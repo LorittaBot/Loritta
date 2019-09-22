@@ -84,7 +84,7 @@ class StoreItemsGuildController {
 			}
 		}
 
-		val storeItem = serverConfig.economyConfig.storeItems.firstOrNull { it.uniqueId.toString() == uniqueId } ?: run {
+		/* val storeItem = serverConfig.economyConfig.storeItems.firstOrNull { it.uniqueId.toString() == uniqueId } ?: run {
 			res.status(Status.NOT_FOUND)
 			res.send(
 					WebsiteUtils.createErrorPayload(
@@ -95,6 +95,6 @@ class StoreItemsGuildController {
 			return
 		}
 
-		res.send("${storeItem.uniqueId}")
+		res.send("${storeItem.uniqueId}") */
 	}
 }

@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.platform.discord.commands.LorittaDiscordCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class LoriToolsQuirkyStuffCommand : LorittaDiscordCommand(arrayOf("loritoolsqs"), CommandCategory.MAGIC) {
+class LoriToolsQuirkyStuffCommand(val m: QuirkyStuff) : LorittaDiscordCommand(arrayOf("loritoolsqs"), CommandCategory.MAGIC) {
 	override val onlyOwner: Boolean
 		get() = true
 
@@ -42,6 +42,11 @@ class LoriToolsQuirkyStuffCommand : LorittaDiscordCommand(arrayOf("loritoolsqs")
 		}
 
 		QuirkyStuff.onBoostDeactivate(member)
+	}
+
+	@Subcommand(["send_sponsored_message"])
+	suspend fun sendSponsoredMessage(context: DiscordCommandContext) {
+		m.sponsorsAdvertisement?.broadcastSponsoredMessage()
 	}
 
 	@Subcommand(["enable_birthday_in_channel"])

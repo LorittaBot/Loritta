@@ -57,6 +57,7 @@ class QuirkyStuff : DiscordPlugin() {
     var topDonatorsRank: TopDonatorsRank? = null
     var topVotersRank: TopVotersRank? = null
     var birthdaysRank: BirthdaysRank? = null
+    var sponsorsAdvertisement: SponsorsAdvertisement? = null
 
     override fun onEnable() {
         val config = Constants.HOCON_MAPPER.readValue<QuirkyConfig>(File(dataFolder, "config.conf"))
@@ -82,6 +83,13 @@ class QuirkyStuff : DiscordPlugin() {
             }
         }
 
+        if (config.sponsorsAdvertisement.enabled) {
+            logger.info { "Sponsors Advertisement is enabled! Enabling sponsors advertisement stuff... :3"}
+            sponsorsAdvertisement = SponsorsAdvertisement(this, config).apply {
+                this.start()
+            }
+        }
+
         birthdaysRank = BirthdaysRank(
                 this,
                 config
@@ -99,7 +107,7 @@ class QuirkyStuff : DiscordPlugin() {
                 ThankYouLoriModule(config)
         )
 
-        registerCommand(LoriToolsQuirkyStuffCommand())
+        registerCommand(LoriToolsQuirkyStuffCommand(this))
         registerCommand(SouTopDoadorCommand(config))
         registerCommand(BirthdayCommand(this))
         
@@ -133,6 +141,7 @@ class QuirkyStuff : DiscordPlugin() {
         topDonatorsRank?.task?.cancel()
         topVotersRank?.task?.cancel()
         birthdaysRank?.task?.cancel()
+        sponsorsAdvertisement?.task?.cancel()
     }
 
     companion object {

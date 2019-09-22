@@ -283,7 +283,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			if (FeatureFlags.isEnabled("less-request-spam-mute")) {
 				var processedRequests = 0
 				for (textChannel in context.guild.textChannels) {
-					if (context.guild.selfMember.hasPermission(textChannel, Permission.MANAGE_CHANNEL)) {
+					if (context.guild.selfMember.hasPermission(textChannel, Permission.MANAGE_CHANNEL, Permission.MANAGE_PERMISSIONS)) {
 						val permissionOverride = textChannel.getPermissionOverride(mutedRole)
 						if (permissionOverride == null) { // Se é null...
 							textChannel.createPermissionOverride(mutedRole)
@@ -304,7 +304,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 				}
 			} else {
 				for (textChannel in context.guild.textChannels) {
-					if (context.guild.selfMember.hasPermission(textChannel, Permission.MANAGE_CHANNEL)) {
+					if (context.guild.selfMember.hasPermission(textChannel, Permission.MANAGE_CHANNEL, Permission.MANAGE_PERMISSIONS)) {
 						val permissionOverride = textChannel.getPermissionOverride(mutedRole)
 						if (permissionOverride == null) { // Se é null...
 							textChannel.createPermissionOverride(mutedRole)
@@ -327,7 +327,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			if (FeatureFlags.isEnabled("less-request-spam-mute")) {
 				var processedRequests = 0
 				for (voiceChannel in context.guild.voiceChannels) {
-					if (context.guild.selfMember.hasPermission(voiceChannel, Permission.MANAGE_CHANNEL)) {
+					if (context.guild.selfMember.hasPermission(voiceChannel, Permission.MANAGE_CHANNEL, Permission.MANAGE_PERMISSIONS)) {
 						val permissionOverride = voiceChannel.getPermissionOverride(mutedRole)
 						if (permissionOverride == null) { // Se é null...
 							voiceChannel.createPermissionOverride(mutedRole)
@@ -348,7 +348,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 				}
 			} else {
 				for (voiceChannel in context.guild.voiceChannels) {
-					if (context.guild.selfMember.hasPermission(voiceChannel, Permission.MANAGE_CHANNEL)) {
+					if (context.guild.selfMember.hasPermission(voiceChannel, Permission.MANAGE_CHANNEL, Permission.MANAGE_PERMISSIONS)) {
 						val permissionOverride = voiceChannel.getPermissionOverride(mutedRole)
 						if (permissionOverride == null) { // Se é null...
 							voiceChannel.createPermissionOverride(mutedRole)

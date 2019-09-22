@@ -29,6 +29,9 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 	var mixerWebhook: MixerWebhook? = null
 
 	fun checkNewVideos() {
+		if (!loritta.isMaster) // Não verifique caso não seja o servidor mestre
+			return
+
 		val mixerWebhookFile = File(Loritta.FOLDER, "mixer_webhook.json")
 
 		if (mixerWebhook == null && mixerWebhookFile.exists())
@@ -121,7 +124,7 @@ class NewLivestreamThread : Thread("Livestream Query Thread") {
 				val json = jsonObject(
 						"kind" to "web",
 						"events" to gson.toJsonTree(events),
-						"url" to loritta.config.loritta.website.url + "api/v1/callbacks/mixer",
+						"url" to loritta.instanceConfig.loritta.website.url + "api/v1/callbacks/mixer",
 						"secret" to loritta.config.mixer.webhookSecret
 				)
 

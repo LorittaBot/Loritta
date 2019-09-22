@@ -1,5 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
+import com.github.salomonbrys.kotson.nullString
+import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -8,7 +10,6 @@ import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "iconeserver", "iconeguild", "iconedoserver", "iconedaguild", "íconedoserver", "iconedoservidor", "íconeguild", "íconedoserver", "íconedaguild", "íconedoservidor"), category = CommandCategory.DISCORD) {
@@ -21,11 +22,15 @@ class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "ico
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
-		var guild: Guild? = context.guild
-		val id = if (context.args.isNotEmpty()) { context.args[0] } else { null }
+		var guild: JsonObject? = null
 
-		if (id != null && id.isValidSnowflake()) {
-			guild = lorittaShards.getGuildById(context.args[0])
+		if (context.rawArgs.isNotEmpty()) {
+			val id = context.rawArgs.first()
+			if (id.isValidSnowflake()) {
+				guild = lorittaShards.queryGuildById(context.args[0])
+			}
+		} else {
+			guild = lorittaShards.queryGuildById(context.guild.idLong)
 		}
 
 		if (guild == null) {
@@ -38,7 +43,10 @@ class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "ico
 			return
 		}
 
-		if (guild.iconUrl == null) {
+		val name = guild["name"].nullString
+		val iconUrl = guild["iconUrl"].nullString
+
+		if (iconUrl == null) {
 			context.reply(
 					LoriReply(
 							message = context.legacyLocale["SERVERICON_NoIcon"],
@@ -50,14 +58,14 @@ class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "ico
 
 		val embed = EmbedBuilder()
 		embed.setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
-		val description = "**${context.legacyLocale["AVATAR_CLICKHERE", guild.iconUrl + "?size=2048"]}**"
+		val description = "**${context.legacyLocale["AVATAR_CLICKHERE", iconUrl + "?size=2048"]}**"
 
-		val guildIconUrl = guild.iconUrl!!
+		val guildIconUrl = iconUrl!!
 
 		embed.setDescription(description)
-		embed.setImage(guild.iconUrl) // Ícone da Guild
+		embed.setImage(iconUrl) // Ícone da Guild
 		embed.setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
-		embed.setTitle("<:discord:314003252830011395> ${guild.name}", null) // Nome da Guild
+		embed.setTitle("<:discord:314003252830011395> ${name}", null) // Nome da Guild
 		embed.setImage(guildIconUrl.replace("jpg", "png") + (if (!guildIconUrl.endsWith(".gif")) "?size=2048" else ""))
 
 		context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!

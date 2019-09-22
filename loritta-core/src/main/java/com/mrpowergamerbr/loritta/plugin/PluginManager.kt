@@ -35,7 +35,7 @@ class PluginManager(val loritta: LorittaBot) {
 	}
 
 	fun loadPlugins() {
-		val folder = File(loritta.config.loritta.folders.plugins)
+		val folder = File(loritta.instanceConfig.loritta.folders.plugins)
 
 		for (file in folder.listFiles().filter { it.extension == "jar" }) {
 			loadPlugin(file)

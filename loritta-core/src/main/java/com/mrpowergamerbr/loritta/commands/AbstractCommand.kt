@@ -236,7 +236,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 			embed.setDescription(cmdInfo)
 			embed.setAuthor("${context.userHandle.name}#${context.userHandle.discriminator}", null, ev.author.effectiveAvatarUrl)
-			embed.setFooter(context.legacyLocale[this.category.fancyTitle], "${loritta.config.loritta.website.url}assets/img/loritta_gabizinha_v1.png") // Mostrar categoria do comando
+			embed.setFooter(context.legacyLocale[this.category.fancyTitle], "${loritta.instanceConfig.loritta.website.url}assets/img/loritta_gabizinha_v1.png") // Mostrar categoria do comando
 			embed.setTimestamp(Instant.now())
 
 			if (conf.explainInPrivate) {

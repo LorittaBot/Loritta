@@ -31,6 +31,19 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val arg0 = context.rawArgs.getOrNull(0)
+		val arg1 = context.rawArgs.getOrNull(1)
+
+		if (arg0 == "action") {
+			loritta.config.clusters.forEach {
+				lorittaShards.queryAllLorittaClusters("/api/v1/loritta/action/$arg1")
+			}
+			context.reply(
+					LoriReply(
+							"Enviado ação para todos os clusters!"
+					)
+			)
+			return
+		}
 
 		if (arg0 == "emotes") {
 			context.reply(
@@ -228,10 +241,10 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			logger.info("Interrompendo a Thread do Website...")
 			loritta.websiteThread.interrupt()
 			logger.info("Iniciando instância do Website...")
-			loritta.website = LorittaWebsite(loritta.config.loritta.website.url, loritta.config.loritta.website.folder)
+			loritta.website = LorittaWebsite(loritta.instanceConfig.loritta.website.url, loritta.instanceConfig.loritta.website.folder)
 			logger.info("Iniciando website...")
 			loritta.websiteThread = thread(true, name = "Website Thread") {
-				loritta.website = LorittaWebsite(loritta.config.loritta.website.url, loritta.config.loritta.website.folder)
+				loritta.website = LorittaWebsite(loritta.instanceConfig.loritta.website.url, loritta.instanceConfig.loritta.website.folder)
 				org.jooby.run({
 					loritta.website
 				})

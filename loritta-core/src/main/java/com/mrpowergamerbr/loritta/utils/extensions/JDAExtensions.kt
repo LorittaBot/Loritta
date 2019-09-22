@@ -44,7 +44,7 @@ suspend fun Message.edit(content: Message, clearReactions: Boolean = true): Mess
  * This reduces the number of API requests needed
  */
 suspend fun Message.editMessageIfContentWasChanged(message: String): Message {
-	if (this.contentRaw != message)
+	if (this.contentRaw == message)
 		return this
 
 	return this.editMessage(message).await()
@@ -147,6 +147,7 @@ fun Permission.localized(locale: BaseLocale): String {
 		MANAGE_PERMISSIONS -> locale["discord.permissions.managePermissions"]
 		MANAGE_WEBHOOKS -> locale["discord.permissions.manageWebhooks"]
 		MANAGE_EMOTES -> locale["discord.permissions.manageEmotes"]
+		VOICE_STREAM -> locale["discord.permissions.voiceStream"]
 		UNKNOWN -> "This should never, ever happen!"
 	}
 }

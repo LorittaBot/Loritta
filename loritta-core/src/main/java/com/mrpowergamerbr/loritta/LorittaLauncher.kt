@@ -1,12 +1,12 @@
 package com.mrpowergamerbr.loritta
 
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MigrationTool
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordConfig
+import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordInstanceConfig
+import com.mrpowergamerbr.loritta.utils.config.GeneralInstanceConfig
+import net.perfectdreams.loritta.utils.readConfigurationFromFile
 import java.io.File
-import java.io.IOException
 import java.nio.file.Paths
 import java.util.jar.Attributes
 import java.util.jar.JarFile
@@ -53,9 +53,9 @@ object LorittaLauncher {
 		System.setProperty("kotlin.script.classpath", propClassPath)
 
 		val configurationFile = File(System.getProperty("conf") ?: "./loritta.conf")
-		val config: GeneralConfig
 		val discordConfigurationFile = File(System.getProperty("discordConf") ?: "./discord.conf")
-		val discordConfig: GeneralDiscordConfig
+		val configurationInstanceFile = File(System.getProperty("instanceConf") ?: "./loritta.instance.conf")
+		val discordInstanceConfigurationFile = File(System.getProperty("discordConf") ?: "./discord.instance.conf")
 
 		if (!configurationFile.exists() || !discordConfigurationFile.exists()) {
 			println("Welcome to Loritta Morenitta! :3")
@@ -68,14 +68,18 @@ object LorittaLauncher {
 			println("After configuring the file, run me again!")
 
 			copyFromJar("/loritta.conf", "./loritta.conf")
+			copyFromJar("/loritta.instance.conf", "./loritta.instance.conf")
 			copyFromJar("/discord.conf", "./discord.conf")
+			copyFromJar("/discord.instance.conf", "./discord.instance.conf")
 
 			System.exit(1)
 			return
 		}
 
-		config = readConfigurationFromFile(configurationFile)
-		discordConfig = readConfigurationFromFile(discordConfigurationFile)
+		val config = readConfigurationFromFile<GeneralConfig>(configurationFile)
+		val discordConfig = readConfigurationFromFile<GeneralDiscordConfig>(discordConfigurationFile)
+		val instanceConfig = readConfigurationFromFile<GeneralInstanceConfig>(configurationInstanceFile)
+		val discordInstanceConfig = readConfigurationFromFile<GeneralDiscordInstanceConfig>(discordInstanceConfigurationFile)
 
 		val arg0 = args.getOrNull(0)
 		val arg1 = args.getOrNull(1)
@@ -88,23 +92,12 @@ object LorittaLauncher {
 		}
 
 		// Iniciar instância da Loritta
-		loritta = Loritta(discordConfig, config)
+		loritta = Loritta(discordConfig, discordInstanceConfig, config, instanceConfig)
 		loritta.start()
 	}
 
 	private fun copyFromJar(inputPath: String, outputPath: String) {
 		val inputStream = LorittaLauncher::class.java.getResourceAsStream(inputPath)
 		File(outputPath).writeBytes(inputStream.readAllBytes())
-	}
-
-	private inline fun <reified T> readConfigurationFromFile(file: File): T {
-		try {
-			val json = file.readText()
-			return Constants.HOCON_MAPPER.readValue<T>(json)
-		} catch (e: IOException) {
-			e.printStackTrace()
-			System.exit(1) // Sair caso der erro
-			throw e
-		}
 	}
 }

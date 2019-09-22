@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.*
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.Request
 import org.jooby.Response
@@ -25,7 +26,7 @@ class UserDashboardController {
 
         val userId = userIdentification.id
 
-        val user = lorittaShards.getUserById(userId)!!
+        val user = runBlocking { lorittaShards.retrieveUserById(userId)!! }
         val lorittaProfile = loritta.getOrCreateLorittaProfile(userId)
 
         variables["profileUser"] = user

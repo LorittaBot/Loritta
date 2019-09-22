@@ -32,6 +32,9 @@ object Emotes {
     val LORI_WOW: LorittaEmote by resettableLazy(lazyMgr) { getEmote("lori_wow") }
     val LORI_SMILE: LorittaEmote by resettableLazy(lazyMgr) { getEmote("lori_smile") }
     val LORI_HM: LorittaEmote by resettableLazy(lazyMgr) { getEmote("lori_hm") }
+    val LORI_RICH: LorittaEmote by resettableLazy(lazyMgr) { getEmote("lori_rich") }
+    val MINECRAFT_GRASS: LorittaEmote by resettableLazy(lazyMgr) { getEmote("minecraft_grass") }
+    val DEFAULT_DANCE: LorittaEmote by resettableLazy(lazyMgr) { getEmote("default_dance") }
     val KOTLIN: LorittaEmote by resettableLazy(lazyMgr) { getEmote("kotlin") }
     val JDA: LorittaEmote by resettableLazy(lazyMgr) { getEmote("jda") }
 
@@ -39,7 +42,7 @@ object Emotes {
 
     fun loadEmotes() {
         resetEmotes()
-        val emoteMap = Constants.HOCON_MAPPER.readValue<Map<String, String>>(File("${loritta.config.loritta.folders.root}emotes.conf"))
+        val emoteMap = Constants.HOCON_MAPPER.readValue<Map<String, String>>(File("${loritta.instanceConfig.loritta.folders.root}emotes.conf"))
         this.emoteMap = emoteMap
     }
 

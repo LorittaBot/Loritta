@@ -189,7 +189,7 @@ object ScriptingUtils {
             tempCode += "abstract "
         else
             tempCode += "open "
-        tempCode += "class ${f.nameWithoutExtension.capitalize()} "
+        tempCode += "class ${f.nameWithoutExtension.replace("-", "").capitalize()} "
         if (classToBeExtended != null)
             tempCode += ": $classToBeExtended() "
         tempCode += "{\n"

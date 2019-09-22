@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.website.LoriForceReauthentication
 import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
 import com.mrpowergamerbr.loritta.website.evaluateKotlin
 import com.mrpowergamerbr.loritta.website.requests.routes.Page
+import kotlinx.coroutines.runBlocking
 import kotlinx.html.body
 import kotlinx.html.html
 import kotlinx.html.stream.appendHTML
@@ -29,7 +30,7 @@ class UserReputationController {
 	@LoriForceReauthentication(true)
 	fun handle(req: Request, res: Response, @Local variables: MutableMap<String, Any?>): String {
 		val userId = req.param("userId").value()
-		val user = lorittaShards.getUserById(userId)!!
+		val user = runBlocking { lorittaShards.retrieveUserById(userId)!! }
 		val userIdentification = variables["userIdentification"] as TemmieDiscordAuth.UserIdentification?
 
 		// Vamos agora pegar todas as reputações
@@ -47,7 +48,7 @@ class UserReputationController {
 			}
 		} else { null }
 
-		val result = evaluateKotlin("user/reputation.kts", "onLoad", userIdentification, user, lastReputationGiven, reputations, req.param("channel").valueOrNull())
+		val result = evaluateKotlin("user/reputation.kts", "onLoad", userIdentification, user, lastReputationGiven, reputations, req.param("guild").valueOrNull(), req.param("channel").valueOrNull())
 		val builder = StringBuilder()
 		builder.appendHTML().html {
 			Page.getHead(

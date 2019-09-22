@@ -64,7 +64,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 		val serverIconUrl = if (guildIconUrl != null) {
 			guildIconUrl.replace("jpg", "png")
 		} else {
-			"${loritta.config.loritta.website.url}assets/img/unknown.png"
+			"${loritta.instanceConfig.loritta.website.url}assets/img/unknown.png"
 		}
 
 		val serverIcon = LorittaUtils.downloadImage(serverIconUrl)!!.getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
@@ -95,7 +95,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 			}
 
 			val profile = transaction(Databases.loritta) { GuildProfile.wrapRow(resultRow) }
-			val member = lorittaShards.getUserById(profile.userId)
+			val member = context.guild.getMemberById(profile.userId)
 
 			if (member != null) {
 				val file = java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + profile.userId + ".png")
@@ -113,7 +113,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 
 				graphics.font = oswaldRegular20
 
-				ImageUtils.drawTextWrap(member.name, 143, currentY + 21, 9999, 9999, graphics.fontMetrics, graphics)
+				ImageUtils.drawTextWrap(member.user.name, 143, currentY + 21, 9999, 9999, graphics.fontMetrics, graphics)
 
 				graphics.font = oswaldRegular16
 
@@ -123,7 +123,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 
 				ImageUtils.drawTextWrap("Nível " + profile.getCurrentLevel().currentLevel, 145, currentY + 48, 9999, 9999, graphics.fontMetrics, graphics)
 
-				val avatar = (LorittaUtils.downloadImage(member.effectiveAvatarUrl) ?: LorittaUtils.downloadImage("https://loritta.website/assets/img/unknown.png")!!)
+				val avatar = (LorittaUtils.downloadImage(member.user.effectiveAvatarUrl) ?: LorittaUtils.downloadImage("https://loritta.website/assets/img/unknown.png")!!)
 						.getScaledInstance(143, 143, BufferedImage.SCALE_SMOOTH)
 
 				var editedAvatar = BufferedImage(143, 143, BufferedImage.TYPE_INT_ARGB)

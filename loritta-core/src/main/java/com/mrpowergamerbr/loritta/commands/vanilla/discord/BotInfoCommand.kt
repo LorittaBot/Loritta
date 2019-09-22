@@ -31,6 +31,8 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 			return
 		}
 
+		val guildCount = lorittaShards.queryGuildCount()
+
 		val embed = EmbedBuilder()
 
 		var jvmUpTime = ManagementFactory.getRuntimeMXBean().uptime
@@ -53,14 +55,14 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		sb.append(seconds)
 		sb.append("s")
 
-		embed.setAuthor("${locale["BOTINFO_TITLE"]} 💁", loritta.config.loritta.website.url, "${loritta.config.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
-		embed.setThumbnail("${loritta.config.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
+		embed.setAuthor("${locale["BOTINFO_TITLE"]} 💁", loritta.instanceConfig.loritta.website.url, "${loritta.instanceConfig.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
+		embed.setThumbnail("${loritta.instanceConfig.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
 		embed.setColor(Color(0, 193, 223))
 		embed.setDescription(
 				locale.toNewLocale().getWithType<List<String>>("commands.discord.botinfo.embedDescription")
 						.joinToString("\n\n")
 						.msgFormat(
-								lorittaShards.getCachedGuildCount(),
+								guildCount,
 								sb.toString(),
 								LorittaLauncher.loritta.legacyCommandManager.commandMap.size + loritta.commandManager.commands.size,
 								LorittaUtilsKotlin.executedCommands,
@@ -72,10 +74,10 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 						)
 		)
 
-		embed.addField("\uD83C\uDF80 ${context.legacyLocale["WEBSITE_DONATE"]}", "${loritta.config.loritta.website.url}donate", true)
-		embed.addField("<:loritta:331179879582269451> ${context.legacyLocale["WEBSITE_ADD_ME"]}", "${loritta.config.loritta.website.url}dashboard", true)
-		embed.addField("<:lori_ok_hand:426183783008698391> ${context.legacyLocale["WEBSITE_COMMANDS"]}", "${loritta.config.loritta.website.url}commands", true)
-		embed.addField("\uD83D\uDC81 ${context.legacyLocale["WEBSITE_Support"]}", "${loritta.config.loritta.website.url}support", true)
+		embed.addField("\uD83C\uDF80 ${context.legacyLocale["WEBSITE_DONATE"]}", "${loritta.instanceConfig.loritta.website.url}donate", true)
+		embed.addField("<:loritta:331179879582269451> ${context.legacyLocale["WEBSITE_ADD_ME"]}", "${loritta.instanceConfig.loritta.website.url}dashboard", true)
+		embed.addField("<:lori_ok_hand:426183783008698391> ${context.legacyLocale["WEBSITE_COMMANDS"]}", "${loritta.instanceConfig.loritta.website.url}commands", true)
+		embed.addField("\uD83D\uDC81 ${context.legacyLocale["WEBSITE_Support"]}", "${loritta.instanceConfig.loritta.website.url}support", true)
 		embed.addField("<:twitter:552840901886738433> Twitter", "[@LorittaBot](https://twitter.com/LorittaBot)", true)
 		embed.addField("<:instagram:552841049660325908> Instagram", "[@lorittabot](https://instagram.com/lorittabot/)", true)
 

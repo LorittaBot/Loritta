@@ -379,7 +379,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 
 			embed.setDescription(cmdInfo)
 			embed.setAuthor("${userHandle.name}#${userHandle.discriminator}", null, ev.author.effectiveAvatarUrl)
-			embed.setFooter(legacyLocale[command.category.fancyTitle], "${loritta.config.loritta.website.url}assets/img/loritta_gabizinha_v1.png") // Mostrar categoria do comando
+			embed.setFooter(legacyLocale[command.category.fancyTitle], "${loritta.instanceConfig.loritta.website.url}assets/img/loritta_gabizinha_v1.png") // Mostrar categoria do comando
 			embed.setTimestamp(Instant.now())
 
 			if (conf.explainInPrivate) {

@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
@@ -135,7 +136,7 @@ class NostalgiaProfileCreator : ProfileCreator {
 
 			val marrySection = ImageIO.read(File(Loritta.ASSETS, "profile/nostalgia/marry.png"))
 			graphics.drawImage(marrySection, 0, 0, null)
-			val marriedWith = lorittaShards.getUserById(marriedWithId)
+			val marriedWith = runBlocking { lorittaShards.retrieveUserById(marriedWithId) }
 
 			if (marriedWith != null) {
 				val whitneySemiBold16 = whitneySemiBold.deriveFont(16f)

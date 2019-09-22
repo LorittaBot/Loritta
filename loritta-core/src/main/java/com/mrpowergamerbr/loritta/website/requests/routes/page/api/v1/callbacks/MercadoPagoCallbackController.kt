@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.callbacks
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -9,8 +8,10 @@ import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.perfectdreams.loritta.dao.Payment
+import net.perfectdreams.loritta.utils.payments.PaymentReason
 import net.perfectdreams.mercadopago.PaymentStatus
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.MediaType
@@ -72,38 +73,47 @@ class MercadoPagoCallbackController {
 							return
 						}
 
+						if (internalPayment.paidAt != null) {
+							logger.warn { "MercadoPago Payment $id with Reference ID: ${payment.externalReference} ($internalTransactionId) is alredy paid! Ignoring..." }
+							res.status(Status.OK)
+							res.send("{}")
+							return
+						}
+
 						logger.info { "Setting Payment $internalTransactionId as paid! (via MercadoPago payment $id) - Payment made by ${internalPayment.userId}" }
 						transaction(Databases.loritta) { // Pagamento aprovado
 							internalPayment.paidAt = System.currentTimeMillis()
 							internalPayment.expiresAt = System.currentTimeMillis() + Constants.DONATION_ACTIVE_MILLIS
 
-							if (isKeyRenewal) {
-								val donationKeyId = payment.externalReference.split("-").dropLast(1).last()
-								MercadoPagoCallbackController.logger.info { "Renewing key $donationKeyId with value ${internalPayment.money.toDouble()} for ${internalPayment.userId}" }
-								val donationKey = DonationKey.findById(donationKeyId.toLong())
+							if (internalPayment.reason == PaymentReason.DONATION) {
+								if (isKeyRenewal) {
+									val donationKeyId = payment.externalReference.split("-").dropLast(1).last()
+									MercadoPagoCallbackController.logger.info { "Renewing key $donationKeyId with value ${internalPayment.money.toDouble()} for ${internalPayment.userId}" }
+									val donationKey = DonationKey.findById(donationKeyId.toLong())
 
-								if (donationKey == null) {
-									MercadoPagoCallbackController.logger.warn { "Key renewal for key $donationKeyId for ${internalPayment.userId} failed! Key doesn't exist! Bug?" }
-									res.status(Status.OK)
-									res.send("{}")
-									return@transaction
-								}
+									if (donationKey == null) {
+										MercadoPagoCallbackController.logger.warn { "Key renewal for key $donationKeyId for ${internalPayment.userId} failed! Key doesn't exist! Bug?" }
+										res.status(Status.OK)
+										res.send("{}")
+										return@transaction
+									}
 
-								donationKey.expiresAt += 2_764_800_000 // 32 dias
-							} else {
-								if (internalPayment.money > 9.99.toBigDecimal()) {
-									MercadoPagoCallbackController.logger.info { "Creating donation key with value ${internalPayment.money.toDouble()} for ${internalPayment.userId}" }
+									donationKey.expiresAt += 2_764_800_000 // 32 dias
+								} else {
+									if (internalPayment.money > 9.99.toBigDecimal()) {
+										MercadoPagoCallbackController.logger.info { "Creating donation key with value ${internalPayment.money.toDouble()} for ${internalPayment.userId}" }
 
-									DonationKey.new {
-										this.userId = internalPayment.userId
-										this.expiresAt = System.currentTimeMillis() + 2_764_800_000 // 32 dias
-										this.value = internalPayment.money.toDouble()
+										DonationKey.new {
+											this.userId = internalPayment.userId
+											this.expiresAt = System.currentTimeMillis() + 2_764_800_000 // 32 dias
+											this.value = internalPayment.money.toDouble()
+										}
 									}
 								}
 							}
 						}
 
-						val user = lorittaShards.getUserById(internalPayment.userId)
+						val user = runBlocking { lorittaShards.retrieveUserById(internalPayment.userId) }
 						if (user != null) {
 							user.openPrivateChannel().queue {
 								it.sendMessage("Seu pagamento foi aprovado com sucesso!").queue()

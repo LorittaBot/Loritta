@@ -12,8 +12,8 @@ import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.tables.*
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
@@ -80,12 +80,14 @@ class APILoriDailyRewardView : NoVarsView() {
 					.firstOrNull()
 		}?.get(Dailies.receivedAt) ?: 0L
 
-		val sameIpDailyAt = transaction(Databases.loritta) {
+		val sameIpDaily = transaction(Databases.loritta) {
 			com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.ip eq ip }
 					.orderBy(Dailies.receivedAt to false)
 					.limit(1)
 					.firstOrNull()
-		}?.get(Dailies.receivedAt) ?: 0L
+		}
+
+		val sameIpDailyAt = sameIpDaily?.get(Dailies.receivedAt) ?: 0L
 
 		run {
 			val calendar = Calendar.getInstance()
@@ -95,7 +97,7 @@ class APILoriDailyRewardView : NoVarsView() {
 			calendar.add(Calendar.DAY_OF_MONTH, 1)
 			val tomorrow = calendar.timeInMillis
 
-			if (tomorrow > System.currentTimeMillis()) {
+			if (tomorrow > System.currentTimeMillis() && !loritta.config.isOwner(userIdentification.id.toLong())) {
 				val payload = JsonObject()
 				payload["api:code"] = LoriWebCodes.ALREADY_VOTED_TODAY
 				return payload.toString()
@@ -110,7 +112,9 @@ class APILoriDailyRewardView : NoVarsView() {
 			calendar.add(Calendar.DAY_OF_MONTH, 1)
 			val tomorrow = calendar.timeInMillis
 
-			if (tomorrow > System.currentTimeMillis()) {
+			if (tomorrow > System.currentTimeMillis() && !loritta.config.isOwner(userIdentification.id.toLong())) {
+				logger.warn { "User ${userIdentification.id} tried to get daily with the same IP as ${sameIpDaily?.get(Dailies.receivedById)}! IP = ${sameIpDaily?.get(Dailies.receivedById)}; Current User Email: ${userIdentification.email}; Daily User Email: ${sameIpDaily?.get(Dailies.email)}" }
+
 				val payload = JsonObject()
 				payload["api:code"] = LoriWebCodes.ALREADY_VOTED_TODAY
 				return payload.toString()
@@ -179,46 +183,61 @@ class APILoriDailyRewardView : NoVarsView() {
 		var dailyPayout = RANDOM.nextInt(555 /* Math.max(555, 555 * (multiplier - 1)) */, ((600 * multiplier) + 1).toInt()) // 555 (lower bound) -> 555 * sites de votação do PerfectDreams
 		val originalPayout = dailyPayout
 
-		val mutualGuilds = lorittaShards.getMutualGuilds(lorittaShards.getUserById(userIdentification.id)!!)
-		var sponsoredBy: Guild? = null
+		val mutualGuilds = runBlocking {
+			lorittaShards.queryMutualGuildsInAllLorittaClusters(userIdentification.id)
+		}
+
+		mutualGuilds.forEach {
+			logger.info { "$it" }
+		}
+
+		var sponsoredBy: JsonObject? = null
 		var multipliedBy: Double? = null
 		var sponsoredByUser: User? = null
 
 		transaction(Databases.loritta) {
 			// Pegar todos os servidores com sonhos patrocinados
 			val results = (ServerConfigs innerJoin DonationConfigs innerJoin DonationKeys).select {
-				(ServerConfigs.id inList mutualGuilds.map { it.idLong }) and
-				(DonationConfigs.dailyMultiplier eq true) and
+				(ServerConfigs.id inList mutualGuilds.map { it["id"].string.toLong() }) and
+						(DonationConfigs.dailyMultiplier eq true) and
 						(ServerConfigs.donationKey.isNotNull()) and
 						(DonationKeys.expiresAt greaterEq System.currentTimeMillis()) and
 						(DonationKeys.value greaterEq 59.99)
 			}.orderBy(DonationKeys.value to false)
 
 			val serverConfigs = ServerConfig.wrapRows(results)
+			val user = runBlocking { lorittaShards.retrieveUserById(userIdentification.id) }
 
 			var bestServer: ServerConfig? = null
+			var bestServerInfo: JsonObject? = null
 
 			for (config in serverConfigs) {
-				val guild = lorittaShards.getGuildById(config.guildId) ?: continue
+				logger.info { "Checking ${config.guildId}" }
 
-				val member = guild.getMemberById(lorittaProfile.id.value) ?: continue
+				val guild = mutualGuilds.firstOrNull { logger.info { "it[id] = ${it["id"].string.toLong()}" }; it["id"].string.toLong() == config.guildId }?.obj ?: continue
+				val id = guild["id"].string.toLong()
 
-				val epochMillis = member.timeJoined.toEpochSecond() * 1000
+				val epochMillis = guild["timeJoined"].long
 
-				if (member.user.avatarId == null) {
+				if (user?.avatarId == null) {
+					logger.info { "avatar is null" }
 					if (epochMillis + 1_296_000_000 > System.currentTimeMillis()) // 15 dias
 						continue
 				} else {
+					logger.info { "avatar is not null" }
 					if (epochMillis + Constants.ONE_WEEK_IN_MILLISECONDS > System.currentTimeMillis()) // 7 dias
 						continue
 				}
 
-				val xp = GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq member.idLong) }.firstOrNull()?.xp ?: 0L
-
+				val xp = GuildProfile.find { (GuildProfiles.guildId eq id) and (GuildProfiles.userId eq userIdentification.id.toLong()) }.firstOrNull()?.xp ?: 0L
+				logger.info { "user has $xp xp" }
 				if (500 > xp)
 					continue
 
+				logger.info { "got it!" }
+
 				bestServer = config
+				bestServerInfo = guild
 				break
 			}
 
@@ -228,13 +247,14 @@ class APILoriDailyRewardView : NoVarsView() {
 
 				if (donationConfig != null && donationKey != null && donationKey.value >= 59.99) {
 					multipliedBy = when {
+						donationKey.value >= 179.99 -> 2.0
 						donationKey.value >= 139.99 -> 1.75
 						donationKey.value >= 99.99 -> 1.5
 						donationKey.value >= 59.99 -> 1.25
 						else -> 1.0
 					}
-					sponsoredBy = lorittaShards.getGuildById(bestServer.guildId)
-					sponsoredByUser = lorittaShards.getUserById(donationKey.userId)
+					sponsoredBy = bestServerInfo
+					sponsoredByUser = runBlocking { lorittaShards.retrieveUserById(donationKey.userId) }
 				}
 			}
 		}
@@ -246,9 +266,9 @@ class APILoriDailyRewardView : NoVarsView() {
 			val sponsor = jsonObject(
 					"multipliedBy" to multipliedBy,
 					"guild" to jsonObject(
-							"name" to sponsoredBy!!.name,
-							"iconUrl" to sponsoredBy!!.iconUrl,
-							"id" to sponsoredBy!!.id
+							"name" to sponsoredBy!!["name"].nullString,
+							"iconUrl" to sponsoredBy!!["iconUrl"].nullString,
+							"id" to sponsoredBy!!["id"].nullString
 					),
 					"originalPayout" to originalPayout
 			)

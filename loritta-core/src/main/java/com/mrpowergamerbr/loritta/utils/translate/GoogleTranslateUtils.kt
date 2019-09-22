@@ -21,10 +21,11 @@ object GoogleTranslateUtils {
 		var message = message
 		try {
 			message = URLEncoder.encode(message, "UTF-8")
-			val url = URL("http://translate.googleapis.com/translate_a/single?client=gtx&sl=" + from + "&tl="
+			val url = URL("https://translate.googleapis.com/translate_a/single?client=gtx&sl=" + from + "&tl="
 					+ to + "&dt=t&q=" + message + "&ie=UTF-8&oe=UTF-8")
 			val uc = url.openConnection()
-			uc.setRequestProperty("User-Agent", "Mozilla/5.0")
+			uc.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0")
+
 			val ucInputStream = uc.getInputStream()
 			val inputStreamReader = InputStreamReader(ucInputStream, "UTF-8")
 			val bufferedReader = BufferedReader(inputStreamReader)

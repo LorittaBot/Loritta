@@ -1,10 +1,12 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.user
 
+import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.Reputation
 import com.mrpowergamerbr.loritta.network.Databases
@@ -17,10 +19,12 @@ import com.mrpowergamerbr.loritta.website.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
@@ -36,7 +40,87 @@ import org.jooby.mvc.Path
 
 @Path("/api/v1/user/:userId/reputation")
 class UserReputationController {
-	private val logger = KotlinLogging.logger {}
+	companion object {
+		private val logger = KotlinLogging.logger {}
+
+		fun sendReputationToCluster(guildId: String, channelId: String, giverId: String, receiverId: String, reputationCount: Int) {
+			if (guildId.isValidSnowflake() && channelId.isValidSnowflake()) {
+				val cluster = DiscordUtils.getLorittaClusterForGuildId(guildId.toLong())
+
+				try {
+					HttpRequest.post("https://${cluster.getUrl()}/api/v1/loritta/send-reputation-message")
+							.userAgent(loritta.lorittaCluster.getUserAgent())
+							.header("Authorization", loritta.lorittaInternalApiKey.name)
+							.connectTimeout(5_000)
+							.readTimeout(5_000)
+							.send(
+									gson.toJson(
+											jsonObject(
+													"guildId" to guildId,
+													"channelId" to channelId,
+													"giverId" to giverId,
+													"receiverId" to receiverId,
+													"reputationCount" to reputationCount
+											)
+									)
+							)
+							.ok()
+				} catch (e: Exception) {
+					logger.warn(e) { "Shard ${cluster.name} ${cluster.id} offline!" }
+					throw PingCommand.ShardOfflineException(cluster.id, cluster.name)
+				}
+			}
+		}
+
+		fun sendReputationReceivedMessage(guildId: String, channelId: String, giverId: String, giverProfile: Profile, receiverId: String, reputationCount: Int) {
+			logger.info { "Received sendReputation request in $guildId $channelId by $giverId for $receiverId" }
+
+			if (guildId.isValidSnowflake() && channelId.isValidSnowflake()) {
+				// Iremos verificar se o usuário *pode* usar comandos no canal especificado
+				val channel = lorittaShards.getTextChannelById(channelId)
+
+				if (channel != null) {
+					if (!channel.canTalk()) // Eu não posso falar!
+						return
+					val member = channel.guild.getMemberById(giverId)
+					if (member == null || !channel.canTalk(member)) // O usuário não está no servidor ou não pode falar no chat
+						return
+
+					if (!channel.guild.selfMember.hasPermission(channel, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_EMBED_LINKS)) // Permissões
+						return
+
+					val serverConfig = loritta.getServerConfigForGuild(channelId)
+					val receiverProfile = loritta.getOrCreateLorittaProfile(giverId)
+					val receiverSettings = transaction(Databases.loritta) {
+						receiverProfile.settings
+					}
+
+					val lorittaUser = GuildLorittaUser(member, serverConfig, giverProfile)
+
+					if (serverConfig.blacklistedChannels.contains(channel.id) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) // O usuário não pode enviar comandos no canal
+						return
+
+					val locale = loritta.getLocaleById(serverConfig.localeId)
+
+					// Tudo certo? Então vamos enviar!
+					val reply = LoriReply(
+							locale[
+									"commands.social.reputation.success",
+									"<@${giverId}>",
+									"<@$receiverId>",
+									reputationCount,
+									Emotes.LORI_OWO,
+									"<${loritta.instanceConfig.loritta.website.url}user/${receiverId}/rep?guild=${guildId}&channel=${channelId}>",
+									receiverSettings.gender.getPersonalPronoun(locale, PersonalPronoun.THIRD_PERSON, "<@$receiverId>")
+							],
+							Emotes.LORI_HUG
+					)
+
+					channel.sendMessage(reply.build()).queue()
+				}
+			}
+		}
+	}
 
 	@GET
 	@LoriDoNotLocaleRedirect(true)
@@ -79,6 +163,7 @@ class UserReputationController {
 		val json = jsonParser.parse(rawMessage)
 		val content = json["content"].string
 		val token = json["token"].string
+		val guildId = json["guildId"].nullString
 		val channelId = json["channelId"].nullString
 
 		if (!MiscUtils.checkRecaptcha(loritta.config.googleRecaptcha.reputationToken, token))
@@ -118,8 +203,6 @@ class UserReputationController {
 
 		giveReputation(userIdentification.id.toLong(), ip, userIdentification.email!!, receiver.toLong(), content)
 
-		val profile = loritta.getOrCreateLorittaProfile(userIdentification.id)
-
 		var randomChance = 2.5
 		val donatorPaid = loritta.getActiveMoneyFromDonations(userIdentification.id.toLong())
 		if (donatorPaid != 0.0) {
@@ -151,9 +234,8 @@ class UserReputationController {
 					Reputations.select { Reputations.receivedById eq userIdentification.id.toLong() }.count()
 				}
 
-				if (channelId != null) {
-					val lorittaProfile = loritta.getOrCreateLorittaProfile(loritta.discordConfig.discord.clientId.toLong())
-					sendReputationReceivedMessage(channelId, loritta.discordConfig.discord.clientId, lorittaProfile, userIdentification.id, reputationCount)
+				if (guildId != null && channelId != null) {
+					sendReputationToCluster(guildId, channelId, loritta.discordConfig.discord.clientId, userIdentification.id, reputationCount)
 				}
 			}
 		}
@@ -164,8 +246,8 @@ class UserReputationController {
 
 		res.status(Status.OK)
 
-		if (channelId != null)
-			sendReputationReceivedMessage(channelId, userIdentification.id, profile, receiver, reputations.size)
+		if (guildId != null && channelId != null)
+			sendReputationToCluster(guildId, channelId, userIdentification.id, receiver, reputations.size)
 
 		val rank = StringBuilder().appendHTML().div(classes = "box-item") {
 			val map = reputations.groupingBy { it.givenById }.eachCount()
@@ -189,7 +271,7 @@ class UserReputationController {
 					}
 					for ((userId, count) in map) {
 						if (idx == 5) break
-						val rankUser = lorittaShards.getUserById(userId.toString())
+						val rankUser = runBlocking { lorittaShards.retrieveUserById(userId) }
 
 						if (rankUser != null) {
 							tr {
@@ -240,53 +322,6 @@ class UserReputationController {
 				this.receivedById = receiver
 				this.content = content
 				this.receivedAt = System.currentTimeMillis()
-			}
-		}
-	}
-
-	fun sendReputationReceivedMessage(channelId: String, giverId: String, giverProfile: Profile, receiverId: String, reputationCount: Int) {
-		if (channelId.isValidSnowflake()) {
-			// Iremos verificar se o usuário *pode* usar comandos no canal especificado
-			val channel = lorittaShards.getTextChannelById(channelId)
-
-			if (channel != null) {
-				if (!channel.canTalk()) // Eu não posso falar!
-					return
-				val member = channel.guild.getMemberById(giverId)
-				if (member == null || !channel.canTalk(member)) // O usuário não está no servidor ou não pode falar no chat
-					return
-
-				if (!channel.guild.selfMember.hasPermission(channel, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_EMBED_LINKS)) // Permissões
-					return
-
-				val serverConfig = loritta.getServerConfigForGuild(channelId)
-				val receiverProfile = loritta.getOrCreateLorittaProfile(giverId)
-				val receiverSettings = transaction(Databases.loritta) {
-					receiverProfile.settings
-				}
-
-				val lorittaUser = GuildLorittaUser(member, serverConfig, giverProfile)
-
-				if (serverConfig.blacklistedChannels.contains(channel.id) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) // O usuário não pode enviar comandos no canal
-					return
-
-				val locale = loritta.getLocaleById(serverConfig.localeId)
-
-				// Tudo certo? Então vamos enviar!
-				val reply = LoriReply(
-						locale[
-								"commands.social.reputation.success",
-								"<@${giverId}>",
-								"<@$receiverId>",
-								reputationCount,
-								Emotes.LORI_OWO,
-								"<${loritta.config.loritta.website.url}user/${receiverId}/rep?channel=$channelId>",
-								receiverSettings.gender.getPersonalPronoun(locale, PersonalPronoun.THIRD_PERSON, "<@$receiverId>")
-						],
-						Emotes.LORI_HUG
-				)
-
-				channel.sendMessage(reply.build()).queue()
 			}
 		}
 	}

@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.tables.Dailies
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -70,7 +71,7 @@ class APILoriDailyRewardStatusView : NoVarsView() {
 			calendar.add(Calendar.DAY_OF_MONTH, 1)
 			val tomorrow = calendar.timeInMillis
 
-			if (tomorrow > System.currentTimeMillis()) {
+			if (tomorrow > System.currentTimeMillis() && !loritta.config.isOwner(userIdentification.id.toLong())) {
 				val payload = JsonObject()
 				payload["canPayoutAgain"] = tomorrow
 				payload["api:code"] = LoriWebCodes.ALREADY_VOTED_TODAY
@@ -86,7 +87,7 @@ class APILoriDailyRewardStatusView : NoVarsView() {
 			calendar.add(Calendar.DAY_OF_MONTH, 1)
 			val tomorrow = calendar.timeInMillis
 
-			if (tomorrow > System.currentTimeMillis()) {
+			if (tomorrow > System.currentTimeMillis() && !loritta.config.isOwner(userIdentification.id.toLong())) {
 				val payload = JsonObject()
 				payload["canPayoutAgain"] = tomorrow
 				payload["api:code"] = LoriWebCodes.ALREADY_VOTED_TODAY

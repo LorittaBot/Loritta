@@ -34,13 +34,13 @@ class RemindersThread : Thread("Reminders Thread") {
 
 			if (channel != null && channel.canTalk()) {
 				channel.sendMessage("<a:lori_notification:394165039227207710> | <@" + reminder.userId + "> Lembrete! `" + reminder.content + "`").queue()
+
+				transaction(Databases.loritta) {
+					Reminders.deleteWhere { Reminders.remindAt.lessEq(System.currentTimeMillis()) }
+				}
 			} else {
 				// TODO: Enviar na DM do usuário
 			}
-		}
-
-		transaction(Databases.loritta) {
-			Reminders.deleteWhere { Reminders.remindAt.lessEq(System.currentTimeMillis()) }
 		}
 	}
 }

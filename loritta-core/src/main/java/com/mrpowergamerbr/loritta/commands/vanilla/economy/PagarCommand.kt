@@ -1,17 +1,26 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.economy
 
+import com.github.kevinsawicki.http.HttpRequest
+import com.github.salomonbrys.kotson.double
+import com.github.salomonbrys.kotson.jsonObject
+import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.math.BigDecimal
 
 class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECONOMY) {
 	companion object {
 		const val TRANSACTION_TAX = 0.05
+		private val mutex = Mutex()
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -29,7 +38,13 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 
 			val payerProfile = context.config.getUserData(context.userHandle.idLong)
 
-			if (context.config.economyConfig.isEnabled) {
+			val economyConfig = transaction(Databases.loritta) {
+				loritta.getOrCreateServerConfig(context.guild.idLong).economyConfig
+			}
+
+			val localEconomyEnabled = economyConfig?.enabled == true
+
+			if (localEconomyEnabled && economyConfig != null) {
 				val arg0 = context.rawArgs.getOrNull(currentIdx++)
 
 				if (arg0?.equals("global", true) == true || arg0?.equals("local", true) == true) {
@@ -55,7 +70,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 									mentionUser = false
 							),
 							LoriReply(
-									"`${context.config.commandPrefix}pay local $display` — Forma de pagamento: ${context.config.economyConfig.economyNamePlural} (Você possui **${payerProfile.money} ${context.config.economyConfig.economyNamePlural}**!)",
+									"`${context.config.commandPrefix}pay local $display` — Forma de pagamento: ${economyConfig.economyNamePlural} (Você possui **${payerProfile.money} ${economyConfig.economyNamePlural}**!)",
 									prefix = "\uD83D\uDCB5",
 									mentionUser = false
 							)
@@ -107,7 +122,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			if (howMuch.toBigDecimal() > balanceQuantity) {
 				context.reply(
 						LoriReply(
-								locale["PAY_InsufficientFunds", if (economySource == "global") locale["ECONOMY_NamePlural"] else context.config.economyConfig.economyNamePlural],
+								locale["PAY_InsufficientFunds", if (economySource == "global") locale["ECONOMY_NamePlural"] else economyConfig?.economyNamePlural],
 								Constants.ERROR
 						)
 				)
@@ -128,13 +143,22 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 					return
 				}
 
-				val taxedMoney = Math.ceil(TRANSACTION_TAX * howMuch.toDouble())
+				val activeMoneyFromDonations = loritta.getActiveMoneyFromDonations(context.userHandle.idLong)
+				val taxBypass = activeMoneyFromDonations >= LorittaPrices.NO_PAY_TAX
+
+				val taxedMoney = if (taxBypass) { 0.0 } else { Math.ceil(TRANSACTION_TAX * howMuch.toDouble()) }
 				val finalMoney = howMuch - taxedMoney
 
 				val message = context.reply(
-						LoriReply(
-								"Você irá transferir $howMuch sonhos ($taxedMoney sonhos de taxa) para ${user.asMention}! Ele irá receber ${howMuch - taxedMoney} sonhos"
-						),
+						if (!taxBypass) {
+							LoriReply(
+									"Você irá transferir $howMuch sonhos ($taxedMoney sonhos de taxa) para ${user.asMention}! Ele irá receber ${howMuch - taxedMoney} sonhos"
+							)
+						} else {
+							LoriReply(
+									"Você irá transferir $howMuch sonhos para ${user.asMention}! Como você é um incrível doador, você não precisará pagar nenhuma taxa! Afinal, se você me ajudou, então você não precisa de taxas toscas te perturbando. ${Emotes.LORI_SMILE}"
+							)
+						},
 						LoriReply(
 								"Clique em ✅ para aceitar a transação!"
 						)
@@ -142,39 +166,46 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 
 				message.onReactionAddByAuthor(context) {
 					if (it.reactionEmote.name == "✅") {
-						val receiverProfile = loritta.getOrCreateLorittaProfile(user.id)
+						logger.info { "Sending request to transfer sonhos between ${context.userHandle.id} and ${user.id}, $howMuch sonhos will be transferred. Is mutex locked? ${mutex.isLocked}" }
+						mutex.withLock {
+							val shard = loritta.config.clusters.first { it.id == 1L }
 
-						if (receiverProfile.money.isNaN()) {
-							// receiverProfile.dreams = 0.0
-							return@onReactionAddByAuthor
-						}
+							val body = HttpRequest.post("https://${shard.getUrl()}/api/v1/loritta/transfer-balance")
+									.userAgent(loritta.lorittaCluster.getUserAgent())
+									.header("Authorization", loritta.lorittaInternalApiKey.name)
+									.connectTimeout(5_000)
+									.readTimeout(5_000)
+									.send(
+											gson.toJson(
+													jsonObject(
+															"giverId" to context.userHandle.idLong,
+															"receiverId" to user.idLong,
+															"howMuch" to howMuch
+													)
+											)
+									)
+									.body()
 
-						if (context.lorittaUser.profile.money.isNaN()) {
-							// context.lorittaUser.profile.dreams = 0.0
-							return@onReactionAddByAuthor
-						}
+							val result = jsonParser.parse(
+									body
+							).obj
 
-						val giverProfile = loritta.getOrCreateLorittaProfile(context.lorittaUser.profile.id.value)
+							val status = PayStatus.valueOf(result["status"].string)
 
-						if (howMuch > giverProfile.money)
-							return@onReactionAddByAuthor
-
-						val beforeGiver = context.lorittaUser.profile.money
-						val beforeReceiver = receiverProfile.money
-
-						transaction(Databases.loritta) {
-							context.lorittaUser.profile.money -= howMuch
-							receiverProfile.money += finalMoney
-						}
-
-						logger.info("${context.userHandle.id} (antes possuia ${beforeGiver} sonhos) transferiu ${howMuch} sonhos para ${receiverProfile.userId} (antes possuia ${beforeReceiver} sonhos, recebeu apenas $finalMoney (taxado!))")
-
-						context.reply(
-								LoriReply(
-										locale["PAY_TransactionComplete", user.asMention, finalMoney, if (finalMoney == 1.0) { locale["ECONOMY_Name"] } else { locale["ECONOMY_NamePlural"] }],
-										"\uD83D\uDCB8"
+							if (status == PayStatus.SUCCESS) {
+								val finalMoney = result["finalMoney"].double
+								context.reply(
+										LoriReply(
+												locale["PAY_TransactionComplete", user.asMention, finalMoney, if (finalMoney == 1.0) {
+													locale["ECONOMY_Name"]
+												} else {
+													locale["ECONOMY_NamePlural"]
+												}],
+												"\uD83D\uDCB8"
+										)
 								)
-						)
+							}
+						}
 					}
 				}
 
@@ -185,15 +216,16 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 				val beforeGiver = payerProfile.money
 				val beforeReceiver = receiverProfile.money
 
-				payerProfile.money -= howMuch.toBigDecimal()
-				receiverProfile.money += howMuch.toBigDecimal()
+				transaction(Databases.loritta) {
+					payerProfile.money -= howMuch.toBigDecimal()
+					receiverProfile.money += howMuch.toBigDecimal()
+				}
 
 				logger.info("${context.userHandle.id} (antes possuia ${beforeGiver} economia local) transferiu ${howMuch} economia local para ${receiverProfile.userId} (antes possuia ${beforeReceiver} economia local)")
-				loritta save context.config
 
 				context.reply(
 						LoriReply(
-								locale["PAY_TransactionComplete", user.asMention, howMuch, if (howMuch == 1.0) { context.config.economyConfig.economyName } else { context.config.economyConfig.economyNamePlural }],
+								locale["PAY_TransactionComplete", user.asMention, howMuch, if (howMuch == 1.0) { economyConfig?.economyName } else { economyConfig?.economyNamePlural }],
 								"\uD83D\uDCB8"
 						)
 				)
@@ -201,5 +233,11 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 		} else {
 			context.explain()
 		}
+	}
+
+	enum class PayStatus {
+		INVALID_MONEY_STATUS,
+		NOT_ENOUGH_MONEY,
+		SUCCESS
 	}
 }

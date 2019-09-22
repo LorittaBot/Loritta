@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.website.views.subviews.api.config.types
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.ServerConfig
+import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.MemberCounterConfig
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
@@ -65,13 +66,8 @@ class TextChannelsPayload : ConfigPayloadType("text_channels") {
 					}
 				}
 
-				if (FeatureFlags.isEnabled("member-counter-update")) {
-					for (textChannel in guild.textChannels) {
-						val memberCountConfig = legacyServerConfig.getTextChannelConfig(textChannel).memberCounterConfig ?: continue
-						val formattedTopic = memberCountConfig.getFormattedTopic(guild)
-						textChannel.manager.setTopic(formattedTopic).queue()
-					}
-				}
+				if (FeatureFlags.isEnabled("member-counter-update"))
+					DiscordListener.queueTextChannelTopicUpdates(guild, legacyServerConfig, true)
 			} else {
 				config.memberCounterConfig = null
 			}

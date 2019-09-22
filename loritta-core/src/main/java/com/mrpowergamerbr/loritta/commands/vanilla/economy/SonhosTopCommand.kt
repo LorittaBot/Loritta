@@ -59,7 +59,7 @@ class SonhosTopCommand : AbstractCommand("sonhostop", listOf("topsonhos"), Comma
 		val serverIconUrl = if (guildIconUrl != null) {
 			guildIconUrl.replace("jpg", "png")
 		} else {
-			"${loritta.config.loritta.website.url}assets/img/unknown.png"
+			"${loritta.instanceConfig.loritta.website.url}assets/img/unknown.png"
 		}
 
 		val serverIcon = LorittaUtils.downloadImage(serverIconUrl)!!.getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
@@ -90,7 +90,7 @@ class SonhosTopCommand : AbstractCommand("sonhostop", listOf("topsonhos"), Comma
 			}
 
 			val userId = profile[Profiles.id].value.toString()
-			val member = lorittaShards.getUserById(userId)
+			val member = lorittaShards.retrieveUserById(userId)
 
 			if (member != null) {
 				val file = java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/$userId.png")

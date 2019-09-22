@@ -19,6 +19,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBattleComm
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBoxCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.*
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
@@ -32,6 +33,7 @@ import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.perfectdreams.loritta.utils.DonateUtils
 import net.perfectdreams.loritta.utils.Emotes
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 class CommandManager {
@@ -113,7 +115,7 @@ class CommandManager {
 		commandMap.add(LanguageCommand())
 		commandMap.add(PatreonCommand())
 		commandMap.add(DiscordBotListCommand())
-		commandMap.add(VotarCommand())
+		// commandMap.add(VotarCommand())
 		commandMap.add(ParallaxCommand())
 
 		// =======[ SOCIAL ]======
@@ -322,7 +324,8 @@ class CommandManager {
 			val isPrivateChannel = ev.isFromType(ChannelType.PRIVATE)
 			val start = System.currentTimeMillis()
 
-			var args = message.replace("@${ev.guild?.selfMember?.effectiveName ?: ""}", "").stripCodeMarks().split(" ").toTypedArray().remove(0)
+			var args = message.replace("@${ev.guild?.selfMember?.effectiveName
+					?: ""}", "").stripCodeMarks().split(" ").toTypedArray().remove(0)
 			var rawArgs = ev.message.contentRaw.stripCodeMarks().split(" ").toTypedArray().remove(0)
 			var strippedArgs = ev.message.contentStripped.stripCodeMarks().split(" ").toTypedArray().remove(0)
 			if (byMention) {
@@ -389,11 +392,13 @@ class CommandManager {
 					return true
 				}
 
-				val profile = lorittaUser.profile
 				var cooldown = command.cooldown
 				val donatorPaid = loritta.getActiveMoneyFromDonations(ev.author.idLong)
+				val guildPaid = transaction(Databases.loritta) {
+					loritta.getOrCreateServerConfig(ev.author.idLong).donationKey?.value
+				} ?: 0.0
 
-				if (donatorPaid >= 39.99) {
+				if (donatorPaid >= 39.99 || guildPaid >= 59.99) {
 					cooldown /= 2
 				}
 
@@ -445,11 +450,11 @@ class CommandManager {
 
 					if (missingPermissions.isNotEmpty()) {
 						// oh no
-						val required = missingPermissions.joinToString(", ", transform = { "`" + reparsedLegacyLocale["LORIPERMISSION_${it.name}"] + "`"})
+						val required = missingPermissions.joinToString(", ", transform = { "`" + reparsedLegacyLocale["LORIPERMISSION_${it.name}"] + "`" })
 						var message = reparsedLegacyLocale["LORIPERMISSION_MissingPermissions", required]
 
 						if (ev.member.hasPermission(Permission.ADMINISTRATOR) || ev.member.hasPermission(Permission.MANAGE_SERVER)) {
-							message += " ${reparsedLegacyLocale["LORIPERMISSION_MissingPermCanConfigure", loritta.config.loritta.website.url]}"
+							message += " ${reparsedLegacyLocale["LORIPERMISSION_MissingPermCanConfigure", loritta.instanceConfig.loritta.website.url]}"
 						}
 						ev.textChannel.sendMessage(Constants.ERROR + " **|** ${ev.member.asMention} $message").queue()
 						return true
@@ -499,9 +504,9 @@ class CommandManager {
 				}
 
 				if (command.requiresMusicEnabled()) {
-					if (!context.config.musicConfig.isEnabled || context.config.musicConfig.channelId == null) {
+					if (!context.config.musicConfig.isEnabled) {
 						val canManage = context.handle.hasPermission(Permission.MANAGE_SERVER) || context.handle.hasPermission(Permission.ADMINISTRATOR)
-						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + reparsedLegacyLocale["DJ_LORITTA_DISABLED"] + " \uD83D\uDE1E" + if (canManage) reparsedLegacyLocale["DJ_LORITTA_HOW_TO_ENABLE", "${loritta.config.loritta.website.url}dashboard"] else "")
+						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + reparsedLegacyLocale["DJ_LORITTA_DISABLED"] + " \uD83D\uDE1E" + if (canManage) reparsedLegacyLocale["DJ_LORITTA_HOW_TO_ENABLE", "${loritta.instanceConfig.loritta.website.url}dashboard"] else "")
 						return true
 					}
 				}
@@ -509,7 +514,8 @@ class CommandManager {
 				// Vamos pegar uma mensagem aleatória de doação, se não for nula, iremos enviar ela :3
 				DonateUtils.getRandomDonationMessage(
 						locale,
-						donatorPaid
+						donatorPaid,
+						guildPaid
 				)?.let { context.reply(it) }
 
 				if (!context.isPrivateChannel) {
@@ -569,7 +575,6 @@ class CommandManager {
 				}
 
 				logger.error("Exception ao executar comando ${command.javaClass.simpleName}", e)
-				LorittaUtilsKotlin.sendStackTrace(ev.message, e)
 
 				// Avisar ao usuário que algo deu muito errado
 				val mention = if (conf.mentionOnCommandOutput) "${ev.author.asMention} " else ""

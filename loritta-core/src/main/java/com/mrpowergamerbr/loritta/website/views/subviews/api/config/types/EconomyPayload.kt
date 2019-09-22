@@ -8,6 +8,6 @@ import net.dv8tion.jda.api.entities.Guild
 
 class EconomyPayload : ConfigPayloadType("economy") {
 	override fun process(payload: JsonObject, userIdentification: TemmieDiscordAuth.UserIdentification, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, guild: Guild) {
-		applyReflection(payload, legacyServerConfig.economyConfig)
+		// applyReflection(payload, legacyServerConfig.economyConfig)
 	}
 }

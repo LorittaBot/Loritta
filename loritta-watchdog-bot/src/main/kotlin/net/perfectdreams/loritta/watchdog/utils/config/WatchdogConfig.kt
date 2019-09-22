@@ -7,12 +7,13 @@ data class WatchdogConfig @JsonCreator constructor(
 		val checkBots: List<BotConfig>
 ) {
 	data class BotConfig @JsonCreator constructor(
-			val delay: Long,
-			val startAfter: Long,
+			val name: String,
 			val botId: Long,
 			val channelId: Long,
-			val useCommand: String,
-			val timeout: Long,
-			val warnAfter: Long
+			val clusterUrl: String,
+			val websiteUrl: String,
+			val packFiles: List<String>,
+			val rollingDelayPerShard: Int,
+			val clusters: List<LorittaClusterConfig>
 	)
 }

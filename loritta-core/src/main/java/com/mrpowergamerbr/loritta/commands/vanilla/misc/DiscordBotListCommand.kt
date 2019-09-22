@@ -17,7 +17,7 @@ class DiscordBotListCommand : AbstractCommand("discordbotlist", listOf("dbl", "u
     override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val embed = EmbedBuilder().apply {
 			setColor(Constants.LORITTA_AQUA)
-			setThumbnail("${loritta.config.loritta.website.url}assets/img/loritta_star.png")
+			setThumbnail("${loritta.instanceConfig.loritta.website.url}assets/img/loritta_star.png")
 			setTitle("✨ Discord Bot List")
 			setDescription(locale["DBL_Info", context.config.commandPrefix, PerfilCommand.userVotes?.size ?: 0, "https://discordbots.org/bot/loritta"])
 		}

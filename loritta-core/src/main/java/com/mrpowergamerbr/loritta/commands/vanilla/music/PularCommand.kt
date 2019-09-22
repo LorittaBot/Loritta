@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.music
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -32,21 +31,26 @@ class PularCommand : AbstractCommand("skip", listOf("pular"), category = Command
 			// Se tiver, vamos deixar ela pular a música, afinal, só tem ela!
 
 			if (usersInChannel.size > 1 || (usersInChannel.size == 1 && usersInChannel.first().user.idLong != context.userHandle.idLong)) { // Mas se tiver mais de uma, vamos verificar se ela tem permissão de DJ!
-				val missingPermissions = listOf(LorittaPermission.DJ).filterNot { context.lorittaUser.hasPermission(it) }
+				// E foi o usuário que colocou essa música?
+				val musicManager = loritta.audioManager.getGuildAudioPlayer(context.guild)
 
-				if (missingPermissions.isNotEmpty()) {
-					// oh no
-					val required = missingPermissions.joinToString(", ", transform = { "`" + locale["LORIPERMISSION_${it.name}"] + "`"})
-					var message = locale["LORIPERMISSION_MissingPermissions", required]
+				if (musicManager.scheduler.currentTrack?.user?.idLong != context.userHandle.idLong) {
+					val missingPermissions = listOf(LorittaPermission.DJ).filterNot { context.lorittaUser.hasPermission(it) }
 
-					if (context.handle.hasPermission(Permission.ADMINISTRATOR) || context.handle.hasPermission(Permission.MANAGE_SERVER)) {
-						message += " ${locale["LORIPERMISSION_MissingPermCanConfigure", loritta.config.loritta.website.url]}"
+					if (missingPermissions.isNotEmpty()) {
+						// oh no
+						val required = missingPermissions.joinToString(", ", transform = { "`" + locale["LORIPERMISSION_${it.name}"] + "`" })
+						var message = locale["LORIPERMISSION_MissingPermissions", required]
+
+						if (context.handle.hasPermission(Permission.ADMINISTRATOR) || context.handle.hasPermission(Permission.MANAGE_SERVER)) {
+							message += " ${locale["LORIPERMISSION_MissingPermCanConfigure", loritta.instanceConfig.loritta.website.url]}"
+						}
+						context.reply(
+								message,
+								Constants.ERROR
+						)
+						return
 					}
-					context.reply(
-							message,
-							Constants.ERROR
-					)
-					return
 				}
 			}
 		}

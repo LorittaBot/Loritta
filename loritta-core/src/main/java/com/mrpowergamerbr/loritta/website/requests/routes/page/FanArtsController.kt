@@ -35,7 +35,7 @@ class FanArtsController {
 	@GET
 	@LoriRequiresVariables(true)
 	fun handle(req: Request, res: Response, @Local variables: MutableMap<String, Any?>) {
-		if (FeatureFlags.isEnabled(FeatureFlags.NEW_WEBSITE_PORT) && FeatureFlags.isEnabled(FeatureFlags.NEW_WEBSITE_PORT + "-fanarts")) {
+		if (FeatureFlags.NEW_WEBSITE_PORT && FeatureFlags.isEnabled(FeatureFlags.Names.NEW_WEBSITE_PORT + "-fanarts")) {
 			val html = runBlocking {
 				ScriptingUtils.evaluateWebPageFromTemplate(
 						File(

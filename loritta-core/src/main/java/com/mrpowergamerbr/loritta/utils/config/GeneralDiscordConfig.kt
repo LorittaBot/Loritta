@@ -11,6 +11,4 @@ class GeneralDiscordConfig @JsonCreator constructor(
 		val discordBotList: DiscordBotListConfig,
 		val ghostIds: List<String>,
 		val antiRaidIds: List<String>
-) {
-
-}
+)

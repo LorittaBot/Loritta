@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
+import com.mrpowergamerbr.loritta.modules.AutoroleModule
 import com.mrpowergamerbr.loritta.modules.Modules
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
@@ -54,9 +55,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		if (DebugLog.cancelAllEvents)
-			return
-
-		if (!(loritta.discordConfig.discord.requestLimiter.allowMessagesWith.any { event.message.contentRaw.contains(it, true) }) && loritta.requestLimiter.isRateLimited())
 			return
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
@@ -158,6 +156,10 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						lorittaUser
 				)
 
+				if (serverConfig.autoroleConfig.isEnabled && serverConfig.autoroleConfig.giveOnlyAfterMessageWasSent && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) { // Está ativado?
+					AutoroleModule.giveRoles(member, serverConfig.autoroleConfig)
+				}
+
 				for (module in (MESSAGE_RECEIVED_MODULES + loritta.pluginManager.plugins.flatMap { it.messageReceivedModules })) {
 					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyLocale) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyLocale))
 						return@launch
@@ -251,7 +253,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				}
 			} catch (e: Exception) {
 				logger.error("[${event.guild.name}] Erro ao processar mensagem de ${event.author.name} (${event.author.id} - ${event.message.contentRaw}", e)
-				LorittaUtilsKotlin.sendStackTrace(event.message, e)
 			}
 		}
 	}
@@ -405,6 +406,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	fun isUserStillBanned(profile: Profile): Boolean {
 		if (loritta.ignoreIds.contains(profile.userId)) { // Se o usuário está sendo ignorado...
 			if (profile.isBanned) { // E ele ainda está banido...
+				logger.info { "${profile.id} tried to use me, but they are banned! >:)" }
 				return true // Então flw galerinha
 			} else {
 				// Se não, vamos remover ele da lista do ignoreIds

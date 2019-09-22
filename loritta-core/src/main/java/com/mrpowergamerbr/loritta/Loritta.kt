@@ -4,8 +4,6 @@ import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.salomonbrys.kotson.*
-import com.google.common.collect.EvictingQueue
-import com.google.common.collect.Queues
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.Gson
 import com.google.gson.JsonParser
@@ -31,6 +29,8 @@ import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordConfig
+import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordInstanceConfig
+import com.mrpowergamerbr.loritta.utils.config.GeneralInstanceConfig
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaMessage
 import com.mrpowergamerbr.loritta.utils.locale.Gender
@@ -53,12 +53,10 @@ import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandManager
 import net.perfectdreams.loritta.socket.LorittaSocket
 import net.perfectdreams.loritta.socket.network.SocketOpCode
 import net.perfectdreams.loritta.socket.network.commands.*
-import net.perfectdreams.loritta.tables.BotVotes
-import net.perfectdreams.loritta.tables.Giveaways
-import net.perfectdreams.loritta.tables.Payments
-import net.perfectdreams.loritta.tables.ReactionOptions
+import net.perfectdreams.loritta.tables.*
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.NetAddressUtils
+import net.perfectdreams.loritta.utils.Sponsor
 import net.perfectdreams.loritta.utils.extensions.obj
 import net.perfectdreams.loritta.utils.extensions.objectNode
 import net.perfectdreams.loritta.utils.payments.PaymentReason
@@ -76,8 +74,7 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.util.*
 import java.util.concurrent.ExecutorService
-import java.util.concurrent.SynchronousQueue
-import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
@@ -86,7 +83,7 @@ import kotlin.concurrent.thread
  *
  * @author MrPowerGamerBR
  */
-class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : LorittaBot(config) {
+class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig: GeneralDiscordInstanceConfig, config: GeneralConfig, instanceConfig: GeneralInstanceConfig) : LorittaBot(config, instanceConfig) {
 	// ===[ STATIC ]===
 	companion object {
 		// ===[ LORITTA ]===
@@ -123,11 +120,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 	val coroutineDispatcher = coroutineExecutor.asCoroutineDispatcher() // Coroutine Dispatcher
 
 	fun createThreadPool(name: String): ExecutorService {
-		return ThreadPoolExecutor(15, Integer.MAX_VALUE,
-				5L, TimeUnit.MINUTES,
-				SynchronousQueue<Runnable>(),
-				ThreadFactoryBuilder().setNameFormat(name).build()
-		)
+		return Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat(name).build())
 	}
 
 	lateinit var legacyCommandManager: CommandManager // Nosso command manager
@@ -180,15 +173,16 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 				HeartbeatCommand()
 		)
 	}
-	val requestLimiter = RequestLimiter(this)
+	var willRestartAt: Long? = null
+	var sponsors: List<Sponsor> = listOf()
 
 	init {
 		LorittaLauncher.loritta = this
-		FOLDER = config.loritta.folders.root
-		ASSETS = config.loritta.folders.assets
-		TEMP = config.loritta.folders.temp
-		LOCALES = config.loritta.folders.locales
-		FRONTEND = config.loritta.website.folder
+		FOLDER = instanceConfig.loritta.folders.root
+		ASSETS = instanceConfig.loritta.folders.assets
+		TEMP = instanceConfig.loritta.folders.temp
+		LOCALES = instanceConfig.loritta.folders.locales
+		FRONTEND = instanceConfig.loritta.website.folder
 		loadLocales()
 		loadLegacyLocales()
 		mercadoPago = MercadoPago(
@@ -219,7 +213,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 
 		builder = DefaultShardManagerBuilder()
 				.setShardsTotal(discordConfig.discord.maxShards)
-				.setShards(discordConfig.discord.minShardId, discordConfig.discord.maxShardId)
+				.setShards(discordInstanceConfig.discord.minShardId, discordInstanceConfig.discord.maxShardId)
 				.setStatus(discordConfig.discord.status)
 				.setToken(discordConfig.discord.clientToken)
 				.setBulkDeleteSplittingEnabled(false)
@@ -262,6 +256,21 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 			return youtubeKeys[RANDOM.nextInt(youtubeKeys.size)]
 		}
 
+	val isMaster: Boolean
+		get() {
+			return loritta.instanceConfig.loritta.currentClusterId == 1L
+		}
+
+	val lorittaCluster: GeneralConfig.LorittaClusterConfig
+		get() {
+			return loritta.config.clusters.first { it.id == loritta.instanceConfig.loritta.currentClusterId }
+		}
+
+	val lorittaInternalApiKey: GeneralConfig.LorittaConfig.WebsiteConfig.AuthenticationKey
+		get() {
+			return loritta.config.loritta.website.apiKeys.first { it.description == "Loritta Internal Key" }
+		}
+
 	// Inicia a Loritta
 	fun start() {
 		RestAction.setPassContext(true)
@@ -277,7 +286,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 		logger.info("Sucesso! Iniciando Loritta (Website)...")
 
 		websiteThread = thread(true, name = "Website Thread") {
-			website = LorittaWebsite(config.loritta.website.url, config.loritta.website.folder)
+			website = LorittaWebsite(instanceConfig.loritta.website.url, instanceConfig.loritta.website.folder)
 			org.jooby.run({
 				website
 			})
@@ -299,10 +308,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 						SocketOpCode.Discord.IDENTIFY,
 						objectNode(
 								"lorittaShardId" to config.socket.shardId,
-								"lorittaShardName" to config.socket.clientName,
-								"discordMaxShards" to discordConfig.discord.maxShards,
-								"discordShardMin" to discordConfig.discord.minShardId,
-								"discordShardMax" to discordConfig.discord.maxShardId
+								"lorittaShardName" to config.socket.clientName
 						),
 						success = {
 							logger.info("Identification process was a success! We are now identified and ready to send and receive commands!")
@@ -407,7 +413,9 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 					ParallaxMetaStorages,
 					BotVotes,
 					StoredMessages,
-					StarboardMessages
+					StarboardMessages,
+					Sponsors,
+					EconomyConfigs
 			)
 		}
 	}
@@ -494,19 +502,9 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 		}
 	}
 
-	var idx0 = 0L
-	val findProfilePostgre = Queues.synchronizedQueue(EvictingQueue.create<Long>(1000))
-	var idx2 = 0L
-	val newProfilePostgre = Queues.synchronizedQueue(EvictingQueue.create<Long>(1000))
-
 	fun getOrCreateLorittaProfile(userId: Long): Profile {
 		return transaction(Databases.loritta) {
-			val start0 = System.nanoTime()
 			val sqlProfile = Profile.findById(userId)
-			if (idx0 % 100 == 0L) {
-				findProfilePostgre.add(System.nanoTime() - start0)
-			}
-			idx0++
 
 			if (sqlProfile != null) {
 				return@transaction sqlProfile
@@ -533,11 +531,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, config: GeneralConfig) : 
 					boughtProfiles = arrayOf()
 				}
 			}
-			if (idx2 % 100 == 0L) {
-				newProfilePostgre.add(System.nanoTime() - start2)
-			}
 
-			idx2++
 			return@transaction newProfile
 		}
 	}

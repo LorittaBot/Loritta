@@ -1,23 +1,17 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.economy
 
-import com.mrpowergamerbr.loritta.Loritta
+import com.github.kevinsawicki.http.HttpRequest
+import com.github.salomonbrys.kotson.*
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.threads.RaffleThread
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.launch
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
-import java.util.concurrent.Executors
 
 class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lorifa"), CommandCategory.ECONOMY) {
 	companion object {
-		val coroutineExecutor = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 		const val MAX_TICKETS_BY_USER_PER_ROUND = 1000
 	}
 
@@ -43,8 +37,22 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 			return
 		}
 
+		val shard = loritta.config.clusters.first { it.id == 1L }
+
 		if (arg0 == "comprar" || arg0 == "buy") {
 			val quantity = Math.max(context.args.getOrNull(1)?.toIntOrNull() ?: 1, 1)
+
+			val (canGetDaily, tomorrow) = context.lorittaUser.profile.canGetDaily()
+
+			if (canGetDaily) { // Nós apenas queremos permitir que a pessoa aposte na rifa caso já tenha pegado sonhos alguma vez hoje
+				context.reply(
+						LoriReply(
+								"Parece que você ainda não pegou o seu daily, você só pode apostar na rifa após ter pegado o seu daily de hoje. Pegue agora mesmo! ${loritta.instanceConfig.loritta.website.url}daily",
+								Constants.ERROR
+						)
+				)
+				return
+			}
 
 			if (quantity > MAX_TICKETS_BY_USER_PER_ROUND) {
 				context.reply(
@@ -56,77 +64,94 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 				return
 			}
 
-			val currentUserTicketQuantity = RaffleThread.userIds.count { it.first == context.userHandle.id }
-			if (RaffleThread.userIds.count { it.first == context.userHandle.id } + quantity > MAX_TICKETS_BY_USER_PER_ROUND) {
-				if (currentUserTicketQuantity == MAX_TICKETS_BY_USER_PER_ROUND) {
-					context.reply(
-							LoriReply(
-									"Você já tem tickets demais! Guarde um pouco do seu dinheiro para a próxima rodada!",
-									Constants.ERROR
+			val body = HttpRequest.post("https://${shard.getUrl()}/api/v1/loritta/raffle")
+					.userAgent(loritta.lorittaCluster.getUserAgent())
+					.header("Authorization", loritta.lorittaInternalApiKey.name)
+					.connectTimeout(5_000)
+					.readTimeout(5_000)
+					.send(
+							gson.toJson(
+									jsonObject(
+											"userId" to context.userHandle.id,
+											"quantity" to quantity,
+											"localeId" to context.config.localeId
+									)
 							)
 					)
-				} else {
-					context.reply(
-							LoriReply(
-									"Você não pode apostar tantos tickets assim! Você pode apostar, no máximo, mais ${MAX_TICKETS_BY_USER_PER_ROUND - currentUserTicketQuantity} tickets!",
-									Constants.ERROR
-							)
-					)
-				}
+					.body()
+
+			val json = jsonParser.parse(body)
+
+			val status = BuyRaffleTicketStatus.valueOf(json["status"].string)
+
+			if (status == BuyRaffleTicketStatus.THRESHOLD_EXCEEDED) {
+				context.reply(
+						LoriReply(
+								"Você já tem tickets demais! Guarde um pouco do seu dinheiro para a próxima rodada!",
+								Constants.ERROR
+						)
+				)
 				return
 			}
 
-			val requiredCount = quantity.toLong() * 250
-			RaffleThread.logger.info("${context.userHandle.id} irá comprar $quantity tickets por ${requiredCount}!")
-
-			GlobalScope.launch(coroutineExecutor) {
-				val lorittaProfile = loritta.getOrCreateLorittaProfile(context.userHandle.id)
-
-				if (lorittaProfile.money >= requiredCount) {
-					transaction(Databases.loritta) {
-						lorittaProfile.money -= requiredCount
-					}
-
-					for (i in 0 until quantity) {
-						RaffleThread.userIds.add(Pair(context.userHandle.id, context.config.localeId))
-					}
-
-					RaffleThread.logger.info("${context.userHandle.id} comprou $quantity tickets por ${requiredCount}! (Antes ele possuia ${lorittaProfile.money + requiredCount}) sonhos!")
-
-					loritta.raffleThread.save()
-
-					context.reply(
-							LoriReply(
-									context.legacyLocale["RAFFLE_YouBoughtAnTicket", quantity, if (quantity == 1) "" else "s", requiredCount],
-									"\uD83C\uDFAB"
-							),
-							LoriReply(
-									context.legacyLocale["RAFFLE_WantMoreChances", context.config.commandPrefix],
-									mentionUser = false
-							)
-					)
-				} else {
-					context.reply(
-							LoriReply(
-									context.legacyLocale["RAFFLE_NotEnoughMoney", requiredCount - lorittaProfile.money, quantity, if (quantity == 1) "" else "s"],
-									Constants.ERROR
-							)
-					)
-				}
+			if (status == BuyRaffleTicketStatus.TOO_MANY_TICKETS) {
+				context.reply(
+						LoriReply(
+								"Você não pode apostar tantos tickets assim! Você pode apostar, no máximo, mais ${MAX_TICKETS_BY_USER_PER_ROUND - json["ticketCount"].int} tickets!",
+								Constants.ERROR
+						)
+				)
+				return
 			}
+
+			if (status == BuyRaffleTicketStatus.NOT_ENOUGH_MONEY) {
+				context.reply(
+						LoriReply(
+								context.legacyLocale["RAFFLE_NotEnoughMoney", json["canOnlyPay"].int, quantity, if (quantity == 1) "" else "s"],
+								Constants.ERROR
+						)
+				)
+				return
+			}
+
+			context.reply(
+					LoriReply(
+							context.legacyLocale["RAFFLE_YouBoughtAnTicket", quantity, if (quantity == 1) "" else "s", quantity.toLong() * 250],
+							"\uD83C\uDFAB"
+					),
+					LoriReply(
+							context.legacyLocale["RAFFLE_WantMoreChances", context.config.commandPrefix],
+							mentionUser = false
+					)
+			)
 			return
 		}
 
-		val cal = Calendar.getInstance()
-		cal.timeInMillis = RaffleThread.started + 3600000
+		val body = HttpRequest.get("https://${shard.getUrl()}/api/v1/loritta/raffle")
+				.userAgent(loritta.lorittaCluster.getUserAgent())
+				.header("Authorization", loritta.lorittaInternalApiKey.name)
+				.connectTimeout(5_000)
+				.readTimeout(5_000)
+				.body()
 
-		val lastWinner = if (RaffleThread.lastWinnerId != null) {
-			lorittaShards.getUserById(RaffleThread.lastWinnerId)
+		val json = jsonParser.parse(body)
+
+		val lastWinnerId = json["lastWinnerId"].nullString
+		val currentTickets = json["currentTickets"].int
+		val usersParticipating = json["usersParticipating"].int
+		val started = json["started"].long
+		val lastWinnerPrize = json["lastWinnerPrize"].long
+
+		val cal = Calendar.getInstance()
+		cal.timeInMillis = started + 3600000
+
+		val lastWinner = if (lastWinnerId != null) {
+			lorittaShards.retrieveUserById(lastWinnerId)
 		} else {
 			null
 		}
 
-		var nameAndDiscriminator = if (lastWinner != null) {
+		val nameAndDiscriminator = if (lastWinner != null) {
 			lastWinner.name + "#" + lastWinner.discriminator
 		} else {
 			"\uD83E\uDD37"
@@ -138,22 +163,22 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 						"<:loritta:331179879582269451>"
 				),
 				LoriReply(
-						context.legacyLocale["RAFFLE_CurrentPrize", (RaffleThread.userIds.size * 250).toString()],
+						context.legacyLocale["RAFFLE_CurrentPrize", (currentTickets * 250).toString()],
 						"<:starstruck:540988091117076481>",
 						mentionUser = false
 				),
 				LoriReply(
-						context.legacyLocale["RAFFLE_BoughtTickets", RaffleThread.userIds.size],
+						context.legacyLocale["RAFFLE_BoughtTickets", currentTickets],
 						"\uD83C\uDFAB",
 						mentionUser = false
 				),
 				LoriReply(
-						context.legacyLocale["RAFFLE_UsersParticipating", RaffleThread.userIds.distinctBy { it.first }.size],
+						context.legacyLocale["RAFFLE_UsersParticipating", usersParticipating],
 						"\uD83D\uDC65",
 						mentionUser = false
 				),
 				LoriReply(
-						context.legacyLocale["RAFFLE_LastWinner", nameAndDiscriminator.stripCodeMarks(), RaffleThread.lastWinnerPrize],
+						context.legacyLocale["RAFFLE_LastWinner", "${nameAndDiscriminator.stripCodeMarks()} (${lastWinner?.id})", lastWinnerPrize],
 						"\uD83D\uDE0E",
 						mentionUser = false
 				),
@@ -168,5 +193,12 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 						mentionUser = false
 				)
 		)
+	}
+
+	enum class BuyRaffleTicketStatus {
+		THRESHOLD_EXCEEDED,
+		TOO_MANY_TICKETS,
+		NOT_ENOUGH_MONEY,
+		SUCCESS
 	}
 }

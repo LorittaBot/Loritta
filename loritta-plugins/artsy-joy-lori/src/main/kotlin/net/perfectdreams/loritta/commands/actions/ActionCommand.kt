@@ -116,7 +116,7 @@ abstract class ActionCommand(labels: Array<String>) : LorittaCommand(labels, Com
                 EmbedBuilder()
                         .setDescription("${getEmoji()} $response")
                         .setColor(getEmbedColor())
-                        .setImage(loritta.config.loritta.website.url + "assets/img/actions/${getFolderName()}/${randomImage.folderName}/${randomImage.fileName}")
+                        .setImage(loritta.instanceConfig.loritta.website.url + "assets/img/actions/${getFolderName()}/${randomImage.folderName}/${randomImage.fileName}")
                         .setFooter(locale["commands.actions.clickToRetribute", "\uD83D\uDD01"], null)
                         .build()
         ).handle

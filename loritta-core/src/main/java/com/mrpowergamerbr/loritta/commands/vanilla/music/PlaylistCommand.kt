@@ -1,14 +1,14 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.music
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
+import net.perfectdreams.loritta.api.commands.CommandCategory
 
-class PlaylistCommand : AbstractCommand("playlist", listOf("list"), CommandCategory.MUSIC) {
+class PlaylistCommand : AbstractCommand("playlist", listOf("list", "queue"), CommandCategory.MUSIC) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.get("PLAYLIST_DESCRIPTION")
 	}

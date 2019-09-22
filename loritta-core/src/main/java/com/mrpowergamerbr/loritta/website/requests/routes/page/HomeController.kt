@@ -27,7 +27,7 @@ class HomeController {
 
 		val variables = req.get<MutableMap<String, Any?>>("variables")
 
-		if (FeatureFlags.isEnabled(FeatureFlags.NEW_WEBSITE_PORT) && FeatureFlags.isEnabled(FeatureFlags.NEW_WEBSITE_PORT + "-home")) {
+		if (FeatureFlags.NEW_WEBSITE_PORT && FeatureFlags.isEnabled(FeatureFlags.Names.NEW_WEBSITE_PORT + "-home")) {
 			val html = runBlocking {
 				ScriptingUtils.evaluateWebPageFromTemplate(
 						File(

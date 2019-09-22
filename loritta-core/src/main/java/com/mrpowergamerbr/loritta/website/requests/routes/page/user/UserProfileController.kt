@@ -12,6 +12,7 @@ import com.mrpowergamerbr.loritta.website.LoriForceReauthentication
 import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.evaluate
+import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Emote
 import net.dv8tion.jda.api.entities.Guild
@@ -31,7 +32,7 @@ class UserProfileController {
     @LoriRequiresVariables(true)
     @LoriForceReauthentication(true)
     fun handle(req: Request, res: Response, userId: String, @Local variables: MutableMap<String, Any?>): String {
-        val user = lorittaShards.getUserById(userId)!!
+        val user = runBlocking { lorittaShards.retrieveUserById(userId)!! }
         val lorittaProfile = loritta.getOrCreateLorittaProfile(userId)
 
         var userIdentification: TemmieDiscordAuth.UserIdentification? = null

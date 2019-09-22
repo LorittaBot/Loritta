@@ -1,11 +1,14 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page.extras
 
-import com.mongodb.client.model.Filters
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.evaluate
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.Request
 import org.jooby.Response
 import org.jooby.mvc.GET
@@ -24,14 +27,16 @@ class ExtrasViewerController {
 			if (File(LorittaWebsite.FOLDER, "extras/$extraType.html").exists()) {
 				variables["extraType"] = extraType
 				if (extraType == "banned-users") {
-					val bannedUsers = loritta.mongo.getDatabase("loritta").getCollection("users").find(
-							Filters.eq("banned", true)
-					).toMutableList()
+					val bannedUsers = transaction(Databases.loritta) {
+						Profiles.select {
+							Profiles.isBanned eq true
+						}.toMutableSet()
+					}
 
 					var html = ""
 					for (profile in bannedUsers) {
-						val userId = profile.getString("_id")
-						val banReason = profile.getString("banReason") ?: "???"
+						val userId = profile[Profiles.id].value
+						val banReason = profile[Profiles.bannedReason] ?: "???"
 						val user = try {
 							lorittaShards.getUserById(userId)
 						} catch (e: Exception) {
