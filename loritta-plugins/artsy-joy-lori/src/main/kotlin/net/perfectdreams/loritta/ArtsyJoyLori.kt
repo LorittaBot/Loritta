@@ -43,6 +43,7 @@ class ArtsyJoyLori : LorittaPlugin() {
         registerCommand(ChicoAtaCommand())
         registerCommand(CanellaDvdCommand())
         registerCommand(GessyAtaCommand())
+        registerCommand(ToBeContinuedCommand())
 
         // ACTIONS
         registerCommand(AttackCommand())
