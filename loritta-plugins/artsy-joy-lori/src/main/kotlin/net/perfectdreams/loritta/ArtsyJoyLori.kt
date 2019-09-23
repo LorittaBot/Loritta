@@ -44,6 +44,7 @@ class ArtsyJoyLori : LorittaPlugin() {
         registerCommand(CanellaDvdCommand())
         registerCommand(GessyAtaCommand())
         registerCommand(ToBeContinuedCommand())
+        registerCommand(EmojiMashupCommand())
 
         // ACTIONS
         registerCommand(AttackCommand())
