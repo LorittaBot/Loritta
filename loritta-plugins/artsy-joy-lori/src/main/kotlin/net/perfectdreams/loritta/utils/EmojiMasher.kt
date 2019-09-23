@@ -104,7 +104,7 @@ class EmojiMasher(val path: File) {
 					0,
 					null
 			)
-		
+
 		newEmojiGraphics.drawImage(
 				emoji2.mouth,
 				0,

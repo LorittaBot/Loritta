@@ -1,11 +1,10 @@
 package net.perfectdreams.loritta.commands.actions
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.entities.User
 import java.awt.Color
 
-class HeadPatCommand : ActionCommand(arrayOf("headpat", "headpet", "cafuné", "cafune")) {
+class HeadPatCommand : ActionCommand(arrayOf("headpat", "headpet", "cafuné", "cafune", "pat")) {
     override fun getEmbedColor(): Color {
         return Color(156, 39, 176)
     }
