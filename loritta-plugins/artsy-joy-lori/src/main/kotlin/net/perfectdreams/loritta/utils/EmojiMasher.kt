@@ -1,10 +1,21 @@
 package net.perfectdreams.loritta.emojimasher
 
+import com.github.salomonbrys.kotson.fromJson
+import com.mrpowergamerbr.loritta.utils.gson
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
 class EmojiMasher(val path: File) {
+	private val emojis by lazy {
+		gson.fromJson<List<StoredEmoji>>(File(path, "emojis.json").readText())
+	}
+
+	private val baseFolder = File(path, "base")
+	private val eyesFolder = File(path, "eyes")
+	private val mouthFolder = File(path, "mouth")
+	private val detailFolder = File(path, "detail")
+
 	fun mashupEmojis(emoji1: String, emoji2: String, emoji3: String?, emoji4: String?): BufferedImage {
 		// MISSING:
 		// https://emojipedia.org/rolling-on-the-floor-laughing/ (Fazer que rotacione)
@@ -21,6 +32,7 @@ class EmojiMasher(val path: File) {
 		// https://emojipedia.org/shocked-face-with-exploding-head/ (Não tem no Discord)
 		// https://emojipedia.org/face-with-party-horn-and-party-hat/ (Não tem no Discord)
 		// https://emojipedia.org/face-with-pleading-eyes/ (Não tem no Discord)
+		// https://emojipedia.org/serious-face-with-symbols-covering-mouth/ (Não tem no Discord)
 
 		// Falta fazer Face Screaming in Fear para frente
 
@@ -39,9 +51,8 @@ class EmojiMasher(val path: File) {
 		val emojiParts4 = emoji4?.let { loadEmojiParts(it) }
 
 		println("HERE's THE BASE SIZE")
-		println("basesize1: ${emojiParts1.baseSize}")
-		println("basesize2: ${emojiParts2.baseSize}")
-		val sameBase = emojiParts1.baseSize == emojiParts2.baseSize
+		val sameBase = emojiParts1.baseName == emojiParts2.baseName
+
 		// Caso seja a mesma base...
 
 		var base: EmojiParts = emojiParts1
@@ -50,11 +61,13 @@ class EmojiMasher(val path: File) {
 		var detail: EmojiParts = (emojiParts4 ?: emojiParts2)
 
 		if (emojiParts4 != null && emojiParts3 != null) {
+			println("All parts available")
 			base = emojiParts1
 			eyes = emojiParts2
 			mouth = emojiParts3
 			detail = emojiParts4
 		} else if (emojiParts3 != null) {
+			println("All parts up to 3 available")
 			base = emojiParts1
 			eyes = emojiParts2
 			mouth = emojiParts3
@@ -67,6 +80,7 @@ class EmojiMasher(val path: File) {
 				emojiParts2
 			} else { emojiParts1 }
 		} else {
+			println("Only two parts available, same base? $sameBase")
 			if (sameBase) {
 				eyes = emojiParts1
 				mouth = emojiParts2
@@ -86,9 +100,9 @@ class EmojiMasher(val path: File) {
 	}
 
 	fun mashupEmojis(emoji1: EmojiParts, emoji2: EmojiParts, emoji3: EmojiParts, emoji4: EmojiParts): BufferedImage {
-		val newEmoji = BufferedImage(240, 240, BufferedImage.TYPE_INT_ARGB)
+		var newEmoji = BufferedImage(240, 240, BufferedImage.TYPE_INT_ARGB)
 
-		val newEmojiGraphics = newEmoji.graphics
+		var newEmojiGraphics = newEmoji.graphics
 
 		newEmojiGraphics.drawImage(
 				emoji1.base,
@@ -97,54 +111,86 @@ class EmojiMasher(val path: File) {
 				null
 		)
 
-		if (emoji4.detail != null)
-			newEmojiGraphics.drawImage(
-					emoji4.detail,
-					0,
-					0,
+		if (emoji1.unicode != "1f920") { // cowboy
+			if (emoji4.detail != null)
+				newEmojiGraphics.drawImage(
+						emoji4.detail,
+						0,
+						0,
+						null
+				)
+		}
+
+		newEmojiGraphics.drawImage(
+				emoji2.eyes,
+				0,
+				0,
+				null
+		)
+
+		newEmojiGraphics.drawImage(
+				emoji3.mouth,
+				0,
+				0,
+				null
+		)
+
+		if (emoji1.unicode == "1f920") { // cowboy
+			val cowboyEmoji = BufferedImage(240, 240, BufferedImage.TYPE_INT_ARGB)
+			cowboyEmoji.graphics.drawImage(
+					newEmoji.getScaledInstance(
+							200,
+							200,
+							BufferedImage.SCALE_SMOOTH
+					),
+					20,
+					40,
 					null
 			)
+			newEmoji = cowboyEmoji
+			newEmojiGraphics = newEmoji.graphics
 
-		newEmojiGraphics.drawImage(
-				emoji2.mouth,
-				0,
-				0,
-				null
-		)
-
-		newEmojiGraphics.drawImage(
-				emoji3.eyes,
-				0,
-				0,
-				null
-		)
+			if (emoji4.detail != null)
+				newEmojiGraphics.drawImage(
+						emoji4.detail,
+						0,
+						0,
+						null
+				)
+		}
 
 		return newEmoji
 	}
 
 	fun loadEmojiParts(code: String): EmojiParts? {
-		val emojiFolder = File(path, code)
-
-		if (!emojiFolder.exists())
-			return null
-
-		println(emojiFolder)
-		println(File(emojiFolder, "base.png").length())
+		val emoji = emojis.firstOrNull { it.unicode == code } ?: return null
 
 		return EmojiParts(
-				File(emojiFolder, "base.png").length(),
-				ImageIO.read(File(emojiFolder, "base.png")),
-				ImageIO.read(File(emojiFolder, "eyes.png")),
-				ImageIO.read(File(emojiFolder, "mouth.png")),
-				try { ImageIO.read(File(emojiFolder, "detail.png")) } catch (e: Exception) { null }
+				emoji.unicode,
+				emoji.base,
+				ImageIO.read(File(baseFolder, emoji.base)),
+				ImageIO.read(File(eyesFolder, emoji.eyes)),
+				ImageIO.read(File(mouthFolder, emoji.mouth)),
+				try { ImageIO.read(File(detailFolder, emoji.detail)) } catch (e: Exception) { null }
 		)
 	}
 
+	fun isEmojiSupported(code: String) = emojis.any { it.unicode == code }
+
 	data class EmojiParts(
-			val baseSize: Long,
+			val unicode: String,
+			val baseName: String,
 			val base: BufferedImage,
 			val eyes: BufferedImage,
 			val mouth: BufferedImage,
 			val detail: BufferedImage?
+	)
+
+	data class StoredEmoji(
+			val unicode: String,
+			val base: String,
+			val eyes: String,
+			val mouth: String,
+			val detail: String?
 	)
 }
