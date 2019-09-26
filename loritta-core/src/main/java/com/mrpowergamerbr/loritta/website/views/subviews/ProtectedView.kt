@@ -7,12 +7,12 @@ import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.oauth2.SimpleUserIdentification
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.tables.Dailies
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.trueIp
-import com.mrpowergamerbr.loritta.utils.extensions.urlQueryString
 import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -35,6 +35,11 @@ abstract class ProtectedView : AbstractView() {
 
 		if (path.startsWith("/dashboard")) {
 			val state = req.param("state")
+			val guildId = req.param("guild_id")
+
+			// Caso o usuário utilizou o invite link que adiciona a Lori no servidor, terá o parâmetro "guild_id" na URL
+			// Se o parâmetro exista, vamos redirecionar!
+
 			if (!req.param("code").isSet) {
 				if (!req.session().get("discordAuth").isSet) {
 					if (req.header("User-Agent").valueOrNull() == Constants.DISCORD_CRAWLER_USER_AGENT) {
@@ -47,27 +52,25 @@ abstract class ProtectedView : AbstractView() {
 					return false
 				}
 			} else {
-				// Caso o usuário utilizou o invite link que adiciona a Lori no servidor, terá o parâmetro "guild_id" na URL
-				// Se o parâmetro exista, vamos apenas repassar para os subservidores com um parâmetro a mais
-				val guildId = req.param("guild_id")
-				val isRedirectedFromMaster = req.param("from_master")
-
-				if (!isRedirectedFromMaster.isSet && guildId.isSet) {
-					val cluster = DiscordUtils.getLorittaClusterForGuildId(guildId.value().toLong())
-
-					if (cluster.getUrl() != hostHeader) {
-						// Vamos redirecionar!
-						res.redirect("https://$hostHeader/dashboard${req.urlQueryString}&from_master=true")
-						return true
-					}
-				}
-
 				val code = req.param("code").value()
-				val auth = TemmieDiscordAuth(code, "https://$hostHeader/dashboard", loritta.discordConfig.discord.clientId, loritta.discordConfig.discord.clientSecret).apply {
-					debug = false
+
+				val storedUserIdentification = variables["userIdentification"] as SimpleUserIdentification?
+
+				val userIdentification = if (code == "from_master" && storedUserIdentification != null) {
+					// Veio do master cluster, vamos apenas tentar autenticar com os dados existentes!
+					storedUserIdentification
+				} else {
+					val auth = TemmieDiscordAuth(code, "https://$hostHeader/dashboard", loritta.discordConfig.discord.clientId, loritta.discordConfig.discord.clientSecret).apply {
+						debug = false
+					}
+
+					auth.doTokenExchange()
+					val userIdentification = auth.getUserIdentification()
+
+					req.session()["discordAuth"] = GSON.toJson(auth)
+
+					userIdentification
 				}
-				auth.doTokenExchange()
-				val userIdentification = auth.getUserIdentification()
 
 				// Verificar se o usuário é (possivelmente) alguém que foi banido de usar a Loritta
 				val trueIp = req.trueIp
@@ -87,7 +90,6 @@ abstract class ProtectedView : AbstractView() {
 				if (bannedProfiles.isNotEmpty())
 					logger.warn { "User ${userIdentification.id} has banned accounts in ${trueIp}! IDs: ${bannedProfiles.joinToString(transform = { it[Profiles.id].toString() })}" }
 
-				req.session()["discordAuth"] = GSON.toJson(auth)
 				if (state.isSet) {
 					// state = base 64 encoded JSON
 					val decodedState = Base64.getDecoder().decode(state.value()).toString(Charsets.UTF_8)
@@ -101,6 +103,20 @@ abstract class ProtectedView : AbstractView() {
 				}
 
 				if (guildId.isSet) {
+					val isRedirectedFromMaster = req.param("from_master")
+
+					if (!isRedirectedFromMaster.isSet) {
+						val cluster = DiscordUtils.getLorittaClusterForGuildId(guildId.value().toLong())
+
+						if (cluster.getUrl() != hostHeader) {
+							logger.info { "Received guild $guildId via OAuth2 scope, but the guild isn't in this cluster! Redirecting to where the user should be... $cluster" }
+
+							// Vamos redirecionar!
+							res.redirect("https://${cluster.getUrl()}/dashboard?guild_id=${guildId.value()}&code=from_master")
+							return true
+						}
+					}
+
 					logger.info { "Received guild $guildId via OAuth2 scope, sending DM to the guild owner..." }
 					var guildFound = false
 					var tries = 0
@@ -117,7 +133,7 @@ abstract class ProtectedView : AbstractView() {
 							// Agora nós iremos pegar o locale do servidor
 							val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 
-							val userId = auth.getUserIdentification().id
+							val userId = userIdentification.id
 
 							val user = runBlocking { lorittaShards.retrieveUserById(userId) }
 
