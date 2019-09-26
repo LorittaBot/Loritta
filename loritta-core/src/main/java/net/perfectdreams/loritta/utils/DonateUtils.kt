@@ -44,7 +44,7 @@ object DonateUtils {
 
 			if (expiresAt >= System.currentTimeMillis() && receivedAt >= (profile.lastCommandSentAt ?: 0)) {
 				return LoriReply(
-						locale["commands.checkOutPatchNotes", "${loritta.instanceConfig.loritta.website.url}blog/${blogPostId}?utm_source=discord&utm_medium=link&utm_campaign=update_cmd"],
+						locale["commands.checkOutPatchNotes", "${loritta.instanceConfig.loritta.website.url}/${locale["website.localePath"]}blog/${blogPostId}?utm_source=discord&utm_medium=link&utm_campaign=update_cmd"],
 						Emotes.LORI_WOW
 				)
 			}
