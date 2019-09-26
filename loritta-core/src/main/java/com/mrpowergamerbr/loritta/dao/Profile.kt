@@ -20,6 +20,7 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 	var bannedReason by Profiles.bannedReason
 	var lastMessageSentAt by Profiles.lastMessageSentAt
 	var lastMessageSentHash by Profiles.lastMessageSentHash
+	var lastCommandSentAt by Profiles.lastCommandSentAt
 	var isAfk by Profiles.isAfk
 	var afkReason by Profiles.afkReason
 	var isDonator by Profiles.isDonator

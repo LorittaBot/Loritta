@@ -514,6 +514,7 @@ class CommandManager {
 				// Vamos pegar uma mensagem aleatória de doação, se não for nula, iremos enviar ela :3
 				DonateUtils.getRandomDonationMessage(
 						locale,
+						lorittaUser.profile,
 						donatorPaid,
 						guildPaid
 				)?.let { context.reply(it) }
@@ -539,6 +540,10 @@ class CommandManager {
 							}
 						}
 					}
+				}
+
+				transaction(Databases.loritta) {
+					lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
 				}
 
 				command.run(context, context.legacyLocale)

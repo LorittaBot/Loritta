@@ -173,7 +173,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 				HeartbeatCommand()
 		)
 	}
-	var willRestartAt: Long? = null
+	var patchData = PatchData()
 	var sponsors: List<Sponsor> = listOf()
 
 	init {
@@ -287,6 +287,8 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 
 		websiteThread = thread(true, name = "Website Thread") {
 			website = LorittaWebsite(instanceConfig.loritta.website.url, instanceConfig.loritta.website.folder)
+			net.perfectdreams.loritta.website.LorittaWebsite.INSTANCE.blog.posts = net.perfectdreams.loritta.website.LorittaWebsite.INSTANCE.blog.loadAllBlogPosts()
+
 			org.jooby.run({
 				website
 			})

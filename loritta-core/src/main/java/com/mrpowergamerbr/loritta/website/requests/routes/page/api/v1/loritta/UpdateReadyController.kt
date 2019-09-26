@@ -2,6 +2,8 @@ package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.loritta
 
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.long
+import com.github.salomonbrys.kotson.string
+import com.mrpowergamerbr.loritta.utils.PatchData
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.LoriAuthLevel
@@ -42,13 +44,32 @@ class UpdateReadyController {
 	@POST
 	@LoriDoNotLocaleRedirect(true)
 	@LoriRequiresAuth(LoriAuthLevel.API_KEY)
-	fun handle(req: Request, res: Response, @Body type: String) {
+	fun handle(req: Request, res: Response, @Body body: String) {
 		res.type(MediaType.json)
 
-		val json = jsonParser.parse(type)
-		val willRestartAt = json["willRestartAt"].long
+		val json = jsonParser.parse(body)
 
-		loritta.willRestartAt = willRestartAt
-		res.send("")
+		val type = json["type"].string
+
+		when (type) {
+			"setRestartTimer" -> {
+				val willRestartAt = json["willRestartAt"].long
+
+				loritta.patchData.willRestartAt = willRestartAt
+				res.send("")
+			}
+			"setPatchNotesPost" -> {
+				val patchNotesPostId = json["patchNotesPostId"].string
+				val expiresAt = json["expiresAt"].long
+
+				loritta.patchData.patchNotes = PatchData.PatchNotes(
+						System.currentTimeMillis(),
+						expiresAt,
+						patchNotesPostId
+				)
+
+				res.send("")
+			}
+		}
 	}
 }

@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.utils
 
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -16,8 +17,8 @@ object DonateUtils {
 	 * @param donatorPaid how much the user donated
 	 * @return A reply, may be null
 	 */
-	fun getRandomDonationMessage(locale: BaseLocale, donatorPaid: Double, guildPaid: Double): LoriReply? {
-		val willRestartAt = loritta.willRestartAt
+	fun getRandomDonationMessage(locale: BaseLocale, profile: Profile, donatorPaid: Double, guildPaid: Double): LoriReply? {
+		val willRestartAt = loritta.patchData.willRestartAt
 		if (willRestartAt != null) {
 			val instant = Instant.ofEpochMilli(willRestartAt).atZone(ZoneId.systemDefault())
 			val estimatedTime = lorittaShards.shardManager.shards.size * 8_000L
@@ -32,6 +33,21 @@ object DonateUtils {
 					],
 					"\uD83D\uDEAB"
 			)
+		}
+
+		val patchNotes = loritta.patchData.patchNotes
+
+		if (patchNotes != null) {
+			val blogPostId = patchNotes.blogPostId
+			val expiresAt = patchNotes.expiresAt
+			val receivedAt = patchNotes.receivedAt
+
+			if (expiresAt >= System.currentTimeMillis() && receivedAt >= (profile.lastCommandSentAt ?: 0)) {
+				return LoriReply(
+						locale["commands.checkOutPatchNotes", "${loritta.instanceConfig.loritta.website.url}blog/${blogPostId}?utm_source=discord&utm_medium=link&utm_campaign=update_cmd"],
+						Emotes.LORI_WOW
+				)
+			}
 		}
 
 		val shouldWeSentARandomMessage = Loritta.RANDOM.nextInt(0, 20)

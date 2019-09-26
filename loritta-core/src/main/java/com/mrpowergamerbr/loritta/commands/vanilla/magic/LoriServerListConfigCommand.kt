@@ -1,10 +1,13 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
+import com.github.kevinsawicki.http.HttpRequest
+import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.string
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
 import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.network.Databases
@@ -17,6 +20,9 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanEntry
 import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanType
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.callbacks.MercadoPagoCallbackController
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.dao.EconomyConfig
 import net.perfectdreams.loritta.dao.Payment
@@ -68,6 +74,45 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 
 				context.reply(
 						"Quantidade alterada com sucesso!!"
+				)
+				return
+			}
+			if (arg0 == "set_update_post") {
+				val shards = loritta.config.clusters
+
+				val jobs = shards.map {
+					GlobalScope.async {
+						try {
+							val body = HttpRequest.get("https://${it.getUrl()}/api/v1/loritta/update")
+									.userAgent(loritta.lorittaCluster.getUserAgent())
+									.header("Authorization", loritta.lorittaInternalApiKey.name)
+									.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
+									.readTimeout(loritta.config.loritta.clusterReadTimeout)
+									.send(
+											gson.toJson(
+													jsonObject(
+															"type" to "setPatchNotesPost",
+															"patchNotesPostId" to arg1,
+															"expiresAt" to arg2!!.toLong()
+													)
+											)
+									)
+									.body()
+
+							jsonParser.parse(
+									body
+							)
+						} catch (e: Exception) {
+							logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
+							throw PingCommand.ShardOfflineException(it.id, it.name)
+						}
+					}
+				}
+
+				jobs.awaitAll()
+
+				context.reply(
+						"Enviado patch data!"
 				)
 				return
 			}

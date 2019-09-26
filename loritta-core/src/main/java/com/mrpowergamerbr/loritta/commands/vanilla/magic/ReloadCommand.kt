@@ -33,6 +33,17 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 		val arg0 = context.rawArgs.getOrNull(0)
 		val arg1 = context.rawArgs.getOrNull(1)
 
+		if (arg0 == "posts") {
+			net.perfectdreams.loritta.website.LorittaWebsite.INSTANCE.blog.posts = net.perfectdreams.loritta.website.LorittaWebsite.INSTANCE.blog.loadAllBlogPosts()
+
+			context.reply(
+					LoriReply(
+							"Posts recarregados!"
+					)
+			)
+			return
+		}
+
 		if (arg0 == "action") {
 			loritta.config.clusters.forEach {
 				lorittaShards.queryAllLorittaClusters("/api/v1/loritta/action/$arg1")

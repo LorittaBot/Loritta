@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.website
 
 import com.mrpowergamerbr.loritta.utils.loritta
+import net.perfectdreams.loritta.website.blog.Blog
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
@@ -23,6 +24,7 @@ class LorittaWebsite {
 
 	val pathCache = ConcurrentHashMap<File, Any>()
 	var config = WebsiteConfig()
+	val blog = Blog()
 
 	class WebsiteConfig {
 		val websiteUrl: String

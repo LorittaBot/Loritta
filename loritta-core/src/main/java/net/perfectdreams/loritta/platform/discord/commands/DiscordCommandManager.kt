@@ -386,6 +386,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                 // Vamos pegar uma mensagem aleatória de doação, se não for nula, iremos enviar ela :3
                 DonateUtils.getRandomDonationMessage(
                         locale,
+                        lorittaUser.profile,
                         donatorPaid,
                         guildPaid
                 )?.let { context.reply(it) }
@@ -411,6 +412,10 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                             }
                         }
                     }
+                }
+
+                transaction(Databases.loritta) {
+                    lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
                 }
 
                 val result = execute(context, command, rawArgs)

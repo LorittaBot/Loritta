@@ -101,6 +101,7 @@ object ScriptingUtils {
 				import com.mrpowergamerbr.loritta.utils.locale.*
                 import net.perfectdreams.loritta.website.*
                 import net.perfectdreams.loritta.api.entities.*
+                import net.perfectdreams.loritta.website.blog.*
                 // import net.perfectdreams.loritta.website.utils.config.*
                 import org.w3c.dom.Document
                 import org.w3c.dom.Element

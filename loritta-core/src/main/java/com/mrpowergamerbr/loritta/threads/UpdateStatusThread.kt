@@ -145,7 +145,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 				str = str.replace("{guilds}", runBlocking { lorittaShards.queryGuildCount() }.toString())
 				str = str.replace("{uptime}", sb.toString())
 
-				val willRestartAt = loritta.willRestartAt
+				val willRestartAt = loritta.patchData.willRestartAt
 				if (willRestartAt != null) {
 					val instant = Instant.ofEpochMilli(willRestartAt).atZone(ZoneId.systemDefault())
 					str = "\uD83D\uDEAB Inatividade Agendada: ${instant.hour.toString().padStart(2, '0')}:${instant.minute.toString().padStart(2, '0')}"
