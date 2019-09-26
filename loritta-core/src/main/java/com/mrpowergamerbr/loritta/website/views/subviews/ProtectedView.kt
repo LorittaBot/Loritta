@@ -12,10 +12,12 @@ import com.mrpowergamerbr.loritta.tables.Dailies
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.trueIp
+import com.mrpowergamerbr.loritta.utils.extensions.urlQueryString
 import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.utils.DiscordUtils
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -45,6 +47,21 @@ abstract class ProtectedView : AbstractView() {
 					return false
 				}
 			} else {
+				// Caso o usuário utilizou o invite link que adiciona a Lori no servidor, terá o parâmetro "guild_id" na URL
+				// Se o parâmetro exista, vamos apenas repassar para os subservidores com um parâmetro a mais
+				val guildId = req.param("guild_id")
+				val isRedirectedFromMaster = req.param("from_master")
+
+				if (!isRedirectedFromMaster.isSet && guildId.isSet) {
+					val cluster = DiscordUtils.getLorittaClusterForGuildId(guildId.value().toLong())
+
+					if (cluster.getUrl() != hostHeader) {
+						// Vamos redirecionar!
+						res.redirect("https://$hostHeader/dashboard${req.urlQueryString}&from_master=true")
+						return true
+					}
+				}
+
 				val code = req.param("code").value()
 				val auth = TemmieDiscordAuth(code, "https://$hostHeader/dashboard", loritta.discordConfig.discord.clientId, loritta.discordConfig.discord.clientSecret).apply {
 					debug = false
@@ -83,9 +100,6 @@ abstract class ProtectedView : AbstractView() {
 					}
 				}
 
-				// Caso o usuário utilizou o invite link que adiciona a Lori no servidor, terá o parâmetro "guild_id" na URL
-				// Se o parâmetro exista, redirecione automaticamente para a tela de configuração da Lori
-				val guildId = req.param("guild_id")
 				if (guildId.isSet) {
 					logger.info { "Received guild $guildId via OAuth2 scope, sending DM to the guild owner..." }
 					var guildFound = false
