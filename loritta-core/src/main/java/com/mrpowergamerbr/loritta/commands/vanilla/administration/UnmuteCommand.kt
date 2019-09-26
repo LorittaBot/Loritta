@@ -159,7 +159,8 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 										"@staff" to punisher.asMention,
 										"staff-discriminator" to punisher.discriminator,
 										"staff-avatar-url" to punisher.effectiveAvatarUrl,
-										"staff-id" to punisher.id
+										"staff-id" to punisher.id,
+										"duration" to locale.toNewLocale()["commands.moderation.mute.forever"]
 								)
 						)
 

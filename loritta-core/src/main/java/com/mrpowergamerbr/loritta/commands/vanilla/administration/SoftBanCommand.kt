@@ -191,7 +191,8 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 										"@staff" to context.userHandle.asMention,
 										"staff-discriminator" to context.userHandle.discriminator,
 										"staff-avatar-url" to context.userHandle.effectiveAvatarUrl,
-										"staff-id" to context.userHandle.id
+										"staff-id" to context.userHandle.id,
+										"duration" to locale.toNewLocale()["commands.moderation.mute.forever"]
 								)
 						)
 

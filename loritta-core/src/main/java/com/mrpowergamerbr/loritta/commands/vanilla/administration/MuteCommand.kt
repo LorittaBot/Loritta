@@ -254,7 +254,12 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 										"@staff" to context.userHandle.asMention,
 										"staff-discriminator" to context.userHandle.discriminator,
 										"staff-avatar-url" to context.userHandle.effectiveAvatarUrl,
-										"staff-id" to context.userHandle.id
+										"staff-id" to context.userHandle.id,
+										"duration" to if (delay != null) {
+											DateUtils.formatMillis(delay, locale)
+										} else {
+											locale.toNewLocale()["commands.moderation.mute.forever"]
+										}
 								)
 						)
 
