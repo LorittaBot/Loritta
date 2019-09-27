@@ -71,7 +71,7 @@ You can also host Loritta yourself if you don't want to use the official version
 * Remember that running Loritta takes API-Keys for multiple different services as for her functionality. Not providing them might cause her to malfunction or might cause parts to not function correctly.
 * Assets such as images aren't included in the project as they may be licensed differently. Some parts of the project might not work or not work correctly as a result. Please keep that in mind.
 * Please do also keep in mind that Loritta was never meant to be hosted by third parties, so running her might require you to adjust a few of the many "hard-coded" settings in the source code and have you compile the project yourself. 😉
-* Loritta is hosted on CentOS 7, it's possible she won't work correctly on other systems
+* Loritta is hosted on Ubuntu 18.04, it's possible she won't work correctly on other systems
 * You may not name any self hosted instance of her like the original "Loritta".
 
 But if you still really want to host Loritta, follow these steps:
