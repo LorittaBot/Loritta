@@ -36,6 +36,9 @@ object ScriptingUtils {
                 if (this is WebsiteArgumentType) {
                     var str = (this.kType.classifier as KClass<*>).simpleName
 
+                    if (this.kType.arguments.isNotEmpty())
+                        str += "<${this.kType.arguments.joinToString(", ", transform = { (it.type!!.classifier as KClass<*>).simpleName!! })}>"
+
                     if (this.kType.isMarkedNullable)
                         str += "?"
 
