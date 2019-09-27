@@ -72,7 +72,7 @@ Você também pode hospedar a Loritta em algum lugar se você não quiser utiliz
 * Lembrando que ela precisa de várias API Keys para várias funcionalidades dela, caso você não coloque uma delas, talvez ela poderá ter funcionalidade reduzida ou talvez não irá funcionar corretamente!
 * Lembrando que eu não distribuo os "assets" dela (imagens, fontes, etc), ou seja, comandos que utilizam tais assets não irão funcionar corretamente.
 * Existem várias coisas "hard coded" nela, ou seja, você terá que editar o código-fonte dela e recompilar, afinal, eu nunca pensei que alguém ia usar hospedar a Loritta então você terá que fazer algumas modificações no código-fonte dela para funcionar. 😉
-* Eu hospedo ela em uma máquina rodando CentOS 7, talvez ela não irá rodar corretamente em outros sistemas operacionais.
+* Eu hospedo ela em uma máquina rodando Ubuntu 18.04, talvez ela não irá rodar corretamente em outros sistemas operacionais.
 * Você não pode utilizar o nome "Loritta" ou a personagem Loritta na sua versão self hosted.
 
 Mas se você quiser mesmo hospedar a Loritta, siga os seguintes passos:
