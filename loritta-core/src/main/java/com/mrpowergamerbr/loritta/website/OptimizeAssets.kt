@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.website
 
 import com.mrpowergamerbr.loritta.Loritta
 import mu.KotlinLogging
+import net.perfectdreams.loritta.website.utils.WebsiteAssetsHashes
 import java.io.File
 
 object OptimizeAssets {
@@ -16,6 +17,9 @@ object OptimizeAssets {
 	 * @param check if the fingerprinting check should be done
 	 */
 	fun optimizeCss(check: Boolean = true) {
+		WebsiteAssetsHashes.websiteFileHashes.clear()
+		WebsiteAssetsHashes.legacyWebsiteFileHashes.clear()
+
 		val root = File(Loritta.FRONTEND, "css")
 		val output = File(Loritta.FRONTEND, "static/assets/css/style.css")
 		val assetOrderFile = File(root, "asset_order")
