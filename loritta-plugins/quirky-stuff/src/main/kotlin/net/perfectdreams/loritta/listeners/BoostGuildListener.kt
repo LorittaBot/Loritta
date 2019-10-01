@@ -4,7 +4,6 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import mu.KotlinLogging
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.QuirkyConfig
@@ -23,7 +22,8 @@ class BoostGuildListener(val config: QuirkyConfig) : ListenerAdapter() {
 			return
 		}
 
-		if (event.newTimeBoosted != null && event.oldTimeBoosted == null) {
+		if (event.newTimeBoosted != null && event.oldTimeBoosted != null) {
+			// Desativou Boost
 			GlobalScope.launch(loritta.coroutineDispatcher) {
 				QuirkyStuff.onBoostDeactivate(event.member)
 			}
