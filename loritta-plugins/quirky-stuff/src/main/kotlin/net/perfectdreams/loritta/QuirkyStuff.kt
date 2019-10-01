@@ -71,12 +71,12 @@ class QuirkyStuff : DiscordPlugin() {
 
                     DonationKey.find {
                         (DonationKeys.expiresAt eq Long.MAX_VALUE) and (DonationKeys.value eq 40.0)
-                    }.firstOrNull()?.apply {
-                        val member = guild.getMemberById(this.userId)
+                    }.forEach {
+                        val member = guild.getMemberById(it.userId)
 
                         if (member == null || member.timeBoosted == null) {
-                            logger.warn { "Deleting donation key via Nitro Boost by ${this.userId} because user is not boosting the guild anymore! (is member null? ${member != null})" }
-                            this.delete()
+                            logger.warn { "Deleting donation key via Nitro Boost by ${it.userId} because user is not boosting the guild anymore! (is member null? ${member != null})" }
+                            it.delete()
                         }
                     }
                 }
