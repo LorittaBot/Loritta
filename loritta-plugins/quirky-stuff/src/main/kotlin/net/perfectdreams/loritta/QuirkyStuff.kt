@@ -50,6 +50,34 @@ class QuirkyStuff : DiscordPlugin() {
                         }
                     }
                 }
+
+                // Remover key de boosts inválidos
+                transaction(Databases.loritta) {
+                    val nitroBoostPayments = Payment.find {
+                        (Payments.gateway eq PaymentGateway.NITRO_BOOST)
+                    }.toMutableList()
+
+                    for (nitroBoostPayment in nitroBoostPayments) {
+                        val member = guild.getMemberById(nitroBoostPayment.userId)
+
+                        if (member == null || member.timeBoosted == null) {
+                            logger.warn { "Deleting Nitro Boost payment by ${nitroBoostPayment.userId} because user is not boosting the guild anymore! (is member null? ${member != null})" }
+                            nitroBoostPayment.delete()
+                        }
+                    }
+
+
+                    DonationKey.find {
+                        (DonationKeys.userId inList nitroBoostPayments.map { it.userId }) and (DonationKeys.expiresAt eq Long.MAX_VALUE) and (DonationKeys.value eq 40.0)
+                    }.firstOrNull()?.apply {
+                        val member = guild.getMemberById(this.userId)
+
+                        if (member == null || member.timeBoosted == null) {
+                            logger.warn { "Deleting donation key via Nitro Boost by ${this.userId} because user is not boosting the guild anymore! (is member null? ${member != null})" }
+                            this.delete()
+                        }
+                    }
+                }
             }
         }
     }
