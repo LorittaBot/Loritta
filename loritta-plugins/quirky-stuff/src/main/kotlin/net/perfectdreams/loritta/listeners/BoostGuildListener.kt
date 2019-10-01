@@ -23,7 +23,8 @@ class BoostGuildListener(val config: QuirkyConfig) : ListenerAdapter() {
 			return
 		}
 
-		if (event.newTimeBoosted != null && event.oldTimeBoosted == null) {
+		if (event.newTimeBoosted != null && event.oldTimeBoosted != null) {
+			// Desativou Boost
 			GlobalScope.launch(loritta.coroutineDispatcher) {
 				QuirkyStuff.onBoostDeactivate(event.member)
 			}
