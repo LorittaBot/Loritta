@@ -25,7 +25,7 @@ object AutoroleModule {
 		val filteredRoles = roles.filter { !member.roles.contains(it) }
 
 		if (filteredRoles.isNotEmpty()) {
-			if (filteredRoles.size == 1 && member.roles.isEmpty()) {
+			if (filteredRoles.size == 1) {
 				if (autoroleConfig.giveRolesAfter != null)
 					guild.addRoleToMember(member, filteredRoles[0]).reason("Autorole").queueAfter(autoroleConfig.giveRolesAfter!!, TimeUnit.SECONDS)
 				else
