@@ -71,7 +71,7 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 				if (channelJoined.members.isEmpty()) // Whoops, demorou demais!
 					return@withLock
 
-				if (channelJoined.members.contains(channelJoined.guild.selfMember)) // Mas... fui eu mesmo que entrei!
+				if (channelJoined.members.contains(channelJoined.guild.selfMember)) // Mas... eu já estou neste canal!
 					return@withLock
 
 				val mm = loritta.audioManager.getGuildAudioPlayer(channelJoined.guild)
