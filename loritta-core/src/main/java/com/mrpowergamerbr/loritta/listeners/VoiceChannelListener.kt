@@ -62,9 +62,6 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 				if (!config.musicConfig.isEnabled)
 					return@withLock
 
-				if ((config.musicConfig.musicGuildId ?: "").isEmpty())
-					return@withLock
-
 				if (config.musicConfig.musicGuildId != channelJoined.id)
 					return@withLock
 
@@ -99,8 +96,8 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 
 				if (!config.musicConfig.isEnabled)
 					return@withLock
-
-				if ((config.musicConfig.musicGuildId ?: "").isEmpty())
+				
+				if (config.musicConfig.musicGuildId != channelLeft.id)
 					return@withLock
 
 				if (channelLeft.members.any { !it.user.isBot && (it.voiceState?.isDeafened != true && it.voiceState?.isGuildDeafened != true) })
