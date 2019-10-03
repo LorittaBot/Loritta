@@ -96,7 +96,7 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 
 				if (!config.musicConfig.isEnabled)
 					return@withLock
-				
+
 				if (config.musicConfig.musicGuildId != channelLeft.id)
 					return@withLock
 

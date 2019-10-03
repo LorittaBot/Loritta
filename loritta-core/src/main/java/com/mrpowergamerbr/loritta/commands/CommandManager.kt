@@ -31,8 +31,10 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.utils.DonateUtils
 import net.perfectdreams.loritta.utils.Emotes
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
@@ -297,7 +299,6 @@ class CommandManager {
 	 */
 	suspend fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
 		val message = ev.message.contentDisplay
-		val member = ev.message.member
 		val baseLocale = locale
 
 		// Carregar as opções de comandos
@@ -350,7 +351,7 @@ class CommandManager {
 			try {
 				if (ev.message.isFromType(ChannelType.TEXT)) {
 					logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
-				} else {
+									} else {
 					logger.info("(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
 				}
 
@@ -544,6 +545,17 @@ class CommandManager {
 
 				transaction(Databases.loritta) {
 					lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
+
+					transaction(Databases.loritta) {
+						ExecutedCommandsLog.insert {
+							it[userId] = lorittaUser.user.idLong
+							it[guildId] = ev.message.isFromGuild.let { ev.message.guild.idLong }
+							it[channelId] = ev.message.channel.idLong
+							it[sentAt] = System.currentTimeMillis()
+							it[ExecutedCommandsLog.command] = command::class.simpleName ?: "UnknownCommand"
+							it[ExecutedCommandsLog.message] = ev.message.contentRaw
+						}
+					}
 				}
 
 				command.run(context, context.legacyLocale)
