@@ -30,6 +30,7 @@ import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.utils.DonateUtils
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.FeatureFlags
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
@@ -419,13 +420,15 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                 transaction(Databases.loritta) {
                     lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
 
-                    ExecutedCommandsLog.insert {
-                        it[userId] = lorittaUser.user.idLong
-                        it[guildId] = if (ev.message.isFromGuild) ev.message.guild.idLong else null
-                        it[channelId] = ev.message.channel.idLong
-                        it[sentAt] = System.currentTimeMillis()
-                        it[ExecutedCommandsLog.command] = command::class.simpleName ?: "UnknownCommand"
-                        it[ExecutedCommandsLog.message] = ev.message.contentRaw
+                    if (FeatureFlags.LOG_COMMANDS) {
+                        ExecutedCommandsLog.insert {
+                            it[userId] = lorittaUser.user.idLong
+                            it[guildId] = if (ev.message.isFromGuild) ev.message.guild.idLong else null
+                            it[channelId] = ev.message.channel.idLong
+                            it[sentAt] = System.currentTimeMillis()
+                            it[ExecutedCommandsLog.command] = command::class.simpleName ?: "UnknownCommand"
+                            it[ExecutedCommandsLog.message] = ev.message.contentRaw
+                        }
                     }
                 }
 

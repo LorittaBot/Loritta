@@ -12,6 +12,7 @@ object FeatureFlags {
 	val SELECT_USERS_WITH_LESS_MONEY = isEnabled(Names.SELECT_USERS_WITH_LESS_MONEY)
 	val ADVERTISE_SPARKLYPOWER = isEnabled(Names.ADVERTISE_SPARKLYPOWER)
 	val ADVERTISE_SPONSORS = isEnabled(Names.ADVERTISE_SPONSORS)
+	val LOG_COMMANDS = isEnabled(Names.LOG_COMMANDS)
 
 	fun isEnabled(name: String): Boolean {
 		return loritta.config.loritta.featureFlags.contains(name)
@@ -27,5 +28,6 @@ object FeatureFlags {
 		const val SELECT_USERS_WITH_LESS_MONEY = "$WRECK_THE_RAFFLE_STOP_THE_WHALES-select-users-with-less-money"
 		const val ADVERTISE_SPARKLYPOWER = "advertise-sparklypower"
 		const val ADVERTISE_SPONSORS = "advertise-sponsors"
+		const val LOG_COMMANDS = "log-commands"
 	}
 }
