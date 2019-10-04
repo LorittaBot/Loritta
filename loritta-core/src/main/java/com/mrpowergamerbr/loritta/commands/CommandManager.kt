@@ -351,7 +351,7 @@ class CommandManager {
 			try {
 				if (ev.message.isFromType(ChannelType.TEXT)) {
 					logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
-									} else {
+				} else {
 					logger.info("(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
 				}
 
@@ -546,15 +546,13 @@ class CommandManager {
 				transaction(Databases.loritta) {
 					lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
 
-					transaction(Databases.loritta) {
-						ExecutedCommandsLog.insert {
-							it[userId] = lorittaUser.user.idLong
-							it[guildId] = ev.message.isFromGuild.let { ev.message.guild.idLong }
-							it[channelId] = ev.message.channel.idLong
-							it[sentAt] = System.currentTimeMillis()
-							it[ExecutedCommandsLog.command] = command::class.simpleName ?: "UnknownCommand"
-							it[ExecutedCommandsLog.message] = ev.message.contentRaw
-						}
+					ExecutedCommandsLog.insert {
+						it[userId] = lorittaUser.user.idLong
+						it[guildId] = if (ev.message.isFromGuild) ev.message.guild.idLong else null
+						it[channelId] = ev.message.channel.idLong
+						it[sentAt] = System.currentTimeMillis()
+						it[ExecutedCommandsLog.command] = command::class.simpleName ?: "UnknownCommand"
+						it[ExecutedCommandsLog.message] = ev.message.contentRaw
 					}
 				}
 

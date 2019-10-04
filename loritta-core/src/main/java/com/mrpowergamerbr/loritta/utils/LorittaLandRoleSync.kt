@@ -314,6 +314,9 @@ class LorittaLandRoleSync : Runnable {
 					val filter = roles.filter { it.name.startsWith("\uD83C\uDFA8") }
 					roles.removeAll(filter)
 
+					if (roles.contains(advertisementRole))
+						roles.remove(advertisementRole)
+
 					if (roles.contains(donatorRole))
 						roles.remove(donatorRole)
 
