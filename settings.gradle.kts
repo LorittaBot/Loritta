@@ -32,6 +32,7 @@ include(":loritta-plugins:minecraft-stuff")
 include(":loritta-plugins:quirky-stuff")
 include(":loritta-plugins:github-issue-sync")
 include(":loritta-plugins:fortnite-stuff")
+include(":loritta-plugins:profile-designs")
 
 // Website
 include(":loritta-website")
