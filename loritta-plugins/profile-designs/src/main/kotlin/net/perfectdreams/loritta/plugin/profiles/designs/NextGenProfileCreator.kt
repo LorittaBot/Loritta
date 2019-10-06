@@ -11,7 +11,6 @@ import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
@@ -24,9 +23,9 @@ import java.io.File
 import java.io.FileInputStream
 import javax.imageio.ImageIO
 
-class CowboyProfileCreator : ProfileCreator {
+class NextGenProfileCreator : ProfileCreator {
 	override fun create(sender: User, user: User, userProfile: Profile, guild: Guild, serverConfig: MongoServerConfig, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
-		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/cowboy/profile_wrapper.png"))
+		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/next_gen/profile_wrapper.png"))
 
 		val whitneySemiBold = FileInputStream(File(Loritta.ASSETS + "whitney-semibold.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
@@ -40,8 +39,8 @@ class CowboyProfileCreator : ProfileCreator {
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics as java.awt.Graphics2D
 		graphics.setRenderingHint(
-				java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-				java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON
+				RenderingHints.KEY_TEXT_ANTIALIASING,
+				RenderingHints.VALUE_TEXT_ANTIALIAS_ON
 		)
 
 		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl)!!.getScaledInstance(147, 147, BufferedImage.SCALE_SMOOTH)
@@ -52,7 +51,7 @@ class CowboyProfileCreator : ProfileCreator {
 
 		val marriage = transaction(Databases.loritta) { userProfile.marriage }
 
-		if (marriage != null) {
+		/* if (marriage != null) {
 			val marriedWithId = if (marriage.user1 == user.idLong) {
 				marriage.user2
 			} else {
@@ -74,19 +73,21 @@ class CowboyProfileCreator : ProfileCreator {
 				graphics.font = whitneySemiBold16
 				ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(311, 0 + 18 + 24, 216, 14), whitneySemiBold16)
 			}
-		}
+		} */
 
-		graphics.color = Color.BLACK
+		graphics.color = Color.WHITE
 		graphics.drawImage(profileWrapper, 0, 0, null)
 
+		val oswaldRegular36 = Constants.OSWALD_REGULAR
+				.deriveFont(36f)
 		val oswaldRegular50 = Constants.OSWALD_REGULAR
 				.deriveFont(50F)
 		val oswaldRegular42 = Constants.OSWALD_REGULAR
 				.deriveFont(42F)
 
-		graphics.font = oswaldRegular50
-		graphics.drawText(user.name, 162, 506) // Nome do usuário
-		graphics.font = oswaldRegular42
+		graphics.font = oswaldRegular36
+		graphics.drawText(user.name, 234, 143) // Nome do usuário
+		ImageUtils.drawCenteredString(graphics, locale.toNewLocale()["profile.aboutMe"], Rectangle(8, 427, 212, 51), oswaldRegular36)
 
 		drawReputations(user, graphics)
 
@@ -97,26 +98,27 @@ class CowboyProfileCreator : ProfileCreator {
 
 		graphics.font = whitneyMedium22
 
-		ImageUtils.drawTextWrapSpaces(aboutMe, 162, 529, 773 - biggestStrWidth - 4, 600, graphics.fontMetrics, graphics)
+		ImageUtils.drawTextWrapSpaces(aboutMe, 8, 508, 796, 600, graphics.fontMetrics, graphics)
 
 		return base.makeRoundedCorners(15)
 	}
 
 	fun drawAvatar(avatar: Image, graphics: Graphics) {
 		graphics.drawImage(
-				avatar.toBufferedImage()
-						.getSubimage(0, 19, 147, 147 - 19),
-				6,
-				466,
+				avatar
+						.toBufferedImage()
+						.makeRoundedCorners(999),
+				46,
+				95,
 				null
 		)
 	}
 
 	fun drawBadges(badges: List<BufferedImage>, graphics: Graphics) {
-		var x = 191
+		var x = 243
 		for (badge in badges) {
-			graphics.drawImage(badge.getScaledInstance(33, 33, BufferedImage.SCALE_SMOOTH), x, 427, null)
-			x += 35
+			graphics.drawImage(badge.getScaledInstance(24, 24, BufferedImage.SCALE_SMOOTH), x, 428, null)
+			x += 26
 		}
 	}
 
@@ -126,16 +128,17 @@ class CowboyProfileCreator : ProfileCreator {
 			Reputations.select { Reputations.receivedById eq user.idLong }.count()
 		}
 
-		ImageUtils.drawCenteredString(graphics, "$reputations reps", Rectangle(582, 0, 218, 66), font)
+		ImageUtils.drawCenteredString(graphics, "$reputations reps", Rectangle(620, 168, 180, 55), font)
 	}
 
 	fun drawUserInfo(user: User, userProfile: Profile, guild: Guild, graphics: Graphics): Int {
 		val userInfo = mutableListOf<String>()
+		graphics.drawText("Global", 232, 157)
 		userInfo.add("Global")
 		val globalPosition = transaction(Databases.loritta) {
 			Profiles.select { Profiles.xp greaterEq userProfile.xp }.count()
 		}
-		userInfo.add("#$globalPosition / ${userProfile.xp} XP")
+		graphics.drawText("#$globalPosition / ${userProfile.xp} XP", 232, 173)
 
 		val localProfile = transaction(Databases.loritta) {
 			GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.idLong) }.firstOrNull()
@@ -150,28 +153,19 @@ class CowboyProfileCreator : ProfileCreator {
 		val xpLocal = localProfile?.xp
 
 		// Iremos remover os emojis do nome da guild, já que ele não calcula direito no stringWidth
-		userInfo.add(guild.name.replace(Constants.EMOJI_PATTERN.toRegex(), ""))
+		graphics.drawText(guild.name.replace(Constants.EMOJI_PATTERN.toRegex(), ""), 16, 51)
 		if (xpLocal != null) {
-			userInfo.add("#$localPosition / $xpLocal XP")
+			graphics.drawText("#$localPosition / $xpLocal XP", 16, 70)
 		} else {
-			userInfo.add("???")
+			graphics.drawText("???", 16, 70)
 		}
 
 		val globalEconomyPosition = transaction(Databases.loritta) {
 			Profiles.select { Profiles.money greaterEq userProfile.money }.count()
 		}
 
-		userInfo.add("Sonhos")
-		userInfo.add("#$globalEconomyPosition / ${"%.2f".format(userProfile.money)}")
-
-		val biggestStrWidth = graphics.fontMetrics.stringWidth(userInfo.maxBy { graphics.fontMetrics.stringWidth(it) }!!)
-
-		var y = 480
-		for (line in userInfo) {
-			graphics.drawText(line, 773 - biggestStrWidth - 2, y)
-			y += 18
-		}
-
-		return biggestStrWidth
+		graphics.drawText("Sonhos", 631, 34)
+		graphics.drawText("#$globalEconomyPosition / ${"%.2f".format(userProfile.money)}", 631, 54)
+		return 0
 	}
 }

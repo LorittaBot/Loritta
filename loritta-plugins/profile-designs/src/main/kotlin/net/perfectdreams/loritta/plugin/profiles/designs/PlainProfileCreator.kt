@@ -24,9 +24,15 @@ import java.io.File
 import java.io.FileInputStream
 import javax.imageio.ImageIO
 
-class CowboyProfileCreator : ProfileCreator {
+open class PlainProfileCreator(val color: String) : ProfileCreator {
+	class PlainWhiteProfileCreator : PlainProfileCreator("white")
+	class PlainOrangeProfileCreator : PlainProfileCreator("orange")
+	class PlainPurpleProfileCreator : PlainProfileCreator("purple")
+	class PlainAquaProfileCreator : PlainProfileCreator("aqua")
+	class PlainGreenProfileCreator : PlainProfileCreator("green")
+
 	override fun create(sender: User, user: User, userProfile: Profile, guild: Guild, serverConfig: MongoServerConfig, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
-		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/cowboy/profile_wrapper.png"))
+		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/plain/profile_wrapper_$color.png"))
 
 		val whitneySemiBold = FileInputStream(File(Loritta.ASSETS + "whitney-semibold.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
@@ -36,6 +42,8 @@ class CowboyProfileCreator : ProfileCreator {
 		}
 		val whitneyMedium22 = whitneySemiBold.deriveFont(22f)
 		val whitneyBold16 = whitneyBold.deriveFont(16f)
+		val whitneyMedium16 = whitneySemiBold.deriveFont(16f)
+		val whitneyBold12 = whitneyBold.deriveFont(12f)
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics as java.awt.Graphics2D
@@ -44,11 +52,9 @@ class CowboyProfileCreator : ProfileCreator {
 				java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON
 		)
 
-		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl)!!.getScaledInstance(147, 147, BufferedImage.SCALE_SMOOTH)
+		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl)!!.getScaledInstance(152, 152, BufferedImage.SCALE_SMOOTH)
 
 		graphics.drawImage(background.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH), 0, 0, null)
-
-		drawAvatar(avatar, graphics)
 
 		val marriage = transaction(Databases.loritta) { userProfile.marriage }
 
@@ -59,7 +65,7 @@ class CowboyProfileCreator : ProfileCreator {
 				marriage.user1
 			}.toString()
 
-			val marrySection = ImageIO.read(File(Loritta.ASSETS, "profile/cowboy/marry.png"))
+			val marrySection = ImageIO.read(File(Loritta.ASSETS, "profile/plain/marry.png"))
 			graphics.drawImage(marrySection, 0, 0, null)
 			val marriedWith = runBlocking { lorittaShards.retrieveUserById(marriedWithId) }
 
@@ -67,17 +73,18 @@ class CowboyProfileCreator : ProfileCreator {
 				val whitneySemiBold16 = whitneySemiBold.deriveFont(16f)
 				val whitneyMedium20 = whitneyMedium22.deriveFont(20f)
 				graphics.color = Color.WHITE
-				graphics.font = whitneySemiBold16
-				ImageUtils.drawCenteredString(graphics, locale.toNewLocale()["profile.marriedWith"], Rectangle(311, 0, 216, 14), whitneySemiBold16)
-				graphics.font = whitneyMedium20
-				ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(311, 0 + 18, 216, 18), whitneyMedium20)
-				graphics.font = whitneySemiBold16
-				ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(311, 0 + 18 + 24, 216, 14), whitneySemiBold16)
+				graphics.font = whitneyBold12
+				ImageUtils.drawCenteredString(graphics, locale.toNewLocale()["profile.marriedWith"], Rectangle(635, 350, 165, 14), whitneyBold12)
+				graphics.font = whitneyMedium16
+				ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(635, 350 + 16, 165, 18), whitneyMedium16)
+				graphics.font = whitneyBold12
+				ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(635, 350 + 16 + 18, 165, 14), whitneyBold12)
 			}
 		}
 
 		graphics.color = Color.BLACK
 		graphics.drawImage(profileWrapper, 0, 0, null)
+		drawAvatar(avatar, graphics)
 
 		val oswaldRegular50 = Constants.OSWALD_REGULAR
 				.deriveFont(50F)
@@ -85,7 +92,7 @@ class CowboyProfileCreator : ProfileCreator {
 				.deriveFont(42F)
 
 		graphics.font = oswaldRegular50
-		graphics.drawText(user.name, 162, 506) // Nome do usuário
+		graphics.drawText(user.name, 162, 461) // Nome do usuário
 		graphics.font = oswaldRegular42
 
 		drawReputations(user, graphics)
@@ -97,7 +104,7 @@ class CowboyProfileCreator : ProfileCreator {
 
 		graphics.font = whitneyMedium22
 
-		ImageUtils.drawTextWrapSpaces(aboutMe, 162, 529, 773 - biggestStrWidth - 4, 600, graphics.fontMetrics, graphics)
+		ImageUtils.drawTextWrapSpaces(aboutMe, 162, 484, 773 - biggestStrWidth - 4, 600, graphics.fontMetrics, graphics)
 
 		return base.makeRoundedCorners(15)
 	}
@@ -105,18 +112,18 @@ class CowboyProfileCreator : ProfileCreator {
 	fun drawAvatar(avatar: Image, graphics: Graphics) {
 		graphics.drawImage(
 				avatar.toBufferedImage()
-						.getSubimage(0, 19, 147, 147 - 19),
-				6,
-				466,
+						.makeRoundedCorners(999),
+				3,
+				406,
 				null
 		)
 	}
 
 	fun drawBadges(badges: List<BufferedImage>, graphics: Graphics) {
-		var x = 191
+		var x = 2
 		for (badge in badges) {
-			graphics.drawImage(badge.getScaledInstance(33, 33, BufferedImage.SCALE_SMOOTH), x, 427, null)
-			x += 35
+			graphics.drawImage(badge.getScaledInstance(35, 35, BufferedImage.SCALE_SMOOTH), x, 564, null)
+			x += 37
 		}
 	}
 
@@ -126,7 +133,7 @@ class CowboyProfileCreator : ProfileCreator {
 			Reputations.select { Reputations.receivedById eq user.idLong }.count()
 		}
 
-		ImageUtils.drawCenteredString(graphics, "$reputations reps", Rectangle(582, 0, 218, 66), font)
+		ImageUtils.drawCenteredString(graphics, "$reputations reps", Rectangle(634, 404, 166, 52), font)
 	}
 
 	fun drawUserInfo(user: User, userProfile: Profile, guild: Guild, graphics: Graphics): Int {
@@ -166,10 +173,10 @@ class CowboyProfileCreator : ProfileCreator {
 
 		val biggestStrWidth = graphics.fontMetrics.stringWidth(userInfo.maxBy { graphics.fontMetrics.stringWidth(it) }!!)
 
-		var y = 480
+		var y = 475
 		for (line in userInfo) {
 			graphics.drawText(line, 773 - biggestStrWidth - 2, y)
-			y += 18
+			y += 16
 		}
 
 		return biggestStrWidth

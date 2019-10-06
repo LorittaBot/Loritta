@@ -26,7 +26,7 @@ import java.io.File
 import java.io.FileInputStream
 import javax.imageio.ImageIO
 
-class MonicaAtaProfileCreator : ProfileCreator {
+class LoriAtaProfileCreator : ProfileCreator {
 	val KOMIKA by lazy {
 		FileInputStream(File(Loritta.ASSETS + "komika.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
@@ -34,7 +34,7 @@ class MonicaAtaProfileCreator : ProfileCreator {
 	}
 
 	override fun create(sender: User, user: User, userProfile: Profile, guild: Guild, serverConfig: MongoServerConfig, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
-		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/monica_ata/profile_wrapper.png"))
+		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/lori_ata/profile_wrapper.png"))
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics as java.awt.Graphics2D
@@ -84,10 +84,10 @@ class MonicaAtaProfileCreator : ProfileCreator {
 		val image = LorittaImage(background.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH).toBufferedImage())
 
 		image.setCorners(
-				280f, 0f,
+				320f, 0f,
 				800f, 0f,
-				800f, 417f,
-				289f, 331f
+				800f, 346f,
+				330f, 250f
 		)
 
 		graphics.drawImage(image.bufferedImage, 0, 0, null)
@@ -129,16 +129,16 @@ class MonicaAtaProfileCreator : ProfileCreator {
 			}.toString()
 
 			val marrySection = ImageIO.read(File(Loritta.ASSETS, "profile/monica_ata/marry.png"))
-			graphics.drawImage(marrySection, 0, 0, null)
+			graphics.drawImage(marrySection, 200, 0, null)
 			val marriedWith = runBlocking { lorittaShards.retrieveUserById(marriedWithId) }
 
 			if (marriedWith != null) {
 				graphics.font = KOMIKA.deriveFont(21f)
-				ImageUtils.drawCenteredString(graphics, locale.toNewLocale()["profile.marriedWith"], Rectangle(280, 270, 218, 22), graphics.font)
+				ImageUtils.drawCenteredString(graphics, locale.toNewLocale()["profile.marriedWith"], Rectangle(200 + 280, 270, 218, 22), graphics.font)
 				graphics.font = KOMIKA.deriveFont(16f)
-				ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(280, 270 + 23, 218, 18), graphics.font)
+				ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(200 + 280, 270 + 23, 218, 18), graphics.font)
 				graphics.font = KOMIKA.deriveFont(12f)
-				ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(280, 270 + 23 + 16, 218, 15), graphics.font)
+				ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(200 + 280, 270 + 23 + 16, 218, 15), graphics.font)
 			}
 		}
 
