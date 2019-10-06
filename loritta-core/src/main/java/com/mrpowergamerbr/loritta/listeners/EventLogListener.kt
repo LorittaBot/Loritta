@@ -373,8 +373,12 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						StoredMessage.find { StoredMessages.id inList event.messageIds.map { it.toLong() } }.toMutableList()
 					}
 					if (storedMessages.isNotEmpty()) {
-						val user = lorittaShards.retrieveUserById(storedMessages.first().authorId.toString())
+						val retrievedUsers = mutableMapOf<Long, User?>()
+
+						val user = lorittaShards.retrieveUserById(storedMessages.first().authorId)
 								?: return@launch
+
+						retrievedUsers[storedMessages.first().authorId] = user
 
 						val embed = EmbedBuilder()
 						embed.setTimestamp(Instant.now())
@@ -384,9 +388,11 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						val lines = mutableListOf<String>()
 
 						for (message in storedMessages) {
+							val messageSentByUser = retrievedUsers.getOrPut(message.authorId, { lorittaShards.retrieveUserById(storedMessages.first().authorId) })
+
 							val creationTime = OffsetDateTime.ofInstant(Instant.ofEpochMilli(message.createdAt), TimeZone.getTimeZone("GMT").toZoneId())
 
-							val line = "[${creationTime.format(DateUtils.PRETTY_DATE_FORMAT)}] (${message.authorId}) ${user.name}#${user.discriminator}: ${message.content}"
+							val line = "[${creationTime.format(DateUtils.PRETTY_DATE_FORMAT)}] (${message.authorId}) ${messageSentByUser?.name}#${messageSentByUser?.discriminator}: ${message.content}"
 							lines.add(line)
 						}
 
