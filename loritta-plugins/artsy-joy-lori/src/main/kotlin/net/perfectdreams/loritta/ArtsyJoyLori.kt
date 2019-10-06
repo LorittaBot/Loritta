@@ -47,6 +47,7 @@ class ArtsyJoyLori : LorittaPlugin() {
         registerCommand(EmojiMashupCommand())
         registerCommand(BuckShirtCommand())
         registerCommand(BobBurningPaperCommand())
+        registerCommand(PassingPaperCommand())
 
         // ACTIONS
         registerCommand(AttackCommand())
