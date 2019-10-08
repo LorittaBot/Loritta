@@ -24,6 +24,7 @@ import net.perfectdreams.spicymorenitta.routes.FanArtsRoute
 import net.perfectdreams.spicymorenitta.routes.HomeRoute
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
 import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.GeneralDashboardRoute
+import net.perfectdreams.spicymorenitta.trunfo.TrunfoGame
 import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.utils.locale.BaseLocale
 import net.perfectdreams.spicymorenitta.views.BaseView
@@ -39,7 +40,8 @@ import kotlin.dom.addClass
 import kotlin.dom.clear
 import kotlin.dom.hasClass
 import kotlin.dom.removeClass
-import kotlin.js.*
+import kotlin.js.Date
+import kotlin.js.Json
 
 var switchPageStart = 0.0
 val pageCache = mutableMapOf<String, String>()
@@ -116,6 +118,11 @@ class SpicyMorenitta : Logging {
 
 		if (window.location.pathname == "/auth") { // Nós não precisamos processar o resto do código apenas para verificar o popup de auth
 			AuthUtils.handlePopup()
+			return
+		}
+
+		if (true) {
+			TrunfoGame.start()
 			return
 		}
 
