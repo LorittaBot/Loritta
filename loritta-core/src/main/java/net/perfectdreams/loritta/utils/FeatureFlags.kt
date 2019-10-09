@@ -13,6 +13,8 @@ object FeatureFlags {
 	val ADVERTISE_SPARKLYPOWER = isEnabled(Names.ADVERTISE_SPARKLYPOWER)
 	val ADVERTISE_SPONSORS = isEnabled(Names.ADVERTISE_SPONSORS)
 	val LOG_COMMANDS = isEnabled(Names.LOG_COMMANDS)
+	val DISABLE_MUSIC_RATELIMIT = isEnabled(Names.DISABLE_MUSIC_RATELIMIT)
+	val DISABLE_TRANSLATE_RATELIMIT = isEnabled(Names.DISABLE_TRANSLATE_RATELIMIT)
 
 	fun isEnabled(name: String): Boolean {
 		return loritta.config.loritta.featureFlags.contains(name)
@@ -29,5 +31,7 @@ object FeatureFlags {
 		const val ADVERTISE_SPARKLYPOWER = "advertise-sparklypower"
 		const val ADVERTISE_SPONSORS = "advertise-sponsors"
 		const val LOG_COMMANDS = "log-commands"
+		const val DISABLE_MUSIC_RATELIMIT = "disable-music-ratelimit"
+		const val DISABLE_TRANSLATE_RATELIMIT = "disable-translate-ratelimit"
 	}
 }

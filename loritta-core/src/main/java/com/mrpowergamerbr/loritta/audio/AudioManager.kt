@@ -20,6 +20,7 @@ import lavalink.client.io.jda.JdaLavalink
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.managers.AudioManager
+import net.perfectdreams.loritta.utils.FeatureFlags
 import net.perfectdreams.loritta.utils.NetAddressUtils
 import java.net.URI
 import java.util.*
@@ -78,6 +79,9 @@ class AudioManager(val loritta: Loritta) {
 	 * @param override       (optional) forces the song to be played
 	 */
 	suspend fun loadAndPlay(context: CommandContext, trackUrl: String, alreadyChecked: Boolean = false, override: Boolean = false) {
+		if (FeatureFlags.DISABLE_MUSIC_RATELIMIT)
+			return
+
 		if (!alreadyChecked) {
 			if (!checkVoiceChannelState(context))
 				return
@@ -156,6 +160,9 @@ class AudioManager(val loritta: Loritta) {
 	 * @param override       (optional) forces the song to be played
 	 */
 	fun playPlaylist(context: CommandContext, musicManager: GuildMusicManager, playlist: AudioPlaylist, override: Boolean = false) {
+		if (FeatureFlags.DISABLE_MUSIC_RATELIMIT)
+			return
+
 		val channel = context.event.channel
 		val musicConfig = context.config.musicConfig
 
@@ -198,6 +205,9 @@ class AudioManager(val loritta: Loritta) {
 	 * @param trackUrl the track URL
 	 */
 	fun loadAndPlayNoFeedback(guild: Guild, config: MongoServerConfig, trackUrl: String) {
+		if (FeatureFlags.DISABLE_MUSIC_RATELIMIT)
+			return
+
 		val musicManager = getGuildAudioPlayer(guild)
 
 		if (playlistCache.contains(trackUrl)) {
@@ -242,6 +252,9 @@ class AudioManager(val loritta: Loritta) {
 	 * @param override     (optional) forces the song to be played
 	 */
 	fun play(guild: Guild, conf: MongoServerConfig, musicManager: GuildMusicManager, trackWrapper: AudioTrackWrapper, override: Boolean = false) {
+		if (FeatureFlags.DISABLE_MUSIC_RATELIMIT)
+			return
+
 		val musicGuildId = conf.musicConfig.musicGuildId!!
 
 		if (override) {
@@ -286,6 +299,9 @@ class AudioManager(val loritta: Loritta) {
 	 * @param audioManager the audio manager
 	 */
 	fun connectToVoiceChannel(id: String, audioManager: AudioManager) {
+		if (FeatureFlags.DISABLE_MUSIC_RATELIMIT)
+			return
+
 		val link = loritta.audioManager.lavalink.getLink(audioManager.guild)
 		if (audioManager.isConnected && audioManager.connectedChannel?.id != id) { // Se a Loritta está conectada em um canal de áudio mas não é o que nós queremos...
 			link.disconnect() // Desconecte do canal atual!

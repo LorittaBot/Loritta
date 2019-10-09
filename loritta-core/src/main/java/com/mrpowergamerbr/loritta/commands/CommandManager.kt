@@ -511,6 +511,14 @@ class CommandManager {
 						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + reparsedLegacyLocale["DJ_LORITTA_DISABLED"] + " \uD83D\uDE1E" + if (canManage) reparsedLegacyLocale["DJ_LORITTA_HOW_TO_ENABLE", "${loritta.instanceConfig.loritta.website.url}dashboard"] else "")
 						return true
 					}
+
+					if (FeatureFlags.DISABLE_MUSIC_RATELIMIT) {
+						context.reply(
+								locale["commands.googleRateLimited", "${loritta.instanceConfig.loritta.website.url}${locale["website.localePath"]}/blog/youtube-google-block?utm_source=discord&utm_medium=link&utm_campaign=update_cmd"],
+								Constants.ERROR
+						)
+						return true
+					}
 				}
 
 				// Vamos pegar uma mensagem aleatória de doação, se não for nula, iremos enviar ela :3
