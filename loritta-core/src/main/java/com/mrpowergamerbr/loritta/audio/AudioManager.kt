@@ -395,7 +395,7 @@ class AudioManager(val loritta: Loritta) {
 	}
 
 	private fun getYouTubeVideoIdFromUrl(url: String): String? {
-		val regex = YOUTUBE_VIDEO_URL_REGEX.matcher("https://www.youtube.com/watch?v=heIvcW7nw5U")
+		val regex = YOUTUBE_VIDEO_URL_REGEX.matcher(url)
 		val find = regex.find()
 
 		if (find)
