@@ -128,7 +128,7 @@ class AudioManager(val loritta: Loritta) {
 			val matchingTrack = matchingTracks.firstOrNull()
 
 			if (matchingTrack != null) {
-				trackCache[trackId] = matchingTrack
+				trackCache[matchingTrack.identifier] = matchingTrack
 
 				if (musicConfig.hasMaxSecondRestriction) { // Se esta guild tem a limitação de áudios...
 					if (matchingTrack.duration > TimeUnit.SECONDS.toMillis(musicConfig.maxSeconds.toLong())) {
@@ -240,7 +240,7 @@ class AudioManager(val loritta: Loritta) {
 		val matchingTrack = matchingTracks.firstOrNull()
 
 		if (matchingTrack != null) {
-			trackCache[trackId] = matchingTrack
+			trackCache[matchingTrack.identifier] = matchingTrack
 			track = matchingTrack
 		}
 
