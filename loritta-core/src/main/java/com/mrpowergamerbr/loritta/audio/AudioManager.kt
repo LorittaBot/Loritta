@@ -34,11 +34,13 @@ class AudioManager(val loritta: Loritta) {
 	var playerManager = DefaultAudioPlayerManager()
 	val musicManagers = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.MINUTES).build<Long, GuildMusicManager>().asMap()
 	var songThrottle = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(10L, TimeUnit.SECONDS).build<String, Long>().asMap()
+	val trackCache = Caffeine.newBuilder().expireAfterWrite(24L, TimeUnit.HOURS).maximumSize(10_000).build<String, AudioTrack>().asMap()
 	val playlistCache = Caffeine.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(100).build<String, AudioPlaylist>().asMap()
 	val lavalink = JdaLavalink(loritta.discordConfig.discord.clientId, loritta.discordConfig.discord.maxShards) { shardId: Int -> lorittaShards.shardManager.getShardById(shardId) }
 
 	companion object {
 		private val logger = KotlinLogging.logger {}
+		val YOUTUBE_VIDEO_URL_REGEX = "(?:youtu.be\\/|v\\/|u\\/\\w\\/|embed\\/|watch\\?v=)([^#\\&\\?]*)".toPattern()
 	}
 
 	init {
@@ -113,34 +115,48 @@ class AudioManager(val loritta: Loritta) {
 			return
 		}
 
-		val matchingTracks = loadAudioTracks(trackUrl)
+		val trackId = getYouTubeVideoIdFromUrl(trackUrl)
 
-		val matchingTrack = matchingTracks.firstOrNull()
+		var track: AudioTrack? = null
 
-		if (matchingTrack != null) {
-			if (musicConfig.hasMaxSecondRestriction) { // Se esta guild tem a limitação de áudios...
-				if (matchingTrack.duration > TimeUnit.SECONDS.toMillis(musicConfig.maxSeconds.toLong())) {
-					val final = String.format("%02d:%02d", ((musicConfig.maxSeconds / 60) % 60), (musicConfig.maxSeconds % 60))
-					channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["MUSIC_MAX", final]).queue()
-					return
+		if (trackId != null)
+			track = trackCache[trackId]
+
+		if (track == null) {
+			val matchingTracks = loadAudioTracks(trackUrl)
+
+			val matchingTrack = matchingTracks.firstOrNull()
+
+			if (matchingTrack != null) {
+				trackCache[trackId] = matchingTrack
+
+				if (musicConfig.hasMaxSecondRestriction) { // Se esta guild tem a limitação de áudios...
+					if (matchingTrack.duration > TimeUnit.SECONDS.toMillis(musicConfig.maxSeconds.toLong())) {
+						val final = String.format("%02d:%02d", ((musicConfig.maxSeconds / 60) % 60), (musicConfig.maxSeconds % 60))
+						channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["MUSIC_MAX", final]).queue()
+						return
+					}
 				}
-			}
-			channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.legacyLocale["MUSIC_ADDED", matchingTrack.info.title.stripCodeMarks().escapeMentions()]).queue()
+				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.legacyLocale["MUSIC_ADDED", matchingTrack.info.title.stripCodeMarks().escapeMentions()]).queue()
 
-			play(context, musicManager, AudioTrackWrapper(matchingTrack, false, context.userHandle, HashMap<String, String>()), override)
-		} else {
-			if (!alreadyChecked) {
-				// Ok, não encontramos NADA relacionado a essa música
-				// Então vamos pesquisar!
-				val items = YouTubeUtils.searchVideosOnYouTube(trackUrl)
+				track = matchingTrack
+			} else {
+				if (!alreadyChecked) {
+					// Ok, não encontramos NADA relacionado a essa música
+					// Então vamos pesquisar!
+					val items = YouTubeUtils.searchVideosOnYouTube(trackUrl)
 
-				if (items.isNotEmpty()) {
-					loadAndPlay(context, items[0].id.videoId, true, override)
-					return
+					if (items.isNotEmpty()) {
+						loadAndPlay(context, items[0].id.videoId, true, override)
+						return
+					}
 				}
+				channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["MUSIC_NOTFOUND", trackUrl]).queue()
+				return
 			}
-			channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["MUSIC_NOTFOUND", trackUrl]).queue()
 		}
+
+		play(context, musicManager, AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()), override)
 	}
 
 	/**
@@ -212,12 +228,24 @@ class AudioManager(val loritta: Loritta) {
 			return
 		}
 
+		val trackId = getYouTubeVideoIdFromUrl(trackUrl)
+
+		var track: AudioTrack? = null
+
+		if (trackId != null)
+			track = trackCache[trackId]
+
 		val matchingTracks = loadAudioTracks(trackUrl)
 
 		val matchingTrack = matchingTracks.firstOrNull()
 
-		if (matchingTrack != null)
-			play(guild, config, musicManager, AudioTrackWrapper(matchingTrack, true, guild.selfMember.user, HashMap<String, String>()))
+		if (matchingTrack != null) {
+			trackCache[trackId] = matchingTrack
+			track = matchingTrack
+		}
+
+		if (track != null)
+			play(guild, config, musicManager, AudioTrackWrapper(track, true, guild.selfMember.user, HashMap<String, String>()))
 	}
 
 	fun play(context: CommandContext, musicManager: GuildMusicManager, trackWrapper: AudioTrackWrapper, override: Boolean = false) {
@@ -364,5 +392,14 @@ class AudioManager(val loritta: Loritta) {
 		} catch (e: IOException) {
 			throw RuntimeException(e)
 		}
+	}
+
+	private fun getYouTubeVideoIdFromUrl(url: String): String? {
+		val regex = YOUTUBE_VIDEO_URL_REGEX.matcher("https://www.youtube.com/watch?v=heIvcW7nw5U")
+		val find = regex.find()
+
+		if (find)
+			return regex.group(1)
+		return null
 	}
 }
