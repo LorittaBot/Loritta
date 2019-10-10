@@ -6,9 +6,8 @@ import kotlinx.html.js.onClickFunction
 import net.perfectdreams.spicymorenitta.utils.Audio
 import net.perfectdreams.spicymorenitta.utils.Logging
 import net.perfectdreams.spicymorenitta.utils.select
+import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
-import org.w3c.dom.HTMLImageElement
-import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.WebSocket
 import kotlin.browser.document
 import kotlin.browser.window
@@ -21,13 +20,15 @@ object Trunfo : Logging {
 	lateinit var ws: WebSocket
 	var currentPopup: HTMLElement? = null
 	var player1Name: String = "???"
+	var player1Avatar: String = "???"
 	var player2Name: String = "???"
+	var player2Avatar: String = "???"
 	var isMyTurn: Boolean = false
 	var errou = Audio("faustao_errou.mp3")
 	var dogResidue = Audio("dog_residue.mp3")
 
 	@JsName("connectToServer")
-	fun connectToServer(playerName: String) {
+	fun connectToServer() {
 		currentPopup?.remove()
 		currentPopup = TrunfoGame.openPopup {
 			img(src = "https://cdn.discordapp.com/emojis/621886615899471891.gif?v=1") {}
@@ -53,7 +54,6 @@ object Trunfo : Logging {
 					JSON.stringify(
 							object {
 								val status = "JOIN_MATCHMAKING"
-								val name = playerName
 							}
 					)
 			)
@@ -76,7 +76,24 @@ object Trunfo : Logging {
 
 			// document.select<HTMLDivElement>("#status-data").innerHTML = currentStatus
 
-			if (currentStatus == "CLOSED") {
+			if (currentStatus == "PING") {
+				debug("Ping received... pong!")
+				ws.send(
+						JSON.stringify(object {
+							var status = "PONG"
+						})
+				)
+			} else if (currentStatus == "UNAUTHORIZED") {
+				currentPopup?.remove()
+				currentPopup = TrunfoGame.openPopup {
+					div {
+						+ "Não autorizado, redirecionando..."
+					}
+				}
+
+				window.location.replace("https://discordapp.com/oauth2/authorize?client_id=297153970613387264&scope=identify+guilds+email+guilds.join&permissions=2080374975&response_type=code&redirect_uri=https://loritta.website/dashboard&state=eyJyZWRpcmVjdFVybCI6Imh0dHBzOi8vdHJ1bmZvLmxvcml0dGEud2Vic2l0ZS9pbmRleF9rb3RsaW4uaHRtbCJ9");
+			} else if (currentStatus == "CLOSED") {
+				currentPopup?.remove()
 				currentPopup = TrunfoGame.openPopup {
 					div {
 						+ "Sala fechada, talvez o seu amiguchx tenha saido da sala..."
@@ -114,6 +131,10 @@ object Trunfo : Logging {
 				document.select<HTMLElement>("#opponent-card .power-entry").removeClass("pop-out", "green", "red")
 				document.select<HTMLElement>("#your-card .fame-entry").removeClass("pop-out", "green", "red")
 				document.select<HTMLElement>("#opponent-card .fame-entry").removeClass("pop-out", "green", "red")
+				document.select<HTMLElement>("#your-card .intelligence-entry").removeClass("pop-out", "green", "red")
+				document.select<HTMLElement>("#opponent-card .intelligence-entry").removeClass("pop-out", "green", "red")
+				document.select<HTMLElement>("#your-card .cuteness-entry").removeClass("pop-out", "green", "red")
+				document.select<HTMLElement>("#opponent-card .cuteness-entry").removeClass("pop-out", "green", "red")
 
 
 				document.select<HTMLElement>("#waiting-for-something").innerHTML = "Esperando..."
@@ -124,33 +145,25 @@ object Trunfo : Logging {
 				document.select<HTMLElement>("#player-1-card-count").innerHTML = howManyCards.toString()
 				document.select<HTMLElement>("#player-2-card-count").innerHTML = howManyOpponentCards.toString()
 				var card = json["currentCard"] as Json
-				document.select<HTMLImageElement>("#your-card .header").src = card["imageUrl"] as String
+				fillCardInfo(card, document.select<HTMLElement>("#your-card"))
 
-				document.select<HTMLElement>("#your-card .card-name").innerHTML = card["name"] as String
-				debug("Trying to cast age")
-				debug(card["age"])
-				debug(card["age"] as Int)
-				debug("Trying to cast element")
-				debug(document.select<HTMLElement>("#your-card .age-card"))
-				document.select<HTMLElement>("#your-card .age-card").innerHTML = (card["age"] as Int).toString()
-				document.select<HTMLElement>("#your-card .height-card").innerHTML = (card["height"] as Int).toString()
-				document.select<HTMLElement>("#your-card .weight-card").innerHTML = (card["weight"] as Int).toString()
-				document.select<HTMLElement>("#your-card .power-card").innerHTML = (card["power"] as Int).toString()
-				document.select<HTMLElement>("#your-card .fame-card").innerHTML = (card["fame"] as Int).toString()
-
-				document.select<HTMLInputElement>("#opponent-card .header").src = "https://via.placeholder.com/128"
+				document.select<HTMLElement>("#opponent-card .header").style.backgroundImage = "url('https://via.placeholder.com/128')"
 
 				document.select<HTMLElement>("#opponent-card .card-name").innerHTML = "Segredo uwu"
 				document.select<HTMLElement>("#opponent-card .age-card").innerHTML = "???"
 				document.select<HTMLElement>("#opponent-card .height-card").innerHTML = "???"
 				document.select<HTMLElement>("#opponent-card .weight-card").innerHTML = "???"
 				document.select<HTMLElement>("#opponent-card .power-card").innerHTML = "???"
+				document.select<HTMLElement>("#opponent-card .cuteness-card").innerHTML = "???"
+				document.select<HTMLElement>("#opponent-card .intelligence-card").innerHTML = "???"
 				document.select<HTMLElement>("#opponent-card .fame-card").innerHTML = "???"
 
 				toggleDisabledStatus(isMyTurn as Boolean)
 			} else if (currentStatus == "SET_PLAYER_NAMES") {
 				player1Name = (json["player1"] as String)
+				player1Avatar = (json["player1Avatar"] as String)
 				player2Name = (json["player2"] as String)
+				player2Avatar = (json["player2Avatar"] as String)
 			} else if (currentStatus == "SEND_ROUND_STATS") {
 				var whatHappened = json["whatHappened"]
 
@@ -161,14 +174,7 @@ object Trunfo : Logging {
 					document.select<HTMLElement>("#waiting-for-something").innerHTML = "Você ganhou a rodada!"
 
 					var card = json["opponentCard"] as Json
-					document.select<HTMLImageElement>("#opponent-card .header").src = card["imageUrl"] as String
-
-					document.select<HTMLElement>("#opponent-card .card-name").innerHTML = card["name"] as String
-					document.select<HTMLElement>("#opponent-card .age-card").innerHTML = (card["age"] as Int).toString()
-					document.select<HTMLElement>("#opponent-card .height-card").innerHTML = (card["height"] as Int).toString()
-					document.select<HTMLElement>("#opponent-card .weight-card").innerHTML = (card["weight"] as Int).toString()
-					document.select<HTMLElement>("#opponent-card .power-card").innerHTML = (card["power"] as Int).toString()
-					document.select<HTMLElement>("#opponent-card .fame-card").innerHTML = (card["fame"] as Int).toString()
+					fillCardInfo(card, document.select<HTMLElement>("#opponent-card"))
 
 					var withWhatStats = json["withWhatStats"]
 					console.log(withWhatStats)
@@ -184,14 +190,7 @@ object Trunfo : Logging {
 					document.select<HTMLElement>("#waiting-for-something").innerHTML = "Você perdeu a rodada..."
 
 					var card = json["opponentCard"] as Json
-					document.select<HTMLImageElement>("#opponent-card .header").src = card["imageUrl"] as String
-
-					document.select<HTMLElement>("#opponent-card .card-name").innerHTML = card["name"] as String
-					document.select<HTMLElement>("#opponent-card .age-card").innerHTML = (card["age"] as Int).toString()
-					document.select<HTMLElement>("#opponent-card .height-card").innerHTML = (card["height"] as Int).toString()
-					document.select<HTMLElement>("#opponent-card .weight-card").innerHTML = (card["weight"] as Int).toString()
-					document.select<HTMLElement>("#opponent-card .power-card").innerHTML = (card["power"] as Int).toString()
-					document.select<HTMLElement>("#opponent-card .fame-card").innerHTML = (card["fame"] as Int).toString()
+					fillCardInfo(card, document.select<HTMLElement>("#opponent-card"))
 
 					var withWhatStats = json["withWhatStats"]
 					console.log(withWhatStats)
@@ -209,6 +208,19 @@ object Trunfo : Logging {
 		ws.onclose = {
 			window.alert("Conexão perdida...")
 		}
+	}
+
+	fun fillCardInfo(json: Json, element: Element) {
+		element.select<HTMLElement>(".header").style.backgroundImage = "url('${json["imageUrl"]}')"
+
+		element.select<HTMLElement>(".card-name").innerHTML = json["name"] as String
+		element.select<HTMLElement>(".age-card").innerHTML = (json["age"] as Int).toString()
+		element.select<HTMLElement>(".height-card").innerHTML = (json["height"] as Int).toString()
+		element.select<HTMLElement>(".weight-card").innerHTML = (json["weight"] as Int).toString()
+		element.select<HTMLElement>(".power-card").innerHTML = (json["power"] as Int).toString()
+		element.select<HTMLElement>(".cuteness-card").innerHTML = (json["cuteness"] as Int).toString()
+		element.select<HTMLElement>(".intelligence-card").innerHTML = (json["intelligence"] as Int).toString()
+		element.select<HTMLElement>(".fame-card").innerHTML = (json["fame"] as Int).toString()
 	}
 
 	fun toggleDisabledStatus(isMyTurn: Boolean) {
@@ -263,7 +275,7 @@ object Trunfo : Logging {
 
 	fun DIV.buildPlayerNavbar(playerCount: String) {
 		div(classes = "player-entry") {
-			img(src = "https://cdn.discordapp.com/avatars/123170274651668480/a_f5edb8f69836651dddefd0a722816f08.gif?size=256", classes = "bar-avatar") {}
+			img(src = if (playerCount == "1") player1Avatar else player2Avatar, classes = "bar-avatar") {}
 
 			div(classes = "bar-name-and-stats") {
 				div(classes = "bar-name") {
@@ -291,7 +303,7 @@ object Trunfo : Logging {
 		div(classes = "card") {
 			id = idName
 
-			img(src = "https://loritta.website/assets/img/blog/lori_to_be_continued.png", classes = "header") {}
+			div(classes = "header") {}
 
 			div(classes = "card-name") {
 				+ "Nome da Carta"
@@ -370,6 +382,42 @@ object Trunfo : Logging {
 					}
 				}
 
+				div(classes = "entry cuteness-entry") {
+					if (setClick) {
+						onClickFunction = {
+							if (isMyTurn)
+								sendSelectionData("cuteness")
+						}
+					}
+
+					div(classes = "name") {
+						i(classes = "fas fa-heart") {}
+
+						+ " Fofura"
+					}
+					div(classes = "value cuteness-card") {
+						+ "???"
+					}
+				}
+
+				div(classes = "entry intelligence-entry") {
+					if (setClick) {
+						onClickFunction = {
+							if (isMyTurn)
+								sendSelectionData("intelligence")
+						}
+					}
+
+					div(classes = "name") {
+						i(classes = "fas fa-brain") {}
+
+						+ " Inteligência"
+					}
+					div(classes = "value intelligence-card") {
+						+ "???"
+					}
+				}
+
 				div(classes = "entry fame-entry") {
 					if (setClick) {
 						onClickFunction = {
@@ -395,6 +443,7 @@ object Trunfo : Logging {
 	fun sendSelectionData(selectedEntry: String) {
 		ws.send(
 				JSON.stringify(object {
+					var status = "SELECTION"
 					var selected = selectedEntry
 				})
 		)

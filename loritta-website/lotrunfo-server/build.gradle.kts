@@ -46,6 +46,7 @@ dependencies {
     compile("org.honton.chas.hocon:jackson-dataformat-hocon:1.1.1")
     compile("com.sedmelluq:lavaplayer:1.3.19")
     compile("com.github.salomonbrys.kotson:kotson:2.5.0")
+    compile("com.github.kevinsawicki:http-request:6.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.0-M1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.0-M1")
     testImplementation("io.mockk:mockk:1.9.3")
