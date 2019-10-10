@@ -86,9 +86,9 @@ object DateUtils {
 			val isPlural = days != 1L
 			sb.append(" ")
 			if (!isPlural) {
-				sb.append(locale["DATEUTILS_Month"])
+				sb.append(locale["DATEUTILS_Day"])
 			} else {
-				sb.append(locale["DATEUTILS_Months"])
+				sb.append(locale["DATEUTILS_Days"])
 			}
 			sb.append(" ")
 		}

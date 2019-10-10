@@ -4,6 +4,7 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
+import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import org.jooby.WebSocket
 import kotlin.concurrent.thread
 
@@ -15,28 +16,28 @@ class Game {
 	val availableCards = mutableListOf(
 			Card(
 					"Loritta Morenitta",
-					"https://cdn.discordapp.com/emojis/626942886432473098.png?v=1",
+					"https://trunfo.loritta.website/assets/img/cards/loritta.png",
 
 					170,
 					50,
 					16,
-					75,
-					0,
-					0,
-					97
+					35,
+					70,
+					70,
+					70
 			),
 			Card(
 					"Pantufa",
-					"https://cdn.discordapp.com/emojis/626942886583205898.png?v=1",
+					"https://trunfo.loritta.website/assets/img/cards/pantufa.png",
 
 
 					166,
 					45,
 					15,
-					65,
-					0,
-					0,
-					40
+					45,
+					73,
+					67,
+					60
 			),
 			Card(
 					"Gabriela",
@@ -45,22 +46,22 @@ class Game {
 					174,
 					66,
 					17,
-					55,
-					0,
-					0,
-					50
+					70,
+					60,
+					75,
+					30
 			),
 			Card(
 					"Dokyo Inuyama",
-					"https://cdn.discordapp.com/emojis/603389181808607262.png?v=1",
+					"https://trunfo.loritta.website/assets/img/cards/dokyo.png",
 
 					168,
 					50,
 					13,
-					75,
-					0,
-					0,
-					65
+					40,
+					77,
+					60,
+					55
 			),
 			Card(
 					"Gessy",
@@ -69,10 +70,10 @@ class Game {
 					180,
 					52,
 					14,
-					70,
-					0,
-					0,
-					70
+					40,
+					77,
+					62,
+					65
 			),
 			Card(
 					"Kaike Carlos",
@@ -82,8 +83,8 @@ class Game {
 					28,
 					17,
 					53,
-					0,
-					0,
+					70,
+					80,
 					37
 			),
 			Card(
@@ -93,9 +94,9 @@ class Game {
 					30,
 					4,
 					6,
-					78,
-					0,
-					0,
+					40,
+					80,
+					20,
 					67
 			),
 			Card(
@@ -106,8 +107,8 @@ class Game {
 					5,
 					14,
 					35,
-					0,
-					0,
+					90,
+					10,
 					74
 			),
 			Card(
@@ -118,8 +119,8 @@ class Game {
 					86,
 					42,
 					90,
-					0,
-					0,
+					10,
+					35,
 					90
 			),
 			Card(
@@ -130,21 +131,21 @@ class Game {
 					20,
 					10,
 					58,
-					0,
-					0,
+					60,
+					85,
 					27
 			),
 			Card(
 					"Moletom da Lori",
-					"https://cdn.discordapp.com/emojis/623670395907866625.png?v=1",
+					"https://trunfo.loritta.website/assets/img/cards/lori_sweater.png",
 
 					43,
 					1,
 					3,
-					78,
-					0,
-					0,
-					100
+					30,
+					85,
+					5,
+					93
 			),
 			Card(
 					"Gessy após ter soltado um barro",
@@ -153,9 +154,9 @@ class Game {
 					180,
 					48,
 					14,
-					85,
-					0,
-					0,
+					75,
+					20,
+					70,
 					63
 			),
 			Card(
@@ -166,8 +167,8 @@ class Game {
 					85,
 					23,
 					53,
-					0,
-					0,
+					60,
+					65,
 					20
 			),
 			Card(
@@ -178,9 +179,57 @@ class Game {
 					7,
 					3,
 					67,
-					0,
-					0,
+					87,
+					35,
 					57
+			),
+			Card(
+					"Wumpus",
+					"https://trunfo.loritta.website/assets/img/cards/wumpus.png",
+
+					25,
+					4,
+					4,
+					37,
+					90,
+					50,
+					95
+			),
+			Card(
+					"Loritta Samurai",
+					"https://trunfo.loritta.website/assets/img/cards/loritta_samurai.png",
+
+					170,
+					75,
+					16,
+					80,
+					60,
+					70,
+					70
+			),
+			Card(
+					"Gessy Maromba",
+					"https://trunfo.loritta.website/assets/img/cards/gessy_maromba.png",
+
+					200,
+					90,
+					14,
+					85,
+					10,
+					32,
+					25
+			),
+			Card(
+					"Yudi Tamashiro",
+					"https://trunfo.loritta.website/assets/img/cards/yudi.png",
+
+					158,
+					62,
+					27,
+					35,
+					63,
+					40,
+					80
 			)
 	)
 
@@ -191,13 +240,18 @@ class Game {
 			"age" -> Card::age
 			"power" -> Card::power
 			"fame" -> Card::fame
+			"cuteness" -> Card::fame
+			"intelligence" -> Card::intelligence
 			else -> throw RuntimeException("oof, $str is invalid")
 		}
+
+		println("Processing selection and changing stats to SEND_ROUND_STATS")
+		status = Status.SEND_ROUND_STATS
 
 		val oppositePlayer = getOppositePlayer()
 
 		val currentPlayer = currentPlayer!!
-		val currentCard = currentPlayer!!.cards.first()
+		val currentCard = currentPlayer.cards.first()
 		val currentCard2 = oppositePlayer.cards.first()
 
 		val cardAttr = attr.call(currentCard)
@@ -289,14 +343,20 @@ class Game {
 		}
 	}
 
-	fun join(name: String, ws: WebSocket) {
+	fun join(userIdentification: TemmieDiscordAuth.UserIdentification, ws: WebSocket) {
 		ws.onMessage {
-			println("Received message within Game.kt! ${it.value()}")
-
+			println("Received message within Game.kt! (status = $status) ${it.value()}")
 			val parsed = jsonParser.parse(it.value())
-			val selected = parsed["selected"].string
 
-			processSelection(selected)
+			var statusFromClient = parsed["status"].string
+
+			if (statusFromClient == "SELECTION" && status == Game.Status.PLAYING) {
+				println("Received selected payload while in playing status!")
+
+				val selected = parsed["selected"].string
+
+				processSelection(selected)
+			}
 		}
 
 		val cardsForNewPlayer = mutableListOf<Card>()
@@ -310,9 +370,9 @@ class Game {
 		}
 
 		if (player1 == null) {
-			player1 = Player(name, ws, cardsForNewPlayer)
+			player1 = Player(userIdentification, ws, cardsForNewPlayer)
 		} else if (player2 == null) {
-			player2 = Player(name, ws, cardsForNewPlayer)
+			player2 = Player(userIdentification, ws, cardsForNewPlayer)
 		}
 
 		if (player1 != null && player2 != null) {
@@ -326,11 +386,28 @@ class Game {
 	}
 
 	fun start() {
-		broadcast(
+		val player1Avatar = "https://cdn.discordapp.com/avatars/${player1?.identification?.id}/${player1?.identification?.avatar}.${if (player1?.identification?.avatar?.startsWith("a_") == true) "gif" else "png"}"
+		val player2Avatar = "https://cdn.discordapp.com/avatars/${player2?.identification?.id}/${player2?.identification?.avatar}.${if (player2?.identification?.avatar?.startsWith("a_") == true) "gif" else "png"}"
+
+		send(
+				player1!!,
 				jsonObject(
 						"status" to Status.SET_PLAYER_NAMES.toString(),
-						"player1" to player1!!.name,
-						"player2" to player2!!.name
+						"player1" to player1!!.identification.username,
+						"player1Avatar" to player1Avatar,
+						"player2" to player2!!.identification.username,
+						"player2Avatar" to player2Avatar
+				)
+		)
+
+		send(
+				player2!!,
+				jsonObject(
+						"status" to Status.SET_PLAYER_NAMES.toString(),
+						"player1" to player2!!.identification.username,
+						"player1Avatar" to player2Avatar,
+						"player2" to player1!!.identification.username,
+						"player2Avatar" to player1Avatar
 				)
 		)
 
@@ -401,14 +478,13 @@ class Game {
 	}
 
 	fun broadcast(json: JsonObject) {
-		val str = gson.toJson(json)
+		player1?.let {
+			send(it, json)
+		}
 
-		player1?.ws?.send(
-				str
-		)
-		player2?.ws?.send(
-				str
-		)
+		player2?.let {
+			send(it, json)
+		}
 	}
 
 	fun send(player: Player, json: JsonObject) {
@@ -464,7 +540,9 @@ class Game {
 			"weight" to card.weight,
 			"height" to card.height,
 			"power" to card.power,
-			"fame" to card.fame
+			"fame" to card.fame,
+			"cuteness" to card.cuteness,
+			"intelligence" to card.intelligence
 	)
 
 	fun cleanUp() {

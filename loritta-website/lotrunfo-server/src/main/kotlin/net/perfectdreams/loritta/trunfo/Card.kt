@@ -9,6 +9,6 @@ class Card(
 		val age: Int,
 		val power: Int,
 		val cuteness: Int,
-		val inteligence: Int,
+		val intelligence: Int,
 		val fame: Int
 )
