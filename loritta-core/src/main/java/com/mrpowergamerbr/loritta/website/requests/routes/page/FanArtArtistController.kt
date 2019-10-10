@@ -38,7 +38,7 @@ class FanArtArtistController {
 			val html = runBlocking {
 				ScriptingUtils.evaluateWebPageFromTemplate(
 						File(
-								"${LorittaWebsite.INSTANCE.config.websiteFolder}/views/fan_arts.kts"
+								"${LorittaWebsite.INSTANCE.config.websiteFolder}/views/fan_art_artist.kts"
 						),
 						mapOf(
 								"path" to req.path().split("/").drop(2).joinToString("/"),
