@@ -1,13 +1,16 @@
 package net.perfectdreams.spicymorenitta.trunfo
 
-import kotlinx.html.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.html.DIV
+import kotlinx.html.button
+import kotlinx.html.div
 import kotlinx.html.dom.create
+import kotlinx.html.h1
 import kotlinx.html.js.onClickFunction
 import net.perfectdreams.spicymorenitta.utils.Audio
 import net.perfectdreams.spicymorenitta.utils.onDOMReady
-import net.perfectdreams.spicymorenitta.utils.select
 import org.w3c.dom.HTMLElement
-import org.w3c.dom.HTMLInputElement
 import kotlin.browser.document
 
 object TrunfoGame {
@@ -20,13 +23,6 @@ object TrunfoGame {
 					+"Lori's Super Trunfo™"
 				}
 
-				div {
-					+"Seu Nome: "
-					input {
-						id = "player-name-input"
-					}
-				}
-
 				button {
 					+"Conectar em uma sala!"
 
@@ -35,9 +31,9 @@ object TrunfoGame {
 						nintendoWfc.loop = true
 						nintendoWfc.play()
 
-						val playerName = document.select<HTMLInputElement>("#player-name-input").value
-
-						Trunfo.connectToServer(playerName)
+						GlobalScope.launch {
+							Trunfo.connectToServer()
+						}
 					}
 				}
 			}
