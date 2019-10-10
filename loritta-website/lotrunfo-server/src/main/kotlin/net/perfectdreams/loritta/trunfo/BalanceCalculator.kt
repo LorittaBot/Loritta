@@ -4,28 +4,28 @@ fun main() {
 	val availableCards = mutableListOf(
 			Card(
 					"Loritta Morenitta",
-					"https://cdn.discordapp.com/emojis/626942886432473098.png?v=1",
+					"https://trunfo.loritta.website/assets/img/cards/loritta.png",
 
 					170,
 					50,
 					16,
-					75,
-					0,
-					0,
-					97
+					35,
+					70,
+					70,
+					70
 			),
 			Card(
 					"Pantufa",
-					"https://cdn.discordapp.com/emojis/626942886583205898.png?v=1",
+					"https://trunfo.loritta.website/assets/img/cards/pantufa.png",
 
 
 					166,
 					45,
 					15,
-					65,
-					0,
-					0,
-					40
+					45,
+					73,
+					67,
+					60
 			),
 			Card(
 					"Gabriela",
@@ -34,22 +34,22 @@ fun main() {
 					174,
 					66,
 					17,
-					55,
-					0,
-					0,
-					50
+					70,
+					60,
+					75,
+					30
 			),
 			Card(
 					"Dokyo Inuyama",
-					"https://cdn.discordapp.com/emojis/603389181808607262.png?v=1",
+					"https://trunfo.loritta.website/assets/img/cards/dokyo.png",
 
 					168,
 					50,
 					13,
-					75,
-					0,
-					0,
-					65
+					40,
+					77,
+					60,
+					55
 			),
 			Card(
 					"Gessy",
@@ -58,10 +58,10 @@ fun main() {
 					180,
 					52,
 					14,
-					70,
-					0,
-					0,
-					70
+					40,
+					77,
+					62,
+					65
 			),
 			Card(
 					"Kaike Carlos",
@@ -71,8 +71,8 @@ fun main() {
 					28,
 					17,
 					53,
-					0,
-					0,
+					70,
+					80,
 					37
 			),
 			Card(
@@ -82,9 +82,9 @@ fun main() {
 					30,
 					4,
 					6,
-					78,
-					0,
-					0,
+					40,
+					80,
+					20,
 					67
 			),
 			Card(
@@ -95,8 +95,8 @@ fun main() {
 					5,
 					14,
 					35,
-					0,
-					0,
+					90,
+					10,
 					74
 			),
 			Card(
@@ -107,8 +107,8 @@ fun main() {
 					86,
 					42,
 					90,
-					0,
-					0,
+					10,
+					35,
 					90
 			),
 			Card(
@@ -119,21 +119,21 @@ fun main() {
 					20,
 					10,
 					58,
-					0,
-					0,
+					60,
+					85,
 					27
 			),
 			Card(
 					"Moletom da Lori",
-					"https://cdn.discordapp.com/emojis/623670395907866625.png?v=1",
+					"https://trunfo.loritta.website/assets/img/cards/lori_sweater.png",
 
 					43,
 					1,
 					3,
-					78,
-					0,
-					0,
-					100
+					30,
+					85,
+					5,
+					93
 			),
 			Card(
 					"Gessy após ter soltado um barro",
@@ -142,9 +142,9 @@ fun main() {
 					180,
 					48,
 					14,
-					85,
-					0,
-					0,
+					75,
+					20,
+					70,
 					63
 			),
 			Card(
@@ -155,8 +155,8 @@ fun main() {
 					85,
 					23,
 					53,
-					0,
-					0,
+					60,
+					65,
 					20
 			),
 			Card(
@@ -167,9 +167,45 @@ fun main() {
 					7,
 					3,
 					67,
-					0,
-					0,
+					87,
+					35,
 					57
+			),
+			Card(
+					"Wumpus",
+					"https://trunfo.loritta.website/assets/img/cards/wumpus.png",
+
+					25,
+					4,
+					4,
+					37,
+					90,
+					50,
+					95
+			),
+			Card(
+					"Loritta Samurai",
+					"https://trunfo.loritta.website/assets/img/cards/loritta_samurai.png",
+
+					170,
+					75,
+					16,
+					80,
+					60,
+					70,
+					70
+			),
+			Card(
+					"Gessy Maromba",
+					"https://trunfo.loritta.website/assets/img/cards/gessy_maromba.png",
+
+					200,
+					90,
+					14,
+					85,
+					10,
+					32,
+					25
 			)
 	)
 
@@ -184,7 +220,9 @@ fun main() {
 					Card::weight,
 					Card::height,
 					Card::power,
-					Card::fame
+					Card::fame,
+					Card::cuteness,
+					Card::intelligence
 			)) {
 				val el0 = entry.get(card)
 				val el1 = entry.get(matchCard)
@@ -201,7 +239,7 @@ fun main() {
 	}
 
 	wonCards.entries.sortedByDescending { it.value }.forEach {
-		println("${it.key.name}")
+		println("\n${it.key.name}")
 		val won = wonCards[it.key]
 		val tie = tieCards[it.key]
 		val lost = lostCards[it.key]
