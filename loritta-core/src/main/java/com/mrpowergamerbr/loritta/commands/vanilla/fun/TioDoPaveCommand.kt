@@ -1,12 +1,11 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.WebhookUtils.getOrCreateWebhook
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
-import org.jsoup.Jsoup
+import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), CommandCategory.FUN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -57,7 +56,6 @@ class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), CommandCa
 				"Qual é a tia que não te deixa comer doces?\n\nA tia Bete",
 				"quando ficar triste, procure sapatos.\n\n...um sapato com sola",
 				"Quem vota no Trump e no PT?\n\nO Trumpetista 🎷",
-				"Fwd: Um caso de polícia! kkkkkkkkkkkkk\n\nDois suspeitos de um homicídios foram presos, mas nenhum confessava o crime. O delegado mandou deixar os dois presos por um mês e alimentá-los bem. Findo o mês, um dos suspeitos havia engordado 5 kg, enquanto o outro manteve o peso. O delegado não teve dúvidas: \"Solta o gordo!\" O escrivão ficou confuso. \"Mas por quê, doutor?\" \"Porque o que não mata, engorda.\"",
 				"Não gosto de ir ao podólogo...\n\nporque lá sempre pegam no meu pé. :/",
 				"qual carro movido a suco?\n\nR: musTANG",
 				"Qual o contrário de volátil?\n\nVem cá sobrinho.",
@@ -89,7 +87,6 @@ class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), CommandCa
 				"Por que Hitler não conquistou a Rússia?\n\nPorque ele Moscou",
 				"Vocês sabiam?\n\nSe o Hino for cantado de trás pra frente, ele deixar de ser Hino e passa a se chamar \"Voltano\".",
 				"Porque a fita isolante é melhor que a fita crepe?\n\nPorque ela é faixa preta 🥋",
-				"Um gordo irritado sai com uma arma na mão\n\nEle passa por uma construção e dá um tiro num saco. No dia seguinte, o jornal relata o acontecimento: GORDO BALEIA SACO DE AREIA",
 				"O cadeirante vira para o cego e diz...\n\nolha que mulher gostosa passando o cego: corre atrás dela",
 				"Depois que o meu sobrinho virou mulher, nunca mais o vi.\n\nEle tornou-se transparente!",
 				"Em plena primavera, registramos neve em Gramado.\n\nFlagrante do sinistro",
