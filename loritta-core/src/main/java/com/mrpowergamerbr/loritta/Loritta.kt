@@ -417,7 +417,8 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 					StoredMessages,
 					StarboardMessages,
 					Sponsors,
-					EconomyConfigs
+					EconomyConfigs,
+					ExecutedCommandsLog
 			)
 		}
 	}

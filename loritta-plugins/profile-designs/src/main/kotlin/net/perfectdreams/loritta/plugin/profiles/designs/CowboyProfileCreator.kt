@@ -68,7 +68,7 @@ class CowboyProfileCreator : ProfileCreator {
 				val whitneyMedium20 = whitneyMedium22.deriveFont(20f)
 				graphics.color = Color.WHITE
 				graphics.font = whitneySemiBold16
-				ImageUtils.drawCenteredString(graphics, "Casado com", Rectangle(311, 0, 216, 14), whitneySemiBold16)
+				ImageUtils.drawCenteredString(graphics, locale.toNewLocale()["profile.marriedWith"], Rectangle(311, 0, 216, 14), whitneySemiBold16)
 				graphics.font = whitneyMedium20
 				ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(311, 0 + 18, 216, 18), whitneyMedium20)
 				graphics.font = whitneySemiBold16

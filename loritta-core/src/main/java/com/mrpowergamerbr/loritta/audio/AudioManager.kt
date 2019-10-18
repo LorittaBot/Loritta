@@ -1,6 +1,11 @@
 package com.mrpowergamerbr.loritta.audio
 
 import com.github.benmanes.caffeine.cache.Caffeine
+import com.github.kevinsawicki.http.HttpRequest
+import com.github.salomonbrys.kotson.array
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
@@ -8,20 +13,20 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.getVoiceChannelByNullableId
 import com.mrpowergamerbr.loritta.utils.extensions.isValidUrl
 import com.mrpowergamerbr.loritta.utils.misc.YouTubeUtils
-import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers
-import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import lavalink.client.LavalinkUtil
 import lavalink.client.io.jda.JdaLavalink
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.managers.AudioManager
+import net.perfectdreams.loritta.utils.FeatureFlags
 import net.perfectdreams.loritta.utils.NetAddressUtils
+import java.io.IOException
 import java.net.URI
+import java.net.URLEncoder
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -29,11 +34,13 @@ class AudioManager(val loritta: Loritta) {
 	var playerManager = DefaultAudioPlayerManager()
 	val musicManagers = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.MINUTES).build<Long, GuildMusicManager>().asMap()
 	var songThrottle = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(10L, TimeUnit.SECONDS).build<String, Long>().asMap()
+	val trackCache = Caffeine.newBuilder().expireAfterWrite(24L, TimeUnit.HOURS).maximumSize(10_000).build<String, AudioTrack>().asMap()
 	val playlistCache = Caffeine.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(100).build<String, AudioPlaylist>().asMap()
 	val lavalink = JdaLavalink(loritta.discordConfig.discord.clientId, loritta.discordConfig.discord.maxShards) { shardId: Int -> lorittaShards.shardManager.getShardById(shardId) }
 
 	companion object {
 		private val logger = KotlinLogging.logger {}
+		val YOUTUBE_VIDEO_URL_REGEX = "(?:youtu.be\\/|v\\/|u\\/\\w\\/|embed\\/|watch\\?v=)([^#\\&\\?]*)".toPattern()
 	}
 
 	init {
@@ -78,6 +85,9 @@ class AudioManager(val loritta: Loritta) {
 	 * @param override       (optional) forces the song to be played
 	 */
 	suspend fun loadAndPlay(context: CommandContext, trackUrl: String, alreadyChecked: Boolean = false, override: Boolean = false) {
+		if (FeatureFlags.DISABLE_MUSIC_RATELIMIT)
+			return
+
 		if (!alreadyChecked) {
 			if (!checkVoiceChannelState(context))
 				return
@@ -95,56 +105,58 @@ class AudioManager(val loritta: Loritta) {
 		context.guild.audioManager.isSelfMuted = false // Desmutar a Loritta
 		context.guild.audioManager.isSelfDeafened = false // E desilenciar a Loritta
 
-		if (playlistCache.containsKey(trackUrl)) {
+		if (false && playlistCache.containsKey(trackUrl)) {
 			playPlaylist(context, musicManager, playlistCache[trackUrl]!!, override)
 			return
 		}
-
 
 		if (trackUrl.isValidUrl() && !loritta.connectionManager.isTrusted(trackUrl)) {
 			channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["MUSIC_NOTFOUND", trackUrl]).queue()
 			return
 		}
 
-		playerManager.loadItemOrdered(musicManager, trackUrl, object: AudioLoadResultHandler {
-			override fun trackLoaded(track: AudioTrack) {
+		val trackId = getYouTubeVideoIdFromUrl(trackUrl)
+
+		var track: AudioTrack? = null
+
+		if (trackId != null)
+			track = trackCache[trackId]
+
+		if (track == null) {
+			val matchingTracks = loadAudioTracks(trackUrl)
+
+			val matchingTrack = matchingTracks.firstOrNull()
+
+			if (matchingTrack != null) {
+				trackCache[matchingTrack.identifier] = matchingTrack
+
 				if (musicConfig.hasMaxSecondRestriction) { // Se esta guild tem a limitação de áudios...
-					if (track.duration > TimeUnit.SECONDS.toMillis(musicConfig.maxSeconds.toLong())) {
+					if (matchingTrack.duration > TimeUnit.SECONDS.toMillis(musicConfig.maxSeconds.toLong())) {
 						val final = String.format("%02d:%02d", ((musicConfig.maxSeconds / 60) % 60), (musicConfig.maxSeconds % 60))
 						channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["MUSIC_MAX", final]).queue()
 						return
 					}
 				}
-				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.legacyLocale["MUSIC_ADDED", track.info.title.stripCodeMarks().escapeMentions()]).queue()
+				channel.sendMessage("\uD83D\uDCBD **|** " + context.getAsMention(true) + context.legacyLocale["MUSIC_ADDED", matchingTrack.info.title.stripCodeMarks().escapeMentions()]).queue()
 
-				play(context, musicManager, AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()), override)
-			}
-
-			override fun playlistLoaded(playlist: AudioPlaylist) {
-				playlistCache[trackUrl] = playlist
-				playPlaylist(context, musicManager, playlist, override)
-			}
-
-			override fun noMatches() {
+				track = matchingTrack
+			} else {
 				if (!alreadyChecked) {
 					// Ok, não encontramos NADA relacionado a essa música
 					// Então vamos pesquisar!
 					val items = YouTubeUtils.searchVideosOnYouTube(trackUrl)
 
 					if (items.isNotEmpty()) {
-						GlobalScope.launch(loritta.coroutineDispatcher) {
-							loadAndPlay(context, items[0].id.videoId, true, override)
-						}
+						loadAndPlay(context, items[0].id.videoId, true, override)
 						return
 					}
 				}
 				channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["MUSIC_NOTFOUND", trackUrl]).queue()
+				return
 			}
+		}
 
-			override fun loadFailed(exception: FriendlyException) {
-				channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["MUSIC_ERROR", exception.message]).queue()
-			}
-		})
+		play(context, musicManager, AudioTrackWrapper(track, false, context.userHandle, HashMap<String, String>()), override)
 	}
 
 	/**
@@ -156,6 +168,9 @@ class AudioManager(val loritta: Loritta) {
 	 * @param override       (optional) forces the song to be played
 	 */
 	fun playPlaylist(context: CommandContext, musicManager: GuildMusicManager, playlist: AudioPlaylist, override: Boolean = false) {
+		if (FeatureFlags.DISABLE_MUSIC_RATELIMIT)
+			return
+
 		val channel = context.event.channel
 		val musicConfig = context.config.musicConfig
 
@@ -198,6 +213,9 @@ class AudioManager(val loritta: Loritta) {
 	 * @param trackUrl the track URL
 	 */
 	fun loadAndPlayNoFeedback(guild: Guild, config: MongoServerConfig, trackUrl: String) {
+		if (FeatureFlags.DISABLE_MUSIC_RATELIMIT)
+			return
+
 		val musicManager = getGuildAudioPlayer(guild)
 
 		if (playlistCache.contains(trackUrl)) {
@@ -210,22 +228,24 @@ class AudioManager(val loritta: Loritta) {
 			return
 		}
 
-		playerManager.loadItemOrdered(musicManager, trackUrl, object: AudioLoadResultHandler {
-			override fun trackLoaded(track: AudioTrack) {
-				play(guild, config, musicManager, AudioTrackWrapper(track, true, guild.selfMember.user, HashMap<String, String>()))
-			}
+		val trackId = getYouTubeVideoIdFromUrl(trackUrl)
 
-			override fun playlistLoaded(playlist: AudioPlaylist) {
-				playlistCache[trackUrl] = playlist
-				loadAndPlayNoFeedback(guild, config, playlist.tracks[Loritta.RANDOM.nextInt(0, playlist.tracks.size)].info.uri)
-			}
+		var track: AudioTrack? = null
 
-			override fun noMatches() {
-			}
+		if (trackId != null)
+			track = trackCache[trackId]
 
-			override fun loadFailed(exception: FriendlyException) {
-			}
-		})
+		val matchingTracks = loadAudioTracks(trackUrl)
+
+		val matchingTrack = matchingTracks.firstOrNull()
+
+		if (matchingTrack != null) {
+			trackCache[matchingTrack.identifier] = matchingTrack
+			track = matchingTrack
+		}
+
+		if (track != null)
+			play(guild, config, musicManager, AudioTrackWrapper(track, true, guild.selfMember.user, HashMap<String, String>()))
 	}
 
 	fun play(context: CommandContext, musicManager: GuildMusicManager, trackWrapper: AudioTrackWrapper, override: Boolean = false) {
@@ -242,6 +262,9 @@ class AudioManager(val loritta: Loritta) {
 	 * @param override     (optional) forces the song to be played
 	 */
 	fun play(guild: Guild, conf: MongoServerConfig, musicManager: GuildMusicManager, trackWrapper: AudioTrackWrapper, override: Boolean = false) {
+		if (FeatureFlags.DISABLE_MUSIC_RATELIMIT)
+			return
+
 		val musicGuildId = conf.musicConfig.musicGuildId!!
 
 		if (override) {
@@ -286,6 +309,9 @@ class AudioManager(val loritta: Loritta) {
 	 * @param audioManager the audio manager
 	 */
 	fun connectToVoiceChannel(id: String, audioManager: AudioManager) {
+		if (FeatureFlags.DISABLE_MUSIC_RATELIMIT)
+			return
+
 		val link = loritta.audioManager.lavalink.getLink(audioManager.guild)
 		if (audioManager.isConnected && audioManager.connectedChannel?.id != id) { // Se a Loritta está conectada em um canal de áudio mas não é o que nós queremos...
 			link.disconnect() // Desconecte do canal atual!
@@ -342,5 +368,38 @@ class AudioManager(val loritta: Loritta) {
 		}
 
 		return true
+	}
+
+	private fun loadAudioTracks(identifier: String): List<AudioTrack> {
+		val randomNode = loritta.discordConfig.lavalink.nodes.random()
+		try {
+			val trackData = jsonParser.parse(
+					HttpRequest.get("http://${randomNode.address}/loadtracks?identifier=" + URLEncoder.encode(identifier, "UTF-8"))
+							.header("Authorization", randomNode.password)
+							.body()
+			).obj["tracks"].array
+
+			val list = ArrayList<AudioTrack>()
+			trackData.forEach { o ->
+				try {
+					list.add(LavalinkUtil.toAudioTrack(o["track"].string))
+				} catch (e: IOException) {
+					throw RuntimeException(e)
+				}
+			}
+
+			return list
+		} catch (e: IOException) {
+			throw RuntimeException(e)
+		}
+	}
+
+	private fun getYouTubeVideoIdFromUrl(url: String): String? {
+		val regex = YOUTUBE_VIDEO_URL_REGEX.matcher(url)
+		val find = regex.find()
+
+		if (find)
+			return regex.group(1)
+		return null
 	}
 }

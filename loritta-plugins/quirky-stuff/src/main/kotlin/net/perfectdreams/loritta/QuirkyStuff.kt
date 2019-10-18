@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.DonationKeys
 import com.mrpowergamerbr.loritta.tables.Profiles
+import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -47,6 +48,41 @@ class QuirkyStuff : DiscordPlugin() {
                     Profiles.update({ Profiles.id inList guild.boosters.map { it.user.idLong }}) {
                         with(SqlExpressionBuilder) {
                             it.update(money, money + 3.0)
+                        }
+                    }
+                }
+
+                // Remover key de boosts inválidos
+                transaction(Databases.loritta) {
+                    val nitroBoostPayments = Payment.find {
+                        (Payments.gateway eq PaymentGateway.NITRO_BOOST)
+                    }.toMutableList()
+
+                    val invalidNitroPayments = mutableListOf<Long>()
+
+                    for (nitroBoostPayment in nitroBoostPayments) {
+                        val member = guild.getMemberById(nitroBoostPayment.userId)
+
+                        if (member == null || member.timeBoosted == null) {
+                            logger.warn { "Deleting Nitro Boost payment by ${nitroBoostPayment.userId} because user is not boosting the guild anymore! (is member null? ${member != null})" }
+                            invalidNitroPayments.add(nitroBoostPayment.userId)
+                            nitroBoostPayment.delete()
+                        }
+                    }
+
+                    DonationKey.find {
+                        (DonationKeys.expiresAt eq Long.MAX_VALUE) and (DonationKeys.value eq 40.0)
+                    }.forEach {
+                        val member = guild.getMemberById(it.userId)
+
+                        if (member == null || member.timeBoosted == null) {
+                            logger.warn { "Deleting donation key via Nitro Boost by ${it.userId} because user is not boosting the guild anymore! (is member null? ${member != null})" }
+
+                            ServerConfigs.update({ ServerConfigs.donationKey eq it.id }) {
+                                it[donationKey] = null
+                            }
+
+                            it.delete()
                         }
                     }
                 }

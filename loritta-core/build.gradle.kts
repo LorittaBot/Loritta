@@ -93,6 +93,7 @@ dependencies {
     compile("com.github.markozajc:akiwrapper:1.4.3.1")
     compile("org.json:json:20180813")
     compile("com.github.salomonbrys.kotson:kotson:2.5.0")
+    compile("com.vladsch.flexmark:flexmark-all:0.50.26")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.0-M1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.0-M1")
     testImplementation("io.mockk:mockk:1.9.3")

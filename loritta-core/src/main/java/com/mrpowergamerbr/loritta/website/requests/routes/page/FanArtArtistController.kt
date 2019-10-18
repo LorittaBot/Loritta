@@ -41,6 +41,7 @@ class FanArtArtistController {
 								"${LorittaWebsite.INSTANCE.config.websiteFolder}/views/fan_art_artist.kts"
 						),
 						mapOf(
+								"path" to req.path().split("/").drop(2).joinToString("/"),
 								"websiteUrl" to LorittaWebsite.INSTANCE.config.websiteUrl,
 								"locale" to ScriptingUtils.WebsiteArgumentType(BaseLocale::class.createType(nullable = false), variables["locale"]!!),
 								"artist" to fanArtist,

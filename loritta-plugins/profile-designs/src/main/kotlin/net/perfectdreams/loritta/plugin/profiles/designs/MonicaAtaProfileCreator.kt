@@ -134,7 +134,7 @@ class MonicaAtaProfileCreator : ProfileCreator {
 
 			if (marriedWith != null) {
 				graphics.font = KOMIKA.deriveFont(21f)
-				ImageUtils.drawCenteredString(graphics, "Casado com", Rectangle(280, 270, 218, 22), graphics.font)
+				ImageUtils.drawCenteredString(graphics, locale.toNewLocale()["profile.marriedWith"], Rectangle(280, 270, 218, 22), graphics.font)
 				graphics.font = KOMIKA.deriveFont(16f)
 				ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(280, 270 + 23, 218, 18), graphics.font)
 				graphics.font = KOMIKA.deriveFont(12f)

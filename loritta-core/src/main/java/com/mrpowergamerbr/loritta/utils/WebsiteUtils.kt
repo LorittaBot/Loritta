@@ -33,6 +33,7 @@ import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.dao.ReactionOption
 import net.perfectdreams.loritta.tables.ReactionOptions
 import net.perfectdreams.loritta.utils.DiscordUtils
+import net.perfectdreams.loritta.website.utils.WebsiteAssetsHashes
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.MediaType
 import org.jooby.Request
@@ -191,6 +192,15 @@ object WebsiteUtils {
 			variables["sponsor_${it}_name"] = sponsor?.name
 			variables["sponsor_${it}_url"] = sponsor?.link
 			variables["sponsor_${it}_slug"] = sponsor?.slug
+		}
+
+		val legacyAssets = listOf(
+				"assets/css/style.css",
+				"assets/js/SpicyMorenitta.js"
+		)
+
+		for (asset in legacyAssets) {
+			variables["legacy_asset_hash_${asset.split("/").last().split(".").first()}"] = WebsiteAssetsHashes.getLegacyAssetHash(asset)
 		}
 
 		if (req.session().isSet("discordAuth")) {

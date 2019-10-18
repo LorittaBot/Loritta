@@ -31,8 +31,11 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.utils.DonateUtils
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.FeatureFlags
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
@@ -297,7 +300,6 @@ class CommandManager {
 	 */
 	suspend fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
 		val message = ev.message.contentDisplay
-		val member = ev.message.member
 		val baseLocale = locale
 
 		// Carregar as opções de comandos
@@ -509,6 +511,14 @@ class CommandManager {
 						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + reparsedLegacyLocale["DJ_LORITTA_DISABLED"] + " \uD83D\uDE1E" + if (canManage) reparsedLegacyLocale["DJ_LORITTA_HOW_TO_ENABLE", "${loritta.instanceConfig.loritta.website.url}dashboard"] else "")
 						return true
 					}
+
+					if (FeatureFlags.DISABLE_MUSIC_RATELIMIT) {
+						context.reply(
+								locale["commands.googleRateLimited", "${loritta.instanceConfig.loritta.website.url}${locale["website.localePath"]}/blog/youtube-google-block?utm_source=discord&utm_medium=link&utm_campaign=update_cmd"],
+								Constants.ERROR
+						)
+						return true
+					}
 				}
 
 				// Vamos pegar uma mensagem aleatória de doação, se não for nula, iremos enviar ela :3
@@ -544,6 +554,17 @@ class CommandManager {
 
 				transaction(Databases.loritta) {
 					lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
+
+					if (FeatureFlags.LOG_COMMANDS) {
+						ExecutedCommandsLog.insert {
+							it[userId] = lorittaUser.user.idLong
+							it[guildId] = if (ev.message.isFromGuild) ev.message.guild.idLong else null
+							it[channelId] = ev.message.channel.idLong
+							it[sentAt] = System.currentTimeMillis()
+							it[ExecutedCommandsLog.command] = command::class.simpleName ?: "UnknownCommand"
+							it[ExecutedCommandsLog.message] = ev.message.contentRaw
+						}
+					}
 				}
 
 				command.run(context, context.legacyLocale)

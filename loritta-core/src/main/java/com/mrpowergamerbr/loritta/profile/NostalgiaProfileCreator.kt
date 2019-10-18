@@ -59,7 +59,7 @@ class NostalgiaProfileCreator : ProfileCreator {
 		graphics.font = oswaldRegular42
 		ImageUtils.drawCenteredString(graphics, "${reputations} reps", Rectangle(598, 54, 202, 54), oswaldRegular42)
 		graphics.font = oswaldRegular29
-		ImageUtils.drawCenteredString(graphics, "Sobre Mim", Rectangle(0, 465, 132, 38), oswaldRegular29)
+		ImageUtils.drawCenteredString(graphics, locale.toNewLocale()["profile.aboutMe"], Rectangle(0, 465, 132, 38), oswaldRegular29)
 
 		var x = 162
 		for (badge in badges) {
@@ -142,7 +142,7 @@ class NostalgiaProfileCreator : ProfileCreator {
 				val whitneySemiBold16 = whitneySemiBold.deriveFont(16f)
 				val whitneyMedium20 = whitneyMedium22.deriveFont(20f)
 				graphics.font = whitneySemiBold16
-				ImageUtils.drawCenteredString(graphics, "Casado com", Rectangle(545, 108, 256, 14), whitneySemiBold16)
+				ImageUtils.drawCenteredString(graphics, locale.toNewLocale()["profile.marriedWith"], Rectangle(545, 108, 256, 14), whitneySemiBold16)
 				graphics.font = whitneyMedium20
 				ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(545, 108 + 14, 256, 18), whitneyMedium20)
 				graphics.font = whitneySemiBold16
