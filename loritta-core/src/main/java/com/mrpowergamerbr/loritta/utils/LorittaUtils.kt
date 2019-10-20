@@ -55,10 +55,15 @@ object LorittaUtils {
 	}
 
 	@JvmOverloads
-	fun downloadImage(url: String, connectTimeout: Int = 10, readTimeout: Int = 60, maxSize: Int = 16_777_216, overrideTimeoutsForSafeDomains: Boolean = false, maxWidth: Int = 2_500, maxHeight: Int = 2_500): BufferedImage? {
+	fun downloadImage(url: String, connectTimeout: Int = 10, readTimeout: Int = 60, maxSize: Int = 16_777_216, overrideTimeoutsForSafeDomains: Boolean = false, maxWidth: Int = 2_500, maxHeight: Int = 2_500, bypassSafety: Boolean = false): BufferedImage? {
 		try {
 			val imageUrl = URL(url)
-			val connection = imageUrl.openSafeConnection() as HttpURLConnection
+			val connection = if (bypassSafety) {
+				imageUrl.openConnection()
+			} else {
+				imageUrl.openSafeConnection()
+			} as HttpURLConnection
+
 			connection.setRequestProperty("User-Agent",
 					Constants.USER_AGENT)
 

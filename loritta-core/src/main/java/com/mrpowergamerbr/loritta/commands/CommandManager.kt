@@ -103,7 +103,6 @@ class CommandManager {
 
 		// =======[ DIVERSÃO ]======
 		commandMap.add(CongaParrotCommand())
-		commandMap.add(GabrielaCommand())
 		commandMap.add(BemBoladaCommand())
 		commandMap.add(TodoGrupoTemCommand())
 		commandMap.add(TioDoPaveCommand())
