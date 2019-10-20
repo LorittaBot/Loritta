@@ -1,5 +1,6 @@
+
 <p align="center">
-<img height="384" src="https://loritta.website/assets/img/loritta.png?v2">
+<img height="384" src="https://loritta.website/v2/assets/img/loritta.png">
 <br>
 <a href="https://loritta.website"><img src="https://img.shields.io/badge/website-loritta-blue.svg"></a>
 <a href="https://perfectdreams.net/"><img src="https://perfectdreams.net/assets/img/perfectdreams_badge.png?v2"></a>
@@ -11,7 +12,6 @@
 <a href="https://twitter.com/intent/user?screen_name=perfectdreamsmc"><img src="https://img.shields.io/badge/👍 Curtir-PerfectDreams 🎮-3B5998.svg?longCache=true"></a>
 <a href="https://twitter.com/intent/user?screen_name=perfectdreamsmc"><img src="https://img.shields.io/twitter/follow/perfectdreamsmc.svg?style=social&label=Seguir%20PerfectDreams"></a>
 <a href="https://twitter.com/intent/user?screen_name=MrPowerGamerBR"><img src="https://img.shields.io/twitter/follow/mrpowergamerbr.svg?style=social&label=Seguir%20MrPowerGamerBR"></a>
-<a href="https://perfectdreams.net/loja"><img src="https://img.shields.io/badge/donate-perfectdreams-00CE44.svg"></a>
 </p>
 <h1 align="center">💁 Loritta 💁</h1>
 <p align="center">
@@ -20,8 +20,6 @@
 </a>
  </p>
 <p align="center">
-<a href="https://circleci.com/gh/LorittaBot/Loritta"><img src="https://circleci.com/gh/LorittaBot/Loritta.svg?style=shield"></img></a>
-<a href="https://www.codacy.com/app/MrPowerGamerBR/Loritta?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=LorittaBot/Loritta&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/9dab59af231f4d6e96fe6bab6abe93af"></a>
 <a href="https://github.com/LorittaBot/Loritta/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-AGPL%20v3-lightgray.svg"></a>
 </p>
 <p align="center">
@@ -62,31 +60,48 @@ Existem vários repositórios [na nossa organização](https://github.com/Loritt
 Mesmo que você não saiba programar, você pode ajudar no desenvolvimento da Loritta doando! https://loritta.website/donate
 
 ### 🙌 Como Usar?
-#### 👨‍💻 Como Compilar?
+#### 👨‍💻 Como Compilar e Selfhostear?
 
-Você também pode hospedar a Loritta em algum lugar se você não quiser utilizar a versão pública dela, mas lembrando...
+Você também pode hospedar a Loritta você mesmo (afinal, é por isso que se chama *self*hosting) caso você preferia ter total controle sobre os bots que você tem no seu servidor, mas lembre-se...
 * Nós deixamos o código-fonte de nossos projetos para que outras pessoas possam se inspirar e aprender com nossos projetos, o objetivo é que pessoas que são fãs da Loritta aprendam como ela funciona e, caso queiram, podem ajudar ela com bug fixes e novas funcionalidades.
 * Eu não irei dar suporte caso você queria fazer self hosting apenas para você querer fazer "fama" falando que você criou um bot, mesmo que na verdade você apenas pegou o código-fonte dela e hospedou, lembre-se, a licença do projeto é [AGPL v3](https://github.com/LorittaBot/Loritta/blob/master/LICENSE), você é **obrigado a deixar todas as suas alterações no projeto públicas**!
-* Eu não irei ficar explicando como arrumar problemas na sua versão self hosted dela, **você está por sua conta e risco**.
-* Eu irei dar suporte caso você queria hospedar ela para contribuir e ajudar ela.
-* Lembrando que ela precisa de várias API Keys para várias funcionalidades dela, caso você não coloque uma delas, talvez ela poderá ter funcionalidade reduzida ou talvez não irá funcionar corretamente!
-* Lembrando que eu não distribuo os "assets" dela (imagens, fontes, etc), ou seja, comandos que utilizam tais assets não irão funcionar corretamente.
-* Existem várias coisas "hard coded" nela, ou seja, você terá que editar o código-fonte dela e recompilar, afinal, eu nunca pensei que alguém ia usar hospedar a Loritta então você terá que fazer algumas modificações no código-fonte dela para funcionar. 😉
-* Eu hospedo ela em uma máquina rodando CentOS 7, talvez ela não irá rodar corretamente em outros sistemas operacionais.
-* Você não pode utilizar o nome "Loritta" ou a personagem Loritta na sua versão self hosted.
+* Eu não irei ficar explicando e te ajudando a como arrumar problemas na sua versão selfhosted dela, **você está por sua conta e risco**. A única exceção é se você está planejando selfhostear para ajudar a desenvolver ela.
+* A Lori precisa de várias API Keys para várias funcionalidades diferentes, enquanto nem todas são obrigatórias, a falta de alguma irá causar problemas em algumas funcionalidades dela.
+* Os "assets" (imagens, fontes, etc) não são distribuídos junto com o código-fonte, você terá que criar e incluir seus próprios assets.
+* Nós utilizamos Ubuntu 18.04, talvez ela irá funcionar em outros sistemas Linux ou até em Windows, mas recomendamos que você tente hospedar em uma máquina que rode Ubuntu ou derivados.
+* Para evitar confusões e problemas, você **não pode** utilizar o nome ou a personagem "Loritta", "Lori" ou nomes parecidos na sua versão selfhosted.
 
-Mas se você quiser mesmo hospedar a Loritta, siga os seguintes passos:
-1. Tenha o MongoDB instalado na sua máquina.
-2. Tenha o JDK 8 (ou superior) na sua máquina.
-3. Tenha o Git Bash instalado na sua máquina.
-4. Tenha o Maven instalado na sua máquina com o `PATH` configurado corretamente. (para que você possa usar `mvn install` em qualquer pasta e o `JAVA_HOME`, para que o `mvn install` funcione)
-4. Tenha o IntelliJ IDEA instalado na sua máquina.
-5. Faça ```git clone https://github.com/LorittaBot/Loritta.git``` em alguma pasta no seu computador.
-6. Agora, usando o PowerShell (ou o próprio Git Bash), entre na pasta criada e utilize `mvn install`
-7. Após terminar de compilar, vá na pasta `target` e pegue a JAR `Loritta-0.0.1-SNAPSHOT.jar` e a pasta "libs".
-8. Inicie a JAR que você copiou pelo prompt de comando utilizando `java -jar Loritta-0.0.1-SNAPSHOT.jar`, você provavelmente terá que futuramente colocar mais memória nela para evitar OutOfMemoryExceptions, no momento que eu escrevi este post, a versão pública dela está utilizando `-Xmx8G -Xms8G` (ou seja, 8GBs de memória alocada)
-9. Após iniciar, um arquivo chamado `config.json` será criado, abra ele com um editor de texto decente (como o Notepad++) e preencha todas as opções, a configuração já vem com alguns valores padrões e alguns destes valores padrões vem com explicações sobre para que ele serve e da onde ele surgiu.
-10. Após terminar de configurar, inicie a JAR novamente e, se tudo der certo, ela irá iniciar e você poderá usar os comandos dela! 🎉
+Nós [recomendamos utilizar a versão pública da Loritta](https://loritta.website/), mas se você *realmente* quiser hospedar ou ajudar a desenvolver a Loritta, siga os seguintes passos:
+1. Tenha o [JDK 11 (ou superior)](https://adoptopenjdk.net/) instalado na sua máquina e certifique-se que o Java está acessível pelo terminal. (Tente executar `java` no terminal, caso não funcione, procure como incluir a pasta do JDK no `PATH` do seu sistema operacional)
+2. Tenha o MongoDB instalado na sua máquina. (No futuro o MongoDB será removido da Loritta e será 100% substituido pelo PostgreSQL)
+3. Tenha o PostgreSQL instalado na sua máquina. (No futuro será possível executar a Loritta utilizando uma database SQLite)
+4. Tenha o `git-shell` ou o `git-cli` instalados. No Windows você pode utilizar o Git Bash.
+5. Caso você precise fazer modificações no código-fonte da Lori, é recomendado utilizar o IntelliJ IDEA.
+6. Faça `git clone https://github.com/LorittaBot/Loritta.git` em alguma pasta no seu computador.
+7. Agora, usando o PowerShell (ou o Git Bash), entre na pasta criada e utilize `gradle w build`
+8. Ao terminar de compilar todos os módulos, vá em `loritta-discord\build\libs`. (Troque `loritta-discord` pelo módulo da Loritta que você deseja utilizar)
+9. Caso tenha uma JAR `loritta-discord-fat-YYYY.MM.DD-SNAPSHOT.jar`, quer dizer que tudo compilou corretamente, yay! 🎉
+10. Copie a JAR acima para uma nova pasta.
+11. Vá para a pasta principal do repositório, copie a pasta `libs` para a nova pasta que você tinha criado anteriormente.
+12. Antes de inicializar a Lori, você deverá criar quatro arquivos para configurar a Loritta, sendo eles...
+* [loritta.conf](https://gist.github.com/MrPowerGamerBR/5446ac25980eb951db74a4c75501d36f#file-loritta-conf)
+* [loritta.instance.conf](https://gist.github.com/MrPowerGamerBR/5446ac25980eb951db74a4c75501d36f#file-loritta-instance-conf)
+* [discord.conf](https://gist.github.com/MrPowerGamerBR/5446ac25980eb951db74a4c75501d36f#file-discord-conf)
+* [discord.instance.conf](https://gist.github.com/MrPowerGamerBR/5446ac25980eb951db74a4c75501d36f#file-discord-instance-conf)
+* [emotes.conf](https://gist.github.com/MrPowerGamerBR/5446ac25980eb951db74a4c75501d36f#file-emotes-conf)
+
+Salve cada arquivo na mesma pasta da JAR e configure cada um utilizando o seu editor de texto favorito. (Visual Studio Code, Notepad++, etc)
+
+Você pode pegar os arquivos de linguagem "locales" utilizando `git clone https://github.com/LorittaBot/LorittaLocales`
+
+Você pode pegar os arquivos do website utilizando `git clone https://github.com/LorittaBot/LorittaWebsite`
+
+Algumas funcionalidades da Lori estão em plugins separados, você pode pegar eles na pasta `loritta-plugins/nome-do-plugin/build/libs/`.
+
+13. Pelo terminal, utilize `java -Xmx1G -Xms1G -jar NomeDaJarQueVocêCopiouAnteriormente.jar`.
+14. Caso tenha dado tudo certo, a sua versão selfhosted da Lori irá iniciar e você poderá utilizar os comandos dela! 🎉
+
+Para editar o código-fonte da Loritta, abra o IntelliJ IDEA e importe o `build.gradle.kts`, espere o IDEA baixar todas as dependências e divirta-se aprendendo, modificando e melhorando a Loritta!
 
 #### 🔀 Pull Requests
 
