@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.LorittaCommand
+import net.perfectdreams.loritta.utils.Emotes
 import java.awt.Color
 
 class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "commands"), CommandCategory.MISC) {
@@ -97,12 +98,13 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 					CommandCategory.UTILS to "\uD83D\uDD27",
 					CommandCategory.MISC to "\uD83D\uDDC3",
 					CommandCategory.ANIME to "\uD83D\uDCFA",
-					CommandCategory.ECONOMY to "\uD83D\uDCB5"
+					CommandCategory.ECONOMY to "\uD83D\uDCB5",
+					CommandCategory.FORTNITE to Emotes.DEFAULT_DANCE.toString()
 			)
 
 			val embeds = ArrayList<MessageEmbed>()
 			var embed = EmbedBuilder()
-			embed.setTitle(reactionEmotes.getOrDefault(cat, ":loritta:331179879582269451") + " " + context.legacyLocale[cat.fancyTitle], null)
+			embed.setTitle(reactionEmotes.getOrDefault(cat, ":loritta:331179879582269451") + " " + cat.getLocalizedName(context.locale), null)
 			val conf = context.config
 
 			val color = when (cat) {
@@ -116,6 +118,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 				CommandCategory.UTILS -> Color(176, 146, 209)
 				CommandCategory.MUSIC -> Color(124, 91, 197)
 				CommandCategory.ECONOMY -> Color(167, 210, 139)
+				CommandCategory.FORTNITE -> Color(76, 81, 247)
 				else -> Color(186, 0, 239)
 			}
 
@@ -134,7 +137,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 			embed.setColor(color)
 			embed.setThumbnail(image)
 
-			var description = "*" + context.legacyLocale[cat.description] + "*\n\n"
+			var description = "*" + cat.getLocalizedDescription(context.locale) + "*\n\n"
 			val categoryCmds = loritta.commandManager.getRegisteredCommands().filter { cmd -> cmd.category == cat } + loritta.legacyCommandManager.commandMap.filter { cmd -> cmd.category == cat }
 
 			if (!categoryCmds.isEmpty()) {
@@ -205,7 +208,8 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 					CommandCategory.UTILS to "\uD83D\uDD27",
 					CommandCategory.MISC to "\uD83D\uDDC3",
 					CommandCategory.ANIME to "\uD83D\uDCFA",
-					CommandCategory.ECONOMY to "\uD83D\uDCB5"
+					CommandCategory.ECONOMY to "\uD83D\uDCB5",
+					CommandCategory.FORTNITE to Emotes.DEFAULT_DANCE.toString().replace("<", "").replace(">", "")
 			)
 
 			for (category in categories) {
@@ -221,7 +225,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 					reactionEmote
 				}
 				val commands = if (cmdCountInCategory == 1) "comando" else "comandos"
-				description += "$emoji **" + context.legacyLocale[category.fancyTitle] + "** ($cmdCountInCategory $commands)\n"
+				description += "$emoji **" + category.getLocalizedName(context.locale) + "** ($cmdCountInCategory $commands)\n"
 
 				val mixedCommands = cmdsInCategory + legacyCmdsInCategory
 
@@ -295,7 +299,8 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 					CommandCategory.UTILS to "\uD83D\uDD27",
 					CommandCategory.MISC to "\uD83D\uDDC3",
 					CommandCategory.ANIME to "\uD83D\uDCFA",
-					CommandCategory.ECONOMY to "\uD83D\uDCB5"
+					CommandCategory.ECONOMY to "\uD83D\uDCB5",
+					CommandCategory.FORTNITE to "default_dance"
 			)
 
 			val entry = reactionEmotes.entries.firstOrNull { it.value == e.reactionEmote.name }
