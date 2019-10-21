@@ -20,6 +20,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import mu.KotlinLogging
@@ -42,6 +44,7 @@ import org.jooby.mvc.Path
 class UserReputationController {
 	companion object {
 		private val logger = KotlinLogging.logger {}
+		private val mutex = Mutex()
 
 		fun sendReputationToCluster(guildId: String, channelId: String, giverId: String, receiverId: String, reputationCount: Int) {
 			if (guildId.isValidSnowflake() && channelId.isValidSnowflake()) {
@@ -176,140 +179,144 @@ class UserReputationController {
 
 		val ip = req.trueIp
 
-		val lastReputationGiven = transaction(Databases.loritta) {
-			Reputation.find {
-				(Reputations.givenById eq userIdentification.id.toLong()) or
-						(Reputations.givenByEmail eq userIdentification.email!!) or
-						(Reputations.givenByIp eq ip)
-			}.sortedByDescending { it.receivedAt }.firstOrNull()
-		}
+		runBlocking {
+			mutex.withLock {
+				val lastReputationGiven = transaction(Databases.loritta) {
+					Reputation.find {
+						(Reputations.givenById eq userIdentification.id.toLong()) or
+								(Reputations.givenByEmail eq userIdentification.email!!) or
+								(Reputations.givenByIp eq ip)
+					}.sortedByDescending { it.receivedAt }.firstOrNull()
+				}
 
-		val diff = System.currentTimeMillis() - (lastReputationGiven?.receivedAt ?: 0L)
+				val diff = System.currentTimeMillis() - (lastReputationGiven?.receivedAt ?: 0L)
 
-		if (3_600_000 > diff)
-			throw WebsiteAPIException(Status.FORBIDDEN,
-					WebsiteUtils.createErrorPayload(
-							LoriWebCode.COOLDOWN
+				if (3_600_000 > diff)
+					throw WebsiteAPIException(Status.FORBIDDEN,
+							WebsiteUtils.createErrorPayload(
+									LoriWebCode.COOLDOWN
+							)
 					)
-			)
 
-		val status = MiscUtils.verifyAccount(userIdentification, ip)
-		val email = userIdentification.email
-		logger.info { "AccountCheckResult for (${userIdentification.username}#${userIdentification.discriminator}) ${userIdentification.id} - ${status.name}" }
-		logger.info { "Is verified? ${userIdentification.verified}" }
-		logger.info { "Email ${email}" }
-		logger.info { "IP: $ip" }
-		MiscUtils.handleVerification(status)
+				val status = MiscUtils.verifyAccount(userIdentification, ip)
+				val email = userIdentification.email
+				logger.info { "AccountCheckResult for (${userIdentification.username}#${userIdentification.discriminator}) ${userIdentification.id} - ${status.name}" }
+				logger.info { "Is verified? ${userIdentification.verified}" }
+				logger.info { "Email ${email}" }
+				logger.info { "IP: $ip" }
+				MiscUtils.handleVerification(status)
 
-		giveReputation(userIdentification.id.toLong(), ip, userIdentification.email!!, receiver.toLong(), content)
+				giveReputation(userIdentification.id.toLong(), ip, userIdentification.email!!, receiver.toLong(), content)
 
-		var randomChance = 2.5
-		val donatorPaid = loritta.getActiveMoneyFromDonations(userIdentification.id.toLong())
-		if (donatorPaid != 0.0) {
-			randomChance = when {
-				donatorPaid >= 159.99 -> 20.0
-				donatorPaid >= 139.99 -> 17.5
-				donatorPaid >= 119.99 -> 15.0
-				donatorPaid >= 99.99 -> 12.5
-				donatorPaid >= 79.99 -> 10.0
-				donatorPaid >= 59.99 -> 7.5
-				donatorPaid >= 39.99 -> 5.0
-				else -> randomChance
-			}
-		}
-
-		if (chance(randomChance)) { // Lori é fofis e retribu reputações :eu_te_moido:
-			GlobalScope.launch(loritta.coroutineDispatcher) {
-				delay(Loritta.RANDOM.nextLong(8000, 15001)) // Delay aleatório para ficar mais "real"
-
-				giveReputation(
-						loritta.discordConfig.discord.clientId.toLong(),
-						"127.0.0.1",
-						"me@loritta.website",
-						userIdentification.id.toLong(),
-						"Stay awesome :3"
-				)
-
-				val reputationCount = transaction(Databases.loritta) {
-					Reputations.select { Reputations.receivedById eq userIdentification.id.toLong() }.count()
+				var randomChance = 2.5
+				val donatorPaid = loritta.getActiveMoneyFromDonations(userIdentification.id.toLong())
+				if (donatorPaid != 0.0) {
+					randomChance = when {
+						donatorPaid >= 159.99 -> 20.0
+						donatorPaid >= 139.99 -> 17.5
+						donatorPaid >= 119.99 -> 15.0
+						donatorPaid >= 99.99 -> 12.5
+						donatorPaid >= 79.99 -> 10.0
+						donatorPaid >= 59.99 -> 7.5
+						donatorPaid >= 39.99 -> 5.0
+						else -> randomChance
+					}
 				}
 
-				if (guildId != null && channelId != null) {
-					sendReputationToCluster(guildId, channelId, loritta.discordConfig.discord.clientId, userIdentification.id, reputationCount)
-				}
-			}
-		}
+				if (chance(randomChance)) { // Lori é fofis e retribu reputações :eu_te_moido:
+					GlobalScope.launch(loritta.coroutineDispatcher) {
+						delay(Loritta.RANDOM.nextLong(8000, 15001)) // Delay aleatório para ficar mais "real"
 
-		val reputations = transaction(Databases.loritta) {
-			Reputation.find { Reputations.receivedById eq receiver.toLong() }.sortedByDescending { it.receivedAt }
-		}
+						giveReputation(
+								loritta.discordConfig.discord.clientId.toLong(),
+								"127.0.0.1",
+								"me@loritta.website",
+								userIdentification.id.toLong(),
+								"Stay awesome :3"
+						)
 
-		res.status(Status.OK)
-
-		if (guildId != null && channelId != null)
-			sendReputationToCluster(guildId, channelId, userIdentification.id, receiver, reputations.size)
-
-		val rank = StringBuilder().appendHTML().div(classes = "box-item") {
-			val map = reputations.groupingBy { it.givenById }.eachCount()
-					.entries
-					.sortedByDescending { it.value }
-
-			var idx = 0
-			div(classes = "rank-title") {
-				+ "Placar de Reputações"
-			}
-			table {
-				tbody {
-					tr {
-						th {
-							// + "Posição"
+						val reputationCount = transaction(Databases.loritta) {
+							Reputations.select { Reputations.receivedById eq userIdentification.id.toLong() }.count()
 						}
-						th {}
-						th {
-							// + "Nome"
+
+						if (guildId != null && channelId != null) {
+							sendReputationToCluster(guildId, channelId, loritta.discordConfig.discord.clientId, userIdentification.id, reputationCount)
 						}
 					}
-					for ((userId, count) in map) {
-						if (idx == 5) break
-						val rankUser = runBlocking { lorittaShards.retrieveUserById(userId) }
+				}
 
-						if (rankUser != null) {
+				val reputations = transaction(Databases.loritta) {
+					Reputation.find { Reputations.receivedById eq receiver.toLong() }.sortedByDescending { it.receivedAt }
+				}
+
+				res.status(Status.OK)
+
+				if (guildId != null && channelId != null)
+					sendReputationToCluster(guildId, channelId, userIdentification.id, receiver, reputations.size)
+
+				val rank = StringBuilder().appendHTML().div(classes = "box-item") {
+					val map = reputations.groupingBy { it.givenById }.eachCount()
+							.entries
+							.sortedByDescending { it.value }
+
+					var idx = 0
+					div(classes = "rank-title") {
+						+"Placar de Reputações"
+					}
+					table {
+						tbody {
 							tr {
-								td {
-									img(classes = "rank-avatar", src = rankUser.effectiveAvatarUrl) { width = "64" }
+								th {
+									// + "Posição"
 								}
-								td(classes = "rank-position") {
-									+ "#${idx + 1}"
-								}
-								td {
-									if (idx == 0) {
-										div(classes = "rank-name rainbow") {
-											+ rankUser.name
-										}
-
-									} else {
-										div(classes = "rank-name") {
-											+ rankUser.name
-										}
-									}
-									div(classes = "reputations-received") {
-										+ "${count} reputações"
-									}
+								th {}
+								th {
+									// + "Nome"
 								}
 							}
-							idx++
+							for ((userId, count) in map) {
+								if (idx == 5) break
+								val rankUser = runBlocking { lorittaShards.retrieveUserById(userId) }
+
+								if (rankUser != null) {
+									tr {
+										td {
+											img(classes = "rank-avatar", src = rankUser.effectiveAvatarUrl) { width = "64" }
+										}
+										td(classes = "rank-position") {
+											+"#${idx + 1}"
+										}
+										td {
+											if (idx == 0) {
+												div(classes = "rank-name rainbow") {
+													+rankUser.name
+												}
+
+											} else {
+												div(classes = "rank-name") {
+													+rankUser.name
+												}
+											}
+											div(classes = "reputations-received") {
+												+"${count} reputações"
+											}
+										}
+									}
+									idx++
+								}
+							}
 						}
 					}
 				}
+
+				// Vamos reenviar vários dados utilizados na hora de gerar a telinha
+				val response = jsonObject(
+						"count" to transaction(Databases.loritta) { Reputations.select { Reputations.receivedById eq receiver.toLong() }.count() },
+						"rank" to rank.toString()
+				)
+				res.send(gson.toJson(response))
 			}
 		}
-
-		// Vamos reenviar vários dados utilizados na hora de gerar a telinha
-		val response = jsonObject(
-				"count" to transaction(Databases.loritta) { Reputations.select { Reputations.receivedById eq receiver.toLong() }.count() },
-				"rank" to rank.toString()
-		)
-		res.send(gson.toJson(response))
 	}
 
 	fun giveReputation(giver: Long, giverIp: String, giverEmail: String, receiver: Long, content: String) {
