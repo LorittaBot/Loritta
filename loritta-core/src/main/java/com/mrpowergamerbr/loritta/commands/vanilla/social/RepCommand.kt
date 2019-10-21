@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "reputacao"), CommandCategory.SOCIAL) {
@@ -26,7 +27,7 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 		return false
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
 		val user = context.getUserAt(0)
 		val lastReputationGiven = transaction(Databases.loritta) {
 			Reputation.find {
@@ -61,7 +62,8 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 
 			context.reply(
 					LoriReply(
-							url
+							locale.toNewLocale()["commands.social.reputation.reputationLink", url],
+							Emotes.LORI_HAPPY
 					)
 			)
 		} else {
