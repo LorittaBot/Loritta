@@ -82,26 +82,39 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 
 	companion object {
 		private val logger = KotlinLogging.logger {}
-		fun getCommandsFor(context: CommandContext, cat: CommandCategory): MutableList<MessageEmbed> {
-			val reactionEmotes = mapOf(
-					CommandCategory.DISCORD to "<:discord_logo:412576344120229888>",
-					CommandCategory.ROBLOX to "<:roblox_logo:412576693803286528>",
-					CommandCategory.UNDERTALE to "<:undertale_heart:412576128340066304>",
-					CommandCategory.POKEMON to "<:pokeball:412575443024216066>",
-					CommandCategory.MINECRAFT to "<:minecraft_logo:412575161041289217>",
-					CommandCategory.SOCIAL to "<a:lori_ablobcouple:412577132007653383>",
-					CommandCategory.ACTION to "✨",
-					CommandCategory.FUN to "<:vieirinha:412574915879763982>",
-					CommandCategory.ADMIN to "\uD83D\uDC6E",
-					CommandCategory.IMAGES to "\uD83C\uDFA8",
-					CommandCategory.MUSIC to "\uD83C\uDFA7",
-					CommandCategory.UTILS to "\uD83D\uDD27",
-					CommandCategory.MISC to "\uD83D\uDDC3",
-					CommandCategory.ANIME to "\uD83D\uDCFA",
-					CommandCategory.ECONOMY to "\uD83D\uDCB5",
-					CommandCategory.FORTNITE to Emotes.DEFAULT_DANCE.toString()
-			)
 
+		private val reactionEmotes = mapOf(
+				CommandCategory.DISCORD to "<:discord_logo:412576344120229888>",
+				CommandCategory.ROBLOX to "<:roblox_logo:412576693803286528>",
+				CommandCategory.UNDERTALE to "<:undertale_heart:412576128340066304>",
+				CommandCategory.POKEMON to "<:pokeball:412575443024216066>",
+				CommandCategory.MINECRAFT to "<:minecraft_logo:412575161041289217>",
+				CommandCategory.SOCIAL to "<a:lori_ablobcouple:412577132007653383>",
+				CommandCategory.ACTION to "✨",
+				CommandCategory.FUN to "<:vieirinha:412574915879763982>",
+				CommandCategory.ADMIN to "\uD83D\uDC6E",
+				CommandCategory.IMAGES to "\uD83C\uDFA8",
+				CommandCategory.MUSIC to "\uD83C\uDFA7",
+				CommandCategory.UTILS to "\uD83D\uDD27",
+				CommandCategory.MISC to "\uD83D\uDDC3",
+				CommandCategory.ANIME to "\uD83D\uDCFA",
+				CommandCategory.ECONOMY to "\uD83D\uDCB5",
+				CommandCategory.FORTNITE to Emotes.DEFAULT_DANCE.toString()
+		)
+
+		private val nameOnlyReactionEmotes = reactionEmotes.map {
+			if (it.value.startsWith("<:") || it.value.startsWith("<a:")) {
+				// Pegar apenas o nome do emoji, ou seja...
+				// <:discord_logo:412576344120229888>
+				// vira apenas
+				// discord_logo
+				it.key to Constants.DISCORD_EMOTE_PATTERN.matcher(it.value).apply { this.find() }.group(1)
+			} else {
+				it.key to it.value
+			}
+		}.toMap()
+
+		fun getCommandsFor(context: CommandContext, cat: CommandCategory): MutableList<MessageEmbed> {
 			val embeds = ArrayList<MessageEmbed>()
 			var embed = EmbedBuilder()
 			embed.setTitle(reactionEmotes.getOrDefault(cat, ":loritta:331179879582269451") + " " + cat.getLocalizedName(context.locale), null)
@@ -193,25 +206,6 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 						loritta.commandManager.commands.any { it.category == category }
 			}
 
-			val reactionEmotes = mapOf(
-					CommandCategory.DISCORD to ":discord_logo:412576344120229888",
-					CommandCategory.ROBLOX to ":roblox_logo:412576693803286528",
-					CommandCategory.UNDERTALE to ":undertale_heart:412576128340066304",
-					CommandCategory.POKEMON to ":pokeball:412575443024216066",
-					CommandCategory.MINECRAFT to ":minecraft_logo:412575161041289217",
-					CommandCategory.SOCIAL to "a:lori_ablobcouple:412577132007653383",
-					CommandCategory.ACTION to "✨",
-					CommandCategory.FUN to ":vieirinha:412574915879763982",
-					CommandCategory.ADMIN to "\uD83D\uDC6E",
-					CommandCategory.IMAGES to "\uD83C\uDFA8",
-					CommandCategory.MUSIC to "\uD83C\uDFA7",
-					CommandCategory.UTILS to "\uD83D\uDD27",
-					CommandCategory.MISC to "\uD83D\uDDC3",
-					CommandCategory.ANIME to "\uD83D\uDCFA",
-					CommandCategory.ECONOMY to "\uD83D\uDCB5",
-					CommandCategory.FORTNITE to Emotes.DEFAULT_DANCE.toString().replace("<", "").replace(">", "")
-			)
-
 			for (category in categories) {
 				val legacyCmdsInCategory = loritta.legacyCommandManager.commandMap.filter { it.category == category && !disabledCommands.contains(it) }
 				val cmdsInCategory = loritta.commandManager.commands.filter { it.category == category }
@@ -219,13 +213,9 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 				val cmdCountInCategory = legacyCmdsInCategory.count() + cmdsInCategory.count()
 
 				val reactionEmote = reactionEmotes.getOrDefault(category, ":loritta:331179879582269451")
-				val emoji = if (reactionEmote.startsWith(":") || reactionEmote.startsWith("a:")) {
-					"<$reactionEmote>"
-				} else {
-					reactionEmote
-				}
+
 				val commands = if (cmdCountInCategory == 1) "comando" else "comandos"
-				description += "$emoji **" + category.getLocalizedName(context.locale) + "** ($cmdCountInCategory $commands)\n"
+				description += "$reactionEmote **" + category.getLocalizedName(context.locale) + "** ($cmdCountInCategory $commands)\n"
 
 				val mixedCommands = cmdsInCategory + legacyCmdsInCategory
 
@@ -251,6 +241,10 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 				for (category in categories) {
 					// TODO: Corrigir exception ao usar a reaction antes de terminar de enviar todas as reactions
 					val reactionEmote = reactionEmotes.getOrDefault(category, "loritta:331179879582269451")
+							.replace("<:", "")
+							.replace("<a", "")
+							.replace(">", "") // Para que possa ser adicionado como emoji, caso seja um emoji do Discord
+
 					message.addReaction(reactionEmote).queue()
 				}
 				message.addReaction("\uD83D\uDD22").queue() // all categories
@@ -284,26 +278,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 				return
 			}
 
-			val reactionEmotes = mapOf(
-					CommandCategory.DISCORD to "discord_logo",
-					CommandCategory.ROBLOX to "roblox_logo",
-					CommandCategory.UNDERTALE to "undertale_heart",
-					CommandCategory.POKEMON to "pokeball",
-					CommandCategory.MINECRAFT to "minecraft_logo",
-					CommandCategory.SOCIAL to "lori_ablobcouple",
-					CommandCategory.ACTION to "✨",
-					CommandCategory.FUN to "vieirinha",
-					CommandCategory.ADMIN to "\uD83D\uDC6E",
-					CommandCategory.IMAGES to "\uD83C\uDFA8",
-					CommandCategory.MUSIC to "\uD83C\uDFA7",
-					CommandCategory.UTILS to "\uD83D\uDD27",
-					CommandCategory.MISC to "\uD83D\uDDC3",
-					CommandCategory.ANIME to "\uD83D\uDCFA",
-					CommandCategory.ECONOMY to "\uD83D\uDCB5",
-					CommandCategory.FORTNITE to "default_dance"
-			)
-
-			val entry = reactionEmotes.entries.firstOrNull { it.value == e.reactionEmote.name }
+			val entry = nameOnlyReactionEmotes.entries.firstOrNull { it.value == e.reactionEmote.name }
 			if (entry != null) {
 				// Algumas categorias possuem vários comandos, fazendo que seja necessário enviar vários embeds
 				val embeds = getCommandsFor(context, entry.key)
