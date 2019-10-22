@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.utils
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -82,6 +83,14 @@ object DonateUtils {
 				)
 			} else { null }
 		}
+
+		if (loritta.config.loritta.environment == EnvironmentType.CANARY) {
+			return LoriReply(
+					locale["commands.canaryInstanceDoNotUse"],
+					Emotes.DO_NOT_DISTURB
+			)
+		}
+
 		return null
 	}
 }
