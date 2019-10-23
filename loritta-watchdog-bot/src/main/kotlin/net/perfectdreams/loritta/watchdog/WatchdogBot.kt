@@ -6,6 +6,7 @@ import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import io.ktor.client.HttpClient
+import io.ktor.client.engine.apache.Apache
 import io.ktor.client.request.get
 import io.ktor.client.response.HttpResponse
 import io.ktor.client.response.readText
@@ -36,7 +37,19 @@ class WatchdogBot(val config: WatchdogConfig) {
 		var jsonParser = JsonParser()
 	}
 
-	val http = HttpClient {
+	val http = HttpClient(Apache) {
+		engine {
+			/**
+			 * Max time between TCP packets - default 10 seconds.
+			 */
+			socketTimeout = 15_000
+
+			/**
+			 * Max time to establish an HTTP connection - default 10 seconds.
+			 */
+			connectTimeout = 15_000
+		}
+
 		this.expectSuccess = false
 	}
 
@@ -79,7 +92,7 @@ class WatchdogBot(val config: WatchdogConfig) {
 						Pair(
 								it,
 								GlobalScope.async {
-									withTimeout(15_000) {
+									withTimeout(25_000) {
 										val result = http.get<HttpResponse>("https://$url/api/v1/loritta/status") {
 											userAgent(USER_AGENT)
 										}

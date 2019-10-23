@@ -85,7 +85,7 @@ class MessageListener(val m: WatchdogBot) : ListenerAdapter() {
 							if (actions.contains("rolling")) {
 								if (!actions.contains("silent") && actions.contains("restart")) {
 									try {
-										withTimeout(5_000) {
+										withTimeout(25_000) {
 											m.http.post<HttpResponse>("https://${clusterInfo.getUrl(bot)}/api/v1/loritta/update") {
 												userAgent(WatchdogBot.USER_AGENT)
 												header("Authorization", clusterInfo.apiKey)
@@ -125,7 +125,7 @@ class MessageListener(val m: WatchdogBot) : ListenerAdapter() {
 
 							if (actions.contains("restart")) {
 								try {
-									withTimeout(5_000) {
+									withTimeout(25_000) {
 										m.http.get<HttpResponse>("https://${clusterInfo.getUrl(bot)}/api/v1/loritta/update") {
 											header("Authorization", clusterInfo.apiKey)
 											userAgent(WatchdogBot.USER_AGENT)
