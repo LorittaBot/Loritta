@@ -135,10 +135,11 @@ class FortniteNotifyCommand(val m: FortniteStuff) : LorittaDiscordCommand(arrayO
 	}
 
 	suspend fun trackItem(context: DiscordCommandContext, item: JsonElement) {
-		val isUpcoming = item["item"]["upcoming"].bool
-		val itemName = item["item"]["name"].string
+		val itemWrapper = item["item"].obj
+		val isUpcoming = itemWrapper["upcoming"].bool
+		val itemName = itemWrapper["name"].string
 
-		if (item["item"]["source"].string == "shop") {
+		if ((itemWrapper["source"].nullString ?: "shop") == "shop") {
 			val alreadyTracking = transaction(Databases.loritta) {
 				TrackedFortniteItems.select {
 					(TrackedFortniteItems.trackedBy eq context.lorittaUser.profile.id) and (TrackedFortniteItems.itemId eq item["itemId"].string)
