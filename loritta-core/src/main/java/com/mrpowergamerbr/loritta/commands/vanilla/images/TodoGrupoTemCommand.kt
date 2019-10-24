@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.User
@@ -28,11 +29,7 @@ class TodoGrupoTemCommand : AbstractCommand("everygrouphas", listOf("todogrupote
 		val bi = ImageIO.read(File(Loritta.ASSETS + context.legacyLocale["TODOGRUPOTEM_File"])) // Primeiro iremos carregar o nosso template
 
 		val base = BufferedImage(366, 266, BufferedImage.TYPE_INT_ARGB) // Iremos criar uma imagem 384x256 (tamanho do template)
-		val baseGraph = base.graphics as Graphics2D
-
-		baseGraph.setRenderingHint(
-				java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-				java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+		val baseGraph = base.graphics.enableFontAntiAliasing()
 
 		val users = ArrayList<User>()
 		val members = context.guild.members.filter { it.onlineStatus != OnlineStatus.OFFLINE && it.user.avatarUrl != null }.toMutableList()

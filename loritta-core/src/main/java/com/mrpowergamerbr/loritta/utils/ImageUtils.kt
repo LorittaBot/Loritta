@@ -49,6 +49,14 @@ fun Graphics.drawText(text: String, x: Int, y: Int, maxX: Int? = null) {
 	}
 }
 
+fun Graphics.enableFontAntiAliasing(): Graphics2D {
+	this as Graphics2D
+	this.setRenderingHint(
+			RenderingHints.KEY_TEXT_ANTIALIASING,
+			RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+	return this
+}
+
 object ImageUtils {
 	val emotes = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).build<String, BufferedImage?>().asMap()
 

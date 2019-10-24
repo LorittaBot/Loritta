@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.commands.images
 
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaImage
+import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.commands.annotation.Subcommand
@@ -43,10 +44,8 @@ class AtendenteCommand : LorittaCommand(arrayOf("atendente"), CommandCategory.IM
             val templateGraphics = template.graphics
 
             val image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
-            val graphics = image.graphics as Graphics2D
-            graphics.setRenderingHint(
-                java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-                java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+            val graphics = image.graphics.enableFontAntiAliasing()
+
             // graphics.color = Color.WHITE
             // graphics.fillRect(0, 0, width, height)
             val font = ArtsyJoyLoriConstants.KOMIKA.deriveFont(16f)

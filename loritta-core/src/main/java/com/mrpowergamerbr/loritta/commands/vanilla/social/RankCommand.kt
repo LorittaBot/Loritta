@@ -54,11 +54,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 
 		val rankHeader = ImageIO.read(File(Loritta.ASSETS, "rank_header.png"))
 		val base = BufferedImage(400, 300, BufferedImage.TYPE_INT_ARGB_PRE)
-		val graphics = base.graphics as Graphics2D
-
-		graphics.setRenderingHint(
-				java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-				java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+		val graphics = base.graphics.enableFontAntiAliasing()
 
 		val guildIconUrl = context.guild.iconUrl
 		val serverIconUrl = if (guildIconUrl != null) {

@@ -37,10 +37,7 @@ class MonicaAtaProfileCreator : ProfileCreator {
 		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/monica_ata/profile_wrapper.png"))
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
-		val graphics = base.graphics as java.awt.Graphics2D
-		graphics.setRenderingHint(
-				java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-				java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+		val graphics = base.graphics.enableFontAntiAliasing()
 
 		val userInfo = mutableListOf<String>()
 		userInfo.add("Global")

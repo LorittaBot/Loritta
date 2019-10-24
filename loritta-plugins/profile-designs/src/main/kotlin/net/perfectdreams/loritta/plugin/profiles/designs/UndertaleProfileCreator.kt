@@ -29,11 +29,8 @@ class UndertaleProfileCreator : ProfileCreator {
 		val determinationMono = Constants.DETERMINATION_MONO
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
-		val graphics = base.graphics as java.awt.Graphics2D
-		graphics.setRenderingHint(
-				RenderingHints.KEY_TEXT_ANTIALIASING,
-				RenderingHints.VALUE_TEXT_ANTIALIAS_ON
-		)
+		val graphics = base.graphics.enableFontAntiAliasing()
+
 		graphics.drawImage(background.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH), 0, 0, null)
 
 		graphics.font = determinationMono.deriveFont(Font.PLAIN, 22f)

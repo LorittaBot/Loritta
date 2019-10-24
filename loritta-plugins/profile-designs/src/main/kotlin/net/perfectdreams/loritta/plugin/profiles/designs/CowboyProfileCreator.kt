@@ -38,11 +38,7 @@ class CowboyProfileCreator : ProfileCreator {
 		val whitneyBold16 = whitneyBold.deriveFont(16f)
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
-		val graphics = base.graphics as java.awt.Graphics2D
-		graphics.setRenderingHint(
-				java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-				java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON
-		)
+		val graphics = base.graphics.enableFontAntiAliasing()
 
 		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl)!!.getScaledInstance(147, 147, BufferedImage.SCALE_SMOOTH)
 

@@ -27,10 +27,7 @@ class DefaultProfileCreator : ProfileCreator {
 		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile_wrapper_v4.png"))
 		val profileWrapperOverlay = ImageIO.read(File(Loritta.ASSETS, "profile_wrapper_v4_overlay.png"))
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
-		val graphics = base.graphics as java.awt.Graphics2D
-		graphics.setRenderingHint(
-				java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-				java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+		val graphics = base.graphics.enableFontAntiAliasing()
 
 		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl)!!.getScaledInstance(115, 115, BufferedImage.SCALE_SMOOTH)
 

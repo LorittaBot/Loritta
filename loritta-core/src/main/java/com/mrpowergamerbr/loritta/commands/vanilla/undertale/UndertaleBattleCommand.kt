@@ -2,14 +2,14 @@ package com.mrpowergamerbr.loritta.commands.vanilla.undertale
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.Color
-import java.awt.Graphics2D
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.File
@@ -64,7 +64,7 @@ class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebatt
                 var undertaleSpeechBox = ImageIO.read(File(Loritta.ASSETS, "speech_box.png")) // Speech Box
 
                 val blackWhite = BufferedImage(undertaleMonster.width + undertaleSpeechBox.width + 2, undertaleMonster.height, BufferedImage.TYPE_INT_ARGB) // Criar nosso template
-                val graphics = blackWhite.graphics as Graphics2D
+                val graphics = blackWhite.graphics.enableFontAntiAliasing()
                 graphics.paint = (Color(0, 0, 0)) // Encher de preto
                 graphics.fillRect(0, 0, blackWhite.width, blackWhite.height)
                 graphics.paint = (Color(0, 0, 0)) // Encher de preto
@@ -76,9 +76,6 @@ class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebatt
 
                 graphics.paint = (Color(0, 0, 0)) // Encher de preto
                 // TODO: Fonte do Undertale
-                graphics.setRenderingHint(
-                        RenderingHints.KEY_TEXT_ANTIALIASING,
-                        RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
 
                 graphics.font = Constants.DOTUMCHE.deriveFont(12F)
                 ImageUtils.drawTextWrapUndertale(text, startX + 18, startY + 15, startX + 90, 9999, graphics.fontMetrics, graphics)

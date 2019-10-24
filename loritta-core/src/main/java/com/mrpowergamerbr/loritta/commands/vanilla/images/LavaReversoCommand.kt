@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
+import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import java.awt.Color
 import java.awt.Font
@@ -68,14 +69,12 @@ class LavaReversoCommand : AbstractCommand("lavareverse", listOf("lavareverso", 
 			templateGraphics.drawImage(resized, 100, 0, null)
 			templateGraphics.drawImage(small, 464, 175, null)
 			var image = BufferedImage(693, 766, BufferedImage.TYPE_INT_ARGB)
-			var graphics = image.graphics as java.awt.Graphics2D
+			var graphics = image.graphics.enableFontAntiAliasing()
 			graphics.color = Color.WHITE
 			graphics.fillRect(0, 0, 693, 766)
 			graphics.color = Color.BLACK
 			graphics.drawImage(template, 0, 100, null)
-			graphics.setRenderingHint(
-					java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-					java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+
 			var font = Font.createFont(0, File(Loritta.ASSETS + "mavenpro-bold.ttf")).deriveFont(32F)
 			graphics.font = font
 			ImageUtils.drawCenteredString(graphics, "O chão " + (if (singular) "é" else "são") + " $joined", Rectangle(2, 2, 693, 100), font)

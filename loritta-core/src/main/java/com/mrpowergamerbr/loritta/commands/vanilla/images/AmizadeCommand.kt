@@ -2,12 +2,13 @@ package com.mrpowergamerbr.loritta.commands.vanilla.images
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.Color
 import java.awt.GradientPaint
 import java.awt.Graphics2D
@@ -49,7 +50,7 @@ class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), CommandC
 
 			val template = ImageIO.read(File(Loritta.ASSETS + "amizade.png")) // Template
 
-			val graphics = template.graphics as Graphics2D // É necessário usar Graphics2D para usar gradients
+			val graphics = template.graphics.enableFontAntiAliasing() // É necessário usar Graphics2D para usar gradients
 
 			// Colocar todos os avatares
 			graphics.drawImage(avatar!!.getScaledInstance(108, 108, BufferedImage.SCALE_SMOOTH), 55, 10, null)
@@ -62,9 +63,6 @@ class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), CommandC
 
 			var font = graphics.font.deriveFont(21F)
 			graphics.font = font
-			graphics.setRenderingHint(
-					java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-					java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
 			var fontMetrics = graphics.getFontMetrics(font)
 
 			val friendshipEnded = locale["AMIZADE_AMIZADE_COM", user.name]

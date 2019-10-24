@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.commands.images
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.ImageUtils
+import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.perfectdreams.commands.annotation.Subcommand
@@ -9,7 +10,6 @@ import net.perfectdreams.loritta.api.commands.*
 import java.awt.Color
 import java.awt.FontMetrics
 import java.awt.Graphics
-import java.awt.Graphics2D
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
@@ -83,11 +83,7 @@ class DrawnWordCommand : LorittaCommand(arrayOf("drawnword"), CommandCategory.IM
 
             val width = 468
 
-            val graphics = drawnMaskWordImage.graphics as Graphics2D
-            graphics.setRenderingHint(
-                    java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-                    java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON
-            )
+            val graphics = drawnMaskWordImage.graphics.enableFontAntiAliasing()
 
             val font2 = graphics.font.deriveFont(24f)
             graphics.font = font2
@@ -120,11 +116,7 @@ class DrawnWordCommand : LorittaCommand(arrayOf("drawnword"), CommandCategory.IM
             }
 
             val wordScreen = BufferedImage(drawnMaskWordImage.width, wordScreenHeight, BufferedImage.TYPE_INT_ARGB)
-            val wordScreenGraphics = wordScreen.graphics as Graphics2D
-            wordScreenGraphics.setRenderingHint(
-                    java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-                    java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON
-            )
+            val wordScreenGraphics = wordScreen.graphics.enableFontAntiAliasing()
 
             wordScreenGraphics.drawImage(drawnMaskWordImage, 0, 0, null)
 

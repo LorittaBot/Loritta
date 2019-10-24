@@ -456,13 +456,9 @@ object TretaNewsGenerator {
 
 		top.graphics.drawImage(treta, 0, 0, null)
 
-		val graphics = top.graphics
+		val graphics = top.graphics.enableFontAntiAliasing()
 		graphics.color = Color(0, 0, 0, 191)
 		graphics.fillRect(206, 122, 30, 14)
-
-		(graphics as Graphics2D).setRenderingHint(
-				RenderingHints.KEY_TEXT_ANTIALIASING,
-				RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
 
 		graphics.setColor(Color(255, 255, 255, 255))
 		run {
@@ -472,14 +468,11 @@ object TretaNewsGenerator {
 		}
 
 		val youtube = BufferedImage(655, 138, BufferedImage.TYPE_INT_ARGB)
-		val g2d = youtube.graphics as Graphics2D
+		val g2d = youtube.graphics.enableFontAntiAliasing()
 		youtube.graphics.color = Color.WHITE
 		youtube.graphics.fillRect(0, 0, 655, 158)
 
 		youtube.graphics.drawImage(top, 0, 0, null)
-
-		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
-
 
 		g2d.color = Color(22, 122, 198)
 		var font = Font("Arial", Font.PLAIN, 18)

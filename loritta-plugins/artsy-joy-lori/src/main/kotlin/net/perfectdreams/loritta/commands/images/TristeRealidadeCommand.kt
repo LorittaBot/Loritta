@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.Gender
 import com.mrpowergamerbr.loritta.utils.locale.PersonalPronoun
@@ -36,10 +37,7 @@ class TristeRealidadeCommand : LorittaCommand(arrayOf("sadreality", "tristereali
         var y = 0
 
         val base = BufferedImage(384, 256, BufferedImage.TYPE_INT_ARGB) // Iremos criar uma imagem 384x256 (tamanho do template)
-        val baseGraph = base.graphics as Graphics2D
-        baseGraph.setRenderingHint(
-                java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-                java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+        val baseGraph = base.graphics.enableFontAntiAliasing()
 
         val users = mutableListOf<User>()
 

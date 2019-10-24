@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.ImageUtils
+import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import java.awt.Color
 import java.awt.Font
@@ -33,11 +34,9 @@ class LaranjoCommand : AbstractCommand("laranjo", category = CommandCategory.IMA
 			val template = ImageIO.read(File(Loritta.ASSETS + "laranjo.png")) // Template
 			val texto = context.args.joinToString(" ")
 
-			var graphics = template.graphics as java.awt.Graphics2D
+			var graphics = template.graphics.enableFontAntiAliasing()
 			graphics.color = Color.BLACK
-			graphics.setRenderingHint(
-					java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-					java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+
 			var font = Font.createFont(0, File(Loritta.ASSETS + "mavenpro-bold.ttf")).deriveFont(24F)
 			graphics.font = font
 			ImageUtils.drawTextWrapSpaces(texto, 2, 40, 334, 9999, graphics.fontMetrics, graphics)

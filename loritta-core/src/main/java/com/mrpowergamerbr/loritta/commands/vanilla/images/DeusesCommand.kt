@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
+import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import java.awt.Color
 import java.awt.Font
@@ -40,14 +41,12 @@ class DeusesCommand : AbstractCommand("deuses", category = CommandCategory.IMAGE
 
 			// Vamos criar o nosso tempalte
 			val image = BufferedImage(630, 830, BufferedImage.TYPE_INT_ARGB)
-			val graphics = image.graphics as java.awt.Graphics2D
+			val graphics = image.graphics.enableFontAntiAliasing()
 			graphics.color = Color.WHITE
 			graphics.fillRect(0, 0, 630, 830)
 			graphics.color = Color.BLACK
 			graphics.drawImage(TEMPLATE, 0, 200, null)
-			graphics.setRenderingHint(
-					java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-					java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+
 			val font = Font.createFont(0, File(Loritta.ASSETS + "mavenpro-bold.ttf")).deriveFont(42F)
 			graphics.font = font
 			ImageUtils.drawTextWrapSpaces(texto, 2, 40, 630, 9999, graphics.fontMetrics, graphics)
