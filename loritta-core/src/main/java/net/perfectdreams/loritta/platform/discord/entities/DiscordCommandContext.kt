@@ -736,16 +736,19 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 
 			try {
 				// Tentar encontrar por cargos mencionados
-				if (message.mentionedRoles[argument] != null)
-					return this.discordMessage.mentionedRoles[argument]
+				val mentionedRole = message.mentionedRoles.getOrNull(argument)
+
+				if (mentionedRole != null)
+					return mentionedRole
 
 				// Tentar encontrar por ID de cargo
 				if (roleStr.isValidSnowflake() && guild.getRoleById(roleStr) != null)
 					return guild.getRoleById(roleStr)
 
 				// Tentar encontrar por nome
-				if (guild.getRolesByName(roleStr, true).isNotEmpty())
-					return guild.getRolesByName(roleStr, true).first()
+				val rolesMatchingName = guild.getRolesByName(roleStr, true)
+				if (rolesMatchingName.isNotEmpty())
+					return rolesMatchingName.first()
 			} catch(e: Exception) {
 				// Se for algum motivo der erro, apenas retorne null
 				return null
