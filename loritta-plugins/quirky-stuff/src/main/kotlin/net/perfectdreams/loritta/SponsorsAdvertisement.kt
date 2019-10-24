@@ -59,7 +59,7 @@ class SponsorsAdvertisement(val m: QuirkyStuff, val config: QuirkyConfig) {
 					message.append("@everyone <:pantufa_mention:400416007664959499>\n\n")
 					message.append("<:smol_gessy:593907632784408644> Mais uma Quarta-Feira, mais uma... <:smol_gessy:593907632784408644>\n\n")
 					message.append("**<:lori_rica:593979718919913474> Quarta Patrocinada da <@297153970613387264>**! <:lori_rica:593979718919913474>\n\n")
-					message.append("Para me manter online, é necessário ter dinheiro... E né, dinheiro não cai do céu. <:loriChateada:611371449659162624>\n\nPor isso eu tenho os meus **incríveis patrocinadores**! Então... agradeça os patrocinadores deste mês entrando nos servidores deles... sem eles, talvez eu nem estaria aqui hoje, te ajudando e divertindo em vários outros servidores! <:lori_cheese:592779169059045379>")
+					message.append("Para me manter online, é necessário ter dinheiro... E né, dinheiro não cai do céu. <:lori_chateada:626942886461833217>\n\nPor isso eu tenho os meus **incríveis patrocinadores**! Então... agradeça os patrocinadores deste mês entrando nos servidores deles... sem eles, talvez eu nem estaria aqui hoje, te ajudando e divertindo em vários outros servidores! <:lori_cheese:592779169059045379>")
 					textChannel.sendMessage(message.toString()).await()
 
 					for (sponsor in loritta.sponsors) {
