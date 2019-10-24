@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.platform.discord.commands.LorittaDiscordCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.plugin.fortnite.FortniteStuff
 
-class FortniteShopCommand(val m: FortniteStuff) : LorittaDiscordCommand(arrayOf("fortniteshop", "fortniteloja"), CommandCategory.FORTNITE) {
+class FortniteShopCommand(val m: FortniteStuff) : LorittaDiscordCommand(arrayOf("fortniteshop", "fortniteloja", "fnshop", "fnloja"), CommandCategory.FORTNITE) {
 	override val needsToUploadFiles: Boolean
 		get() = true
 
@@ -24,7 +24,7 @@ class FortniteShopCommand(val m: FortniteStuff) : LorittaDiscordCommand(arrayOf(
 					"Enviando imagem da loja do Fortnite em todos os servidores que possuem a funcionalidade ativada..."
 			)
 
-			m.updateStoreItems?.broadcastNewFortniteShopItems()
+			// m.updateStoreItems?.broadcastNewFortniteShopItems()
 			return
 		}
 
