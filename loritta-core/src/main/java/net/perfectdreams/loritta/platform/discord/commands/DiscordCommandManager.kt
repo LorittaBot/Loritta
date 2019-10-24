@@ -197,9 +197,9 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
             val isPrivateChannel = ev.isFromType(ChannelType.PRIVATE)
             val start = System.currentTimeMillis()
 
-            var args = message.replace("@${ev.guild?.selfMember?.effectiveName ?: ""}", "").stripCodeMarks().split(" ").toTypedArray().remove(0)
-            var rawArgs = ev.message.contentRaw.stripCodeMarks().split(" ").toTypedArray().remove(0)
-            var strippedArgs = ev.message.contentStripped.stripCodeMarks().split(" ").toTypedArray().remove(0)
+            var args = message.replace("@${ev.guild?.selfMember?.effectiveName ?: ""}", "").stripCodeMarks().split(Constants.WHITE_SPACE_MULTIPLE_REGEX).toTypedArray().remove(0)
+            var rawArgs = ev.message.contentRaw.stripCodeMarks().split(Constants.WHITE_SPACE_MULTIPLE_REGEX).toTypedArray().remove(0)
+            var strippedArgs = ev.message.contentStripped.stripCodeMarks().split(Constants.WHITE_SPACE_MULTIPLE_REGEX).toTypedArray().remove(0)
             if (byMention) {
                 args = args.remove(0)
                 rawArgs = rawArgs.remove(0)
