@@ -265,7 +265,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 			maxY += 30
 
 		val bufImage = BufferedImage(width, maxY, BufferedImage.TYPE_INT_ARGB)
-		val graphics = bufImage.graphics.apply { enableFontAntiAliasing(this) } as Graphics2D
+		val graphics = bufImage.graphics.enableFontAntiAliasing()
 
 		val blueToBlack = GradientPaint(0f, 0f, Color(38, 132, 225),
 				0f, bufImage.height.toFloat(), Color(15, 52, 147))
@@ -354,20 +354,12 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 		return bufImage
 	}
 
-	private fun enableFontAntiAliasing(graphics: Graphics): Graphics2D {
-		graphics as Graphics2D
-		graphics.setRenderingHint(
-				RenderingHints.KEY_TEXT_ANTIALIASING,
-				RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
-		return graphics
-	}
-
 	private fun makeFortniteHeader(fontMetrics: FontMetrics, str: String): BufferedImage {
 		val header = str
 		val width = fontMetrics.stringWidth(header.toUpperCase())
 
 		val subHeader = BufferedImage(512 + (PADDING_BETWEEN_ITEMS * 3), 36, BufferedImage.TYPE_INT_ARGB)
-		val subHeaderGraphics = subHeader.graphics.apply { enableFontAntiAliasing(this) }
+		val subHeaderGraphics = subHeader.graphics.enableFontAntiAliasing()
 
 		subHeaderGraphics.font = Constants.BURBANK_BIG_CONDENSED_BLACK.deriveFont(27f)
 
@@ -385,7 +377,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 
 		// rarity = common, uncommon, rare, epic, legendary, marvel
 		val base = BufferedImage(128, 144, BufferedImage.TYPE_INT_ARGB)
-		val graphics = base.graphics.apply { enableFontAntiAliasing(this) } as Graphics2D
+		val graphics = base.graphics.enableFontAntiAliasing()
 
 		val backgroundColor = FortniteStuff.convertRarityToColor(rarity)
 

@@ -13,7 +13,9 @@ import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.platform.discord.commands.LorittaDiscordCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.plugin.fortnite.FortniteStuff
-import java.awt.*
+import java.awt.Color
+import java.awt.FontMetrics
+import java.awt.Rectangle
 import java.awt.geom.Path2D
 import java.awt.image.BufferedImage
 import java.io.File
@@ -156,7 +158,7 @@ class FortniteStatsCommand(val m: FortniteStuff) : LorittaDiscordCommand(arrayOf
 		val userName = statsV2["general"]["userName"].string
 
 		val image = ImageIO.read(File(loritta.instanceConfig.loritta.folders.assets, "fortnite_stats.png"))
-		val graphics = image.graphics.apply { enableFontAntiAliasing(this) }
+		val graphics = image.graphics.enableFontAntiAliasing()
 
 		val titleFont = Constants.BURBANK_BIG_CONDENSED_BLACK.deriveFont(109f)
 
@@ -273,20 +275,12 @@ class FortniteStatsCommand(val m: FortniteStuff) : LorittaDiscordCommand(arrayOf
 		return fmt
 	}
 
-	private fun enableFontAntiAliasing(graphics: Graphics): Graphics2D {
-		graphics as Graphics2D
-		graphics.setRenderingHint(
-				RenderingHints.KEY_TEXT_ANTIALIASING,
-				RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
-		return graphics
-	}
-
 	private fun makeFortniteHeader(fontMetrics: FontMetrics, color: Color, str: String): BufferedImage {
 		val header = str
 		val width = fontMetrics.stringWidth(header)
 
 		val subHeader = BufferedImage(14 + width + 14 + 14, 48, BufferedImage.TYPE_INT_ARGB)
-		val subHeaderGraphics = subHeader.graphics.apply { enableFontAntiAliasing(this) }
+		val subHeaderGraphics = subHeader.graphics.enableFontAntiAliasing()
 
 		subHeaderGraphics.font = Constants.BURBANK_BIG_CONDENSED_BLACK.deriveFont(40f)
 
