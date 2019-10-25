@@ -135,7 +135,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 				else -> Color(186, 0, 239)
 			}
 
-			var image = when (cat) {
+			val image = when (cat) {
 				CommandCategory.SOCIAL -> "https://loritta.website/assets/img/social.png"
 				CommandCategory.POKEMON -> "https://loritta.website/assets/img/pokemon.png"
 				CommandCategory.MINECRAFT -> "https://loritta.website/assets/img/loritta_pudim.png"
@@ -144,6 +144,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 				CommandCategory.MUSIC -> "https://loritta.website/assets/img/loritta_headset.png"
 				CommandCategory.ANIME -> "https://loritta.website/assets/img/loritta_anime.png"
 				CommandCategory.ECONOMY -> "https://loritta.website/assets/img/loritta_money_discord.png"
+				CommandCategory.FORTNITE -> "https://loritta.website/assets/img/loritta_fortnite_icon.png"
 				else -> "https://loritta.website/assets/img/loritta_gabizinha_v1.png"
 			}
 
