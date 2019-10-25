@@ -282,6 +282,50 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 		}
 	}
 
+	fun getCommandLabel(): String {
+		val rawArguments = discordMessage.contentRaw.split(" ")
+
+		var prefix = config.commandPrefix
+		// Como comandos podem ter labels com espaço, é necessário descobrir qual label o usuário usou
+		// Por isso iremos fazer igual como é processado comandos
+		val checkArguments = rawArguments.toMutableList()
+		val rawArgument0 = checkArguments.getOrNull(0)
+		val byMention = (rawArgument0 == "<@${loritta.discordConfig.discord.clientId}>" || rawArgument0 == "<@!${loritta.discordConfig.discord.clientId}>")
+
+		if (byMention) {
+			checkArguments.removeAt(0)
+			prefix = ""
+		}
+
+		var commandLabel = "<this is a bug, plz report it>"
+
+		for (label in command.labels) {
+			val subLabels = label.split(" ")
+
+			var validLabelCount = 0
+
+			for ((index, subLabel) in subLabels.withIndex()) {
+				val rawArgumentAt = checkArguments.getOrNull(index) ?: break
+
+				val subLabelPrefix = if (index == 0)
+					prefix
+				else
+					""
+
+				if (rawArgumentAt.equals(subLabelPrefix + subLabel, true)) { // ignoreCase = true ~ Permite usar "+cOmAnDo"
+					validLabelCount++
+				}
+			}
+
+			if (validLabelCount == subLabels.size) {
+				commandLabel = label
+				break
+			}
+		}
+
+		return commandLabel
+	}
+
 	/**
 	 * Sends an embed explaining what the command does
 	 *
@@ -292,47 +336,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 		val ev = event
 
 		if (conf.explainOnCommandRun) {
-			val rawArguments = discordMessage.contentRaw.split(" ")
-
-			var prefix = config.commandPrefix
-			// Como comandos podem ter labels com espaço, é necessário descobrir qual label o usuário usou
-			// Por isso iremos fazer igual como é processado comandos
-			val checkArguments = rawArguments.toMutableList()
-			val rawArgument0 = checkArguments.getOrNull(0)
-			val byMention = (rawArgument0 == "<@${loritta.discordConfig.discord.clientId}>" || rawArgument0 == "<@!${loritta.discordConfig.discord.clientId}>")
-
-			if (byMention) {
-				checkArguments.removeAt(0)
-				prefix = ""
-			}
-
-			var commandLabel = "<this is a bug, plz report it>"
-
-			for (label in command.labels) {
-				val subLabels = label.split(" ")
-
-				var validLabelCount = 0
-
-				for ((index, subLabel) in subLabels.withIndex()) {
-					val rawArgumentAt = checkArguments.getOrNull(index) ?: break
-
-					val subLabelPrefix = if (index == 0)
-						prefix
-					else
-						""
-
-					if (rawArgumentAt.equals(subLabelPrefix + subLabel, true)) { // ignoreCase = true ~ Permite usar "+cOmAnDo"
-						validLabelCount++
-					}
-				}
-
-				if (validLabelCount == subLabels.size) {
-					commandLabel = label
-					break
-				}
-			}
-
-			commandLabel = config.commandPrefix + commandLabel
+			val commandLabel = config.commandPrefix + getCommandLabel()
 
 			val embed = EmbedBuilder()
 			embed.setColor(Color(0, 193, 223))
