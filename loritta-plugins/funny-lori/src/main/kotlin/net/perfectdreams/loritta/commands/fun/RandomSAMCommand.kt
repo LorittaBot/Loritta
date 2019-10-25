@@ -15,8 +15,8 @@ import org.jsoup.Jsoup
 
 class RandomSAMCommand : LorittaCommand(arrayOf("randomsam", "randomsouthamericamemes", "rsam", "rsouthamericamemes"), category = CommandCategory.IMAGES) {
     companion object {
-        var lastRequest = 0L
-        var cachedMemes = listOf<JsonElement>()
+        private var lastRequest = 0L
+        private var cachedMemes = listOf<JsonElement>()
     }
 
     override fun getDescription(locale: BaseLocale): String? {
