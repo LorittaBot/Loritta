@@ -33,7 +33,7 @@ class GiveawayCommand : LorittaDiscordCommand(arrayOf("giveaway", "sorteio"), Co
 				GiveawayEndCommand(),
 				GiveawayRerollCommand()
 		)
-		
+
 		for (cmd in commands) {
 			val toBeAdded = run {
 				val usage = cmd.getUsage(com.mrpowergamerbr.loritta.utils.loritta.getLocaleById(context.config.localeId)).build(context.locale)

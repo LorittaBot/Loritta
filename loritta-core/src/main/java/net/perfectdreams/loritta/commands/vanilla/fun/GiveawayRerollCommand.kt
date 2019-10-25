@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.api.Permission
@@ -44,16 +45,17 @@ class GiveawayRerollCommand : LorittaDiscordCommand(arrayOf("giveaway reroll", "
 
 		val split = link.split("/")
 
-		val messageId = try {split[split.size - 1].toLong() } catch (e: Exception) {
-			context.reply(
-					LoriReply(
-							locale["${GiveawayEndCommand.LOCALE_PREFIX}.giveawayInvalidArguments", "`https://canary.discordapp.com/channels/297732013006389252/297732013006389252/594270558238146603`"],
-							Constants.ERROR
-					)
-			)
-			return
+		var messageId: Long? = null
+		var channelId: Long? = null
+
+		if (split.size == 1 && split[0].isValidSnowflake()) {
+			messageId = split[0].toLong()
+		} else {
+			messageId = split.getOrNull(split.size - 1)?.toLongOrNull()
+			channelId = split.getOrNull(split.size - 2)?.toLongOrNull()
 		}
-		val channelId = try {split[split.size - 2].toLong() } catch (e: Exception) {
+
+		if (messageId == null) {
 			context.reply(
 					LoriReply(
 							locale["${GiveawayEndCommand.LOCALE_PREFIX}.giveawayInvalidArguments", "`https://canary.discordapp.com/channels/297732013006389252/297732013006389252/594270558238146603`"],
@@ -64,9 +66,15 @@ class GiveawayRerollCommand : LorittaDiscordCommand(arrayOf("giveaway reroll", "
 		}
 
 		val giveaway = transaction(Databases.loritta) {
-			Giveaway.find {
-				(Giveaways.guildId eq context.guild!!.id) and (Giveaways.messageId eq messageId) and (Giveaways.textChannelId eq channelId)
-			}.firstOrNull()
+			if (channelId != null) {
+				Giveaway.find {
+					(Giveaways.guildId eq context.guild!!.id) and (Giveaways.messageId eq messageId) and (Giveaways.textChannelId eq channelId)
+				}.firstOrNull()
+			} else {
+				Giveaway.find {
+					(Giveaways.guildId eq context.guild!!.id) and (Giveaways.messageId eq messageId)
+				}.firstOrNull()
+			}
 		}
 
 		if (giveaway == null) {
