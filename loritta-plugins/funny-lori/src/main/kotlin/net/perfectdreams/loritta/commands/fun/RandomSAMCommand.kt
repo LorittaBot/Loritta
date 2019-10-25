@@ -34,7 +34,8 @@ class RandomSAMCommand : LorittaCommand(arrayOf("randomsam", "randomsouthamerica
 
             val json = jsonParser.parse(instagramData).obj
 
-            cachedMemes = json["entry_data"]["ProfilePage"].array[0]["graphql"]["user"]["edge_owner_to_timeline_media"]["edges"].array.toMutableList()
+            cachedMemes = json["entry_data"]["ProfilePage"].array[0]["graphql"]["user"]["edge_owner_to_timeline_media"]["edges"].array.toList()
+                    .filter { it["node"]["__typename"].string == "GraphImage" }
             lastRequest = System.currentTimeMillis()
         }
 
