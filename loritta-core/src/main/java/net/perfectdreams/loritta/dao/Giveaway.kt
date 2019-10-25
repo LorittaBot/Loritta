@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.dao
 
-import com.mrpowergamerbr.loritta.tables.Mutes
 import net.perfectdreams.loritta.tables.Giveaways
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.LongEntity
@@ -21,4 +20,5 @@ class Giveaway(id: EntityID<Long>) : LongEntity(id) {
     var customMessage by Giveaways.customMessage
     var locale by Giveaways.locale
     var roleIds by Giveaways.roleIds
+    var finished by Giveaways.finished
 }

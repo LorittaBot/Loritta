@@ -17,4 +17,5 @@ object Giveaways : LongIdTable() {
 	val customMessage = text("custom_message").nullable()
 	val locale = text("locale")
 	val roleIds = array<String>("roles", TextColumnType()).nullable()
+	val finished = bool("finished").default(false).index()
 }

@@ -62,6 +62,9 @@ abstract class LorittaCommandManager(val loritta: LorittaBot) : CommandManager<L
 	final override fun registerCommand(command: LorittaCommand) {
 		command.loritta = loritta
 		commands.add(command)
+		commands.sortByDescending {
+			it.labels.maxBy { it.length }
+		}
 	}
 
 	final override fun unregisterCommand(command: LorittaCommand) {

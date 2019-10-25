@@ -567,7 +567,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			}
 
 			val allActiveGiveaways = transaction(Databases.loritta) {
-				Giveaway.find { Giveaways.guildId eq event.guild.idLong }.toMutableList()
+				Giveaway.find { (Giveaways.guildId eq event.guild.idLong) and (Giveaways.finished eq false) }.toMutableList()
 			}
 
 			allActiveGiveaways.forEach {

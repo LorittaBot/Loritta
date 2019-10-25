@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import mu.KotlinLogging
 import net.perfectdreams.loritta.dao.Giveaway
+import net.perfectdreams.loritta.tables.Giveaways
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class SpawnGiveawayTask : Runnable {
@@ -14,7 +15,7 @@ class SpawnGiveawayTask : Runnable {
     override fun run() {
 
         transaction(Databases.loritta) {
-            val allActiveGiveaways = Giveaway.all()
+            val allActiveGiveaways = Giveaway.find { Giveaways.finished eq false }
 
             allActiveGiveaways.forEach {
                 try {

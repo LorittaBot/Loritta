@@ -22,9 +22,7 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.commands.LorittaCommandManager
 import net.perfectdreams.loritta.api.entities.User
-import net.perfectdreams.loritta.commands.vanilla.`fun`.AkinatorCommand
-import net.perfectdreams.loritta.commands.vanilla.`fun`.FanArtsCommand
-import net.perfectdreams.loritta.commands.vanilla.`fun`.GiveawayCommand
+import net.perfectdreams.loritta.commands.vanilla.`fun`.*
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
@@ -44,6 +42,9 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
         registerCommand(PluginsCommand())
 
         registerCommand(ChannelInfoCommand())
+        registerCommand(GiveawayEndCommand())
+        registerCommand(GiveawayRerollCommand())
+        registerCommand(GiveawaySetupCommand())
         registerCommand(GiveawayCommand())
         registerCommand(AkinatorCommand())
         registerCommand(FanArtsCommand())
@@ -173,7 +174,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
 
         // Carregar as opções de comandos
         // val cmdOptions = conf.getCommandOptionsFor(command)
-        val prefix = conf.commandPrefix
+        var prefix = conf.commandPrefix
 
         val labels = command.labels.toMutableList()
 
@@ -181,26 +182,55 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
         // if (cmdOptions.enableCustomAliases) // Adicionar labels customizadas no painel
         // 	labels.addAll(cmdOptions.aliases)
 
-        // ignoreCase = true ~ Permite usar "+cOmAnDo"
-        var valid = labels.any { rawArguments[0].equals(prefix + it, true) }
-        var byMention = false
+        // Comandos com espaços na label, yeah!
+        var valid = false
 
-        if (!isSubcommand && rawArguments.getOrNull(1) != null && (rawArguments[0] == "<@${discordLoritta.discordConfig.discord.clientId}>" || rawArguments[0] == "<@!${discordLoritta.discordConfig.discord.clientId}>")) {
-            // by mention
-            valid = labels.any { rawArguments[1].equals(it, true) }
-            byMention = true
+        val checkArguments = rawArguments.toMutableList()
+        val rawArgument0 = checkArguments.getOrNull(0)
+        var removeArgumentCount = 0
+        val byMention = !isSubcommand && (rawArgument0 == "<@${discordLoritta.discordConfig.discord.clientId}>" || rawArgument0 == "<@!${discordLoritta.discordConfig.discord.clientId}>")
+
+        if (byMention) {
+            removeArgumentCount++
+            checkArguments.removeAt(0)
+            prefix = ""
         }
 
-        // println("Vàlido? $valid $rawArguments[0]")
+        for (label in labels) {
+            val subLabels = label.split(" ")
+
+            removeArgumentCount = if (byMention) { 1 } else { 0 }
+            var validLabelCount = 0
+
+            for ((index, subLabel) in subLabels.withIndex()) {
+                val rawArgumentAt = checkArguments.getOrNull(index) ?: break
+
+                val subLabelPrefix = if (index == 0)
+                    prefix
+                else
+                    ""
+
+                if (rawArgumentAt.equals(subLabelPrefix + subLabel, true)) { // ignoreCase = true ~ Permite usar "+cOmAnDo"
+                    validLabelCount++
+                    removeArgumentCount++
+                }
+            }
+
+            if (validLabelCount == subLabels.size) {
+                valid = true
+                break
+            }
+        }
 
         if (valid) {
             val isPrivateChannel = ev.isFromType(ChannelType.PRIVATE)
             val start = System.currentTimeMillis()
 
-            var args = message.replace("@${ev.guild?.selfMember?.effectiveName ?: ""}", "").stripCodeMarks().split(Constants.WHITE_SPACE_MULTIPLE_REGEX).toTypedArray().remove(0)
-            var rawArgs = ev.message.contentRaw.stripCodeMarks().split(Constants.WHITE_SPACE_MULTIPLE_REGEX).toTypedArray().remove(0)
-            var strippedArgs = ev.message.contentStripped.stripCodeMarks().split(Constants.WHITE_SPACE_MULTIPLE_REGEX).toTypedArray().remove(0)
-            if (byMention) {
+            var args = message.replace("@${ev.guild?.selfMember?.effectiveName ?: ""}", "").stripCodeMarks().split(Constants.WHITE_SPACE_MULTIPLE_REGEX).toTypedArray()
+            var rawArgs = ev.message.contentRaw.stripCodeMarks().split(Constants.WHITE_SPACE_MULTIPLE_REGEX).toTypedArray()
+            var strippedArgs = ev.message.contentStripped.stripCodeMarks().split(Constants.WHITE_SPACE_MULTIPLE_REGEX).toTypedArray()
+
+            repeat(removeArgumentCount) {
                 args = args.remove(0)
                 rawArgs = rawArgs.remove(0)
                 strippedArgs = strippedArgs.remove(0)

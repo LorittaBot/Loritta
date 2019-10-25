@@ -293,12 +293,46 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 
 		if (conf.explainOnCommandRun) {
 			val rawArguments = discordMessage.contentRaw.split(" ")
-			var commandLabel = rawArguments[0]
-			if (rawArguments.getOrNull(1) != null && (rawArguments[0] == "<@${loritta.discordConfig.discord.clientId}>" || rawArguments[0] == "<@!${loritta.discordConfig.discord.clientId}>")) {
-				// Caso o usuário tenha usado "@Loritta comando", pegue o segundo argumento (no caso o "comando") em vez do primeiro (que é a mention da Lori)
-				commandLabel = rawArguments[1]
+
+			var prefix = config.commandPrefix
+			// Como comandos podem ter labels com espaço, é necessário descobrir qual label o usuário usou
+			// Por isso iremos fazer igual como é processado comandos
+			val checkArguments = rawArguments.toMutableList()
+			val rawArgument0 = checkArguments.getOrNull(0)
+			val byMention = (rawArgument0 == "<@${loritta.discordConfig.discord.clientId}>" || rawArgument0 == "<@!${loritta.discordConfig.discord.clientId}>")
+
+			if (byMention) {
+				checkArguments.removeAt(0)
+				prefix = ""
 			}
-			commandLabel = commandLabel.toLowerCase()
+
+			var commandLabel = "<this is a bug, plz report it>"
+
+			for (label in command.labels) {
+				val subLabels = label.split(" ")
+
+				var validLabelCount = 0
+
+				for ((index, subLabel) in subLabels.withIndex()) {
+					val rawArgumentAt = checkArguments.getOrNull(index) ?: break
+
+					val subLabelPrefix = if (index == 0)
+						prefix
+					else
+						""
+
+					if (rawArgumentAt.equals(subLabelPrefix + subLabel, true)) { // ignoreCase = true ~ Permite usar "+cOmAnDo"
+						validLabelCount++
+					}
+				}
+
+				if (validLabelCount == subLabels.size) {
+					commandLabel = label
+					break
+				}
+			}
+
+			commandLabel = config.commandPrefix + commandLabel
 
 			val embed = EmbedBuilder()
 			embed.setColor(Color(0, 193, 223))

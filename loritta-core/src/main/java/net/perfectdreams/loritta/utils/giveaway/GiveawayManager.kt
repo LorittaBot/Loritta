@@ -141,6 +141,7 @@ object GiveawayManager {
                 this.customMessage = customMessage
                 this.locale = locale.id
                 this.roleIds = roleIds?.toTypedArray()
+                this.finished = false
             }
         }
 
@@ -313,9 +314,7 @@ object GiveawayManager {
         }
     }
 
-    suspend fun finishGiveaway(message: Message, giveaway: Giveaway) {
-        logger.info { "Finishing giveaway ${giveaway.id.value}, let's party! \uD83C\uDF89" }
-
+    suspend fun rollWinners(message: Message, giveaway: Giveaway) {
         val emoteId = giveaway.reaction.toLongOrNull()
 
         val messageReaction: MessageReaction?
@@ -394,9 +393,15 @@ object GiveawayManager {
         }
 
         message.editMessage(embed.build()).await()
+    }
+
+    suspend fun finishGiveaway(message: Message, giveaway: Giveaway) {
+        logger.info { "Finishing giveaway ${giveaway.id.value}, let's party! \uD83C\uDF89" }
+
+        rollWinners(message, giveaway)
 
         transaction(Databases.loritta) {
-            giveaway.delete()
+            giveaway.finished = true
         }
 
         giveawayTasks[giveaway.id.value]?.cancel()
