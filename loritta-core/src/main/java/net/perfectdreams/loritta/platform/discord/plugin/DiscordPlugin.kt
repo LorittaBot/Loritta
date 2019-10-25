@@ -6,12 +6,14 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.perfectdreams.loritta.profile.Badge
 
 open class DiscordPlugin : LorittaPlugin() {
     val eventListeners = mutableListOf<ListenerAdapter>()
     val onGuildReadyListeners = mutableListOf<suspend (Guild, MongoServerConfig) -> (Unit)>()
     val onGuildMemberJoinListeners = mutableListOf<suspend (Member, Guild, MongoServerConfig) -> (Unit)>()
     val onGuildMemberLeaveListeners = mutableListOf<suspend (Member, Guild, MongoServerConfig) -> (Unit)>()
+    val badges = mutableListOf<Badge>()
 
     override fun onDisable() {
         super.onDisable()
@@ -37,6 +39,10 @@ open class DiscordPlugin : LorittaPlugin() {
         eventListeners.forEach {
             addEventListener(it)
         }
+    }
+
+    fun registerBadge(badge: Badge) {
+        badges.add(badge)
     }
 
     fun onGuildReady(callback: suspend (Guild, MongoServerConfig) -> (Unit)) {

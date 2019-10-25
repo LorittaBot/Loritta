@@ -18,18 +18,25 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
 import net.perfectdreams.loritta.commands.BirthdayCommand
+import net.perfectdreams.loritta.commands.DocesCommand
 import net.perfectdreams.loritta.commands.LoriToolsQuirkyStuffCommand
 import net.perfectdreams.loritta.commands.SouTopDoadorCommand
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.listeners.AddReactionListener
 import net.perfectdreams.loritta.listeners.BoostGuildListener
+import net.perfectdreams.loritta.listeners.GetCandyListener
+import net.perfectdreams.loritta.modules.DropCandyModule
 import net.perfectdreams.loritta.modules.QuirkyModule
 import net.perfectdreams.loritta.modules.ThankYouLoriModule
 import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
+import net.perfectdreams.loritta.profile.badges.HalloweenBadge
+import net.perfectdreams.loritta.tables.CollectedCandies
+import net.perfectdreams.loritta.tables.Halloween2019Players
 import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.utils.payments.PaymentReason
+import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -135,18 +142,31 @@ class QuirkyStuff : DiscordPlugin() {
 
         registerEventListeners(
                 AddReactionListener(config),
-                BoostGuildListener(config)
+                BoostGuildListener(config),
+                GetCandyListener(config)
         )
 
         registerMessageReceivedModules(
                 QuirkyModule(config),
-                ThankYouLoriModule(config)
+                ThankYouLoriModule(config),
+                DropCandyModule(config)
         )
 
         registerCommand(LoriToolsQuirkyStuffCommand(this))
         registerCommand(SouTopDoadorCommand(config))
         registerCommand(BirthdayCommand(this))
-        
+
+        // ===[ HALLOWEEN 2019 ]===
+        registerCommand(DocesCommand())
+        registerBadge(HalloweenBadge())
+
+        transaction(Databases.loritta) {
+            SchemaUtils.createMissingTablesAndColumns(
+                    Halloween2019Players,
+                    CollectedCandies
+            )
+        }
+
         onGuildReady { guild, mongoServerConfig ->
             birthdaysRank?.updateBirthdayRank(guild, mongoServerConfig)
         }

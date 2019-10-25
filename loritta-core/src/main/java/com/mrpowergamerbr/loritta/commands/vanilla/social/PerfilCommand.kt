@@ -12,6 +12,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
+import com.mrpowergamerbr.loritta.gifs.GifSequenceWriter
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.profile.ProfileCreator
 import com.mrpowergamerbr.loritta.tables.DonationConfigs
@@ -21,6 +22,7 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
 import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.and
@@ -29,6 +31,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
+import javax.imageio.stream.FileImageOutputStream
 
 class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCategory.SOCIAL) {
 	companion object {
@@ -82,6 +85,14 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			val isPocketDreamsStaff = hasRole(Constants.SPARKLYPOWER_GUILD_ID, "332650495522897920")
 
 			val badges = mutableListOf<BufferedImage>()
+
+			badges.addAll(
+					loritta.pluginManager.plugins.filterIsInstance<DiscordPlugin>().flatMap {
+						it.badges.filter { it.checkIfUserDeservesBadge(user, profile, mutualGuilds) }.map {
+							ImageIO.read(File(Loritta.ASSETS, it.badgeFileName))
+						}
+					}
+			)
 
 			if (user.patreon || loritta.config.isOwner(user.id)) badges += ImageIO.read(File(Loritta.ASSETS + "blob_blush.png"))
 			if (user.lorittaSupervisor) badges += ImageIO.read(File(Loritta.ASSETS + "supervisor.png"))
@@ -268,7 +279,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 
 		val creator = availableDesigns.first { it.internalType == type }.clazz
 		val profileCreator = creator.constructors.first().newInstance() as ProfileCreator
-		val profile = profileCreator.create(
+		val images = profileCreator.createGif(
 				context.userHandle,
 				user,
 				userProfile,
@@ -281,7 +292,24 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 				member
 		)
 
-		context.sendFile(profile, "lori_profile.png", "📝 **|** " + context.getAsMention(true) + context.legacyLocale["PEFIL_PROFILE"]) // E agora envie o arquivo
+		if (images.size == 1) {
+			context.sendFile(images.first(), "lori_profile.png", "📝 **|** " + context.getAsMention(true) + context.legacyLocale["PEFIL_PROFILE"]) // E agora envie o arquivo
+		} else {
+			// Montar a GIF
+			val fileName = Loritta.TEMP + "profile-" + System.currentTimeMillis() + ".gif"
+
+			val output = FileImageOutputStream(File(fileName))
+			val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 10, true)
+
+			for (image in images) {
+				writer.writeToSequence(image)
+			}
+
+			writer.close()
+			output.close()
+
+			context.sendFile(File(fileName), "lori_profile.gif", "📝 **|** " + context.getAsMention(true) + context.legacyLocale["PEFIL_PROFILE"]) // E agora envie o arquivo
+		}
 	}
 
 	class DiscordBotVote(

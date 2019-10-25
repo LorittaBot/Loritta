@@ -90,7 +90,7 @@ class SelfProfileController {
 					)
 			)
 
-			if (profileSettings.boughtProfiles.contains(profileDesign.clazz.simpleName)) {
+			if (profileSettings.boughtProfiles.contains(profileDesign.clazz.simpleName) || profileDesign.price == -1.0) {
 				throw WebsiteAPIException(Status.FORBIDDEN,
 						WebsiteUtils.createErrorPayload(
 								LoriWebCode.FORBIDDEN
