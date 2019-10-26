@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.perfectdreams.commands.annotation.Subcommand
+import net.perfectdreams.loritta.Halloween2019
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.platform.discord.commands.LorittaDiscordCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
@@ -41,7 +42,7 @@ class DocesCommand : LorittaDiscordCommand(arrayOf("doces"), CommandCategory.MAG
 
 			context.sendMessage("""Obrigada por querer me ajudar a conseguir doces, finalmente alguém quis me ajudar a saciar a minha vontade de comer doces nesse Halloween. ${Emotes.LORI_CRYING}
 				|
-				|Você pode ver quantos doces você possui utilizando `doces`, para conseguir doces, fique de olho nos doces (🍬) que caem por aí, ao encontrar um, reaja para conseguir um doce!
+				|Você pode ver quantos doces você possui utilizando `doces`, para conseguir doces, fique de olho nos doces (${Halloween2019.CANDIES.joinToString(" ")}) que caem por aí, ao encontrar um, reaja para conseguir um doce!
 				|
 				|Doces apenas caem de mensagens de usuários que também estão participando do evento, então convide seus amigxs para participar!
 				|
@@ -78,7 +79,7 @@ class DocesCommand : LorittaDiscordCommand(arrayOf("doces"), CommandCategory.MAG
 			|
 			|Por isso eu estou aqui pedindo para que **você** me ajude a conseguir doces neste ano! ${Emotes.DEFAULT_DANCE}
 			|
-			|Você percebeu como as pessoas deixam cair doces no chão? Então, pegue os doces (🍬) das mensagens para mim reagindo neles!
+			|Você percebeu como as pessoas deixam cair doces no chão? Então, pegue os doces (${Halloween2019.CANDIES.joinToString(" ")}) das mensagens para mim reagindo neles!
 			|
 			|**As suas recompensas:**
 			|• **A cada 125 doces:** 10k sonhos

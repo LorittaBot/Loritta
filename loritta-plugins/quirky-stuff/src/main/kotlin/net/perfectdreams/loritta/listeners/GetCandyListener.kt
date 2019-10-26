@@ -11,6 +11,7 @@ import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.perfectdreams.loritta.Halloween2019
 import net.perfectdreams.loritta.QuirkyConfig
 import net.perfectdreams.loritta.dao.Giveaway
 import net.perfectdreams.loritta.tables.CollectedCandies
@@ -30,7 +31,7 @@ class GetCandyListener(val config: QuirkyConfig) : ListenerAdapter() {
 	}
 
 	override fun onGuildMessageReactionAdd(event: GuildMessageReactionAddEvent) {
-		if (event.reactionEmote.name != "\uD83C\uDF6C")
+		if (event.reactionEmote.name !in Halloween2019.CANDIES)
 			return
 
 		if (event.user.isBot)

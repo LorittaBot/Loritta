@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.chance
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.Halloween2019
 import net.perfectdreams.loritta.QuirkyConfig
 import net.perfectdreams.loritta.tables.Halloween2019Players
 import org.jetbrains.exposed.sql.select
@@ -21,10 +22,7 @@ class DropCandyModule(val config: QuirkyConfig) : MessageReceivedModule {
     }
 
     override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
-        if (lorittaProfile.userId == 123170274651668480L)
-            println("${event.message.contentStripped.hashCode()} -> ${lorittaProfile.lastMessageSentHash}")
-
-        if (chance(3.0) && event.message.contentStripped.hashCode() == lorittaProfile.lastMessageSentHash) {
+        if (chance(7.5) && event.message.contentStripped.hashCode() == lorittaProfile.lastMessageSentHash) {
             val isParticipating = transaction(Databases.loritta) {
                 Halloween2019Players.select {
                     Halloween2019Players.user eq lorittaProfile.id
@@ -34,7 +32,7 @@ class DropCandyModule(val config: QuirkyConfig) : MessageReceivedModule {
             val getTheCandy = isParticipating && Calendar.getInstance()[Calendar.MONTH] == 9
 
             if (getTheCandy)
-                event.message.addReaction("\uD83C\uDF6C").queue()
+                event.message.addReaction(Halloween2019.CANDIES.random()).queue()
         }
 
         return false
