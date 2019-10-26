@@ -24,7 +24,7 @@ class GiveawayCommand : LorittaDiscordCommand(arrayOf("giveaway", "sorteio"), Co
 	suspend fun root(context: DiscordCommandContext, locale: BaseLocale, args: Array<String>) {
 		val embed = EmbedBuilder()
 				.setTitle("\uD83C\uDF89 ${locale["commands.fun.giveawaymenu.categoryTitle"]}")
-				.setThumbnail("https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/twitter/228/party-popper_1f389.png")
+				.setThumbnail("https://loritta.website/assets/img/loritta_confetti.png")
 				.setDescription("*${locale["commands.fun.giveawaymenu.categoryDescription"]}*\n\n")
 				.setColor(Color(200, 20, 217))
 
