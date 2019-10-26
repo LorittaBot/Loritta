@@ -27,8 +27,5 @@ class ProfileDesignManager {
 		registerDesign(
 				ProfileDesign(true, OrkutProfileCreator::class.java, "orkut", 7500.0, listOf())
 		)
-		registerDesign(
-				ProfileDesign(true, Halloween2019ProfileCreator::class.java, "halloween_2019", -1.0, listOf())
-		)
 	}
 }

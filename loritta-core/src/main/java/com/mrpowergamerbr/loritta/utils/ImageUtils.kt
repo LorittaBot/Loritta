@@ -1,9 +1,11 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.google.common.cache.CacheBuilder
+import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
 import java.awt.*
 import java.awt.geom.RoundRectangle2D
 import java.awt.image.BufferedImage
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 fun Graphics.drawText(text: String, x: Int, y: Int, maxX: Int? = null) {
@@ -58,21 +60,22 @@ fun Graphics.enableFontAntiAliasing(): Graphics2D {
 }
 
 object ImageUtils {
-	val emotes = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).build<String, BufferedImage?>().asMap()
+	val emotes = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).build<String, Optional<BufferedImage>>().asMap()
+
 
 	fun getTwitterEmoji(text: String, index: Int): BufferedImage? {
 		try {
 			val imageUrl = "https://twemoji.maxcdn.com/2/72x72/" + LorittaUtils.toUnicode(text.codePointAt(index - 1)).substring(2) + ".png"
 			try {
 				if (emotes.containsKey(imageUrl))
-					return emotes[imageUrl]
+					return emotes[imageUrl]?.getOrNull()
 
 				val emoteImage = LorittaUtils.downloadImage(imageUrl)
-				emotes[imageUrl] = emoteImage
+				emotes[imageUrl] = Optional.ofNullable(emoteImage)
 				return emoteImage
 			} catch (e: Exception) {
 				// Outro try ... catch, esse é usado para evitar baixar imagens inexistentes, mas que o codepoint existe
-				emotes[imageUrl] = null
+				emotes[imageUrl] = Optional.empty()
 				return null
 			}
 		} catch (e: Exception) {

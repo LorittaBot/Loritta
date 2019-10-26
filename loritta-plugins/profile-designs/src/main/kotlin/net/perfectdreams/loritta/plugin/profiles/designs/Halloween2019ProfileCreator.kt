@@ -118,7 +118,7 @@ class Halloween2019ProfileCreator : ProfileCreator {
 
 				graphics.font = whitneyMedium22
 
-				drawTextWrapSpaces(aboutMe, 162, 484, 773 - biggestStrWidth - 4, 600, graphics.fontMetrics, graphics)
+				ImageUtils.drawTextWrapSpaces(aboutMe, 162, 484, 773 - biggestStrWidth - 4, 600, graphics.fontMetrics, graphics)
 
 				if (marriage != null) {
 					graphics.drawImage(marrySection, 0, 0, null)
@@ -193,66 +193,5 @@ class Halloween2019ProfileCreator : ProfileCreator {
 		}
 
 		return biggestStrWidth
-	}
-
-	val emotes = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).build<String, Optional<BufferedImage>>().asMap()
-
-	fun getTwitterEmoji(text: String, index: Int): BufferedImage? {
-		try {
-			val imageUrl = "https://twemoji.maxcdn.com/2/72x72/" + LorittaUtils.toUnicode(text.codePointAt(index - 1)).substring(2) + ".png"
-			try {
-				if (emotes.containsKey(imageUrl))
-					return emotes[imageUrl]?.getOrNull()
-
-				val emoteImage = LorittaUtils.downloadImage(imageUrl)
-				emotes[imageUrl] = Optional.ofNullable(emoteImage)
-				return emoteImage
-			} catch (e: Exception) {
-				// Outro try ... catch, esse é usado para evitar baixar imagens inexistentes, mas que o codepoint existe
-				emotes[imageUrl] = Optional.empty()
-				return null
-			}
-		} catch (e: Exception) {
-			return null
-		}
-	}
-
-	fun drawTextWrapSpaces(text: String, startX: Int, startY: Int, endX: Int, endY: Int, fontMetrics: FontMetrics, graphics: Graphics): Int {
-		val lineHeight = fontMetrics.height // Aqui é a altura da nossa fonte
-
-		var currentX = startX // X atual
-		var currentY = startY // Y atual
-
-		val split = text.split("((?<= )|(?= ))".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray() // Nós precisamos deixar os espaços entre os splits!
-		for (str in split) {
-			var width = fontMetrics.stringWidth(str) // Width do texto que nós queremos colocar
-			if (currentX + width > endX) { // Se o currentX é maior que o endX... (Nós usamos currentX + width para verificar "ahead of time")
-				currentX = startX // Nós iremos fazer wrapping do texto
-				currentY += lineHeight
-			}
-			var idx = 0
-			for (c in str.toCharArray()) { // E agora nós iremos printar todos os chars
-				idx++
-				if (c == '\n') {
-					currentX = startX // Nós iremos fazer wrapping do texto
-					currentY += lineHeight
-					continue
-				}
-				width = fontMetrics.charWidth(c)
-				if (!graphics.font.canDisplay(c)) {
-					// Talvez seja um emoji!
-					val emoteImage = getTwitterEmoji(str, idx)
-					if (emoteImage != null) {
-						graphics.drawImage(emoteImage.getScaledInstance(width, width, BufferedImage.SCALE_SMOOTH), currentX, currentY - width, null)
-						currentX += width
-					}
-
-					continue
-				}
-				graphics.drawString(c.toString(), currentX, currentY) // Escreva o char na imagem
-				currentX += width // E adicione o width no nosso currentX
-			}
-		}
-		return currentY
 	}
 }
