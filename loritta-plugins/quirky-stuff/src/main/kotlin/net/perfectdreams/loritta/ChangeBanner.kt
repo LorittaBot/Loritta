@@ -9,6 +9,7 @@ import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Icon
+import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.config.FanArtArtist
 import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
@@ -29,7 +30,7 @@ class ChangeBanner(val m: QuirkyStuff, val config: QuirkyConfig) {
 		val currentBannerIndexFile = File(m.dataFolder, "current_banner_index")
 		if (currentBannerIndex == -1) {
 			currentBannerIndex = if (currentBannerIndexFile.exists())
-				currentBannerIndexFile.readText().toInt()
+				currentBannerIndexFile.readText().toIntOrNull() ?: 0
 			else
 				0
 		}
@@ -60,42 +61,52 @@ class ChangeBanner(val m: QuirkyStuff, val config: QuirkyConfig) {
 				logger.info { "Banner will be changed in ${currentMillisRelativeToTheCurrentHour}ms!"}
 				delay(config.changeBanner.timeMod - currentMillisRelativeToTheCurrentHour) // Vamos esperar até a próxima hora!
 
-				val randomBanner = selectRandomBanner()
-				logger.info { "New banner is ${randomBanner.first} by ${randomBanner.second.id}!"}
-
-				val fanArtArtist = randomBanner.second
-				val discordId = fanArtArtist.socialNetworks
-						?.firstIsInstanceOrNull<FanArtArtist.SocialNetwork.DiscordSocialNetwork>()
-						?.id
-
-				val artistUser = lorittaShards.getUserById(discordId)
-
-				for (guildId in config.changeBanner.guilds) {
-					val guild = lorittaShards.getGuildById(guildId) ?: continue
-
-					val icon = withContext(Dispatchers.IO) {
-						Icon.from(
-								randomBanner.first
-						)
-					}
-
-					guild.manager.setBanner(icon).await()
-				}
-
-				for (channelId in config.changeBanner.channels) {
-					val channel = lorittaShards.getTextChannelById(channelId.toString()) ?: continue
-
-
-					channel.sendMessage(
-							EmbedBuilder()
-									.setThumbnail(artistUser?.effectiveAvatarUrl)
-									.setTitle("Eu alterei o banner! \uD83C\uDFA8")
-									.setDescription("O banner atual foi feito por ${artistUser?.name}! ${Emotes.LORI_HAPPY}")
-									.setColor(Constants.LORITTA_AQUA)
-									.build()
-					).await()
-				}
+				changeBanner()
 			}
+		}
+	}
+
+	suspend fun changeBanner() {
+		var artistUser: User? = null
+		var randomBanner: Pair<File, FanArtArtist>? = null
+
+		while (artistUser == null) {
+			randomBanner = selectRandomBanner()
+			logger.info { "New banner is ${randomBanner.first} by ${randomBanner.second.id}!" }
+
+			val fanArtArtist = randomBanner.second
+			val discordId = fanArtArtist.socialNetworks
+					?.firstIsInstanceOrNull<FanArtArtist.SocialNetwork.DiscordSocialNetwork>()
+					?.id
+
+			artistUser = lorittaShards.getUserById(discordId)
+		}
+
+		randomBanner!!
+
+		for (guildId in config.changeBanner.guilds) {
+			val guild = lorittaShards.getGuildById(guildId) ?: continue
+
+			val icon = withContext(Dispatchers.IO) {
+				Icon.from(
+						randomBanner.first
+				)
+			}
+
+			guild.manager.setBanner(icon).await()
+		}
+
+		for (channelId in config.changeBanner.channels) {
+			val channel = lorittaShards.getTextChannelById(channelId.toString()) ?: continue
+
+			channel.sendMessage(
+					EmbedBuilder()
+							.setThumbnail(artistUser?.effectiveAvatarUrl)
+							.setTitle("Eu alterei o banner! \uD83C\uDFA8")
+							.setDescription("O banner atual foi feito por ${artistUser?.name}! ${Emotes.LORI_HAPPY}")
+							.setColor(Constants.LORITTA_AQUA)
+							.build()
+			).await()
 		}
 	}
 }

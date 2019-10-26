@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.listeners
 
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.profile.Halloween2019ProfileCreator
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.GlobalScope
@@ -63,6 +62,16 @@ class GetCandyListener(val config: QuirkyConfig) : ListenerAdapter() {
 			if (!event.reaction.retrieveUsers().await().any { it.id == loritta.discordConfig.discord.clientId })
 				return@launch
 
+			val message = event.channel.retrieveMessageById(event.messageIdLong).await()
+
+			if (System.currentTimeMillis() - 900_000 >= message.timeCreated.toInstant().toEpochMilli()) {
+				try {
+					event.user.openPrivateChannel().await().sendMessage("O doce que você coletou está velho demais!")
+							.await()
+				} catch (e: Exception) {}
+				return@launch
+			}
+
 			mutex.withLock {
 				val collectedCandies = transaction(Databases.loritta) {
 					CollectedCandies.select {
@@ -91,7 +100,7 @@ class GetCandyListener(val config: QuirkyConfig) : ListenerAdapter() {
 
 					val dreams = howMuchDidTheUserCollect % 125
 
-					if (dreams == 0) {
+					if (dreams == 0 && 1250 >= howMuchDidTheUserCollect) {
 						transaction(Databases.loritta) {
 							lorittaProfile.money += 10_000
 						}
@@ -112,7 +121,7 @@ class GetCandyListener(val config: QuirkyConfig) : ListenerAdapter() {
 					if (howMuchDidTheUserCollect == 777) {
 						transaction(Databases.loritta) {
 							val settings = lorittaProfile.settings
-							settings.boughtProfiles = settings.boughtProfiles.toMutableList().apply { this.add(Halloween2019ProfileCreator::class.simpleName!!) }.toTypedArray()
+							settings.boughtProfiles = settings.boughtProfiles.toMutableList().apply { this.add("Halloween2019ProfileCreator") }.toTypedArray()
 						}
 
 						try {
