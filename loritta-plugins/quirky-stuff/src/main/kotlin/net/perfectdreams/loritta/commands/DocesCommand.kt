@@ -45,7 +45,7 @@ class DocesCommand : LorittaDiscordCommand(arrayOf("doces"), CommandCategory.MAG
 						}.count()
 					}
 
-					if (howMuchDidTheUserCollect >= Halloween2019.BOOST_LEVEL) {
+					if (howMuchDidTheUserCollect >= Halloween2019.BOOST_LEVEL || loritta.config.isOwner(context.userHandle.idLong)) {
 						val arg1 = context.args.getOrNull(0)
 
 						if (arg1 == null) {
