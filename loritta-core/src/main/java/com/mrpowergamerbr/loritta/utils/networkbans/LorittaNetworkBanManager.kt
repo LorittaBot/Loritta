@@ -4,14 +4,21 @@ import com.github.salomonbrys.kotson.fromJson
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.tables.BlacklistedUsers
+import org.jetbrains.exposed.dao.EntityID
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 
 class LorittaNetworkBanManager {
@@ -19,7 +26,6 @@ class LorittaNetworkBanManager {
 		private val logger = KotlinLogging.logger {}
 	}
 
-	var networkBannedUsers = mutableListOf<NetworkBanEntry>()
 	var notVerifiedEntries = mutableListOf<NetworkBanEntry>()
 
 	fun punishUser(user: User, reason: String) {
@@ -44,7 +50,7 @@ class LorittaNetworkBanManager {
 				val guild = mutualGuilds.firstOrNull { it.id == serverConfig.guildId } ?: continue
 				if (!guild.isMember(user))
 					continue
-				
+
 				logger.info("Banindo ${user.id} em ${guild.id}...")
 				BanCommand.ban(
 						serverConfig,
@@ -54,7 +60,7 @@ class LorittaNetworkBanManager {
 						user,
 						reason,
 						false,
-						7
+						0
 				)
 			} catch (e: Exception) {
 				logger.error(e) { "Erro ao punir o usuário ${user.id} na guild ${serverConfig.guildId}" }
@@ -93,9 +99,7 @@ class LorittaNetworkBanManager {
 	fun createBanReason(entry: NetworkBanEntry, relayedBan: Boolean): String {
 		var reason = entry.reason
 
-		if (relayedBan) {
-			reason = "[Loritta's Bans Network] $reason"
-		}
+		reason = "[Loritta's Bans Network] $reason"
 
 		if (entry.guildId != null) {
 			val guild = lorittaShards.getGuildById(entry.guildId)
@@ -108,10 +112,10 @@ class LorittaNetworkBanManager {
 		return reason
 	}
 
-	fun addNonVerifiedEntry(entry: NetworkBanEntry) {
+	suspend fun addNonVerifiedEntry(entry: NetworkBanEntry) {
 		val userId = entry.id
 		logger.info { "Adicionando $userId na lista de usuários não verificados para serem banidos na Loritta Network..." }
-		val user = runBlocking { lorittaShards.retrieveUserById(entry.id) } ?: run {
+		val user = lorittaShards.retrieveUserById(entry.id) ?: run {
 			logger.error("$userId não é um usuário válido!")
 			return
 		}
@@ -129,10 +133,10 @@ class LorittaNetworkBanManager {
 		notVerifiedEntries.add(entry)
 	}
 
-	fun addBanEntry(entry: NetworkBanEntry) {
+	suspend fun addBanEntry(entry: NetworkBanEntry) {
 		val userId = entry.id
 		logger.info { "Adicionando $userId na lista de usuários banidos na Loritta Network..." }
-		val user = runBlocking { lorittaShards.retrieveUserById(entry.id) } ?: run {
+		val user = lorittaShards.retrieveUserById(entry.id) ?: run {
 			logger.error("$userId não é um usuário válido!")
 			return
 		}
@@ -142,30 +146,108 @@ class LorittaNetworkBanManager {
 			return
 		}
 
-		networkBannedUsers.add(entry)
-
-		saveNetworkBannedUsers()
+		transaction(Databases.loritta) {
+			BlacklistedUsers.insert {
+				it[BlacklistedUsers.id] = EntityID(entry.id, BlacklistedUsers)
+				it[BlacklistedUsers.guildId] = entry.guildId
+				it[BlacklistedUsers.reason] = entry.reason
+				it[BlacklistedUsers.bannedAt] = System.currentTimeMillis()
+				it[BlacklistedUsers.globally] = false
+			}
+		}
 
 		punishUser(user, createBanReason(entry, true))
 	}
 
-	fun getNetworkBanEntry(id: String): NetworkBanEntry? {
-		return networkBannedUsers.firstOrNull { it.id == id }
+	fun getGlobalBanEntry(id: Long): NetworkBanEntry? {
+		val result = transaction(Databases.loritta) {
+			BlacklistedUsers.select {
+				BlacklistedUsers.id eq id and (BlacklistedUsers.globally eq true)
+			}.firstOrNull()
+		} ?: return null
+
+		return NetworkBanEntry(
+				result[BlacklistedUsers.id].value,
+				result[BlacklistedUsers.guildId],
+				result[BlacklistedUsers.type],
+				result[BlacklistedUsers.reason]
+		)
 	}
 
-	fun getNonVerifiedBanEntry(id: String): NetworkBanEntry? {
+	fun getNetworkBanEntry(id: Long): NetworkBanEntry? {
+		val result = transaction(Databases.loritta) {
+			BlacklistedUsers.select {
+				BlacklistedUsers.id eq id
+			}.firstOrNull()
+		} ?: return null
+
+		return NetworkBanEntry(
+				result[BlacklistedUsers.id].value,
+				result[BlacklistedUsers.guildId],
+				result[BlacklistedUsers.type],
+				result[BlacklistedUsers.reason]
+		)
+	}
+
+	fun getNonVerifiedBanEntry(id: Long): NetworkBanEntry? {
 		return notVerifiedEntries.firstOrNull { it.id == id }
 	}
 
-	fun loadNetworkBannedUsers() {
+	fun migrateNetworkBannedUsers() {
 		if (File("./network_banned_users.json").exists()) {
-			networkBannedUsers = Loritta.GSON.fromJson(File("./network_banned_users.json").readText())
+			logger.info { "Migrating user bans to the database..." }
+
+			var networkBannedUsers = Loritta.GSON.fromJson<List<NetworkBanEntry>>(File("./network_banned_users.json").readText())
 			networkBannedUsers = networkBannedUsers.distinctBy { it.id }.toMutableList()
-			logger.info { "Carregado ${networkBannedUsers.size} usuários banidos da Loritta Network!" }
+
+			for (networkBannedUser in networkBannedUsers) {
+				transaction(Databases.loritta) {
+					BlacklistedUsers.insert {
+						it[id] = EntityID(networkBannedUser.id.toLong(), BlacklistedUsers)
+						it[bannedAt] = System.currentTimeMillis()
+						it[guildId] = networkBannedUser.guildId?.toLong()
+						it[type] = networkBannedUser.type
+						it[reason] = networkBannedUser.reason
+						it[globally] = false
+					}
+				}
+			}
+
+			File("./network_banned_users.json").delete()
 		}
 	}
 
-	fun saveNetworkBannedUsers() {
-		File("./network_banned_users.json").writeText(Loritta.GSON.toJson(networkBannedUsers))
+	fun checkIfUserShouldBeBanned(user: User, guild: Guild, serverConfig: MongoServerConfig): Boolean {
+		val globallyBannedEntry = loritta.networkBanManager.getGlobalBanEntry(user.idLong) // oof¹
+		if (globallyBannedEntry != null) {
+			BanCommand.ban(
+					serverConfig,
+					guild,
+					guild.selfMember.user,
+					com.mrpowergamerbr.loritta.utils.loritta.getLegacyLocaleById(serverConfig.localeId),
+					user,
+					"[Loritta's Global Bans] ${globallyBannedEntry.reason}",
+					false,
+					0
+			)
+			return true
+		}
+
+		val networkBannedEntry = loritta.networkBanManager.getNetworkBanEntry(user.idLong) // oof²
+		if (serverConfig.moderationConfig.useLorittaBansNetwork && networkBannedEntry != null) {
+			BanCommand.ban(
+					serverConfig,
+					guild,
+					guild.selfMember.user,
+					com.mrpowergamerbr.loritta.utils.loritta.getLegacyLocaleById(serverConfig.localeId),
+					user,
+					"[Loritta's Bans Network] ${networkBannedEntry.reason}",
+					false,
+					0
+			)
+			return true
+		}
+
+		return false
 	}
 }

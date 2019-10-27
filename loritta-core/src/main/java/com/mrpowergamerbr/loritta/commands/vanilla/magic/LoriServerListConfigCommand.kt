@@ -26,10 +26,12 @@ import kotlinx.coroutines.awaitAll
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.dao.EconomyConfig
 import net.perfectdreams.loritta.dao.Payment
+import net.perfectdreams.loritta.tables.BlacklistedUsers
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 
@@ -287,7 +289,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 						replies.clear()
 					}
 
-					val user = lorittaShards.getUserById(it.id) ?: return
+					val user = lorittaShards.retrieveUserById(it.id) ?: return@forEach
 
 					val typeEmote = when {
 						user.isBot -> Emotes.BOT_TAG
@@ -325,9 +327,10 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 
 				message.onReactionAddByAuthor(context) {
 					if (it.reactionEmote.isEmote("✅")) {
-						loritta.networkBanManager.notVerifiedEntries.forEach {
-							loritta.networkBanManager.addBanEntry(it)
+						loritta.networkBanManager.notVerifiedEntries.forEach { entry ->
+							loritta.networkBanManager.addBanEntry(entry)
 						}
+
 						loritta.networkBanManager.notVerifiedEntries.clear()
 						context.reply(
 								LoriReply(
@@ -388,8 +391,8 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 
 				loritta.networkBanManager.addNonVerifiedEntry(
 						NetworkBanEntry(
-								userId,
-								guildId,
+								userId.toLong(),
+								guildId?.toLong(),
 								NetworkBanType.valueOf(arg3),
 								rawArgs.joinToString(" ")
 						)
@@ -414,12 +417,11 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 			if (arg0 == "network_unban" && arg1 != null) {
 				val userId = arg1
 
-				val filtered = loritta.networkBanManager.networkBannedUsers.filter { it.id != userId }
-						.toMutableList()
-
-				loritta.networkBanManager.networkBannedUsers = filtered
-
-				loritta.networkBanManager.saveNetworkBannedUsers()
+				transaction(Databases.loritta) {
+					BlacklistedUsers.deleteWhere {
+						BlacklistedUsers.id eq userId.toLong()
+					}
+				}
 
 				context.reply(
 						LoriReply(

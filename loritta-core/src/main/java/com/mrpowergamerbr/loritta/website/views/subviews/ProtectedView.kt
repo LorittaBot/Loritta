@@ -17,6 +17,7 @@ import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.utils.DiscordUtils
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
@@ -144,9 +145,16 @@ abstract class ProtectedView : AbstractView() {
 									// E, se o membro não for um bot e possui permissão de gerenciar o servidor ou permissão de administrador...
 									if (!user.isBot && (member.hasPermission(Permission.MANAGE_SERVER) || member.hasPermission(Permission.ADMINISTRATOR))) {
 										// Verificar coisas antes de adicionar a Lori
-										val blacklistedReason = loritta.blacklistedServers.entries.firstOrNull { guild.id == it.key }?.value
-										if (blacklistedReason != null) { // Servidor blacklisted
-											// Envie via DM uma mensagem falando sobre a Loritta!
+										val blacklisted = transaction(Databases.loritta) {
+											BlacklistedGuilds.select {
+												BlacklistedGuilds.id eq guild.idLong
+											}.firstOrNull()
+										}
+
+										if (blacklisted != null) {
+											val blacklistedReason = blacklisted[BlacklistedGuilds.reason]
+
+											// Envie via DM uma mensagem falando sobre o motivo do ban
 											val message = locale["LORITTA_BlacklistedServer", blacklistedReason]
 
 											user.openPrivateChannel().queue {

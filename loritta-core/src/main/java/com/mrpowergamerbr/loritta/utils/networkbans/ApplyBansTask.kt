@@ -1,8 +1,12 @@
 package com.mrpowergamerbr.loritta.utils.networkbans
 
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import mu.KotlinLogging
+import net.perfectdreams.loritta.tables.BlacklistedUsers
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class ApplyBansTask : Runnable {
 	companion object {
@@ -11,9 +15,20 @@ class ApplyBansTask : Runnable {
 
 	override fun run() {
 		try {
-			logger.info("Verificando ${loritta.networkBanManager.networkBannedUsers.size} usuários banidos...")
+			val bannedUsers = transaction(Databases.loritta) {
+				BlacklistedUsers.selectAll().toMutableList()
+			}
 
-			for (entry in loritta.networkBanManager.networkBannedUsers) {
+			logger.info("Verificando ${bannedUsers.size} usuários banidos...")
+
+			for (bannedUser in bannedUsers) {
+				val entry = NetworkBanEntry(
+						bannedUser[BlacklistedUsers.id].value,
+						bannedUser[BlacklistedUsers.guildId],
+						bannedUser[BlacklistedUsers.type],
+						bannedUser[BlacklistedUsers.reason]
+				)
+
 				try {
 					val user = lorittaShards.getUserById(entry.id) ?: continue
 

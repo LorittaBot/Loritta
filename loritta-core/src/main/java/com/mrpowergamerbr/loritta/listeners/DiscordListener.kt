@@ -375,20 +375,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			try {
 				val conf = loritta.getServerConfigForGuild(event.guild.id)
 
-				if (conf.moderationConfig.useLorittaBansNetwork && loritta.networkBanManager.getNetworkBanEntry(event.user.id) != null) {
-					val entry = loritta.networkBanManager.getNetworkBanEntry(event.user.id)!! // oof
-					BanCommand.ban(
-							conf,
-							event.guild,
-							event.guild.selfMember.user,
-							com.mrpowergamerbr.loritta.utils.loritta.getLegacyLocaleById(conf.localeId),
-							event.user,
-							entry.reason,
-							false,
-							7
-					)
+				if (loritta.networkBanManager.checkIfUserShouldBeBanned(event.user, event.guild, conf))
 					return@launch
-				}
 
 				if (conf.miscellaneousConfig.enableQuirky && event.user.name.contains("lori", true) && MiscUtils.hasInappropriateWords(event.user.name)) { // #LoritaTambémTemSentimentos
 					BanCommand.ban(

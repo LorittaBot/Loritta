@@ -278,15 +278,6 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			)
 			return
 		}
-		if (arg0 == "loadblacklist") {
-			loritta.loadBlacklistedServers()
-			context.reply(
-					LoriReply(
-							"Servidores Blacklisted carregados!"
-					)
-			)
-			return
-		}
 
 		if (arg0 == "exportdate") {
 			val dates = mutableMapOf<String, Int>()

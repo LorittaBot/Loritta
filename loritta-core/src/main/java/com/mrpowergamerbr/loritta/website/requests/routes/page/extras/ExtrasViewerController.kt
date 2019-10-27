@@ -2,12 +2,13 @@ package com.mrpowergamerbr.loritta.website.requests.routes.page.extras
 
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Profiles
-import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.evaluate
+import net.perfectdreams.loritta.tables.BlacklistedUsers
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.Request
 import org.jooby.Response
@@ -56,17 +57,24 @@ class ExtrasViewerController {
 				}
 				if (extraType == "network-bans") {
 					var html = ""
-					for (entry in loritta.networkBanManager.networkBannedUsers) {
-						val userId = entry.id
-						val banReason = entry.reason
+					val bannedUsers = transaction(Databases.loritta) {
+						BlacklistedUsers.selectAll().toMutableList()
+					}
+
+					for (entry in bannedUsers) {
+						val userId = entry[BlacklistedUsers.id].value
+						val banReason = entry[BlacklistedUsers.reason]
+						val guildId = entry[BlacklistedUsers.guildId]
+						val type = entry[BlacklistedUsers.type]
+
 						val user = try {
 							lorittaShards.getUserById(userId)
 						} catch (e: Exception) {
 							null
 						}
 
-						val guildName = if (entry.guildId != null) {
-							lorittaShards.getGuildById(entry.guildId)?.name ?: entry.guildId
+						val guildName = if (guildId != null) {
+							lorittaShards.getGuildById(guildId)?.name ?: guildId
 						} else {
 							"✘"
 						}
@@ -76,7 +84,7 @@ class ExtrasViewerController {
 							<td>${user?.id ?: userId}</td>
 							<td>${if (user != null) "${user.name}#${user.discriminator}" else "???"}</td>
 							<td>$guildName</td>
-							<td>${entry.type}</td>
+							<td>${type}</td>
 							<td>$banReason</td>
 							</tr>
 						""".trimIndent()

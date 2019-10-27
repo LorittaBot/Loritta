@@ -21,8 +21,10 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.perfectdreams.loritta.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.utils.Emotes
 import org.apache.commons.text.similarity.LevenshteinDistance
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
@@ -83,6 +85,9 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 					return@launch
 
 				if (isGuildBanned(event.guild))
+					return@launch
+
+				if (loritta.networkBanManager.checkIfUserShouldBeBanned(event.author, event.guild, serverConfig))
 					return@launch
 
 				EventLog.onMessageReceived(serverConfig, event.message)
@@ -387,9 +392,15 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	 * @return if the owner of the guild is banned
 	 */
 	fun isGuildBanned(guild: Guild): Boolean {
-		if (loritta.blacklistedServers.any { it.key == guild.id }) { // Se o servidor está banido...
+		val blacklisted = transaction(Databases.loritta) {
+			BlacklistedGuilds.select {
+				BlacklistedGuilds.id eq guild.idLong
+			}.firstOrNull()
+		}
+
+		if (blacklisted != null) { // Se o servidor está banido...
 			if (!loritta.config.isOwner(guild.owner!!.user.id)) { // E ele não é o dono do bot!
-				logger.info("Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o servidor está banido de me usar! ᕙ(⇀‸↼‶)ᕗ")
+				logger.info("Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o servidor está banido de me usar! ᕙ(⇀‸↼‶)ᕗ *${blacklisted[BlacklistedGuilds.reason]}")
 				guild.leave().queue() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
 				return true
 			}

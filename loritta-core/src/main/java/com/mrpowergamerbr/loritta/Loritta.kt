@@ -66,8 +66,10 @@ import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.pojo.PojoCodecProvider
+import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -153,7 +155,6 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 	lateinit var bomDiaECia: BomDiaECia
 
 	var ticTacToeServer = TicTacToeServer()
-	var blacklistedServers = mutableMapOf<String, String>()
 	val networkBanManager = LorittaNetworkBanManager()
 
 	lateinit var website: LorittaWebsite
@@ -192,10 +193,8 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 		youtube = TemmieYouTube()
 		resetYouTubeKeys()
 		loadFanArts()
-		loadBlacklistedServers()
 		Emotes.emoteManager = DiscordEmoteManager()
 		Emotes.loadEmotes()
-		networkBanManager.loadNetworkBannedUsers()
 		GlobalHandler.generateViews()
 		audioManager = AudioManager(this)
 
@@ -282,6 +281,23 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 
 		initMongo()
 		initPostgreSql()
+
+		if (File("./blacklisted_servers.json").exists()) {
+			logger.info { "Migrating guild bans to the database..." }
+			val blacklistedServers = Loritta.GSON.fromJson<Map<String, String>>(File("./blacklisted_servers.json").readText())
+
+			for ((id, reason) in blacklistedServers) {
+				transaction(Databases.loritta) {
+					BlacklistedGuilds.insert {
+						it[BlacklistedGuilds.id] = EntityID(id.toLong(), BlacklistedUsers)
+						it[bannedAt] = System.currentTimeMillis()
+						it[BlacklistedGuilds.reason] = reason
+					}
+				}
+			}
+
+			File("./blacklisted_servers.json").delete()
+		}
 
 		logger.info("Sucesso! Iniciando Loritta (Website)...")
 
@@ -418,7 +434,9 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 					StarboardMessages,
 					Sponsors,
 					EconomyConfigs,
-					ExecutedCommandsLog
+					ExecutedCommandsLog,
+					BlacklistedUsers,
+					BlacklistedGuilds
 			)
 		}
 	}
@@ -548,13 +566,5 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 		// Isto parece não ter nenhuma utilidade, mas, caso estejamos usando o JRebel, é usado para recarregar o command manager
 		// Ou seja, é possível adicionar comandos sem ter que reiniciar tudo!
 		legacyCommandManager = CommandManager()
-	}
-
-	/**
-	 * Loads the blacklisted server list from the "blacklisted-servers.json" file
-	 */
-	fun loadBlacklistedServers() {
-		if (File("./blacklisted_servers.json").exists())
-			blacklistedServers = GSON.fromJson(File("./blacklisted_servers.json").readText())
 	}
 }
