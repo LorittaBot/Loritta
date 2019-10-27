@@ -30,6 +30,7 @@ import net.perfectdreams.loritta.modules.QuirkyModule
 import net.perfectdreams.loritta.modules.ThankYouLoriModule
 import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
 import net.perfectdreams.loritta.profile.badges.HalloweenBadge
+import net.perfectdreams.loritta.tables.BoostedCandyChannels
 import net.perfectdreams.loritta.tables.CollectedCandies
 import net.perfectdreams.loritta.tables.Halloween2019Players
 import net.perfectdreams.loritta.tables.Payments
@@ -163,7 +164,8 @@ class QuirkyStuff : DiscordPlugin() {
         transaction(Databases.loritta) {
             SchemaUtils.createMissingTablesAndColumns(
                     Halloween2019Players,
-                    CollectedCandies
+                    CollectedCandies,
+                    BoostedCandyChannels
             )
         }
 
