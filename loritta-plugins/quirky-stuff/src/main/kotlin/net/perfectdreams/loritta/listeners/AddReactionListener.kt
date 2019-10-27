@@ -172,6 +172,13 @@ networks = [
 							userMessage.append("\n\n")
 							userMessage.append("Agora você tem permissão para mandar mais fan arts para mim em <#583406099047252044>, mandar outros desenhos fofis em <#510601125221761054> e conversar com outros artistas em <#574387310129315850>! ${Emotes.LORI_OWO}")
 							event.guild.removeRoleFromMember(fanArtArtistGuildMember, role).await()
+
+							// Enviar a fan art no canal de fan arts da Lori
+							val channel = event.guild.getTextChannelById(583406099047252044L)
+
+							channel?.sendMessageAsync(
+									"Fan Art de <@$userId> <:lori_yay:637660093051043850> https://loritta.website/assets/img/fanarts/$fanArtName"
+							)
 						} else {
 							userMessage.append("Obrigada por ser uma pessoa incrível e por continuar a fazer fan arts de mim (tô até emocionada ${Emotes.LORI_CRYING})... Te amooo!! (como amiga, é clarooo!) ${Emotes.LORI_HAPPY}")
 						}
