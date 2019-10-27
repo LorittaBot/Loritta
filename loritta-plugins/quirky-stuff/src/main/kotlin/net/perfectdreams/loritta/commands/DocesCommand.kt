@@ -141,7 +141,7 @@ class DocesCommand : LorittaDiscordCommand(arrayOf("doces"), CommandCategory.MAG
 								it[guildId] = context.guild!!.id
 								it[channelId] = channel.idLong
 								it[givenAt] = System.currentTimeMillis()
-								it[expiresAt] = System.currentTimeMillis() + 300_000
+								it[expiresAt] = System.currentTimeMillis() + 600_000
 							}
 						}
 
