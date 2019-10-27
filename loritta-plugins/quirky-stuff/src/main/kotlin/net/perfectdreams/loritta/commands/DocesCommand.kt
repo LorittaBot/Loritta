@@ -141,7 +141,7 @@ class DocesCommand : LorittaDiscordCommand(arrayOf("doces"), CommandCategory.MAG
 								it[guildId] = context.guild!!.id
 								it[channelId] = channel.idLong
 								it[givenAt] = System.currentTimeMillis()
-								it[expiresAt] = System.currentTimeMillis() + 600_000
+								it[expiresAt] = System.currentTimeMillis() + 300_000
 							}
 						}
 
@@ -152,7 +152,7 @@ class DocesCommand : LorittaDiscordCommand(arrayOf("doces"), CommandCategory.MAG
 						)
 
 						channel.sendMessageAsync(
-								"${context.userHandle.asMention} deu um **boost de doces** no canal! Doces terão 4x mais chance de cair enquanto o boost estiver ativo! ${Halloween2019.CANDIES.joinToString(" ")}"
+								"${context.userHandle.asMention} deu um **boost de doces** no canal! Doces terão 10x mais chance de cair durante cinco minutos! ${Halloween2019.CANDIES.joinToString(" ")}"
 						)
 					} else {
 						context.reply(

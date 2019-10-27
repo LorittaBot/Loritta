@@ -47,16 +47,22 @@ class DropCandyModule(val config: QuirkyConfig) : MessageReceivedModule {
 
         val chanceBoost = (6.0 * since) / 360_000
 
-        chance = Math.min(chance + chanceBoost, 6.0)
-
         val boostChannel = transaction(Databases.loritta) {
             BoostedCandyChannels.select {
                 BoostedCandyChannels.channelId eq event.channel.idLong and (BoostedCandyChannels.expiresAt greaterEq System.currentTimeMillis())
             }.firstOrNull()
         }
 
+        val ceil = if (boostChannel != null) {
+            10.0
+        } else {
+            6.0
+        }
+
+        chance = Math.min(chance + chanceBoost, ceil)
+
         if (boostChannel != null) {
-            chance *= 4
+            chance *= 10
         }
 
         if (chance(chance) && event.message.contentStripped.hashCode() == lorittaProfile.lastMessageSentHash) {
