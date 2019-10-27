@@ -1,16 +1,22 @@
 package net.perfectdreams.loritta.commands
 
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
+import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.dv8tion.jda.api.entities.TextChannel
 import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.Halloween2019
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.platform.discord.commands.LorittaDiscordCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
+import net.perfectdreams.loritta.tables.BoostedCandyChannels
 import net.perfectdreams.loritta.tables.CollectedCandies
 import net.perfectdreams.loritta.tables.Halloween2019Players
 import net.perfectdreams.loritta.utils.Emotes
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -21,9 +27,6 @@ class DocesCommand : LorittaDiscordCommand(arrayOf("doces"), CommandCategory.MAG
 
 	@Subcommand
 	suspend fun root(context: DiscordCommandContext) {
-		if (!context.isPrivateChannel)
-			return
-
 		val calendar = Calendar.getInstance()
 
 		if (calendar.get(Calendar.MONTH) != 9) {
@@ -32,6 +35,149 @@ class DocesCommand : LorittaDiscordCommand(arrayOf("doces"), CommandCategory.MAG
 		}
 
 		val arg0 = context.args.getOrNull(0)
+
+		if (!context.isPrivateChannel) {
+			if (arg0 == "boost") {
+				if (calendar.get(Calendar.DAY_OF_MONTH) in 29..31) {
+					val howMuchDidTheUserCollect = transaction(Databases.loritta) {
+						CollectedCandies.select {
+							(CollectedCandies.user eq context.lorittaUser.profile.id.value)
+						}.count()
+					}
+
+					if (howMuchDidTheUserCollect >= Halloween2019.BOOST_LEVEL) {
+						val arg1 = context.args.getOrNull(0)
+
+						if (arg1 == null) {
+							context.reply(
+									LoriReply(
+											"Mencione o canal que você deseja dar boost! `${context.config.commandPrefix}doces boost #CanalAqui`"
+									)
+							)
+							return
+						}
+
+						var channel: TextChannel? = null
+
+						val channels = context.discordGuild!!.getTextChannelsByName(arg1, true)
+
+						if (channels.isNotEmpty()) {
+							channel = channels[0]
+						} else {
+							val id = arg1
+									.replace("<", "")
+									.replace("#", "")
+									.replace(">", "")
+
+							if (id.isValidSnowflake()) {
+								channel = context.discordGuild!!.getTextChannelById(id)
+							}
+						}
+
+						if (channel == null) {
+							context.reply(
+									LoriReply(
+											"Canal inválido!",
+											Constants.ERROR
+									)
+							)
+							return
+						}
+
+						if (!channel.canTalk()) {
+							context.reply(
+									LoriReply(
+											"Eu não posso falar no canal de texto!",
+											Constants.ERROR
+									)
+							)
+							return
+						}
+
+						if (!channel.canTalk(context.handle)) {
+							context.reply(
+									LoriReply(
+											"Você não pode falar no canal de texto!",
+											Constants.ERROR
+									)
+							)
+							return
+						}
+
+						val boostChannel = transaction(Databases.loritta) {
+							BoostedCandyChannels.select {
+								BoostedCandyChannels.channelId eq channel.idLong and (BoostedCandyChannels.expiresAt greaterEq System.currentTimeMillis())
+							}.firstOrNull()
+						}
+
+						if (boostChannel != null) {
+							context.reply(
+									LoriReply(
+											"Já estão dando boost no canal que você escolheu!",
+											Constants.ERROR
+									)
+							)
+							return
+						}
+
+						val userBoost = transaction(Databases.loritta) {
+							BoostedCandyChannels.select {
+								BoostedCandyChannels.user eq context.userHandle.idLong and (BoostedCandyChannels.givenAt greaterEq System.currentTimeMillis() - 3_600_000)
+							}.firstOrNull()
+						}
+
+						if (userBoost != null) {
+							context.reply(
+									LoriReply(
+											"Você precisa esperar uma hora desde o seu último boost para poder dar um boost novamente!"
+									)
+							)
+							return
+						}
+
+						transaction(Databases.loritta) {
+							BoostedCandyChannels.insert {
+								it[BoostedCandyChannels.user] = context.lorittaUser.profile.id
+								it[guildId] = context.guild!!.id
+								it[channelId] = channel.idLong
+								it[givenAt] = System.currentTimeMillis()
+								it[expiresAt] = System.currentTimeMillis() + 300_000
+							}
+						}
+
+						context.reply(
+								LoriReply(
+										"O boost foi dado! ${Emotes.LORI_HAPPY}"
+								)
+						)
+
+						channel.sendMessageAsync(
+								"${context.userHandle.asMention} deu um **boost de doces** no canal! Doces terão 2x mais chance de cair enquanto o boost estiver ativo! ${Halloween2019.CANDIES.joinToString(" ")}"
+						)
+					} else {
+						context.reply(
+								LoriReply(
+										"Cadê a sua máquina de doces? É necessário ter uma para conseguir dar boost em canais! Me disseram que você consegue uma ao conseguir **1500 doces**..."
+								)
+						)
+					}
+				} else {
+					context.reply(
+							LoriReply(
+									"As máquinas ainda não estão prontas! A sociedade atual não irá conseguir aguentar este poder divino..."
+							)
+					)
+				}
+				return
+			}
+
+			context.reply(
+					LoriReply(
+							"Tais segredos só podem ser revelados via mensagem direta. \uD83D\uDC40"
+					)
+			)
+			return
+		}
 
 		if (arg0 == "participar") {
 			transaction(Databases.loritta) {
