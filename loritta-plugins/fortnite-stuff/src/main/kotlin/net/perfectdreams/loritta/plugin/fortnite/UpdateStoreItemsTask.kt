@@ -47,22 +47,27 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 
 		task = GlobalScope.launch(LorittaLauncher.loritta.coroutineDispatcher) {
 			while (true) {
-				val distinctApiIds = loritta.locales.values.map {
-					it["commands.fortnite.shop.localeId"]
-				}.distinct()
+				try {
+					val distinctApiIds = loritta.locales.values.map {
+						it["commands.fortnite.shop.localeId"]
+					}.distinct()
 
-				for (apiId in distinctApiIds) {
-					logger.info { "Updated ${apiId} items locale" }
-					m.itemsInfo[apiId] = jsonParser.parse(
-							HttpRequest.get("https://fnapi.me/api/items/all?lang=$apiId")
-									.header("Authorization", com.mrpowergamerbr.loritta.utils.loritta.config.fortniteApi.token)
-									.body()
-					)["data"].array
+					for (apiId in distinctApiIds) {
+						logger.info { "Updated ${apiId} items locale" }
+						m.itemsInfo[apiId] = jsonParser.parse(
+								HttpRequest.get("https://fnapi.me/api/items/all?lang=$apiId")
+										.header("Authorization", com.mrpowergamerbr.loritta.utils.loritta.config.fortniteApi.token)
+										.body()
+						)["data"].array
+					}
+
+					updateFortniteShop()
+
+					logger.info { "Waiting until 15000ms for the next update..." }
+				} catch (e: Exception) {
+					logger.warn(e) { "Error while updating Fortnite Stuff" }
 				}
 
-				updateFortniteShop()
-
-				logger.info { "Waiting until 15000ms for the next update..." }
 				delay(15_000)
 			}
 		}
@@ -112,7 +117,9 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 					logger.info { "All shops were successfully updated! Broadcasting to every guild..." }
 
 					if (!alreadyNotifiedUsers && loritta.isMaster) { // Se todos os clusters enviarem, úsuários vão receber 4 mensagens diferentes para o mesmo item
-						notifyUsersAboutItems(shopData)
+						GlobalScope.launch {
+							notifyUsersAboutItems(shopData)
+						}
 						alreadyNotifiedUsers = true
 					}
 
@@ -127,39 +134,46 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 
 		for (storeItem in items) {
 			val itemId = storeItem["itemId"].string
-			val item = m.itemsInfo["ptbr"]!!.first { storeItem["itemId"].string == it["itemId"].string }["item"].obj
 
-			logger.info { "Finding users that are tracking ${itemId}..." }
+			try {
+				val item = (m.itemsInfo["ptbr"]!!.firstOrNull { storeItem["itemId"].string == it["itemId"].string }
+						?: m.itemsInfo["en"]!!.first { storeItem["itemId"].string == it["itemId"].string })["item"].obj
 
-			val usersThatAreTrackingThisItem = transaction(Databases.loritta) {
-				TrackedFortniteItems.innerJoin(Profiles).select {
-					TrackedFortniteItems.itemId eq itemId
-				}.toMutableList()
-			}
+				logger.info { "Finding users that are tracking ${itemId}..." }
 
-			logger.info { "There are ${usersThatAreTrackingThisItem.size} users that are tracking this item" }
-
-			for (user in usersThatAreTrackingThisItem) {
-				logger.info { "Sending DM to ${user[Profiles.id].value}..." }
-				val theUser = lorittaShards.retrieveUserById(user[Profiles.id].value)
-
-				val locale = loritta.getLocaleById("default")
-
-				try {
-					theUser?.openPrivateChannel()?.await()?.sendMessage(
-							EmbedBuilder()
-									.setTitle("${Emotes.DEFAULT_DANCE} ${item["name"].string} voltou para a loja!")
-									.setThumbnail(item["images"]["background"].string)
-									.setDescription("O item que você pediu para ser notificado voltou para a loja! Espero que você tenha economizado os V-Bucks para comprar. ${Emotes.LORI_HAPPY}\n\nPor favor use o código de criador `MrPowerGamerBR` na loja de itens antes de comprar! Assim você me ajuda a ficar online, para que eu possa continuar a te notificar novos itens! ${Emotes.LORI_OWO}")
-									.addField("\uD83D\uDD16 ${locale["commands.fortnite.item.type"]}", item["typeName"].nullString, true)
-									.addField("⭐ ${locale["commands.fortnite.item.rarity"]}", item["rarityName"].nullString, true)
-									.addField("<:vbucks:635158614109192199> ${locale["commands.fortnite.item.cost"]}", storeItem["store"]["cost"].nullInt.toString(), true)
-									.setColor(FortniteStuff.convertRarityToColor(item["rarity"].nullString ?: "???"))
-									.build()
-					)?.await()
-				} catch (e: Exception) {
-					e.printStackTrace()
+				val usersThatAreTrackingThisItem = transaction(Databases.loritta) {
+					TrackedFortniteItems.innerJoin(Profiles).select {
+						TrackedFortniteItems.itemId eq itemId
+					}.toMutableList()
 				}
+
+				logger.info { "There are ${usersThatAreTrackingThisItem.size} users that are tracking this item" }
+
+				for (user in usersThatAreTrackingThisItem) {
+					logger.info { "Sending DM to ${user[Profiles.id].value}..." }
+					val theUser = lorittaShards.retrieveUserById(user[Profiles.id].value)
+
+					val locale = loritta.getLocaleById("default")
+
+					try {
+						theUser?.openPrivateChannel()?.await()?.sendMessage(
+								EmbedBuilder()
+										.setTitle("${Emotes.DEFAULT_DANCE} ${item["name"].string} voltou para a loja!")
+										.setThumbnail(item["images"]["background"].string)
+										.setDescription("O item que você pediu para ser notificado voltou para a loja! Espero que você tenha economizado os V-Bucks para comprar. ${Emotes.LORI_HAPPY}\n\nPor favor use o código de criador `MrPowerGamerBR` na loja de itens antes de comprar! Assim você me ajuda a ficar online, para que eu possa continuar a te notificar novos itens! ${Emotes.LORI_OWO}")
+										.addField("\uD83D\uDD16 ${locale["commands.fortnite.item.type"]}", item["typeName"].nullString, true)
+										.addField("⭐ ${locale["commands.fortnite.item.rarity"]}", item["rarityName"].nullString, true)
+										.addField("<:vbucks:635158614109192199> ${locale["commands.fortnite.item.cost"]}", storeItem["store"]["cost"].nullInt.toString(), true)
+										.setColor(FortniteStuff.convertRarityToColor(item["rarity"].nullString
+												?: "???"))
+										.build()
+						)?.await()
+					} catch (e: Exception) {
+						e.printStackTrace()
+					}
+				}
+			} catch (e: Exception) {
+				logger.warn(e) { "Error while trying to notify users about $itemId in shop" }
 			}
 		}
 	}

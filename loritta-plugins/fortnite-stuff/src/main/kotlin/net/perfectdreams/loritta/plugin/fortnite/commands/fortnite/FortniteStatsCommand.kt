@@ -48,6 +48,11 @@ class FortniteStatsCommand(val m: FortniteStuff) : LorittaDiscordCommand(arrayOf
 
 	@Subcommand
 	suspend fun root(context: DiscordCommandContext, locale: BaseLocale) {
+		if (context.args.isEmpty()) {
+			context.explain()
+			return
+		}
+
 		val arg0 = context.args.joinToString(" ")
 
 		val payloadV2 = HttpRequest.get("https://fnapi.me/api/stats2v/username?name=${arg0?.encodeToUrl()}")
