@@ -56,7 +56,7 @@ class DropCandyModule(val config: QuirkyConfig) : MessageReceivedModule {
         }
 
         if (boostChannel != null) {
-            chance *= 2
+            chance *= 4
         }
 
         if (chance(chance) && event.message.contentStripped.hashCode() == lorittaProfile.lastMessageSentHash) {

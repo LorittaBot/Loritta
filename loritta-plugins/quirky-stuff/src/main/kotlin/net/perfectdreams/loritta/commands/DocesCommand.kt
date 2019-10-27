@@ -152,7 +152,7 @@ class DocesCommand : LorittaDiscordCommand(arrayOf("doces"), CommandCategory.MAG
 						)
 
 						channel.sendMessageAsync(
-								"${context.userHandle.asMention} deu um **boost de doces** no canal! Doces terão 2x mais chance de cair enquanto o boost estiver ativo! ${Halloween2019.CANDIES.joinToString(" ")}"
+								"${context.userHandle.asMention} deu um **boost de doces** no canal! Doces terão 4x mais chance de cair enquanto o boost estiver ativo! ${Halloween2019.CANDIES.joinToString(" ")}"
 						)
 					} else {
 						context.reply(
