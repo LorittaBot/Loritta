@@ -13,7 +13,9 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.Halloween2019
 import net.perfectdreams.loritta.QuirkyConfig
+import net.perfectdreams.loritta.tables.BoostedCandyChannels
 import net.perfectdreams.loritta.tables.Halloween2019Players
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
@@ -46,6 +48,16 @@ class DropCandyModule(val config: QuirkyConfig) : MessageReceivedModule {
         val chanceBoost = (6.0 * since) / 360_000
 
         chance = Math.min(chance + chanceBoost, 6.0)
+
+        val boostChannel = transaction(Databases.loritta) {
+            BoostedCandyChannels.select {
+                BoostedCandyChannels.channelId eq event.channel.idLong and (BoostedCandyChannels.expiresAt greaterEq System.currentTimeMillis())
+            }.firstOrNull()
+        }
+
+        if (boostChannel != null) {
+            chance *= 2
+        }
 
         if (chance(chance) && event.message.contentStripped.hashCode() == lorittaProfile.lastMessageSentHash) {
             if (5_000 >= System.currentTimeMillis() - lastDrop)
