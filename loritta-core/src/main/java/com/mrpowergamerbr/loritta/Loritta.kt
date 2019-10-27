@@ -299,6 +299,8 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 			File("./blacklisted_servers.json").delete()
 		}
 
+		networkBanManager.migrateNetworkBannedUsers()
+
 		logger.info("Sucesso! Iniciando Loritta (Website)...")
 
 		websiteThread = thread(true, name = "Website Thread") {

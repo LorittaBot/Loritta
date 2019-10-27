@@ -26,12 +26,15 @@ import kotlinx.coroutines.awaitAll
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.dao.EconomyConfig
 import net.perfectdreams.loritta.dao.Payment
+import net.perfectdreams.loritta.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.tables.BlacklistedUsers
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.utils.payments.PaymentReason
+import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 
@@ -426,6 +429,48 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				context.reply(
 						LoriReply(
 								"Usuário desbanido na Loritta Bans Network!"
+						)
+				)
+			}
+
+			if (arg0 == "guild_ban" && arg1 != null) {
+				val guildId = arg1.toLong()
+
+				val rawArgs = context.rawArgs.toMutableList()
+				rawArgs.removeAt(0)
+				rawArgs.removeAt(0)
+
+				transaction(Databases.loritta) {
+					BlacklistedGuilds.insert {
+						it[BlacklistedGuilds.id] = EntityID(guildId, BlacklistedGuilds)
+						it[BlacklistedGuilds.bannedAt] = System.currentTimeMillis()
+						it[BlacklistedGuilds.reason] = rawArgs.joinToString(" ")
+					}
+				}
+
+				context.reply(
+						LoriReply(
+								"Guild banida!"
+						)
+				)
+			}
+
+			if (arg0 == "guild_unban" && arg1 != null) {
+				val guildId = arg1.toLong()
+
+				val rawArgs = context.rawArgs.toMutableList()
+				rawArgs.removeAt(0)
+				rawArgs.removeAt(0)
+
+				transaction(Databases.loritta) {
+					BlacklistedGuilds.deleteWhere {
+						BlacklistedGuilds.id eq guildId
+					}
+				}
+
+				context.reply(
+						LoriReply(
+								"Guild desbanida!"
 						)
 				)
 			}
