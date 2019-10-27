@@ -38,7 +38,7 @@ class DocesCommand : LorittaDiscordCommand(arrayOf("doces"), CommandCategory.MAG
 
 		if (!context.isPrivateChannel) {
 			if (arg0 == "boost") {
-				if (calendar.get(Calendar.DAY_OF_MONTH) in 29..31) {
+				if (calendar.get(Calendar.DAY_OF_MONTH) in 29..31 || loritta.config.isOwner(context.userHandle.idLong)) {
 					val howMuchDidTheUserCollect = transaction(Databases.loritta) {
 						CollectedCandies.select {
 							(CollectedCandies.user eq context.lorittaUser.profile.id.value)
