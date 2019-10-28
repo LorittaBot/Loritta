@@ -205,9 +205,9 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 
 		val okHttpBuilder = OkHttpClient.Builder()
 				.dispatcher(dispatcher)
-				.connectTimeout(30, TimeUnit.SECONDS) // O padrão de timeouts é 10 segundos, mas vamos aumentar para evitar problemas.
-				.readTimeout(30, TimeUnit.SECONDS)
-				.writeTimeout(30, TimeUnit.SECONDS)
+				.connectTimeout(discordConfig.okHttpConfig.connectTimeout, TimeUnit.SECONDS) // O padrão de timeouts é 10 segundos, mas vamos aumentar para evitar problemas.
+				.readTimeout(discordConfig.okHttpConfig.readTimeout, TimeUnit.SECONDS)
+				.writeTimeout(discordConfig.okHttpConfig.writeTimeout, TimeUnit.SECONDS)
 				.protocols(listOf(Protocol.HTTP_1_1)) // https://i.imgur.com/FcQljAP.png
 
 		builder = DefaultShardManagerBuilder()
