@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.commands.actions
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.utils.Emotes
 import java.awt.Color
 
 class HeadPatCommand : ActionCommand(arrayOf("headpat", "headpet", "cafuné", "cafune", "pat")) {
@@ -22,6 +23,6 @@ class HeadPatCommand : ActionCommand(arrayOf("headpat", "headpet", "cafuné", "c
     }
 
     override fun getEmoji(): String {
-        return "<a:headpat:554060146016387223>"
+        return Emotes.LORI_PAT.toString()
     }
 }
