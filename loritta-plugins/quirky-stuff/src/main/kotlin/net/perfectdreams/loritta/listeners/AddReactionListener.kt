@@ -177,7 +177,7 @@ networks = [
 							val channel = event.guild.getTextChannelById(583406099047252044L)
 
 							channel?.sendMessageAsync(
-									"Fan Art de <@$userId> <:lori_yay:637660093051043850> https://loritta.website/assets/img/fanarts/$fanArtName"
+									"Fan Art de <@$userId> <:lori_heart:638065264541564929> https://loritta.website/assets/img/fanarts/$fanArtName"
 							)
 						} else {
 							userMessage.append("Obrigada por ser uma pessoa incrível e por continuar a fazer fan arts de mim (tô até emocionada ${Emotes.LORI_CRYING})... Te amooo!! (como amiga, é clarooo!) ${Emotes.LORI_HAPPY}")
