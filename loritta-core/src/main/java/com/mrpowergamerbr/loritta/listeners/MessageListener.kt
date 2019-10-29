@@ -88,7 +88,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				if (isGuildBanned(event.guild))
 					return@launch
 
-				if (FeatureFlags.CHECK_IF_USER_IS_BANNED_EVERY_MESSAGE && loritta.networkBanManager.checkIfUserShouldBeBanned(event.author, event.guild, serverConfig))
+				if (FeatureFlags.CHECK_IF_USER_IS_BANNED_IN_EVERY_MESSAGE && loritta.networkBanManager.checkIfUserShouldBeBanned(event.author, event.guild, serverConfig))
 					return@launch
 
 				EventLog.onMessageReceived(serverConfig, event.message)
