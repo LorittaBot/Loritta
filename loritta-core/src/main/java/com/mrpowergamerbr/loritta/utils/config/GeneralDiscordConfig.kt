@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 class GeneralDiscordConfig @JsonCreator constructor(
 		val discord: DiscordConfig,
 		val lavalink: LavalinkConfig,
-		val okHttpConfig: JdaOkHttpConfig,
+		val okHttp: JdaOkHttpConfig,
 		val discordBots: DiscordBotsConfig,
 		val discordBotList: DiscordBotListConfig,
 		val ghostIds: List<String>,
