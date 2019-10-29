@@ -93,51 +93,47 @@ class Halloween2019ProfileCreator : ProfileCreator {
 		val resizedBadges = badges.map { it.getScaledInstance(35, 35, BufferedImage.SCALE_SMOOTH).toBufferedImage() }
 
 		for (i in 0..29) {
-			val result = measureTimeMillis {
-				val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/halloween_2019/frames/halloween_2019_${i.toString().padStart(6, '0')}.png"))
+			val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/halloween_2019/frames/halloween_2019_${i.toString().padStart(6, '0')}.png"))
 
-				val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
-				val graphics = base.graphics.enableFontAntiAliasing()
+			val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
+			val graphics = base.graphics.enableFontAntiAliasing()
 
-				graphics.drawImage(background.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH), 0, 0, null)
+			graphics.drawImage(background.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH), 0, 0, null)
 
-				graphics.color = Color.BLACK
-				graphics.drawImage(profileWrapper, 0, 0, null)
-				drawAvatar(avatar, graphics)
+			graphics.color = Color.BLACK
+			graphics.drawImage(profileWrapper, 0, 0, null)
+			drawAvatar(avatar, graphics)
 
-				graphics.font = oswaldRegular50
-				graphics.drawText(user.name, 162, 461) // Nome do usuário
-				graphics.font = oswaldRegular42
+			graphics.font = oswaldRegular50
+			graphics.drawText(user.name, 162, 461) // Nome do usuário
+			graphics.font = oswaldRegular42
 
-				drawReputations(user, graphics, reputations)
+			drawReputations(user, graphics, reputations)
 
-				drawBadges(resizedBadges, graphics)
+			drawBadges(resizedBadges, graphics)
 
-				graphics.font = whitneyBold16
-				val biggestStrWidth = drawUserInfo(user, userProfile, guild, graphics, globalPosition, localPosition, xpLocal, globalEconomyPosition)
+			graphics.font = whitneyBold16
+			val biggestStrWidth = drawUserInfo(user, userProfile, guild, graphics, globalPosition, localPosition, xpLocal, globalEconomyPosition)
 
-				graphics.font = whitneyMedium22
+			graphics.font = whitneyMedium22
 
-				ImageUtils.drawTextWrapSpaces(aboutMe, 162, 484, 773 - biggestStrWidth - 4, 600, graphics.fontMetrics, graphics)
+			ImageUtils.drawTextWrapSpaces(aboutMe, 162, 484, 773 - biggestStrWidth - 4, 600, graphics.fontMetrics, graphics)
 
-				if (marriage != null) {
-					graphics.drawImage(marrySection, 0, 0, null)
+			if (marriage != null) {
+				graphics.drawImage(marrySection, 0, 0, null)
 
-					if (marriedWith != null) {
-						graphics.color = Color.WHITE
-						graphics.font = whitneyBold12
-						ImageUtils.drawCenteredString(graphics, locale.toNewLocale()["profile.marriedWith"], Rectangle(635, 350, 165, 14), whitneyBold12)
-						graphics.font = whitneyMedium16
-						ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(635, 350 + 16, 165, 18), whitneyMedium16)
-						graphics.font = whitneyBold12
-						ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(635, 350 + 16 + 18, 165, 14), whitneyBold12)
-					}
+				if (marriedWith != null) {
+					graphics.color = Color.WHITE
+					graphics.font = whitneyBold12
+					ImageUtils.drawCenteredString(graphics, locale.toNewLocale()["profile.marriedWith"], Rectangle(635, 350, 165, 14), whitneyBold12)
+					graphics.font = whitneyMedium16
+					ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(635, 350 + 16, 165, 18), whitneyMedium16)
+					graphics.font = whitneyBold12
+					ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(635, 350 + 16 + 18, 165, 14), whitneyBold12)
 				}
-
-				list.add(base.getScaledInstance(400, 300, BufferedImage.SCALE_SMOOTH).toBufferedImage())
 			}
 
-			println("Result $i: ${result}ms")
+			list.add(base.getScaledInstance(400, 300, BufferedImage.SCALE_SMOOTH).toBufferedImage())
 		}
 
 		return list
