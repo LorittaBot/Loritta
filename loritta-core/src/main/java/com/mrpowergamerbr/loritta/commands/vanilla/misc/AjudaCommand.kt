@@ -98,7 +98,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 				CommandCategory.UTILS to "\uD83D\uDD27",
 				CommandCategory.MISC to "\uD83D\uDDC3",
 				CommandCategory.ANIME to "\uD83D\uDCFA",
-				CommandCategory.ECONOMY to "\uD83D\uDCB5",
+				CommandCategory.ECONOMY to Emotes.LORI_RICH.toString(),
 				CommandCategory.FORTNITE to Emotes.DEFAULT_DANCE.toString()
 		)
 
