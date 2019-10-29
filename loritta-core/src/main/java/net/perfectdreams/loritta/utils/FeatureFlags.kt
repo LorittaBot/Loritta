@@ -27,6 +27,8 @@ object FeatureFlags {
 			get() = isEnabled(Names.DISABLE_MUSIC_RATELIMIT)
 	val DISABLE_TRANSLATE_RATELIMIT: Boolean
 			get() = isEnabled(Names.DISABLE_TRANSLATE_RATELIMIT)
+	val CHECK_IF_USER_IS_BANNED_IN_EVERY_MESSAGE: Boolean
+		get() = isEnabled(Names.CHECK_IF_USER_IS_BANNED_IN_EVERY_MESSAGE)
 
 	fun isEnabled(name: String): Boolean {
 		return loritta.config.loritta.featureFlags.contains(name)
@@ -45,5 +47,6 @@ object FeatureFlags {
 		const val LOG_COMMANDS = "log-commands"
 		const val DISABLE_MUSIC_RATELIMIT = "disable-music-ratelimit"
 		const val DISABLE_TRANSLATE_RATELIMIT = "disable-translate-ratelimit"
+		const val CHECK_IF_USER_IS_BANNED_IN_EVERY_MESSAGE = "check-if-user-is-banned-in-every-message"
 	}
 }

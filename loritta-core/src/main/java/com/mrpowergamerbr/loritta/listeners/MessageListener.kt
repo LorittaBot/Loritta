@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.FeatureFlags
 import org.apache.commons.text.similarity.LevenshteinDistance
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -87,7 +88,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				if (isGuildBanned(event.guild))
 					return@launch
 
-				if (loritta.networkBanManager.checkIfUserShouldBeBanned(event.author, event.guild, serverConfig))
+				if (FeatureFlags.CHECK_IF_USER_IS_BANNED_EVERY_MESSAGE && loritta.networkBanManager.checkIfUserShouldBeBanned(event.author, event.guild, serverConfig))
 					return@launch
 
 				EventLog.onMessageReceived(serverConfig, event.message)
