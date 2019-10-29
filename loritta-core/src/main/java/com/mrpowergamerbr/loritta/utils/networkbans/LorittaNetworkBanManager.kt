@@ -202,13 +202,17 @@ class LorittaNetworkBanManager {
 
 			for (networkBannedUser in networkBannedUsers) {
 				transaction(Databases.loritta) {
-					BlacklistedUsers.insert {
-						it[id] = EntityID(networkBannedUser.id.toLong(), BlacklistedUsers)
-						it[bannedAt] = System.currentTimeMillis()
-						it[guildId] = networkBannedUser.guildId?.toLong()
-						it[type] = networkBannedUser.type
-						it[reason] = networkBannedUser.reason
-						it[globally] = false
+					try {
+						BlacklistedUsers.insert {
+							it[id] = EntityID(networkBannedUser.id.toLong(), BlacklistedUsers)
+							it[bannedAt] = System.currentTimeMillis()
+							it[guildId] = networkBannedUser.guildId?.toLong()
+							it[type] = networkBannedUser.type
+							it[reason] = networkBannedUser.reason
+							it[globally] = false
+						}
+					} catch (e: Exception) {
+						logger.warn { "Erro ao migrar ban $networkBannedUser "}
 					}
 				}
 			}
