@@ -8,7 +8,6 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.chance
-import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.Halloween2019
@@ -69,12 +68,12 @@ class DropCandyModule(val config: QuirkyConfig) : MessageReceivedModule {
             if (5_000 >= System.currentTimeMillis() - lastDrop)
                 return false
 
-            val recentMessages = event.textChannel?.history?.retrievePast(10)?.await()
+            /* val recentMessages = event.textChannel?.history?.retrievePast(10)?.await()
 
             val messageCount = recentMessages?.count { it.author.idLong == event.author.idLong } ?: 0
 
             if (messageCount >= 7)
-                return false
+                return false */
 
             val isParticipating = transaction(Databases.loritta) {
                 Halloween2019Players.select {
