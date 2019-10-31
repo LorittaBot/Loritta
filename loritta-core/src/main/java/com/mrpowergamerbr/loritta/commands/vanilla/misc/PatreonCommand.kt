@@ -58,7 +58,7 @@ class PatreonCommand : AbstractCommand("donator", listOf("donators", "patreons",
 			setTitle("${Emotes.LORI_RICH} ${context.legacyLocale["PATREON_THANKS"]}")
 			setColor(Color(0, 193, 223))
 			setDescription(patrons)
-			addField("\uD83C\uDF80 " + context.legacyLocale["PATREON_DO_YOU_WANNA_HELP"], context.legacyLocale["PATREON_HOW_TO_HELP", "https://www.patreon.com/mrpowergamerbr", "${loritta.instanceConfig.loritta.website.url}donate", "https://apoia.se/mrpowergamerbr"], false)
+			addField("\uD83C\uDF80 " + context.legacyLocale["PATREON_DO_YOU_WANNA_HELP"], context.locale["commands.misc.donate.howToHelp", "${loritta.instanceConfig.loritta.website.url}donate", Emotes.LORI_HEART, Emotes.LORI_CRYING, Emotes.LORI_RICH], false)
 		}
 
 		context.sendMessage(context.getAsMention(true), embed.build())
