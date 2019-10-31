@@ -14,7 +14,6 @@ import com.mrpowergamerbr.loritta.website.views.subviews.api.*
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.APIGetApiKeyView
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.APIGetServerConfigView
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.APIUpdateServerConfigView
-import com.mrpowergamerbr.loritta.website.views.subviews.api.serverlist.*
 import com.mrpowergamerbr.loritta.website.views.subviews.configure.*
 import org.jooby.Request
 import org.jooby.Response
@@ -152,23 +151,16 @@ object GlobalHandler {
 		apiViews.add(APIGetRssFeedTitleView())
 		apiViews.add(APIGetTwitchInfoView())
 		apiViews.add(APILoriSetBalanceView())
-		apiViews.add(APIVoteServerView())
 		apiViews.add(APIGetServerConfigView())
 		apiViews.add(APIUpdateServerConfigView())
-		apiViews.add(APIGetServersView())
 		apiViews.add(APILoriDailyRewardView())
 		apiViews.add(APILoriDailyRewardStatusView())
-		apiViews.add(APIJoinServerView())
 		apiViews.add(APIGetApiKeyView())
-		apiViews.add(APIGetServerVotesView())
 		apiViews.add(APIGetCommandsView())
-		apiViews.add(APIBumpServerView())
 
 		views.add(HomeView())
 		views.add(TranslationView())
 		views.add(DashboardView())
-		views.add(LoriPartnerView())
-		views.add(ServersView())
 		views.add(CommandsView())
 		views.add(DailyView())
 		views.add(SupportView())
@@ -194,7 +186,6 @@ object GlobalHandler {
 		views.add(ConfigureCommandsView())
 		views.add(ConfigureTextChannelsView())
 		views.add(ConfigureModerationView())
-		views.add(ConfigureLoriPartnerView())
 		views.add(TestMessageView())
 
 		this.views = views
