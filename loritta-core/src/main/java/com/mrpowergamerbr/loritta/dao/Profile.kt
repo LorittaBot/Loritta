@@ -59,4 +59,14 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 	 * Returns if the user is an active donator
 	 */
 	fun isActiveDonator() = isDonator && donationExpiresIn > System.currentTimeMillis()
+
+	fun getCurrentLevel(): XpWrapper {
+		return XpWrapper((xp / 1000).toInt(), xp)
+	}
+
+	fun getExpToAdvanceFrom(lvl: Int): Int {
+		return lvl * 1000
+	}
+
+	class XpWrapper constructor(val currentLevel: Int, val expLeft: Long)
 }
