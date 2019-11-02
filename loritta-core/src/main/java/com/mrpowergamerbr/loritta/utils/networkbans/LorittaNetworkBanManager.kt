@@ -153,6 +153,7 @@ class LorittaNetworkBanManager {
 				it[BlacklistedUsers.reason] = entry.reason
 				it[BlacklistedUsers.bannedAt] = System.currentTimeMillis()
 				it[BlacklistedUsers.globally] = false
+				it[BlacklistedUsers.type] = entry.type
 			}
 		}
 
