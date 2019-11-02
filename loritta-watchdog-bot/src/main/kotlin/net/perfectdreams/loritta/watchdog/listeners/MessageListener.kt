@@ -107,7 +107,7 @@ class MessageListener(val m: WatchdogBot) : ListenerAdapter() {
 									val time = "${instant.hour.toString().padStart(2, '0')}:${instant.minute.toString().padStart(2, '0')}:${instant.second.toString().padStart(2, '0')}"
 									channel?.sendMessage(
 											EmbedBuilder()
-													.setTitle("<:loriShrug:611371352452104202> Inatividade Agendada em Cluster ${clusterInfo.id} (${clusterInfo.name})")
+													.setTitle("<:lori_shrug:626942886876938243> Inatividade Agendada em Cluster ${clusterInfo.id} (${clusterInfo.name})")
 													.setDescription("Cluster irá reiniciar às $time!\n\nShards ${clusterInfo.minShard} até ${clusterInfo.maxShard} ficarão offline durante a manutenção.")
 													.setColor(Color(206, 7, 232))
 													.setTimestamp(Instant.now())
@@ -140,7 +140,7 @@ class MessageListener(val m: WatchdogBot) : ListenerAdapter() {
 
 								channel?.sendMessage(
 										EmbedBuilder()
-												.setTitle("<:loriShrug:611371352452104202> Reiniciando Cluster ${clusterInfo.id} (${clusterInfo.name}) devido a atualização")
+												.setTitle("<:lori_shrug:626942886876938243> Reiniciando Cluster ${clusterInfo.id} (${clusterInfo.name}) devido a atualização")
 												.setDescription("Shards ${clusterInfo.minShard} até ${clusterInfo.maxShard} estão offline!")
 												.setColor(Color(0, 65, 168))
 												.setTimestamp(Instant.now())
