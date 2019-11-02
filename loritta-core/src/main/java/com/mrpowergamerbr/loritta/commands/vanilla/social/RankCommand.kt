@@ -36,7 +36,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 		var global = false
 		var page = context.args.getOrNull(0)?.toIntOrNull()
 
-		if (page != null)
+		if (page != nuRecll)
 			page -= 1
 
 		if (page == null)

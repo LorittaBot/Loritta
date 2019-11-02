@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.utils.Emotes
 import java.awt.Color
+import kotlin.reflect.full.companionObject
 
 class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "commands"), CommandCategory.MISC) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -83,24 +84,25 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 	companion object {
 		private val logger = KotlinLogging.logger {}
 
-		private val reactionEmotes = mapOf(
-				CommandCategory.DISCORD to "<:discord_logo:412576344120229888>",
-				CommandCategory.ROBLOX to "<:roblox_logo:412576693803286528>",
-				CommandCategory.UNDERTALE to "<:undertale_heart:412576128340066304>",
-				CommandCategory.POKEMON to "<:pokeball:412575443024216066>",
-				CommandCategory.MINECRAFT to "<:minecraft_logo:412575161041289217>",
-				CommandCategory.SOCIAL to Emotes.LORI_HEART.toString(),
-				CommandCategory.ACTION to Emotes.LORI_PAT.toString(),
-				CommandCategory.FUN to "<:vieirinha:412574915879763982>",
-				CommandCategory.ADMIN to "\uD83D\uDC6E",
-				CommandCategory.IMAGES to "\uD83C\uDFA8",
-				CommandCategory.MUSIC to "\uD83C\uDFA7",
-				CommandCategory.UTILS to "\uD83D\uDD27",
-				CommandCategory.MISC to "\uD83D\uDDC3",
-				CommandCategory.ANIME to "\uD83D\uDCFA",
-				CommandCategory.ECONOMY to Emotes.LORI_RICH.toString(),
-				CommandCategory.FORTNITE to Emotes.DEFAULT_DANCE.toString()
-		)
+		private val reactionEmotes: Map<CommandCategory, String>
+			get() = mapOf(
+					CommandCategory.DISCORD to "<:discord_logo:412576344120229888>",
+					CommandCategory.ROBLOX to "<:roblox_logo:412576693803286528>",
+					CommandCategory.UNDERTALE to "<:undertale_heart:412576128340066304>",
+					CommandCategory.POKEMON to "<:pokeball:412575443024216066>",
+					CommandCategory.MINECRAFT to "<:minecraft_logo:412575161041289217>",
+					CommandCategory.SOCIAL to Emotes.LORI_HEART.toString(),
+					CommandCategory.ACTION to Emotes.LORI_PAT.toString(),
+					CommandCategory.FUN to "<:vieirinha:412574915879763982>",
+					CommandCategory.ADMIN to "\uD83D\uDC6E",
+					CommandCategory.IMAGES to "\uD83C\uDFA8",
+					CommandCategory.MUSIC to "\uD83C\uDFA7",
+					CommandCategory.UTILS to "\uD83D\uDD27",
+					CommandCategory.MISC to "\uD83D\uDDC3",
+					CommandCategory.ANIME to "\uD83D\uDCFA",
+					CommandCategory.ECONOMY to Emotes.LORI_RICH.toString(),
+					CommandCategory.FORTNITE to Emotes.DEFAULT_DANCE.toString()
+			)
 
 		private val nameOnlyReactionEmotes = reactionEmotes.map {
 			if (it.value.startsWith("<:") || it.value.startsWith("<a:")) {
