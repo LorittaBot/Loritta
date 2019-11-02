@@ -20,7 +20,6 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.utils.Emotes
 import java.awt.Color
-import kotlin.reflect.full.companionObject
 
 class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "commands"), CommandCategory.MISC) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -104,17 +103,18 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 					CommandCategory.FORTNITE to Emotes.DEFAULT_DANCE.toString()
 			)
 
-		private val nameOnlyReactionEmotes = reactionEmotes.map {
-			if (it.value.startsWith("<:") || it.value.startsWith("<a:")) {
-				// Pegar apenas o nome do emoji, ou seja...
-				// <:discord_logo:412576344120229888>
-				// vira apenas
-				// discord_logo
-				it.key to Constants.DISCORD_EMOTE_PATTERN.matcher(it.value).apply { this.find() }.group(1)
-			} else {
-				it.key to it.value
-			}
-		}.toMap()
+		private val nameOnlyReactionEmotes: Map<CommandCategory, String>
+			get() = reactionEmotes.map {
+				if (it.value.startsWith("<:") || it.value.startsWith("<a:")) {
+					// Pegar apenas o nome do emoji, ou seja...
+					// <:discord_logo:412576344120229888>
+					// vira apenas
+					// discord_logo
+					it.key to Constants.DISCORD_EMOTE_PATTERN.matcher(it.value).apply { this.find() }.group(1)
+				} else {
+					it.key to it.value
+				}
+			}.toMap()
 
 		fun getCommandsFor(context: CommandContext, cat: CommandCategory): MutableList<MessageEmbed> {
 			val embeds = ArrayList<MessageEmbed>()
