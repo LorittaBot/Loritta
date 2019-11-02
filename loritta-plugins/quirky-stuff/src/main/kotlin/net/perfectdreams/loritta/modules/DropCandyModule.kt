@@ -25,7 +25,7 @@ class DropCandyModule(val config: QuirkyConfig) : MessageReceivedModule {
             .asMap()
 
     override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
-        return event.guild?.selfMember?.hasPermission(Permission.MESSAGE_ADD_REACTION) == true
+        return event.guild?.selfMember?.hasPermission(Permission.MESSAGE_ADD_REACTION) == true && Calendar.getInstance().get(Calendar.MONTH) == 9
     }
 
     override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
@@ -85,7 +85,11 @@ class DropCandyModule(val config: QuirkyConfig) : MessageReceivedModule {
 
             if (getTheCandy) {
                 lastDropsAt[id] = System.currentTimeMillis()
-                event.message.addReaction(Halloween2019.CANDIES.random()).queue()
+                if (chance(10.0)) {
+                    event.message.addReaction(Halloween2019.SPECIAL_CANDY).queue()
+                } else {
+                    event.message.addReaction(Halloween2019.CANDIES.random()).queue()
+                }
             }
         }
 

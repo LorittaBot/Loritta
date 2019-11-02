@@ -11,4 +11,5 @@ object Halloween2019 {
 			"\uD83C\uDF6C",
 			"\uD83C\uDF6D"
 	)
+	val SPECIAL_CANDY = "\uD83C\uDF83"
 }
