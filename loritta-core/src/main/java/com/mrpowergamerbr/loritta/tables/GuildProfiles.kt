@@ -8,4 +8,5 @@ object GuildProfiles : LongIdTable() {
 	val xp = long("xp").index()
 	val quickPunishment = bool("quick_punishment")
 	val money = decimal("money", 19, 14).index()
+	val isInGuild = bool("is_in_guild").default(true).index()
 }

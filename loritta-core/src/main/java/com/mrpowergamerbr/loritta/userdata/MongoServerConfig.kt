@@ -71,13 +71,21 @@ class MongoServerConfig @BsonCreator constructor(
 	fun getUserData(id: Long): GuildProfile {
 		val t = this
 		return transaction(Databases.loritta) {
-			GuildProfile.find { (GuildProfiles.guildId eq guildId.toLong()) and (GuildProfiles.userId eq id) }.firstOrNull() ?: GuildProfile.new {
+			getUserDataIfExists(id) ?: GuildProfile.new {
 				this.guildId = t.guildId.toLong()
 				this.userId = id
 				this.money = BigDecimal(0)
 				this.quickPunishment = false
 				this.xp = 0
+				this.isInGuild = true
 			}
+		}
+	}
+
+	fun getUserDataIfExists(id: Long): GuildProfile? {
+		val t = this
+		return transaction(Databases.loritta) {
+			GuildProfile.find { (GuildProfiles.guildId eq guildId.toLong()) and (GuildProfiles.userId eq id) }.firstOrNull()
 		}
 	}
 

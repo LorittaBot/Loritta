@@ -162,6 +162,16 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						lorittaUser
 				)
 
+				if (FeatureFlags.UPDATE_IN_GUILD_STATS_ON_MESSAGE_SEND) {
+					val profile = serverConfig.getUserDataIfExists(member.idLong)
+
+					if (profile != null && !profile.isInGuild) {
+						transaction(Databases.loritta) {
+							profile.isInGuild = true
+						}
+					}
+				}
+
 				if (serverConfig.autoroleConfig.isEnabled && serverConfig.autoroleConfig.giveOnlyAfterMessageWasSent && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) { // Está ativado?
 					AutoroleModule.giveRoles(member, serverConfig.autoroleConfig)
 				}

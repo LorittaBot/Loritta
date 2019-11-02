@@ -9,6 +9,9 @@ import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.FeatureFlags
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
@@ -43,8 +46,11 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 			page = 0
 
 		val profiles = transaction(Databases.loritta) {
-			GuildProfiles.select { GuildProfiles.guildId eq context.guild.idLong }
-					.orderBy(GuildProfiles.xp to false)
+			GuildProfiles.select {
+				(GuildProfiles.guildId eq context.guild.idLong) and
+						(GuildProfiles.isInGuild eq true)
+			}
+					.orderBy(GuildProfiles.xp to SortOrder.DESC)
 					.limit(5, page * 5)
 					.toMutableList()
 		}
@@ -140,6 +146,12 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 				graphics.drawImage(editedAvatar, 0, currentY, null)
 				idx++
 				currentY += 53
+			} else if (FeatureFlags.UPDATE_IN_GUILD_STATS_ON_RANK_FAILURE) {
+				if (!profile.isInGuild) {
+					transaction(Databases.loritta) {
+						profile.isInGuild = false
+					}
+				}
 			}
 		}
 		context.sendFile(base.makeRoundedCorners(15), "rank.png", context.getAsMention(true))

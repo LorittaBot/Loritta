@@ -13,6 +13,7 @@ class GuildProfile(id: EntityID<Long>) : LongEntity(id) {
 	var xp by GuildProfiles.xp
 	var quickPunishment by GuildProfiles.quickPunishment
 	var money by GuildProfiles.money
+	var isInGuild by GuildProfiles.isInGuild
 
 	fun getCurrentLevel(): XpWrapper {
 		return XpWrapper((xp / 1000).toInt(), xp)

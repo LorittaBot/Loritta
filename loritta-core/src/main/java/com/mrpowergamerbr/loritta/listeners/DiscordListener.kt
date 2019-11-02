@@ -392,6 +392,16 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					return@launch
 				}
 
+				if (FeatureFlags.UPDATE_IN_GUILD_STATS_ON_GUILD_JOIN) {
+					val profile = conf.getUserDataIfExists(event.guild.idLong)
+
+					if (profile != null) {
+						transaction(Databases.loritta) {
+							profile.isInGuild = true
+						}
+					}
+				}
+
 				queueTextChannelTopicUpdates(event.guild, conf, true)
 
 				if (conf.autoroleConfig.isEnabled && !conf.autoroleConfig.giveOnlyAfterMessageWasSent && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) { // Está ativado?
@@ -448,6 +458,16 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					return@launch
 
 				val conf = loritta.getServerConfigForGuild(event.guild.id)
+
+				if (FeatureFlags.UPDATE_IN_GUILD_STATS_ON_GUILD_QUIT) {
+					val profile = conf.getUserDataIfExists(event.guild.idLong)
+
+					if (profile != null) {
+						transaction(Databases.loritta) {
+							profile.isInGuild = false
+						}
+					}
+				}
 
 				DiscordListener.queueTextChannelTopicUpdates(event.guild, conf, true)
 
