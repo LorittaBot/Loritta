@@ -277,6 +277,16 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				return
 			}
 
+			if (arg0 == "sync_ban") {
+				context.reply(
+						LoriReply(
+								"Forçando a sincronização de bans globais de $arg1..."
+						)
+				)
+				lorittaShards.queryAllLorittaClusters("/api/v1/global-bans/sync/${arg1}")
+				return
+			}
+
 			if (arg0 == "commit_bans") {
 				val replies = mutableListOf<LoriReply>()
 				replies.add(

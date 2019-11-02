@@ -28,7 +28,7 @@ class LorittaNetworkBanManager {
 
 	var notVerifiedEntries = mutableListOf<NetworkBanEntry>()
 
-	fun punishUser(user: User, reason: String) {
+	fun punishUser(user: User, reason: String, isGlobal: Boolean) {
 		val mutualGuilds = lorittaShards.getMutualGuilds(user).filter {
 			val member = it.getMember(user) ?: return@filter false
 			// Apenas pegue servidores que ela realmente pode banir o infrator
@@ -38,18 +38,25 @@ class LorittaNetworkBanManager {
 		if (mutualGuilds.isEmpty())
 			return
 
-		val serverConfigs = loritta.serversColl.find(
-				Filters.and(
-						Filters.`in`("_id", mutualGuilds.map { it.id }),
-						Filters.eq("moderationConfig.useLorittaBansNetwork", true)
-				)
-		).toMutableList()
+		val serverConfigs = if (isGlobal) {
+			loritta.serversColl.find(
+					Filters.`in`("_id", mutualGuilds.map { it.id })
+			).toMutableList()
+		} else {
+			loritta.serversColl.find(
+					Filters.and(
+							Filters.`in`("_id", mutualGuilds.map { it.id }),
+							Filters.eq("moderationConfig.useLorittaBansNetwork", true)
+					)
+			).toMutableList()
+		}
 
-		for (serverConfig in serverConfigs) {
+		for (guild in mutualGuilds) {
 			try {
-				val guild = mutualGuilds.firstOrNull { it.id == serverConfig.guildId } ?: continue
 				if (!guild.isMember(user))
 					continue
+
+				val serverConfig = serverConfigs.firstOrNull { it.guildId == guild.id } ?: continue
 
 				logger.info("Banindo ${user.id} em ${guild.id}...")
 				BanCommand.ban(
@@ -63,7 +70,7 @@ class LorittaNetworkBanManager {
 						0
 				)
 			} catch (e: Exception) {
-				logger.error(e) { "Erro ao punir o usuário ${user.id} na guild ${serverConfig.guildId}" }
+				logger.error(e) { "Error while punishing user ${user.id} in guild ${guild.idLong}" }
 			}
 		}
 	}
@@ -157,7 +164,9 @@ class LorittaNetworkBanManager {
 			}
 		}
 
-		punishUser(user, createBanReason(entry, true))
+		punishUser(user, createBanReason(entry, true), false)
+
+		lorittaShards.queryAllLorittaClusters("/api/v1/global-bans/sync/$userId")
 	}
 
 	fun getGlobalBanEntry(id: Long): NetworkBanEntry? {

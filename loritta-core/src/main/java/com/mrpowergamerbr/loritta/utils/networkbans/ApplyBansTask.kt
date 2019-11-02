@@ -32,7 +32,7 @@ class ApplyBansTask : Runnable {
 				try {
 					val user = lorittaShards.getUserById(entry.id) ?: continue
 
-					loritta.networkBanManager.punishUser(user, loritta.networkBanManager.createBanReason(entry, true))
+					loritta.networkBanManager.punishUser(user, loritta.networkBanManager.createBanReason(entry, true), bannedUser[BlacklistedUsers.globally])
 				} catch (e: Exception) {
 					logger.error(e) { "Erro ao processar entry de ${entry.id}!" }
 				}
