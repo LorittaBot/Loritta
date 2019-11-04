@@ -140,8 +140,6 @@ class ExperienceModule : MessageReceivedModule {
 
 		val (newLevel, newXp) = guildProfile.getCurrentLevel()
 
-		logger.info { "${event.author} $previousLevel -> $newLevel; $previousXp -> $newXp" }
-
 		if (previousLevel != newLevel && levelConfig != null) {
 			logger.info { "Notfying about level up from $previousLevel -> $newLevel; level config is $levelConfig"}
 
