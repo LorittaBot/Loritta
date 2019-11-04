@@ -13,5 +13,6 @@ class GuildRoute : Jooby() {
 		use(ConfigurePremiumKeyController::class.java)
 		use(ConfigureCustomBadgeController::class.java)
 		use(ConfigureDailyMultiplierController::class.java)
+		use(ConfigureLevelUpController::class.java)
 	}
 }

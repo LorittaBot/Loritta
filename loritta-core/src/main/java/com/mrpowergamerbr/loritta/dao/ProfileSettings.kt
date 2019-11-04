@@ -16,4 +16,5 @@ class ProfileSettings(id: EntityID<Long>) : LongEntity(id) {
 	var activeProfile by UserSettings.activeProfile
 	var boughtProfiles by UserSettings.boughtProfiles
 	var birthday by UserSettings.birthday
+	var doNotSendXpNotificationsInDm by UserSettings.doNotSendXpNotificationsInDm
 }

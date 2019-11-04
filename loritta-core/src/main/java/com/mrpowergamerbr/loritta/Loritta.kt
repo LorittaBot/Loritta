@@ -438,7 +438,10 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 					EconomyConfigs,
 					ExecutedCommandsLog,
 					BlacklistedUsers,
-					BlacklistedGuilds
+					BlacklistedGuilds,
+					RolesByExperience,
+					LevelAnnouncementConfigs,
+					LevelConfigs
 			)
 		}
 	}

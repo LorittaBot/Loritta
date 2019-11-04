@@ -23,5 +23,5 @@ class GuildProfile(id: EntityID<Long>) : LongEntity(id) {
 		return lvl * 1000
 	}
 
-	class XpWrapper constructor(val currentLevel: Int, val expLeft: Long)
+	data class XpWrapper constructor(val currentLevel: Int, val expLeft: Long)
 }

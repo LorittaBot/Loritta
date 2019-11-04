@@ -2,21 +2,32 @@ package com.mrpowergamerbr.loritta.modules
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LorittaUser
+import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import mu.KotlinLogging
+import net.perfectdreams.loritta.tables.LevelAnnouncementConfigs
+import net.perfectdreams.loritta.tables.RolesByExperience
+import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.FeatureFlags
+import net.perfectdreams.loritta.utils.levels.LevelUpAnnouncementType
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.TimeUnit
 
 class ExperienceModule : MessageReceivedModule {
+	companion object {
+		private val logger = KotlinLogging.logger {}
+	}
+
 	// Para evitar "could not serialize access due to concurrent update", vamos sincronizar o update de XP usando mutexes
 	// Como um usuário normalmente só está falando em um servidor ao mesmo tempo, a gente pode sincronizar baseado no User ID dele
 	// User ID -> Mutex
@@ -72,14 +83,8 @@ class ExperienceModule : MessageReceivedModule {
 
 					val profile = serverConfig.getUserData(event.author.idLong)
 
-					val mutex = mutexes.getOrPut(event.author.idLong) { Mutex() }
-
 					if (FeatureFlags.isEnabled("experience-gain-locally")) {
-						mutex.withLock {
-							transaction(Databases.loritta) {
-								profile.xp += gainedXp
-							}
-						}
+						handleLocalExperience(event, lorittaProfile, profile, gainedXp, locale.toNewLocale())
 					}
 				}
 			}
@@ -99,5 +104,143 @@ class ExperienceModule : MessageReceivedModule {
 			}
 		}
 		return false
+	}
+
+	suspend fun handleLocalExperience(event: LorittaMessageEvent, profile: Profile, guildProfile: GuildProfile, gainedXp: Int, locale: BaseLocale) {
+		val mutex = mutexes.getOrPut(event.author.idLong) { Mutex() }
+
+		val guild = event.guild!!
+		val member = event.member!!
+
+		val levelConfig = transaction(Databases.loritta) {
+			loritta.getOrCreateServerConfig(guild.idLong).levelConfig
+		}
+
+		if (levelConfig != null) {
+			logger.info { "Level Config isn't null in $guild" }
+
+			val noXpRoles = levelConfig.noXpRoles
+
+			if (member.roles.any { it.idLong in noXpRoles })
+				return
+
+			val noXpChannels = levelConfig.noXpChannels
+
+			if (event.channel.idLong in noXpChannels)
+				return
+		}
+
+		val (previousLevel, previousXp) = guildProfile.getCurrentLevel()
+
+		mutex.withLock {
+			transaction(Databases.loritta) {
+				guildProfile.xp += gainedXp
+			}
+		}
+
+		val (newLevel, newXp) = guildProfile.getCurrentLevel()
+
+		logger.info { "${event.author} $previousLevel -> $newLevel; $previousXp -> $newXp" }
+
+		if (previousLevel != newLevel && levelConfig != null) {
+			logger.info { "Notfying about level up from $previousLevel -> $newLevel; level config is $levelConfig"}
+
+			val announcements = transaction(Databases.loritta) {
+				LevelAnnouncementConfigs.select {
+					LevelAnnouncementConfigs.levelConfig eq levelConfig.id
+				}.toMutableList()
+			}
+
+			logger.info { "There are ${announcements.size} announcement stuff!"}
+
+			for (announcement in announcements) {
+				val type = announcement[LevelAnnouncementConfigs.type]
+				logger.info { "Type is $type" }
+
+				val message = MessageUtils.generateMessage(
+						announcement[LevelAnnouncementConfigs.message],
+						listOf(
+								member,
+								guild
+						),
+						guild,
+						mapOf(
+								"previous-level" to previousLevel.toString(),
+								"previous-xp" to previousXp.toString(),
+								"level" to newLevel.toString(),
+								"xp" to newXp.toString()
+						)
+				)
+
+				logger.info { "Message for notif is $message" }
+
+				if (message != null) {
+					when (type) {
+						LevelUpAnnouncementType.SAME_CHANNEL -> {
+							logger.info { "Same channel, sending msg" }
+							if (event.textChannel!!.canTalk()) {
+								event.textChannel.sendMessage(
+										message
+								).queue()
+							}
+						}
+						LevelUpAnnouncementType.DIRECT_MESSAGE -> {
+							val profileSettings = transaction(Databases.loritta) {
+								profile.settings
+							}
+
+							if (!profileSettings.doNotSendXpNotificationsInDm) {
+								logger.info { "Direct msg, sending msg" }
+								try {
+									val privateChannel = member.user.openPrivateChannel().await()
+
+									privateChannel.sendMessage(message).await()
+
+									val shouldNotifyThatUserCanDisable = previousLevel % 10
+
+									if (shouldNotifyThatUserCanDisable == 0) {
+										privateChannel.sendMessage(locale["modules.experience.howToDisableLevelNotifications", "`${guild.name.stripCodeMarks()}`", "`disablexpnotifications`", Emotes.LORI_YAY.toString()]).await()
+									}
+								} catch (e: Exception) {
+									logger.warn { "Error while sending DM to ${event.author} due to level up ($previousLevel -> $newLevel)"}
+								}
+							}
+						}
+						LevelUpAnnouncementType.DIFFERENT_CHANNEL -> {
+							logger.info { "Diff channel, sending msg" }
+							val channelId = announcement[LevelAnnouncementConfigs.channelId]
+
+							if (channelId != null) {
+								val channel = guild.getTextChannelById(channelId)
+
+								channel?.sendMessage(
+										message
+								)?.queue()
+							}
+						}
+					}
+				}
+			}
+		}
+
+		val configs = transaction(Databases.loritta) {
+			RolesByExperience.select {
+				RolesByExperience.guildId eq guild.idLong
+			}.toMutableList()
+		}
+
+		val matched = configs.filter { guildProfile.xp >= it[RolesByExperience.requiredExperience] }
+
+		if (matched.isNotEmpty()) {
+			val giveRoles = matched.flatMap { it[RolesByExperience.roles].map { guild.getRoleById(it) } }
+
+			val shouldGiveRoles = !member.roles.containsAll(giveRoles)
+
+			if (shouldGiveRoles) {
+				val missingRoles = giveRoles.toMutableList().apply { this.removeAll(member.roles) }
+				guild.modifyMemberRoles(member, member.roles.toMutableList().apply { this.addAll(missingRoles) })
+						.queue()
+			}
+		}
 	}
 }

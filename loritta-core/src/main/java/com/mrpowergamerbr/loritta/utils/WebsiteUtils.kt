@@ -31,9 +31,13 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.dao.ReactionOption
+import net.perfectdreams.loritta.tables.LevelAnnouncementConfigs
 import net.perfectdreams.loritta.tables.ReactionOptions
+import net.perfectdreams.loritta.tables.RolesByExperience
 import net.perfectdreams.loritta.utils.DiscordUtils
+import net.perfectdreams.loritta.utils.levels.RoleGiveType
 import net.perfectdreams.loritta.website.utils.WebsiteAssetsHashes
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.MediaType
 import org.jooby.Request
@@ -41,9 +45,6 @@ import org.jooby.Response
 import org.jooby.Status
 import java.io.UnsupportedEncodingException
 import java.lang.management.ManagementFactory
-import java.lang.reflect.Field
-import java.lang.reflect.Modifier
-import java.net.HttpURLConnection
 import java.net.URLEncoder
 import java.text.MessageFormat
 import java.util.*
@@ -512,29 +513,6 @@ object WebsiteUtils {
 		return true
 	}
 
-	fun allowMethods(vararg methods: String) {
-		try {
-			val methodsField = HttpURLConnection::class.java.getDeclaredField("methods")
-
-			val modifiersField = Field::class.java.getDeclaredField("modifiers")
-			modifiersField.isAccessible = true
-			modifiersField.setInt(methodsField, methodsField.modifiers and Modifier.FINAL.inv())
-
-			methodsField.isAccessible = true
-
-			val oldMethods = methodsField.get(null) as Array<String>
-			val methodsSet = LinkedHashSet(Arrays.asList(*oldMethods))
-			methodsSet.addAll(Arrays.asList(*methods))
-			val newMethods = methodsSet.toTypedArray()
-
-			methodsField.set(null, newMethods)/*static field*/
-		} catch (e: NoSuchFieldException) {
-			throw IllegalStateException(e)
-		} catch (e: IllegalAccessException) {
-			throw IllegalStateException(e)
-		}
-	}
-
 	fun transformToJson(user: User): JsonObject {
 		return jsonObject(
 				"id" to user.id,
@@ -604,6 +582,45 @@ object WebsiteUtils {
 			}.toJsonArray()
 		}
 
+		guildJson["levelUpConfig"] = transaction(Databases.loritta) {
+			val levelConfig = serverConfig.levelConfig
+			val announcements = LevelAnnouncementConfigs.select {
+				LevelAnnouncementConfigs.levelConfig eq (levelConfig?.id?.value ?: -1L)
+			}
+
+			val announcementArray = jsonArray()
+			for (announcement in announcements) {
+				announcementArray.add(
+						jsonObject(
+								"type" to announcement[LevelAnnouncementConfigs.type].toString(),
+								"channelId" to announcement[LevelAnnouncementConfigs.channelId]?.toString(),
+								"message" to announcement[LevelAnnouncementConfigs.message].toString()
+						)
+				)
+			}
+
+			val rolesByExperience = RolesByExperience.select {
+				RolesByExperience.guildId eq guild.idLong
+			}
+			val rolesByExperienceArray = jsonArray()
+			for (roleByExperience in rolesByExperience) {
+				rolesByExperienceArray.add(
+						jsonObject(
+								"requiredExperience" to roleByExperience[RolesByExperience.requiredExperience].toString(),
+								"roles" to roleByExperience[RolesByExperience.roles].map { it.toString() }.toList().toJsonArray()
+						)
+				)
+			}
+
+			jsonObject(
+					"roleGiveType" to (levelConfig?.roleGiveType?.toString() ?: RoleGiveType.STACK),
+					"noXpChannels" to (levelConfig?.noXpChannels?.toList()?.toJsonArray() ?: jsonArray()),
+					"noXpRoles" to (levelConfig?.noXpRoles?.toList()?.toJsonArray() ?: jsonArray()),
+					"announcements" to announcementArray,
+					"rolesByExperience" to rolesByExperienceArray
+			)
+		}
+
 		guildJson["selfMember"] = selfMember
 
 		transaction(Databases.loritta) {
@@ -622,11 +639,14 @@ object WebsiteUtils {
 			jsonObject(
 					"id" to it.id,
 					"name" to it.name,
-					"color" to it.colorRaw
+					"colorRaw" to it.colorRaw,
+					"canInteract" to guild.selfMember.canInteract(it),
+					"isHoisted" to it.isHoisted,
+					"isManaged" to it.isManaged
 			)
 		}.toJsonArray()
 
-		guildJson["textChannels"] in guild.textChannels.map {
+		guildJson["textChannels"] = guild.textChannels.map {
 			jsonObject(
 					"id" to it.id,
 					"canTalk" to it.canTalk(),
@@ -635,62 +655,6 @@ object WebsiteUtils {
 			)
 		}.toJsonArray()
 
-		return guildJson
-	}
-
-	fun getGuildAsJson(guild: Guild): JsonObject {
-		val guildJson = jsonObject(
-				"name" to guild.name
-		)
-
-		val textChannels = JsonArray()
-		for (textChannel in guild.textChannels) {
-			val json = JsonObject()
-
-			json["id"] = textChannel.id
-			json["canTalk"] = textChannel.canTalk()
-			json["name"] = textChannel.name
-			json["topic"] = textChannel.topic
-
-			textChannels.add(json)
-		}
-
-		guildJson["textChannels"] = textChannels
-
-		val roles = JsonArray()
-		for (role in guild.roles) {
-			val json = JsonObject()
-
-			json["id"] = role.id
-			json["name"] = role.name
-			json["isPublicRole"] = role.isPublicRole
-			json["isManaged"] = role.isManaged
-			json["canInteract"] = guild.selfMember.canInteract(role)
-
-			if (role.color != null) {
-				json["color"] = jsonObject(
-						"red" to role.color!!.red,
-						"green" to role.color!!.green,
-						"blue" to role.color!!.blue
-				)
-			}
-
-			roles.add(json)
-		}
-
-		val emotes = JsonArray()
-		for (emote in guild.emotes) {
-			val json = JsonObject()
-
-			json["id"] = emote.id
-			json["name"] = emote.name
-
-			emotes.add(json)
-		}
-
-		guildJson["roles"] = roles
-		guildJson["emotes"] = emotes
-		guildJson["permissions"] = gson.toJsonTree(guild.selfMember.permissions.map { it.name })
 		return guildJson
 	}
 
@@ -785,44 +749,44 @@ object WebsiteUtils {
 		return serverConfigJson
 	}
 
-fun getProfileAsJson(profile: Profile): JsonObject {
-	return jsonObject(
-			"id" to profile.id.value,
-			"money" to profile.money
-	)
-}
+	fun getProfileAsJson(profile: Profile): JsonObject {
+		return jsonObject(
+				"id" to profile.id.value,
+				"money" to profile.money
+		)
+	}
 
-fun transformProfileToJson(profile: Profile): JsonObject {
-	// TODO: É necessário alterar o frontend para usar os novos valores
-	val jsonObject = JsonObject()
-	jsonObject["userId"] = profile.id.value
-	jsonObject["money"] = profile.money
-	jsonObject["dreams"] = profile.money // Deprecated
-	return jsonObject
-}
+	fun transformProfileToJson(profile: Profile): JsonObject {
+		// TODO: É necessário alterar o frontend para usar os novos valores
+		val jsonObject = JsonObject()
+		jsonObject["userId"] = profile.id.value
+		jsonObject["money"] = profile.money
+		jsonObject["dreams"] = profile.money // Deprecated
+		return jsonObject
+	}
 
-fun getDiscordCrawlerAuthenticationPage(): String {
-	return createHTML().html {
-		head {
-			fun setMetaProperty(property: String, content: String) {
-				meta(content = content) { attributes["property"] = property }
+	fun getDiscordCrawlerAuthenticationPage(): String {
+		return createHTML().html {
+			head {
+				fun setMetaProperty(property: String, content: String) {
+					meta(content = content) { attributes["property"] = property }
+				}
+				title("Login • Loritta")
+				setMetaProperty("og:site_name", "Loritta")
+				setMetaProperty("og:title", "Painel da Loritta")
+				setMetaProperty("og:description", "Meu painel de configuração, aonde você pode me configurar para deixar o seu servidor único e incrível!")
+				setMetaProperty("og:image", loritta.instanceConfig.loritta.website.url + "assets/img/loritta_dashboard.png")
+				setMetaProperty("og:image:width", "320")
+				setMetaProperty("og:ttl", "660")
+				setMetaProperty("og:image:width", "320")
+				setMetaProperty("theme-color", "#7289da")
+				meta("twitter:card", "summary_large_image")
 			}
-			title("Login • Loritta")
-			setMetaProperty("og:site_name", "Loritta")
-			setMetaProperty("og:title", "Painel da Loritta")
-			setMetaProperty("og:description", "Meu painel de configuração, aonde você pode me configurar para deixar o seu servidor único e incrível!")
-			setMetaProperty("og:image", loritta.instanceConfig.loritta.website.url + "assets/img/loritta_dashboard.png")
-			setMetaProperty("og:image:width", "320")
-			setMetaProperty("og:ttl", "660")
-			setMetaProperty("og:image:width", "320")
-			setMetaProperty("theme-color", "#7289da")
-			meta("twitter:card", "summary_large_image")
-		}
-		body {
-			p {
-				+ "Parabéns, você encontrou um easter egg!"
+			body {
+				p {
+					+ "Parabéns, você encontrou um easter egg!"
+				}
 			}
 		}
 	}
-}
 }

@@ -141,7 +141,8 @@ class UpdateServerConfigController {
 				"timers" to TimersPayload::class.java,
 				"premium" to PremiumKeyPayload::class.java,
 				"badge" to CustomBadgePayload::class.java,
-				"daily_multiplier" to DailyMultiplierPayload::class.java
+				"daily_multiplier" to DailyMultiplierPayload::class.java,
+				"level" to LevelPayload::class.java
 		)
 
 		val payloadHandlerClass = payloadHandlers[type]

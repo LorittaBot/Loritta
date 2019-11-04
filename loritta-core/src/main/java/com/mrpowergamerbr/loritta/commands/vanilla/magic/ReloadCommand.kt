@@ -17,9 +17,15 @@ import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.dao.LevelConfig
 import net.perfectdreams.loritta.dao.ReactionOption
+import net.perfectdreams.loritta.tables.LevelAnnouncementConfigs
+import net.perfectdreams.loritta.tables.RolesByExperience
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.levels.LevelUpAnnouncementType
+import net.perfectdreams.loritta.utils.levels.RoleGiveType
 import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import kotlin.concurrent.thread
@@ -32,6 +38,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val arg0 = context.rawArgs.getOrNull(0)
 		val arg1 = context.rawArgs.getOrNull(1)
+		val arg2 = context.rawArgs.getOrNull(2)
 
 		if (arg0 == "posts") {
 			net.perfectdreams.loritta.website.LorittaWebsite.INSTANCE.blog.posts = net.perfectdreams.loritta.website.LorittaWebsite.INSTANCE.blog.loadAllBlogPosts()
@@ -221,6 +228,54 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			}
 
 			context.sendMessage("Adicionado configuração genérica para o reaction role! ID: ${reactionRole.id.value}")
+			return
+		}
+
+		if (arg0 == "add_role_by_level") {
+			val reactionRole = transaction(Databases.loritta) {
+				RolesByExperience.insertAndGetId {
+					it[RolesByExperience.guildId] = 297732013006389252L
+					it[RolesByExperience.requiredExperience] = arg1!!.toLong()
+					it[RolesByExperience.roles] = arrayOf(arg2!!.toLong())
+				}
+			}
+
+			context.sendMessage("Adicionado configuração de nível por cargo por XP! ID: ${reactionRole.value}")
+			return
+		}
+
+		if (arg0 == "inject_level_config") {
+			val levelConfig = transaction(Databases.loritta) {
+				LevelConfig.new {
+					this.roleGiveType = RoleGiveType.STACK
+					this.noXpRoles = arrayOf()
+					this.noXpChannels = arrayOf()
+				}
+			}
+
+			val config = loritta.getOrCreateServerConfig(context.guild.idLong)
+
+			transaction(Databases.loritta) {
+				config.levelConfig = levelConfig
+			}
+
+			context.sendMessage("Adicionado configuração de level up! ID: ${levelConfig.id.value}")
+			return
+		}
+
+		if (arg0 == "add_announcement_by_level") {
+			val config = loritta.getOrCreateServerConfig(context.guild.idLong)
+
+			val reactionRole = transaction(Databases.loritta) {
+				LevelAnnouncementConfigs.insertAndGetId {
+					it[levelConfig] = config.levelConfig!!.id
+					it[type] = LevelUpAnnouncementType.valueOf(arg1!!)
+					it[channelId] = arg2!!.toLongOrNull()
+					it[message] = "{@user} Yay, você passou de {previous-level} para {level}!! Antes você tinha {previous-xp} mas devido a toda sua força e determinação você passou para {xp} experiência!"
+				}
+			}
+
+			context.sendMessage("Adicionado notificação de level up por XP! ID: ${reactionRole.value}")
 			return
 		}
 
