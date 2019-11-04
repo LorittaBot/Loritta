@@ -147,7 +147,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 				idx++
 				currentY += 53
 			} else if (FeatureFlags.UPDATE_IN_GUILD_STATS_ON_RANK_FAILURE) {
-				if (!profile.isInGuild) {
+				if (profile.isInGuild) {
 					transaction(Databases.loritta) {
 						profile.isInGuild = false
 					}
