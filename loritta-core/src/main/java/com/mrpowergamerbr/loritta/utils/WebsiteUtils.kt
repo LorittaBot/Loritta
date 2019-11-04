@@ -613,7 +613,7 @@ object WebsiteUtils {
 			}
 
 			jsonObject(
-					"roleGiveType" to (levelConfig?.roleGiveType?.toString() ?: RoleGiveType.STACK),
+					"roleGiveType" to (levelConfig?.roleGiveType ?: RoleGiveType.STACK).toString(),
 					"noXpChannels" to (levelConfig?.noXpChannels?.toList()?.toJsonArray() ?: jsonArray()),
 					"noXpRoles" to (levelConfig?.noXpRoles?.toList()?.toJsonArray() ?: jsonArray()),
 					"announcements" to announcementArray,
