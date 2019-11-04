@@ -39,7 +39,7 @@ class NextGenProfileCreator : ProfileCreator {
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
 
-		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl)!!.getScaledInstance(147, 147, BufferedImage.SCALE_SMOOTH)
+		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl)!!.getScaledInstance(167, 167, BufferedImage.SCALE_SMOOTH)
 
 		graphics.drawImage(background.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH), 0, 0, null)
 
