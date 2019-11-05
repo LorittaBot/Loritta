@@ -14,6 +14,7 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
+import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.tables.LevelAnnouncementConfigs
 import net.perfectdreams.loritta.tables.RolesByExperience
 import net.perfectdreams.loritta.utils.Emotes
@@ -221,23 +222,26 @@ class ExperienceModule : MessageReceivedModule {
 			}
 		}
 
-		val configs = transaction(Databases.loritta) {
-			RolesByExperience.select {
-				RolesByExperience.guildId eq guild.idLong
-			}.toMutableList()
-		}
+		if (guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) {
+			val configs = transaction(Databases.loritta) {
+				RolesByExperience.select {
+					RolesByExperience.guildId eq guild.idLong
+				}.toMutableList()
+			}
 
-		val matched = configs.filter { guildProfile.xp >= it[RolesByExperience.requiredExperience] }
+			val matched = configs.filter { guildProfile.xp >= it[RolesByExperience.requiredExperience] }
 
-		if (matched.isNotEmpty()) {
-			val giveRoles = matched.flatMap { it[RolesByExperience.roles].map { guild.getRoleById(it) } }
+			if (matched.isNotEmpty()) {
+				val giveRoles = matched.flatMap { it[RolesByExperience.roles].mapNotNull { guild.getRoleById(it) } }
+						.filter { guild.selfMember.canInteract(it) } // caso seja um cargo que a Lori não consiga dar, apenas ignore!
 
-			val shouldGiveRoles = !member.roles.containsAll(giveRoles)
+				val shouldGiveRoles = !member.roles.containsAll(giveRoles)
 
-			if (shouldGiveRoles) {
-				val missingRoles = giveRoles.toMutableList().apply { this.removeAll(member.roles) }
-				guild.modifyMemberRoles(member, member.roles.toMutableList().apply { this.addAll(missingRoles) })
-						.queue()
+				if (shouldGiveRoles) {
+					val missingRoles = giveRoles.toMutableList().apply { this.removeAll(member.roles) }
+					guild.modifyMemberRoles(member, member.roles.toMutableList().apply { this.addAll(missingRoles) })
+							.queue()
+				}
 			}
 		}
 	}
