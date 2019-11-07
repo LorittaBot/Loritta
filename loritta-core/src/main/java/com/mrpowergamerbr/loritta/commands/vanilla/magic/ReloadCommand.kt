@@ -445,25 +445,11 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			}
 			return
 		}
-		val oldCommandCount = loritta.legacyCommandManager.commandMap.size
-
-		val file = File(System.getProperty("conf") ?: "./loritta.conf")
-		loritta.config = Constants.HOCON_MAPPER.readValue(file.readText())
-		val file2 = File(System.getProperty("discordConf") ?: "./discord.conf")
-		loritta.discordConfig = Constants.HOCON_MAPPER.readValue(file2.readText())
-
-		loritta.generateDummyServerConfig()
-		LorittaLauncher.loritta.loadCommandManager()
-		loritta.loadLegacyLocales()
-		loritta.loadFanArts()
-
-		loritta.initMongo()
-
-		GlobalHandler.generateViews()
 
 		context.reply(
 				LoriReply(
-						"Fui recarregada com sucesso! **(${loritta.legacyCommandManager.commandMap.size} comandos ativados, ${loritta.legacyCommandManager.commandMap.size - oldCommandCount} comandos adicionados)**"
+						"Mas... cadê o sub argumento?",
+						Emotes.LORI_SHRUG
 				)
 		)
 	}
