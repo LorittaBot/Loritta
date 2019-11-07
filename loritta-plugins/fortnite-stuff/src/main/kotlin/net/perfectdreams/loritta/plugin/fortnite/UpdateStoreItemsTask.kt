@@ -56,6 +56,8 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 						logger.info { "Updated ${apiId} items locale" }
 						m.itemsInfo[apiId] = jsonParser.parse(
 								HttpRequest.get("https://fnapi.me/api/items/all?lang=$apiId")
+										.connectTimeout(15_000)
+										.readTimeout(15_000)
 										.header("Authorization", com.mrpowergamerbr.loritta.utils.loritta.config.fortniteApi.token)
 										.body()
 						)["data"].array
@@ -97,12 +99,12 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 			logger.info { "Updating shop for ${locale.id}... API Locale ID is $apiLocaleId, Shop Data is ${shopsData[apiLocaleId]}" }
 
 			val shopData = shopsData[apiLocaleId]?.await() ?: continue
-			val newUpdatedAt = shopData["updateAt"].long
+			val newUpdatedAt = shopData["general"]["featuredStoreUpdate"].long + shopData["general"]["dailyStoreUpdate"].long
 			val updatedAt = lastUpdatedAt.getOrDefault(apiLocaleId, 0L)
 
 			val firstUpdate = updatedAt == 0L
 
-			logger.info { "Last shop update for $apiLocaleId was at ${shopData["updateAt"].long}"}
+			logger.info { "Last shop update for $apiLocaleId was at ${shopData["updateAt"].long} New updated at = $newUpdatedAt"}
 
 			if (updatedAt != newUpdatedAt) {
 				lastUpdatedAt[apiLocaleId] = newUpdatedAt
@@ -206,7 +208,10 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 	}
 
 	private fun getShopData(localeId: String): JsonObject {
+		logger.info { "Getting shop data for locale $localeId" }
 		val shop = HttpRequest.get("https://fnapi.me/api/shop?lang=$localeId")
+				.connectTimeout(15_000)
+				.readTimeout(15_000)
 				.header("Authorization", loritta.config.fortniteApi.token)
 				.body()
 
@@ -214,7 +219,11 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 	}
 
 	fun getNewsData(gameMode: String, localeId: String): JsonObject {
+		logger.info { "Getting news data (game mode: $gameMode) for locale $localeId" }
+
 		val news = HttpRequest.get("https://fnapi.me/api/news/?type=$gameMode&lang=$localeId")
+				.connectTimeout(15_000)
+				.readTimeout(15_000)
 				.header("Authorization", loritta.config.fortniteApi.token)
 				.body()
 

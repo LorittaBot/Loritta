@@ -19,7 +19,7 @@ class FortniteShopCommand(val m: FortniteStuff) : LorittaDiscordCommand(arrayOf(
 	suspend fun root(context: DiscordCommandContext, locale: BaseLocale) {
 		var storeImage: ByteArray? = null
 
-		if (loritta.config.isOwner(context.userHandle.idLong) && context.args.getOrNull(0) == "force_resend") {
+		if (loritta.config.isOwner(context.userHandle.idLong) && context.args.getOrNull(0) == "force_notify_resend") {
 			context.reply(
 					"Enviando imagem da loja do Fortnite em todos os servidores que possuem a funcionalidade ativada..."
 			)
