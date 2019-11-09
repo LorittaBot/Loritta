@@ -298,14 +298,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				// Deletar configurações
 				logger.trace { "Deleting all ${e.guild} configurations..."}
 				val serverConfig = ServerConfig.findById(e.guild.idLong)
-				logger.trace { "Deleting ${e.guild} configs..."}
-				val donationConfig = serverConfig?.donationConfig
-				val birthdayConfig = serverConfig?.birthdayConfig
 
 				logger.trace { "Deleting ${e.guild} config..."}
 				serverConfig?.delete()
-				donationConfig?.delete()
-				birthdayConfig?.delete()
 
 				logger.trace { "Deleting all ${e.guild}'s giveaways..."}
 				val allGiveaways = Giveaway.find {
