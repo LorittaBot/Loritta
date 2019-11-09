@@ -348,12 +348,12 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				}
 
 				// Executar comandos
-				if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
-					return@launch
-
 				if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser)) {
 					return@launch
 				}
+				
+				if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
+					return@launch
 			}
 		}
 	}
