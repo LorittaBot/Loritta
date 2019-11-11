@@ -20,7 +20,7 @@ dependencies {
 tasks {
 	compileKotlin2Js {
 		kotlinOptions {
-			outputFile = "${sourceSets.main.get().output.resourcesDir}/output.js"
+			outputFile = "${sourceSets.main.get().output.resourcesDir}/SpicyMorenitta.js"
 			sourceMap = true
 		}
 	}

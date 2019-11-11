@@ -14,7 +14,7 @@ import org.w3c.dom.HTMLElement
 import kotlin.browser.document
 
 object TrunfoGame {
-	var nintendoWfc = Audio("nintendo_wfc.mp3")
+	val nintendoWfc by lazy { Audio("nintendo_wfc.mp3") }
 
 	fun start() {
 		document.onDOMReady {

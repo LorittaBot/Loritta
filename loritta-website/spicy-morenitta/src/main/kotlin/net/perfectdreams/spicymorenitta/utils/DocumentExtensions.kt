@@ -2,6 +2,7 @@ package net.perfectdreams.spicymorenitta.utils
 
 import org.w3c.dom.*
 import org.w3c.dom.events.Event
+import kotlin.browser.window
 
 fun <T> ParentNode.select(query: String): T {
     return this.querySelector(query) as T
@@ -42,3 +43,20 @@ fun Element.onMouseEnter(callback: (Event) -> (Unit)) {
 fun Element.onMouseLeave(callback: (Event) -> (Unit)) {
     this.addEventListener("mouseleave", callback)
 }
+
+fun Element.offset(): Offset {
+    val rect = this.getBoundingClientRect()
+    val scrollLeft = window.pageXOffset
+    val scrollTop = window.pageYOffset
+    return Offset(
+            rect.top + scrollTop,
+            rect.left + scrollLeft
+    )
+}
+
+fun Element.width() = this.getBoundingClientRect().width
+
+data class Offset(
+        val top: Double,
+        val left: Double
+)

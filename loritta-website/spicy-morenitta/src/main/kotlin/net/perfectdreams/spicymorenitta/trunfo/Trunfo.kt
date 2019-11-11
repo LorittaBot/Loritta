@@ -24,8 +24,8 @@ object Trunfo : Logging {
 	var player2Name: String = "???"
 	var player2Avatar: String = "???"
 	var isMyTurn: Boolean = false
-	var errou = Audio("faustao_errou.mp3")
-	var dogResidue = Audio("dog_residue.mp3")
+	val errou by lazy { Audio("faustao_errou.mp3") }
+	val dogResidue by lazy { Audio("dog_residue.mp3") }
 
 	@JsName("connectToServer")
 	fun connectToServer() {

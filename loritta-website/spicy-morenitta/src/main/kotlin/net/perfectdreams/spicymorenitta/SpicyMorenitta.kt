@@ -29,6 +29,7 @@ import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.utils.locale.BaseLocale
 import net.perfectdreams.spicymorenitta.views.BaseView
 import net.perfectdreams.spicymorenitta.ws.PingCommand
+import oldMain
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.WebSocket
@@ -121,10 +122,12 @@ class SpicyMorenitta : Logging {
 			return
 		}
 
-		if (true) {
+		if (false) {
 			TrunfoGame.start()
 			return
 		}
+
+		oldMain(arrayOf())
 
 		// From old website
 		val darkThemeCookie = CookiesUtils.readCookie("darkTheme")
@@ -297,11 +300,10 @@ class SpicyMorenitta : Logging {
 		debug("Current path is $path")
 		debug("Path without locale is ${WebsiteUtils.getPathWithoutLocale()}")
 
-		val route = routes.firstOrNull { it.matches(WebsiteUtils.getPathWithoutLocale()) }
+		var route = routes.firstOrNull { it.matches(WebsiteUtils.getPathWithoutLocale()) }
 		if (route == null) {
-			warn("No route for ${WebsiteUtils.getPathWithoutLocale()} found! Bug?")
-			hideLoadingScreen()
-			return
+			warn("No route for ${WebsiteUtils.getPathWithoutLocale()} found! Bug? Defaulting to UpdateNavbarSizerPostRender!")
+			route = UpdateNavbarSizePostRender(WebsiteUtils.getPathWithoutLocale())
 		}
 
 		val params = route.getPathParameters(WebsiteUtils.getPathWithoutLocale())
@@ -368,40 +370,42 @@ class SpicyMorenitta : Logging {
 		debug("Adding navbar options!")
 		val navbar = document.select<Element>("#navigation-bar")
 
-		val loginButton = document.select<Element>("#login-button")
+		val loginButton = document.select<Element?>("#login-button")
 
-		loginButton.onClick {
-			if (isOldWebsite) {
-				window.location.href = "${window.location.origin}/dashboard"
-			} else {
-				if (userIdentification == null) {
-					val popup = window.open("${window.location.origin}/auth", "popup", "height=700,width=400")
+		if (loginButton != null) {
+			loginButton.onClick {
+				if (isOldWebsite) {
+					window.location.href = "${window.location.origin}/dashboard"
+				} else {
+					if (userIdentification == null) {
+						val popup = window.open("${window.location.origin}/auth", "popup", "height=700,width=400")
+					}
 				}
 			}
-		}
 
-		val themeChangerButton = document.select<Element>("#theme-changer-button")
+			val themeChangerButton = document.select<Element>("#theme-changer-button")
 
-		themeChangerButton.onClick {
-			val body = document.body!!
+			themeChangerButton.onClick {
+				val body = document.body!!
 
-			if (body.hasClass("dark")) {
-				WebsiteThemeUtils.changeWebsiteThemeTo(WebsiteThemeUtils.WebsiteTheme.DEFAULT, false)
-			} else {
-				WebsiteThemeUtils.changeWebsiteThemeTo(WebsiteThemeUtils.WebsiteTheme.DARK_THEME, false)
+				if (body.hasClass("dark")) {
+					WebsiteThemeUtils.changeWebsiteThemeTo(WebsiteThemeUtils.WebsiteTheme.DEFAULT, false)
+				} else {
+					WebsiteThemeUtils.changeWebsiteThemeTo(WebsiteThemeUtils.WebsiteTheme.DARK_THEME, false)
+				}
 			}
-		}
 
-		val hamburgerButton = document.select<Element>("#hamburger-menu-button")
+			val hamburgerButton = document.select<Element>("#hamburger-menu-button")
 
-		hamburgerButton.onClick {
-			debug("Clicked on the hamburger button!")
-			if (navbar.hasClass("expanded")) {
-				navbar.removeClass("expanded")
-				document.body!!.style.overflowY = ""
-			} else {
-				navbar.addClass("expanded")
-				document.body!!.style.overflowY = "hidden" // Para remover as scrollbars e apenas deixar as scrollbars da navbar
+			hamburgerButton.onClick {
+				debug("Clicked on the hamburger button!")
+				if (navbar.hasClass("expanded")) {
+					navbar.removeClass("expanded")
+					document.body!!.style.overflowY = ""
+				} else {
+					navbar.addClass("expanded")
+					document.body!!.style.overflowY = "hidden" // Para remover as scrollbars e apenas deixar as scrollbars da navbar
+				}
 			}
 		}
 
