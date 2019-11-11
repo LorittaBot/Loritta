@@ -91,6 +91,7 @@ class MessageListener(val m: WatchdogBot) : ListenerAdapter() {
 												header("Authorization", clusterInfo.apiKey)
 												body = Gson().toJson(
 														jsonObject(
+																"type" to "setRestartTimer",
 																"willRestartAt" to whenItWillBeRestarted
 														)
 												)
