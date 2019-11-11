@@ -23,6 +23,7 @@ class UserRoute : Jooby() {
 		use(SponsorsRedirectController::class.java)
 		use(BlogController::class.java)
 		use(BlogPostController::class.java)
+		use(CommunityGuildelinesController::class.java)
 
 		// ===[ LANDING PAGES ]===
 		use(BrazilianBotLandingPageController::class.java)
