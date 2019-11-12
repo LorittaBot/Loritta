@@ -23,8 +23,10 @@ import net.perfectdreams.loritta.commands.LoriToolsQuirkyStuffCommand
 import net.perfectdreams.loritta.commands.SouTopDoadorCommand
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.listeners.AddReactionListener
+import net.perfectdreams.loritta.listeners.AddReactionForLoriBanListener
 import net.perfectdreams.loritta.listeners.BoostGuildListener
 import net.perfectdreams.loritta.listeners.GetCandyListener
+import net.perfectdreams.loritta.modules.AddReactionForStaffLoriBanModule
 import net.perfectdreams.loritta.modules.DropCandyModule
 import net.perfectdreams.loritta.modules.QuirkyModule
 import net.perfectdreams.loritta.modules.ThankYouLoriModule
@@ -144,13 +146,15 @@ class QuirkyStuff : DiscordPlugin() {
         registerEventListeners(
                 AddReactionListener(config),
                 BoostGuildListener(config),
-                GetCandyListener(config)
+                GetCandyListener(config),
+                AddReactionForLoriBanListener(config)
         )
 
         registerMessageReceivedModules(
                 QuirkyModule(config),
                 ThankYouLoriModule(config),
-                DropCandyModule(config)
+                DropCandyModule(config),
+                AddReactionForStaffLoriBanModule(config)
         )
 
         registerCommand(LoriToolsQuirkyStuffCommand(this))
