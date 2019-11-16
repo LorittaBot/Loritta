@@ -121,4 +121,17 @@ object ServerConfig {
 			val id: String,
 			val name: String
 	)
+
+	@Serializable
+	class WebAuditLogWrapper(
+			val users: List<SelfMember>,
+			val entries: List<WebAuditLogEntry>
+	)
+
+	@Serializable
+	class WebAuditLogEntry(
+			val id: Long,
+			val executedAt: Long,
+			val type: String
+	)
 }

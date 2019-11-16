@@ -5,7 +5,9 @@ import kotlin.browser.document
 import kotlin.js.Json
 import kotlin.js.json
 
-object ConfigureModerationView {
+object 
+
+ConfigureModerationView {
 	fun start() {
 		document.addEventListener("DOMContentLoaded", {
 			val serverConfig = LoriDashboard.loadServerConfig()

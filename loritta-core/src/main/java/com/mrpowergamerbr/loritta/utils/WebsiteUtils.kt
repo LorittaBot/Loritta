@@ -204,6 +204,8 @@ object WebsiteUtils {
 			variables["legacy_asset_hash_${asset.split("/").last().split(".").first()}"] = WebsiteAssetsHashes.getLegacyAssetHash(asset)
 		}
 
+		variables["asset_hash_app"] = WebsiteAssetsHashes.getAssetHash("assets/js/app.js")
+
 		if (req.session().isSet("discordAuth")) {
 			val discordAuth = Loritta.GSON.fromJson<TemmieDiscordAuth>(req.session()["discordAuth"].value())
 			try {

@@ -19,10 +19,7 @@ import kotlinx.html.style
 import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.parse
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
-import net.perfectdreams.spicymorenitta.routes.DashboardRoute
-import net.perfectdreams.spicymorenitta.routes.FanArtsRoute
-import net.perfectdreams.spicymorenitta.routes.HomeRoute
-import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
+import net.perfectdreams.spicymorenitta.routes.*
 import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.GeneralDashboardRoute
 import net.perfectdreams.spicymorenitta.trunfo.TrunfoGame
 import net.perfectdreams.spicymorenitta.utils.*
@@ -30,10 +27,7 @@ import net.perfectdreams.spicymorenitta.utils.locale.BaseLocale
 import net.perfectdreams.spicymorenitta.views.BaseView
 import net.perfectdreams.spicymorenitta.ws.PingCommand
 import oldMain
-import org.w3c.dom.Element
-import org.w3c.dom.HTMLDivElement
-import org.w3c.dom.WebSocket
-import org.w3c.dom.asList
+import org.w3c.dom.*
 import kotlin.browser.document
 import kotlin.browser.window
 import kotlin.collections.set
@@ -48,7 +42,6 @@ var switchPageStart = 0.0
 val pageCache = mutableMapOf<String, String>()
 var ignoreCacheRequests = false
 var navbarIsSetup = false
-external var isOldWebsite: Boolean
 
 val http = HttpClient(Js) {
 	expectSuccess = false // Não dar erro ao receber status codes 400-500
@@ -70,11 +63,13 @@ class SpicyMorenitta : Logging {
 	val routes = mutableListOf(
 			HomeRoute(),
 			FanArtsRoute(this),
-			DashboardRoute(this),
+			// DashboardRoute(this),
 			GeneralDashboardRoute(this),
 			UpdateNavbarSizePostRender("/support"),
 			UpdateNavbarSizePostRender("/blog"),
-			UpdateNavbarSizePostRender("/extended")
+			UpdateNavbarSizePostRender("/extended"),
+			AuditLogRoute(this),
+			LevelUpRoute(this)
 	)
 	val validWebsiteLocaleIds = mutableListOf(
 			"br",
@@ -228,6 +223,13 @@ class SpicyMorenitta : Logging {
 				onPageChange(socket, window.location.pathname, null)
 			}
 		}
+
+		window.onpopstate = {
+			debug("History changed! Trying to load the new page...")
+			launch {
+				sendSwitchPageRequest(socket, window.location.pathname)
+			}
+		}
 	}
 
 	@UseExperimental(ImplicitReflectionSerializer::class)
@@ -262,8 +264,12 @@ class SpicyMorenitta : Logging {
 		cloned.setAttribute("href", "/br/dashboard")
 		setUpPageSwitcher(cloned, "/br/dashboard")
 
+		val extension = if (newUser.avatar?.startsWith("a_") == true) { // Avatares animados no Discord começam com "_a"
+			"gif"
+		} else { "png" }
+
 		cloned.append {
-			img(src = "https://cdn.discordapp.com/avatars/${newUser.id}/${newUser.avatar}.png?size=256") {
+			img(src = "https://cdn.discordapp.com/avatars/${newUser.id}/${newUser.avatar}.${extension}?size=256") {
 				style = """    font-size: 0px;
     line-height: 0px;
     width: 40px;
@@ -374,7 +380,7 @@ class SpicyMorenitta : Logging {
 
 		if (loginButton != null) {
 			loginButton.onClick {
-				if (isOldWebsite) {
+				if (true) {
 					window.location.href = "${window.location.origin}/dashboard"
 				} else {
 					if (userIdentification == null) {
@@ -417,8 +423,22 @@ class SpicyMorenitta : Logging {
 
 	fun setUpLinkPreloader() {
 		document.querySelectorAll("a[data-enable-link-preload=\"true\"]:not([data-preload-activated=\"true\"])").asList().forEach {
-			debug("Setting up page switcher for $it")
-			setUpPageSwitcher(it as Element, it.getAttribute("href")!!)
+			if (it is Element) {
+				debug("Setting up page switcher for $it")
+
+				var pageUrl = it.getAttribute("href")!!
+
+				if (pageUrl.startsWith("http")) {
+					if (!pageUrl.startsWith(window.location.origin)) // Mesmo que seja no mesmo domínio, existe as políticas de CORS
+						return@forEach
+
+					val location = document.createElement("a") as HTMLAnchorElement
+					location.href = pageUrl
+					pageUrl = location.pathname
+				}
+
+				setUpPageSwitcher(it, pageUrl)
+			}
 		}
 	}
 
@@ -532,9 +552,9 @@ class SpicyMorenitta : Logging {
 			this.innerHTML = content
 		}
 
-		val temporaryBody = temporary.querySelector("#content")!!
+		val temporaryBody = temporary.select<HTMLDivElement?>("#content")
 
-		val title = temporary.querySelector("title")?.innerHTML
+		val title = temporary.select<HTMLElement?>("title")?.innerHTML
 		debug("New title is $title")
 
 		if (title != null)
@@ -589,5 +609,16 @@ class SpicyMorenitta : Logging {
 	fun launch(block: suspend CoroutineScope.() -> Unit) {
 		val job = GlobalScope.launch(block = block)
 		pageSpecificTasks.add(job)
+	}
+
+	/**
+	 * Fixes the left sidebar after the content is switched
+	 */
+	fun fixLeftSidebarScroll(call: () -> (Unit)) {
+		val leftSidebar = document.select<HTMLDivElement>("#left-sidebar")
+		val oldScroll = leftSidebar.scrollTop
+		call.invoke()
+		val newLeftSidebar = document.select<HTMLDivElement>("#left-sidebar")
+		newLeftSidebar.scrollTop = oldScroll
 	}
 }

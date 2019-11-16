@@ -6,12 +6,15 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler
+import com.mrpowergamerbr.loritta.oauth2.SimpleUserIdentification
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.*
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.evaluate
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.utils.ActionType
+import net.perfectdreams.loritta.utils.auditlog.WebAuditLogUtils
 import org.jooby.Request
 import org.jooby.Response
 import java.io.ByteArrayInputStream
@@ -144,6 +147,23 @@ class ConfigureServerView : ConfigureView() {
 						response = handlePartner(serverConfig, receivedPayload)
 					}
 				}
+
+				val userIdentification = req.ifGet<SimpleUserIdentification>("userIdentification").get()
+
+				val actionType = WebAuditLogUtils.fromTargetType(type)
+
+				val params = if (actionType == ActionType.UNKNOWN) {
+					jsonObject("target_type" to target)
+				} else {
+					jsonObject()
+				}
+
+				WebAuditLogUtils.addEntry(
+						guild,
+						userIdentification.id.toLong(),
+						actionType,
+						params
+				)
 
 				loritta save serverConfig
 

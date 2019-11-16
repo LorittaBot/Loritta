@@ -11,6 +11,8 @@ import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.Autoro
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.ModerationPayload
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.ServerListPayload
 import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.utils.ActionType
+import net.perfectdreams.loritta.utils.auditlog.WebAuditLogUtils
 import org.jooby.Request
 import org.jooby.Response
 
@@ -90,6 +92,22 @@ class APIUpdateServerConfigView : NoVarsView() {
 		if (payloadHandlerClass != null) {
 			val payloadHandler = payloadHandlerClass.newInstance()
 			payloadHandler.process(config, userIdentification, loritta.getOrCreateServerConfig(serverConfig.guildId.toLong()), serverConfig, server)
+
+			val actionType = WebAuditLogUtils.fromTargetType(type)
+
+			val params = if (actionType == ActionType.UNKNOWN) {
+				jsonObject("target_type" to type)
+			} else {
+				jsonObject()
+			}
+
+			WebAuditLogUtils.addEntry(
+					server,
+					userIdentification.id.toLong(),
+					actionType,
+					params
+			)
+
 			loritta save serverConfig
 		} else {
 			payload["api:code"] = LoriWebCodes.MISSING_PAYLOAD_HANDLER

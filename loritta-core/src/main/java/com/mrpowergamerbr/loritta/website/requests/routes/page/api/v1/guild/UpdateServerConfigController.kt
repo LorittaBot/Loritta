@@ -15,6 +15,8 @@ import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.utils.ActionType
+import net.perfectdreams.loritta.utils.auditlog.WebAuditLogUtils
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -150,6 +152,22 @@ class UpdateServerConfigController {
 		if (payloadHandlerClass != null) {
 			val payloadHandler = payloadHandlerClass.getDeclaredConstructor().newInstance()
 			payloadHandler.process(config, userIdentification, newServerConfig, serverConfig, guild)
+
+			val actionType = WebAuditLogUtils.fromTargetType(type)
+
+			val params = if (actionType == ActionType.UNKNOWN) {
+				jsonObject("target_type" to type)
+			} else {
+				jsonObject()
+			}
+
+			WebAuditLogUtils.addEntry(
+					guildId.toLong(),
+					userIdentification.id.toLong(),
+					actionType,
+					params
+			)
+
 			loritta save serverConfig
 			res.status(Status.OK)
 			res.send(
