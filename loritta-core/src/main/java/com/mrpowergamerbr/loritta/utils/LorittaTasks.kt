@@ -37,6 +37,8 @@ object LorittaTasks {
 		scheduleWithFixedDelay(ApplyBansTask(), 0L, 60L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(SpawnGiveawayTask(), 0L, 1L, TimeUnit.HOURS)
 		scheduleWithFixedDelay(DeleteOldStoredMessagesTask(), 0L, 1L, TimeUnit.HOURS)
+		if (!loritta.isMaster)
+			scheduleWithFixedDelay(UpdateFanArtsTask(), 0L, 1L, TimeUnit.MINUTES)
 	}
 
 	fun scheduleWithFixedDelay(task: Runnable, initialDelay: Long, delay: Long, unit: TimeUnit) {
