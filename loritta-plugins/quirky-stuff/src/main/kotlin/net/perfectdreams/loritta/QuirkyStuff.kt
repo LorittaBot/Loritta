@@ -22,8 +22,8 @@ import net.perfectdreams.loritta.commands.DocesCommand
 import net.perfectdreams.loritta.commands.LoriToolsQuirkyStuffCommand
 import net.perfectdreams.loritta.commands.SouTopDoadorCommand
 import net.perfectdreams.loritta.dao.Payment
-import net.perfectdreams.loritta.listeners.AddReactionListener
 import net.perfectdreams.loritta.listeners.AddReactionForLoriBanListener
+import net.perfectdreams.loritta.listeners.AddReactionListener
 import net.perfectdreams.loritta.listeners.BoostGuildListener
 import net.perfectdreams.loritta.listeners.GetCandyListener
 import net.perfectdreams.loritta.modules.AddReactionForStaffLoriBanModule
@@ -31,6 +31,7 @@ import net.perfectdreams.loritta.modules.DropCandyModule
 import net.perfectdreams.loritta.modules.QuirkyModule
 import net.perfectdreams.loritta.modules.ThankYouLoriModule
 import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
+import net.perfectdreams.loritta.profile.badges.CanecaBadge
 import net.perfectdreams.loritta.profile.badges.HalloweenBadge
 import net.perfectdreams.loritta.tables.BoostedCandyChannels
 import net.perfectdreams.loritta.tables.CollectedCandies
@@ -164,6 +165,7 @@ class QuirkyStuff : DiscordPlugin() {
         // ===[ HALLOWEEN 2019 ]===
         registerCommand(DocesCommand())
         registerBadge(HalloweenBadge())
+        registerBadge(CanecaBadge())
 
         transaction(Databases.loritta) {
             SchemaUtils.createMissingTablesAndColumns(
