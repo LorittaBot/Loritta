@@ -210,7 +210,7 @@ class ExperienceModule : MessageReceivedModule {
 									val shouldNotifyThatUserCanDisable = previousLevel % 10
 
 									if (shouldNotifyThatUserCanDisable == 0) {
-										privateChannel.sendMessage(locale["modules.experience.howToDisableLevelNotifications", "`${guild.name.stripCodeMarks()}`", "`disablexpnotifications`", Emotes.LORI_YAY.toString()]).await()
+										privateChannel.sendMessage(locale["modules.levelUp.howToDisableLevelNotifications", "`${guild.name.stripCodeMarks()}`", "`xpnotifications`", Emotes.LORI_YAY.toString()]).await()
 									}
 								} catch (e: Exception) {
 									logger.warn { "Error while sending DM to ${event.author} due to level up ($previousLevel -> $newLevel)"}

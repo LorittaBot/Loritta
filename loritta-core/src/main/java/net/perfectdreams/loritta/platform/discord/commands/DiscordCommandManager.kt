@@ -25,6 +25,7 @@ import net.perfectdreams.loritta.api.entities.User
 import net.perfectdreams.loritta.commands.vanilla.`fun`.*
 import net.perfectdreams.loritta.commands.vanilla.social.RankGlobalCommand
 import net.perfectdreams.loritta.commands.vanilla.social.RepTopCommand
+import net.perfectdreams.loritta.commands.vanilla.social.XpNotificationsCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
@@ -52,6 +53,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
         registerCommand(AkinatorCommand())
         registerCommand(FanArtsCommand())
         registerCommand(RankGlobalCommand())
+        registerCommand(XpNotificationsCommand())
 
         contextManager.registerContext<User>(
                 { clazz: KClass<*> -> clazz.isSubclassOf(User::class) || clazz == User::class },
