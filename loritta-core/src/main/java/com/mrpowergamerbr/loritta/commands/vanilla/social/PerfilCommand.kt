@@ -23,6 +23,7 @@ import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
+import net.perfectdreams.loritta.tables.BotVotes
 import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.and
@@ -52,29 +53,10 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 				return usersWithRoles.contains(user.id)
 			}
 
-			try {
-				// biscord bots
-				if (System.currentTimeMillis() - lastQuery > 60000) {
-					val discordBotsResponse = HttpRequest.get("https://discordbots.org/api/bots/${loritta.discordConfig.discord.clientId}/votes?onlyids=1")
-							.authorization(loritta.discordConfig.discordBotList.apiKey)
-							.body()
-
-					lastQuery = System.currentTimeMillis()
-					userVotes = GSON.fromJson(discordBotsResponse)
-				}
-			} catch (e: Exception) {
-				e.printStackTrace()
-			}
-
-
-			val upvotedOnDiscordBots = try {
-				if (userVotes != null) {
-					userVotes!!.any { it.id == user.id }
-				} else {
-					false
-				}
-			} catch (e: Exception) {
-				false
+			val hasUpvoted = transaction(Databases.loritta) {
+				BotVotes.select {
+					BotVotes.userId eq user.idLong and (BotVotes.votedAt greaterEq System.currentTimeMillis() - (Constants.ONE_HOUR_IN_MILLISECONDS * 12))
+				}.count() != 0
 			}
 
 			val hasNotifyMeRole = hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "334734175531696128")
@@ -170,7 +152,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 				}
 				badges += ImageIO.read(File(Loritta.ASSETS + "ring.png"))
 			}
-			if (upvotedOnDiscordBots) badges += ImageIO.read(File(Loritta.ASSETS + "upvoted_badge.png"))
+			if (hasUpvoted) badges += ImageIO.read(File(Loritta.ASSETS + "upvoted_badge.png"))
 
 			return badges
 		}
