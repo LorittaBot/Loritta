@@ -127,7 +127,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 				it["memberCount"].int
 			}
 
-			if (settings.hideSharedServers) {
+			if (settings.hideSharedServers && !loritta.config.isOwner(context.handle.user.idLong)) {
 				servers = "*${context.legacyLocale["USERINFO_PrivacyOn"]}*"
 			} else {
 				servers = sharedServers.joinToString(separator = ", ", transform = { "`${it["name"].string}`" })
@@ -138,7 +138,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 				servers = servers.substring(0..1020) + "..."
 			}
 
-			embed.addField("\uD83C\uDF0E $sharedServersFieldTitle", servers, true)
+			embed.addField("\uD83C\uDF0E $sharedServersFieldTitle", servers, false)
 
 			embed.setFooter(context.legacyLocale["USERINFO_PrivacyInfo"], null)
 		}
@@ -159,7 +159,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			val lorittaProfile = loritta.getOrCreateLorittaProfile(user.id)
 			val settings = transaction(Databases.loritta) { lorittaProfile.settings }
 
-			if (settings.hidePreviousUsernames) {
+			if (settings.hidePreviousUsernames && !loritta.config.isOwner(context.handle.user.idLong)) {
 				val alsoKnownAs = "**" + context.legacyLocale.get("USERINFO_ALSO_KNOWN_AS") + "**\n*${locale["USERINFO_PrivacyOn"]}*"
 				setDescription(alsoKnownAs)
 			} else {

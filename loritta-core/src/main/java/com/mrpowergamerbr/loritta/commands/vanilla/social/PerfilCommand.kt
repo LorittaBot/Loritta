@@ -60,7 +60,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			val isLorittaPartner = hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "434512654292221952")
 			val isTranslator = hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "385579854336360449")
 			val isGitHubContributor = hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "505144985591480333")
-			val hasLoriStickerArt = hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, Constants.LORI_STICKERS_ROLE_ID)
+			val hasLoriStickerArt = loritta.fanArtArtists.any { it.id == user.id }
 			val isPocketDreamsStaff = hasRole(Constants.SPARKLYPOWER_GUILD_ID, "332650495522897920")
 
 			val badges = mutableListOf<BufferedImage>()
