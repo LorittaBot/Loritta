@@ -15,11 +15,15 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.tables.ExperienceRoleRates
 import net.perfectdreams.loritta.tables.LevelAnnouncementConfigs
 import net.perfectdreams.loritta.tables.RolesByExperience
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.FeatureFlags
 import net.perfectdreams.loritta.utils.levels.LevelUpAnnouncementType
+import net.perfectdreams.loritta.utils.levels.RoleGiveType
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.TimeUnit
@@ -135,7 +139,15 @@ class ExperienceModule : MessageReceivedModule {
 
 		mutex.withLock {
 			transaction(Databases.loritta) {
-				guildProfile.xp += gainedXp
+				val customRoleRates = ExperienceRoleRates.select {
+					ExperienceRoleRates.guildId eq event.guild.idLong and
+							(ExperienceRoleRates.role inList member.roles.map { it.idLong })
+				}.orderBy(ExperienceRoleRates.rate, SortOrder.DESC)
+						.firstOrNull()
+
+				val rate = customRoleRates?.getOrNull(ExperienceRoleRates.rate) ?: 1.0
+
+				guildProfile.xp += (gainedXp * rate).toLong()
 			}
 		}
 
@@ -230,17 +242,37 @@ class ExperienceModule : MessageReceivedModule {
 			}
 
 			val matched = configs.filter { guildProfile.xp >= it[RolesByExperience.requiredExperience] }
+					.sortedByDescending { it[RolesByExperience.requiredExperience] }
 
 			if (matched.isNotEmpty()) {
-				val giveRoles = matched.flatMap { it[RolesByExperience.roles].mapNotNull { guild.getRoleById(it) } }
+				val guildRoles = matched.flatMap { it[RolesByExperience.roles].mapNotNull { guild.getRoleById(it) } }
 						.filter { guild.selfMember.canInteract(it) } // caso seja um cargo que a Lori não consiga dar, apenas ignore!
 
-				val shouldGiveRoles = !member.roles.containsAll(giveRoles)
+				if (guildRoles.isEmpty())
+					return
 
-				if (shouldGiveRoles) {
-					val missingRoles = giveRoles.toMutableList().apply { this.removeAll(member.roles) }
-					guild.modifyMemberRoles(member, member.roles.toMutableList().apply { this.addAll(missingRoles) })
-							.queue()
+				if (levelConfig?.roleGiveType == RoleGiveType.REMOVE) {
+					val topRole = guildRoles.firstOrNull()
+
+					if (topRole != null) {
+						val memberNewRoleList = member.roles.toMutableList()
+
+						memberNewRoleList.removeAll(guildRoles)
+						memberNewRoleList.add(topRole)
+
+						if (!memberNewRoleList.containsAll(member.roles) || !member.roles.containsAll(memberNewRoleList)) {
+							guild.modifyMemberRoles(member, memberNewRoleList)
+									.queue()
+						}
+					}
+				} else {
+					val shouldGiveRoles = !member.roles.containsAll(guildRoles)
+
+					if (shouldGiveRoles) {
+						val missingRoles = guildRoles.toMutableList().apply { this.removeAll(member.roles) }
+						guild.modifyMemberRoles(member, member.roles.toMutableList().apply { this.addAll(missingRoles) })
+								.queue()
+					}
 				}
 			}
 		}

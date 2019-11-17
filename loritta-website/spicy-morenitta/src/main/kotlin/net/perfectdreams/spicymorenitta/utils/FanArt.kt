@@ -5,7 +5,7 @@ import kotlin.js.Date
 
 @Serializable
 data class FanArt(
-        val fileName: String,
-        @Serializable(with = TestSerializer::class) val createdAt: Date,
-        val tags: Set<String>
+		val fileName: String,
+		@Serializable(with = DateSerializer::class) val createdAt: Date,
+		val tags: Set<String>
 )

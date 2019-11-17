@@ -68,69 +68,40 @@ class AuditLogRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/
             div(classes = "pure-g") {
                 div(classes = "pure-u-1 pure-u-md-18-24") {
                     div {
-                        style = "margin-left: 10px; margin-right: 10;"
+                        style = "margin-left: 10px; margin-right: 10px;"
 
-                        val updateString = if (type.updateType == "updated") {
-                            locale["modules.auditLog.${type.updateType}"]
-                        } else {
-                            locale["modules.auditLog.generic"]
-                        }
+                        val updateString = locale["modules.auditLog.${type.updateType}"]
 
                         div(classes = "amino-title entry-title") {
                             style = "font-family: Lato,Helvetica Neue,Helvetica,Arial,sans-serif;"
 
-                            var isControl = false
-                            var ignoreNext = false
+                            locale.buildAsHtml(updateString, { num ->
+                                if (num == 0) {
+                                    + selfMember.name
 
-                            val genericStringBuilder = StringBuilder()
-
-                            for (ch in updateString) {
-                                if (ignoreNext) {
-                                    ignoreNext = false
-                                    continue
-                                }
-                                if (isControl) {
-                                    if (genericStringBuilder.isNotEmpty()) {
-                                        span {
-                                            style = "opacity: 0.8;"
-
-                                            + genericStringBuilder.toString()
-                                        }
-                                        genericStringBuilder.clear()
+                                    span {
+                                        style = "font-size: 0.8em; opacity: 0.6;"
+                                        + "#${selfMember.discriminator}"
                                     }
-
-                                    ignoreNext = true
-                                    isControl = false
-
-                                    val num = ch.toString().toInt()
-                                    if (num == 0) {
-                                        + selfMember.name
-
-                                        span {
-                                            style = "font-size: 0.8em; opacity: 0.6;"
-                                            + "#${selfMember.discriminator}"
-                                        }
-                                    }
-
-                                    if (num == 1) {
-                                        span {
-                                            var sectionName = when (type) {
-                                                ActionType.UPDATE_YOUTUBE -> "YouTube"
-                                                ActionType.UPDATE_TWITCH -> "Twitch"
-                                                else -> locale["modules.sectionNames.${type.sectionName}"]
-                                            }
-
-                                            + sectionName
-                                        }
-                                    }
-                                    continue
-                                }
-                                if (ch == '{') {
-                                    isControl = true
-                                    continue
                                 }
 
-                                genericStringBuilder.append(ch)
+                                if (num == 1) {
+                                    span {
+                                        val sectionName = when (type) {
+                                            ActionType.UPDATE_YOUTUBE -> "YouTube"
+                                            ActionType.UPDATE_TWITCH -> "Twitch"
+                                            else -> locale["modules.sectionNames.${type.sectionName}"]
+                                        }
+
+                                        + sectionName
+                                    }
+                                }
+                            }) { str ->
+                                span {
+                                    style = "opacity: 0.8;"
+
+                                    + str
+                                }
                             }
                         }
                         div(classes = "amino-title toggleSubText") {

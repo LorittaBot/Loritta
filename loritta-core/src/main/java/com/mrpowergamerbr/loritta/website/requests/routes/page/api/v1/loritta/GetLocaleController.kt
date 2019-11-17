@@ -28,6 +28,8 @@ class GetLocaleController {
 
 			if (value is String) {
 				localeEntries[it.key] = value
+			} else if (value is List<*>) {
+				localeEntries[it.key] = "list::${value.joinToString("\n")}"
 			}
 		}
 

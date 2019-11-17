@@ -442,7 +442,8 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 					RolesByExperience,
 					LevelAnnouncementConfigs,
 					LevelConfigs,
-					AuditLog
+					AuditLog,
+					ExperienceRoleRates
 			)
 		}
 	}

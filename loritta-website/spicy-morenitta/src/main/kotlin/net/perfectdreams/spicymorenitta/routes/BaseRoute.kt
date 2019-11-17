@@ -8,6 +8,7 @@ import kotlinx.html.js.i
 import kotlinx.html.js.onClickFunction
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
+import net.perfectdreams.spicymorenitta.utils.GoogleAdSense
 import net.perfectdreams.spicymorenitta.utils.Logging
 import net.perfectdreams.spicymorenitta.utils.select
 import org.w3c.dom.*
@@ -133,6 +134,8 @@ abstract class BaseRoute(val path: String) : Logging {
                     document.body?.appendChild(newScript)
                 }
             }
+
+            GoogleAdSense.renderAds()
 
             SpicyMorenitta.INSTANCE.setUpLinkPreloader()
             SpicyMorenitta.INSTANCE.setUpLazyLoad()

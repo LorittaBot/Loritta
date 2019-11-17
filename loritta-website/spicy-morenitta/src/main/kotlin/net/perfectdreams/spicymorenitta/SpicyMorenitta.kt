@@ -203,6 +203,8 @@ class SpicyMorenitta : Logging {
 
 			debug(window.location.pathname + " - " + WebsiteUtils.getPathWithoutLocale())
 
+			GoogleAdSense.renderAds()
+
 			AdvertisementUtils.checkIfUserIsBlockingAds()
 
 			launch {

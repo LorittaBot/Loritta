@@ -144,7 +144,8 @@ class UpdateServerConfigController {
 				"premium" to PremiumKeyPayload::class.java,
 				"badge" to CustomBadgePayload::class.java,
 				"daily_multiplier" to DailyMultiplierPayload::class.java,
-				"level" to LevelPayload::class.java
+				"level" to LevelPayload::class.java,
+				"reset_xp" to ResetXpPayload::class.java
 		)
 
 		val payloadHandlerClass = payloadHandlers[type]
@@ -161,12 +162,14 @@ class UpdateServerConfigController {
 				jsonObject()
 			}
 
-			WebAuditLogUtils.addEntry(
-					guildId.toLong(),
-					userIdentification.id.toLong(),
-					actionType,
-					params
-			)
+			if (actionType != ActionType.RESET_XP) {
+				WebAuditLogUtils.addEntry(
+						guildId.toLong(),
+						userIdentification.id.toLong(),
+						actionType,
+						params
+				)
+			}
 
 			loritta save serverConfig
 			res.status(Status.OK)

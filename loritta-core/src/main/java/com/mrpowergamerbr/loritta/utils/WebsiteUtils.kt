@@ -31,6 +31,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.dao.ReactionOption
+import net.perfectdreams.loritta.tables.ExperienceRoleRates
 import net.perfectdreams.loritta.tables.LevelAnnouncementConfigs
 import net.perfectdreams.loritta.tables.ReactionOptions
 import net.perfectdreams.loritta.tables.RolesByExperience
@@ -170,6 +171,12 @@ object WebsiteUtils {
 		// Então vamos fazer algumas pequenas gambiarras para retirar as listas antes de enviar para o website
 		val patchedLocales = BaseLocale(locale.id)
 		patchedLocales.localeEntries.putAll(locale.localeEntries.filter { it.value is String })
+		// Mas nós *precisamos* de listas no Kotlin/JS, então...
+		locale.localeEntries.filter { it.value is List<*> }.forEach {
+			val value = it.value as List<String>
+			// no frontend iremos apenas verificar se começa com "list::" e, se começar, iremos transformar em uma lista
+			patchedLocales.localeEntries[it.key] = "list::${value.joinToString("\n")}"
+		}
 
 		variables["baseLocale"] = Loritta.GSON.toJson(patchedLocales)
 		variables["localeAsJson"] = Loritta.GSON.toJson(legacyLocale.strings)
@@ -614,12 +621,26 @@ object WebsiteUtils {
 				)
 			}
 
+			val experienceRoleRates = ExperienceRoleRates.select {
+				ExperienceRoleRates.guildId eq guild.idLong
+			}
+			val experienceRoleRatesArray = jsonArray()
+			for (experienceRoleRate in experienceRoleRates) {
+				experienceRoleRatesArray.add(
+						jsonObject(
+								"role" to experienceRoleRate[ExperienceRoleRates.role].toString(),
+								"rate" to experienceRoleRate[ExperienceRoleRates.rate].toDouble()
+						)
+				)
+			}
+
 			jsonObject(
 					"roleGiveType" to (levelConfig?.roleGiveType ?: RoleGiveType.STACK).toString(),
 					"noXpChannels" to (levelConfig?.noXpChannels?.toList()?.toJsonArray() ?: jsonArray()),
 					"noXpRoles" to (levelConfig?.noXpRoles?.toList()?.toJsonArray() ?: jsonArray()),
 					"announcements" to announcementArray,
-					"rolesByExperience" to rolesByExperienceArray
+					"rolesByExperience" to rolesByExperienceArray,
+					"experienceRoleRates" to experienceRoleRatesArray
 			)
 		}
 

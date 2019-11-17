@@ -55,7 +55,8 @@ object ServerConfig {
 			val noXpRoles: List<Long>,
 			val noXpChannels: List<Long>,
 			val announcements: List<Announcement>,
-			val rolesByExperience: List<RoleByExperience>
+			val rolesByExperience: List<RoleByExperience>,
+			val experienceRoleRates: List<ExperienceRoleRate>
 	)
 
 	@Serializable
@@ -69,6 +70,12 @@ object ServerConfig {
 	class RoleByExperience(
 			val requiredExperience: String,
 			val roles: List<String>
+	)
+
+	@Serializable
+	class ExperienceRoleRate(
+			val role: Long,
+			val rate: Double
 	)
 
 	@Serializable

@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.dao.LevelConfig
+import net.perfectdreams.loritta.tables.ExperienceRoleRates
 import net.perfectdreams.loritta.tables.LevelAnnouncementConfigs
 import net.perfectdreams.loritta.tables.RolesByExperience
 import net.perfectdreams.loritta.utils.levels.LevelUpAnnouncementType
@@ -26,7 +27,7 @@ class LevelPayload : ConfigPayloadType("level") {
 			}
 
 			// Main
-			levelConfig.roleGiveType = RoleGiveType.STACK
+			levelConfig.roleGiveType = RoleGiveType.valueOf(payload["roleGiveType"].string)
 			levelConfig.noXpChannels = payload["noXpChannels"].array.map { it.long }.toTypedArray()
 			levelConfig.noXpRoles = payload["noXpRoles"].array.map { it.long }.toTypedArray()
 
@@ -64,10 +65,29 @@ class LevelPayload : ConfigPayloadType("level") {
 
 				RolesByExperience.insert {
 					it[RolesByExperience.guildId] = serverConfig.guildId
-					it[RolesByExperience.requiredExperience] = requiredExperience
+					it[RolesByExperience.requiredExperience] = Math.max(Math.min(10000000, requiredExperience), 0)
 					it[RolesByExperience.roles] = roles
 				}
 			}
+
+			// Rates personalizados por experiência
+			val experienceRoleRates = payload["experienceRoleRates"].array
+			// Deletar todas que já existem
+			ExperienceRoleRates.deleteWhere {
+				ExperienceRoleRates.guildId eq serverConfig.guildId
+			}
+
+			for (experienceRoleRate in experienceRoleRates.map { it.obj }) {
+				val rate = experienceRoleRate["rate"].double
+				val roleId = experienceRoleRate["role"].long
+
+				ExperienceRoleRates.insert {
+					it[ExperienceRoleRates.guildId] = serverConfig.guildId
+					it[ExperienceRoleRates.role] = roleId
+					it[ExperienceRoleRates.rate] = Math.max(Math.min(10.0, rate), 0.0)
+				}
+			}
+
 
 			serverConfig.levelConfig = levelConfig // Yay!!
 		}

@@ -6,9 +6,15 @@ import io.ktor.client.response.readText
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.html.*
+import kotlinx.html.js.onChangeFunction
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.http
+import org.w3c.dom.HTMLInputElement
+import kotlin.browser.document
 import kotlin.browser.window
+import kotlin.dom.addClass
+import kotlin.dom.removeClass
 
 object WebsiteUtils : Logging {
     fun getUrlWithLocale(): String {
@@ -88,4 +94,47 @@ object WebsiteUtils : Logging {
         MANAGER(true),
         MEMBER(false)
     }
+
+    var currentRadioButtonIdx = 0
+}
+
+fun DIV.createRadioButton(queryName: String, title: String, subTitle: String, stringValue: String, checked: Boolean) {
+    label {
+        div(classes = "discord-radio-button ${if (checked) "active" else ""}") {
+            input(InputType.radio) {
+                id = "radio-button-${WebsiteUtils.currentRadioButtonIdx}"
+                hidden = true
+                name = queryName
+                this.value = stringValue
+                this.checked = checked
+
+                onChangeFunction = { event ->
+                    document.selectAll<HTMLInputElement>("input[name='$queryName']").forEach { // Deselect
+                        if (it != event.target)
+                            it.parentElement?.removeClass("active")
+                    }
+
+                    (event.target as HTMLInputElement).parentElement?.addClass("active")
+                }
+            }
+
+            id = "prettified-radio-button-${WebsiteUtils.currentRadioButtonIdx}"
+
+            div(classes = "checkbox") {
+                i(classes = "fas fa-check") {}
+            }
+
+            div(classes = "info") {
+                div(classes = "title") {
+                    + title
+                }
+
+                div(classes = "subtitle") {
+                    + subTitle
+                }
+            }
+        }
+    }
+
+    WebsiteUtils.currentRadioButtonIdx++
 }

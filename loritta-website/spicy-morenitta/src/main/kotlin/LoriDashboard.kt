@@ -214,7 +214,7 @@ object LoriDashboard {
 		SUMMARY(consumer).visit(block)
 	}
 
-	fun configureTextArea(jquery: JQuery, markdownPreview: Boolean = false, serverConfig: ServerConfig?, sendTestMessages: Boolean = false, textChannelSelect: JQuery? = null, showPlaceholders: Boolean = false, placeholders: Map<String, String> = mapOf(), showTemplates: Boolean = false, templates: Map<String, String> = mapOf()) {
+	fun configureTextArea(jquery: JQuery, markdownPreview: Boolean = false, serverConfig: ServerConfig?, sendTestMessages: Boolean = false, textChannelSelect: JQuery? = null, showPlaceholders: Boolean = false, placeholders: Map<String, String> = mapOf(), showTemplates: Boolean = false, templates: Map<String, String> = mapOf(), customTokens: Map<String, String> = mapOf()) {
 		val div = jq("<div>") // wrapper
 				.css("position", "relative")
 
@@ -428,7 +428,7 @@ object LoriDashboard {
 					val content = json["content"]
 					val embed = json["embed"]
 					if (content != null && content is String) {
-						description = replaceTokens(content, serverConfig)
+						description = replaceTokens(content, serverConfig, customTokens)
 						description = converter.makeHtml(description)
 
 						markdownPreview.append(description)
@@ -439,7 +439,7 @@ object LoriDashboard {
 						markdownEmbedConverter.setOption("simpleLineBreaks", true)
 
 						fun replaceAndConvert(text: String): String {
-							var _text = replaceTokens(text, serverConfig)
+							var _text = replaceTokens(text, serverConfig, customTokens)
 							_text = converter.makeHtml(_text)
 
 							return jq(_text).html()
@@ -480,7 +480,7 @@ object LoriDashboard {
 														div(classes = "embed-author") {
 															val iconUrl = author["icon_url"] as String?
 															if (iconUrl != null) {
-																img(src = replaceTokens(iconUrl, serverConfig), classes = "embed-author-icon")
+																img(src = replaceTokens(iconUrl, serverConfig, customTokens), classes = "embed-author-icon")
 															}
 															val url = author["url"] as String?
 															val name = author["name"] as String?
@@ -550,14 +550,14 @@ object LoriDashboard {
 													}
 												}
 												if (thumbnailUrl != null) {
-													img(src = replaceTokens(thumbnailUrl, serverConfig)) {
+													img(src = replaceTokens(thumbnailUrl, serverConfig, customTokens)) {
 														style = "max-width: 80px; max-height: 80px;"
 													}
 												}
 											}
 											if (imageUrl != null) {
 												a(classes = "embed-thumbnail embed-thumbnail-rich") {
-													img(classes = "image", src = replaceTokens(imageUrl, serverConfig))
+													img(classes = "image", src = replaceTokens(imageUrl, serverConfig, customTokens))
 												}
 											}
 											if (footer != null) {
@@ -566,7 +566,7 @@ object LoriDashboard {
 													val text = footer["text"] as String?
 
 													if (iconUrl != null) {
-														img(src = replaceTokens(iconUrl, serverConfig), classes = "embed-footer-icon") {
+														img(src = replaceTokens(iconUrl, serverConfig, customTokens), classes = "embed-footer-icon") {
 															width = "20"
 															height = "20"
 														}
@@ -591,7 +591,7 @@ object LoriDashboard {
 					}
 				} else {
 					extendedMode.css("display", "none")
-					description = replaceTokens(description, serverConfig)
+					description = replaceTokens(description, serverConfig, customTokens)
 					description = converter.makeHtml(description)
 
 					markdownPreview.html(description)
@@ -639,6 +639,21 @@ object LoriDashboard {
 		message = message.replace("{@owner}", mentionOwner)
 		message = message.replace("{owner}", owner)
 
+		// EMOTES
+		// Nós fazemos uma vez antes e depois uma depois, para evitar bugs (já que :emoji: também existe dentro de <:emoji:...>
+		val regex = Regex("<(a)?:([A-z0-9_-]+):([0-9]+)>", RegexOption.MULTILINE)
+		message = regex.replace(message) { matchResult: MatchResult ->
+			matchResult.groups.forEachIndexed { index, result ->
+				println("$index group is $result")
+			}
+			// <img class="inline-emoji" src="https://cdn.discordapp.com/emojis/$2.png?v=1">
+			val extension = if (matchResult.groups[1]?.value == "a")
+				"gif"
+			else
+				"png"
+			"<img class=\"inline-emoji\" src=\"https://cdn.discordapp.com/emojis/${matchResult.groups[3]?.value}.$extension?v=1\">"
+		}
+
 		if (serverConfig != null) {
 			// TEXT CHANNELS
 			for (textChannel in serverConfig.textChannels) {
@@ -676,14 +691,18 @@ object LoriDashboard {
 				}
 			}) */
 
-			// EMOTES
-			// Nós fazemos uma vez antes e depois uma depois, para evitar bugs (já que :emoji: também existe dentro de <:emoji:...>
-			val regex = Regex("<(?:a)?:([A-z0-9_-]+):([0-9]+)>", RegexOption.MULTILINE)
-			message = regex.replace(message, "<img class=\"inline-emoji\" src=\"https://cdn.discordapp.com/emojis/$2.png?v=1\">")
+			// EMOTES (de novo)
 			for (emote in serverConfig.emotes) {
 				message = message.replace(":${emote.name}:", "<:${emote.name}:${emote.id}>")
 			}
-			message = regex.replace(message, "<img class=\"inline-emoji\" src=\"https://cdn.discordapp.com/emojis/$2.png?v=1\">")
+			message = regex.replace(message) { matchResult: MatchResult ->
+				// <img class="inline-emoji" src="https://cdn.discordapp.com/emojis/$2.png?v=1">
+				val extension = if (matchResult.groups[1]?.value == "a")
+					"gif"
+				else
+					"png"
+				"<img class=\"inline-emoji\" src=\"https://cdn.discordapp.com/emojis/${matchResult.groups[3]?.value}.$extension?v=1\">"
+			}
 		}
 
 		return message

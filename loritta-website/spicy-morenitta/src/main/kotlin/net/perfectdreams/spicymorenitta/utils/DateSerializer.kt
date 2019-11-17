@@ -4,7 +4,7 @@ import kotlinx.serialization.*
 import kotlinx.serialization.internal.StringDescriptor
 import kotlin.js.Date
 
-class TestSerializer : KSerializer<Date> {
+class DateSerializer : KSerializer<Date> {
     override val descriptor: SerialDescriptor = StringDescriptor.withName("WithCustomDefault")
 
     override fun serialize(output: Encoder, obj: Date) {
