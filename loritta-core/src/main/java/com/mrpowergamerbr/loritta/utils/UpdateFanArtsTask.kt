@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.utils
 
-import com.github.salomonbrys.kotson.fromJson
+import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 
@@ -12,9 +12,8 @@ class UpdateFanArtsTask : Runnable {
 	override fun run() {
 		if (!loritta.isMaster) {
 			try {
-				loritta.fanArtArtists = gson.fromJson(
-						runBlocking { lorittaShards.queryMasterLorittaCluster("/api/v1/loritta/fan-arts").await() }
-				)
+				val content = runBlocking { lorittaShards.queryMasterLorittaCluster("/api/v1/loritta/fan-arts").await() }
+				loritta.fanArtArtists = Constants.JSON_MAPPER.readValue(gson.toJson(content)) // Gambiarra para converter de Gson para Jackson
 			} catch (e: Exception) {
 				logger.warn(e) { "Error while trying to update fan arts from master cluster" }
 			}
