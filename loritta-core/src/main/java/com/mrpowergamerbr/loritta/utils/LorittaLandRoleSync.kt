@@ -1,9 +1,6 @@
 package com.mrpowergamerbr.loritta.utils
 
-import com.github.salomonbrys.kotson.array
-import com.github.salomonbrys.kotson.get
-import com.github.salomonbrys.kotson.nullString
-import com.github.salomonbrys.kotson.string
+import com.github.salomonbrys.kotson.*
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
 import com.mrpowergamerbr.loritta.network.Databases
@@ -57,6 +54,16 @@ class LorittaLandRoleSync : Runnable {
 			logger.info("Dando cargos especiais da LorittaLand...")
 
 			// ===[ DESENHISTAS ]===
+			if (!loritta.isMaster) {
+				try {
+					loritta.fanArtArtists = gson.fromJson(
+							runBlocking { lorittaShards.queryMasterLorittaCluster("/api/v1/loritta/fan-arts").await() }
+					)
+				} catch (e: Exception) {
+					logger.warn(e) { "Error while trying to update fan arts from master cluster" }
+				}
+			}
+
 			val drawingRole = originalGuild.getRoleById("341343754336337921")
 
 			logger.info("Processando cargos de desenhistas...")

@@ -192,7 +192,8 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 		)
 		youtube = TemmieYouTube()
 		resetYouTubeKeys()
-		loadFanArts()
+		if (loritta.isMaster) // Apenas o master cluster deve carregar as fan arts, os outros clusters irão carregar pela API
+			loadFanArts()
 		Emotes.emoteManager = DiscordEmoteManager()
 		Emotes.loadEmotes()
 		GlobalHandler.generateViews()

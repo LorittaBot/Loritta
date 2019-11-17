@@ -1,13 +1,10 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
-import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.fromJson
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.nullArray
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonElement
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
