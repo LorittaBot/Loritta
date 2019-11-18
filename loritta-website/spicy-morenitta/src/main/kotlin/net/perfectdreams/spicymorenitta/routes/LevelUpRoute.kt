@@ -123,7 +123,7 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 							
 							select {
 								style = "width: 100%;"
-								id = "choose-channel-no-xp"
+								id = "choose-channel-custom-channel"
 								// style = "width: 320px;"
 
 								for (channel in guild.textChannels) {
@@ -152,7 +152,7 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 
 						textArea {
 							id = "announcement-message"
-							+(announcement?.message ?: locale["$LOCALE_PREFIX.levelUpAnnouncement.defaultMessage", "<a:lori_yay_wobbly:638040459721310238>"])
+							+(announcement?.message ?: locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.default.content", "<a:lori_yay_wobbly:638040459721310238>"])
 						}
 					}
 				}
@@ -524,14 +524,14 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 				),
 				showTemplates = true,
 				templates = mapOf(
-						locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.default.title"] to locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.default.content"],
+						locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.default.title"] to locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.default.content", "<a:lori_yay_wobbly:638040459721310238>"],
 						locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.embed.title"] to """{
   "content":"{@user}",
     "embed":{
     "color":-12591736,
     "title":" **<a:lori_yay_wobbly:638040459721310238> | LEVEL UP!**",
     "description":" **${locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.default.content", "<:lori_heart:640158506049077280>"]}",
-    "footer": ${locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.embed.footer"]}
+    "footer": "${locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.embed.footer"]}"
   }
 }"""
 				)
@@ -569,10 +569,18 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 
 		list.clear()
 
+		val invalidEntries = mutableListOf<ServerConfig.ExperienceRoleRate>()
+
 		for (experienceRoleRate in experienceRoleRates.sortedByDescending { it.rate.toLong() }) {
 			val theRealRoleId = experienceRoleRate.role
 
-			val guildRole = guild.roles.firstOrNull { it.id == theRealRoleId.toString() } ?: continue
+			val guildRole = guild.roles.firstOrNull { it.id == theRealRoleId.toString() }
+
+			if (guildRole == null) {
+				debug("Role ${theRealRoleId} not found! Removing $experienceRoleRate")
+				invalidEntries.add(experienceRoleRate)
+				continue
+			}
 
 			val color = guildRole.getColor()
 
@@ -584,7 +592,7 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 						onClickFunction = {
 							experienceRoleRates.remove(experienceRoleRate)
 
-							updateRoleByExperienceList(guild)
+							updateRolesWithCustomRateList(guild)
 						}
 					}
 
@@ -610,6 +618,8 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 				}
 			}
 		}
+
+		experienceRoleRates.removeAll(invalidEntries)
 	}
 
 	fun addRoleToRoleByExperienceList(guild: ServerConfig.Guild, roleByExperience: ServerConfig.RoleByExperience) {
@@ -623,10 +633,18 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 
 		list.clear()
 
+		val invalidEntries = mutableListOf<ServerConfig.RoleByExperience>()
+
 		for (roleByExperience in rolesByExperience.sortedByDescending { it.requiredExperience.toLong() }) {
 			val theRealRoleId = roleByExperience.roles.firstOrNull() ?: continue
 
-			val guildRole = guild.roles.firstOrNull { it.id == theRealRoleId } ?: continue
+			val guildRole = guild.roles.firstOrNull { it.id == theRealRoleId }
+
+			if (guildRole == null) {
+				debug("Role ${theRealRoleId} not found! Removing $roleByExperience")
+				invalidEntries.add(roleByExperience)
+				continue
+			}
 
 			val color = guildRole.getColor()
 
@@ -670,6 +688,8 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 				}
 			}
 		}
+
+		rolesByExperience.removeAll(invalidEntries)
 	}
 
 	fun updateNoXpRoleList(guild: ServerConfig.Guild) {
@@ -792,7 +812,7 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 				)
 
 				if (announcementType == "DIFFERENT_CHANNEL") {
-					json["channelId"] = document.select<HTMLSelectElement>("#choose-channel-no-xp").value
+					json["channelId"] = document.select<HTMLSelectElement>("#choose-channel-custom-channel").value
 				}
 
 				announcements.add(json)

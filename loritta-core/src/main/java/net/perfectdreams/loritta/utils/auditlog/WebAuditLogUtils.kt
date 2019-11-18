@@ -61,6 +61,7 @@ object WebAuditLogUtils {
 			"miscellaneous" -> ActionType.UPDATE_MISCELLANEOUS
 			"premium" -> ActionType.UPDATE_PREMIUM
 			"economy" -> ActionType.UPDATE_ECONOMY
+			"reset_xp" -> ActionType.RESET_XP
 
 			else -> ActionType.UNKNOWN
 		}

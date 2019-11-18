@@ -29,8 +29,12 @@ object GoogleAdSense : Logging {
 
 		ads.forEach {
 			if (!it.hasAttribute("data-adsbygoogle-status")) {
-				console.log(it)
-				js("(adsbygoogle = window.adsbygoogle || []).push({});")
+				try {
+					console.log(it)
+					js("(adsbygoogle = window.adsbygoogle || []).push({});")
+					debug("Yay!")
+				} catch (e: Throwable) {}
+
 			}
 		}
 	}
