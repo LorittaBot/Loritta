@@ -521,6 +521,19 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 						"previous-xp" to "99987",
 						"level" to "100",
 						"xp" to "100002"
+				),
+				showTemplates = true,
+				templates = mapOf(
+						locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.default.title"] to locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.default.content"],
+						locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.embed.title"] to """{
+  "content":"{@user}",
+    "embed":{
+    "color":-12591736,
+    "title":" **<a:lori_yay_wobbly:638040459721310238> | LEVEL UP!**",
+    "description":" **${locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.default.content", "<:lori_heart:640158506049077280>"]}",
+    "footer": ${locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.embed.footer"]}
+  }
+}"""
 				)
 		)
 
