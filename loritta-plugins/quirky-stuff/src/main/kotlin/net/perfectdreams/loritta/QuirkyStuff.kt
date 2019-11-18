@@ -165,7 +165,7 @@ class QuirkyStuff : DiscordPlugin() {
         // ===[ HALLOWEEN 2019 ]===
         registerCommand(DocesCommand())
         registerBadge(HalloweenBadge())
-        registerBadge(CanecaBadge())
+        registerBadge(CanecaBadge(config))
 
         transaction(Databases.loritta) {
             SchemaUtils.createMissingTablesAndColumns(
