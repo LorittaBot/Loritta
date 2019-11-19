@@ -153,7 +153,7 @@ class ConfigureServerView : ConfigureView() {
 				val actionType = WebAuditLogUtils.fromTargetType(type)
 
 				val params = if (actionType == ActionType.UNKNOWN) {
-					jsonObject("target_type" to target)
+					jsonObject("target_type" to type)
 				} else {
 					jsonObject()
 				}
