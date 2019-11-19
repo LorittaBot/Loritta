@@ -320,7 +320,7 @@ object GiveawayManager {
         val messageReaction: MessageReaction?
 
         if (emoteId != null) {
-            messageReaction = message.reactions.firstOrNull { it.reactionEmote.emote?.idLong == emoteId }
+            messageReaction = message.reactions.firstOrNull { it.reactionEmote.isEmote && it.reactionEmote.emote.idLong == emoteId }
         } else {
             messageReaction = message.reactions.firstOrNull { it.reactionEmote.name == giveaway.reaction }
         }
