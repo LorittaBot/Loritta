@@ -66,6 +66,8 @@ class AddReactionListener(val config: QuirkyConfig) : ListenerAdapter() {
 
 				val ext = if (fanArtUrl.endsWith("jpg"))
 					"jpg"
+				else if (fanArtUrl.endsWith("gif"))
+					"gif"
 				else
 					"png"
 
