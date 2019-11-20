@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.requests.RestAction
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction
 import net.dv8tion.jda.api.requests.restaction.MessageAction
+import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -81,6 +82,42 @@ class SendHelpController {
 	}
 
 	class FakeMessage : Message {
+		override fun getReactionById(id: String): MessageReaction.ReactionEmote? {
+			TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		}
+
+		override fun getReactionById(id: Long): MessageReaction.ReactionEmote? {
+			TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		}
+
+		override fun removeReaction(emote: Emote): RestAction<Void> {
+			TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		}
+
+		override fun removeReaction(emote: Emote, user: User): RestAction<Void> {
+			TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		}
+
+		override fun removeReaction(unicode: String): RestAction<Void> {
+			TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		}
+
+		override fun removeReaction(unicode: String, user: User): RestAction<Void> {
+			TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		}
+
+		override fun retrieveReactionUsers(emote: Emote): ReactionPaginationAction {
+			TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		}
+
+		override fun retrieveReactionUsers(unicode: String): ReactionPaginationAction {
+			TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		}
+
+		override fun getReactionByUnicode(unicode: String): MessageReaction.ReactionEmote? {
+			TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		}
+
 		override fun isFromType(type: ChannelType): Boolean {
 			TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 		}

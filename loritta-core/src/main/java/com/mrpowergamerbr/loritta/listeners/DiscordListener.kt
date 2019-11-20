@@ -266,8 +266,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	override fun onGuildLeave(e: GuildLeaveEvent) {
 		logger.info { "Someone removed me @ ${e.guild}! :(" }
 
-		loritta.socket.socketWrapper?.syncDiscordStats()
-
 		// Remover threads de role removal caso a Loritta tenha saido do servidor
 		val toRemove = mutableListOf<String>()
 		MuteCommand.roleRemovalJobs.forEach { key, value ->
@@ -321,8 +319,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	override fun onGuildJoin(event: GuildJoinEvent) {
 		logger.info { "Someone added me @ ${event.guild}! :)" }
 
-		loritta.socket.socketWrapper?.syncDiscordStats()
-
 		// Vamos alterar a minha linguagem quando eu entrar em um servidor, baseando na localização dele
 		val region = event.guild.region
 		val regionName = region.getName()
@@ -354,10 +350,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			loritta save serverConfig
 		}
-	}
-
-	override fun onReady(event: ReadyEvent) {
-		loritta.socket.socketWrapper?.syncDiscordStats()
 	}
 
 	override fun onGuildMemberJoin(event: GuildMemberJoinEvent) {

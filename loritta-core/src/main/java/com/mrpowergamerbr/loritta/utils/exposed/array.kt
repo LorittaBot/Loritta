@@ -30,19 +30,19 @@ class ArrayColumnType(private val type: ColumnType) : ColumnType() {
 }
 
 class AnyOp(val expr1: Expression<*>, val expr2: Expression<*>) : Op<Boolean>() {
-	override fun toSQL(queryBuilder: QueryBuilder) = buildString {
+	override fun toQueryBuilder(queryBuilder: QueryBuilder) {
 		if (expr2 is OrOp) {
-			append("(").append(expr2.toSQL(queryBuilder)).append(")")
+			queryBuilder.append("(").append(expr2).append(")")
 		} else {
-			append(expr2.toSQL(queryBuilder))
+			queryBuilder.append(expr2)
 		}
-		append(" = ANY (")
+		queryBuilder.append(" = ANY (")
 		if (expr1 is OrOp) {
-			append("(").append(expr1.toSQL(queryBuilder)).append(")")
+			queryBuilder.append("(").append(expr1).append(")")
 		} else {
-			append(expr1.toSQL(queryBuilder))
+			queryBuilder.append(expr1)
 		}
-		append(")")
+		queryBuilder.append(")")
 	}
 }
 

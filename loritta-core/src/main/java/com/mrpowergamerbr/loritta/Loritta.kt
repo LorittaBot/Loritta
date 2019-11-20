@@ -50,15 +50,10 @@ import net.perfectdreams.loritta.api.platform.PlatformFeature
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.platform.discord.DiscordEmoteManager
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandManager
-import net.perfectdreams.loritta.socket.LorittaSocket
-import net.perfectdreams.loritta.socket.network.SocketOpCode
-import net.perfectdreams.loritta.socket.network.commands.*
 import net.perfectdreams.loritta.tables.*
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.NetAddressUtils
 import net.perfectdreams.loritta.utils.Sponsor
-import net.perfectdreams.loritta.utils.extensions.obj
-import net.perfectdreams.loritta.utils.extensions.objectNode
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import net.perfectdreams.mercadopago.MercadoPago
 import okhttp3.Dispatcher
@@ -163,17 +158,6 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 	var twitch = TwitchAPI()
 	val connectionManager = ConnectionManager()
 	val mercadoPago: MercadoPago
-	val socket = LorittaSocket(35575).apply {
-		this.registerCommands(
-				GetUserByIdCommand(),
-				GetUsersByIdCommand(),
-				GetGuildByIdCommand(),
-				GetGuildsByIdCommand(),
-				GetGuildConfigByIdCommand(),
-				UpdateGuildConfigByIdCommand(),
-				HeartbeatCommand()
-		)
-	}
 	var patchData = PatchData()
 	var sponsors: List<Sponsor> = listOf()
 
@@ -320,39 +304,6 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 		lorittaShards.shardManager = shardManager
 
 		generateDummyServerConfig()
-
-		if (config.socket.enabled) {
-			logger.info { "Sucesso! Iniciando socket client..." }
-			socket.connect()
-			socket.onSocketConnected = { socketWrapper ->
-				socketWrapper.sendRequestAsync(
-						SocketOpCode.Discord.IDENTIFY,
-						objectNode(
-								"lorittaShardId" to config.socket.shardId,
-								"lorittaShardName" to config.socket.clientName
-						),
-						success = {
-							logger.info("Identification process was a success! We are now identified and ready to send and receive commands!")
-
-							socketWrapper.isReady = true
-							socketWrapper.syncDiscordStats()
-						},
-						failure = {
-							logger.error("Failed to identify!")
-						}
-				)
-			}
-
-			socket.onMessageReceived = {
-				val socketWrapper = socket.socketWrapper!!
-
-				val uniqueId = UUID.fromString(it["uniqueId"].textValue())
-				val request = socketWrapper._requests.getIfPresent(uniqueId)
-				socketWrapper._requests.invalidate(uniqueId)
-
-				request?.first?.invoke(it.obj)
-			}
-		}
 
 		logger.info { "Sucesso! Iniciando comandos e plugins da Loritta..." }
 

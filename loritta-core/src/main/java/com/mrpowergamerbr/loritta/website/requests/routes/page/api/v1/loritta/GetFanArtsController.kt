@@ -9,7 +9,6 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.utils.config.FanArtArtist
-import net.perfectdreams.loritta.utils.extensions.obj
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -60,7 +59,9 @@ class GetFanArtsController {
 					val user = users.firstOrNull { it.idAsString == id }
 
 					if (user != null) {
-						it.obj["user"] = filterEntries(Constants.JSON_MAPPER.valueToTree(user), "id", "name", "effectiveAvatarUrl")
+						val node = filterEntries(Constants.JSON_MAPPER.valueToTree(user), "id", "name", "effectiveAvatarUrl")
+						it as ObjectNode
+						it.set<JsonNode>("user", node)
 					}
 				}
 			}
