@@ -95,7 +95,7 @@ class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCatego
 					embed.addField("\uD83D\uDC4B ${locale["INVITEINFO_WhoInvited"]}", "`$username#$discriminator` ($id)", true)
 				}
 
-				val discordGuild = lorittaShards.getGuildById(id)
+				val discordGuild = lorittaShards.queryGuildById(id)
 
 				if (discordGuild != null) {
 					embed.setFooter("\uD83D\uDE0A ${context.locale["commands.discord.inviteinfo.inThisServer"]}")
