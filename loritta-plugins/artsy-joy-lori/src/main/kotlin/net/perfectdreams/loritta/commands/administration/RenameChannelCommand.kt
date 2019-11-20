@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.commands.administration
 
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.Permission
@@ -13,6 +14,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.platform.discord.commands.LorittaDiscordCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
+import net.perfectdreams.loritta.utils.Emotes
 
 class RenameChannelCommand : LorittaDiscordCommand(arrayOf("renamechannel", "renomearcanal"), CommandCategory.ADMIN) {
     override fun getDescription(locale: BaseLocale): String? {
@@ -72,11 +74,13 @@ class RenameChannelCommand : LorittaDiscordCommand(arrayOf("renamechannel", "ren
             return
         }
 
-        val toRename = context.args.drop(1).joinToString(" ")
+        val newNameArgs = context.args.drop(1)
+
+        val toRename = newNameArgs.joinToString(" ")
                 .trim()
                 .replace("(\\s\\|\\s|\\|)".toRegex(), "│")
                 .replace("(\\s&\\s|&)".toRegex(), "＆")
-                .replace("[\\s]".toRegex(), "\u2005")
+                .replace("[\\s]".toRegex(), "᎔")
 
         try {
             if (textChannel != null && voiceChannel == null) {
@@ -86,7 +90,24 @@ class RenameChannelCommand : LorittaDiscordCommand(arrayOf("renamechannel", "ren
                 f.isAccessible = true
                 f.set(manager, toRename)
                 manager.complete()
-                context.reply(locale["commands.moderation.renamechannel.successfullyRenamed"], "\uD83C\uDF89")
+
+                val replies = mutableListOf(
+                        LoriReply(
+                                locale["commands.moderation.renamechannel.successfullyRenamed"],
+                                "\uD83C\uDF89"
+                        )
+                )
+
+                if (newNameArgs.size != 1) {
+                    replies.add(
+                            LoriReply(
+                                    "Eu não consigo mais colocar espaços no nome de canais de texto devido a alterações no Discord. Eu tentei deixar de um jeito bonitinho, mas infelizmente eu não consigo colocar outro caractere melhor, desculpa...",
+                                    Emotes.LORI_CRYING
+                            )
+                    )
+                }
+
+                context.reply(*replies.toTypedArray())
             } else if (voiceChannel != null && textChannel == null) {
                 voiceChannel.manager.setName(context.args.drop(1).joinToString(" ").trim()).queue()
                 context.reply(locale["commands.moderation.renamechannel.successfullyRenamed"], "\uD83C\uDF89")
