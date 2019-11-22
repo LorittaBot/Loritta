@@ -84,7 +84,7 @@ class LevelPayload : ConfigPayloadType("level") {
 				ExperienceRoleRates.insert {
 					it[ExperienceRoleRates.guildId] = serverConfig.guildId
 					it[ExperienceRoleRates.role] = roleId
-					it[ExperienceRoleRates.rate] = Math.max(Math.min(10.0, rate), 0.0)
+					it[ExperienceRoleRates.rate] = Math.max(Math.min(100.0, rate), 0.0)
 				}
 			}
 
