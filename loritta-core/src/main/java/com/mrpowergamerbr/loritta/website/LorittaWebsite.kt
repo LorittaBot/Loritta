@@ -209,6 +209,7 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 		ENGINE = PebbleEngine.Builder().cacheActive(true) // Deixar o cache ativo ajuda na performance ao usar "extends" em templates (e não ao carregar templates de arquivos!)
 				.templateCache(CaffeineTemplateCache()) // Utilizar o cache do Caffeine em vez do padrão usando ConcurrentMapTemplateCache
 				.tagCache(CaffeineTagCache()) // Cache para tags de {% cache %} do Pebble
+				.allowUnsafeMethods(true)
 				.strictVariables(true)
 				.loader(fl)
 				.build()
