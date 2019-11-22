@@ -22,10 +22,7 @@ import net.perfectdreams.loritta.commands.DocesCommand
 import net.perfectdreams.loritta.commands.LoriToolsQuirkyStuffCommand
 import net.perfectdreams.loritta.commands.SouTopDoadorCommand
 import net.perfectdreams.loritta.dao.Payment
-import net.perfectdreams.loritta.listeners.AddReactionForLoriBanListener
-import net.perfectdreams.loritta.listeners.AddReactionListener
-import net.perfectdreams.loritta.listeners.BoostGuildListener
-import net.perfectdreams.loritta.listeners.GetCandyListener
+import net.perfectdreams.loritta.listeners.*
 import net.perfectdreams.loritta.modules.*
 import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
 import net.perfectdreams.loritta.profile.badges.CanecaBadge
@@ -145,7 +142,8 @@ class QuirkyStuff : DiscordPlugin() {
                 AddReactionListener(config),
                 BoostGuildListener(config),
                 GetCandyListener(config),
-                AddReactionForLoriBanListener(config)
+                AddReactionForLoriBanListener(config),
+                AddReactionFurryAminoPtListener(config)
         )
 
         registerMessageReceivedModules(
