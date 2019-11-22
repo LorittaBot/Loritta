@@ -6,15 +6,14 @@ import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.extensions.trueIp
 import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriForceReauthentication
 import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
-import com.mrpowergamerbr.loritta.website.evaluateKotlin
-import com.mrpowergamerbr.loritta.website.requests.routes.Page
 import kotlinx.coroutines.runBlocking
-import kotlinx.html.body
-import kotlinx.html.html
-import kotlinx.html.stream.appendHTML
+import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.website.LorittaWebsite
+import net.perfectdreams.loritta.website.utils.ScriptingUtils
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.Request
@@ -22,13 +21,16 @@ import org.jooby.Response
 import org.jooby.mvc.GET
 import org.jooby.mvc.Local
 import org.jooby.mvc.Path
+import java.io.File
+import kotlin.reflect.KTypeProjection
+import kotlin.reflect.full.createType
 
 @Path("/:localeId/user/:userId/rep")
 class UserReputationController {
 	@GET
 	@LoriRequiresVariables(true)
 	@LoriForceReauthentication(true)
-	fun handle(req: Request, res: Response, @Local variables: MutableMap<String, Any?>): String {
+	fun handle(req: Request, res: Response, @Local variables: MutableMap<String, Any?>) {
 		val userId = req.param("userId").value()
 		val user = runBlocking { lorittaShards.retrieveUserById(userId)!! }
 		val userIdentification = variables["userIdentification"] as TemmieDiscordAuth.UserIdentification?
@@ -48,22 +50,28 @@ class UserReputationController {
 			}
 		} else { null }
 
-		val result = evaluateKotlin("user/reputation.kts", "onLoad", userIdentification, user, lastReputationGiven, reputations, req.param("guild").valueOrNull(), req.param("channel").valueOrNull())
-		val builder = StringBuilder()
-		builder.appendHTML().html {
-			Page.getHead(
-					req,
-					res,
-					variables,
-					"Reputações para ${user.name}",
-					"Reputações servem para você agradecer outro usuário por algo que ele fez. ${user.name} te ajudou em algo? ${user.name} contou uma piada e você caiu no chão de tanto rir? Então dê uma reputação para agradecer!",
-					user.effectiveAvatarUrl
-			).invoke(this)
-			body {
-				result.invoke(this)
-			}
+		val html = runBlocking {
+			ScriptingUtils.evaluateWebPageFromTemplate(
+					File(
+							"${LorittaWebsite.INSTANCE.config.websiteFolder}/views/user/user_reputation.kts"
+					),
+					mapOf(
+							"path" to req.path().split("/").drop(2).joinToString("/"),
+							"websiteUrl" to LorittaWebsite.INSTANCE.config.websiteUrl,
+							"locale" to ScriptingUtils.WebsiteArgumentType(BaseLocale::class.createType(nullable = false), variables["locale"]!!),
+							"userIdentification" to ScriptingUtils.WebsiteArgumentType(TemmieDiscordAuth.UserIdentification::class.createType(nullable = true), userIdentification, "TemmieDiscordAuth.UserIdentification"),
+							"user" to ScriptingUtils.WebsiteArgumentType(User::class.createType(nullable = true), user),
+							"lastReputationGiven" to ScriptingUtils.WebsiteArgumentType(Reputation::class.createType(nullable = true), lastReputationGiven),
+							"reputations" to ScriptingUtils.WebsiteArgumentType(
+									List::class.createType(listOf(KTypeProjection.invariant(Reputation::class.createType()))),
+									reputations
+							),
+							"guildId" to ScriptingUtils.WebsiteArgumentType(String::class.createType(nullable = true), req.param("guild").valueOrNull()),
+							"channelId" to ScriptingUtils.WebsiteArgumentType(String::class.createType(nullable = true), req.param("channel").valueOrNull())
+					)
+			)
 		}
 
-		return builder.toString()
+		res.send(html)
 	}
 }

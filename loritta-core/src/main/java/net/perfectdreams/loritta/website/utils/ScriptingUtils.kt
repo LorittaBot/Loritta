@@ -34,7 +34,9 @@ object ScriptingUtils {
         val argTypes = modifiedArgs.map {
             it.key to it.value.run {
                 if (this is WebsiteArgumentType) {
-                    var str = (this.kType.classifier as KClass<*>).simpleName
+					val clazzName = this.overrideClassName ?: (this.kType.classifier as KClass<*>).qualifiedName
+
+                    var str = clazzName
 
                     if (this.kType.arguments.isNotEmpty())
                         str += "<${this.kType.arguments.joinToString(", ", transform = { (it.type!!.classifier as KClass<*>).simpleName!! })}>"
@@ -44,7 +46,7 @@ object ScriptingUtils {
 
                     str!!
                 } else {
-                    this::class.simpleName!!
+                    this::class.qualifiedName!!
                 }
             }
         }.toMap().toMutableMap()
@@ -77,7 +79,7 @@ object ScriptingUtils {
         return document.transformToString()
     }
 
-    data class WebsiteArgumentType(val kType: KType, val value: Any?)
+    data class WebsiteArgumentType(val kType: KType, val value: Any?, val overrideClassName: String? = null)
 
     suspend fun <T> evaluateTemplate(file: File, args: Map<String, String> = mapOf()): T {
         if (LorittaWebsite.INSTANCE.pathCache[file] != null)
@@ -98,8 +100,11 @@ object ScriptingUtils {
         val editedCode = """
                 import kotlinx.html.*
                 import kotlinx.html.dom.*
+				import net.perfectdreams.loritta.dao.*
+				import com.mrpowergamerbr.loritta.dao.*
                 import com.mrpowergamerbr.loritta.utils.KtsObjectLoader
                 import net.perfectdreams.loritta.utils.*
+				import com.mrpowergamerbr.loritta.utils.*
                 // import net.perfectdreams.loritta.utils.locale.*
 				import com.mrpowergamerbr.loritta.utils.locale.*
                 import net.perfectdreams.loritta.website.*
@@ -112,6 +117,7 @@ object ScriptingUtils {
                 import java.io.File
                 // import net.perfectdreams.loritta.utils.oauth2.*
 				import net.perfectdreams.loritta.utils.config.*
+				import com.mrpowergamerbr.loritta.oauth2.*
 
                 $code
             """.trimIndent()
