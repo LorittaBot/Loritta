@@ -63,12 +63,19 @@ class PluginManager(val loritta: LorittaBot) {
 			plugin.classLoader = classLoader
 			plugin.pluginFile = file
 
-			plugin.onEnable()
+			try {
+				plugin.onEnable()
+			} catch (e: Throwable) {
+				logger.error(e) { "Exception while loading plugin $file" }
+				plugin.onDisable()
+				return
+			}
+
 			plugins.add(plugin)
 
 			logger.info("${info.pluginName} loaded successfully!")
-		} catch (e: Exception) {
-			logger.error(e) { "Exception while loading plugin $file"}
+		} catch (e: Throwable) {
+			logger.error(e) { "Exception while loading plugin $file" }
 		}
 	}
 
