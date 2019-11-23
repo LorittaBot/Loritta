@@ -17,4 +17,6 @@ class ProfileSettings(id: EntityID<Long>) : LongEntity(id) {
 	var boughtProfiles by UserSettings.boughtProfiles
 	var birthday by UserSettings.birthday
 	var doNotSendXpNotificationsInDm by UserSettings.doNotSendXpNotificationsInDm
+	var discordAccountFlags by UserSettings.discordAccountFlags
+	var discordPremiumType by UserSettings.discordPremiumType
 }

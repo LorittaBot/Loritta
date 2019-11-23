@@ -13,7 +13,7 @@ open class DiscordPlugin : LorittaPlugin() {
     val onGuildReadyListeners = mutableListOf<suspend (Guild, MongoServerConfig) -> (Unit)>()
     val onGuildMemberJoinListeners = mutableListOf<suspend (Member, Guild, MongoServerConfig) -> (Unit)>()
     val onGuildMemberLeaveListeners = mutableListOf<suspend (Member, Guild, MongoServerConfig) -> (Unit)>()
-    val badges = mutableListOf<Badge>()
+    private val badges = mutableListOf<Badge>()
 
     override fun onDisable() {
         super.onDisable()
@@ -23,6 +23,10 @@ open class DiscordPlugin : LorittaPlugin() {
         eventListeners.clear()
         onGuildReadyListeners.clear()
         onGuildMemberLeaveListeners.clear()
+        badges.forEach {
+            loritta.profileDesignManager.unregisterBadge(it)
+        }
+        badges.clear()
     }
 
     fun addEventListener(eventListener: ListenerAdapter) {
@@ -42,7 +46,13 @@ open class DiscordPlugin : LorittaPlugin() {
     }
 
     fun registerBadge(badge: Badge) {
+        loritta.profileDesignManager.registerBadge(badge)
         badges.add(badge)
+    }
+
+    fun unregisterBadge(badge: Badge) {
+        loritta.profileDesignManager.unregisterBadge(badge)
+        badges.remove(badge)
     }
 
     fun onGuildReady(callback: suspend (Guild, MongoServerConfig) -> (Unit)) {
