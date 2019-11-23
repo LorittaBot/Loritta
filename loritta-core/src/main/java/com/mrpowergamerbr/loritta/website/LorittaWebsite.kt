@@ -14,13 +14,13 @@ import com.mrpowergamerbr.loritta.utils.extensions.trueIp
 import com.mrpowergamerbr.loritta.utils.extensions.urlQueryString
 import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
 import com.mrpowergamerbr.loritta.utils.gson
-import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.requests.routes.APIRoute
 import com.mrpowergamerbr.loritta.website.requests.routes.GuildRoute
 import com.mrpowergamerbr.loritta.website.requests.routes.UserRoute
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
 import kotlinx.html.HtmlBlockTag
 import mu.KotlinLogging
+import net.perfectdreams.loritta.api.platform.LorittaBot
 import org.jooby.Kooby
 import org.jooby.MediaType
 import org.jooby.Request
@@ -32,7 +32,7 @@ import java.io.StringWriter
 import java.util.*
 import kotlin.reflect.full.functions
 
-class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby({
+class LorittaWebsite(val loritta: LorittaBot, val websiteUrl: String, var frontendFolder: String) : Kooby({
 	port(loritta.instanceConfig.loritta.website.port) // Porta do website
 	assets("/**", File(frontendFolder, "static/").toPath()).onMissing(0)
 	use(Mongodb()) // Usar extensão do MongoDB para o Jooby
@@ -159,6 +159,10 @@ class LorittaWebsite(val websiteUrl: String, var frontendFolder: String) : Kooby
 	use(APIRoute())
 	use(UserRoute())
 	use(GuildRoute())
+
+	for (route in loritta.pluginManager.plugins.flatMap { it.routes }) {
+		use(route)
+	}
 
 	get("/**") { req, res ->
 		if (req.path() == "/lorisocket")

@@ -286,17 +286,6 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 
 		networkBanManager.migrateNetworkBannedUsers()
 
-		logger.info("Sucesso! Iniciando Loritta (Website)...")
-
-		websiteThread = thread(true, name = "Website Thread") {
-			website = LorittaWebsite(instanceConfig.loritta.website.url, instanceConfig.loritta.website.folder)
-			net.perfectdreams.loritta.website.LorittaWebsite.INSTANCE.blog.posts = net.perfectdreams.loritta.website.LorittaWebsite.INSTANCE.blog.loadAllBlogPosts()
-
-			org.jooby.run({
-				website
-			})
-		}
-
 		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
 		logger.info { "Sucesso! Iniciando Loritta (Discord Bot)..." }
 
@@ -309,6 +298,17 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 
 		loadCommandManager() // Inicie todos os comandos da Loritta
 		pluginManager.loadPlugins()
+
+		logger.info("Sucesso! Iniciando Loritta (Website)...")
+
+		websiteThread = thread(true, name = "Website Thread") {
+			website = LorittaWebsite(this, instanceConfig.loritta.website.url, instanceConfig.loritta.website.folder)
+			net.perfectdreams.loritta.website.LorittaWebsite.INSTANCE.blog.posts = net.perfectdreams.loritta.website.LorittaWebsite.INSTANCE.blog.loadAllBlogPosts()
+
+			org.jooby.run({
+				website
+			})
+		}
 
 		logger.info { "Sucesso! Iniciando threads da Loritta..." }
 

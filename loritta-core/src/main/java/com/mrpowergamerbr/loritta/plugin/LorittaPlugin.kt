@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.modules.MessageReceivedModule
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.platform.LorittaBot
+import org.jooby.Jooby
 import java.io.File
 import java.net.URLClassLoader
 
@@ -17,6 +18,7 @@ open class LorittaPlugin {
 	val dataFolder by lazy { File(Loritta.FOLDER, "plugins/$name") }
 	val messageReceivedModules = mutableListOf<MessageReceivedModule>()
 	val messageEditedModules = mutableListOf<MessageReceivedModule>()
+	val routes = mutableListOf<Jooby>()
 
 	open fun onEnable() {
 
@@ -25,6 +27,7 @@ open class LorittaPlugin {
 	open fun onDisable() {
 		messageReceivedModules.clear()
 		messageEditedModules.clear()
+		routes.clear()
 	}
 
 	fun registerCommand(command: LorittaCommand) {

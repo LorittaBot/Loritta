@@ -307,10 +307,10 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			logger.info("Interrompendo a Thread do Website...")
 			loritta.websiteThread.interrupt()
 			logger.info("Iniciando instância do Website...")
-			loritta.website = LorittaWebsite(loritta.instanceConfig.loritta.website.url, loritta.instanceConfig.loritta.website.folder)
+			loritta.website = LorittaWebsite(loritta, loritta.instanceConfig.loritta.website.url, loritta.instanceConfig.loritta.website.folder)
 			logger.info("Iniciando website...")
 			loritta.websiteThread = thread(true, name = "Website Thread") {
-				loritta.website = LorittaWebsite(loritta.instanceConfig.loritta.website.url, loritta.instanceConfig.loritta.website.folder)
+				loritta.website = LorittaWebsite(loritta, loritta.instanceConfig.loritta.website.url, loritta.instanceConfig.loritta.website.folder)
 				org.jooby.run({
 					loritta.website
 				})
