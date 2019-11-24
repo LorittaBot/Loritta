@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.modules.MessageReceivedModule
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUser
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.utils.Emotes
 
@@ -26,6 +27,9 @@ class AddReactionForHeathecliffModule : MessageReceivedModule {
 		if (event.channel.idLong == 646871435465326592L) {
 			if (25 >= event.message.contentRaw.length) {
 				event.message.delete().queue()
+				val channel = event.author.openPrivateChannel().await()
+
+				channel.sendMessage("Olha... eu duvido que você conseguiu responder todas as <#647909086326816799> com tão poucas palavras. Que tal responder elas de uma forma decente? ${Emotes.LORI_SHRUG}").await()
 				return false
 			}
 
