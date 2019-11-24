@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.net.InetAddress
 import java.util.concurrent.TimeUnit
-import java.util.regex.Pattern
 
 object MiscUtils {
 	val logger = LoggerFactory.getLogger(MiscUtils::class.java)
@@ -33,9 +32,16 @@ object MiscUtils {
 		return getInviteId(url) != null
 	}
 
-	fun getInviteId(url: String, count: Int = 0): String? {
+	fun getInviteId(url: String, count: Int = 0, requestDiscordInvite: Boolean = false): String? {
 		if (count == 5) // Stuck in a loop
 			return null
+
+		if (!requestDiscordInvite) {
+			val matcher = Constants.DISCORD_INVITE_PATTERN.matcher(url)
+			if (matcher.find()) {
+				return matcher.group(3)
+			}
+		}
 
 		try {
 			val temmie = TemmieBitly("R_fb665e9e7f6a830134410d9eb7946cdf", "o_5s5av92lgs")
@@ -53,7 +59,7 @@ object MiscUtils {
 			httpRequest.ok()
 			val location = httpRequest.headers().entries.firstOrNull { it.key == "Location" }?.value?.getOrNull(0)
 			val url = location ?: httpRequest.url().toString()
-			val matcher = Pattern.compile(".*(discord\\.gg|discordapp.com(/invite))/([A-z0-9]+).*").matcher(url)
+			val matcher = Constants.DISCORD_INVITE_PATTERN.matcher(url)
 			if (matcher.find()) {
 				return matcher.group(3)
 			}
