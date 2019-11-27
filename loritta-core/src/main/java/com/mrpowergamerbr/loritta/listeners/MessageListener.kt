@@ -274,6 +274,16 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onPrivateMessageReceived(event: PrivateMessageReceivedEvent) {
+		// Bots não conseguem enviar mensagens para si mesmo... mas a Lori consegue e, com o "say", é possível fazer ela executar os próprios comandos
+		if (loritta.discordConfig.discord.disallowBots && !loritta.discordConfig.discord.botWhitelist.contains(event.author.idLong) && event.author.isBot) // Se uma mensagem de um bot, ignore a mensagem!
+			return
+
+		if (DebugLog.cancelAllEvents)
+			return
+
+		if (event.message.type != MessageType.DEFAULT) // Existem vários tipos de mensagens no Discord, mas apenas estamos interessados nas mensagens padrões de texto
+			return
+
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = LorittaLauncher.loritta.dummyServerConfig
 			val profile = loritta.getOrCreateLorittaProfile(event.author.idLong) // Carregar perfil do usuário
