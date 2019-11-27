@@ -166,7 +166,7 @@ class LorittaNetworkBanManager {
 
 		punishUser(user, createBanReason(entry, true), false)
 
-		lorittaShards.queryAllLorittaClusters("/api/v1/global-bans/sync/$userId")
+		lorittaShards.queryAllLorittaClusters("/api/v1/loritta/global-bans/sync/$userId")
 	}
 
 	fun getGlobalBanEntry(id: Long): NetworkBanEntry? {

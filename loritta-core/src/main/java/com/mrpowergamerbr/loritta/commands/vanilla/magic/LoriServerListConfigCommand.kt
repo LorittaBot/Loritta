@@ -283,7 +283,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 								"Forçando a sincronização de bans globais de $arg1..."
 						)
 				)
-				lorittaShards.queryAllLorittaClusters("/api/v1/global-bans/sync/${arg1}")
+				lorittaShards.queryAllLorittaClusters("/api/v1/loritta/global-bans/sync/${arg1}")
 				return
 			}
 
