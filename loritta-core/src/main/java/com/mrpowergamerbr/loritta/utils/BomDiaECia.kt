@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.threads.BomDiaECiaThread
 import com.mrpowergamerbr.loritta.utils.extensions.getRandom
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
@@ -16,7 +17,10 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.tables.BomDiaECiaWinners
 import net.perfectdreams.loritta.utils.Emotes
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 

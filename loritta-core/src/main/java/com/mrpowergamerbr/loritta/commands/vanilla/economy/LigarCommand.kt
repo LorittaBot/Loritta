@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.commands.vanilla.economy
 
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -12,6 +11,9 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.tables.BomDiaECiaWinners
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.Executors
 
@@ -79,9 +81,18 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 						loritta.bomDiaECia.available = false
 
 						val randomPrize = RANDOM.nextInt(150, 376)
+						val guild = context.guild
+						val user = context.userHandle
 
 						transaction(Databases.loritta) {
 							profile.money += randomPrize
+
+							BomDiaECiaWinners.insert {
+								it[guildId] = guild.idLong
+								it[userId] = user.idLong
+								it[wonAt] = System.currentTimeMillis()
+								it[prize] = randomPrize.toBigDecimal()
+							}
 						}
 
 						logger.info("${context.userHandle.id} ganhou ${randomPrize} no Bom Dia & Cia!")

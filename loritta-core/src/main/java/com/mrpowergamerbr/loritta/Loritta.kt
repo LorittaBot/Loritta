@@ -395,7 +395,8 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 					LevelAnnouncementConfigs,
 					LevelConfigs,
 					AuditLog,
-					ExperienceRoleRates
+					ExperienceRoleRates,
+					BomDiaECiaWinners
 			)
 		}
 	}
