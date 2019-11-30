@@ -17,7 +17,7 @@ enum class ActionType(val updateType: String, val sectionName: String) {
 	UPDATE_ECONOMY("updated", "economy"),
 	UPDATE_TIMERS("updated", "timers"),
 	UPDATE_STARBOARD("updated", "starboard"),
-	UPDATE_MISCELLANEOUS("updated", "premiumKeys"),
+	UPDATE_MISCELLANEOUS("updated", "miscellaneous"),
 	UPDATE_CUSTOM_BADGE("updated", "customBadge"),
 	UPDATE_DAILY_MULTIPLIER("updated", "dailyMultiplier"),
 	UPDATE_CUSTOM_COMMANDS("updated", "customCommands"),

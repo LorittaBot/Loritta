@@ -14,6 +14,7 @@ import legacyLocale
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.locale
+import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.createToggle
 import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.utils.levelup.LevelUpAnnouncementType
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
@@ -60,103 +61,7 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 		val stuff = document.select<HTMLDivElement>("#level-stuff")
 
 		stuff.append {
-			val announcement = guild.levelUpConfig.announcements.firstOrNull()
-
-			div {
-				h5(classes = "section-title") {
-					+ locale["$LOCALE_PREFIX.levelUpAnnouncement.title"]
-				}
-
-				locale.getList("$LOCALE_PREFIX.levelUpAnnouncement.description").forEach {
-					p {
-						+ it
-					}
-				}
-				
-				div {
-					style = "display: flex; flex-direction: column;"
-
-					div {
-						style = "display: flex; flex-direction: row;"
-
-						div {
-							style = "flex-grow: 1; margin-right: 10px;"
-							h5(classes = "section-title") {
-								+locale["$LOCALE_PREFIX.levelUpAnnouncement.tellWhere"]
-							}
-
-							select {
-								style = "width: 100%;"
-								id = "announcement-type"
-
-								for (entry in LevelUpAnnouncementType.values()) {
-									option {
-										+ when (entry) {
-											LevelUpAnnouncementType.DISABLED -> locale["$LOCALE_PREFIX.channelTypes.disabled"]
-											LevelUpAnnouncementType.SAME_CHANNEL -> locale["$LOCALE_PREFIX.channelTypes.sameChannel"]
-											LevelUpAnnouncementType.DIRECT_MESSAGE -> locale["$LOCALE_PREFIX.channelTypes.directMessage"]
-											LevelUpAnnouncementType.DIFFERENT_CHANNEL -> locale["$LOCALE_PREFIX.channelTypes.differentChannel"]
-										}
-
-										value = entry.name
-
-										if (entry.name == announcement?.type) {
-											selected = true
-										}
-									}
-								}
-
-								onChangeFunction = {
-									updateDisabledSections()
-								}
-							}
-						}
-
-						div(classes = "blurSection") {
-							style = "flex-grow: 1; margin-left: 16px;"
-
-							id = "select-custom-channel"
-
-							h5(classes = "section-title") {
-								+locale["$LOCALE_PREFIX.levelUpAnnouncement.channel"]
-							}
-							
-							select {
-								style = "width: 100%;"
-								id = "choose-channel-custom-channel"
-								// style = "width: 320px;"
-
-								for (channel in guild.textChannels) {
-									option {
-										+ ("#${channel.name}")
-
-										value = channel.id
-
-										if (channel.id == announcement?.channelId) {
-											selected = true
-										}
-									}
-								}
-							}
-						}
-					}
-
-					div(classes = "blurSection") {
-						id = "level-up-message"
-
-						style = "flex-grow: 1;"
-
-						h5(classes = "section-title") {
-							+ locale["$LOCALE_PREFIX.levelUpAnnouncement.theMessage"]
-						}
-
-						textArea {
-							id = "announcement-message"
-							+(announcement?.message ?: locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.default.content", "<a:lori_yay_wobbly:638040459721310238>"])
-						}
-					}
-				}
-			}
+			generateLevelUpAnnouncementSection(guild)
 
 			hr {}
 
@@ -530,8 +435,8 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
     "embed":{
     "color":-12591736,
     "title":" **<a:lori_yay_wobbly:638040459721310238> | LEVEL UP!**",
-    "description":" **${locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.default.content", "<:lori_heart:640158506049077280>"]}",
-    "footer": "${locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.embed.footer"]}"
+    "description":" ${locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.default.content", "<:lori_heart:640158506049077280>"]}",
+    "footer": { "text": "${locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.embed.footer"]}" }
   }
 }"""
 				)
@@ -808,7 +713,8 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 			if (announcementType != "DISABLED") {
 				val json = json(
 						"type" to announcementType,
-						"message" to announcementMessage
+						"message" to announcementMessage,
+						"onlyIfUserReceivedRoles" to document.select<HTMLInputElement>("#only-if-user-received-roles").checked
 				)
 
 				if (announcementType == "DIFFERENT_CHANNEL") {
@@ -844,5 +750,115 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 
 			it["experienceRoleRates"] = experienceRoleRates
 		})
+	}
+
+	private fun TagConsumer<HTMLElement>.generateLevelUpAnnouncementSection(guild: ServerConfig.Guild) {
+		val announcement = guild.levelUpConfig.announcements.firstOrNull()
+
+		div {
+			h5(classes = "section-title") {
+				+locale["$LOCALE_PREFIX.levelUpAnnouncement.title"]
+			}
+
+			locale.getList("$LOCALE_PREFIX.levelUpAnnouncement.description").forEach {
+				p {
+					+it
+				}
+			}
+
+			div {
+				style = "display: flex; flex-direction: column;"
+
+				div {
+					style = "display: flex; flex-direction: row;"
+
+					div {
+						style = "flex-grow: 1; margin-right: 10px;"
+						h5(classes = "section-title") {
+							+locale["$LOCALE_PREFIX.levelUpAnnouncement.tellWhere"]
+						}
+
+						select {
+							style = "width: 100%;"
+							id = "announcement-type"
+
+							for (entry in LevelUpAnnouncementType.values()) {
+								option {
+									+when (entry) {
+										LevelUpAnnouncementType.DISABLED -> locale["$LOCALE_PREFIX.channelTypes.disabled"]
+										LevelUpAnnouncementType.SAME_CHANNEL -> locale["$LOCALE_PREFIX.channelTypes.sameChannel"]
+										LevelUpAnnouncementType.DIRECT_MESSAGE -> locale["$LOCALE_PREFIX.channelTypes.directMessage"]
+										LevelUpAnnouncementType.DIFFERENT_CHANNEL -> locale["$LOCALE_PREFIX.channelTypes.differentChannel"]
+									}
+
+									value = entry.name
+
+									if (entry.name == announcement?.type) {
+										selected = true
+									}
+								}
+							}
+
+							onChangeFunction = {
+								updateDisabledSections()
+							}
+						}
+					}
+
+					div(classes = "blurSection") {
+						style = "flex-grow: 1; margin-left: 16px;"
+
+						id = "select-custom-channel"
+
+						h5(classes = "section-title") {
+							+locale["$LOCALE_PREFIX.levelUpAnnouncement.channel"]
+						}
+
+						select {
+							style = "width: 100%;"
+							id = "choose-channel-custom-channel"
+							// style = "width: 320px;"
+
+							for (channel in guild.textChannels) {
+								option {
+									+("#${channel.name}")
+
+									value = channel.id
+
+									if (channel.id == announcement?.channelId) {
+										selected = true
+									}
+								}
+							}
+						}
+					}
+				}
+
+				div {
+					createToggle(
+							locale["modules.levelUp.levelUpAnnouncement.onlyIfUserReceivedRoles.title"],
+							locale["modules.levelUp.levelUpAnnouncement.onlyIfUserReceivedRoles.subtext"],
+							id = "only-if-user-received-roles",
+							isChecked = announcement?.onlyIfUserReceivedRoles ?: false
+					)
+				}
+
+				div(classes = "blurSection") {
+					id = "level-up-message"
+
+					style = "flex-grow: 1;"
+
+					h5(classes = "section-title") {
+						+locale["$LOCALE_PREFIX.levelUpAnnouncement.theMessage"]
+					}
+
+					textArea {
+						id = "announcement-message"
+						+(announcement?.message
+								?: locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.default.content", "<a:lori_yay_wobbly:638040459721310238>"])
+					}
+				}
+			}
+		}
 	}
 }

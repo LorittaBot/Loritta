@@ -63,6 +63,7 @@ object ServerConfig {
 	class Announcement(
 			val type: String,
 			@Optional val channelId: String? = null,
+			val onlyIfUserReceivedRoles: Boolean,
 			val message: String
 	)
 

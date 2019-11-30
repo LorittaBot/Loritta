@@ -90,6 +90,7 @@ class AuditLogRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/
                                         val sectionName = when (type) {
                                             ActionType.UPDATE_YOUTUBE -> "YouTube"
                                             ActionType.UPDATE_TWITCH -> "Twitch"
+                                            ActionType.UPDATE_MISCELLANEOUS -> locale["commands.category.misc.name"]
                                             else -> locale["modules.sectionNames.${type.sectionName}"]
                                         }
 

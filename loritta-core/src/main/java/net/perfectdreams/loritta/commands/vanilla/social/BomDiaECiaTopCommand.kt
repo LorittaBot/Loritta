@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.commands.vanilla.social
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.perfectdreams.commands.annotation.Subcommand

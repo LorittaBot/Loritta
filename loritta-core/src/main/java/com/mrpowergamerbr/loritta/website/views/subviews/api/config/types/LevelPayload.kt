@@ -43,11 +43,13 @@ class LevelPayload : ConfigPayloadType("level") {
 				val type = announcement["type"].string
 				val channelId = announcement["channelId"].nullLong
 				val message = announcement["message"].string
+				val onlyIfUserReceivedRoles = announcement["onlyIfUserReceivedRoles"].bool
 
 				LevelAnnouncementConfigs.insert {
 					it[LevelAnnouncementConfigs.levelConfig] = levelConfig.id
 					it[LevelAnnouncementConfigs.type] = LevelUpAnnouncementType.valueOf(type)
 					it[LevelAnnouncementConfigs.channelId] = channelId
+					it[LevelAnnouncementConfigs.onlyIfUserReceivedRoles] = onlyIfUserReceivedRoles
 					it[LevelAnnouncementConfigs.message] = message
 				}
 			}

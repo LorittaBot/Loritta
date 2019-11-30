@@ -603,6 +603,7 @@ object WebsiteUtils {
 						jsonObject(
 								"type" to announcement[LevelAnnouncementConfigs.type].toString(),
 								"channelId" to announcement[LevelAnnouncementConfigs.channelId]?.toString(),
+								"onlyIfUserReceivedRoles" to announcement[LevelAnnouncementConfigs.onlyIfUserReceivedRoles],
 								"message" to announcement[LevelAnnouncementConfigs.message].toString()
 						)
 				)
