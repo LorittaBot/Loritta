@@ -121,82 +121,6 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				)
 				return
 			}
-			if (arg0 == "search_user") {
-				val pattern = context.rawArgs.toMutableList().drop(1).joinToString(" ")
-
-				val allUsers = lorittaShards.searchUserInAllLorittaClusters(pattern)
-
-				val strBuilder = StringBuilder()
-
-				allUsers.forEach {
-					val name = it["name"].string
-					val discriminator = it["discriminator"].string
-					val id = it["id"].long
-
-					strBuilder.append("`${name}#${discriminator}` (`${id}`)\n")
-				}
-
-				if (strBuilder.length > 2000) {
-					context.reply(
-							LoriReply(
-									"Tem tanto usuário na lista que eu não vou conseguir mostrar, a mensagem está grande demais! Sorry ;w;",
-									Constants.ERROR
-							)
-					)
-					return
-				}
-
-				if (strBuilder.isEmpty()) {
-					context.reply(
-							LoriReply(
-									"Nenhum usuário se encaixa na pesquisa que você realizou, sorry ;w;",
-									Constants.ERROR
-							)
-					)
-					return
-				}
-
-				context.sendMessage(strBuilder.toString())
-				return
-			}
-
-			if (arg0 == "search_guild") {
-				val pattern = context.rawArgs.toMutableList().drop(1).joinToString(" ")
-
-				val allGuilds = lorittaShards.searchGuildInAllLorittaClusters(pattern)
-
-				val strBuilder = StringBuilder()
-
-				allGuilds.forEach {
-					val name = it["name"].string
-					val id = it["id"].long
-
-					strBuilder.append("`${name}` (`${id}`)\n")
-				}
-
-				if (strBuilder.length > 2000) {
-					context.reply(
-							LoriReply(
-									"Tem tanta guild na lista que eu não vou conseguir mostrar, a mensagem está grande demais! Sorry ;w;",
-									Constants.ERROR
-							)
-					)
-					return
-				}
-
-				if (strBuilder.isEmpty()) {
-					context.reply(
-							LoriReply(
-									"Nenhuma guild se encaixa na pesquisa que você realizou, sorry ;w;",
-									Constants.ERROR
-							)
-					)
-					return
-				}
-
-				context.sendMessage(strBuilder.toString())
-				return
-			}
 
 			if (arg0 == "set_dreams" && arg1 != null && arg2 != null) {
 				val user = context.getUserAt(2)!!
@@ -483,6 +407,83 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 								"Guild desbanida!"
 						)
 				)
+			}
+
+			if (arg0 == "search_user") {
+				val pattern = context.rawArgs.toMutableList().drop(1).joinToString(" ")
+
+				val allUsers = lorittaShards.searchUserInAllLorittaClusters(pattern)
+
+				val strBuilder = StringBuilder()
+
+				allUsers.forEach {
+					val name = it["name"].string
+					val discriminator = it["discriminator"].string
+					val id = it["id"].long
+
+					strBuilder.append("`${name}#${discriminator}` (`${id}`)\n")
+				}
+
+				if (strBuilder.length > 2000) {
+					context.reply(
+							LoriReply(
+									"Tem tanto usuário na lista que eu não vou conseguir mostrar, a mensagem está grande demais! Sorry ;w;",
+									Constants.ERROR
+							)
+					)
+					return
+				}
+
+				if (strBuilder.isEmpty()) {
+					context.reply(
+							LoriReply(
+									"Nenhum usuário se encaixa na pesquisa que você realizou, sorry ;w;",
+									Constants.ERROR
+							)
+					)
+					return
+				}
+
+				context.sendMessage(strBuilder.toString())
+				return
+			}
+
+			if (arg0 == "search_guild") {
+				val pattern = context.rawArgs.toMutableList().drop(1).joinToString(" ")
+
+				val allGuilds = lorittaShards.searchGuildInAllLorittaClusters(pattern)
+
+				val strBuilder = StringBuilder()
+
+				allGuilds.forEach {
+					val name = it["name"].string
+					val id = it["id"].long
+
+					strBuilder.append("`${name}` (`${id}`)\n")
+				}
+
+				if (strBuilder.length > 2000) {
+					context.reply(
+							LoriReply(
+									"Tem tanta guild na lista que eu não vou conseguir mostrar, a mensagem está grande demais! Sorry ;w;",
+									Constants.ERROR
+							)
+					)
+					return
+				}
+
+				if (strBuilder.isEmpty()) {
+					context.reply(
+							LoriReply(
+									"Nenhuma guild se encaixa na pesquisa que você realizou, sorry ;w;",
+									Constants.ERROR
+							)
+					)
+					return
+				}
+
+				context.sendMessage(strBuilder.toString())
+				return
 			}
 		}
 	}
