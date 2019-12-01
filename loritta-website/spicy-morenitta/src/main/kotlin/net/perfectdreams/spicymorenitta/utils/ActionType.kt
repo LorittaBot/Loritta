@@ -24,6 +24,7 @@ enum class ActionType(val updateType: String, val sectionName: String) {
 	UPDATE_LEVEL_UP("updated", "levelUp"),
 	UPDATE_TEXT_CHANNELS("updated", "textChannels"),
 	UPDATE_PREMIUM("updated", "premiumKeys"),
+	UPDATE_TWITTER("updated", "twitter"),
 
 	RESET_XP("resetXp", "unknown")
 }

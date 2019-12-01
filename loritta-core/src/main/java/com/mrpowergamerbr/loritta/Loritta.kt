@@ -54,6 +54,7 @@ import net.perfectdreams.loritta.tables.*
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.NetAddressUtils
 import net.perfectdreams.loritta.utils.Sponsor
+import net.perfectdreams.loritta.utils.TweetTracker
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import net.perfectdreams.mercadopago.MercadoPago
 import okhttp3.Dispatcher
@@ -160,6 +161,8 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 	val mercadoPago: MercadoPago
 	var patchData = PatchData()
 	var sponsors: List<Sponsor> = listOf()
+
+	val tweetTracker = TweetTracker(this)
 
 	init {
 		LorittaLauncher.loritta = this
@@ -327,6 +330,11 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 		logger.info { "Iniciando bom dia & cia..." }
 		bomDiaECia = BomDiaECia()
 
+		if (loritta.isMaster) { // Apenas o cluster principal deve criar a stream, para evitar que tenha várias streams logando ao mesmo tempo (e tomando rate limit)
+			logger.info { "Iniciando streams de tweets..." }
+			tweetTracker.updateStreams()
+		}
+
 		logger.info { "Carregando raffle..." }
 		val raffleFile = File(FOLDER, "raffle.json")
 
@@ -396,7 +404,8 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 					LevelConfigs,
 					AuditLog,
 					ExperienceRoleRates,
-					BomDiaECiaWinners
+					BomDiaECiaWinners,
+					TrackedTwitterAccounts
 			)
 		}
 	}

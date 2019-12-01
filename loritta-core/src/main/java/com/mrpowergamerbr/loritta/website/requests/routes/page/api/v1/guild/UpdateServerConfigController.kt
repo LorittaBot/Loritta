@@ -145,7 +145,8 @@ class UpdateServerConfigController {
 				"badge" to CustomBadgePayload::class.java,
 				"daily_multiplier" to DailyMultiplierPayload::class.java,
 				"level" to LevelPayload::class.java,
-				"reset_xp" to ResetXpPayload::class.java
+				"reset_xp" to ResetXpPayload::class.java,
+				"twitter" to TwitterPayload::class.java
 		)
 
 		val payloadHandlerClass = payloadHandlers[type]

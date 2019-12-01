@@ -21,12 +21,15 @@ import net.perfectdreams.loritta.dao.LevelConfig
 import net.perfectdreams.loritta.dao.ReactionOption
 import net.perfectdreams.loritta.tables.LevelAnnouncementConfigs
 import net.perfectdreams.loritta.tables.RolesByExperience
+import net.perfectdreams.loritta.tables.TrackedTwitterAccounts
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.levels.LevelUpAnnouncementType
 import net.perfectdreams.loritta.utils.levels.RoleGiveType
 import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.transactions.transaction
+import twitter4j.TwitterFactory
 import java.io.File
 import kotlin.concurrent.thread
 
@@ -260,6 +263,34 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			}
 
 			context.sendMessage("Adicionado configuração de level up! ID: ${levelConfig.id.value}")
+			return
+		}
+
+		if (arg0 == "inject_twitter_track") {
+			val channel = arg1
+			val handle = arg2
+
+			val tf = TwitterFactory(loritta.tweetTracker.buildTwitterConfig())
+			val twitter = tf.instance
+
+			val twitterUser = twitter.users().lookupUsers(handle)[0]
+
+			transaction(Databases.loritta) {
+				TrackedTwitterAccounts.insert {
+					it[TrackedTwitterAccounts.guildId] = context.guild.idLong
+					it[TrackedTwitterAccounts.channelId] = arg1?.toLong() ?: 0L
+					it[TrackedTwitterAccounts.twitterAccountId] = twitterUser.id
+					it[TrackedTwitterAccounts.message] = "{link}"
+				}
+			}
+
+			loritta.tweetTracker.updateStreams()
+
+			context.reply(
+					LoriReply(
+							"Adicionado track do usuário ${twitterUser.id} para canal $channel"
+					)
+			)
 			return
 		}
 

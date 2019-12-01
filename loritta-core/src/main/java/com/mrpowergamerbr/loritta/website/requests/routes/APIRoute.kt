@@ -9,6 +9,9 @@ import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild.Send
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild.StoreItemsGuildController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild.UpdateServerConfigController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.loritta.*
+import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.twitter.ReceivedTweetController
+import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.twitter.ShowTwitterUserController
+import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.twitter.UpdateStreamController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.user.*
 import org.jooby.Jooby
 
@@ -58,6 +61,11 @@ class APIRoute : Jooby() {
 		use(GetLocaleController::class.java)
 		use(GetSelfInfoController::class.java)
 		use(GetFanArtsController::class.java)
+
+		// ===[ TWITTER ]===
+		use(ReceivedTweetController::class.java)
+		use(UpdateStreamController::class.java)
+		use(ShowTwitterUserController::class.java)
 
 		// ===[ MONEY ]===
 		use(TransferBalanceExternalController::class.java)

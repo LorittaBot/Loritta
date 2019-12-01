@@ -69,7 +69,8 @@ class SpicyMorenitta : Logging {
 			UpdateNavbarSizePostRender("/blog"),
 			UpdateNavbarSizePostRender("/extended"),
 			AuditLogRoute(this),
-			LevelUpRoute(this)
+			LevelUpRoute(this),
+			TwitterRoute(this)
 	)
 	val validWebsiteLocaleIds = mutableListOf(
 			"br",
@@ -608,9 +609,10 @@ class SpicyMorenitta : Logging {
 		}
 	}
 
-	fun launch(block: suspend CoroutineScope.() -> Unit) {
+	fun launch(block: suspend CoroutineScope.() -> Unit): Job {
 		val job = GlobalScope.launch(block = block)
 		pageSpecificTasks.add(job)
+		return job
 	}
 
 	/**

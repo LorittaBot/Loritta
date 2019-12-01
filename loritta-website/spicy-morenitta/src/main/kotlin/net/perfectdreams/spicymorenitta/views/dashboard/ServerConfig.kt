@@ -20,6 +20,7 @@ object ServerConfig {
 			val donationConfig: DonationConfig,
 			val reactionRoleConfigs: List<ReactionOption>,
 			val levelUpConfig: LevelUpConfig,
+			val trackedTwitterAccounts: Array<TrackedTwitterAccount>,
 			val roles: Array<Role>,
 			val textChannels: Array<TextChannel>
 	)
@@ -77,6 +78,13 @@ object ServerConfig {
 	class ExperienceRoleRate(
 			val role: Long,
 			val rate: Double
+	)
+
+	@Serializable
+	class TrackedTwitterAccount(
+			val channelId: Long,
+			val twitterAccountId: Long,
+			val message: String
 	)
 
 	@Serializable

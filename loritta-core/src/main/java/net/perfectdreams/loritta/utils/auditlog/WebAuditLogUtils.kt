@@ -62,6 +62,7 @@ object WebAuditLogUtils {
 			"premium" -> ActionType.UPDATE_PREMIUM
 			"economy" -> ActionType.UPDATE_ECONOMY
 			"reset_xp" -> ActionType.RESET_XP
+			"twitter" -> ActionType.UPDATE_TWITTER
 
 			else -> ActionType.UNKNOWN
 		}

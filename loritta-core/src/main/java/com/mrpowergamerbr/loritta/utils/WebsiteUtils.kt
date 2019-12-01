@@ -31,10 +31,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.dao.ReactionOption
-import net.perfectdreams.loritta.tables.ExperienceRoleRates
-import net.perfectdreams.loritta.tables.LevelAnnouncementConfigs
-import net.perfectdreams.loritta.tables.ReactionOptions
-import net.perfectdreams.loritta.tables.RolesByExperience
+import net.perfectdreams.loritta.tables.*
 import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.utils.levels.RoleGiveType
 import net.perfectdreams.loritta.website.utils.WebsiteAssetsHashes
@@ -643,6 +640,24 @@ object WebsiteUtils {
 					"rolesByExperience" to rolesByExperienceArray,
 					"experienceRoleRates" to experienceRoleRatesArray
 			)
+		}
+
+		guildJson["trackedTwitterAccounts"] = transaction(Databases.loritta) {
+			val array = JsonArray()
+
+			TrackedTwitterAccounts.select {
+				TrackedTwitterAccounts.guildId eq guild.idLong
+			}.forEach {
+				array.add(
+						jsonObject(
+								"channelId" to it[TrackedTwitterAccounts.channelId],
+								"twitterAccountId" to it[TrackedTwitterAccounts.twitterAccountId],
+								"message" to it[TrackedTwitterAccounts.message]
+						)
+				)
+			}
+
+			array
 		}
 
 		guildJson["selfMember"] = selfMember

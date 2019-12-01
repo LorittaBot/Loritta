@@ -53,6 +53,7 @@ dependencies {
     compile("org.graalvm:graal-sdk:1.0.0-rc7")
     compile("org.jetbrains.kotlinx:kotlinx-html-jvm:0.6.12")
     compile("org.twitter4j:twitter4j-core:[4.0,)")
+    compile("org.twitter4j:twitter4j-stream:[4.0,)")
     compile("com.github.ben-manes.caffeine:caffeine:2.8.0")
     compile("javax.xml.bind:jaxb-api:2.3.1")
     compile("com.sun.xml.bind:jaxb-core:2.3.0.1")

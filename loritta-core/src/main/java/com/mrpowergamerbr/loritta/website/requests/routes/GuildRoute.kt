@@ -14,6 +14,7 @@ class GuildRoute : Jooby() {
 		use(ConfigureCustomBadgeController::class.java)
 		use(ConfigureDailyMultiplierController::class.java)
 		use(ConfigureLevelUpController::class.java)
+		use(ConfigureTrackedTwitterAccountsController::class.java)
 		use(AuditLogController::class.java)
 	}
 }
