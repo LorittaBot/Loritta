@@ -98,6 +98,8 @@ abstract class BaseRoute(val path: String) : Logging {
         switchContent(call)
     }
 
+    open fun onUnload() {}
+
     open fun hideDummyNavbarHeight(call: ApplicationCall) {
         val dummyNavigationBar = document.select<HTMLDivElement?>("#dummy-navbar")
         dummyNavigationBar?.style?.height = "0px"

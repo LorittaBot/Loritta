@@ -24,7 +24,6 @@ import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.GeneralDashboard
 import net.perfectdreams.spicymorenitta.trunfo.TrunfoGame
 import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.utils.locale.BaseLocale
-import net.perfectdreams.spicymorenitta.views.BaseView
 import net.perfectdreams.spicymorenitta.ws.PingCommand
 import oldMain
 import org.w3c.dom.*
@@ -83,7 +82,6 @@ class SpicyMorenitta : Logging {
 			"es" to "es-es"
 	)
 
-	val view: BaseView? = null
 	lateinit var socket: WebSocket
 	val localeId: String
 		get() {
@@ -98,6 +96,8 @@ class SpicyMorenitta : Logging {
 			else
 				"us"
 		}
+
+	var currentRoute: BaseRoute? = null
 
 	var userIdentification: UserIdentification? = null
 	val pageSpecificTasks = mutableListOf<Job>()
@@ -321,6 +321,9 @@ class SpicyMorenitta : Logging {
 
 		if (!route.keepLoadingScreen) // Utilizado para coisas que querem mais http requests após carregar (página de fan arts!)
 			hideLoadingScreen()
+
+		this.currentRoute?.onUnload()
+		this.currentRoute = route
 
 		route.onRender(call)
 	}

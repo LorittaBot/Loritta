@@ -22,8 +22,6 @@ object TimersView {
 		page.getElementById("timer-entries")
 	}
 	var currentIndex = -1
-	val visibleModal: Element
-		get() = page.getElementByClass("tingle-modal--visible")
 
 	@JsName("start")
 	fun start() {

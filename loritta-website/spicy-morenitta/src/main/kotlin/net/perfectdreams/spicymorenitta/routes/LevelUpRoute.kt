@@ -37,13 +37,15 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 	val noXpRoles = mutableListOf<Long>()
 	val noXpChannels = mutableListOf<Long>()
 
-	@ImplicitReflectionSerializer
-	override fun onRender(call: ApplicationCall) {
+	override fun onUnload() {
 		rolesByExperience.clear()
+		experienceRoleRates.clear()
 		noXpRoles.clear()
 		noXpChannels.clear()
-		experienceRoleRates.clear()
+	}
 
+	@ImplicitReflectionSerializer
+	override fun onRender(call: ApplicationCall) {
 		m.fixLeftSidebarScroll {
 			super.onRender(call)
 		}

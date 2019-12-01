@@ -60,3 +60,6 @@ data class Offset(
         val top: Double,
         val left: Double
 )
+
+val visibleModal: Element
+    get() = page.getElementByClass("tingle-modal--visible")

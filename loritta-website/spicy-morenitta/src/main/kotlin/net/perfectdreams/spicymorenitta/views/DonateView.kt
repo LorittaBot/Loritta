@@ -13,6 +13,7 @@ import loriUrl
 import net.perfectdreams.spicymorenitta.utils.HttpRequest
 import net.perfectdreams.spicymorenitta.utils.appendBuilder
 import net.perfectdreams.spicymorenitta.utils.page
+import net.perfectdreams.spicymorenitta.utils.visibleModal
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLInputElement
@@ -437,7 +438,7 @@ object DonateView {
 								onClickFunction = {
 									val o = object {
 										val gateway = "MERCADOPAGO"
-										val money = (page.getElementByClass("tingle-modal--visible").getElementsByClassName("how-much-money")[0] as HTMLInputElement).value
+										val money = (visibleModal.getElementsByClassName("how-much-money")[0] as HTMLInputElement).value
 									}
 
 									println(JSON.stringify(o))

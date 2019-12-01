@@ -34,19 +34,21 @@ import kotlin.js.json
 
 class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{guildid}/configure/twitter") {
 	companion object {
-		private const val LOCALE_PREFIX = "modules.trackedTwitterAccounts"
+		private const val LOCALE_PREFIX = "modules.twitter"
 	}
 
 	val trackedTwitterAccounts = mutableListOf<ServerConfig.TrackedTwitterAccount>()
-	val visibleModal: Element
-		get() = page.getElementByClass("tingle-modal--visible")
 	val cachedUsersById = mutableMapOf<Long, TwitterAccountInfo>()
 	val cachedUsersByScreenName = mutableMapOf<String, TwitterAccountInfo>()
 
+	override fun onUnload() {
+		trackedTwitterAccounts.clear()
+		cachedUsersById.clear()
+		cachedUsersByScreenName.clear()
+	}
+
 	@ImplicitReflectionSerializer
 	override fun onRender(call: ApplicationCall) {
-		trackedTwitterAccounts.clear()
-
 		m.fixLeftSidebarScroll {
 			super.onRender(call)
 		}
@@ -253,7 +255,7 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 							style = "flex-grow: 1; margin: 0.25em;"
 
 							h5(classes = "section-title") {
-								+ locale["modules.twitter.userName"]
+								+ locale["$LOCALE_PREFIX.userName"]
 							}
 
 							input(classes = "twitter-account") {
@@ -266,7 +268,7 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 
 							div(classes = "account-config blurSection") {
 								h5(classes = "section-title") {
-									+ locale["modules.twitter.channel"]
+									+ locale["$LOCALE_PREFIX.channel"]
 								}
 
 								select("choose-channel") {
@@ -289,7 +291,7 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 								}
 
 								h5(classes = "section-title") {
-									+ locale["modules.twitter.theMessage"]
+									+ locale["$LOCALE_PREFIX.theMessage"]
 								}
 
 								textArea(classes = "choose-text") {
