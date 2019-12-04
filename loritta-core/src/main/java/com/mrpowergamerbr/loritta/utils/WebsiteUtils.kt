@@ -660,6 +660,24 @@ object WebsiteUtils {
 			array
 		}
 
+		guildJson["trackedRssFeeds"] = transaction(Databases.loritta) {
+			val array = JsonArray()
+
+			TrackedRssFeeds.select {
+				TrackedRssFeeds.guildId eq guild.idLong
+			}.forEach {
+				array.add(
+						jsonObject(
+								"feedUrl" to it[TrackedRssFeeds.feedUrl],
+								"channelId" to it[TrackedRssFeeds.channelId],
+								"message" to it[TrackedRssFeeds.message]
+						)
+				)
+			}
+
+			array
+		}
+
 		guildJson["selfMember"] = selfMember
 
 		transaction(Databases.loritta) {

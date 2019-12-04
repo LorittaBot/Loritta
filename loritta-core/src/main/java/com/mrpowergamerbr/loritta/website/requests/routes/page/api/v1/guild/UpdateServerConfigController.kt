@@ -146,7 +146,8 @@ class UpdateServerConfigController {
 				"daily_multiplier" to DailyMultiplierPayload::class.java,
 				"level" to LevelPayload::class.java,
 				"reset_xp" to ResetXpPayload::class.java,
-				"twitter" to TwitterPayload::class.java
+				"twitter" to TwitterPayload::class.java,
+				"rss_feeds" to RssFeedsPayload::class.java
 		)
 
 		val payloadHandlerClass = payloadHandlers[type]

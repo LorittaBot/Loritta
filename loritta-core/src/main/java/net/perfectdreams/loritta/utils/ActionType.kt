@@ -27,5 +27,6 @@ enum class ActionType {
 
 	RESET_XP,
 
-	UPDATE_TWITTER
+	UPDATE_TWITTER,
+	UPDATE_RSS_FEEDS
 }

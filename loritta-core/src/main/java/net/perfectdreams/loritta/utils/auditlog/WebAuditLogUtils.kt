@@ -63,6 +63,7 @@ object WebAuditLogUtils {
 			"economy" -> ActionType.UPDATE_ECONOMY
 			"reset_xp" -> ActionType.RESET_XP
 			"twitter" -> ActionType.UPDATE_TWITTER
+			"rss_feeds" -> ActionType.UPDATE_RSS_FEEDS
 
 			else -> ActionType.UNKNOWN
 		}

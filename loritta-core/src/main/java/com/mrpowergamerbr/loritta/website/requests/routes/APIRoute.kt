@@ -9,6 +9,11 @@ import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild.Send
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild.StoreItemsGuildController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild.UpdateServerConfigController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.loritta.*
+import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.parallax.AddRoleToMemberController
+import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.parallax.RemoveRoleFromMemberController
+import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.parallax.SendMessageController
+import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.rss.DefaultRssFeedsController
+import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.rss.ReceivedFeedEntryController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.twitter.ReceivedTweetController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.twitter.ShowTwitterUserController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.twitter.UpdateStreamController
@@ -69,5 +74,14 @@ class APIRoute : Jooby() {
 
 		// ===[ MONEY ]===
 		use(TransferBalanceExternalController::class.java)
+
+		// ===[ PARALLAX ]===
+		use(SendMessageController::class.java)
+		use(AddRoleToMemberController::class.java)
+		use(RemoveRoleFromMemberController::class.java)
+
+		// ===[ RSS FEEDS ]===
+		use(DefaultRssFeedsController::class.java)
+		use(ReceivedFeedEntryController::class.java)
 	}
 }

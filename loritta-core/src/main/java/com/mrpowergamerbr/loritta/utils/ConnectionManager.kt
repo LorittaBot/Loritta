@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.mrpowergamerbr.loritta.threads.NewRssFeedTask.Companion.coroutineDispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -1539,7 +1538,7 @@ fun HttpRequest.doSafeConnection(): HttpRequest {
     if (loritta.config.connectionManager.proxyUntrustedConnections) {
         if (loritta.connectionManager.isBlocked(url.toString())) {
             if (System.currentTimeMillis() - loritta.connectionManager.lastProxyListUpdate > 900_000 && !loritta.connectionManager.mutex.isLocked) {
-                GlobalScope.launch(coroutineDispatcher) {
+                GlobalScope.launch(loritta.coroutineDispatcher) {
                     loritta.connectionManager.updateProxies()
                 }
             }
@@ -1551,7 +1550,7 @@ fun HttpRequest.doSafeConnection(): HttpRequest {
 
         if (!loritta.connectionManager.isTrusted(url.toString())) {
             if (System.currentTimeMillis() - loritta.connectionManager.lastProxyListUpdate > 900_000 && !loritta.connectionManager.mutex.isLocked) {
-                GlobalScope.launch(coroutineDispatcher) {
+                GlobalScope.launch(loritta.coroutineDispatcher) {
                     loritta.connectionManager.updateProxies()
                 }
             }
@@ -1572,7 +1571,7 @@ fun URL.openSafeConnection(): URLConnection {
     if (loritta.config.connectionManager.proxyUntrustedConnections) {
         if (loritta.connectionManager.isBlocked(this.toString())) {
             if (System.currentTimeMillis() - loritta.connectionManager.lastProxyListUpdate > 900_000 && !loritta.connectionManager.mutex.isLocked) {
-                GlobalScope.launch(coroutineDispatcher) {
+                GlobalScope.launch(loritta.coroutineDispatcher) {
                     loritta.connectionManager.updateProxies()
                 }
             }
@@ -1584,7 +1583,7 @@ fun URL.openSafeConnection(): URLConnection {
 
         if (!loritta.connectionManager.isTrusted(this.toString())) {
             if (System.currentTimeMillis() - loritta.connectionManager.lastProxyListUpdate > 900_000 && !loritta.connectionManager.mutex.isLocked) {
-                GlobalScope.launch(coroutineDispatcher) {
+                GlobalScope.launch(loritta.coroutineDispatcher) {
                     loritta.connectionManager.updateProxies()
                 }
             }

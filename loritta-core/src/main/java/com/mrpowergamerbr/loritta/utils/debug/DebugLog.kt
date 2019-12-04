@@ -8,11 +8,8 @@ import com.mrpowergamerbr.loritta.modules.InviteLinkModule
 import com.mrpowergamerbr.loritta.threads.NewRssFeedTask
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import kotlinx.coroutines.debug.DebugProbes
 import mu.KotlinLogging
 import net.perfectdreams.loritta.website.LorittaWebsite
-import java.io.File
-import java.io.PrintStream
 import java.lang.management.ManagementFactory
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.atomic.AtomicInteger

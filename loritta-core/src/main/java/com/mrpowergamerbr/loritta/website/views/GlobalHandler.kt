@@ -179,7 +179,6 @@ object GlobalHandler {
 		views.add(ConfigureAminoView())
 		views.add(ConfigureYouTubeView())
 		views.add(ConfigureLivestreamView())
-		views.add(ConfigureRSSFeedsView())
 		views.add(ConfigureNashornCommandsView())
 		views.add(ConfigureMusicView())
 		views.add(ConfigureEventHandlersView())

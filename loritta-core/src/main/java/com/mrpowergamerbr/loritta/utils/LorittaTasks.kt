@@ -25,7 +25,6 @@ object LorittaTasks {
 			scheduleWithFixedDelay(LorittaLandRoleSync(), 0L, 1L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(SponsorsSyncTask(), 0L, 1L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(AminoRepostTask(), 0L, 1L, TimeUnit.MINUTES)
-		scheduleWithFixedDelay(NewRssFeedTask(), 0L, 1L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(CreateYouTubeWebhooksTask(), 0L, 1L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(CreateTwitchWebhooksTask(), 0L, 1L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(OptimizeAssetsTask(), 0L, 5L, TimeUnit.SECONDS)
@@ -37,8 +36,9 @@ object LorittaTasks {
 		scheduleWithFixedDelay(ApplyBansTask(), 0L, 60L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(SpawnGiveawayTask(), 0L, 1L, TimeUnit.HOURS)
 		scheduleWithFixedDelay(DeleteOldStoredMessagesTask(), 0L, 1L, TimeUnit.HOURS)
-		if (!loritta.isMaster)
-			scheduleWithFixedDelay(UpdateFanArtsTask(), 0L, 1L, TimeUnit.MINUTES)
+		if (loritta.isMaster)
+			scheduleWithFixedDelay(NewRssFeedTask(), 0L, 15L, TimeUnit.SECONDS)
+
 	}
 
 	fun scheduleWithFixedDelay(task: Runnable, initialDelay: Long, delay: Long, unit: TimeUnit) {

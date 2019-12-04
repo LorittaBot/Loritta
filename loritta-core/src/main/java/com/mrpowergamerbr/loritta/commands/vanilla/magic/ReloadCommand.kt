@@ -448,10 +448,6 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 				if (serverConfig.musicConfig.isEnabled)
 					continue
 
-				// FEEDS
-				if (serverConfig.rssFeedConfig.feeds.isNotEmpty())
-					continue
-
 				// YOUTUBE
 				if (serverConfig.youTubeConfig.channels.isNotEmpty())
 					continue

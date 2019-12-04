@@ -49,7 +49,6 @@ class ConfigureServerView : ConfigureView() {
 					"amino" -> serverConfig.aminoConfig
 					"youtube" -> serverConfig.youTubeConfig
 					"livestream" -> serverConfig.livestreamConfig
-					"feeds" -> serverConfig.rssFeedConfig
 					"nashorn_commands" -> serverConfig.nashornCommands
 					"event_handlers" -> serverConfig.nashornEventHandlers
 					"vanilla_commands" -> serverConfig.disabledCommands
@@ -86,8 +85,6 @@ class ConfigureServerView : ConfigureView() {
 					response = handleYouTubeChannels(serverConfig, receivedPayload)
 				}  else if (target is LivestreamConfig) {
 					response = handleLivestreamChannels(serverConfig, receivedPayload)
-				} else if (target is RssFeedConfig) {
-					response = handleRssFeeds(serverConfig, receivedPayload)
 				} else if (type == "nashorn_commands") {
 					response = handleNashornCommands(serverConfig, receivedPayload)
 				} else if (type == "event_handlers") {
@@ -277,23 +274,6 @@ class ConfigureServerView : ConfigureView() {
 			val channel = LivestreamConfig.LivestreamInfo(channelUrl, repostToChannelId, videoSentMessage)
 
 			config.livestreamConfig.channels.add(channel)
-		}
-
-		return "nice"
-	}
-
-	fun handleRssFeeds(config: MongoServerConfig, receivedPayload: JsonObject): String {
-		config.rssFeedConfig.feeds.clear()
-		val entries = receivedPayload["entries"].array
-
-		for (entry in entries) {
-			val repostToChannelId = entry["repostToChannelId"].string
-			val feedUrl = entry["feedUrl"].string
-			val newMessage = entry["newMessage"].string
-
-			val feed = RssFeedConfig.FeedInfo(feedUrl, repostToChannelId, newMessage)
-
-			config.rssFeedConfig.feeds.add(feed)
 		}
 
 		return "nice"

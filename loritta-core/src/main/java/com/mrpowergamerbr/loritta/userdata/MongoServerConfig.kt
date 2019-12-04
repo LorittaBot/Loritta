@@ -52,7 +52,6 @@ class MongoServerConfig @BsonCreator constructor(
 	var youTubeConfig = YouTubeConfig()
 	var livestreamConfig = LivestreamConfig()
 	var starboardConfig = StarboardConfig()
-	var rssFeedConfig = RssFeedConfig()
 	var eventLogConfig = EventLogConfig()
 	var autoroleConfig = AutoroleConfig()
 	var inviteBlockerConfig = InviteBlockerConfig()
