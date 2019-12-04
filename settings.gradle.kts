@@ -39,6 +39,7 @@ include(":loritta-website")
 include(":loritta-website:sweet-morenitta")
 include(":loritta-website:spicy-morenitta")
 include(":loritta-website:lotrunfo-server")
+include(":parallax-code-server")
 
 // Watchdoggo
 include(":loritta-watchdog-bot")

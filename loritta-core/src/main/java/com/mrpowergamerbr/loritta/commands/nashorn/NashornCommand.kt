@@ -1,12 +1,19 @@
 package com.mrpowergamerbr.loritta.commands.nashorn
 
+import com.github.salomonbrys.kotson.jsonObject
+import com.github.salomonbrys.kotson.toJsonArray
 import com.google.common.util.concurrent.ThreadFactoryBuilder
+import com.google.gson.JsonArray
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornContext
 import com.mrpowergamerbr.loritta.parallax.ParallaxUtils
 import com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxContext
+import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
+import io.ktor.client.request.post
+import io.ktor.http.userAgent
 import jdk.nashorn.api.scripting.ClassFilter
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.bson.types.ObjectId
@@ -103,8 +110,67 @@ var getGuild=function() { return contexto.getGuild(); };"""
 			}
 			executor.shutdownNow()
 		} else {
-			// Funções inline para facilitar a programação de comandos
-			val inlineMethods = """
+			if (javaScript.contains("// WEBSERVER")) {
+				val guild = ogContext.guild
+
+				val members = JsonArray()
+
+				guild.members.forEach {
+					members.add(
+							ParallaxUtils.transformToJson(it)
+					)
+				}
+
+				val channels = JsonArray()
+
+				guild.channels.forEach {
+					channels.add(
+							jsonObject(
+									"id" to it.idLong,
+									"name" to it.name
+							)
+					)
+				}
+
+				val roles = JsonArray()
+
+				guild.roles.forEach {
+					roles.add(
+							jsonObject(
+									"id" to it.idLong,
+									"name" to it.name
+
+							)
+					)
+				}
+
+				val jsonGuild = jsonObject(
+						"id" to ogContext.guild.idLong,
+						"name" to ogContext.guild.name,
+						"members" to members,
+						"channels" to channels,
+						"roles" to roles
+				)
+
+				val commandRequest = jsonObject(
+						"code" to javaScript,
+						"guild" to jsonGuild,
+						"message" to ParallaxUtils.transformToJson(ogContext.message),
+						"lorittaClusterId" to loritta.lorittaCluster.id,
+						"args" to ogContext.rawArgs.toList().toJsonArray(),
+						"clusterUrl" to "https://${loritta.lorittaCluster.getUrl()}"
+				)
+
+				logger.info { "Sending code to the Parallax Server Executor..." }
+
+				loritta.http.post<io.ktor.client.response.HttpResponse>("http://127.0.0.1:3366/api/v1/parallax/process-command") {
+					userAgent(loritta.lorittaCluster.getUserAgent())
+
+					body = gson.toJson(commandRequest)
+				}
+			} else {
+				// Funções inline para facilitar a programação de comandos
+				val inlineMethods = """
 				var guild = context.guild;
 				var member = context.member;
 				var user = context.member;
@@ -116,24 +182,25 @@ var getGuild=function() { return contexto.getGuild(); };"""
 				var Attachment = Java.type('com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxAttachment')
 				var http = Java.type('com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxHttp')
 			""".trimIndent()
-			val executor = Executors.newSingleThreadExecutor(ThreadFactoryBuilder().setNameFormat("JavaScript (GraalJS) Evaluator Thread for Guild ${ogContext.guild.idLong} - %s").build())
-			try {
-				val parallaxContext = ParallaxContext(ogContext)
-				val future = executor.submit(
-						ParallaxTask(
-								graalContext,
-								"(function(context) { \n" +
-										"$inlineMethods\n" +
-										"$javaScript\n })",
-								ogContext,
-								parallaxContext
-						)
-				)
-				future.get(15, TimeUnit.SECONDS)
-			} catch (e: Throwable) {
-				ParallaxUtils.sendThrowableToChannel(e, ogContext.event.channel)
+				val executor = Executors.newSingleThreadExecutor(ThreadFactoryBuilder().setNameFormat("JavaScript (GraalJS) Evaluator Thread for Guild ${ogContext.guild.idLong} - %s").build())
+				try {
+					val parallaxContext = ParallaxContext(ogContext)
+					val future = executor.submit(
+							ParallaxTask(
+									graalContext,
+									"(function(context) { \n" +
+											"$inlineMethods\n" +
+											"$javaScript\n })",
+									ogContext,
+									parallaxContext
+							)
+					)
+					future.get(15, TimeUnit.SECONDS)
+				} catch (e: Throwable) {
+					ParallaxUtils.sendThrowableToChannel(e, ogContext.event.channel)
+				}
+				executor.shutdownNow()
 			}
-			executor.shutdownNow()
 		}
 	}
 
@@ -152,8 +219,4 @@ var getGuild=function() { return contexto.getGuild(); };"""
 			val arguments: String = "",
 			val example: String = ""
 	)
-
-	companion object {
-
-	}
 }
