@@ -69,7 +69,8 @@ class SpicyMorenitta : Logging {
 			UpdateNavbarSizePostRender("/extended"),
 			AuditLogRoute(this),
 			LevelUpRoute(this),
-			TwitterRoute(this)
+			TwitterRoute(this),
+			RssFeedsRoute(this)
 	)
 	val validWebsiteLocaleIds = mutableListOf(
 			"br",

@@ -23,14 +23,15 @@ class RssFeedsPayload : ConfigPayloadType("rss_feeds") {
 				TrackedRssFeeds.guildId eq guild.idLong
 			}
 
-			val announcements = payload["rssFeeds"].array
+			val rssFeeds = payload["rssFeeds"].array
 
 			// E reinserir!
-			announcements.forEach {
+			rssFeeds.forEach { rssFeed ->
 				TrackedRssFeeds.insert {
-					it[feedUrl] = announcements["feedUrl"].string
-					it[channelId] = announcements["channelId"].long
-					it[message] = announcements["message"].string
+					it[guildId] = guild.idLong
+					it[feedUrl] = rssFeed["feedUrl"].string
+					it[channelId] = rssFeed["channelId"].long
+					it[message] = rssFeed["message"].string
 				}
 			}
 		}

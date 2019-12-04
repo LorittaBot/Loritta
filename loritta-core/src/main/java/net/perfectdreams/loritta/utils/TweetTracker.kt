@@ -91,10 +91,10 @@ class TweetTracker(val m: Loritta) {
 					override fun onDeletionNotice(p0: StatusDeletionNotice) {}
 
 					override fun onStatus(p0: Status) {
-						logger.info { "Received status ${p0.id} from ${p0.user.screenName} (${p0.user.id}), relaying to master cluster..." }
-
 						if (p0.isRetweet)
 							return
+
+						logger.info { "Received status ${p0.id} from ${p0.user.screenName} (${p0.user.id}), relaying to master cluster..." }
 
 						val payload = jsonObject(
 								"tweetId" to p0.id,

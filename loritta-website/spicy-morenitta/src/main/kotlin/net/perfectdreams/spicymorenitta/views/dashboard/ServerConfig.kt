@@ -21,6 +21,7 @@ object ServerConfig {
 			val reactionRoleConfigs: List<ReactionOption>,
 			val levelUpConfig: LevelUpConfig,
 			val trackedTwitterAccounts: Array<TrackedTwitterAccount>,
+			val trackedRssFeeds: Array<TrackedRssFeed>,
 			val roles: Array<Role>,
 			val textChannels: Array<TextChannel>
 	)
@@ -84,6 +85,13 @@ object ServerConfig {
 	class TrackedTwitterAccount(
 			val channelId: Long,
 			val twitterAccountId: Long,
+			val message: String
+	)
+
+	@Serializable
+	class TrackedRssFeed(
+			val channelId: Long,
+			val feedUrl: String,
 			val message: String
 	)
 

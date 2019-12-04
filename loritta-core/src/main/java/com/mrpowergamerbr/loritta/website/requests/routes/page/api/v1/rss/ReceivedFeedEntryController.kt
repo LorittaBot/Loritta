@@ -10,7 +10,6 @@ import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriRequiresAuth
 import mu.KotlinLogging
 import net.perfectdreams.loritta.tables.TrackedRssFeeds
-import net.perfectdreams.loritta.tables.TrackedTwitterAccounts
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.MediaType
@@ -46,7 +45,7 @@ class ReceivedFeedEntryController {
 		logger.info { "There are ${configsTrackingAccount.size} tracked configs tracking $feedUrl" }
 
 		for (tracked in configsTrackingAccount) {
-			val guildId = tracked[TrackedTwitterAccounts.guildId]
+			val guildId = tracked[TrackedRssFeeds.guildId]
 			val serverConfig = loritta.getOrCreateServerConfig(guildId)
 
 			val hasCustomRssFeedsSupport = transaction(Databases.loritta) {
@@ -56,8 +55,8 @@ class ReceivedFeedEntryController {
 			if (!(feedUrl.startsWith("{") && feedUrl.endsWith("}")) && !hasCustomRssFeedsSupport) // O servidor não possui custom rss feeds!
 				continue
 
-			val guild = lorittaShards.getGuildById(tracked[TrackedTwitterAccounts.guildId]) ?: continue
-			val textChannel = guild.getTextChannelById(tracked[TrackedTwitterAccounts.channelId]) ?: continue
+			val guild = lorittaShards.getGuildById(tracked[TrackedRssFeeds.guildId]) ?: continue
+			val textChannel = guild.getTextChannelById(tracked[TrackedRssFeeds.channelId]) ?: continue
 
 			val message = MessageUtils.generateMessage(
 					tracked[TrackedRssFeeds.message],

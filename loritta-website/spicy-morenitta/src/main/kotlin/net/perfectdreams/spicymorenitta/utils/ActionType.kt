@@ -25,6 +25,7 @@ enum class ActionType(val updateType: String, val sectionName: String) {
 	UPDATE_TEXT_CHANNELS("updated", "textChannels"),
 	UPDATE_PREMIUM("updated", "premiumKeys"),
 	UPDATE_TWITTER("updated", "twitter"),
+	UPDATE_RSS_FEEDS("rss_feeds", "rssFeeds"),
 
 	RESET_XP("resetXp", "unknown")
 }

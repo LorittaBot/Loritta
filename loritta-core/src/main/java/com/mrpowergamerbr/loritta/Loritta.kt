@@ -405,7 +405,9 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 					AuditLog,
 					ExperienceRoleRates,
 					BomDiaECiaWinners,
-					TrackedTwitterAccounts
+					TrackedTwitterAccounts,
+					TrackedRssFeeds,
+					DefaultRssFeeds
 			)
 		}
 	}

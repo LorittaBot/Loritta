@@ -121,6 +121,7 @@ abstract class BaseRoute(val path: String) : Logging {
 
             // Cancelar todas as tasks
             SpicyMorenitta.INSTANCE.pageSpecificTasks.onEach { it.cancel() }
+            SpicyMorenitta.INSTANCE.pageSpecificTasks.clear()
 
             document.body?.appendChild(call.content)
             val childNode = document.body?.childNodes?.get(0)

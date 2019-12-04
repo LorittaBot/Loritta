@@ -73,7 +73,7 @@ class NewRssFeedTask : Runnable {
 					if (remapRss != null)
 						realLink = remapRss[DefaultRssFeeds.feedUrl]
 
-					val request = HttpRequest.get(rssFeedLink)
+					val request = HttpRequest.get(realLink)
 							.connectTimeout(15_000)
 							.readTimeout(15_000)
 							.userAgent(Constants.USER_AGENT)
@@ -90,8 +90,10 @@ class NewRssFeedTask : Runnable {
 
 					val entries = feed.entries
 
-					if (storedLastEntries[rssFeedLink] != null) { // Se já existe entries relacionadas a esse link...
-						val storedEntriesLink = storedLastEntries[rssFeedLink]!!
+					logger.info { "Feed $realLink has ${entries.size} entries!" }
+
+					if (storedLastEntries[realLink] != null) { // Se já existe entries relacionadas a esse link...
+						val storedEntriesLink = storedLastEntries[realLink]!!
 
 						for (entry in entries) {
 							if (!storedEntriesLink.contains(entry.link)) {
@@ -103,7 +105,7 @@ class NewRssFeedTask : Runnable {
 
 								val feedPayload = gson.toJson(
 										jsonObject(
-												"feedUrl" to realLink,
+												"feedUrl" to rssFeedLink,
 												"entry" to jsonObject(
 														"title" to entry.title,
 														"link" to entry.link
@@ -136,7 +138,7 @@ class NewRssFeedTask : Runnable {
 					}
 
 					// Guardar os últimos links enviados
-					storedLastEntries[rssFeedLink] = entries.map { it.link }.toMutableSet()
+					storedLastEntries[realLink] = entries.map { it.link }.toMutableSet()
 				} catch (e: Exception) {
 					ignoreUrls[rssFeedLink] = System.currentTimeMillis()
 					logger.warn("Ignorning link $rssFeedLink due to feed failure")
