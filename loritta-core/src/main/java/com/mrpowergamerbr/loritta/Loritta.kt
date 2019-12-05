@@ -407,7 +407,8 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 					BomDiaECiaWinners,
 					TrackedTwitterAccounts,
 					TrackedRssFeeds,
-					DefaultRssFeeds
+					DefaultRssFeeds,
+					SonhosTransaction
 			)
 		}
 	}

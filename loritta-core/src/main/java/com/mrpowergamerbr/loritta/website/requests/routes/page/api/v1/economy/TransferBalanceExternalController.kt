@@ -8,6 +8,9 @@ import com.mrpowergamerbr.loritta.website.LoriAuthLevel
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriRequiresAuth
 import mu.KotlinLogging
+import net.perfectdreams.loritta.tables.SonhosTransaction
+import net.perfectdreams.loritta.utils.SonhosPaymentReason
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.MediaType
 import org.jooby.Request
@@ -36,9 +39,20 @@ class TransferBalanceExternalController {
 		val profile = loritta.getOrCreateLorittaProfile(receiverId)
 
 		logger.info { "$receiverId (has ${profile.money} dreams) is transferring $garticos garticos to Loritta with transfer rate is $transferRate" }
+		val finalMoney = (garticos * transferRate)
+
 		transaction(Databases.loritta) {
-			profile.money += (garticos * transferRate)
+			profile.money += finalMoney
+
+			SonhosTransaction.insert {
+				it[givenBy] = null
+				it[receivedBy] = receiverId.toLong()
+				it[givenAt] = System.currentTimeMillis()
+				it[quantity] = finalMoney.toBigDecimal()
+				it[reason] = SonhosPaymentReason.GARTICOS_TRANSFER
+			}
 		}
+
 		logger.info { "$receiverId (now has ${profile.money} dreams) transferred $garticos garticos to Loritta with transfer rate is $transferRate" }
 
 		res.send(

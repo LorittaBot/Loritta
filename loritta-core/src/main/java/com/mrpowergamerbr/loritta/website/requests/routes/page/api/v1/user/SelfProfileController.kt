@@ -9,6 +9,9 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.*
 import com.mrpowergamerbr.loritta.website.requests.routes.page.user.dashboard.ProfileListController
 import mu.KotlinLogging
+import net.perfectdreams.loritta.tables.SonhosTransaction
+import net.perfectdreams.loritta.utils.SonhosPaymentReason
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.MediaType
 import org.jooby.Request
@@ -71,6 +74,14 @@ class SelfProfileController {
 				}
 
 				profile.money -= 3000
+
+				SonhosTransaction.insert {
+					it[givenBy] = userIdentification.id.toLong()
+					it[receivedBy] = null
+					it[givenAt] = System.currentTimeMillis()
+					it[quantity] = 3000.toBigDecimal()
+					it[reason] = SonhosPaymentReason.SHIP_EFFECT
+				}
 			}
 
 			res.send(gson.toJson(jsonObject()))
@@ -109,12 +120,28 @@ class SelfProfileController {
 			transaction(Databases.loritta) {
 				profileSettings.boughtProfiles = profileSettings.boughtProfiles.toMutableList().apply { this.add(profileDesign.clazz.simpleName) }.toTypedArray()
 				profile.money -= profileDesign.price
+
+				SonhosTransaction.insert {
+					it[givenBy] = profile.id.value
+					it[receivedBy] = null
+					it[givenAt] = System.currentTimeMillis()
+					it[quantity] = profileDesign.price.toBigDecimal()
+					it[reason] = SonhosPaymentReason.PROFILE
+				}
 			}
 
 			for (creatorId in profileDesign.createdBy) {
 				val creator = loritta.getOrCreateLorittaProfile(creatorId)
 				transaction(Databases.loritta) {
 					creator.money += profileDesign.price * 0.2
+
+					SonhosTransaction.insert {
+						it[givenBy] = null
+						it[receivedBy] = creator.id.value
+						it[givenAt] = System.currentTimeMillis()
+						it[quantity] = (profileDesign.price * 0.2).toBigDecimal()
+						it[reason] = SonhosPaymentReason.PROFILE
+					}
 				}
 			}
 

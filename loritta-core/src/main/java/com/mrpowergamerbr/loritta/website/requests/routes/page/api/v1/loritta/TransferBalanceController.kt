@@ -16,6 +16,9 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
+import net.perfectdreams.loritta.tables.SonhosTransaction
+import net.perfectdreams.loritta.utils.SonhosPaymentReason
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.MediaType
 import org.jooby.Request
@@ -78,6 +81,22 @@ class TransferBalanceController {
 				transaction(Databases.loritta) {
 					giverProfile.money -= howMuch
 					receiverProfile.money += finalMoney
+
+					SonhosTransaction.insert {
+						it[givenBy] = giverProfile.id.value
+						it[receivedBy] = null
+						it[givenAt] = System.currentTimeMillis()
+						it[quantity] = taxedMoney.toBigDecimal()
+						it[reason] = SonhosPaymentReason.PAYMENT_TAX
+					}
+
+					SonhosTransaction.insert {
+						it[givenBy] = giverProfile.id.value
+						it[receivedBy] = receiverProfile.id.value
+						it[givenAt] = System.currentTimeMillis()
+						it[quantity] = finalMoney.toBigDecimal()
+						it[reason] = SonhosPaymentReason.PAYMENT
+					}
 				}
 
 				logger.info { "$giverId (antes possuia ${beforeGiver} sonhos) transferiu ${howMuch} sonhos para ${receiverProfile.userId} (antes possuia ${beforeReceiver} sonhos, recebeu apenas $finalMoney (taxado!))" }

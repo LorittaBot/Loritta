@@ -11,6 +11,9 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAdd
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.tables.SonhosTransaction
+import net.perfectdreams.loritta.utils.SonhosPaymentReason
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.SOCIAL) {
@@ -199,6 +202,22 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 						proposeToProfile.marriage = newMarriage
 						profile.money -= splitCost
 						proposeToProfile.money -= splitCost
+
+						SonhosTransaction.insert {
+							it[givenBy] = profile.id.value
+							it[receivedBy] = null
+							it[givenAt] = System.currentTimeMillis()
+							it[quantity] = splitCost.toBigDecimal()
+							it[reason] = SonhosPaymentReason.MARRIAGE
+						}
+
+						SonhosTransaction.insert {
+							it[givenBy] = proposeToProfile.id.value
+							it[receivedBy] = null
+							it[givenAt] = System.currentTimeMillis()
+							it[quantity] = splitCost.toBigDecimal()
+							it[reason] = SonhosPaymentReason.MARRIAGE
+						}
 					}
 
 					context.reply(

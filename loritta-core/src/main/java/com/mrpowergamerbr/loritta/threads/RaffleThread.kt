@@ -14,7 +14,10 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
+import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.utils.FeatureFlags
+import net.perfectdreams.loritta.utils.SonhosPaymentReason
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.time.Instant
@@ -160,6 +163,14 @@ class RaffleThread : Thread("Raffle Thread") {
 
 			transaction(Databases.loritta){
 				lorittaProfile.money += money
+
+				SonhosTransaction.insert {
+					it[givenBy] = null
+					it[receivedBy] = winnerId.toLong()
+					it[givenAt] = System.currentTimeMillis()
+					it[quantity] = money.toBigDecimal()
+					it[reason] = SonhosPaymentReason.RAFFLE
+				}
 			}
 
 			userIds.clear()

@@ -18,7 +18,7 @@ class RawJson(private val gson: Gson, private val jsonParser: JsonParser) : Colu
 	override fun setParameter(stmt: PreparedStatement, index: Int, value: Any?) {
 		val obj = PGobject()
 		obj.type = "jsonb"
-		obj.value = value as String
+		obj.value = value as String?
 		stmt.setObject(index, obj)
 	}
 

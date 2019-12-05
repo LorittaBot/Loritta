@@ -15,6 +15,8 @@ import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.tables.SonhosTransaction
+import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -302,6 +304,14 @@ class APILoriDailyRewardView : NoVarsView() {
 			}
 
 			lorittaProfile.money += dailyPayout
+
+			SonhosTransaction.insert {
+				it[givenBy] = null
+				it[receivedBy] = lorittaProfile.id.value
+				it[givenAt] = System.currentTimeMillis()
+				it[quantity] = dailyPayout.toBigDecimal()
+				it[reason] = SonhosPaymentReason.DAILY
+			}
 		}
 
 		payload["api:code"] = LoriWebCodes.SUCCESS

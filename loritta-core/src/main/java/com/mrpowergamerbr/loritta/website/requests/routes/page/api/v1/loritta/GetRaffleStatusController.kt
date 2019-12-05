@@ -16,6 +16,9 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
+import net.perfectdreams.loritta.tables.SonhosTransaction
+import net.perfectdreams.loritta.utils.SonhosPaymentReason
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.MediaType
 import org.jooby.Request
@@ -90,6 +93,14 @@ class GetRaffleStatusController {
 				if (lorittaProfile.money >= requiredCount) {
 					transaction(Databases.loritta) {
 						lorittaProfile.money -= requiredCount
+
+						SonhosTransaction.insert {
+							it[givenBy] = lorittaProfile.id.value
+							it[receivedBy] = null
+							it[givenAt] = System.currentTimeMillis()
+							it[SonhosTransaction.quantity] = requiredCount.toBigDecimal()
+							it[reason] = SonhosPaymentReason.RAFFLE
+						}
 					}
 
 					for (i in 0 until quantity) {

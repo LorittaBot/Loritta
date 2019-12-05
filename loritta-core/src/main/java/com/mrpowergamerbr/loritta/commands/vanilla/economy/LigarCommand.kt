@@ -13,6 +13,8 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.tables.BomDiaECiaWinners
+import net.perfectdreams.loritta.tables.SonhosTransaction
+import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.Executors
@@ -47,6 +49,14 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 
 				transaction(Databases.loritta) {
 					profile.money -= 75
+
+					SonhosTransaction.insert {
+						it[givenBy] = context.userHandle.idLong
+						it[receivedBy] = null
+						it[givenAt] = System.currentTimeMillis()
+						it[quantity] = 75.toBigDecimal()
+						it[reason] = SonhosPaymentReason.BOM_DIA_E_CIA
+					}
 				}
 
 				GlobalScope.launch(coroutineExecutor) {
@@ -83,6 +93,7 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 						val randomPrize = RANDOM.nextInt(150, 376)
 						val guild = context.guild
 						val user = context.userHandle
+						val prizeAsBigDecimal = randomPrize.toBigDecimal()
 
 						transaction(Databases.loritta) {
 							profile.money += randomPrize
@@ -91,7 +102,15 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 								it[guildId] = guild.idLong
 								it[userId] = user.idLong
 								it[wonAt] = System.currentTimeMillis()
-								it[prize] = randomPrize.toBigDecimal()
+								it[prize] = prizeAsBigDecimal
+							}
+
+							SonhosTransaction.insert {
+								it[givenBy] = null
+								it[receivedBy] = user.idLong
+								it[givenAt] = System.currentTimeMillis()
+								it[quantity] = prizeAsBigDecimal
+								it[reason] = SonhosPaymentReason.BOM_DIA_E_CIA
 							}
 						}
 
