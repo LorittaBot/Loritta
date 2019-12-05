@@ -161,7 +161,7 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 				}
 			}
 
-			guild.unban(user).reason(locale["UNBAN_UnbannedBy"] + " ${punisher.name}#${punisher.discriminator} — ${locale["BAN_PunishmentReason"]}: $reason".substringIfNeeded(0 until 512))
+			guild.unban(user).reason((locale["UNBAN_UnbannedBy"] + " ${punisher.name}#${punisher.discriminator} — ${locale["BAN_PunishmentReason"]}: $reason").substringIfNeeded(0 until 512))
 					.queue()
 		}
 	}

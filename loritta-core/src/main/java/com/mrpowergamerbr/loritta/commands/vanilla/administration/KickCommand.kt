@@ -183,7 +183,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 				}
 			}
 
-			context.guild.kick(member, locale["BAN_PunishedBy"] + " ${context.userHandle.name}#${context.userHandle.discriminator} — ${locale["BAN_PunishmentReason"]}: $reason".substringIfNeeded(0 until 512))
+			context.guild.kick(member, (locale["BAN_PunishedBy"] + " ${context.userHandle.name}#${context.userHandle.discriminator} — ${locale["BAN_PunishmentReason"]}: $reason").substringIfNeeded(0 until 512))
 					.queue()
 		}
 	}
