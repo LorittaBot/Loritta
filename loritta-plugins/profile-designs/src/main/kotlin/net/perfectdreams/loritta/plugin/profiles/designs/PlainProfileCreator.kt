@@ -30,6 +30,7 @@ open class PlainProfileCreator(val color: String) : ProfileCreator {
 	class PlainPurpleProfileCreator : PlainProfileCreator("purple")
 	class PlainAquaProfileCreator : PlainProfileCreator("aqua")
 	class PlainGreenProfileCreator : PlainProfileCreator("green")
+	class PlainGreenHeartsProfileCreator : PlainProfileCreator("green_hearts")
 
 	override fun create(sender: User, user: User, userProfile: Profile, guild: Guild, serverConfig: MongoServerConfig, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
 		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/plain/profile_wrapper_$color.png"))

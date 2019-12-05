@@ -65,6 +65,15 @@ class ProfileDesigns : LorittaPlugin() {
         registeredProfiles.add(
                 ProfileDesign(
                         true,
+                        PlainProfileCreator.PlainGreenHeartsProfileCreator::class.java,
+                        "plain_green_hearts",
+                        3000.0,
+                        listOf(321821618177310721L)
+                )
+        )
+        registeredProfiles.add(
+                ProfileDesign(
+                        true,
                         CowboyProfileCreator::class.java,
                         "cowboy",
                         3500.0,
