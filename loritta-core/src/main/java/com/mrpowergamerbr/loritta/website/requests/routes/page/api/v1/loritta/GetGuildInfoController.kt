@@ -36,7 +36,7 @@ class GetGuildInfoController {
 						"id" to guild.id,
 						"name" to guild.name,
 						"iconUrl" to guild.iconUrl,
-						"shardId" to MiscUtil.getShardForGuild(guild, loritta.lorittaShards.shardManager.shards.size),
+						"shardId" to guild.jda.shardInfo.shardId,
 						"ownerId" to guild.ownerId,
 						"region" to guild.region.name,
 						"count" to jsonObject(
