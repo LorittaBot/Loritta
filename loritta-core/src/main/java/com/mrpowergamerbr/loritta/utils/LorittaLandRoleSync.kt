@@ -1,6 +1,9 @@
 package com.mrpowergamerbr.loritta.utils
 
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.array
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.nullString
+import com.github.salomonbrys.kotson.string
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
 import com.mrpowergamerbr.loritta.network.Databases
@@ -31,6 +34,9 @@ class LorittaLandRoleSync : Runnable {
 
 	override fun run() {
 		try {
+			if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount())
+				return
+
 			val roleRemap = mutableMapOf(
 					"316363779518627842" to "420630427837923328", // Deusas Supremas
 					"301764115582681088" to "420630186061725696", // Loritta (Integration)
