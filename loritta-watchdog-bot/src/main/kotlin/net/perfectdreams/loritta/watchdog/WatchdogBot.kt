@@ -54,9 +54,22 @@ class WatchdogBot(val config: WatchdogConfig) {
 	}
 
 	val botStuff = mutableMapOf<Long, Bot>()
+	val pingTracker = DiscordPingStatusTracker(this)
 
 	fun start() {
 		INSTANCE = this
+
+		GlobalScope.launch {
+			while (true) {
+				try {
+					pingTracker.checkStatus()
+				} catch (e: Exception) {
+					logger.warn(e) { "Error while checking Discord's Status!" }
+				}
+
+				delay(25_000)
+			}
+		}
 
 		val jda = JDABuilder()
 				.setToken(config.discordToken)

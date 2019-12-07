@@ -3,6 +3,8 @@ package net.perfectdreams.loritta.watchdog.utils.config
 import com.fasterxml.jackson.annotation.JsonCreator
 
 data class WatchdogConfig @JsonCreator constructor(
+		val discordStatusCheck: DiscordStatusCheckConfig,
+		val twitter: TwitterConfig,
 		val discordToken: String,
 		val checkBots: List<BotConfig>
 ) {
@@ -15,5 +17,10 @@ data class WatchdogConfig @JsonCreator constructor(
 			val packFiles: List<String>,
 			val rollingDelayPerShard: Int,
 			val clusters: List<LorittaClusterConfig>
+	)
+
+	class DiscordStatusCheckConfig(
+			val enabled: Boolean,
+			val tweet: Boolean
 	)
 }
