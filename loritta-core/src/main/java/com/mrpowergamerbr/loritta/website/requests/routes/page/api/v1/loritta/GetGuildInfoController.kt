@@ -1,13 +1,11 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.loritta
 
 import com.github.salomonbrys.kotson.jsonObject
-import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriAuthLevel
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriRequiresAuth
 import net.dv8tion.jda.api.OnlineStatus
-import net.dv8tion.jda.api.utils.MiscUtil
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response

@@ -85,7 +85,7 @@ class DiscordPingStatusTracker(val bot: WatchdogBot) {
 			val type = firstParagraph.getElementsByTag("strong").text()
 			val typeDescription = firstParagraph.ownText()
 
-			val tweet = "\uD83D\uDCE3 Discord Status Update\n\n\uD83D\uDCF0 $title • $type\n\n$typeDescription".substringIfNeeded(range = 0 until 200)
+			val tweet = "\uD83D\uDCE3 Discord Status Update\n\n\uD83D\uDCF0 $title • $type\n\n$typeDescription ${lastestEntry.link}".substringIfNeeded(range = 0 until 200)
 
 			if (bot.config.discordStatusCheck.tweet) {
 				val status = StatusUpdate(tweet)
