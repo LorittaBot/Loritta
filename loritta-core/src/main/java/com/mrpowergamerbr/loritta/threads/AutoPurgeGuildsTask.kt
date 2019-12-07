@@ -1,0 +1,30 @@
+package com.mrpowergamerbr.loritta.threads
+
+import com.mrpowergamerbr.loritta.utils.Constants
+import kotlinx.coroutines.Runnable
+import mu.KotlinLogging
+import net.perfectdreams.loritta.utils.FeatureFlags
+import net.perfectdreams.loritta.utils.PurgeDiscordGuilds
+
+class AutoPurgeGuildsTask : Runnable {
+	private val logger = KotlinLogging.logger {}
+
+	override fun run() {
+		if (!FeatureFlags.AUTO_PURGE_GUILDS)
+			return
+
+		val guildsToBePurged = PurgeDiscordGuilds.getGuildsToBePurged(
+				System.currentTimeMillis() - Constants.ONE_MONTH_IN_MILLISECONDS * 12 // one year
+		)
+
+		logger.info { "${guildsToBePurged.size} guilds will be purged!" }
+
+		guildsToBePurged.forEach { guild ->
+			logger.info { "Leaving ${guild.name} (${guild.idLong}), owner ${guild.owner?.user?.name} (${guild.ownerIdLong}) due to guild inactivity..." }
+
+			guild.leave().complete()
+		}
+
+		logger.info { "${guildsToBePurged.size} guilds were successfully purged!" }
+	}
+}

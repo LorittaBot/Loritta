@@ -37,6 +37,8 @@ object FeatureFlags {
 		get() = isEnabled(Names.UPDATE_IN_GUILD_STATS_ON_MESSAGE_SEND)
 	val UPDATE_IN_GUILD_STATS_ON_RANK_FAILURE: Boolean
 		get() = isEnabled(Names.UPDATE_IN_GUILD_STATS_ON_RANK_FAILURE)
+	val AUTO_PURGE_GUILDS: Boolean
+		get() = isEnabled(Names.AUTO_PURGE_GUILDS)
 
 	fun isEnabled(name: String): Boolean {
 		return loritta.config.loritta.featureFlags.contains(name)
@@ -60,5 +62,6 @@ object FeatureFlags {
 		const val UPDATE_IN_GUILD_STATS_ON_GUILD_QUIT = "update-in-guild-stats-on-guild-quit"
 		const val UPDATE_IN_GUILD_STATS_ON_MESSAGE_SEND = "update-in-guild-stats-on-message-send"
 		const val UPDATE_IN_GUILD_STATS_ON_RANK_FAILURE = "update-in-guild-stats-on-rank-failure"
+		const val AUTO_PURGE_GUILDS = "auto-purge-guilds"
 	}
 }

@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.amino.AminoRepostTask
 import com.mrpowergamerbr.loritta.analytics.AnalyticSender
 import com.mrpowergamerbr.loritta.analytics.InternalAnalyticSender
 import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
+import com.mrpowergamerbr.loritta.threads.AutoPurgeGuildsTask
 import com.mrpowergamerbr.loritta.threads.NewRssFeedTask
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.eventlog.DeleteOldStoredMessagesTask
@@ -36,9 +37,9 @@ object LorittaTasks {
 		scheduleWithFixedDelay(ApplyBansTask(), 0L, 60L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(SpawnGiveawayTask(), 0L, 1L, TimeUnit.HOURS)
 		scheduleWithFixedDelay(DeleteOldStoredMessagesTask(), 0L, 1L, TimeUnit.HOURS)
+		scheduleWithFixedDelay(AutoPurgeGuildsTask(), 0L, 15L, TimeUnit.MINUTES)
 		if (loritta.isMaster)
 			scheduleWithFixedDelay(NewRssFeedTask(), 0L, 15L, TimeUnit.SECONDS)
-
 	}
 
 	fun scheduleWithFixedDelay(task: Runnable, initialDelay: Long, delay: Long, unit: TimeUnit) {
