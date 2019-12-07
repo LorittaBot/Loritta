@@ -8,6 +8,9 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 
 class ChannelListener(val loritta: Loritta) : ListenerAdapter() {
 	override fun onTextChannelCreate(event: TextChannelCreateEvent) {
+		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
+			return
+
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val config = loritta.getServerConfigForGuild(event.guild.id)
 

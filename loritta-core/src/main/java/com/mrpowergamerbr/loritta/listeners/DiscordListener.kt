@@ -28,7 +28,6 @@ import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.TextChannel
-import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
@@ -176,6 +175,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (event.user.isBot)
 			return
 
+		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
+			return
+
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			ReactionModule.onReactionAdd(event)
 		}
@@ -183,6 +185,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 	override fun onGuildMessageReactionRemove(event: GuildMessageReactionRemoveEvent) {
 		if (event.user.isBot)
+			return
+
+		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
 			return
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
@@ -195,6 +200,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		if (DebugLog.cancelAllEvents)
+			return
+
+		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(e.guild))
 			return
 
 		if (loritta.messageInteractionCache.containsKey(e.messageIdLong)) {
@@ -264,6 +272,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildLeave(e: GuildLeaveEvent) {
+		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(e.guild))
+			return
+
 		logger.info { "Someone removed me @ ${e.guild}! :(" }
 
 		// Remover threads de role removal caso a Loritta tenha saido do servidor
@@ -317,6 +328,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildJoin(event: GuildJoinEvent) {
+		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
+			return
+
 		logger.info { "Someone added me @ ${event.guild}! :)" }
 
 		// Vamos alterar a minha linguagem quando eu entrar em um servidor, baseando na localização dele
@@ -353,6 +367,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildMemberJoin(event: GuildMemberJoinEvent) {
+		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
+			return
+
 		if (DebugLog.cancelAllEvents)
 			return
 
@@ -428,6 +445,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildMemberLeave(event: GuildMemberLeaveEvent) {
+		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
+			return
+
 		if (DebugLog.cancelAllEvents)
 			return
 
@@ -474,6 +494,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildReady(event: GuildReadyEvent) {
+		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
+			return
+
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
 

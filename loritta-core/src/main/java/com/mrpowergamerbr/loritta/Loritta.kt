@@ -27,10 +27,7 @@ import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.tictactoe.TicTacToeServer
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
-import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordConfig
-import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordInstanceConfig
-import com.mrpowergamerbr.loritta.utils.config.GeneralInstanceConfig
+import com.mrpowergamerbr.loritta.utils.config.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaMessage
 import com.mrpowergamerbr.loritta.utils.locale.Gender
@@ -42,6 +39,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
+import net.dv8tion.jda.api.OnlineStatus
+import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.requests.RestAction
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.utils.cache.CacheFlag
@@ -247,6 +246,33 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 		get() {
 			return loritta.instanceConfig.loritta.currentClusterId == 1L
 		}
+
+	val isMainAccount: Boolean
+		get() {
+			if (config.loritta.environment != EnvironmentType.PRODUCTION)
+				return true
+			return discordConfig.discord.clientId == "297153970613387264"
+		}
+
+	fun isMainAccountOnlineAndWeAreNotTheMainAccount(): Boolean {
+		if (isMainAccount)
+			return false
+
+		return lorittaShards.getGuilds()
+				.first()
+				.getMemberById(297153970613387264L)
+				?.onlineStatus?.let {
+			it != OnlineStatus.OFFLINE && it != OnlineStatus.UNKNOWN
+		} ?: false
+	}
+
+	fun isMainAccountOnlineAndWeAreNotTheMainAccount(guild: Guild): Boolean {
+		if (isMainAccount)
+			return false
+
+		val member = guild.getMemberById(297153970613387264L) ?: return false
+		return member.onlineStatus != OnlineStatus.OFFLINE && member.onlineStatus != OnlineStatus.UNKNOWN
+	}
 
 	val lorittaCluster: GeneralConfig.LorittaClusterConfig
 		get() {

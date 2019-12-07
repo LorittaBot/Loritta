@@ -28,6 +28,9 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildVoiceJoin(event: GuildVoiceJoinEvent) {
+		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
+			return
+
 		if (DebugLog.cancelAllEvents)
 			return
 
@@ -35,6 +38,9 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildVoiceMove(event: GuildVoiceMoveEvent) {
+		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
+			return
+
 		if (DebugLog.cancelAllEvents)
 			return
 
@@ -43,6 +49,9 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildVoiceLeave(event: GuildVoiceLeaveEvent) {
+		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
+			return
+
 		if (DebugLog.cancelAllEvents)
 			return
 
