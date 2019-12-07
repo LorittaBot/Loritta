@@ -116,8 +116,8 @@ object DebugLog {
 			"shards" -> {
 				val shards = lorittaShards.getShards()
 
-				for ((index, shard) in shards.withIndex()) {
-					println("SHARD $index (${shard.status.name} - ${shard.gatewayPing}ms): ${shard.guilds.size} guilds - ${shard.users.size} members")
+				for (shard in shards.sortedByDescending { it.shardInfo.shardId }) {
+					println("SHARD ${it.shardInfo.shardId} (${shard.status.name} - ${shard.gatewayPing}ms): ${shard.guilds.size} guilds - ${shard.users.size} members")
 				}
 			}
 			"extendedinfo" -> {
