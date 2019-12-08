@@ -60,7 +60,7 @@ class TweetTracker(val m: Loritta) {
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			while (true) {
-				delay(60_000 * Math.max(streams.size.toLong(), 1L)) // O delay varia dependendo de quantas streams existem
+				delay(300_000 * Math.max(streams.size.toLong(), 1L)) // O delay varia dependendo de quantas streams existem
 
 				if (restartStream) { // Caso tenha que reiniciar
 					restartStream = false
