@@ -65,7 +65,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			val badges = mutableListOf<BufferedImage>()
 
 			badges.addAll(
-					loritta.profileDesignManager.badges.map {
+					loritta.profileDesignManager.badges.filter { it.checkIfUserDeservesBadge(user, profile, mutualGuilds) }.map {
 						ImageIO.read(File(Loritta.ASSETS, it.badgeFileName))
 					}
 			)
