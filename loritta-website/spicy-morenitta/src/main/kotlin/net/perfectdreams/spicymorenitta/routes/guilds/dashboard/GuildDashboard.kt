@@ -43,11 +43,6 @@ fun DIV.createToggle(title: String, subText: String? = null, id: String? = null,
                 if (isChecked) {
                     attributes["checked"] = "true"
                 }
-
-                onChangeFunction = {
-                    displayUnsavedAlert()
-                    isModified = true
-                }
             }
             div(classes = "slider round") {}
         }
