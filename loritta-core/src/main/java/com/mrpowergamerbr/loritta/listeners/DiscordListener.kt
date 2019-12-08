@@ -202,7 +202,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(e.guild))
+		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount())
 			return
 
 		if (loritta.messageInteractionCache.containsKey(e.messageIdLong)) {
