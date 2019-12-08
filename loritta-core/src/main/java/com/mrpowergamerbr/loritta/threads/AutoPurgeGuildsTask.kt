@@ -20,9 +20,13 @@ class AutoPurgeGuildsTask : Runnable {
 		logger.info { "${guildsToBePurged.size} guilds will be purged!" }
 
 		guildsToBePurged.forEach { (guild, serverConfig) ->
-			logger.info { "Leaving ${guild.name} (${guild.idLong}), owner ${guild.owner?.user?.name} (${guild.ownerIdLong}) due to guild inactivity... Member quantity: ${guild.members.size}; Last command was executed at ${serverConfig.lastCommandReceivedAt}" }
+			try {
+				logger.info { "Leaving ${guild.name} (${guild.idLong}), owner ${guild.owner?.user?.name} (${guild.ownerIdLong}) due to guild inactivity... Member quantity: ${guild.members.size}; Last command was executed at ${serverConfig.lastCommandReceivedAt}" }
 
-			guild.leave().complete()
+				guild.leave().complete()
+			} catch (e: Exception) {
+				logger.warn(e) { "Exception while leaving $guild" }
+			}
 		}
 
 		logger.info { "${guildsToBePurged.size} guilds were successfully purged!" }
