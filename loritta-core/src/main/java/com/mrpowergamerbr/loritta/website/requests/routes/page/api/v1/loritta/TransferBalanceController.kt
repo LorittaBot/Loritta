@@ -82,12 +82,14 @@ class TransferBalanceController {
 					giverProfile.money -= howMuch
 					receiverProfile.money += finalMoney
 
-					SonhosTransaction.insert {
-						it[givenBy] = giverProfile.id.value
-						it[receivedBy] = null
-						it[givenAt] = System.currentTimeMillis()
-						it[quantity] = taxedMoney.toBigDecimal()
-						it[reason] = SonhosPaymentReason.PAYMENT_TAX
+					if (taxedMoney != 0.0) {
+						SonhosTransaction.insert {
+							it[givenBy] = giverProfile.id.value
+							it[receivedBy] = null
+							it[givenAt] = System.currentTimeMillis()
+							it[quantity] = taxedMoney.toBigDecimal()
+							it[reason] = SonhosPaymentReason.PAYMENT_TAX
+						}
 					}
 
 					SonhosTransaction.insert {

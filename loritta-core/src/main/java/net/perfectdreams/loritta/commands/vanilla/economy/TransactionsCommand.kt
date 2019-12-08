@@ -24,7 +24,7 @@ class TransactionsCommand : LorittaCommand(arrayOf("transactions", "transações
 
     @Subcommand
     suspend fun run(context: DiscordCommandContext, locale: BaseLocale) {
-        val user = context.userHandle
+        val user = context.getUserAt(0) ?: context.userHandle
 
         val transactions = transaction(Databases.loritta) {
             SonhosTransaction.select {
