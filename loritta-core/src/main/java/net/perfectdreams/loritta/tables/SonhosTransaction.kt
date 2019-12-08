@@ -11,6 +11,6 @@ object SonhosTransaction : LongIdTable() {
 	val givenBy = long("given_by").index().nullable()
 	val receivedBy = long("received_by").index().nullable()
 	val givenAt = long("given_at")
-	val quantity = decimal("quantity", 19, 14)
+	val quantity = decimal("quantity", 12, 2)
 	val metadata = rawJsonb("metadata", gson, jsonParser).nullable()
 }

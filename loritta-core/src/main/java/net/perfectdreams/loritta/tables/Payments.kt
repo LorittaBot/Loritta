@@ -8,7 +8,7 @@ object Payments : LongIdTable() {
     val userId = long("user").index()
     val gateway = enumeration("gateway", PaymentGateway::class)
     val reason = enumeration("reason", PaymentReason::class)
-    val money = decimal("money", 19, 14).index()
+    val money = decimal("money", 12, 2).index()
     val createdAt = long("created_at")
     val paidAt = long("paid_at").nullable()
     val expiresAt = long("expires_at").nullable()
