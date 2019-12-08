@@ -33,6 +33,9 @@ object PurgeDiscordGuilds {
 			if (guild != null)
 				GuildAndServerConfig(guild, it)
 			else null
+		}.filter {
+			// Verificar se ela entrou a mais do que a última vez que executaram comandos, as vezes "0" pode significar "eu acabei de entrar e nunca usaram comandos meus!"
+			lastCommandReceivedBefore > it.guild.selfMember.timeJoined.toInstant().toEpochMilli()
 		}
 	}
 
