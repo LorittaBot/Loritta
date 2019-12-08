@@ -65,8 +65,11 @@ class TransactionsCommand : LorittaCommand(arrayOf("transactions", "transações
                     this.append(locale["commands.economy.transactions.sentMoneySonhosTax", transaction[SonhosTransaction.quantity]])
                 } else {
                     val type = transaction[SonhosTransaction.reason].name.replace("_", " ")
-                            .capitalize()
-                            .replace(" ", "")
+                            .split(" ")
+                            .map {
+                                it.capitalize()
+                            }
+                            .joinToString("")
                             .toCharArray().apply {
                                 this[0] = this[0].toLowerCase()
                             }
