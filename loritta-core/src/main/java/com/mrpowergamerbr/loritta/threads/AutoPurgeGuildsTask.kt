@@ -14,7 +14,7 @@ class AutoPurgeGuildsTask : Runnable {
 			return
 
 		val guildsToBePurged = PurgeDiscordGuilds.getGuildsToBePurged(
-				System.currentTimeMillis() - Constants.ONE_MONTH_IN_MILLISECONDS * 12 // one year
+				System.currentTimeMillis() - (Constants.ONE_MONTH_IN_MILLISECONDS * 12) // one year
 		)
 
 		logger.info { "${guildsToBePurged.size} guilds will be purged!" }
