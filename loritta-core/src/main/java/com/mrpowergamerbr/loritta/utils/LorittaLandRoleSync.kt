@@ -23,8 +23,6 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
 import java.time.Instant
-import kotlin.collections.component1
-import kotlin.collections.component2
 import kotlin.collections.set
 
 class LorittaLandRoleSync : Runnable {
@@ -52,10 +50,10 @@ class LorittaLandRoleSync : Runnable {
 				logger.error("Erro ao sincronizar cargos! Servidor da Loritta (Original) não existe!")
 				return
 			}
-			val usGuild = lorittaShards.getGuildById(Constants.ENGLISH_SUPPORT_GUILD_ID) ?: run {
+			val usGuild = lorittaShards.getGuildById(Constants.ENGLISH_SUPPORT_GUILD_ID) /* ?: run {
 				logger.error("Erro ao sincronizar cargos! Servidor da Loritta (Inglês) não existe!")
 				return
-			}
+			} */
 
 			logger.info("Dando cargos especiais da LorittaLand...")
 
@@ -160,7 +158,7 @@ class LorittaLandRoleSync : Runnable {
 				logger.warn { "Not all shards are loaded yet! Ignoring partnership role sync..." }
 			}
 
-			logger.info("Sincronizando cargos da LorittaLand...")
+			/* logger.info("Sincronizando cargos da LorittaLand...")
 
 			for ((originalRoleId, usRoleId) in roleRemap) {
 				val originalRole = originalGuild.getRoleById(originalRoleId)
@@ -206,6 +204,7 @@ class LorittaLandRoleSync : Runnable {
 			synchronizeRoles(originalGuild, usGuild, "534659343656681474", "568505810825642029") // LorittaLand
 			synchronizeRoles(originalGuild, usGuild, "463652112656629760", "568506127977938977") // Super Contribuidor
 			synchronizeRoles(originalGuild, usGuild, "364201981016801281", "420640526711390208") // Contribuidor
+			*/
 
 			// Apply donators roles
 			val payments = transaction(Databases.loritta) {
