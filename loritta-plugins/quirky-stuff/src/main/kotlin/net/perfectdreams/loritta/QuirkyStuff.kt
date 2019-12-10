@@ -27,6 +27,7 @@ import net.perfectdreams.loritta.profile.badges.CanecaBadge
 import net.perfectdreams.loritta.profile.badges.HalloweenBadge
 import net.perfectdreams.loritta.tables.*
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.FeatureFlags
 import net.perfectdreams.loritta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -138,8 +139,7 @@ class QuirkyStuff : DiscordPlugin() {
                 BoostGuildListener(config),
                 GetCandyListener(config),
                 AddReactionForLoriBanListener(config),
-                AddReactionFurryAminoPtListener(config),
-                GetChristmasStuffListener(config)
+                AddReactionFurryAminoPtListener(config)
         )
 
         registerMessageReceivedModules(
@@ -147,8 +147,7 @@ class QuirkyStuff : DiscordPlugin() {
                 ThankYouLoriModule(config),
                 DropCandyModule(config),
                 AddReactionForStaffLoriBanModule(config),
-                AddReactionForHeathecliffModule(),
-                DropChristmasStuffModule(config)
+                AddReactionForHeathecliffModule()
         )
 
         registerCommand(LoriToolsQuirkyStuffCommand(this))
@@ -161,8 +160,18 @@ class QuirkyStuff : DiscordPlugin() {
         registerBadge(CanecaBadge(config))
 
         // ===[ NATAL 2019 ]===
-        registerCommand(Christmas2019Command())
-        routes.add(Christmas2019Endpoints())
+        if (FeatureFlags.isEnabled("christmas-2019")) {
+            registerCommand(Christmas2019Command())
+            routes.add(Christmas2019Endpoints())
+
+            registerEventListeners(
+                    GetChristmasStuffListener(config)
+            )
+
+            registerMessageReceivedModules(
+                    DropChristmasStuffModule(config)
+            )
+        }
 
         transaction(Databases.loritta) {
             SchemaUtils.createMissingTablesAndColumns(
