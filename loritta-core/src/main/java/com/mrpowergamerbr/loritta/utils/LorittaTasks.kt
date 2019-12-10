@@ -38,6 +38,7 @@ object LorittaTasks {
 		scheduleWithFixedDelay(SpawnGiveawayTask(), 0L, 1L, TimeUnit.HOURS)
 		scheduleWithFixedDelay(DeleteOldStoredMessagesTask(), 0L, 1L, TimeUnit.HOURS)
 		scheduleWithFixedDelay(AutoPurgeGuildsTask(), 0L, 15L, TimeUnit.MINUTES)
+		scheduleWithFixedDelay(UpdateFanArtsTask(), 0L, 5L, TimeUnit.MINUTES)
 		if (loritta.isMaster)
 			scheduleWithFixedDelay(NewRssFeedTask(), 0L, 15L, TimeUnit.SECONDS)
 	}
