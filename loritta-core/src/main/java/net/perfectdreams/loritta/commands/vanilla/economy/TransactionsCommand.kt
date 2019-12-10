@@ -78,9 +78,9 @@ class TransactionsCommand : LorittaCommand(arrayOf("transactions", "transações
                     val genericTypeName = locale["commands.economy.transactions.types.${type}"]
 
                     if (receivedSonhos)
-                        this.append(locale["commands.economy.transactions.genericReceived", genericTypeName])
+                        this.append(locale["commands.economy.transactions.genericReceived", transaction[SonhosTransaction.quantity], genericTypeName])
                     else
-                        this.append(locale["commands.economy.transactions.genericSent", genericTypeName])
+                        this.append(locale["commands.economy.transactions.genericSent", transaction[SonhosTransaction.quantity], genericTypeName])
                 }
                 this.append("\n")
             }
