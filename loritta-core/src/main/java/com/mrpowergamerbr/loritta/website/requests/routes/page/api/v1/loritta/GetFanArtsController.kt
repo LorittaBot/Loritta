@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
+import kotlinx.coroutines.runBlocking
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.utils.config.FanArtArtist
 import org.jooby.MediaType
@@ -48,7 +49,7 @@ class GetFanArtsController {
 								}
 					}
 
-			val users = discordIds.asSequence().mapNotNull { lorittaShards.getUserById(it) }
+			val users = discordIds.asSequence().mapNotNull { runBlocking { lorittaShards.retrieveUserById(it) } }
 					.map { JDAUser(it) }.toList()
 
 			fanArtists.map {

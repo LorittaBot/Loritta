@@ -72,6 +72,7 @@ object DebugLog {
 		logger.info("> Misc Stuff")
 		logger.info("fanArts.size: ${loritta.fanArts.size}")
 		logger.info("eventLogListener.downloadedAvatarJobs: ${EventLogListener.downloadedAvatarJobs}")
+		logger.info("Cached Retrieved Users: ${lorittaShards.cachedRetrievedUsers.size()}")
 	}
 
 	fun handleLine(line: String) {

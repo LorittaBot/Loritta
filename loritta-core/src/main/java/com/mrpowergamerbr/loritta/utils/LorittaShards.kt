@@ -2,11 +2,13 @@ package com.mrpowergamerbr.loritta.utils
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
+import com.google.common.cache.CacheBuilder
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -18,6 +20,8 @@ import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.sharding.ShardManager
 import net.perfectdreams.loritta.utils.DiscordUtils
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 /**
  * Guarda todos as shards da Loritta
@@ -27,6 +31,8 @@ class LorittaShards {
 		internal val logger = KotlinLogging.logger {}
 	}
 	lateinit var shardManager: ShardManager
+	val cachedRetrievedUsers = CacheBuilder.newBuilder().expireAfterWrite(15, TimeUnit.MINUTES)
+			.build<Long, Optional<User>>()
 
 	fun getGuildById(id: String): Guild? = shardManager.getGuildById(id)
 	fun getGuildById(id: Long): Guild? = shardManager.getGuildById(id)
@@ -73,18 +79,19 @@ class LorittaShards {
 		return shardManager.getUserById(id)
 	}
 
-	suspend fun retrieveUserById(id: String?): User? {
-		if (id == null)
-			return null
-
-		return getUserById(id) ?: shardManager.retrieveUserById(id).await()
-	}
+	suspend fun retrieveUserById(id: String?) = retrieveUserById(id?.toLongOrNull())
 
 	suspend fun retrieveUserById(id: Long?): User? {
 		if (id == null)
 			return null
 
-		return getUserById(id) ?: shardManager.retrieveUserById(id).await()
+		val cachedUser = cachedRetrievedUsers.getIfPresent(id)
+		if (cachedUser != null)
+			return cachedUser.getOrNull()
+
+		val user = shardManager.retrieveUserById(id).await()
+		cachedRetrievedUsers.put(id, Optional.of(user))
+		return user
 	}
 
 	fun getMutualGuilds(user: User): List<Guild> = shardManager.getMutualGuilds(user)
