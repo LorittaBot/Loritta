@@ -49,6 +49,8 @@ import net.perfectdreams.loritta.api.platform.PlatformFeature
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.platform.discord.DiscordEmoteManager
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandManager
+import net.perfectdreams.loritta.platform.discord.utils.BucketedController
+import net.perfectdreams.loritta.platform.discord.utils.LoriMasterShardControllerSessionControllerAdapter
 import net.perfectdreams.loritta.tables.*
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.NetAddressUtils
@@ -198,6 +200,12 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 				.protocols(listOf(Protocol.HTTP_1_1)) // https://i.imgur.com/FcQljAP.png
 
 		builder = DefaultShardManagerBuilder()
+				.apply {
+					if (loritta.discordConfig.shardController.enabled) {
+						logger.info { "Using shard controller (for bots with \"sharding for very large bots\" to manage shards!" }
+						this.setSessionController(BucketedController())
+					}
+				}
 				.setShardsTotal(discordConfig.discord.maxShards)
 				.setShards(discordInstanceConfig.discord.minShardId, discordInstanceConfig.discord.maxShardId)
 				.setStatus(discordConfig.discord.status)
