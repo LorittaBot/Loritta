@@ -57,14 +57,16 @@ class TransactionsCommand : LorittaCommand(arrayOf("transactions", "transações
                     val name = (receivedByUser?.name + "#" + receivedByUser?.discriminator)
 
                     if (receivedSonhos) {
-                        this.append(locale["commands.economy.transactions.receivedMoneySonhos", transaction[SonhosTransaction.quantity], name])
+                        this.append(locale["commands.economy.transactions.receivedMoneySonhos", transaction[SonhosTransaction.quantity], "`$name`"])
                     } else {
-                        this.append(locale["commands.economy.transactions.sentMoneySonhos", transaction[SonhosTransaction.quantity], name])
+                        this.append(locale["commands.economy.transactions.sentMoneySonhos", transaction[SonhosTransaction.quantity], "`$name`"])
                     }
                 } else if (transaction[SonhosTransaction.reason] == SonhosPaymentReason.PAYMENT_TAX) {
                     this.append(locale["commands.economy.transactions.sentMoneySonhosTax", transaction[SonhosTransaction.quantity]])
                 } else {
-                    val type = transaction[SonhosTransaction.reason].name.replace("_", " ")
+                    val type = transaction[SonhosTransaction.reason].name
+                            .toLowerCase()
+                            .replace("_", " ")
                             .split(" ")
                             .map {
                                 it.capitalize()
