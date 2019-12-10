@@ -396,7 +396,7 @@ class CommandManager {
 				var cooldown = command.cooldown
 				val donatorPaid = loritta.getActiveMoneyFromDonations(ev.author.idLong)
 				val guildPaid = transaction(Databases.loritta) {
-					loritta.getOrCreateServerConfig(ev.author.idLong).donationKey?.value
+					loritta.getOrCreateServerConfig(ev.guild.idLong).donationKey?.value
 				} ?: 0.0
 
 				if (donatorPaid >= 39.99 || guildPaid >= 59.99) {
