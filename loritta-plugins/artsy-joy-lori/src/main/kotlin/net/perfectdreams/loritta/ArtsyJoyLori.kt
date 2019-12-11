@@ -48,6 +48,7 @@ class ArtsyJoyLori : LorittaPlugin() {
         registerCommand(BuckShirtCommand())
         registerCommand(BobBurningPaperCommand())
         registerCommand(PassingPaperCommand())
+        registerCommand(CoringaCommand())
 
         // ACTIONS
         registerCommand(AttackCommand())
