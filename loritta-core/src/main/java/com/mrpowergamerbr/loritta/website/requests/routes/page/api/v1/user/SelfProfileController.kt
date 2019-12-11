@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.profile.NostalgiaProfileCreator
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.*
 import com.mrpowergamerbr.loritta.website.requests.routes.page.user.dashboard.ProfileListController
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
@@ -20,6 +21,7 @@ import org.jooby.Status
 import org.jooby.mvc.Body
 import org.jooby.mvc.PATCH
 import org.jooby.mvc.Path
+import java.util.regex.Pattern
 
 @Path("/api/v1/user/self-profile")
 class SelfProfileController {
@@ -47,14 +49,19 @@ class SelfProfileController {
 			val editedValue = Math.max(0, Math.min(config["editedValue"].int, 100))
 
 			val user2Name = config["user2NamePlusDiscriminator"].string
-			val split = user2Name.split("#")
+			val split = user2Name.trim().split("#")
 
-			val user = lorittaShards.getUsers().firstOrNull { it.name == split[0].trim() && it.discriminator == split[1].trim() }
-					?: throw WebsiteAPIException(Status.NOT_FOUND,
-							WebsiteUtils.createErrorPayload(
-									LoriWebCode.UNKNOWN_USER
-							)
+			val quotedUserName = Pattern.quote(split.first())
+
+			val userResults = runBlocking {
+				lorittaShards.searchUserInAllLorittaClusters("^$quotedUserName$#${split[1]}")
+			}
+
+			val user = userResults.firstOrNull() ?: throw WebsiteAPIException(Status.NOT_FOUND,
+					WebsiteUtils.createErrorPayload(
+							LoriWebCode.UNKNOWN_USER
 					)
+			)
 
 			if (3000 > profile.money) {
 				throw WebsiteAPIException(Status.PAYMENT_REQUIRED,
@@ -64,11 +71,13 @@ class SelfProfileController {
 				)
 			}
 
+			val user2Id = user["id"].long
+
 			transaction(Databases.loritta) {
 				ShipEffect.new {
 					this.buyerId = userIdentification.id.toLong()
 					this.user1Id = userIdentification.id.toLong()
-					this.user2Id = user.idLong
+					this.user2Id = user2Id
 					this.editedShipValue = editedValue
 					this.expiresAt = System.currentTimeMillis() + Constants.ONE_WEEK_IN_MILLISECONDS
 				}
