@@ -57,5 +57,6 @@ class ArtsyJoyLori : LorittaPlugin() {
         registerCommand(KissCommand())
         registerCommand(SlapCommand())
         registerCommand(HeadPatCommand())
+        registerCommand(HighFiveCommand())
     }
 }
