@@ -48,6 +48,7 @@ class ArtsyJoyLori : LorittaPlugin() {
         registerCommand(BuckShirtCommand())
         registerCommand(BobBurningPaperCommand())
         registerCommand(PassingPaperCommand())
+        registerCommand(CoringaCommand())
 
         // ACTIONS
         registerCommand(AttackCommand())
@@ -56,5 +57,6 @@ class ArtsyJoyLori : LorittaPlugin() {
         registerCommand(KissCommand())
         registerCommand(SlapCommand())
         registerCommand(HeadPatCommand())
+        registerCommand(HighFiveCommand())
     }
 }
