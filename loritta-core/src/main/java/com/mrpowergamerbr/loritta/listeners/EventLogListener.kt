@@ -394,7 +394,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						val lines = mutableListOf<String>()
 
 						for (message in storedMessages) {
-							val messageSentByUser = retrievedUsers.getOrPut(message.authorId, { lorittaShards.retrieveUserById(storedMessages.first().authorId) })
+							val messageSentByUser = retrievedUsers.getOrPut(message.authorId, { lorittaShards.retrieveUserById(message.authorId) })
 
 							val creationTime = OffsetDateTime.ofInstant(Instant.ofEpochMilli(message.createdAt), TimeZone.getTimeZone("GMT").toZoneId())
 
