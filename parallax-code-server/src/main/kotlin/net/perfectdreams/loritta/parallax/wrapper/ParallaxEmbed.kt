@@ -4,17 +4,17 @@ import com.google.gson.annotations.SerializedName
 import java.awt.Color
 
 class ParallaxEmbed {
-	var rgb: ParallaxColor? = null
-	var color: Int? = null
-	var hex: String? = null
-	var title: String? = null
-	var url: String?  = null
-	var description: String?  = null
-	var author: ParallaxEmbedAuthor?  = null
-	var thumbnail: ParallaxEmbedImage?  = null
-	var image: ParallaxEmbedImage? = null
-	var footer: ParallaxEmbedFooter? = null
-	var fields: MutableList<ParallaxEmbedField>? = null
+	private var rgb: ParallaxColor? = null
+	private var color: Int? = null
+	private var hex: String? = null
+	private var title: String? = null
+	private var url: String?  = null
+	private var description: String?  = null
+	private var author: ParallaxEmbedAuthor?  = null
+	private var thumbnail: ParallaxEmbedImage?  = null
+	private var image: ParallaxEmbedImage? = null
+	private var footer: ParallaxEmbedFooter? = null
+	private var fields: MutableList<ParallaxEmbedField>? = null
 
 	@JvmOverloads
 	fun addBlankField(inline: Boolean = false): ParallaxEmbed {
@@ -41,7 +41,10 @@ class ParallaxEmbed {
 		return this
 	}
 
-	// TODO: setColor
+	fun setColor(color: Int): ParallaxEmbed {
+		this.color = color
+		return this
+	}
 
 	fun setDescription(description: String): ParallaxEmbed {
 		this.description = description

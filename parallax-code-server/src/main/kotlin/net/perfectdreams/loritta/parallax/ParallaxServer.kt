@@ -140,11 +140,24 @@ class ParallaxServer {
 
 					executor.submit {
 						logger.info { "Executing the command!" }
+
+						val source = """(async function(context) {
+							|	try {
+							|		$inlineMethods
+							|		
+							|		$javaScriptCode
+							|	} catch (e) {
+							|		context.jsStacktrace(e);
+							|	}
+							|})
+						""".trimMargin()
+
+						logger.info { "After fill $source" }
 						try {
-							val value = graalContext.eval("js", "(async function(context) { try {\n" +
-									"$inlineMethods\n" +
-									"$javaScriptCode\n" +
-									"} catch (e) { context.jsStacktrace(e); }})")
+							val value = graalContext.eval(
+									"js",
+									source
+							)
 
 							value.execute(context)
 						} catch (e: Throwable) {

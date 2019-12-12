@@ -13,7 +13,7 @@ class JSCommandContext(
 ) {
 	val rateLimiter = ParallaxRateLimiter(context)
 
-	fun jsStacktrace(throwable: Throwable) {
-		throwable.printStackTrace()
+	fun jsStacktrace(throwable: Any?) {
+		message.channel.send(throwable.toString())
 	}
 }
