@@ -111,6 +111,7 @@ class LoriMasterShardControllerSessionControllerAdapter : SessionControllerAdapt
 				if (canLogin == ControllerResponseType.CONFLICT) {
 					log.info("Shard ${node.shardInfo.shardId} (login pool: ${node.shardInfo.shardId % 16}) can't login! Another cluster is logging in that shard, delaying login...")
 					if (delay > 0) sleep(delay)
+					appendSession(node)
 					continue
 				}
 
