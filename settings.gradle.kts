@@ -33,6 +33,7 @@ include(":loritta-plugins:quirky-stuff")
 include(":loritta-plugins:github-issue-sync")
 include(":loritta-plugins:fortnite-stuff")
 include(":loritta-plugins:profile-designs")
+include(":loritta-plugins:cloudflare-web-firewall")
 
 // Website
 include(":loritta-website")

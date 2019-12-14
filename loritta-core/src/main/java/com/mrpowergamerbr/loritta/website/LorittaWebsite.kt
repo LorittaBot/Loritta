@@ -60,9 +60,16 @@ class LorittaWebsite(val loritta: LorittaBot, val websiteUrl: String, var fronte
 			return@before
 		}
 
+		for (befLoad in loritta.pluginManager.plugins.flatMap { it.joobyWebsite.beforeLoad }) {
+			val stop = befLoad.invoke(req, res)
+			if (stop)
+				return@before
+		}
+
 		req.set("start", System.currentTimeMillis())
 		logger.info("${req.trueIp} (${req.header("User-Agent").valueOrNull()}): ${req.method()} ${req.path()}$queryString")
 	}
+
 	// Mostrar o tempo que demorou para processar tal request
 	complete("*") { req, rsp, cause ->
 		val start = req.get<Long>("start")

@@ -1,0 +1,2 @@
+name: CloudflareWebFirewall
+main: net.perfectdreams.loritta.plugin.cloudflarewebfirewall.CloudflareWebFirewall

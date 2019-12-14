@@ -5,6 +5,8 @@ import com.mrpowergamerbr.loritta.modules.MessageReceivedModule
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.platform.LorittaBot
 import org.jooby.Jooby
+import org.jooby.Request
+import org.jooby.Response
 import java.io.File
 import java.net.URLClassLoader
 
@@ -19,6 +21,7 @@ open class LorittaPlugin {
 	val messageReceivedModules = mutableListOf<MessageReceivedModule>()
 	val messageEditedModules = mutableListOf<MessageReceivedModule>()
 	val routes = mutableListOf<Jooby>()
+	val joobyWebsite = JoobyWebsite()
 
 	open fun onEnable() {
 
@@ -28,6 +31,7 @@ open class LorittaPlugin {
 		messageReceivedModules.clear()
 		messageEditedModules.clear()
 		routes.clear()
+		joobyWebsite.beforeLoad.clear()
 	}
 
 	fun registerCommand(command: LorittaCommand) {
@@ -65,5 +69,13 @@ open class LorittaPlugin {
 
 	fun unregisterMessageEditedModules(vararg modules: MessageReceivedModule) {
 		messageEditedModules.removeAll(modules)
+	}
+
+	class JoobyWebsite {
+		val beforeLoad = mutableListOf<((Request, Response) -> (Boolean))>()
+
+		fun beforeLoad(callback: (Request, Response) -> (Boolean)) {
+			beforeLoad.add(callback)
+		}
 	}
 }
