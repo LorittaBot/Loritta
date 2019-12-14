@@ -61,6 +61,7 @@ class CheckConnectingIPs(val m: CloudflareWebFirewall, val config: CloudflareCon
 
 		val allConnections = ipMap.sumBy { it.value }
 		val connectionsByAsn = mutableMapOf<Int, Int>()
+		val numberOfIpsUsingAsn = mutableMapOf<Int, Int>()
 
 		val banConnectedIp = mutableListOf<Map.Entry<String, Int>>()
 		val banConnectedAsns = mutableListOf<Pair<Int, CloudflareWebFirewall.ASN>>()
@@ -78,6 +79,10 @@ class CheckConnectingIPs(val m: CloudflareWebFirewall, val config: CloudflareCon
 				val currentConnections = connectionsByAsn.getOrPut(asnNumber) { 0 }
 
 				connectionsByAsn[asnNumber] = (currentConnections + ip.value)
+
+				val connectionsUsingAsn = numberOfIpsUsingAsn.getOrPut(asnNumber) { 0 }
+
+				numberOfIpsUsingAsn[asnNumber] = (connectionsUsingAsn + 1)
 			}
 
 			if (ip.value >= config.requiredConnectionsForIpBlacklist && ip.key !in config.whitelistedIps)
@@ -91,10 +96,11 @@ class CheckConnectingIPs(val m: CloudflareWebFirewall, val config: CloudflareCon
 			val asnInfo = m.asns[asnNumber]!!
 			val asnName = asnInfo.name
 			val connectionRatio = connections.toDouble() / allAsnConnections
+			val ipsUsingThisAsn = numberOfIpsUsingAsn[asnNumber]!!
 
-			logger.info { "AS$asnNumber (${asnName}): ${connections} connections (${connectionRatio * 100}%)" }
+			logger.info { "AS$asnNumber (${asnName}): $connections connections (with $ipsUsingThisAsn IPs) (${connectionRatio * 100}%)" }
 
-			if (connectionRatio >= config.asnBlacklistRatio && asnNumber !in config.whitelistedAsns)
+			if (connectionRatio >= config.asnBlacklistRatio && asnNumber !in config.whitelistedAsns && ipsUsingThisAsn != 1)
 				banConnectedAsns.add(Pair(asnNumber, asnInfo))
 		}
 
