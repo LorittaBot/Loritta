@@ -26,6 +26,10 @@ allprojects {
                 fun(mainClass: String, customAttributes: Map<String, String>): Task {
                     return task("fatJar", type = Jar::class) {
                         println("Building fat jar for ${project.name}...")
+                        val addToFinalJarSourceProjects = arrayOf(
+                                "loritta-core-",
+                                "loritta-api-"
+                        )
 
                         archiveBaseName.set("${project.name}-fat")
 
@@ -41,7 +45,10 @@ allprojects {
                             addIfAvailable("compiled.at", "Compiled-At")
                             attributes["Main-Class"] = mainClass
                             attributes["Kotlin-Version"] = kotlinVersion
-                            attributes["Class-Path"] = configurations.compile.get().joinToString(" ", transform = { "libs/" + it.name })
+                            attributes["Class-Path"] = configurations.compile.get()
+                                    .filterNot { addToFinalJarSourceProjects.any { sourceName -> it.name.startsWith(sourceName) } }
+                                    .filter { it.extension == "jar" }
+                                    .joinToString(" ", transform = { "libs/" + it.name })
                             attributes.putAll(customAttributes)
                         }
 
@@ -50,7 +57,7 @@ allprojects {
                         libs.mkdirs()
 
                         from(configurations.runtimeClasspath.get().mapNotNull {
-                            if (it.name.startsWith("loritta-core-") || it.name.startsWith("loritta-api-")) {
+                            if (addToFinalJarSourceProjects.any { sourceName -> it.name.startsWith(sourceName) }) {
                                 zipTree(it)
                             } else {
                                 val output = File(libs, it.name)
