@@ -48,6 +48,7 @@ allprojects {
                             attributes["Class-Path"] = configurations.compile.get()
                                     .filterNot { addToFinalJarSourceProjects.any { sourceName -> it.name.startsWith(sourceName) } }
                                     .filter { it.extension == "jar" }
+                                    .distinctBy { it.name }
                                     .joinToString(" ", transform = { "libs/" + it.name })
                             attributes.putAll(customAttributes)
                         }
