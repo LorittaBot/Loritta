@@ -31,6 +31,11 @@ class CheckConnectingIPs(val m: CloudflareWebFirewall, val config: CloudflareCon
 		logger.info { "Registering beforeLoad handler..." }
 
 		m.joobyWebsite.beforeLoad { req, res ->
+			val isAWhitelistedPath = config.whitelistedPaths.any { req.path().matches(Regex(it)) }
+
+			if (isAWhitelistedPath)
+				return@beforeLoad false
+
 			val trueIp = req.trueIp
 
 			connectedIPsQueue.add(trueIp)

@@ -15,5 +15,6 @@ class CloudflareConfig @JsonCreator constructor(
 		val ruleId: String,
 
 		val whitelistedIps: List<String>,
-		val whitelistedAsns: List<Int>
+		val whitelistedAsns: List<Int>,
+		val whitelistedPaths: List<String>
 )
