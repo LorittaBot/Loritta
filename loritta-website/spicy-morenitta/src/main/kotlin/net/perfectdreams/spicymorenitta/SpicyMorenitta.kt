@@ -20,7 +20,6 @@ import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.parse
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.routes.*
-import net.perfectdreams.spicymorenitta.routes.christmas2019.Christmas2019Route
 import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.GeneralDashboardRoute
 import net.perfectdreams.spicymorenitta.trunfo.TrunfoGame
 import net.perfectdreams.spicymorenitta.utils.*
@@ -71,8 +70,7 @@ class SpicyMorenitta : Logging {
 			AuditLogRoute(this),
 			LevelUpRoute(this),
 			TwitterRoute(this),
-			RssFeedsRoute(this),
-			Christmas2019Route(this)
+			RssFeedsRoute(this)
 	)
 	val validWebsiteLocaleIds = mutableListOf(
 			"br",
