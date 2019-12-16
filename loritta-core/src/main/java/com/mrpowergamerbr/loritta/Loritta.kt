@@ -48,7 +48,6 @@ import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.platform.discord.DiscordEmoteManager
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandManager
 import net.perfectdreams.loritta.platform.discord.utils.BucketedController
-import net.perfectdreams.loritta.platform.discord.utils.LoriMasterShardControllerSessionControllerAdapter
 import net.perfectdreams.loritta.tables.*
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.NetAddressUtils
@@ -286,8 +285,6 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 
 	// Inicia a Loritta
 	fun start() {
-		RestAction.setPassContext(true)
-
 		// Mandar o MongoDB calar a boca
 		val loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
 		val rootLogger = loggerContext.getLogger("org.mongodb.driver")
