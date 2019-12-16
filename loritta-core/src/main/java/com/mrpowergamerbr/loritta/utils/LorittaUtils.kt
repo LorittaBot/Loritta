@@ -54,6 +54,21 @@ object LorittaUtils {
 		}
 	}
 
+	/**
+	 * Downloads an image and returns it as a BufferedImage, additional checks are made and can be customized to avoid
+	 * downloading unsafe/big images that crash the application.
+	 *
+	 * @param url                            the image URL
+	 * @param connectTimeout                 the connection timeout
+	 * @param readTimeout                    the read timeout
+	 * @param maxSize                        the image's maximum size
+	 * @param overrideTimeoutsForSafeDomains if the URL is a safe domain, ignore timeouts
+	 * @param maxWidth                       the image's max width
+	 * @param maxHeight                      the image's max height
+	 * @param bypassSafety                   if the safety checks should be bypassed
+	 *
+	 * @return the image as a BufferedImage or null, if the image is considered unsafe
+	 */
 	@JvmOverloads
 	fun downloadImage(url: String, connectTimeout: Int = 10, readTimeout: Int = 60, maxSize: Int = 16_777_216, overrideTimeoutsForSafeDomains: Boolean = false, maxWidth: Int = 2_500, maxHeight: Int = 2_500, bypassSafety: Boolean = false): BufferedImage? {
 		try {
@@ -137,27 +152,6 @@ object LorittaUtils {
 
 	fun getUUID(id: String): UUID {
 		return UUID.fromString(id.substring(0, 8) + "-" + id.substring(8, 12) + "-" + id.substring(12, 16) + "-" + id.substring(16, 20) + "-" + id.substring(20, 32))
-	}
-
-	@Throws(Exception::class)
-	fun fetchRemoteFile(location: String): ByteArray? {
-		val url = URL(location)
-		val connection = url.openSafeConnection() as HttpURLConnection
-		connection.setRequestProperty(
-				"User-Agent",
-				"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0")
-		var `is`: InputStream? = null
-		var bytes: ByteArray? = null
-		try {
-			`is` = connection.inputStream
-			bytes = IOUtils.toByteArray(`is`!!)
-		} catch (e: IOException) {
-			e.printStackTrace()
-			//matches errors
-		} finally {
-			`is`?.close()
-		}
-		return bytes
 	}
 
 	fun toUnicode(ch: Int): String {
@@ -257,14 +251,3 @@ object LorittaUtils {
 		}.parse()
 	}
 }
-/**
- * Faz download de uma imagem e retorna ela como um BufferedImage
- * @param url
- * @return
- */
-/**
- * Faz download de uma imagem e retorna ela como um BufferedImage
- * @param url
- * @param timeout
- * @return
- */
