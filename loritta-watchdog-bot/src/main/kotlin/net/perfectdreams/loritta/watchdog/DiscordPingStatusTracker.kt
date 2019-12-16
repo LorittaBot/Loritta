@@ -40,7 +40,7 @@ class DiscordPingStatusTracker(val bot: WatchdogBot) {
 		logger.info { "Current API latency is ${discordPing}ms, difference between then and now is ${difference}ms (raw: $rawDifference})" }
 
 		if (lastLatencyResult != -1) {
-			if (difference >= 50) {
+			if (difference >= 75 && (discordPing >= 500 || 0 > rawDifference)) {
 				logger.info { "Tweeting about the API latency change!" }
 				// broadcast
 				lastBroadcastedPing = discordPing
@@ -85,7 +85,7 @@ class DiscordPingStatusTracker(val bot: WatchdogBot) {
 			val type = firstParagraph.getElementsByTag("strong").text()
 			val typeDescription = firstParagraph.ownText()
 
-			val tweet = "\uD83D\uDCE3 Discord Status Update\n\n\uD83D\uDCF0 $title • $type\n\n$typeDescription ${lastestEntry.link}".substringIfNeeded(range = 0 until 200)
+			val tweet = "\uD83D\uDCE3 Discord Status Update\n\n\uD83D\uDCF0 $title • $type\n\n$typeDescription".substringIfNeeded(range = 0 until 200) + " " + lastestEntry.link
 
 			if (bot.config.discordStatusCheck.tweet) {
 				val status = StatusUpdate(tweet)

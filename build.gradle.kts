@@ -4,8 +4,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 // val kotlinVersion by lazy { ext["kotlin-version"] as String }
 // val ktorVersion by lazy { ext["ktor-version"] as String }
 val loriVersion   = "2019.12.20-SNAPSHOT"
-val kotlinVersion = "1.3.60"
-val ktorVersion   = "1.2.5"
+val kotlinVersion = "1.3.61"
+val ktorVersion   = "1.2.6"
 val jdaVersion    = "4.0.0_62"
 
 println("Compiling Loritta $loriVersion")

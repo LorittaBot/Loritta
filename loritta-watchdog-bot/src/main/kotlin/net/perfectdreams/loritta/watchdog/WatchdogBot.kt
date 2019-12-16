@@ -6,7 +6,7 @@ import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.apache.Apache
+import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.get
 import io.ktor.client.response.HttpResponse
 import io.ktor.client.response.readText
@@ -23,6 +23,7 @@ import net.perfectdreams.loritta.watchdog.listeners.MessageListener
 import net.perfectdreams.loritta.watchdog.utils.Bot
 import net.perfectdreams.loritta.watchdog.utils.Commands
 import net.perfectdreams.loritta.watchdog.utils.config.WatchdogConfig
+import org.jsoup.Jsoup
 import java.awt.Color
 import java.time.Instant
 import java.util.*
@@ -37,17 +38,9 @@ class WatchdogBot(val config: WatchdogConfig) {
 		var jsonParser = JsonParser()
 	}
 
-	val http = HttpClient(Apache) {
+	val http = HttpClient(CIO) {
 		engine {
-			/**
-			 * Max time between TCP packets - default 10 seconds.
-			 */
-			socketTimeout = 15_000
-
-			/**
-			 * Max time to establish an HTTP connection - default 10 seconds.
-			 */
-			connectTimeout = 15_000
+			requestTimeout = 15_000
 		}
 
 		this.expectSuccess = false
@@ -81,9 +74,41 @@ class WatchdogBot(val config: WatchdogConfig) {
 
 		GlobalScope.launch {
 			while (true) {
-				jda.presence.activity = Activity.of(
-						Activity.ActivityType.WATCHING,
-						"se eu cai ;w;"
+				val status = if (pingTracker.lastLatencyResult >= 200) {
+					OnlineStatus.DO_NOT_DISTURB
+				} else if (pingTracker.lastLatencyResult >= 100) {
+					OnlineStatus.IDLE
+				} else {
+					OnlineStatus.ONLINE
+				}
+
+				val lastPublished = pingTracker.lastPublishedStatus
+
+				val stringStatus = buildString {
+					this.append("\uD83D\uDCE1 DPing: ${pingTracker.lastLatencyResult}ms")
+
+					if (lastPublished != null && lastPublished.publishedDate.time >= System.currentTimeMillis() - 3_600_000L) {
+						val description = lastPublished.description.value
+
+						val jsoup = Jsoup.parse(description)
+
+						val firstParagraph = jsoup.getElementsByTag("p").first()
+
+						val type = firstParagraph.getElementsByTag("strong").text()
+
+						this.append(" • \uD83D\uDCF0 ${lastPublished.title} - ${type}")
+					}
+
+					this.append(" • \uD83E\uDD70 se eu cai ;w;")
+				}
+
+
+				jda.presence.setPresence(
+						status,
+						Activity.of(
+								Activity.ActivityType.WATCHING,
+								stringStatus
+						)
 				)
 
 				delay(25_000)
@@ -105,14 +130,21 @@ class WatchdogBot(val config: WatchdogConfig) {
 						Pair(
 								it,
 								GlobalScope.async {
-									withTimeout(25_000) {
-										val result = http.get<HttpResponse>("https://$url/api/v1/loritta/status") {
+									val time = System.currentTimeMillis()
+
+									logger.info { "Verifying ${config.name} ${it.name} status... Time is $time" }
+
+									withTimeout(15_000) {
+										val result = http.get<HttpResponse>("https://$url/api/v1/loritta/status?t=${time}") {
 											userAgent(USER_AGENT)
 										}
+
+										val body = result.readText()
+										logger.info { "${config.name} ${it.name} response is ${result.status}" }
+
 										if (result.status != HttpStatusCode.OK)
 											throw HttpStatusError(result.status)
 
-										val body = result.readText()
 										jsonParser.parse(
 												body
 										)
@@ -201,7 +233,7 @@ class WatchdogBot(val config: WatchdogConfig) {
 							botCluster.startedAt = uptime
 							botCluster.dead = false
 
-							logger.info { "Cluster ${clusterInfo.id} (${clusterInfo.name}) is alive and well ;w;" }
+							logger.info { "Cluster ${config.name} ${clusterInfo.id} (${clusterInfo.name}) is alive and well ;w;" }
 						} catch (e: Exception) {
 							logger.error(e) { "Error while checking cluster!" }
 
