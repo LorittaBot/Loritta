@@ -13,7 +13,7 @@ class BomDiaECiaModule : MessageReceivedModule {
 		return serverConfig.miscellaneousConfig.enableBomDiaECia
 	}
 
-	suspend override fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
+	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
 		val activeTextChannelInfo = loritta.bomDiaECia.activeTextChannels.getOrDefault(event.channel.id, BomDiaECia.YudiTextChannelInfo(serverConfig.commandPrefix))
 		activeTextChannelInfo.lastMessageSent = System.currentTimeMillis()
 		activeTextChannelInfo.users.add(event.author)

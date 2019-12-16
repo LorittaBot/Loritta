@@ -573,7 +573,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				if (roles.isNotEmpty()) {
 					val reaction = message.reactions.firstOrNull {
-						it.reactionEmote.name == option.reaction || it.reactionEmote.emote?.id == option.reaction
+						it.reactionEmote.name == option.reaction || it.reactionEmote.emote.id == option.reaction
 					}
 
 					if (reaction != null) { // Reaction existe!

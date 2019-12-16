@@ -105,7 +105,7 @@ class EmojiSearchCommand : AbstractCommand("emojisearch", listOf("procuraremoji"
 			message.delete().queue()
 
 			if (it.reactionEmote.isEmote) {
-				val emote = queriedEmotes.firstOrNull { queriedEmote -> queriedEmote.idLong == it.reactionEmote?.emote?.idLong }
+				val emote = queriedEmotes.firstOrNull { queriedEmote -> queriedEmote.idLong == it.reactionEmote.emote.idLong }
 
 				if (emote == null) {
 					// TODO: Adicionar mensagem avisando que o emote foi deletado

@@ -54,9 +54,9 @@ class CreateTwitchWebhooksTask : Runnable {
 						/* val textChannel = guild.getTextChannelByNullableId(channel.repostToChannelId) ?: continue
 
 						if (!textChannel.canTalk())
-							continue */;
+							continue */
 
-						val userLogin = channel.channelUrl!!.split("/").last()
+                        val userLogin = channel.channelUrl!!.split("/").last()
 						if (userLogin.isBlank())
 							continue
 

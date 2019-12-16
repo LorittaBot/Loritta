@@ -10,6 +10,7 @@ import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.parse
 import loriUrl
+import net.perfectdreams.loritta.utils.daily.DailyGuildMissingRequirement
 import net.perfectdreams.spicymorenitta.utils.GoogleRecaptchaUtils
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import utils.*
@@ -167,6 +168,26 @@ object DailyView {
 
 										+ "?"
 									}
+
+									if (payload.failedGuilds.isNotEmpty()) {
+										for (failedGuild in payload.failedGuilds) {
+											p {
+												+ "Você poderia ganhar x${failedGuild.multiplier} sonhos "
+
+												when (failedGuild.type) {
+													DailyGuildMissingRequirement.REQUIRES_MORE_TIME -> {
+														+ "após ficar por mais de 15 dias em"
+													}
+													DailyGuildMissingRequirement.REQUIRES_MORE_XP -> {
+														+ "sendo mais ativo em"
+													}
+												}
+
+												+ failedGuild.guild.name
+												+ "!"
+											}
+										}
+									}
 								}
 
 								prepended.append(jq("<img>")
@@ -212,7 +233,8 @@ object DailyView {
 			val receivedDailyAt: String,
 			val dailyPayout: Int,
 			@Optional val sponsoredBy: Sponsored? = null,
-			val currentBalance: Double
+			val currentBalance: Double,
+			val failedGuilds: Array<FailedGuildDailyStats>
 	)
 
 	@Serializable
@@ -229,5 +251,13 @@ object DailyView {
 			@Optional val user: ServerConfig.SelfMember? = null,
 			val multipliedBy: Double,
 			val originalPayout: Double
+	)
+
+	@Serializable
+	class FailedGuildDailyStats(
+			val guild: Guild,
+			val type: DailyGuildMissingRequirement,
+			val data: Long,
+			val multiplier: Double
 	)
 }

@@ -306,7 +306,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 
 			val replies = mutableListOf(
 					LoriReply(
-							message = "**Pong!** (\uD83D\uDCE1 Shard ${context.event.jda.shardInfo?.shardId}/${loritta.discordConfig.discord.maxShards - 1}) (<:loritta:331179879582269451> Loritta Cluster ${loritta.lorittaCluster.id} (`${loritta.lorittaCluster.name}`))",
+							message = "**Pong!** (\uD83D\uDCE1 Shard ${context.event.jda.shardInfo.shardId}/${loritta.discordConfig.discord.maxShards - 1}) (<:loritta:331179879582269451> Loritta Cluster ${loritta.lorittaCluster.id} (`${loritta.lorittaCluster.name}`))",
 							prefix = ":ping_pong:"
 					),
 					LoriReply(

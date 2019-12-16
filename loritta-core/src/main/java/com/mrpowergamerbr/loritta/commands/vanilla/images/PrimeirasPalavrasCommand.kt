@@ -31,17 +31,17 @@ class PrimeirasPalavrasCommand : AbstractCommand("firstwords", listOf("primeiras
 
 			val baseGraph = bi.graphics.enableFontAntiAliasing()
 
-			baseGraph.setColor(Color(0, 0, 0, 255))
+            baseGraph.color = Color(0, 0, 0, 255)
 
 			val font = Font("Arial", Font.BOLD, 32)
 
-			baseGraph.setFont(font)
+            baseGraph.font = font
 
 			val quaseFalando = str[0] + "... " + str[0] + "..."
 
-			ImageUtils.drawTextWrap(quaseFalando, 4, 5 + font.size, 236, 0, baseGraph.getFontMetrics(), baseGraph)
+			ImageUtils.drawTextWrap(quaseFalando, 4, 5 + font.size, 236, 0, baseGraph.fontMetrics, baseGraph)
 
-			ImageUtils.drawTextWrapSpaces(str, 4, 277 + font.size, 342, 0, baseGraph.getFontMetrics(), baseGraph)
+			ImageUtils.drawTextWrapSpaces(str, 4, 277 + font.size, 342, 0, baseGraph.fontMetrics, baseGraph)
 
 			context.sendFile(bi, "tirinha_baby.png", context.getAsMention(true))
 		} else {

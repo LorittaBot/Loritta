@@ -460,10 +460,10 @@ object TretaNewsGenerator {
 		graphics.color = Color(0, 0, 0, 191)
 		graphics.fillRect(206, 122, 30, 14)
 
-		graphics.setColor(Color(255, 255, 255, 255))
+        graphics.color = Color(255, 255, 255, 255)
 		run {
 			val font = Font("Arial", Font.BOLD, 11)
-			graphics.setFont(font)
+            graphics.font = font
 			graphics.drawString(Loritta.RANDOM.nextInt(2, 10).toString() + ":" + Loritta.RANDOM.nextInt(10, 60), 211, 122 + font.size)
 		}
 

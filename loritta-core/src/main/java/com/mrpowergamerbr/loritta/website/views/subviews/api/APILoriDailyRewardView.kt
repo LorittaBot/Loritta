@@ -18,6 +18,8 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
+import net.perfectdreams.loritta.utils.daily.DailyGuildMissingRequirement
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -197,6 +199,8 @@ class APILoriDailyRewardView : NoVarsView() {
 		var multipliedBy: Double? = null
 		var sponsoredByUser: User? = null
 
+		val failedDailyServersInfo = jsonArray()
+
 		transaction(Databases.loritta) {
 			// Pegar todos os servidores com sonhos patrocinados
 			val results = (ServerConfigs innerJoin DonationConfigs innerJoin DonationKeys).select {
@@ -205,7 +209,7 @@ class APILoriDailyRewardView : NoVarsView() {
 						(ServerConfigs.donationKey.isNotNull()) and
 						(DonationKeys.expiresAt greaterEq System.currentTimeMillis()) and
 						(DonationKeys.value greaterEq 59.99)
-			}.orderBy(DonationKeys.value to false)
+			}.orderBy(DonationKeys.value, SortOrder.DESC)
 
 			val serverConfigs = ServerConfig.wrapRows(results)
 			val user = runBlocking { lorittaShards.retrieveUserById(userIdentification.id) }
@@ -221,22 +225,45 @@ class APILoriDailyRewardView : NoVarsView() {
 
 				val epochMillis = guild["timeJoined"].long
 
-				if (user?.avatarId == null) {
-					logger.info { "avatar is null" }
-					if (epochMillis + 1_296_000_000 > System.currentTimeMillis()) // 15 dias
-						continue
-				} else {
-					logger.info { "avatar is not null" }
-					if (epochMillis + Constants.ONE_WEEK_IN_MILLISECONDS > System.currentTimeMillis()) // 7 dias
-						continue
+				val requiredTime = if (user?.avatarId == null)
+					1_296_000_000
+				else
+					Constants.ONE_WEEK_IN_MILLISECONDS
+
+				if (epochMillis + requiredTime > System.currentTimeMillis()) { // 15 dias
+					val diff = epochMillis + requiredTime - System.currentTimeMillis()
+					failedDailyServersInfo.add(
+							jsonObject(
+									"guild" to jsonObject(
+											"name" to guild["name"].string,
+											"iconUrl" to guild["iconUrl"].string,
+											"id" to guild["id"].string
+									),
+									"type" to DailyGuildMissingRequirement.REQUIRES_MORE_TIME,
+									"data" to diff,
+									"multiplier" to getDailyMultiplier(serverConfig.donationKey)
+							)
+					)
+					continue
 				}
 
 				val xp = GuildProfile.find { (GuildProfiles.guildId eq id) and (GuildProfiles.userId eq userIdentification.id.toLong()) }.firstOrNull()?.xp ?: 0L
-				logger.info { "user has $xp xp" }
-				if (500 > xp)
-					continue
 
-				logger.info { "got it!" }
+				if (500 > xp) {
+					failedDailyServersInfo.add(
+							jsonObject(
+									"guild" to jsonObject(
+											"name" to guild["name"].string,
+											"iconUrl" to guild["iconUrl"].string,
+											"id" to guild["id"].string
+									),
+									"type" to DailyGuildMissingRequirement.REQUIRES_MORE_XP,
+									"data" to 500 - xp,
+									"multiplier" to getDailyMultiplier(serverConfig.donationKey)
+							)
+					)
+					continue
+				}
 
 				bestServer = config
 				bestServerInfo = guild
@@ -248,13 +275,7 @@ class APILoriDailyRewardView : NoVarsView() {
 				val donationKey = bestServer.donationKey
 
 				if (donationConfig != null && donationKey != null && donationKey.value >= 59.99) {
-					multipliedBy = when {
-						donationKey.value >= 179.99 -> 2.0
-						donationKey.value >= 139.99 -> 1.75
-						donationKey.value >= 99.99 -> 1.5
-						donationKey.value >= 59.99 -> 1.25
-						else -> 1.0
-					}
+					multipliedBy = getDailyMultiplier(donationKey)
 					sponsoredBy = bestServerInfo
 					sponsoredByUser = runBlocking { lorittaShards.retrieveUserById(donationKey.userId) }
 				}
@@ -318,8 +339,19 @@ class APILoriDailyRewardView : NoVarsView() {
 		payload["receivedDailyAt"] = receivedDailyAt
 		payload["dailyPayout"] = dailyPayout
 		payload["currentBalance"] = lorittaProfile.money
+		payload["failedGuilds"] = failedDailyServersInfo
 
 		logger.info { "${lorittaProfile.userId} recebeu ${dailyPayout} (quantidade atual: ${lorittaProfile.money}) sonhos no Daily! Email: ${userIdentification.email} - IP: ${ip} - Patrocinado? ${sponsoredBy} ${multipliedBy}" }
 		return gson.toJson(payload)
+	}
+
+	fun getDailyMultiplier(donationKey: DonationKey): Double {
+		return when {
+			donationKey.value >= 179.99 -> 2.0
+			donationKey.value >= 139.99 -> 1.75
+			donationKey.value >= 99.99 -> 1.5
+			donationKey.value >= 59.99 -> 1.25
+			else -> 1.0
+		}
 	}
 }

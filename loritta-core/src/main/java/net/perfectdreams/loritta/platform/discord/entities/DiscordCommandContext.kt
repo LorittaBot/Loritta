@@ -425,7 +425,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 					it.sendMessage(embed.build()).queue()
 				}
 			} else {
-				val message = (sendMessage(getAsMention(true), embed.build()) as net.perfectdreams.loritta.platform.discord.entities.DiscordMessage).handle
+				val message = sendMessage(getAsMention(true), embed.build()).handle
 				message.addReaction("❓").queue()
 				message.onReactionAddByAuthor(this) {
 					if (it.reactionEmote.isEmote("❓")) {
@@ -465,7 +465,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 				false
 		)
 
-		val message = (sendMessage(getAsMention(true), embed.build()) as net.perfectdreams.loritta.platform.discord.entities.DiscordMessage).handle
+		val message = sendMessage(getAsMention(true), embed.build()).handle
 		message.addReaction("❓").queue()
 		message.onReactionAddByAuthor(this) {
 			if (it.reactionEmote.isEmote("❓")) {

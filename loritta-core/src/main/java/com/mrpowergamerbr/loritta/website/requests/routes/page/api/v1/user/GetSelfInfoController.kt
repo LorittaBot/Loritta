@@ -37,7 +37,7 @@ class GetSelfInfoController {
 
 		if (profile != null) {
 			transaction(Databases.loritta) {
-				profile.settings.discordAccountFlags = (userIdentification.flags ?: 0)
+				profile.settings.discordAccountFlags = userIdentification.flags
 				profile.settings.discordPremiumType = userIdentification.premiumType
 			}
 		}

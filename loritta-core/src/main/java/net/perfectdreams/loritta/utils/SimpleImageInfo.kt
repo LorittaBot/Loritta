@@ -36,11 +36,9 @@ class SimpleImageInfo {
 	var width: Int = 0
 	var mimeType: String? = null
 
-	private constructor() {
+	private constructor()
 
-	}
-
-	@Throws(IOException::class)
+    @Throws(IOException::class)
 	constructor(file: File) {
 		val `is` = FileInputStream(file)
 		try {

@@ -241,7 +241,7 @@ fun Message.onReactionAddByAuthor(userId: String, function: suspend (MessageReac
 	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
 	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
 
-	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(null, this.channel?.idLong, userId) }
+	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(null, this.channel.idLong, userId) }
 	functions.onReactionAddByAuthor = function
 	return this
 }

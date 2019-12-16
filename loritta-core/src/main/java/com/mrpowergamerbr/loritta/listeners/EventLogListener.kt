@@ -436,7 +436,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				if (relayTo != null) {
 					if (relayTo.retrieveBanList().await().firstOrNull { it.user == event.user } == null) {
-						relayTo.ban(event.user, 7, "Banned on LorittaLand (Brazilian Server)")?.queue()
+                        relayTo.ban(event.user, 7, "Banned on LorittaLand (Brazilian Server)").queue()
 					}
 				}
 			}
@@ -445,7 +445,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				if (relayTo != null) {
 					if (relayTo.retrieveBanList().await().firstOrNull { it.user == event.user } == null) {
-						relayTo.ban(event.user, 7, "Banido na LorittaLand (English Server)")?.queue()
+                        relayTo.ban(event.user, 7, "Banido na LorittaLand (English Server)").queue()
 					}
 				}
 			}

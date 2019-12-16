@@ -299,7 +299,7 @@ class LorittaLandRoleSync : Runnable {
 					if (message != null) {
 						val embed = message.embeds.firstOrNull()
 						if (embed == null) {
-							message.delete()?.queue()
+                            message.delete().queue()
 						} else {
 							if (embed.description != newEmbed.description) {
 								message.editMessage(newMessage).queue()

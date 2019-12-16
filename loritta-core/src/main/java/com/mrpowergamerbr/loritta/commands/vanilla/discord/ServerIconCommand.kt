@@ -60,7 +60,7 @@ class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "ico
 		embed.setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
 		val description = "**${context.legacyLocale["AVATAR_CLICKHERE", iconUrl + "?size=2048"]}**"
 
-		val guildIconUrl = iconUrl!!
+		val guildIconUrl = iconUrl
 
 		embed.setDescription(description)
 		embed.setImage(iconUrl) // Ícone da Guild

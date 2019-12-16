@@ -80,7 +80,7 @@ class CreateYouTubeWebhooksTask : Runnable {
 
 			val notCreatedYetChannels = mutableListOf<String>()
 
-			logger.info { "Existem ${channelIds.size} canais no YouTube que eu irei verificar! Atualmente existem ${youtubeWebhooks!!.size} webhooks criadas!" }
+			logger.info { "Existem ${channelIds.size} canais no YouTube que eu irei verificar! Atualmente existem ${youtubeWebhooks.size} webhooks criadas!" }
 
 			for (channelId in channelIds) {
 				val webhook = youtubeWebhooks[channelId]

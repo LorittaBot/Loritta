@@ -14,8 +14,8 @@ class Blog {
 
 	val options = MutableDataSet().apply {
 		this.set(Parser.EXTENSIONS, listOf(TablesExtension.create(), StrikethroughExtension.create()))
-		this.set(HtmlRenderer.SOFT_BREAK, "<br />\n");
-	}
+		this.set(HtmlRenderer.SOFT_BREAK, "<br />\n")
+    }
 	val parser = Parser.builder(options).build()
 	val renderer = HtmlRenderer.builder(options).build()
 

@@ -15,9 +15,9 @@ fun InputStream.readAllBytes(limit: Int): ByteArray {
 	while (true) {
 		// read to EOF which may read more or less than initial buffer size
 		while (read(buf, nread, capacity - nread).let { n = it; n > 0 })
-			nread += n;
+			nread += n
 
-		// if the last call to read returned -1, then we're done
+        // if the last call to read returned -1, then we're done
 		if (n < 0)
 			break
 
