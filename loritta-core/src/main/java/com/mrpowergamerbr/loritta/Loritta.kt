@@ -29,7 +29,6 @@ import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
-import com.mrpowergamerbr.loritta.utils.gabriela.GabrielaMessage
 import com.mrpowergamerbr.loritta.utils.locale.Gender
 import com.mrpowergamerbr.loritta.utils.networkbans.LorittaNetworkBanManager
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
@@ -134,7 +133,6 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 	// ===[ MONGODB ]===
 	lateinit var mongo: MongoClient // MongoDB
 	lateinit var serversColl: MongoCollection<MongoServerConfig>
-	lateinit var gabrielaMessagesColl: MongoCollection<GabrielaMessage>
 
 	val audioManager: AudioManager
 
@@ -468,7 +466,6 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 		val dbCodec = db.withCodecRegistry(pojoCodecRegistry)
 
 		serversColl = dbCodec.getCollection("servers", MongoServerConfig::class.java)
-		gabrielaMessagesColl = dbCodec.getCollection("gabriela", GabrielaMessage::class.java)
 	}
 
 	/**
