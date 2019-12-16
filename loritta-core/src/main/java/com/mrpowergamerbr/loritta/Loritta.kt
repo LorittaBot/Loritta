@@ -11,7 +11,6 @@ import com.mongodb.MongoClient
 import com.mongodb.MongoClientOptions
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
-import com.mrpowergamerbr.loritta.audio.AudioManager
 import com.mrpowergamerbr.loritta.commands.CommandManager
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ProfileSettings
@@ -134,8 +133,6 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 	lateinit var mongo: MongoClient // MongoDB
 	lateinit var serversColl: MongoCollection<MongoServerConfig>
 
-	val audioManager: AudioManager
-
 	var youtubeKeys = mutableListOf<String>()
 	var lastKeyReset = 0
 
@@ -183,7 +180,6 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 		Emotes.emoteManager = DiscordEmoteManager()
 		Emotes.loadEmotes()
 		GlobalHandler.generateViews()
-		audioManager = AudioManager(this)
 
 		net.perfectdreams.loritta.website.LorittaWebsite.init() // hack!
 
@@ -216,10 +212,8 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 						eventLogListener,
 						messageListener,
 						voiceChannelListener,
-						channelListener,
-						audioManager.lavalink
+						channelListener
 				)
-				.setVoiceDispatchInterceptor(audioManager.lavalink.voiceInterceptor)
 	}
 
 	// Gera uma configuração "dummy" para comandos enviados no privado

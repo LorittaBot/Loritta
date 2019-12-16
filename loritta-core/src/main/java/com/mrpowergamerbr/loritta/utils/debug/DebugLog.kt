@@ -57,8 +57,6 @@ object DebugLog {
 		logger.info("ignoreIds.size: ${loritta.ignoreIds.size}")
 		logger.info("userCooldown.size: ${loritta.userCooldown.size}")
 		logger.info("> Music Stuff")
-		logger.info("musicManagers.size: ${loritta.audioManager.musicManagers.size}")
-		logger.info("songThrottle.size: ${loritta.audioManager.songThrottle.size}")
 		logger.info("youTubeKeys.size: ${loritta.youtubeKeys.size}")
 		logger.info("> Tasks Stuff")
 		logger.info("storedLastEntries.size: ${AminoRepostTask.storedLastIds.size}")

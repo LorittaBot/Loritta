@@ -64,15 +64,6 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 				val mensagem = context.sendMessage(context.getAsMention(true), embed.build())
 
 				mensagem.onReactionAddByAuthor(context) {
-					if (context.metadata.contains("currentItem")) {
-						val item = context.metadata["currentItem"] as YouTubeItem
-						if (it.reactionEmote.isEmote("▶")) {
-							loritta.audioManager.loadAndPlay(context, "https://youtu.be/${item.id.videoId}")
-							context.metadata.remove("currentItem")
-						}
-						return@onReactionAddByAuthor
-					}
-
 					val idx = Constants.INDEXES.indexOf(it.reactionEmote.name)
 
 					// Caso seja uma reaçõa inválida ou que não tem no metadata, ignore!
@@ -124,11 +115,6 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 							mensagem.editMessage(embed.build()).queue()
 
 							context.metadata.put("currentItem", item)
-
-							if (context.config.musicConfig.isEnabled) {
-								// Se o sistema de músicas está ativado...
-								mensagem.addReaction("▶").queue() // Vamos colocar um ícone para tocar!
-							}
 						} else {
 							var channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&id=${item.snippet.channelId}&key=${loritta.youtubeKey}").body()
 							var channelJson = jsonParser.parse(channelResponse).obj

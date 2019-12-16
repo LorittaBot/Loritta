@@ -8,9 +8,9 @@ import com.mrpowergamerbr.loritta.commands.vanilla.discord.*
 import com.mrpowergamerbr.loritta.commands.vanilla.economy.*
 import com.mrpowergamerbr.loritta.commands.vanilla.images.*
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.*
+import com.mrpowergamerbr.loritta.commands.vanilla.music.*
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.*
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.*
-import com.mrpowergamerbr.loritta.commands.vanilla.music.*
 import com.mrpowergamerbr.loritta.commands.vanilla.pokemon.PokedexCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbGameCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbUserCommand
@@ -107,6 +107,7 @@ class CommandManager {
 		commandMap.add(TodoGrupoTemCommand())
 		commandMap.add(TioDoPaveCommand())
 		commandMap.add(VemDeZapCommand())
+		commandMap.add(YouTubeCommand())
 
 		// =======[ MISC ]======
 		commandMap.add(AjudaCommand())
@@ -231,21 +232,6 @@ class CommandManager {
 		commandMap.add(EvalKotlinCommand())
 		if (loritta.config.loritta.environment == EnvironmentType.CANARY)
 			commandMap.add(AntiRaidCommand())
-
-		// =======[ MÚSICA ]========
-		commandMap.add(TocarCommand())
-		commandMap.add(MusicInfoCommand())
-		commandMap.add(VolumeCommand())
-		commandMap.add(PlaylistCommand())
-		commandMap.add(PularCommand())
-		commandMap.add(PausarCommand())
-		commandMap.add(ResumirCommand())
-		commandMap.add(SeekCommand())
-		commandMap.add(YouTubeCommand())
-		commandMap.add(RestartSongCommand())
-		commandMap.add(TocarAgoraCommand())
-		commandMap.add(ShuffleCommand())
-		commandMap.add(PararCommand())
 
 		// =======[ ECONOMIA ]========
 		commandMap.add(LoraffleCommand())

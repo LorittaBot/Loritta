@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.listeners
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.EventLog
 import kotlinx.coroutines.GlobalScope
@@ -67,29 +66,6 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 				val config = loritta.getServerConfigForGuild(channelJoined.guild.id)
 
 				EventLog.onVoiceJoin(config, member, channelJoined)
-
-				if (!config.musicConfig.isEnabled)
-					return@withLock
-
-				if (config.musicConfig.musicGuildId != channelJoined.id)
-					return@withLock
-
-				if (channelJoined.members.isEmpty()) // Whoops, demorou demais!
-					return@withLock
-
-				if (channelJoined.members.contains(channelJoined.guild.selfMember)) // Mas... eu já estou neste canal!
-					return@withLock
-
-				val mm = loritta.audioManager.getGuildAudioPlayer(channelJoined.guild)
-
-				// Se não está tocando nada e o sistema de músicas aleatórias está ativado, toque uma!
-				if (mm.player.playingTrack == null && config.musicConfig.autoPlayWhenEmpty && config.musicConfig.urls.isNotEmpty())
-					LorittaUtilsKotlin.startRandomSong(channelJoined.guild, config)
-				else if (mm.player.playingTrack != null && !channelJoined.members.contains(channelJoined.guild.selfMember)) {
-					mm.player.isPaused = false
-					val link = loritta.audioManager.lavalink.getLink(channelJoined.guild)
-					link.connect(channelJoined)
-				}
 			}
 		}
 	}
@@ -102,21 +78,6 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 				val config = loritta.getServerConfigForGuild(channelLeft.guild.id)
 
 				EventLog.onVoiceLeave(config, member, channelLeft)
-
-				if (!config.musicConfig.isEnabled)
-					return@withLock
-
-				if (config.musicConfig.musicGuildId != channelLeft.id)
-					return@withLock
-
-				if (channelLeft.members.any { !it.user.isBot && (it.voiceState?.isDeafened != true && it.voiceState?.isGuildDeafened != true) })
-					return@withLock
-
-				// Caso não tenha ninguém no canal de voz, vamos retirar o music manager da nossa lista
-				loritta.audioManager.musicManagers.remove(channelLeft.guild.idLong)
-
-				val link = loritta.audioManager.lavalink.getLink(channelLeft.guild)
-				link.disconnect() // E desconectar do canal de voz
 			}
 		}
 	}

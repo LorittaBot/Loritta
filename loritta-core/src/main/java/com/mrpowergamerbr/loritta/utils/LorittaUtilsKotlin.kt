@@ -1,47 +1,27 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.get
-import com.github.salomonbrys.kotson.nullString
-import com.github.salomonbrys.kotson.obj
-import com.github.salomonbrys.kotson.string
-import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
-import com.mongodb.MongoWaitQueueFullException
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.ReplaceOptions
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
-import com.mrpowergamerbr.loritta.audio.AudioTrackWrapper
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
-import com.mrpowergamerbr.loritta.parallax.ParallaxUtils
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
-import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.loritta.utils.extensions.getVoiceChannelByNullableId
-import com.mrpowergamerbr.loritta.utils.extensions.isEmote
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.*
-import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent
-import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.utils.MiscUtil
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import org.apache.commons.lang3.ArrayUtils
 import org.jsoup.nodes.Element
-import java.awt.Color
 import java.awt.Graphics
 import java.awt.Image
 import java.awt.image.BufferedImage
 import java.io.StringReader
 import java.net.URLEncoder
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 fun Image.toBufferedImage() : BufferedImage {
 	return ImageUtils.toBufferedImage(this)
@@ -241,212 +221,7 @@ object LorittaUtilsKotlin {
 		return NSFWResponse.OK
 	}
 
-	@JvmStatic
-	fun fillTrackMetadata(track: AudioTrackWrapper) {
-		if (track.track.sourceManager.sourceName == "youtube") { // Se é do YouTube, então vamos preencher com algumas informações "legais"
-			try {
-				val playingTrack = track.track
-				val videoId = playingTrack.info.uri.substring(playingTrack.info.uri.length - 11 until playingTrack.info.uri.length)
-				val response = HttpRequest.get("https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=snippet,statistics&key=${loritta.youtubeKey}").body()
-				val parser = JsonParser()
-				val json = parser.parse(response).asJsonObject
-				val item = json["items"][0]
-				val snippet = item["snippet"].obj
-				val statistics = item["statistics"].obj
-				val likeCount = statistics["likeCount"].nullString
-				val dislikeCount = statistics["dislikeCount"].nullString
-
-				var channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${snippet.get("channelId").asString}&fields=items%2Fsnippet%2Fthumbnails&key=${loritta.youtubeKey}").body()
-				var channelJson = parser.parse(channelResponse).obj
-
-				track.metadata.put("viewCount", statistics["viewCount"].string)
-
-				if (likeCount != null)
-					track.metadata.put("likeCount", likeCount)
-				if (dislikeCount != null)
-					track.metadata.put("dislikeCount", dislikeCount)
-
-				if (statistics.has("commentCount")) {
-					track.metadata.put("commentCount", statistics["commentCount"].string)
-				} else {
-					track.metadata.put("commentCount", "Comentários desativados")
-				}
-				track.metadata.put("thumbnail", snippet["thumbnails"]["high"]["url"].string)
-				track.metadata.put("channelIcon", channelJson["items"][0]["snippet"]["thumbnails"]["high"]["url"].string)
-			} catch (e: Exception) {
-				logger.error("Erro ao pegar informações sobre ${track.track}!", e)
-			}
-		}
-	}
-
-	fun createTrackInfoEmbed(context: CommandContext): MessageEmbed {
-		return createTrackInfoEmbed(context.guild, context.legacyLocale, context.config.musicConfig.voteToSkip)
-	}
-
-	@JvmStatic
-	fun createTrackInfoEmbed(guild: Guild, locale: LegacyBaseLocale, stripSkipInfo: Boolean): MessageEmbed {
-		val manager = loritta.audioManager.getGuildAudioPlayer(guild)
-		val playingTrack = manager.player.playingTrack
-		val metaTrack = manager.scheduler.currentTrack
-		val embed = EmbedBuilder()
-		embed.setTitle("\uD83C\uDFB5 ${playingTrack.info.title}", playingTrack.info.uri)
-		embed.setColor(Color(93, 173, 236))
-		val millis = manager.player.playingTrack.duration
-
-		val fancy = String.format("%02d:%02d",
-				TimeUnit.MILLISECONDS.toMinutes(millis),
-				TimeUnit.MILLISECONDS.toSeconds(millis) -
-						TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
-		)
-
-		val elapsedMillis = manager.player.trackPosition
-
-		val elapsed = String.format("%02d:%02d",
-				TimeUnit.MILLISECONDS.toMinutes(elapsedMillis),
-				TimeUnit.MILLISECONDS.toSeconds(elapsedMillis) -
-						TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(elapsedMillis))
-		)
-
-		embed.addField("\uD83D\uDD52 ${locale["MUSICINFO_LENGTH"]}", "`$elapsed`/`$fancy`", true)
-
-		if (playingTrack.sourceManager.sourceName == "youtube" && metaTrack != null) {
-			val viewCount = if (metaTrack.metadata.containsKey("viewCount")) metaTrack.metadata["viewCount"] else "???"
-			val likeCount = if (metaTrack.metadata.containsKey("likeCount")) metaTrack.metadata["likeCount"] else "???"
-			val dislikeCount = if (metaTrack.metadata.containsKey("dislikeCount")) metaTrack.metadata["dislikeCount"] else "???"
-			val commentCount = if (metaTrack.metadata.containsKey("commentCount")) metaTrack.metadata["commentCount"] else "???"
-
-			// Se a source é do YouTube, então vamos pegar informações sobre o vídeo!
-			embed.addField("\uD83D\uDCFA ${locale["MUSICINFO_VIEWS"]}", viewCount, true)
-			embed.addField("\uD83D\uDE0D ${locale["MUSICINFO_LIKES"]}", likeCount, true)
-			embed.addField("\uD83D\uDE20 ${locale["MUSICINFO_DISLIKES"]}", dislikeCount, true)
-			embed.addField("\uD83D\uDCAC ${locale["MUSICINFO_COMMENTS"]}", commentCount, true)
-			embed.setThumbnail(metaTrack.metadata["thumbnail"])
-			embed.setAuthor(playingTrack.info.author, null, metaTrack.metadata["channelIcon"])
-		}
-
-		if (!stripSkipInfo)
-			embed.addField("\uD83D\uDCAB ${locale["MUSICINFO_SKIPTITLE"]}", locale["MUSICINFO_SKIPTUTORIAL"], false)
-
-		return embed.build()
-	}
-
-	fun createPlaylistInfoEmbed(context: CommandContext): MessageEmbed {
-		val manager = loritta.audioManager.getGuildAudioPlayer(context.guild)
-		val embed = EmbedBuilder()
-
-		embed.setTitle("\uD83C\uDFB6 ${context.legacyLocale["MUSICINFO_INQUEUE"]}")
-		embed.setColor(Color(93, 173, 236))
-
-		val songs = manager.scheduler.queue.toList()
-		val currentTrack = manager.scheduler.currentTrack
-		if (currentTrack != null) {
-			var text = "[${currentTrack.track.info.title}](${currentTrack.track.info.uri}) (${context.legacyLocale["MUSICINFO_REQUESTED_BY"]} ${currentTrack.user.asMention})\n"
-			text += songs.joinToString("\n", transform = { "[${it.track.info.title}](${it.track.info.uri}) (${context.legacyLocale["MUSICINFO_REQUESTED_BY"]} ${it.user.asMention})" })
-			if (text.length >= 2048) {
-				text = text.substring(0, 2047)
-			}
-			embed.setDescription(text)
-		} else {
-			embed.setDescription(context.legacyLocale["MUSICINFO_NOMUSIC_SHORT"])
-		}
-		return embed.build()
-	}
-
-	suspend fun handleMusicReaction(context: CommandContext, e: GenericMessageReactionEvent, msg: Message) {
-		if (e.reactionEmote.name != "\uD83E\uDD26") { // Se é diferente de facepalm...
-			if (context.handle == e.member) { // Então só deixe quem exectou o comando mexer!
-				if (e.reactionEmote.isEmote("\uD83D\uDD22")) {
-					msg.editMessage(LorittaUtilsKotlin.createPlaylistInfoEmbed(context)).queue {
-						val filteredReactions = msg.reactions.filter { it.reactionEmote.name != "\uD83E\uDD26" }
-						for (reaction in filteredReactions) {
-							if (msg.reactions.indexOf(reaction) == (filteredReactions.size - 1)) {
-								reaction.removeReaction().queue {
-									e.reaction.removeReaction(e.user).queue {
-										msg.addReaction("\uD83D\uDCBF").queue()
-									}
-								}
-							} else {
-								reaction.removeReaction().queue()
-							}
-						}
-					}
-				} else if (e.reactionEmote.isEmote("\uD83E\uDD26")) {
-					msg.editMessage(LorittaUtilsKotlin.createTrackInfoEmbed(context)).queue {
-						val filteredReactions = msg.reactions.filter { it.reactionEmote.name != "\uD83E\uDD26" }
-						for (reaction in filteredReactions) {
-							if (msg.reactions.indexOf(reaction) == (filteredReactions.size - 1)) {
-								reaction.removeReaction().queue {
-									e.reaction.removeReaction(e.user).queue {
-										msg.addReaction("\uD83D\uDD22").queue()
-									}
-								}
-							} else {
-								reaction.removeReaction().queue()
-							}
-						}
-					}
-				}
-			}
-		} else { // Se for facepalm...
-			val atw = context.metadata.get("currentTrack") as AudioTrackWrapper
-			val list = e.reaction.retrieveUsers().await()
-			val count = list.count { !it.isBot }
-
-			val conf = context.config
-
-			if (count > 0 && conf.musicConfig.voteToSkip && loritta.audioManager.getGuildAudioPlayer(e.guild).scheduler.currentTrack === atw) {
-				val vc = e.guild.getVoiceChannelByNullableId(conf.musicConfig.musicGuildId)
-
-				if (e.reactionEmote.name != "\uD83E\uDD26") { // Só permitir reactions de "facepalm"
-					return
-				}
-
-				if (e.member?.voiceState?.channel !== vc) {
-					e.reaction.removeReaction(e.user).queue()
-					return
-				}
-
-				if (vc != null) {
-					val inChannel = vc.members.filter { !it.user.isBot }.size
-					val required = Math.round(inChannel.toDouble() * (conf.musicConfig.required.toDouble() / 100))
-
-					if (count >= required) {
-						loritta.audioManager.skipTrack(context)
-					}
-				}
-			}
-		}
-	}
-
 	var executedCommands = 0
-
-	fun startRandomSong(guild: Guild, conf: MongoServerConfig) {
-		val diff = System.currentTimeMillis() - loritta.audioManager.songThrottle.getOrDefault(guild.id, 0L)
-
-		if (5000 > diff)
-			return  // bye
-
-		if (conf.musicConfig.musicGuildId == null || conf.musicConfig.musicGuildId!!.isEmpty())
-			return
-
-		val voiceChannel = guild.getVoiceChannelByNullableId(conf.musicConfig.musicGuildId) ?: return
-
-		if (!guild.selfMember.hasPermission(voiceChannel, Permission.VOICE_CONNECT))
-			return
-
-		if (voiceChannel.members.isEmpty())
-			return
-
-		if (conf.musicConfig.autoPlayWhenEmpty && !conf.musicConfig.urls.isEmpty()) {
-			val trackUrl = conf.musicConfig.urls[Loritta.RANDOM.nextInt(0, conf.musicConfig.urls.size)]
-
-			// Nós iremos colocar o servidor em um throttle, para evitar várias músicas sendo colocadas ao mesmo tempo devido a VEVO sendo tosca
-			loritta.audioManager.songThrottle.put(guild.id, System.currentTimeMillis())
-
-			// E agora carregue a música
-			loritta.audioManager.loadAndPlayNoFeedback(guild, conf, trackUrl) // Só vai meu parça
-		}
-	}
 }
 
 data class FacebookPostWrapper(
