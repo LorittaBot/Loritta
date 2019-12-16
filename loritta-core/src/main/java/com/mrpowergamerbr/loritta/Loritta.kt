@@ -14,6 +14,7 @@ import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.commands.CommandManager
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ProfileSettings
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.listeners.*
 import com.mrpowergamerbr.loritta.livestreams.TwitchAPI
 import com.mrpowergamerbr.loritta.modules.ServerSupportModule
@@ -461,9 +462,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 	 */
 	fun getOrCreateServerConfig(guildId: Long): com.mrpowergamerbr.loritta.dao.ServerConfig {
 		return transaction(Databases.loritta) {
-			com.mrpowergamerbr.loritta.dao.ServerConfig.findById(guildId) ?: com.mrpowergamerbr.loritta.dao.ServerConfig.new(guildId) {
-
-			}
+			ServerConfig.findById(guildId) ?: ServerConfig.new(guildId) {}
 		}
 	}
 
@@ -502,11 +501,9 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 		return transaction(Databases.loritta) {
 			val sqlProfile = Profile.findById(userId)
 
-			if (sqlProfile != null) {
+			if (sqlProfile != null)
 				return@transaction sqlProfile
-			}
 
-			val start2 = System.nanoTime()
 			val newProfile = Profile.new(userId) {
 				xp = 0
 				isBanned = false
