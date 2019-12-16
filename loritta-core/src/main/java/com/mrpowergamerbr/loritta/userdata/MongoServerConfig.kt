@@ -58,14 +58,11 @@ class MongoServerConfig @BsonCreator constructor(
 	var permissionsConfig = PermissionsConfig()
 	var moderationConfig = ModerationConfig()
 	var serverListConfig = ServerListConfig()
-	// var economyConfig = EconomyConfig()
 	var miscellaneousConfig = MiscellaneousConfig()
 	var defaultTextChannelConfig = TextChannelConfig("default")
 	var textChannelConfigs = mutableListOf<TextChannelConfig>()
 
 	var lastCommandReceivedAt = 0L
-	var apiKey: String? = null
-	var premiumKey: String? = null
 
 	fun getUserData(id: Long): GuildProfile {
 		val t = this

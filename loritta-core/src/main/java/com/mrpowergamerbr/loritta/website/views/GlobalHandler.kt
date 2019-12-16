@@ -12,7 +12,6 @@ import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.evaluate
 import com.mrpowergamerbr.loritta.website.views.subviews.*
 import com.mrpowergamerbr.loritta.website.views.subviews.api.*
-import com.mrpowergamerbr.loritta.website.views.subviews.api.config.APIGetApiKeyView
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.APIGetServerConfigView
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.APIUpdateServerConfigView
 import com.mrpowergamerbr.loritta.website.views.subviews.configure.*
@@ -156,7 +155,6 @@ object GlobalHandler {
 		apiViews.add(APIUpdateServerConfigView())
 		apiViews.add(APILoriDailyRewardView())
 		apiViews.add(APILoriDailyRewardStatusView())
-		apiViews.add(APIGetApiKeyView())
 		apiViews.add(APIGetCommandsView())
 
 		views.add(HomeView())
