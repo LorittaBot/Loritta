@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
+import com.mrpowergamerbr.loritta.utils.extensions.trueIp
 import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
@@ -36,14 +37,14 @@ object GlobalHandler {
 		}
 
 		if (req.path().matches(Regex("^/dashboard/configure/[0-9]+/testmessage")) || req.path().matches(Regex("^\\/dashboard\\/configure\\/[0-9]+(\\/)(save)"))) {
-			val last = loritta.apiCooldown.getOrDefault(req.header("X-Forwarded-For").value(), 0L)
+			val last = loritta.apiCooldown.getOrDefault(req.trueIp, 0L)
 
 			val diff = System.currentTimeMillis() - last
 			if (2500 >= diff) {
 				return GSON.toJson(mapOf("api:code" to LoriWebCodes.RATE_LIMITED, "api:message" to "RATE_LIMITED"))
 			}
 
-			loritta.apiCooldown[req.header("X-Forwarded-For").value()] = System.currentTimeMillis()
+			loritta.apiCooldown[req.trueIp] = System.currentTimeMillis()
 		}
 
 		apiViews.filter { it.handleRender(req, res, req.path()) }
@@ -133,7 +134,7 @@ object GlobalHandler {
 			views.filter { it.handleRender(req, res, pathNoLanguageCode, variables) }
 					.forEach { return it.render(req, res, pathNoLanguageCode, variables) }
 		} catch (e: Exception) {
-			logger.error("Erro ao processar conteúdo para ${req.header("X-Forwarded-For").value()}: ${req.path()}", e)
+			logger.error("Erro ao processar conteúdo para ${req.trueIp}: ${req.path()}", e)
 			throw e
 		}
 

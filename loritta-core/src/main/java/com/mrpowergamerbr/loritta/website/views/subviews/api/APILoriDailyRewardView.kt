@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.tables.*
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.trueIp
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -68,8 +69,7 @@ class APILoriDailyRewardView : NoVarsView() {
 			return payload.toString()
 		}
 
-		val ips = req.header("X-Forwarded-For").value() // Cloudflare, Apache
-		val ip = ips.split(", ")[0]
+		val ip = req.trueIp
 
 		val lorittaProfile = loritta.getOrCreateLorittaProfile(userIdentification.id)
 

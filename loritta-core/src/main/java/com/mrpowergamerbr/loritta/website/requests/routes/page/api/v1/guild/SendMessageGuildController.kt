@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild
 import com.github.salomonbrys.kotson.*
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.trueIp
 import com.mrpowergamerbr.loritta.website.LoriAuthLevel
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriRequiresAuth
@@ -29,7 +30,7 @@ class SendMessageGuildController {
 		res.type(MediaType.json)
 
 		// Rate Limit
-		val last = loritta.apiCooldown.getOrDefault(req.header("X-Forwarded-For").value(), 0L)
+		val last = loritta.apiCooldown.getOrDefault(req.trueIp, 0L)
 
 		val diff = System.currentTimeMillis() - last
 		if (4000 >= diff) {
@@ -42,7 +43,7 @@ class SendMessageGuildController {
 			return
 		}
 
-		loritta.apiCooldown[req.header("X-Forwarded-For").value()] = System.currentTimeMillis()
+		loritta.apiCooldown[req.trueIp] = System.currentTimeMillis()
 
 		val json = jsonParser.parse(rawMessage).obj
 		val channelId = json["channelId"].nullString
