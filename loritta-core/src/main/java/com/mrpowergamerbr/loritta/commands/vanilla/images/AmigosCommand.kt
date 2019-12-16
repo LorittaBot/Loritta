@@ -6,7 +6,6 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.extensions.getRandom
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import net.dv8tion.jda.api.entities.Member
@@ -76,7 +75,7 @@ class AmigosCommand : AbstractCommand("friends", listOf("amigos", "meusamigos", 
 		while (userAvatar == null) {
 			if (list.isEmpty()) { // omg, lista vazia!
 				// Vamos pegar um usuário aleatório e vamos cair fora daqui!
-				userAvatar = context.guild.members.getRandom().user.effectiveAvatarUrl
+				userAvatar = context.guild.members.random().user.effectiveAvatarUrl
 				break
 			}
 			val member = list[Loritta.RANDOM.nextInt(list.size)]

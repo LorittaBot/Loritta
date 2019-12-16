@@ -3,7 +3,6 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.WebhookUtils
-import com.mrpowergamerbr.loritta.utils.extensions.getRandom
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import net.perfectdreams.loritta.api.commands.ArgumentType
@@ -42,7 +41,7 @@ class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball
 
 			context.sendMessage(temmie, DiscordMessage.builder()
 					.username("Vieirinha")
-					.content(context.getAsMention(true) + locale.toNewLocale().getWithType<List<String>>("commands.entertainment.vieirinha.responses").getRandom())
+					.content(context.getAsMention(true) + locale.toNewLocale().getWithType<List<String>>("commands.entertainment.vieirinha.responses").random())
 					.avatarUrl("http://i.imgur.com/rRtHdti.png")
 					.build())
 		} else {

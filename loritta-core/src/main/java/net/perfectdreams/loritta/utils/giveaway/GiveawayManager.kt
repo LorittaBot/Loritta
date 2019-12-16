@@ -4,7 +4,6 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.loritta.utils.extensions.getRandom
 import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -345,7 +344,7 @@ object GiveawayManager {
                     if (reactedUsers.isEmpty())
                         return@repeat
 
-                    val user = reactedUsers.getRandom()
+                    val user = reactedUsers.random()
                     winners.add(user)
                     reactedUsers.remove(user)
                 }
