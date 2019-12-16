@@ -203,34 +203,6 @@ class LorittaNetworkBanManager {
 		return notVerifiedEntries.firstOrNull { it.id == id }
 	}
 
-	fun migrateNetworkBannedUsers() {
-		if (File("./network_banned_users.json").exists()) {
-			logger.info { "Migrating user bans to the database..." }
-
-			var networkBannedUsers = Loritta.GSON.fromJson<List<NetworkBanEntry>>(File("./network_banned_users.json").readText())
-			networkBannedUsers = networkBannedUsers.distinctBy { it.id }.toMutableList()
-
-			for (networkBannedUser in networkBannedUsers) {
-				transaction(Databases.loritta) {
-					try {
-						BlacklistedUsers.insert {
-							it[id] = EntityID(networkBannedUser.id.toLong(), BlacklistedUsers)
-							it[bannedAt] = System.currentTimeMillis()
-							it[guildId] = networkBannedUser.guildId?.toLong()
-							it[type] = networkBannedUser.type
-							it[reason] = networkBannedUser.reason
-							it[globally] = false
-						}
-					} catch (e: Exception) {
-						logger.warn { "Erro ao migrar ban $networkBannedUser "}
-					}
-				}
-			}
-
-			File("./network_banned_users.json").delete()
-		}
-	}
-
 	fun checkIfUserShouldBeBanned(user: User, guild: Guild, serverConfig: MongoServerConfig): Boolean {
 		val globallyBannedEntry = loritta.networkBanManager.getGlobalBanEntry(user.idLong) // oof¹
 		if (globallyBannedEntry != null) {

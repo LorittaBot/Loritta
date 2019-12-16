@@ -293,25 +293,6 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 		initMongo()
 		initPostgreSql()
 
-		if (File("./blacklisted_servers.json").exists()) {
-			logger.info { "Migrating guild bans to the database..." }
-			val blacklistedServers = Loritta.GSON.fromJson<Map<String, String>>(File("./blacklisted_servers.json").readText())
-
-			for ((id, reason) in blacklistedServers) {
-				transaction(Databases.loritta) {
-					BlacklistedGuilds.insert {
-						it[BlacklistedGuilds.id] = EntityID(id.toLong(), BlacklistedUsers)
-						it[bannedAt] = System.currentTimeMillis()
-						it[BlacklistedGuilds.reason] = reason
-					}
-				}
-			}
-
-			File("./blacklisted_servers.json").delete()
-		}
-
-		networkBanManager.migrateNetworkBannedUsers()
-
 		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
 		logger.info { "Sucesso! Iniciando Loritta (Discord Bot)..." }
 
