@@ -15,7 +15,6 @@ import net.dv8tion.jda.api.utils.MiscUtil
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import org.apache.commons.lang3.ArrayUtils
-import org.jsoup.nodes.Element
 import java.awt.Graphics
 import java.awt.Image
 import java.awt.image.BufferedImage
@@ -221,15 +220,3 @@ object LorittaUtilsKotlin {
 		return NSFWResponse.OK
 	}
 }
-
-data class FacebookPostWrapper(
-		val url: String,
-		val description: String)
-
-data class FeedEntry(
-		val title: String,
-		val link: String,
-		val date: Calendar,
-		val description: String?,
-		val entry: Element
-)
