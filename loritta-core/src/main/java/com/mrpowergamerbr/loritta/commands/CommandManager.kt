@@ -406,7 +406,6 @@ class CommandManager {
 
 				loritta.userCooldown[ev.author.idLong] = System.currentTimeMillis()
 
-				LorittaUtilsKotlin.executedCommands++
 				command.executedCount++
 
 				if (command.hasCommandFeedback() && !conf.commandOutputInPrivate) {

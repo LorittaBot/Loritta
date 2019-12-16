@@ -220,8 +220,6 @@ object LorittaUtilsKotlin {
 		}
 		return NSFWResponse.OK
 	}
-
-	var executedCommands = 0
 }
 
 data class FacebookPostWrapper(

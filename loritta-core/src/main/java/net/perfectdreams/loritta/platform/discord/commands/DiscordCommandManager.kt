@@ -328,7 +328,6 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
 
                 discordLoritta.userCooldown[ev.author.idLong] = System.currentTimeMillis()
 
-                LorittaUtilsKotlin.executedCommands++
                 command.executedCount++
 
                 if (command.hasCommandFeedback && !conf.commandOutputInPrivate) {

@@ -114,7 +114,6 @@ object WebsiteUtils {
 				"guildCount" to lorittaShards.getCachedGuildCount(),
 				"availableCommandsCount" to loritta.legacyCommandManager.commandMap.size + loritta.commandManager.commands.size,
 				"commandMap" to loritta.legacyCommandManager.commandMap + loritta.commandManager.commands.size,
-				"executedCommandsCount" to LorittaUtilsKotlin.executedCommands,
 				"path" to req.path(),
 				"clientId" to loritta.discordConfig.discord.clientId,
 				"cssAssetVersion" to OptimizeAssets.cssAssetVersion,
