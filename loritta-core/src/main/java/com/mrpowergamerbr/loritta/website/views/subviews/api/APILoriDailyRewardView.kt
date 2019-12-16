@@ -5,6 +5,7 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
+import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
@@ -241,7 +242,7 @@ class APILoriDailyRewardView : NoVarsView() {
 									),
 									"type" to DailyGuildMissingRequirement.REQUIRES_MORE_TIME,
 									"data" to diff,
-									"multiplier" to getDailyMultiplier(serverConfig.donationKey)
+									"multiplier" to config.donationKey?.let { getDailyMultiplier(it) }
 							)
 					)
 					continue
@@ -259,7 +260,7 @@ class APILoriDailyRewardView : NoVarsView() {
 									),
 									"type" to DailyGuildMissingRequirement.REQUIRES_MORE_XP,
 									"data" to 500 - xp,
-									"multiplier" to getDailyMultiplier(serverConfig.donationKey)
+									"multiplier" to config.donationKey?.let { getDailyMultiplier(it) }
 							)
 					)
 					continue
