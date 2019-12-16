@@ -1,9 +1,6 @@
 package com.mrpowergamerbr.loritta.profile
 
-import net.perfectdreams.loritta.profile.Badge
-import net.perfectdreams.loritta.profile.DiscordEarlySupporterBadge
-import net.perfectdreams.loritta.profile.DiscordHouseBadge
-import net.perfectdreams.loritta.profile.DiscordNitroBadge
+import net.perfectdreams.loritta.profile.*
 
 class ProfileDesignManager {
 	val designs = mutableListOf<ProfileDesign>()
@@ -60,6 +57,10 @@ class ProfileDesignManager {
 
 		registerBadge(
 				DiscordNitroBadge()
+		)
+
+		registerBadge(
+				ArtistBadge()
 		)
 	}
 }

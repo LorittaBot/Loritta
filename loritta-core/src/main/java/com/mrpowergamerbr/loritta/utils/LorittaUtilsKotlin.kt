@@ -38,44 +38,12 @@ fun Array<String>.remove(index: Int): Array<String> {
 	return ArrayUtils.remove(this, index)
 }
 
-val User.patreon: Boolean
-	get() {
-		val lorittaGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
-
-		if (lorittaGuild != null) {
-			val role = lorittaGuild.getRoleById("364201981016801281")
-			val member = lorittaGuild.getMember(this)
-
-			if (member != null && role != null) {
-				if (member.roles.contains(role))
-					return true
-			}
-		}
-		return false
-	}
-
 val User.lorittaSupervisor: Boolean
 	get() {
 		val lorittaGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
 
 		if (lorittaGuild != null) {
 			val role = lorittaGuild.getRoleById("351473717194522647")
-			val member = lorittaGuild.getMember(this)
-
-			if (member != null && role != null) {
-				if (member.roles.contains(role))
-					return true
-			}
-		}
-		return false
-	}
-
-val User.artist: Boolean
-	get() {
-		val lorittaGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
-
-		if (lorittaGuild != null) {
-			val role = lorittaGuild.getRoleById("341343754336337921")
 			val member = lorittaGuild.getMember(this)
 
 			if (member != null && role != null) {

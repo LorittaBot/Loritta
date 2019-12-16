@@ -65,12 +65,13 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			val badges = mutableListOf<BufferedImage>()
 
 			badges.addAll(
-					loritta.profileDesignManager.badges.filter { it.checkIfUserDeservesBadge(user, profile, mutualGuilds) }.map {
-						ImageIO.read(File(Loritta.ASSETS, it.badgeFileName))
-					}
+					loritta.profileDesignManager.badges.filter { it.checkIfUserDeservesBadge(user, profile, mutualGuilds) }
+							.sortedByDescending { it.priority }
+							.map {
+								ImageIO.read(File(Loritta.ASSETS, it.badgeFileName))
+							}
 			)
 
-			if (user.patreon || loritta.config.isOwner(user.id)) badges += ImageIO.read(File(Loritta.ASSETS + "blob_blush.png"))
 			if (user.lorittaSupervisor) badges += ImageIO.read(File(Loritta.ASSETS + "supervisor.png"))
 			if (isPocketDreamsStaff) badges += ImageIO.read(File(Loritta.ASSETS + "pocketdreams_staff.png"))
 			if (user.support) badges += ImageIO.read(File(Loritta.ASSETS + "support.png"))
@@ -92,8 +93,6 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 
 			if (user.idLong == 249508932861558785L || user.idLong == 336892460280315905L)
 				badges += ImageIO.read(File(Loritta.ASSETS + "loritta_sweater.png"))
-
-			if (user.artist) badges += ImageIO.read(File(Loritta.ASSETS + "artist_badge.png"))
 
 			transaction(Databases.loritta) {
 				var specialCase = false
