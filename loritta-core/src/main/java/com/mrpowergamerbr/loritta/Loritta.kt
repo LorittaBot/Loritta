@@ -428,7 +428,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 		}
 
 		val options = mongoBuilder
-				.connectionsPerHost(250)
+				.connectionsPerHost(config.mongoDb.maxConnectionsPerHost)
 				.build()
 
 		mongo = MongoClient(NetAddressUtils.getWithPortIfMissing(config.mongoDb.address, 27017), options) // Hora de iniciar o MongoClient
