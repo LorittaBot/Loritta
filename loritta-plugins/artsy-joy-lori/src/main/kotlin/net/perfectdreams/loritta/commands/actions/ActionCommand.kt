@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.extensions.getRandom
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.Gender
 import net.dv8tion.jda.api.EmbedBuilder
@@ -109,7 +108,7 @@ abstract class ActionCommand(labels: Array<String>) : LorittaCommand(labels, Com
             files = getGifsFor(Gender.UNKNOWN, Gender.UNKNOWN)
         }
 
-        val randomImage = files.getRandom()
+        val randomImage = files.random()
 
         val message = context.sendMessage(
                 user.asMention,
