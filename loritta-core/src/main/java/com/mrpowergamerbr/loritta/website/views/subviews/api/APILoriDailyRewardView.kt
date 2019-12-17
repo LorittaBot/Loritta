@@ -240,7 +240,7 @@ class APILoriDailyRewardView : NoVarsView() {
 											"iconUrl" to guild["iconUrl"].string,
 											"id" to guild["id"].string
 									),
-									"type" to DailyGuildMissingRequirement.REQUIRES_MORE_TIME,
+									"type" to DailyGuildMissingRequirement.REQUIRES_MORE_TIME.toString(),
 									"data" to diff,
 									"multiplier" to config.donationKey?.let { getDailyMultiplier(it) }
 							)
@@ -258,7 +258,7 @@ class APILoriDailyRewardView : NoVarsView() {
 											"iconUrl" to guild["iconUrl"].string,
 											"id" to guild["id"].string
 									),
-									"type" to DailyGuildMissingRequirement.REQUIRES_MORE_XP,
+									"type" to DailyGuildMissingRequirement.REQUIRES_MORE_XP.toString(),
 									"data" to 500 - xp,
 									"multiplier" to config.donationKey?.let { getDailyMultiplier(it) }
 							)
