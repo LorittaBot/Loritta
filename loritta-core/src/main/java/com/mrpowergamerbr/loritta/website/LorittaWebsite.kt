@@ -175,13 +175,13 @@ class LorittaWebsite(val loritta: LorittaBot, val websiteUrl: String, var fronte
 			return@get
 		val result = GlobalHandler.render(req, res)
 		if (result == "Redirecionando..." || result == "Redirecting..." ) // Gambiarra! Quer dizer que é um redirect e que não é necessário enviar o conteúdo.
-			return
+			return@get
 		res.send(result)
 	}
 	post("/**") { req, res ->
 		val result = GlobalHandler.render(req, res)
 		if (result == "Redirecionando..." || result == "Redirecting..." ) // Gambiarra! Quer dizer que é um redirect e que não é necessário enviar o conteúdo.
-			return
+			return@post
 		res.send(result)
 	}
 }) {
