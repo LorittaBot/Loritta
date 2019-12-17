@@ -38,6 +38,33 @@ suspend fun Message.edit(content: Message, clearReactions: Boolean = true): Mess
 	return this.editMessage(content).await()
 }
 
+suspend fun MessageHistory.retrievePastChunked(quantity: Int): List<Message> {
+	val messages = mutableListOf<Message>()
+
+	for (x in 0 until quantity step 100) {
+		val newMessages = this.retrievePast(100).await()
+		if (newMessages.isEmpty())
+			break
+
+		messages += newMessages
+	}
+	return messages
+}
+
+suspend fun MessageHistory.retrieveAllMessages(): List<Message> {
+	val messages = mutableListOf<Message>()
+
+	while (true) {
+		val newMessages = this.retrievePast(100).await()
+		if (newMessages.isEmpty())
+			break
+
+		messages += newMessages
+	}
+
+	return messages
+}
+
 /**
  * Edits the message, but only if the content was changed
  *

@@ -7,6 +7,8 @@ import com.github.salomonbrys.kotson.string
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.utils.extensions.retrieveAllMessages
+import com.mrpowergamerbr.loritta.utils.extensions.retrievePastChunked
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
@@ -236,7 +238,7 @@ class LorittaLandRoleSync : Runnable {
 
 			val textChannel = originalGuild.getTextChannelById(Constants.THANK_YOU_DONATORS_CHANNEL_ID)
 
-			val messages = textChannel!!.history.retrievePast(100).complete()
+			val messages = runBlocking { textChannel!!.history.retrieveAllMessages() }
 
 			for (member in originalGuild.members) {
 				val roles = member.roles.toMutableSet()
@@ -306,7 +308,7 @@ class LorittaLandRoleSync : Runnable {
 							}
 						}
 					} else {
-						textChannel.sendMessage(newMessage).queue {
+						textChannel?.sendMessage(newMessage)?.queue {
 							it.addReaction(
 									"a:clapping:536170783257395202"
 							).queue()
