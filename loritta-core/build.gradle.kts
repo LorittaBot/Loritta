@@ -71,7 +71,7 @@ dependencies {
     compile("org.apache.commons:commons-text:1.8")
     compile("org.apache.commons:commons-collections4:4.4")
     compile("org.jooby:jooby:1.6.2")
-    compile("org.jooby:jooby-undertow:1.6.2")
+    compile("org.jooby:jooby-netty:1.6.2")
     compile("org.jooby:jooby-lang-kotlin:1.6.2")
     compile("org.jooby:jooby-mongodb:1.6.2")
     compile("io.ktor:ktor-server-core:$ktorVersion")
