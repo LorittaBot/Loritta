@@ -130,7 +130,6 @@ class LorittaWebsite(val loritta: LorittaBot, val websiteUrl: String, var fronte
 						val hostHeader = req.header("Host").valueOrNull()
 						res.status(302) // temporary redirect / no page rank penalty (?)
 						res.redirect("https://$hostHeader/${locale["website.localePath"]}${req.path()}${req.urlQueryString}")
-						res.send("Redirecting...")
 						return@use
 					}
 				}
@@ -174,10 +173,16 @@ class LorittaWebsite(val loritta: LorittaBot, val websiteUrl: String, var fronte
 	get("/**") { req, res ->
 		if (req.path() == "/lorisocket")
 			return@get
-		res.send(GlobalHandler.render(req, res))
+		val result = GlobalHandler.render(req, res)
+		if (result == "Redirecionando..." || result == "Redirecting..." ) // Gambiarra! Quer dizer que é um redirect e que não é necessário enviar o conteúdo.
+			return
+		res.send(result)
 	}
 	post("/**") { req, res ->
-		res.send(GlobalHandler.render(req, res))
+		val result = GlobalHandler.render(req, res)
+		if (result == "Redirecionando..." || result == "Redirecting..." ) // Gambiarra! Quer dizer que é um redirect e que não é necessário enviar o conteúdo.
+			return
+		res.send(result)
 	}
 }) {
 	companion object {
