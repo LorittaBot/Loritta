@@ -129,7 +129,7 @@ object Constants {
 	val WHITE_SPACE_MULTIPLE_REGEX = Regex(" +")
 	val TWITCH_USERNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9][\\w]{3,24}\$")
 	val DISCORD_EMOTE_PATTERN = Pattern.compile("<a?:([A-z0-9_]+):([0-9]+)>")
-	val DISCORD_INVITE_PATTERN = Pattern.compile(".*(discord\\.gg|discordapp.com(/invite))/([A-z0-9]+).*")
+	val DISCORD_INVITE_PATTERN = Pattern.compile(".*(discord\\.gg|discordapp.com(/invite))/([A-z0-9]+).*", Pattern.CASE_INSENSITIVE)
 
 	val YOUTUBE_DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
 	val ASSETS_FOLDER by lazy { File(Loritta.ASSETS) }

@@ -97,7 +97,7 @@ class InviteLinkModule : MessageReceivedModule {
 				val urls = mutableSetOf<String>()
 				while (matcher.find()) {
 					var url = matcher.group()
-					if (url.startsWith("discord.gg")) {
+					if (url.startsWith("discord.gg", true)) {
 						url = "discord.gg" + matcher.group(1).replace(".", "")
 					}
 					urls.add(url)

@@ -1502,7 +1502,7 @@ class ConnectionManager {
         val domain = getDomainFromUrl(url)
 
         return if (domain != null) {
-            loritta.config.connectionManager.blockedDomains.any { it.endsWith(domain) }
+            loritta.config.connectionManager.blockedDomains.any { it.endsWith(domain, true) }
         } else {
             false
         }
