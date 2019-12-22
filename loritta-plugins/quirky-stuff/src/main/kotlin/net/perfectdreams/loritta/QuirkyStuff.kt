@@ -1,6 +1,9 @@
 package net.perfectdreams.loritta
 
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.github.salomonbrys.kotson.jsonObject
+import com.github.salomonbrys.kotson.nullLong
+import com.github.salomonbrys.kotson.obj
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.dao.Profile
@@ -30,29 +33,50 @@ import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.FeatureFlags
 import net.perfectdreams.loritta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.utils.payments.PaymentReason
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.SqlExpressionBuilder
-import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
 import java.io.File
 import java.math.BigDecimal
 
 class QuirkyStuff : DiscordPlugin() {
+    private val dreamsBoostTypes = mapOf(
+            59.99.toBigDecimal() to 1.0,
+            39.99.toBigDecimal() to 1.0,
+            19.99.toBigDecimal() to 1.0
+    )
+
+
     val task = GlobalScope.launch(LorittaLauncher.loritta.coroutineDispatcher) {
         while (true) {
             delay(60_000)
-            val guild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
+            val moneySumId = Payments.money.sum()
+            val mostPayingUsers = transaction(Databases.loritta) {
+                Payments.slice(Payments.userId, moneySumId)
+                        .select {
+                            Payments.paidAt.isNotNull() and
+                                    (Payments.reason eq PaymentReason.DONATION) or (Payments.reason eq PaymentReason.SPONSORED) and
+                                    (Payments.expiresAt greaterEq System.currentTimeMillis())
+                        }
+                        .groupBy(Payments.userId)
+                        .orderBy(moneySumId, SortOrder.DESC)
+                        .toMutableList()
+            }
 
-            if (guild != null) {
+            for ((bigDecimal, quantity) in dreamsBoostTypes) {
+                val deserveTheRewardUsers = mostPayingUsers.filter { it[moneySumId]!! >= bigDecimal }.map { it[Payments.userId] }
+
                 transaction(Databases.loritta) {
-                    Profiles.update({ Profiles.id inList guild.boosters.map { it.user.idLong }}) {
+                    Profiles.update({ Profiles.id inList deserveTheRewardUsers }) {
                         with(SqlExpressionBuilder) {
-                            it.update(money, money + 3.0)
+                            it.update(money, money + quantity)
                         }
                     }
                 }
+            }
 
+            val guild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
+
+            if (guild != null) {
                 // Remover key de boosts inválidos
                 transaction(Databases.loritta) {
                     val nitroBoostPayments = Payment.find {
@@ -62,34 +86,45 @@ class QuirkyStuff : DiscordPlugin() {
                     val invalidNitroPayments = mutableListOf<Long>()
 
                     for (nitroBoostPayment in nitroBoostPayments) {
-                        val member = guild.getMemberById(nitroBoostPayment.userId)
+                        val metadata = nitroBoostPayment.metadata
+                        val isFromThisGuild = metadata != null && metadata.obj["guildId"].nullLong == guild.idLong
 
-                        if (member == null || member.timeBoosted == null) {
-                            logger.warn { "Deleting Nitro Boost payment by ${nitroBoostPayment.userId} because user is not boosting the guild anymore! (is member null? ${member != null})" }
-                            invalidNitroPayments.add(nitroBoostPayment.userId)
-                            nitroBoostPayment.delete()
+                        if (isFromThisGuild) {
+                            val member = guild.getMemberById(nitroBoostPayment.userId)
+
+                            if (member == null || member.timeBoosted == null) {
+                                logger.warn { "Deleting Nitro Boost payment by ${nitroBoostPayment.userId} because user is not boosting the guild anymore! (is member null? ${member != null})" }
+                                invalidNitroPayments.add(nitroBoostPayment.userId)
+                                nitroBoostPayment.delete()
+                            }
                         }
                     }
 
                     DonationKey.find {
-                        (DonationKeys.expiresAt eq Long.MAX_VALUE) and (DonationKeys.value eq 40.0)
+                        (DonationKeys.expiresAt eq Long.MAX_VALUE) and (DonationKeys.value eq 19.99)
                     }.forEach {
-                        val member = guild.getMemberById(it.userId)
+                        val metadata = it.metadata
+                        val isFromThisGuild = metadata != null && metadata.obj["guildId"].nullLong == guild.idLong
 
-                        if (member == null || member.timeBoosted == null) {
-                            logger.warn { "Deleting donation key via Nitro Boost by ${it.userId} because user is not boosting the guild anymore! (is member null? ${member != null})" }
+                        if (isFromThisGuild) {
+                            val member = guild.getMemberById(it.userId)
 
-                            ServerConfigs.update({ ServerConfigs.donationKey eq it.id }) {
-                                it[donationKey] = null
+                            if (member == null || member.timeBoosted == null) {
+                                logger.warn { "Deleting donation key via Nitro Boost by ${it.userId} because user is not boosting the guild anymore! (is member null? ${member != null})" }
+
+                                ServerConfigs.update({ ServerConfigs.donationKey eq it.id }) {
+                                    it[donationKey] = null
+                                }
+
+                                it.delete()
                             }
-
-                            it.delete()
                         }
                     }
                 }
             }
         }
     }
+
     var changeBanner: ChangeBanner? = null
     var topDonatorsRank: TopDonatorsRank? = null
     var topVotersRank: TopVotersRank? = null
@@ -220,7 +255,9 @@ class QuirkyStuff : DiscordPlugin() {
         private val logger = KotlinLogging.logger {}
 
         suspend fun onBoostActivate(member: Member) {
-            logger.info { "Enabling donation features via boost for $member in Loritta's main guild!"}
+            val guild = member.guild
+
+            logger.info { "Enabling donation features via boost for $member in $guild!" }
 
             val now = System.currentTimeMillis()
 
@@ -232,14 +269,21 @@ class QuirkyStuff : DiscordPlugin() {
                     this.reason = PaymentReason.DONATION
                     this.createdAt = now
                     this.paidAt = now
-                    this.money = BigDecimal(40)
+                    this.money = BigDecimal(19.99)
                     this.expiresAt = Long.MAX_VALUE // Nunca!
+                    this.metadata = jsonObject(
+                            "guildId" to member.guild.idLong
+                    )
                 }
+
                 // Gerar key de doação
                 DonationKey.new {
                     this.userId = member.idLong
-                    this.value = 40.0
+                    this.value = 19.99
                     this.expiresAt = Long.MAX_VALUE // Nunca!
+                    this.metadata = jsonObject(
+                            "guildId" to member.guild.idLong
+                    )
                 }
             }
 
@@ -249,7 +293,7 @@ class QuirkyStuff : DiscordPlugin() {
                         EmbedBuilder()
                                 .setTitle("Obrigada por ativar o seu boost! ${Emotes.LORI_HAPPY}")
                                 .setDescription(
-                                        "Obrigada por ativar o seu Nitro Boost no meu servidor! ${Emotes.LORI_NITRO_BOOST}\n\nA cada dia eu estou mais próxima de virar uma digital influencer de sucesso, graças a sua ajuda! ${Emotes.LORI_HAPPY}\n\nAh, e como agradecimento por você ter ativado o seu boost no meu servidor, você irá receber todas as minhas vantagens de quem doa 40 reais e irá receber 3 sonhos a cada 1 minuto! (Até você desativar o seu boost... espero que você não desative... ${Emotes.LORI_CRYING})\n\nContinue sendo incrível!"
+                                        "Obrigada por ativar o seu Nitro Boost no meu servidor! ${Emotes.LORI_NITRO_BOOST}\n\nA cada dia eu estou mais próxima de virar uma digital influencer de sucesso, graças a sua ajuda! ${Emotes.LORI_HAPPY}\n\nAh, e como agradecimento por você ter ativado o seu boost no meu servidor, você irá receber todas as minhas vantagens de quem doa 19,99 reai! (Até você desativar o seu boost... espero que você não desative... ${Emotes.LORI_CRYING})\n\nContinue sendo incrível!"
                                 )
                                 .setImage("https://loritta.website/assets/img/fanarts/Loritta_-_Raspoza.png")
                                 .setColor(Constants.LORITTA_AQUA)
@@ -259,16 +303,24 @@ class QuirkyStuff : DiscordPlugin() {
         }
 
         suspend fun onBoostDeactivate(member: Member) {
-            logger.info { "Disabling donation features via boost for $member in Loritta's main guild!"}
+            val guild = member.guild
+
+            logger.info { "Disabling donation features via boost for $member in $guild!"}
 
             transaction(Databases.loritta) {
                 Payment.find {
                     (Payments.userId eq member.idLong) and (Payments.gateway eq PaymentGateway.NITRO_BOOST)
-                }.firstOrNull()?.delete()
+                }.firstOrNull {
+                    val metadata = it.metadata
+                    metadata != null && metadata.obj["guildId"].nullLong == guild.idLong
+                }?.delete()
 
                 DonationKey.find {
-                    (DonationKeys.userId eq member.idLong) and (DonationKeys.expiresAt eq Long.MAX_VALUE) and (DonationKeys.value eq 40.0)
-                }.firstOrNull()?.apply {
+                    (DonationKeys.userId eq member.idLong) and (DonationKeys.expiresAt eq Long.MAX_VALUE) and (DonationKeys.value eq 19.99)
+                }.firstOrNull {
+                    val metadata = it.metadata
+                    metadata != null && metadata.obj["guildId"].nullLong == guild.idLong
+                }?.apply {
                     this.expiresAt = System.currentTimeMillis() // Ou seja, a key estará expirada
                 }
             }
