@@ -23,7 +23,7 @@ class ArtsyJoyLori : LorittaPlugin() {
         registerCommand(RoleInfoCommand())
         registerCommand(RenameEmojiCommand())
         registerCommand(GuildBannerCommand())
-        
+
         // IMAGES
         registerCommand(AtendenteCommand())
         registerCommand(TristeRealidadeCommand())
@@ -48,7 +48,8 @@ class ArtsyJoyLori : LorittaPlugin() {
         registerCommand(BuckShirtCommand())
         registerCommand(BobBurningPaperCommand())
         registerCommand(PassingPaperCommand())
-        registerCommand(CoringaCommand())
+        if (false)
+            registerCommand(CoringaCommand())
 
         // ACTIONS
         registerCommand(AttackCommand())
@@ -57,6 +58,7 @@ class ArtsyJoyLori : LorittaPlugin() {
         registerCommand(KissCommand())
         registerCommand(SlapCommand())
         registerCommand(HeadPatCommand())
-        registerCommand(HighFiveCommand())
+        if (false)
+            registerCommand(HighFiveCommand())
     }
 }
