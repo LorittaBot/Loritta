@@ -91,7 +91,10 @@ class TweetTracker(val m: Loritta) {
 					override fun onDeletionNotice(p0: StatusDeletionNotice) {}
 
 					override fun onStatus(p0: Status) {
-						if (p0.isRetweet)
+						if (p0.isRetweet) // É um retweet
+							return
+
+						if (p0.user.id !in window) // ID do usuário não está na window... Então para que fazer relay?
 							return
 
 						logger.info { "Received status ${p0.id} from ${p0.user.screenName} (${p0.user.id}), relaying to master cluster..." }
