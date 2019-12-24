@@ -21,6 +21,8 @@ import java.util.concurrent.TimeUnit
 class DropChristmasStuffModule(val config: Christmas2019Config) : MessageReceivedModule {
     val lastDropsAt = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build<Long, Long>()
             .asMap()
+    val lastDropsByUserAt = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build<Long, Long>()
+            .asMap()
 
     override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
         return event.guild?.selfMember?.hasPermission(Permission.MESSAGE_ADD_REACTION) == true && Calendar.getInstance().get(Calendar.MONTH) == 11
@@ -42,12 +44,19 @@ class DropChristmasStuffModule(val config: Christmas2019Config) : MessageReceive
 
         val since = 360_000 - Math.max(360_000 - lastDropDiff, 0)
 
-        val ceil = 6.0
+        val chanceBoost = (6.0 * since) / 360_000
 
-        chance = Math.min(chance, ceil)
+        val ceil = 3.0
+
+        chance = Math.min(chance + chanceBoost, ceil)
 
         if (chance(chance) && event.message.contentStripped.hashCode() == lorittaProfile.lastMessageSentHash) {
             if (5_000 >= System.currentTimeMillis() - lastDrop)
+                return false
+
+            val userDropTime = lastDropsByUserAt.getOrDefault(event.author.idLong, 0L)
+
+            if (180_000 >= System.currentTimeMillis() - userDropTime)
                 return false
 
             val isParticipating = transaction(Databases.loritta) {
@@ -60,6 +69,7 @@ class DropChristmasStuffModule(val config: Christmas2019Config) : MessageReceive
 
             if (getTheCandy) {
                 lastDropsAt[id] = System.currentTimeMillis()
+                lastDropsByUserAt[event.author.idLong] = System.currentTimeMillis()
                 event.message.addReaction("lori_gift:653402818199158805").queue()
             }
         }
