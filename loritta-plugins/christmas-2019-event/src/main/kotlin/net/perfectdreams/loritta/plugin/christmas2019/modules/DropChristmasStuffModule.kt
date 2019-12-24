@@ -42,11 +42,9 @@ class DropChristmasStuffModule(val config: Christmas2019Config) : MessageReceive
 
         val since = 360_000 - Math.max(360_000 - lastDropDiff, 0)
 
-        val chanceBoost = (6.0 * since) / 360_000
-
         val ceil = 6.0
 
-        chance = Math.min(chance + chanceBoost, ceil)
+        chance = Math.min(chance, ceil)
 
         if (chance(chance) && event.message.contentStripped.hashCode() == lorittaProfile.lastMessageSentHash) {
             if (5_000 >= System.currentTimeMillis() - lastDrop)
