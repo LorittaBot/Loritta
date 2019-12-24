@@ -114,7 +114,7 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 								onChangeFunction = {
 									document.select<HTMLSpanElement>("#give-role-level-calc")
 											.innerText = ((document.select<HTMLInputElement>(".add-role .required-xp")
-											.value.toLong() / 1000).toString())
+											.valueOrPlaceholderIfEmpty("1000").toLong() / 1000).toString())
 								}
 							}
 						}
@@ -148,7 +148,7 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 										guild,
 										ServerConfig.RoleByExperience(
 												document.select<HTMLInputElement>(".add-role .required-xp")
-														.value,
+														.valueOrPlaceholderIfEmpty("1000"),
 												listOf(
 														document.select<HTMLSelectElement>("#choose-role").value
 												)
@@ -206,7 +206,7 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 									ServerConfig.ExperienceRoleRate(
 											document.select<HTMLSelectElement>("#choose-role-custom-rate").value.toLong(),
 											document.select<HTMLInputElement>(".add-custom-rate-role .xp-rate")
-													.value.toDouble()
+													.valueOrPlaceholderIfEmpty("1.0").toDouble()
 									)
 							)
 						}
@@ -862,5 +862,12 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 				}
 			}
 		}
+	}
+
+	private fun HTMLInputElement.valueOrPlaceholderIfEmpty(newValue: String): String {
+		val value = this.value
+		if (value.isEmpty())
+			return newValue
+		return value
 	}
 }

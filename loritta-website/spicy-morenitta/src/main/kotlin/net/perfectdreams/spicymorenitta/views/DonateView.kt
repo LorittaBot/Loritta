@@ -42,13 +42,6 @@ object DonateView {
 						}
 					}),
 					DonationReward("A Sensação de ser Incrível", 0.99, true),
-					DonationReward("Nome no +contribuidores", 0.99, true, callback = { column ->
-						if (column >= 0.99) {
-							i("fas fa-check") {}
-						} else {
-							+"Você nem contribuiu!"
-						}
-					}),
 					DonationReward("Cargo exclusivo no Servidor de Suporte", 4.99, true),
 					DonationReward("Emblema exclusivo no +perfil", 4.99, true),
 
@@ -62,17 +55,6 @@ object DonateView {
 							+"Apenas leitura"
 						}
 					}),
-					DonationReward("Usar +volume em qualquer servidor que você tenha permissão de DJ", 19.99, false),
-					DonationReward("Ativar +volume em um servidor que você administra", 19.99, false/* , false, callback = { column ->
-                        when {
-                            column >= 99.99 -> + "Apenas cinco servidores"
-                            column >= 79.99 -> + "Apenas quatro servidores"
-                            column >= 59.99 -> + "Apenas três servidores"
-                            column >= 39.99 -> + "Apenas dois servidores"
-                            column >= 19.99 -> + "Apenas um servidor"
-                            else -> i("fas fa-times") {}
-                        }
-                    } */),
 					DonationReward("Número de Contadores de Membros", 19.99, false, callback = { column ->
 						if (column >= 19.99) {
 							+"3"
@@ -131,7 +113,6 @@ object DonateView {
 						}
 					}), */
 
-					DonationReward("Nome em negrito nos +contribuidores", 59.99, true),
 					DonationReward("Uma versão premium minha! ...ela não faz NADA, só serve para você ostentar!", 59.99, true),
 					DonationReward("Mais outro cargo exclusivo no servidor de suporte", 59.99, true),
 					DonationReward("Lori irá parar de perturbar os membros do seu servidor com pedidos de doação", 59.99, false),
