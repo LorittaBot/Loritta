@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.utils
 
-import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.common.cache.CacheBuilder
 import com.google.gson.JsonElement
@@ -9,9 +8,16 @@ import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.response.HttpResponse
+import io.ktor.client.response.readText
+import io.ktor.http.userAgent
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.withTimeout
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Emote
@@ -119,12 +125,14 @@ class LorittaShards {
 
 		return GlobalScope.async {
 			try {
-				val body = HttpRequest.get("https://${shard.getUrl()}$path")
-						.userAgent(loritta.lorittaCluster.getUserAgent())
-						.header("Authorization", loritta.lorittaInternalApiKey.name)
-						.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
-						.readTimeout(loritta.config.loritta.clusterReadTimeout)
-						.body()
+				val body = withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
+					val response = loritta.http.get<HttpResponse>("https://${shard.getUrl()}$path") {
+						header("Authorization", loritta.lorittaInternalApiKey.name)
+						userAgent(loritta.lorittaCluster.getUserAgent())
+					}
+
+					response.readText()
+				}
 
 				jsonParser.parse(
 						body
@@ -139,12 +147,14 @@ class LorittaShards {
 	fun queryCluster(cluster: GeneralConfig.LorittaClusterConfig, path: String): Deferred<JsonElement> {
 		return GlobalScope.async {
 			try {
-				val body = HttpRequest.get("https://${cluster.getUrl()}$path")
-						.userAgent(loritta.lorittaCluster.getUserAgent())
-						.header("Authorization", loritta.lorittaInternalApiKey.name)
-						.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
-						.readTimeout(loritta.config.loritta.clusterReadTimeout)
-						.body()
+				val body = withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
+					val response = loritta.http.get<HttpResponse>("https://${cluster.getUrl()}$path") {
+						header("Authorization", loritta.lorittaInternalApiKey.name)
+						userAgent(loritta.lorittaCluster.getUserAgent())
+					}
+
+					response.readText()
+				}
 
 				jsonParser.parse(
 						body
@@ -162,16 +172,17 @@ class LorittaShards {
 		return shards.map {
 			GlobalScope.async {
 				try {
-					val body = HttpRequest.get("https://${it.getUrl()}$path")
-							.userAgent(loritta.lorittaCluster.getUserAgent())
-							.header("Authorization", loritta.lorittaInternalApiKey.name)
-							.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
-							.readTimeout(loritta.config.loritta.clusterReadTimeout)
-							.body()
+					withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
+						val response = loritta.http.get<HttpResponse>("https://${it.getUrl()}$path") {
+							userAgent(it.getUserAgent())
+							header("Authorization", loritta.lorittaInternalApiKey.name)
+						}
 
-					jsonParser.parse(
-							body
-					)
+						val body = response.readText()
+						jsonParser.parse(
+								body
+						)
+					}
 				} catch (e: Exception) {
 					logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
 					throw PingCommand.ShardOfflineException(it.id, it.name)
@@ -204,21 +215,21 @@ class LorittaShards {
 		val results = shards.map {
 			GlobalScope.async {
 				try {
-					val body = HttpRequest.post("https://${it.getUrl()}/api/v1/loritta/user/search")
-							.userAgent(loritta.lorittaCluster.getUserAgent())
-							.header("Authorization", loritta.lorittaInternalApiKey.name)
-							.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
-							.readTimeout(loritta.config.loritta.clusterReadTimeout)
-							.send(
-									gson.toJson(
-											jsonObject("pattern" to pattern)
-									)
-							)
-							.body()
+					withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
+						val response = loritta.http.post<HttpResponse>("https://${it.getUrl()}/api/v1/loritta/user/search") {
+							header("Authorization", loritta.lorittaInternalApiKey.name)
+							userAgent(it.getUserAgent())
 
-					jsonParser.parse(
-							body
-					)
+							body = gson.toJson(
+									jsonObject("pattern" to pattern)
+							)
+						}
+
+						val body = response.readText()
+						jsonParser.parse(
+								body
+						)
+					}
 				} catch (e: Exception) {
 					logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
 					throw PingCommand.ShardOfflineException(it.id, it.name)
@@ -247,21 +258,21 @@ class LorittaShards {
 		val results = shards.map {
 			GlobalScope.async {
 				try {
-					val body = HttpRequest.post("https://${it.getUrl()}/api/v1/loritta/guild/search")
-							.userAgent(loritta.lorittaCluster.getUserAgent())
-							.header("Authorization", loritta.lorittaInternalApiKey.name)
-							.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
-							.readTimeout(loritta.config.loritta.clusterReadTimeout)
-							.send(
-									gson.toJson(
-											jsonObject("pattern" to pattern)
-									)
-							)
-							.body()
+					withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
+						val response = loritta.http.post<HttpResponse>("https://${it.getUrl()}/api/v1/loritta/guild/search") {
+							header("Authorization", loritta.lorittaInternalApiKey.name)
+							userAgent(it.getUserAgent())
 
-					jsonParser.parse(
-							body
-					)
+							body = gson.toJson(
+									jsonObject("pattern" to pattern)
+							)
+						}
+
+						val body = response.readText()
+						jsonParser.parse(
+								body
+						)
+					}
 				} catch (e: Exception) {
 					logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
 					throw PingCommand.ShardOfflineException(it.id, it.name)
@@ -305,12 +316,14 @@ class LorittaShards {
 		val clusterId = DiscordUtils.getLorittaClusterIdForShardId(shardId)
 		val url = DiscordUtils.getUrlForLorittaClusterId(clusterId)
 
-		val body = HttpRequest.get("https://$url/api/v1/loritta/guild/$id")
-				.userAgent(loritta.lorittaCluster.getUserAgent())
-				.header("Authorization", loritta.lorittaInternalApiKey.name)
-				.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
-				.readTimeout(loritta.config.loritta.clusterReadTimeout)
-				.body()
+		val body = withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
+			val response = loritta.http.get<HttpResponse>("https://$url/api/v1/loritta/guild/$id") {
+				header("Authorization", loritta.lorittaInternalApiKey.name)
+				userAgent(loritta.lorittaCluster.getUserAgent())
+			}
+
+			response.readText()
+		}
 
 		val json = jsonParser.parse(body).obj
 		if (!json.has("id"))
