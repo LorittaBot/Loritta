@@ -14,6 +14,7 @@ import com.mrpowergamerbr.loritta.utils.config.GeneralInstanceConfig
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import io.ktor.client.HttpClient
+import io.ktor.client.engine.apache.Apache
 import net.perfectdreams.loritta.api.commands.LorittaCommandManager
 import net.perfectdreams.loritta.utils.config.FanArt
 import net.perfectdreams.loritta.utils.config.FanArtArtist
@@ -32,8 +33,14 @@ abstract class LorittaBot(var config: GeneralConfig, var instanceConfig: General
 	var locales = mapOf<String, BaseLocale>()
 	var legacyLocales = mapOf<String, LegacyBaseLocale>()
 	var pluginManager = PluginManager(this)
-	val http = HttpClient {
+	val http = HttpClient(Apache) {
 		this.expectSuccess = false
+
+		engine {
+			this.socketTimeout = 25_000
+			this.connectTimeout = 25_000
+			this.connectionRequestTimeout = 25_000
+		}
 	}
 	var fanArtArtists = listOf<FanArtArtist>()
 	val fanArts: List<FanArt>
