@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.remove
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class LorittaBanCommand : AbstractCommand("lorittaban", category = CommandCategory.MAGIC, onlyOwner = true) {
@@ -17,10 +18,17 @@ class LorittaBanCommand : AbstractCommand("lorittaban", category = CommandCatego
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.size >= 2) {
-			val monster = context.args[0].toLowerCase() // ID
-			context.args[0] = ""
-			val reason = context.args.joinToString(" ")
-			val profile = LorittaLauncher.loritta.getLorittaProfile(monster)
+			val monster = context.getUserAt(0) ?: run {
+				context.reply(
+						LoriReply(
+								"Usuário inváldio!",
+								Constants.ERROR
+						)
+				)
+				return
+			}
+			
+			val profile = LorittaLauncher.loritta.getLorittaProfile(monster.idLong)
 
 			if (profile == null) {
 				context.reply(
@@ -31,6 +39,8 @@ class LorittaBanCommand : AbstractCommand("lorittaban", category = CommandCatego
 				)
 				return
 			}
+
+			val reason = context.rawArgs.toMutableList().apply { this.removeAt(0) }.joinToString(" ")
 
 			transaction(Databases.loritta) {
 				profile.isBanned = true

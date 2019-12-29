@@ -2,10 +2,10 @@ package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class EscolherCommand : AbstractCommand("choose", listOf("escolher"), category = CommandCategory.MISC) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -19,7 +19,7 @@ class EscolherCommand : AbstractCommand("choose", listOf("escolher"), category =
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var joined = context.args.joinToString(separator = " ") // Vamos juntar tudo em uma string
-			var split = joined.split(",") // E vamos separar!
+			var split = joined.split(",").map { it.trim() } // E vamos separar!
 
 			// Hora de escolher algo aleatório!
 			var chosen = split[Loritta.RANDOM.nextInt(split.size)]
