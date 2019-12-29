@@ -1,9 +1,17 @@
 package net.perfectdreams.loritta.plugin.christmas2019.listeners
 
+import com.github.salomonbrys.kotson.jsonObject
 import com.google.common.cache.CacheBuilder
+import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.loritta
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.response.HttpResponse
+import io.ktor.http.userAgent
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -14,6 +22,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.dao.Giveaway
 import net.perfectdreams.loritta.plugin.christmas2019.Christmas2019
 import net.perfectdreams.loritta.plugin.christmas2019.Christmas2019Config
+import net.perfectdreams.loritta.plugin.christmas2019.modules.DropChristmasStuffModule
 import net.perfectdreams.loritta.tables.Christmas2019Players
 import net.perfectdreams.loritta.tables.CollectedChristmas2019Points
 import net.perfectdreams.loritta.tables.Giveaways
@@ -36,8 +45,12 @@ class GetChristmasStuffListener(val config: Christmas2019Config) : ListenerAdapt
 		if (event.user.isBot)
 			return
 
-		if (event.reactionEmote.idLong != 653402818199158805L)
-			return
+		if (event.reactionEmote.isEmoji) {
+			if (event.reactionEmote.name !in Christmas2019.emojis)
+				return
+		} else
+			if ("${event.reactionEmote.name}:${event.reactionEmote.idLong}" !in Christmas2019.emojis)
+				return
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val lorittaProfile = loritta.getLorittaProfile(event.user.idLong) ?: return@launch
@@ -66,6 +79,26 @@ class GetChristmasStuffListener(val config: Christmas2019Config) : ListenerAdapt
 				return@launch
 
 			val message = event.channel.retrieveMessageById(event.messageIdLong).await()
+
+			val reactedAt = DropChristmasStuffModule.dropInMessageAt[event.messageIdLong]
+			if (reactedAt != null) {
+				val diff = System.currentTimeMillis() - reactedAt
+
+				logger.info { "User (${event.member.idLong}) took ${diff}ms to react in ${event.messageIdLong} @ ${event.guild}" }
+				if (1_500 >= diff) {
+					logger.info { "Looks like ${event.member.idLong} is using userbots to react on the messages! Took ${diff}ms to react in ${event.messageIdLong} @ ${event.guild}" }
+					loritta.http.post<HttpResponse>("https://loritta-cluster3.loritta.website/api/v1/parallax/channels/660794036952760340/messages") {
+						userAgent(loritta.lorittaCluster.getUserAgent())
+						header("Authorization", loritta.lorittaInternalApiKey.name)
+
+						body = gson.toJson(
+								jsonObject(
+										"content" to "Eu acho que <@${event.member.idLong}> (${event.member.idLong}) está usando userbots para reagir nas mensagens! Demorou ${diff}ms para reagir em ${event.messageIdLong} @ ${event.guild}"
+								)
+						)
+					}
+				}
+			}
 
 			if (System.currentTimeMillis() - 900_000 >= message.timeCreated.toInstant().toEpochMilli()) {
 				try {
@@ -118,7 +151,7 @@ class GetChristmasStuffListener(val config: Christmas2019Config) : ListenerAdapt
 
 						val dreams = howMuchDidTheUserCollect % 125
 
-						if (dreams == 0 && 1250 >= howMuchDidTheUserCollect) {
+						if (dreams == 0 && 2500 > howMuchDidTheUserCollect) {
 							transaction(Databases.loritta) {
 								lorittaProfile.money += 10_000
 							}
@@ -146,6 +179,35 @@ class GetChristmasStuffListener(val config: Christmas2019Config) : ListenerAdapt
 
 							try {
 								event.user.openPrivateChannel().await().sendMessage("Você coletou **$howMuchDidTheUserCollect presentes**, como recompensa você ganhou um design exclusivo para o seu `+perfil`! Ative ele em <https://loritta.website/user/@me/dashboard/profiles>\n\nAgora me dê esses presentes para eu poder colocar de baixo da árvore de Natal! ${Emotes.LORI_TEMMIE}\n\nFeliz Natal!")
+										.await()
+							} catch (e: Exception) {
+							}
+						}
+
+						if (howMuchDidTheUserCollect == 2500) {
+							transaction(Databases.loritta) {
+								val settings = lorittaProfile.settings
+								settings.boughtProfiles = settings.boughtProfiles.toMutableList().apply { this.add("LorittaChristmas2019ProfileCreator") }.toTypedArray()
+							}
+
+							try {
+								event.user.openPrivateChannel().await().sendMessage("Você coletou **$howMuchDidTheUserCollect presentes**, como recompensa você ganhou um design exclusivo para o seu `+perfil`! Ative ele em <https://loritta.website/user/@me/dashboard/profiles>\n\nAgora me dê esses presentes para eu poder colocar de baixo da árvore de Natal! ${Emotes.LORI_TEMMIE}\n\nFeliz Natal!")
+										.await()
+							} catch (e: Exception) {
+							}
+						}
+
+						if (howMuchDidTheUserCollect == 3000) {
+							transaction(Databases.loritta) {
+								DonationKey.new {
+									this.userId = event.member.idLong
+									this.expiresAt = System.currentTimeMillis() + Constants.ONE_MONTH_IN_MILLISECONDS
+									this.value = 199.99
+								}
+							}
+
+							try {
+								event.user.openPrivateChannel().await().sendMessage("Você coletou **$howMuchDidTheUserCollect presentes**, como recompensa você ganhou uma key de doador que vale R$ 199,99 para o seu servidor! Ative multiplicadores de sonhos, badges e muito mais no seu servidor! Ative em <https://loritta.website/dashboard> e veja todas as vantagens em <https://loritta.website/donate>\n\nAgora me dê esses presentes para eu poder colocar de baixo da árvore de Natal! ${Emotes.LORI_TEMMIE}\n\nFeliz Natal!")
 										.await()
 							} catch (e: Exception) {
 							}

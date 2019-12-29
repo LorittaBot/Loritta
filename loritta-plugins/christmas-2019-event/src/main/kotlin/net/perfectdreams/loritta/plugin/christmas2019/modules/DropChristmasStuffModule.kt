@@ -9,11 +9,14 @@ import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.chance
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.plugin.christmas2019.Christmas2019
 import net.perfectdreams.loritta.plugin.christmas2019.Christmas2019Config
 import net.perfectdreams.loritta.tables.Christmas2019Players
+import net.perfectdreams.loritta.tables.CollectedChristmas2019Points
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -23,6 +26,11 @@ class DropChristmasStuffModule(val config: Christmas2019Config) : MessageReceive
             .asMap()
     val lastDropsByUserAt = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build<Long, Long>()
             .asMap()
+    companion object {
+        val dropInMessageAt = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build<Long, Long>()
+                .asMap()
+        private val logger = KotlinLogging.logger {}
+    }
 
     override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
         return event.guild?.selfMember?.hasPermission(Permission.MESSAGE_ADD_REACTION) == true && Calendar.getInstance().get(Calendar.MONTH) == 11
@@ -44,9 +52,9 @@ class DropChristmasStuffModule(val config: Christmas2019Config) : MessageReceive
 
         val since = 360_000 - Math.max(360_000 - lastDropDiff, 0)
 
-        val chanceBoost = (6.0 * since) / 360_000
+        val chanceBoost = (4.0 * since) / 360_000
 
-        val ceil = 3.0
+        val ceil = 4.0
 
         chance = Math.min(chance + chanceBoost, ceil)
 
@@ -65,12 +73,25 @@ class DropChristmasStuffModule(val config: Christmas2019Config) : MessageReceive
                 }.count() != 0
             }
 
+            val collectedAll = transaction(Databases.loritta) {
+                CollectedChristmas2019Points.selectAll().count()
+            }
+
             val getTheCandy = isParticipating && Christmas2019.isEventActive()
+
+            val emoteToBeUsed = try {
+                Christmas2019.emojis[(collectedAll / 50_000) % Christmas2019.emojis.size]
+            } catch (e: Exception) {
+                logger.warn(e) { "Invalid Christmas emote! ${(collectedAll / 50_000) % Christmas2019.emojis.size}" }
+                return false
+            }
 
             if (getTheCandy) {
                 lastDropsAt[id] = System.currentTimeMillis()
                 lastDropsByUserAt[event.author.idLong] = System.currentTimeMillis()
-                event.message.addReaction("lori_gift:653402818199158805").queue()
+                event.message.addReaction(emoteToBeUsed).queue {
+                    dropInMessageAt[event.message.idLong] = System.currentTimeMillis()
+                }
             }
         }
 

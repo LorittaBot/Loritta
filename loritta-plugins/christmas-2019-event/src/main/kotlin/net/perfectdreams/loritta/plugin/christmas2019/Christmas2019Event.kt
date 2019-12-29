@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
 import net.perfectdreams.loritta.plugin.christmas2019.commands.Christmas2019Command
 import net.perfectdreams.loritta.plugin.christmas2019.listeners.GetChristmasStuffListener
 import net.perfectdreams.loritta.plugin.christmas2019.modules.DropChristmasStuffModule
+import net.perfectdreams.loritta.plugin.christmas2019.profile.badges.ChristmasBadge
 import net.perfectdreams.loritta.tables.Christmas2019Players
 import net.perfectdreams.loritta.tables.CollectedChristmas2019Points
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -24,6 +25,8 @@ class Christmas2019Event : DiscordPlugin() {
 		registerMessageReceivedModules(
 				DropChristmasStuffModule(config)
 		)
+
+		registerBadge(ChristmasBadge())
 
 		transaction(Databases.loritta) {
 			SchemaUtils.createMissingTablesAndColumns(

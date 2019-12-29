@@ -76,10 +76,9 @@ class Christmas2019Command : LorittaDiscordCommand(arrayOf("natal"), CommandCate
 			|Você percebeu como as pessoas deixam cair coisas natalinas no chão? Então, pegue os presentes (<:lori_gift:653402818199158805>) das mensagens para mim reagindo neles!
 			|
 			|**As suas recompensas:**
-			|• **A cada 125 presentes:** 10k sonhos
+			|• **A cada 125 presentes:** 10k sonhos (Até 2000 presentes)
 			|• **400 presentes:** Um emblema exclusivo no seu `+perfil`
-			|• **777 presentes:** Um design para o `+perfil` exclusivo de Natal, que você pode ativar em <https://loritta.website/user/@me/dashboard/profiles>
-			|
+			|• **777 presentes e 2500 presentes:** Um design para o `+perfil` exclusivo de Natal, que você pode ativar em <https://loritta.website/user/@me/dashboard/profiles>
 			|Achou legal? Use `natal participar` para entrar na brincadeira e me ajudar a fazer uma festa de Natal incrível para a Lori! ${Emotes.LORI_TEMMIE}
 		""".trimMargin())
 		}
