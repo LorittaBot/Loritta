@@ -39,9 +39,7 @@ class BomDiaECiaTopCommand : LorittaCommand(arrayOf("bomdiaecia top", "bd&c top"
 
     @Subcommand
     suspend fun run(context: DiscordCommandContext, locale: BaseLocale) {
-        val typeName = context.args.getOrNull(0)
-
-        var page = context.args.getOrNull(1)?.toIntOrNull()
+        var page = context.args.getOrNull(0)?.toIntOrNull()
 
         if (page != null)
             page -= 1
