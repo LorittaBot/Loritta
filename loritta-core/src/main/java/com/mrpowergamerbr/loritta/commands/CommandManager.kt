@@ -146,7 +146,6 @@ class CommandManager {
 		commandMap.add(DicioCommand())
 		commandMap.add(TempoCommand())
 		commandMap.add(PackageInfoCommand())
-		commandMap.add(IsUpCommand())
 		commandMap.add(KnowYourMemeCommand())
 		commandMap.add(AnagramaCommand())
 		commandMap.add(CalculadoraCommand())
