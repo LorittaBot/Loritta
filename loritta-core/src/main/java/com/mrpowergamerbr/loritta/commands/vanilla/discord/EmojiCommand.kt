@@ -64,13 +64,7 @@ class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD
 			val isUnicodeEmoji = Constants.EMOJI_PATTERN.matcher(arg0).find()
 
 			if (isUnicodeEmoji) {
-				val codePoints = mutableListOf<String>()
-				for (idx in 0 until arg0.length step 2) {
-					var codePoint = LorittaUtils.toUnicode(arg0.codePointAt(idx)).substring(2)
-					codePoints += codePoint
-				}
-				// Vamos usar codepoints porque emojis
-				val value = codePoints.joinToString(separator = "-")
+				val value = ImageUtils.getTwitterEmojiUrlId(arg0)
 				try {
 					if (HttpRequest.get("https://twemoji.maxcdn.com/2/72x72/$value.png").code() != 200) {
 						context.sendMessage(Constants.ERROR + " **|** ${context.getAsMention(true)}${context.legacyLocale.get("EMOJI_ERROR_WHILE_DOWNLOADING")}")

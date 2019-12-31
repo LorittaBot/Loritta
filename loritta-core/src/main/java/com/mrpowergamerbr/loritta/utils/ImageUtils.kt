@@ -7,6 +7,7 @@ import java.awt.geom.RoundRectangle2D
 import java.awt.image.BufferedImage
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.streams.toList
 
 fun Graphics.drawText(text: String, x: Int, y: Int, maxX: Int? = null) {
 	var currentX = x // X atual
@@ -62,6 +63,7 @@ fun Graphics.enableFontAntiAliasing(): Graphics2D {
 object ImageUtils {
 	val emotes = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).build<String, Optional<BufferedImage>>().asMap()
 
+	fun getTwitterEmojiUrlId(emoji: String) = emoji.codePoints().toList().joinToString(separator = "-") { LorittaUtils.toUnicode(it).substring(2) }
 
 	fun getTwitterEmoji(text: String, index: Int): BufferedImage? {
 		try {

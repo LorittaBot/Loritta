@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
+import kotlin.streams.toList
 
 class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory.DISCORD) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -61,11 +62,7 @@ class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory
 			val isUnicodeEmoji = Constants.EMOJI_PATTERN.matcher(arg0).find()
 
 			if (isUnicodeEmoji) {
-				val codePoints = mutableListOf<String>()
-				for (idx in 0 until arg0.length step 2) {
-					val codePoint = LorittaUtils.toUnicode(arg0.codePointAt(idx)).substring(2)
-					codePoints += codePoint
-				}
+				val codePoints = arg0.codePoints().toList().map { LorittaUtils.toUnicode(it).substring(2) }
 
 				val value = codePoints.joinToString(separator = "-")
 				val emojiUrl = "https://twemoji.maxcdn.com/2/72x72/$value.png"
