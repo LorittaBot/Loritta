@@ -52,9 +52,9 @@ class DropChristmasStuffModule(val config: Christmas2019Config) : MessageReceive
 
         val since = 360_000 - Math.max(360_000 - lastDropDiff, 0)
 
-        val chanceBoost = (4.0 * since) / 360_000
+        val chanceBoost = (8.0 * since) / 360_000
 
-        val ceil = 4.0
+        val ceil = 8.0
 
         chance = Math.min(chance + chanceBoost, ceil)
 
@@ -80,7 +80,21 @@ class DropChristmasStuffModule(val config: Christmas2019Config) : MessageReceive
             val getTheCandy = isParticipating && Christmas2019.isEventActive()
 
             val emoteToBeUsed = try {
-                Christmas2019.emojis[(collectedAll / 50_000) % Christmas2019.emojis.size]
+                val day = Calendar.getInstance()[Calendar.DAY_OF_MONTH]
+
+                val magicChance = if (day == 29) {
+                    5.0
+                } else if (day == 30) {
+                    7.5
+                } else {
+                    10.0
+                }
+
+                if (chance(magicChance)) {
+                    "\uD83C\uDF20"
+                } else {
+                    Christmas2019.emojis[(collectedAll / 50_000) % Christmas2019.emojis.size]
+                }
             } catch (e: Exception) {
                 logger.warn(e) { "Invalid Christmas emote! ${(collectedAll / 50_000) % Christmas2019.emojis.size}" }
                 return false

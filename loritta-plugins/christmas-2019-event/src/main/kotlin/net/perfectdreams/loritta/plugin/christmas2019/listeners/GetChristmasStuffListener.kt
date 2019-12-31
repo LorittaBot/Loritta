@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.plugin.christmas2019.listeners
 
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.common.cache.CacheBuilder
+import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -27,7 +28,6 @@ import net.perfectdreams.loritta.tables.Christmas2019Players
 import net.perfectdreams.loritta.tables.CollectedChristmas2019Points
 import net.perfectdreams.loritta.tables.Giveaways
 import net.perfectdreams.loritta.utils.Emotes
-import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -41,12 +41,34 @@ class GetChristmasStuffListener(val config: Christmas2019Config) : ListenerAdapt
 				.asMap()
 	}
 
+	val nicePhrases = listOf(
+			"seja um ano maravilhoso e que você consiga realizar os seus sonhos",
+			"seja um ano incrível e que você seja uma pessoa mais feliz",
+			"seja um ano incrível com novidades que jamais imaginamos",
+			"seja um ano extraordinário",
+			"seja um ano com coisas que jamais vimos antes",
+			"seja um ano top do top",
+			"seja um ano topperson"
+	)
+	val randomDrawings = listOf(
+			"https://cdn.discordapp.com/attachments/652532280090296350/658376094671699970/690_Sem_Titulo_20191220151740.png",
+			"https://cdn.discordapp.com/attachments/652532280090296350/658375695314976807/57_Sem_Titulo_20191220025103.png",
+			"https://cdn.discordapp.com/attachments/652532280090296350/658375103326846980/loei_natal.png",
+			"https://cdn.discordapp.com/attachments/652532280090296350/658374765119143936/22_Sem_Titulo_20191221002818.png",
+			"https://cdn.discordapp.com/attachments/652532280090296350/658374569345679380/hohoho.png",
+			"https://cdn.discordapp.com/attachments/652532280090296350/658374347349819452/lori_concursoremaster.png",
+			"https://cdn.discordapp.com/attachments/652532280090296350/658374161885822996/Loritta_natal_1.png",
+			"https://cdn.discordapp.com/attachments/652532280090296350/658374064397746176/69_Sem_Titulo_20191214180244.png",
+			"https://cdn.discordapp.com/attachments/652532280090296350/658373910383034369/1576829370124.png",
+			"https://cdn.discordapp.com/attachments/652532280090296350/658373754250067977/lorinatal_2.gif"
+	)
+
 	override fun onGuildMessageReactionAdd(event: GuildMessageReactionAddEvent) {
 		if (event.user.isBot)
 			return
 
 		if (event.reactionEmote.isEmoji) {
-			if (event.reactionEmote.name !in Christmas2019.emojis)
+			if (event.reactionEmote.name !in Christmas2019.emojis && event.reactionEmote.name != "\uD83C\uDF20")
 				return
 		} else
 			if ("${event.reactionEmote.name}:${event.reactionEmote.idLong}" !in Christmas2019.emojis)
@@ -111,44 +133,49 @@ class GetChristmasStuffListener(val config: Christmas2019Config) : ListenerAdapt
 			val mutex = mutexes.getOrPut(event.user.idLong, { Mutex() })
 
 			mutex.withLock {
-				val count = 1
+				val count = if (event.reactionEmote.name == "\uD83C\uDF20")
+					RANDOM.nextInt(5, 51)
+				else
+					1
 
-				for (it in 0 until count) {
-					val collectedCandies = if (it == 0) {
-						transaction(Databases.loritta) {
-							CollectedChristmas2019Points.select {
-								(CollectedChristmas2019Points.user eq lorittaProfile.id.value) and
-										(CollectedChristmas2019Points.guildId eq event.guild.idLong) and
-										(CollectedChristmas2019Points.channelId eq event.channel.idLong) and
-										(CollectedChristmas2019Points.messageId eq event.messageIdLong)
-							}.toMutableList()
+				val collectedPointsInMessage = transaction(Databases.loritta) {
+					CollectedChristmas2019Points.select {
+						(CollectedChristmas2019Points.user eq lorittaProfile.id.value) and
+								(CollectedChristmas2019Points.guildId eq event.guild.idLong) and
+								(CollectedChristmas2019Points.channelId eq event.channel.idLong) and
+								(CollectedChristmas2019Points.messageId eq event.messageIdLong)
+					}.toMutableList()
+				}
+
+				if (collectedPointsInMessage.isEmpty()) {
+					if (count != 1) {
+						event.user.openPrivateChannel().queue {
+							it.sendMessage("A estrela de ano novo te deixou **$count presentes**! O Natal pode ter acabado, mas os presentes não param!\n\nFeliz Ano Novo! Eu espero que 2020 ${nicePhrases.random()} ^-^\n\n${randomDrawings.random()}")
+									.queue()
 						}
-					} else {
-						listOf<ResultRow>()
 					}
 
-					if (collectedCandies.isEmpty()) {
-						if (it == 0) {
-							if (count != 1)
-								event.user.openPrivateChannel().await().sendMessage("Você vasculhou a ábobora e encontrou **$count doces** dentro dela! Delícioso, e o melhor de tudo? Todos esses doces vão ficar para mim quando acabar o Halloween! ${Emotes.LORI_YAY}\n\nObrigada por me ajudar a coletar doces no Halloween ;w;")
-										.queue()
-						}
+					val howMuchDidTheUserCollectBeforeAddingPoints = transaction(Databases.loritta) {
+						CollectedChristmas2019Points.select {
+							(CollectedChristmas2019Points.user eq lorittaProfile.id.value)
+						}.count()
+					}
 
-						transaction(Databases.loritta) {
-							CollectedChristmas2019Points.insert {
-								it[user] = lorittaProfile.id
-								it[guildId] = event.guild.idLong
-								it[channelId] = event.channel.idLong
-								it[messageId] = event.messageIdLong
+					transaction(Databases.loritta) {
+						repeat(count) {
+							transaction(Databases.loritta) {
+								CollectedChristmas2019Points.insert {
+									it[user] = lorittaProfile.id
+									it[guildId] = event.guild.idLong
+									it[channelId] = event.channel.idLong
+									it[messageId] = event.messageIdLong
+								}
 							}
 						}
+					}
 
-						val howMuchDidTheUserCollect = transaction(Databases.loritta) {
-							CollectedChristmas2019Points.select {
-								(CollectedChristmas2019Points.user eq lorittaProfile.id.value)
-							}.count()
-						}
-
+					repeat(count) {
+						val howMuchDidTheUserCollect = howMuchDidTheUserCollectBeforeAddingPoints + (it + 1)
 						val dreams = howMuchDidTheUserCollect % 125
 
 						if (dreams == 0 && 2500 > howMuchDidTheUserCollect) {
@@ -212,8 +239,6 @@ class GetChristmasStuffListener(val config: Christmas2019Config) : ListenerAdapt
 							} catch (e: Exception) {
 							}
 						}
-					} else {
-						break
 					}
 				}
 			}
