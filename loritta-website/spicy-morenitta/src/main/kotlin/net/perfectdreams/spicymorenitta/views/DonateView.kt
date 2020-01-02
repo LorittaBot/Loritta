@@ -64,7 +64,7 @@ object DonateView {
 					}),
 					DonationReward("Badge EXCLUSIVA para os membros do seu servidor", 19.99, false),
 
-					DonationReward("Lori irá parar de te perturbar para doar ao usar um comando", 39.99, false),
+					DonationReward("Lori irá parar de te perturbar para doar ao usar um comando", 19.99, false),
 					DonationReward("Tempo reduzido entre comandos", 39.99, false),
 					DonationReward("Não pagar taxas no +pay", 39.99, false),
 					DonationReward("Pode enviar convites no canal de divulgação no servidor de suporte da Lori", 39.99, true),
