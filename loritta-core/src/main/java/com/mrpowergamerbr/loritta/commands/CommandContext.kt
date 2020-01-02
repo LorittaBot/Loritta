@@ -396,15 +396,17 @@ class CommandContext(val config: MongoServerConfig, var lorittaUser: LorittaUser
 	 * @return           the image object or null, if nothing was found
 	 * @see              BufferedImage
 	 */
-	suspend fun getImageAt(argument: Int, search: Int = 25, avatarSize: Int = 2048): BufferedImage? {
+	suspend fun getImageAt(argument: Int, search: Int = 25, avatarSize: Int = 2048, createTextAsImageIfNotFound: Boolean = true): BufferedImage? {
 		var toBeDownloaded = getImageUrlAt(argument, 0, avatarSize)
 
 		if (toBeDownloaded == null) {
-			if (rawArgs.isNotEmpty()) {
+			if (rawArgs.isNotEmpty() && createTextAsImageIfNotFound) {
 				return ImageUtils.createTextAsImage(256, 256, rawArgs.joinToString(" "))
 			}
 
-			toBeDownloaded = getImageUrlAt(argument, search, avatarSize)
+			if (search != 0) {
+				toBeDownloaded = getImageUrlAt(argument, search, avatarSize)
+			}
 		}
 
 		if (toBeDownloaded == null)

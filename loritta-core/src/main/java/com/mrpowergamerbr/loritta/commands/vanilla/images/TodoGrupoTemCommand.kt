@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.commands.vanilla.images
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
@@ -10,7 +9,10 @@ import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.User
-import java.awt.*
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import java.awt.Font
+import java.awt.Image
+import java.awt.Rectangle
 import java.awt.image.BufferedImage
 import java.io.File
 import java.util.*
@@ -37,7 +39,7 @@ class TodoGrupoTemCommand : AbstractCommand("everygrouphas", listOf("todogrupote
 		users.addAll(context.message.mentionedUsers)
 
 		while (6 > users.size) {
-			var member = if (members.isEmpty()) {
+			val member = if (members.isEmpty()) {
 				// omg
 				context.guild.members[Loritta.RANDOM.nextInt(context.guild.members.size)]
 			} else {
