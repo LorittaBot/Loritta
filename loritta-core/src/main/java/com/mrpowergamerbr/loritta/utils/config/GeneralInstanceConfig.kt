@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 class GeneralInstanceConfig @JsonCreator constructor(
+		val machineExternalIp: String,
 		val loritta: LorittaInstanceConfig
 ) {
 	class LorittaInstanceConfig @JsonCreator constructor(

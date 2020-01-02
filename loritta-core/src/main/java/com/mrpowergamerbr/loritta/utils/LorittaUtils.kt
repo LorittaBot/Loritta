@@ -10,9 +10,7 @@ import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.perfectdreams.loritta.utils.SimpleImageInfo
 import net.perfectdreams.loritta.utils.readAllBytes
-import org.apache.commons.io.IOUtils
 import java.awt.image.BufferedImage
-import java.io.IOException
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.MalformedURLException

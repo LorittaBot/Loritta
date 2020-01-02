@@ -10,7 +10,7 @@ object Databases {
 	val hikariConfigLoritta by lazy {
 		val loritta = com.mrpowergamerbr.loritta.utils.loritta
 		val config = HikariConfig()
-		config.jdbcUrl = "jdbc:postgresql://${NetAddressUtils.getWithPortIfMissing(loritta.config.postgreSql.address, 5432)}/${loritta.config.postgreSql.databaseName}"
+		config.jdbcUrl = "jdbc:postgresql://${NetAddressUtils.fixIp(NetAddressUtils.getWithPortIfMissing(loritta.config.postgreSql.address, 5432))}/${loritta.config.postgreSql.databaseName}"
 		config.username = loritta.config.postgreSql.username
 		if (loritta.config.postgreSql.password.isNotEmpty())
 			config.password = loritta.config.postgreSql.password

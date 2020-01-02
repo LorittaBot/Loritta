@@ -10,6 +10,7 @@ import io.ktor.http.userAgent
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.utils.SessionController
 import net.dv8tion.jda.api.utils.SessionControllerAdapter
+import net.perfectdreams.loritta.utils.NetAddressUtils
 import java.util.concurrent.TimeUnit
 
 /**
@@ -75,7 +76,7 @@ class LoriMasterShardControllerSessionControllerAdapter : SessionControllerAdapt
 				fun setLoginPoolLockToShardController(): ControllerResponseType {
 					return runBlocking {
 						try {
-							val response = loritta.http.put<HttpResponse>("${loritta.discordConfig.shardController.url}/api/v1/shard/${node.shardInfo.shardId}") {
+							val response = loritta.http.put<HttpResponse>("http://${NetAddressUtils.fixIp(loritta.discordConfig.shardController.url)}/api/v1/shard/${node.shardInfo.shardId}") {
 								userAgent(loritta.lorittaCluster.getUserAgent())
 							}
 
@@ -97,7 +98,7 @@ class LoriMasterShardControllerSessionControllerAdapter : SessionControllerAdapt
 				fun removeLoginPoolLockFromShardController() {
 					runBlocking {
 						try {
-							loritta.http.delete<HttpResponse>("${loritta.discordConfig.shardController.url}/api/v1/shard/${node.shardInfo.shardId}") {
+							loritta.http.delete<HttpResponse>("http://${NetAddressUtils.fixIp(loritta.discordConfig.shardController.url)}/api/v1/shard/${node.shardInfo.shardId}") {
 								userAgent(loritta.lorittaCluster.getUserAgent())
 							}
 						} catch (e: Exception) {

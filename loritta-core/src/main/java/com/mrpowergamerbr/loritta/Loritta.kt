@@ -40,7 +40,6 @@ import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.requests.RestAction
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.perfectdreams.loritta.api.platform.LorittaBot
@@ -61,10 +60,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.pojo.PojoCodecProvider
-import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -432,7 +429,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 				.connectionsPerHost(config.mongoDb.maxConnectionsPerHost)
 				.build()
 
-		mongo = MongoClient(NetAddressUtils.getWithPortIfMissing(config.mongoDb.address, 27017), options) // Hora de iniciar o MongoClient
+		mongo = MongoClient(NetAddressUtils.fixIp(NetAddressUtils.getWithPortIfMissing(config.mongoDb.address, 27017)), options) // Hora de iniciar o MongoClient
 
 		val db = mongo.getDatabase(config.mongoDb.databaseName)
 
