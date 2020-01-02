@@ -20,17 +20,21 @@ import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
-import net.perfectdreams.loritta.commands.*
+import net.perfectdreams.loritta.commands.BirthdayCommand
+import net.perfectdreams.loritta.commands.DocesCommand
+import net.perfectdreams.loritta.commands.LoriToolsQuirkyStuffCommand
+import net.perfectdreams.loritta.commands.SouTopDoadorCommand
 import net.perfectdreams.loritta.dao.Payment
-import net.perfectdreams.loritta.endpoints.Christmas2019Endpoints
 import net.perfectdreams.loritta.listeners.*
 import net.perfectdreams.loritta.modules.*
 import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
 import net.perfectdreams.loritta.profile.badges.CanecaBadge
 import net.perfectdreams.loritta.profile.badges.HalloweenBadge
-import net.perfectdreams.loritta.tables.*
+import net.perfectdreams.loritta.tables.BoostedCandyChannels
+import net.perfectdreams.loritta.tables.CollectedCandies
+import net.perfectdreams.loritta.tables.Halloween2019Players
+import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.FeatureFlags
 import net.perfectdreams.loritta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.sql.*
@@ -194,27 +198,11 @@ class QuirkyStuff : DiscordPlugin() {
         registerBadge(HalloweenBadge())
         registerBadge(CanecaBadge(config))
 
-        // ===[ NATAL 2019 ]===
-        if (FeatureFlags.isEnabled("christmas-2019")) {
-            registerCommand(Christmas2019Command())
-            routes.add(Christmas2019Endpoints())
-
-            registerEventListeners(
-                    GetChristmasStuffListener(config)
-            )
-
-            registerMessageReceivedModules(
-                    DropChristmasStuffModule(config)
-            )
-        }
-
         transaction(Databases.loritta) {
             SchemaUtils.createMissingTablesAndColumns(
                     Halloween2019Players,
                     CollectedCandies,
-                    BoostedCandyChannels,
-                    Christmas2019Players,
-                    CollectedChristmas2019Points
+                    BoostedCandyChannels
             )
         }
 
