@@ -199,8 +199,6 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		val member = mutualGuilds.firstOrNull()?.getMember(user)
 		val badges = getUserBadges(user, userProfile, mutualGuildsInAllClusters)
 
-		val file = File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + userProfile.userId + ".png")
-
 		var aboutMe: String? = null
 
 		if (userProfile.userId == loritta.discordConfig.discord.clientId.toLong()) {
@@ -219,13 +217,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			aboutMe = "A Loritta é a minha amiga! Sabia que você pode alterar este texto usando \"${context.config.commandPrefix}sobremim\"? :3"
 		}
 
-		val background = when {
-			file.exists() -> ImageIO.read(File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + userProfile.userId + ".png")) // Background padrão
-			else -> {
-				// Background padrão
-				ImageIO.read(File(Loritta.ASSETS + "default_background.png"))
-			}
-		}
+		val background = context.lorittaUser.profile.getProfileBackground()
 
 		val availableDesigns = if (loritta.config.isOwner(context.userHandle.idLong)) {
 			loritta.profileDesignManager.designs

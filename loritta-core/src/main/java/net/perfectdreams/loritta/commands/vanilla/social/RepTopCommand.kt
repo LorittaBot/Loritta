@@ -138,10 +138,7 @@ class RepTopCommand : LorittaCommand(arrayOf("rep top", "reputation top", "reput
             val member = lorittaShards.retrieveUserById(userId)
 
             if (member != null) {
-                val file = java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/$userId.png")
-                val imageFile = if (file.exists()) file else java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/default_background.png")
-
-                val rankBackground = ImageIO.read(imageFile)
+                val rankBackground = context.lorittaUser.profile.getProfileBackground()
                 graphics.drawImage(rankBackground.getScaledInstance(400, 300, BufferedImage.SCALE_SMOOTH)
                         .toBufferedImage()
                         .getSubimage(0, idx * 52, 400, 53), 0, currentY, null)

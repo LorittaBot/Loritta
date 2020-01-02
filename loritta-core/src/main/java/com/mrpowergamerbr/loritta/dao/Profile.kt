@@ -3,12 +3,20 @@ package com.mrpowergamerbr.loritta.dao
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Dailies
 import com.mrpowergamerbr.loritta.tables.Profiles
+import com.mrpowergamerbr.loritta.utils.loritta
+import io.ktor.client.request.get
+import io.ktor.client.response.HttpResponse
+import io.ktor.client.response.readBytes
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.userAgent
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.awt.image.BufferedImage
 import java.util.*
+import javax.imageio.ImageIO
 
 class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 	companion object : EntityClass<Long, Profile>(Profiles)
@@ -67,6 +75,24 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 	fun getExpToAdvanceFrom(lvl: Int): Int {
 		return lvl * 1000
 	}
+
+	suspend fun getProfileBackground(): BufferedImage {
+		val response = loritta.http.get<HttpResponse>("https://loritta.website/assets/img/backgrounds/${id.value}.png") {
+			userAgent(loritta.lorittaCluster.getUserAgent())
+		}
+
+		val bytes = if (response.status != HttpStatusCode.OK) {
+			val response2 = loritta.http.get<HttpResponse>("https://loritta.website/assets/img/backgrounds/default_background.png") {
+				userAgent(loritta.lorittaCluster.getUserAgent())
+			}
+
+			response2.readBytes()
+		} else
+			response.readBytes()
+
+		return ImageIO.read(bytes.inputStream())
+	}
+
 
 	class XpWrapper constructor(val currentLevel: Int, val expLeft: Long)
 }
