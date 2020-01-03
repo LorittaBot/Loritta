@@ -62,17 +62,17 @@ abstract class LorittaCommandContext(val locale: BaseLocale, val legacyLocale: L
 	 * @return           the image object or null, if nothing was found
 	 * @see              BufferedImage
 	 */
-	abstract suspend fun getImage(text: String, search: Int = 25, avatarSize: Int = 2048): BufferedImage?
+	abstract suspend fun getImage(text: String, search: Int = 25, avatarSize: Int = 256): BufferedImage?
 
 	abstract suspend fun getUserAt(argument: Int): User?
 
 	abstract suspend fun getUser(link: String?): net.perfectdreams.loritta.api.entities.User?
 
-	abstract suspend fun getImageUrlAt(argument: Int, search: Int = 25, avatarSize: Int = 2048): String?
+	abstract suspend fun getImageUrlAt(argument: Int, search: Int = 25, avatarSize: Int = 256): String?
 
-	abstract suspend fun getImageUrl(link: String?, search: Int = 25, avatarSize: Int = 2048): String?
+	abstract suspend fun getImageUrl(link: String?, search: Int = 25, avatarSize: Int = 256): String?
 
-	abstract suspend fun getImageAt(argument: Int, search: Int = 25, avatarSize: Int = 2048): BufferedImage?
+	abstract suspend fun getImageAt(argument: Int, search: Int = 25, avatarSize: Int = 256): BufferedImage?
 
 	abstract suspend fun explain()
 }

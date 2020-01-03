@@ -41,7 +41,7 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 			)
 			return
 		}
-		
+
 		val link = context.getImageUrlAt(0, 1, 2048)
 
 		if (link != null) {

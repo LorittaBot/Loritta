@@ -329,7 +329,7 @@ class CommandContext(val config: MongoServerConfig, var lorittaUser: LorittaUser
 	 * @param avatarSize the size of retrieved user avatars from Discord (default: 2048)
 	 * @return           the image URL or null, if nothing was found
 	 */
-	suspend fun getImageUrlAt(argument: Int, search: Int = 25, avatarSize: Int = 2048): String? {
+	suspend fun getImageUrlAt(argument: Int, search: Int = 25, avatarSize: Int = 256): String? {
 		if (this.rawArgs.size > argument) { // Primeiro iremos verificar se existe uma imagem no argumento especificado
 			val link = this.rawArgs[argument] // Ok, será que isto é uma URL?
 
@@ -396,7 +396,7 @@ class CommandContext(val config: MongoServerConfig, var lorittaUser: LorittaUser
 	 * @return           the image object or null, if nothing was found
 	 * @see              BufferedImage
 	 */
-	suspend fun getImageAt(argument: Int, search: Int = 25, avatarSize: Int = 2048, createTextAsImageIfNotFound: Boolean = true): BufferedImage? {
+	suspend fun getImageAt(argument: Int, search: Int = 25, avatarSize: Int = 256, createTextAsImageIfNotFound: Boolean = true): BufferedImage? {
 		var toBeDownloaded = getImageUrlAt(argument, 0, avatarSize)
 
 		if (toBeDownloaded == null) {
