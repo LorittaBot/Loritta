@@ -79,7 +79,7 @@ dependencies {
     compile("io.ktor:ktor-client-core:$ktorVersion")
     compile("io.ktor:ktor-client-apache:$ktorVersion")
     compile("io.github.microutils:kotlin-logging:1.7.8")
-    compile("io.pebbletemplates:pebble:3.1.1")
+    compile("io.pebbletemplates:pebble:3.1.2")
     compile("org.jsoup:jsoup:1.12.1")
     compile("com.github.kevinsawicki:http-request:6.0")
     compile("com.rometools:rome:1.12.2")
