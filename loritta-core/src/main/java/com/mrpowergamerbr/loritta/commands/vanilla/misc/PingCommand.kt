@@ -11,6 +11,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import net.dv8tion.jda.api.JDA
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.NetAddressUtils
 import java.util.concurrent.TimeUnit
 
 class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
@@ -26,7 +27,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 			val shardControllerStatus = if (loritta.discordConfig.shardController.enabled) {
 				GlobalScope.async {
 					try {
-						val body = HttpRequest.get("${loritta.discordConfig.shardController.url}/api/v1/login-pools")
+						val body = HttpRequest.get("${NetAddressUtils.fixIp(loritta.discordConfig.shardController.url)}/api/v1/login-pools")
 								.userAgent(loritta.lorittaCluster.getUserAgent())
 								.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
 								.readTimeout(loritta.config.loritta.clusterReadTimeout)
