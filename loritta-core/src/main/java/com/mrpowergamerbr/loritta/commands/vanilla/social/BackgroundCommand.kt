@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.Emotes
 import java.awt.Color
 
 class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"), CommandCategory.SOCIAL) {
@@ -31,6 +32,16 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+		if (loritta.lorittaCluster.id !in 1..4) {
+			context.reply(
+					LoriReply(
+							"Atualmente clusters >4 não conseguem editar o background do perfil já que clusters >4 não estão na máquina principal... Veja qual cluster você está em +ping. Isto será arrumado em breve, sorry!",
+							Emotes.LORI_CRYING
+					)
+			)
+			return
+		}
+		
 		val link = context.getImageUrlAt(0, 1, 2048)
 
 		if (link != null) {
