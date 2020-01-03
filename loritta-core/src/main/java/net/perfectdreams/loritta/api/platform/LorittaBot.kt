@@ -40,6 +40,14 @@ abstract class LorittaBot(var config: GeneralConfig, var instanceConfig: General
 			this.socketTimeout = 25_000
 			this.connectTimeout = 25_000
 			this.connectionRequestTimeout = 25_000
+
+			customizeClient {
+				// Maximum number of socket connections.
+				setMaxConnTotal(1000)
+
+				// Maximum number of requests for a specific endpoint route.
+				setMaxConnPerRoute(100)
+			}
 		}
 	}
 	var fanArtArtists = listOf<FanArtArtist>()
