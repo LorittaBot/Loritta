@@ -120,6 +120,12 @@ class ProfileDesigns : LorittaPlugin() {
         registeredProfiles.add(
                 ProfileDesign(true, Halloween2019ProfileCreator::class.java, "halloween_2019", -1.0, listOf())
         )
+        registeredProfiles.add(
+                ProfileDesign(true, Christmas2019ProfileCreator::class.java, "christmas_2019", -1.0, listOf())
+        )
+        registeredProfiles.add(
+                ProfileDesign(true, LorittaChristmas2019ProfileCreator::class.java, "animated_christmas_2019", -1.0, listOf())
+        )
 
         loritta.profileDesignManager.designs.removeAll(loritta.profileDesignManager.designs.filter { it.internalType == "halloween_2019" })
 
