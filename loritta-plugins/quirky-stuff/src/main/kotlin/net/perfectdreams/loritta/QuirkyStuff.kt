@@ -43,88 +43,116 @@ import java.io.File
 import java.math.BigDecimal
 
 class QuirkyStuff : DiscordPlugin() {
-    private val dreamsBoostTypes = mapOf(
-            59.99.toBigDecimal() to 1.0,
-            39.99.toBigDecimal() to 1.0,
-            19.99.toBigDecimal() to 1.0
-    )
-
+    private val REQUIRED_TO_RECEIVE_DREAM_BOOST = 19.99.toBigDecimal()
 
     val task = GlobalScope.launch(LorittaLauncher.loritta.coroutineDispatcher) {
         while (true) {
             delay(60_000)
-            val moneySumId = Payments.money.sum()
-            val mostPayingUsers = transaction(Databases.loritta) {
-                Payments.slice(Payments.userId, moneySumId)
-                        .select {
-                            Payments.paidAt.isNotNull() and
-                                    (Payments.reason eq PaymentReason.DONATION) or (Payments.reason eq PaymentReason.SPONSORED) and
-                                    (Payments.expiresAt greaterEq System.currentTimeMillis())
-                        }
-                        .groupBy(Payments.userId)
-                        .orderBy(moneySumId, SortOrder.DESC)
-                        .toMutableList()
-            }
-
-            for ((bigDecimal, quantity) in dreamsBoostTypes) {
-                val deserveTheRewardUsers = mostPayingUsers.filter { it[moneySumId]!! >= bigDecimal }.map { it[Payments.userId] }
-
-                transaction(Databases.loritta) {
-                    Profiles.update({ Profiles.id inList deserveTheRewardUsers }) {
-                        with(SqlExpressionBuilder) {
-                            it.update(money, money + quantity)
-                        }
-                    }
+            try {
+                // get premium keys
+                val guildsWithBoostFeature = transaction(Databases.loritta) {
+                    (ServerConfigs innerJoin DonationKeys).slice(ServerConfigs.id, DonationKeys.expiresAt, DonationKeys.value)
+                            .select {
+                                DonationKeys.value greaterEq 99.99 and (DonationKeys.expiresAt greaterEq System.currentTimeMillis())
+                            }.toMutableList()
                 }
-            }
 
-            val guild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
+                // Vantagem de key de doador: boosters ganham 2 sonhos por minuto
+                for (guildWithBoostFeature in guildsWithBoostFeature) {
+                    if (guildWithBoostFeature[ServerConfigs.id].value in boostAsDonationGuilds) // Esses sonhos serão dados mais para frente, já que eles são considerados doadores
+                        continue
 
-            if (guild != null) {
-                // Remover key de boosts inválidos
-                transaction(Databases.loritta) {
-                    val nitroBoostPayments = Payment.find {
-                        (Payments.gateway eq PaymentGateway.NITRO_BOOST)
-                    }.toMutableList()
+                    val guild = lorittaShards.getGuildById(guildWithBoostFeature[ServerConfigs.id].value) ?: continue
+                    val boosters = guild.boosters
 
-                    val invalidNitroPayments = mutableListOf<Long>()
+                    logger.info { "Guild $guild has donation features enabled! Giving sonhos to $boosters" }
 
-                    for (nitroBoostPayment in nitroBoostPayments) {
-                        val metadata = nitroBoostPayment.metadata
-                        val isFromThisGuild = metadata != null && metadata.obj["guildId"].nullLong == guild.idLong
-
-                        if (isFromThisGuild) {
-                            val member = guild.getMemberById(nitroBoostPayment.userId)
-
-                            if (member == null || member.timeBoosted == null) {
-                                logger.warn { "Deleting Nitro Boost payment by ${nitroBoostPayment.userId} because user is not boosting the guild anymore! (is member null? ${member != null})" }
-                                invalidNitroPayments.add(nitroBoostPayment.userId)
-                                nitroBoostPayment.delete()
+                    transaction(Databases.loritta) {
+                        Profiles.update({ Profiles.id inList boosters.map { it.user.idLong } }) {
+                            with(SqlExpressionBuilder) {
+                                it.update(money, money + 2.0)
                             }
                         }
                     }
+                }
 
-                    DonationKey.find {
-                        (DonationKeys.expiresAt eq Long.MAX_VALUE) and (DonationKeys.value eq 19.99)
-                    }.forEach {
-                        val metadata = it.metadata
-                        val isFromThisGuild = metadata != null && metadata.obj["guildId"].nullLong == guild.idLong
+                val moneySumId = Payments.money.sum()
+                val mostPayingUsers = transaction(Databases.loritta) {
+                    Payments.slice(Payments.userId, moneySumId)
+                            .select {
+                                Payments.paidAt.isNotNull() and
+                                        (Payments.reason eq PaymentReason.DONATION) or (Payments.reason eq PaymentReason.SPONSORED) and
+                                        (Payments.expiresAt greaterEq System.currentTimeMillis()) and (Payments.money greaterEq REQUIRED_TO_RECEIVE_DREAM_BOOST)
+                            }
+                            .groupBy(Payments.userId)
+                            .orderBy(moneySumId, SortOrder.DESC)
+                            .toMutableList()
+                }
 
-                        if (isFromThisGuild) {
-                            val member = guild.getMemberById(it.userId)
 
-                            if (member == null || member.timeBoosted == null) {
-                                logger.warn { "Deleting donation key via Nitro Boost by ${it.userId} because user is not boosting the guild anymore! (is member null? ${member != null})" }
+                val deserveTheRewardUsers = mostPayingUsers.map { it[Payments.userId] }
 
-                                ServerConfigs.update({ ServerConfigs.donationKey eq it.id }) {
-                                    it[donationKey] = null
+                transaction(Databases.loritta) {
+                    for (profile in Profiles.select { Profiles.id inList deserveTheRewardUsers }) {
+                        val howMuchShouldBeGiven = ((profile[Profiles.money] / 19.99) * 2) // Se doou 19.99, será (19.99 / 19.99) * 2 = 2 sonhos por segundo, se foi 39.99, será 4 sonhos, etc
+                        logger.info { "Giving $howMuchShouldBeGiven sonhos to ${profile[Profiles.id]}" }
+
+                        Profiles.update({ Profiles.id eq profile[Profiles.id] }) {
+                            it[money] = profile[money] + howMuchShouldBeGiven
+                        }
+                    }
+                }
+
+                for (boostAsDonationGuildId in boostAsDonationGuilds) {
+                    val guild = lorittaShards.getGuildById(boostAsDonationGuildId) ?: continue
+
+                    // Remover key de boosts inválidos
+                    transaction(Databases.loritta) {
+                        val nitroBoostPayments = Payment.find {
+                            (Payments.gateway eq PaymentGateway.NITRO_BOOST)
+                        }.toMutableList()
+
+                        val invalidNitroPayments = mutableListOf<Long>()
+
+                        for (nitroBoostPayment in nitroBoostPayments) {
+                            val metadata = nitroBoostPayment.metadata
+                            val isFromThisGuild = metadata != null && metadata.obj["guildId"].nullLong == guild.idLong
+
+                            if (isFromThisGuild) {
+                                val member = guild.getMemberById(nitroBoostPayment.userId)
+
+                                if (member == null || member.timeBoosted == null) {
+                                    logger.warn { "Deleting Nitro Boost payment by ${nitroBoostPayment.userId} because user is not boosting the guild anymore! (is member null? ${member != null})" }
+                                    invalidNitroPayments.add(nitroBoostPayment.userId)
+                                    nitroBoostPayment.delete()
                                 }
+                            }
+                        }
 
-                                it.delete()
+                        DonationKey.find {
+                            (DonationKeys.expiresAt eq Long.MAX_VALUE) and (DonationKeys.value eq 19.99)
+                        }.forEach {
+                            val metadata = it.metadata
+                            val isFromThisGuild = metadata != null && metadata.obj["guildId"].nullLong == guild.idLong
+
+                            if (isFromThisGuild) {
+                                val member = guild.getMemberById(it.userId)
+
+                                if (member == null || member.timeBoosted == null) {
+                                    logger.warn { "Deleting donation key via Nitro Boost by ${it.userId} because user is not boosting the guild anymore! (is member null? ${member != null})" }
+
+                                    ServerConfigs.update({ ServerConfigs.donationKey eq it.id }) {
+                                        it[donationKey] = null
+                                    }
+
+                                    it.delete()
+                                }
                             }
                         }
                     }
                 }
+            } catch (e: Exception) {
+                logger.warn(e) { "Error while checking for guilds and stuff" }
             }
         }
     }
@@ -241,6 +269,11 @@ class QuirkyStuff : DiscordPlugin() {
 
     companion object {
         private val logger = KotlinLogging.logger {}
+        val boostAsDonationGuilds = listOf(
+                297732013006389252L, // Loritta (BR)
+                420626099257475072L, // Loritta (International)
+                320248230917046282L  // SparklyPower
+        )
 
         suspend fun onBoostActivate(member: Member) {
             val guild = member.guild

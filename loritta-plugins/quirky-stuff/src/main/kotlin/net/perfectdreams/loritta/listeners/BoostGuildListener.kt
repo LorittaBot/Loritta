@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.listeners
 
-import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -11,7 +10,7 @@ import net.perfectdreams.loritta.QuirkyStuff
 
 class BoostGuildListener(val config: QuirkyConfig) : ListenerAdapter() {
 	override fun onGuildMemberUpdateBoostTime(event: GuildMemberUpdateBoostTimeEvent) {
-		if (event.guild.id != Constants.PORTUGUESE_SUPPORT_GUILD_ID)
+		if (event.guild.idLong !in QuirkyStuff.boostAsDonationGuilds)
 			return
 
 		if (event.oldTimeBoosted == null && event.newTimeBoosted != null) {
