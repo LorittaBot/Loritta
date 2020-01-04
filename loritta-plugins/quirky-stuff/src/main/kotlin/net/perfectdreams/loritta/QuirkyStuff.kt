@@ -76,29 +76,35 @@ class QuirkyStuff : DiscordPlugin() {
                     }
                 }
 
-                val moneySumId = Payments.money.sum()
-                val mostPayingUsers = transaction(Databases.loritta) {
-                    Payments.slice(Payments.userId, moneySumId)
-                            .select {
-                                Payments.paidAt.isNotNull() and
-                                        (Payments.reason eq PaymentReason.DONATION) or (Payments.reason eq PaymentReason.SPONSORED) and
-                                        (Payments.expiresAt greaterEq System.currentTimeMillis()) and (Payments.money greaterEq REQUIRED_TO_RECEIVE_DREAM_BOOST)
+                if (LorittaLauncher.loritta.isMaster) {
+                    val moneySumId = Payments.money.sum()
+                    val mostPayingUsers = transaction(Databases.loritta) {
+                        Payments.slice(Payments.userId, moneySumId)
+                                .select {
+                                    Payments.paidAt.isNotNull() and
+                                            (Payments.reason eq PaymentReason.DONATION) or (Payments.reason eq PaymentReason.SPONSORED) and
+                                            (Payments.expiresAt greaterEq System.currentTimeMillis()) and (Payments.money greaterEq REQUIRED_TO_RECEIVE_DREAM_BOOST)
+                                }
+                                .groupBy(Payments.userId)
+                                .orderBy(moneySumId, SortOrder.DESC)
+                                .toMutableList()
+                    }
+
+
+                    val deserveTheRewardUsers = mostPayingUsers.map { it[Payments.userId] }
+
+                    transaction(Databases.loritta) {
+                        for (profile in Profiles.select { Profiles.id inList deserveTheRewardUsers }) {
+                            val userPayment = mostPayingUsers.firstOrNull { it[Payments.userId] == profile[Profiles.id].value }
+
+                            if (userPayment != null) {
+                                val howMuchShouldBeGiven = ((userPayment[moneySumId]!!.toDouble() / 19.99) * 2) // Se doou 19.99, será (19.99 / 19.99) * 2 = 2 sonhos por segundo, se foi 39.99, será 4 sonhos, etc
+                                logger.info { "Giving $howMuchShouldBeGiven sonhos to ${profile[Profiles.id]}" }
+
+                                Profiles.update({ Profiles.id eq profile[Profiles.id] }) {
+                                    it[money] = profile[money] + howMuchShouldBeGiven
+                                }
                             }
-                            .groupBy(Payments.userId)
-                            .orderBy(moneySumId, SortOrder.DESC)
-                            .toMutableList()
-                }
-
-
-                val deserveTheRewardUsers = mostPayingUsers.map { it[Payments.userId] }
-
-                transaction(Databases.loritta) {
-                    for (profile in Profiles.select { Profiles.id inList deserveTheRewardUsers }) {
-                        val howMuchShouldBeGiven = ((profile[Profiles.money] / 19.99) * 2) // Se doou 19.99, será (19.99 / 19.99) * 2 = 2 sonhos por segundo, se foi 39.99, será 4 sonhos, etc
-                        logger.info { "Giving $howMuchShouldBeGiven sonhos to ${profile[Profiles.id]}" }
-
-                        Profiles.update({ Profiles.id eq profile[Profiles.id] }) {
-                            it[money] = profile[money] + howMuchShouldBeGiven
                         }
                     }
                 }
