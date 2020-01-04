@@ -16,6 +16,8 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.Instant
+import java.time.ZoneId
 
 class TransactionsCommand : LorittaCommand(arrayOf("transactions", "transações"), category = CommandCategory.ECONOMY) {
     override fun getDescription(locale: BaseLocale): String? {
@@ -38,6 +40,18 @@ class TransactionsCommand : LorittaCommand(arrayOf("transactions", "transações
             for (transaction in transactions) {
                 val receivedSonhos = transaction[SonhosTransaction.receivedBy] == user.idLong
 
+                val givenAtTime = Instant.ofEpochMilli(transaction[SonhosTransaction.givenAt])
+                        .atZone(ZoneId.systemDefault())
+
+                val day = givenAtTime.dayOfMonth.toString().padStart(2, '0')
+                val month = givenAtTime.monthValue.toString().padStart(2, '0')
+                val year = givenAtTime.year
+
+                val hour = givenAtTime.hour.toString().padStart(2, '0')
+                val minute = givenAtTime.minute.toString().padStart(2, '0')
+
+                this.append("[$day/$month/$year $hour:$minute] ")
+                
                 val emoji = if (receivedSonhos)
                     "\uD83D\uDCB5"
                 else
