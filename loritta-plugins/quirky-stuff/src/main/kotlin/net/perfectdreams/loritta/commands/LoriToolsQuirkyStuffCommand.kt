@@ -64,7 +64,7 @@ class LoriToolsQuirkyStuffCommand(val m: QuirkyStuff) : LorittaDiscordCommand(ar
 		for (booster in context.discordGuild!!.boosters) {
 			val payment = transaction(Databases.loritta) {
 				Payment.find {
-					Payments.money eq 19.99.toBigDecimal() and (Payments.gateway eq PaymentGateway.NITRO_BOOST)
+					Payments.money eq 20.00.toBigDecimal() and (Payments.gateway eq PaymentGateway.NITRO_BOOST)
 				}.firstOrNull()
 			}
 

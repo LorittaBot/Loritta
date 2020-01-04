@@ -43,7 +43,7 @@ import java.io.File
 import java.math.BigDecimal
 
 class QuirkyStuff : DiscordPlugin() {
-    private val REQUIRED_TO_RECEIVE_DREAM_BOOST = 19.99.toBigDecimal()
+    private val REQUIRED_TO_RECEIVE_DREAM_BOOST = 20.00.toBigDecimal()
 
     val task = GlobalScope.launch(LorittaLauncher.loritta.coroutineDispatcher) {
         while (true) {
@@ -98,7 +98,7 @@ class QuirkyStuff : DiscordPlugin() {
                             val userPayment = mostPayingUsers.firstOrNull { it[Payments.userId] == profile[Profiles.id].value }
 
                             if (userPayment != null) {
-                                val howMuchShouldBeGiven = ((userPayment[moneySumId]!!.toDouble() / 19.99) * 2) // Se doou 19.99, será (19.99 / 19.99) * 2 = 2 sonhos por segundo, se foi 39.99, será 4 sonhos, etc
+                                val howMuchShouldBeGiven = ((userPayment[moneySumId]!!.toDouble() / 20.00) * 2) // Se doou 19.99, será (19.99 / 19.99) * 2 = 2 sonhos por segundo, se foi 39.99, será 4 sonhos, etc
                                 logger.info { "Giving $howMuchShouldBeGiven sonhos to ${profile[Profiles.id]}" }
 
                                 Profiles.update({ Profiles.id eq profile[Profiles.id] }) {
@@ -136,7 +136,7 @@ class QuirkyStuff : DiscordPlugin() {
                         }
 
                         DonationKey.find {
-                            (DonationKeys.expiresAt eq Long.MAX_VALUE) and (DonationKeys.value eq 19.99)
+                            (DonationKeys.expiresAt eq Long.MAX_VALUE) and (DonationKeys.value eq 20.00)
                         }.forEach {
                             val metadata = it.metadata
                             val isFromThisGuild = metadata != null && metadata.obj["guildId"].nullLong == guild.idLong
@@ -296,7 +296,7 @@ class QuirkyStuff : DiscordPlugin() {
                     this.reason = PaymentReason.DONATION
                     this.createdAt = now
                     this.paidAt = now
-                    this.money = BigDecimal(19.99)
+                    this.money = BigDecimal(20.00)
                     this.expiresAt = Long.MAX_VALUE // Nunca!
                     this.metadata = jsonObject(
                             "guildId" to member.guild.idLong
@@ -306,7 +306,7 @@ class QuirkyStuff : DiscordPlugin() {
                 // Gerar key de doação
                 DonationKey.new {
                     this.userId = member.idLong
-                    this.value = 19.99
+                    this.value = 20.00
                     this.expiresAt = Long.MAX_VALUE // Nunca!
                     this.metadata = jsonObject(
                             "guildId" to member.guild.idLong
@@ -343,7 +343,7 @@ class QuirkyStuff : DiscordPlugin() {
                 }?.delete()
 
                 DonationKey.find {
-                    (DonationKeys.userId eq member.idLong) and (DonationKeys.expiresAt eq Long.MAX_VALUE) and (DonationKeys.value eq 19.99)
+                    (DonationKeys.userId eq member.idLong) and (DonationKeys.expiresAt eq Long.MAX_VALUE) and (DonationKeys.value eq 20.00)
                 }.firstOrNull {
                     val metadata = it.metadata
                     metadata != null && metadata.obj["guildId"].nullLong == guild.idLong
