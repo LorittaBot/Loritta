@@ -1,18 +1,24 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
-import com.mrpowergamerbr.loritta.Loritta
+import com.github.salomonbrys.kotson.jsonObject
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.response.HttpResponse
+import io.ktor.http.userAgent
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import net.perfectdreams.loritta.utils.Emotes
 import java.awt.Color
+import java.io.ByteArrayOutputStream
+import java.util.*
+import javax.imageio.ImageIO
 
 class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"), CommandCategory.SOCIAL) {
 	override fun getUsage(): String {
@@ -32,16 +38,6 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
-		if (loritta.lorittaCluster.id !in 1..4) {
-			context.reply(
-					LoriReply(
-							"Atualmente clusters >4 não conseguem editar o background do perfil já que clusters >4 não estão na máquina principal... Veja qual cluster você está em +ping. Isto será arrumado em breve, sorry!",
-							Emotes.LORI_CRYING
-					)
-			)
-			return
-		}
-
 		val link = context.getImageUrlAt(0, 1, 2048)
 
 		if (link != null) {
@@ -60,12 +56,9 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 				return@onReactionAddByAuthor
 			}
 			if (it.reactionEmote.isEmote("\uD83D\uDDBC")) { // Se é o quadro...
-				val file = java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + context.lorittaUser.profile.userId + ".png")
-				val imageUrl = if (file.exists()) "${loritta.instanceConfig.loritta.website.url}assets/img/backgrounds/" + context.lorittaUser.profile.userId + ".png?time=" + System.currentTimeMillis() else "http://loritta.website/assets/img/backgrounds/default_background.png"
-
-				var builder = net.dv8tion.jda.api.EmbedBuilder()
+				val builder = net.dv8tion.jda.api.EmbedBuilder()
 						.setTitle("\uD83D\uDDBC ${context.legacyLocale["BACKGROUND_YOUR_CURRENT_BG"]}")
-						.setImage(imageUrl)
+						.setImage("${loritta.instanceConfig.loritta.website.url}static/assets/img/backgrounds/${context.userHandle.idLong}.png")
 						.setColor(Color(0, 223, 142))
 				message.editMessage(builder.build()).await()
 				message.clearReactions().await()
@@ -128,28 +121,12 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 
 	suspend fun setAsBackground(link0: String, context: CommandContext) {
 		var link = link0
-		var mensagem = context.sendMessage("💭 **|** " + context.getAsMention(true) + "${context.legacyLocale["PROCESSING"]}...")
+		val mensagem = context.sendMessage("💭 **|** " + context.getAsMention(true) + "${context.legacyLocale["PROCESSING"]}...")
 
 		val params = getQueryParameters(link)
 
 		if (params.containsKey("imgurl")) {
 			link = params["imgurl"]!!
-		}
-
-		val status = LorittaUtilsKotlin.getImageStatus(link)
-
-		if (status == NSFWResponse.ERROR) {
-			mensagem.editMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["BACKGROUND_INVALID_IMAGE"]).queue()
-			return
-		}
-
-		if (status == NSFWResponse.NSFW) {
-			mensagem.editMessage("🙅 **|** " + context.getAsMention(true) + context.legacyLocale["NSFW_IMAGE", context.asMention]).queue()
-			return
-		}
-
-		if (status == NSFWResponse.EXCEPTION) {
-			println("* Usuário: ${context.userHandle.name} (${context.userHandle.id})")
 		}
 
 		var bufferedImage = LorittaUtils.downloadImage(link) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
@@ -158,15 +135,28 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 		if (!(bufferedImage.width == 800 && bufferedImage.height == 600)) {
 			needsEditing = true
 			if (bufferedImage.width > 800 && bufferedImage.height > 600) {
-				var newWidth = 800.toDouble() / bufferedImage.width.toDouble()
-				var newHeight = 600.toDouble() / bufferedImage.height.toDouble()
-				var use = if (bufferedImage.height > bufferedImage.width) newWidth else newHeight
+				val newWidth = 800.toDouble() / bufferedImage.width.toDouble()
+				val newHeight = 600.toDouble() / bufferedImage.height.toDouble()
+				val use = if (bufferedImage.height > bufferedImage.width) newWidth else newHeight
 				bufferedImage = com.mrpowergamerbr.loritta.utils.ImageUtils.toBufferedImage(bufferedImage.getScaledInstance((bufferedImage.width * use).toInt(), (bufferedImage.height * use).toInt(), java.awt.image.BufferedImage.SCALE_SMOOTH))
 				bufferedImage = bufferedImage.getSubimage(0, 0, Math.min(bufferedImage.width, 800), Math.min(bufferedImage.height, 600))
 			}
 		}
-		javax.imageio.ImageIO.write(bufferedImage, "png", java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/" + context.lorittaUser.profile.userId + ".png"))
 
+		val baos = ByteArrayOutputStream()
+		ImageIO.write(bufferedImage, "png", baos)
+
+		loritta.http.post<HttpResponse>("${loritta.instanceConfig.loritta.website.url}/api/v1/loritta/users/${context.lorittaUser.profile.userId}/background") {
+			userAgent(loritta.lorittaCluster.getUserAgent())
+			header("Authorization", loritta.lorittaInternalApiKey.name)
+
+			body = gson.toJson(
+					jsonObject(
+							"type" to "custom",
+							"data" to Base64.getEncoder().encodeToString(baos.toByteArray())
+					)
+			)
+		}
 		context.sendMessage("✨ **|** " + context.getAsMention(true) + context.legacyLocale["BACKGROUND_UPDATED"] + if (needsEditing) " ${context.legacyLocale["BACKGROUND_EDITED"]}!" else "")
 		return
 	}
