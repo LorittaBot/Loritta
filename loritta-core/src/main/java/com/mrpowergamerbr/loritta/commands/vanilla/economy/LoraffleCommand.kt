@@ -178,7 +178,7 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 						mentionUser = false
 				),
 				LoriReply(
-						context.locale["commands.economy.raffle.lastWinner", "${nameAndDiscriminator.stripCodeMarks()} (${lastWinner?.id})", lastWinnerPrize, lastWinnerPrize * 0.8],
+						context.locale["commands.economy.raffle.lastWinner", "`${nameAndDiscriminator.stripCodeMarks()} (${lastWinner?.id})`", lastWinnerPrize, lastWinnerPrize * 0.8],
 						"\uD83D\uDE0E",
 						mentionUser = false
 				),
