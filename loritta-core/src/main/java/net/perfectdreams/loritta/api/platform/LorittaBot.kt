@@ -13,14 +13,22 @@ import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralInstanceConfig
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
+import io.ktor.client.request.get
+import io.ktor.client.response.HttpResponse
+import io.ktor.client.response.readBytes
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.userAgent
 import net.perfectdreams.loritta.api.commands.LorittaCommandManager
 import net.perfectdreams.loritta.utils.config.FanArt
 import net.perfectdreams.loritta.utils.config.FanArtArtist
+import java.awt.image.BufferedImage
 import java.io.File
 import java.lang.reflect.Modifier
 import java.util.*
+import javax.imageio.ImageIO
 
 /**
  * Loritta Morenitta :3
@@ -54,6 +62,29 @@ abstract class LorittaBot(var config: GeneralConfig, var instanceConfig: General
 	val fanArts: List<FanArt>
 		get() = fanArtArtists.flatMap { it.fanArts }
 	val profileDesignManager = ProfileDesignManager()
+
+	/**
+	 * Gets an user's profile background
+	 *
+	 * @param id the user's ID
+	 * @return the background image
+	 */
+	suspend fun getUserProfileBackground(id: Long): BufferedImage {
+		val response = loritta.http.get<HttpResponse>("https://loritta.website/assets/img/backgrounds/${id}.png?t=${System.currentTimeMillis()}") {
+			userAgent(loritta.lorittaCluster.getUserAgent())
+		}
+
+		val bytes = if (response.status != HttpStatusCode.OK) {
+			val response2 = loritta.http.get<HttpResponse>("https://loritta.website/assets/img/backgrounds/default_background.png") {
+				userAgent(loritta.lorittaCluster.getUserAgent())
+			}
+
+			response2.readBytes()
+		} else
+			response.readBytes()
+
+		return ImageIO.read(bytes.inputStream())
+	}
 
 	/**
 	 * Loads the artists from the Fan Arts folder

@@ -34,6 +34,11 @@ import com.mrpowergamerbr.loritta.utils.networkbans.LorittaNetworkBanManager
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
+import io.ktor.client.request.get
+import io.ktor.client.response.HttpResponse
+import io.ktor.client.response.readBytes
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.userAgent
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -64,12 +69,14 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
+import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileNotFoundException
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import javax.imageio.ImageIO
 import kotlin.concurrent.thread
 
 /**
@@ -484,16 +491,6 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 		return getOrCreateLorittaProfile(userId.toLong())
 	}
 
-	fun getActiveMoneyFromDonations(userId: Long): Double {
-		return transaction(Databases.loritta) {
-			Payment.find {
-				(Payments.expiresAt greaterEq System.currentTimeMillis()) and
-						(Payments.reason eq PaymentReason.DONATION) and
-						(Payments.userId eq userId)
-			}.sumByDouble { it.money.toDouble() }
-		}
-	}
-
 	fun getOrCreateLorittaProfile(userId: Long): Profile {
 		return transaction(Databases.loritta) {
 			val sqlProfile = Profile.findById(userId)
@@ -523,6 +520,16 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 			}
 
 			return@transaction newProfile
+		}
+	}
+
+	fun getActiveMoneyFromDonations(userId: Long): Double {
+		return transaction(Databases.loritta) {
+			Payment.find {
+				(Payments.expiresAt greaterEq System.currentTimeMillis()) and
+						(Payments.reason eq PaymentReason.DONATION) and
+						(Payments.userId eq userId)
+			}.sumByDouble { it.money.toDouble() }
 		}
 	}
 

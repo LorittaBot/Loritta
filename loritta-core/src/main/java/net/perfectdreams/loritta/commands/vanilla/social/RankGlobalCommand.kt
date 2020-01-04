@@ -88,7 +88,7 @@ class RankGlobalCommand : LorittaCommand(arrayOf("rank global", "top global", "l
             val user = lorittaShards.retrieveUserById(profile.userId)
 
             if (user != null) {
-                 val rankBackground = context.lorittaUser.profile.getProfileBackground()
+                 val rankBackground = com.mrpowergamerbr.loritta.utils.loritta.getUserProfileBackground(user.idLong)
                 graphics.drawImage(rankBackground.getScaledInstance(400, 300, BufferedImage.SCALE_SMOOTH)
                         .toBufferedImage()
                         .getSubimage(0, idx * 52, 400, 53), 0, currentY, null)

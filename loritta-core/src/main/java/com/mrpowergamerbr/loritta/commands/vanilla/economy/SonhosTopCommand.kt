@@ -89,7 +89,7 @@ class SonhosTopCommand : AbstractCommand("sonhostop", listOf("topsonhos"), Comma
 			val member = lorittaShards.retrieveUserById(userId)
 
 			if (member != null) {
-				val rankBackground = context.lorittaUser.profile.getProfileBackground()
+				val rankBackground = loritta.getUserProfileBackground(member.idLong)
 				graphics.drawImage(rankBackground.getScaledInstance(400, 300, BufferedImage.SCALE_SMOOTH)
 						.toBufferedImage()
 						.getSubimage(0, idx * 52, 400, 53), 0, currentY, null)

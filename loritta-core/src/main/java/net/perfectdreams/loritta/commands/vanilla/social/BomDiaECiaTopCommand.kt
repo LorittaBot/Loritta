@@ -94,18 +94,14 @@ class BomDiaECiaTopCommand : LorittaCommand(arrayOf("bomdiaecia top", "bd&c top"
         var currentY = 37
 
         for (profile in userData) {
-            if (idx >= 5) {
+            if (idx >= 5)
                 break
-            }
 
             val userId = profile[userId].toString()
             val member = lorittaShards.retrieveUserById(userId)
 
             if (member != null) {
-                val file = java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/$userId.png")
-                val imageFile = if (file.exists()) file else java.io.File(Loritta.FRONTEND, "static/assets/img/backgrounds/default_background.png")
-
-                val rankBackground = ImageIO.read(imageFile)
+                val rankBackground = loritta.getUserProfileBackground(member.idLong)
                 graphics.drawImage(rankBackground.getScaledInstance(400, 300, BufferedImage.SCALE_SMOOTH)
                         .toBufferedImage()
                         .getSubimage(0, idx * 52, 400, 53), 0, currentY, null)

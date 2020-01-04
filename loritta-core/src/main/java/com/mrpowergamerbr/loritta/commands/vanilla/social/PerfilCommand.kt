@@ -167,7 +167,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		var userProfile = context.lorittaUser.profile
 
 		val contextUser = context.getUserAt(0)
-		val user = if (contextUser != null) contextUser else context.userHandle
+		val user = contextUser ?: context.userHandle
 
 		if (contextUser != null) {
 			userProfile = loritta.getOrCreateLorittaProfile(contextUser.id)
@@ -217,7 +217,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			aboutMe = "A Loritta é a minha amiga! Sabia que você pode alterar este texto usando \"${context.config.commandPrefix}sobremim\"? :3"
 		}
 
-		val background = context.lorittaUser.profile.getProfileBackground()
+		val background = loritta.getUserProfileBackground(user.idLong)
 
 		val availableDesigns = if (loritta.config.isOwner(context.userHandle.idLong)) {
 			loritta.profileDesignManager.designs
