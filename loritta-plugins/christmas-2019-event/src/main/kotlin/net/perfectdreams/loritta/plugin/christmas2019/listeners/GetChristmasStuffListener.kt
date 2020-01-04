@@ -134,7 +134,7 @@ class GetChristmasStuffListener(val config: Christmas2019Config) : ListenerAdapt
 
 			mutex.withLock {
 				val count = if (event.reactionEmote.name == "\uD83C\uDF20")
-					RANDOM.nextInt(5, 51)
+					RANDOM.nextInt(40, 101)
 				else
 					1
 
@@ -163,13 +163,11 @@ class GetChristmasStuffListener(val config: Christmas2019Config) : ListenerAdapt
 
 					transaction(Databases.loritta) {
 						repeat(count) {
-							transaction(Databases.loritta) {
-								CollectedChristmas2019Points.insert {
-									it[user] = lorittaProfile.id
-									it[guildId] = event.guild.idLong
-									it[channelId] = event.channel.idLong
-									it[messageId] = event.messageIdLong
-								}
+							CollectedChristmas2019Points.insert {
+								it[user] = lorittaProfile.id
+								it[guildId] = event.guild.idLong
+								it[channelId] = event.channel.idLong
+								it[messageId] = event.messageIdLong
 							}
 						}
 					}

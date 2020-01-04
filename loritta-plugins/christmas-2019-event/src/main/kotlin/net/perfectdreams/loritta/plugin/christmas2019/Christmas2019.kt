@@ -19,4 +19,6 @@ object Christmas2019 {
 		val calendar = Calendar.getInstance()
 		return calendar.get(Calendar.YEAR) == 2019
 	}
+
+	val recoveredDreams = Collections.synchronizedSet(mutableSetOf<Long>())
 }

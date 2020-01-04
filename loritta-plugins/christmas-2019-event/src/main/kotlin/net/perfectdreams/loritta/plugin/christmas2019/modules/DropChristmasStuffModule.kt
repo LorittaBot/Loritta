@@ -54,7 +54,7 @@ class DropChristmasStuffModule(val config: Christmas2019Config) : MessageReceive
 
         val chanceBoost = (8.0 * since) / 360_000
 
-        val ceil = 8.0
+        val ceil = 22.0
 
         chance = Math.min(chance + chanceBoost, ceil)
 
@@ -87,7 +87,7 @@ class DropChristmasStuffModule(val config: Christmas2019Config) : MessageReceive
                 } else if (day == 30) {
                     7.5
                 } else {
-                    10.0
+                    20.0
                 }
 
                 if (chance(magicChance)) {
