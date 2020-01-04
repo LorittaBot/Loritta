@@ -50,8 +50,8 @@ class TransactionsCommand : LorittaCommand(arrayOf("transactions", "transações
                 val hour = givenAtTime.hour.toString().padStart(2, '0')
                 val minute = givenAtTime.minute.toString().padStart(2, '0')
 
-                this.append("[$day/$month/$year $hour:$minute] ")
-                
+                this.append("`[$day/$month/$year $hour:$minute]` ")
+
                 val emoji = if (receivedSonhos)
                     "\uD83D\uDCB5"
                 else
