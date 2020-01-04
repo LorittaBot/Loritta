@@ -156,10 +156,11 @@ class RaffleThread : Thread("Raffle Thread") {
 			lastWinnerId = winnerId
 
 			val money = userIds.size * 250
+			val bulkPrize = money * 0.8
 			lastWinnerPrize = money
 
 			val lorittaProfile = loritta.getOrCreateLorittaProfile(winnerId)
-			logger.info("$lastWinnerId ganhou $lastWinnerPrize sonhos (antes ele possuia ${lorittaProfile.money} sonhos) na Rifa!")
+			logger.info("$lastWinnerId ganhou $bulkPrize (total: $money) sonhos (antes ele possuia ${lorittaProfile.money} sonhos) na Rifa!")
 
 			transaction(Databases.loritta){
 				lorittaProfile.money += money
@@ -168,7 +169,7 @@ class RaffleThread : Thread("Raffle Thread") {
 					it[givenBy] = null
 					it[receivedBy] = winnerId.toLong()
 					it[givenAt] = System.currentTimeMillis()
-					it[quantity] = money.toBigDecimal()
+					it[quantity] = bulkPrize.toBigDecimal()
 					it[reason] = SonhosPaymentReason.RAFFLE
 				}
 			}
@@ -184,7 +185,7 @@ class RaffleThread : Thread("Raffle Thread") {
 					embed.setThumbnail("attachment://loritta_money.png")
 					embed.setColor(Constants.LORITTA_AQUA)
 					embed.setTitle("\uD83C\uDF89 ${locale["RAFFLE_Congratulations"]}!")
-					embed.setDescription("${locale["RAFFLE_YouEarned", lastWinnerPrize]} \uD83E\uDD11")
+					embed.setDescription("${locale["RAFFLE_YouEarned", bulkPrize]} \uD83E\uDD11")
 					embed.setTimestamp(Instant.now())
 					val message = MessageBuilder().setContent(" ").setEmbed(embed.build()).build()
 					user.openPrivateChannel().queue {
