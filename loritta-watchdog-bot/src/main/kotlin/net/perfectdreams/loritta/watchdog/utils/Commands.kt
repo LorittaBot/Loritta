@@ -78,6 +78,7 @@ object Commands {
 
 		val sshPortForwardProcessBuilder = ProcessBuilder(
 				"ssh",
+				"-o UserKnownHostsFile=/dev/null",
 				"-oStrictHostKeyChecking=no",
 				"-L",
 				"127.0.0.1:$randomPort:${slave.ipPortForward}",
@@ -100,17 +101,19 @@ object Commands {
 				"rsync",
 				"-avz",
 				"-e",
-				"sshpass -p \"${slave.password}\" ssh -oStrictHostKeyChecking=no -p $randomPort",
-				"root@127.0.0.1:${bot.packFiles.joinToString(" ")}",
-				slave.folder
+				"sshpass -p \"${slave.password}\" ssh -o UserKnownHostsFile=/dev/null -oStrictHostKeyChecking=no -p $randomPort",
+				*bot.packFiles.toTypedArray(),
+				"root@127.0.0.1:${slave.folder}"
 		).redirectErrorStream(true)
+
+		logger.info { "Executing ${rsyncProcessBuilder.command()}" }
 
 		val rsync = rsyncProcessBuilder.start()
 		showProcessOutputOnConsole("rsync", rsync)
 		val statusCode = rsync.waitFor()
 
 		if (statusCode != 0) {
-			logger.error { "Something went wrong while deploying changes to ${bot.name} cluster ${slave.id} ${slave.name}! rsync error code #statusCode" }
+			logger.error { "Something went wrong while deploying changes to ${bot.name} cluster ${slave.id} ${slave.name}! rsync error code $statusCode" }
 		}
 
 		logger.info { "Finished! Stopping all processes..." }
