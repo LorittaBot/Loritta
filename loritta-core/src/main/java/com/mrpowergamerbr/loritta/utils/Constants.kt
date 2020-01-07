@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.utils.jackson.FixedMapDeserializer
 import org.yaml.snakeyaml.Yaml
 import java.awt.Color
 import java.awt.Font
+import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
 import java.text.SimpleDateFormat
@@ -37,6 +38,13 @@ object Constants {
 	const val SIX_MONTHS_IN_MILLISECONDS = ONE_MONTH_IN_MILLISECONDS * 8
 	const val DELAY_CUT_OFF = SIX_MONTHS_IN_MILLISECONDS // six months
 	const val CLUSTER_USER_AGENT = "Loritta Cluster %s (%s)"
+	val DEFAULT_DISCORD_BLUE_AVATAR by lazy {
+		LorittaUtils.downloadImage(
+				"https://cdn.discordapp.com/embed/avatars/0.png?size=256",
+				-1,
+				-1
+		)!!
+	}
 
 	/**
 	 * Discord's URL Crawler User Agent

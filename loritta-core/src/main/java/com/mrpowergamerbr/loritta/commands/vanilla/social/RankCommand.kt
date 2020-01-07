@@ -69,7 +69,8 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 			"${loritta.instanceConfig.loritta.website.url}assets/img/unknown.png"
 		}
 
-		val serverIcon = LorittaUtils.downloadImage(serverIconUrl)!!.getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
+		val serverIcon = (LorittaUtils.downloadImage(serverIconUrl) ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR)
+				.getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
 
 		graphics.drawImage(serverIcon, 259, -52, null)
 

@@ -107,7 +107,8 @@ class RepTopCommand : LorittaCommand(arrayOf("rep top", "reputation top", "reput
             "${com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url}assets/img/unknown.png"
         }
 
-        val serverIcon = LorittaUtils.downloadImage(serverIconUrl)!!.getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
+        val serverIcon = (LorittaUtils.downloadImage(serverIconUrl) ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR)
+                .getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
 
         graphics.drawImage(serverIcon, 259, -52, null)
 
@@ -164,7 +165,7 @@ class RepTopCommand : LorittaCommand(arrayOf("rep top", "reputation top", "reput
 
                 // ImageUtils.drawTextWrap("Nível " + userData.getCurrentLevel().currentLevel, 145, currentY + 48, 9999, 9999, graphics.fontMetrics, graphics)
 
-                val avatar = LorittaUtils.downloadImage(member.effectiveAvatarUrl)!!
+                val avatar = (LorittaUtils.downloadImage(member.effectiveAvatarUrl) ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR)
                         .getScaledInstance(143, 143, BufferedImage.SCALE_SMOOTH)
 
                 var editedAvatar = BufferedImage(143, 143, BufferedImage.TYPE_INT_ARGB)

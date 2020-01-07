@@ -57,7 +57,8 @@ class RankGlobalCommand : LorittaCommand(arrayOf("rank global", "top global", "l
             "${com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url}assets/img/unknown.png"
         }
 
-        val serverIcon = LorittaUtils.downloadImage(serverIconUrl)!!.getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
+        val serverIcon = (LorittaUtils.downloadImage(serverIconUrl) ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR)
+                .getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
 
         graphics.drawImage(serverIcon, 259, -52, null)
 
@@ -88,7 +89,7 @@ class RankGlobalCommand : LorittaCommand(arrayOf("rank global", "top global", "l
             val user = lorittaShards.retrieveUserById(profile.userId)
 
             if (user != null) {
-                 val rankBackground = com.mrpowergamerbr.loritta.utils.loritta.getUserProfileBackground(user.idLong)
+                val rankBackground = com.mrpowergamerbr.loritta.utils.loritta.getUserProfileBackground(user.idLong)
                 graphics.drawImage(rankBackground.getScaledInstance(400, 300, BufferedImage.SCALE_SMOOTH)
                         .toBufferedImage()
                         .getSubimage(0, idx * 52, 400, 53), 0, currentY, null)
@@ -110,7 +111,7 @@ class RankGlobalCommand : LorittaCommand(arrayOf("rank global", "top global", "l
 
                 ImageUtils.drawTextWrap("Nível " + profile.getCurrentLevel().currentLevel, 145, currentY + 48, 9999, 9999, graphics.fontMetrics, graphics)
 
-                val avatar = (LorittaUtils.downloadImage(user.effectiveAvatarUrl) ?: LorittaUtils.downloadImage("https://loritta.website/assets/img/unknown.png")!!)
+                val avatar = (LorittaUtils.downloadImage(user.effectiveAvatarUrl) ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR)
                         .getScaledInstance(143, 143, BufferedImage.SCALE_SMOOTH)
 
                 var editedAvatar = BufferedImage(143, 143, BufferedImage.TYPE_INT_ARGB)
