@@ -66,6 +66,7 @@ class ArtsyJoyLori : LorittaPlugin() {
         if (false)
             registerCommand(HighFiveCommand())
         registerCommand(ScratchCardCommand())
+        registerCommand(Bolsonaro2Command())
 
         transaction(Databases.loritta) {
             SchemaUtils.createMissingTablesAndColumns(
