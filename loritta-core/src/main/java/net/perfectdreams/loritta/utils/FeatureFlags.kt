@@ -4,29 +4,29 @@ import com.mrpowergamerbr.loritta.utils.loritta
 
 object FeatureFlags {
 	val NEW_WEBSITE_PORT: Boolean
-			get() = isEnabled(Names.NEW_WEBSITE_PORT)
+		get() = isEnabled(Names.NEW_WEBSITE_PORT)
 	val MEMBER_COUNTER_UPDATE: Boolean
-			get() = isEnabled(Names.MEMBER_COUNTER_UPDATE)
+		get() = isEnabled(Names.MEMBER_COUNTER_UPDATE)
 	val ALLOW_MORE_THAN_ONE_COUNTER_FOR_PREMIUM_USERS: Boolean
-			get() = isEnabled(Names.ALLOW_MORE_THAN_ONE_COUNTER_FOR_PREMIUM_USERS)
+		get() = isEnabled(Names.ALLOW_MORE_THAN_ONE_COUNTER_FOR_PREMIUM_USERS)
 	val BOTS_CAN_HAVE_FUN_IN_THE_RAFFLE_TOO: Boolean
-			get() = isEnabled(Names.BOTS_CAN_HAVE_FUN_IN_THE_RAFFLE_TOO)
+		get() = isEnabled(Names.BOTS_CAN_HAVE_FUN_IN_THE_RAFFLE_TOO)
 	val WRECK_THE_RAFFLE_STOP_THE_WHALES: Boolean
-			get() = isEnabled(Names.WRECK_THE_RAFFLE_STOP_THE_WHALES)
+		get() = isEnabled(Names.WRECK_THE_RAFFLE_STOP_THE_WHALES)
 	val SELECT_LOW_BETTING_USERS: Boolean
-			get() = isEnabled(Names.SELECT_LOW_BETTING_USERS)
+		get() = isEnabled(Names.SELECT_LOW_BETTING_USERS)
 	val SELECT_USERS_WITH_LESS_MONEY: Boolean
-			get() = isEnabled(Names.SELECT_USERS_WITH_LESS_MONEY)
+		get() = isEnabled(Names.SELECT_USERS_WITH_LESS_MONEY)
 	val ADVERTISE_SPARKLYPOWER: Boolean
-			get() = isEnabled(Names.ADVERTISE_SPARKLYPOWER)
+		get() = isEnabled(Names.ADVERTISE_SPARKLYPOWER)
 	val ADVERTISE_SPONSORS: Boolean
-			get() = isEnabled(Names.ADVERTISE_SPONSORS)
+		get() = isEnabled(Names.ADVERTISE_SPONSORS)
 	val LOG_COMMANDS: Boolean
-			get() = isEnabled(Names.LOG_COMMANDS)
+		get() = isEnabled(Names.LOG_COMMANDS)
 	val DISABLE_MUSIC_RATELIMIT: Boolean
-			get() = isEnabled(Names.DISABLE_MUSIC_RATELIMIT)
+		get() = isEnabled(Names.DISABLE_MUSIC_RATELIMIT)
 	val DISABLE_TRANSLATE_RATELIMIT: Boolean
-			get() = isEnabled(Names.DISABLE_TRANSLATE_RATELIMIT)
+		get() = isEnabled(Names.DISABLE_TRANSLATE_RATELIMIT)
 	val CHECK_IF_USER_IS_BANNED_IN_EVERY_MESSAGE: Boolean
 		get() = isEnabled(Names.CHECK_IF_USER_IS_BANNED_IN_EVERY_MESSAGE)
 	val UPDATE_IN_GUILD_STATS_ON_GUILD_JOIN: Boolean
@@ -39,6 +39,8 @@ object FeatureFlags {
 		get() = isEnabled(Names.UPDATE_IN_GUILD_STATS_ON_RANK_FAILURE)
 	val AUTO_PURGE_GUILDS: Boolean
 		get() = isEnabled(Names.AUTO_PURGE_GUILDS)
+	val OPTIMIZE_ANIMATED_PROFILES: Boolean
+		get() = isEnabled(Names.OPTIMIZE_ANIMATED_PROFILES)
 
 	fun isEnabled(name: String): Boolean {
 		return loritta.config.loritta.featureFlags.contains(name)
@@ -63,5 +65,6 @@ object FeatureFlags {
 		const val UPDATE_IN_GUILD_STATS_ON_MESSAGE_SEND = "update-in-guild-stats-on-message-send"
 		const val UPDATE_IN_GUILD_STATS_ON_RANK_FAILURE = "update-in-guild-stats-on-rank-failure"
 		const val AUTO_PURGE_GUILDS = "auto-purge-guilds"
+		const val OPTIMIZE_ANIMATED_PROFILES = "optimize-animated-profiles"
 	}
 }

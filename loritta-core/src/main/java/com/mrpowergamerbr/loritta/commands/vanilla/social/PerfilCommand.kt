@@ -22,6 +22,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.tables.BotVotes
 import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.FeatureFlags
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -275,7 +276,12 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			writer.close()
 			output.close()
 
-			context.sendFile(File(fileName), "lori_profile.gif", "📝 **|** " + context.getAsMention(true) + context.legacyLocale["PEFIL_PROFILE"]) // E agora envie o arquivo
+			val outputFile = File(fileName)
+
+			if (FeatureFlags.OPTIMIZE_ANIMATED_PROFILES)
+				MiscUtils.optimizeGIF(outputFile)
+
+			context.sendFile(outputFile, "lori_profile.gif", "📝 **|** " + context.getAsMention(true) + context.legacyLocale["PEFIL_PROFILE"]) // E agora envie o arquivo
 		}
 	}
 
