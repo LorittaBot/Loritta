@@ -62,7 +62,6 @@ class APIRoute : Jooby() {
 		use(GetMembersWithRolesInGuildController::class.java)
 		use(GlobalBansController::class.java)
 		use(UpdateUserBackgroundController::class.java)
-		use(UpdateGlobalRateLimitController::class.java)
 
 		// ===[ NEW WEBSITE STUFF ]===
 		use(GetLocaleController::class.java)

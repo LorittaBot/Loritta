@@ -1,7 +1,5 @@
 package net.perfectdreams.loritta.platform.discord.utils
 
-import com.mrpowergamerbr.loritta.utils.LorittaShards
-import mu.KotlinLogging
 import net.dv8tion.jda.api.utils.SessionController
 import net.dv8tion.jda.api.utils.SessionController.SessionConnectNode
 import net.dv8tion.jda.api.utils.SessionControllerAdapter
@@ -13,25 +11,8 @@ import javax.annotation.Nonnegative
  *
  * Thanks Mantaro! https://github.com/Mantaro/MantaroBot/blob/0abd5d98af728e24a5b0fb4a0ad63fc451ef8d0f/src/main/java/net/kodehawa/mantarobot/core/shard/jda/BucketedController.java
  */
-class BucketedController(val lorittaShards: LorittaShards, @Nonnegative bucketFactor: Int = 16) : SessionControllerAdapter() {
-	companion object {
-		private val logger = KotlinLogging.logger {}
-	}
-
+class BucketedController @JvmOverloads constructor(@Nonnegative bucketFactor: Int = 16) : SessionControllerAdapter() {
 	private val shardControllers: Array<SessionController?>
-
-	override fun setGlobalRatelimit(ratelimit: Long) {
-		setGlobalRatelimitWithoutRelay(ratelimit) // Primeiro vamos marcar o rate limit deste cluster
-
-		if (ratelimit > 0) { // Não precisamos sincronizar se for apenas reset, os outros clusters vão resetar sozinho quando necessário
-			logger.info { "Relaying Global Rate Limit status to other clusters..." }
-			lorittaShards.queryAllLorittaClusters("/api/v1/loritta/global-rate-limit/$ratelimit")
-		}
-	}
-
-	fun setGlobalRatelimitWithoutRelay(ratelimit: Long) {
-		globalRatelimit.set(ratelimit)
-	}
 
 	init {
 		require(bucketFactor >= 1) { "Bucket factor must be at least 1" }

@@ -156,7 +156,6 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 	var sponsors: List<Sponsor> = listOf()
 
 	val tweetTracker = TweetTracker(this)
-	var bucketedController: BucketedController? = null
 
 	init {
 		LorittaLauncher.loritta = this
@@ -195,8 +194,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 				.apply {
 					if (loritta.discordConfig.shardController.enabled) {
 						logger.info { "Using shard controller (for bots with \"sharding for very large bots\" to manage shards!" }
-						bucketedController = BucketedController(lorittaShards)
-						this.setSessionController(bucketedController)
+						this.setSessionController(BucketedController())
 					}
 				}
 				.setShardsTotal(discordConfig.discord.maxShards)
