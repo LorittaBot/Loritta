@@ -21,6 +21,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 	@Transient
 	@get:BsonIgnore
 	internal val logger = KotlinLogging.logger {}
+	var executedCount = 0
 
 	val cooldown: Int
 		get() {
@@ -35,7 +36,10 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 				loritta.config.loritta.commands.cooldown
 		}
 
-	var executedCount = 0
+	open val sendTypingStatus: Boolean
+		get() {
+			return cooldown > loritta.config.loritta.commands.imageCooldown
+		}
 
 	open fun getDescription(locale: LegacyBaseLocale): String {
 		return "Insira descrição do comando aqui!"

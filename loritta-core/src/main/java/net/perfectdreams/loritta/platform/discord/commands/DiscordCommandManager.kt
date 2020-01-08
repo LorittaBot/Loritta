@@ -331,7 +331,12 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                 command.executedCount++
 
                 if (command.hasCommandFeedback && !conf.commandOutputInPrivate) {
-                    ev.channel.sendTyping().await()
+                    if (FeatureFlags.IMPROVED_TYPING_SEND) {
+                        if (command.sendTypingStatus)
+                            ev.channel.sendTyping().await()
+                    } else {
+                        ev.channel.sendTyping().await()
+                    }
                 }
 
                 // Se estamos dentro de uma guild... (Já que mensagens privadas não possuem permissões)

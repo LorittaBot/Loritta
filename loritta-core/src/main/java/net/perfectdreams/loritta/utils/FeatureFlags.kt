@@ -41,6 +41,8 @@ object FeatureFlags {
 		get() = isEnabled(Names.AUTO_PURGE_GUILDS)
 	val OPTIMIZE_ANIMATED_PROFILES: Boolean
 		get() = isEnabled(Names.OPTIMIZE_ANIMATED_PROFILES)
+	val IMPROVED_TYPING_SEND: Boolean
+		get() = isEnabled(Names.IMPROVED_TYPING_SEND)
 
 	fun isEnabled(name: String): Boolean {
 		return loritta.config.loritta.featureFlags.contains(name)
@@ -66,5 +68,6 @@ object FeatureFlags {
 		const val UPDATE_IN_GUILD_STATS_ON_RANK_FAILURE = "update-in-guild-stats-on-rank-failure"
 		const val AUTO_PURGE_GUILDS = "auto-purge-guilds"
 		const val OPTIMIZE_ANIMATED_PROFILES = "optimize-animated-profiles"
+		const val IMPROVED_TYPING_SEND = "improved-typing-send"
 	}
 }
