@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.dao.EconomyConfig
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.math.BigDecimal
 
@@ -15,7 +16,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 		return locale["SONHOS_Description"]
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
 		val retrieveDreamsFromUser = context.getUserAt(0) ?: context.userHandle
 
 		val lorittaProfile = if (retrieveDreamsFromUser == context.userHandle) {
@@ -31,12 +32,17 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 			return
 		}
 
+		var localEconomyEnabled = false
+		var economyConfig: EconomyConfig? = null
 
-		val economyConfig = transaction(Databases.loritta) {
-			loritta.getOrCreateServerConfig(context.guild.idLong).economyConfig
+		if (!context.isPrivateChannel) { // Se não estamos em um canal privado
+			// Vamos ver se a guild atual utiliza o sistema de economia local!
+			economyConfig = transaction(Databases.loritta) {
+				loritta.getOrCreateServerConfig(context.guild.idLong).economyConfig
+			}
+
+			localEconomyEnabled = economyConfig?.enabled == true
 		}
-
-		val localEconomyEnabled = economyConfig?.enabled == true
 
 		if (context.userHandle == retrieveDreamsFromUser) {
 			if (localEconomyEnabled && economyConfig != null) { // Sistema de ecnomia local está ativado!
