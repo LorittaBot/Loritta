@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta
 
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.plugin.LorittaPlugin
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import net.perfectdreams.loritta.commands.actions.*
@@ -9,7 +10,11 @@ import net.perfectdreams.loritta.commands.administration.RoleColorCommand
 import net.perfectdreams.loritta.commands.discord.GuildBannerCommand
 import net.perfectdreams.loritta.commands.discord.RenameEmojiCommand
 import net.perfectdreams.loritta.commands.discord.RoleInfoCommand
+import net.perfectdreams.loritta.commands.economy.ScratchCardCommand
 import net.perfectdreams.loritta.commands.images.*
+import net.perfectdreams.loritta.tables.Raspadinhas
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class ArtsyJoyLori : LorittaPlugin() {
     override fun onEnable() {
@@ -60,5 +65,12 @@ class ArtsyJoyLori : LorittaPlugin() {
         registerCommand(HeadPatCommand())
         if (false)
             registerCommand(HighFiveCommand())
+        registerCommand(ScratchCardCommand())
+
+        transaction(Databases.loritta) {
+            SchemaUtils.createMissingTablesAndColumns(
+                    Raspadinhas
+            )
+        }
     }
 }
