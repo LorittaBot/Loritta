@@ -239,7 +239,7 @@ class APILoriDailyRewardView : NoVarsView() {
 									jsonObject(
 											"guild" to jsonObject(
 													"name" to guild["name"].string,
-													"iconUrl" to guild["iconUrl"].string,
+													"iconUrl" to guild["iconUrl"].nullString,
 													"id" to guild["id"].string
 											),
 											"type" to DailyGuildMissingRequirement.REQUIRES_MORE_TIME.toString(),
@@ -258,7 +258,7 @@ class APILoriDailyRewardView : NoVarsView() {
 									jsonObject(
 											"guild" to jsonObject(
 													"name" to guild["name"].string,
-													"iconUrl" to guild["iconUrl"].string,
+													"iconUrl" to guild["iconUrl"].nullString,
 													"id" to guild["id"].string
 											),
 											"type" to DailyGuildMissingRequirement.REQUIRES_MORE_XP.toString(),
