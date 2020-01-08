@@ -291,7 +291,11 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 
 			if (prize == 0) {
 				transaction(Databases.loritta) {
-					context.lorittaUser.profile.money -= 1000
+					if (1000 > context.lorittaUser.profile.money) {
+						context.lorittaUser.profile.money = 0.0
+					} else {
+						context.lorittaUser.profile.money -= 1000
+					}
 				}
 
 				context.reply(
