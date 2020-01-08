@@ -24,12 +24,8 @@ class BucketedController(val lorittaShards: LorittaShards, @Nonnegative bucketFa
 		setGlobalRatelimitWithoutRelay(ratelimit) // Primeiro vamos marcar o rate limit deste cluster
 
 		if (ratelimit > 0) { // Não precisamos sincronizar se for apenas reset, os outros clusters vão resetar sozinho quando necessário
-			val currentRatelimit = globalRatelimit.get()
-
-			if (ratelimit > currentRatelimit) { // As vezes vários requests podem atingir o global ratelimit em sequência, não iremos fazer relay se o valor for menor
-				logger.info { "Relaying Global Rate Limit status to other clusters..." }
-				lorittaShards.queryAllLorittaClusters("/api/v1/loritta/global-rate-limit/$ratelimit")
-			}
+			logger.info { "Relaying Global Rate Limit status to other clusters..." }
+			lorittaShards.queryAllLorittaClusters("/api/v1/loritta/global-rate-limit/$ratelimit")
 		}
 	}
 
