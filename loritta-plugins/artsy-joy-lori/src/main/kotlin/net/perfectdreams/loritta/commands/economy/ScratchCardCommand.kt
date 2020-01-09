@@ -80,7 +80,7 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 							mentionUser = false
 					),
 					LoriReply(
-							"**Combinação de <:loritta:664849802961485894>:** ${PANTUFA_COMBO} sonhos",
+							"**Combinação de <:pantufa:664849802793713686>:** ${PANTUFA_COMBO} sonhos",
 							mentionUser = false
 					),
 					LoriReply(
@@ -108,7 +108,7 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 		}
 	}
 
-	private suspend fun buyRaspadinha(context: DiscordCommandContext, profile: Profile, message: Message? = null) {
+	private suspend fun buyRaspadinha(context: DiscordCommandContext, profile: Profile, message: Message? = null, boughtScratchCardsInThisMessage: Int = 0) {
 		mutex.withLock {
 			if (125 > profile.money) {
 				context.reply(
@@ -186,12 +186,26 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 <:scratch_19:664139718140755986>||${transformToEmote(array[0][2])}||||${transformToEmote(array[1][2])}||||${transformToEmote(array[2][2])}||<:scratch_23:664139718266716160><:scratch_24:664139718354665492> 
 <:scratch_25:664139718354796545><:scratch_26:664139718014795779><:scratch_27:664139718237224981><:scratch_28:664139718388351007><:scratch_29:664139718430162954><:scratch_30:664139717989629968>"""
 
+			var invisibleSpoilers = ""
+			repeat(boughtScratchCardsInThisMessage) {
+				// Ao editar mensagens, os spoilers continuam abertos
+				// Como workaround, podemos adicionar spoilers invisíveis no começo da mensagem
+				invisibleSpoilers += "||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||"
+			}
+
 			val content = "${Emotes.LORI_RICH} **|** ${context.getAsMention(false)} aqui está a sua raspadinha com número $id! Raspe clicando na parte cinza e, se o seu cartão for premiado com combinações de emojis na horizontal/vertical/diagonal, clique em ${Emotes.LORI_RICH} para receber a sua recompensa! Mas cuidado, não tente resgatar prêmios de uma raspadinha que não tem prêmios!! Se você quiser comprar um novo ticket pagando 125 sonhos, aperte em \uD83D\uDD04!!\n$scratchCardTemplate"
-			val theMessage = message?.edit(MessageBuilder().append(content).build(), clearReactions = false) ?: context.sendMessage(content).handle
+			var contentWithInvisibleSpoilers = "$invisibleSpoilers$content"
+			if (content.length >= 2000 && message != null) {
+				// Se a mensagem está ficando grande demais por causa dos spoilers, vamos editar para que seja vazia para "liberar" os spoilers usados
+				message.edit(MessageBuilder().append("...").build())
+				contentWithInvisibleSpoilers = content
+			}
+
+			val theMessage = message?.edit(MessageBuilder().append(contentWithInvisibleSpoilers).build(), clearReactions = false) ?: context.sendMessage(contentWithInvisibleSpoilers).handle
 
 			theMessage.onReactionByAuthor(context) {
 				if (it.reactionEmote.isEmote("\uD83D\uDD04")) {
-					buyRaspadinha(context, LorittaLauncher.loritta.getOrCreateLorittaProfile(context.handle.idLong), theMessage)
+					buyRaspadinha(context, LorittaLauncher.loritta.getOrCreateLorittaProfile(context.handle.idLong), theMessage, boughtScratchCardsInThisMessage + 1)
 				}
 
 				if (it.reactionEmote.isEmote("593979718919913474")) {
