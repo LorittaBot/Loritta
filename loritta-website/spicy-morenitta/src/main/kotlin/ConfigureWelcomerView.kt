@@ -240,16 +240,6 @@ Aliás, continue sendo incrível! (E eu sou muito fofa! :3)""",
 					true,
 					Placeholders.DEFAULT_PLACEHOLDERS
 			)
-
-			LoriDashboard.configureTextArea(
-					jq("#kickMessage"),
-					true,
-					serverConfig,
-					true,
-					jq("#canalLeaveId"),
-					true,
-					Placeholders.DEFAULT_PLACEHOLDERS
-			)
 		})
 	}
 

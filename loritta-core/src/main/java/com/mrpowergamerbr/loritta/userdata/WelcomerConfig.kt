@@ -24,10 +24,6 @@ class WelcomerConfig {
 	@AllowReflection
 	var banMessage: String = ""
 	@AllowReflection
-	var tellOnKick: Boolean = false
-	@AllowReflection
-	var kickMessage: String = ""
-	@AllowReflection
 	var deleteJoinMessagesAfter: Long? = null
 	@AllowReflection
 	var deleteLeaveMessagesAfter: Long? = null

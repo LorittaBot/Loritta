@@ -95,6 +95,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 				.build<Long, UserMetaHolder>().asMap()
 
+		val bannedUsers = Caffeine.newBuilder().expireAfterWrite(10, TimeUnit.SECONDS).maximumSize(100)
+				.build<String, Boolean>()
+
 		fun sendUsernameChange(user: User, usernameChange: UserMetaHolder) {
 			val oldName = usernameChange.oldName ?: user.name
 			val oldDiscriminator = usernameChange.oldDiscriminator ?: user.discriminator
@@ -417,6 +420,8 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		if (DebugLog.cancelAllEvents)
 			return
+
+		bannedUsers.put("${event.guild.id}#${event.user.id}", true)
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			// Fazer relay de bans

@@ -2,18 +2,16 @@ package com.mrpowergamerbr.loritta.modules
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.LorittaLauncher.loritta
+import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.MessageUtils
-import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.audit.ActionType
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent
@@ -176,10 +174,6 @@ object WelcomeModule {
 	}
 
 	suspend fun handleLeave(event: GuildMemberLeaveEvent, serverConfig: MongoServerConfig) {
-		logger.trace { "Member = ${event.member}, Waiting 500ms for $event before processing member quit messages... (audit log delay)" }
-		delay(500) // esperar 0.5ms antes de avisar
-		logger.trace { "Member = ${event.member}, Waited for 500ms for $event!" }
-
 		val joinLeaveConfig = serverConfig.joinLeaveConfig
 
 		logger.trace { "Member = ${event.member}, Guild ${event.guild} has tellOnLeave = ${joinLeaveConfig.tellOnLeave} and the leaveMessage is ${joinLeaveConfig.leaveMessage}, canalLeaveId = ${joinLeaveConfig.canalLeaveId}" }
@@ -214,43 +208,15 @@ object WelcomeModule {
 
 						val customTokens = mutableMapOf<String, String>()
 
-						if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
-							logger.debug { "Member = ${event.member}, I have VIEW_AUDIT_LOGS permission in $guild, getting information from there..."}
+						// Verificar se o usuário foi banido e, se sim, mudar a mensagem caso necessário
+						val bannedUserKey = "${event.guild.id}#${event.user.id}"
 
-							val auditLogs = guild.retrieveAuditLogs().await()
-							logger.trace { "Member = ${event.member}, There are ${auditLogs.size} entries in $guild"}
-
-							if (auditLogs.isNotEmpty()) {
-								val entry = auditLogs.firstOrNull { it.targetId == event.user.id }
-
-								logger.debug { "Member = ${event.member}, While trying to retrieve an audit log entry in $guild for it.targetId == event.user.id (${event.user.id}), I got $entry"}
-
-								if (entry != null) {
-									logger.trace { "Member = ${event.member}, Entry is not null for $guild! ActionType is ${entry.type}" }
-									logger.trace { "Member = ${event.member}, joinLeaveConfig.tellOnKick = ${joinLeaveConfig.tellOnKick}" }
-									logger.trace { "Member = ${event.member}, joinLeaveConfig.kickMessage = ${joinLeaveConfig.kickMessage}" }
-									logger.trace { "Member = ${event.member}, joinLeaveConfig.tellOnBan = ${joinLeaveConfig.tellOnBan}" }
-									logger.trace { "Member = ${event.member}, joinLeaveConfig.banMessage = ${joinLeaveConfig.banMessage}" }
-
-									if (joinLeaveConfig.tellOnKick && entry.type == ActionType.KICK) {
-										if (joinLeaveConfig.kickMessage.isNotEmpty()) {
-											msg = joinLeaveConfig.kickMessage
-											customTokens["reason"] = entry.reason ?: "\uD83E\uDD37"
-											customTokens["@staff"] = entry.user?.asMention ?: "???"
-											customTokens["staff"] = entry.user?.name ?: "???"
-										}
-									}
-									if (joinLeaveConfig.tellOnBan && entry.type == ActionType.BAN) {
-										if (joinLeaveConfig.banMessage.isNotEmpty()) {
-											msg = joinLeaveConfig.banMessage
-											customTokens["reason"] = entry.reason ?: "\uD83E\uDD37"
-											customTokens["@staff"] = entry.user?.asMention ?: "???"
-											customTokens["staff"] = entry.user?.name ?: "???"
-										}
-									}
-								}
-							}
+						if (joinLeaveConfig.tellOnBan && EventLogListener.bannedUsers.getIfPresent(bannedUserKey) == true) {
+							if (joinLeaveConfig.banMessage.isNotEmpty())
+								msg = joinLeaveConfig.banMessage
 						}
+						// Invalidar, já que a Loritta faz cache mesmo que o servidor não use a função
+						EventLogListener.bannedUsers.invalidate(bannedUserKey)
 
 						if (msg.isNotEmpty()) {
 							logger.debug { "Member = ${event.member}, Sending quit message \"$msg\" in $textChannel at $guild"}
