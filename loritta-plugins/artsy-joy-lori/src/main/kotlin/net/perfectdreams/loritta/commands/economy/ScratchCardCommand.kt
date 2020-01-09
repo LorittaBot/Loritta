@@ -108,7 +108,8 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 		}
 	}
 
-	private suspend fun buyRaspadinha(context: DiscordCommandContext, profile: Profile, message: Message? = null, boughtScratchCardsInThisMessage: Int = 0) {
+	private suspend fun buyRaspadinha(context: DiscordCommandContext, profile: Profile, message: Message? = null, _boughtScratchCardsInThisMessage: Int = 0) {
+		var boughtScratchCardsInThisMessage = _boughtScratchCardsInThisMessage
 		mutex.withLock {
 			if (125 > profile.money) {
 				context.reply(
@@ -197,8 +198,9 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 			var contentWithInvisibleSpoilers = "$invisibleSpoilers$content"
 			if (contentWithInvisibleSpoilers.length >= 2000 && message != null) {
 				// Se a mensagem está ficando grande demais por causa dos spoilers, vamos editar para que seja vazia para "liberar" os spoilers usados
-				message.edit(MessageBuilder().append("...").build())
+				message.edit(MessageBuilder().append("...").build(), clearReactions = false)
 				contentWithInvisibleSpoilers = content
+				boughtScratchCardsInThisMessage = -1
 			}
 
 			val theMessage = message?.edit(MessageBuilder().append(contentWithInvisibleSpoilers).build(), clearReactions = false) ?: context.sendMessage(contentWithInvisibleSpoilers).handle
