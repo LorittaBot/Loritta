@@ -21,7 +21,6 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.audit.ActionType
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.guild.GuildBanEvent
 import net.dv8tion.jda.api.events.guild.GuildUnbanEvent
@@ -325,16 +324,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						var deletedMessage = "\uD83D\uDCDD ${locale["EVENTLOG_MESSAGE_DELETED", storedMessage.content, "<#${storedMessage.channelId}>"]}"
 
-						if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
-							val auditEntry = event.guild.retrieveAuditLogs().await().firstOrNull()
-
-							if (auditEntry != null && auditEntry.type == ActionType.MESSAGE_DELETE) {
-								if (auditEntry.targetIdLong == storedMessage.authorId) {
-									deletedMessage += "\n" + locale["EVENTLOG_MESSAGE_DeletedBy", auditEntry.user?.asMention ?: "???"] + "\n"
-								}
-							}
-						}
-
 						if (storedMessage.storedAttachments.isNotEmpty()) {
 							deletedMessage += "\n${locale.get("EVENTLOG_MESSAGE_DELETED_UPLOADS")}\n" + storedMessage.storedAttachments.joinToString(separator = "\n")
 						}
@@ -472,15 +461,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				var message = "\uD83D\uDEAB **${locale["EVENTLOG_Banned", event.user.name]}**"
 
-				if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
-					// Caso a Loritta consiga ver o audit log, vamos pegar quem baniu e o motivo do ban!
-					val auditLog = event.guild.retrieveAuditLogs().await().first()
-
-					if (auditLog.type == ActionType.BAN) {
-						message += "\n**${locale["BAN_PunishedBy"]}:** ${auditLog.user?.asMention ?: "???"}"
-						message += "\n**${locale["BAN_PunishmentReason"]}:** `${if (auditLog.reason == null) "\uD83E\uDD37 Nenhum motivo" else auditLog.reason}`"
-					}
-				}
 				embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
 				embed.setDescription(message)
 				embed.setFooter(locale["EVENTLOG_USER_ID", event.user.id], null)
@@ -531,15 +511,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				embed.setColor(Color(35, 209, 96))
 
 				var message = "\uD83E\uDD1D **${locale["EVENTLOG_Unbanned", event.user.name]}**"
-
-				if (event.guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS)) {
-					// Caso a Loritta consiga ver o audit log, vamos pegar quem baniu e o motivo do ban!
-					val auditLog = event.guild.retrieveAuditLogs().await().first()
-
-					if (auditLog.type == ActionType.UNBAN) {
-						message += "\n${locale["EVENTLOG_UnbannedBy", auditLog.user?.asMention ?: "???"]}"
-					}
-				}
 
 				embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
 				embed.setDescription(message)
