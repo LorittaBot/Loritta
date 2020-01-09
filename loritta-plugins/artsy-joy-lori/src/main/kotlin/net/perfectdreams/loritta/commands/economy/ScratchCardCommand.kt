@@ -129,22 +129,22 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 					val randomNumber = Loritta.RANDOM.nextInt(1, 101)
 
 					when (randomNumber) {
-						100 -> { // 1
+						in 99..100 -> { // 1
 							array[x][y] = 'L'
 						}
-						in 94..99 -> { // 3
+						in 93..99 -> { // 3
 							array[x][y] = 'P'
 						}
-						in 78..93 -> { // 6
+						in 77..92 -> { // 6
 							array[x][y] = 'B'
 						}
-						in 59..77 -> { // 20
+						in 58..76 -> { // 20
 							array[x][y] = 'D'
 						}
-						in 34..58 -> { // 25
+						in 33..57 -> { // 25
 							array[x][y] = 'G'
 						}
-						in 0..33 -> { // 25
+						in 0..32 -> { // 25
 							array[x][y] = 'T'
 						}
 					}
