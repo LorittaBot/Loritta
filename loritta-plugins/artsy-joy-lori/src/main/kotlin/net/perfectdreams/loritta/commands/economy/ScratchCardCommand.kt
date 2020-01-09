@@ -200,7 +200,7 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 				// Se a mensagem está ficando grande demais por causa dos spoilers, vamos editar para que seja vazia para "liberar" os spoilers usados
 				message.edit(MessageBuilder().append("...").build(), clearReactions = false)
 				contentWithInvisibleSpoilers = content
-				boughtScratchCardsInThisMessage = -1
+				boughtScratchCardsInThisMessage = 0
 			}
 
 			val theMessage = message?.edit(MessageBuilder().append(contentWithInvisibleSpoilers).build(), clearReactions = false) ?: context.sendMessage(contentWithInvisibleSpoilers).handle
