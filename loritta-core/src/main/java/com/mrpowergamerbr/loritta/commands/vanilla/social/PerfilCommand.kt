@@ -189,7 +189,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			)
 			return
 		}
-		if (contextUser == null && context.args.isNotEmpty() && context.args.first() == "shop") {
+		if (contextUser == null && context.args.isNotEmpty() && (context.args.first() == "shop" || context.args.first() == "loja")) {
 			context.reply(LoriReply(context.locale["commands.social.profile.profileshop","${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/profiles"], Emotes.LORI_OWO))
 			return
 		}
