@@ -6,12 +6,16 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.extensions.doReactions
+import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
+import com.mrpowergamerbr.loritta.utils.onReactionByAuthor
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
+import net.dv8tion.jda.api.MessageBuilder
+import net.dv8tion.jda.api.entities.Message
 import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.*
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
@@ -104,7 +108,7 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 		}
 	}
 
-	private suspend fun buyRaspadinha(context: DiscordCommandContext, profile: Profile) {
+	private suspend fun buyRaspadinha(context: DiscordCommandContext, profile: Profile, message: Message? = null) {
 		mutex.withLock {
 			if (125 > profile.money) {
 				context.reply(
@@ -182,8 +186,10 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 <:scratch_19:664139718140755986>||${transformToEmote(array[0][2])}||||${transformToEmote(array[1][2])}||||${transformToEmote(array[2][2])}||<:scratch_23:664139718266716160><:scratch_24:664139718354665492> 
 <:scratch_25:664139718354796545><:scratch_26:664139718014795779><:scratch_27:664139718237224981><:scratch_28:664139718388351007><:scratch_29:664139718430162954><:scratch_30:664139717989629968>"""
 
-			val message = context.sendMessage("${Emotes.LORI_RICH} **|** ${context.getAsMention(false)} aqui está a sua raspadinha com número $id! Raspe clicando na parte cinza e, se o seu cartão for premiado com combinações de emojis na horizontal/vertical/diagonal, clique em ${Emotes.LORI_RICH} para receber a sua recompensa! Mas cuidado, não tente resgatar prêmios de uma raspadinha que não tem prêmios!! Se você quiser comprar um novo ticket pagando 125 sonhos, aperte em \uD83D\uDD04!!\n$scratchCardTemplate")
-			message.handle.onReactionAddByAuthor(context) {
+			val content = "${Emotes.LORI_RICH} **|** ${context.getAsMention(false)} aqui está a sua raspadinha com número $id! Raspe clicando na parte cinza e, se o seu cartão for premiado com combinações de emojis na horizontal/vertical/diagonal, clique em ${Emotes.LORI_RICH} para receber a sua recompensa! Mas cuidado, não tente resgatar prêmios de uma raspadinha que não tem prêmios!! Se você quiser comprar um novo ticket pagando 125 sonhos, aperte em \uD83D\uDD04!!\n$scratchCardTemplate"
+			val theMessage = message?.edit(MessageBuilder().append(content).build(), clearReactions = false) ?: context.sendMessage(content).handle
+
+			theMessage.onReactionByAuthor(context) {
 				if (it.reactionEmote.isEmote("\uD83D\uDD04")) {
 					buyRaspadinha(context, LorittaLauncher.loritta.getOrCreateLorittaProfile(context.handle.idLong))
 				}
@@ -192,8 +198,8 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 					checkRaspadinha(context, LorittaLauncher.loritta.getOrCreateLorittaProfile(context.handle.idLong), id.value)
 				}
 			}
-			message.handle.addReaction("lori_rica:593979718919913474").queue()
-			message.handle.addReaction("\uD83D\uDD04").queue()
+
+			theMessage.doReactions("lori_rica:593979718919913474", "\uD83D\uDD04")
 		}
 	}
 
