@@ -1,6 +1,8 @@
 package net.perfectdreams.loritta.commands.economy
 
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
@@ -45,9 +47,9 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 	@Subcommand
 	suspend fun root(context: DiscordCommandContext, locale: BaseLocale) {
 		if (context.args.firstOrNull() == "ganhar" || context.args.firstOrNull() == "win" || context.args.firstOrNull() == "claim") {
-			checkRaspadinha(context, context.args.getOrNull(1)?.toLongOrNull())
+			checkRaspadinha(context, context.lorittaUser.profile, context.args.getOrNull(1)?.toLongOrNull())
 		} else if (context.args.firstOrNull() == "comprar" || context.args.firstOrNull() == "buy") {
-			buyRaspadinha(context)
+			buyRaspadinha(context, context.lorittaUser.profile)
 		} else {
 			context.reply(
 					LoriReply(
@@ -102,9 +104,9 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 		}
 	}
 
-	private suspend fun buyRaspadinha(context: DiscordCommandContext) {
+	private suspend fun buyRaspadinha(context: DiscordCommandContext, profile: Profile) {
 		mutex.withLock {
-			if (125 > context.lorittaUser.profile.money) {
+			if (125 > profile.money) {
 				context.reply(
 						LoriReply(
 								"Você precisa de 125 sonhos para poder comprar uma raspadinha!",
@@ -115,7 +117,7 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 			}
 
 			transaction(Databases.loritta) {
-				context.lorittaUser.profile.money -= 125
+				profile.money -= 125
 			}
 
 			logger.info { "User ${context.userHandle.idLong} bought one raspadinha ticket!" }
@@ -183,11 +185,11 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 			val message = context.sendMessage("${Emotes.LORI_RICH} **|** ${context.getAsMention(false)} aqui está a sua raspadinha com número $id! Raspe clicando na parte cinza e, se o seu cartão for premiado com combinações de emojis na horizontal/vertical/diagonal, clique em ${Emotes.LORI_RICH} para receber a sua recompensa! Mas cuidado, não tente resgatar prêmios de uma raspadinha que não tem prêmios!! Se você quiser comprar um novo ticket pagando 125 sonhos, aperte em \uD83D\uDD04!!\n$scratchCardTemplate")
 			message.handle.onReactionAddByAuthor(context) {
 				if (it.reactionEmote.isEmote("\uD83D\uDD04")) {
-					buyRaspadinha(context)
+					buyRaspadinha(context, LorittaLauncher.loritta.getOrCreateLorittaProfile(context.handle.idLong))
 				}
 
 				if (it.reactionEmote.isEmote("593979718919913474")) {
-					checkRaspadinha(context, id.value)
+					checkRaspadinha(context, LorittaLauncher.loritta.getOrCreateLorittaProfile(context.handle.idLong), id.value)
 				}
 			}
 			message.handle.addReaction("lori_rica:593979718919913474").queue()
@@ -195,7 +197,7 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 		}
 	}
 
-	private suspend fun checkRaspadinha(context: DiscordCommandContext, id: Long?) {
+	private suspend fun checkRaspadinha(context: DiscordCommandContext, profile: Profile, id: Long?) {
 		mutex.withLock {
 			val raspadinha = transaction(Databases.loritta) {
 				Raspadinhas.select {
@@ -275,12 +277,12 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 			val gessyCombos = checkArrayFor('G')
 			val tobiasCombos = checkArrayFor('T')
 
-			prize += (loriCombos * ScratchCardCommand.LORITTA_COMBO)
-			prize += (pantufaCombos * ScratchCardCommand.PANTUFA_COMBO)
-			prize += (gabiCombos * ScratchCardCommand.GABI_COMBO)
-			prize += (dokyoCombos * ScratchCardCommand.DOKYO_COMBO)
-			prize += (gessyCombos * ScratchCardCommand.GESSY_COMBO)
-			prize += (tobiasCombos * ScratchCardCommand.TOBIAS_COMBO)
+			prize += (loriCombos * LORITTA_COMBO)
+			prize += (pantufaCombos * PANTUFA_COMBO)
+			prize += (gabiCombos * GABI_COMBO)
+			prize += (dokyoCombos * DOKYO_COMBO)
+			prize += (gessyCombos * GESSY_COMBO)
+			prize += (tobiasCombos * TOBIAS_COMBO)
 
 			transaction(Databases.loritta) {
 				Raspadinhas.update({ Raspadinhas.id eq id }) {
@@ -291,10 +293,10 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 
 			if (prize == 0) {
 				transaction(Databases.loritta) {
-					if (1000 > context.lorittaUser.profile.money) {
-						context.lorittaUser.profile.money = 0.0
+					if (1000 > profile.money) {
+						profile.money = 0.0
 					} else {
-						context.lorittaUser.profile.money -= 1000
+						profile.money -= 1000
 					}
 				}
 
@@ -306,7 +308,7 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 			} else {
 				ScratchCardCommand.logger.info { "User ${context.userHandle.idLong} won $prize sonhos in the raspadinha! Combos: Lori: $loriCombos; Pantufa: $pantufaCombos; Gabi: $gabiCombos; Dokyo: $dokyoCombos; Gessy: $gessyCombos; Tobias: $tobiasCombos" }
 				transaction(Databases.loritta) {
-					context.lorittaUser.profile.money += prize
+					profile.money += prize
 				}
 				context.reply(
 						LoriReply(
