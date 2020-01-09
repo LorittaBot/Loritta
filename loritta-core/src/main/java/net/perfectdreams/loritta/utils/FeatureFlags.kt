@@ -43,6 +43,8 @@ object FeatureFlags {
 		get() = isEnabled(Names.OPTIMIZE_ANIMATED_PROFILES)
 	val IMPROVED_TYPING_SEND: Boolean
 		get() = isEnabled(Names.IMPROVED_TYPING_SEND)
+	val COMMANDS_ON_THE_WEBSITE: Boolean
+		get() = isEnabled(Names.COMMANDS_ON_THE_WEBSITE)
 
 	fun isEnabled(name: String): Boolean {
 		return loritta.config.loritta.featureFlags.contains(name)
@@ -69,5 +71,6 @@ object FeatureFlags {
 		const val AUTO_PURGE_GUILDS = "auto-purge-guilds"
 		const val OPTIMIZE_ANIMATED_PROFILES = "optimize-animated-profiles"
 		const val IMPROVED_TYPING_SEND = "improved-typing-send"
+		const val COMMANDS_ON_THE_WEBSITE = "commands-on-the-website"
 	}
 }

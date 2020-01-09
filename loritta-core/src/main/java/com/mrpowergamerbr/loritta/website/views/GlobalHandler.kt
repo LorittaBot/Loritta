@@ -155,12 +155,10 @@ object GlobalHandler {
 		apiViews.add(APIUpdateServerConfigView())
 		apiViews.add(APILoriDailyRewardView())
 		apiViews.add(APILoriDailyRewardStatusView())
-		apiViews.add(APIGetCommandsView())
 
 		views.add(HomeView())
 		views.add(TranslationView())
 		views.add(DashboardView())
-		views.add(CommandsView())
 		views.add(DailyView())
 		views.add(SupportView())
 		views.add(NashornDocsView())

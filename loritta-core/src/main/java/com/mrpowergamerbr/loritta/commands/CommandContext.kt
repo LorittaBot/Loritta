@@ -17,6 +17,7 @@ import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.exceptions.PermissionException
+import net.perfectdreams.loritta.utils.FeatureFlags
 import org.jsoup.Jsoup
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
@@ -130,7 +131,7 @@ class CommandContext(val config: MongoServerConfig, var lorittaUser: LorittaUser
 		if (cmdOptions.override && cmdOptions.commandOutputInPrivate) {
 			privateReply = cmdOptions.commandOutputInPrivate
 		}
-		if (privateReply || cmd is AjudaCommand) {
+		if (privateReply || (cmd is AjudaCommand && !FeatureFlags.COMMANDS_ON_THE_WEBSITE)) {
 			val privateChannel = lorittaUser.user.openPrivateChannel().await()
 			return privateChannel.sendMessageAsync(message)
 		} else {
@@ -240,7 +241,7 @@ class CommandContext(val config: MongoServerConfig, var lorittaUser: LorittaUser
 		if (cmdOptions.override && cmdOptions.commandOutputInPrivate) {
 			privateReply = cmdOptions.commandOutputInPrivate
 		}
-		if (privateReply || cmd is AjudaCommand) {
+		if (privateReply || (cmd is AjudaCommand && !FeatureFlags.COMMANDS_ON_THE_WEBSITE)) {
 			val privateChannel = lorittaUser.user.openPrivateChannel().await()
 			val sentMessage = privateChannel.sendMessageAsync(message)
 			return sentMessage

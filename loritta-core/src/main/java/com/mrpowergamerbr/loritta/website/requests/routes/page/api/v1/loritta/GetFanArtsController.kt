@@ -17,7 +17,7 @@ import org.jooby.Status
 import org.jooby.mvc.GET
 import org.jooby.mvc.Path
 
-@Path("/api/v1/loritta/fan-arts")
+@Path("/api/v1/loritta/commands")
 class GetFanArtsController {
 	fun filterEntries(node: ObjectNode, vararg fields: String): JsonNode {
 		val toBeRemoved = mutableSetOf<String>()

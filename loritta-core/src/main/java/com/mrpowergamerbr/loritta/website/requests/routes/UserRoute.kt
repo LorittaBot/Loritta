@@ -24,6 +24,7 @@ class UserRoute : Jooby() {
 		use(BlogController::class.java)
 		use(BlogPostController::class.java)
 		use(CommunityGuildelinesController::class.java)
+		use(CommandsController::class.java)
 
 		// ===[ LANDING PAGES ]===
 		use(BrazilianBotLandingPageController::class.java)
