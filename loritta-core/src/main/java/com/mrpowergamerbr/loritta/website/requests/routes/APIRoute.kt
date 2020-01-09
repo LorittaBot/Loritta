@@ -47,7 +47,6 @@ class APIRoute : Jooby() {
 		use(UsersController::class.java)
 		use(GetStatusController::class.java)
 		use(GetMutualGuildsController::class.java)
-		use(SendHelpController::class.java)
 		use(RegisterUsernameChangeController::class.java)
 		use(GetRaffleStatusController::class.java)
 		use(UpdateReadyController::class.java)
