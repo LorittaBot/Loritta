@@ -226,7 +226,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			loritta.profileDesignManager.publicDesigns
 		}
 
-		var type = if (user.idLong == context.userHandle.idLong) {
+		var type = if (user.idLong == context.userHandle.idLong && contextUser == null) {
 			context.rawArgs.getOrNull(0)
 		} else {
 			context.rawArgs.getOrNull(1)
