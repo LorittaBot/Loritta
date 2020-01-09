@@ -103,6 +103,7 @@ class SpicyMorenitta : Logging {
 
 	var userIdentification: UserIdentification? = null
 	val pageSpecificTasks = mutableListOf<Job>()
+	var currentPath: String? = null
 
 	@UseExperimental(ImplicitReflectionSerializer::class)
 	fun start() {
@@ -229,10 +230,17 @@ class SpicyMorenitta : Logging {
 			}
 		}
 
+		currentPath = window.location.pathname
+
 		window.onpopstate = {
-			debug("History changed! Trying to load the new page...")
-			launch {
-				sendSwitchPageRequest(socket, window.location.pathname)
+			if (currentPath == window.location.pathname) {
+				debug("History changed but seems to be a hash change (maybe?), ignoring onpopstate event...")
+			} else {
+				debug("History changed! Trying to load the new page... New pathname is ${window.location.pathname}")
+				currentPath = window.location.pathname
+				launch {
+					sendSwitchPageRequest(socket, window.location.pathname)
+				}
 			}
 		}
 	}
@@ -570,7 +578,7 @@ class SpicyMorenitta : Logging {
 
 		// document.select<HTMLDivElement>("#content").remove()
 		// document.body?.appendChild(temporaryBody)
-
+		currentPath = path
 		window.history.pushState(null, "", path)
 
 		onPageChange(socket, path, temporaryBody)

@@ -38,6 +38,11 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
             val entriesDiv = document.select<HTMLDivElement>("#commands")
 
             var index = 0
+
+            entriesDiv.append {
+
+            }
+
             for (category in CommandCategory.values().filter { it != CommandCategory.MAGIC }) {
                 val commands = list.filter { it.category == category }
                 if (commands.isNotEmpty()) {
@@ -47,6 +52,8 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
                             classes += " wobbly-bg"
 
                         div(classes = classes) {
+                            id = "category-${category.name.toLowerCase().replace("_", "-")}"
+
                             if (index % 2 == 0) {
                                 div {
                                     style = "text-align: center;"
@@ -88,7 +95,7 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
                                     div {
                                         style = "text-align: center;"
                                         h1 {
-                                            +category.getLocalizedName(locale)
+                                            + category.getLocalizedName(locale)
                                         }
                                     }
                                     p {
