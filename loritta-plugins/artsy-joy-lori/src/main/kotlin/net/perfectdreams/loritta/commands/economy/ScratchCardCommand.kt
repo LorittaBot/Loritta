@@ -190,7 +190,7 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 			repeat(boughtScratchCardsInThisMessage) {
 				// Ao editar mensagens, os spoilers continuam abertos
 				// Como workaround, podemos adicionar spoilers invisíveis no começo da mensagem
-				invisibleSpoilers += "||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||"
+				invisibleSpoilers += "||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||"
 			}
 
 			val content = "${Emotes.LORI_RICH} **|** ${context.getAsMention(false)} aqui está a sua raspadinha com número $id! Raspe clicando na parte cinza e, se o seu cartão for premiado com combinações de emojis na horizontal/vertical/diagonal, clique em ${Emotes.LORI_RICH} para receber a sua recompensa! Mas cuidado, não tente resgatar prêmios de uma raspadinha que não tem prêmios!! Se você quiser comprar um novo ticket pagando 125 sonhos, aperte em \uD83D\uDD04!!\n$scratchCardTemplate"
