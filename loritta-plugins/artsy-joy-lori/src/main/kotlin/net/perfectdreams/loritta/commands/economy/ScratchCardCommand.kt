@@ -7,7 +7,6 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.extensions.doReactions
 import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -219,7 +218,10 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 				}
 			}
 
-			theMessage.doReactions("lori_rica:593979718919913474", "\uD83D\uDD04")
+			if (message == null) {
+				theMessage.addReaction("lori_rica:593979718919913474").queue()
+				theMessage.addReaction("\uD83D\uDD04").queue()
+			}
 		}
 	}
 
