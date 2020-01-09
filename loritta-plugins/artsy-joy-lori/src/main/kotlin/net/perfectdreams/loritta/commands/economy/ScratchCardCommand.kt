@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.commands.economy
 
+import com.google.common.cache.CacheBuilder
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.dao.Profile
@@ -25,10 +26,12 @@ import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
+import java.util.concurrent.TimeUnit
 
 class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), CommandCategory.DISCORD) {
 	companion object {
-		val mutex = Mutex()
+		private val mutexes = CacheBuilder.newBuilder().expireAfterWrite(1L, TimeUnit.MINUTES).build<Long, Mutex>()
+				.asMap()
 		private const val LORITTA_COMBO = 100_000
 		private const val PANTUFA_COMBO = 10_000
 		private const val GABI_COMBO = 1_000
@@ -110,6 +113,7 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 
 	private suspend fun buyRaspadinha(context: DiscordCommandContext, profile: Profile, message: Message? = null, _boughtScratchCardsInThisMessage: Int = 0) {
 		var boughtScratchCardsInThisMessage = _boughtScratchCardsInThisMessage
+		val mutex = mutexes.getOrPut(context.userHandle.idLong, { Mutex() })
 		mutex.withLock {
 			if (125 > profile.money) {
 				context.reply(
@@ -220,6 +224,7 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 	}
 
 	private suspend fun checkRaspadinha(context: DiscordCommandContext, profile: Profile, id: Long?) {
+		val mutex = mutexes.getOrPut(context.userHandle.idLong, { Mutex() })
 		mutex.withLock {
 			val raspadinha = transaction(Databases.loritta) {
 				Raspadinhas.select {
@@ -328,7 +333,7 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 						)
 				)
 			} else {
-				ScratchCardCommand.logger.info { "User ${context.userHandle.idLong} won $prize sonhos in the raspadinha! Combos: Lori: $loriCombos; Pantufa: $pantufaCombos; Gabi: $gabiCombos; Dokyo: $dokyoCombos; Gessy: $gessyCombos; Tobias: $tobiasCombos" }
+				logger.info { "User ${context.userHandle.idLong} won $prize sonhos in the raspadinha! Combos: Lori: $loriCombos; Pantufa: $pantufaCombos; Gabi: $gabiCombos; Dokyo: $dokyoCombos; Gessy: $gessyCombos; Tobias: $tobiasCombos" }
 				transaction(Databases.loritta) {
 					profile.money += prize
 				}
