@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.utils.debug
 
 import com.mongodb.Mongo
 import com.mrpowergamerbr.loritta.LorittaLauncher
-import com.mrpowergamerbr.loritta.amino.AminoRepostTask
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.modules.InviteLinkModule
 import com.mrpowergamerbr.loritta.threads.NewRssFeedTask
@@ -59,7 +58,6 @@ object DebugLog {
 		logger.info("> Music Stuff")
 		logger.info("youTubeKeys.size: ${loritta.youtubeKeys.size}")
 		logger.info("> Tasks Stuff")
-		logger.info("storedLastEntries.size: ${AminoRepostTask.storedLastIds.size}")
 		logger.info("loritta.twitch.cachedGames: ${loritta.twitch.cachedGames.size}")
 		logger.info("loritta.twitch.cachedStreamerInfo: ${loritta.twitch.cachedStreamerInfo.size}")
 		logger.info("gameInfoCache.size: ${loritta.twitch.cachedGames.size}")

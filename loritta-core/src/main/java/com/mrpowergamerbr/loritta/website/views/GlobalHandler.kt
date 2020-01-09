@@ -175,7 +175,6 @@ object GlobalHandler {
 		views.add(ConfigurePermissionsView())
 		views.add(ConfigureWelcomerView())
 		views.add(ConfigureStarboardView())
-		views.add(ConfigureAminoView())
 		views.add(ConfigureYouTubeView())
 		views.add(ConfigureLivestreamView())
 		views.add(ConfigureNashornCommandsView())

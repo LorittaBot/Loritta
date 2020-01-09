@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder
-import com.mrpowergamerbr.loritta.amino.AminoRepostTask
 import com.mrpowergamerbr.loritta.analytics.AnalyticSender
 import com.mrpowergamerbr.loritta.analytics.InternalAnalyticSender
 import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
@@ -25,7 +24,6 @@ object LorittaTasks {
 		if (loritta.config.loritta.environment == EnvironmentType.PRODUCTION)
 			scheduleWithFixedDelay(LorittaLandRoleSync(), 0L, 1L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(SponsorsSyncTask(), 0L, 1L, TimeUnit.MINUTES)
-		scheduleWithFixedDelay(AminoRepostTask(), 0L, 1L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(CreateYouTubeWebhooksTask(), 0L, 1L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(CreateTwitchWebhooksTask(), 0L, 1L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(OptimizeAssetsTask(), 0L, 5L, TimeUnit.SECONDS)

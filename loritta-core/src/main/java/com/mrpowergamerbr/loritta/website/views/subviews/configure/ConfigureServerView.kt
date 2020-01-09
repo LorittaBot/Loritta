@@ -79,8 +79,6 @@ class ConfigureServerView : ConfigureView() {
 
 				if (target is PermissionsConfig) {
 					response = handlePermissions(serverConfig, receivedPayload)
-				} else if (target is AminoConfig) {
-					response = handleCommunities(serverConfig, receivedPayload)
 				} else if (target is YouTubeConfig) {
 					response = handleYouTubeChannels(serverConfig, receivedPayload)
 				}  else if (target is LivestreamConfig) {
@@ -222,26 +220,6 @@ class ConfigureServerView : ConfigureView() {
 			config.permissionsConfig.roles[element.key] = roleConfig
 		}
 		return response
-	}
-
-	fun handleCommunities(config: MongoServerConfig, receivedPayload: JsonObject): String {
-		config.aminoConfig.aminos.clear()
-		val communities = receivedPayload["communities"].array
-
-		config.aminoConfig.fixAminoImages = receivedPayload["fixAminoImages"].bool
-		config.aminoConfig.syncAmino = receivedPayload["syncAmino"].bool
-
-		for (community in communities) {
-			val repostToChannelId = community["repostToChannelId"].string
-			val inviteUrl = community["inviteUrl"].string
-			val communityId = community["communityId"].string
-
-			val amino = AminoConfig.AminoInfo(inviteUrl, communityId, repostToChannelId)
-
-			config.aminoConfig.aminos.add(amino)
-		}
-
-		return "nice"
 	}
 
 	fun handleYouTubeChannels(config: MongoServerConfig, receivedPayload: JsonObject): String {

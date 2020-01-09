@@ -421,7 +421,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 				val guild = lorittaShards.getGuildById(serverConfig.guildId) ?: continue
 
 				// AMINO
-				if (serverConfig.aminoConfig.fixAminoImages || serverConfig.aminoConfig.aminos.isNotEmpty())
+				if (serverConfig.aminoConfig.fixAminoImages)
 					continue
 
 				// INVITE BLOCKER
