@@ -76,23 +76,23 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 							mentionUser = false
 					),
 					LoriReply(
-							"**Combinação de <a:lori_derp:653310964652834886>:** ${LORITTA_COMBO} sonhos",
+							"**Combinação de <:loritta:664849802961485894>:** ${LORITTA_COMBO} sonhos",
 							mentionUser = false
 					),
 					LoriReply(
-							"**Combinação de <:pantufa_gasp:645104302460895272>:** ${PANTUFA_COMBO} sonhos",
+							"**Combinação de <:loritta:664849802961485894>:** ${PANTUFA_COMBO} sonhos",
 							mentionUser = false
 					),
 					LoriReply(
-							"**Combinação de <a:gabi_calca_1:647982987937447937>:** ${GABI_COMBO} sonhos",
+							"**Combinação de <:gabriela:664849802927800351>:** ${GABI_COMBO} sonhos",
 							mentionUser = false
 					),
 					LoriReply(
-							"**Combinação de <:dokyo_funkeiro:603389181808607262>:** ${DOKYO_COMBO} sonhos",
+							"**Combinação de <:dokyo:664849803397562369>:** ${DOKYO_COMBO} sonhos",
 							mentionUser = false
 					),
 					LoriReply(
-							"**Combinação de <:gesso:523176710439567392>:** ${GESSY_COMBO} sonhos",
+							"**Combinação de <:gessy:664847035245002764>:** ${GESSY_COMBO} sonhos",
 							mentionUser = false
 					),
 					LoriReply(
@@ -157,11 +157,11 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 
 			fun transformToEmote(char: Char): String {
 				return when (char) {
-					'L' -> "<a:lori_derp:653310964652834886>"
-					'P' -> "<:pantufa_gasp:645104302460895272>"
-					'B' -> "<a:gabi_calca_1:647982987937447937>"
-					'D' -> "<:dokyo_funkeiro:603389181808607262>"
-					'G' -> "<:gesso:523176710439567392>"
+					'L' -> "<:loritta:664849802961485894>"
+					'P' -> "<:pantufa:664849802793713686>"
+					'B' -> "<:gabriela:664849802927800351>"
+					'D' -> "<:dokyo:664849803397562369>"
+					'G' -> "<:gessy:664847035245002764>"
 					'T' -> "<:tobias_nosa:450476856303419432>"
 					else -> throw RuntimeException("I don't know what emote is for $char")
 				}
