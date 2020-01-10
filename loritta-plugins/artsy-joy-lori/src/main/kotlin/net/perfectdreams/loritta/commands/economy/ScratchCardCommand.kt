@@ -41,7 +41,7 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 	}
 
 	override fun getDescription(locale: BaseLocale): String? {
-		return locale["commands.discord.scratchcard.description"]
+		return locale["commands.economy.scratchcard.description"]
 	}
 
 	override fun getUsage(locale: BaseLocale): CommandArguments {
