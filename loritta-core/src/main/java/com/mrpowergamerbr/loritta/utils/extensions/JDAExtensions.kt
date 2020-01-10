@@ -104,11 +104,11 @@ suspend fun Message.doReactions(vararg emotes: String): Message {
 	if (clearAll) { // Pelo visto tem alguns emojis que não deveriam estar aqui, vamos limpar!
 		this.clearReactions().await() // Vamos limpar todas as reações
 		message = this.refresh().await() // E pegar o novo obj da mensagem
-	}
 
-	emotes.forEach {
-		// E agora vamos readicionar os emotes!
-		message.addReaction(it).await()
+		emotes.forEach {
+			// E agora vamos readicionar os emotes!
+			message.addReaction(it).await()
+		}
 	}
 	return message
 }
