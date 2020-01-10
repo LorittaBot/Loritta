@@ -48,7 +48,6 @@ class MongoServerConfig @BsonCreator constructor(
 
 	var joinLeaveConfig = WelcomerConfig()
 	var musicConfig = MusicConfig()
-	var aminoConfig = AminoConfig()
 	var youTubeConfig = YouTubeConfig()
 	var livestreamConfig = LivestreamConfig()
 	var starboardConfig = StarboardConfig()

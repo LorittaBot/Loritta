@@ -38,7 +38,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				Modules.INVITE_LINK,
 				Modules.SERVER_SUPPORT,
 				Modules.EXPERIENCE,
-				Modules.AMINO_CONVERTER,
 				Modules.AFK,
 				Modules.BOM_DIA_E_CIA
 		)
