@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.commands
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.LorittaLauncher
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.AjudaCommand
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
@@ -130,7 +129,7 @@ class CommandContext(val config: MongoServerConfig, var lorittaUser: LorittaUser
 		if (cmdOptions.override && cmdOptions.commandOutputInPrivate) {
 			privateReply = cmdOptions.commandOutputInPrivate
 		}
-		if (privateReply || cmd is AjudaCommand) {
+		if (privateReply) {
 			val privateChannel = lorittaUser.user.openPrivateChannel().await()
 			return privateChannel.sendMessageAsync(message)
 		} else {
@@ -240,7 +239,7 @@ class CommandContext(val config: MongoServerConfig, var lorittaUser: LorittaUser
 		if (cmdOptions.override && cmdOptions.commandOutputInPrivate) {
 			privateReply = cmdOptions.commandOutputInPrivate
 		}
-		if (privateReply || cmd is AjudaCommand) {
+		if (privateReply) {
 			val privateChannel = lorittaUser.user.openPrivateChannel().await()
 			val sentMessage = privateChannel.sendMessageAsync(message)
 			return sentMessage
