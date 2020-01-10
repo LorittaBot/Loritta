@@ -32,11 +32,8 @@ import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
 
 class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCategory.MAGIC) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -127,6 +124,42 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				transaction(Databases.loritta) {
 					Profiles.update({ Profiles.id eq user.idLong }) {
 						it[money] = arg1.toDouble()
+					}
+				}
+
+				context.reply(
+						LoriReply(
+								"Sonhos de ${user.asMention} foram editados com sucesso!"
+						)
+				)
+				return
+			}
+
+			if (arg0 == "add_dreams" && arg1 != null && arg2 != null) {
+				val user = context.getUserAt(2)!!
+				transaction(Databases.loritta) {
+					Profiles.update({ Profiles.id eq user.idLong }) {
+						with(SqlExpressionBuilder) {
+							it.update(money, money + arg1.toDouble())
+						}
+					}
+				}
+
+				context.reply(
+						LoriReply(
+								"Sonhos de ${user.asMention} foram editados com sucesso!"
+						)
+				)
+				return
+			}
+
+			if (arg0 == "remove_dreams" && arg1 != null && arg2 != null) {
+				val user = context.getUserAt(2)!!
+				transaction(Databases.loritta) {
+					Profiles.update({ Profiles.id eq user.idLong }) {
+						with(SqlExpressionBuilder) {
+							it.update(money, money - arg1.toDouble())
+						}
 					}
 				}
 
