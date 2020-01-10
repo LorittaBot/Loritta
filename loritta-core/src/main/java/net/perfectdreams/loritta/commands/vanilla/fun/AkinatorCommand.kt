@@ -4,16 +4,14 @@ import com.markozajc.akiwrapper.Akiwrapper
 import com.markozajc.akiwrapper.AkiwrapperBuilder
 import com.markozajc.akiwrapper.core.entities.Guess
 import com.markozajc.akiwrapper.core.entities.Server
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
-import net.perfectdreams.loritta.utils.Emotes
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.doReactions
 import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
+import com.mrpowergamerbr.loritta.utils.onReactionByAuthor
 import com.mrpowergamerbr.loritta.utils.removeAllFunctions
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
@@ -21,6 +19,7 @@ import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
+import net.perfectdreams.loritta.utils.Emotes
 import java.awt.Color
 
 class AkinatorCommand : LorittaCommand(arrayOf("akinator"), CommandCategory.FUN) {
@@ -169,9 +168,7 @@ class AkinatorCommand : LorittaCommand(arrayOf("akinator"), CommandCategory.FUN)
 
         val message = currentMessage?.edit(context.getAsMention(true), builder.build(), clearReactions = false) ?: context.sendMessage(context.getAsMention(true), builder.build()).handle
 
-        message.onReactionAddByAuthor(context) {
-            it.reaction.removeReaction(it.user).await()
-
+        message.onReactionByAuthor(context) {
             val answer = when {
                 it.reactionEmote.isEmote("\uD83D\uDC4D") -> Akiwrapper.Answer.YES
                 it.reactionEmote.isEmote("\uD83D\uDC4E") -> Akiwrapper.Answer.NO

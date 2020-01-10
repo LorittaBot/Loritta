@@ -146,7 +146,6 @@ object GlobalHandler {
 		val apiViews = mutableListOf<NoVarsView>()
 
 		// ===[ APIS ]===
-		apiViews.add(APIGetCommunityInfoView())
 		apiViews.add(APIGetChannelInfoView())
 		apiViews.add(APIGetRssFeedTitleView())
 		apiViews.add(APIGetTwitchInfoView())
