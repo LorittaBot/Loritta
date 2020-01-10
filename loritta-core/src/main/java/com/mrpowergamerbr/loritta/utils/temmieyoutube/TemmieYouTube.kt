@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.utils.temmieyoutube
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.obj
+import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.jsonParser
@@ -71,7 +72,7 @@ data class SearchResponse(
 data class YouTubeItem(
 		val kind: String,
 		val etag: String,
-		val id: YouTubeId,
+		val id: JsonObject,
 		val snippet: Snippet)
 
 data class Thumbnails(
@@ -96,7 +97,3 @@ data class ThumbnailInfo(
 		val url: String,
 		val width: Int,
 		val height: Int)
-
-data class YouTubeId(
-		val kind: String,
-		val videoId: String)

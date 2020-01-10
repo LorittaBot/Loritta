@@ -1,9 +1,9 @@
 package com.mrpowergamerbr.loritta.utils.misc
 
+import com.github.salomonbrys.kotson.nullString
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.SearchResponse
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.YouTubeItem
-import kotlin.streams.toList
 
 object YouTubeUtils {
 	/**
@@ -14,7 +14,7 @@ object YouTubeUtils {
 	 * @return O SearchResponse
 	 */
 	@JvmStatic
-	fun searchOnYouTube(query:String):SearchResponse {
+	fun searchOnYouTube(query:String): SearchResponse {
 		val response = Loritta.youtube.searchOnYouTube(query)
 		return response
 	}
@@ -27,7 +27,7 @@ object YouTubeUtils {
 	 * @return uma lista com os resultados
 	 */
 	@JvmStatic
-	fun searchAnythingOnYouTube(query:String):List<YouTubeItem> {
+	fun searchAnythingOnYouTube(query:String): List<YouTubeItem> {
 		val (_, _, _, _, _, items) = searchOnYouTube(query)
 		return items
 	}
@@ -40,9 +40,9 @@ object YouTubeUtils {
 	 * @return uma lista com os resultados
 	 */
 	@JvmStatic
-	fun searchVideosOnYouTube(query: String):List<YouTubeItem> {
+	fun searchVideosOnYouTube(query: String): List<YouTubeItem> {
 		val response = searchAnythingOnYouTube(query)
-		return response.stream().filter{ it.id.kind == "youtube#video"}.toList()
+		return response.filter{ it.id["kind"].nullString == "youtube#video" }
 	}
 
 	/**
@@ -55,6 +55,6 @@ object YouTubeUtils {
 	@JvmStatic
 	fun searchOnYouTube(query: String, vararg kinds: String): List<YouTubeItem> {
 		val response = searchAnythingOnYouTube(query)
-		return response.stream().filter{ kinds.contains(it.id.kind)}.toList()
+		return response.filter { kinds.contains(it.id["kind"].nullString) }
 	}
 }

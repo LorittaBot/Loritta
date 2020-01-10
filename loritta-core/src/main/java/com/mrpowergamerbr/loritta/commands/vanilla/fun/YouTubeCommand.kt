@@ -6,7 +6,6 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -34,25 +33,26 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
-			var query = context.args.joinToString(" ")
+			val query = context.args.joinToString(" ")
 			val items = YouTubeUtils.searchOnYouTube(query, "youtube#video", "youtube#channel")
 
 			if (items.isNotEmpty()) {
 				var format = ""
-				var youtubeKey = loritta.youtubeKey
+				val youtubeKey = loritta.youtubeKey
 				for (i in 0 until Math.min(10, items.size)) {
-					var item = items[i]
-					if (item.id.kind == "youtube#video") {
-						var response = HttpRequest.get("https://www.googleapis.com/youtube/v3/videos?id=${item.id.videoId}&part=contentDetails&key=${youtubeKey}").body()
-						var parser = jsonParser
-						var json = parser.parse(response).asJsonObject
-						var strDuration = json["items"].array[0]["contentDetails"]["duration"].string
-						var duration = java.time.Duration.parse(strDuration)
-						var inSeconds = duration.get(java.time.temporal.ChronoUnit.SECONDS) // Nós não podemos pegar o tempo diretamente porque é "unsupported"
-						var final = String.format("%02d:%02d", ((inSeconds / 60) % 60), (inSeconds % 60))
-						format += "${Constants.INDEXES[i]}\uD83C\uDFA5 `[${final}]` **[${Parser.unescapeEntities(item.snippet.title, false)}](https://youtu.be/${item.id.videoId})**\n"
+					val item = items[i]
+					if (item.id["kind"].string == "youtube#video") {
+						val response = HttpRequest.get("https://www.googleapis.com/youtube/v3/videos?id=${item.id["videoId"].string}&part=contentDetails&key=${youtubeKey}").body()
+
+						val parser = jsonParser
+						val json = parser.parse(response).asJsonObject
+						val strDuration = json["items"].array[0]["contentDetails"]["duration"].string
+						val duration = java.time.Duration.parse(strDuration)
+						val inSeconds = duration.get(java.time.temporal.ChronoUnit.SECONDS) // Nós não podemos pegar o tempo diretamente porque é "unsupported"
+						val final = String.format("%02d:%02d", ((inSeconds / 60) % 60), (inSeconds % 60))
+						format += "${Constants.INDEXES[i]} \uD83C\uDFA5 `[${final}]` **[${Parser.unescapeEntities(item.snippet.title, false)}](https://youtu.be/${item.id["videoId"].string})**\n"
 					} else {
-						format += "${Constants.INDEXES[i]}\uD83D\uDCFA **[${Parser.unescapeEntities(item.snippet.title, false)}](https://youtu.be/${item.id.videoId})**\n"
+						format += "${Constants.INDEXES[i]} \uD83D\uDCFA **[${Parser.unescapeEntities(item.snippet.title, false)}](https://youtube.com/channel/${item.id["channelId"].string})**\n"
 					}
 					context.metadata.put(i.toString(), item)
 				}
@@ -74,16 +74,16 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 
 					// Remover todos os reactions
 					mensagem.clearReactions().queue {
-						if (item.id.kind == "youtube#video") { // Se é um vídeo...
-							val response = HttpRequest.get("https://www.googleapis.com/youtube/v3/videos?id=${item.id.videoId}&part=snippet,statistics&key=${loritta.youtubeKey}").body()
+						if (item.id["kind"].string == "youtube#video") { // Se é um vídeo...
+							val response = HttpRequest.get("https://www.googleapis.com/youtube/v3/videos?id=${item.id["videoId"].string}&part=snippet,statistics&key=${loritta.youtubeKey}").body()
 							val parser = JsonParser()
 							val json = parser.parse(response).asJsonObject
 							val jsonItem = json["items"][0]
 							val snippet = jsonItem["snippet"].obj
 							val statistics = jsonItem["statistics"].obj
 
-							var channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${snippet.get("channelId").asString}&fields=items%2Fsnippet%2Fthumbnails&key=${loritta.youtubeKey}").body()
-							var channelJson = parser.parse(channelResponse).obj
+							val channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${snippet.get("channelId").asString}&fields=items%2Fsnippet%2Fthumbnails&key=${loritta.youtubeKey}").body()
+							val channelJson = parser.parse(channelResponse).obj
 
 							val viewCount = statistics["viewCount"].string
 							val likeCount = statistics["likeCount"].nullString ?: "???"
@@ -97,17 +97,17 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 							val thumbnail = snippet["thumbnails"]["high"]["url"].string
 							val channelIcon = channelJson["items"][0]["snippet"]["thumbnails"]["high"]["url"].string
 
-							var embed = EmbedBuilder()
-							embed.setTitle("<:youtube:314349922885566475> ${Parser.unescapeEntities(item.snippet.title, false)}", "https://youtu.be/${item.id.videoId}")
+							val embed = EmbedBuilder()
+							embed.setTitle("<:youtube:314349922885566475> ${Parser.unescapeEntities(item.snippet.title, false)}", "https://youtu.be/${item.id["videoId"].string}")
 							embed.setDescription(item.snippet.description)
-							embed.addField("⛓ Link", "https://youtu.be/${item.id.videoId}", true)
+							embed.addField("⛓ Link", "https://youtu.be/${item.id["videoId"].string}", true)
 
 							embed.addField("\uD83D\uDCFA ${context.legacyLocale["MUSICINFO_VIEWS"]}", viewCount, true)
 							embed.addField("\uD83D\uDE0D ${context.legacyLocale["MUSICINFO_LIKES"]}", likeCount, true)
 							embed.addField("\uD83D\uDE20 ${context.legacyLocale["MUSICINFO_DISLIKES"]}", dislikeCount, true)
 							embed.addField("\uD83D\uDCAC ${context.legacyLocale["MUSICINFO_COMMENTS"]}", commentCount, true)
 							embed.setThumbnail(thumbnail)
-							embed.setAuthor("${item.snippet.channelTitle}", "https://youtube.com/channel/${item.snippet.channelId}", channelIcon)
+							embed.setAuthor(item.snippet.channelTitle, "https://youtube.com/channel/${item.snippet.channelId}", channelIcon)
 
 							embed.setColor(Color(217, 66, 52))
 
@@ -116,10 +116,11 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 
 							context.metadata.put("currentItem", item)
 						} else {
-							var channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&id=${item.snippet.channelId}&key=${loritta.youtubeKey}").body()
-							var channelJson = jsonParser.parse(channelResponse).obj
+							val channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&id=${item.id["channelId"].string}&key=${loritta.youtubeKey}").body()
 
-							var embed = EmbedBuilder()
+							val channelJson = jsonParser.parse(channelResponse).obj
+
+							val embed = EmbedBuilder()
 
 							val entry = channelJson["items"][0]
 
@@ -147,19 +148,23 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 							var lastLikedVideoId: String? = null
 
 							if (uploadsPlaylistId != null) {
-								var uploadsPlaylistResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=$uploadsPlaylistId&maxResults=1&key=${loritta.youtubeKey}").body()
-								var uploadsPlaylist = jsonParser.parse(uploadsPlaylistResponse).obj
+								val uploadsPlaylistResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=$uploadsPlaylistId&maxResults=1&key=${loritta.youtubeKey}").body()
+								val uploadsPlaylist = jsonParser.parse(uploadsPlaylistResponse).obj
 
-								lastUploadedVideoName = uploadsPlaylist["items"][0]["snippet"]["title"].string
-								lastUploadedVideoId = uploadsPlaylist["items"][0]["snippet"]["resourceId"]["videoId"].string
+								try {
+									lastUploadedVideoName = uploadsPlaylist["items"][0]["snippet"]["title"].string
+									lastUploadedVideoId = uploadsPlaylist["items"][0]["snippet"]["resourceId"]["videoId"].string
+								} catch (e: Exception) {}
 							}
 
 							if (likesPlaylistId != null) {
-								var likesPlaylistResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=$likesPlaylistId&maxResults=1&key=${loritta.youtubeKey}").body()
-								var likesPlaylist = jsonParser.parse(likesPlaylistResponse).obj
+								val likesPlaylistResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=$likesPlaylistId&maxResults=1&key=${loritta.youtubeKey}").body()
+								val likesPlaylist = jsonParser.parse(likesPlaylistResponse).obj
 
-								lastLikedVideoName = likesPlaylist["items"][0]["snippet"]["title"].string
-								lastLikedVideoId = likesPlaylist["items"][0]["snippet"]["resourceId"]["videoId"].string
+								try {
+									lastLikedVideoName = likesPlaylist["items"][0]["snippet"]["title"].string
+									lastLikedVideoId = likesPlaylist["items"][0]["snippet"]["resourceId"]["videoId"].string
+								} catch (e: Exception) {}
 							}
 
 							embed.setTitle(title, "https://youtube.com/channel/${item.snippet.channelId}")
