@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.commands.vanilla.roblox
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
@@ -10,6 +9,7 @@ import com.mrpowergamerbr.loritta.utils.encodeToUrl
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.jsoup.Jsoup
 
 class RbGameCommand : AbstractCommand("rbgame", listOf("rbjogo", "rbgameinfo"), CommandCategory.ROBLOX) {
@@ -63,12 +63,13 @@ class RbGameCommand : AbstractCommand("rbgame", listOf("rbjogo", "rbgameinfo"), 
 			val gameStats = gameDocument.getElementsByClass("game-stat")
 
 			val playing = gameStats[0].getElementsByClass("text-lead").text()
-			val visits = gameStats[1].getElementsByClass("text-lead").text()
-			val created = gameStats[2].getElementsByClass("text-lead").text()
-			val updated = gameStats[3].getElementsByClass("text-lead").text()
-			val maxplayers = gameStats[4].getElementsByClass("text-lead").text()
-			val genre = gameStats[5].getElementsByClass("text-lead").text()
-			val allowedgear = gameStats[6].getElementsByClass("text-lead").text()
+			val favoriteCountFromPage = gameStats[1].getElementsByClass("text-lead").text()
+			val visits = gameStats[2].getElementsByClass("text-lead").text()
+			val created = gameStats[3].getElementsByClass("text-lead").text()
+			val updated = gameStats[4].getElementsByClass("text-lead").text()
+			val maxplayers = gameStats[5].getElementsByClass("text-lead").text()
+			val genre = gameStats[6].getElementsByClass("text-lead").text()
+			val allowedgear = gameStats[7].getElementsByClass("text-lead").text()
 
 			val voteBody = HttpRequest.get("https://www.roblox.com/games/votingservice/$placeId")
 					.body()
