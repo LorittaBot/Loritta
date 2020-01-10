@@ -216,6 +216,7 @@ class TemmieDiscordAuth {
 		val bot: Boolean,
 		val locale: String,
 		val flags: Int,
+		@SerializedName("premium_type")
 		val premiumType: Int?
 	) : SimpleUserIdentification(username, id, avatar, discriminator)
 
