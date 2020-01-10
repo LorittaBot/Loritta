@@ -26,7 +26,7 @@ class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) 
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
-			var query = context.args.joinToString(" ")
+			val query = context.args.joinToString(" ")
 
 			if (!Constants.TWITCH_USERNAME_PATTERN.matcher(query).matches()) {
 				context.reply(

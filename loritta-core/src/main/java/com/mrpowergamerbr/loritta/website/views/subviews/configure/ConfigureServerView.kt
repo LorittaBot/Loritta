@@ -46,7 +46,6 @@ class ConfigureServerView : ConfigureView() {
 					"welcomer" -> serverConfig.joinLeaveConfig
 					"starboard" -> serverConfig.starboardConfig
 					"music" -> serverConfig.musicConfig
-					"amino" -> serverConfig.aminoConfig
 					"youtube" -> serverConfig.youTubeConfig
 					"livestream" -> serverConfig.livestreamConfig
 					"nashorn_commands" -> serverConfig.nashornCommands

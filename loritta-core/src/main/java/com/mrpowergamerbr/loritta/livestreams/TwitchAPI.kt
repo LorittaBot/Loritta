@@ -29,7 +29,8 @@ class TwitchAPI {
 	var ratelimitResetsAt = 0L
 
 	suspend fun getUserLogin(login: String): StreamerInfo? {
-		return getUserLogins(listOf(login))[login]
+		val loginAsLowerCase = login.toLowerCase()
+		return getUserLogins(listOf(loginAsLowerCase))[loginAsLowerCase]
 	}
 
 	suspend fun getUserLogins(userLogins: List<String>): Map<String, StreamerInfo> {
@@ -81,7 +82,6 @@ class TwitchAPI {
 				throw e
 			}
 		}
-
 		return results
 	}
 
