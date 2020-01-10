@@ -23,6 +23,7 @@ import net.perfectdreams.loritta.tables.Raspadinhas
 import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.sum
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import java.util.concurrent.TimeUnit
@@ -57,6 +58,19 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 		} else if (context.args.firstOrNull() == "comprar" || context.args.firstOrNull() == "buy") {
 			buyRaspadinha(context, context.lorittaUser.profile)
 		} else {
+			val raspadinhaCount = transaction(Databases.loritta) {
+				Raspadinhas.select {
+					Raspadinhas.receivedById eq context.userHandle.idLong
+				}.count()
+			}
+			val earnings = Raspadinhas.value.sum()
+			val raspadinhaEarnings = transaction(Databases.loritta) {
+				Raspadinhas.slice(Raspadinhas.receivedById, earnings).select {
+					Raspadinhas.receivedById eq context.userHandle.idLong
+				}.groupBy(Raspadinhas.receivedById)
+						.firstOrNull()
+			}
+
 			context.reply(
 					LoriReply(
 							"**Raspadinha da Loritta**",
@@ -99,6 +113,10 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 					),
 					LoriReply(
 							"**Combinação de <:tobias_nosa:450476856303419432>:** ${TOBIAS_COMBO} sonhos",
+							mentionUser = false
+					),
+					LoriReply(
+							"Você já comprou **${raspadinhaCount} raspadinhas** e, com elas, você ganhou **${raspadinhaEarnings?.get(earnings) ?: 0} sonhos**",
 							mentionUser = false
 					),
 					LoriReply(

@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.commands.discord.GuildBannerCommand
 import net.perfectdreams.loritta.commands.discord.RenameEmojiCommand
 import net.perfectdreams.loritta.commands.discord.RoleInfoCommand
 import net.perfectdreams.loritta.commands.economy.ScratchCardCommand
+import net.perfectdreams.loritta.commands.economy.ScratchCardTopCommand
 import net.perfectdreams.loritta.commands.images.*
 import net.perfectdreams.loritta.tables.Raspadinhas
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -66,6 +67,7 @@ class ArtsyJoyLori : LorittaPlugin() {
         if (false)
             registerCommand(HighFiveCommand())
         registerCommand(ScratchCardCommand())
+        registerCommand(ScratchCardTopCommand())
         registerCommand(Bolsonaro2Command())
 
         transaction(Databases.loritta) {

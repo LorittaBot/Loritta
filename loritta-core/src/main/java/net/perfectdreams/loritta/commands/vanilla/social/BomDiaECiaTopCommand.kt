@@ -150,9 +150,4 @@ class BomDiaECiaTopCommand : LorittaCommand(arrayOf("bomdiaecia top", "bd&c top"
         context.sendFile(base.makeRoundedCorners(15), "rank.png", context.getAsMention(true))
         return
     }
-
-    private enum class TopOrder {
-        MOST_RECEIVED,
-        MOST_GIVEN
-    }
 }
