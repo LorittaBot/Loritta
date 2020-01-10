@@ -2,24 +2,21 @@ package com.mrpowergamerbr.loritta.website.views.subviews.configure
 
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
-import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler
 import com.mrpowergamerbr.loritta.oauth2.SimpleUserIdentification
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.*
-import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.website.LoriWebCodes
+import com.mrpowergamerbr.loritta.utils.LorittaPermission
+import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.save
 import com.mrpowergamerbr.loritta.website.evaluate
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.utils.ActionType
 import net.perfectdreams.loritta.utils.auditlog.WebAuditLogUtils
 import org.jooby.Request
 import org.jooby.Response
-import java.io.ByteArrayInputStream
-import java.io.File
-import javax.imageio.ImageIO
 
 class ConfigureServerView : ConfigureView() {
 	override fun handleRender(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): Boolean {
@@ -53,26 +50,8 @@ class ConfigureServerView : ConfigureView() {
 					"vanilla_commands" -> serverConfig.disabledCommands
 					"text_channels" -> serverConfig.textChannelConfigs
 					"moderation" -> serverConfig.moderationConfig
-					"partner" -> serverConfig.serverListConfig
 					else -> null
-				}
-
-				if (target == null) {
-					return "Invalid type: $type"
-				}
-
-				if (target is ServerListConfig) {
-					if (receivedPayload["isPartner"].bool && !target.isPartner) {
-						val jsonObject = JsonObject()
-						jsonObject["api:code"] = LoriWebCodes.TRYING_TO_SAVE_PARTNER_CONFIG_WHILE_NOT_PARTNER
-						return jsonObject.toString()
-					}
-					receivedPayload.remove("isPartner")
-					if (!target.isPartner) {
-						// remover conteúdos que o usuário não pode usar (como vanityUrl)
-						receivedPayload.remove("vanityUrl")
-					}
-				}
+				} ?: return "Invalid type: $type"
 
 				var response = ""
 
@@ -135,10 +114,6 @@ class ConfigureServerView : ConfigureView() {
 						}
 
 						response += element.key + " -> " + element.value + " ✘\n"
-					}
-
-					if (type == "partner") {
-						response = handlePartner(serverConfig, receivedPayload)
 					}
 				}
 
@@ -324,31 +299,5 @@ class ConfigureServerView : ConfigureView() {
 		}
 
 		return "Saved textChannel Configuration!"
-	}
-
-	fun handlePartner(config: MongoServerConfig, receivedPayload: JsonObject): String {
-		val keywords = receivedPayload["keywords"].nullArray
-
-		config.serverListConfig.keywords.clear()
-
-		if (keywords != null) {
-			keywords.forEach {
-				config.serverListConfig.keywords.add(LorittaPartner.Keyword.valueOf(it.string))
-			}
-		}
-
-		val data = receivedPayload["backgroundImage"].nullString
-
-		if (data != null) {
-			val base64Image = data.split(",")[1]
-			val imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64Image)
-			val img = ImageIO.read(ByteArrayInputStream(imageBytes))
-
-			if (img != null) {
-				ImageIO.write(img, "png", File(Loritta.FRONTEND, "static/assets/img/servers/backgrounds/${config.guildId}.png"))
-			}
-		}
-
-		return GSON.toJson(mapOf("api:code" to LoriWebCodes.SUCCESS))
 	}
 }

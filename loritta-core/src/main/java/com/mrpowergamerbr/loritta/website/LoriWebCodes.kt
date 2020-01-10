@@ -4,7 +4,6 @@ package com.mrpowergamerbr.loritta.website
 object LoriWebCodes {
 	const val SUCCESS = 0 // sucesso
 	const val RATE_LIMITED = 1 // rate limited ao acessar a API
-	const val TRYING_TO_SAVE_PARTNER_CONFIG_WHILE_NOT_PARTNER = 2 // unused
 	const val UNKNOWN_GUILD = 3 // a guild não existe
 	const val UNAUTHORIZED = 4 // não autorizado (deslogado no Discord ou sem permissão para acessar a guild)
 	const val ALREADY_VOTED_TODAY = 5 // já votou hoje

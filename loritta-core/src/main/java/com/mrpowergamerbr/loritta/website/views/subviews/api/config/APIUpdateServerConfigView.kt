@@ -9,7 +9,6 @@ import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.views.subviews.api.NoVarsView
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.AutorolePayload
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.ModerationPayload
-import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.ServerListPayload
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.utils.ActionType
 import net.perfectdreams.loritta.utils.auditlog.WebAuditLogUtils
@@ -82,7 +81,6 @@ class APIUpdateServerConfigView : NoVarsView() {
 		payload["api:code"] = LoriWebCodes.SUCCESS
 
 		val payloadHandlers = mapOf(
-				"server_list" to ServerListPayload::class.java,
 				"moderation" to ModerationPayload::class.java,
 				"autorole" to AutorolePayload::class.java
 		)

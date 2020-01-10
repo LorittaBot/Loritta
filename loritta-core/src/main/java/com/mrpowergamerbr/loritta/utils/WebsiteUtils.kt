@@ -793,15 +793,6 @@ object WebsiteUtils {
 		serverConfigJson["guildName"] = guild.name
 		serverConfigJson["memberCount"] = guild.members.size
 
-		// Filtrar informações
-		val voteArray = serverConfigJson["serverListConfig"]["votes"].array
-		val newArray = JsonArray()
-		voteArray.forEach {
-			it["ip"] = null
-			it["email"] = null
-		}
-		serverConfigJson["serverListConfig"]["votes"] = newArray
-
 		return serverConfigJson
 	}
 

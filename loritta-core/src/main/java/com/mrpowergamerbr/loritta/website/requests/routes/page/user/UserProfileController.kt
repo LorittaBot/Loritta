@@ -83,15 +83,7 @@ class UserProfileController {
         for (guild in mutualGuilds) {
             val serverConfig = serverConfigs.firstOrNull { it.guildId == guild.id } ?: continue
 
-            if (guild.owner?.user == user && serverConfig.serverListConfig.isEnabled) {
-                ownerOfGuilds.add(guild)
-                onlineCount[guild] = guild.members.count { it.onlineStatus != OnlineStatus.OFFLINE }
-            }
-            if (serverConfig.serverListConfig.isEnabled) {
-                inGuildListEnabled.add(guild)
-            } else {
-                notInGuildList.add(guild)
-            }
+            notInGuildList.add(guild)
         }
 
         variables["ownerOfGuilds"] = ownerOfGuilds.sortedByDescending { it.members.size }
