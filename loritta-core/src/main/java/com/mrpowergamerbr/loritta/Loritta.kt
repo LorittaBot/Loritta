@@ -4,6 +4,7 @@ import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.salomonbrys.kotson.*
+import com.google.common.cache.CacheBuilder
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.Gson
 import com.google.gson.JsonParser
@@ -40,6 +41,7 @@ import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.perfectdreams.loritta.api.platform.LorittaBot
@@ -154,7 +156,8 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 	val mercadoPago: MercadoPago
 	var patchData = PatchData()
 	var sponsors: List<Sponsor> = listOf()
-
+	val cachedRetrievedArtists = CacheBuilder.newBuilder().expireAfterWrite(7, TimeUnit.DAYS)
+			.build<Long, Optional<User>>()
 	val tweetTracker = TweetTracker(this)
 
 	init {

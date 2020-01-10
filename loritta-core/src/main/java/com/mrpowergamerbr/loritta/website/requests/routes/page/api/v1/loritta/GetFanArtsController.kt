@@ -3,11 +3,10 @@ package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.loritta
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
 import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
-import kotlinx.coroutines.runBlocking
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.utils.config.FanArtArtist
 import org.jooby.MediaType
@@ -49,7 +48,7 @@ class GetFanArtsController {
 								}
 					}
 
-			val users = discordIds.asSequence().mapNotNull { runBlocking { lorittaShards.retrieveUserById(it) } }
+			val users = discordIds.asSequence().mapNotNull { loritta.cachedRetrievedArtists.getIfPresent(it)?.getOrNull() }
 					.map { JDAUser(it) }.toList()
 
 			fanArtists.map {
