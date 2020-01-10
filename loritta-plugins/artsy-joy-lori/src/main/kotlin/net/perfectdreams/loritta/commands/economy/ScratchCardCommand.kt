@@ -27,7 +27,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import java.util.concurrent.TimeUnit
 
-class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), CommandCategory.DISCORD) {
+class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), CommandCategory.ECONOMY) {
 	companion object {
 		private val mutexes = CacheBuilder.newBuilder().expireAfterWrite(1L, TimeUnit.MINUTES).build<Long, Mutex>()
 				.asMap()
