@@ -81,7 +81,8 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				logIfEnabled(enableProfiling) { "Loading user's profile took ${System.currentTimeMillis() - start}ms for ${event.author.idLong}" }
 
 				start = System.currentTimeMillis()
-				val ownerProfile = loritta.getLorittaProfile(event.guild.owner!!.user.idLong)
+				// Se o dono do servidor for o usuário que está executando o comando, não é necessário pegar o perfil novamente
+				val ownerProfile = if (event.guild.ownerIdLong == member.idLong) lorittaProfile else loritta.getLorittaProfile(event.guild.ownerIdLong)
 				logIfEnabled(enableProfiling) { "Loading owner's profile took ${System.currentTimeMillis() - start}ms for ${event.author.idLong}" }
 
 				start = System.currentTimeMillis()
