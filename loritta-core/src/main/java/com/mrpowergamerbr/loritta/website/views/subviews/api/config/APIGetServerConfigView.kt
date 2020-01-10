@@ -107,6 +107,14 @@ class APIGetServerConfigView : NoVarsView() {
 
 		serverConfigJson["roles"] = roles
 
+		val voteArray = serverConfigJson["serverListConfig"]["votes"].array
+		val newArray = JsonArray()
+		voteArray.forEach {
+			it["ip"] = null
+			it["email"] = null
+		}
+		serverConfigJson["serverListConfig"]["votes"] = newArray
+
 		return serverConfigJson.toString()
 	}
 }

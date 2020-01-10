@@ -8,9 +8,9 @@ import com.mrpowergamerbr.loritta.commands.vanilla.discord.*
 import com.mrpowergamerbr.loritta.commands.vanilla.economy.*
 import com.mrpowergamerbr.loritta.commands.vanilla.images.*
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.*
+import com.mrpowergamerbr.loritta.commands.vanilla.music.*
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.*
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.*
-import com.mrpowergamerbr.loritta.commands.vanilla.music.LyricsCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.pokemon.PokedexCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbGameCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbUserCommand
@@ -118,6 +118,7 @@ class CommandManager {
 		commandMap.add(LanguageCommand())
 		commandMap.add(PatreonCommand())
 		commandMap.add(DiscordBotListCommand())
+		// commandMap.add(VotarCommand())
 		commandMap.add(ParallaxCommand())
 
 		// =======[ SOCIAL ]======

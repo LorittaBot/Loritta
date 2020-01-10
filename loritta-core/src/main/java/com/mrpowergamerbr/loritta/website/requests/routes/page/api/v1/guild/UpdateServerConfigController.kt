@@ -110,6 +110,15 @@ class UpdateServerConfigController {
 
 		serverConfigJson["guildName"] = guild.name
 
+		// Filtrar informações
+		val voteArray = serverConfigJson["serverListConfig"]["votes"].array
+		val newArray = JsonArray()
+		voteArray.forEach {
+			it["ip"] = null
+			it["email"] = null
+		}
+		serverConfigJson["serverListConfig"]["votes"] = newArray
+
 		res.send(serverConfigJson)
 	}
 
@@ -124,6 +133,7 @@ class UpdateServerConfigController {
 		val config = payload["config"].obj
 
 		val payloadHandlers = mapOf(
+				"server_list" to ServerListPayload::class.java,
 				"moderation" to ModerationPayload::class.java,
 				"autorole" to AutorolePayload::class.java,
 				"welcomer" to WelcomerPayload::class.java,
