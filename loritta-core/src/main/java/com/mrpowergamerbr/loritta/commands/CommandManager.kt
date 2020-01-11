@@ -118,7 +118,6 @@ class CommandManager {
 		commandMap.add(LanguageCommand())
 		commandMap.add(PatreonCommand())
 		commandMap.add(DiscordBotListCommand())
-		// commandMap.add(VotarCommand())
 		commandMap.add(ParallaxCommand())
 
 		// =======[ SOCIAL ]======

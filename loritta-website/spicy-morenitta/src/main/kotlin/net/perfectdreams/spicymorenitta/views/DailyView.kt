@@ -1,6 +1,6 @@
 package net.perfectdreams.spicymorenitta.views
 
-import LoriServerList
+import LoriDashboard
 import jQuery
 import jq
 import kotlinx.html.*
@@ -22,7 +22,7 @@ import kotlin.random.Random
 @UseExperimental(ImplicitReflectionSerializer::class)
 object DailyView {
 	fun start() {
-		LoriServerList.showLoadingBar("Carregando...")
+		LoriDashboard.showLoadingBar("Carregando...")
 
 		jQuery.post("${loriUrl}api/v1/economy/daily-reward-status", { data, b, c ->
 			println("Status data: ${JSON.stringify(data)}")
@@ -60,7 +60,7 @@ object DailyView {
 				}
 				jq(".daily-notification").text(error)
 			}
-			LoriServerList.hideLoadingBar()
+			LoriDashboard.hideLoadingBar()
 		})
 	}
 

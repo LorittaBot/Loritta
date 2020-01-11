@@ -1,14 +1,11 @@
 package utils
 
-import net.perfectdreams.spicymorenitta.views.dashboard.PremiumKeyView
 import userdata.AutoroleConfig
 import userdata.ModerationConfig
-import userdata.PartnerConfig
 import userdata.WelcomerConfig
 
 class ServerConfig(
 		val commandPrefix: String,
-		val serverListConfig: PartnerConfig,
 		val moderationConfig: ModerationConfig,
 		val autoroleConfig: AutoroleConfig,
 		val textChannelConfigs: Array<TextChannelConfig>,
