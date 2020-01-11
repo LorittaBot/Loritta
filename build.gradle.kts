@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 // val loriVersion by lazy { ext["lori-version"] as String }
 // val kotlinVersion by lazy { ext["kotlin-version"] as String }
 // val ktorVersion by lazy { ext["ktor-version"] as String }
-val loriVersion   = "2020.01.10-SNAPSHOT"
+val loriVersion   = "2020.01.17-SNAPSHOT"
 val kotlinVersion = "1.3.61"
 val ktorVersion   = "1.2.6"
 val jdaVersion    = "4.0.0_62"
