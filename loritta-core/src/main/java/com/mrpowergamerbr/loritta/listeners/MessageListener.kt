@@ -72,66 +72,66 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				val enableProfiling = loritta.config.isOwner(member.idLong)
 
-				var start = System.currentTimeMillis()
+				var start = System.nanoTime()
 				val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
-				logIfEnabled(enableProfiling) { "Loading Server Config took ${System.currentTimeMillis() - start}ms for ${event.author.idLong}" }
+				logIfEnabled(enableProfiling) { "Loading Server Config took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
-				start = System.currentTimeMillis()
+				start = System.nanoTime()
 				val lorittaProfile = loritta.getOrCreateLorittaProfile(event.author.idLong)
-				logIfEnabled(enableProfiling) { "Loading user's profile took ${System.currentTimeMillis() - start}ms for ${event.author.idLong}" }
+				logIfEnabled(enableProfiling) { "Loading user's profile took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
-				start = System.currentTimeMillis()
+				start = System.nanoTime()
 				// Se o dono do servidor for o usuário que está executando o comando, não é necessário pegar o perfil novamente
 				val ownerProfile = if (event.guild.ownerIdLong == member.idLong) lorittaProfile else loritta.getLorittaProfile(event.guild.ownerIdLong)
-				logIfEnabled(enableProfiling) { "Loading owner's profile took ${System.currentTimeMillis() - start}ms for ${event.author.idLong}" }
+				logIfEnabled(enableProfiling) { "Loading owner's profile took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
-				start = System.currentTimeMillis()
+				start = System.nanoTime()
 				val locale = loritta.getLocaleById(serverConfig.localeId)
-				logIfEnabled(enableProfiling) { "Loading ${serverConfig.localeId} locale took ${System.currentTimeMillis() - start}ms for ${event.author.idLong}" }
+				logIfEnabled(enableProfiling) { "Loading ${serverConfig.localeId} locale took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
-				start = System.currentTimeMillis()
+				start = System.nanoTime()
 				val legacyLocale = loritta.getLegacyLocaleById(serverConfig.localeId)
-				logIfEnabled(enableProfiling) { "Loading ${serverConfig.localeId} legacy locale took ${System.currentTimeMillis() - start}ms for ${event.author.idLong}" }
+				logIfEnabled(enableProfiling) { "Loading ${serverConfig.localeId} legacy locale took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
-				start = System.currentTimeMillis()
+				start = System.nanoTime()
 				val lorittaUser = GuildLorittaUser(member, serverConfig, lorittaProfile)
-				logIfEnabled(enableProfiling) { "Wrapping $member $serverConfig and $lorittaProfile in a GuildLorittaUser took ${System.currentTimeMillis() - start}ms for ${event.author.idLong}" }
+				logIfEnabled(enableProfiling) { "Wrapping $member $serverConfig and $lorittaProfile in a GuildLorittaUser took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
-				start = System.currentTimeMillis()
+				start = System.nanoTime()
 				if (lorittaProfile.isAfk) {
 					transaction(Databases.loritta) {
 						lorittaProfile.isAfk = false
 						lorittaProfile.afkReason = null
 					}
 				}
-				logIfEnabled(enableProfiling) { "Changing AFK status took ${System.currentTimeMillis() - start}ms for ${event.author.idLong}" }
+				logIfEnabled(enableProfiling) { "Changing AFK status took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
-				start = System.currentTimeMillis()
+				start = System.nanoTime()
 				if (ownerProfile != null && isOwnerBanned(ownerProfile, event.guild))
 					return@launch
-				logIfEnabled(enableProfiling) { "Checking for owner profile ban took ${System.currentTimeMillis() - start}ms for ${event.author.idLong}" }
+				logIfEnabled(enableProfiling) { "Checking for owner profile ban took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
-				start = System.currentTimeMillis()
+				start = System.nanoTime()
 				if (isGuildBanned(event.guild))
 					return@launch
-				logIfEnabled(enableProfiling) { "Checking for guild ban took ${System.currentTimeMillis() - start}ms for ${event.author.idLong}" }
+				logIfEnabled(enableProfiling) { "Checking for guild ban took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
-				start = System.currentTimeMillis()
+				start = System.nanoTime()
 				if (FeatureFlags.CHECK_IF_USER_IS_BANNED_IN_EVERY_MESSAGE && loritta.networkBanManager.checkIfUserShouldBeBanned(event.author, event.guild, serverConfig))
 					return@launch
-				logIfEnabled(enableProfiling) { "Checking for user global/network ban took ${System.currentTimeMillis() - start}ms for ${event.author.idLong}" }
+				logIfEnabled(enableProfiling) { "Checking for user global/network ban took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
-				start = System.currentTimeMillis()
+				start = System.nanoTime()
 				EventLog.onMessageReceived(serverConfig, event.message)
-				logIfEnabled(enableProfiling) { "Logging to EventLog took ${System.currentTimeMillis() - start}ms for ${event.author.idLong}" }
+				logIfEnabled(enableProfiling) { "Logging to EventLog took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
-				start = System.currentTimeMillis()
+				start = System.nanoTime()
 				if (isMentioningMe(event.message))
 					if (chance(25.0) && serverConfig.miscellaneousConfig.enableQuirky && event.member!!.hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI))
 						event.message.addReaction("smol_lori_putassa_ping:397748526362132483").queue()
-				logIfEnabled(enableProfiling) { "Checking user mention took ${System.currentTimeMillis() - start}ms for ${event.author.idLong}" }
+				logIfEnabled(enableProfiling) { "Checking user mention took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
-				start = System.currentTimeMillis()
+				start = System.nanoTime()
 				if (isMentioningOnlyMe(event.message.contentRaw)) {
 					var response = legacyLocale["MENTION_RESPONSE", member.asMention, serverConfig.commandPrefix]
 
@@ -183,9 +183,9 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						}
 					}
 				}
-				logIfEnabled(enableProfiling) { "Checking self mention for help took ${System.currentTimeMillis() - start}ms for ${event.author.idLong}" }
+				logIfEnabled(enableProfiling) { "Checking self mention for help took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
-				start = System.currentTimeMillis()
+				start = System.nanoTime()
 				val lorittaMessageEvent = LorittaMessageEvent(
 						event.author,
 						member,
@@ -198,9 +198,9 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						legacyLocale,
 						lorittaUser
 				)
-				logIfEnabled(enableProfiling) { "Creating a LorittaMessageEvent took ${System.currentTimeMillis() - start}ms for ${event.author.idLong}" }
+				logIfEnabled(enableProfiling) { "Creating a LorittaMessageEvent took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
-				start = System.currentTimeMillis()
+				start = System.nanoTime()
 				if (FeatureFlags.UPDATE_IN_GUILD_STATS_ON_MESSAGE_SEND) {
 					val profile = serverConfig.getUserDataIfExists(member.idLong)
 
@@ -210,47 +210,47 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						}
 					}
 				}
-				logIfEnabled(enableProfiling) { "Updating In Guild Status took ${System.currentTimeMillis() - start}ms for ${event.author.idLong}" }
+				logIfEnabled(enableProfiling) { "Updating In Guild Status took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
-				start = System.currentTimeMillis()
+				start = System.nanoTime()
 				if (serverConfig.autoroleConfig.isEnabled && serverConfig.autoroleConfig.giveOnlyAfterMessageWasSent && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) // Está ativado?
 					AutoroleModule.giveRoles(member, serverConfig.autoroleConfig)
-				logIfEnabled(enableProfiling) { "Giving auto role on message took ${System.currentTimeMillis() - start}ms for ${event.author.idLong}" }
+				logIfEnabled(enableProfiling) { "Giving auto role on message took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				for (module in (MESSAGE_RECEIVED_MODULES + loritta.pluginManager.plugins.flatMap { it.messageReceivedModules })) {
-					start = System.currentTimeMillis()
+					start = System.nanoTime()
 					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyLocale) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyLocale))
 						return@launch
-					logIfEnabled(enableProfiling) { "Executing ${module::class.simpleName} took ${System.currentTimeMillis() - start}ms for ${event.author.idLong}" }
+					logIfEnabled(enableProfiling) { "Executing ${module::class.simpleName} took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 				}
 
-				start = System.currentTimeMillis()
+				start = System.nanoTime()
 				for (eventHandler in serverConfig.nashornEventHandlers)
 					eventHandler.handleMessageReceived(event, serverConfig)
-				logIfEnabled(enableProfiling) { "Executing event handlers took ${System.currentTimeMillis() - start}ms for ${event.author.idLong}" }
+				logIfEnabled(enableProfiling) { "Executing event handlers took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
-				start = System.currentTimeMillis()
+				start = System.nanoTime()
 				if (lorittaUser.hasPermission(LorittaPermission.IGNORE_COMMANDS))
 					return@launch
-				logIfEnabled(enableProfiling) { "Checking for ignore permission took ${System.currentTimeMillis() - start}ms for ${event.author.idLong}" }
+				logIfEnabled(enableProfiling) { "Checking for ignore permission took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
-				start = System.currentTimeMillis()
+				start = System.nanoTime()
 				if (isUserStillBanned(lorittaProfile))
 					return@launch
-				logIfEnabled(enableProfiling) { "Checking for user ban took ${System.currentTimeMillis() - start}ms for ${event.author.idLong}" }
+				logIfEnabled(enableProfiling) { "Checking for user ban took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				// Executar comandos
-				start = System.currentTimeMillis()
+				start = System.nanoTime()
 				if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 					return@launch
-				logIfEnabled(enableProfiling) { "Checking for command manager commands took ${System.currentTimeMillis() - start}ms for ${event.author.idLong}" }
+				logIfEnabled(enableProfiling) { "Checking for command manager commands took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
-				start = System.currentTimeMillis()
+				start = System.nanoTime()
 				if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 					return@launch
-				logIfEnabled(enableProfiling) { "Checking for legacy command manager commands took ${System.currentTimeMillis() - start}ms for ${event.author.idLong}" }
+				logIfEnabled(enableProfiling) { "Checking for legacy command manager commands took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
-				start = System.currentTimeMillis()
+				start = System.nanoTime()
 				loritta.messageInteractionCache.values.toMutableList().forEach {
 					if (it.onMessageReceived != null)
 						it.onMessageReceived!!.invoke(lorittaMessageEvent)
@@ -265,9 +265,9 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						}
 					}
 				}
-				logIfEnabled(enableProfiling) { "Checking for interaction cache took ${System.currentTimeMillis() - start}ms for ${event.author.idLong}" }
+				logIfEnabled(enableProfiling) { "Checking for interaction cache took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
-				start = System.currentTimeMillis()
+				start = System.nanoTime()
 				if (event.channel.canTalk() && serverConfig.warnOnUnknownCommand) {
 					val startsWithCommandPattern = Regex("^" + Pattern.quote(serverConfig.commandPrefix) + "[A-z0-9]+.*")
 
@@ -323,7 +323,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						}
 					}
 				}
-				logIfEnabled(enableProfiling) { "Checking for similar commands took ${System.currentTimeMillis() - start}ms for ${event.author.idLong}" }
+				logIfEnabled(enableProfiling) { "Checking for similar commands took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 			} catch (e: Exception) {
 				logger.error("[${event.guild.name}] Erro ao processar mensagem de ${event.author.name} (${event.author.id} - ${event.message.contentRaw}", e)
 			}
