@@ -82,7 +82,6 @@ class ParallaxServer {
 							.option("js.nashorn-compat", "true")
 							.build()
 
-
 					val listener = ExecutionListener.newBuilder()
 							.onEnter { e: ExecutionEvent ->
 								println(e.location.characters)

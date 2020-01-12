@@ -19,6 +19,9 @@ class Guild(
 	fun getRoleById(id: String) = roles.firstOrNull { it.id.toString() == id }
 	fun getRoleById(id: Long) = roles.firstOrNull { it.id == id }
 
+	fun getTextChannelById(id: String) = channels.firstOrNull { it.id.toString() == id }
+	fun getTextChannelById(id: Long) = channels.firstOrNull { it.id == id }
+
 	fun addRoleToMember(member: GuildMember, role: Role): JavaScriptPromise {
 		if (role in member.roles)
 			return null
