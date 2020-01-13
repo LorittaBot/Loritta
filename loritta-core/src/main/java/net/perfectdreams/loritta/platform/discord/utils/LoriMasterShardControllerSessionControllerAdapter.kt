@@ -76,16 +76,18 @@ class LoriMasterShardControllerSessionControllerAdapter : SessionControllerAdapt
 				fun setLoginPoolLockToShardController(): ControllerResponseType {
 					return runBlocking {
 						try {
-							val response = loritta.http.put<HttpResponse>("http://${NetAddressUtils.fixIp(loritta.discordConfig.shardController.url)}/api/v1/shard/${node.shardInfo.shardId}") {
+							val status = loritta.http.put<HttpResponse>("http://${NetAddressUtils.fixIp(loritta.discordConfig.shardController.url)}/api/v1/shard/${node.shardInfo.shardId}") {
 								userAgent(loritta.lorittaCluster.getUserAgent())
+							}.use {
+								it.status
 							}
 
-							if (response.status == HttpStatusCode.OK)
+							if (status == HttpStatusCode.OK)
 								ControllerResponseType.OK
-							else if (response.status == HttpStatusCode.Conflict)
+							else if (status == HttpStatusCode.Conflict)
 								ControllerResponseType.CONFLICT
 							else {
-								log.error("Weird status code while fetching shard ${node.shardInfo.shardId} login pool status, status code: ${response.status}")
+								log.error("Weird status code while fetching shard ${node.shardInfo.shardId} login pool status, status code: ${status}")
 								ControllerResponseType.OFFLINE
 							}
 						} catch (e: Exception) {
@@ -100,7 +102,7 @@ class LoriMasterShardControllerSessionControllerAdapter : SessionControllerAdapt
 						try {
 							loritta.http.delete<HttpResponse>("http://${NetAddressUtils.fixIp(loritta.discordConfig.shardController.url)}/api/v1/shard/${node.shardInfo.shardId}") {
 								userAgent(loritta.lorittaCluster.getUserAgent())
-							}
+							}.use {}
 						} catch (e: Exception) {
 							log.error("Exception while telling master shard controller that shard ${node.shardInfo.shardId} already logged in! Other clusters may have temporary issues while logging in...", e)
 						}

@@ -129,9 +129,9 @@ class LorittaShards {
 					val response = loritta.http.get<HttpResponse>("https://${shard.getUrl()}$path") {
 						header("Authorization", loritta.lorittaInternalApiKey.name)
 						userAgent(loritta.lorittaCluster.getUserAgent())
+					}.use {
+						it.readText()
 					}
-
-					response.readText()
 				}
 
 				jsonParser.parse(
@@ -148,12 +148,12 @@ class LorittaShards {
 		return GlobalScope.async {
 			try {
 				val body = withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
-					val response = loritta.http.get<HttpResponse>("https://${cluster.getUrl()}$path") {
+					loritta.http.get<HttpResponse>("https://${cluster.getUrl()}$path") {
 						header("Authorization", loritta.lorittaInternalApiKey.name)
 						userAgent(loritta.lorittaCluster.getUserAgent())
+					}.use {
+						it.readText()
 					}
-
-					response.readText()
 				}
 
 				jsonParser.parse(
@@ -173,15 +173,15 @@ class LorittaShards {
 			GlobalScope.async {
 				try {
 					withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
-						val response = loritta.http.get<HttpResponse>("https://${it.getUrl()}$path") {
+						loritta.http.get<HttpResponse>("https://${it.getUrl()}$path") {
 							userAgent(it.getUserAgent())
 							header("Authorization", loritta.lorittaInternalApiKey.name)
+						}.use {
+							val body = it.readText()
+							jsonParser.parse(
+									body
+							)
 						}
-
-						val body = response.readText()
-						jsonParser.parse(
-								body
-						)
 					}
 				} catch (e: Exception) {
 					logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
@@ -216,19 +216,19 @@ class LorittaShards {
 			GlobalScope.async {
 				try {
 					withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
-						val response = loritta.http.post<HttpResponse>("https://${it.getUrl()}/api/v1/loritta/user/search") {
+						loritta.http.post<HttpResponse>("https://${it.getUrl()}/api/v1/loritta/user/search") {
 							header("Authorization", loritta.lorittaInternalApiKey.name)
 							userAgent(it.getUserAgent())
 
 							body = gson.toJson(
 									jsonObject("pattern" to pattern)
 							)
+						}.use {
+							val body = it.readText()
+							jsonParser.parse(
+									body
+							)
 						}
-
-						val body = response.readText()
-						jsonParser.parse(
-								body
-						)
 					}
 				} catch (e: Exception) {
 					logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
@@ -259,19 +259,19 @@ class LorittaShards {
 			GlobalScope.async {
 				try {
 					withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
-						val response = loritta.http.post<HttpResponse>("https://${it.getUrl()}/api/v1/loritta/guild/search") {
+						loritta.http.post<HttpResponse>("https://${it.getUrl()}/api/v1/loritta/guild/search") {
 							header("Authorization", loritta.lorittaInternalApiKey.name)
 							userAgent(it.getUserAgent())
 
 							body = gson.toJson(
 									jsonObject("pattern" to pattern)
 							)
+						}.use {
+							val body = it.readText()
+							jsonParser.parse(
+									body
+							)
 						}
-
-						val body = response.readText()
-						jsonParser.parse(
-								body
-						)
 					}
 				} catch (e: Exception) {
 					logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
@@ -320,9 +320,9 @@ class LorittaShards {
 			val response = loritta.http.get<HttpResponse>("https://$url/api/v1/loritta/guild/$id") {
 				header("Authorization", loritta.lorittaInternalApiKey.name)
 				userAgent(loritta.lorittaCluster.getUserAgent())
+			}.use {
+				it.readText()
 			}
-
-			response.readText()
 		}
 
 		val json = jsonParser.parse(body).obj

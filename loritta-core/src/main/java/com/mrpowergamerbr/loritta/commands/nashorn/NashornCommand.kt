@@ -167,6 +167,8 @@ var getGuild=function() { return contexto.getGuild(); };"""
 					userAgent(loritta.lorittaCluster.getUserAgent())
 
 					body = gson.toJson(commandRequest)
+				}.use {
+					logger.info { "Parallax code sent to the server executor!" }
 				}
 			} else {
 				// Funções inline para facilitar a programação de comandos

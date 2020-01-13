@@ -70,20 +70,20 @@ abstract class LorittaBot(var config: GeneralConfig, var instanceConfig: General
 	 * @return the background image
 	 */
 	suspend fun getUserProfileBackground(id: Long): BufferedImage {
-		val response = loritta.http.get<HttpResponse>("${loritta.instanceConfig.loritta.website.url}assets/img/backgrounds/${id}.png?t=${System.currentTimeMillis()}") {
+		loritta.http.get<HttpResponse>("${loritta.instanceConfig.loritta.website.url}assets/img/backgrounds/${id}.png?t=${System.currentTimeMillis()}") {
 			userAgent(loritta.lorittaCluster.getUserAgent())
+		}.use {
+			val bytes = if (it.status != HttpStatusCode.OK) {
+				loritta.http.get<HttpResponse>("${loritta.instanceConfig.loritta.website.url}assets/img/backgrounds/default_background.png") {
+					userAgent(loritta.lorittaCluster.getUserAgent())
+				}.use {
+					it.readBytes()
+				}
+			} else
+				it.readBytes()
+
+			return ImageIO.read(bytes.inputStream())
 		}
-
-		val bytes = if (response.status != HttpStatusCode.OK) {
-			val response2 = loritta.http.get<HttpResponse>("${loritta.instanceConfig.loritta.website.url}assets/img/backgrounds/default_background.png") {
-				userAgent(loritta.lorittaCluster.getUserAgent())
-			}
-
-			response2.readBytes()
-		} else
-			response.readBytes()
-
-		return ImageIO.read(bytes.inputStream())
 	}
 
 	/**

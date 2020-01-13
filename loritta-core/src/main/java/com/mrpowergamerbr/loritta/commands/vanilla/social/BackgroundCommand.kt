@@ -156,7 +156,10 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 							"data" to Base64.getEncoder().encodeToString(baos.toByteArray())
 					)
 			)
+		}.use {
+			logger.info { "Background updated for ${context.userHandle.idLong}!" }
 		}
+
 		context.sendMessage("✨ **|** " + context.getAsMention(true) + context.legacyLocale["BACKGROUND_UPDATED"] + if (needsEditing) " ${context.legacyLocale["BACKGROUND_EDITED"]}!" else "")
 		return
 	}
