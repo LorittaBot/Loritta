@@ -16,6 +16,7 @@ import io.ktor.client.request.post
 import io.ktor.http.userAgent
 import jdk.nashorn.api.scripting.ClassFilter
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.NetAddressUtils
 import org.bson.types.ObjectId
 import org.graalvm.polyglot.Context
 import java.util.*
@@ -163,7 +164,7 @@ var getGuild=function() { return contexto.getGuild(); };"""
 
 				logger.info { "Sending code to the Parallax Server Executor..." }
 
-				loritta.http.post<io.ktor.client.response.HttpResponse>("http://127.0.0.1:3366/api/v1/parallax/process-command") {
+				loritta.http.post<io.ktor.client.response.HttpResponse>("http://${NetAddressUtils.fixIp(loritta.discordConfig.shardController.url)}:3366/api/v1/parallax/process-command") {
 					userAgent(loritta.lorittaCluster.getUserAgent())
 
 					body = gson.toJson(commandRequest)
