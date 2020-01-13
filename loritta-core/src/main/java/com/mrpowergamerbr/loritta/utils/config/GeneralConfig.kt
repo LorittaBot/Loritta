@@ -18,6 +18,7 @@ class GeneralConfig @JsonCreator constructor(
 		val connectionManager: ConnectionManagerConfig,
 		@JsonProperty("mercadopago")
 		val mercadoPago: MercadoPagoConfig,
+		val parallaxCodeServer: ParallaxCodeServerConfig,
 		val socket: SocketConfig,
 		val youtube: YouTubeConfig,
 		val mashape: MashapeConfig,

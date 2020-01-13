@@ -164,7 +164,7 @@ var getGuild=function() { return contexto.getGuild(); };"""
 
 				logger.info { "Sending code to the Parallax Server Executor..." }
 
-				loritta.http.post<io.ktor.client.response.HttpResponse>("http://${NetAddressUtils.fixIp(loritta.discordConfig.shardController.url)}:3366/api/v1/parallax/process-command") {
+				loritta.http.post<io.ktor.client.response.HttpResponse>("http://${NetAddressUtils.fixIp(loritta.config.parallaxCodeServer.url)}/api/v1/parallax/process-command") {
 					userAgent(loritta.lorittaCluster.getUserAgent())
 
 					body = gson.toJson(commandRequest)
