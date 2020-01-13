@@ -126,7 +126,7 @@ class LorittaShards {
 		return GlobalScope.async {
 			try {
 				val body = withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
-					val response = loritta.http.get<HttpResponse>("https://${shard.getUrl()}$path") {
+					loritta.http.get<HttpResponse>("https://${shard.getUrl()}$path") {
 						header("Authorization", loritta.lorittaInternalApiKey.name)
 						userAgent(loritta.lorittaCluster.getUserAgent())
 					}.use {
@@ -317,7 +317,7 @@ class LorittaShards {
 		val url = DiscordUtils.getUrlForLorittaClusterId(clusterId)
 
 		val body = withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
-			val response = loritta.http.get<HttpResponse>("https://$url/api/v1/loritta/guild/$id") {
+			loritta.http.get<HttpResponse>("https://$url/api/v1/loritta/guild/$id") {
 				header("Authorization", loritta.lorittaInternalApiKey.name)
 				userAgent(loritta.lorittaCluster.getUserAgent())
 			}.use {
