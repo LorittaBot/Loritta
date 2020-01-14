@@ -1,18 +1,27 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.*
-import com.mrpowergamerbr.loritta.modules.InviteLinkModule
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
+import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.commands.vanilla.utils.CalculadoraCommand
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.remove
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.utils.Emotes
 
 class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), CommandCategory.FUN) {
+	companion object {
+		private const val LOCALE_PREFIX = "commands.fun.roll"
+	}
+
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.entertainment.roll.description"]
+		return locale.toNewLocale()["$LOCALE_PREFIX.description"]
 	}
 
 	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
@@ -20,7 +29,7 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 			argument(ArgumentType.NUMBER) {
 				optional = true
 				defaultValue = "6"
-				explanation = locale.toNewLocale()["commands.entertainment.roll.howMuchSides"]
+				explanation = locale.toNewLocale()["$LOCALE_PREFIX.howMuchSides"]
 			}
 		}
 	}
@@ -66,7 +75,12 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 					try {
 						LorittaUtils.evalMath(Loritta.RANDOM.nextLong(lowerBound, upperBound + 1).toString() + expression).toInt().toString()
 					} catch (ex: RuntimeException) {
-						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale.get("CALC_INVALID", expression))
+						context.reply(
+								LoriReply(
+										context.locale["${CalculadoraCommand.LOCALE_PREFIX}.invalid", expression] + " ${Emotes.LORI_CRYING}",
+										Emotes.LORI_HM
+								)
+						)
 						return
 					}
 					if (!expression.startsWith(" ")) {
@@ -74,14 +88,24 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 					}
 				}
 			} catch (e: Exception) {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["INVALID_NUMBER", context.args[0]])
+				context.reply(
+						LoriReply(
+								context.locale["commands.invalidNumber", expression] + " ${Emotes.LORI_CRYING}",
+								Emotes.LORI_HM
+						)
+				)
 				return
 			}
 
 		}
 
 		if (0 >= upperBound || lowerBound > upperBound) {
-			context.sendMessage(context.getAsMention(true) + locale["ROLL_INVALID_NUMBER"])
+			context.reply(
+					LoriReply(
+							context.locale["$LOCALE_PREFIX.roll.invalidBound"] + " ${Emotes.LORI_SHRUG}",
+							Constants.ERROR
+					)
+			)
 			return
 		}
 
@@ -115,7 +139,7 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 			response = "`${finalResult.toInt()}` **»** $response"
 		}
 
-		var message = context.legacyLocale["ROLL_RESULT", upperBound, finalResult.toInt()]
+		val message = context.locale["$LOCALE_PREFIX.result", context.getAsMention(false), upperBound.toString(), finalResult.toInt()]
 
 		val list = mutableListOf<LoriReply>()
 		list.add(LoriReply(message = message, prefix = "\uD83C\uDFB2", forceMention = true))

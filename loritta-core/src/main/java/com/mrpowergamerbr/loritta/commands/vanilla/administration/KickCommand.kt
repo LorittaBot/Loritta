@@ -2,10 +2,13 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
+import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
@@ -14,6 +17,7 @@ import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.utils.Emotes
 
 class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -49,49 +53,22 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val user = context.getUserAt(0)
-
-			if (user == null) {
-				context.reply(
-						LoriReply(
-								locale["BAN_UserDoesntExist"],
-								Constants.ERROR
-						)
-				)
-				return
-			}
+			val user = AdminUtils.checkForUser(context) ?: return
 
 			val member = context.guild.getMember(user)
 
 			if (member == null) {
 				context.reply(
 						LoriReply(
-								locale["BAN_UserNotInThisServer"],
-								Constants.ERROR
+								context.locale["commands.userNotOnTheGuild", "${user.asMention} (`${user.name.stripCodeMarks()}#${user.discriminator} (${user.idLong})`)"],
+								Emotes.LORI_HM
 						)
 				)
 				return
 			}
 
-			if (!context.guild.selfMember.canInteract(member)) {
-				context.reply(
-						LoriReply(
-								locale["BAN_RoleTooLow"],
-								Constants.ERROR
-						)
-				)
+			if (!AdminUtils.checkForPermissions(context, member))
 				return
-			}
-
-			if (!context.handle.canInteract(member)) {
-				context.reply(
-						LoriReply(
-								locale["BAN_PunisherRoleTooLow"],
-								Constants.ERROR
-						)
-				)
-				return
-			}
 
 			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context) ?: return
 
@@ -100,12 +77,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 
 				message?.delete()?.queue()
 
-				context.reply(
-						LoriReply(
-								locale["BAN_SuccessfullyPunished"],
-								"\uD83C\uDF89"
-						)
-				)
+				AdminUtils.sendSuccessfullyPunishedMessage(context)
 			}
 
 			if (skipConfirmation) {
@@ -113,19 +85,8 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 				return
 			}
 
-			var str = locale["BAN_ReadyToPunish", locale["KICK_PunishName"], member.asMention, member.user.name + "#" + member.user.discriminator, member.user.id]
-
 			val hasSilent = context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog
-			if (context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog) {
-				str += " ${locale["BAN_SilentTip"]}"
-			}
-
-			val message = context.reply(
-					LoriReply(
-							message = str,
-							prefix = "⚠"
-					)
-			)
+			val message = AdminUtils.sendConfirmationMessage(context, user, hasSilent, "kick")
 
 			message.onReactionAddByAuthor(context) {
 				if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
@@ -144,6 +105,8 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 	}
 
 	companion object {
+		private val LOCALE_PREFIX = "commands.moderation"
+
 		fun kick(context: CommandContext, locale: LegacyBaseLocale, member: Member, user: User, reason: String, isSilent: Boolean) {
 			if (!isSilent) {
 				if (context.config.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
@@ -168,7 +131,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 								context.guild,
 								mutableMapOf(
 										"reason" to reason,
-										"punishment" to locale["KICK_PunishAction"],
+										"punishment" to locale.toNewLocale()["$LOCALE_PREFIX.kick.punishAction"],
 										"staff" to context.userHandle.name,
 										"@staff" to context.userHandle.asMention,
 										"staff-discriminator" to context.userHandle.discriminator,
@@ -183,7 +146,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 				}
 			}
 
-			context.guild.kick(member, (locale["BAN_PunishedBy"] + " ${context.userHandle.name}#${context.userHandle.discriminator} — ${locale["BAN_PunishmentReason"]}: $reason").substringIfNeeded(0 until 512))
+			context.guild.kick(member, AdminUtils.generateAuditLogMessage(locale.toNewLocale(), context.userHandle, reason))
 					.queue()
 		}
 	}

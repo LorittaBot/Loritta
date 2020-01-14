@@ -1,17 +1,112 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import com.mrpowergamerbr.loritta.utils.remove
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.MessageEmbed
-import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.*
+import net.perfectdreams.loritta.utils.Emotes
 import java.awt.Color
 import java.time.Instant
 
 object AdminUtils {
+	private val LOCALE_PREFIX = "commands.moderation"
+
+	suspend fun checkForUser(context: CommandContext): User? {
+		val user = context.getUserAt(0)
+
+		if (user == null) {
+			context.reply(
+					LoriReply(
+							context.locale["commands.userDoesNotExist", "`${context.rawArgs[0].stripCodeMarks()}`"],
+							Emotes.LORI_HM
+					)
+			)
+		}
+
+		return user
+	}
+
+	suspend fun checkForPermissions(context: CommandContext, member: Member): Boolean {
+		if (!context.guild.selfMember.canInteract(member)) {
+			val reply = buildString {
+				this.append(context.locale["${LOCALE_PREFIX}.roleTooLow"])
+
+				if (context.handle.hasPermission(Permission.MANAGE_ROLES)) {
+					this.append(" ")
+					this.append(context.locale["${LOCALE_PREFIX}.roleTooLowHowToFix"])
+				}
+			}
+
+			context.reply(
+					LoriReply(
+							reply,
+							Constants.ERROR
+					)
+			)
+			return false
+		}
+
+		if (!context.handle.canInteract(member)) {
+			val reply = buildString {
+				this.append(context.locale["commands.moderation.punisherRoleTooLow"])
+
+				if (context.handle.hasPermission(Permission.MANAGE_ROLES)) {
+					this.append(" ")
+					this.append(context.locale["commands.moderation.punisherRoleTooLowHowToFix"])
+				}
+			}
+
+			context.reply(
+					LoriReply(
+							reply,
+							Constants.ERROR
+					)
+			)
+			return false
+		}
+		return true
+	}
+
+	suspend fun sendConfirmationMessage(context: CommandContext, user: User, hasSilent: Boolean, type: String): Message {
+		val str = context.locale["${LOCALE_PREFIX}.readyToPunish", context.locale["${LOCALE_PREFIX}.$type.punishName"], user.asMention, user.name + "#" + user.discriminator, user.id]
+
+		val replies = mutableListOf(
+				LoriReply(
+						str,
+						"⚠"
+				)
+		)
+
+		if (hasSilent) {
+			replies += LoriReply(
+					context.locale["${LOCALE_PREFIX}.silentTip"],
+					"\uD83D\uDC40"
+			)
+		}
+
+		if (!context.config.getUserData(context.userHandle.idLong).quickPunishment) {
+			replies += LoriReply(
+					context.locale["${LOCALE_PREFIX}.skipConfirmationTip", "`${context.config.commandPrefix}quickpunishment`"]
+			)
+		}
+
+		return context.reply(*replies.toTypedArray())
+	}
+
+	suspend fun sendSuccessfullyPunishedMessage(context: CommandContext) {
+		context.reply(
+				LoriReply(
+						context.locale["${LOCALE_PREFIX}.successfullyPunished"],
+						"\uD83C\uDF89"
+				)
+		)
+	}
+
+	fun generateAuditLogMessage(locale: BaseLocale, punisher: User, reason: String) = locale["${LOCALE_PREFIX}.punishedLog", "${punisher.name}#${punisher.discriminator}", reason].substringIfNeeded(0 until 512)
+
 	fun createPunishmentEmbedBuilderSentViaDirectMessage(guild: Guild, locale: LegacyBaseLocale, punisher: User, punishmentAction: String, reason: String): EmbedBuilder {
 		val embed = EmbedBuilder()
 
@@ -20,9 +115,9 @@ object AdminUtils {
 
 		embed.setThumbnail(guild.iconUrl)
 		embed.setAuthor(punisher.name + "#" + punisher.discriminator, null, punisher.avatarUrl)
-		embed.setTitle("\uD83D\uDEAB ${locale["BAN_YouAreBanned", punishmentAction.toLowerCase(), guild.name]}!")
-		embed.addField("\uD83D\uDC6E ${locale["BAN_PunishedBy"]}", punisher.name + "#" + punisher.discriminator, false)
-		embed.addField("\uD83D\uDCDD ${locale["BAN_PunishmentReason"]}", reason, false)
+		embed.setTitle("\uD83D\uDEAB ${locale.toNewLocale()["$LOCALE_PREFIX.youGotPunished", punishmentAction.toLowerCase(), guild.name]}!")
+		embed.addField("\uD83D\uDC6E ${locale.toNewLocale()["$LOCALE_PREFIX.punishedBy"]}", punisher.name + "#" + punisher.discriminator, false)
+		embed.addField("\uD83D\uDCDD ${locale.toNewLocale()["$LOCALE_PREFIX.punishmentReason"]}", reason, false)
 
 		return embed
 	}
@@ -65,11 +160,11 @@ object AdminUtils {
 					delDays = it.split(" ")[0].toIntOrNull() ?: 0
 
 					if (delDays > 7) {
-						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["SOFTBAN_FAIL_MORE_THAN_SEVEN_DAYS"])
+						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["$LOCALE_PREFIX.cantDeleteMessagesMoreThan7Days"])
 						return null
 					}
 					if (0 > delDays) {
-						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["SOFTBAN_FAIL_LESS_THAN_ZERO_DAYS"])
+						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["$LOCALE_PREFIX.cantDeleteMessagesLessThan0Days"])
 						return null
 					}
 

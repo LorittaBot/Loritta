@@ -3,10 +3,11 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
@@ -50,40 +51,13 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val user = context.getUserAt(0)
-
-			if (user == null) {
-				context.reply(
-						LoriReply(
-								locale["BAN_UserDoesntExist"],
-								Constants.ERROR
-						)
-				)
-				return
-			}
+			val user = AdminUtils.checkForUser(context) ?: return
 
 			val member = context.guild.getMember(user)
 
 			if (member != null) {
-				if (!context.guild.selfMember.canInteract(member)) {
-					context.reply(
-							LoriReply(
-									locale["BAN_RoleTooLow"],
-									Constants.ERROR
-							)
-					)
+				if (!AdminUtils.checkForPermissions(context, member))
 					return
-				}
-
-				if (!context.handle.canInteract(member)) {
-					context.reply(
-							LoriReply(
-									locale["BAN_PunisherRoleTooLow"],
-									Constants.ERROR
-							)
-					)
-					return
-				}
 			}
 
 			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context) ?: return
@@ -93,12 +67,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 
 				message?.delete()?.queue()
 
-				context.reply(
-						LoriReply(
-								locale["BAN_SuccessfullyPunished"],
-								"\uD83C\uDF89"
-						)
-				)
+				AdminUtils.sendSuccessfullyPunishedMessage(context)
 			}
 
 			if (skipConfirmation) {
@@ -106,19 +75,8 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 				return
 			}
 
-			var str = locale["BAN_ReadyToPunish", locale["BAN_PunishName"], user.asMention, user.name + "#" + user.discriminator, user.id]
-
 			val hasSilent = context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog
-			if (context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog) {
-				str += " ${locale["BAN_SilentTip"]}"
-			}
-
-			val message = context.reply(
-					LoriReply(
-							message = str,
-							prefix = "⚠"
-					)
-			)
+			val message = AdminUtils.sendConfirmationMessage(context, user, hasSilent, "ban")
 
 			message.onReactionAddByAuthor(context) {
 				if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
@@ -137,11 +95,13 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 	}
 
 	companion object {
+		private val LOCALE_PREFIX = "commands.moderation"
+
 		fun ban(serverConfig: MongoServerConfig, guild: Guild, punisher: User, locale: LegacyBaseLocale, user: User, reason: String, isSilent: Boolean, delDays: Int) {
 			if (!isSilent) {
 				if (serverConfig.moderationConfig.sendPunishmentViaDm && guild.isMember(user)) {
 					try {
-						val embed =  AdminUtils.createPunishmentMessageSentViaDirectMessage(guild, locale, punisher, locale["BAN_PunishAction"], reason)
+						val embed =  AdminUtils.createPunishmentMessageSentViaDirectMessage(guild, locale, punisher, locale.toNewLocale()["$LOCALE_PREFIX.ban.punishAction"], reason)
 
 						user.openPrivateChannel().queue {
 							it.sendMessage(embed).queue()
@@ -161,13 +121,13 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 								guild,
 								mutableMapOf(
 										"reason" to reason,
-										"punishment" to locale["BAN_PunishAction"],
+										"punishment" to locale.toNewLocale()["$LOCALE_PREFIX.ban.punishAction"],
 										"staff" to punisher.name,
 										"@staff" to punisher.asMention,
 										"staff-discriminator" to punisher.discriminator,
 										"staff-avatar-url" to punisher.effectiveAvatarUrl,
 										"staff-id" to punisher.id,
-										"duration" to locale.toNewLocale()["commands.moderation.mute.forever"]
+										"duration" to locale.toNewLocale()["$LOCALE_PREFIX.mute.forever"]
 								)
 						)
 
@@ -176,7 +136,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 				}
 			}
 
-			guild.ban(user, delDays, (locale["BAN_PunishedBy"] + " ${punisher.name}#${punisher.discriminator} — ${locale["BAN_PunishmentReason"]}: $reason").substringIfNeeded(0 until 512))
+			guild.ban(user, delDays, AdminUtils.generateAuditLogMessage(locale.toNewLocale(), punisher, reason))
 					.queue()
 		}
 	}

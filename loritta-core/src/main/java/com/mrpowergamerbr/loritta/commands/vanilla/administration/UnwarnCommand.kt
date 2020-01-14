@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
-import com.mrpowergamerbr.loritta.commands.*
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
+import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Warn
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Warns
@@ -14,10 +15,15 @@ import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCategory.ADMIN) {
+	companion object {
+		private val LOCALE_PREFIX = "commands.moderation"
+	}
+
 	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["UNWARN_Description"]
 	}
@@ -48,40 +54,13 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val user = context.getUserAt(0)
-
-			if (user == null) {
-				context.reply(
-						LoriReply(
-								locale["BAN_UserDoesntExist"],
-								Constants.ERROR
-						)
-				)
-				return
-			}
+			val user = AdminUtils.checkForUser(context) ?: return
 
 			val member = context.guild.getMember(user)
 
 			if (member != null) {
-				if (!context.guild.selfMember.canInteract(member)) {
-					context.reply(
-							LoriReply(
-									locale["BAN_RoleTooLow"],
-									Constants.ERROR
-							)
-					)
+				if (!AdminUtils.checkForPermissions(context, member))
 					return
-				}
-
-				if (!context.handle.canInteract(member)) {
-					context.reply(
-							LoriReply(
-									locale["BAN_PunisherRoleTooLow"],
-									Constants.ERROR
-							)
-					)
-					return
-				}
 			}
 
 			val warns = transaction(Databases.loritta) {
@@ -91,7 +70,7 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 			if (warns.isEmpty()) {
 				context.reply(
 						LoriReply(
-								locale["WARN_DoesntHaveWarns"],
+								context.locale["$LOCALE_PREFIX.moderation.noWarnsFound"],
 								Constants.ERROR
 						)
 				)
@@ -99,9 +78,7 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 			}
 
 			transaction(Databases.loritta) {
-				Warn.find { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) }
-						.sortedByDescending { it.receivedAt }
-						.first()
+				Warn.find { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) }.maxBy { it.receivedAt }!!
 						.delete()
 			}
 
@@ -109,7 +86,7 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 
 			context.reply(
 					LoriReply(
-							locale["WARN_WarnRemoved"],
+							context.locale["$LOCALE_PREFIX.moderation.warnRemoved"] + " ${Emotes.LORI_HMPF}",
 							"\uD83C\uDF89"
 					)
 			)

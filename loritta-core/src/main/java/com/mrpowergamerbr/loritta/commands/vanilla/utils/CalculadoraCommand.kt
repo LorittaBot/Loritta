@@ -1,17 +1,19 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.modules.InviteLinkModule
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LorittaPermission
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-
+import com.mrpowergamerbr.loritta.utils.stripCodeMarks
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.Emotes
 
 class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calculator"), CommandCategory.UTILS) {
+	companion object {
+		const val LOCALE_PREFIX = "commands.utils.calc"
+	}
+
 	override fun getUsage(): String {
 		return "conta"
 	}
@@ -27,16 +29,23 @@ class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calcul
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val expression = context.args.joinToString(" ")
+					.replace("_", "")
 
 			try {
 				val result = LorittaUtils.evalMath(expression)
 
 				context.reply(
-						locale["CALC_RESULT", result],
-						"\uD83E\uDD13"
+						LoriReply(
+								context.locale["$LOCALE_PREFIX.result", result]
+						)
 				)
 			} catch (e: Exception) {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["CALC_INVALID", expression])
+				context.reply(
+						LoriReply(
+								context.locale["$LOCALE_PREFIX.invalid", expression.stripCodeMarks()] + " ${Emotes.LORI_CRYING}",
+								Emotes.LORI_HM
+						)
+				)
 			}
 		} else {
 			this.explain(context)

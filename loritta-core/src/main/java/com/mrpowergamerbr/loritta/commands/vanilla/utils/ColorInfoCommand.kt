@@ -1,15 +1,13 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import net.perfectdreams.loritta.utils.ColorUtils
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.drawText
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import com.mrpowergamerbr.loritta.utils.makeRoundedCorners
 import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.ColorUtils
+import net.perfectdreams.loritta.utils.Emotes
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.image.BufferedImage
@@ -18,6 +16,7 @@ class ColorInfoCommand : AbstractCommand("colorinfo", listOf("rgb", "hexcolor", 
 	companion object {
 		val COLOR_UTILS = com.mrpowergamerbr.loritta.utils.ColorUtils()
 		const val FACTOR = 0.7
+		private const val LOCALE_PREFIX = "commands.utils.colorinfo"
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -27,13 +26,13 @@ class ColorInfoCommand : AbstractCommand("colorinfo", listOf("rgb", "hexcolor", 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val input = context.args.joinToString(" ")
-			var color = ColorUtils.getColorFromString(input)
+			val color = ColorUtils.getColorFromString(input)
 
 			if (color == null) { // Cor inválida!
 				context.reply(
 						LoriReply(
-								message = locale["COLOR_InvalidColor", input],
-								prefix = Constants.ERROR
+								message = context.locale["commands.invalidColor", input.stripCodeMarks()],
+								prefix = Emotes.LORI_HM
 						)
 				)
 				return
@@ -96,7 +95,7 @@ class ColorInfoCommand : AbstractCommand("colorinfo", listOf("rgb", "hexcolor", 
 					Color.HSBtoRGB(((hue - 30) % 360 / 360), saturation / 100, value / 100)
 			)
 
-			graphics.drawWithOutline(locale["COLOR_Shades"], 2, 11)
+			graphics.drawWithOutline(context.locale["$LOCALE_PREFIX.shades"], 2, 11)
 
 			run {
 				var shade = Color(color.rgb)
@@ -117,7 +116,7 @@ class ColorInfoCommand : AbstractCommand("colorinfo", listOf("rgb", "hexcolor", 
 				}
 			}
 
-			graphics.drawWithOutline(locale["COLOR_Tints"], 2, 13 + 48 + 9)
+			graphics.drawWithOutline(context.locale["$LOCALE_PREFIX.tints"], 2, 13 + 48 + 9)
 
 			run {
 				var tint = Color(color.rgb)
@@ -138,18 +137,18 @@ class ColorInfoCommand : AbstractCommand("colorinfo", listOf("rgb", "hexcolor", 
 				}
 			}
 
-			graphics.drawWithOutline(locale["COLOR_Triadic"], 2, 13 + 48 + 9 + 48 + 11)
+			graphics.drawWithOutline(context.locale["$LOCALE_PREFIX.triadic"], 2, 13 + 48 + 9 + 48 + 11)
 
 			graphics.drawColor(color, 0, 13 + 48 + 9 + 48 + 11 + 4)
 			graphics.drawColor(triadColor1, 48, 13 + 48 + 9 + 48 + 11 + 4)
 			graphics.drawColor(triadColor2, 96, 13 + 48 + 9 + 48 + 11 + 4)
 
-			graphics.drawWithOutline(locale["COLOR_Analogous"], 2, 13 + 48 + 9 + 48 + 11 + 48 + 11 + 3)
+			graphics.drawWithOutline(context.locale["$LOCALE_PREFIX.analogous"], 2, 13 + 48 + 9 + 48 + 11 + 48 + 11 + 3)
 
 			graphics.drawColor(analogousColor1, 0, 13 + 48 + 9 + 48 + 11 + 48 + 15  + 3)
 			graphics.drawColor(analogousColor2, 48, 13 + 48 + 9 + 48 + 11 + 48 + 15  + 3)
 
-			graphics.drawWithOutline(locale["COLOR_Complementary"], 146, 13 + 48 + 9 + 48 + 11)
+			graphics.drawWithOutline(context.locale["$LOCALE_PREFIX.complementary"], 146, 13 + 48 + 9 + 48 + 11)
 
 			graphics.drawColor(color, 146, 13 + 48 + 9 + 48 + 11 + 4)
 			graphics.drawColor(complementaryColor, 194, 13 + 48 + 9 + 48 + 11 + 4)

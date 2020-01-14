@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Mutes
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
-import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
@@ -55,40 +54,13 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val user = context.getUserAt(0)
-
-			if (user == null) {
-				context.reply(
-						LoriReply(
-								locale["BAN_UserDoesntExist"],
-								Constants.ERROR
-						)
-				)
-				return
-			}
+			val user = AdminUtils.checkForUser(context) ?: return
 
 			val member = context.guild.getMember(user)
 
 			if (member != null) {
-				if (!context.guild.selfMember.canInteract(member)) {
-					context.reply(
-							LoriReply(
-									locale["BAN_RoleTooLow"],
-									Constants.ERROR
-							)
-					)
+				if (!AdminUtils.checkForPermissions(context, member))
 					return
-				}
-
-				if (!context.handle.canInteract(member)) {
-					context.reply(
-							LoriReply(
-									locale["BAN_PunisherRoleTooLow"],
-									Constants.ERROR
-							)
-					)
-					return
-				}
 			}
 
 			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context) ?: return
@@ -111,19 +83,8 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 				return
 			}
 
-			var str = locale["BAN_ReadyToPunish", locale.toNewLocale()["commands.moderation.unmute.punishName"], user.asMention, user.name + "#" + user.discriminator, user.id]
-
 			val hasSilent = context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog
-			if (context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog) {
-				str += " ${locale["BAN_SilentTip"]}"
-			}
-
-			val message = context.reply(
-					LoriReply(
-							message = str,
-							prefix = "⚠"
-					)
-			)
+			val message = AdminUtils.sendConfirmationMessage(context, user, hasSilent, "unmute")
 
 			message.onReactionAddByAuthor(context) {
 				if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
@@ -172,7 +133,7 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 			val member = guild.getMember(user)
 
 			if (member != null) {
-				val mutedRoles = MuteCommand.getMutedRole(guild, locale)
+				val mutedRoles = MuteCommand.getMutedRole(guild, locale.toNewLocale())
 
 				val thread = MuteCommand.roleRemovalJobs[member.guild.id + "#" + member.user.id]
 				thread?.cancel()

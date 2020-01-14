@@ -13,9 +13,14 @@ import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.utils.Emotes
 import java.util.*
 
 class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCORD) {
+	companion object {
+		const val LOCALE_PREFIX = "commands.discord.avatar"
+	}
+
 	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["AVATAR_DESCRIPTION"]
 	}
@@ -41,16 +46,26 @@ class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCO
 
 		val embed = EmbedBuilder()
 		embed.setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
-		embed.setDescription("**${context.legacyLocale["AVATAR_CLICKHERE", getAvatar.effectiveAvatarUrl + "?size=2048"]}**")
+		embed.setDescription("**${context.locale["$LOCALE_PREFIX.clickHere", "${getAvatar.effectiveAvatarUrl}?size=2048"]}**")
 
-		if (getAvatar.id == "390927821997998081")
-			embed.appendDescription("\n*${context.legacyLocale["AVATAR_PantufaCute"]}* \uD83D\uDE0A")
+		// Easter Egg: Pantufa
+		if (getAvatar.idLong == 390927821997998081L)
+			embed.appendDescription("\n*${context.locale["$LOCALE_PREFIX.pantufaCute"]}* ${Emotes.LORI_TEMMIE}")
 
+		// Easter Egg: Gabriela
+		if (getAvatar.idLong == 481901252007952385L)
+			embed.appendDescription("\n*${context.locale["$LOCALE_PREFIX.gabrielaCute"]}* ${Emotes.LORI_PAT}")
+
+		// Easter Egg: Pollux
+		if (getAvatar.idLong == 271394014358405121L || getAvatar.idLong == 354285599588483082L || getAvatar.idLong == 578913818961248256L)
+			embed.appendDescription("\n*${context.locale["$LOCALE_PREFIX.polluxCute"]}* ${Emotes.LORI_HEART}")
+
+		// Easter Egg: Loritta
 		if (getAvatar.id == loritta.discordConfig.discord.clientId) {
 			val calendar = Calendar.getInstance()
 			val currentDay = calendar.get(Calendar.DAY_OF_WEEK)
 
-			embed.appendDescription("\n*${context.legacyLocale["AVATAR_LORITTACUTE"]}* \uD83D\uDE0A")
+			embed.appendDescription("\n*${context.locale["$LOCALE_PREFIX.lorittaCute"]}* ${Emotes.LORI_SMILE}")
 			if (loritta.discordConfig.discord.fanArtExtravaganza.enabled && currentDay == loritta.discordConfig.discord.fanArtExtravaganza.dayOfTheWeek) {
 				val currentFanArtInMasterCluster = lorittaShards.queryMasterLorittaCluster("/api/v1/loritta/current-fan-art-avatar").await().obj
 

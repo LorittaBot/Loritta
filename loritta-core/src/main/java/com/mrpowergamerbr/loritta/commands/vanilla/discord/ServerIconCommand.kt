@@ -11,8 +11,13 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.Emotes
 
 class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "iconeserver", "iconeguild", "iconedoserver", "iconedaguild", "íconedoserver", "iconedoservidor", "íconeguild", "íconedoserver", "íconedaguild", "íconedoservidor"), category = CommandCategory.DISCORD) {
+	companion object {
+		private const val LOCALE_PREFIX = "commands.discord.servericon"
+	}
+
 	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.get("SERVERICON_DESCRIPTION")
 	}
@@ -24,9 +29,12 @@ class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "ico
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		var guild: JsonObject? = null
 
+		var guildId = context.guild.idLong
+
 		if (context.rawArgs.isNotEmpty()) {
 			val id = context.rawArgs.first()
 			if (id.isValidSnowflake()) {
+				guildId = id.toLong()
 				guild = lorittaShards.queryGuildById(context.args[0])
 			}
 		} else {
@@ -36,8 +44,8 @@ class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "ico
 		if (guild == null) {
 			context.reply(
 					LoriReply(
-							message = context.legacyLocale["SERVERINFO_UnknownGuild", context.args[0]],
-							prefix = Constants.ERROR
+							context.locale["commands.guildDoesNotExist", guildId],
+							Emotes.LORI_HM
 					)
 			)
 			return
@@ -49,7 +57,7 @@ class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "ico
 		if (iconUrl == null) {
 			context.reply(
 					LoriReply(
-							message = context.legacyLocale["SERVERICON_NoIcon"],
+							message = context.locale["$LOCALE_PREFIX.noIcon", Emotes.LORI_PAT],
 							prefix = Constants.ERROR
 					)
 			)
@@ -58,7 +66,7 @@ class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "ico
 
 		val embed = EmbedBuilder()
 		embed.setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
-		val description = "**${context.legacyLocale["AVATAR_CLICKHERE", iconUrl + "?size=2048"]}**"
+		val description = "**${context.locale["${AvatarCommand.LOCALE_PREFIX}.clickHere", "$iconUrl?size=2048"]}**"
 
 		val guildIconUrl = iconUrl
 

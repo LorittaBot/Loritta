@@ -2,14 +2,19 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.google.common.math.BigIntegerMath
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.Emotes
 
 
 class AnagramaCommand : AbstractCommand("anagram", listOf("anagrama"), CommandCategory.UTILS) {
+	companion object {
+		private const val LOCALE_PREFIX = "commands.utils.anagram"
+	}
+
 	override fun getUsage(): String {
 		return "palavra"
 	}
@@ -33,7 +38,7 @@ class AnagramaCommand : AbstractCommand("anagram", listOf("anagrama"), CommandCa
 
 			val chars = mutableMapOf<Char, Int>()
 			for (ch in palavra) {
-				chars.put(ch, chars.getOrDefault(ch, 0) + 1)
+				chars[ch] = chars.getOrDefault(ch, 0) + 1
 			}
 
 			var exp = 1.toBigInteger()
@@ -45,11 +50,11 @@ class AnagramaCommand : AbstractCommand("anagram", listOf("anagrama"), CommandCa
 
 			context.reply(
 					LoriReply(
-							message = context.legacyLocale["ANAGRAMA_RESULT", shuffledWord] + " \uD83D\uDE4B",
+							message = context.locale["$LOCALE_PREFIX.result", shuffledWord] + " ${Emotes.LORI_WOW}",
 							prefix = "✍"
 					),
 					LoriReply(
-							message = context.legacyLocale["ANAGRAMA_Stats", palavra, max],
+							message = context.locale["$LOCALE_PREFIX.stats", palavra, max],
 							prefix = "\uD83E\uDD13"
 					)
 			)

@@ -8,9 +8,9 @@ import com.mrpowergamerbr.loritta.commands.vanilla.discord.*
 import com.mrpowergamerbr.loritta.commands.vanilla.economy.*
 import com.mrpowergamerbr.loritta.commands.vanilla.images.*
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.*
-import com.mrpowergamerbr.loritta.commands.vanilla.music.*
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.*
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.*
+import com.mrpowergamerbr.loritta.commands.vanilla.music.LyricsCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.pokemon.PokedexCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbGameCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbUserCommand
@@ -61,7 +61,6 @@ class CommandManager {
 		commandMap.add(MagicBallCommand())
 		commandMap.add(SAMCommand())
 		commandMap.add(NyanCatCommand())
-		commandMap.add(WikiaCommand())
 		commandMap.add(PrimeirasPalavrasCommand())
 		commandMap.add(DrakeCommand())
 		commandMap.add(InverterCommand())
@@ -150,7 +149,6 @@ class CommandManager {
 		commandMap.add(CalculadoraCommand())
 		commandMap.add(MorseCommand())
 		commandMap.add(OCRCommand())
-		// commandMap.add(EmojiSearchCommand())
 		commandMap.add(EncodeCommand())
 		commandMap.add(LyricsCommand())
 
@@ -162,12 +160,9 @@ class CommandManager {
 		commandMap.add(ServerInfoCommand())
 		commandMap.add(InviteCommand())
 		commandMap.add(UserInfoCommand())
-		// commandMap.add(ChatLogCommand())
 		commandMap.add(InviteInfoCommand())
 		commandMap.add(AddEmojiCommand())
 		commandMap.add(RemoveEmojiCommand())
-		if (false && loritta.config.loritta.environment == EnvironmentType.CANARY)
-			commandMap.add(UserInvitesCommand())
 		commandMap.add(EmojiInfoCommand())
 		commandMap.add(OldMembersCommand())
 

@@ -21,6 +21,10 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADMIN) {
+	companion object {
+		private val LOCALE_PREFIX = "commands.moderation"
+	}
+
 	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["WARN_Description"]
 	}
@@ -55,40 +59,13 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val user = context.getUserAt(0)
-
-			if (user == null) {
-				context.reply(
-						LoriReply(
-								locale["BAN_UserDoesntExist"],
-								Constants.ERROR
-						)
-				)
-				return
-			}
+			val user = AdminUtils.checkForUser(context) ?: return
 
 			val member = context.guild.getMember(user)
 
 			if (member != null) {
-				if (!context.guild.selfMember.canInteract(member)) {
-					context.reply(
-							LoriReply(
-									locale["BAN_RoleTooLow"],
-									Constants.ERROR
-							)
-					)
+				if (!AdminUtils.checkForPermissions(context, member))
 					return
-				}
-
-				if (!context.handle.canInteract(member)) {
-					context.reply(
-							LoriReply(
-									locale["BAN_PunisherRoleTooLow"],
-									Constants.ERROR
-							)
-					)
-					return
-				}
 			}
 
 			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context) ?: return
@@ -117,13 +94,13 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 									context.guild,
 									mutableMapOf(
 											"reason" to reason,
-											"punishment" to locale["WARN_PunishAction"],
+											"punishment" to context.locale["$LOCALE_PREFIX.warn.punishAction"],
 											"staff" to context.userHandle.name,
 											"@staff" to context.userHandle.asMention,
 											"staff-discriminator" to context.userHandle.discriminator,
 											"staff-avatar-url" to context.userHandle.effectiveAvatarUrl,
 											"staff-id" to context.userHandle.id,
-											"duration" to locale.toNewLocale()["commands.moderation.mute.forever"]
+											"duration" to locale.toNewLocale()["$LOCALE_PREFIX.mute.forever"]
 									)
 							)
 
@@ -166,12 +143,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 
 				message?.delete()?.queue()
 
-				context.reply(
-						LoriReply(
-								locale["BAN_SuccessfullyPunished"],
-								"\uD83C\uDF89"
-						)
-				)
+				AdminUtils.sendSuccessfullyPunishedMessage(context)
 			}
 
 			if (skipConfirmation) {
@@ -179,19 +151,8 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 				return
 			}
 
-			var str = locale["BAN_ReadyToPunish", locale["WARN_PunishName"], user.asMention, user.name + "#" + user.discriminator, user.id]
-
 			val hasSilent = context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog
-			if (context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog) {
-				str += " ${locale["BAN_SilentTip"]}"
-			}
-
-			val message = context.reply(
-					LoriReply(
-							message = str,
-							prefix = "⚠"
-					)
-			)
+			val message = AdminUtils.sendConfirmationMessage(context, user, hasSilent, "warn")
 
 			message.onReactionAddByAuthor(context) {
 				if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {

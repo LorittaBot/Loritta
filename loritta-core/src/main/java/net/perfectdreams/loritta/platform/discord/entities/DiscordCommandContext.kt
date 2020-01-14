@@ -409,7 +409,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 			val onlyUnusedAliases = aliases.filter { it != commandLabel.replaceFirst(config.commandPrefix, "") }
 			if (onlyUnusedAliases.isNotEmpty()) {
 				embed.addField(
-						"\uD83D\uDD00 ${legacyLocale["CommandAliases"]}",
+						"\uD83D\uDD00 ${locale["commands.aliases"]}",
 						onlyUnusedAliases.joinToString(", ", transform = { "`" + config.commandPrefix + it + "`" }),
 						true
 				)

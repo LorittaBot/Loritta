@@ -36,8 +36,8 @@ class AFKModule : MessageReceivedModule {
 			if (afkMembers.size == 1) {
 				event.channel.sendMessage(
 						LoriReply(
-								message = locale["AFK_UserIsAfk", "**" + afkMembers[0].first.effectiveName.escapeMentions().stripCodeMarks() + "**"] + if (afkMembers[0].second != null) {
-									" **" + locale["HACKBAN_REASON"] + "** » `${afkMembers[0].second}`"
+								message = locale.toNewLocale()["modules.afk.userIsAfk", "**" + afkMembers[0].first.effectiveName.escapeMentions().stripCodeMarks() + "**"] + if (afkMembers[0].second != null) {
+									" **" + locale.toNewLocale()["commands.moderation.punishmentReason"] + "** » `${afkMembers[0].second}`"
 								} else {
 									""
 								},
@@ -50,7 +50,7 @@ class AFKModule : MessageReceivedModule {
 				val replies = mutableListOf<LoriReply>()
 				replies.add(
 						LoriReply(
-								message = locale["AFK_UsersAreAFK", afkMembers.joinToString(separator = ", ", transform = { "**" + it.first.effectiveName.escapeMentions().stripCodeMarks() + "**" })],
+								message = locale.toNewLocale()["modules.afk.usersAreAfk", afkMembers.joinToString(separator = ", ", transform = { "**" + it.first.effectiveName.escapeMentions().stripCodeMarks() + "**" })],
 								prefix = "\uD83D\uDE34"
 						)
 				)

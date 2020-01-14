@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.*
 import mu.KotlinLogging
@@ -19,7 +20,7 @@ import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
-import net.perfectdreams.loritta.utils.FeatureFlags
+import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -61,53 +62,26 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val user = context.getUserAt(0)
-
-			if (user == null) {
-				context.reply(
-						LoriReply(
-								locale["BAN_UserDoesntExist"],
-								Constants.ERROR
-						)
-				)
-				return
-			}
+			val user = AdminUtils.checkForUser(context) ?: return
 
 			val member = context.guild.getMember(user)
 
 			if (member == null) {
 				context.reply(
 						LoriReply(
-								locale["BAN_UserNotInThisServer"],
-								Constants.ERROR
+								context.locale["commands.userNotOnTheGuild", "${user.asMention} (`${user.name.stripCodeMarks()}#${user.discriminator} (${user.idLong})`)"],
+								Emotes.LORI_HM
 						)
 				)
 				return
 			}
 
-			if (!context.guild.selfMember.canInteract(member)) {
-				context.reply(
-						LoriReply(
-								locale["BAN_RoleTooLow"],
-								Constants.ERROR
-						)
-				)
+			if (!AdminUtils.checkForPermissions(context, member))
 				return
-			}
-
-			if (!context.handle.canInteract(member)) {
-				context.reply(
-						LoriReply(
-								locale["BAN_PunisherRoleTooLow"],
-								Constants.ERROR
-						)
-				)
-				return
-			}
 
 			val setHour = context.reply(
 					LoriReply(
-							locale["MUTE_SetHour"],
+							context.locale["$LOCALE_PREFIX.setPunishmentTime"],
 							"⏰"
 					)
 			)
@@ -122,28 +96,12 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 						return
 					}
 
-					context.reply(
-							LoriReply(
-									locale["BAN_SuccessfullyPunished"],
-									"\uD83C\uDF89"
-							)
-					)
+					AdminUtils.sendSuccessfullyPunishedMessage(context)
 					return
 				}
 
-				var str = locale["BAN_ReadyToPunish", locale["MUTE_PunishName"], member.asMention, member.user.name + "#" + member.user.discriminator, member.user.id]
-
 				val hasSilent = context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog
-				if (context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog) {
-					str += " ${locale["BAN_SilentTip"]}"
-				}
-
-				val message = context.reply(
-						LoriReply(
-								message = str,
-								prefix = "⚠"
-						)
-				)
+				val message = AdminUtils.sendConfirmationMessage(context, user, hasSilent, "mute")
 
 				message.onReactionAddByAuthor(context) {
 					if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
@@ -159,7 +117,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 
 						context.reply(
 								LoriReply(
-										locale["BAN_SuccessfullyPunished"],
+										locale.toNewLocale()["${LOCALE_PREFIX}.successfullyPunished"] + " ${Emotes.LORI_RAGE}",
 										"\uD83C\uDF89"
 								)
 						)
@@ -192,6 +150,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 	}
 
 	companion object {
+		private val LOCALE_PREFIX = "commands.moderation"
 		private val logger = KotlinLogging.logger {}
 
 		// Para guardar as threads, a key deverá ser...
@@ -211,7 +170,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 				// :whatdog:
 				context.reply(
 						LoriReply(
-								locale["MUTE_NegativeTime"],
+								context.locale["$LOCALE_PREFIX.mute.negativeTime"],
 								Constants.ERROR
 						)
 				)
@@ -249,7 +208,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 								context.guild,
 								mutableMapOf(
 										"reason" to reason,
-										"punishment" to locale["MUTE_PunishAction"],
+										"punishment" to locale.toNewLocale()["commands.moderation.mute.punishAction"],
 										"staff" to context.userHandle.name,
 										"@staff" to context.userHandle.asMention,
 										"staff-discriminator" to context.userHandle.discriminator,
@@ -269,12 +228,13 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			}
 
 			// Vamos pegar se a nossa role existe
-			val mutedRoles = context.guild.getRolesByName(context.legacyLocale["MUTE_ROLE_NAME"], false)
+			val mutedRoleName = context.locale["$LOCALE_PREFIX.mute.roleName"]
+			val mutedRoles = context.guild.getRolesByName(mutedRoleName, false)
 			val mutedRole: Role?
 			if (mutedRoles.isEmpty()) {
 				// Se não existe, vamos criar ela!
 				mutedRole = context.guild.createRole()
-						.setName(context.legacyLocale["MUTE_ROLE_NAME"])
+						.setName(mutedRoleName)
 						.setColor(Color.BLACK)
 						.await()
 			} else {
@@ -285,7 +245,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			val couldntEditChannels = mutableListOf<GuildChannel>()
 
 			// E agora vamos pegar todos os canais de texto do servidor
-			if (FeatureFlags.isEnabled("less-request-spam-mute")) {
+			run {
 				var processedRequests = 0
 				for (textChannel in context.guild.textChannels) {
 					if (context.guild.selfMember.hasPermission(textChannel, Permission.MANAGE_CHANNEL, Permission.MANAGE_PERMISSIONS)) {
@@ -307,29 +267,10 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 						couldntEditChannels.add(textChannel)
 					}
 				}
-			} else {
-				for (textChannel in context.guild.textChannels) {
-					if (context.guild.selfMember.hasPermission(textChannel, Permission.MANAGE_CHANNEL, Permission.MANAGE_PERMISSIONS)) {
-						val permissionOverride = textChannel.getPermissionOverride(mutedRole)
-						if (permissionOverride == null) { // Se é null...
-							textChannel.createPermissionOverride(mutedRole)
-									.setDeny(Permission.MESSAGE_WRITE) // kk eae men, daora ficar mutado né
-									.queue()
-						} else {
-							if (permissionOverride.denied.contains(Permission.MESSAGE_WRITE)) {
-								permissionOverride.manager
-										.deny(Permission.MESSAGE_WRITE) // kk eae men, daora ficar mutado né
-										.queue()
-							}
-						}
-					} else {
-						couldntEditChannels.add(textChannel)
-					}
-				}
 			}
 
 			// E agora os canais de voz
-			if (FeatureFlags.isEnabled("less-request-spam-mute")) {
+			run {
 				var processedRequests = 0
 				for (voiceChannel in context.guild.voiceChannels) {
 					if (context.guild.selfMember.hasPermission(voiceChannel, Permission.MANAGE_CHANNEL, Permission.MANAGE_PERMISSIONS)) {
@@ -351,33 +292,14 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 						couldntEditChannels.add(voiceChannel)
 					}
 				}
-			} else {
-				for (voiceChannel in context.guild.voiceChannels) {
-					if (context.guild.selfMember.hasPermission(voiceChannel, Permission.MANAGE_CHANNEL, Permission.MANAGE_PERMISSIONS)) {
-						val permissionOverride = voiceChannel.getPermissionOverride(mutedRole)
-						if (permissionOverride == null) { // Se é null...
-							voiceChannel.createPermissionOverride(mutedRole)
-									.setDeny(Permission.VOICE_SPEAK) // kk eae men, daora ficar mutado né
-									.queue()
-						} else {
-							if (permissionOverride.denied.contains(Permission.VOICE_SPEAK)) {
-								permissionOverride.manager
-										.deny(Permission.VOICE_SPEAK) // kk eae men, daora ficar mutado né
-										.queue()
-							}
-						}
-					} else {
-						couldntEditChannels.add(voiceChannel)
-					}
-				}
 			}
 
 			// E... finalmente... iremos dar (ou remover) a role para o carinha
 			if (!context.guild.isMember(member.user)) {
 				context.reply(
 						LoriReply(
-								context.legacyLocale["BAN_UserNotInThisServer"],
-								Constants.ERROR
+								context.locale["commands.userNotOnTheGuild", "${user.asMention} (`${user.name.stripCodeMarks()}#${user.discriminator} (${user.idLong})`)"],
+								Emotes.LORI_HM
 						)
 				)
 				return false
@@ -428,18 +350,28 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 					spawnRoleRemovalThread(context.guild, context.legacyLocale, user, time!!)
 				}
 			} catch (e: HierarchyException) {
+				val reply = buildString {
+					this.append(context.locale["${LOCALE_PREFIX}.roleTooLow"])
+
+					if (context.handle.hasPermission(Permission.MANAGE_ROLES)) {
+						this.append(" ")
+						this.append(context.locale["${LOCALE_PREFIX}.roleTooLowHowToFix"])
+					}
+				}
+
 				context.reply(
 						LoriReply(
-								context.legacyLocale["BAN_RoleTooLow"],
+								reply,
 								Constants.ERROR
 						)
 				)
 				return false
 			}
+
 			return true
 		}
 
-		fun getMutedRole(guild: Guild, locale: LegacyBaseLocale) = guild.getRolesByName(locale["MUTE_ROLE_NAME"], false).getOrNull(0)
+		fun getMutedRole(guild: Guild, locale: BaseLocale) = guild.getRolesByName(locale["$LOCALE_PREFIX.mute.roleName"], false).getOrNull(0)
 
 		fun spawnRoleRemovalThread(guild: Guild, locale: LegacyBaseLocale, user: User, expiresAt: Long) = spawnRoleRemovalThread(guild.idLong, locale, user.idLong, expiresAt)
 
@@ -462,7 +394,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			}
 
 			// Vamos pegar se a nossa role existe
-			val mutedRole = getMutedRole(currentGuild, locale)
+			val mutedRole = getMutedRole(currentGuild, locale.toNewLocale())
 
 			if (System.currentTimeMillis() > expiresAt) {
 				logger.info("Removendo cargo silenciado de $userId na guild ${guildId} - Motivo: Já expirou!")
