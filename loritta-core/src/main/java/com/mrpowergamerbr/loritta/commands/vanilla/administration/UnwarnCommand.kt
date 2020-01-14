@@ -70,7 +70,7 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 			if (warns.isEmpty()) {
 				context.reply(
 						LoriReply(
-								context.locale["$LOCALE_PREFIX.warn.noWarnsFound"],
+								context.locale["$LOCALE_PREFIX.unwarn.noWarnsFound"],
 								Constants.ERROR
 						)
 				)
@@ -86,7 +86,7 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 
 			context.reply(
 					LoriReply(
-							context.locale["$LOCALE_PREFIX.warn.warnRemoved"] + " ${Emotes.LORI_HMPF}",
+							context.locale["$LOCALE_PREFIX.unwarn.warnRemoved"] + " ${Emotes.LORI_HMPF}",
 							"\uD83C\uDF89"
 					)
 			)
