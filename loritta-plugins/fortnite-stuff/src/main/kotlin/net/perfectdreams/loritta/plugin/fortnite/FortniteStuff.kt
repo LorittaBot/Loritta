@@ -4,6 +4,7 @@ import com.google.gson.JsonArray
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.plugin.LorittaPlugin
 import net.perfectdreams.loritta.plugin.fortnite.commands.fortnite.*
+import net.perfectdreams.loritta.plugin.fortnite.commands.fortnite.*
 import net.perfectdreams.loritta.plugin.fortnite.extendedtables.FortniteConfigs
 import net.perfectdreams.loritta.plugin.fortnite.extendedtables.FortniteServerConfigs
 import net.perfectdreams.loritta.plugin.fortnite.extendedtables.TrackedFortniteItems

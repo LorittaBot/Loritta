@@ -71,7 +71,8 @@ class SpicyMorenitta : Logging {
 			LevelUpRoute(this),
 			TwitterRoute(this),
 			RssFeedsRoute(this),
-			CommandsRoute(this)
+			CommandsRoute(this),
+			TranslateRoute(this)
 	)
 	val validWebsiteLocaleIds = mutableListOf(
 			"br",

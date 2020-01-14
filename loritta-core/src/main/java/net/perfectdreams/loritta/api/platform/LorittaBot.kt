@@ -63,6 +63,11 @@ abstract class LorittaBot(var config: GeneralConfig, var instanceConfig: General
 		get() = fanArtArtists.flatMap { it.fanArts }
 	val profileDesignManager = ProfileDesignManager()
 
+	val isMaster: Boolean
+		get() {
+			return loritta.instanceConfig.loritta.currentClusterId == 1L
+		}
+
 	/**
 	 * Gets an user's profile background
 	 *
@@ -121,7 +126,7 @@ abstract class LorittaBot(var config: GeneralConfig, var instanceConfig: General
 		val localeFolder = File(instanceConfig.loritta.folders.locales, id)
 
 		if (localeFolder.exists()) {
-			localeFolder.listFiles().filter { it.extension == "yml" }.forEach {
+			localeFolder.listFiles().filter { it.extension == "yml" || it.extension == "json" }.forEach {
 				val entries = Constants.YAML.load<MutableMap<String, Any?>>(it.readText())
 
 				fun transformIntoFlatMap(map: MutableMap<String, Any?>, prefix: String) {
@@ -155,6 +160,17 @@ abstract class LorittaBot(var config: GeneralConfig, var instanceConfig: General
 		val localeFolder = File(instanceConfig.loritta.folders.locales)
 		localeFolder.listFiles().filter { it.isDirectory && it.name != Constants.DEFAULT_LOCALE_ID && !it.name.startsWith(".") /* ignorar .git */ } .forEach {
 			locales[it.name] = loadLocale(it.name, defaultLocale)
+		}
+
+		for ((localeId, locale) in locales) {
+			val languageInheritsFromLanguageId = locale["loritta.inheritsFromLanguageId"]
+
+			if (languageInheritsFromLanguageId != Constants.DEFAULT_LOCALE_ID) {
+				// Caso a linguagem seja filha de outra linguagem que não seja a default, nós iremos recarregar a linguagem usando o pai correto
+				// Isso é útil já que linguagens internacionais seriam melhor que dependa de "en-us" em vez de "default".
+				// Também seria possível implementar "linguagens auto geradas" com overrides específicos, por exemplo: "auto-en-us" -> "en-us"
+				locales[localeId] = loadLocale(localeId, locales[languageInheritsFromLanguageId])
+			}
 		}
 
 		this.locales = locales

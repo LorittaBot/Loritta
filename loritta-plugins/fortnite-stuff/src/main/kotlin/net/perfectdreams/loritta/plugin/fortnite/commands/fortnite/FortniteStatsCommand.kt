@@ -179,9 +179,9 @@ class FortniteStatsCommand(val m: FortniteStuff) : LorittaDiscordCommand(arrayOf
 		graphics.color = Color(119, 123, 150)
 		graphics.font = verticalHeaderFont
 
-		ImageUtils.drawCenteredString(graphics, locale["${LOCALE_PREFIX}.wins"].toUpperCase(), Rectangle(50, 198, 143, 63), verticalHeaderFont)
-		ImageUtils.drawCenteredString(graphics, locale["${LOCALE_PREFIX}.killDeathRatio"].toUpperCase(), Rectangle(232, 198, 89, 63), verticalHeaderFont)
-		ImageUtils.drawCenteredString(graphics, "${locale["${LOCALE_PREFIX}.wins"]} %".toUpperCase(), Rectangle(352, 198, 184, 63), verticalHeaderFont)
+		ImageUtils.drawCenteredString(graphics, locale["$LOCALE_PREFIX.wins"].toUpperCase(), Rectangle(50, 198, 143, 63), verticalHeaderFont)
+		ImageUtils.drawCenteredString(graphics, locale["$LOCALE_PREFIX.killDeathRatio"].toUpperCase(), Rectangle(232, 198, 89, 63), verticalHeaderFont)
+		ImageUtils.drawCenteredString(graphics, "${locale["$LOCALE_PREFIX.wins"]} %".toUpperCase(), Rectangle(352, 198, 184, 63), verticalHeaderFont)
 
 		val verticalBodyFont = Constants.BURBANK_BIG_CONDENSED_BLACK.deriveFont(44f)
 
@@ -196,10 +196,10 @@ class FortniteStatsCommand(val m: FortniteStuff) : LorittaDiscordCommand(arrayOf
 		graphics.font = inlineBodyStatsFont
 		graphics.color = Color(119, 123, 150)
 
-		graphics.drawString(locale["${LOCALE_PREFIX}.eliminations"].toUpperCase(), 44, 378)
-		graphics.drawString(locale["${LOCALE_PREFIX}.averageElims"].toUpperCase(), 44, 455)
-		graphics.drawString(locale["${LOCALE_PREFIX}.matchesPlayed"].toUpperCase(), 44, 533)
-		graphics.drawString(locale["${LOCALE_PREFIX}.timePlaying"].toUpperCase(), 44, 612)
+		graphics.drawString(locale["$LOCALE_PREFIX.eliminations"].toUpperCase(), 44, 378)
+		graphics.drawString(locale["$LOCALE_PREFIX.averageElims"].toUpperCase(), 44, 455)
+		graphics.drawString(locale["$LOCALE_PREFIX.matchesPlayed"].toUpperCase(), 44, 533)
+		graphics.drawString(locale["$LOCALE_PREFIX.timePlaying"].toUpperCase(), 44, 612)
 
 		graphics.color = Color.WHITE
 
@@ -230,19 +230,19 @@ class FortniteStatsCommand(val m: FortniteStuff) : LorittaDiscordCommand(arrayOf
 			graphics.color = Color.WHITE
 			val fontMetrics = graphics.fontMetrics
 
-			graphics.drawString(locale["${LOCALE_PREFIX}.matchesCount", matchesPlayed], x + 730 - fontMetrics.stringWidth("${matchesPlayed} Partidas") - 16, y + 48 - 9)
+			graphics.drawString(locale["$LOCALE_PREFIX.matchesCount", matchesPlayed], x + 730 - fontMetrics.stringWidth("${matchesPlayed} Partidas") - 16, y + 48 - 9)
 
 			val inlineBodyStatsFont = Constants.BURBANK_BIG_CONDENSED_BLACK.deriveFont(42f)
 			graphics.font = inlineBodyStatsFont
 			graphics.color = Color(119, 123, 150)
 
 			if (!isTeamRumble) {
-				ImageUtils.drawCenteredString(graphics, locale["${LOCALE_PREFIX}.wins"].toUpperCase(), Rectangle(x + 18, y + 70, 136, 49), inlineBodyStatsFont)
-				ImageUtils.drawCenteredString(graphics, "${locale["${LOCALE_PREFIX}.wins"]} %".toUpperCase(), Rectangle(x + 171, y + 70, 173, 49), inlineBodyStatsFont)
+				ImageUtils.drawCenteredString(graphics, locale["$LOCALE_PREFIX.wins"].toUpperCase(), Rectangle(x + 18, y + 70, 136, 49), inlineBodyStatsFont)
+				ImageUtils.drawCenteredString(graphics, "${locale["$LOCALE_PREFIX.wins"]} %".toUpperCase(), Rectangle(x + 171, y + 70, 173, 49), inlineBodyStatsFont)
 			}
-			ImageUtils.drawCenteredString(graphics, locale["${LOCALE_PREFIX}.elims"].toUpperCase(), Rectangle(x + 364, y + 70, 89, 49), inlineBodyStatsFont)
-			ImageUtils.drawCenteredString(graphics, locale["${LOCALE_PREFIX}.killDeathRatio"].toUpperCase(), Rectangle(x + 492, y + 70, 57, 49), inlineBodyStatsFont)
-			ImageUtils.drawCenteredString(graphics, locale["${LOCALE_PREFIX}.score"].toUpperCase(), Rectangle(x + 581, y + 70, 119, 49), inlineBodyStatsFont)
+			ImageUtils.drawCenteredString(graphics, locale["$LOCALE_PREFIX.elims"].toUpperCase(), Rectangle(x + 364, y + 70, 89, 49), inlineBodyStatsFont)
+			ImageUtils.drawCenteredString(graphics, locale["$LOCALE_PREFIX.killDeathRatio"].toUpperCase(), Rectangle(x + 492, y + 70, 57, 49), inlineBodyStatsFont)
+			ImageUtils.drawCenteredString(graphics, locale["$LOCALE_PREFIX.score"].toUpperCase(), Rectangle(x + 581, y + 70, 119, 49), inlineBodyStatsFont)
 
 			graphics.color = Color.WHITE
 
@@ -261,10 +261,10 @@ class FortniteStatsCommand(val m: FortniteStuff) : LorittaDiscordCommand(arrayOf
 		val defaultSquadGameMode = foundGameModes["defaultsquad"] ?: GameMode()
 		val defaultTeamRumbleGameMode = foundGameModes["teamrumble"] ?: GameMode()
 
-		drawGameModeStats(defaultSoloGameMode, locale["${LOCALE_PREFIX}.solo"], Color(0, 123, 255), 589, 186, false)
-		drawGameModeStats(defaultDuosGameMode, locale["${LOCALE_PREFIX}.duos"], Color(124, 229, 67), 589, 393, false)
-		drawGameModeStats(defaultSquadGameMode, locale["${LOCALE_PREFIX}.squad"], Color(255, 132, 0), 589, 600, false)
-		drawGameModeStats(defaultTeamRumbleGameMode, locale["${LOCALE_PREFIX}.rumble"], Color(255, 0, 132), 589, 807, true)
+		drawGameModeStats(defaultSoloGameMode, locale["$LOCALE_PREFIX.solo"], Color(0, 123, 255), 589, 186, false)
+		drawGameModeStats(defaultDuosGameMode, locale["$LOCALE_PREFIX.duos"], Color(124, 229, 67), 589, 393, false)
+		drawGameModeStats(defaultSquadGameMode, locale["$LOCALE_PREFIX.squad"], Color(255, 132, 0), 589, 600, false)
+		drawGameModeStats(defaultTeamRumbleGameMode, locale["$LOCALE_PREFIX.rumble"], Color(255, 0, 132), 589, 807, true)
 
 		context.sendFile(image, "fortnite-stats.png", " ")
 	}

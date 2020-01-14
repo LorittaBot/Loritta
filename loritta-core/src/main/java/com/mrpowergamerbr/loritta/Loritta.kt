@@ -242,11 +242,6 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 			return youtubeKeys[RANDOM.nextInt(youtubeKeys.size)]
 		}
 
-	val isMaster: Boolean
-		get() {
-			return loritta.instanceConfig.loritta.currentClusterId == 1L
-		}
-
 	val isMainAccount: Boolean
 		get() {
 			if (config.loritta.environment != EnvironmentType.PRODUCTION)

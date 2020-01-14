@@ -102,7 +102,7 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 		if (quantity > 100) {
 			context.reply(
 					LoriReply(
-							context.locale["$LOCALE_PREFIX.tooMuchDices"] + " ${Emotes.LORI_SHRUG}",
+							context.locale["$LOCALE_PREFIX.tooMuchDices"] + " ${Emotes.LORI_CRYING}",
 							Constants.ERROR
 					)
 			)

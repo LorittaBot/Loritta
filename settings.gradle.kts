@@ -35,6 +35,7 @@ include(":loritta-plugins:fortnite-stuff")
 include(":loritta-plugins:profile-designs")
 include(":loritta-plugins:cloudflare-web-firewall")
 include(":loritta-plugins:christmas-2019-event")
+include(":loritta-plugins:automated-locales")
 
 // Website
 include(":loritta-website")

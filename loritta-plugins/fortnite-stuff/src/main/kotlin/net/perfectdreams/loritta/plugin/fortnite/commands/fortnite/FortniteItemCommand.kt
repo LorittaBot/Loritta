@@ -75,7 +75,7 @@ class FortniteItemCommand(val m: FortniteStuff) : LorittaDiscordCommand(arrayOf(
 				val item = items[i].obj
 				val fortniteItemInCurrentLocale = fortniteItemsInCurrentLocale.first { item["itemId"].string == it["itemId"].string }["item"].obj
 
-				embed.setTitle("${Emotes.LORI_HM} ${locale["${LOCALE_PREFIX}.multipleItems"]}")
+				embed.setTitle("${Emotes.LORI_HM} ${locale["$LOCALE_PREFIX.multipleItems"]}")
 				embed.setColor(Color(0, 125, 187))
 				embed.appendDescription("${Constants.INDEXES[i]} ${fortniteItemInCurrentLocale["name"].nullString} (${fortniteItemInCurrentLocale["typeName"].nullString})\n")
 			}

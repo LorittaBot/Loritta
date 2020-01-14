@@ -6,7 +6,7 @@ import net.perfectdreams.spicymorenitta.utils.Logging
 @Serializable
 class BaseLocale(
         val id: String,
-        val localeEntries: Map<String, String>
+        val localeEntries: MutableMap<String, String>
 ) : Logging {
     val path: String
         get() = this["website.localePath"]
