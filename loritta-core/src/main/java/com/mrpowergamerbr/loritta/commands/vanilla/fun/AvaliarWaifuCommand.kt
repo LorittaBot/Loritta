@@ -62,14 +62,13 @@ class AvaliarWaifuCommand : AbstractCommand("ratewaifu", listOf("avaliarwaifu", 
 				strNota = "∞"
 				reason = "${context.locale.getWithType<List<String>>("$LOCALE_PREFIX.noteLoritta").random()} ${Emotes.LORI_YAY}"
 			}
-
 			if (waifuLowerCase == "pollux") {
 				strNota = "10"
 				reason = context.locale.getWithType<List<String>>("$LOCALE_PREFIX.notePollux").random()
 			}
 			if (waifuLowerCase == "pantufa") {
 				strNota = "10"
-				reason = context.locale.getWithType<List<String>>("$LOCALE_PREFIX.notePollux").random() + " ${Emotes.LORI_HEART}"
+				reason = context.locale.getWithType<List<String>>("$LOCALE_PREFIX.notePantufa").random() + " ${Emotes.LORI_HEART}"
 			}
 			if (waifuLowerCase == "tatsumaki") {
 				strNota = "10"

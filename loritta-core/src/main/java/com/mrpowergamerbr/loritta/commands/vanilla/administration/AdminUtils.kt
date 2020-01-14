@@ -83,13 +83,15 @@ object AdminUtils {
 		if (hasSilent) {
 			replies += LoriReply(
 					context.locale["${LOCALE_PREFIX}.silentTip"],
-					"\uD83D\uDC40"
+					"\uD83D\uDC40",
+					mentionUser = false
 			)
 		}
 
 		if (!context.config.getUserData(context.userHandle.idLong).quickPunishment) {
 			replies += LoriReply(
-					context.locale["${LOCALE_PREFIX}.skipConfirmationTip", "`${context.config.commandPrefix}quickpunishment`"]
+					context.locale["${LOCALE_PREFIX}.skipConfirmationTip", "`${context.config.commandPrefix}quickpunishment`"],
+					mentionUser = false
 			)
 		}
 
@@ -99,7 +101,7 @@ object AdminUtils {
 	suspend fun sendSuccessfullyPunishedMessage(context: CommandContext) {
 		context.reply(
 				LoriReply(
-						context.locale["${LOCALE_PREFIX}.successfullyPunished"],
+						context.locale["${LOCALE_PREFIX}.successfullyPunished"] + " ${Emotes.LORI_RAGE}",
 						"\uD83C\uDF89"
 				)
 		)

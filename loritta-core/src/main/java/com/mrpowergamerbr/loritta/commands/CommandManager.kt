@@ -56,7 +56,6 @@ class CommandManager {
 		commandMap.add(VaporondaCommand())
 		commandMap.add(QualidadeCommand())
 		commandMap.add(VaporQualidadeCommand())
-		// commandMap.add(TristeRealidadeCommand())
 		commandMap.add(TretaNewsCommand())
 		commandMap.add(MagicBallCommand())
 		commandMap.add(SAMCommand())
@@ -136,7 +135,6 @@ class CommandManager {
 
 		// =======[ UTILS ]=======
 		commandMap.add(TranslateCommand())
-		commandMap.add(EncurtarCommand())
 		commandMap.add(WikipediaCommand())
 		commandMap.add(MoneyCommand())
 		commandMap.add(ColorInfoCommand())
@@ -169,14 +167,12 @@ class CommandManager {
 		// =======[ MINECRAFT ]========
 		commandMap.add(OfflineUUIDCommand())
 		commandMap.add(McAvatarCommand())
-		// commandMap.add(McQueryCommand())
 		commandMap.add(McUUIDCommand())
 		commandMap.add(McStatusCommand())
 		commandMap.add(McHeadCommand())
 		commandMap.add(McBodyCommand())
 		commandMap.add(SpigotMcCommand())
 		commandMap.add(McConquistaCommand())
-		// commandMap.add(PeQueryCommand())
 		commandMap.add(McSkinCommand())
 		commandMap.add(McMoletomCommand())
 
@@ -202,7 +198,6 @@ class CommandManager {
 		commandMap.add(MuteCommand())
 		commandMap.add(UnmuteCommand())
 		commandMap.add(SlowModeCommand())
-		// commandMap.add(TempBanCommand())
 		commandMap.add(KickCommand())
 		commandMap.add(BanCommand())
 		commandMap.add(UnbanCommand())
