@@ -98,7 +98,7 @@ class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCO
 		}
 
 		embed.setTitle("\uD83D\uDDBC ${getAvatar.name}")
-		embed.setImage(getAvatar.effectiveAvatarUrl + "?size=2048")
+		embed.setImage("${getAvatar.effectiveAvatarUrl}?size=2048")
 		context.sendMessage(context.getAsMention(true), embed.build())
 	}
 }

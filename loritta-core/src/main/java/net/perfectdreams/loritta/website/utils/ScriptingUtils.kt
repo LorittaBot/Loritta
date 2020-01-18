@@ -162,7 +162,7 @@ object ScriptingUtils {
             output.append('\n')
 
             if (stack.empty()) {
-                output.append(holder.file.nameWithoutExtension.capitalize())
+                output.append(holder.file.nameWithoutExtension.replace("-", "").capitalize())
                 output.append("()")
             }
         }
@@ -184,7 +184,7 @@ object ScriptingUtils {
                 val pathToBeImported = line.substring("@extends '".length, line.length - 1)
 
                 val fileName = pathToBeImported.replace(".kts", "")
-                classToBeExtended = fileName.capitalize()
+                classToBeExtended = fileName.replace("-", "").capitalize()
             }
             if (line.startsWith("@import")) {
                 val pathToBeImported = line.substring("@import '".length, line.length - 1)

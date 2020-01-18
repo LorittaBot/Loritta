@@ -57,19 +57,19 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 		}
 
 		if (user1Name != null && user2Name != null && user1Name.isNotEmpty() && user2Name.isNotEmpty()) {
-			var texto = context.getAsMention(true) + "\n💖 **${context.legacyLocale["SHIP_NEW_COUPLE"]}** 💖\n"
+			var texto = context.getAsMention(true) + "\n💖 **${context.locale["commands.fun.ship.newCouple"]}** 💖\n"
 
 			texto += "`${user1Name}`\n`${user2Name}`\n"
 
 			var name1 = user1Name.substring(0..(user1Name.length / 2))
 			var name2 = user2Name.substring(user2Name.length / 2..user2Name.length - 1)
-			var shipName = name1 + name2
+			val shipName = name1 + name2
 
 			// Para motivos de cálculos, nós iremos criar um "real ship name"
 			// Que é só o nome do ship... mas em ordem alfabética!
 			var realShipName = shipName
 			if (1 > user2Name.compareTo(user1Name)) {
-				var reversedMentionedUsers = mutableListOf<String>()
+				val reversedMentionedUsers = mutableListOf<String>()
 				reversedMentionedUsers.add(user2Name)
 				reversedMentionedUsers.add(user1Name)
 				name1 = reversedMentionedUsers[0].substring(0..(reversedMentionedUsers[0].length / 2))
@@ -77,7 +77,7 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 				realShipName = name1 + name2
 			}
 
-			var random = SplittableRandom(realShipName.hashCode().toLong() + 1)
+			val random = SplittableRandom(realShipName.hashCode().toLong() + 1)
 
 			var percentage = random.nextInt(0, 101)
 
@@ -88,7 +88,7 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 						(((ShipEffects.user1Id eq user1.idLong) and (ShipEffects.user2Id eq user2.idLong)) or
 								(ShipEffects.user2Id eq user1.idLong and (ShipEffects.user1Id eq user2.idLong))) and
 								(ShipEffects.expiresAt greaterEq System.currentTimeMillis())
-					}.sortedByDescending { it.expiresAt } .firstOrNull()
+					}.sortedByDescending { it.expiresAt }.firstOrNull()
 				}
 
 				if (effect != null) {
@@ -110,75 +110,64 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 				)
 			}
 
-
-			var friendzone: String
-
-			friendzone = if (random.nextBoolean()) {
+			val friendzone = if (random.nextBoolean()) {
 				user1Name
 			} else {
 				user2Name
 			}
-
-			var messages = listOf("Isto nunca deverá aparecer!")
-			if (percentage >= 90) {
-				messages = context.legacyLocale.SHIP_valor90
-			} else if (percentage >= 80) {
-				messages = context.legacyLocale.SHIP_valor80
-			} else if (percentage >= 70) {
-				messages = context.legacyLocale.SHIP_valor70
-			} else if (percentage >= 60) {
-				messages = context.legacyLocale.SHIP_valor60
-			} else if (percentage >= 50) {
-				messages = context.legacyLocale.SHIP_valor50
-			} else if (percentage >= 40) {
-				messages = context.legacyLocale.SHIP_valor40
-			} else if (percentage >= 30) {
-				messages = context.legacyLocale.SHIP_valor30
-			} else if (percentage >= 20) {
-				messages = context.legacyLocale.SHIP_valor20
-			} else if (percentage >= 10) {
-				messages = context.legacyLocale.SHIP_valor10
-			} else if (percentage >= 0) {
-				messages = context.legacyLocale.SHIP_valor0
+			
+			val messages: List<String> = when {
+				percentage >= 90 -> context.locale.getWithType("commands.fun.ship.value90")
+				percentage >= 80 -> context.locale.getWithType("commands.fun.ship.value80")
+				percentage >= 70 -> context.locale.getWithType("commands.fun.ship.value70")
+				percentage >= 60 -> context.locale.getWithType("commands.fun.ship.value60")
+				percentage >= 50 -> context.locale.getWithType("commands.fun.ship.value50")
+				percentage >= 40 -> context.locale.getWithType("commands.fun.ship.value40")
+				percentage >= 30 -> context.locale.getWithType("commands.fun.ship.value30")
+				percentage >= 20 -> context.locale.getWithType("commands.fun.ship.value20")
+				percentage >= 10 -> context.locale.getWithType("commands.fun.ship.value10")
+				percentage >= 0  -> context.locale.getWithType("commands.fun.ship.value0")
+				else -> {
+					throw RuntimeException("Can't find ship value for percentage $percentage")
+				}
 			}
 
-			var emoji: BufferedImage
-			if (percentage >= 50) {
-				emoji = ImageIO.read(File(Loritta.ASSETS + "heart.png"))
+			val emoji = if (percentage >= 50) {
+				ImageIO.read(File(Loritta.ASSETS + "heart.png"))
 			} else if (percentage >= 30) {
-				emoji = ImageIO.read(File(Loritta.ASSETS + "shrug.png"))
+				ImageIO.read(File(Loritta.ASSETS + "shrug.png"))
 			} else {
-				emoji = ImageIO.read(File(Loritta.ASSETS + "crying.png"))
+				ImageIO.read(File(Loritta.ASSETS + "crying.png"))
 			}
 
-			var resizedEmoji = emoji.getScaledInstance(100, 100, BufferedImage.SCALE_SMOOTH)
+			val resizedEmoji = emoji.getScaledInstance(100, 100, BufferedImage.SCALE_SMOOTH)
 
 			var message = messages[random.nextInt(messages.size)]
 			message = message.replace("%user%", friendzone.escapeMentions())
 			message = message.replace("%ship%", "`$shipName`")
-			texto += "$message"
+			texto += message
 
-			var avatar1Old = LorittaUtils.downloadImage("$user1AvatarUrl?size=128")
-			var avatar2Old = LorittaUtils.downloadImage("$user2AvatarUrl?size=128")
+			val avatar1Old = LorittaUtils.downloadImage("$user1AvatarUrl?size=128") ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR
+			val avatar2Old = LorittaUtils.downloadImage("$user2AvatarUrl?size=128") ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR
 
 			var avatar1 = avatar1Old
 			var avatar2 = avatar2Old
 
-			if (avatar1!!.height != 128 && avatar1.width != 128) {
+			if (avatar1.height != 128 && avatar1.width != 128) {
 				avatar1 = ImageUtils.toBufferedImage(avatar1.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH))
 			}
 
-			if (avatar2!!.height != 128 && avatar2.width != 128) {
+			if (avatar2.height != 128 && avatar2.width != 128) {
 				avatar2 = ImageUtils.toBufferedImage(avatar2.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH))
 			}
 
-			var image = BufferedImage(384, 128, BufferedImage.TYPE_INT_ARGB)
-			var graphics = image.graphics
+			val image = BufferedImage(384, 128, BufferedImage.TYPE_INT_ARGB)
+			val graphics = image.graphics
 			graphics.drawImage(avatar1, 0, 0, null)
 			graphics.drawImage(resizedEmoji, 142, 10, null)
 			graphics.drawImage(avatar2, 256, 0, null)
 
-			var embed = EmbedBuilder()
+			val embed = EmbedBuilder()
 			embed.setColor(Color(255, 132, 188))
 
 			var text = "[`"
@@ -192,7 +181,7 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 			text += "`]"
 			embed.setDescription("**$percentage%** $text")
 			embed.setImage("attachment://ships.png")
-			var msgBuilder = MessageBuilder().append(texto)
+			val msgBuilder = MessageBuilder().append(texto)
 			msgBuilder.setEmbed(embed.build())
 			context.sendFile(image, "ships.png", msgBuilder.build())
 		} else {

@@ -158,7 +158,7 @@ class TranslateRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/trans
 
                         originalLocaleKeyDiv.innerText = key
 
-                        var toBeTranslated = localeToBeTranslated[key]
+                        var toBeTranslated = localeToBeTranslated.localeEntries[key] as String
 
                         // workaround, ew
                         val isList = toBeTranslated.startsWith("list::")

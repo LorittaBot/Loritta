@@ -61,6 +61,7 @@ class SpicyMorenitta : Logging {
 	)
 	val routes = mutableListOf(
 			HomeRoute(),
+			DiscordBotBrasileiroRoute(),
 			FanArtsRoute(this),
 			// DashboardRoute(this),
 			GeneralDashboardRoute(this),
@@ -77,12 +78,20 @@ class SpicyMorenitta : Logging {
 	val validWebsiteLocaleIds = mutableListOf(
 			"br",
 			"us",
-			"es"
+			"es",
+			"pt-furry",
+			"en-furry",
+			"br-debug",
+			"en-debug"
 	)
 	val websiteLocaleIdToLocaleId = mutableMapOf(
 			"br" to "default",
-			"us" to "us-us",
-			"es" to "es-es"
+			"us" to "en-us",
+			"es" to "es-es",
+			"pt-furry" to "pt-furry",
+			"en-furry" to "en-furry",
+			"br-debug" to "pt-debug",
+			"en-debug" to "en-debug"
 	)
 
 	lateinit var socket: WebSocket
@@ -395,40 +404,38 @@ class SpicyMorenitta : Logging {
 
 		val loginButton = document.select<Element?>("#login-button")
 
-		if (loginButton != null) {
-			loginButton.onClick {
-				if (true) {
-					window.location.href = "${window.location.origin}/dashboard"
-				} else {
-					if (userIdentification == null) {
-						val popup = window.open("${window.location.origin}/auth", "popup", "height=700,width=400")
-					}
+		loginButton?.onClick {
+			if (true) {
+				window.location.href = "${window.location.origin}/dashboard"
+			} else {
+				if (userIdentification == null) {
+					val popup = window.open("${window.location.origin}/auth", "popup", "height=700,width=400")
 				}
 			}
+		}
 
-			val themeChangerButton = document.select<Element>("#theme-changer-button")
+		val themeChangerButton = document.select<Element?>("#theme-changer-button")
 
-			themeChangerButton.onClick {
-				val body = document.body!!
+		themeChangerButton?.onClick {
+			val body = document.body!!
 
-				if (body.hasClass("dark")) {
-					WebsiteThemeUtils.changeWebsiteThemeTo(WebsiteThemeUtils.WebsiteTheme.DEFAULT, false)
-				} else {
-					WebsiteThemeUtils.changeWebsiteThemeTo(WebsiteThemeUtils.WebsiteTheme.DARK_THEME, false)
-				}
+			if (body.hasClass("dark")) {
+				WebsiteThemeUtils.changeWebsiteThemeTo(WebsiteThemeUtils.WebsiteTheme.DEFAULT, false)
+			} else {
+				WebsiteThemeUtils.changeWebsiteThemeTo(WebsiteThemeUtils.WebsiteTheme.DARK_THEME, false)
 			}
+		}
 
-			val hamburgerButton = document.select<Element>("#hamburger-menu-button")
+		val hamburgerButton = document.select<Element?>("#hamburger-menu-button")
 
-			hamburgerButton.onClick {
-				debug("Clicked on the hamburger button!")
-				if (navbar.hasClass("expanded")) {
-					navbar.removeClass("expanded")
-					document.body!!.style.overflowY = ""
-				} else {
-					navbar.addClass("expanded")
-					document.body!!.style.overflowY = "hidden" // Para remover as scrollbars e apenas deixar as scrollbars da navbar
-				}
+		hamburgerButton?.onClick {
+			debug("Clicked on the hamburger button!")
+			if (navbar.hasClass("expanded")) {
+				navbar.removeClass("expanded")
+				document.body!!.style.overflowY = ""
+			} else {
+				navbar.addClass("expanded")
+				document.body!!.style.overflowY = "hidden" // Para remover as scrollbars e apenas deixar as scrollbars da navbar
 			}
 		}
 
@@ -608,7 +615,7 @@ class SpicyMorenitta : Logging {
 		return result
 	}
 
-	fun showLoadingScreen(text: String = "Carregando...") {
+	fun showLoadingScreen(text: String = "${locale["loritta.loading"]}...") {
 		document.select<HTMLDivElement>("#loading-screen").apply {
 			select<HTMLDivElement>(".loading-text").apply {
 				textContent = text

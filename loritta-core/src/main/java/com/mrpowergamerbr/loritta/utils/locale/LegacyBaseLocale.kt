@@ -72,25 +72,4 @@ open class LegacyBaseLocale {
 			else -> throw UnsupportedOperationException("Can't parse $result in BaseLocale!")
 		}
 	}
-
-	// Generic
-	lateinit var SHIP_valor90: List<String>
-
-	lateinit var SHIP_valor80: List<String>
-
-	lateinit var SHIP_valor70: List<String>
-
-	lateinit var SHIP_valor60: List<String>
-
-	lateinit var SHIP_valor50: List<String>
-
-	lateinit var SHIP_valor40: List<String>
-
-	lateinit var SHIP_valor30: List<String>
-
-	lateinit var SHIP_valor20: List<String>
-
-	lateinit var SHIP_valor10: List<String>
-
-	lateinit var SHIP_valor0: List<String>
 }

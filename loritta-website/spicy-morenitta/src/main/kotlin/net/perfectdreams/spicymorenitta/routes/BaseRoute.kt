@@ -13,6 +13,7 @@ import net.perfectdreams.spicymorenitta.utils.Logging
 import net.perfectdreams.spicymorenitta.utils.select
 import org.w3c.dom.*
 import kotlin.browser.document
+import kotlin.browser.window
 import kotlin.dom.addClass
 import kotlin.dom.clear
 import kotlin.dom.hasClass
@@ -107,6 +108,8 @@ abstract class BaseRoute(val path: String) : Logging {
 
     open fun switchContent(call: ApplicationCall) {
         if (call.content != null) {
+            val body = document.body ?: return
+
             document.select<HTMLDivElement>("#content").remove()
             val scriptList = call.content.querySelectorAll("script")
             val toBeReinserted = mutableListOf<Node>()
@@ -123,8 +126,15 @@ abstract class BaseRoute(val path: String) : Logging {
             SpicyMorenitta.INSTANCE.pageSpecificTasks.onEach { it.cancel() }
             SpicyMorenitta.INSTANCE.pageSpecificTasks.clear()
 
-            document.body?.appendChild(call.content)
-            val childNode = document.body?.childNodes?.get(0)
+            val pageFooter = body.select<HTMLElement?>("footer")
+            if (pageFooter != null) {
+                // Se o footer existe, vamos inserir o conteúdo ANTES do footer, e não depois.
+                body.insertBefore(call.content, pageFooter)
+            } else {
+                body.appendChild(call.content)
+            }
+
+            val childNode = body.childNodes[0]
 
             if (childNode != null) {
                 // Necessário para executar scripts inline
@@ -134,7 +144,7 @@ abstract class BaseRoute(val path: String) : Logging {
                     val newScript = document.createElement("script")
                     val inlineScript = document.createTextNode(inline)
                     newScript.appendChild(inlineScript)
-                    document.body?.appendChild(newScript)
+                    body.appendChild(newScript)
                 }
             }
 
@@ -142,6 +152,9 @@ abstract class BaseRoute(val path: String) : Logging {
 
             SpicyMorenitta.INSTANCE.setUpLinkPreloader()
             SpicyMorenitta.INSTANCE.setUpLazyLoad()
+
+            // Resetar o scroll para o começo da página
+            window.scrollTo(0.0, 0.0)
         }
     }
 

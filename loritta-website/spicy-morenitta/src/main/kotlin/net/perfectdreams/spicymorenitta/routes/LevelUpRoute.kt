@@ -138,7 +138,7 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 
 					+ " "
 					button(classes = "button-discord button-discord-info pure-button") {
-						+ "Adicionar"
+						+ locale["loritta.add"]
 
 						onClickFunction = {
 							if (rolesByExperience.size >= 15) {
@@ -198,7 +198,7 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 
 					+ " "
 					button(classes = "button-discord button-discord-info pure-button") {
-						+ "Adicionar"
+						+ locale["loritta.add"]
 
 						onClickFunction = {
 							addRoleToRolesWithCustomRateList(
@@ -235,7 +235,7 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 				}
 
 				button(classes = "button-discord button-discord-info pure-button") {
-					+ "Adicionar"
+					+ locale["loritta.add"]
 
 					onClickFunction = {
 						val role = document.select<HTMLSelectElement>("#choose-role-no-xp").value
@@ -278,7 +278,7 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 				}
 
 				button(classes = "button-discord button-discord-info pure-button") {
-					+"Adicionar"
+					+ locale["loritta.add"]
 
 					onClickFunction = {
 						val role = document.select<HTMLSelectElement>("#choose-channel-no-xp").value

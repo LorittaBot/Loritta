@@ -24,21 +24,33 @@ class AutomatedLocales : LorittaPlugin() {
 
         // Remover linguagens furrificadas carregadas da memória, nós iremos recarregar depois
         loritta.locales = loritta.locales.toMutableMap().apply {
+            this.remove("pt-debug")
+            this.remove("en-debug")
             this.remove("pt-furry")
             this.remove("en-furry")
             this.remove("auto-pt-furry")
             this.remove("auto-en-furry")
         }
+
         val autoPtFurry = furrifyLocale("auto-pt-furry", defaultLocale)
         val autoEnFurry = furrifyLocale("auto-en-furry", englishLocale)
         autoPtFurry.localeEntries["loritta.inheritsFromLanguageId"] = "default"
         autoEnFurry.localeEntries["loritta.inheritsFromLanguageId"] = "en-us"
 
+        val autoDebugPt = convertLocaleToPseudoLocalization("pt-debug", defaultLocale)
+        val autoDebugEn = convertLocaleToPseudoLocalization("en-debug", englishLocale)
+        autoDebugPt.localeEntries["loritta.inheritsFromLanguageId"] = "default"
+        autoDebugEn.localeEntries["loritta.inheritsFromLanguageId"] = "en-us"
+
         // Salvar as locales em arquivos
         val autoPtFurryFolder = File(Loritta.LOCALES, "auto-pt-furry")
         val autoEnFurryFolder = File(Loritta.LOCALES, "auto-en-furry")
+        val autoDebugPtFolder = File(Loritta.LOCALES, "pt-debug")
+        val autoDebugEnFolder = File(Loritta.LOCALES, "en-debug")
         autoPtFurryFolder.mkdirs()
         autoEnFurryFolder.mkdirs()
+        autoDebugPtFolder.mkdirs()
+        autoDebugEnFolder.mkdirs()
 
         File(autoPtFurryFolder, "furrified.json")
                 .writeText(
@@ -60,11 +72,35 @@ class AutomatedLocales : LorittaPlugin() {
                                 )
                 )
 
+        File(autoDebugPtFolder, "debug.json")
+                .writeText(
+                        GsonBuilder()
+                                .setPrettyPrinting()
+                                .create()
+                                .toJson(
+                                        autoDebugPt.localeEntries
+                                )
+                )
+
+        File(autoDebugEnFolder, "debug.json")
+                .writeText(
+                        GsonBuilder()
+                                .setPrettyPrinting()
+                                .create()
+                                .toJson(
+                                        autoDebugEn.localeEntries
+                                )
+                )
+
         // Recarregar as locales editadas
-        loritta.loadLocale("auto-pt-furry", defaultLocale)
-        loritta.loadLocale("auto-en-furry", englishLocale)
-        loritta.loadLocale("pt-furry", autoPtFurry)
-        loritta.loadLocale("en-furry", autoEnFurry)
+        loritta.locales = loritta.locales.toMutableMap().apply {
+            this.put("pt-debug", loritta.loadLocale("pt-debug", defaultLocale))
+            this.put("en-debug", loritta.loadLocale("en-debug", englishLocale))
+            this.put("auto-pt-furry", loritta.loadLocale("auto-pt-furry", defaultLocale))
+            this.put("auto-en-furry", loritta.loadLocale("auto-en-furry", englishLocale))
+            this.put("pt-furry", loritta.loadLocale("pt-furry", autoPtFurry))
+            this.put("en-furry", loritta.loadLocale("en-furry", autoEnFurry))
+        }
     }
 
     val replacements = mapOf(
@@ -72,6 +108,17 @@ class AutomatedLocales : LorittaPlugin() {
             "quer" to "quew",
             "ser" to "sew",
             "dir" to "diw",
+            "per" to "pew",
+            "par" to "paw",
+            "eat" to "eaw",
+            "vez" to "vew",
+            "isso" to "issu",
+            "dio" to "diu",
+            "bado" to "bad",
+            "dos" to "dus",
+            "mente" to "ment",
+            "servidor" to "servidOwOr",
+            "Loritta" to "OwOrittaw",
             "R" to "W",
             "L" to "W",
             "ow" to "OwO",
@@ -112,6 +159,35 @@ class AutomatedLocales : LorittaPlugin() {
             "（＾ｖ＾）",
             ">_<"
     )
+
+    fun convertLocaleToPseudoLocalization(localeId: String, originalLocale: BaseLocale): BaseLocale {
+        val doNotChangeThisKeys = listOf(
+                "loritta.inheritsFromLanguageId",
+                "commands.fortnite.shop.localeId",
+                "website.localePath"
+        )
+
+        val newLocale = BaseLocale(localeId)
+
+        for ((key, value) in originalLocale.localeEntries) {
+            if (key in doNotChangeThisKeys) {
+                newLocale.localeEntries[key] = value
+            } else {
+                if (value is String) {
+                    val furrifiedMessage = PseudoLocalization.convertWord(value)
+                    if (furrifiedMessage != value)
+                        newLocale.localeEntries[key] = furrifiedMessage
+                } else if (value is List<*>) {
+                    value as List<String>
+                    newLocale.localeEntries[key] = value.map { PseudoLocalization.convertWord(it) }
+                }
+            }
+        }
+
+        newLocale.localeEntries["website.localePath"] = "${originalLocale.path}-debug"
+
+        return newLocale
+    }
 
     fun furrifyLocale(localeId: String, originalLocale: BaseLocale): BaseLocale {
         val newLocale = BaseLocale(localeId)

@@ -126,14 +126,14 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 		message.addReaction("lori_ok_hand:426183783008698391").queue()
 	}
 
-	private fun buildLanguageEmbed(locale: BaseLocale, languages: List<LocaleWrapper>): MessageEmbed {
+	private suspend fun buildLanguageEmbed(locale: BaseLocale, languages: List<LocaleWrapper>): MessageEmbed {
 		val embed = EmbedBuilder()
 		embed.setColor(Color(0, 193, 223))
 
 		embed.setTitle("\uD83C\uDF0E " + locale["commands.miscellaneous.language.pleaseSelectYourLanguage"])
 
 		for (wrapper in languages) {
-			val translators = wrapper.locale.getWithType<List<String>>("loritta.translationAuthors").mapNotNull { lorittaShards.getUserById(it) }
+			val translators = wrapper.locale.getWithType<List<String>>("loritta.translationAuthors").mapNotNull { lorittaShards.retrieveUserById(it) }
 
 			embed.addField(
 					wrapper.emoteName + " " + wrapper.name,

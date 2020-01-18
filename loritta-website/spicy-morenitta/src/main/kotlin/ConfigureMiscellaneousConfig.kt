@@ -3,7 +3,7 @@ import kotlin.browser.document
 
 object ConfigureMiscellaneousConfig {
 	fun start() {
-		LoriDashboard.showLoadingBar("Carregando...")
+		LoriDashboard.showLoadingBar("${locale["loritta.loading"]}...")
 
 		document.addEventListener("DOMContentLoaded", {
 			val serverConfig = LoriDashboard.loadServerConfig()

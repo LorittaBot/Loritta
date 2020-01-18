@@ -118,7 +118,7 @@ class GetChristmasStuffListener(val config: Christmas2019Config) : ListenerAdapt
 										"content" to "Eu acho que <@${event.member.idLong}> (${event.member.idLong}) está usando userbots para reagir nas mensagens! Demorou ${diff}ms para reagir em ${event.messageIdLong} @ ${event.guild}"
 								)
 						)
-					}
+					}.use {}
 				}
 			}
 
