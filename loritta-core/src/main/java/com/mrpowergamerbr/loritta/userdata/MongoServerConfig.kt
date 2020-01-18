@@ -32,11 +32,7 @@ class MongoServerConfig @BsonCreator constructor(
 	// Os command options são salvos assim:
 	// AbstractCommand.getClass().getSimpleName() - CommandOptions
 
-	var explainOnCommandRun = true // Explicar quando rodar *comando*? (Ou quando usar *comando* :shrug:)
-	var explainInPrivate = false // Caso explainOnCommandRun estiver ativado, é para explicar APENAS no privado ou mandar no global?
-	var commandOutputInPrivate = false // É para mandar o output (ou seja, tudo do comando) no privado em vez de mandar no global?
 	var warnOnMissingPermission = false // Avisar quando a Loritta não tem permissão para falar em um canal específico
-	var mentionOnCommandOutput = true // Caso esteja ativado, a Loritta irá marcar quem executou na mensagem resposta
 	var warnOnUnknownCommand = true
 	var blacklistedChannels = ArrayList<String>() // Canais em que os comandos são bloqueados
 	var warnIfBlacklisted = false

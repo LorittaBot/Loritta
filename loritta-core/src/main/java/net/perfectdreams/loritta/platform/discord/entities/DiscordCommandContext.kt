@@ -8,7 +8,6 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.extensions.localized
-import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
@@ -108,7 +107,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 
 	override suspend fun reply(mentionUserBeforeReplies: Boolean, vararg loriReplies: LoriReply): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
 		val message = StringBuilder()
-		if (mentionUserBeforeReplies && config.mentionOnCommandOutput) {
+		if (mentionUserBeforeReplies) {
 			message.append(LoriReply().build(this))
 			message.append("\n")
 		}
@@ -140,26 +139,14 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 	}
 
 	suspend fun sendMessage(message: Message): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
-		var privateReply = lorittaUser.config.commandOutputInPrivate
-		/* if (cmd is AbstractCommand) {
-			val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd as AbstractCommand)
-			if (cmdOptions.override && cmdOptions.commandOutputInPrivate) {
-				privateReply = cmdOptions.commandOutputInPrivate
-			}
-		} */
-		if (privateReply) {
-			val privateChannel = lorittaUser.user.openPrivateChannel().await()
-			return DiscordMessage(privateChannel.sendMessageAsync(message))
+		if (isPrivateChannel || event.textChannel!!.canTalk()) {
+			val sentMessage = event.channel.sendMessage(message).await()
+			if (config.deleteMessagesAfter != null)
+				sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
+			return DiscordMessage(sentMessage)
 		} else {
-			if (isPrivateChannel || event.textChannel!!.canTalk()) {
-				val sentMessage = event.channel.sendMessage(message).await()
-				if (config.deleteMessagesAfter != null)
-					sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
-				return DiscordMessage(sentMessage)
-			} else {
-				LorittaUtils.warnOwnerNoPermission(discordGuild, event.textChannel, lorittaUser.config)
-				throw RuntimeException("Sem permissão para enviar uma mensagem!")
-			}
+			LorittaUtils.warnOwnerNoPermission(discordGuild, event.textChannel, lorittaUser.config)
+			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
 	}
 
@@ -256,29 +243,15 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 	}
 
 	suspend fun sendFile(inputStream: InputStream, name: String, message: Message): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
-		var privateReply = lorittaUser.config.commandOutputInPrivate
-		/* if (cmd is AbstractCommand) {
-        val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd as AbstractCommand)
-        if (cmdOptions.override && cmdOptions.commandOutputInPrivate) {
-            privateReply = cmdOptions.commandOutputInPrivate
-        }
-    } */
-		if (privateReply) {
-			val privateChannel = lorittaUser.user.openPrivateChannel().await()
-			val sentMessage = privateChannel.sendMessageAsync(message)
+		if (isPrivateChannel || event.textChannel!!.canTalk()) {
+			val sentMessage = event.channel.sendMessage(message).addFile(inputStream, name).await()
 
+			if (config.deleteMessagesAfter != null)
+				sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
 			return DiscordMessage(sentMessage)
 		} else {
-			if (isPrivateChannel || event.textChannel!!.canTalk()) {
-				val sentMessage = event.channel.sendMessage(message).addFile(inputStream, name).await()
-
-				if (config.deleteMessagesAfter != null)
-					sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
-				return DiscordMessage(sentMessage)
-			} else {
-				LorittaUtils.warnOwnerNoPermission(discordGuild, event.textChannel, lorittaUser.config)
-				throw RuntimeException("Sem permissão para enviar uma mensagem!")
-			}
+			LorittaUtils.warnOwnerNoPermission(discordGuild, event.textChannel, lorittaUser.config)
+			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
 	}
 
@@ -335,104 +308,96 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 		val conf = config
 		val ev = event
 
-		if (conf.explainOnCommandRun) {
-			val commandLabel = config.commandPrefix + getCommandLabel()
+		val commandLabel = config.commandPrefix + getCommandLabel()
 
-			val embed = EmbedBuilder()
-			embed.setColor(Color(0, 193, 223))
-			embed.setTitle("\uD83E\uDD14 `$commandLabel`")
+		val embed = EmbedBuilder()
+		embed.setColor(Color(0, 193, 223))
+		embed.setTitle("\uD83E\uDD14 `$commandLabel`")
 
-			val commandArguments = command.getUsage(locale)
-			val usage = when {
-				commandArguments.arguments.isNotEmpty() -> " `${commandArguments.build(locale)}`"
-				else -> ""
-			}
+		val commandArguments = command.getUsage(locale)
+		val usage = when {
+			commandArguments.arguments.isNotEmpty() -> " `${commandArguments.build(locale)}`"
+			else -> ""
+		}
 
-			var cmdInfo = command.getDescription(locale) + "\n\n"
+		var cmdInfo = command.getDescription(locale) + "\n\n"
 
-			cmdInfo += "\uD83D\uDC81 **" + legacyLocale["HOW_TO_USE"] + ":** " + commandLabel + usage + "\n"
+		cmdInfo += "\uD83D\uDC81 **" + legacyLocale["HOW_TO_USE"] + ":** " + commandLabel + usage + "\n"
 
-			for (argument in commandArguments.arguments) {
-				if (argument.explanation != null) {
-					cmdInfo += "${Constants.LEFT_PADDING} `${argument.build(locale)}` - "
-					if (argument.defaultValue != null) {
-						cmdInfo += "(Padrão: ${argument.defaultValue}) "
-					}
-					cmdInfo += "${argument.explanation}\n"
+		for (argument in commandArguments.arguments) {
+			if (argument.explanation != null) {
+				cmdInfo += "${Constants.LEFT_PADDING} `${argument.build(locale)}` - "
+				if (argument.defaultValue != null) {
+					cmdInfo += "(Padrão: ${argument.defaultValue}) "
 				}
+				cmdInfo += "${argument.explanation}\n"
 			}
+		}
 
-			cmdInfo += "\n"
+		cmdInfo += "\n"
 
-			// Criar uma lista de exemplos
-			val examples = ArrayList<String>()
-			for (example in command.getExamples(locale)) { // Adicionar todos os exemplos simples
-				examples.add(commandLabel + if (example.isEmpty()) "" else " `$example`")
+		// Criar uma lista de exemplos
+		val examples = ArrayList<String>()
+		for (example in command.getExamples(locale)) { // Adicionar todos os exemplos simples
+			examples.add(commandLabel + if (example.isEmpty()) "" else " `$example`")
+		}
+
+		if (examples.isEmpty()) {
+			embed.addField(
+					"\uD83D\uDCD6 " + legacyLocale["EXAMPLE"],
+					commandLabel,
+					false
+			)
+		} else {
+			var exampleList = ""
+			for (example in examples) {
+				exampleList += example + "\n"
 			}
+			embed.addField(
+					"\uD83D\uDCD6 " + legacyLocale["EXAMPLE"] + (if (command.getExamples(locale).size == 1) "" else "s"),
+					exampleList,
+					false
+			)
+		}
 
-			if (examples.isEmpty()) {
-				embed.addField(
-						"\uD83D\uDCD6 " + legacyLocale["EXAMPLE"],
-						commandLabel,
-						false
-				)
-			} else {
-				var exampleList = ""
-				for (example in examples) {
-					exampleList += example + "\n"
-				}
-				embed.addField(
-						"\uD83D\uDCD6 " + legacyLocale["EXAMPLE"] + (if (command.getExamples(locale).size == 1) "" else "s"),
-						exampleList,
-						false
-				)
+		if (command is LorittaDiscordCommand && (command.botPermissions.isNotEmpty() || command.discordPermissions.isNotEmpty())) {
+			var field = ""
+			if (command.discordPermissions.isNotEmpty()) {
+				field += "\uD83D\uDC81 Você precisa ter permissão para ${command.discordPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })} para utilizar este comando!\n"
 			}
-
-			if (command is LorittaDiscordCommand && (command.botPermissions.isNotEmpty() || command.discordPermissions.isNotEmpty())) {
-				var field = ""
-				if (command.discordPermissions.isNotEmpty()) {
-					field += "\uD83D\uDC81 Você precisa ter permissão para ${command.discordPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })} para utilizar este comando!\n"
-				}
-				if (command.botPermissions.isNotEmpty()) {
-					field += "<:loritta:331179879582269451> Eu preciso de permissão para ${command.botPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })} para poder executar este comando!\n"
-				}
-				embed.addField(
-						"\uD83D\uDCDB Permissões",
-						field,
-						false
-				)
+			if (command.botPermissions.isNotEmpty()) {
+				field += "<:loritta:331179879582269451> Eu preciso de permissão para ${command.botPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })} para poder executar este comando!\n"
 			}
+			embed.addField(
+					"\uD83D\uDCDB Permissões",
+					field,
+					false
+			)
+		}
 
-			val aliases = mutableSetOf<String>()
-			aliases.addAll(command.labels)
+		val aliases = mutableSetOf<String>()
+		aliases.addAll(command.labels)
 
-			val onlyUnusedAliases = aliases.filter { it != commandLabel.replaceFirst(config.commandPrefix, "") }
-			if (onlyUnusedAliases.isNotEmpty()) {
-				embed.addField(
-						"\uD83D\uDD00 ${locale["commands.aliases"]}",
-						onlyUnusedAliases.joinToString(", ", transform = { "`" + config.commandPrefix + it + "`" }),
-						true
-				)
-			}
+		val onlyUnusedAliases = aliases.filter { it != commandLabel.replaceFirst(config.commandPrefix, "") }
+		if (onlyUnusedAliases.isNotEmpty()) {
+			embed.addField(
+					"\uD83D\uDD00 ${locale["commands.aliases"]}",
+					onlyUnusedAliases.joinToString(", ", transform = { "`" + config.commandPrefix + it + "`" }),
+					true
+			)
+		}
 
-			embed.setDescription(cmdInfo)
-			embed.setAuthor("${userHandle.name}#${userHandle.discriminator}", null, ev.author.effectiveAvatarUrl)
-			embed.setFooter(command.category.getLocalizedName(locale), "${loritta.instanceConfig.loritta.website.url}assets/img/loritta_gabizinha_v1.png") // Mostrar categoria do comando
-			embed.setTimestamp(Instant.now())
+		embed.setDescription(cmdInfo)
+		embed.setAuthor("${userHandle.name}#${userHandle.discriminator}", null, ev.author.effectiveAvatarUrl)
+		embed.setFooter(command.category.getLocalizedName(locale), "${loritta.instanceConfig.loritta.website.url}assets/img/loritta_gabizinha_v1.png") // Mostrar categoria do comando
+		embed.setTimestamp(Instant.now())
 
-			if (conf.explainInPrivate) {
-				ev.author.openPrivateChannel().queue {
-					it.sendMessage(embed.build()).queue()
-				}
-			} else {
-				val message = sendMessage(getAsMention(true), embed.build()).handle
-				message.addReaction("❓").queue()
-				message.onReactionAddByAuthor(this) {
-					if (it.reactionEmote.isEmote("❓")) {
-						message.delete().queue()
-						explainArguments()
-					}
-				}
+		val message = sendMessage(getAsMention(true), embed.build()).handle
+		message.addReaction("❓").queue()
+		message.onReactionAddByAuthor(this) {
+			if (it.reactionEmote.isEmote("❓")) {
+				message.delete().queue()
+				explainArguments()
 			}
 		}
 	}

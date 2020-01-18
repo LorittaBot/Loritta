@@ -330,7 +330,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
 
                 command.executedCount++
 
-                if (command.hasCommandFeedback && !conf.commandOutputInPrivate) {
+                if (command.hasCommandFeedback) {
                     if (FeatureFlags.IMPROVED_TYPING_SEND) {
                         if (command.sendTypingStatus)
                             ev.channel.sendTyping().await()
@@ -511,7 +511,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                 logger.error("Exception ao executar comando ${command.javaClass.simpleName}", e)
 
                 // Avisar ao usuário que algo deu muito errado
-                val mention = if (conf.mentionOnCommandOutput) "${ev.author.asMention} " else ""
+                val mention = "${ev.author.asMention} "
                 var reply = "\uD83E\uDD37 **|** " + mention + locale["commands.errorWhileExecutingCommand", Emotes.LORI_RAGE, Emotes.LORI_CRYING]
 
                 if (!e.message.isNullOrEmpty())

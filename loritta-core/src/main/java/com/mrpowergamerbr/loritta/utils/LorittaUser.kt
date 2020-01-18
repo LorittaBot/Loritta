@@ -18,7 +18,7 @@ open class LorittaUser(val user: User, val config: MongoServerConfig, val profil
 		get() = getAsMention(false)
 
 	fun getAsMention(addSpace: Boolean): String {
-		return if (config.mentionOnCommandOutput) user.asMention + (if (addSpace) " " else "") else ""
+		return user.asMention + (if (addSpace) " " else "")
 	}
 
 	open fun hasPermission(lorittaPermission: LorittaPermission): Boolean {

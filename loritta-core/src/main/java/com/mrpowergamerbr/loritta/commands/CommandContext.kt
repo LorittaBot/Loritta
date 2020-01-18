@@ -6,7 +6,6 @@ import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
@@ -92,7 +91,7 @@ class CommandContext(val config: MongoServerConfig, var lorittaUser: LorittaUser
 
 	suspend fun reply(mentionUserBeforeReplies: Boolean, vararg loriReplies: LoriReply): Message {
 		val message = StringBuilder()
-		if (mentionUserBeforeReplies && config.mentionOnCommandOutput) {
+		if (mentionUserBeforeReplies) {
 			message.append(LoriReply().build(this))
 			message.append("\n")
 		}
@@ -124,24 +123,14 @@ class CommandContext(val config: MongoServerConfig, var lorittaUser: LorittaUser
 	}
 
 	suspend fun sendMessage(message: Message): Message {
-		var privateReply = lorittaUser.config.commandOutputInPrivate
-		val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd)
-		if (cmdOptions.override && cmdOptions.commandOutputInPrivate) {
-			privateReply = cmdOptions.commandOutputInPrivate
-		}
-		if (privateReply) {
-			val privateChannel = lorittaUser.user.openPrivateChannel().await()
-			return privateChannel.sendMessageAsync(message)
+		if (isPrivateChannel || event.textChannel!!.canTalk()) {
+			val sentMessage = event.channel.sendMessage(message).await()
+			if (config.deleteMessagesAfter != null)
+				sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
+			return sentMessage
 		} else {
-			if (isPrivateChannel || event.textChannel!!.canTalk()) {
-				val sentMessage = event.channel.sendMessage(message).await()
-				if (config.deleteMessagesAfter != null)
-					sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
-				return sentMessage
-			} else {
-				LorittaUtils.warnOwnerNoPermission(guild, event.textChannel, lorittaUser.config)
-				throw RuntimeException("Sem permissão para enviar uma mensagem!")
-			}
+			LorittaUtils.warnOwnerNoPermission(guild, event.textChannel, lorittaUser.config)
+			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
 	}
 
@@ -234,26 +223,15 @@ class CommandContext(val config: MongoServerConfig, var lorittaUser: LorittaUser
 	}
 
 	suspend fun sendFile(inputStream: InputStream, name: String, message: Message): Message {
-		var privateReply = lorittaUser.config.commandOutputInPrivate
-		val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd)
-		if (cmdOptions.override && cmdOptions.commandOutputInPrivate) {
-			privateReply = cmdOptions.commandOutputInPrivate
-		}
-		if (privateReply) {
-			val privateChannel = lorittaUser.user.openPrivateChannel().await()
-			val sentMessage = privateChannel.sendMessageAsync(message)
+		if (isPrivateChannel || event.textChannel!!.canTalk()) {
+			val sentMessage = event.channel.sendMessage(message).addFile(inputStream, name).await()
+
+			if (config.deleteMessagesAfter != null)
+				sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
 			return sentMessage
 		} else {
-			if (isPrivateChannel || event.textChannel!!.canTalk()) {
-				val sentMessage = event.channel.sendMessage(message).addFile(inputStream, name).await()
-
-				if (config.deleteMessagesAfter != null)
-					sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
-				return sentMessage
-			} else {
-				LorittaUtils.warnOwnerNoPermission(guild, event.textChannel, lorittaUser.config)
-				throw RuntimeException("Sem permissão para enviar uma mensagem!")
-			}
+			LorittaUtils.warnOwnerNoPermission(guild, event.textChannel, lorittaUser.config)
+			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
 	}
 

@@ -141,121 +141,113 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 		val ev = context.event
 		val locale = context.legacyLocale
 
-		if (conf.explainOnCommandRun) {
-			val rawArguments = context.message.contentRaw.split(" ")
-			var commandLabel = rawArguments[0]
-			if (rawArguments.getOrNull(1) != null && (rawArguments[0] == "<@${loritta.discordConfig.discord.clientId}>" || rawArguments[0] == "<@!${loritta.discordConfig.discord.clientId}>")) {
-				// Caso o usuário tenha usado "@Loritta comando", pegue o segundo argumento (no caso o "comando") em vez do primeiro (que é a mention da Lori)
-				commandLabel = rawArguments[1]
-			}
-			commandLabel = commandLabel.toLowerCase()
+		val rawArguments = context.message.contentRaw.split(" ")
+		var commandLabel = rawArguments[0]
+		if (rawArguments.getOrNull(1) != null && (rawArguments[0] == "<@${loritta.discordConfig.discord.clientId}>" || rawArguments[0] == "<@!${loritta.discordConfig.discord.clientId}>")) {
+			// Caso o usuário tenha usado "@Loritta comando", pegue o segundo argumento (no caso o "comando") em vez do primeiro (que é a mention da Lori)
+			commandLabel = rawArguments[1]
+		}
+		commandLabel = commandLabel.toLowerCase()
 
-			val embed = EmbedBuilder()
-			embed.setColor(Color(0, 193, 223))
-			embed.setTitle("\uD83E\uDD14 `$commandLabel`")
+		val embed = EmbedBuilder()
+		embed.setColor(Color(0, 193, 223))
+		embed.setTitle("\uD83E\uDD14 `$commandLabel`")
 
-			val commandArguments = getUsage(locale)
-			val usage = when {
-				commandArguments.arguments.isNotEmpty() -> " `${commandArguments.build(context.locale)}`"
-				getUsage() != null -> " `${getUsage()}`"
-				else -> ""
-			}
+		val commandArguments = getUsage(locale)
+		val usage = when {
+			commandArguments.arguments.isNotEmpty() -> " `${commandArguments.build(context.locale)}`"
+			getUsage() != null -> " `${getUsage()}`"
+			else -> ""
+		}
 
-			var cmdInfo = getDescription(context.legacyLocale) + "\n\n"
+		var cmdInfo = getDescription(context.legacyLocale) + "\n\n"
 
-			cmdInfo += "\uD83D\uDC81 **" + locale["HOW_TO_USE"] + ":** " + commandLabel + usage + "\n"
+		cmdInfo += "\uD83D\uDC81 **" + locale["HOW_TO_USE"] + ":** " + commandLabel + usage + "\n"
 
-			for (argument in commandArguments.arguments) {
-				if (argument.explanation != null) {
-					cmdInfo += "${Constants.LEFT_PADDING} `${argument.build(context.locale)}` - "
-					if (argument.defaultValue != null) {
-						cmdInfo += "(Padrão: ${argument.defaultValue}) "
-					}
-					cmdInfo += "${argument.explanation}\n"
+		for (argument in commandArguments.arguments) {
+			if (argument.explanation != null) {
+				cmdInfo += "${Constants.LEFT_PADDING} `${argument.build(context.locale)}` - "
+				if (argument.defaultValue != null) {
+					cmdInfo += "(Padrão: ${argument.defaultValue}) "
 				}
+				cmdInfo += "${argument.explanation}\n"
 			}
+		}
 
-			cmdInfo += "\n"
+		cmdInfo += "\n"
 
-			// Criar uma lista de exemplos
-			val examples = ArrayList<String>()
-			for (example in this.getExamples()) { // Adicionar todos os exemplos simples
+		// Criar uma lista de exemplos
+		val examples = ArrayList<String>()
+		for (example in this.getExamples()) { // Adicionar todos os exemplos simples
+			examples.add(commandLabel + if (example.isEmpty()) "" else " `$example`")
+		}
+		if (this.getExamples(context.legacyLocale).isNotEmpty()) {
+			examples.clear()
+			for (example in this.getExamples(context.legacyLocale)) { // Adicionar todos os exemplos simples
 				examples.add(commandLabel + if (example.isEmpty()) "" else " `$example`")
 			}
-			if (this.getExamples(context.legacyLocale).isNotEmpty()) {
-				examples.clear()
-				for (example in this.getExamples(context.legacyLocale)) { // Adicionar todos os exemplos simples
-					examples.add(commandLabel + if (example.isEmpty()) "" else " `$example`")
-				}
+		}
+		for ((key, value) in this.getExtendedExamples()) { // E agora vamos adicionar os exemplos mais complexos/extendidos
+			examples.add(commandLabel + if (key.isEmpty()) "" else " `$key` - **$value**")
+		}
+
+		if (examples.isEmpty()) {
+			embed.addField(
+					"\uD83D\uDCD6 " + context.legacyLocale["EXAMPLE"],
+					commandLabel,
+					false
+			)
+		} else {
+			var exampleList = ""
+			for (example in examples) {
+				exampleList += example + "\n"
 			}
-			for ((key, value) in this.getExtendedExamples()) { // E agora vamos adicionar os exemplos mais complexos/extendidos
-				examples.add(commandLabel + if (key.isEmpty()) "" else " `$key` - **$value**")
+			embed.addField(
+					"\uD83D\uDCD6 " + context.legacyLocale["EXAMPLE"] + (if (this.getExamples().size == 1) "" else "s"),
+					exampleList,
+					false
+			)
+		}
+
+		if (getBotPermissions().isNotEmpty() || getDiscordPermissions().isNotEmpty()) {
+			var field = ""
+			if (getDiscordPermissions().isNotEmpty()) {
+				field += "\uD83D\uDC81 Você precisa ter permissão para ${getDiscordPermissions().joinToString(", ", transform = { "`${it.localized(context.locale)}`" })} para utilizar este comando!\n"
 			}
-
-			if (examples.isEmpty()) {
-				embed.addField(
-						"\uD83D\uDCD6 " + context.legacyLocale["EXAMPLE"],
-						commandLabel,
-						false
-				)
-			} else {
-				var exampleList = ""
-				for (example in examples) {
-					exampleList += example + "\n"
-				}
-				embed.addField(
-						"\uD83D\uDCD6 " + context.legacyLocale["EXAMPLE"] + (if (this.getExamples().size == 1) "" else "s"),
-						exampleList,
-						false
-				)
+			if (getBotPermissions().isNotEmpty()) {
+				field += "<:loritta:331179879582269451> Eu preciso de permissão para ${getBotPermissions().joinToString(", ", transform = { "`${it.localized(context.locale)}`" })} para poder executar este comando!\n"
 			}
+			embed.addField(
+					"\uD83D\uDCDB Permissões",
+					field,
+					false
+			)
+		}
 
-			if (getBotPermissions().isNotEmpty() || getDiscordPermissions().isNotEmpty()) {
-				var field = ""
-				if (getDiscordPermissions().isNotEmpty()) {
-					field += "\uD83D\uDC81 Você precisa ter permissão para ${getDiscordPermissions().joinToString(", ", transform = { "`${it.localized(context.locale)}`" })} para utilizar este comando!\n"
-				}
-				if (getBotPermissions().isNotEmpty()) {
-					field += "<:loritta:331179879582269451> Eu preciso de permissão para ${getBotPermissions().joinToString(", ", transform = { "`${it.localized(context.locale)}`" })} para poder executar este comando!\n"
-				}
-				embed.addField(
-						"\uD83D\uDCDB Permissões",
-						field,
-						false
-				)
-			}
+		val aliases = mutableSetOf<String>()
+		aliases.add(this.label)
+		aliases.addAll(this.aliases)
 
-			val aliases = mutableSetOf<String>()
-			aliases.add(this.label)
-			aliases.addAll(this.aliases)
+		val onlyUnusedAliases = aliases.filter { it != commandLabel.replaceFirst(context.config.commandPrefix, "") }
+		if (onlyUnusedAliases.isNotEmpty()) {
+			embed.addField(
+					"\uD83D\uDD00 ${context.locale["commands.aliases"]}",
+					onlyUnusedAliases.joinToString(", ", transform = { "`" + context.config.commandPrefix + it + "`" }),
+					true
+			)
+		}
 
-			val onlyUnusedAliases = aliases.filter { it != commandLabel.replaceFirst(context.config.commandPrefix, "") }
-			if (onlyUnusedAliases.isNotEmpty()) {
-				embed.addField(
-						"\uD83D\uDD00 ${context.locale["commands.aliases"]}",
-						onlyUnusedAliases.joinToString(", ", transform = { "`" + context.config.commandPrefix + it + "`" }),
-						true
-				)
-			}
+		embed.setDescription(cmdInfo)
+		embed.setAuthor("${context.userHandle.name}#${context.userHandle.discriminator}", null, ev.author.effectiveAvatarUrl)
+		embed.setFooter(category.getLocalizedName(context.locale), "${loritta.instanceConfig.loritta.website.url}assets/img/loritta_gabizinha_v1.png") // Mostrar categoria do comando
+		embed.setTimestamp(Instant.now())
 
-			embed.setDescription(cmdInfo)
-			embed.setAuthor("${context.userHandle.name}#${context.userHandle.discriminator}", null, ev.author.effectiveAvatarUrl)
-			embed.setFooter(category.getLocalizedName(context.locale), "${loritta.instanceConfig.loritta.website.url}assets/img/loritta_gabizinha_v1.png") // Mostrar categoria do comando
-			embed.setTimestamp(Instant.now())
-
-			if (conf.explainInPrivate) {
-				ev.author.openPrivateChannel().queue {
-					it.sendMessage(embed.build()).queue()
-				}
-			} else {
-				val message = context.sendMessage(context.getAsMention(true), embed.build())
-				message.addReaction("❓").queue()
-				message.onReactionAddByAuthor(context) {
-					if (it.reactionEmote.isEmote("❓")) {
-						message.delete().queue()
-						explainArguments(context)
-					}
-				}
+		val message = context.sendMessage(context.getAsMention(true), embed.build())
+		message.addReaction("❓").queue()
+		message.onReactionAddByAuthor(context) {
+			if (it.reactionEmote.isEmote("❓")) {
+				message.delete().queue()
+				explainArguments(context)
 			}
 		}
 	}
