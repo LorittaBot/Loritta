@@ -100,7 +100,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 					return
 				}
 
-				val hasSilent = context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog
+				val hasSilent = context.legacyConfig.moderationConfig.sendPunishmentViaDm || context.legacyConfig.moderationConfig.sendToPunishLog
 				val message = AdminUtils.sendConfirmationMessage(context, user, hasSilent, "mute")
 
 				message.onReactionAddByAuthor(context) {
@@ -178,7 +178,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			}
 
 			if (!isSilent) {
-				if (context.config.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
+				if (context.legacyConfig.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
 					try {
 						val embed = AdminUtils.createPunishmentEmbedBuilderSentViaDirectMessage(context.guild, locale, context.userHandle, locale["MUTE_PunishAction"], reason)
 
@@ -198,12 +198,12 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 					}
 				}
 
-				if (context.config.moderationConfig.sendToPunishLog) {
-					val textChannel = context.guild.getTextChannelByNullableId(context.config.moderationConfig.punishmentLogChannelId)
+				if (context.legacyConfig.moderationConfig.sendToPunishLog) {
+					val textChannel = context.guild.getTextChannelByNullableId(context.legacyConfig.moderationConfig.punishmentLogChannelId)
 
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
-								context.config.moderationConfig.punishmentLogMessage,
+								context.legacyConfig.moderationConfig.punishmentLogMessage,
 								listOf(user),
 								context.guild,
 								mutableMapOf(

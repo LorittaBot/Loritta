@@ -252,7 +252,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 				user,
 				userProfile,
 				context.guild,
-				context.config,
+				context.legacyConfig,
 				badges,
 				locale,
 				background,

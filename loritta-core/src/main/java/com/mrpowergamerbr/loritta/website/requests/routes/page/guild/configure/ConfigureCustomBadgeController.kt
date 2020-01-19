@@ -3,8 +3,6 @@ package com.mrpowergamerbr.loritta.website.requests.routes.page.guild.configure
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.oauth2.SimpleUserIdentification
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
-import com.mrpowergamerbr.loritta.utils.WebsiteUtils
-import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.website.LoriAuthLevel
 import com.mrpowergamerbr.loritta.website.LoriRequiresAuth
 import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
@@ -24,9 +22,6 @@ class ConfigureCustomBadgeController {
 	@LoriRequiresVariables(true)
 	fun handle(req: Request, res: Response, @Local variables: MutableMap<String, Any?>, @Local guild: Guild, @Local newServerConfig: ServerConfig, @Local serverConfig: MongoServerConfig, @Local userIdentification: SimpleUserIdentification): String {
 		variables["saveType"] = "badge"
-
-		variables["badge_json"] = gson.toJson(WebsiteUtils.transformToDashboardConfigurationJson(userIdentification, guild, newServerConfig, serverConfig))
-
 		return evaluate("configure_badge.html", variables)
 	}
 }

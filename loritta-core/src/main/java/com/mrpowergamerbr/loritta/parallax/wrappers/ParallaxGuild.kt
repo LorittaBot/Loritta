@@ -61,7 +61,7 @@ class ParallaxGuild(private val guild: Guild) {
 
 	@JvmOverloads
 	fun ban(user: ParallaxUser, punisher: ParallaxUser, options: Map<String, Any> = mapOf()) {
-		val serverConfig = loritta.getServerConfigForGuild(guild.id)
+		val serverConfig = loritta.getOrCreateServerConfig(guild.idLong)
 		BanCommand.ban(
 				loritta.getServerConfigForGuild(guild.id),
 				guild,

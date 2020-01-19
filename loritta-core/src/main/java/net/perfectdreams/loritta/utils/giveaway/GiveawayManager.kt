@@ -324,7 +324,7 @@ object GiveawayManager {
             messageReaction = message.reactions.firstOrNull { it.reactionEmote.name == giveaway.reaction }
         }
 
-        val serverConfig = loritta.getServerConfigForGuild(message.guild.id)
+        val serverConfig = loritta.getOrCreateServerConfig(message.guild.idLong)
         val locale = loritta.getLocaleById(serverConfig.localeId)
 
         if (messageReaction != null) {

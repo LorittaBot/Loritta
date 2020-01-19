@@ -83,7 +83,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		private val logger = KotlinLogging.logger {}
 		private val requestLogger = LoggerFactory.getLogger("requests")
 
-		fun queueTextChannelTopicUpdates(guild: Guild, serverConfig: MongoServerConfig, hideInEventLog: Boolean = false) {
+		fun queueTextChannelTopicUpdates(guild: Guild, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, hideInEventLog: Boolean = false) {
 			val donationKey = transaction(Databases.loritta) {
 				loritta.getOrCreateServerConfig(guild.idLong).donationKey
 			}
@@ -91,7 +91,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			logger.debug { "Creating text channel topic updates in $guild for ${guild.textChannels.size} channels! Donation key is $donationKey (${donationKey?.value}) Should hide in event log? $hideInEventLog" }
 
 			val validChannels = guild.textChannels.filter {
-				val memberCounterConfig = serverConfig.getTextChannelConfig(it).memberCounterConfig
+				val memberCounterConfig = legacyServerConfig.getTextChannelConfig(it).memberCounterConfig
 				guild.selfMember.hasPermission(it, Permission.MANAGE_CHANNEL) && memberCounterConfig?.topic?.contains("{counter}") == true
 			}
 
@@ -102,15 +102,15 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			}
 
 			for (textChannel in channelsThatWillBeChecked) {
-				queueTextChannelTopicUpdate(guild, serverConfig, donationKey, textChannel, hideInEventLog)
+				queueTextChannelTopicUpdate(guild, serverConfig, legacyServerConfig, donationKey, textChannel, hideInEventLog)
 			}
 		}
 
-		fun queueTextChannelTopicUpdate(guild: Guild, serverConfig: MongoServerConfig, donationKey: DonationKey?, textChannel: TextChannel, hideInEventLog: Boolean = false) {
+		fun queueTextChannelTopicUpdate(guild: Guild, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, donationKey: DonationKey?, textChannel: TextChannel, hideInEventLog: Boolean = false) {
 			if (!guild.selfMember.hasPermission(textChannel, Permission.MANAGE_CHANNEL))
 				return
 
-			val memberCountConfig = serverConfig.getTextChannelConfig(textChannel).memberCounterConfig ?: return
+			val memberCountConfig = legacyServerConfig.getTextChannelConfig(textChannel).memberCounterConfig ?: return
 
 			val lastUpdate = memberCounterLastUpdate[textChannel.idLong] ?: 0L
 			val diff = System.currentTimeMillis() - lastUpdate
@@ -139,7 +139,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			updateTextChannelTopic(guild, serverConfig, donationKey, textChannel, memberCountConfig, hideInEventLog)
 		}
 
-		fun updateTextChannelTopic(guild: Guild, serverConfig: MongoServerConfig, donationKey: DonationKey?, textChannel: TextChannel, memberCounterConfig: MemberCounterConfig, hideInEventLog: Boolean = false) {
+		fun updateTextChannelTopic(guild: Guild, serverConfig: ServerConfig, donationKey: DonationKey?, textChannel: TextChannel, memberCounterConfig: MemberCounterConfig, hideInEventLog: Boolean = false) {
 			val formattedTopic = memberCounterConfig.getFormattedTopic(guild)
 			if (hideInEventLog)
 				Companion.memberCounterJoinLeftCache.add(textChannel.idLong)
@@ -377,17 +377,18 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			try {
-				val conf = loritta.getServerConfigForGuild(event.guild.id)
+				val legacyServerConfig = loritta.getServerConfigForGuild(event.guild.id)
+				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 
-				if (loritta.networkBanManager.checkIfUserShouldBeBanned(event.user, event.guild, conf))
+				if (loritta.networkBanManager.checkIfUserShouldBeBanned(event.user, event.guild, serverConfig, legacyServerConfig))
 					return@launch
 
-				if (conf.miscellaneousConfig.enableQuirky && event.user.name.contains("lori", true) && MiscUtils.hasInappropriateWords(event.user.name)) { // #LoritaTambémTemSentimentos
+				if (legacyServerConfig.miscellaneousConfig.enableQuirky && event.user.name.contains("lori", true) && MiscUtils.hasInappropriateWords(event.user.name)) { // #LoritaTambémTemSentimentos
 					BanCommand.ban(
-							conf,
+							legacyServerConfig,
 							event.guild,
 							event.guild.selfMember.user,
-							com.mrpowergamerbr.loritta.utils.loritta.getLegacyLocaleById(conf.localeId),
+							com.mrpowergamerbr.loritta.utils.loritta.getLegacyLocaleById(serverConfig.localeId),
 							event.user,
 							"Sim, eu também tenho sentimentos. (Usar nomes inapropriados que ofendem outros usuários!)",
 							false,
@@ -397,7 +398,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 
 				if (FeatureFlags.UPDATE_IN_GUILD_STATS_ON_GUILD_JOIN) {
-					val profile = conf.getUserDataIfExists(event.guild.idLong)
+					val profile = legacyServerConfig.getUserDataIfExists(event.guild.idLong)
 
 					if (profile != null) {
 						transaction(Databases.loritta) {
@@ -406,14 +407,14 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 				}
 
-				queueTextChannelTopicUpdates(event.guild, conf, true)
+				queueTextChannelTopicUpdates(event.guild, serverConfig, legacyServerConfig, true)
 
-				if (conf.autoroleConfig.isEnabled && !conf.autoroleConfig.giveOnlyAfterMessageWasSent && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) { // Está ativado?
-					AutoroleModule.giveRoles(event.member, conf.autoroleConfig)
+				if (legacyServerConfig.autoroleConfig.isEnabled && !legacyServerConfig.autoroleConfig.giveOnlyAfterMessageWasSent && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) { // Está ativado?
+					AutoroleModule.giveRoles(event.member, legacyServerConfig.autoroleConfig)
 				}
 
-				if (conf.joinLeaveConfig.isEnabled) { // Está ativado?
-					WelcomeModule.handleJoin(event, conf)
+				if (legacyServerConfig.joinLeaveConfig.isEnabled) { // Está ativado?
+					WelcomeModule.handleJoin(event, serverConfig, legacyServerConfig)
 				}
 
 				val mute = transaction(Databases.loritta) {
@@ -424,8 +425,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				if (mute != null) {
 					logger.debug { "${event.member} in guild ${event.guild} has a mute! Readding roles and recreating role removal task!" }
-					val locale = loritta.getLegacyLocaleById(conf.localeId)
-					val muteRole = MuteCommand.getMutedRole(event.guild, loritta.getLocaleById(conf.localeId)) ?: return@launch
+					val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
+					val muteRole = MuteCommand.getMutedRole(event.guild, loritta.getLocaleById(serverConfig.localeId)) ?: return@launch
 
 					event.guild.addRoleToMember(event.member, muteRole).await()
 
@@ -436,7 +437,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				loritta.pluginManager.plugins.filterIsInstance(DiscordPlugin::class.java).flatMap {
 					it.onGuildMemberJoinListeners
 				}.forEach {
-					it.invoke(event.member, event.guild, conf)
+					it.invoke(event.member, event.guild, serverConfig)
 				}
 			} catch (e: Exception) {
 				logger.error("[${event.guild.name}] Ao entrar no servidor ${event.user.name}", e)
@@ -464,10 +465,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				if (event.user.id == loritta.discordConfig.discord.clientId)
 					return@launch
 
-				val conf = loritta.getServerConfigForGuild(event.guild.id)
+				val legacyServerConfig = loritta.getServerConfigForGuild(event.guild.id)
+				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 
 				if (FeatureFlags.UPDATE_IN_GUILD_STATS_ON_GUILD_QUIT) {
-					val profile = conf.getUserDataIfExists(event.guild.idLong)
+					val profile = legacyServerConfig.getUserDataIfExists(event.guild.idLong)
 
 					if (profile != null) {
 						transaction(Databases.loritta) {
@@ -476,16 +478,16 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 				}
 
-				DiscordListener.queueTextChannelTopicUpdates(event.guild, conf, true)
+				DiscordListener.queueTextChannelTopicUpdates(event.guild, serverConfig, legacyServerConfig, true)
 
-				if (conf.joinLeaveConfig.isEnabled) {
-					WelcomeModule.handleLeave(event, conf)
+				if (legacyServerConfig.joinLeaveConfig.isEnabled) {
+					WelcomeModule.handleLeave(event, serverConfig, legacyServerConfig)
 				}
 
 				loritta.pluginManager.plugins.filterIsInstance(DiscordPlugin::class.java).flatMap {
 					it.onGuildMemberLeaveListeners
 				}.forEach {
-					it.invoke(event.member, event.guild, conf)
+					it.invoke(event.member, event.guild, serverConfig)
 				}
 			} catch (e: Exception) {
 				logger.error("[${event.guild.name}] Ao sair do servidor ${event.user.name}", e)
@@ -498,7 +500,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
-			val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
+			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 
 			val mutes = transaction(Databases.loritta) {
 				Mute.find {

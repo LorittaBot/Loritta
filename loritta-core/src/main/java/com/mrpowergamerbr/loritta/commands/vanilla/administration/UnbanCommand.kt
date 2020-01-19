@@ -68,7 +68,7 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context) ?: return
 
 			val banCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
-				unban(context.config, context.guild, context.userHandle, locale, user, reason, isSilent)
+				unban(context.legacyConfig, context.guild, context.userHandle, locale, user, reason, isSilent)
 
 				message?.delete()?.queue()
 
@@ -85,7 +85,7 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 				return
 			}
 
-			val hasSilent = context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog
+			val hasSilent = context.legacyConfig.moderationConfig.sendPunishmentViaDm || context.legacyConfig.moderationConfig.sendToPunishLog
 			val message = AdminUtils.sendConfirmationMessage(context, user, hasSilent, "unban")
 
 			message.onReactionAddByAuthor(context) {

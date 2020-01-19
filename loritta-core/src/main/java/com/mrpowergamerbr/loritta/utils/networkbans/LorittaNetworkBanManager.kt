@@ -1,9 +1,8 @@
 package com.mrpowergamerbr.loritta.utils.networkbans
 
-import com.github.salomonbrys.kotson.fromJson
 import com.mongodb.client.model.Filters
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.escapeMentions
@@ -19,7 +18,6 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.io.File
 
 class LorittaNetworkBanManager {
 	companion object {
@@ -56,11 +54,12 @@ class LorittaNetworkBanManager {
 				if (!guild.isMember(user))
 					continue
 
-				val serverConfig = serverConfigs.firstOrNull { it.guildId == guild.id } ?: continue
+				val legacyServerConfig = serverConfigs.firstOrNull { it.guildId == guild.id } ?: continue
+				val serverConfig = loritta.getOrCreateServerConfig(guild.idLong)
 
 				logger.info("Banindo ${user.id} em ${guild.id}...")
 				BanCommand.ban(
-						serverConfig,
+						legacyServerConfig,
 						guild,
 						guild.selfMember.user,
 						loritta.getLegacyLocaleById(serverConfig.localeId),
@@ -84,12 +83,13 @@ class LorittaNetworkBanManager {
 		if (guild.selfMember.hasPermission(Permission.BAN_MEMBERS) && guild.selfMember.canInteract(member!!))
 			return
 
-		val serverConfig = loritta.getServerConfigForGuild(guild.id)
+		val serverConfig = loritta.getOrCreateServerConfig(guild.idLong)
+		val legacyServerConfig = loritta.getServerConfigForGuild(guild.id)
 
 		try {
 			logger.info("Banindo ${user.id} em ${guild.id}...")
 			BanCommand.ban(
-					serverConfig,
+					legacyServerConfig,
 					guild,
 					guild.selfMember.user,
 					loritta.getLegacyLocaleById(serverConfig.localeId),
@@ -99,7 +99,7 @@ class LorittaNetworkBanManager {
 					7
 			)
 		} catch (e: Exception) {
-			logger.error(e) { "Erro ao punir o usuário ${user.id} na guild ${serverConfig.guildId}" }
+			logger.error(e) { "Erro ao punir o usuário ${user.id} na guild ${legacyServerConfig.guildId}" }
 		}
 	}
 
@@ -203,11 +203,11 @@ class LorittaNetworkBanManager {
 		return notVerifiedEntries.firstOrNull { it.id == id }
 	}
 
-	fun checkIfUserShouldBeBanned(user: User, guild: Guild, serverConfig: MongoServerConfig): Boolean {
+	fun checkIfUserShouldBeBanned(user: User, guild: Guild, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig): Boolean {
 		val globallyBannedEntry = loritta.networkBanManager.getGlobalBanEntry(user.idLong) // oof¹
 		if (globallyBannedEntry != null) {
 			BanCommand.ban(
-					serverConfig,
+					legacyServerConfig,
 					guild,
 					guild.selfMember.user,
 					com.mrpowergamerbr.loritta.utils.loritta.getLegacyLocaleById(serverConfig.localeId),
@@ -220,9 +220,9 @@ class LorittaNetworkBanManager {
 		}
 
 		val networkBannedEntry = loritta.networkBanManager.getNetworkBanEntry(user.idLong) // oof²
-		if (serverConfig.moderationConfig.useLorittaBansNetwork && networkBannedEntry != null) {
+		if (legacyServerConfig.moderationConfig.useLorittaBansNetwork && networkBannedEntry != null) {
 			BanCommand.ban(
-					serverConfig,
+					legacyServerConfig,
 					guild,
 					guild.selfMember.user,
 					com.mrpowergamerbr.loritta.utils.loritta.getLegacyLocaleById(serverConfig.localeId),

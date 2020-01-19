@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.platform.discord.plugin
 
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.plugin.LorittaPlugin
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
@@ -10,9 +10,9 @@ import net.perfectdreams.loritta.profile.Badge
 
 open class DiscordPlugin : LorittaPlugin() {
     val eventListeners = mutableListOf<ListenerAdapter>()
-    val onGuildReadyListeners = mutableListOf<suspend (Guild, MongoServerConfig) -> (Unit)>()
-    val onGuildMemberJoinListeners = mutableListOf<suspend (Member, Guild, MongoServerConfig) -> (Unit)>()
-    val onGuildMemberLeaveListeners = mutableListOf<suspend (Member, Guild, MongoServerConfig) -> (Unit)>()
+    val onGuildReadyListeners = mutableListOf<suspend (Guild, ServerConfig) -> (Unit)>()
+    val onGuildMemberJoinListeners = mutableListOf<suspend (Member, Guild, ServerConfig) -> (Unit)>()
+    val onGuildMemberLeaveListeners = mutableListOf<suspend (Member, Guild, ServerConfig) -> (Unit)>()
     private val badges = mutableListOf<Badge>()
 
     override fun onDisable() {
@@ -55,15 +55,15 @@ open class DiscordPlugin : LorittaPlugin() {
         badges.remove(badge)
     }
 
-    fun onGuildReady(callback: suspend (Guild, MongoServerConfig) -> (Unit)) {
+    fun onGuildReady(callback: suspend (Guild, ServerConfig) -> (Unit)) {
         onGuildReadyListeners.add(callback)
     }
 
-    fun onGuildMemberJoinListeners(callback: suspend (Member, Guild, MongoServerConfig) -> (Unit)) {
+    fun onGuildMemberJoinListeners(callback: suspend (Member, Guild, ServerConfig) -> (Unit)) {
         onGuildMemberJoinListeners.add(callback)
     }
 
-    fun onGuildMemberLeaveListeners(callback: suspend (Member, Guild, MongoServerConfig) -> (Unit)) {
+    fun onGuildMemberLeaveListeners(callback: suspend (Member, Guild, ServerConfig) -> (Unit)) {
         onGuildMemberLeaveListeners.add(callback)
     }
 }

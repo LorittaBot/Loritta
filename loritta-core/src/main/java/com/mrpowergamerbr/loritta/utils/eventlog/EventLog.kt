@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.utils.eventlog
 
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.dao.StoredMessage
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
@@ -89,9 +90,9 @@ object EventLog {
 		}
 	}
 
-	fun onVoiceJoin(serverConfig: MongoServerConfig, member: Member, channelJoined: VoiceChannel) {
+	fun onVoiceJoin(serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, member: Member, channelJoined: VoiceChannel) {
 		try {
-			val eventLogConfig = serverConfig.eventLogConfig
+			val eventLogConfig = legacyServerConfig.eventLogConfig
 
 			if (eventLogConfig.isEnabled && eventLogConfig.voiceChannelJoins) {
 				val textChannel = member.guild.getTextChannelByNullableId(eventLogConfig.eventLogChannelId) ?: return
@@ -123,9 +124,9 @@ object EventLog {
 		}
 	}
 
-	fun onVoiceLeave(serverConfig: MongoServerConfig, member: Member, channelLeft: VoiceChannel) {
+	fun onVoiceLeave(serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, member: Member, channelLeft: VoiceChannel) {
 		try {
-			val eventLogConfig = serverConfig.eventLogConfig
+			val eventLogConfig = legacyServerConfig.eventLogConfig
 
 			if (eventLogConfig.isEnabled && eventLogConfig.voiceChannelLeaves) {
 				val textChannel = member.guild.getTextChannelByNullableId(eventLogConfig.eventLogChannelId) ?: return

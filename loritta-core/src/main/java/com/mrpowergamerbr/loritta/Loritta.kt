@@ -121,7 +121,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 
 	lateinit var legacyCommandManager: CommandManager // Nosso command manager
 	override val commandManager = DiscordCommandManager(this)
-	lateinit var dummyServerConfig: MongoServerConfig // Config utilizada em comandos no privado
+	lateinit var dummyLegacyServerConfig: MongoServerConfig // Config utilizada em comandos no privado
 	var messageInteractionCache = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<Long, MessageInteractionFunctions>().asMap()
 
 	var ignoreIds = mutableSetOf<Long>() // IDs para serem ignorados nesta sessão
@@ -222,7 +222,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 			commandPrefix = ""
 		}
 
-		dummyServerConfig = dummy
+		dummyLegacyServerConfig = dummy
 	}
 
 	fun resetYouTubeKeys() {

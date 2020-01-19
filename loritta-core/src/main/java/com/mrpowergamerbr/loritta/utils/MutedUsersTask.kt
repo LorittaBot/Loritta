@@ -60,7 +60,7 @@ class MutedUsersTask : Runnable {
 
 				logger.info { "Adicionado removal thread pelo MutedUsersThread ~ Guild: ${mute.guildId} - User: ${mute.userId}" }
 
-				val localeId = guildLocales.getOrPut(mute.guildId, { loritta.getServerConfigForGuild(mute.guildId.toString()).localeId })
+				val localeId = guildLocales.getOrPut(mute.guildId, { loritta.getOrCreateServerConfig(mute.guildId).localeId })
 				MuteCommand.spawnRoleRemovalThread(guild, loritta.getLegacyLocaleById(localeId), member.user, mute.expiresAt!!)
 			}
 		} catch (e: Exception) {

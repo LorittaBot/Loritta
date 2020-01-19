@@ -28,6 +28,9 @@ class TranslateRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/trans
     override val keepLoadingScreen: Boolean
         get() = true
 
+    var filterOnlyMissing = false
+    val changedOnThisSessionKeys = mutableSetOf<String>()
+
     @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         super.onRender(call)
@@ -50,6 +53,13 @@ class TranslateRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/trans
             val originalLocale = kotlinx.serialization.json.JSON.nonstrict.parse<BaseLocale>(originalLocalePayload)
 
             val content = document.select<HTMLDivElement>("#content")
+
+            val filterMissing = document.select<HTMLDivElement>("#filter-missing")
+
+            filterMissing.onClick {
+                filterOnlyMissing = !filterOnlyMissing
+                redrawLocaleEntriesSidebar(originalLocale, localeToBeTranslated)
+            }
 
             val downloadJson = document.select<HTMLDivElement>("#download-json")
 
@@ -143,8 +153,14 @@ class TranslateRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/trans
                 val translatedEntry = localeToBeTranslated[key]
 
                 var classes = "locale-entry"
-                if (translatedEntry == value) {
+                if (changedOnThisSessionKeys.contains(key)) {
+                    classes += " edited-on-this-session"
+                } else if (translatedEntry == value) {
                     classes += " not-edited"
+                } else if (changedOnThisSessionKeys.contains(key)) {
+                    classes += " edited-on-this-session"
+                } else if (filterOnlyMissing) {
+                    continue
                 }
 
                 div(classes) {
@@ -180,6 +196,7 @@ class TranslateRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/trans
 
                             localeToBeTranslated.localeEntries[key] = localeValue
 
+                            changedOnThisSessionKeys.add(key)
                             redrawLocaleEntriesSidebar(originalLocale, localeToBeTranslated)
                             asDynamic()
                         }

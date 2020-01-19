@@ -92,15 +92,16 @@ class UserReputationController {
 					if (!channel.guild.selfMember.hasPermission(channel, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_EMBED_LINKS)) // Permissões
 						return
 
-					val serverConfig = loritta.getServerConfigForGuild(channelId)
+					val serverConfig = loritta.getOrCreateServerConfig(guildId.toLong())
+					val legacyServerConfig = loritta.getServerConfigForGuild(guildId)
 					val receiverProfile = loritta.getOrCreateLorittaProfile(giverId)
 					val receiverSettings = transaction(Databases.loritta) {
 						receiverProfile.settings
 					}
 
-					val lorittaUser = GuildLorittaUser(member, serverConfig, giverProfile)
+					val lorittaUser = GuildLorittaUser(member, legacyServerConfig, giverProfile)
 
-					if (serverConfig.blacklistedChannels.contains(channel.id) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) // O usuário não pode enviar comandos no canal
+					if (serverConfig.blacklistedChannels.contains(channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) // O usuário não pode enviar comandos no canal
 						return
 
 					val locale = loritta.getLocaleById(serverConfig.localeId)

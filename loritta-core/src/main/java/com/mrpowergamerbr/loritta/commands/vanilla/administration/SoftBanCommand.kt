@@ -119,8 +119,8 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 
 				var str = locale["BAN_ReadyToPunish", locale["SOFTBAN_PunishName"], member.asMention, member.user.name + "#" + member.user.discriminator, member.user.id]
 
-				val hasSilent = context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog
-				if (context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog) {
+				val hasSilent = context.legacyConfig.moderationConfig.sendPunishmentViaDm || context.legacyConfig.moderationConfig.sendToPunishLog
+				if (context.legacyConfig.moderationConfig.sendPunishmentViaDm || context.legacyConfig.moderationConfig.sendToPunishLog) {
 					str += " ${locale["BAN_SilentTip"]}"
 				}
 
@@ -164,7 +164,7 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 	companion object {
 		fun softBan(context: CommandContext, locale: LegacyBaseLocale, member: Member, days: Int, user: User, reason: String, isSilent: Boolean) {
 			if (!isSilent) {
-				if (context.config.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
+				if (context.legacyConfig.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
 					try {
 						val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, locale["SOFTBAN_PunishAction"], reason)
 
@@ -176,12 +176,12 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 					}
 				}
 
-				if (context.config.moderationConfig.sendToPunishLog) {
-					val textChannel = context.guild.getTextChannelByNullableId(context.config.moderationConfig.punishmentLogChannelId)
+				if (context.legacyConfig.moderationConfig.sendToPunishLog) {
+					val textChannel = context.guild.getTextChannelByNullableId(context.legacyConfig.moderationConfig.punishmentLogChannelId)
 
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
-								context.config.moderationConfig.punishmentLogMessage,
+								context.legacyConfig.moderationConfig.punishmentLogMessage,
 								listOf(user),
 								context.guild,
 								mutableMapOf(

@@ -82,7 +82,7 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 						.delete()
 			}
 
-			loritta save context.config
+			loritta save context.legacyConfig
 
 			context.reply(
 					LoriReply(

@@ -1,13 +1,16 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild
 
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.jsonObject
+import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.string
 import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.WebsiteUtils
+import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.save
 import com.mrpowergamerbr.loritta.website.LoriAuthLevel
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriRequiresAuth
@@ -30,85 +33,17 @@ class UpdateServerConfigController {
 	@GET
 	@LoriDoNotLocaleRedirect(true)
 	@LoriRequiresAuth(LoriAuthLevel.DISCORD_GUILD_REST_AUTH)
-	fun getConfig(req: Request, res: Response, guildId: String, @Local userIdentification: TemmieDiscordAuth.UserIdentification, @Local serverConfig: MongoServerConfig, @Local guild: Guild) {
+	fun getConfig(req: Request, res: Response, guildId: String, @Local userIdentification: TemmieDiscordAuth.UserIdentification, @Local newServerConfig: ServerConfig, @Local serverConfig: MongoServerConfig, @Local guild: Guild) {
 		res.type(MediaType.json)
 
-		val serverConfigJson = Gson().toJsonTree(serverConfig)
-
-		val textChannels = JsonArray()
-		for (textChannel in guild.textChannels) {
-			val json = JsonObject()
-
-			json["id"] = textChannel.id
-			json["canTalk"] = textChannel.canTalk()
-			json["name"] = textChannel.name
-
-			textChannels.add(json)
-		}
-
-		serverConfigJson["textChannels"] = textChannels
-
-		val roles = JsonArray()
-		for (role in guild.roles) {
-			val json = JsonObject()
-
-			json["id"] = role.id
-			json["name"] = role.name
-			json["isPublicRole"] = role.isPublicRole
-			json["isManaged"] = role.isManaged
-			json["canInteract"] = guild.selfMember.canInteract(role)
-
-			if (role.color != null) {
-				json["color"] = jsonObject(
-						"red" to role.color!!.red,
-						"green" to role.color!!.green,
-						"blue" to role.color!!.blue
+		val serverConfigJson = Gson().toJson(
+				WebsiteUtils.transformToDashboardConfigurationJson(
+						userIdentification,
+						guild,
+						newServerConfig,
+						serverConfig
 				)
-			}
-
-			roles.add(json)
-		}
-
-		val members = JsonArray()
-		for (member in guild.members) {
-			val json = JsonObject()
-
-			json["id"] = member.user.id
-			json["name"] = member.user.name
-			json["discriminator"] = member.user.discriminator
-			json["avatar"] = member.user.avatarUrl
-
-			members.add(json)
-		}
-
-		val emotes = JsonArray()
-		for (emote in guild.emotes) {
-			val json = JsonObject()
-
-			json["id"] = emote.id
-			json["name"] = emote.name
-
-			emotes.add(json)
-		}
-
-		serverConfigJson["roles"] = roles
-		serverConfigJson["members"] = members
-		serverConfigJson["emotes"] = emotes
-		serverConfigJson["permissions"] = gson.toJsonTree(guild.selfMember.permissions.map { it.name })
-
-		val user = lorittaShards.getUserById(userIdentification.id)
-
-		if (user != null) {
-			val selfUser = jsonObject(
-					"id" to userIdentification.id,
-					"name" to user.name,
-					"discriminator" to user.discriminator,
-					"avatar" to user.effectiveAvatarUrl
-			)
-			serverConfigJson["selfUser"] = selfUser
-		}
-
-		serverConfigJson["guildName"] = guild.name
+		)
 
 		res.send(serverConfigJson)
 	}
@@ -137,7 +72,8 @@ class UpdateServerConfigController {
 				"level" to LevelPayload::class.java,
 				"reset_xp" to ResetXpPayload::class.java,
 				"twitter" to TwitterPayload::class.java,
-				"rss_feeds" to RssFeedsPayload::class.java
+				"rss_feeds" to RssFeedsPayload::class.java,
+				"default" to GeneralConfigPayload::class.java
 		)
 
 		val payloadHandlerClass = payloadHandlers[type]

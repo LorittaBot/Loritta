@@ -63,7 +63,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context) ?: return
 
 			val banCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
-				ban(context.config, context.guild, context.userHandle, locale, user, reason, isSilent, delDays)
+				ban(context.legacyConfig, context.guild, context.userHandle, locale, user, reason, isSilent, delDays)
 
 				message?.delete()?.queue()
 
@@ -75,7 +75,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 				return
 			}
 
-			val hasSilent = context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog
+			val hasSilent = context.legacyConfig.moderationConfig.sendPunishmentViaDm || context.legacyConfig.moderationConfig.sendToPunishLog
 			val message = AdminUtils.sendConfirmationMessage(context, user, hasSilent, "ban")
 
 			message.onReactionAddByAuthor(context) {

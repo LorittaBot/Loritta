@@ -36,7 +36,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			var economySource = "global"
 			var currentIdx = 0
 
-			val payerProfile = context.config.getUserData(context.userHandle.idLong)
+			val payerProfile = context.legacyConfig.getUserData(context.userHandle.idLong)
 
 			val economyConfig = transaction(Databases.loritta) {
 				loritta.getOrCreateServerConfig(context.guild.idLong).economyConfig
@@ -213,7 +213,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 
 				message.addReaction("✅").queue()
 			} else {
-				val receiverProfile = context.config.getUserData(user.idLong)
+				val receiverProfile = context.legacyConfig.getUserData(user.idLong)
 
 				val beforeGiver = payerProfile.money
 				val beforeReceiver = receiverProfile.money

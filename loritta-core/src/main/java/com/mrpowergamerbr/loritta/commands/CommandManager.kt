@@ -18,6 +18,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.social.*
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBattleCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBoxCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.*
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
@@ -241,7 +242,7 @@ class CommandManager {
 		return commandMap.filter { conf.disabledCommands.contains(it.javaClass.simpleName) }
 	}
 
-	suspend fun matches(ev: LorittaMessageEvent, conf: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun matches(ev: LorittaMessageEvent, serverConfig: ServerConfig, conf: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
 		val rawMessage = ev.message.contentRaw
 
 		// É necessário remover o new line para comandos como "+eval", etc
@@ -249,13 +250,13 @@ class CommandManager {
 
 		// Primeiro os comandos vanilla da Loritta(tm)
 		for (command in commandMap.filter { !conf.disabledCommands.contains(it.javaClass.simpleName) }) {
-			if (matches(command, rawArguments, ev, conf, locale, legacyLocale, lorittaUser))
+			if (matches(command, rawArguments, ev, serverConfig, conf, locale, legacyLocale, lorittaUser))
 				return true
 		}
 
 		// E depois os comandos usando JavaScript (Nashorn)
 		for (command in conf.nashornCommands) {
-			if (matches(command, rawArguments, ev, conf, locale, legacyLocale, lorittaUser))
+			if (matches(command, rawArguments, ev, serverConfig, conf, locale, legacyLocale, lorittaUser))
 				return true
 		}
 
@@ -266,18 +267,18 @@ class CommandManager {
 	 * Checks if the command should be handled (if all conditions are valid, like labels, etc)
 	 *
 	 * @param ev          the event wrapped in a LorittaMessageEvent
-	 * @param conf        the server configuration
+	 * @param legacyServerConfig        the server configuration
 	 * @param legacyLocale      the language of the server
 	 * @param lorittaUser the user that is executing this command
 	 * @return            if the command was handled or not
 	 */
-	suspend fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
 		val message = ev.message.contentDisplay
 		val baseLocale = locale
 
 		// Carregar as opções de comandos
-		val cmdOptions = conf.getCommandOptionsFor(command)
-		val prefix = if (cmdOptions.enableCustomPrefix) cmdOptions.customPrefix else conf.commandPrefix
+		val cmdOptions = legacyServerConfig.getCommandOptionsFor(command)
+		val prefix = if (cmdOptions.enableCustomPrefix) cmdOptions.customPrefix else serverConfig.commandPrefix
 
 		val labels = mutableListOf(command.label)
 
@@ -320,7 +321,7 @@ class CommandManager {
 				}
 			}
 
-			val context = CommandContext(conf, lorittaUser, baseLocale, legacyLocale, ev, command, args, rawArgs, strippedArgs)
+			val context = CommandContext(serverConfig, legacyServerConfig, lorittaUser, baseLocale, legacyLocale, ev, command, args, rawArgs, strippedArgs)
 
 			try {
 				if (ev.message.isFromType(ChannelType.TEXT)) {
@@ -329,23 +330,23 @@ class CommandManager {
 					logger.info("(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
 				}
 
-				conf.lastCommandReceivedAt = System.currentTimeMillis()
+				legacyServerConfig.lastCommandReceivedAt = System.currentTimeMillis()
 				loritta.serversColl.updateOne(
-						Filters.eq("_id", conf.guildId),
-						Updates.set("lastCommandReceivedAt", conf.lastCommandReceivedAt)
+						Filters.eq("_id", legacyServerConfig.guildId),
+						Updates.set("lastCommandReceivedAt", legacyServerConfig.lastCommandReceivedAt)
 				)
 
-				if (conf != loritta.dummyServerConfig && ev.textChannel != null && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
-					LorittaUtils.warnOwnerNoPermission(ev.guild, ev.textChannel, conf)
+				if (legacyServerConfig != loritta.dummyLegacyServerConfig && ev.textChannel != null && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
+					LorittaUtils.warnOwnerNoPermission(ev.guild, ev.textChannel, serverConfig)
 					return true
 				}
 
-				if (conf.blacklistedChannels.contains(ev.channel.id) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
-					if (!conf.miscellaneousConfig.enableBomDiaECia || (conf.miscellaneousConfig.enableBomDiaECia && command !is LigarCommand)) {
-						if (conf.warnIfBlacklisted) {
-							if (conf.blacklistWarning.isNotEmpty() && ev.guild != null && ev.member != null && ev.textChannel != null) {
+				if (serverConfig.blacklistedChannels.contains(ev.channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
+					if (!legacyServerConfig.miscellaneousConfig.enableBomDiaECia || (legacyServerConfig.miscellaneousConfig.enableBomDiaECia && command !is LigarCommand)) {
+						if (serverConfig.warnIfBlacklisted) {
+							if (serverConfig.blacklistedWarning?.isNotEmpty() == true && ev.guild != null && ev.member != null && ev.textChannel != null) {
 								val generatedMessage = MessageUtils.generateMessage(
-										conf.blacklistWarning,
+										serverConfig.blacklistedWarning ?: "???",
 										listOf(ev.member, ev.textChannel),
 										ev.guild
 								)
@@ -487,7 +488,7 @@ class CommandManager {
 				}
 
 				if (command.requiresMusicEnabled()) {
-					if (!context.config.musicConfig.isEnabled) {
+					if (!context.legacyConfig.musicConfig.isEnabled) {
 						val canManage = context.handle.hasPermission(Permission.MANAGE_SERVER) || context.handle.hasPermission(Permission.ADMINISTRATOR)
 						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + reparsedLegacyLocale["DJ_LORITTA_DISABLED"] + " \uD83D\uDE1E" + if (canManage) reparsedLegacyLocale["DJ_LORITTA_HOW_TO_ENABLE", "${loritta.instanceConfig.loritta.website.url}dashboard"] else "")
 						return true
@@ -550,9 +551,9 @@ class CommandManager {
 
 				command.run(context, context.legacyLocale)
 
-				val cmdOpti = context.config.getCommandOptionsFor(command)
+				val cmdOpti = context.legacyConfig.getCommandOptionsFor(command)
 				if (!isPrivateChannel && ev.guild != null) {
-					if (ev.guild.selfMember.hasPermission(ev.textChannel!!, Permission.MESSAGE_MANAGE) && (conf.deleteMessageAfterCommand || (cmdOpti.override && cmdOpti.deleteMessageAfterCommand))) {
+					if (ev.guild.selfMember.hasPermission(ev.textChannel!!, Permission.MESSAGE_MANAGE) && (serverConfig.deleteMessageAfterCommand || (cmdOpti.override && cmdOpti.deleteMessageAfterCommand))) {
 						ev.message.textChannel.retrieveMessageById(ev.messageId).queue {
 							// Nós iremos pegar a mensagem novamente, já que talvez ela tenha sido deletada
 							it.delete().queue()

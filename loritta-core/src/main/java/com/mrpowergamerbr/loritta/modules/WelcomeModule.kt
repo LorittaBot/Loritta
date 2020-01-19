@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.modules
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.LorittaLauncher.loritta
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
@@ -33,8 +34,9 @@ object WelcomeModule {
 					if (v1.size > 20) {
 						logger.info("Mais de 20 membros entraram em menos de 15 segundos em $k1! Que triste, né? Vamos enviar um arquivo com todos que sairam!")
 
-						val serverConfig = loritta.getServerConfigForGuild(v1.toString())
-						val joinLeaveConfig = serverConfig.joinLeaveConfig
+						val legacyServerConfig = loritta.getServerConfigForGuild(k1.toString())
+						val serverConfig = loritta.getOrCreateServerConfig(k1)
+						val joinLeaveConfig = legacyServerConfig.joinLeaveConfig
 
 						if (joinLeaveConfig.tellOnJoin && joinLeaveConfig.joinMessage.isNotEmpty()) {
 							val guild = lorittaShards.getGuildById(k1) ?: return@removalListener
@@ -73,8 +75,9 @@ object WelcomeModule {
 					if (v1.size > 20) {
 						logger.info("Mais de 20 membros sairam em menos de 15 segundos em $k1! Que triste, né? Vamos enviar um arquivo com todos que sairam!")
 
-						val serverConfig = loritta.getServerConfigForGuild(v1.toString())
-						val joinLeaveConfig = serverConfig.joinLeaveConfig
+						val legacyServerConfig = loritta.getServerConfigForGuild(k1.toString())
+						val serverConfig = loritta.getOrCreateServerConfig(k1)
+						val joinLeaveConfig = legacyServerConfig.joinLeaveConfig
 
 						if (joinLeaveConfig.tellOnLeave && joinLeaveConfig.leaveMessage.isNotEmpty()) {
 							val guild = lorittaShards.getGuildById(k1) ?: return@removalListener
@@ -105,8 +108,8 @@ object WelcomeModule {
 			}
 			.build<Long, CopyOnWriteArrayList<User>>()
 
-	suspend fun handleJoin(event: GuildMemberJoinEvent, serverConfig: MongoServerConfig) {
-		val joinLeaveConfig = serverConfig.joinLeaveConfig
+	suspend fun handleJoin(event: GuildMemberJoinEvent, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig) {
+		val joinLeaveConfig = legacyServerConfig.joinLeaveConfig
 		val tokens = mapOf(
 				"humanized-date" to event.member.timeJoined.humanize(loritta.getLegacyLocaleById(serverConfig.localeId))
 		)
@@ -146,8 +149,8 @@ object WelcomeModule {
 							logger.debug { "Member = ${event.member}, Sending quit message \"$msg\" in $textChannel at $guild"}
 
 							textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(guild, event.member), guild, tokens)!!).queue {
-								if (serverConfig.joinLeaveConfig.deleteJoinMessagesAfter != null)
-									it.delete().queueAfter(serverConfig.joinLeaveConfig.deleteJoinMessagesAfter!!, TimeUnit.SECONDS)
+								if (legacyServerConfig.joinLeaveConfig.deleteJoinMessagesAfter != null)
+									it.delete().queueAfter(legacyServerConfig.joinLeaveConfig.deleteJoinMessagesAfter!!, TimeUnit.SECONDS)
 							}
 						}
 					} else {
@@ -173,8 +176,8 @@ object WelcomeModule {
 		}
 	}
 
-	suspend fun handleLeave(event: GuildMemberLeaveEvent, serverConfig: MongoServerConfig) {
-		val joinLeaveConfig = serverConfig.joinLeaveConfig
+	suspend fun handleLeave(event: GuildMemberLeaveEvent, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig) {
+		val joinLeaveConfig = legacyServerConfig.joinLeaveConfig
 
 		logger.trace { "Member = ${event.member}, Guild ${event.guild} has tellOnLeave = ${joinLeaveConfig.tellOnLeave} and the leaveMessage is ${joinLeaveConfig.leaveMessage}, canalLeaveId = ${joinLeaveConfig.canalLeaveId}" }
 		if (joinLeaveConfig.tellOnLeave && joinLeaveConfig.leaveMessage.isNotEmpty()) {
@@ -222,8 +225,8 @@ object WelcomeModule {
 							logger.debug { "Member = ${event.member}, Sending quit message \"$msg\" in $textChannel at $guild"}
 
 							textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(event.guild, event.member), guild, customTokens)!!).queue {
-								if (serverConfig.joinLeaveConfig.deleteLeaveMessagesAfter != null)
-									it.delete().queueAfter(serverConfig.joinLeaveConfig.deleteLeaveMessagesAfter!!, TimeUnit.SECONDS)
+								if (legacyServerConfig.joinLeaveConfig.deleteLeaveMessagesAfter != null)
+									it.delete().queueAfter(legacyServerConfig.joinLeaveConfig.deleteLeaveMessagesAfter!!, TimeUnit.SECONDS)
 							}
 						}
 					} else {

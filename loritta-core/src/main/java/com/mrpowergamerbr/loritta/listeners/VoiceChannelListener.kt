@@ -63,9 +63,10 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 
 			mutex.withLock {
 				// Carregar a configuração do servidor
-				val config = loritta.getServerConfigForGuild(channelJoined.guild.id)
+				val serverConfig = loritta.getOrCreateServerConfig(channelJoined.guild.idLong)
+				val legacyServerConfig = loritta.getServerConfigForGuild(channelJoined.guild.id)
 
-				EventLog.onVoiceJoin(config, member, channelJoined)
+				EventLog.onVoiceJoin(serverConfig, legacyServerConfig, member, channelJoined)
 			}
 		}
 	}
@@ -75,9 +76,10 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 			val mutex = mutexes.getOrPut(channelLeft.idLong) { Mutex() }
 
 			mutex.withLock {
-				val config = loritta.getServerConfigForGuild(channelLeft.guild.id)
+				val serverConfig = loritta.getOrCreateServerConfig(channelLeft.guild.idLong)
+				val legacyServerConfig = loritta.getServerConfigForGuild(channelLeft.guild.id)
 
-				EventLog.onVoiceLeave(config, member, channelLeft)
+				EventLog.onVoiceLeave(serverConfig, legacyServerConfig, member, channelLeft)
 			}
 		}
 	}

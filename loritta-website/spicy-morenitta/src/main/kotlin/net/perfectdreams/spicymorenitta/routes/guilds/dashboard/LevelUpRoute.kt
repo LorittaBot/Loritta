@@ -1,4 +1,4 @@
-package net.perfectdreams.spicymorenitta.routes
+package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
 
 import LoriDashboard
 import jq
@@ -8,14 +8,14 @@ import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.stream.createHTML
 import kotlinx.serialization.ImplicitReflectionSerializer
-import kotlinx.serialization.json.JSON
-import kotlinx.serialization.parse
 import legacyLocale
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.locale
-import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.createToggle
+import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
 import net.perfectdreams.spicymorenitta.utils.*
+import net.perfectdreams.spicymorenitta.utils.DashboardUtils.launchWithLoadingScreenAndFixContent
+import net.perfectdreams.spicymorenitta.utils.DashboardUtils.switchContentAndFixLeftSidebarScroll
 import net.perfectdreams.spicymorenitta.utils.levelup.LevelUpAnnouncementType
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import net.perfectdreams.spicymorenitta.views.dashboard.Stuff
@@ -44,395 +44,394 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 		noXpChannels.clear()
 	}
 
+	override val keepLoadingScreen: Boolean
+		get() = true
+
 	@ImplicitReflectionSerializer
 	override fun onRender(call: ApplicationCall) {
-		m.fixLeftSidebarScroll {
-			super.onRender(call)
-		}
+		launchWithLoadingScreenAndFixContent(call) {
+			val guild = DashboardUtils.retrieveGuildConfiguration(call.parameters["guildid"]!!)
+			switchContentAndFixLeftSidebarScroll(call)
 
-		document.select<HTMLButtonElement>("#save-button").onClick {
-			prepareSave()
-		}
-
-		val optionData = mutableListOf<dynamic>()
-
-		val premiumAsJson = document.getElementById("badge-json")?.innerHTML!!
-
-		val guild = JSON.nonstrict.parse<ServerConfig.Guild>(premiumAsJson)
-
-		val stuff = document.select<HTMLDivElement>("#level-stuff")
-
-		stuff.append {
-			generateLevelUpAnnouncementSection(guild)
-
-			hr {}
-
-			div {
-				h5(classes = "section-title") {
-					+ locale["$LOCALE_PREFIX.roleGiveType.title"]
-				}
-
-				createRadioButton(
-						"role-level-up-style",
-						locale["$LOCALE_PREFIX.roleGiveType.types.stack.title"],
-						locale["$LOCALE_PREFIX.roleGiveType.types.stack.description"],
-						"STACK",
-						guild.levelUpConfig.roleGiveType == "STACK"
-				)
-
-				createRadioButton(
-						"role-level-up-style",
-						locale["$LOCALE_PREFIX.roleGiveType.types.remove.title"],
-						locale["$LOCALE_PREFIX.roleGiveType.types.remove.description"],
-						"REMOVE",
-						guild.levelUpConfig.roleGiveType == "REMOVE"
-				)
+			document.select<HTMLButtonElement>("#save-button").onClick {
+				prepareSave()
 			}
 
-			hr {}
+			val optionData = mutableListOf<dynamic>()
 
-			div {
-				h5(classes = "section-title") {
-					+ locale["$LOCALE_PREFIX.roleByXpLevel.title"]
-				}
+			val stuff = document.select<HTMLDivElement>("#level-stuff")
 
-				locale.getList("$LOCALE_PREFIX.roleByXpLevel.description").forEach {
-					p {
-						+ it
+			stuff.append {
+				generateLevelUpAnnouncementSection(guild)
+
+				hr {}
+
+				div {
+					h5(classes = "section-title") {
+						+ locale["$LOCALE_PREFIX.roleGiveType.title"]
 					}
+
+					createRadioButton(
+							"role-level-up-style",
+							locale["$LOCALE_PREFIX.roleGiveType.types.stack.title"],
+							locale["$LOCALE_PREFIX.roleGiveType.types.stack.description"],
+							"STACK",
+							guild.levelUpConfig.roleGiveType == "STACK"
+					)
+
+					createRadioButton(
+							"role-level-up-style",
+							locale["$LOCALE_PREFIX.roleGiveType.types.remove.title"],
+							locale["$LOCALE_PREFIX.roleGiveType.types.remove.description"],
+							"REMOVE",
+							guild.levelUpConfig.roleGiveType == "REMOVE"
+					)
 				}
 
-				div(classes = "add-role") {
-					locale.buildAsHtml(locale["$LOCALE_PREFIX.roleByXpLevel.whenUserGetsToXp"], { num ->
-						if (num == 0) {
-							input(InputType.number, classes = "required-xp") {
-								placeholder = "1000"
-								min = "0"
-								max = "10000000"
-								step = "1000"
+				hr {}
 
-								onChangeFunction = {
-									document.select<HTMLSpanElement>("#give-role-level-calc")
-											.innerText = ((document.select<HTMLInputElement>(".add-role .required-xp")
-											.valueOrPlaceholderIfEmpty("1000").toLong() / 1000).toString())
+				div {
+					h5(classes = "section-title") {
+						+ locale["$LOCALE_PREFIX.roleByXpLevel.title"]
+					}
+
+					locale.getList("$LOCALE_PREFIX.roleByXpLevel.description").forEach {
+						p {
+							+ it
+						}
+					}
+
+					div(classes = "add-role") {
+						locale.buildAsHtml(locale["$LOCALE_PREFIX.roleByXpLevel.whenUserGetsToXp"], { num ->
+							if (num == 0) {
+								input(InputType.number, classes = "required-xp") {
+									placeholder = "1000"
+									min = "0"
+									max = "10000000"
+									step = "1000"
+
+									onChangeFunction = {
+										document.select<HTMLSpanElement>("#give-role-level-calc")
+												.innerText = ((document.select<HTMLInputElement>(".add-role .required-xp")
+												.valueOrPlaceholderIfEmpty("1000").toLong() / 1000).toString())
+									}
+								}
+							}
+
+							if (num == 1) {
+								span {
+									id = "give-role-level-calc"
+									+ "0"
+								}
+							}
+
+							if (num == 2) {
+								select {
+									id = "choose-role"
+									style = "width: 320px;"
+								}
+							}
+						}) { str ->
+							+ str
+						}
+
+						+ " "
+						button(classes = "button-discord button-discord-info pure-button") {
+							+ locale["loritta.add"]
+
+							onClickFunction = {
+								if (rolesByExperience.size >= 15) {
+									Stuff.showPremiumFeatureModal()
+								} else {
+									addRoleToRoleByExperienceList(
+											guild,
+											ServerConfig.RoleByExperience(
+													document.select<HTMLInputElement>(".add-role .required-xp")
+															.valueOrPlaceholderIfEmpty("1000"),
+													listOf(
+															document.select<HTMLSelectElement>("#choose-role").value
+													)
+											)
+									)
 								}
 							}
 						}
-
-						if (num == 1) {
-							span {
-								id = "give-role-level-calc"
-								+ "0"
-							}
-						}
-
-						if (num == 2) {
-							select {
-								id = "choose-role"
-								style = "width: 320px;"
-							}
-						}
-					}) { str ->
-						+ str
 					}
 
-					+ " "
-					button(classes = "button-discord button-discord-info pure-button") {
-						+ locale["loritta.add"]
+					div(classes = "roles-by-xp-list list-wrapper") {}
+				}
 
-						onClickFunction = {
-							if (rolesByExperience.size >= 15) {
-								Stuff.showPremiumFeatureModal()
-							} else {
-								addRoleToRoleByExperienceList(
+				hr {}
+
+				div {
+					h5(classes = "section-title") {
+						+ locale["$LOCALE_PREFIX.customRoleRate.title"]
+					}
+
+					locale.getList("$LOCALE_PREFIX.customRoleRate.description").forEach {
+						p {
+							+ it
+						}
+					}
+
+					div(classes = "add-custom-rate-role") {
+						locale.buildAsHtml(locale["$LOCALE_PREFIX.customRoleRate.whenUserHasRoleRate"], { num ->
+							if (num == 0) {
+								select {
+									id = "choose-role-custom-rate"
+									style = "width: 320px;"
+								}
+							}
+
+							if (num == 1) {
+								input(InputType.number, classes = "xp-rate") {
+									placeholder = "1.0"
+									min = "0"
+									max = "10"
+									step = "0.05"
+								}
+							}
+						}) { str ->
+							+ str
+						}
+
+						+ " "
+						button(classes = "button-discord button-discord-info pure-button") {
+							+ locale["loritta.add"]
+
+							onClickFunction = {
+								addRoleToRolesWithCustomRateList(
 										guild,
-										ServerConfig.RoleByExperience(
-												document.select<HTMLInputElement>(".add-role .required-xp")
-														.valueOrPlaceholderIfEmpty("1000"),
-												listOf(
-														document.select<HTMLSelectElement>("#choose-role").value
-												)
+										ServerConfig.ExperienceRoleRate(
+												document.select<HTMLSelectElement>("#choose-role-custom-rate").value.toLong(),
+												document.select<HTMLInputElement>(".add-custom-rate-role .xp-rate")
+														.valueOrPlaceholderIfEmpty("1.0").toDouble()
 										)
 								)
 							}
 						}
 					}
-				}
 
-				div(classes = "roles-by-xp-list list-wrapper") {}
-			}
-
-			hr {}
-
-			div {
-				h5(classes = "section-title") {
-					+ locale["$LOCALE_PREFIX.customRoleRate.title"]
-				}
-
-				locale.getList("$LOCALE_PREFIX.customRoleRate.description").forEach {
-					p {
-						+ it
-					}
-				}
-
-				div(classes = "add-custom-rate-role") {
-					locale.buildAsHtml(locale["$LOCALE_PREFIX.customRoleRate.whenUserHasRoleRate"], { num ->
-						if (num == 0) {
-							select {
-								id = "choose-role-custom-rate"
-								style = "width: 320px;"
-							}
-						}
-
-						if (num == 1) {
-							input(InputType.number, classes = "xp-rate") {
-								placeholder = "1.0"
-								min = "0"
-								max = "10"
-								step = "0.05"
-							}
-						}
-					}) { str ->
-						+ str
-					}
-
-					+ " "
-					button(classes = "button-discord button-discord-info pure-button") {
-						+ locale["loritta.add"]
-
-						onClickFunction = {
-							addRoleToRolesWithCustomRateList(
-									guild,
-									ServerConfig.ExperienceRoleRate(
-											document.select<HTMLSelectElement>("#choose-role-custom-rate").value.toLong(),
-											document.select<HTMLInputElement>(".add-custom-rate-role .xp-rate")
-													.valueOrPlaceholderIfEmpty("1.0").toDouble()
-									)
-							)
-						}
-					}
-				}
-
-				div(classes = "roles-with-custom-rate-list list-wrapper") {}
-			}
-
-			hr {}
-
-			div {
-				h5(classes = "section-title") {
-					+ locale["$LOCALE_PREFIX.noXpRoles.title"]
-				}
-
-				locale.getList("$LOCALE_PREFIX.noXpRoles.description").forEach {
-					p {
-						+ it
-					}
-				}
-
-				select {
-					id = "choose-role-no-xp"
-					style = "width: 320px;"
-				}
-
-				button(classes = "button-discord button-discord-info pure-button") {
-					+ locale["loritta.add"]
-
-					onClickFunction = {
-						val role = document.select<HTMLSelectElement>("#choose-role-no-xp").value
-
-						noXpRoles.add(role.toLong())
-
-						updateNoXpRoleList(guild)
-					}
-				}
-
-				div(classes = "list-wrapper") {
-					id = "choose-role-no-xp-list"
-				}
-			}
-
-			hr {}
-
-			div {
-				h5(classes = "section-title") {
-					+ locale["$LOCALE_PREFIX.noXpChannels.title"]
-				}
-
-				locale.getList("$LOCALE_PREFIX.noXpChannels.description").forEach {
-					p {
-						+ it
-					}
-				}
-
-				select {
-					id = "choose-channel-no-xp"
-					style = "width: 320px;"
-
-					for (channel in guild.textChannels) {
-						option {
-							+ ("#${channel.name}")
-
-							value = channel.id
-						}
-					}
-				}
-
-				button(classes = "button-discord button-discord-info pure-button") {
-					+ locale["loritta.add"]
-
-					onClickFunction = {
-						val role = document.select<HTMLSelectElement>("#choose-channel-no-xp").value
-
-						noXpChannels.add(role.toLong())
-
-						updateNoXpChannelsList(guild)
-					}
-				}
-
-				div(classes = "list-wrapper") {
-					id = "choose-channel-no-xp-list"
+					div(classes = "roles-with-custom-rate-list list-wrapper") {}
 				}
 
 				hr {}
 
-				button(classes = "button-discord button-discord-attention pure-button") {
-					i(classes = "fas fa-redo") {}
+				div {
+					h5(classes = "section-title") {
+						+ locale["$LOCALE_PREFIX.noXpRoles.title"]
+					}
 
-					+ " ${locale["$LOCALE_PREFIX.resetXp.title"]}"
-
-					onClickFunction = {
-						val modal = TingleModal(
-								TingleOptions(
-										footer = true,
-										cssClass = arrayOf("tingle-modal--overflow")
-								)
-						)
-
-						modal.addFooterBtn("<i class=\"fas fa-redo\"></i> ${locale["$LOCALE_PREFIX.resetXp.clearAll"]}", "button-discord button-discord-attention pure-button button-discord-modal") {
-							modal.close()
-
-							SaveUtils.prepareSave("reset_xp", {})
+					locale.getList("$LOCALE_PREFIX.noXpRoles.description").forEach {
+						p {
+							+ it
 						}
+					}
 
-						modal.addFooterBtn("<i class=\"fas fa-times\"></i> ${locale["$LOCALE_PREFIX.resetXp.cancel"]}", "button-discord pure-button button-discord-modal button-discord-modal-secondary-action") {
-							modal.close()
+					select {
+						id = "choose-role-no-xp"
+						style = "width: 320px;"
+					}
+
+					button(classes = "button-discord button-discord-info pure-button") {
+						+ locale["loritta.add"]
+
+						onClickFunction = {
+							val role = document.select<HTMLSelectElement>("#choose-role-no-xp").value
+
+							noXpRoles.add(role.toLong())
+
+							updateNoXpRoleList(guild)
 						}
+					}
 
-						modal.setContent(
-								createHTML().div {
-									div(classes = "category-name") {
-										+ locale["$LOCALE_PREFIX.resetXp.areYouSure"]
-									}
+					div(classes = "list-wrapper") {
+						id = "choose-role-no-xp-list"
+					}
+				}
 
-									div {
-										style = "text-align: center;"
+				hr {}
 
-										img(src = "https://loritta.website/assets/img/fanarts/l6.png") {
-											width = "250"
+				div {
+					h5(classes = "section-title") {
+						+ locale["$LOCALE_PREFIX.noXpChannels.title"]
+					}
+
+					locale.getList("$LOCALE_PREFIX.noXpChannels.description").forEach {
+						p {
+							+ it
+						}
+					}
+
+					select {
+						id = "choose-channel-no-xp"
+						style = "width: 320px;"
+
+						for (channel in guild.textChannels) {
+							option {
+								+ ("#${channel.name}")
+
+								value = channel.id
+							}
+						}
+					}
+
+					button(classes = "button-discord button-discord-info pure-button") {
+						+ locale["loritta.add"]
+
+						onClickFunction = {
+							val role = document.select<HTMLSelectElement>("#choose-channel-no-xp").value
+
+							noXpChannels.add(role.toLong())
+
+							updateNoXpChannelsList(guild)
+						}
+					}
+
+					div(classes = "list-wrapper") {
+						id = "choose-channel-no-xp-list"
+					}
+
+					hr {}
+
+					button(classes = "button-discord button-discord-attention pure-button") {
+						i(classes = "fas fa-redo") {}
+
+						+ " ${locale["$LOCALE_PREFIX.resetXp.title"]}"
+
+						onClickFunction = {
+							val modal = TingleModal(
+									TingleOptions(
+											footer = true,
+											cssClass = arrayOf("tingle-modal--overflow")
+									)
+							)
+
+							modal.addFooterBtn("<i class=\"fas fa-redo\"></i> ${locale["$LOCALE_PREFIX.resetXp.clearAll"]}", "button-discord button-discord-attention pure-button button-discord-modal") {
+								modal.close()
+
+								SaveUtils.prepareSave("reset_xp", {})
+							}
+
+							modal.addFooterBtn("<i class=\"fas fa-times\"></i> ${locale["$LOCALE_PREFIX.resetXp.cancel"]}", "button-discord pure-button button-discord-modal button-discord-modal-secondary-action") {
+								modal.close()
+							}
+
+							modal.setContent(
+									createHTML().div {
+										div(classes = "category-name") {
+											+ locale["$LOCALE_PREFIX.resetXp.areYouSure"]
 										}
 
-										locale.getList("$LOCALE_PREFIX.resetXp.description").forEach {
-											p {
-												+ it
+										div {
+											style = "text-align: center;"
+
+											img(src = "https://loritta.website/assets/img/fanarts/l6.png") {
+												width = "250"
+											}
+
+											locale.getList("$LOCALE_PREFIX.resetXp.description").forEach {
+												p {
+													+ it
+												}
 											}
 										}
 									}
-								}
-						)
-						modal.open()
+							)
+							modal.open()
+						}
 					}
 				}
 			}
-		}
 
-		for (it in guild.roles/* .filter { !it.isPublicRole } */) {
-			val option = object {}.asDynamic()
-			option.id = it.id
-			var text = "<span style=\"font-weight: 600;\">${it.name}</span>"
+			for (it in guild.roles/* .filter { !it.isPublicRole } */) {
+				val option = object {}.asDynamic()
+				option.id = it.id
+				var text = "<span style=\"font-weight: 600;\">${it.name}</span>"
 
-			val color = it.getColor()
+				val color = it.getColor()
 
-			if (color != null) {
-				text = "<span style=\"font-weight: 600; color: rgb(${color.red}, ${color.green}, ${color.blue})\">${it.name}</span>"
-			}
-
-			option.text = text
-
-			/* if (serverConfig.autoroleConfig.roles.contains(it.id))
-			continue */
-
-			if (!it.canInteract || it.isManaged) {
-				if (it.isManaged) {
-					option.text = "${text} <span class=\"keyword\" style=\"background-color: rgb(225, 149, 23);\">${legacyLocale["DASHBOARD_RoleByIntegration"]}</span>"
-				} else {
-					option.text = "${text} <span class=\"keyword\" style=\"background-color: rgb(231, 76, 60);\">${legacyLocale["DASHBOARD_NoPermission"]}</span>"
+				if (color != null) {
+					text = "<span style=\"font-weight: 600; color: rgb(${color.red}, ${color.green}, ${color.blue})\">${it.name}</span>"
 				}
+
+				option.text = text
+
+				/* if (serverConfig.autoroleConfig.roles.contains(it.id))
+				continue */
+
+				if (!it.canInteract || it.isManaged) {
+					if (it.isManaged) {
+						option.text = "${text} <span class=\"keyword\" style=\"background-color: rgb(225, 149, 23);\">${legacyLocale["DASHBOARD_RoleByIntegration"]}</span>"
+					} else {
+						option.text = "${text} <span class=\"keyword\" style=\"background-color: rgb(231, 76, 60);\">${legacyLocale["DASHBOARD_NoPermission"]}</span>"
+					}
+				}
+
+				optionData.add(option)
 			}
 
-			optionData.add(option)
-		}
+			val options = object {}.asDynamic()
 
-		val options = object {}.asDynamic()
+			options.data = optionData.toTypedArray()
+			options.escapeMarkup = { str: dynamic ->
+				str
+			}
 
-		options.data = optionData.toTypedArray()
-		options.escapeMarkup = { str: dynamic ->
-			str
-		}
+			jq("#choose-role-no-xp").asDynamic().select2(
+					options
+			)
 
-		jq("#choose-role-no-xp").asDynamic().select2(
-				options
-		)
+			jq("#choose-role").asDynamic().select2(
+					options
+			)
 
-		jq("#choose-role").asDynamic().select2(
-				options
-		)
+			jq("#choose-role-custom-rate").asDynamic().select2(
+					options
+			)
 
-		jq("#choose-role-custom-rate").asDynamic().select2(
-				options
-		)
+			val roleList = guild.roles
 
-		val roleList = guild.roles
+			roleList.forEach {
+				addRoleToAutoroleList(it)
+			}
 
-		roleList.forEach {
-			addRoleToAutoroleList(it)
-		}
+			guild.levelUpConfig.rolesByExperience.forEach {
+				addRoleToRoleByExperienceList(guild, it)
+			}
 
-		guild.levelUpConfig.rolesByExperience.forEach {
-			addRoleToRoleByExperienceList(guild, it)
-		}
+			guild.levelUpConfig.experienceRoleRates.forEach {
+				addRoleToRolesWithCustomRateList(guild, it)
+			}
 
-		guild.levelUpConfig.experienceRoleRates.forEach {
-			addRoleToRolesWithCustomRateList(guild, it)
-		}
+			noXpRoles.addAll(guild.levelUpConfig.noXpRoles)
+			noXpChannels.addAll(guild.levelUpConfig.noXpChannels)
+			updateNoXpRoleList(guild)
+			updateNoXpChannelsList(guild)
 
-		noXpRoles.addAll(guild.levelUpConfig.noXpRoles)
-		noXpChannels.addAll(guild.levelUpConfig.noXpChannels)
-		updateNoXpRoleList(guild)
-		updateNoXpChannelsList(guild)
-
-		LoriDashboard.configureTextArea(
-				jq("#announcement-message"),
-				true,
-				null,
-				false,
-				null,
-				true,
-				Placeholders.DEFAULT_PLACEHOLDERS.toMutableMap().apply {
-					put("previous-level", "Qual era o nível do usuário antes dele ter passado de nível")
-					put("previous-xp", "Quanta experiência o usuário tinha antes dele ter passado de nível")
-					put("level", "O novo nível que o usuário está")
-					put("xp", "A nova quantidade de experiência que o usuário tem")
-				},
-				customTokens = mapOf(
-						"previous-level" to "99",
-						"previous-xp" to "99987",
-						"level" to "100",
-						"xp" to "100002"
-				),
-				showTemplates = true,
-				templates = mapOf(
-						locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.default.title"] to locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.default.content", "<a:lori_yay_wobbly:638040459721310238>"],
-						locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.embed.title"] to """{
+			LoriDashboard.configureTextArea(
+					jq("#announcement-message"),
+					true,
+					null,
+					false,
+					null,
+					true,
+					Placeholders.DEFAULT_PLACEHOLDERS.toMutableMap().apply {
+						put("previous-level", "Qual era o nível do usuário antes dele ter passado de nível")
+						put("previous-xp", "Quanta experiência o usuário tinha antes dele ter passado de nível")
+						put("level", "O novo nível que o usuário está")
+						put("xp", "A nova quantidade de experiência que o usuário tem")
+					},
+					customTokens = mapOf(
+							"previous-level" to "99",
+							"previous-xp" to "99987",
+							"level" to "100",
+							"xp" to "100002"
+					),
+					showTemplates = true,
+					templates = mapOf(
+							locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.default.title"] to locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.default.content", "<a:lori_yay_wobbly:638040459721310238>"],
+							locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.embed.title"] to """{
   "content":"{@user}",
     "embed":{
     "color":-12591736,
@@ -441,10 +440,11 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
     "footer": { "text": "${locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.embed.footer"]}" }
   }
 }"""
-				)
-		)
+					)
+			)
 
-		updateDisabledSections()
+			updateDisabledSections()
+		}
 	}
 
 	fun updateDisabledSections() {

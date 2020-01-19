@@ -25,7 +25,7 @@ class DemonCommand : AbstractCommand("demon", listOf("demônio", "demonio", "dem
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
-		val file = DemonGIF.getGIF(contextImage, context.config.guildId)
+		val file = DemonGIF.getGIF(contextImage, context.legacyConfig.guildId)
 
 		MiscUtils.optimizeGIF(file)
 		context.sendFile(file, "demon.gif", context.getAsMention(true))

@@ -67,7 +67,7 @@ class TextChannelsPayload : ConfigPayloadType("text_channels") {
 				}
 
 				if (FeatureFlags.isEnabled("member-counter-update"))
-					DiscordListener.queueTextChannelTopicUpdates(guild, legacyServerConfig, true)
+					DiscordListener.queueTextChannelTopicUpdates(guild, serverConfig, legacyServerConfig, true)
 			} else {
 				config.memberCounterConfig = null
 			}

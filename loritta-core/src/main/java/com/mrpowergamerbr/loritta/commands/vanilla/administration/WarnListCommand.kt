@@ -64,7 +64,7 @@ class WarnListCommand : AbstractCommand("punishmentlist", listOf("listadeavisos"
 				setTitle("\uD83D\uDE94 Lista de Avisos")
 
 				val warn = warns.size
-				val warnPunishments = context.config.moderationConfig.punishmentActions
+				val warnPunishments = context.legacyConfig.moderationConfig.punishmentActions
 				val nextPunishment = warnPunishments.firstOrNull { it.warnCount == warn + 1 }
 
 				if (nextPunishment != null) {

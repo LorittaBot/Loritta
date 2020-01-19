@@ -11,7 +11,7 @@ class ArrayColumnType(private val type: ColumnType) : ColumnType() {
 		append(" ARRAY")
 	}
 	override fun valueToDB(value: Any?): Any? {
-		if (value is kotlin.Array<*>) {
+		if (value is Array<*>) {
 			val columnType = type.sqlType().split("(")[0]
 			return TransactionManager.currentOrNull()?.connection?.createArrayOf(columnType, value)
 		} else {
@@ -26,6 +26,18 @@ class ArrayColumnType(private val type: ColumnType) : ColumnType() {
 			return value
 		}
 		error("Array does not support for this database")
+	}
+
+	override fun notNullValueToDB(value: Any): Any {
+		if (value is Array<*>) {
+			if (value.isEmpty())
+				return "'{}'"
+
+			val columnType = type.sqlType().split("(")[0]
+			return TransactionManager.currentOrNull()?.connection?.createArrayOf(columnType, value) ?: error("Can't create non null array for $value")
+		} else {
+			return super.notNullValueToDB(value)
+		}
 	}
 }
 

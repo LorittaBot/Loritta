@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta
 
 import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.BirthdayConfigs
 import com.mrpowergamerbr.loritta.tables.Profiles
@@ -67,15 +68,15 @@ class BirthdaysRank(val m: QuirkyStuff, val config: QuirkyConfig) {
 		for (resultRow in resultRows) {
 			val guildId = resultRow[ServerConfigs.id].value
 			val guild = lorittaShards.getGuildById(guildId) ?: continue
-			val serverConfig = loritta.getServerConfigForGuild(guildId.toString())
+			val serverConfig = ServerConfig.wrapRow(resultRow)
 
 			updateBirthdayRank(guild, serverConfig, resultRow)
 		}
 	}
 
-	suspend fun updateBirthdayRank(guild: Guild) = updateBirthdayRank(guild, loritta.getServerConfigForGuild(guild.id))
+	suspend fun updateBirthdayRank(guild: Guild) = updateBirthdayRank(guild, loritta.getOrCreateServerConfig(guild.idLong))
 
-	suspend fun updateBirthdayRank(guild: Guild, serverConfig: MongoServerConfig) {
+	suspend fun updateBirthdayRank(guild: Guild, serverConfig: ServerConfig) {
 		val config = transaction(Databases.loritta) {
 			(ServerConfigs innerJoin BirthdayConfigs)
 					.select {
@@ -89,7 +90,7 @@ class BirthdaysRank(val m: QuirkyStuff, val config: QuirkyConfig) {
 		updateBirthdayRank(guild, serverConfig, config)
 	}
 
-	suspend  fun updateBirthdayRank(guild: Guild, serverConfig: MongoServerConfig, config: ResultRow) {
+	suspend  fun updateBirthdayRank(guild: Guild, serverConfig: ServerConfig, config: ResultRow) {
 		val channelId = config[BirthdayConfigs.channelId] ?: return
 		val channel = guild.getTextChannelById(channelId) ?: return
 

@@ -23,20 +23,27 @@ class MongoServerConfig @BsonCreator constructor(
 		@get:[BsonIgnore]
 		val guildId: String // Guild ID
 ) {
+	@Deprecated("Please use ServerConfigs' fields")
 	var commandPrefix = "+" // Command Prefix (example: +help or .help or etc)
 	var disabledCommands = ArrayList<String>() // Comandos desativados
+	@Deprecated("Please use ServerConfigs' fields")
 	var deleteMessageAfterCommand = false // Deletar mensagem do comando após executar ele?
+	@Deprecated("Please use ServerConfigs' fields")
 	var localeId = "default"
 
 	var commandOptions = HashMap<String, CommandOptions>() // Command Options
 	// Os command options são salvos assim:
 	// AbstractCommand.getClass().getSimpleName() - CommandOptions
 
+	@Deprecated("Please use ServerConfigs' fields")
 	var warnOnMissingPermission = false // Avisar quando a Loritta não tem permissão para falar em um canal específico
+	@Deprecated("Please use ServerConfigs' fields")
 	var warnOnUnknownCommand = true
+	@Deprecated("Please use ServerConfigs' fields")
 	var blacklistedChannels = ArrayList<String>() // Canais em que os comandos são bloqueados
+	@Deprecated("Please use ServerConfigs' fields")
 	var warnIfBlacklisted = false
-	var deleteMessagesAfter: Long? = null
+	@Deprecated("Please use ServerConfigs' fields")
 	var blacklistWarning = "{@user} Você não pode usar comandos no {@channel}, bobinho(a)!"
 	var nashornCommands = ArrayList<NashornCommand>() // Comandos customizados
 

@@ -107,7 +107,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 			localeId = newLanguage?.locale?.id ?: localeId
 
 			context.config.localeId = localeId
-			loritta save context.config
+			loritta save context.legacyConfig
 
 			val newLocale = loritta.getLocaleById(localeId)
 			if (localeId == "default") {

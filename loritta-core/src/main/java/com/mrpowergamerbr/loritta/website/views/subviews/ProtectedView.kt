@@ -129,7 +129,7 @@ abstract class ProtectedView : AbstractView() {
 						if (guild != null) {
 							logger.info { "Guild ${guild} was successfully found after $tries tries! Yay!!" }
 
-							val serverConfig = loritta.getServerConfigForGuild(guild.id)
+							val serverConfig = loritta.getOrCreateServerConfig(guild.idLong)
 
 							// Agora nós iremos pegar o locale do servidor
 							val locale = loritta.getLegacyLocaleById(serverConfig.localeId)

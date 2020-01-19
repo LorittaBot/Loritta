@@ -41,7 +41,7 @@ class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category =
 				return
 			}
 
-			val userData = context.config.getUserData(user.idLong)
+			val userData = context.legacyConfig.getUserData(user.idLong)
 
 			transaction(Databases.loritta) {
 				userData.xp = newXp

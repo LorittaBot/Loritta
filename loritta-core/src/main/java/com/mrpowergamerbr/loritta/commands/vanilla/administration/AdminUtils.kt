@@ -88,7 +88,7 @@ object AdminUtils {
 			)
 		}
 
-		if (!context.config.getUserData(context.userHandle.idLong).quickPunishment) {
+		if (!context.legacyConfig.getUserData(context.userHandle.idLong).quickPunishment) {
 			replies += LoriReply(
 					context.locale["${LOCALE_PREFIX}.skipConfirmationTip", "`${context.config.commandPrefix}quickpunishment`"],
 					mentionUser = false
@@ -137,7 +137,7 @@ object AdminUtils {
 		val pipedReason = reason.split("|")
 
 		var usingPipedArgs = false
-		var skipConfirmation = context.config.getUserData(context.userHandle.idLong).quickPunishment
+		var skipConfirmation = context.legacyConfig.getUserData(context.userHandle.idLong).quickPunishment
 		var delDays = 7
 
 		var silent = false

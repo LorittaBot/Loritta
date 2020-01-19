@@ -1,4 +1,4 @@
-package net.perfectdreams.spicymorenitta.routes
+package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
 
 import LoriDashboard
 import io.ktor.client.request.get
@@ -11,13 +11,15 @@ import kotlinx.html.stream.createHTML
 import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
-import kotlinx.serialization.parse
 import kotlinx.serialization.parseList
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
+import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
 import net.perfectdreams.spicymorenitta.utils.*
+import net.perfectdreams.spicymorenitta.utils.DashboardUtils.launchWithLoadingScreenAndFixContent
+import net.perfectdreams.spicymorenitta.utils.DashboardUtils.switchContentAndFixLeftSidebarScroll
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import org.w3c.dom.*
 import kotlin.browser.document
@@ -45,28 +47,20 @@ class RssFeedsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/
 
 	@ImplicitReflectionSerializer
 	override fun onRender(call: ApplicationCall) {
-		m.showLoadingScreen()
-
-		SpicyMorenitta.INSTANCE.launch {
+		launchWithLoadingScreenAndFixContent(call) {
 			val result = http.get<String> {
 				url("${window.location.origin}/api/v1/rss/default")
 			}
 
-			m.hideLoadingScreen()
-
-			m.fixLeftSidebarScroll {
-				super.onRender(call)
-			}
-
-			defaultFeedEntries.addAll(JSON.nonstrict.parseList<DefaultRssFeedEntry>(result))
+			defaultFeedEntries.addAll(JSON.nonstrict.parseList(result))
 
 			document.select<HTMLButtonElement>("#save-button").onClick {
 				prepareSave()
 			}
 
-			val premiumAsJson = document.getElementById("badge-json")?.innerHTML!!
+			val guild = DashboardUtils.retrieveGuildConfiguration(call.parameters["guildid"]!!)
 
-			val guild = JSON.nonstrict.parse<ServerConfig.Guild>(premiumAsJson)
+			switchContentAndFixLeftSidebarScroll(call)
 
 			val stuff = document.select<HTMLDivElement>("#level-stuff")
 

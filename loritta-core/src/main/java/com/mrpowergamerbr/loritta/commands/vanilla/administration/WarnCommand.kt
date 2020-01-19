@@ -72,7 +72,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 
 			val warnCallback: (suspend (Message?, Boolean) -> Unit) = { message, isSilent ->
 				if (!isSilent) {
-					if (context.config.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
+					if (context.legacyConfig.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
 						try {
 							val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, locale["WARN_PunishAction"], reason)
 
@@ -84,12 +84,12 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 						}
 					}
 
-					if (context.config.moderationConfig.sendToPunishLog) {
-						val textChannel = context.guild.getTextChannelByNullableId(context.config.moderationConfig.punishmentLogChannelId)
+					if (context.legacyConfig.moderationConfig.sendToPunishLog) {
+						val textChannel = context.guild.getTextChannelByNullableId(context.legacyConfig.moderationConfig.punishmentLogChannelId)
 
 						if (textChannel != null && textChannel.canTalk()) {
 							val message = MessageUtils.generateMessage(
-									context.config.moderationConfig.punishmentLogMessage,
+									context.legacyConfig.moderationConfig.punishmentLogMessage,
 									listOf(user),
 									context.guild,
 									mutableMapOf(
@@ -119,7 +119,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 
 				for (punishment in punishments) {
 					when {
-						punishment.punishmentAction == ModerationConfig.PunishmentAction.BAN -> BanCommand.ban(context.config, context.guild, context.userHandle, locale, user, reason, isSilent, punishment.customMetadata1)
+						punishment.punishmentAction == ModerationConfig.PunishmentAction.BAN -> BanCommand.ban(context.legacyConfig, context.guild, context.userHandle, locale, user, reason, isSilent, punishment.customMetadata1)
 						member != null && punishment.punishmentAction == ModerationConfig.PunishmentAction.SOFT_BAN -> SoftBanCommand.softBan(context, locale, member, 7, user, reason, isSilent)
 						member != null && punishment.punishmentAction == ModerationConfig.PunishmentAction.KICK -> KickCommand.kick(context, locale, member, user, reason, isSilent)
 						member != null && punishment.punishmentAction == ModerationConfig.PunishmentAction.MUTE -> {
@@ -151,7 +151,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 				return
 			}
 
-			val hasSilent = context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog
+			val hasSilent = context.legacyConfig.moderationConfig.sendPunishmentViaDm || context.legacyConfig.moderationConfig.sendToPunishLog
 			val message = AdminUtils.sendConfirmationMessage(context, user, hasSilent, "warn")
 
 			message.onReactionAddByAuthor(context) {

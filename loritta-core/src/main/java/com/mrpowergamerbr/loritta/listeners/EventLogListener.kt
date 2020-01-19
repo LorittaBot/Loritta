@@ -131,12 +131,13 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					)
 			).iterator().use {
 				while (it.hasNext()) {
-					val config = it.next()
-					val locale = loritta.getLegacyLocaleById(config.localeId)
+					val legacyServerConfig = it.next()
+					val serverConfig = loritta.getOrCreateServerConfig(legacyServerConfig.guildId.toLong())
+					val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 
-					val guild = guilds.first { it.id == config.guildId }
+					val guild = guilds.first { it.id == legacyServerConfig.guildId }
 
-					val textChannel = guild.getTextChannelByNullableId(config.eventLogConfig.eventLogChannelId)
+					val textChannel = guild.getTextChannelByNullableId(legacyServerConfig.eventLogConfig.eventLogChannelId)
 
 					if (textChannel != null && textChannel.canTalk()) {
 						if (!guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
@@ -210,12 +211,13 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						).iterator().use {
 							while (it.hasNext()) {
-								val config = it.next()
-								val locale = loritta.getLegacyLocaleById(config.localeId)
+								val legacyServerConfig = it.next()
+								val serverConfig = loritta.getOrCreateServerConfig(legacyServerConfig.guildId.toLong())
+								val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 
-								val guild = guilds.first { it.id == config.guildId }
+								val guild = guilds.first { it.id == legacyServerConfig.guildId }
 
-								val textChannel = guild.getTextChannelByNullableId(config.eventLogConfig.eventLogChannelId)
+								val textChannel = guild.getTextChannelByNullableId(legacyServerConfig.eventLogConfig.eventLogChannelId)
 
 								if (textChannel != null && textChannel.canTalk()) {
 									if (!guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_EMBED_LINKS))
@@ -297,9 +299,10 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
-			val config = loritta.getServerConfigForGuild(event.guild.id)
-			val locale = loritta.getLegacyLocaleById(config.localeId)
-			val eventLogConfig = config.eventLogConfig
+			val legacyServerConfig = loritta.getServerConfigForGuild(event.guild.id)
+			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
+			val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
+			val eventLogConfig = legacyServerConfig.eventLogConfig
 
 			if (eventLogConfig.isEnabled && eventLogConfig.messageDeleted) {
 				val textChannel = event.guild.getTextChannelByNullableId(eventLogConfig.eventLogChannelId)
@@ -353,9 +356,10 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
-			val config = loritta.getServerConfigForGuild(event.guild.id)
-			val locale = loritta.getLegacyLocaleById(config.localeId)
-			val eventLogConfig = config.eventLogConfig
+			val legacyServerConfig = loritta.getServerConfigForGuild(event.guild.id)
+			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
+			val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
+			val eventLogConfig = legacyServerConfig.eventLogConfig
 
 			if (eventLogConfig.isEnabled && eventLogConfig.messageDeleted) {
 				val textChannel = event.guild.getTextChannelByNullableId(eventLogConfig.eventLogChannelId)
@@ -444,11 +448,12 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 			}
 
-			val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
-			val eventLogConfig = serverConfig.eventLogConfig
+			val legacyServerConfig = loritta.getServerConfigForGuild(event.guild.id)
+			val eventLogConfig = legacyServerConfig.eventLogConfig
 
 			if (eventLogConfig.isEnabled && eventLogConfig.memberBanned) {
 				val textChannel = event.guild.getTextChannelByNullableId(eventLogConfig.eventLogChannelId) ?: return@launch
+				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 				val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 
 				if (!textChannel.canTalk())
@@ -496,8 +501,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				relayTo?.unban(event.user)?.queue()
 			}
 
-			val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
-			val eventLogConfig = serverConfig.eventLogConfig
+			val legacyServerConfig = loritta.getServerConfigForGuild(event.guild.id)
+			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
+			val eventLogConfig = legacyServerConfig.eventLogConfig
 
 			if (eventLogConfig.isEnabled && eventLogConfig.memberUnbanned) {
 				val textChannel = event.guild.getTextChannelByNullableId(eventLogConfig.eventLogChannelId) ?: return@launch
@@ -535,10 +541,11 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
-			val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
-			val eventLogConfig = serverConfig.eventLogConfig
+			val legacyServerConfig = loritta.getServerConfigForGuild(event.guild.id)
+			val eventLogConfig = legacyServerConfig.eventLogConfig
 
 			if (eventLogConfig.isEnabled && eventLogConfig.nicknameChanges) {
+				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 				val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 				val embed = EmbedBuilder()
 				embed.setColor(Color(35, 209, 96))

@@ -73,7 +73,7 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MISC)
 					)
 					return
 				}
-				if (context.config.blacklistedChannels.contains(channel.id) && !context.lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
+				if (context.config.blacklistedChannels.contains(channel.idLong) && !context.lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
 					context.reply(
 							LoriReply(
 									locale["SAY_CommandsCannotBeUsedIn", channel.asMention],

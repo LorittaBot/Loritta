@@ -27,7 +27,6 @@ import java.net.URL
 import java.util.concurrent.ConcurrentHashMap
 import javax.imageio.ImageIO
 
-
 class UpdateStoreItemsTask(val m: FortniteStuff) {
 	companion object {
 		private val logger = KotlinLogging.logger {}
@@ -190,7 +189,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 		guildsWithNotificationsEnabled.forEach {
 			val guild = lorittaShards.getGuildById(it[FortniteServerConfigs.id].value) ?: return@forEach
 			val channel = guild.getTextChannelById(it[FortniteConfigs.channelToAdvertiseNewItems] ?: return@forEach) ?: return@forEach
-			val guildLocaleId = loritta.getServerConfigForGuild(guild.id).localeId
+			val guildLocaleId = loritta.getOrCreateServerConfig(guild.idLong).localeId
 
 			if (guildLocaleId == localeId) {
 				val storeImage = when {

@@ -66,7 +66,7 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context) ?: return
 
 			val banCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
-				UnmuteCommand.unmute(context.config, context.guild, context.userHandle, locale, user, reason, isSilent)
+				UnmuteCommand.unmute(context.legacyConfig, context.guild, context.userHandle, locale, user, reason, isSilent)
 
 				message?.delete()?.queue()
 
@@ -83,7 +83,7 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 				return
 			}
 
-			val hasSilent = context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog
+			val hasSilent = context.legacyConfig.moderationConfig.sendPunishmentViaDm || context.legacyConfig.moderationConfig.sendToPunishLog
 			val message = AdminUtils.sendConfirmationMessage(context, user, hasSilent, "unmute")
 
 			message.onReactionAddByAuthor(context) {

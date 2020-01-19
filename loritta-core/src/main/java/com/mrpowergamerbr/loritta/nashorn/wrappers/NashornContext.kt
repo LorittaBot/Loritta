@@ -36,9 +36,9 @@ class NashornContext(
 	var message: NashornMessage = NashornMessage(context.message)
 	private var sentMessages = 0 // Quantas mensagens foram enviadas, usado para não levar rate limit
 	private var lastMessageSent = 0L // Quando foi a última mensagem enviada
-	var sender: NashornMember = NashornLorittaUser(context.handle, context.config)
+	var sender: NashornMember = NashornLorittaUser(context.handle, context.legacyConfig)
 
-	val nashornGuild = NashornGuild(context.message.guild, context.config)
+	val nashornGuild = NashornGuild(context.message.guild, context.legacyConfig)
 
 	@NashornCommand.NashornDocs("Envia uma mensagem no canal de texto atual, a mensagem será \"@Usuário mensagem\", caso a opção de mencionar usuários do servidor esteja desativada, a menção não aparecerá!",
 	"mensagem",

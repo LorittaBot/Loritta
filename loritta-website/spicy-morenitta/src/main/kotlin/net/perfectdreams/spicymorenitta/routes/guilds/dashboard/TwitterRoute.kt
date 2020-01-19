@@ -1,4 +1,4 @@
-package net.perfectdreams.spicymorenitta.routes
+package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
 
 import LoriDashboard
 import io.ktor.client.request.get
@@ -20,7 +20,10 @@ import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
+import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
 import net.perfectdreams.spicymorenitta.utils.*
+import net.perfectdreams.spicymorenitta.utils.DashboardUtils.launchWithLoadingScreenAndFixContent
+import net.perfectdreams.spicymorenitta.utils.DashboardUtils.switchContentAndFixLeftSidebarScroll
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import org.w3c.dom.*
 import kotlin.browser.document
@@ -49,42 +52,41 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 
 	@ImplicitReflectionSerializer
 	override fun onRender(call: ApplicationCall) {
-		m.fixLeftSidebarScroll {
-			super.onRender(call)
+		launchWithLoadingScreenAndFixContent(call) {
+			val guild = DashboardUtils.retrieveGuildConfiguration(call.parameters["guildid"]!!)
+			switchContentAndFixLeftSidebarScroll(call)
+
+			document.select<HTMLButtonElement>("#save-button").onClick {
+				prepareSave()
+			}
+
+			val premiumAsJson = document.getElementById("badge-json")?.innerHTML!!
+
+			val stuff = document.select<HTMLDivElement>("#level-stuff")
+
+			stuff.append {
+				div(classes = "tracked-twitter-accounts") {}
+
+				hr {}
+			}
+
+			val addEntryButton = document.select<HTMLButtonElement>("#add-new-entry")
+			addEntryButton.onClick {
+				editTrackedTwitterAccount(
+						guild,
+						null,
+						ServerConfig.TrackedTwitterAccount(
+								-1L,
+								-1L,
+								"{link}"
+						)
+				)
+			}
+
+			trackedTwitterAccounts.addAll(guild.trackedTwitterAccounts)
+
+			updateTrackedTwitterAccountsList(guild)
 		}
-
-		document.select<HTMLButtonElement>("#save-button").onClick {
-			prepareSave()
-		}
-
-		val premiumAsJson = document.getElementById("badge-json")?.innerHTML!!
-
-		val guild = JSON.nonstrict.parse<ServerConfig.Guild>(premiumAsJson)
-
-		val stuff = document.select<HTMLDivElement>("#level-stuff")
-
-		stuff.append {
-			div(classes = "tracked-twitter-accounts") {}
-
-			hr {}
-		}
-
-		val addEntryButton = document.select<HTMLButtonElement>("#add-new-entry")
-		addEntryButton.onClick {
-			editTrackedTwitterAccount(
-					guild,
-					null,
-					ServerConfig.TrackedTwitterAccount(
-							-1L,
-							-1L,
-							"{link}"
-					)
-			)
-		}
-
-		trackedTwitterAccounts.addAll(guild.trackedTwitterAccounts)
-
-		updateTrackedTwitterAccountsList(guild)
 	}
 
 	@ImplicitReflectionSerializer

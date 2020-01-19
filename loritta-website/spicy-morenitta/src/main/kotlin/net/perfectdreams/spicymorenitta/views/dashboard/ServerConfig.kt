@@ -15,6 +15,15 @@ object ServerConfig {
 	class Guild(
 			// É deserializado para String pois JavaScript é burro e não funciona direito com Longs
 			val name: String,
+			val localeId: String,
+			val commandPrefix: String,
+			val deleteMessageAfterCommand: Boolean,
+			val warnOnMissingPermission: Boolean,
+			val warnOnUnknownCommand: Boolean,
+			val blacklistedChannels: Array<Long>,
+			val warnIfBlacklisted: Boolean,
+			@Optional
+			val blacklistedWarning: String? = null,
 			val selfMember: SelfMember,
 			@Optional val donationKey: DonationKey? = null,
 			val donationConfig: DonationConfig,

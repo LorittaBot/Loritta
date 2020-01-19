@@ -54,7 +54,7 @@ class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), Command
 				if (context.guild.selfMember.hasPermission(Permission.MANAGE_CHANNEL))
 					context.message.textChannel.manager.setSlowmode(0).queue()
 
-				loritta save context.config
+				loritta save context.legacyConfig
 
 				context.sendMessage("\uD83C\uDFC3 **|** " + context.getAsMention(true) + context.legacyLocale["SLOWMODE_DisabledInChannel", context.event.textChannel!!.asMention])
 				return
@@ -68,7 +68,7 @@ class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), Command
 				return
 			}
 
-			loritta save context.config
+			loritta save context.legacyConfig
 
 			context.sendMessage("\uD83D\uDC0C **|** " + context.getAsMention(true) + context.legacyLocale["SLOWMODE_EnabledInChannel", context.event.textChannel!!.asMention, seconds])
 		} else {

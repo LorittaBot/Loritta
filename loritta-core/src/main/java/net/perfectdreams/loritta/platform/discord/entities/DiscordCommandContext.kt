@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.platform.discord.entities
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
@@ -32,10 +33,9 @@ import java.io.File
 import java.io.InputStream
 import java.time.Instant
 import java.util.*
-import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 
-class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: LorittaUser, locale: BaseLocale, legacyLocale: LegacyBaseLocale, var event: LorittaMessageEvent, command: LorittaCommand, args: Array<String>, val displayArgs: Array<String>, val strippedArgs: Array<String>) : LorittaCommandContext(locale, legacyLocale, command, args) {
+class DiscordCommandContext(val config: ServerConfig, val legacyConfig: MongoServerConfig, var lorittaUser: LorittaUser, locale: BaseLocale, legacyLocale: LegacyBaseLocale, var event: LorittaMessageEvent, command: LorittaCommand, args: Array<String>, val displayArgs: Array<String>, val strippedArgs: Array<String>) : LorittaCommandContext(locale, legacyLocale, command, args) {
 	var metadata = HashMap<String, Any>()
 
 	val isPrivateChannel: Boolean
@@ -141,11 +141,9 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 	suspend fun sendMessage(message: Message): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
 		if (isPrivateChannel || event.textChannel!!.canTalk()) {
 			val sentMessage = event.channel.sendMessage(message).await()
-			if (config.deleteMessagesAfter != null)
-				sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
 			return DiscordMessage(sentMessage)
 		} else {
-			LorittaUtils.warnOwnerNoPermission(discordGuild, event.textChannel, lorittaUser.config)
+			LorittaUtils.warnOwnerNoPermission(discordGuild, event.textChannel, config)
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
 	}
@@ -245,12 +243,9 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 	suspend fun sendFile(inputStream: InputStream, name: String, message: Message): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
 		if (isPrivateChannel || event.textChannel!!.canTalk()) {
 			val sentMessage = event.channel.sendMessage(message).addFile(inputStream, name).await()
-
-			if (config.deleteMessagesAfter != null)
-				sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
 			return DiscordMessage(sentMessage)
 		} else {
-			LorittaUtils.warnOwnerNoPermission(discordGuild, event.textChannel, lorittaUser.config)
+			LorittaUtils.warnOwnerNoPermission(discordGuild, event.textChannel, config)
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
 	}
@@ -305,7 +300,7 @@ class DiscordCommandContext(val config: MongoServerConfig, var lorittaUser: Lori
 	 * @param context the context of the command
 	 */
 	override suspend fun explain() {
-		val conf = config
+		val conf = legacyConfig
 		val ev = event
 
 		val commandLabel = config.commandPrefix + getCommandLabel()

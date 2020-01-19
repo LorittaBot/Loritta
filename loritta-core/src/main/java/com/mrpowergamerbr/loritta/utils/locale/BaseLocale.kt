@@ -16,13 +16,13 @@ class BaseLocale(val id: String) {
 		try {
 			return getWithType<String>(key).f(*arguments)
 		} catch (e: RuntimeException) {
-			logger.error(e) { "Error when trying to retrieve $key" }
+			logger.error(e) { "Error when trying to retrieve $key for locale $id" }
 		}
 		return "!!{$key}!!"
 	}
 
 	fun <T> getWithType(key: String): T {
-		val entry = localeEntries[key] ?: throw RuntimeException("Key $key doesn't exist!")
+		val entry = localeEntries[key] ?: throw RuntimeException("Key $key doesn't exist in locale $id!")
 		return entry as T
 	}
 }

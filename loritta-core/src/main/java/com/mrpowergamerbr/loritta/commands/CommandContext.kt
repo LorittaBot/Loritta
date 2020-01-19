@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.commands
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
@@ -22,13 +23,12 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.InputStream
 import java.util.*
-import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 
 /**
  * Contexto do comando executado
  */
-class CommandContext(val config: MongoServerConfig, var lorittaUser: LorittaUser, val locale: BaseLocale, val legacyLocale: LegacyBaseLocale, var event: LorittaMessageEvent, var cmd: AbstractCommand, var args: Array<String>, var rawArgs: Array<String>, var strippedArgs: Array<String>) {
+class CommandContext(val config: ServerConfig, val legacyConfig: MongoServerConfig, var lorittaUser: LorittaUser, val locale: BaseLocale, val legacyLocale: LegacyBaseLocale, var event: LorittaMessageEvent, var cmd: AbstractCommand, var args: Array<String>, var rawArgs: Array<String>, var strippedArgs: Array<String>) {
 	var metadata = HashMap<String, Any>()
 
 	val isPrivateChannel: Boolean
@@ -125,11 +125,9 @@ class CommandContext(val config: MongoServerConfig, var lorittaUser: LorittaUser
 	suspend fun sendMessage(message: Message): Message {
 		if (isPrivateChannel || event.textChannel!!.canTalk()) {
 			val sentMessage = event.channel.sendMessage(message).await()
-			if (config.deleteMessagesAfter != null)
-				sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
 			return sentMessage
 		} else {
-			LorittaUtils.warnOwnerNoPermission(guild, event.textChannel, lorittaUser.config)
+			LorittaUtils.warnOwnerNoPermission(guild, event.textChannel, config)
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
 	}
@@ -225,12 +223,9 @@ class CommandContext(val config: MongoServerConfig, var lorittaUser: LorittaUser
 	suspend fun sendFile(inputStream: InputStream, name: String, message: Message): Message {
 		if (isPrivateChannel || event.textChannel!!.canTalk()) {
 			val sentMessage = event.channel.sendMessage(message).addFile(inputStream, name).await()
-
-			if (config.deleteMessagesAfter != null)
-				sentMessage.delete().queueAfter(config.deleteMessagesAfter!!, TimeUnit.SECONDS)
 			return sentMessage
 		} else {
-			LorittaUtils.warnOwnerNoPermission(guild, event.textChannel, lorittaUser.config)
+			LorittaUtils.warnOwnerNoPermission(guild, event.textChannel, config)
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
 	}

@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.ChannelInfoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.PluginsCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.MagicPingCommand
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
@@ -151,40 +152,40 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
         )
     }
 
-    suspend fun dispatch(ev: LorittaMessageEvent, conf: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
+    suspend fun dispatch(ev: LorittaMessageEvent, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
         val rawMessage = ev.message.contentRaw
 
         // É necessário remover o new line para comandos como "+eval", etc
         val rawArguments = rawMessage.replace("\n", "").split(" ")
 
         // Primeiro os comandos vanilla da Loritta(tm)
-        for (command in getRegisteredCommands().filter { !conf.disabledCommands.contains(it.javaClass.simpleName) }) {
-            if (verifyAndDispatch(command, rawArguments, ev, conf, locale, legacyLocale, lorittaUser))
+        for (command in getRegisteredCommands().filter { !legacyServerConfig.disabledCommands.contains(it.javaClass.simpleName) }) {
+            if (verifyAndDispatch(command, rawArguments, ev, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser))
                 return true
         }
 
         return false
     }
 
-    suspend fun verifyAndDispatch(command: LorittaCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
+    suspend fun verifyAndDispatch(command: LorittaCommand, rawArguments: List<String>, ev: LorittaMessageEvent, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
         for (subCommand in command.subcommands) {
-            if (dispatch(subCommand as LorittaCommand, rawArguments.drop(1).toMutableList(), ev, conf, locale, legacyLocale, lorittaUser, true))
+            if (dispatch(subCommand as LorittaCommand, rawArguments.drop(1).toMutableList(), ev, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser, true))
                 return true
         }
 
-        if (dispatch(command, rawArguments, ev, conf, locale, legacyLocale, lorittaUser, false))
+        if (dispatch(command, rawArguments, ev, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser, false))
             return true
 
         return false
     }
 
-    suspend fun dispatch(command: LorittaCommand, rawArguments: List<String>, ev: LorittaMessageEvent, conf: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser, isSubcommand: Boolean): Boolean {
+    suspend fun dispatch(command: LorittaCommand, rawArguments: List<String>, ev: LorittaMessageEvent, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser, isSubcommand: Boolean): Boolean {
         val message = ev.message.contentDisplay
         val member = ev.message.member
 
         // Carregar as opções de comandos
         // val cmdOptions = conf.getCommandOptionsFor(command)
-        var prefix = conf.commandPrefix
+        var prefix = serverConfig.commandPrefix
 
         val labels = command.labels.toMutableList()
 
@@ -258,7 +259,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                 }
             }
 
-            val context = DiscordCommandContext(conf, lorittaUser, locale, legacyLocale, ev, command, rawArgs, args, strippedArgs)
+            val context = DiscordCommandContext(serverConfig, legacyServerConfig, lorittaUser, locale, legacyLocale, ev, command, rawArgs, args, strippedArgs)
 
             if (ev.message.isFromType(ChannelType.TEXT)) {
                 logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
@@ -267,23 +268,23 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
             }
 
             try {
-                conf.lastCommandReceivedAt = System.currentTimeMillis()
+                legacyServerConfig.lastCommandReceivedAt = System.currentTimeMillis()
                 com.mrpowergamerbr.loritta.utils.loritta.serversColl.updateOne(
-                        Filters.eq("_id", conf.guildId),
-                        Updates.set("lastCommandReceivedAt", conf.lastCommandReceivedAt)
+                        Filters.eq("_id", legacyServerConfig.guildId),
+                        Updates.set("lastCommandReceivedAt", legacyServerConfig.lastCommandReceivedAt)
                 )
 
-                if (conf != discordLoritta.dummyServerConfig && ev.textChannel != null && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
-                    LorittaUtils.warnOwnerNoPermission(ev.guild, ev.textChannel, conf)
+                if (legacyServerConfig != discordLoritta.dummyLegacyServerConfig && ev.textChannel != null && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
+                    LorittaUtils.warnOwnerNoPermission(ev.guild, ev.textChannel, serverConfig)
                     return true
                 }
 
-                if (conf.blacklistedChannels.contains(ev.channel.id) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
+                if (serverConfig.blacklistedChannels.contains(ev.channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
                     // if (!conf.miscellaneousConfig.enableBomDiaECia || (conf.miscellaneousConfig.enableBomDiaECia && command !is LigarCommand)) {
-                    if (conf.warnIfBlacklisted) {
-                        if (conf.blacklistWarning.isNotEmpty() && ev.guild != null && ev.member != null && ev.textChannel != null) {
+                    if (serverConfig.warnIfBlacklisted) {
+                        if (serverConfig.blacklistedChannels.isNotEmpty() && ev.guild != null && ev.member != null && ev.textChannel != null) {
                             val generatedMessage = MessageUtils.generateMessage(
-                                    conf.blacklistWarning,
+                                    serverConfig.blacklistedWarning ?: "???",
                                     listOf(ev.member, ev.textChannel),
                                     ev.guild
                             )
@@ -423,7 +424,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                 } */
 
                 if (command.requiresMusic) {
-                    if (!context.config.musicConfig.isEnabled) {
+                    if (!context.legacyConfig.musicConfig.isEnabled) {
                         val canManage = context.handle.hasPermission(Permission.MANAGE_SERVER) || context.handle.hasPermission(Permission.ADMINISTRATOR)
                         context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + legacyLocale["DJ_LORITTA_DISABLED"] + " \uD83D\uDE1E" + if (canManage) legacyLocale["DJ_LORITTA_HOW_TO_ENABLE", "${loritta.instanceConfig.loritta.website.url}dashboard"] else "")
                         return true
@@ -479,7 +480,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                 val result = execute(context, command, rawArgs)
 
                 if (!isPrivateChannel && ev.guild != null) {
-                    if (ev.guild.selfMember.hasPermission(ev.textChannel!!, Permission.MESSAGE_MANAGE) && (conf.deleteMessageAfterCommand)) {
+                    if (ev.guild.selfMember.hasPermission(ev.textChannel!!, Permission.MESSAGE_MANAGE) && (serverConfig.deleteMessageAfterCommand)) {
                         ev.message.textChannel.retrieveMessageById(ev.messageId).queue {
                             // Nós iremos pegar a mensagem novamente, já que talvez ela tenha sido deletada
                             it.delete().queue()

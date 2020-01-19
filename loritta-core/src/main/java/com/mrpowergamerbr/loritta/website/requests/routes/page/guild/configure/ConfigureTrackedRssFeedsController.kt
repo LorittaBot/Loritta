@@ -24,9 +24,6 @@ class ConfigureTrackedRssFeedsController {
 	@LoriRequiresVariables(true)
 	fun handle(req: Request, res: Response, @Local variables: MutableMap<String, Any?>, @Local guild: Guild, @Local newServerConfig: ServerConfig, @Local serverConfig: MongoServerConfig, @Local userIdentification: SimpleUserIdentification): String {
 		variables["saveType"] = "rss_feeds"
-
-		variables["level_json"] = gson.toJson(WebsiteUtils.transformToDashboardConfigurationJson(userIdentification, guild, newServerConfig, serverConfig))
-
 		return evaluate("configure_rss_feeds.html", variables)
 	}
 }

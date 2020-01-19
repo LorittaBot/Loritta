@@ -39,19 +39,20 @@ abstract class ConfigureView : ProtectedView() {
 		}
 
 		val jdaGuild = lorittaShards.getGuildById(guildId)
-		val serverConfig = loritta.getServerConfigForGuild(guildId)
 
 		if (jdaGuild == null) {
 			res.redirect(loritta.discordInstanceConfig.discord.addBotUrl)
 			return "Redirecting..."
 		}
 
+		val legacyServerConfig = loritta.getServerConfigForGuild(guildId)
+
 		val id = userIdentification.id
 		val member = jdaGuild.getMemberById(id)
 		var canAccessDashboardViaPermission = false
 
 		if (member != null) {
-			val lorittaUser = GuildLorittaUser(member, serverConfig, loritta.getOrCreateLorittaProfile(id.toLong()))
+			val lorittaUser = GuildLorittaUser(member, legacyServerConfig, loritta.getOrCreateLorittaProfile(id.toLong()))
 
 			canAccessDashboardViaPermission = lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
 		}
@@ -62,9 +63,10 @@ abstract class ConfigureView : ProtectedView() {
 		}
 
 		variables["guild"] = jdaGuild
-		variables["serverConfig"] = serverConfig
-		variables["serverConfigJson"] = gson.toJson(WebsiteUtils.getServerConfigAsJson(jdaGuild, serverConfig, userIdentification))
-		return renderConfiguration(req, res, path, variables, discordAuth, jdaGuild, serverConfig)
+		variables["serverConfig"] = legacyServerConfig
+		// TODO: Remover isto quando for removido o "server-config-json" do website
+		variables["serverConfigJson"] = gson.toJson(WebsiteUtils.getServerConfigAsJson(jdaGuild, legacyServerConfig, userIdentification))
+		return renderConfiguration(req, res, path, variables, discordAuth, jdaGuild, legacyServerConfig)
 	}
 
 	abstract fun renderConfiguration(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>, discordAuth: TemmieDiscordAuth, guild: Guild, serverConfig: MongoServerConfig): String

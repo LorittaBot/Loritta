@@ -21,7 +21,7 @@ object GuildDashboard {
     var isModified = false
 }
 
-fun DIV.createToggle(title: String, subText: String? = null, id: String? = null, isChecked: Boolean = false) {
+fun DIV.createToggle(title: String, subText: String? = null, id: String? = null, isChecked: Boolean = false, onChange: (() -> (Unit))? = null) {
     div(classes = "toggleable-wrapper") {
         div(classes = "information") {
             div {
@@ -43,6 +43,8 @@ fun DIV.createToggle(title: String, subText: String? = null, id: String? = null,
                 if (isChecked) {
                     attributes["checked"] = "true"
                 }
+
+                onChangeFunction = { onChange?.invoke() }
             }
             div(classes = "slider round") {}
         }

@@ -137,7 +137,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 	 * @param context the context of the command
 	 */
 	suspend fun explain(context: CommandContext) {
-		val conf = context.config
+		val conf = context.legacyConfig
 		val ev = context.event
 		val locale = context.legacyLocale
 

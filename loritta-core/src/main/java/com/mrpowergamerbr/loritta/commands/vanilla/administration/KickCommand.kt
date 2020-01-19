@@ -85,7 +85,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 				return
 			}
 
-			val hasSilent = context.config.moderationConfig.sendPunishmentViaDm || context.config.moderationConfig.sendToPunishLog
+			val hasSilent = context.legacyConfig.moderationConfig.sendPunishmentViaDm || context.legacyConfig.moderationConfig.sendToPunishLog
 			val message = AdminUtils.sendConfirmationMessage(context, user, hasSilent, "kick")
 
 			message.onReactionAddByAuthor(context) {
@@ -109,7 +109,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 
 		fun kick(context: CommandContext, locale: LegacyBaseLocale, member: Member, user: User, reason: String, isSilent: Boolean) {
 			if (!isSilent) {
-				if (context.config.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
+				if (context.legacyConfig.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
 					try {
 						val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, locale["KICK_PunishAction"], reason)
 
@@ -121,12 +121,12 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 					}
 				}
 
-				if (context.config.moderationConfig.sendToPunishLog) {
-					val textChannel = context.guild.getTextChannelByNullableId(context.config.moderationConfig.punishmentLogChannelId)
+				if (context.legacyConfig.moderationConfig.sendToPunishLog) {
+					val textChannel = context.guild.getTextChannelByNullableId(context.legacyConfig.moderationConfig.punishmentLogChannelId)
 
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
-								context.config.moderationConfig.punishmentLogMessage,
+								context.legacyConfig.moderationConfig.punishmentLogMessage,
 								listOf(user),
 								context.guild,
 								mutableMapOf(

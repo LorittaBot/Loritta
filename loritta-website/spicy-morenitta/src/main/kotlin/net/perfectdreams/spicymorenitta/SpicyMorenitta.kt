@@ -20,7 +20,7 @@ import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.parse
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.routes.*
-import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.GeneralDashboardRoute
+import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.*
 import net.perfectdreams.spicymorenitta.trunfo.TrunfoGame
 import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.utils.locale.BaseLocale
@@ -73,8 +73,16 @@ class SpicyMorenitta : Logging {
 			TwitterRoute(this),
 			RssFeedsRoute(this),
 			CommandsRoute(this),
-			TranslateRoute(this)
+			TranslateRoute(this),
+			GeneralConfigRoute(this),
+			BadgeRoute(this),
+			DailyMultiplierRoute(this),
+			LevelUpRoute(this),
+			PremiumKeyRoute(this),
+			RssFeedsRoute(this),
+			TwitterRoute(this)
 	)
+
 	val validWebsiteLocaleIds = mutableListOf(
 			"br",
 			"us",

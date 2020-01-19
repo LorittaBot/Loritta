@@ -85,9 +85,11 @@ object LorittaLauncher {
 		val arg1 = args.getOrNull(1)
 
 		if (arg0 != null && arg0 == "migrate" && arg1 != null) {
-			val tool = MigrationTool(config)
+			val tool = MigrationTool(discordConfig, discordInstanceConfig, config, instanceConfig)
 
-			when (arg1) {}
+			when (arg1) {
+				"general" -> tool.migrateGeneralConfig()
+			}
 			return
 		}
 

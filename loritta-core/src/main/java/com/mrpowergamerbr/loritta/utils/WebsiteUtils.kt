@@ -529,7 +529,15 @@ object WebsiteUtils {
 
 	fun transformToDashboardConfigurationJson(user: SimpleUserIdentification, guild: Guild, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig): JsonObject {
 		val guildJson = jsonObject(
-				"name" to guild.name
+				"name" to guild.name,
+				"localeId" to serverConfig.localeId,
+				"commandPrefix" to serverConfig.commandPrefix,
+				"deleteMessageAfterCommand" to serverConfig.deleteMessageAfterCommand,
+				"warnOnMissingPermission" to serverConfig.warnOnMissingPermission,
+				"warnOnUnknownCommand" to serverConfig.warnOnUnknownCommand,
+				"blacklistedChannels" to serverConfig.blacklistedChannels.toList().toJsonArray(),
+				"warnIfBlacklisted" to serverConfig.warnIfBlacklisted,
+				"blacklistedWarning" to serverConfig.blacklistedWarning
 		)
 
 		val selfMember = transformToJson(lorittaShards.getUserById(user.id)!!)
