@@ -111,6 +111,7 @@ class SpicyMorenitta : Logging {
 	val websiteLocaleId: String
 		get() {
 			val localeIdFromPath = WebsiteUtils.getWebsiteLocaleIdViaPath()
+			debug("Locale ID from Path is $localeIdFromPath")
 			return if (localeIdFromPath in validWebsiteLocaleIds)
 				localeIdFromPath
 			else

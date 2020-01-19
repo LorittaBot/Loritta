@@ -60,8 +60,6 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 				prepareSave()
 			}
 
-			val premiumAsJson = document.getElementById("badge-json")?.innerHTML!!
-
 			val stuff = document.select<HTMLDivElement>("#level-stuff")
 
 			stuff.append {

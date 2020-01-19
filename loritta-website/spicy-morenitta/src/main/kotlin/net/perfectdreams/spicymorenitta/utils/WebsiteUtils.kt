@@ -43,9 +43,11 @@ object WebsiteUtils : Logging {
     }
 
     fun getWebsiteLocaleIdViaPath(): String {
-        val href = window.location.href
+        val href = window.location.pathname
         val split = href.split("/")
-        return split.dropLast(1).last()
+        // /br/...
+        // Então nós removemos o primeiro (que será vazio) e pegamos o primeiro que aparecer
+        return split.drop(1).first()
     }
 
     fun patchGuildConfigById(

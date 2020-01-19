@@ -28,4 +28,13 @@ class UserIdentification(
         val flags: Int?,
         @SerialName("premium_type")
         @Optional val premiumType: Int? = 0
-)
+) {
+        val userAvatarUrl: String
+                get() {
+                        val extension = if (avatar?.startsWith("a_") == true) { // Avatares animados no Discord começam com "_a"
+                                "gif"
+                        } else { "png" }
+
+                        return "https://cdn.discordapp.com/avatars/${id}/${avatar}.${extension}?size=256"
+                }
+}

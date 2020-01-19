@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.GenericReplies
 
 class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), CommandCategory.FUN) {
 	companion object {
@@ -88,12 +89,7 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 					}
 				}
 			} catch (e: Exception) {
-				context.reply(
-						LoriReply(
-								context.locale["commands.invalidNumber", expression] + " ${Emotes.LORI_CRYING}",
-								Emotes.LORI_HM
-						)
-				)
+				GenericReplies.invalidNumber(context, expression)
 				return
 			}
 

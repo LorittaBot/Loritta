@@ -5,6 +5,7 @@ import jq
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.js.onClickFunction
+import kotlinx.html.js.onInputFunction
 import kotlinx.serialization.ImplicitReflectionSerializer
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
@@ -17,10 +18,7 @@ import net.perfectdreams.spicymorenitta.utils.Placeholders
 import net.perfectdreams.spicymorenitta.utils.SaveUtils
 import net.perfectdreams.spicymorenitta.utils.select
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
-import org.w3c.dom.HTMLDivElement
-import org.w3c.dom.HTMLInputElement
-import org.w3c.dom.HTMLSelectElement
-import org.w3c.dom.HTMLTextAreaElement
+import org.w3c.dom.*
 import kotlin.browser.document
 import kotlin.dom.addClass
 import kotlin.dom.clear
@@ -39,6 +37,34 @@ class GeneralConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/d
 
 	override val keepLoadingScreen: Boolean
 		get() = true
+
+	private fun DIV.createFakeMessage(avatarUrl: String, name: String, content: DIV.() -> (Unit)) {
+		div {
+			style = "display: flex; align-items: center;"
+
+			div {
+				style = "display: flex; flex-direction: column; margin-right: 10px;"
+
+				img(src = avatarUrl) {
+					style = "border-radius: 100%;"
+					width = "40"
+				}
+			}
+
+			div {
+				style = "display: flex; flex-direction: column;"
+
+				div {
+					style = "font-weight: 600;"
+					+ name
+				}
+
+				div {
+					content.invoke(this)
+				}
+			}
+		}
+	}
 
 	@ImplicitReflectionSerializer
 	override fun onRender(call: ApplicationCall) {
@@ -60,12 +86,57 @@ class GeneralConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/d
 						}
 						div(classes = "pure-u-1 pure-u-md-2-3") {
 							div(classes = "flavourText") {
-								+ "Prefixo da Loritta"
+								+ locale["website.dashboard.general.commandPrefix.title"]
+							}
+
+							div(classes = "toggleSubText") {
+								+ locale["website.dashboard.general.commandPrefix.subtext"]
 							}
 
 							input(type = InputType.text) {
 								id = "command-prefix"
 								value = guild.commandPrefix
+
+								onInputFunction = {
+									document.select<HTMLSpanElement>("#command-prefix-preview")
+											.innerText = document.select<HTMLInputElement>("#command-prefix").value
+								}
+							}
+							div(classes = "discord-message-helper") {
+								style = "display: flex; flex-direction: column; justify-content: center; font-family: Lato,Helvetica Neue,Helvetica,Arial,sans-serif;"
+
+								createFakeMessage(
+										m.userIdentification?.userAvatarUrl ?: "???",
+										m.userIdentification?.username ?: "???"
+								) {
+									span {
+										id = "command-prefix-preview"
+										+ guild.commandPrefix
+									}
+									span {
+										+ "ping"
+									}
+								}
+
+								div {
+									hr {}
+								}
+
+								createFakeMessage(
+										"/assets/img/lori_avatar_v3.png",
+										"Loritta"
+								) {
+									span {
+										+ "\uD83C\uDFD3"
+									}
+									b {
+										+ " | "
+										span(classes = "discord-mention") {
+											+ ("@" + (m.userIdentification?.username ?: "???"))
+										}
+										+ " Pong!"
+									}
+								}
 							}
 						}
 					}
@@ -155,7 +226,7 @@ class GeneralConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/d
 						id = "hidden-if-disabled-blacklist"
 
 						div(classes = "flavourText") {
-							+ "???"
+							+ locale["website.dashboard.general.messageWhenUsingACommandInABlockedChannel.title"]
 						}
 
 						textArea {
@@ -167,6 +238,8 @@ class GeneralConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/d
 					hr {}
 
 					button(classes = "button-discord button-discord-success pure-button") {
+						style = "float: right;"
+
 						+ locale["loritta.save"]
 
 						onClickFunction = {
