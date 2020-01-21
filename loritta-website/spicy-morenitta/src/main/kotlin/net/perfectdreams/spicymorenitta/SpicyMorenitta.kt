@@ -128,6 +128,9 @@ class SpicyMorenitta : Logging {
 	fun start() {
 		INSTANCE = this
 
+		// Workaround for KotlinJS's DCE
+		DoNotRemoveDeadCodeWorkaround.methodRefs
+
 		info("SpicyMorenitta :3")
 		info("Howdy, my name is Loritta!")
 		info("I want to make the world a better place... making people happier and helping other people... changing their lives...")

@@ -15,15 +15,6 @@ import kotlin.js.Json
 import kotlin.js.json
 
 object ReputationView {
-	@JsName("debug")
-	fun debug() {
-		GlobalScope.launch {
-			val response = HttpRequest.get("${loriUrl}api/v1/callbacks/user-agent")
-
-			println(response.body)
-		}
-	}
-
 	@JsName("recaptchaCallback")
 	fun recaptchaCallback(userId: String, token: String) {
 		println("reCAPTCHA token is: $token")

@@ -56,7 +56,8 @@ class DiscordBotBrasileiroRoute : BaseRoute("/discord-bot-brasileiro") {
             val x = (it.asDynamic().pageX - offset.left) / blushingPose.offsetWidth // Se usar "selfie.offsetWidth", sempre irá retornar 0 pois as imagens são absolutas
             val y = (it.asDynamic().pageY - offset.top) / selfie.offsetHeight
 
-            if (x in 0.1671535346819007..0.3108727776792628 && y in 0.2758491868558137..0.36264792560825687) {
+            debug("x: $x; y: $y")
+            if (x in 0.19..0.30 && y in 0.24..0.35) {
                 blushingPose.style.visibility = "visible"
             }
         }

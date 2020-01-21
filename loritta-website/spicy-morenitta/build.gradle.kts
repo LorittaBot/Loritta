@@ -1,5 +1,6 @@
 plugins {
 	id("kotlin2js")
+	id("kotlin-dce-js") apply true
 	id("kotlinx-serialization") version "1.3.0" apply true
 }
 
