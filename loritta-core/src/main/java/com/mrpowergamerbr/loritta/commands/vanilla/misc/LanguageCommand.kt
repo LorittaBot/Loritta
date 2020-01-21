@@ -36,24 +36,24 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 						loritta.getLegacyLocaleById("default"),
 						"\uD83C\uDDE7\uD83C\uDDF7"
 				),
-				LocaleWrapper(
+				/* LocaleWrapper(
 						"Português-Portugal",
 						loritta.getLocaleById("pt-pt"),
 						loritta.getLegacyLocaleById("pt-pt"),
 						"\uD83C\uDDF5\uD83C\uDDF9"
-				),
+				), */
 				LocaleWrapper(
 						"English-US",
 						loritta.getLocaleById("en-us"),
 						loritta.getLegacyLocaleById("en-us"),
 						"\uD83C\uDDFA\uD83C\uDDF8"
 				),
-				LocaleWrapper(
+				/* LocaleWrapper(
 						"Español",
 						loritta.getLocaleById("es-es"),
 						loritta.getLegacyLocaleById("es-es"),
 						"\uD83C\uDDEA\uD83C\uDDF8"
-				),
+				), */
 				LocaleWrapper(
 						"Português-Funk",
 						loritta.getLocaleById("pt-funk"),
