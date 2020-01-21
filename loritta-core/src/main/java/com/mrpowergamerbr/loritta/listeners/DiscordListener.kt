@@ -336,17 +336,22 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		// Vamos alterar a minha linguagem quando eu entrar em um servidor, baseando na localização dele
 		val region = event.guild.region
 		val regionName = region.getName()
-		val serverConfig = loritta.getServerConfigForGuild(event.guild.id)
+		val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
+		val legacyServerConfig = loritta.getServerConfigForGuild(event.guild.id)
 
 		logger.trace { "regionName = $regionName" }
 
 		// Portuguese
 		if (regionName.startsWith("Brazil")) {
 			logger.debug { "Setting localeId to default at ${event.guild}, regionName = $regionName" }
-			serverConfig.localeId = "default"
+			transaction(Databases.loritta) {
+				serverConfig.localeId = "default"
+			}
 		} else {
 			logger.debug { "Setting localeId to en-us at ${event.guild}, regionName = $regionName" }
-			serverConfig.localeId = "en-us"
+			transaction(Databases.loritta) {
+				serverConfig.localeId = "en-us"
+			}
 		}
 
 		logger.debug { "Adding DJ permission to all roles with ADMINISTRATOR or MANAGE_SERVER permission at ${event.guild}"}
@@ -354,7 +359,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		// Adicionar a permissão de DJ para alguns cargos
 		event.guild.roles.forEach {
 			if (it.hasPermission(Permission.ADMINISTRATOR) || it.hasPermission(Permission.MANAGE_SERVER)) {
-				serverConfig.permissionsConfig.roles[it.id] = PermissionsConfig.PermissionRole().apply {
+				legacyServerConfig.permissionsConfig.roles[it.id] = PermissionsConfig.PermissionRole().apply {
 					this.permissions.add(LorittaPermission.DJ)
 				}
 			}
