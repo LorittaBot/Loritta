@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -9,11 +10,11 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
-import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 
 class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak"), category = CommandCategory.MISC) {
@@ -65,14 +66,46 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 						loritta.getLocaleById("pt-furry"),
 						loritta.getLegacyLocaleById("default"),
 						"\uD83D\uDC3E"
+				),
+				LocaleWrapper(
+						"English-Furry",
+						loritta.getLocaleById("en-furry"),
+						loritta.getLegacyLocaleById("default"),
+						"\uD83D\uDC31"
 				)
 		)
+
+		if (context.rawArgs.getOrNull(0) == "br-debug") {
+			activateLanguage(
+					context,
+					LocaleWrapper(
+							"Auto-PT-BR-Debug",
+							loritta.getLocaleById("pt-debug"),
+							loritta.getLegacyLocaleById("default"),
+							"\uD83D\uDC31"
+					)
+			)
+			return
+		}
+
+		if (context.rawArgs.getOrNull(0) == "en-debug") {
+			activateLanguage(
+					context,
+					LocaleWrapper(
+							"Auto-EN-Debug",
+							loritta.getLocaleById("en-debug"),
+							loritta.getLegacyLocaleById("default"),
+							"\uD83D\uDC31"
+					)
+			)
+			return
+		}
 
 		val message = context.sendMessage(
 				context.getAsMention(true),
 				buildLanguageEmbed(
 						locale.toNewLocale(),
-						validLanguages.subList(0, 4)
+						validLanguages.subList(0, 2)
 				)
 		)
 
@@ -82,19 +115,17 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 						" ",
 						buildLanguageEmbed(
 								locale.toNewLocale(),
-								validLanguages.subList(4, validLanguages.size)
+								validLanguages.subList(2, validLanguages.size)
 						),
 						true
 				)
 
-				for (wrapper in validLanguages.subList(4, validLanguages.size)) {
+				for (wrapper in validLanguages.subList(2, validLanguages.size)) {
 					// O "replace" é necessário já que a gente usa emojis personalizados para algumas linguagens
 					message.addReaction(wrapper.emoteName.replace("<", "").replace(">", "")).queue()
 				}
 				return@onReactionAddByAuthor
 			}
-
-			var localeId = "default"
 
 			val newLanguage = validLanguages.firstOrNull { language ->
 				if (language.emoteName.startsWith("<")) {
@@ -103,27 +134,32 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 					it.reactionEmote.isEmote(language.emoteName)
 				}
 			}
-			
-			localeId = newLanguage?.locale?.id ?: localeId
 
-			context.config.localeId = localeId
-			loritta save context.legacyConfig
-
-			val newLocale = loritta.getLocaleById(localeId)
-			if (localeId == "default") {
-				localeId = "pt-br" // Já que nós já salvamos, vamos trocar o localeId para algo mais "decente"
-			}
-
-			context.reply(newLocale["commands.miscellaneous.language.languageChanged", "`$localeId`"], "\uD83C\uDFA4")
+			activateLanguage(context, newLanguage ?: validLanguages.first { it.locale.id == "default" })
 			message.delete().queue()
 		}
 
-		for (wrapper in validLanguages.subList(0, 4)) {
+		for (wrapper in validLanguages.subList(0, 2)) {
 			// O "replace" é necessário já que a gente usa emojis personalizados para algumas linguagens
 			message.addReaction(wrapper.emoteName.replace("<", "").replace(">", "")).queue()
 		}
 
 		message.addReaction("lori_ok_hand:426183783008698391").queue()
+	}
+
+	private suspend fun activateLanguage(context: CommandContext, newLanguage: LocaleWrapper) {
+		var localeId = newLanguage.locale.id
+
+		transaction(Databases.loritta) {
+			context.config.localeId = localeId
+		}
+
+		val newLocale = loritta.getLocaleById(localeId)
+		if (localeId == "default") {
+			localeId = "pt-br" // Já que nós já salvamos, vamos trocar o localeId para algo mais "decente"
+		}
+
+		context.reply(newLocale["commands.miscellaneous.language.languageChanged", "`$localeId`"], "\uD83C\uDFA4")
 	}
 
 	private suspend fun buildLanguageEmbed(locale: BaseLocale, languages: List<LocaleWrapper>): MessageEmbed {
