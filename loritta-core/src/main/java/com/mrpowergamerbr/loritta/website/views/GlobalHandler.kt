@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.extensions.trueIp
 import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.evaluate
@@ -15,10 +16,15 @@ import com.mrpowergamerbr.loritta.website.views.subviews.api.*
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.APIGetServerConfigView
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.APIUpdateServerConfigView
 import com.mrpowergamerbr.loritta.website.views.subviews.configure.*
+import kotlinx.coroutines.runBlocking
+import net.perfectdreams.loritta.website.LorittaWebsite
+import net.perfectdreams.loritta.website.utils.ScriptingUtils
 import org.jooby.Request
 import org.jooby.Response
 import org.slf4j.LoggerFactory
+import java.io.File
 import java.util.*
+import kotlin.reflect.full.createType
 
 object GlobalHandler {
 	var views = mutableListOf<AbstractView>()
@@ -138,7 +144,19 @@ object GlobalHandler {
 		}
 
 		res.status(404)
-		return evaluate("404.html", variables)
+		val html = runBlocking {
+			ScriptingUtils.evaluateWebPageFromTemplate(
+					File(
+							"${LorittaWebsite.INSTANCE.config.websiteFolder}/views/error_404.kts"
+					),
+					mapOf(
+							"path" to req.path().split("/").drop(2).joinToString("/"),
+							"websiteUrl" to LorittaWebsite.INSTANCE.config.websiteUrl,
+							"locale" to ScriptingUtils.WebsiteArgumentType(BaseLocale::class.createType(nullable = false), variables["locale"]!!)
+					)
+			)
+		}
+		return html
 	}
 
 	fun generateViews()  {
