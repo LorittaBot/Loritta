@@ -231,7 +231,7 @@ class GeneralConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/d
 
 						textArea {
 							id = "blacklisted-warning"
-							+ (guild.blacklistedWarning ?: "???")
+							+ (guild.blacklistedWarning ?: "{@user} Você não pode usar comandos no {@channel}, bobinho(a)")
 						}
 					}
 
