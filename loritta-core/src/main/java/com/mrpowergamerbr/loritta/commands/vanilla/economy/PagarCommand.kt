@@ -7,11 +7,14 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.PersonalPronoun
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -131,17 +134,16 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 
 			// Hora de transferir!
 			if (economySource == "global") {
-				val epochMillis = context.userHandle.timeCreated.toEpochSecond() * 1000
-
-				if (epochMillis + Constants.ONE_WEEK_IN_MILLISECONDS > System.currentTimeMillis()) { // 7 dias
-					context.reply(
-							LoriReply(
-									"Você não pode transferir sonhos! Tente novamente mais tarde...",
-									Constants.ERROR
-							)
-					)
+				// User checks
+				if (!checkIfSelfAccountIsOldEnough(context))
 					return
-				}
+				if (!checkIfOtherAccountIsOldEnough(context, user))
+					return
+				if (!checkIfSelfAccountGotDailyToday(context))
+					return
+				val receiverProfile = loritta.getOrCreateLorittaProfile(user.idLong)
+				if (!checkIfOtherAccountGotDailyToday(context, user, receiverProfile))
+					return
 
 				val activeMoneyFromDonations = loritta.getActiveMoneyFromDonations(context.userHandle.idLong)
 				val taxBypass = activeMoneyFromDonations >= LorittaPrices.NO_PAY_TAX
@@ -235,6 +237,70 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 		} else {
 			context.explain()
 		}
+	}
+
+	private suspend fun checkIfSelfAccountIsOldEnough(context: CommandContext): Boolean {
+		val epochMillis = context.userHandle.timeCreated.toEpochSecond() * 1000
+
+		if (epochMillis + (Constants.ONE_WEEK_IN_MILLISECONDS * 2) > System.currentTimeMillis()) { // 14 dias
+			context.reply(
+					LoriReply(
+							context.locale["commands.economy.pay.selfAccountIsTooNew", 14] + " ${Emotes.LORI_CRYING}",
+							Constants.ERROR
+					)
+			)
+			return false
+		}
+		return true
+	}
+
+	private suspend fun checkIfOtherAccountIsOldEnough(context: CommandContext, target: User): Boolean {
+		val epochMillis = target.timeCreated.toEpochSecond() * 1000
+
+		if (epochMillis + Constants.ONE_WEEK_IN_MILLISECONDS > System.currentTimeMillis()) { // 7 dias
+			context.reply(
+					LoriReply(
+							context.locale["commands.economy.pay.otherAccountIsTooNew", target.asMention, 7] + " ${Emotes.LORI_CRYING}",
+							Constants.ERROR
+					)
+			)
+			return false
+		}
+		return true
+	}
+
+	private suspend fun checkIfSelfAccountGotDailyToday(context: CommandContext): Boolean {
+		val (canGetDaily, tomorrow) = context.lorittaUser.profile.canGetDaily()
+
+		if (canGetDaily) { // Nós apenas queremos permitir que a pessoa possa enviar sonhos caso já tenha pegado sonhos alguma vez hoje
+			context.reply(
+					LoriReply(
+							context.locale["commands.economy.pay.selfAccountNeedsToGetDaily", "${loritta.instanceConfig.loritta.website.url}daily"],
+							Constants.ERROR
+					)
+			)
+			return false
+		}
+		return true
+	}
+
+	private suspend fun checkIfOtherAccountGotDailyToday(context: CommandContext, target: User, profile: Profile): Boolean {
+		val (canGetDaily, tomorrow) = profile.canGetDaily()
+
+		if (canGetDaily) { // Nós apenas queremos permitir que a pessoa possa receber sonhos caso já tenha pegado sonhos alguma vez hoje
+			val pronoun = transaction(Databases.loritta) {
+				profile.settings.gender
+			}.getPersonalPronoun(context.locale, PersonalPronoun.THIRD_PERSON, target.asMention)
+
+			context.reply(
+					LoriReply(
+							context.locale["commands.economy.pay.otherAccountNeedsToGetDaily", target.asMention, pronoun, "${loritta.instanceConfig.loritta.website.url}daily"],
+							Constants.ERROR
+					)
+			)
+			return false
+		}
+		return true
 	}
 
 	enum class PayStatus {
