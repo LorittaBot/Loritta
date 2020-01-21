@@ -29,6 +29,6 @@ class LorittaWebsite {
 	class WebsiteConfig {
 		val websiteUrl: String
 				get() = loritta.instanceConfig.loritta.website.url.removeSuffix("/")
-		val websiteFolder = File(loritta.instanceConfig.loritta.website.folder, "views")
+		val websiteFolder = File(loritta.instanceConfig.loritta.website.folder)
 	}
 }
