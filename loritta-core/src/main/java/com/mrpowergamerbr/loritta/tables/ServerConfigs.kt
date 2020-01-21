@@ -20,4 +20,5 @@ object ServerConfigs : SnowflakeTable() {
 	val birthdayConfig = optReference("birthday_config", BirthdayConfigs, onDelete = ReferenceOption.CASCADE)
 	val economyConfig = optReference("economy_config", EconomyConfigs, onDelete = ReferenceOption.CASCADE)
 	val levelConfig = optReference("level_config", LevelConfigs, onDelete = ReferenceOption.CASCADE)
+	val migrationVersion = integer("migration_version").default(0)
 }

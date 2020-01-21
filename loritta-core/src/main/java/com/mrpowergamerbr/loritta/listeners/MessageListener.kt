@@ -81,6 +81,20 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				logIfEnabled(enableProfiling) { "Loading Server Config took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
+				if (serverConfig.migrationVersion == 0) {
+					logger.info { "Migrating ${event.guild}'s general config to PSQL..." }
+					transaction(Databases.loritta) {
+						MigrationTool.migrateGeneralConfig(
+								serverConfig,
+								legacyServerConfig
+						)
+						serverConfig.migrationVersion = 1
+					}
+				}
+
+				logIfEnabled(enableProfiling) { "Migration Checks took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
+
+				start = System.nanoTime()
 				val lorittaProfile = loritta.getOrCreateLorittaProfile(event.author.idLong)
 				logIfEnabled(enableProfiling) { "Loading user's profile took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 

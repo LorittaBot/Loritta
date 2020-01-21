@@ -24,4 +24,5 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 	var birthdayConfig by BirthdayConfig optionalReferencedOn ServerConfigs.birthdayConfig
 	var economyConfig by EconomyConfig optionalReferencedOn ServerConfigs.economyConfig
 	var levelConfig by LevelConfig optionalReferencedOn ServerConfigs.levelConfig
+	var migrationVersion by ServerConfigs.migrationVersion
 }
