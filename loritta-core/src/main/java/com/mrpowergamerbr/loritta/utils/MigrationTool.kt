@@ -21,11 +21,18 @@ class MigrationTool(val discordConfig: GeneralDiscordConfig, val discordInstance
 				serverConfig.warnIfBlacklisted = legacyServerConfig.warnIfBlacklisted
 				serverConfig.deleteMessageAfterCommand = legacyServerConfig.deleteMessageAfterCommand
 
-				if (!serverConfig.warnIfBlacklisted)
+				if (serverConfig.warnIfBlacklisted)
 					serverConfig.blacklistedWarning = legacyServerConfig.blacklistWarning
 
 				serverConfig.blacklistedChannels = legacyServerConfig.blacklistedChannels.mapNotNull { it.toLongOrNull() }
 						.toTypedArray()
+			}
+		}
+
+		fun fixWarnIfBlacklistedMessage(serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig) {
+			transaction(Databases.loritta) {
+				if (serverConfig.warnIfBlacklisted && serverConfig.blacklistedWarning == null)
+					serverConfig.blacklistedWarning = legacyServerConfig.blacklistWarning
 			}
 		}
 	}

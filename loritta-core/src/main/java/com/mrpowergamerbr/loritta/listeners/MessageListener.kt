@@ -92,6 +92,17 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 					}
 				}
 
+				if (serverConfig.migrationVersion == 1) {
+					logger.info { "Fixing ${event.guild}'s warn if blacklisted message on PSQL db..." }
+					transaction(Databases.loritta) {
+						MigrationTool.fixWarnIfBlacklistedMessage(
+								serverConfig,
+								legacyServerConfig
+						)
+						serverConfig.migrationVersion = 2
+					}
+				}
+
 				logIfEnabled(enableProfiling) { "Migration Checks took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
