@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.website.views.subviews.api
 
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
@@ -31,11 +32,15 @@ import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class APILoriDailyRewardView : NoVarsView() {
 	companion object {
 		private val logger = KotlinLogging.logger {}
-		private val mutex = Mutex()
+		private val mutexes = Caffeine.newBuilder()
+				.expireAfterAccess(60, TimeUnit.SECONDS)
+				.build<Long, Mutex>()
+				.asMap()
 	}
 
 	override fun handleRender(req: Request, res: Response, path: String): Boolean {
@@ -79,6 +84,7 @@ class APILoriDailyRewardView : NoVarsView() {
 
 		val lorittaProfile = loritta.getOrCreateLorittaProfile(userIdentification.id)
 
+		val mutex = mutexes.getOrPut(lorittaProfile.userId) { Mutex() }
 		return runBlocking {
 			mutex.withLock {
 				// Para evitar pessoas criando várias contas e votando, nós iremos também verificar o IP dos usuários que votarem
