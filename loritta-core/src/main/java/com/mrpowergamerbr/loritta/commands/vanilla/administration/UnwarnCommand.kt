@@ -70,7 +70,7 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 			if (warns.isEmpty()) {
 				context.reply(
 						LoriReply(
-								context.locale["$LOCALE_PREFIX.unwarn.noWarnsFound"],
+								context.locale["$LOCALE_PREFIX.unwarn.noWarnsFound", "${context.config.commandPrefix}warnlist"],
 								Constants.ERROR
 						)
 				)
