@@ -51,10 +51,10 @@ abstract class LorittaBot(var config: GeneralConfig, var instanceConfig: General
 
 			customizeClient {
 				// Maximum number of socket connections.
-				this.setMaxConnTotal(1000)
+				this.setMaxConnTotal(100_000)
 
 				// Maximum number of requests for a specific endpoint route.
-				this.setMaxConnPerRoute(100)
+				this.setMaxConnPerRoute(100_000)
 			}
 		}
 	}
