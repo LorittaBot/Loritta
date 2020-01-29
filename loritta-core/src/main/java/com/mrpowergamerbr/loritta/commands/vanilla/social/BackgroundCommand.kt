@@ -9,7 +9,7 @@ import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import io.ktor.client.request.header
 import io.ktor.client.request.post
-import io.ktor.client.response.HttpResponse
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.userAgent
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
@@ -156,9 +156,9 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 							"data" to Base64.getEncoder().encodeToString(baos.toByteArray())
 					)
 			)
-		}.use {
-			logger.info { "Background updated for ${context.userHandle.idLong}!" }
 		}
+
+		logger.info { "Background updated for ${context.userHandle.idLong}!" }
 
 		context.sendMessage("✨ **|** " + context.getAsMention(true) + context.legacyLocale["BACKGROUND_UPDATED"] + if (needsEditing) " ${context.legacyLocale["BACKGROUND_EDITED"]}!" else "")
 		return

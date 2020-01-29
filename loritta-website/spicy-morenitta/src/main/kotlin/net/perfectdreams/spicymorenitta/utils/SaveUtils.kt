@@ -38,7 +38,7 @@ object SaveUtils {
 		LoriDashboard.showLoadingBar(locale["loritta.saving"] + "...")
 
 		GlobalScope.launch {
-			val response = http.patch<io.ktor.client.response.HttpResponse>(endpoint) {
+			val response = http.patch<io.ktor.client.statement.HttpResponse>(endpoint) {
 				body = JSON.stringify(json)
 			}
 			val body = response.readText()

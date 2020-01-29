@@ -27,7 +27,7 @@ class Christmas2019Route(val m: SpicyMorenitta) : BaseRoute("/christmas2019") {
 		GlobalScope.launch {
 			println("Christmas!!!")
 
-			val stats = http.get<io.ktor.client.response.HttpResponse>("${window.location.origin}/api/v1/loritta/christmas2019") {}
+			val stats = http.get<io.ktor.client.statement.HttpResponse>("${window.location.origin}/api/v1/loritta/christmas2019") {}
 
 			val parse = JSON.nonstrict.parse<ChristmasPayload>(stats.readText())
 

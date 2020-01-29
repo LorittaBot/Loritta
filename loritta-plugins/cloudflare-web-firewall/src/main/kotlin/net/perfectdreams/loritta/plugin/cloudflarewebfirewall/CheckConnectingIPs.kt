@@ -9,7 +9,7 @@ import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import io.ktor.client.request.header
 import io.ktor.client.request.put
-import io.ktor.client.response.HttpResponse
+import io.ktor.client.statement.HttpResponse
 import io.ktor.client.response.readText
 import io.ktor.content.TextContent
 import io.ktor.http.ContentType

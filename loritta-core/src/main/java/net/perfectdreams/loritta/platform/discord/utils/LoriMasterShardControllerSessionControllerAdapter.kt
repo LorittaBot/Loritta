@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.neovisionaries.ws.client.OpeningHandshakeException
 import io.ktor.client.request.delete
 import io.ktor.client.request.put
-import io.ktor.client.response.HttpResponse
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.userAgent
 import kotlinx.coroutines.runBlocking
@@ -78,9 +78,7 @@ class LoriMasterShardControllerSessionControllerAdapter : SessionControllerAdapt
 						try {
 							val status = loritta.http.put<HttpResponse>("http://${NetAddressUtils.fixIp(loritta.discordConfig.shardController.url)}/api/v1/shard/${node.shardInfo.shardId}") {
 								userAgent(loritta.lorittaCluster.getUserAgent())
-							}.use {
-								it.status
-							}
+							}.status
 
 							if (status == HttpStatusCode.OK)
 								ControllerResponseType.OK
@@ -102,7 +100,7 @@ class LoriMasterShardControllerSessionControllerAdapter : SessionControllerAdapt
 						try {
 							loritta.http.delete<HttpResponse>("http://${NetAddressUtils.fixIp(loritta.discordConfig.shardController.url)}/api/v1/shard/${node.shardInfo.shardId}") {
 								userAgent(loritta.lorittaCluster.getUserAgent())
-							}.use {}
+							}
 						} catch (e: Exception) {
 							log.error("Exception while telling master shard controller that shard ${node.shardInfo.shardId} already logged in! Other clusters may have temporary issues while logging in...", e)
 						}

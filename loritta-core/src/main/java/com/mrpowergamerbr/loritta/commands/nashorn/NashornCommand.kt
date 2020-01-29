@@ -164,13 +164,13 @@ var getGuild=function() { return contexto.getGuild(); };"""
 
 				logger.info { "Sending code to the Parallax Server Executor..." }
 
-				loritta.http.post<io.ktor.client.response.HttpResponse>("http://${NetAddressUtils.fixIp(loritta.config.parallaxCodeServer.url)}/api/v1/parallax/process-command") {
+				loritta.http.post<io.ktor.client.statement.HttpResponse>("http://${NetAddressUtils.fixIp(loritta.config.parallaxCodeServer.url)}/api/v1/parallax/process-command") {
 					userAgent(loritta.lorittaCluster.getUserAgent())
 
 					body = gson.toJson(commandRequest)
-				}.use {
-					logger.info { "Parallax code sent to the server executor!" }
 				}
+
+				logger.info { "Parallax code sent to the server executor!" }
 			} else {
 				// Funções inline para facilitar a programação de comandos
 				val inlineMethods = """
