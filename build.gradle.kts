@@ -81,6 +81,7 @@ allprojects {
 
     repositories {
         mavenLocal()
+        mavenCentral()
 
         maven("https://dl.bintray.com/kotlin/kotlin-dev/")
         maven("https://dl.bintray.com/kotlin/kotlin-eap/")

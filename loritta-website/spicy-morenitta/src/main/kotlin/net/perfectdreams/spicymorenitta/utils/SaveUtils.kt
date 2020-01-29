@@ -3,6 +3,7 @@ package net.perfectdreams.spicymorenitta.utils
 import LoriDashboard
 import io.ktor.client.request.patch
 import io.ktor.client.response.readText
+import io.ktor.client.statement.readText
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.html.*
