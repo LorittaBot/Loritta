@@ -36,8 +36,10 @@ class EvalKotlinCommand : AbstractCommand("eval", listOf("evalkt", "evalkotlin",
 			import java.awt.image.BufferedImage
 			import java.io.File
 			import javax.imageio.ImageIO
-			import kotlinx.coroutines.GlobalScope
-			import kotlinx.coroutines.launch
+			import kotlinx.coroutines.*
+			import io.ktor.client.request.*
+			import io.ktor.client.statement.*
+			import io.ktor.http.*
 
 			fun loritta(context: CommandContext, locale: LegacyBaseLocale) {
 			    GlobalScope.launch(loritta.coroutineDispatcher) {
