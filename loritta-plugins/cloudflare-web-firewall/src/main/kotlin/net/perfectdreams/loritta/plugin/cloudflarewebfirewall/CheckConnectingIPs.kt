@@ -10,7 +10,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import io.ktor.client.request.header
 import io.ktor.client.request.put
 import io.ktor.client.statement.HttpResponse
-import io.ktor.client.response.readText
+import io.ktor.client.statement.readText
 import io.ktor.content.TextContent
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
@@ -184,19 +184,19 @@ class CheckConnectingIPs(val m: CloudflareWebFirewall, val config: CloudflareCon
 
 					logger.info { jsonPayload }
 
-					loritta.http.put<HttpResponse>("https://api.cloudflare.com/client/v4/zones/${config.zoneId}/filters") {
+					val response = loritta.http.put<HttpResponse>("https://api.cloudflare.com/client/v4/zones/${config.zoneId}/filters") {
 						header("X-Auth-Email", config.authEmail)
 						header("X-Auth-Key", config.authKey)
 
 						body = TextContent(jsonPayload, ContentType.Application.Json)
-					}.use {
-						if (it.status != HttpStatusCode.OK) {
-							val responseText = it.readText()
+					}
 
-							logger.warn { "Failure while trying to update Cloudflare's Firewall Rules! Status Code ${it.status}: $responseText" }
-						} else {
-							logger.info { "Successfully updated Cloudflare's Firewall Rules!" }
-						}
+					if (response.status != HttpStatusCode.OK) {
+						val responseText = response.readText()
+
+						logger.warn { "Failure while trying to update Cloudflare's Firewall Rules! Status Code ${response.status}: $responseText" }
+					} else {
+						logger.info { "Successfully updated Cloudflare's Firewall Rules!" }
 					}
 				}
 			}
