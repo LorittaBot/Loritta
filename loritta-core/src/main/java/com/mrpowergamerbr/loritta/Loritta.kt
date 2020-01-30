@@ -50,6 +50,7 @@ import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.platform.discord.DiscordEmoteManager
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandManager
 import net.perfectdreams.loritta.platform.discord.utils.BucketedController
+import net.perfectdreams.loritta.platform.discord.utils.RateLimitChecker
 import net.perfectdreams.loritta.tables.*
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.NetAddressUtils
@@ -159,6 +160,8 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 	val cachedRetrievedArtists = CacheBuilder.newBuilder().expireAfterWrite(7, TimeUnit.DAYS)
 			.build<Long, Optional<User>>()
 	val tweetTracker = TweetTracker(this)
+	var bucketedController: BucketedController? = null
+	val rateLimitChecker = RateLimitChecker(this)
 
 	init {
 		LorittaLauncher.loritta = this
@@ -197,7 +200,8 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 				.apply {
 					if (loritta.discordConfig.shardController.enabled) {
 						logger.info { "Using shard controller (for bots with \"sharding for very large bots\" to manage shards!" }
-						this.setSessionController(BucketedController())
+						bucketedController = BucketedController()
+						this.setSessionController(bucketedController)
 					}
 				}
 				.setShardsTotal(discordConfig.discord.maxShards)

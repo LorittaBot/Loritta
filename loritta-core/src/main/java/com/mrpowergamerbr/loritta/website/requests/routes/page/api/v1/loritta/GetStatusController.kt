@@ -25,6 +25,7 @@ class GetStatusController {
 		val jsonObject = jsonObject(
 				"id" to currentShard.id,
 				"name" to currentShard.name,
+				"globalRateLimitHits" to loritta.bucketedController?.getGlobalRateLimitHitsInTheLastMinute(),
 				"minShard" to currentShard.minShard,
 				"maxShard" to currentShard.maxShard,
 				"uptime" to ManagementFactory.getRuntimeMXBean().uptime

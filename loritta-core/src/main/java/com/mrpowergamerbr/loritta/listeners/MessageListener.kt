@@ -62,6 +62,9 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 		if (event.message.type != MessageType.DEFAULT) // Existem vários tipos de mensagens no Discord, mas apenas estamos interessados nas mensagens padrões de texto
 			return
 
+		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
+			return
+
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			try {
 				val member = event.member
@@ -371,6 +374,9 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 		if (event.message.type != MessageType.DEFAULT) // Existem vários tipos de mensagens no Discord, mas apenas estamos interessados nas mensagens padrões de texto
 			return
 
+		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
+			return
+
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = loritta.getOrCreateServerConfig(-1)
 			val legacyServerConfig = LorittaLauncher.loritta.dummyLegacyServerConfig
@@ -419,6 +425,9 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		if (DebugLog.cancelAllEvents)
+			return
+
+		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
 			return
 
 		if (event.channel.type == ChannelType.TEXT) { // Mensagens em canais de texto

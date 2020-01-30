@@ -202,6 +202,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
+		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
+			return
+
 		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount())
 			return
 
@@ -378,6 +381,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
+		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
+			return
+
 		logger.debug { "${event.member} joined server ${event.guild}" }
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
@@ -455,6 +461,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		if (DebugLog.cancelAllEvents)
+			return
+
+		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
 			return
 
 		logger.debug { "${event.member} left server ${event.guild}" }

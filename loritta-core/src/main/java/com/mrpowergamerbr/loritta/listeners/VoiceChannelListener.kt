@@ -33,6 +33,9 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
+		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
+			return
+
 		onVoiceChannelConnect(event.member, event.channelJoined)
 	}
 
@@ -41,6 +44,9 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		if (DebugLog.cancelAllEvents)
+			return
+
+		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
 			return
 
 		onVoiceChannelLeave(event.member, event.channelLeft)
@@ -52,6 +58,9 @@ class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		if (DebugLog.cancelAllEvents)
+			return
+
+		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
 			return
 
 		onVoiceChannelLeave(event.member, event.channelLeft)

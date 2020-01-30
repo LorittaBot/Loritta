@@ -163,6 +163,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
+		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
+			return
+
 		// Primeiro iremos baixar o avatar em uma task
 		// Para não precisar baixar (número de shards) vezes (na pior das hipóteses), vamos criar uma task separada que irá baixar apenas uma vez
 		// A task, ao finalizar, irá propagar para o resto dos servidores
@@ -252,6 +255,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
+		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
+			return
+
 		if (!handledUsernameChanges.containsKey(event.user.idLong)) {
 			handledUsernameChanges[event.user.idLong] = UserMetaHolder(event.oldName, null)
 		} else {
@@ -271,6 +277,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 	override fun onUserUpdateDiscriminator(event: UserUpdateDiscriminatorEvent) {
 		if (DebugLog.cancelAllEvents)
+			return
+
+		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
 			return
 
 		if (!handledUsernameChanges.containsKey(event.user.idLong)) {
@@ -296,6 +305,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		if (DebugLog.cancelAllEvents)
+			return
+
+		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
 			return
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
@@ -353,6 +365,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		if (DebugLog.cancelAllEvents)
+			return
+
+		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
 			return
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
@@ -425,6 +440,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
+		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
+			return
+
 		bannedUsers.put("${event.guild.id}#${event.user.id}", true)
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
@@ -488,6 +506,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
+		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
+			return
+
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			// Fazer relay de unbans
 			if (event.guild.id == Constants.PORTUGUESE_SUPPORT_GUILD_ID) {
@@ -538,6 +559,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		if (DebugLog.cancelAllEvents)
+			return
+
+		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
 			return
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
