@@ -1,8 +1,9 @@
 package net.perfectdreams.spicymorenitta.utils
 
 import io.ktor.client.request.patch
-import io.ktor.client.response.HttpResponse
+import io.ktor.client.statement.HttpResponse
 import io.ktor.client.response.readText
+import io.ktor.client.statement.readText
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

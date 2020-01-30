@@ -15,7 +15,7 @@ dependencies {
     compile("org.jetbrains.kotlinx:kotlinx-html-js:0.6.11")
 	compile("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.0.1")
 	compile("org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.9.1")
-	compile("io.ktor:ktor-client-js:1.1.3")
+	compile("io.ktor:ktor-client-js:1.3.0")
 }
 
 tasks {

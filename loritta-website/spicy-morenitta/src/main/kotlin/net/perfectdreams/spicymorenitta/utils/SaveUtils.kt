@@ -3,6 +3,7 @@ package net.perfectdreams.spicymorenitta.utils
 import LoriDashboard
 import io.ktor.client.request.patch
 import io.ktor.client.response.readText
+import io.ktor.client.statement.readText
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.html.*
@@ -38,7 +39,7 @@ object SaveUtils {
 		LoriDashboard.showLoadingBar(locale["loritta.saving"] + "...")
 
 		GlobalScope.launch {
-			val response = http.patch<io.ktor.client.response.HttpResponse>(endpoint) {
+			val response = http.patch<io.ktor.client.statement.HttpResponse>(endpoint) {
 				body = JSON.stringify(json)
 			}
 			val body = response.readText()

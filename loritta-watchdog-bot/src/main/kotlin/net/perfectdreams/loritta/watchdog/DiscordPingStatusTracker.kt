@@ -7,8 +7,9 @@ import com.github.salomonbrys.kotson.string
 import com.rometools.rome.feed.synd.SyndEntry
 import com.rometools.rome.io.SyndFeedInput
 import io.ktor.client.request.get
-import io.ktor.client.response.HttpResponse
+import io.ktor.client.statement.HttpResponse
 import io.ktor.client.response.readText
+import io.ktor.client.statement.readText
 import mu.KotlinLogging
 import net.perfectdreams.loritta.watchdog.WatchdogBot.Companion.jsonParser
 import org.jsoup.Jsoup
