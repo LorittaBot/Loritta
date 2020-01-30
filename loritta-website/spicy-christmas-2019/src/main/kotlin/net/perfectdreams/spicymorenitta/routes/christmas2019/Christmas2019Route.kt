@@ -1,7 +1,7 @@
 package net.perfectdreams.spicymorenitta.routes.christmas2019
 
 import io.ktor.client.request.get
-import io.ktor.client.response.readText
+import io.ktor.client.statement.readText
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ImplicitReflectionSerializer

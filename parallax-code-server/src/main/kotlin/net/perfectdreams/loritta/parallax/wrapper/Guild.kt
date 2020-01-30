@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.parallax.wrapper
 import io.ktor.client.request.delete
 import io.ktor.client.request.header
 import io.ktor.client.request.put
-import io.ktor.client.response.HttpResponse
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.userAgent
 import net.perfectdreams.loritta.parallax.ParallaxServer
 

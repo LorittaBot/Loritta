@@ -5,8 +5,8 @@ import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.set
 import io.ktor.client.request.header
 import io.ktor.client.request.post
-import io.ktor.client.response.HttpResponse
-import io.ktor.client.response.readText
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.readText
 import io.ktor.http.userAgent
 import net.perfectdreams.loritta.parallax.ParallaxServer
 import net.perfectdreams.loritta.parallax.ParallaxServer.Companion.gson
