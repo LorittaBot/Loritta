@@ -95,7 +95,7 @@ class MessageListener(val m: WatchdogBot) : ListenerAdapter() {
 																"willRestartAt" to whenItWillBeRestarted
 														)
 												)
-											}
+											}.use {}
 										}
 									} catch (e: Exception) {
 										e.printStackTrace()
