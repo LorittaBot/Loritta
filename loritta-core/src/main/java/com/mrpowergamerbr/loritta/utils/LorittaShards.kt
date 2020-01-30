@@ -12,7 +12,6 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.statement.HttpResponse
-import io.ktor.client.response.readText
 import io.ktor.client.statement.readText
 import io.ktor.http.userAgent
 import kotlinx.coroutines.Deferred
@@ -175,7 +174,7 @@ class LorittaShards {
 				try {
 					withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
 						val response = loritta.http.get<HttpResponse>("https://${it.getUrl()}$path") {
-							userAgent(it.getUserAgent())
+							userAgent(loritta.lorittaCluster.getUserAgent())
 							header("Authorization", loritta.lorittaInternalApiKey.name)
 						}
 
@@ -219,7 +218,7 @@ class LorittaShards {
 					withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
 						val response = loritta.http.post<HttpResponse>("https://${it.getUrl()}/api/v1/loritta/user/search") {
 							header("Authorization", loritta.lorittaInternalApiKey.name)
-							userAgent(it.getUserAgent())
+							userAgent(loritta.lorittaCluster.getUserAgent())
 
 							body = gson.toJson(
 									jsonObject("pattern" to pattern)
@@ -262,7 +261,7 @@ class LorittaShards {
 					withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
 						val response = loritta.http.post<HttpResponse>("https://${it.getUrl()}/api/v1/loritta/guild/search") {
 							header("Authorization", loritta.lorittaInternalApiKey.name)
-							userAgent(it.getUserAgent())
+							userAgent(loritta.lorittaCluster.getUserAgent())
 
 							body = gson.toJson(
 									jsonObject("pattern" to pattern)
