@@ -126,7 +126,7 @@ object ScriptingUtils {
 
         File("${LorittaWebsite.INSTANCE.config.websiteFolder}/generated_views/${file.name}").writeText(editedCode)
 
-        logger.info {"Compiling ${file.name}..." }
+        logger.info { "Compiling ${file.name}..." }
 
         val deferred = GlobalScope.async {
             val millis = measureTimeMillisWithResult {

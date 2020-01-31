@@ -176,7 +176,7 @@ class PluginsCommand : LorittaCommand(arrayOf("plugins"), category = CommandCate
 		)
 
 		shards.map {
-			GlobalScope.async {
+			GlobalScope.async(com.mrpowergamerbr.loritta.utils.loritta.coroutineDispatcher) {
 				try {
 					val body = loritta.http.post<String>("https://${it.getUrl()}/api/v1/loritta/action/plugin_update") {
 						header("User-Agent", com.mrpowergamerbr.loritta.utils.loritta.lorittaCluster.getUserAgent())
@@ -206,7 +206,7 @@ class PluginsCommand : LorittaCommand(arrayOf("plugins"), category = CommandCate
 		val shards = com.mrpowergamerbr.loritta.utils.loritta.config.clusters
 
 		shards.map {
-			GlobalScope.async {
+			GlobalScope.async(com.mrpowergamerbr.loritta.utils.loritta.coroutineDispatcher) {
 				try {
 					val body = HttpRequest.post("https://${it.getUrl()}/api/v1/loritta/action/$action")
 							.userAgent(com.mrpowergamerbr.loritta.utils.loritta.lorittaCluster.getUserAgent())

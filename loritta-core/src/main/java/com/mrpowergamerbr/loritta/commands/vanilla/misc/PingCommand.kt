@@ -25,7 +25,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 		if (arg0 == "shards" || arg0 == "clusters") {
 			val results = lorittaShards.queryAllLorittaClusters("/api/v1/loritta/status")
 			val shardControllerStatus = if (loritta.discordConfig.shardController.enabled) {
-				GlobalScope.async {
+				GlobalScope.async(loritta.coroutineDispatcher) {
 					try {
 						val body = HttpRequest.get("http://${NetAddressUtils.fixIp(loritta.discordConfig.shardController.url)}/api/v1/login-pools")
 								.userAgent(loritta.lorittaCluster.getUserAgent())

@@ -108,7 +108,7 @@ class TweetTracker(val m: Loritta) {
 						val shards = loritta.config.clusters
 
 						shards.map {
-							GlobalScope.async {
+							GlobalScope.async(loritta.coroutineDispatcher) {
 								try {
 									val body = HttpRequest.post("https://${it.getUrl()}/api/v1/twitter/received-tweet")
 											.userAgent(loritta.lorittaCluster.getUserAgent())

@@ -123,7 +123,7 @@ class LorittaShards {
 	fun queryMasterLorittaCluster(path: String): Deferred<JsonElement> {
 		val shard = loritta.config.clusters.first { it.id == 1L }
 
-		return GlobalScope.async {
+		return GlobalScope.async(loritta.coroutineDispatcher) {
 			try {
 				val body = withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
 					val response = loritta.http.get<HttpResponse>("https://${shard.getUrl()}$path") {
@@ -145,7 +145,7 @@ class LorittaShards {
 	}
 
 	fun queryCluster(cluster: GeneralConfig.LorittaClusterConfig, path: String): Deferred<JsonElement> {
-		return GlobalScope.async {
+		return GlobalScope.async(loritta.coroutineDispatcher) {
 			try {
 				val body = withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
 					val response = loritta.http.get<HttpResponse>("https://${cluster.getUrl()}$path") {
@@ -170,13 +170,16 @@ class LorittaShards {
 		val shards = loritta.config.clusters
 
 		return shards.map {
-			GlobalScope.async {
+			GlobalScope.async(loritta.coroutineDispatcher) {
 				try {
 					withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
+						logger.info { "Executing ${path} to ${it.getUserAgent()}" }
+
 						val response = loritta.http.get<HttpResponse>("https://${it.getUrl()}$path") {
 							userAgent(loritta.lorittaCluster.getUserAgent())
 							header("Authorization", loritta.lorittaInternalApiKey.name)
 						}
+						logger.info { "Successfully got a response from ${it.getUserAgent()} for $path" }
 
 						val body = response.readText()
 						jsonParser.parse(
@@ -213,7 +216,7 @@ class LorittaShards {
 		val shards = loritta.config.clusters
 
 		val results = shards.map {
-			GlobalScope.async {
+			GlobalScope.async(loritta.coroutineDispatcher) {
 				try {
 					withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
 						val response = loritta.http.post<HttpResponse>("https://${it.getUrl()}/api/v1/loritta/user/search") {
@@ -256,7 +259,7 @@ class LorittaShards {
 		val shards = loritta.config.clusters
 
 		val results = shards.map {
-			GlobalScope.async {
+			GlobalScope.async(loritta.coroutineDispatcher) {
 				try {
 					withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
 						val response = loritta.http.post<HttpResponse>("https://${it.getUrl()}/api/v1/loritta/guild/search") {
