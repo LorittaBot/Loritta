@@ -33,21 +33,13 @@ import java.util.*
 import kotlin.reflect.full.functions
 
 class LorittaWebsite(val loritta: LorittaBot, val websiteUrl: String, var frontendFolder: String) : Kooby({
-	port(loritta.instanceConfig.loritta.website.port) // Porta do website
-	assets("/**", File(frontendFolder, "static/").toPath()).onMissing(0)
-	use(Mongodb()) // Usar extensão do MongoDB para o Jooby
-	session(MongoSessionStore::class.java) // Usar session store para o MongoDB do Jooby
-
-	err(WebsiteAPIException::class.java) { req, res, err ->
-		val cause = err.cause as WebsiteAPIException
-		res.type(MediaType.json)
-		res.send(gson.toJson(cause.payload))
-	}
-
 	// Mostrar conexões realizadas ao website
 	before { req, res ->
 		val queryString = req.urlQueryString
 		val userAgent = req.header("User-Agent").valueOrNull()
+		
+		req.set("start", System.currentTimeMillis())
+		logger.info("${req.trueIp} (${req.header("User-Agent").valueOrNull()}): ${req.method()} ${req.path()}$queryString")
 
 		if (loritta.config.loritta.website.blockedIps.contains(req.trueIp)) {
 			logger.warn("${req.trueIp} ($userAgent): ${req.method()} ${req.path()}$queryString - Request was IP blocked")
@@ -65,9 +57,17 @@ class LorittaWebsite(val loritta: LorittaBot, val websiteUrl: String, var fronte
 			if (stop)
 				return@before
 		}
+	}
 
-		req.set("start", System.currentTimeMillis())
-		logger.info("${req.trueIp} (${req.header("User-Agent").valueOrNull()}): ${req.method()} ${req.path()}$queryString")
+	port(loritta.instanceConfig.loritta.website.port) // Porta do website
+	assets("/**", File(frontendFolder, "static/").toPath()).onMissing(0)
+	use(Mongodb()) // Usar extensão do MongoDB para o Jooby
+	session(MongoSessionStore::class.java) // Usar session store para o MongoDB do Jooby
+
+	err(WebsiteAPIException::class.java) { req, res, err ->
+		val cause = err.cause as WebsiteAPIException
+		res.type(MediaType.json)
+		res.send(gson.toJson(cause.payload))
 	}
 
 	// Mostrar o tempo que demorou para processar tal request
