@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.website.utils
 
 import com.mrpowergamerbr.loritta.utils.KtsObjectLoader
+import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -128,7 +129,7 @@ object ScriptingUtils {
 
         logger.info { "Compiling ${file.name}..." }
 
-        val deferred = GlobalScope.async {
+        val deferred = GlobalScope.async(loritta.coroutineDispatcher) {
             val millis = measureTimeMillisWithResult {
                 val test = KtsObjectLoader().load<Any>(editedCode)
 

@@ -83,7 +83,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				val shards = loritta.config.clusters
 
 				val jobs = shards.map {
-					GlobalScope.async {
+					GlobalScope.async(loritta.coroutineDispatcher) {
 						try {
 							val body = HttpRequest.get("https://${it.getUrl()}/api/v1/loritta/update")
 									.userAgent(loritta.lorittaCluster.getUserAgent())
