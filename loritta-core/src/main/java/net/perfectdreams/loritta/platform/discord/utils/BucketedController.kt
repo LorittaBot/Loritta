@@ -35,9 +35,7 @@ class BucketedController @JvmOverloads constructor(@Nonnegative bucketFactor: In
 		// https://i.imgur.com/crENfcG.png
 		runBlocking {
 			rateLimitListMutex.withLock {
-				val activeRateLimits = rateLimits.filter { (10 * 60_000) > (System.currentTimeMillis() - it.hitAt) }
-				rateLimits.clear()
-				rateLimits.addAll(activeRateLimits)
+				removeOutdatedGlobalRateLimitHits()
 				rateLimits.add(
 						RateLimitHit(
 								ratelimit,
@@ -54,6 +52,12 @@ class BucketedController @JvmOverloads constructor(@Nonnegative bucketFactor: In
 				return@runBlocking rateLimits.size
 			}
 		}
+	}
+
+	fun removeOutdatedGlobalRateLimitHits() {
+		val activeRateLimits = rateLimits.filter { (10 * 60_000) > (System.currentTimeMillis() - it.hitAt) }
+		rateLimits.clear()
+		rateLimits.addAll(activeRateLimits)
 	}
 
 	override fun appendSession(node: SessionConnectNode) {

@@ -63,11 +63,13 @@ class RateLimitChecker(val m: Loritta) {
 		val shouldIgnore = rateLimitHits >= maxRequestsPer10Minutes
 
 		if (shouldIgnore) {
-			logger.warn { "All received events are cancelled and ignored due to too many global ratelimitted requests being sent! $rateLimitHits >= $maxRequestsPer10Minutes" }
+			logger.warn { "All received events are cancelled and ignored due to too many global ratelimited requests being sent! $rateLimitHits >= $maxRequestsPer10Minutes" }
 			val diff = System.currentTimeMillis() - lastRequestWipe
 
 			if (diff >= 60_000) {
-				logger.info { "Cancelling all pending requests for all shards!" }
+				logger.info { "Cancelling and removing outdated global rate limit hits..." }
+				m.bucketedController?.removeOutdatedGlobalRateLimitHits()
+
 				// Limpar todos os requests pendentes
 				cancelAllPendingRequests()
 				this.lastRequestWipe = System.currentTimeMillis()
