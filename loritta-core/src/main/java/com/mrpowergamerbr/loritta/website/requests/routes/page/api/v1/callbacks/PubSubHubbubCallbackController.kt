@@ -48,7 +48,7 @@ class PubSubHubbubCallbackController {
 	@LoriDoNotLocaleRedirect(true)
 	fun handle(req: Request, res: Response) {
 		res.type(MediaType.json)
-		/* val response = req.body().value()
+		val response = req.body().value()
 
 		logger.info { "Recebi payload do PubSubHubbub!" }
 		logger.trace { response }
@@ -308,7 +308,7 @@ class PubSubHubbubCallbackController {
 				// Stream down, streamer parou de streamar
 				streamingSince.remove(userLogin)
 			}
-		} */
+		}
 
 		res.status(Status.NO_CONTENT)
 		res.send("")
