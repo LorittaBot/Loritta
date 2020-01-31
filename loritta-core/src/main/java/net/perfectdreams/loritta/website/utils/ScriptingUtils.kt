@@ -82,13 +82,15 @@ object ScriptingUtils {
     data class WebsiteArgumentType(val kType: KType, val value: Any?, val overrideClassName: String? = null)
 
     suspend fun <T> evaluateTemplate(file: File, args: Map<String, String> = mapOf()): T {
-        if (LorittaWebsite.INSTANCE.pathCache[file] != null)
+        if (LorittaWebsite.INSTANCE.pathCache[file] != null) {
+            logger.info { "$file is already cached, loading cached version..." }
             return LorittaWebsite.INSTANCE.pathCache[file] as T
+        }
 
         val deferredCompilingFile = currentlyCompilingFiles[file]
 
         if (deferredCompilingFile != null) {
-            logger.debug { "File $file is already being compiled by something else! Waiting until it finishes compilation..." }
+            logger.info { "File $file is already being compiled by something else! Waiting until it finishes compilation..." }
 
             return deferredCompilingFile.await() as T
         }
@@ -124,7 +126,7 @@ object ScriptingUtils {
 
         File("${LorittaWebsite.INSTANCE.config.websiteFolder}/generated_views/${file.name}").writeText(editedCode)
 
-        logger.info("Compiling ${file.name}...")
+        logger.info {"Compiling ${file.name}..." }
 
         val deferred = GlobalScope.async {
             val millis = measureTimeMillisWithResult {
@@ -141,8 +143,10 @@ object ScriptingUtils {
         currentlyCompilingFiles[file] = deferred
 
         try {
+            val result = deferred.await() as T
             currentlyCompilingFiles.remove(file)
-            return deferred.await() as T
+            logger.info { "File ${file} finished compilation!" }
+            return result
         } catch (e: Exception) {
             currentlyCompilingFiles.remove(file)
             logger.error(e) { "Exception while trying to evaluate $file"}
