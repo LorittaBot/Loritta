@@ -57,8 +57,6 @@ abstract class LorittaBot(var config: GeneralConfig, var instanceConfig: General
                 this.setMaxConnPerRoute(100_000)
             }
         }
-    }.apply {
-        this.engineConfig.threadsCount = 128
     }
 
     var fanArtArtists = listOf<FanArtArtist>()
