@@ -37,7 +37,7 @@ class LorittaWebsite(val loritta: LorittaBot, val websiteUrl: String, var fronte
 	before { req, res ->
 		val queryString = req.urlQueryString
 		val userAgent = req.header("User-Agent").valueOrNull()
-		
+
 		req.set("start", System.currentTimeMillis())
 		logger.info("${req.trueIp} (${req.header("User-Agent").valueOrNull()}): ${req.method()} ${req.path()}$queryString")
 

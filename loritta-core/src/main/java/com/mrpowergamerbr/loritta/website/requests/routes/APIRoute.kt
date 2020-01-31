@@ -1,6 +1,9 @@
 package com.mrpowergamerbr.loritta.website.requests.routes
 
-import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.callbacks.*
+import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.callbacks.DiscordBotsCallbackController
+import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.callbacks.MercadoPagoCallbackController
+import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.callbacks.MixerCallbackController
+import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.callbacks.UpdateAvailableCallbackController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.channels.GetMessageGuildController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.economy.LoriTransferBalanceController
 import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.economy.TransferBalanceExternalController
@@ -47,7 +50,7 @@ class APIRoute : Jooby() {
 		use(UsersController::class.java)
 		use(GetStatusController::class.java)
 		use(GetMutualGuildsController::class.java)
-		use(RegisterUsernameChangeController::class.java)
+		// use(RegisterUsernameChangeController::class.java)
 		use(GetRaffleStatusController::class.java)
 		use(UpdateReadyController::class.java)
 		use(GetGuildInfoController::class.java)
