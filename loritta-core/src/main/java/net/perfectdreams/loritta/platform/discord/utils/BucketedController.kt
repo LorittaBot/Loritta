@@ -1,9 +1,11 @@
 package net.perfectdreams.loritta.platform.discord.utils
 
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.utils.SessionController
 import net.dv8tion.jda.api.utils.SessionController.SessionConnectNode
 import net.dv8tion.jda.api.utils.SessionControllerAdapter
-import java.util.*
 import javax.annotation.CheckReturnValue
 import javax.annotation.Nonnegative
 
@@ -14,9 +16,8 @@ import javax.annotation.Nonnegative
  */
 class BucketedController @JvmOverloads constructor(@Nonnegative bucketFactor: Int = 16) : SessionControllerAdapter() {
 	private val shardControllers: Array<SessionController?>
-	private val rateLimits = Collections.synchronizedList(
-			mutableListOf<RateLimitHit>()
-	)
+	private val rateLimits = mutableListOf<RateLimitHit>()
+	private val rateLimitListMutex = Mutex()
 
 	init {
 		require(bucketFactor >= 1) { "Bucket factor must be at least 1" }
@@ -32,16 +33,28 @@ class BucketedController @JvmOverloads constructor(@Nonnegative bucketFactor: In
 		// Após marcar o novo global ratelimit, iremos adicionar em uma lista de quantos ratelimits já recebemos neste minuto
 		// Remover todos os ratelimits que foram atingidos a mais de 10 minutos
 		// https://i.imgur.com/crENfcG.png
-		rateLimits.filterTo(rateLimits, { (10 * 60_000) > (System.currentTimeMillis() - it.hitAt) })
-		rateLimits.add(
-				RateLimitHit(
-						ratelimit,
-						System.currentTimeMillis()
+		runBlocking {
+			rateLimitListMutex.withLock {
+				val activeRateLimits = rateLimits.filter { (10 * 60_000) > (System.currentTimeMillis() - it.hitAt) }
+				rateLimits.clear()
+				rateLimits.addAll(activeRateLimits)
+				rateLimits.add(
+						RateLimitHit(
+								ratelimit,
+								System.currentTimeMillis()
+						)
 				)
-		)
+			}
+		}
 	}
 
-	fun getGlobalRateLimitHitsInTheLastMinute() = rateLimits.size
+	fun getGlobalRateLimitHitsInTheLastMinute(): Int {
+		return runBlocking {
+			rateLimitListMutex.withLock {
+				return@runBlocking rateLimits.size
+			}
+		}
+	}
 
 	override fun appendSession(node: SessionConnectNode) {
 		controllerFor(node)!!.appendSession(node)

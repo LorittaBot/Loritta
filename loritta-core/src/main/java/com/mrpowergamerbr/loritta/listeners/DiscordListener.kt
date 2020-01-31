@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
@@ -44,6 +45,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.dao.Giveaway
 import net.perfectdreams.loritta.dao.ReactionOption
 import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
+import net.perfectdreams.loritta.platform.discord.utils.RateLimitChecker
 import net.perfectdreams.loritta.tables.Giveaways
 import net.perfectdreams.loritta.tables.ReactionOptions
 import net.perfectdreams.loritta.utils.FeatureFlags
@@ -154,6 +156,10 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			if (FeatureFlags.MEMBER_COUNTER_UPDATE)
 				textChannel.manager.setTopic(formattedTopic).reason(locale["loritta.modules.counter.auditLogReason"]).queue()
 		}
+	}
+
+	override fun onReady(event: ReadyEvent) {
+		RateLimitChecker.changeRateLimiterToCustomRateLimiter(event.jda)
 	}
 
 	override fun onHttpRequest(event: HttpRequestEvent) {
