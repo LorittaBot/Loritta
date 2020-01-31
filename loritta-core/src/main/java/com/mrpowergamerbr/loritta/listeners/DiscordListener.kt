@@ -158,10 +158,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 	}
 
-	override fun onReady(event: ReadyEvent) {
-		RateLimitChecker.changeRateLimiterToCustomRateLimiter(event.jda)
-	}
-
 	override fun onHttpRequest(event: HttpRequestEvent) {
 		val copy = event.requestRaw?.newBuilder()?.build()
 		val buffer = Buffer()

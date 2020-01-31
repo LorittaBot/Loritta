@@ -7,6 +7,8 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.internal.JDAImpl
 import net.dv8tion.jda.internal.requests.RateLimiter
 import net.dv8tion.jda.internal.requests.Requester
+import net.dv8tion.jda.internal.requests.ratelimit.IBucket
+import java.util.concurrent.ConcurrentHashMap
 
 class RateLimitChecker(val m: Loritta) {
 	companion object {
@@ -24,20 +26,15 @@ class RateLimitChecker(val m: Loritta) {
 			field
 		}
 
-		fun changeRateLimiterToCustomRateLimiter(jda: JDA) {
-			val requester = requesterField.get(jda) as Requester
-			val customRateLimiter = LoriBotRateLimiter(requester)
-			rateLimiterField.set(requester, customRateLimiter)
-			logger.info { "JDA instance $jda ratelimiter was changed to $customRateLimiter!" }
+		val bucketsField by lazy {
+			val field = RateLimiter::class.java.getDeclaredField("buckets")
+			field.isAccessible = true
+			field
 		}
 
-		fun getRateLimiter(jda: JDA): LoriBotRateLimiter {
+		fun getRateLimiter(jda: JDA): RateLimiter {
 			val requester = requesterField.get(jda) as Requester
-			val customRateLimiter = LoriBotRateLimiter(requester)
-			val rateLimiter = rateLimiterField.get(customRateLimiter) as RateLimiter
-
-			if (rateLimiter !is LoriBotRateLimiter)
-				throw RuntimeException("JDA instance $jda is not using LoriBotRateLimiter!")
+			val rateLimiter = rateLimiterField.get(requester) as RateLimiter
 
 			return rateLimiter
 		}
@@ -47,9 +44,13 @@ class RateLimitChecker(val m: Loritta) {
 	var lastRequestWipe = System.currentTimeMillis()
 
 	fun getAllPendingRequests() = lorittaShards.shardManager.shards.flatMap {
-		logger.info { "Cancelling pending requests in shard $it" }
 		val rateLimiter = getRateLimiter(it)
-		rateLimiter.getAllRequests()
+		val buckets = bucketsField.get(rateLimiter) as ConcurrentHashMap<String, IBucket>
+		buckets.flatMap { it.value.requests }
+	}
+
+	fun cancelAllPendingRequests() {
+		getAllPendingRequests().map { it.cancel() }
 	}
 
 	fun checkIfRequestShouldBeIgnored(): Boolean {
@@ -68,11 +69,7 @@ class RateLimitChecker(val m: Loritta) {
 			if (diff >= 60_000) {
 				logger.info { "Cancelling all pending requests for all shards!" }
 				// Limpar todos os requests pendentes
-				lorittaShards.shardManager.shards.forEach {
-					logger.info { "Cancelling pending requests in shard $it" }
-					val rateLimiter = getRateLimiter(it)
-					rateLimiter.cancelAllRequests()
-				}
+				cancelAllPendingRequests()
 				this.lastRequestWipe = System.currentTimeMillis()
 			}
 		}
