@@ -1,14 +1,11 @@
 package com.mrpowergamerbr.loritta.utils
 
-import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.ServerConfig
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.TextChannel
-import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.perfectdreams.loritta.utils.SimpleImageInfo
 import net.perfectdreams.loritta.utils.readAllBytes
 import java.awt.image.BufferedImage
@@ -31,7 +28,7 @@ object LorittaUtils {
 	}
 
 	fun warnOwnerNoPermission(guild: Guild?, textChannel: TextChannel?, serverConf: ServerConfig) {
-		if (textChannel == null || guild == null)
+		/* if (textChannel == null || guild == null)
 			return
 
 		if (serverConf.warnOnMissingPermission) {
@@ -50,7 +47,7 @@ object LorittaUtils {
 
 				}
 			}
-		}
+		} */
 	}
 
 	/**
