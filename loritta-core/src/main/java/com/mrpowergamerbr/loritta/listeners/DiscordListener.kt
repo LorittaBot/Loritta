@@ -167,9 +167,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (input.startsWith("--")) {
 			val lines = input.lines()
 
-			requestLogger.info("${event.route.method.name} ${event.route.compiledRoute}\n${lines.take(3).joinToString("\n")}")
+			requestLogger.info("${event.route.method.name} ${event.route.compiledRoute} -> ${event.response?.code}\n${lines.take(3).joinToString("\n")}")
 		} else {
-			requestLogger.info("${event.route.method.name} ${event.route.compiledRoute}\n$input")
+			requestLogger.info("${event.route.method.name} ${event.route.compiledRoute} -> ${event.response?.code}\n$input")
 		}
 	}
 
