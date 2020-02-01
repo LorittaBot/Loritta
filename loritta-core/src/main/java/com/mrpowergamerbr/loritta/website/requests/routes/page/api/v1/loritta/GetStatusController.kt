@@ -26,6 +26,7 @@ class GetStatusController {
 				"id" to currentShard.id,
 				"name" to currentShard.name,
 				"globalRateLimitHits" to loritta.bucketedController?.getGlobalRateLimitHitsInTheLastMinute(),
+				"isIgnoringRequests" to loritta.rateLimitChecker.checkIfRequestShouldBeIgnored(),
 				"minShard" to currentShard.minShard,
 				"maxShard" to currentShard.maxShard,
 				"uptime" to ManagementFactory.getRuntimeMXBean().uptime

@@ -40,7 +40,10 @@ class RateLimitChecker(val m: Loritta) {
 		}
 	}
 
-	val maxRequestsPer10Minutes =  20_000 / m.config.clusters.size
+	// O certo era ser 20k, mas parece que o Discord é muito trigger happy com bans, então é melhor deixar um valor
+	// extremamente baixo porque ficar alguns minutos sem responder comandos é bem melhor do que ser banido por
+	// uma hora
+	val maxRequestsPer10Minutes =  3_000 / m.config.clusters.size
 	var lastRequestWipe = System.currentTimeMillis()
 
 	fun getAllPendingRequests() = lorittaShards.shardManager.shards.flatMap {
