@@ -76,7 +76,7 @@ object GiveawayManager {
                     EmbedBuilder().apply {
                         setTitle("\uD83C\uDF81 $reason")
                         setDescription("$description\n\nUse ${getReactionMention(reaction)} para entrar!")
-                        addField("⏰ Tempo restante", message, true)
+                        // addField("⏰ Tempo restante", message, true)
                         setColor(Constants.DISCORD_BLURPLE)
                         setFooter("Acabará em", null)
                         setTimestamp(Instant.ofEpochMilli(epoch))
@@ -212,7 +212,12 @@ object GiveawayManager {
                         return@launch
                     }
 
-                    val (guild, channel, message) = getGiveawayRelatedEntities(giveaway, true) ?: run {
+                    val guild= getGiveawayGuild(giveaway,true) ?: run {
+                        giveawayTasks.remove(giveaway.id.value)
+                        return@launch
+                    }
+
+                    val channel = getGiveawayTextChannel(giveaway, guild, true) ?: run {
                         giveawayTasks.remove(giveaway.id.value)
                         return@launch
                     }
@@ -232,7 +237,7 @@ object GiveawayManager {
                     )
 
                     // if (embed.fields.first().value != message.embeds.first().fields.first().value) {
-                    message.editMessage(giveawayMessage).await()
+                    // message.editMessage(giveawayMessage).await()
                     // }
 
                     // Quanto mais perto do resultado, mais "rápido" iremos atualizar a embed
