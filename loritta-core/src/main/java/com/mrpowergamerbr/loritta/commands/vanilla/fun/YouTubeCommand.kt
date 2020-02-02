@@ -38,7 +38,7 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 
 			if (items.isNotEmpty()) {
 				var format = ""
-				val youtubeKey = loritta.youtubeKey
+				val youtubeKey = loritta.config.youtube.apiKey
 				for (i in 0 until Math.min(10, items.size)) {
 					val item = items[i]
 					if (item.id["kind"].string == "youtube#video") {
@@ -75,14 +75,14 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 					// Remover todos os reactions
 					mensagem.clearReactions().queue {
 						if (item.id["kind"].string == "youtube#video") { // Se é um vídeo...
-							val response = HttpRequest.get("https://www.googleapis.com/youtube/v3/videos?id=${item.id["videoId"].string}&part=snippet,statistics&key=${loritta.youtubeKey}").body()
+							val response = HttpRequest.get("https://www.googleapis.com/youtube/v3/videos?id=${item.id["videoId"].string}&part=snippet,statistics&key=${loritta.config.youtube.apiKey}").body()
 							val parser = JsonParser()
 							val json = parser.parse(response).asJsonObject
 							val jsonItem = json["items"][0]
 							val snippet = jsonItem["snippet"].obj
 							val statistics = jsonItem["statistics"].obj
 
-							val channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${snippet.get("channelId").asString}&fields=items%2Fsnippet%2Fthumbnails&key=${loritta.youtubeKey}").body()
+							val channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${snippet.get("channelId").asString}&fields=items%2Fsnippet%2Fthumbnails&key=${loritta.config.youtube.apiKey}").body()
 							val channelJson = parser.parse(channelResponse).obj
 
 							val viewCount = statistics["viewCount"].string
@@ -116,7 +116,7 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 
 							context.metadata.put("currentItem", item)
 						} else {
-							val channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&id=${item.id["channelId"].string}&key=${loritta.youtubeKey}").body()
+							val channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&id=${item.id["channelId"].string}&key=${loritta.config.youtube.apiKey}").body()
 
 							val channelJson = jsonParser.parse(channelResponse).obj
 
@@ -148,7 +148,7 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 							var lastLikedVideoId: String? = null
 
 							if (uploadsPlaylistId != null) {
-								val uploadsPlaylistResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=$uploadsPlaylistId&maxResults=1&key=${loritta.youtubeKey}").body()
+								val uploadsPlaylistResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=$uploadsPlaylistId&maxResults=1&key=${loritta.config.youtube.apiKey}").body()
 								val uploadsPlaylist = jsonParser.parse(uploadsPlaylistResponse).obj
 
 								try {
@@ -158,7 +158,7 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 							}
 
 							if (likesPlaylistId != null) {
-								val likesPlaylistResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=$likesPlaylistId&maxResults=1&key=${loritta.youtubeKey}").body()
+								val likesPlaylistResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=$likesPlaylistId&maxResults=1&key=${loritta.config.youtube.apiKey}").body()
 								val likesPlaylist = jsonParser.parse(likesPlaylistResponse).obj
 
 								try {

@@ -19,7 +19,7 @@ class TemmieYouTube {
 	 * @return O resultado da pesquisa
 	 */
 	fun searchOnYouTube(searchQuery: String): SearchResponse {
-		val key = loritta.youtubeKey
+		val key = loritta.config.youtube.apiKey
 		val params = HashMap<String, Any>()
 		params.put("part", "snippet")
 		params.put("q", searchQuery)
@@ -28,18 +28,12 @@ class TemmieYouTube {
 
 		val body = req.body()
 
-		var searchJson = jsonParser.parse(body).obj
+		val searchJson = jsonParser.parse(body).obj
 		val responseError = MiscUtils.getResponseError(searchJson)
 		val error = responseError == "dailyLimitExceeded" || responseError == "quotaExceeded"
 
-		if (error) {
-			loritta.youtubeKeys.remove(key)
-			if (loritta.youtubeKeys.isNotEmpty()) {
-				return searchOnYouTube(searchQuery)
-			} else {
-				return null!!
-			}
-		}
+		if (error)
+			throw RuntimeException("YouTube API key had its daily limit exceeded!")
 
 		return Loritta.GSON.fromJson(body, SearchResponse::class.java)
 	}

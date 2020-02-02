@@ -177,7 +177,6 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 				clientSecret = config.mercadoPago.clientSecret
 		)
 		youtube = TemmieYouTube()
-		resetYouTubeKeys()
 		if (loritta.isMaster) // Apenas o master cluster deve carregar as fan arts, os outros clusters irão carregar pela API
 			loadFanArts()
 		Emotes.emoteManager = DiscordEmoteManager()
@@ -228,22 +227,6 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 
 		dummyLegacyServerConfig = dummy
 	}
-
-	fun resetYouTubeKeys() {
-		youtubeKeys.clear()
-		youtubeKeys.addAll(config.youtube.apiKeys)
-		lastKeyReset = Calendar.getInstance()[Calendar.DAY_OF_MONTH]
-	}
-
-	val youtubeKey: String
-		get() {
-			if (Calendar.getInstance()[Calendar.DAY_OF_MONTH] != lastKeyReset) {
-				if (Calendar.getInstance()[Calendar.HOUR_OF_DAY] == 4) {
-					resetYouTubeKeys()
-				}
-			}
-			return youtubeKeys[RANDOM.nextInt(youtubeKeys.size)]
-		}
 
 	val isMainAccount: Boolean
 		get() {

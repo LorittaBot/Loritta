@@ -46,7 +46,7 @@ class APIGetChannelInfoView : NoVarsView() {
 
 		val urlPath = URL(channelLink).path
 
-		val key = loritta.youtubeKey
+		val key = loritta.config.youtube.apiKey
 
 		try {
 			// Paths que começam com "/channel/" significa que já é um channel ID,
@@ -83,8 +83,7 @@ class APIGetChannelInfoView : NoVarsView() {
 			val error = responseError == "dailyLimitExceeded" || responseError == "quotaExceeded"
 
 			if (error) {
-				println("[!] Removendo key $key...")
-				loritta.youtubeKeys.remove(key)
+				throw RuntimeException("YouTube API key had its daily limit exceeded!")
 			} else {
 				val hasUploadsPlaylist = youTubeJsonResponse["items"].array[0]["contentDetails"].obj.get("relatedPlaylists").asJsonObject.has("uploads")
 
