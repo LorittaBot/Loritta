@@ -8,12 +8,17 @@ import com.mrpowergamerbr.loritta.utils.extensions.isValidUrl
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
+import mu.KotlinLogging
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
-import org.jsoup.Jsoup
+import java.net.URL
 
 class APIGetChannelInfoView : NoVarsView() {
+	companion object {
+		private val logger = KotlinLogging.logger {}
+	}
+
 	override fun handleRender(req: Request, res: Response, path: String): Boolean {
 		return path.matches(Regex("^/api/v1/get_channel_info"))
 	}
@@ -39,28 +44,36 @@ class APIGetChannelInfoView : NoVarsView() {
 			return json.toString()
 		}
 
-		val httpRequest = HttpRequest.get(channelLink)
-				.header("Cookie", "YSC=g_0DTrOsgy8; PREF=f1=50000000&f6=7; VISITOR_INFO1_LIVE=r8qTZn_IpAs")
-				.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36")
+		val urlPath = URL(channelLink).path
 
-		if (httpRequest.code() == 404) {
-			json["error"] = "Unknown channel"
-			return gson.toJson(json)
-		}
-
-		val body = httpRequest.body()
+		val key = loritta.youtubeKey
 
 		try {
-			val jsoup = Jsoup.parse(body)
+			// Paths que começam com "/channel/" significa que já é um channel ID,
+			// já que começam com "/user/" significa que é um username
+			// Exemplos:
+			// https://www.youtube.com/user/TeamMojang
+			// https://www.youtube.com/channel/UCZ-uXTZGSN8lmp-nrXwz7-A
+			val channelId = if (urlPath.startsWith("/channel/")) {
+				urlPath.removePrefix("/channel/")
+			} else {
+				// Se for um username, temos que converter de username -> ID
+				val username = urlPath.split("/").last()
+				logger.info { "Getting $username's channel ID..." }
+				val httpRequest = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?key=$key&forUsername=$username&part=id")
 
-			val canonicalLink = jsoup.getElementsByTag("link").firstOrNull { it.attr("rel") == "canonical" }?.attr("href") ?: run {
-				json["error"] = "Canonical Link is missing!"
-				return gson.toJson(json)
+				val body = httpRequest.body()
+				val jsonObject = jsonParser.parse(body).obj
+
+				val items = jsonObject["items"].array
+				if (items.size() == 0) {
+					json["error"] = "Unknown Channel"
+					return gson.toJson(json)
+				}
+
+				items.first()["id"].string
 			}
-
-			val channelId = canonicalLink.split("/").last()
-
-			val key = loritta.youtubeKey
+			logger.info { "Checking $channelId's channel information..." }
 
 			val response = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=contentDetails,snippet&id=$channelId&key=$key")
 					.body()
@@ -83,7 +96,8 @@ class APIGetChannelInfoView : NoVarsView() {
 			json["channelId"] = channelId
 			return gson.toJson(json)
 		} catch (e: Exception) {
-			json["raw"] = body
+			json["exception"] = e::class.qualifiedName
+			logger.warn(e) { "Exception while retrieving channel information" }
 			return gson.toJson(json)
 		}
 	}
