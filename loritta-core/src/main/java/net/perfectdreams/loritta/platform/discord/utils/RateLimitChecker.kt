@@ -45,6 +45,7 @@ class RateLimitChecker(val m: Loritta) {
 	// uma hora
 	val maxRequestsPer10Minutes =  3_000 / m.config.clusters.size
 	var lastRequestWipe = System.currentTimeMillis()
+	var lastConsoleWarn = System.currentTimeMillis()
 
 	fun getAllPendingRequests() = lorittaShards.shardManager.shards.flatMap {
 		val rateLimiter = getRateLimiter(it)
@@ -66,7 +67,12 @@ class RateLimitChecker(val m: Loritta) {
 		val shouldIgnore = rateLimitHits >= maxRequestsPer10Minutes
 
 		if (shouldIgnore) {
-			logger.warn { "All received events are cancelled and ignored due to too many global ratelimited requests being sent! $rateLimitHits >= $maxRequestsPer10Minutes" }
+			val diff2 = System.currentTimeMillis() - this.lastConsoleWarn
+			if (2_500 >= diff2) {
+				logger.warn { "All received events are cancelled and ignored due to too many global ratelimited requests being sent! $rateLimitHits >= $maxRequestsPer10Minutes" }
+				this.lastConsoleWarn = System.currentTimeMillis()
+			}
+
 			val diff = System.currentTimeMillis() - lastRequestWipe
 
 			if (diff >= 60_000) {
