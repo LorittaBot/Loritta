@@ -12,6 +12,7 @@ import com.mongodb.MongoClient
 import com.mongodb.MongoClientOptions
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
+import com.mrpowergamerbr.loritta.audio.AudioRecorder
 import com.mrpowergamerbr.loritta.commands.CommandManager
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ProfileSettings
@@ -162,6 +163,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 	val tweetTracker = TweetTracker(this)
 	var bucketedController: BucketedController? = null
 	val rateLimitChecker = RateLimitChecker(this)
+	val audioRecorder = AudioRecorder(this)
 
 	init {
 		LorittaLauncher.loritta = this

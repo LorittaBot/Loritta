@@ -24,6 +24,7 @@ import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.commands.LorittaCommandManager
 import net.perfectdreams.loritta.api.entities.User
 import net.perfectdreams.loritta.commands.vanilla.`fun`.*
+import net.perfectdreams.loritta.commands.vanilla.audio.RecordAudioCommand
 import net.perfectdreams.loritta.commands.vanilla.economy.TransactionsCommand
 import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaTopCommand
 import net.perfectdreams.loritta.commands.vanilla.social.RankGlobalCommand
@@ -59,6 +60,8 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
         registerCommand(XpNotificationsCommand())
         registerCommand(BomDiaECiaTopCommand())
         registerCommand(TransactionsCommand())
+        if (loritta.config.loritta.environment == EnvironmentType.CANARY)
+            registerCommand(RecordAudioCommand())
 
         contextManager.registerContext<User>(
                 { clazz: KClass<*> -> clazz.isSubclassOf(User::class) || clazz == User::class },
