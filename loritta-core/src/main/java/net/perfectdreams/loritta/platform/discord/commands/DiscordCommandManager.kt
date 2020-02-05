@@ -39,6 +39,7 @@ import net.perfectdreams.loritta.utils.FeatureFlags
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
+import java.util.concurrent.CancellationException
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
 
@@ -499,6 +500,11 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                 }
                 return result
             } catch (e: Exception) {
+                if (e is CancellationException) {
+                    logger.error(e) { "RestAction in command ${command::class.simpleName} has been cancelled" }
+                    return true
+                }
+
                 if (e is ErrorResponseException) {
                     if (e.errorCode == 40005) { // Request entity too large
                         if (ev.isFromType(ChannelType.PRIVATE) || (ev.isFromType(ChannelType.TEXT) && ev.textChannel != null && ev.textChannel.canTalk()))
