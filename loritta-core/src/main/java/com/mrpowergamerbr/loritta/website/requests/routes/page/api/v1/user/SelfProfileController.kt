@@ -49,15 +49,26 @@ class SelfProfileController {
 			val editedValue = Math.max(0, Math.min(config["editedValue"].int, 100))
 
 			val user2Name = config["user2NamePlusDiscriminator"].string
-			val split = user2Name.trim().split("#")
 
-			val quotedUserName = Pattern.quote(split.first())
+			val user2Id = if (user2Name.isValidSnowflake()) {
+				runBlocking { lorittaShards.retrieveUserById(user2Name) }?.idLong
+			} else {
+				val split = user2Name.trim().split("#")
 
-			val userResults = runBlocking {
-				lorittaShards.searchUserInAllLorittaClusters("^$quotedUserName$#${split[1]}")
-			}
+				val quotedUserName = Pattern.quote(split.first())
 
-			val user = userResults.firstOrNull() ?: throw WebsiteAPIException(Status.NOT_FOUND,
+				val userResults = runBlocking {
+					lorittaShards.searchUserInAllLorittaClusters("^$quotedUserName$#${split[1]}")
+				}
+
+				val user = userResults.firstOrNull() ?: throw WebsiteAPIException(Status.NOT_FOUND,
+						WebsiteUtils.createErrorPayload(
+								LoriWebCode.UNKNOWN_USER
+						)
+				)
+
+				user["id"].long
+			} ?: throw WebsiteAPIException(Status.NOT_FOUND,
 					WebsiteUtils.createErrorPayload(
 							LoriWebCode.UNKNOWN_USER
 					)
@@ -70,8 +81,6 @@ class SelfProfileController {
 						)
 				)
 			}
-
-			val user2Id = user["id"].long
 
 			transaction(Databases.loritta) {
 				ShipEffect.new {
