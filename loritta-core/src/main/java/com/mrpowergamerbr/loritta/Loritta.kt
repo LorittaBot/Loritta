@@ -12,6 +12,7 @@ import com.mongodb.MongoClient
 import com.mongodb.MongoClientOptions
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
+import com.mrpowergamerbr.loritta.audio.AudioManager
 import com.mrpowergamerbr.loritta.audio.AudioRecorder
 import com.mrpowergamerbr.loritta.commands.CommandManager
 import com.mrpowergamerbr.loritta.dao.Profile
@@ -164,6 +165,12 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 	var bucketedController: BucketedController? = null
 	val rateLimitChecker = RateLimitChecker(this)
 	val audioRecorder = AudioRecorder(this)
+	val audioManager: AudioManager? by lazy {
+		if (loritta.discordConfig.lavalink.enabled)
+			AudioManager(this)
+		else
+			null
+	}
 
 	init {
 		LorittaLauncher.loritta = this
@@ -203,6 +210,12 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 						logger.info { "Using shard controller (for bots with \"sharding for very large bots\" to manage shards!" }
 						bucketedController = BucketedController()
 						this.setSessionController(bucketedController)
+					}
+
+					// Lavalink Support
+					if (loritta.discordConfig.lavalink.enabled) {
+						addEventListeners(audioManager!!.lavalink)
+						setVoiceDispatchInterceptor(audioManager!!.lavalink.voiceInterceptor)
 					}
 				}
 				.setShardsTotal(discordConfig.discord.maxShards)
@@ -396,7 +409,8 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 					TrackedTwitterAccounts,
 					TrackedRssFeeds,
 					DefaultRssFeeds,
-					SonhosTransaction
+					SonhosTransaction,
+					LavalinkTracks
 			)
 		}
 	}

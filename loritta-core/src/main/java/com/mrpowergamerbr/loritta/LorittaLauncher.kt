@@ -31,10 +31,6 @@ object LorittaLauncher {
 			}
 		}
 
-		// https://bugs.openjdk.java.net/browse/JDK-7016595
-		// Nós precisamos ativar o PATCH manualmente
-		// WebsiteUtils.allowMethods("PATCH")
-
 		// https://www.reddit.com/r/Kotlin/comments/8qdd4x/kotlin_script_engine_and_your_classpaths_what/
 		val path = this::class.java.protectionDomain.codeSource.location.path
 		val jar = JarFile(path)
