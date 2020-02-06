@@ -186,7 +186,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildMessageReactionRemove(event: GuildMessageReactionRemoveEvent) {
-		if (event.user.isBot)
+		val user = event.user ?: return
+
+		if (user.isBot)
 			return
 
 		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
@@ -198,7 +200,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGenericMessageReaction(e: GenericMessageReactionEvent) {
-		if (e.user.isBot) // Ignorar reactions de bots
+		val user = e.user ?: return
+
+		if (user.isBot) // Ignorar reactions de bots
 			return
 
 		if (DebugLog.cancelAllEvents)
@@ -224,7 +228,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 				}
 
-				if (e.user.id == functions.originalAuthor && (functions.onReactionAddByAuthor != null || functions.onReactionByAuthor != null)) {
+				if (user.id == functions.originalAuthor && (functions.onReactionAddByAuthor != null || functions.onReactionByAuthor != null)) {
 					GlobalScope.launch(loritta.coroutineDispatcher) {
 						try {
 							functions.onReactionByAuthor?.invoke(e)
@@ -247,7 +251,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 				}
 
-				if (e.user.id == functions.originalAuthor && (functions.onReactionRemoveByAuthor != null || functions.onReactionByAuthor != null)) {
+				if (user.id == functions.originalAuthor && (functions.onReactionRemoveByAuthor != null || functions.onReactionByAuthor != null)) {
 					GlobalScope.launch(loritta.coroutineDispatcher) {
 						try {
 							functions.onReactionByAuthor?.invoke(e)

@@ -88,6 +88,8 @@ object ReactionModule {
     }
 
     suspend fun onReactionRemove(event: GuildMessageReactionRemoveEvent) {
+        val member = event.member ?: return
+
         // Ao remover uma reação, vamos pegar se existe algum reaction role baseado nesta reação escolhida
         val reaction = if (event.reactionEmote.isEmote) {
             event.reactionEmote.emote.id
@@ -104,17 +106,17 @@ object ReactionModule {
             }.firstOrNull()
         } ?: return
 
-        if (removedReactionByLorittaCache.contains("${event.member.user.id}-${option.id.value}")) { // Caso tenha sido a própria Lori que tenha removido a reação, só ignore! A gente não liga!
-            removedReactionByLorittaCache.remove("${event.member.user.id}-${option.id.value}")
+        if (removedReactionByLorittaCache.contains("${member.user.id}-${option.id.value}")) { // Caso tenha sido a própria Lori que tenha removido a reação, só ignore! A gente não liga!
+            removedReactionByLorittaCache.remove("${member.user.id}-${option.id.value}")
             return
         }
 
         // Agora nós já temos a opção desejada, só remover os cargos para o usuário!
         val roles = option.roleIds.mapNotNull { event.guild.getRoleById(it) }
 
-        val mutex = mutexes.getOrPut(event.member.user.idLong) { Mutex() }
+        val mutex = mutexes.getOrPut(member.idLong) { Mutex() }
         mutex.withLock {
-            removeRolesFromMember(event.member, option, roles)
+            removeRolesFromMember(member, option, roles)
         }
     }
 

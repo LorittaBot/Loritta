@@ -89,7 +89,7 @@ class AkinatorCommand : LorittaCommand(arrayOf("akinator"), CommandCategory.FUN)
         )
 
         message.onReactionAddByAuthor(context) {
-            it.reaction.removeReaction(it.user).await()
+            it.reaction.removeReaction(it.user ?: return@onReactionAddByAuthor).await()
 
             when {
                 it.reactionEmote.isEmote("✅") -> {
