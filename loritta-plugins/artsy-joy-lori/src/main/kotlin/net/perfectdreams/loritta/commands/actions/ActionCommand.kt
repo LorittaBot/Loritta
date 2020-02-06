@@ -126,7 +126,9 @@ abstract class ActionCommand(labels: Array<String>) : LorittaCommand(labels, Com
             message.addReaction("\uD83D\uDD01").queue()
 
             message.onReactionAdd(context) {
-                if (it.reactionEmote.name == "\uD83D\uDD01" && it.user.id == receiver.id) {
+                val user = it.user ?: return@onReactionAdd
+
+                if (it.reactionEmote.name == "\uD83D\uDD01" && user.id == receiver.id) {
                     message.removeAllFunctions()
 
                     runAction(context, receiver, recProfile, user, null)
