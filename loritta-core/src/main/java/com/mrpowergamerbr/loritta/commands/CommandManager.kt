@@ -538,15 +538,13 @@ class CommandManager {
 				transaction(Databases.loritta) {
 					lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
 
-					if (FeatureFlags.LOG_COMMANDS) {
-						ExecutedCommandsLog.insert {
-							it[userId] = lorittaUser.user.idLong
-							it[guildId] = if (ev.message.isFromGuild) ev.message.guild.idLong else null
-							it[channelId] = ev.message.channel.idLong
-							it[sentAt] = System.currentTimeMillis()
-							it[ExecutedCommandsLog.command] = command::class.simpleName ?: "UnknownCommand"
-							it[ExecutedCommandsLog.message] = ev.message.contentRaw
-						}
+					ExecutedCommandsLog.insert {
+						it[userId] = lorittaUser.user.idLong
+						it[guildId] = if (ev.message.isFromGuild) ev.message.guild.idLong else null
+						it[channelId] = ev.message.channel.idLong
+						it[sentAt] = System.currentTimeMillis()
+						it[ExecutedCommandsLog.command] = command::class.simpleName ?: "UnknownCommand"
+						it[ExecutedCommandsLog.message] = ev.message.contentRaw
 					}
 				}
 

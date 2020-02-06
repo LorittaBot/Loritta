@@ -277,9 +277,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			output.close()
 
 			val outputFile = File(fileName)
-
-			if (FeatureFlags.OPTIMIZE_ANIMATED_PROFILES)
-				MiscUtils.optimizeGIF(outputFile)
+			MiscUtils.optimizeGIF(outputFile)
 
 			context.sendFile(outputFile, "lori_profile.gif", "📝 **|** " + context.getAsMention(true) + context.legacyLocale["PEFIL_PROFILE"]) // E agora envie o arquivo
 		}
