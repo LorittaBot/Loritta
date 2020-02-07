@@ -59,7 +59,7 @@ dependencies {
     compile("com.sun.xml.bind:jaxb-core:2.3.0.1")
     compile("com.sun.xml.bind:jaxb-impl:2.3.2")
     compile("javax.activation:activation:1.1.1")
-    compile("net.dv8tion:JDA:$jdaVersion")
+    compile("com.github.DV8FromTheWorld:JDA:b8eb9c92ec")
     compile("org.mongodb:mongodb-driver:3.11.2")
     compile("org.postgresql:postgresql:42.2.8")
     compile("com.zaxxer:HikariCP:3.4.1")

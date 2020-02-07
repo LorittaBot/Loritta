@@ -204,7 +204,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 				.writeTimeout(discordConfig.okHttp.writeTimeout, TimeUnit.SECONDS)
 				.protocols(listOf(Protocol.HTTP_1_1)) // https://i.imgur.com/FcQljAP.png
 
-		builder = DefaultShardManagerBuilder()
+		builder = DefaultShardManagerBuilder.createDefault(discordConfig.discord.clientToken)
 				.apply {
 					if (loritta.discordConfig.shardController.enabled) {
 						logger.info { "Using shard controller (for bots with \"sharding for very large bots\" to manage shards!" }
