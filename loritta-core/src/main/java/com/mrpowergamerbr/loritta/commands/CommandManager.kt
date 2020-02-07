@@ -164,7 +164,6 @@ class CommandManager {
 		commandMap.add(AddEmojiCommand())
 		commandMap.add(RemoveEmojiCommand())
 		commandMap.add(EmojiInfoCommand())
-		commandMap.add(OldMembersCommand())
 
 		// =======[ MINECRAFT ]========
 		commandMap.add(OfflineUUIDCommand())
