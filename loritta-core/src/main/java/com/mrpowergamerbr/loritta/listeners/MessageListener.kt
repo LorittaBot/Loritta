@@ -173,11 +173,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						// Qual é o cargo que não permite utilizar os meus comandos?
 						val roles = member.roles.toMutableList()
 
-						val everyone = member.guild.publicRole
-						if (everyone != null) {
-							roles.add(everyone)
-						}
-
+						roles.add(member.guild.publicRole)
 						roles.sortByDescending { it.position }
 
 						var ignoringCommandsRole: Role? = null
