@@ -76,32 +76,6 @@ class OrkutProfileCreator : ProfileCreator {
 			startX -= graphics.fontMetrics.charWidth(ch)
 			graphics.drawString(ch.toString(), startX, 291)
 		}
-
-		val mutualGuildsByUsers = lorittaShards.getMutualGuilds(user).filter { it.iconUrl != null }.sortedByDescending { it.members.size }
-
-		var startGuildX = 252
-		var startGuildY = 400
-
-		graphics.color = Color(42, 127, 212)
-		graphics.font = whitneyMedium16
-		for ((index, guild) in mutualGuildsByUsers.withIndex()) {
-			if (index == 8)
-				break
-			if (index == 4) {
-				startGuildX = 252
-				startGuildY += 113 + 26
-			}
-
-			if (guild.iconUrl != null) {
-				val icon = LorittaUtils.downloadImage(guild.iconUrl!!)!!.getScaledInstance(113, 113, BufferedImage.SCALE_SMOOTH)
-				graphics.drawImage(icon, startGuildX, startGuildY, null)
-				graphics.drawText(guild.name, startGuildX, startGuildY + 113 + 18, startGuildX + 113)
-				startGuildX += 113 + 12
-			}
-		}
-
-		graphics.color = Color(51, 51, 93)
-		graphics.drawString("Comunidades (${mutualGuildsByUsers.size})", 226, 332)
 		return base
 	}
 }
