@@ -56,13 +56,6 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 		val voiceChannelCount = guild["count"]["voiceChannels"].int
 		val timeCreated = guild["timeCreated"].long
 		val timeJoined = guild["timeJoined"].long
-		val memberCount = guild["count"]["members"].int
-		val onlineMembers = guild["count"]["onlineMembers"].int
-		val idleMembers = guild["count"]["idleMembers"].int
-		val doNotDisturbMembers = guild["count"]["doNotDisturbMembers"].int
-		val offlineMembers = guild["count"]["offlineMembers"].int
-		val bots = guild["count"]["bots"].int
-		val users = memberCount - bots
 
 		// Baseado no comando ?serverinfo do Dyno
 		embed.setThumbnail(iconUrl) // Ícone da Guild
@@ -78,7 +71,6 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 		embed.addField("\uD83D\uDCC5 ${context.legacyLocale["SERVERINFO_CREATED_IN"]}", "${timeCreated.humanize(locale)} ($createdAtDiff)", true)
 		val joinedAtDiff = DateUtils.formatDateDiff(timeJoined, locale)
 		embed.addField("\uD83C\uDF1F ${context.legacyLocale["SERVERINFO_JOINED_IN"]}", "${timeJoined.humanize(locale)} ($joinedAtDiff)", true)
-		embed.addField("👥 ${context.legacyLocale["SERVERINFO_MEMBERS"]} ($memberCount)", "<:online:313956277808005120> **${context.legacyLocale.get("SERVERINFO_ONLINE")}:** $onlineMembers |<:away:313956277220802560> **${context.legacyLocale.get("SERVERINFO_AWAY")}:** $idleMembers |<:dnd:313956276893646850> **${context.legacyLocale.get("SERVERINFO_BUSY")}:** $doNotDisturbMembers |<:offline:313956277237710868> **${context.legacyLocale.get("SERVERINFO_OFFLINE")}:** $offlineMembers\n\uD83D\uDE4B **${context.legacyLocale.get("SERVERINFO_PEOPLE")}:** $users\n\uD83E\uDD16 **${context.legacyLocale["SERVERINFO_BOTS"]}:** $bots", true) // Membros da Guild
 
 		context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
 	}
