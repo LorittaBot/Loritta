@@ -66,29 +66,6 @@ class UserProfileController {
         }
 
         variables["favoriteEmotes"] = listOf<Emote>()
-
-        val mutualGuilds = lorittaShards.getMutualGuilds(user).sortedByDescending { it.members.size }
-
-        val serverConfigs = loritta.serversColl.find(
-                Filters.`in`("_id", mutualGuilds.map { it.id })
-        ).toMutableList()
-
-        variables["mutualGuilds"] = mutualGuilds
-
-        val ownerOfGuilds = mutableListOf<Guild>()
-        val inGuildListEnabled = mutableListOf<Guild>()
-        val notInGuildList = mutableListOf<Guild>()
-        val onlineCount = mutableMapOf<Guild, Int>()
-
-        for (guild in mutualGuilds) {
-            notInGuildList.add(guild)
-        }
-
-        variables["ownerOfGuilds"] = ownerOfGuilds.sortedByDescending { it.members.size }
-        variables["inGuildListEnabled"] = inGuildListEnabled
-        variables["notInGuildList"] = notInGuildList
-        variables["onlineCount"] = onlineCount
-
         return evaluate("profile.html", variables)
     }
 }
