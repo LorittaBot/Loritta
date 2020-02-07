@@ -52,7 +52,7 @@ object WebsiteVoteUtils {
 				DonationKey.new {
 					this.userId = userId
 					this.expiresAt = System.currentTimeMillis() + Constants.ONE_MONTH_IN_MILLISECONDS
-					this.value = 59.99
+					this.value = 199.99
 				}
 			}
 
