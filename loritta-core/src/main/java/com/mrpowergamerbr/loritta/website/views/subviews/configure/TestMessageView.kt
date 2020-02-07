@@ -46,7 +46,6 @@ class TestMessageView : ConfigureView() {
 		customTokens.put("userAvatarUrl", "https://cdn.discordapp.com/avatars/${userIdentification.id}/${userIdentification.avatar}.png")
 		customTokens.put("nickname", nickname ?: "???")
 		customTokens.put("guild", guild.name)
-		customTokens.put("guildsize", guild.members.size.toString())
 		customTokens.put("@owner", guild.owner?.asMention ?: "???")
 		customTokens.put("owner", guild.owner?.effectiveName ?: "???")
 		customTokens.put("@staff", "<@${loritta.discordConfig.discord.clientId}>")

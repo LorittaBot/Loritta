@@ -616,13 +616,11 @@ object LoriDashboard {
 		val nickname = selfUser.name
 		val avatarUrl = selfUser.avatar
 		var guildName = ""
-		var guildSize = ""
 		val mentionOwner = ""
 		val owner = ""
 
 		if (serverConfig != null) {
 			guildName = serverConfig.guildName
-			guildSize = serverConfig.memberCount.toString()
 		}
 		for ((token, value) in customTokens) {
 			message = message.replace("{$token}", value ?: "\uD83E\uDD37")
@@ -635,7 +633,6 @@ object LoriDashboard {
 		message = message.replace("{user-discriminator}", userDiscriminator)
 		message = message.replace("{nickname}", nickname)
 		message = message.replace("{guild}", guildName)
-		message = message.replace("{guild-size}", guildSize)
 		message = message.replace("{@owner}", mentionOwner)
 		message = message.replace("{owner}", owner)
 

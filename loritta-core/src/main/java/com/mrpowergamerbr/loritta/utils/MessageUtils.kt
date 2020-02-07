@@ -87,7 +87,6 @@ object MessageUtils {
 		var nickname = ""
 		var avatarUrl = ""
 		var guildName = ""
-		var guildSize = ""
 		var mentionOwner = ""
 		var owner = ""
 
@@ -114,7 +113,6 @@ object MessageUtils {
 				}
 				if (source is Guild) {
 					guildName = source.name
-					guildSize = source.members.size.toString()
 					mentionOwner = source.owner?.asMention ?: "???"
 					owner = source.owner?.effectiveName ?: "???"
 					tokens["guild-icon-url"] = source.iconUrl?.replace("jpg", "png")
@@ -141,8 +139,6 @@ object MessageUtils {
 		message = message.replace("{user-discriminator}", userDiscriminator)
 		message = message.replace("{nickname}", nickname.escapeMentions())
 		message = message.replace("{guild}", guildName.escapeMentions())
-		message = message.replace("{guildsize}", guildSize)
-		message = message.replace("{guild-size}", guildSize)
 		message = message.replace("{@owner}", mentionOwner)
 		message = message.replace("{owner}", owner.escapeMentions())
 

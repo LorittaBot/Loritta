@@ -22,8 +22,6 @@ class MemberCounterConfig @BsonCreator constructor(
 			CounterUtils.getEmojis(theme)
 		}
 
-		return topic.replace("{guildsize}", guild.members.size.toString())
-				.replace("{guild-size}", guild.members.size.toString())
-				.replace("{counter}", CounterUtils.generatePrettyCounter(guild.members.size, emojis, padding))
+		return topic.replace("{counter}", CounterUtils.generatePrettyCounter(guild.members.size, emojis, padding))
 	}
 }
