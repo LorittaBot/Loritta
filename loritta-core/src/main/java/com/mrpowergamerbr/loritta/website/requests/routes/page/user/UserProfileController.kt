@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page.user
 
 import com.github.salomonbrys.kotson.fromJson
-import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand
 import com.mrpowergamerbr.loritta.network.Databases
@@ -13,9 +12,7 @@ import com.mrpowergamerbr.loritta.website.LoriRequiresVariables
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.evaluate
 import kotlinx.coroutines.runBlocking
-import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Emote
-import net.dv8tion.jda.api.entities.Guild
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.Request
 import org.jooby.Response

@@ -79,7 +79,7 @@ class ChangeBanner(val m: QuirkyStuff, val config: QuirkyConfig) {
 					?.firstIsInstanceOrNull<FanArtArtist.SocialNetwork.DiscordSocialNetwork>()
 					?.id
 
-			artistUser = lorittaShards.getUserById(discordId)
+			artistUser = lorittaShards.retrieveUserById(discordId)
 		}
 
 		randomBanner!!
