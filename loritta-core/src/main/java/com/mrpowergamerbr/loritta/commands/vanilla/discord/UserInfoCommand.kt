@@ -105,12 +105,6 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			if (member != null) {
 				val accountJoinedDiff = DateUtils.formatDateDiff(member.timeJoined.toInstant().toEpochMilli(), context.legacyLocale)
 				addField("\uD83C\uDF1F ${context.legacyLocale.toNewLocale()["commands.discord.userInfo.accountJoined"]}", accountJoinedDiff, true)
-
-				addField(
-						"\uD83D\uDC81 ${locale.toNewLocale()["commands.discord.userInfo.joinPosition"]}",
-						locale.toNewLocale()["commands.discord.userInfo.joinPlace", "${member.guild.members.sortedBy { it.timeJoined }.indexOf(member) + 1}º"],
-						true
-				)
 			}
 
 			if (lorittaProfile.lastMessageSentAt != 0L) {
