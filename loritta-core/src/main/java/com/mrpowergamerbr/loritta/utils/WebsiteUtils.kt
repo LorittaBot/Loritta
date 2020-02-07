@@ -799,7 +799,6 @@ object WebsiteUtils {
 		}
 
 		serverConfigJson["guildName"] = guild.name
-		serverConfigJson["memberCount"] = guild.members.size
 
 		return serverConfigJson
 	}
