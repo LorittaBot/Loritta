@@ -13,6 +13,7 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.trueIp
 import com.mrpowergamerbr.loritta.utils.locale.PersonalPronoun
 import com.mrpowergamerbr.loritta.website.*
@@ -85,7 +86,7 @@ class UserReputationController {
 				if (channel != null) {
 					if (!channel.canTalk()) // Eu não posso falar!
 						return
-					val member = channel.guild.getMemberById(giverId)
+					val member = runBlocking { channel.guild.retrieveMemberById(giverId).await() }
 					if (member == null || !channel.canTalk(member)) // O usuário não está no servidor ou não pode falar no chat
 						return
 

@@ -1,8 +1,6 @@
 package com.mrpowergamerbr.loritta.website.views.subviews.api.config
 
-import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.fromJson
-import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.set
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -11,10 +9,12 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.views.subviews.api.NoVarsView
+import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.Permission
 import org.jooby.Request
 import org.jooby.Response
@@ -58,7 +58,7 @@ class APIGetServerConfigView : NoVarsView() {
 		}
 
 		val id = userIdentification.id
-		val member = server.getMemberById(id)
+		val member = runBlocking { server.retrieveMemberById(id).await() }
 		var canAccessDashboardViaPermission = false
 		var hasAdministrationOrManageServerPermission = false
 

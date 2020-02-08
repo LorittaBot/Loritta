@@ -3,11 +3,13 @@ package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.guild
 import com.github.salomonbrys.kotson.*
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.trueIp
 import com.mrpowergamerbr.loritta.website.LoriAuthLevel
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriRequiresAuth
 import com.mrpowergamerbr.loritta.website.LoriWebCode
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import org.jooby.MediaType
@@ -60,7 +62,7 @@ class SendMessageGuildController {
 				when (str) {
 					"user" -> sources.add(lorittaShards.getUserById(userIdentification.id)!!)
 					"member" -> {
-						val member = guild.getMemberById(userIdentification.id)
+						val member = runBlocking { guild.retrieveMemberById(userIdentification.id).await() }
 
 						if (member != null)
 							sources.add(member)

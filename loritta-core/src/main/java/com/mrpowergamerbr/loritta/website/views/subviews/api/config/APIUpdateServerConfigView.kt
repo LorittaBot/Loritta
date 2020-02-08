@@ -5,10 +5,12 @@ import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.views.subviews.api.NoVarsView
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.AutorolePayload
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.ModerationPayload
+import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.utils.ActionType
 import net.perfectdreams.loritta.utils.auditlog.WebAuditLogUtils
@@ -54,7 +56,7 @@ class APIUpdateServerConfigView : NoVarsView() {
 		}
 
 		val id = userIdentification.id
-		val member = server.getMemberById(id)
+		val member = runBlocking { server.retrieveMemberById(id).await() }
 
 		if (member == null) { // not in server
 			val payload = JsonObject()

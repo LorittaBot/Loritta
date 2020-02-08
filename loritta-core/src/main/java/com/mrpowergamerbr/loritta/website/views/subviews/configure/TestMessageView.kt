@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.oauth2.SimpleUserIdentification
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.MessageUtils
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.runBlocking
@@ -34,7 +35,7 @@ class TestMessageView : ConfigureView() {
 
 		var message = content
 		val userIdentification = req.ifGet<SimpleUserIdentification>("userIdentification").get()
-		val member = guild.getMemberById(userIdentification.id)
+		val member = runBlocking { guild.retrieveMemberById(userIdentification.id).await() }
 		val nickname = member?.effectiveName
 
 		val customTokens = mutableMapOf<String, String>()

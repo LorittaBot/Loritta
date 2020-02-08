@@ -6,11 +6,13 @@ import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriWebCode
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.jooby.Request
 import org.jooby.Response
@@ -70,7 +72,7 @@ class StoreItemsGuildController {
 
 		val id = userIdentification.id
 		if (!loritta.config.isOwner(id)) {
-			val member = server.getMemberById(id)
+			val member = runBlocking { server.retrieveMemberById(id).await() }
 
 			if (member == null) {
 				res.status(Status.BAD_REQUEST)

@@ -1,9 +1,11 @@
 package com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.parallax
 
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriAuthLevel
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriRequiresAuth
+import kotlinx.coroutines.runBlocking
 import org.jooby.MediaType
 import org.jooby.Request
 import org.jooby.Response
@@ -21,7 +23,7 @@ class AddRoleToMemberController {
 
 		try {
 			val guild = lorittaShards.getGuildById(guildId)!!
-			val member = guild.getMemberById(memberId)!!
+			val member = runBlocking { guild.retrieveMemberById(memberId)!!.await() }
 			val role = guild.getRoleById(roleId)!!
 
 			if (guild.selfMember.canInteract(role)) {

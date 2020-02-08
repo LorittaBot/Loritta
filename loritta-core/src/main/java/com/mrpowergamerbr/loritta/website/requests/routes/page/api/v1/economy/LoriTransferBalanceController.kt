@@ -5,11 +5,13 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.website.LoriAuthLevel
 import com.mrpowergamerbr.loritta.website.LoriDoNotLocaleRedirect
 import com.mrpowergamerbr.loritta.website.LoriRequiresAuth
 import com.mrpowergamerbr.loritta.website.LoriWebCode
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
@@ -96,7 +98,7 @@ class LoriTransferBalanceController {
 			return
 		}
 
-		val member = guild.getMemberById(userId)
+		val member = runBlocking { guild.retrieveMemberById(userId).await() }
 
 		if (member == null) {
 			res.status(Status.BAD_REQUEST)
@@ -107,7 +109,7 @@ class LoriTransferBalanceController {
 			return
 		}
 
-		val receiver = guild.getMemberById(receiverId)
+		val receiver = runBlocking { guild.retrieveMemberById(receiverId).await() }
 
 		if (receiver == null) {
 			res.status(Status.BAD_REQUEST)

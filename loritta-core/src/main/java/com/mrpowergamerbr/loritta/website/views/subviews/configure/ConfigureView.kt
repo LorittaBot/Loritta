@@ -4,9 +4,11 @@ import com.mrpowergamerbr.loritta.oauth2.SimpleUserIdentification
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.urlQueryString
 import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
 import com.mrpowergamerbr.loritta.website.views.subviews.ProtectedView
+import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.utils.DiscordUtils
@@ -48,7 +50,7 @@ abstract class ConfigureView : ProtectedView() {
 		val legacyServerConfig = loritta.getServerConfigForGuild(guildId)
 
 		val id = userIdentification.id
-		val member = jdaGuild.getMemberById(id)
+		val member = runBlocking { jdaGuild.retrieveMemberById(id).await() }
 		var canAccessDashboardViaPermission = false
 
 		if (member != null) {

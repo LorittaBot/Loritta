@@ -15,6 +15,7 @@ import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.tables.DonationKeys
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
 import com.mrpowergamerbr.loritta.utils.extensions.urlQueryString
 import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
@@ -24,6 +25,7 @@ import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.OptimizeAssets
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
+import kotlinx.coroutines.runBlocking
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
 import mu.KotlinLogging
@@ -219,7 +221,7 @@ object WebsiteUtils {
 					null
 				}
 
-				val user = lorittaShards.getUserById(storedId)
+				val user = runBlocking { lorittaShards.retrieveUserById(storedId) }
 
 				if (forceReauthentication || user == null) {
 					discordAuth.isReady(true)
@@ -377,7 +379,7 @@ object WebsiteUtils {
 
 		val id = userIdentification.id
 		if (!loritta.config.isOwner(id)) {
-			val member = server.getMemberById(id)
+			val member = runBlocking { server.retrieveMemberById(id).await() }
 
 			if (member == null) {
 				res.status(Status.BAD_REQUEST)
@@ -472,7 +474,7 @@ object WebsiteUtils {
 
 		val id = userIdentification.id
 		if (!loritta.config.isOwner(id)) {
-			val member = server.getMemberById(id)
+			val member = runBlocking { server.retrieveMemberById(id).await() }
 
 			if (member == null) {
 				res.status(Status.BAD_REQUEST)
@@ -540,7 +542,7 @@ object WebsiteUtils {
 				"blacklistedWarning" to serverConfig.blacklistedWarning
 		)
 
-		val selfMember = transformToJson(lorittaShards.getUserById(user.id)!!)
+		val selfMember = transformToJson(runBlocking { lorittaShards.retrieveUserById(user.id)!! })
 		selfMember["donationKeys"] = transaction(Databases.loritta) {
 			val donationKeys = DonationKey.find {
 				DonationKeys.userId eq user.id.toLong()
@@ -694,7 +696,7 @@ object WebsiteUtils {
 						"id" to donationKey.id.value,
 						"value" to donationKey.value,
 						"expiresAt" to donationKey.expiresAt,
-						"user" to transformToJson(lorittaShards.getUserById(donationKey.userId)!!)
+						"user" to transformToJson(runBlocking { lorittaShards.retrieveUserById(donationKey.userId)!! })
 				)
 			}
 		}
@@ -786,7 +788,7 @@ object WebsiteUtils {
 		serverConfigJson["emotes"] = emotes
 		serverConfigJson["permissions"] = gson.toJsonTree(guild.selfMember.permissions.map { it.name })
 
-		val user = lorittaShards.getUserById(userIdentification.id)
+		val user = runBlocking { lorittaShards.retrieveUserById(userIdentification.id) }
 
 		if (user != null) {
 			val selfUser = jsonObject(

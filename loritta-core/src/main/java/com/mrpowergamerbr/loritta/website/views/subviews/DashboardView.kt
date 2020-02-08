@@ -8,10 +8,12 @@ import com.mrpowergamerbr.loritta.oauth2.SimpleUserIdentification
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.evaluate
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jooby.Request
 import org.jooby.Response
@@ -51,7 +53,7 @@ class DashboardView : ProtectedView() {
 		val guilds = userGuilds.filter {
 			val guild = lorittaShards.getGuildById(it.id)
 			if (guild != null) {
-				val member = guild.getMemberById(lorittaProfile.userId)
+				val member = runBlocking { guild.retrieveMemberById(lorittaProfile.userId).await() }
 				val config = mongoServerConfigs.firstOrNull { config -> config.guildId == it.id }
 				if (member != null && config != null) { // As vezes member == null, então vamos verificar se não é null antes de verificar as permissões
 					val lorittaUser = GuildLorittaUser(member, config, lorittaProfile)

@@ -45,6 +45,7 @@ import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
+import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.perfectdreams.loritta.api.platform.LorittaBot
 import net.perfectdreams.loritta.api.platform.PlatformFeature
@@ -225,6 +226,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 				.setBulkDeleteSplittingEnabled(false)
 				.setHttpClientBuilder(okHttpBuilder)
 				.setDisabledCacheFlags(EnumSet.of(CacheFlag.ACTIVITY))
+				.setMemberCachePolicy(MemberCachePolicy.NONE)
 				.addEventListeners(
 						discordListener,
 						eventLogListener,
