@@ -95,7 +95,7 @@ allprojects {
 
 plugins {
     java
-    kotlin("jvm") version "1.3.60"
+    kotlin("jvm") version "1.3.61" apply false
     `maven-publish`
 }
 

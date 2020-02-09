@@ -2,21 +2,32 @@ package net.perfectdreams.spicymorenitta.routes
 
 import io.ktor.client.request.get
 import io.ktor.client.request.url
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.html.*
 import kotlinx.html.dom.append
+import kotlinx.html.js.onClickFunction
 import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.parseList
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.command
+import net.perfectdreams.loritta.platform.frontend.commands.JSCommandMap
+import net.perfectdreams.loritta.platform.frontend.entities.JSMessage
+import net.perfectdreams.loritta.platform.frontend.entities.JSMessageChannel
+import net.perfectdreams.loritta.platform.frontend.entities.JSUser
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.utils.select
 import org.w3c.dom.HTMLDivElement
-import utils.CommandCategory
+import org.w3c.dom.HTMLInputElement
+import org.w3c.dom.url.URLSearchParams
 import kotlin.browser.document
 import kotlin.browser.window
+
 
 class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/commands") {
     override val keepLoadingScreen: Boolean
@@ -25,6 +36,67 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
     @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         super.onRender(call)
+
+        val queryStrings = document.location!!.search
+        val searchParams = URLSearchParams(queryStrings)
+
+        if (searchParams.get("testcmd") != null) {
+            m.hideLoadingScreen()
+            val entriesDiv = document.select<HTMLDivElement>("#commands")
+
+            val commandMap = JSCommandMap().apply {
+                register(
+                        command(listOf("superping")) {
+                            description { "test" }
+
+                            executes {
+                                val user = user(0) ?: run {
+                                    this.sendMessage("Você não mencionou nenhum usuário, bobinho.")
+                                    return@executes
+                                }
+
+                                this.sendMessage("Olha a menção! ${user.asMention} *fugindo para a pessoa não reclamar* *dança do fortnite*")
+                            }
+                        }
+                )
+            }
+
+            entriesDiv.append {
+                input(InputType.text) {
+                    id = "command-input"
+                }
+
+                button {
+                    id = "send-command"
+
+                    + "Enviar"
+
+                    onClickFunction = {
+                        val commandInput = document.select<HTMLInputElement>("#command-input")
+                        val content = commandInput.value
+                        commandInput.value = ""
+
+                        GlobalScope.launch {
+                            commandMap.dispatch(
+                                    JSMessage(
+                                            JSUser("Asriel Dreemurr"),
+                                            content,
+                                            JSMessageChannel(document.select("#command-output"))
+                                    )
+                            )
+                        }
+                    }
+                }
+
+                div {
+                    id = "command-output"
+                }
+            }
+
+
+
+            return
+        }
 
         m.launch {
             val result = http.get<String> {
@@ -95,11 +167,11 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
                                     div {
                                         style = "text-align: center;"
                                         h1 {
-                                            + category.getLocalizedName(locale)
+                                            // + category.getLocalizedName(locale)
                                         }
                                     }
                                     p {
-                                        + category.getLocalizedDescription(locale)
+                                        // + category.getLocalizedDescription(locale)
                                     }
                                 }
                             }

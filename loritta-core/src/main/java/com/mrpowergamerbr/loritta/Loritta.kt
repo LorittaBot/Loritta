@@ -46,11 +46,13 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.utils.cache.CacheFlag
+import net.perfectdreams.loritta.api.commands.command
 import net.perfectdreams.loritta.api.platform.LorittaBot
 import net.perfectdreams.loritta.api.platform.PlatformFeature
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.platform.discord.DiscordEmoteManager
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandManager
+import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandMap
 import net.perfectdreams.loritta.platform.discord.utils.BucketedController
 import net.perfectdreams.loritta.platform.discord.utils.RateLimitChecker
 import net.perfectdreams.loritta.tables.*
@@ -124,6 +126,22 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 
 	lateinit var legacyCommandManager: CommandManager // Nosso command manager
 	override val commandManager = DiscordCommandManager(this)
+	val commandMap = DiscordCommandMap(this).apply {
+		register(
+				command(listOf("superping")) {
+					description { "test" }
+
+					executes {
+						val user = user(0) ?: run {
+							this.sendMessage("Você não mencionou nenhum usuário, bobinho.")
+							return@executes
+						}
+
+						this.sendMessage("Olha a menção! ${user.asMention} *fugindo para a pessoa não reclamar* ${Emotes.DEFAULT_DANCE}")
+					}
+				}
+		)
+	}
 	lateinit var dummyLegacyServerConfig: MongoServerConfig // Config utilizada em comandos no privado
 	var messageInteractionCache = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<Long, MessageInteractionFunctions>().asMap()
 
@@ -134,9 +152,6 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 	// ===[ MONGODB ]===
 	lateinit var mongo: MongoClient // MongoDB
 	lateinit var serversColl: MongoCollection<MongoServerConfig>
-
-	var youtubeKeys = mutableListOf<String>()
-	var lastKeyReset = 0
 
 	var discordListener = DiscordListener(this) // Vamos usar a mesma instância para todas as shards
 	var eventLogListener = EventLogListener(this) // Vamos usar a mesma instância para todas as shards

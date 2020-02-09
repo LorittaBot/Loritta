@@ -270,6 +270,12 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				// Executar comandos
 				start = System.nanoTime()
+				if (loritta.commandMap.dispatch(lorittaMessageEvent, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser))
+					return@launch
+				logIfEnabled(enableProfiling) { "Checking for command map commands took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
+
+
+				start = System.nanoTime()
 				if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser))
 					return@launch
 				logIfEnabled(enableProfiling) { "Checking for command manager commands took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
@@ -312,6 +318,11 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						)
 
 						val allCommandLabels = mutableListOf<String>()
+
+						loritta.commandMap.commands.values.forEach {
+							if (!it.onlyOwner && !legacyServerConfig.disabledCommands.contains(it.javaClass.simpleName))
+								allCommandLabels.addAll(it.labels)
+						}
 
 						loritta.commandManager.commands.forEach {
 							if (!it.onlyOwner && !legacyServerConfig.disabledCommands.contains(it.javaClass.simpleName))
