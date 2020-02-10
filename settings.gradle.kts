@@ -22,6 +22,7 @@ include(":loritta-core")
 // include(":loritta-cli")
 include(":loritta-discord")
 // include(":loritta-amino")
+include(":loritta-node-discordjs")
 
 // Plugins
 include(":loritta-plugins")
@@ -35,6 +36,7 @@ include(":loritta-plugins:profile-designs")
 include(":loritta-plugins:cloudflare-web-firewall")
 include(":loritta-plugins:christmas-2019-event")
 include(":loritta-plugins:automated-locales")
+include(":loritta-plugins:api-only-test")
 
 // Website
 include(":loritta-website")
