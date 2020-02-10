@@ -22,7 +22,6 @@ include(":loritta-core")
 // include(":loritta-cli")
 include(":loritta-discord")
 // include(":loritta-amino")
-include(":loritta-node-discordjs")
 
 // Plugins
 include(":loritta-plugins")
