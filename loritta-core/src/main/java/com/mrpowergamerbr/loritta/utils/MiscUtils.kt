@@ -32,62 +32,12 @@ object MiscUtils {
 		return getInviteId(url) != null
 	}
 
-	fun getInviteId(url: String, count: Int = 0, requestDiscordInvite: Boolean = false): String? {
-		if (count == 5) // Stuck in a loop
-			return null
-
-		if (!requestDiscordInvite) {
-			val matcher = Constants.DISCORD_INVITE_PATTERN.matcher(url)
-			if (matcher.find()) {
-				return matcher.group(3)
-			}
+	fun getInviteId(url: String): String? {
+		val matcher = Constants.DISCORD_INVITE_PATTERN.matcher(url)
+		if (matcher.find()) {
+			return matcher.group(3)
 		}
-
-		try {
-			val temmie = TemmieBitly("R_fb665e9e7f6a830134410d9eb7946cdf", "o_5s5av92lgs")
-			var newUrl = url.removePrefix(".").removeSuffix(".")
-			val bitlyUrl = temmie.expand(url)
-			if (!bitlyUrl!!.contains("NOT_FOUND") && !bitlyUrl.contains("RATE_LIMIT_EXCEEDED")) {
-				newUrl = bitlyUrl
-			}
-			val httpRequest = HttpRequest.get(newUrl)
-					.doSafeConnection()
-					.followRedirects(true)
-					.connectTimeout(2500)
-					.readTimeout(2500)
-					.userAgent(Constants.USER_AGENT)
-			httpRequest.ok()
-			val location = httpRequest.headers().entries.firstOrNull { it.key == "Location" }?.value?.getOrNull(0)
-			val url = location ?: httpRequest.url().toString()
-			val matcher = Constants.DISCORD_INVITE_PATTERN.matcher(url)
-			if (matcher.find()) {
-				return matcher.group(3)
-			}
-
-			// Se não encontrar nenhum invite, vamos tentar parsear a página para pegar http redirects no <head> da página
-			// Caso seja uma imagem (ou algo que seja binário) o Jsoup retorna UncheckedIOException
-			val parser = try { Jsoup.parse(httpRequest.body()) } catch (e: UncheckedIOException) { return null }
-			val htmlRedirects = parser.getElementsByTag("meta").filter { it.hasAttr("http-equiv") && it.hasAttr("content") }
-
-			htmlRedirects.forEach {
-				val content = it.attr("content") // O formato é algo assim: 3;url=https://discordapp.com/invite/xyzabc
-
-				val urlEqualsIndex = content.indexOf("url=")
-
-				if (urlEqualsIndex == -1) // Caso não tenha um "url=", vamos ignorar
-					return@forEach
-
-				val redirectUrl = content.substring(urlEqualsIndex + "url=".length)
-
-				val externalInviteId = getInviteId(redirectUrl, count + 1)
-				if (externalInviteId != null)
-					return externalInviteId
-			}
-
-			return null
-		} catch (e: HttpRequest.HttpRequestException) {
-			return null
-		}
+		return null
 	}
 
 	/**
