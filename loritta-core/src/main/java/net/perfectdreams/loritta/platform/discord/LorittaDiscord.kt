@@ -23,10 +23,13 @@ import io.ktor.client.statement.readBytes
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.userAgent
 import net.perfectdreams.loritta.api.LorittaBot
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.command
 import net.perfectdreams.loritta.commands.vanilla.audio.Play2Command
 import net.perfectdreams.loritta.commands.vanilla.images.DrakeCommand
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandMap
+import net.perfectdreams.loritta.platform.discord.plugin.JVMPluginManager
+import net.perfectdreams.loritta.platform.discord.utils.JVMLorittaAssets
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.config.FanArt
 import net.perfectdreams.loritta.utils.config.FanArtArtist
@@ -44,7 +47,7 @@ import javax.imageio.ImageIO
 abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig: GeneralDiscordInstanceConfig, var config: GeneralConfig, var instanceConfig: GeneralInstanceConfig) : LorittaBot() {
     override val commandMap = DiscordCommandMap(this).also {
         it.register(
-                command(this, "SuperPingCommand", listOf("superping")) {
+                command(this, "SuperPingCommand", listOf("superping"), CommandCategory.MAGIC) {
                     description { "test" }
 
                     executes {
@@ -60,7 +63,8 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         it.register(DrakeCommand().create(this))
         it.register(Play2Command.create(this))
     }
-
+    override val pluginManager = JVMPluginManager(this)
+    override val assets = JVMLorittaAssets(this)
     var locales = mapOf<String, BaseLocale>()
     var legacyLocales = mapOf<String, LegacyBaseLocale>()
     val http = HttpClient(Apache) {

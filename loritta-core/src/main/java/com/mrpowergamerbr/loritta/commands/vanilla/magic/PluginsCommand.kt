@@ -94,7 +94,7 @@ class PluginsCommand : LorittaCommand(arrayOf("plugins"), category = CommandCate
 		)
 
 		loritta.pluginManager.unloadPlugin(plugin)
-		loritta.pluginManager.loadPlugin(plugin.pluginFile)
+		// loritta.pluginManager.loadPlugin(plugin.pluginFile)
 
 		context.reply(
 				LoriReply(

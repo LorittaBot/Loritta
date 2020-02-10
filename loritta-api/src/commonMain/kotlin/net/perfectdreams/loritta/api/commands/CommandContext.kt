@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.utils.Emotes
 
 abstract class CommandContext(
 		val loritta: LorittaBot,
+		val command: Command<CommandContext>,
 		val args: List<String>,
 		val message: Message,
 		val locale: BaseLocale
@@ -50,7 +51,7 @@ abstract class CommandContext(
 				explain()
 				throw SilentCommandException()
 			} else {
-				throw CommandException("no valid image found", Emotes.LORI_CRYING.toString())
+				throw CommandException(locale["commands.noValidImageFound"], Emotes.LORI_CRYING.toString())
 			}
 		}
 

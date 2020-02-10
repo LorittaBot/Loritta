@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.api.commands
 
-interface CommandMap<Cmd: Command<*>> {
+interface CommandMap<Cmd: Command<CommandContext>> {
 	fun register(command: Cmd)
 
 	fun registerAll(vararg commands: Cmd) {

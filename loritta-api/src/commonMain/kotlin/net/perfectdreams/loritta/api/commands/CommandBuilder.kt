@@ -4,8 +4,8 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.platform.PlatformFeature
 
-fun command(loritta: LorittaBot, commandName: String, labels: List<String>, builder: CommandBuilder<CommandContext>.() -> (Unit)): Command<CommandContext> {
-	val b = CommandBuilder<CommandContext>(loritta, commandName, labels)
+fun command(loritta: LorittaBot, commandName: String, labels: List<String>, category: CommandCategory, builder: CommandBuilder<CommandContext>.() -> (Unit)): Command<CommandContext> {
+	val b = CommandBuilder<CommandContext>(loritta, commandName, labels, category)
 	builder.invoke(b)
 	return b.build()
 }
@@ -13,7 +13,8 @@ fun command(loritta: LorittaBot, commandName: String, labels: List<String>, buil
 open class CommandBuilder<context : CommandContext>(
 		val loritta: LorittaBot,
 		val commandName: String,
-		val labels: List<String>
+		val labels: List<String>,
+		val category: CommandCategory
 ) {
 	var canUseInPrivateChannel = false
 	var needsToUploadFiles = false
@@ -51,6 +52,7 @@ open class CommandBuilder<context : CommandContext>(
 				loritta = loritta,
 				labels = labels,
 				commandName = commandName,
+				category = category,
 				description = descriptionCallback ?: { "???" },
 				usage = usage,
 				examples = examplesCallback,

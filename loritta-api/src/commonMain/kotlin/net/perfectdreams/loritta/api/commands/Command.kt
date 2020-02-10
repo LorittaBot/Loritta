@@ -8,7 +8,8 @@ open class Command<T : CommandContext>(
 		val loritta: LorittaBot,
 		val labels: List<String>,
 		val commandName: String,
-		val description: ((BaseLocale) -> (String))?,
+		val category: CommandCategory,
+		val description: ((BaseLocale) -> (String)),
 		val usage: CommandArguments,
 		val examples: ((BaseLocale) -> (List<String>))? = null,
 		val executor: (suspend T.() -> (Unit))

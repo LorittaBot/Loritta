@@ -32,20 +32,18 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 		private val logger = KotlinLogging.logger {}
 	}
 
-	val commands = mutableMapOf<String, Command<CommandContext>>()
+	val commands = mutableListOf<Command<CommandContext>>()
 	private val userCooldown = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS)
 			.maximumSize(100)
 			.build<Long, Long>().asMap()
 
 	override fun register(command: Command<CommandContext>) {
 		logger.info { "Registering $command with ${command.labels}" }
-		for (label in command.labels)
-			commands[label] = command
+		commands.add(command)
 	}
 
 	override fun unregister(command: Command<CommandContext>) {
-		for (label in command.labels)
-			commands.remove(label)
+		commands.remove(command)
 	}
 
 	suspend fun dispatch(ev: LorittaMessageEvent, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
@@ -55,7 +53,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 		val rawArguments = rawMessage.replace("\n", "").split(" ")
 
 		// Primeiro os comandos vanilla da Loritta(tm)
-		for (command in commands.values.filter { !legacyServerConfig.disabledCommands.contains(it.javaClass.simpleName) }) {
+		for (command in commands.filter { !legacyServerConfig.disabledCommands.contains(it.commandName) }) {
 			if (dispatch(command, rawArguments, ev, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser))
 				return true
 		}
@@ -125,13 +123,13 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 				strippedArgs.removeAt(0)
 			}
 
-			val legacyLocale = legacyLocale
-
 			val context = DiscordCommandContext(
 					loritta,
+					command,
 					rawArgs,
 					ev.message,
-					locale
+					locale,
+					serverConfig
 			)
 
 			if (ev.message.isFromType(ChannelType.TEXT)) {
@@ -259,21 +257,22 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 							)
 					)
 					return true
-				} /*
+				}
 
-				if (!context.canUseCommand()) {
-					if (command is LorittaDiscordCommand) {
-						val requiredPermissions = command.discordPermissions.filter { !ev.message.member!!.hasPermission(ev.message.textChannel, it) }
-						val required = requiredPermissions.joinToString(", ", transform = { "`" + it.localized(locale) + "`" })
+				if (command is DiscordCommand) {
+					val missingRequiredPermissions = command.userRequiredPermissions.filterNot { ev.message.member!!.hasPermission(ev.message.textChannel, it) }
+
+					if (missingRequiredPermissions.isNotEmpty()) {
+						val required = missingRequiredPermissions.joinToString(", ", transform = { "`" + it.localized(locale) + "`" })
 						context.reply(
-								LoriReply(
+								LorittaReply(
 										locale["commands.userDoesntHavePermissionDiscord", required],
 										Constants.ERROR
 								)
 						)
+						return true
 					}
-					return true
-				} */
+				}
 
 				if (context.isPrivateChannel && !command.canUseInPrivateChannel) {
 					context.reply(
@@ -342,7 +341,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 						it[guildId] = if (ev.message.isFromGuild) ev.message.guild.idLong else null
 						it[channelId] = ev.message.channel.idLong
 						it[sentAt] = System.currentTimeMillis()
-						it[ExecutedCommandsLog.command] = command::class.simpleName ?: "UnknownCommand"
+						it[ExecutedCommandsLog.command] = command.commandName ?: "UnknownCommand"
 						it[ExecutedCommandsLog.message] = ev.message.contentRaw
 					}
 				}

@@ -52,11 +52,11 @@ class LorittaWebsite(val loritta: Loritta, val websiteUrl: String, var frontendF
 			return@before
 		}
 
-		for (befLoad in loritta.pluginManager.plugins.flatMap { it.joobyWebsite.beforeLoad }) {
+		/* for (befLoad in loritta.pluginManager.plugins.flatMap { it.joobyWebsite.beforeLoad }) {
 			val stop = befLoad.invoke(req, res)
 			if (stop)
 				return@before
-		}
+		} */
 	}
 
 	port(loritta.instanceConfig.loritta.website.port) // Porta do website
@@ -166,9 +166,9 @@ class LorittaWebsite(val loritta: Loritta, val websiteUrl: String, var frontendF
 	use(UserRoute())
 	use(GuildRoute())
 
-	for (route in loritta.pluginManager.plugins.flatMap { it.routes }) {
+	/* for (route in loritta.pluginManager.plugins.flatMap { it.routes }) {
 		use(route)
-	}
+	} */
 
 	get("/**") { req, res ->
 		if (req.path() == "/lorisocket")

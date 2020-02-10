@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.audio.TrackRequest
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
@@ -13,7 +14,8 @@ object Play2Command {
 	fun create(loritta: LorittaDiscord) = discordCommand(
 			loritta,
 			"PlayCommand",
-			listOf("play2", "tocar2")
+			listOf("play2", "tocar2"),
+			CommandCategory.MUSIC
 	) {
 		description { it["commands.audio.play.description"] }
 

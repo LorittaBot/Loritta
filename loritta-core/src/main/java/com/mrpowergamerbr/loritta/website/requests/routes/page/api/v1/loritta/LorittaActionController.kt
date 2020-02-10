@@ -76,7 +76,7 @@ class LorittaActionController {
 				val plugin = loritta.pluginManager.getPlugin(json["pluginName"].string) ?: return
 
 				loritta.pluginManager.unloadPlugin(plugin)
-				loritta.pluginManager.loadPlugin(plugin.pluginFile)
+				// loritta.pluginManager.loadPlugin(plugin.pluginFile)
 			}
 			"plugin_unload" -> {
 				val plugin = loritta.pluginManager.getPlugin(json["pluginName"].string) ?: return

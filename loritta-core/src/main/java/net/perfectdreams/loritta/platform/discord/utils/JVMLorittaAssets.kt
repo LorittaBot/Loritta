@@ -1,0 +1,25 @@
+package net.perfectdreams.loritta.platform.discord.utils
+
+import com.mrpowergamerbr.loritta.Loritta
+import net.perfectdreams.loritta.api.LorittaBot
+import net.perfectdreams.loritta.api.utils.LorittaAssets
+import net.perfectdreams.loritta.api.utils.image.Image
+import net.perfectdreams.loritta.api.utils.image.JVMImage
+import java.io.File
+import javax.imageio.ImageIO
+
+class JVMLorittaAssets(val loritta: LorittaBot) : LorittaAssets {
+	val cachedImages = mutableMapOf<String, Image>()
+
+	override fun loadImage(path: String, storeInCache: Boolean, loadFromCache: Boolean): Image {
+		if (loadFromCache && cachedImages.containsKey(path))
+			return cachedImages[path]!!
+
+		val image = JVMImage(ImageIO.read(File(Loritta.ASSETS + "drake.png")))
+
+		if (storeInCache)
+			cachedImages[path] = image
+
+		return image
+	}
+}

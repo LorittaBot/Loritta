@@ -1,5 +1,20 @@
 package net.perfectdreams.loritta.api.plugin
 
 import net.perfectdreams.loritta.api.LorittaBot
+import net.perfectdreams.loritta.api.commands.Command
+import net.perfectdreams.loritta.api.commands.CommandContext
 
-class LorittaPlugin(val name: String, val loritta: LorittaBot)
+abstract class LorittaPlugin(val name: String, val loritta: LorittaBot) {
+	val registeredCommands = mutableListOf<Command<CommandContext>>()
+
+	open fun onEnable() {}
+	open fun onDisable() {}
+
+	fun registerCommands(vararg commands: Command<CommandContext>) {
+		commands.forEach { registerCommands(it) }
+	}
+
+	fun registerCommand(command: Command<CommandContext>) {
+		loritta.commandMap.register(command)
+	}
+}

@@ -22,7 +22,6 @@ import com.mrpowergamerbr.loritta.listeners.*
 import com.mrpowergamerbr.loritta.livestreams.TwitchAPI
 import com.mrpowergamerbr.loritta.modules.ServerSupportModule
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.plugin.PluginManager
 import com.mrpowergamerbr.loritta.tables.*
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.threads.RaffleThread
@@ -123,7 +122,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		return Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat(name).build())
 	}
 
-	var pluginManager = PluginManager(this)
+	// var pluginManager = PluginManager(this)
 	lateinit var legacyCommandManager: CommandManager // Nosso command manager
 	val commandManager = DiscordCommandManager(this)
 	lateinit var dummyLegacyServerConfig: MongoServerConfig // Config utilizada em comandos no privado

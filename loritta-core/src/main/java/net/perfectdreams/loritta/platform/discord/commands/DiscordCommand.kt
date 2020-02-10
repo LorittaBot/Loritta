@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandArguments
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.CommandContext
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 
@@ -11,11 +12,12 @@ class DiscordCommand(
 		val lorittaDiscord: LorittaDiscord,
 		labels: List<String>,
 		commandName: String,
-		description: ((BaseLocale) -> String)?,
+		category: CommandCategory,
+		description: ((BaseLocale) -> String),
 		usage: CommandArguments,
 		examples: ((BaseLocale) -> List<String>)?,
 		executor: suspend CommandContext.() -> Unit
-) : Command<CommandContext>(lorittaDiscord, labels, commandName, description, usage, examples, executor) {
+) : Command<CommandContext>(lorittaDiscord, labels, commandName, category, description, usage, examples, executor) {
 	var userRequiredPermissions = listOf<Permission>()
 	var botRequiredPermissions = listOf<Permission>()
 	var requiresMusic = false

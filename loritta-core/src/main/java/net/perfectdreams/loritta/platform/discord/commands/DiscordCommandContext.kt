@@ -2,16 +2,21 @@ package net.perfectdreams.loritta.platform.discord.commands
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.mrpowergamerbr.loritta.dao.ServerConfig
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.exceptions.PermissionException
+import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandContext
 import net.perfectdreams.loritta.api.entities.User
 import net.perfectdreams.loritta.api.utils.image.Image
@@ -19,14 +24,17 @@ import net.perfectdreams.loritta.api.utils.image.JVMImage
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.entities.DiscordMessage
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
+import net.perfectdreams.loritta.utils.Emotes
 import org.jsoup.Jsoup
 
 class DiscordCommandContext(
 		loritta: LorittaDiscord,
+		command: Command<CommandContext>,
 		args: List<String>,
 		val discordMessage: Message,
-		locale: BaseLocale
-) : CommandContext(loritta, args, DiscordMessage(discordMessage), locale) {
+		locale: BaseLocale,
+		val serverConfig: ServerConfig
+) : CommandContext(loritta, command, args, DiscordMessage(discordMessage), locale) {
 	val isPrivateChannel = discordMessage.channelType == ChannelType.PRIVATE
 	val guild: Guild
 			get() = discordMessage.guild
@@ -148,7 +156,22 @@ class DiscordCommandContext(
 		}
 	}
 
+	/**
+	 * Sends an embed explaining what the command does
+	 *
+	 * @param context the context of the command
+	 */
 	override suspend fun explain() {
-		sendMessage("TODO: add explain()")
+		val embed = EmbedBuilder()
+				.setColor(Constants.LORITTA_AQUA)
+				.setAuthor(user.asMention, null, user.name + "#" + user.discriminator)
+				.setTitle("${Emotes.LORI_HM} `${serverConfig.commandPrefix}${command.labels.first()}`")
+				.setDescription(command.description.invoke(locale))
+
+		val messageBuilder = MessageBuilder()
+				.append(getUserMention(true))
+				.setEmbed(embed.build())
+
+		discordMessage.channel.sendMessage(messageBuilder.build()).await()
 	}
 }

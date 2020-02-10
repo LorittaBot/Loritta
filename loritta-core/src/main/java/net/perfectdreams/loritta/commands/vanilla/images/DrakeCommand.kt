@@ -1,20 +1,17 @@
 package net.perfectdreams.loritta.commands.vanilla.images
 
-import com.mrpowergamerbr.loritta.Loritta
-import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.ArgumentType
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.command
 import net.perfectdreams.loritta.api.utils.image.Image
-import net.perfectdreams.loritta.api.utils.image.JVMImage
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.commands.discordCommand
-import java.io.File
-import javax.imageio.ImageIO
 
 class DrakeCommand {
-	fun create(loritta: LorittaDiscord) = discordCommand(
+	fun create(loritta: LorittaDiscord) = command(
 			loritta,
 			"DrakeCommand",
-			listOf("drake2")
+			listOf("drake2"),
+			CommandCategory.IMAGES
 	) {
 		description { it["commands.images.drake.description"] }
 		examples { listOf("@MrPowerGamerBR @Loritta") }
@@ -24,11 +21,10 @@ class DrakeCommand {
 			argument(ArgumentType.IMAGE) {}
 		}
 
-		userRequiredPermissions = listOf(Permission.MANAGE_ROLES)
 		needsToUploadFiles = true
 
 		executes {
-			val bi = JVMImage(ImageIO.read(File(Loritta.ASSETS + "drake.png"))) // Primeiro iremos carregar o nosso template
+			val bi = this.loritta.assets.loadImage("drake.png") // Primeiro iremos carregar o nosso template
 			val graph = bi.createGraphics()
 
 			run {

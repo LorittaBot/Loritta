@@ -246,7 +246,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 					AutoroleModule.giveRoles(member, legacyServerConfig.autoroleConfig)
 				logIfEnabled(enableProfiling) { "Giving auto role on message took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
-				for (module in (MESSAGE_RECEIVED_MODULES + loritta.pluginManager.plugins.flatMap { it.messageReceivedModules })) {
+				for (module in (MESSAGE_RECEIVED_MODULES /* + loritta.pluginManager.plugins.flatMap { it.messageReceivedModules } */)) {
 					start = System.nanoTime()
 					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyServerConfig, legacyLocale) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyServerConfig, legacyLocale))
 						return@launch
@@ -319,7 +319,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 						val allCommandLabels = mutableListOf<String>()
 
-						loritta.commandMap.commands.values.forEach {
+						loritta.commandMap.commands.forEach {
 							if (!it.onlyOwner && !legacyServerConfig.disabledCommands.contains(it.javaClass.simpleName))
 								allCommandLabels.addAll(it.labels)
 						}
@@ -462,7 +462,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						lorittaUser
 				)
 
-				for (module in (MESSAGE_EDITED_MODULES + loritta.pluginManager.plugins.flatMap { it.messageReceivedModules })) {
+				for (module in (MESSAGE_EDITED_MODULES /* + loritta.pluginManager.plugins.flatMap { it.messageReceivedModules } */)) {
 					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyServerConfig, legacyLocale) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyServerConfig, legacyLocale))
 						return@launch
 				}
