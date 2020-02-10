@@ -64,7 +64,6 @@ object DebugLog {
 		logger.info("storedLastEntries.size: ${NewRssFeedTask.storedLastEntries.size}")
 		logger.info("> Invite Stuff")
 		logger.info("cachedInviteLinks.size: ${InviteLinkModule.cachedInviteLinks.size}")
-		logger.info("detectedInviteLinks.size: ${InviteLinkModule.detectedInviteLinks.size}")
 		logger.info("> Misc Stuff")
 		logger.info("fanArts.size: ${loritta.fanArts.size}")
 		logger.info("eventLogListener.downloadedAvatarJobs: ${EventLogListener.downloadedAvatarJobs}")
