@@ -52,7 +52,6 @@ object DebugLog {
 		logger.info("Global Rate Limit Hits in the last 10m: ${loritta.bucketedController?.getGlobalRateLimitHitsInTheLastMinute()} / ${loritta.rateLimitChecker.maxRequestsPer10Minutes}")
 		logger.info("> Command Stuff")
 		logger.info("commandManager.commandMap.size: ${loritta.legacyCommandManager.commandMap.size}")
-		logger.info("commandManager.defaultCmdOptions.size: ${loritta.legacyCommandManager.defaultCmdOptions.size}")
 		logger.info("messageInteractionCache.size: ${loritta.messageInteractionCache.size}")
 		logger.info("locales.size: ${loritta.legacyLocales.size}")
 		logger.info("ignoreIds.size: ${loritta.ignoreIds.size}")

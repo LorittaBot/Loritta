@@ -72,7 +72,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 							"Recarregando emotes!"
 					)
 			)
-			Emotes.loadEmotes()
+			Emotes.emoteManager?.loadEmotes()
 			return
 		}
 		if (arg0 == "dailytax") {

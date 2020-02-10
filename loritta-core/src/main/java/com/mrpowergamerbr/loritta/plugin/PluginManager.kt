@@ -3,15 +3,16 @@ package com.mrpowergamerbr.loritta.plugin
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
 import mu.KotlinLogging
-import net.perfectdreams.loritta.api.platform.LorittaBot
+import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import java.io.File
 import java.net.URL
 import java.net.URLClassLoader
 import java.util.jar.JarFile
 
-class PluginManager(val loritta: LorittaBot) {
+class PluginManager(val loritta: Loritta) {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}

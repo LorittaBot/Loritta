@@ -43,12 +43,10 @@ import java.util.concurrent.CancellationException
 
 class CommandManager {
 	companion object {
-		val DEFAULT_COMMAND_OPTIONS = CommandOptions()
 		val logger = KotlinLogging.logger {}
 	}
 
 	var commandMap: MutableList<AbstractCommand> = ArrayList()
-	var defaultCmdOptions: MutableMap<String, Class<*>> = HashMap()
 
 	init {
 		commandMap.add(RollCommand())
@@ -232,11 +230,6 @@ class CommandManager {
 		commandMap.add(SonhosTopCommand())
 		if (false && loritta.config.loritta.environment == EnvironmentType.CANARY)
 			commandMap.add(ExchangeCommand())
-
-		for (cmdBase in this.commandMap) {
-			defaultCmdOptions[cmdBase.javaClass.simpleName] = CommandOptions::class.java
-		}
-
 	}
 
 	fun getCommandsDisabledIn(conf: MongoServerConfig): List<AbstractCommand> {
@@ -277,15 +270,11 @@ class CommandManager {
 		val message = ev.message.contentDisplay
 		val baseLocale = locale
 
-		// Carregar as opções de comandos
-		val cmdOptions = legacyServerConfig.getCommandOptionsFor(command)
-		val prefix = if (cmdOptions.enableCustomPrefix) cmdOptions.customPrefix else serverConfig.commandPrefix
+		val prefix = serverConfig.commandPrefix
 
 		val labels = mutableListOf(command.label)
 
 		labels.addAll(command.aliases)
-		if (cmdOptions.enableCustomAliases) // Adicionar labels customizadas no painel
-			labels.addAll(cmdOptions.aliases)
 
 		// ignoreCase = true ~ Permite usar "+cOmAnDo"
 		var valid = labels.any { rawArguments[0].equals(prefix + it, true) }
@@ -357,9 +346,6 @@ class CommandManager {
 						return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
 					}
 				}
-
-				if (cmdOptions.override && cmdOptions.blacklistedChannels.contains(ev.channel.id))
-					return true // Ignorar canais bloqueados
 
 				// Cooldown
 				val diff = System.currentTimeMillis() - loritta.userCooldown.getOrDefault(ev.author.idLong, 0L)
@@ -550,9 +536,8 @@ class CommandManager {
 
 				command.run(context, context.legacyLocale)
 
-				val cmdOpti = context.legacyConfig.getCommandOptionsFor(command)
 				if (!isPrivateChannel && ev.guild != null) {
-					if (ev.guild.selfMember.hasPermission(ev.textChannel!!, Permission.MESSAGE_MANAGE) && (serverConfig.deleteMessageAfterCommand || (cmdOpti.override && cmdOpti.deleteMessageAfterCommand))) {
+					if (ev.guild.selfMember.hasPermission(ev.textChannel!!, Permission.MESSAGE_MANAGE) && (serverConfig.deleteMessageAfterCommand)) {
 						ev.message.textChannel.retrieveMessageById(ev.messageId).queue {
 							// Nós iremos pegar a mensagem novamente, já que talvez ela tenha sido deletada
 							it.delete().queue()

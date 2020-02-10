@@ -1,37 +1,44 @@
 package net.perfectdreams.loritta.platform.discord.commands
 
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
-import net.perfectdreams.loritta.api.commands.Command
-import net.perfectdreams.loritta.api.commands.CommandContext
-import net.perfectdreams.loritta.api.commands.CommandMap
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.perfectdreams.loritta.api.commands.*
+import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.FeatureFlags
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.CancellationException
+import java.util.concurrent.TimeUnit
 
-class DiscordCommandMap(val discordLoritta: Loritta) : CommandMap<Command<CommandContext>> {
+class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command<CommandContext>> {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}
 
 	val commands = mutableMapOf<String, Command<CommandContext>>()
+	private val userCooldown = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS)
+			.maximumSize(100)
+			.build<Long, Long>().asMap()
 
 	override fun register(command: Command<CommandContext>) {
+		logger.info { "Registering $command with ${command.labels}" }
 		for (label in command.labels)
 			commands[label] = command
 	}
@@ -58,7 +65,7 @@ class DiscordCommandMap(val discordLoritta: Loritta) : CommandMap<Command<Comman
 
 	suspend fun dispatch(command: Command<CommandContext>, rawArguments: List<String>, ev: LorittaMessageEvent, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
 		val message = ev.message.contentDisplay
-		val member = ev.message.member
+		val user = ev.author
 
 		var prefix = serverConfig.commandPrefix
 
@@ -121,8 +128,10 @@ class DiscordCommandMap(val discordLoritta: Loritta) : CommandMap<Command<Comman
 			val legacyLocale = legacyLocale
 
 			val context = DiscordCommandContext(
+					loritta,
 					rawArgs,
-					ev.message
+					ev.message,
+					locale
 			)
 
 			if (ev.message.isFromType(ChannelType.TEXT)) {
@@ -138,13 +147,7 @@ class DiscordCommandMap(val discordLoritta: Loritta) : CommandMap<Command<Comman
 						Updates.set("lastCommandReceivedAt", legacyServerConfig.lastCommandReceivedAt)
 				)
 
-				if (legacyServerConfig != discordLoritta.dummyLegacyServerConfig && ev.textChannel != null && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
-					LorittaUtils.warnOwnerNoPermission(ev.guild, ev.textChannel, serverConfig)
-					return true
-				}
-
 				if (serverConfig.blacklistedChannels.contains(ev.channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
-					// if (!conf.miscellaneousConfig.enableBomDiaECia || (conf.miscellaneousConfig.enableBomDiaECia && command !is LigarCommand)) {
 					if (serverConfig.warnIfBlacklisted) {
 						if (serverConfig.blacklistedChannels.isNotEmpty() && ev.guild != null && ev.member != null && ev.textChannel != null) {
 							val generatedMessage = MessageUtils.generateMessage(
@@ -156,17 +159,13 @@ class DiscordCommandMap(val discordLoritta: Loritta) : CommandMap<Command<Comman
 						}
 					}
 					return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
-					// }
 				}
 
-				// if (cmdOptions.override && cmdOptions.blacklistedChannels.contains(ev.channel.id))
-				// 	return true // Ignorar canais bloqueados
-
 				// Cooldown
-				val diff = System.currentTimeMillis() - com.mrpowergamerbr.loritta.utils.loritta.userCooldown.getOrDefault(ev.author.idLong, 0L)
+				val diff = System.currentTimeMillis() - userCooldown.getOrDefault(ev.author.idLong, 0L)
 
 				if (1250 > diff && !loritta.config.isOwner(ev.author.id)) { // Tá bom, é alguém tentando floodar, vamos simplesmente ignorar
-					com.mrpowergamerbr.loritta.utils.loritta.userCooldown.put(ev.author.idLong, System.currentTimeMillis()) // E vamos guardar o tempo atual
+					userCooldown.put(ev.author.idLong, System.currentTimeMillis()) // E vamos guardar o tempo atual
 					return true
 				}
 
@@ -180,18 +179,18 @@ class DiscordCommandMap(val discordLoritta: Loritta) : CommandMap<Command<Comman
 					cooldown /= 2
 				}
 
-				/* if (cooldown > diff && !loritta.config.isOwner(ev.author.id)) {
+				if (cooldown > diff && !loritta.config.isOwner(ev.author.id)) {
 					val fancy = DateUtils.formatDateDiff((cooldown - diff) + System.currentTimeMillis(), legacyLocale)
 					context.reply(
-							LoriReply(
+							LorittaReply(
 									locale["commands.pleaseWaitCooldown", fancy, "\uD83D\uDE45"],
 									"\uD83D\uDD25"
 							)
 					)
 					return true
-				} */
+				}
 
-				discordLoritta.userCooldown[ev.author.idLong] = System.currentTimeMillis()
+				userCooldown[ev.author.idLong] = System.currentTimeMillis()
 
 				command.executedCount++
 
@@ -205,9 +204,9 @@ class DiscordCommandMap(val discordLoritta: Loritta) : CommandMap<Command<Comman
 				}
 
 				// Se estamos dentro de uma guild... (Já que mensagens privadas não possuem permissões)
-				/* if (!isPrivateChannel && ev.guild != null && ev.member != null && ev.textChannel != null && command is LorittaDiscordCommand) {
+				if (!isPrivateChannel && ev.guild != null && ev.member != null && ev.textChannel != null && command is DiscordCommand) {
 					// Verificar se a Loritta possui todas as permissões necessárias
-					val botPermissions = command.botPermissions.toMutableList()
+					val botPermissions = command.botRequiredPermissions.toMutableList()
 					botPermissions.add(Permission.MESSAGE_EMBED_LINKS)
 					botPermissions.add(Permission.MESSAGE_EXT_EMOJI)
 					botPermissions.add(Permission.MESSAGE_ADD_REACTION)
@@ -218,7 +217,7 @@ class DiscordCommandMap(val discordLoritta: Loritta) : CommandMap<Command<Comman
 						// oh no
 						val required = missingPermissions.joinToString(", ", transform = { "`" + it.localized(locale) + "`" })
 						context.reply(
-								LoriReply(
+								LorittaReply(
 										locale["commands.loriDoesntHavePermissionDiscord", required, "\uD83D\uDE22", "\uD83D\uDE42"],
 										Constants.ERROR
 								)
@@ -227,7 +226,7 @@ class DiscordCommandMap(val discordLoritta: Loritta) : CommandMap<Command<Comman
 					}
 				}
 
-				if (!isPrivateChannel && ev.member != null && ev.textChannel != null) {
+				/* if (!isPrivateChannel && ev.member != null && ev.textChannel != null) {
 					val missingPermissions = command.lorittaPermissions.filterNot { lorittaUser.hasPermission(it) }
 
 					if (missingPermissions.isNotEmpty()) {
@@ -241,26 +240,26 @@ class DiscordCommandMap(val discordLoritta: Loritta) : CommandMap<Command<Comman
 						ev.textChannel.sendMessage(Constants.ERROR + " **|** ${ev.member.asMention} $message").queue()
 						return true
 					}
-				}
+				} */
 
 				if (args.isNotEmpty() && args[0] == "🤷") { // Usar a ajuda caso 🤷 seja usado
 					context.explain()
 					return true
-				}
+				} /*
 
 				if (LorittaUtilsKotlin.handleIfBanned(context, lorittaUser.profile)) {
 					return true
-				}
+				} */
 
-				if (context.command.onlyOwner && !loritta.config.isOwner(context.userHandle.id)) {
+				if (command.onlyOwner && !loritta.config.isOwner(user.id)) {
 					context.reply(
-							LoriReply(
+							LorittaReply(
 									locale["commands.commandOnlyForOwner"],
 									Constants.ERROR
 							)
 					)
 					return true
-				}
+				} /*
 
 				if (!context.canUseCommand()) {
 					if (command is LorittaDiscordCommand) {
@@ -274,10 +273,15 @@ class DiscordCommandMap(val discordLoritta: Loritta) : CommandMap<Command<Comman
 						)
 					}
 					return true
-				}
+				} */
 
 				if (context.isPrivateChannel && !command.canUseInPrivateChannel) {
-					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + legacyLocale["CANT_USE_IN_PRIVATE"])
+					context.reply(
+							LorittaReply(
+									message = legacyLocale["CANT_USE_IN_PRIVATE"],
+									prefix = Constants.ERROR
+							)
+					)
 					return true
 				}
 
@@ -285,18 +289,22 @@ class DiscordCommandMap(val discordLoritta: Loritta) : CommandMap<Command<Comman
 					if (!LorittaUtils.canUploadFiles(context)) {
 						return true
 					}
-				} */
+				}
 
-				if (command.requiresMusic) {
-					if (!context.legacyConfig.musicConfig.isEnabled) {
+				*/
+
+				if (command is DiscordCommand) {
+					if (command.requiresMusic) {
+						/* if (!context.legacyConfig.musicConfig.isEnabled) {
 						val canManage = context.handle.hasPermission(Permission.MANAGE_SERVER) || context.handle.hasPermission(Permission.ADMINISTRATOR)
 						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + legacyLocale["DJ_LORITTA_DISABLED"] + " \uD83D\uDE1E" + if (canManage) legacyLocale["DJ_LORITTA_HOW_TO_ENABLE", "${loritta.instanceConfig.loritta.website.url}dashboard"] else "")
 						return true
+					} */
 					}
 				}
 
 				// Vamos pegar uma mensagem aleatória de doação, se não for nula, iremos enviar ela :3
-				DonateUtils.getRandomDonationMessage(
+				/* DonateUtils.getRandomDonationMessage(
 						locale,
 						lorittaUser.profile,
 						donatorPaid,
@@ -363,18 +371,31 @@ class DiscordCommandMap(val discordLoritta: Loritta) : CommandMap<Command<Comman
 					return true
 				}
 
-				/* if (e is ErrorResponseException) {
+				if (e is ErrorResponseException) {
 					if (e.errorCode == 40005) { // Request entity too large
 						if (ev.isFromType(ChannelType.PRIVATE) || (ev.isFromType(ChannelType.TEXT) && ev.textChannel != null && ev.textChannel.canTalk()))
 							context.reply(
-									LoriReply(
+									LorittaReply(
 											locale["commands.imageTooLarge", "8MB", Emotes.LORI_TEMMIE],
 											"\uD83E\uDD37"
 									)
 							)
 						return true
 					}
-				} */
+				}
+
+				if (e is SilentCommandException)
+					return true
+
+				if (e is CommandException) {
+					context.reply(
+							LorittaReply(
+									e.reason,
+									e.prefix
+							)
+					)
+					return true
+				}
 
 				logger.error("Exception ao executar comando ${command.javaClass.simpleName}", e)
 

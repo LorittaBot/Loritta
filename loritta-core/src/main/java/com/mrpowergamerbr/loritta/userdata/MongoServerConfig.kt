@@ -1,14 +1,10 @@
 package com.mrpowergamerbr.loritta.userdata
 
-import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandManager
-import com.mrpowergamerbr.loritta.commands.CommandOptions
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
-import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.entities.TextChannel
 import org.bson.codecs.pojo.annotations.BsonCreator
 import org.bson.codecs.pojo.annotations.BsonIgnore
@@ -31,7 +27,6 @@ class MongoServerConfig @BsonCreator constructor(
 	@Deprecated("Please use ServerConfigs' fields")
 	var localeId = "default"
 
-	var commandOptions = HashMap<String, CommandOptions>() // Command Options
 	// Os command options são salvos assim:
 	// AbstractCommand.getClass().getSimpleName() - CommandOptions
 
@@ -100,22 +95,5 @@ class MongoServerConfig @BsonCreator constructor(
 
 	fun hasTextChannelConfig(id: String): Boolean {
 		return textChannelConfigs.firstOrNull { it.id == id } != null
-	}
-
-	fun getCommandOptionsFor(cmd: AbstractCommand): CommandOptions {
-		if (cmd is NashornCommand) { // Se é um comando feito em Nashorn...
-			// Vamos retornar uma configuração padrão!
-			return CommandManager.DEFAULT_COMMAND_OPTIONS
-		}
-
-		val simpleName = cmd.javaClass.simpleName
-		return when {
-			// Se a configuração do servidor tem opções de comandos...
-			commandOptions.containsKey(simpleName) -> commandOptions[simpleName]!!
-			// Se as opções padrões de comandos possui uma opção "específica" para o comando
-			loritta.legacyCommandManager.defaultCmdOptions.containsKey(simpleName) -> loritta.legacyCommandManager.defaultCmdOptions[simpleName]!!.newInstance() as CommandOptions
-			// Se não, retorne as opções padrões
-			else -> CommandManager.DEFAULT_COMMAND_OPTIONS
-		}
 	}
 }

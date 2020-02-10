@@ -67,13 +67,7 @@ class CommandContext(val config: ServerConfig, val legacyConfig: MongoServerConf
 	}
 
 	fun getAsMention(addSpace: Boolean): String {
-		val cmdOptions = lorittaUser.config.getCommandOptionsFor(cmd)
-		return if (cmdOptions.override) {
-			if (cmdOptions.mentionOnCommandOutput)
-				lorittaUser.user.asMention + (if (addSpace) " " else "")
-			else
-				""
-		} else lorittaUser.getAsMention(true)
+		return lorittaUser.user.asMention + (if (addSpace) " " else "")
 	}
 
 	suspend fun reply(message: String, prefix: String? = null, forceMention: Boolean = false): Message {

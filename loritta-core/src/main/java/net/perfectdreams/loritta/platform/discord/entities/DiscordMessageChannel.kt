@@ -11,4 +11,12 @@ class DiscordMessageChannel(handle: net.dv8tion.jda.api.entities.MessageChannel)
 				handle.sendMessage(message.content).await()
 		)
 	}
+
+	override suspend fun sendFile(bytes: ByteArray, fileName: String, message: LorittaMessage): Message {
+		return DiscordMessage(
+				handle.sendMessage(message.content)
+						.addFile(bytes, fileName)
+						.await()
+		)
+	}
 }

@@ -21,10 +21,6 @@ enum class CommandCategory {
 	FORTNITE,
 	MAGIC; // Esta categoria é usada para comandos APENAS para o dono do bot
 
-	init {
-		CommandCategory.values().forEach {}
-	}
-
 	fun getLocalizedName(locale: BaseLocale): String {
 		return locale["commands.category.${this.name.toLowerCase()}.name"]
 	}

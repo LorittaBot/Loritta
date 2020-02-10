@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.api.platform
+package net.perfectdreams.loritta.platform.discord
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kotson.obj
@@ -6,10 +6,11 @@ import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.string
 import com.google.gson.GsonBuilder
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.plugin.PluginManager
 import com.mrpowergamerbr.loritta.profile.ProfileDesignManager
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
+import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordConfig
+import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordInstanceConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralInstanceConfig
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
@@ -21,7 +22,12 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.readBytes
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.userAgent
-import net.perfectdreams.loritta.api.commands.LorittaCommandManager
+import net.perfectdreams.loritta.api.LorittaBot
+import net.perfectdreams.loritta.api.commands.command
+import net.perfectdreams.loritta.commands.vanilla.audio.Play2Command
+import net.perfectdreams.loritta.commands.vanilla.images.DrakeCommand
+import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandMap
+import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.config.FanArt
 import net.perfectdreams.loritta.utils.config.FanArtArtist
 import java.awt.image.BufferedImage
@@ -35,12 +41,28 @@ import javax.imageio.ImageIO
  *
  * This should be extended by plataform specific Lori's
  */
-abstract class LorittaBot(var config: GeneralConfig, var instanceConfig: GeneralInstanceConfig) {
-    abstract val supportedFeatures: List<PlatformFeature>
-    abstract val commandManager: LorittaCommandManager
+abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig: GeneralDiscordInstanceConfig, var config: GeneralConfig, var instanceConfig: GeneralInstanceConfig) : LorittaBot() {
+    override val commandMap = DiscordCommandMap(this).also {
+        it.register(
+                command(this, "SuperPingCommand", listOf("superping")) {
+                    description { "test" }
+
+                    executes {
+                        val user = user(0) ?: run {
+                            this.sendMessage("Você não mencionou nenhum usuário, bobinho.")
+                            return@executes
+                        }
+
+                        this.sendMessage("Olha a menção! ${user.asMention} *fugindo para a pessoa não reclamar* ${Emotes.DEFAULT_DANCE}")
+                    }
+                }
+        )
+        it.register(DrakeCommand().create(this))
+        it.register(Play2Command.create(this))
+    }
+
     var locales = mapOf<String, BaseLocale>()
     var legacyLocales = mapOf<String, LegacyBaseLocale>()
-    var pluginManager = PluginManager(this)
     val http = HttpClient(Apache) {
         this.expectSuccess = false
 

@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.api.commands
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
@@ -7,12 +8,12 @@ import mu.KotlinLogging
 import net.perfectdreams.commands.dsl.BaseDSLCommand
 import net.perfectdreams.commands.manager.CommandContinuationType
 import net.perfectdreams.commands.manager.CommandManager
-import net.perfectdreams.loritta.api.platform.LorittaBot
+import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import java.awt.Image
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
 
-abstract class LorittaCommandManager(val loritta: LorittaBot) : CommandManager<LorittaCommandContext, LorittaCommand, BaseDSLCommand>() {
+abstract class LorittaCommandManager(val loritta: LorittaDiscord) : CommandManager<LorittaCommandContext, LorittaCommand, BaseDSLCommand>() {
 	val logger = KotlinLogging.logger {}
 
 	val commands = mutableListOf<LorittaCommand>()
@@ -60,7 +61,7 @@ abstract class LorittaCommandManager(val loritta: LorittaBot) : CommandManager<L
 	final override fun getRegisteredCommands() = commands
 
 	final override fun registerCommand(command: LorittaCommand) {
-		command.loritta = loritta
+		command.loritta = loritta as Loritta
 		commands.add(command)
 		commands.sortByDescending {
 			it.labels.maxBy { it.length }

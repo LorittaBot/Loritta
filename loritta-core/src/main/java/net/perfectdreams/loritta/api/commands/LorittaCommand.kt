@@ -1,18 +1,18 @@
 package net.perfectdreams.loritta.api.commands
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import mu.KotlinLogging
 import net.perfectdreams.commands.Command
-import net.perfectdreams.loritta.api.platform.LorittaBot
 import net.perfectdreams.loritta.api.platform.PlatformFeature
 import net.perfectdreams.loritta.utils.Emotes
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
 open class LorittaCommand(override val labels: Array<String>, val category: CommandCategory) : Command() {
-	lateinit var loritta: LorittaBot
+	lateinit var loritta: Loritta
 
 	internal val logger = KotlinLogging.logger {}
 	open val requiresFeatures = listOf<PlatformFeature>()

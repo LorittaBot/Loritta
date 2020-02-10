@@ -6,6 +6,7 @@ import com.mitchellbosecke.pebble.PebbleEngine
 import com.mitchellbosecke.pebble.cache.tag.CaffeineTagCache
 import com.mitchellbosecke.pebble.cache.template.CaffeineTemplateCache
 import com.mitchellbosecke.pebble.loader.FileLoader
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.KtsObjectLoader
@@ -20,7 +21,6 @@ import com.mrpowergamerbr.loritta.website.requests.routes.UserRoute
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
 import kotlinx.html.HtmlBlockTag
 import mu.KotlinLogging
-import net.perfectdreams.loritta.api.platform.LorittaBot
 import org.jooby.Kooby
 import org.jooby.MediaType
 import org.jooby.Request
@@ -32,7 +32,7 @@ import java.io.StringWriter
 import java.util.*
 import kotlin.reflect.full.functions
 
-class LorittaWebsite(val loritta: LorittaBot, val websiteUrl: String, var frontendFolder: String) : Kooby({
+class LorittaWebsite(val loritta: Loritta, val websiteUrl: String, var frontendFolder: String) : Kooby({
 	// Mostrar conexões realizadas ao website
 	before { req, res ->
 		val queryString = req.urlQueryString

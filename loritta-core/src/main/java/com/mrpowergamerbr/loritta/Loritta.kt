@@ -22,6 +22,7 @@ import com.mrpowergamerbr.loritta.listeners.*
 import com.mrpowergamerbr.loritta.livestreams.TwitchAPI
 import com.mrpowergamerbr.loritta.modules.ServerSupportModule
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.plugin.PluginManager
 import com.mrpowergamerbr.loritta.tables.*
 import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.threads.RaffleThread
@@ -46,13 +47,11 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.utils.cache.CacheFlag
-import net.perfectdreams.loritta.api.commands.command
-import net.perfectdreams.loritta.api.platform.LorittaBot
 import net.perfectdreams.loritta.api.platform.PlatformFeature
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.platform.discord.DiscordEmoteManager
+import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandManager
-import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandMap
 import net.perfectdreams.loritta.platform.discord.utils.BucketedController
 import net.perfectdreams.loritta.platform.discord.utils.RateLimitChecker
 import net.perfectdreams.loritta.tables.*
@@ -84,7 +83,7 @@ import kotlin.concurrent.thread
  *
  * @author MrPowerGamerBR
  */
-class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig: GeneralDiscordInstanceConfig, config: GeneralConfig, instanceConfig: GeneralInstanceConfig) : LorittaBot(config, instanceConfig) {
+class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: GeneralDiscordInstanceConfig, config: GeneralConfig, instanceConfig: GeneralInstanceConfig) : LorittaDiscord(discordConfig, discordInstanceConfig, config, instanceConfig) {
 	// ===[ STATIC ]===
 	companion object {
 		// ===[ LORITTA ]===
@@ -124,24 +123,9 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 		return Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat(name).build())
 	}
 
+	var pluginManager = PluginManager(this)
 	lateinit var legacyCommandManager: CommandManager // Nosso command manager
-	override val commandManager = DiscordCommandManager(this)
-	val commandMap = DiscordCommandMap(this).apply {
-		register(
-				command(listOf("superping")) {
-					description { "test" }
-
-					executes {
-						val user = user(0) ?: run {
-							this.sendMessage("Você não mencionou nenhum usuário, bobinho.")
-							return@executes
-						}
-
-						this.sendMessage("Olha a menção! ${user.asMention} *fugindo para a pessoa não reclamar* ${Emotes.DEFAULT_DANCE}")
-					}
-				}
-		)
-	}
+	val commandManager = DiscordCommandManager(this)
 	lateinit var dummyLegacyServerConfig: MongoServerConfig // Config utilizada em comandos no privado
 	var messageInteractionCache = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<Long, MessageInteractionFunctions>().asMap()
 
@@ -204,7 +188,7 @@ class Loritta(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig
 		if (loritta.isMaster) // Apenas o master cluster deve carregar as fan arts, os outros clusters irão carregar pela API
 			loadFanArts()
 		Emotes.emoteManager = DiscordEmoteManager()
-		Emotes.loadEmotes()
+		Emotes.emoteManager?.loadEmotes()
 		GlobalHandler.generateViews()
 
 		net.perfectdreams.loritta.website.LorittaWebsite.init() // hack!

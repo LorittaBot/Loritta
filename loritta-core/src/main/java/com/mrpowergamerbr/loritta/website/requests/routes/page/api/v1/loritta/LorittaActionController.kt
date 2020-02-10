@@ -38,7 +38,7 @@ class LorittaActionController {
 
 		when (actionType) {
 			"emotes" -> {
-				Emotes.loadEmotes()
+				Emotes.emoteManager?.loadEmotes()
 			}
 			"locales" -> {
 				loritta.loadLocales()
