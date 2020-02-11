@@ -1,5 +1,5 @@
 dependencies {
-    compile(project(":loritta-core"))
+    compile(project(":loritta-discord"))
 }
 
 plugins {
