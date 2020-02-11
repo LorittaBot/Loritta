@@ -14,7 +14,7 @@ open class JDAUser(@JsonIgnore val handle: net.dv8tion.jda.api.entities.User) : 
         get() = handle.avatarId
 
     override val avatarUrl: String?
-        get() = handle.avatarUrl
+        get() = handle.effectiveAvatarUrl
 
     override val effectiveAvatarUrl: String
         get() = handle.effectiveAvatarUrl

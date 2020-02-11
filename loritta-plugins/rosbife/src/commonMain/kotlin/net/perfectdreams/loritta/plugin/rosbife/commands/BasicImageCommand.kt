@@ -1,0 +1,25 @@
+package net.perfectdreams.loritta.plugin.rosbife.commands
+
+import net.perfectdreams.loritta.api.LorittaBot
+import net.perfectdreams.loritta.api.commands.*
+
+interface BasicImageCommand {
+	val descriptionKey: String
+
+	fun command(loritta: LorittaBot): Command<CommandContext>
+
+	fun create(loritta: LorittaBot, labels: List<String>, builder: CommandBuilder<CommandContext>.() -> (Unit)): Command<CommandContext> {
+		return command(
+				loritta,
+				this::class.simpleName!!,
+				labels,
+				CommandCategory.IMAGES
+		) {
+			description { it[descriptionKey] }
+
+			needsToUploadFiles = true
+
+			builder.invoke(this)
+		}
+	}
+}

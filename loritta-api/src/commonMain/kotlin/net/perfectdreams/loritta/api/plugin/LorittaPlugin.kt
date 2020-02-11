@@ -11,7 +11,7 @@ abstract class LorittaPlugin(val name: String, val loritta: LorittaBot) {
 	open fun onDisable() {}
 
 	fun registerCommands(vararg commands: Command<CommandContext>) {
-		commands.forEach { registerCommands(it) }
+		commands.forEach { registerCommand(it) }
 	}
 
 	fun registerCommand(command: Command<CommandContext>) {

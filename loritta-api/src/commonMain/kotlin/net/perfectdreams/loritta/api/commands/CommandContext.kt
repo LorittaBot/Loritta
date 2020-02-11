@@ -51,7 +51,7 @@ abstract class CommandContext(
 				explain()
 				throw SilentCommandException()
 			} else {
-				throw CommandException(locale["commands.noValidImageFound"], Emotes.LORI_CRYING.toString())
+				throw CommandException(locale["commands.noValidImageFound", Emotes.LORI_CRYING], Emotes.LORI_CRYING.toString())
 			}
 		}
 

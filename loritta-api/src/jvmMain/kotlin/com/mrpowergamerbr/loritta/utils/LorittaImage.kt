@@ -937,9 +937,9 @@ class LorittaImage {
 	 * supplied in clockwise order starting from the upper left corner.
 	 */
 	fun setCorners(x0: Float, y0: Float, //UL
-	               x1: Float, y1: Float, //UR
-	               x2: Float, y2: Float, //LR
-	               x3: Float, y3: Float) { //LL
+				   x1: Float, y1: Float, //UR
+				   x2: Float, y2: Float, //LR
+				   x3: Float, y3: Float) { //LL
 
 		val skew = Skew(this.bufferedImage)
 		this.bufferedImage = skew.setCorners(x0, y0, x1, y1, x2, y2, x3, y3)
@@ -2174,9 +2174,9 @@ class LorittaImage {
 
 
 		fun setCorners(x0: Float, y0: Float,
-		               x1: Float, y1: Float,
-		               x2: Float, y2: Float,
-		               x3: Float, y3: Float): BufferedImage {
+					   x1: Float, y1: Float,
+					   x2: Float, y2: Float,
+					   x3: Float, y3: Float): BufferedImage {
 			this.x0 = x0
 			this.y0 = y0
 			this.x1 = x1
@@ -2192,6 +2192,13 @@ class LorittaImage {
 			dy2 = y3 - y2
 			dx3 = x0 - x1 + x2 - x3
 			dy3 = y0 - y1 + y2 - y3
+
+			println("dx1: $dx1")
+			println("dy1: $dy1")
+			println("dx2: $dx2")
+			println("dy2: $dy2")
+			println("dx3: $dx3")
+			println("dy3: $dy3")
 
 			val a11: Float
 			val a12: Float
@@ -2232,10 +2239,18 @@ class LorittaImage {
 			H = a21 * a13 - a11 * a23
 			I = a11 * a22 - a21 * a12
 
+			println("A: $A")
+			println("B: $B")
+			println("C: $C")
+			println("D: $D")
+			println("E: $E")
+			println("F: $F")
+			println("G: $G")
+			println("H: $H")
+			println("I: $I")
 
 			return filter(src, dst)
 		}
-
 
 		protected fun transformSpace(rect: Rectangle) {
 			rect.x = Math.min(Math.min(x0, x1), Math.min(x2, x3)).toInt()
@@ -2243,7 +2258,6 @@ class LorittaImage {
 			rect.width = Math.max(Math.max(x0, x1), Math.max(x2, x3)).toInt() - rect.x
 			rect.height = Math.max(Math.max(y0, y1), Math.max(y2, y3)).toInt() - rect.y
 		}
-
 
 		private fun filter(src: BufferedImage, dst: BufferedImage?): BufferedImage {
 			var dst = dst
@@ -2256,6 +2270,9 @@ class LorittaImage {
 			transformedSpace = Rectangle(0, 0, width, height)
 			transformSpace(transformedSpace)
 
+			println("originalSpace: $originalSpace")
+			println("transformedSpace: $transformedSpace")
+
 			if (dst == null) {
 				val dstCM = src.colorModel
 				dst = BufferedImage(
@@ -2267,6 +2284,8 @@ class LorittaImage {
 			//WritableRaster dstRaster = dst.getRaster();
 
 			val inPixels = getRGB(src, 0, 0, width, height, null)
+			println(inPixels.size)
+			println(inPixels[0])
 
 			if (interpolation == NEAREST_NEIGHBOUR)
 				return filterPixelsNN(dst, width, height, inPixels, transformedSpace)
@@ -2331,7 +2350,7 @@ class LorittaImage {
 
 
 		protected fun filterPixelsNN(dst: BufferedImage, width: Int,
-		                             height: Int, inPixels: IntArray, transformedSpace: Rectangle): BufferedImage {
+									 height: Int, inPixels: IntArray, transformedSpace: Rectangle): BufferedImage {
 			val outWidth = transformedSpace.width
 			val outHeight = transformedSpace.height
 			val outX: Int

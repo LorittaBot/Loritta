@@ -67,7 +67,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
     override val assets = JVMLorittaAssets(this)
     var locales = mapOf<String, BaseLocale>()
     var legacyLocales = mapOf<String, LegacyBaseLocale>()
-    val http = HttpClient(Apache) {
+    override val http = HttpClient(Apache) {
         this.expectSuccess = false
 
         engine {

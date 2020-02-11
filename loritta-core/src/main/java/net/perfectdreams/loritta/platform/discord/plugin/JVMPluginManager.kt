@@ -30,6 +30,7 @@ class JVMPluginManager(val loritta: LorittaDiscord) : PluginManager {
 			logger.error(e) { "Exception while enabling plugin ${plugin.name}" }
 			unloadPlugin(plugin)
 		}
+		plugins.add(plugin)
 	}
 
 	override fun unloadPlugin(plugin: LorittaPlugin) {

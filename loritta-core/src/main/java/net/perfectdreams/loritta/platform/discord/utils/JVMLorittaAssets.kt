@@ -11,11 +11,11 @@ import javax.imageio.ImageIO
 class JVMLorittaAssets(val loritta: LorittaBot) : LorittaAssets {
 	val cachedImages = mutableMapOf<String, Image>()
 
-	override fun loadImage(path: String, storeInCache: Boolean, loadFromCache: Boolean): Image {
+	override suspend fun loadImage(path: String, storeInCache: Boolean, loadFromCache: Boolean): Image {
 		if (loadFromCache && cachedImages.containsKey(path))
 			return cachedImages[path]!!
 
-		val image = JVMImage(ImageIO.read(File(Loritta.ASSETS + "drake.png")))
+		val image = JVMImage(ImageIO.read(File(Loritta.ASSETS + path)))
 
 		if (storeInCache)
 			cachedImages[path] = image

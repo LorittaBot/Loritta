@@ -164,7 +164,7 @@ class DiscordCommandContext(
 	override suspend fun explain() {
 		val embed = EmbedBuilder()
 				.setColor(Constants.LORITTA_AQUA)
-				.setAuthor(user.asMention, null, user.name + "#" + user.discriminator)
+				.setAuthor(user.name + "#" + user.discriminator, null, user.effectiveAvatarUrl)
 				.setTitle("${Emotes.LORI_HM} `${serverConfig.commandPrefix}${command.labels.first()}`")
 				.setDescription(command.description.invoke(locale))
 
