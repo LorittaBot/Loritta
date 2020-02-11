@@ -18,9 +18,8 @@ pluginManagement {
 
 rootProject.name = "loritta-parent"
 include(":loritta-api")
-include(":loritta-core")
-// include(":loritta-cli")
 include(":loritta-discord")
+// include(":loritta-cli")
 // include(":loritta-amino")
 include(":loritta-eris")
 
