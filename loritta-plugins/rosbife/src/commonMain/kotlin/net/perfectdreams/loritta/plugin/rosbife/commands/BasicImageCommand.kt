@@ -17,6 +17,10 @@ interface BasicImageCommand {
 		) {
 			description { it[descriptionKey] }
 
+			usage {
+				argument(ArgumentType.IMAGE) {}
+			}
+
 			needsToUploadFiles = true
 
 			builder.invoke(this)

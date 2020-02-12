@@ -17,7 +17,7 @@ object BobBurningPaperCommand : BasicSkewedImageCommand {
 					20f, 175f
 			)
 	)
-	override val sourceTemplatePath = "ata.png"
+	override val sourceTemplatePath = "bobfire.png"
 	override val descriptionKey = "commands.images.bobfire.description"
 
 	override fun command(loritta: LorittaBot) = create(loritta, listOf("bobburningpaper", "bobpaperfire", "bobfire", "bobpapelfogo", "bobfogo")) {}

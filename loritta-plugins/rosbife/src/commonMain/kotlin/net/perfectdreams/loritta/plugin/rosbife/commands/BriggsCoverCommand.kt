@@ -5,10 +5,10 @@ import net.perfectdreams.loritta.api.LorittaBot
 object BriggsCoverCommand : BasicSkewedImageCommand {
 	override val corners = listOf(
 			BasicSkewedImageCommand.Corners(
-					108F,11F,
-					383F,8F,
-					375F,167F,
-					106F, 158F
+					242F,67F, // UL
+					381F,88F, // UR
+					366F,266F, // LR
+					218F, 248F // LL
 			)
 	)
 	override val sourceTemplatePath = "briggs_capa.png"
