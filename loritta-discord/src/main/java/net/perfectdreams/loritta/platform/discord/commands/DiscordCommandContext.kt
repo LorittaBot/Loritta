@@ -171,7 +171,9 @@ class DiscordCommandContext(
 
 		if (toBeDownloaded == null) {
 			if (args.isNotEmpty() && createTextAsImageIfNotFound) {
-				return JVMImage(ImageUtils.createTextAsImage(256, 256, args.joinToString(" ")))
+				val theTextThatWillBeWritten = args.drop(argument).joinToString(" ")
+				if (theTextThatWillBeWritten.isNotEmpty())
+					return JVMImage(ImageUtils.createTextAsImage(256, 256, theTextThatWillBeWritten))
 			}
 
 			if (searchPreviousMessages != 0) {
