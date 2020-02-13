@@ -2,9 +2,10 @@ package net.perfectdreams.loritta.plugin.profiles
 
 import com.mrpowergamerbr.loritta.plugin.LorittaPlugin
 import com.mrpowergamerbr.loritta.profile.ProfileDesign
+import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.plugin.profiles.designs.*
 
-class ProfileDesigns : LorittaPlugin() {
+class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaPlugin(name, loritta) {
     val registeredProfiles = mutableListOf<ProfileDesign>()
 
     override fun onEnable() {
@@ -127,10 +128,10 @@ class ProfileDesigns : LorittaPlugin() {
                 ProfileDesign(true, LorittaChristmas2019ProfileCreator::class.java, "animated_christmas_2019", -1.0, listOf())
         )
 
-        loritta.profileDesignManager.designs.removeAll(loritta.profileDesignManager.designs.filter { it.internalType == "halloween_2019" })
+        lorittaDiscord.profileDesignManager.designs.removeAll(lorittaDiscord.profileDesignManager.designs.filter { it.internalType == "halloween_2019" })
 
         registeredProfiles.forEach {
-            loritta.profileDesignManager.registerDesign(it)
+            lorittaDiscord.profileDesignManager.registerDesign(it)
         }
     }
 
@@ -138,7 +139,7 @@ class ProfileDesigns : LorittaPlugin() {
         super.onDisable()
 
         registeredProfiles.forEach {
-            loritta.profileDesignManager.unregisterDesign(it)
+            lorittaDiscord.profileDesignManager.unregisterDesign(it)
         }
     }
 }

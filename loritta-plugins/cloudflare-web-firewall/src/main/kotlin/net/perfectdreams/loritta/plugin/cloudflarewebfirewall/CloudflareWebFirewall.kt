@@ -2,13 +2,14 @@ package net.perfectdreams.loritta.plugin.cloudflarewebfirewall
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.mrpowergamerbr.loritta.plugin.LorittaPlugin
 import com.mrpowergamerbr.loritta.utils.Constants
 import mu.KotlinLogging
-import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
+import net.perfectdreams.loritta.api.LorittaBot
 import org.apache.commons.net.util.SubnetUtils
 import java.io.File
 
-class CloudflareWebFirewall : DiscordPlugin() {
+class CloudflareWebFirewall(name: String, loritta: LorittaBot) : LorittaPlugin(name, loritta) {
 	private val logger = KotlinLogging.logger {}
 	val asns = mutableMapOf<Int, ASN>()
 

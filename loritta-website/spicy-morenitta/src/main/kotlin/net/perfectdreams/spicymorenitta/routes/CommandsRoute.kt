@@ -8,13 +8,13 @@ import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.parseList
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.utils.select
 import org.w3c.dom.HTMLDivElement
-import utils.CommandCategory
 import kotlin.browser.document
 import kotlin.browser.window
 
@@ -95,11 +95,11 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
                                     div {
                                         style = "text-align: center;"
                                         h1 {
-                                            + category.getLocalizedName(locale)
+                                            // + category.getLocalizedName(locale)
                                         }
                                     }
                                     p {
-                                        + category.getLocalizedDescription(locale)
+                                        // + category.getLocalizedDescription(locale)
                                     }
                                 }
                             }

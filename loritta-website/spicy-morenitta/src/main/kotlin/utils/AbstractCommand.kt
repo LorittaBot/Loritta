@@ -1,5 +1,7 @@
 package utils
 
+import net.perfectdreams.loritta.api.commands.CommandCategory
+
 class AbstractCommand(
 		val name: String,
 		val label: String,

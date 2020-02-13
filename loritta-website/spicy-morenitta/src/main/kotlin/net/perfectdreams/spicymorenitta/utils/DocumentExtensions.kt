@@ -4,11 +4,11 @@ import org.w3c.dom.*
 import org.w3c.dom.events.Event
 import kotlin.browser.window
 
-fun <T> ParentNode.select(query: String): T {
+inline fun <T> ParentNode.select(query: String): T {
     return this.querySelector(query) as T
 }
 
-fun <T> ParentNode.selectAll(query: String): List<T> {
+inline fun <T> ParentNode.selectAll(query: String): List<T> {
     return this.querySelectorAll(query).asList() as List<T>
 }
 

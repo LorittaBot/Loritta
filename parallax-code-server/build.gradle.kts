@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-    compile(project(":loritta-api-jvm"))
+    compile(project(":loritta-api"))
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
     compile("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2")
     compile(kotlin("stdlib-jdk8"))

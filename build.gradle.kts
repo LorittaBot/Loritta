@@ -27,7 +27,6 @@ allprojects {
                     return task("fatJar", type = Jar::class) {
                         println("Building fat jar for ${project.name}...")
                         val addToFinalJarSourceProjects = arrayOf(
-                                "loritta-core-",
                                 "loritta-api-"
                         )
 
@@ -95,7 +94,7 @@ allprojects {
 
 plugins {
     java
-    kotlin("jvm") version "1.3.60"
+    kotlin("jvm") version "1.3.61" apply false
     `maven-publish`
 }
 

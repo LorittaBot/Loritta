@@ -1,6 +1,6 @@
 plugins {
 	id("kotlin2js")
-	id("kotlin-dce-js") apply true
+	// id("kotlin-dce-js") apply true
 	id("kotlinx-serialization") version "1.3.0" apply true
 }
 
@@ -12,6 +12,7 @@ repositories {
 
 dependencies {
     compile(kotlin("stdlib-js"))
+	compile(project(":loritta-api"))
     compile("org.jetbrains.kotlinx:kotlinx-html-js:0.6.11")
 	compile("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.0.1")
 	compile("org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.9.1")

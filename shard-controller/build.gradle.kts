@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-    compile(project(":loritta-api-jvm"))
+    compile(project(":loritta-api"))
     compile(kotlin("stdlib-jdk8"))
     compile("org.slf4j:slf4j-api:2.0.0-alpha0")
     compile("ch.qos.logback:logback-classic:1.3.0-alpha4")
