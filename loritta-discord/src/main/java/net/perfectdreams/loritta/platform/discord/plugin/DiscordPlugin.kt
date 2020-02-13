@@ -6,9 +6,10 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.profile.Badge
 
-open class DiscordPlugin : LorittaPlugin() {
+open class DiscordPlugin(name: String, loritta: LorittaBot) : LorittaPlugin(name, loritta) {
     val eventListeners = mutableListOf<ListenerAdapter>()
     val onGuildReadyListeners = mutableListOf<suspend (Guild, ServerConfig) -> (Unit)>()
     val onGuildMemberJoinListeners = mutableListOf<suspend (Member, Guild, ServerConfig) -> (Unit)>()
@@ -24,7 +25,7 @@ open class DiscordPlugin : LorittaPlugin() {
         onGuildReadyListeners.clear()
         onGuildMemberLeaveListeners.clear()
         badges.forEach {
-            loritta.profileDesignManager.unregisterBadge(it)
+            lorittaDiscord.profileDesignManager.unregisterBadge(it)
         }
         badges.clear()
     }
@@ -46,12 +47,12 @@ open class DiscordPlugin : LorittaPlugin() {
     }
 
     fun registerBadge(badge: Badge) {
-        loritta.profileDesignManager.registerBadge(badge)
+        lorittaDiscord.profileDesignManager.registerBadge(badge)
         badges.add(badge)
     }
 
     fun unregisterBadge(badge: Badge) {
-        loritta.profileDesignManager.unregisterBadge(badge)
+        lorittaDiscord.profileDesignManager.unregisterBadge(badge)
         badges.remove(badge)
     }
 

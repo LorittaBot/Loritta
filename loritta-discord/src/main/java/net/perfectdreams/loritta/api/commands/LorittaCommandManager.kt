@@ -61,6 +61,7 @@ abstract class LorittaCommandManager(val loritta: LorittaDiscord) : CommandManag
 	final override fun getRegisteredCommands() = commands
 
 	final override fun registerCommand(command: LorittaCommand) {
+		logger.warn { "Command $command is using the legacy command manager. Legacy command manager is deprecated and will be removed soon" }
 		command.loritta = loritta as Loritta
 		commands.add(command)
 		commands.sortByDescending {

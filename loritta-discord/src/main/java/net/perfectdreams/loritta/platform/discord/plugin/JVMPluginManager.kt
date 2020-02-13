@@ -21,9 +21,13 @@ class JVMPluginManager(val loritta: LorittaDiscord) : PluginManager {
 	}
 
 	override val plugins = mutableListOf<LorittaPlugin>()
+	val loadedFromFile = mutableMapOf<LorittaPlugin, File>()
 
 	override fun loadPlugin(plugin: LorittaPlugin) {
 		logger.info { "Loading ${plugin.name}" }
+
+		if (plugin is com.mrpowergamerbr.loritta.plugin.LorittaPlugin)
+			logger.warn { "Plugin ${plugin.name} is a legacy plugin. Legacy plugin support is deprecated and will be removed soon" }
 		try {
 			plugin.onEnable()
 		} catch (e: Exception) {
@@ -45,6 +49,14 @@ class JVMPluginManager(val loritta: LorittaDiscord) : PluginManager {
 		plugin.registeredCommands.clear()
 
 		plugins.remove(plugin)
+		loadedFromFile.remove(plugin)
+	}
+
+	fun reloadPlugin(plugin: LorittaPlugin) {
+		val file = loadedFromFile[plugin] ?: throw RuntimeException("$plugin does not have an associated file with it! Was it loaded directly via another plugin source code?")
+
+		unloadPlugin(plugin)
+		loadPlugin(file)
 	}
 
 	fun loadPlugins() {
@@ -71,12 +83,8 @@ class JVMPluginManager(val loritta: LorittaDiscord) : PluginManager {
 			val clazz = Class.forName(info.main, true, classLoader)
 
 			val plugin = clazz.getConstructor(String::class.java, LorittaBot::class.java).newInstance(info.pluginName, loritta) as LorittaPlugin
-			// plugin.loritta = loritta
-			// plugin.name = info.pluginName
-			// plugin.classLoader = classLoader
-			// plugin.pluginFile = file
-
 			loadPlugin(plugin)
+			loadedFromFile[plugin] = file
 		} catch (e: Throwable) {
 			logger.error(e) { "Exception while loading plugin $file" }
 		}

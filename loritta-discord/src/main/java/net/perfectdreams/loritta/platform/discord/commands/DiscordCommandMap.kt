@@ -129,7 +129,8 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 					rawArgs,
 					ev.message,
 					locale,
-					serverConfig
+					serverConfig,
+					lorittaUser
 			)
 
 			if (ev.message.isFromType(ChannelType.TEXT)) {

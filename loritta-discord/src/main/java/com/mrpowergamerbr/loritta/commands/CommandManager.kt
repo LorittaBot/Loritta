@@ -58,10 +58,8 @@ class CommandManager {
 		commandMap.add(VaporQualidadeCommand())
 		commandMap.add(TretaNewsCommand())
 		commandMap.add(MagicBallCommand())
-		commandMap.add(SAMCommand())
 		commandMap.add(NyanCatCommand())
 		commandMap.add(PrimeirasPalavrasCommand())
-		commandMap.add(DrakeCommand())
 		commandMap.add(InverterCommand())
 		// commandMap.add(SpinnerCommand())
 		commandMap.add(LavaCommand())
@@ -96,7 +94,6 @@ class CommandManager {
 		commandMap.add(DemonCommand())
 		commandMap.add(KnuxThrowCommand())
 		commandMap.add(TextCraftCommand())
-		commandMap.add(BolsoDrakeCommand())
 		commandMap.add(DrawnMaskCommand())
 
 		// =======[ DIVERSÃO ]======

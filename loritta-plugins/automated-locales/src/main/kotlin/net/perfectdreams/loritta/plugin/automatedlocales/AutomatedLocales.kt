@@ -6,24 +6,25 @@ import com.mrpowergamerbr.loritta.plugin.LorittaPlugin
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import mu.KotlinLogging
+import net.perfectdreams.loritta.api.LorittaBot
 import java.io.File
 import kotlin.random.Random
 
-class AutomatedLocales : LorittaPlugin() {
+class AutomatedLocales(name: String, loritta: LorittaBot) : LorittaPlugin(name, loritta) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
     override fun onEnable() {
-        if (!loritta.isMaster)
+        if (!lorittaDiscord.isMaster)
             return
 
         logger.info { "Generating automated locales..." }
-        val defaultLocale = loritta.getLocaleById(Constants.DEFAULT_LOCALE_ID)
-        val englishLocale = loritta.getLocaleById("en-us")
+        val defaultLocale = lorittaDiscord.getLocaleById(Constants.DEFAULT_LOCALE_ID)
+        val englishLocale = lorittaDiscord.getLocaleById("en-us")
 
         // Remover linguagens furrificadas carregadas da memória, nós iremos recarregar depois
-        loritta.locales = loritta.locales.toMutableMap().apply {
+        lorittaDiscord.locales = lorittaDiscord.locales.toMutableMap().apply {
             this.remove("pt-debug")
             this.remove("en-debug")
             this.remove("pt-furry")
@@ -93,13 +94,13 @@ class AutomatedLocales : LorittaPlugin() {
                 )
 
         // Recarregar as locales editadas
-        loritta.locales = loritta.locales.toMutableMap().apply {
-            this.put("pt-debug", loritta.loadLocale("pt-debug", defaultLocale))
-            this.put("en-debug", loritta.loadLocale("en-debug", englishLocale))
-            this.put("auto-pt-furry", loritta.loadLocale("auto-pt-furry", defaultLocale))
-            this.put("auto-en-furry", loritta.loadLocale("auto-en-furry", englishLocale))
-            this.put("pt-furry", loritta.loadLocale("pt-furry", autoPtFurry))
-            this.put("en-furry", loritta.loadLocale("en-furry", autoEnFurry))
+        lorittaDiscord.locales = lorittaDiscord.locales.toMutableMap().apply {
+            this.put("pt-debug", lorittaDiscord.loadLocale("pt-debug", defaultLocale))
+            this.put("en-debug", lorittaDiscord.loadLocale("en-debug", englishLocale))
+            this.put("auto-pt-furry", lorittaDiscord.loadLocale("auto-pt-furry", defaultLocale))
+            this.put("auto-en-furry", lorittaDiscord.loadLocale("auto-en-furry", englishLocale))
+            this.put("pt-furry", lorittaDiscord.loadLocale("pt-furry", autoPtFurry))
+            this.put("en-furry", lorittaDiscord.loadLocale("en-furry", autoEnFurry))
         }
     }
 

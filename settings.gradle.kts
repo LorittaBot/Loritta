@@ -19,24 +19,22 @@ pluginManagement {
 rootProject.name = "loritta-parent"
 include(":loritta-api")
 include(":loritta-discord")
-// include(":loritta-cli")
-// include(":loritta-amino")
 include(":loritta-eris")
 
 // Plugins
 include(":loritta-plugins")
 include(":loritta-plugins:artsy-joy-lori")
-include(":loritta-plugins:funny-lori")
 include(":loritta-plugins:minecraft-stuff")
 include(":loritta-plugins:quirky-stuff")
-include(":loritta-plugins:github-issue-sync")
+// include(":loritta-plugins:github-issue-sync")
 include(":loritta-plugins:fortnite-stuff")
 include(":loritta-plugins:profile-designs")
 include(":loritta-plugins:cloudflare-web-firewall")
-include(":loritta-plugins:christmas-2019-event")
+// include(":loritta-plugins:christmas-2019-event")
 include(":loritta-plugins:automated-locales")
 include(":loritta-plugins:api-only-test")
 include(":loritta-plugins:rosbife")
+include(":loritta-plugins:funfunfun")
 
 // Website
 include(":loritta-website")

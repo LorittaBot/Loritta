@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.plugin.rosbife.commands
 
 import net.perfectdreams.loritta.api.LorittaBot
+import net.perfectdreams.loritta.plugin.rosbife.commands.base.BasicScaledImageCommand
 
 object StudiopolisTvCommand : BasicScaledImageCommand {
 	override val descriptionKey = "commands.images.studiopolistv.description"

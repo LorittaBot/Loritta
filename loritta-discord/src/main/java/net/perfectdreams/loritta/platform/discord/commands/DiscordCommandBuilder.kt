@@ -22,10 +22,21 @@ class DiscordCommandBuilder(
 	var userRequiredPermissions = listOf<Permission>()
 	var botRequiredPermissions = listOf<Permission>()
 	var requiresMusic = false
+	var executeDiscordCallback: (suspend DiscordCommandContext.() -> (Unit))? = null
+
+	fun executesDiscord(callback: suspend DiscordCommandContext.() -> (Unit)) {
+		this.executeDiscordCallback = callback
+	}
 
 	fun buildDiscord(): DiscordCommand {
 		val usage = arguments {
 			usageCallback?.invoke(this)
+		}
+
+		executes {
+			val context = checkType<DiscordCommandContext>(this)
+
+			executeDiscordCallback?.invoke(context)
 		}
 
 		return DiscordCommand(

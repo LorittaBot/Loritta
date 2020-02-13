@@ -25,8 +25,6 @@ import io.ktor.http.userAgent
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.command
-import net.perfectdreams.loritta.commands.vanilla.audio.Play2Command
-import net.perfectdreams.loritta.commands.vanilla.images.DrakeCommand
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandMap
 import net.perfectdreams.loritta.platform.discord.plugin.JVMPluginManager
 import net.perfectdreams.loritta.platform.discord.utils.JVMLorittaAssets
@@ -38,6 +36,7 @@ import java.io.File
 import java.lang.reflect.Modifier
 import java.util.*
 import javax.imageio.ImageIO
+import kotlin.random.Random
 
 /**
  * Loritta Morenitta :3
@@ -45,24 +44,7 @@ import javax.imageio.ImageIO
  * This should be extended by plataform specific Lori's
  */
 abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig: GeneralDiscordInstanceConfig, var config: GeneralConfig, var instanceConfig: GeneralInstanceConfig) : LorittaBot() {
-    override val commandMap = DiscordCommandMap(this).also {
-        it.register(
-                command(this, "SuperPingCommand", listOf("superping"), CommandCategory.MAGIC) {
-                    description { "test" }
-
-                    executes {
-                        val user = user(0) ?: run {
-                            this.sendMessage("Você não mencionou nenhum usuário, bobinho.")
-                            return@executes
-                        }
-
-                        this.sendMessage("Olha a menção! ${user.asMention} *fugindo para a pessoa não reclamar* ${Emotes.DEFAULT_DANCE}")
-                    }
-                }
-        )
-        it.register(DrakeCommand().create(this))
-        it.register(Play2Command.create(this))
-    }
+    override val commandMap = DiscordCommandMap(this)
     override val pluginManager = JVMPluginManager(this)
     override val assets = JVMLorittaAssets(this)
     var locales = mapOf<String, BaseLocale>()
@@ -84,6 +66,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
             }
         }
     }
+    override val random = Random(System.currentTimeMillis())
 
     var fanArtArtists = listOf<FanArtArtist>()
     val fanArts: List<FanArt>

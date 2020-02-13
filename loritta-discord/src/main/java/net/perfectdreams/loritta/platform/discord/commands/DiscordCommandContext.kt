@@ -5,16 +5,14 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
+import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.ChannelType
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.exceptions.PermissionException
 import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandContext
@@ -26,6 +24,8 @@ import net.perfectdreams.loritta.platform.discord.entities.DiscordMessage
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.utils.Emotes
 import org.jsoup.Jsoup
+import java.io.File
+import java.io.InputStream
 
 class DiscordCommandContext(
 		loritta: LorittaDiscord,
@@ -33,13 +33,56 @@ class DiscordCommandContext(
 		args: List<String>,
 		val discordMessage: Message,
 		locale: BaseLocale,
-		val serverConfig: ServerConfig
+		val serverConfig: ServerConfig,
+		val lorittaUser: LorittaUser
 ) : CommandContext(loritta, command, args, DiscordMessage(discordMessage), locale) {
 	val isPrivateChannel = discordMessage.channelType == ChannelType.PRIVATE
 	val guild: Guild
-			get() = discordMessage.guild
+		get() = discordMessage.guild
 	val user = discordMessage.author
 	val member = discordMessage.member
+
+	suspend fun sendMessage(message: String, embed: MessageEmbed): Message {
+		return sendMessage(MessageBuilder().setEmbed(embed).append(if (message.isEmpty()) " " else message).build())
+	}
+
+	suspend fun sendMessage(embed: MessageEmbed): Message {
+		return sendMessage(MessageBuilder().append(getUserMention(true)).setEmbed(embed).build())
+	}
+
+	suspend fun sendMessage(message: Message): Message {
+		if (isPrivateChannel || discordMessage.textChannel.canTalk()) {
+			val sentMessage = discordMessage.channel.sendMessage(message).await()
+			return sentMessage
+		} else {
+			// LorittaUtils.warnOwnerNoPermission(discordGuild, event.textChannel, config)
+			throw RuntimeException("Sem permissão para enviar uma mensagem!")
+		}
+	}
+
+	suspend fun sendFile(file: File, fileName: String, content: String = this.getUserMention(true), embed: MessageEmbed? = null): DiscordMessage {
+		return DiscordMessage(discordMessage.channel.sendMessage(
+				MessageBuilder()
+						.append(content)
+						.setEmbed(embed)
+						.build()
+		)
+				.addFile(file, fileName)
+				.await()
+		)
+	}
+
+	suspend fun sendFile(inputStream: InputStream, fileName: String, content: String = this.getUserMention(true), embed: MessageEmbed? = null): DiscordMessage {
+		return DiscordMessage(discordMessage.channel.sendMessage(
+				MessageBuilder()
+						.append(content)
+						.setEmbed(embed)
+						.build()
+		)
+				.addFile(inputStream, fileName)
+				.await()
+		)
+	}
 
 	override suspend fun user(argument: Int): User? {
 		if (this.args.size > argument) { // Primeiro iremos verificar se existe uma imagem no argumento especificado

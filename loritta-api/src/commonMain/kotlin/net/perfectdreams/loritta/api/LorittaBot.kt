@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.api.commands.CommandMap
 import net.perfectdreams.loritta.api.platform.PlatformFeature
 import net.perfectdreams.loritta.api.plugin.PluginManager
 import net.perfectdreams.loritta.api.utils.LorittaAssets
+import kotlin.random.Random
 
 /**
  * Loritta Morenitta :3
@@ -19,4 +20,5 @@ abstract class LorittaBot {
 	abstract val pluginManager: PluginManager
 	abstract val assets: LorittaAssets
 	abstract val http: HttpClient
+	abstract val random: Random
 }

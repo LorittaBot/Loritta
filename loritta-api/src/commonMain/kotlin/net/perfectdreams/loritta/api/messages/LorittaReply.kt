@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.api.messages
 
 import net.perfectdreams.loritta.api.commands.CommandContext
+import net.perfectdreams.loritta.api.entities.LorittaEmote
 import net.perfectdreams.loritta.api.entities.User
 
 class LorittaReply(
@@ -10,6 +11,9 @@ class LorittaReply(
 		val hasPadding: Boolean = true,
 		val mentionUser: Boolean = true
 ) {
+	constructor(message: String, prefix: LorittaEmote, forceMention: Boolean = false, hasPadding: Boolean = true, mentionUser: Boolean = true) :
+			this(message, prefix.toString(), forceMention, hasPadding, mentionUser)
+
 	fun build(commandContext: CommandContext): String {
 		return build(commandContext.getUserMention(false), commandContext.getUserMention(true))
 	}

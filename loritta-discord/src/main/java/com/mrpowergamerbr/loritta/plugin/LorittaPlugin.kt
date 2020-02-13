@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.plugin
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.modules.MessageReceivedModule
+import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import org.jooby.Jooby
 import org.jooby.Request
@@ -9,9 +10,7 @@ import org.jooby.Response
 import java.io.File
 import java.net.URLClassLoader
 
-open class LorittaPlugin {
-	lateinit var loritta: Loritta
-	lateinit var name: String
+open class LorittaPlugin(name: String, loritta: LorittaBot) : net.perfectdreams.loritta.api.plugin.LorittaPlugin(name, loritta) {
 	lateinit var classLoader: URLClassLoader
 	lateinit var pluginFile: File
 
@@ -22,11 +21,13 @@ open class LorittaPlugin {
 	val routes = mutableListOf<Jooby>()
 	val joobyWebsite = JoobyWebsite()
 
-	open fun onEnable() {
+	val lorittaDiscord = loritta as Loritta
+
+	override fun onEnable() {
 
 	}
 
-	open fun onDisable() {
+	override fun onDisable() {
 		messageReceivedModules.clear()
 		messageEditedModules.clear()
 		routes.clear()
@@ -34,7 +35,7 @@ open class LorittaPlugin {
 	}
 
 	fun registerCommand(command: LorittaCommand) {
-		loritta.commandManager.registerCommand(command)
+		lorittaDiscord.commandManager.registerCommand(command)
 		commands.add(command)
 	}
 

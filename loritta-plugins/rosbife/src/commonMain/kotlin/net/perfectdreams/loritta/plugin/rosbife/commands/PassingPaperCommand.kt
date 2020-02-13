@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.plugin.rosbife.commands
 
 import net.perfectdreams.loritta.api.LorittaBot
+import net.perfectdreams.loritta.plugin.rosbife.commands.base.BasicSkewedImageCommand
 
 object PassingPaperCommand : BasicSkewedImageCommand {
 	override val corners = listOf(

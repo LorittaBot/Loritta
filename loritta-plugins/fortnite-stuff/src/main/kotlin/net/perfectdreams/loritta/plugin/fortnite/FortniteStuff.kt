@@ -1,9 +1,10 @@
 package net.perfectdreams.loritta.plugin.fortnite
 
 import com.google.gson.JsonArray
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.plugin.LorittaPlugin
-import net.perfectdreams.loritta.plugin.fortnite.commands.fortnite.*
+import net.perfectdreams.loritta.api.LorittaBot
+import net.perfectdreams.loritta.api.plugin.LorittaPlugin
 import net.perfectdreams.loritta.plugin.fortnite.commands.fortnite.*
 import net.perfectdreams.loritta.plugin.fortnite.extendedtables.FortniteConfigs
 import net.perfectdreams.loritta.plugin.fortnite.extendedtables.FortniteServerConfigs
@@ -12,7 +13,7 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 
-class FortniteStuff : LorittaPlugin() {
+class FortniteStuff(name: String, loritta: LorittaBot) : LorittaPlugin(name, loritta) {
     companion object {
         fun convertRarityToColor(type: String): Color {
             return when (type) {
@@ -31,28 +32,17 @@ class FortniteStuff : LorittaPlugin() {
 
     var updateStoreItems: UpdateStoreItemsTask? = null
     val itemsInfo = mutableMapOf<String, JsonArray>()
+    val lorittaDiscord = loritta as Loritta
 
     override fun onEnable() {
         updateStoreItems = UpdateStoreItemsTask(this).apply { start() }
 
-        registerCommand(
-                FortniteShopCommand(this)
-        )
-
-        registerCommand(
-                FortniteItemCommand(this)
-        )
-
-        registerCommand(
-                FortniteNewsCommand(this)
-        )
-
-        registerCommand(
-                FortniteStatsCommand(this)
-        )
-
-        registerCommand(
-                FortniteNotifyCommand(this)
+        registerCommands(
+                FortniteItemCommand.command(lorittaDiscord, this),
+                FortniteNewsCommand.command(lorittaDiscord, this),
+                FortniteShopCommand.command(lorittaDiscord, this),
+                FortniteNotifyCommand.command(lorittaDiscord, this),
+                FortniteStatsCommand.command(lorittaDiscord, this)
         )
 
         transaction(Databases.loritta) {

@@ -8,22 +8,13 @@ import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.parseList
-import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import net.perfectdreams.loritta.api.commands.CommandContext
-import net.perfectdreams.loritta.api.commands.CommandMap
-import net.perfectdreams.loritta.api.commands.command
-import net.perfectdreams.loritta.api.entities.User
-import net.perfectdreams.loritta.api.platform.PlatformFeature
-import net.perfectdreams.loritta.api.plugin.PluginManager
-import net.perfectdreams.loritta.api.utils.LorittaAssets
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.utils.select
 import org.w3c.dom.HTMLDivElement
-import org.w3c.dom.url.URLSearchParams
 import kotlin.browser.document
 import kotlin.browser.window
 
@@ -31,47 +22,9 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
     override val keepLoadingScreen: Boolean
         get() = true
 
-    class LorittaJS : LorittaBot() {
-        override val supportedFeatures: List<PlatformFeature>
-            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-        override val commandMap: CommandMap<net.perfectdreams.loritta.api.commands.Command<CommandContext>>
-            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-        override val pluginManager: PluginManager
-            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-        override val assets: LorittaAssets
-            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-    }
-
-    class UserImpl : User {
-        override val name: String
-            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-        override val avatar: String?
-            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-        override val avatarUrl: String?
-            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-        override val isBot: Boolean
-            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-        override val asMention: String
-            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-        override val id: Long
-            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-
-    }
-
     @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         super.onRender(call)
-
-        val queryStrings = document.location!!.search
-        val searchParams = URLSearchParams(queryStrings)
-
-        val command = command(LorittaJS(), "TestCommand", listOf("test"), CommandCategory.MAGIC) {
-            executes {
-
-            }
-        }
-
-        console.log(command)
 
         m.launch {
             val result = http.get<String> {

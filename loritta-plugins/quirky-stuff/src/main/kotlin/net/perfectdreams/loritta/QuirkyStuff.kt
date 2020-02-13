@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
+import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.commands.BirthdayCommand
 import net.perfectdreams.loritta.commands.DocesCommand
 import net.perfectdreams.loritta.commands.LoriToolsQuirkyStuffCommand
@@ -42,7 +43,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.math.BigDecimal
 
-class QuirkyStuff : DiscordPlugin() {
+class QuirkyStuff(name: String, loritta: LorittaBot) : DiscordPlugin(name, loritta) {
     private val REQUIRED_TO_RECEIVE_DREAM_BOOST = 20.00.toBigDecimal()
 
     val task = GlobalScope.launch(LorittaLauncher.loritta.coroutineDispatcher) {
