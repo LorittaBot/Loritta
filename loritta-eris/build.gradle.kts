@@ -31,35 +31,4 @@ tasks {
 	compileKotlinJs {
 		this.kotlinOptions.moduleKind = "commonjs"
 	}
-
-	val unpackKotlinJsStdlib by registering {
-		group = "build"
-		description = "Unpack the Kotlin JavaScript standard library"
-		val outputDir = file("$buildDir/$name")
-		inputs.property("compileClasspath", configurations.compileClasspath.get())
-		outputs.dir(outputDir)
-
-		doLast {
-			configurations.compileClasspath.get().all {
-				copy {
-					includeEmptyDirs = false
-					from(zipTree(it))
-					into(outputDir)
-					include("**/*.js")
-					exclude("META-INF/**")
-				}
-				true
-			}
-		}
-	}
-	val assembleWeb by registering(Copy::class) {
-		group = "build"
-		description = "Assemble the web application"
-		includeEmptyDirs = false
-		from(unpackKotlinJsStdlib)
-		into("$buildDir/web")
-	}
-	assemble {
-		dependsOn(assembleWeb)
-	}
 }
