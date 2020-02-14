@@ -35,6 +35,7 @@ include(":loritta-plugins:automated-locales")
 include(":loritta-plugins:api-only-test")
 include(":loritta-plugins:rosbife")
 include(":loritta-plugins:funfunfun")
+include(":loritta-plugins:funky")
 
 // Website
 include(":loritta-website")

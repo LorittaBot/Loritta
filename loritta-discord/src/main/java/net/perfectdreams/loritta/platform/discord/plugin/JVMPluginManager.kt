@@ -45,6 +45,7 @@ class JVMPluginManager(val loritta: LorittaDiscord) : PluginManager {
 			logger.error(e) { "Exception while disabling plugin ${plugin.name}" }
 		}
 
+		logger.info { "Unregistering ${plugin.registeredCommands} commands..." }
 		loritta.commandMap.unregisterAll(*plugin.registeredCommands.toTypedArray())
 		plugin.registeredCommands.clear()
 

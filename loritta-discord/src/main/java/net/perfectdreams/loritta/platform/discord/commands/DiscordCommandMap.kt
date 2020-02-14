@@ -43,6 +43,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 	}
 
 	override fun unregister(command: Command<CommandContext>) {
+		logger.info { "Unregistering $command..." }
 		commands.remove(command)
 	}
 
@@ -225,8 +226,8 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 					}
 				}
 
-				/* if (!isPrivateChannel && ev.member != null && ev.textChannel != null) {
-					val missingPermissions = command.lorittaPermissions.filterNot { lorittaUser.hasPermission(it) }
+				if (!isPrivateChannel && ev.member != null && ev.textChannel != null && command is DiscordCommand) {
+					val missingPermissions = command.userRequiredLorittaPermissions.filterNot { lorittaUser.hasPermission(it) }
 
 					if (missingPermissions.isNotEmpty()) {
 						// oh no
@@ -236,10 +237,15 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 						if (ev.member.hasPermission(Permission.ADMINISTRATOR) || ev.member.hasPermission(Permission.MANAGE_SERVER)) {
 							message += " ${legacyLocale["LORIPERMISSION_MissingPermCanConfigure", loritta.instanceConfig.loritta.website.url]}"
 						}
-						ev.textChannel.sendMessage(Constants.ERROR + " **|** ${ev.member.asMention} $message").queue()
+						context.reply(
+								LorittaReply(
+										message,
+										Constants.ERROR
+								)
+						)
 						return true
 					}
-				} */
+				}
 
 				if (args.isNotEmpty() && args[0] == "🤷") { // Usar a ajuda caso 🤷 seja usado
 					context.explain()
