@@ -16,6 +16,8 @@ abstract class CommandContext(
 		val message: Message,
 		val locale: BaseLocale
 ) {
+	val sender = message.author
+
 	suspend fun sendMessage(content: String) = message.channel.sendMessage(content)
 	suspend fun sendMessage(lorittaMessage: LorittaMessage) = message.channel.sendMessage(lorittaMessage)
 	suspend fun sendImage(image: Image, fileName: String = "image.png", content: String = getUserMention(true)) = message.channel.sendFile(image.toByteArray(), fileName, content)

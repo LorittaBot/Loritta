@@ -16,5 +16,6 @@ abstract class LorittaPlugin(val name: String, val loritta: LorittaBot) {
 
 	fun registerCommand(command: Command<CommandContext>) {
 		loritta.commandMap.register(command)
+		registeredCommands.add(command)
 	}
 }

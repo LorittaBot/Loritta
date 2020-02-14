@@ -17,7 +17,13 @@ object PlaylistCommand : DSLCommandBase {
 					.setTitle("Músicas na fila")
 					.setColor(Constants.LORITTA_AQUA)
 					.setDescription(
-							musicManager.scheduler.queue.toList().joinToString("\n") { it.track.info.title }
+							musicManager.scheduler.queue.toList().joinToString("\n") {
+								buildString {
+									this.append(it.requestedBy.asMention)
+									this.append(' ')
+									this.append(it.track.info.title)
+								}
+							}
 					)
 
 			musicManager.scheduler.queue.toList()
