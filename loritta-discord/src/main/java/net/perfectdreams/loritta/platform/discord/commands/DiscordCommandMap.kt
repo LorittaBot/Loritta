@@ -44,7 +44,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 	}
 
 	override fun unregister(command: Command<CommandContext>) {
-		JVMPluginManager.logger.info { "Unregistering $command..." }
+		logger.info { "Unregistering $command..." }
 		commands.remove(command)
 	}
 
