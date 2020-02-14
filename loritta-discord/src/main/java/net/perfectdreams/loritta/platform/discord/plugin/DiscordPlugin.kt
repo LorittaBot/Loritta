@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.profile.Badge
 
+@Deprecated(message = "Please use LorittaDiscordPlugin")
 open class DiscordPlugin(name: String, loritta: LorittaBot) : LorittaPlugin(name, loritta) {
     val eventListeners = mutableListOf<ListenerAdapter>()
     val onGuildReadyListeners = mutableListOf<suspend (Guild, ServerConfig) -> (Unit)>()

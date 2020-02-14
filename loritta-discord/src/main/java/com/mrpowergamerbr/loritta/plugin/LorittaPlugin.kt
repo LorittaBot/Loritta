@@ -10,6 +10,7 @@ import org.jooby.Response
 import java.io.File
 import java.net.URLClassLoader
 
+@Deprecated("Please use LorittaPlugin")
 open class LorittaPlugin(name: String, loritta: LorittaBot) : net.perfectdreams.loritta.api.plugin.LorittaPlugin(name, loritta) {
 	lateinit var classLoader: URLClassLoader
 	lateinit var pluginFile: File
