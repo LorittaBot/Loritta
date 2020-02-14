@@ -407,8 +407,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					TrackedTwitterAccounts,
 					TrackedRssFeeds,
 					DefaultRssFeeds,
-					SonhosTransaction,
-					LavalinkTracks
+					SonhosTransaction
 			)
 		}
 	}

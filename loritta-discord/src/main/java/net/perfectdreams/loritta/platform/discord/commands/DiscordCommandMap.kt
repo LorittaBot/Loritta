@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.perfectdreams.loritta.api.commands.*
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.platform.discord.plugin.JVMPluginManager
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.FeatureFlags
@@ -43,6 +44,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 	}
 
 	override fun unregister(command: Command<CommandContext>) {
+		JVMPluginManager.logger.info { "Unregistering $command..." }
 		commands.remove(command)
 	}
 

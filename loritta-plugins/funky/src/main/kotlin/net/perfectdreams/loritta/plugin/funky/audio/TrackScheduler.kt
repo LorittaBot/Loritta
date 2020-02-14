@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.audio
+package net.perfectdreams.loritta.plugin.funky.audio
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason
@@ -8,7 +8,7 @@ import lavalink.client.player.event.PlayerEventListenerAdapter
 import mu.KotlinLogging
 import java.util.concurrent.LinkedBlockingQueue
 
-class TrackScheduler(val audioManager: AudioManager, val link: Link) : PlayerEventListenerAdapter() {
+class TrackScheduler(val funkyManager: FunkyManager, val link: Link) : PlayerEventListenerAdapter() {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}
@@ -34,7 +34,7 @@ class TrackScheduler(val audioManager: AudioManager, val link: Link) : PlayerEve
 			play(request)
 		} else {
 			// Caso não exista nenhuma próxima música, vamos remover a queue e deletar o link
-			audioManager.musicQueue.remove(link.guildIdLong)
+			funkyManager.musicQueue.remove(link.guildIdLong)
 			link.destroy()
 		}
 	}
@@ -46,7 +46,7 @@ class TrackScheduler(val audioManager: AudioManager, val link: Link) : PlayerEve
 
 	fun destroy() {
 		// Caso não exista nenhuma próxima música, vamos remover a queue e deletar o link
-		audioManager.musicQueue.remove(link.guildIdLong)
+		funkyManager.musicQueue.remove(link.guildIdLong)
 		link.destroy()
 	}
 

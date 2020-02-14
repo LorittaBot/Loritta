@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.platform.discord.commands
 
+import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.Command
@@ -21,6 +22,7 @@ class DiscordCommand(
 	var userRequiredPermissions = listOf<Permission>()
 	var botRequiredPermissions = listOf<Permission>()
 	var requiresMusic = false
+	var userRequiredLorittaPermissions = listOf<LorittaPermission>()
 
 	override val cooldown: Int
 		get() {

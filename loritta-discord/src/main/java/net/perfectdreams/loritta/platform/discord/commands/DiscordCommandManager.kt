@@ -63,17 +63,6 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
         registerCommand(TransactionsCommand())
         if (loritta.config.loritta.environment == EnvironmentType.CANARY) {
             registerCommand(RecordAudioCommand())
-            registerCommand(PlayCommand())
-            registerCommand(SkipCommand())
-            registerCommand(LoopCommand())
-            registerCommand(PauseCommand())
-            registerCommand(PlaylistCommand())
-            registerCommand(PlayNowCommand())
-            registerCommand(ResumeCommand())
-            registerCommand(ShuffleCommand())
-            registerCommand(SkipCommand())
-            registerCommand(StopCommand())
-            registerCommand(VolumeCommand())
         }
 
         contextManager.registerContext<User>(

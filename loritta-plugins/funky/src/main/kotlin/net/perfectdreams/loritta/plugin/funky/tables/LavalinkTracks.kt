@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.tables
+package net.perfectdreams.loritta.plugin.funky.tables
 
 import org.jetbrains.exposed.dao.LongIdTable
 

@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.platform.discord.commands
 
+import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.CommandBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -23,6 +24,7 @@ class DiscordCommandBuilder(
 	var botRequiredPermissions = listOf<Permission>()
 	var requiresMusic = false
 	var executeDiscordCallback: (suspend DiscordCommandContext.() -> (Unit))? = null
+	var userRequiredLorittaPermissions = listOf<LorittaPermission>()
 
 	fun executesDiscord(callback: suspend DiscordCommandContext.() -> (Unit)) {
 		this.executeDiscordCallback = callback
@@ -53,6 +55,7 @@ class DiscordCommandBuilder(
 					it.userRequiredPermissions = userRequiredPermissions
 					it.botRequiredPermissions = botRequiredPermissions
 					it.requiresMusic = requiresMusic
+					it.userRequiredLorittaPermissions = userRequiredLorittaPermissions
 				}
 	}
 }
