@@ -39,6 +39,7 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     compile(project(":loritta-api"))
+    compile(project(":temmie-discord-auth"))
     compile("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2")
     compile("org.jetbrains.kotlinx:kotlinx-coroutines-debug:1.3.2")
     compile("com.google.guava:guava:28.1-jre")
@@ -75,6 +76,8 @@ dependencies {
     compile("org.jooby:jooby-lang-kotlin:1.6.6")
     compile("org.jooby:jooby-mongodb:1.6.6")
     compile("com.github.FredBoat:Lavalink-Client:4.0")
+    compile("io.ktor:ktor-server-core:$ktorVersion")
+    compile("io.ktor:ktor-server-cio:$ktorVersion")
     compile("io.ktor:ktor-client-core:$ktorVersion")
     compile("io.ktor:ktor-client-apache:$ktorVersion")
     compile("io.github.microutils:kotlin-logging:1.7.8")

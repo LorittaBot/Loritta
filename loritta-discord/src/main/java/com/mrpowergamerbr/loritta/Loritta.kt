@@ -152,6 +152,9 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	lateinit var website: LorittaWebsite
 	lateinit var websiteThread: Thread
 
+	var newWebsite: net.perfectdreams.loritta.website.LorittaWebsite? = null
+	var newWebsiteThread: Thread? = null
+
 	var twitch = TwitchAPI()
 	val connectionManager = ConnectionManager()
 	val mercadoPago: MercadoPago
@@ -189,8 +192,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		Emotes.emoteManager = DiscordEmoteManager()
 		Emotes.emoteManager?.loadEmotes()
 		GlobalHandler.generateViews()
-
-		net.perfectdreams.loritta.website.LorittaWebsite.init() // hack!
 
 		val dispatcher = Dispatcher()
 		dispatcher.maxRequestsPerHost = discordConfig.discord.maxRequestsPerHost
@@ -303,13 +304,12 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 
 		logger.info("Sucesso! Iniciando Loritta (Website)...")
 
-		websiteThread = thread(true, name = "Website Thread") {
-			website = LorittaWebsite(this, instanceConfig.loritta.website.url, instanceConfig.loritta.website.folder)
+		newWebsiteThread = thread(true, name = "Website Thread") {
+			website = LorittaWebsite(this, instanceConfig.loritta.website.url, instanceConfig.loritta.website.folder) // Apenas para rodar o init, que preenche uns companion objects marotos
+			val nWebsite = net.perfectdreams.loritta.website.LorittaWebsite(this)
+			newWebsite = nWebsite
+			nWebsite.start()
 			net.perfectdreams.loritta.website.LorittaWebsite.INSTANCE.blog.posts = net.perfectdreams.loritta.website.LorittaWebsite.INSTANCE.blog.loadAllBlogPosts()
-
-			org.jooby.run({
-				website
-			})
 		}
 
 		logger.info { "Sucesso! Iniciando threads da Loritta..." }
@@ -407,7 +407,9 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					TrackedTwitterAccounts,
 					TrackedRssFeeds,
 					DefaultRssFeeds,
-					SonhosTransaction
+					SonhosTransaction,
+					TrackedYouTubeAccounts,
+					TrackedTwitchAccounts
 			)
 		}
 	}

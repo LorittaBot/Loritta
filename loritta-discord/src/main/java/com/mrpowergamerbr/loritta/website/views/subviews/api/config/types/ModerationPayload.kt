@@ -6,7 +6,7 @@ import com.github.salomonbrys.kotson.string
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.ServerConfig
-import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
+import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
@@ -16,7 +16,7 @@ class ModerationPayload : ConfigPayloadType("moderation") {
 		private val logger = KotlinLogging.logger {}
 	}
 
-	override fun process(payload: JsonObject, userIdentification: TemmieDiscordAuth.UserIdentification, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, guild: Guild) {
+	override fun process(payload: JsonObject, userIdentification: LorittaJsonWebSession.UserIdentification, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, guild: Guild) {
 		val moderationConfig = legacyServerConfig.moderationConfig
 		moderationConfig.sendPunishmentViaDm = payload["sendPunishmentViaDm"].bool
 		moderationConfig.sendToPunishLog = payload["sendToPunishLog"].bool

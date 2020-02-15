@@ -5,14 +5,11 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
-import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
-import com.mrpowergamerbr.loritta.utils.webpaste.TemmieBitly
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
+import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import org.jooby.Status
 import org.json.XML
-import org.jsoup.Jsoup
-import org.jsoup.UncheckedIOException
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.net.InetAddress
@@ -82,7 +79,7 @@ object MiscUtils {
 		process.waitFor(10, TimeUnit.SECONDS)
 	}
 
-	fun verifyAccount(userIdentification: TemmieDiscordAuth.UserIdentification, ip: String): AccountCheckResult {
+	fun verifyAccount(userIdentification: LorittaJsonWebSession.UserIdentification, ip: String): AccountCheckResult {
 		if (!userIdentification.verified)
 			return AccountCheckResult.NOT_VERIFIED
 
@@ -92,7 +89,7 @@ object MiscUtils {
 		if (2 > domain.size) // na verdade seria "INVALID_EMAIL" mas...
 			return AccountCheckResult.NOT_VERIFIED
 
-		val list = HttpRequest.get("https://raw.githubusercontent.com/martenson/disposable-email-domains/master/disposable_email_blacklist.conf")
+		val list = HttpRequest.get("https://raw.githubusercontent.com/martenson/disposable-email-domains/master/disposable_email_blocklist.conf")
 				.body()
 				.split("\n")
 				.toMutableList()

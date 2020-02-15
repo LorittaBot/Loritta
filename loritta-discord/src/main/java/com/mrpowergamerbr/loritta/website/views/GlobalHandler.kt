@@ -10,12 +10,11 @@ import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
-import com.mrpowergamerbr.loritta.website.evaluate
-import com.mrpowergamerbr.loritta.website.views.subviews.*
-import com.mrpowergamerbr.loritta.website.views.subviews.api.*
-import com.mrpowergamerbr.loritta.website.views.subviews.api.config.APIGetServerConfigView
-import com.mrpowergamerbr.loritta.website.views.subviews.api.config.APIUpdateServerConfigView
-import com.mrpowergamerbr.loritta.website.views.subviews.configure.*
+import com.mrpowergamerbr.loritta.website.views.subviews.AbstractView
+import com.mrpowergamerbr.loritta.website.views.subviews.AuthPathRedirectView
+import com.mrpowergamerbr.loritta.website.views.subviews.DashboardView
+import com.mrpowergamerbr.loritta.website.views.subviews.configure.ConfigureServerView
+import com.mrpowergamerbr.loritta.website.views.subviews.configure.TestMessageView
 import kotlinx.coroutines.runBlocking
 import net.perfectdreams.loritta.website.LorittaWebsite
 import net.perfectdreams.loritta.website.utils.ScriptingUtils
@@ -28,7 +27,6 @@ import kotlin.reflect.full.createType
 
 object GlobalHandler {
 	var views = mutableListOf<AbstractView>()
-	var apiViews = mutableListOf<NoVarsView>()
 
 	val logger = LoggerFactory.getLogger(AbstractCommand::class.java)
 
@@ -51,9 +49,6 @@ object GlobalHandler {
 
 			loritta.apiCooldown[req.trueIp] = System.currentTimeMillis()
 		}
-
-		apiViews.filter { it.handleRender(req, res, req.path()) }
-				.forEach { return it.render(req, res, req.path()) }
 
 		// TODO: Deprecated
 		val acceptLanguage = req.header("Accept-Language").value("en-US")
@@ -101,8 +96,6 @@ object GlobalHandler {
 				else -> lorittaLocale
 			}
 		}
-
-		WebsiteUtils.initializeVariables(req, locale, lorittaLocale, languageCode, false)
 
 		var pathNoLanguageCode = req.path()
 		val split = pathNoLanguageCode.split("/").toMutableList()
@@ -161,46 +154,14 @@ object GlobalHandler {
 
 	fun generateViews()  {
 		val views = mutableListOf<AbstractView>()
-		val apiViews = mutableListOf<NoVarsView>()
 
 		// ===[ APIS ]===
-		apiViews.add(APIGetChannelInfoView())
-		apiViews.add(APIGetRssFeedTitleView())
-		apiViews.add(APIGetTwitchInfoView())
-		apiViews.add(APILoriSetBalanceView())
-		apiViews.add(APIGetServerConfigView())
-		apiViews.add(APIUpdateServerConfigView())
-		apiViews.add(APILoriDailyRewardView())
-		apiViews.add(APILoriDailyRewardStatusView())
-
-		views.add(HomeView())
-		views.add(TranslationView())
 		views.add(DashboardView())
-		views.add(DailyView())
-		views.add(SupportView())
-		views.add(NashornDocsView())
-		views.add(TermsOfServiceView())
-		views.add(TicTacToeView())
 		views.add(AuthPathRedirectView())
 
 		views.add(ConfigureServerView())
-		views.add(ConfigureEventLogView())
-		views.add(ConfigureInviteBlockerView())
-		views.add(ConfigureAutoroleView())
-		views.add(ConfigurePermissionsView())
-		views.add(ConfigureWelcomerView())
-		views.add(ConfigureStarboardView())
-		views.add(ConfigureYouTubeView())
-		views.add(ConfigureLivestreamView())
-		views.add(ConfigureNashornCommandsView())
-		views.add(ConfigureMusicView())
-		views.add(ConfigureEventHandlersView())
-		views.add(ConfigureCommandsView())
-		views.add(ConfigureTextChannelsView())
-		views.add(ConfigureModerationView())
 		views.add(TestMessageView())
 
 		this.views = views
-		this.apiViews = apiViews
 	}
 }

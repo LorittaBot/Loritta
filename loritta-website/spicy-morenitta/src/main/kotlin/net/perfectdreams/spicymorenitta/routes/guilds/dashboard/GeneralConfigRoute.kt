@@ -24,7 +24,7 @@ import kotlin.dom.addClass
 import kotlin.dom.clear
 import kotlin.dom.removeClass
 
-class GeneralConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/dashboard/configure/{guildid}") {
+class GeneralConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{guildid}/configure") {
 	companion object {
 		private const val LOCALE_PREFIX = "modules.levelUp"
 	}

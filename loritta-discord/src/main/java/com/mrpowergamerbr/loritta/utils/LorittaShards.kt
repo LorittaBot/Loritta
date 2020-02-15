@@ -195,7 +195,7 @@ class LorittaShards {
 	}
 
 	suspend fun queryMutualGuildsInAllLorittaClusters(userId: String): List<JsonObject> {
-		val results = queryAllLorittaClusters("/api/v1/loritta/user/$userId/mutual-guilds")
+		val results = queryAllLorittaClusters("/api/v1/users/$userId/mutual-guilds")
 
 		val allGuilds = mutableListOf<JsonObject>()
 
@@ -219,7 +219,7 @@ class LorittaShards {
 			GlobalScope.async(loritta.coroutineDispatcher) {
 				try {
 					withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
-						val response = loritta.http.post<HttpResponse>("https://${it.getUrl()}/api/v1/loritta/user/search") {
+						val response = loritta.http.post<HttpResponse>("https://${it.getUrl()}/api/v1/users/search") {
 							header("Authorization", loritta.lorittaInternalApiKey.name)
 							userAgent(loritta.lorittaCluster.getUserAgent())
 
@@ -262,7 +262,7 @@ class LorittaShards {
 			GlobalScope.async(loritta.coroutineDispatcher) {
 				try {
 					withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
-						val response = loritta.http.post<HttpResponse>("https://${it.getUrl()}/api/v1/loritta/guild/search") {
+						val response = loritta.http.post<HttpResponse>("https://${it.getUrl()}/api/v1/guilds/search") {
 							header("Authorization", loritta.lorittaInternalApiKey.name)
 							userAgent(loritta.lorittaCluster.getUserAgent())
 
@@ -320,7 +320,7 @@ class LorittaShards {
 		val url = DiscordUtils.getUrlForLorittaClusterId(clusterId)
 
 		val body = withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
-			val response = loritta.http.get<HttpResponse>("https://$url/api/v1/loritta/guild/$id") {
+			val response = loritta.http.get<HttpResponse>("https://$url/api/v1/guilds/$id") {
 				header("Authorization", loritta.lorittaInternalApiKey.name)
 				userAgent(loritta.lorittaCluster.getUserAgent())
 			}

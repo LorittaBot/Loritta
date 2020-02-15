@@ -1,5 +1,23 @@
 package net.perfectdreams.loritta.website.utils.extensions
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.google.gson.JsonElement
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.gson
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
+import io.ktor.application.ApplicationCall
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.request.ApplicationRequest
+import io.ktor.request.header
+import io.ktor.request.queryString
+import io.ktor.response.respondText
+import io.ktor.sessions.get
+import io.ktor.sessions.sessions
+import io.ktor.sessions.set
+import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import org.w3c.dom.Document
 import java.io.StringWriter
 import javax.xml.transform.OutputKeys
@@ -18,5 +36,51 @@ fun Document.transformToString(): String {
 		return sw.toString()
 	} catch (ex: Exception) {
 		throw RuntimeException("Error converting to String", ex)
+	}
+}
+
+suspend fun ApplicationCall.respondJson(json: JsonElement, status: HttpStatusCode? = null) = this.respondText(ContentType.Application.Json, status) {
+	gson.toJson(json)
+}
+
+suspend fun ApplicationCall.respondJson(json: JsonNode, status: HttpStatusCode? = null) = this.respondText(ContentType.Application.Json, status) {
+	Constants.JSON_MAPPER.writeValueAsString(json)
+}
+
+suspend fun ApplicationCall.respondHtml(html: String, status: HttpStatusCode? = null) = this.respondText(ContentType.Text.Html, status) { html }
+
+/**
+ * Returns the request "true IP"
+ * If the "X-Forwarded-For" header is set, then the value of that header is used, if not, Jooby's [Request.ip()] is used
+ */
+val ApplicationRequest.trueIp: String get() {
+	val forwardedForHeader = this.header("X-Forwarded-For")
+	return forwardedForHeader?.split(", ")?.first() ?: this.local.remoteHost
+}
+
+fun ApplicationCall.legacyVariables(locale: BaseLocale): MutableMap<String, Any?> {
+	if (attributes.contains(WebsiteUtils.variablesKey))
+		return attributes[WebsiteUtils.variablesKey]
+
+	WebsiteUtils.initializeVariables(this, locale, loritta.getLegacyLocaleById(locale.id), locale.path)
+	return legacyVariables(locale)
+}
+
+var ApplicationCall.lorittaSession: LorittaJsonWebSession
+	get() = this.sessions.get<LorittaJsonWebSession>() ?: LorittaJsonWebSession.empty()
+	set(value) {
+		this.sessions.set(value)
+	}
+
+/**
+ * Returns the query strings as used in URLs (prefixed with "?")
+ */
+val ApplicationRequest.urlQueryString: String get() {
+	val originalQueryString = this.queryString()
+
+	return if (originalQueryString.isNotEmpty()) {
+		"?$originalQueryString"
+	} else {
+		""
 	}
 }

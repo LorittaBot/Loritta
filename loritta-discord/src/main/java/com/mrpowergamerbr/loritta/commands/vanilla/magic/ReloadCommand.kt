@@ -25,6 +25,7 @@ import net.perfectdreams.loritta.tables.TrackedTwitterAccounts
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.levels.LevelUpAnnouncementType
 import net.perfectdreams.loritta.utils.levels.RoleGiveType
+import net.perfectdreams.loritta.website.utils.WebsiteAssetsHashes
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
@@ -332,6 +333,45 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			return
 		}
 
+		if (arg0 == "webassets") {
+			WebsiteAssetsHashes.websiteFileHashes.clear()
+			WebsiteAssetsHashes.legacyWebsiteFileHashes.clear()
+
+			context.reply(
+					LoriReply(
+							"Assets regenerados!"
+					)
+			)
+			return
+		}
+
+		if (arg0 == "stopweb") {
+			loritta.newWebsite?.stop()
+			loritta.newWebsiteThread?.interrupt()
+
+			context.reply(
+					LoriReply(
+							"Website desligado!"
+					)
+			)
+			return
+		}
+
+		if (arg0 == "startweb") {
+			loritta.newWebsiteThread = thread(true, name = "Website Thread") {
+				val nWebsite = net.perfectdreams.loritta.website.LorittaWebsite(loritta)
+				loritta.newWebsite = nWebsite
+				nWebsite.start()
+			}
+
+			context.reply(
+					LoriReply(
+							"Website ligado!"
+					)
+			)
+			return
+		}
+
 		if (arg0 == "fullwebsite" || arg0 == "full_website") {
 			logger.info("Parando o Jooby...")
 			loritta.website.stop()
@@ -442,10 +482,6 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 
 				// MUSIC
 				if (serverConfig.musicConfig.isEnabled)
-					continue
-
-				// YOUTUBE
-				if (serverConfig.youTubeConfig.channels.isNotEmpty())
 					continue
 
 				reallyUselessServers.add(guild)

@@ -1,0 +1,43 @@
+package net.perfectdreams.loritta.website.routes.api.v1.twitch
+
+import com.github.salomonbrys.kotson.jsonObject
+import com.mrpowergamerbr.loritta.utils.gson
+import io.ktor.application.ApplicationCall
+import io.ktor.http.HttpStatusCode
+import mu.KotlinLogging
+import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.website.routes.BaseRoute
+import net.perfectdreams.loritta.website.utils.extensions.respondJson
+
+class GetTwitchInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/twitch/channel") {
+	companion object {
+		private val logger = KotlinLogging.logger {}
+	}
+
+	override suspend fun onRequest(call: ApplicationCall) {
+		val id = call.parameters["id"]?.toLongOrNull()
+		val login = call.parameters["login"]
+		
+		if (id != null) {
+			val payload = com.mrpowergamerbr.loritta.utils.loritta.twitch.getUserLoginById(id)
+
+			if (payload == null) {
+				call.respondJson(gson.toJsonTree(payload), HttpStatusCode.NotFound)
+				return
+			}
+
+			call.respondJson(gson.toJsonTree(payload))
+		} else if (login != null) {
+			val payload = com.mrpowergamerbr.loritta.utils.loritta.twitch.getUserLogin(login)
+
+			if (payload == null) {
+				call.respondJson(gson.toJsonTree(payload), HttpStatusCode.NotFound)
+				return
+			}
+
+			call.respondJson(gson.toJsonTree(payload))
+		} else {
+			call.respondJson(jsonObject(), HttpStatusCode.NotImplemented)
+		}
+	}
+}

@@ -19,7 +19,7 @@ object DashboardUtils {
 	@ImplicitReflectionSerializer
 	suspend fun retrieveGuildConfiguration(guildId: String): ServerConfig.Guild {
 		val result = http.get<String> {
-			url("${window.location.origin}/api/v1/guild/${guildId}/config")
+			url("${window.location.origin}/api/v1/guilds/${guildId}/config")
 		}
 
 		return kotlinx.serialization.json.JSON.nonstrict.parse(result)

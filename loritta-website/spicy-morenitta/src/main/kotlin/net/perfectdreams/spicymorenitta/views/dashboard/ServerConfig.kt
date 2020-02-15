@@ -30,6 +30,8 @@ object ServerConfig {
 			val reactionRoleConfigs: List<ReactionOption>,
 			val levelUpConfig: LevelUpConfig,
 			val trackedTwitterAccounts: Array<TrackedTwitterAccount>,
+			val trackedYouTubeChannels: Array<TrackedYouTubeAccount>,
+			val trackedTwitchChannels: Array<TrackedTwitchAccount>,
 			val trackedRssFeeds: Array<TrackedRssFeed>,
 			val roles: Array<Role>,
 			val textChannels: Array<TextChannel>
@@ -95,6 +97,22 @@ object ServerConfig {
 			val channelId: Long,
 			val twitterAccountId: Long,
 			val message: String
+	)
+
+	@Serializable
+	class TrackedYouTubeAccount(
+			val channelId: Long,
+			val youTubeChannelId: String,
+			val message: String,
+			@Optional val webhookUrl: String? = null
+	)
+
+	@Serializable
+	class TrackedTwitchAccount(
+			val channelId: Long,
+			val twitchUserId: Long,
+			val message: String,
+			@Optional val webhookUrl: String? = null
 	)
 
 	@Serializable

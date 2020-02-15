@@ -14,12 +14,10 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanEntry
 import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanType
-import com.mrpowergamerbr.loritta.website.requests.routes.page.api.v1.callbacks.MercadoPagoCallbackController
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -205,17 +203,6 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				context.reply(
 						LoriReply(
 								"Key criada com sucesso!"
-						)
-				)
-				return
-			}
-
-			if (arg0 == "allow_any_payment" && arg1 != null) {
-				MercadoPagoCallbackController.allowAnyPayment = arg1.toBoolean()
-
-				context.reply(
-						LoriReply(
-								"Todos os pagamentos serão aprovados sem confirmação? ${MercadoPagoCallbackController.allowAnyPayment}"
 						)
 				)
 				return

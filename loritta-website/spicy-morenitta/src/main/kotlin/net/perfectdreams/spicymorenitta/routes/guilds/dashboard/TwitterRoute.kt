@@ -4,7 +4,6 @@ import LoriDashboard
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.statement.HttpResponse
-import io.ktor.client.response.readText
 import io.ktor.client.statement.readText
 import io.ktor.http.HttpStatusCode
 import jq
@@ -26,6 +25,7 @@ import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.launchWithLoadingScreenAndFixContent
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.switchContentAndFixLeftSidebarScroll
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
+import net.perfectdreams.spicymorenitta.views.dashboard.Stuff
 import org.w3c.dom.*
 import kotlin.browser.document
 import kotlin.browser.window
@@ -71,6 +71,11 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 
 			val addEntryButton = document.select<HTMLButtonElement>("#add-new-entry")
 			addEntryButton.onClick {
+				if (trackedTwitterAccounts.size >= 5) {
+					Stuff.showPremiumFeatureModal()
+					return@onClick
+				}
+
 				editTrackedTwitterAccount(
 						guild,
 						null,
@@ -262,9 +267,9 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 							input(classes = "twitter-account") {
 								if (accountInfo != null) {
 									value = "@${accountInfo.screenName}"
-
-									placeholder = "@LorittaBot"
 								}
+
+								placeholder = "@LorittaBot"
 							}
 
 							div(classes = "account-config blurSection") {

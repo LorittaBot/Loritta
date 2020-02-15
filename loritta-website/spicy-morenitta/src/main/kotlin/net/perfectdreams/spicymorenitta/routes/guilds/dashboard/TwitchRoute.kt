@@ -1,0 +1,470 @@
+package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
+
+import LoriDashboard
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.readText
+import io.ktor.http.HttpStatusCode
+import jq
+import kotlinx.coroutines.delay
+import kotlinx.html.*
+import kotlinx.html.dom.append
+import kotlinx.html.js.onClickFunction
+import kotlinx.html.stream.createHTML
+import kotlinx.serialization.ImplicitReflectionSerializer
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JSON
+import kotlinx.serialization.parse
+import net.perfectdreams.spicymorenitta.SpicyMorenitta
+import net.perfectdreams.spicymorenitta.application.ApplicationCall
+import net.perfectdreams.spicymorenitta.http
+import net.perfectdreams.spicymorenitta.locale
+import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
+import net.perfectdreams.spicymorenitta.utils.*
+import net.perfectdreams.spicymorenitta.utils.DashboardUtils.launchWithLoadingScreenAndFixContent
+import net.perfectdreams.spicymorenitta.utils.DashboardUtils.switchContentAndFixLeftSidebarScroll
+import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
+import net.perfectdreams.spicymorenitta.views.dashboard.Stuff
+import org.w3c.dom.*
+import kotlin.browser.document
+import kotlin.browser.window
+import kotlin.dom.addClass
+import kotlin.dom.clear
+import kotlin.dom.hasClass
+import kotlin.dom.removeClass
+import kotlin.js.Json
+import kotlin.js.json
+
+class TwitchRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{guildid}/configure/twitch") {
+	companion object {
+		private const val LOCALE_PREFIX = "modules.twitch"
+	}
+
+	val trackedTwitchAccounts = mutableListOf<ServerConfig.TrackedTwitchAccount>()
+	val cachedChannelByUserId = mutableMapOf<Long, TwitchAccountInfo>()
+	val cachedChannelByUserLogin = mutableMapOf<String, TwitchAccountInfo>()
+	
+	override fun onUnload() {
+		trackedTwitchAccounts.clear()
+		cachedChannelByUserId.clear()
+		cachedChannelByUserLogin.clear()
+	}
+
+	@ImplicitReflectionSerializer
+	override fun onRender(call: ApplicationCall) {
+		launchWithLoadingScreenAndFixContent(call) {
+			val guild = DashboardUtils.retrieveGuildConfiguration(call.parameters["guildid"]!!)
+			switchContentAndFixLeftSidebarScroll(call)
+
+			document.select<HTMLButtonElement>("#save-button").onClick {
+				prepareSave()
+			}
+
+			val stuff = document.select<HTMLDivElement>("#level-stuff")
+
+			stuff.append {
+				div(classes = "tracked-twitch-accounts") {}
+
+				hr {}
+			}
+
+			val addEntryButton = document.select<HTMLButtonElement>("#add-new-entry")
+			addEntryButton.onClick {
+				if (trackedTwitchAccounts.size >= 5) {
+					Stuff.showPremiumFeatureModal()
+					return@onClick
+				}
+
+				editTrackedTwitchAccount(
+						guild,
+						null,
+						ServerConfig.TrackedTwitchAccount(
+								-1L,
+								-1L,
+								"{link}"
+						)
+				)
+			}
+
+			trackedTwitchAccounts.addAll(guild.trackedTwitchChannels)
+
+			updateTrackedTwitchAccountsList(guild)
+		}
+	}
+
+	@ImplicitReflectionSerializer
+	private fun updateTrackedTwitchAccountsList(guild: ServerConfig.Guild) {
+		val trackedDiv = document.select<HTMLDivElement>(".tracked-twitch-accounts")
+
+		trackedDiv.clear()
+
+		trackedDiv.append {
+			if (trackedTwitchAccounts.isEmpty()) {
+				div {
+					style = "text-align: center;font-size: 2em;opacity: 0.7;"
+					div {
+						img(src = "https://loritta.website/assets/img/blog/lori_calca.gif") {
+							style = "width: 20%; filter: grayscale(100%);"
+						}
+					}
+					+ "${locale["website.empty"]}${locale.getList("website.funnyEmpty").random()}"
+				}
+			} else {
+				for (account in trackedTwitchAccounts) {
+					createTrackedTwitchAccountEntry(guild, account)
+				}
+			}
+		}
+	}
+
+	@ImplicitReflectionSerializer
+	fun TagConsumer<HTMLElement>.createTrackedTwitchAccountEntry(guild: ServerConfig.Guild, trackedTwitchAccount: ServerConfig.TrackedTwitchAccount) {
+		this.div(classes = "discord-generic-entry timer-entry") {
+			attributes["data-twitch-account"] = trackedTwitchAccount.twitchUserId.toString()
+
+			img(classes = "amino-small-image") {
+				style = "width: 6%; height: auto; border-radius: 999999px; float: left; position: relative; bottom: 8px;"
+				// src =
+			}
+
+			div(classes = "pure-g") {
+				div(classes = "pure-u-1 pure-u-md-18-24") {
+					div {
+						style = "margin-left: 10px; margin-right: 10;"
+						div(classes = "amino-title entry-title") {
+							style = "font-family: Whitney,Helvetica Neue,Helvetica,Arial,sans-serif;"
+							+ "..."
+						}
+						div(classes = "amino-title toggleSubText") {
+							+ "..."
+						}
+					}
+				}
+				div(classes = "pure-u-1 pure-u-md-6-24 vertically-centered-content") {
+					button(classes = "button-discord button-discord-edit pure-button delete-button") {
+						style = "margin-right: 8px; min-width: 0px;"
+
+						onClickFunction = {
+							trackedTwitchAccounts.remove(trackedTwitchAccount)
+							updateTrackedTwitchAccountsList(guild)
+						}
+
+						i(classes = "fas fa-trash") {}
+					}
+					button(classes = "button-discord button-discord-edit pure-button edit-button") {
+						+"Editar"
+					}
+				}
+			}
+		}
+
+		m.launch {
+			val accountInfo = loadAccountInfoFromUserId(trackedTwitchAccount.twitchUserId)
+			info("Loading info for account ${trackedTwitchAccount.twitchUserId}...")
+
+			val trackedDiv = document.select<HTMLDivElement>("[data-twitch-account='${trackedTwitchAccount.twitchUserId}']")
+
+			if (accountInfo == null) {
+				trackedTwitchAccounts.remove(trackedTwitchAccount)
+				updateTrackedTwitchAccountsList(guild)
+			} else {
+				val currentChannel = guild.textChannels.firstOrNull { it.id == trackedTwitchAccount.channelId.toString() }
+
+				val channelName = currentChannel?.let { "#${it.name}" } ?: "???"
+
+				trackedDiv.select<HTMLImageElement>(".amino-small-image")
+						.src = accountInfo.profileImageUrl
+
+				trackedDiv.select<HTMLDivElement>(".entry-title")
+						.innerText = "${accountInfo.displayName} (${accountInfo.login})"
+
+				trackedDiv.select<HTMLDivElement>(".toggleSubText")
+						.innerText = channelName
+
+				trackedDiv.select<HTMLDivElement>(".edit-button")
+						.onClick {
+							editTrackedTwitchAccount(guild, accountInfo, trackedTwitchAccount)
+						}
+
+				info("yey")
+			}
+		}
+	}
+
+	@ImplicitReflectionSerializer
+	private fun editTrackedTwitchAccount(guild: ServerConfig.Guild, accountInfo: TwitchAccountInfo?, trackedTwitchAccount: ServerConfig.TrackedTwitchAccount) {
+		val modal = TingleModal(
+				TingleOptions(
+						footer = true,
+						cssClass = arrayOf("tingle-modal--overflow")
+				)
+		)
+
+		modal.addFooterBtn("Salvar", "button-discord button-discord-info pure-button button-discord-modal") {
+			// Iremos salvar a conta atual, aplicando as mudanças realizadas modal.close()
+			var position = trackedTwitchAccounts.size
+
+			if (trackedTwitchAccounts.contains(trackedTwitchAccount)) { // A conta atual já existe...
+				// Caso já exista, vamos remover e recolocar na posição certa
+				position = trackedTwitchAccounts.indexOf(trackedTwitchAccount)
+				if (position == -1)
+					position = trackedTwitchAccounts.size
+				trackedTwitchAccounts.remove(trackedTwitchAccount)
+			}
+
+			val channelId = visibleModal.select<HTMLInputElement>(".choose-channel")
+					.value
+
+			val text = visibleModal.select<HTMLInputElement>(".choose-text")
+					.value
+
+			debug("Adding ${visibleModal.getAttribute("data-twitch-account-id")} account to the tracked Twitch accounts list...")
+			val account = ServerConfig.TrackedTwitchAccount(
+					channelId.toLong(),
+					visibleModal.getAttribute("data-twitch-account-id")?.toLongOrNull() ?: -1L,
+					text
+			)
+
+			trackedTwitchAccounts.add(position, account)
+
+			modal.close()
+
+			updateTrackedTwitchAccountsList(guild)
+		}
+
+		modal.addFooterBtn("Cancelar", "button-discord pure-button button-discord-modal button-discord-modal-secondary-action") {
+			modal.close()
+		}
+
+		modal.setContent(
+				createHTML().div {
+					div(classes = "category-name") {
+						+ "Conta do Twitch"
+					}
+
+					div {
+						style = "display: flex;"
+
+
+						div {
+							style = "flex: 0 1 25%;"
+
+							img(classes = "account-icon") {
+								style = "width: 100%; height: auto; float: left; border-radius: 999999px;"
+
+								src = "https://i.imgur.com/s4dTtBy.jpg"
+							}
+						}
+
+						div {
+							style = "flex-grow: 1; margin: 0.25em;"
+
+							h5(classes = "section-title") {
+								+ locale["$LOCALE_PREFIX.userName"]
+							}
+
+							input(classes = "twitch-account") {
+								if (accountInfo != null) {
+									value = "https://www.twitch.com/channel/${accountInfo.login}"
+								}
+								placeholder = "idk"
+							}
+
+							div(classes = "account-config blurSection") {
+								h5(classes = "section-title") {
+									+ locale["$LOCALE_PREFIX.channel"]
+								}
+
+								select("choose-channel") {
+									style = "box-sizing: border-box !important; width: 100%;"
+									// style = "width: 100%;"
+									// style = "width: 320px;"
+
+									for (channel in guild.textChannels) {
+										option {
+											value = channel.id
+
+											if (channel.id == trackedTwitchAccount.channelId.toString()) {
+												selected = true
+											}
+
+											+("#${channel.name}")
+										}
+									}
+								}
+
+								h5(classes = "section-title") {
+									+ locale["$LOCALE_PREFIX.theMessage"]
+								}
+
+								textArea(classes = "choose-text") {
+									style = "box-sizing: border-box !important; width: 100%;"
+
+									+trackedTwitchAccount.message
+								}
+							}
+						}
+					}
+				}
+		)
+		modal.open()
+		modal.trackOverflowChanges(m)
+
+		fun processAccountInfo(accountInfo: TwitchAccountInfo) {
+			visibleModal.select<HTMLDivElement>(".account-config")
+					.removeClass("blurSection")
+
+			visibleModal.select<HTMLDivElement>(".category-name")
+					.innerText = accountInfo.displayName
+
+			visibleModal.select<HTMLImageElement>(".account-icon")
+					.src = accountInfo.profileImageUrl
+					.replace("_normal", "_400x400")
+
+			visibleModal.select<HTMLDivElement>(".category-name")
+					.innerText = accountInfo.displayName
+
+			visibleModal.setAttribute("data-twitch-account-id", accountInfo.id.toString())
+		}
+
+		val youTubeAccountInput = visibleModal.select<HTMLInputElement>(".twitch-account")
+		youTubeAccountInput.delayedTyping(m, 2_500, {
+			info("Writing something, blurring content...")
+			visibleModal.select<HTMLDivElement>(".account-config")
+					.addClass("blurSection")
+		}) {
+			info("Finished typing! Loading data...")
+
+			val screenName = youTubeAccountInput.value
+					.split("/")
+					.last()
+
+			m.launch {
+				val accountInfo = loadAccountInfoFromUserLogin(screenName)
+
+				if (accountInfo == null) {
+					visibleModal.select<HTMLDivElement>(".account-config")
+							.addClass("blurSection")
+				} else {
+					processAccountInfo(accountInfo)
+				}
+			}
+		}
+
+		if (accountInfo != null)
+			processAccountInfo(accountInfo)
+
+		LoriDashboard.configureTextArea(
+				jq(".tingle-modal--visible .choose-text"),
+				true,
+				null,
+				false,
+				null,
+				true,
+				Placeholders.DEFAULT_PLACEHOLDERS.toMutableMap().apply {
+					put("link", "Link do Tweet")
+				},
+				customTokens = mapOf(
+						"link" to "https://twitch.com/LorittaBot/status/1112093554174763008"
+				),
+				showTemplates = false
+		)
+	}
+
+	@ImplicitReflectionSerializer
+	private suspend fun loadAccountInfoFromUserId(userId: Long): TwitchAccountInfo? {
+		info("Loading info for account ${userId}...")
+
+		if (cachedChannelByUserId.containsKey(userId))
+			return cachedChannelByUserId[userId]
+
+		val response = http.get<HttpResponse>("${window.location.origin}/api/v1/twitch/channel") {
+			parameter("id", userId)
+		}
+
+		val statusCode = response.status
+
+		if (statusCode != HttpStatusCode.OK) {
+			warn("Status Code is $statusCode, oof")
+			return null
+		} else {
+			val text = response.readText()
+			val accountInfo = parseAccountInfo(text)
+			cachedChannelByUserId[userId] = accountInfo
+			cachedChannelByUserLogin[accountInfo.login] = accountInfo
+			return accountInfo
+		}
+	}
+
+	@ImplicitReflectionSerializer
+	private suspend fun loadAccountInfoFromUserLogin(userLogin: String): TwitchAccountInfo? {
+		info("Loading info for account ${userLogin}...")
+
+		if (cachedChannelByUserLogin.containsKey(userLogin))
+			return cachedChannelByUserLogin[userLogin]
+
+		val response = http.get<HttpResponse>("${window.location.origin}/api/v1/twitch/channel") {
+			parameter("login", userLogin)
+		}
+
+		val statusCode = response.status
+
+		if (statusCode != HttpStatusCode.OK) {
+			warn("Status Code is $statusCode, oof")
+			return null
+		} else {
+			val text = response.readText()
+			val accountInfo = parseAccountInfo(text)
+			cachedChannelByUserLogin[userLogin] = accountInfo
+			cachedChannelByUserId[accountInfo.id] = accountInfo
+			return accountInfo
+		}
+	}
+
+	@ImplicitReflectionSerializer
+	private fun parseAccountInfo(payload: String) = JSON.nonstrict.parse<TwitchAccountInfo>(payload)
+
+	@Serializable
+	class TwitchAccountInfo(
+			val login: String,
+			val id: Long,
+			@SerialName("display_name")
+			val displayName: String,
+			@SerialName("profile_image_url")
+			val profileImageUrl: String
+	)
+
+	fun TingleModal.trackOverflowChanges(m: SpicyMorenitta) {
+		debug("Tracking $this overflow changes...")
+
+		m.launch {
+			while (visibleModal.hasClass("tingle-modal--visible")) {
+				this@trackOverflowChanges.checkOverflow()
+				delay(100)
+			}
+
+			debug("Modal $this was closed, we will stop tracking overflow changes...")
+		}
+	}
+
+	@JsName("prepareSave")
+	fun prepareSave() {
+		SaveUtils.prepareSave("twitch", extras = {
+			val accounts = mutableListOf<Json>()
+
+			for (tracked in trackedTwitchAccounts) {
+				accounts.add(
+						json(
+								"channel" to tracked.channelId.toString(),
+								"twitchUserId" to tracked.twitchUserId.toString(),
+								"message" to tracked.message
+						)
+				)
+			}
+
+			it["accounts"] = accounts
+		})
+	}
+}

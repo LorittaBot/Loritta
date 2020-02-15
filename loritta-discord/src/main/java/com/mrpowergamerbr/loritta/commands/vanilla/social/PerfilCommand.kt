@@ -41,7 +41,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			fun hasRole(guildId: String, roleId: String): Boolean {
 				val cluster = DiscordUtils.getLorittaClusterForGuildId(guildId.toLong())
 
-				val usersWithRolesPayload = runBlocking { lorittaShards.queryCluster(cluster, "/api/v1/loritta/guild/$guildId/users-with-any-role/$roleId").await() }
+				val usersWithRolesPayload = runBlocking { lorittaShards.queryCluster(cluster, "/api/v1/guilds/$guildId/users-with-any-role/$roleId").await() }
 
 				val membersArray = usersWithRolesPayload["members"].nullArray ?: return false
 

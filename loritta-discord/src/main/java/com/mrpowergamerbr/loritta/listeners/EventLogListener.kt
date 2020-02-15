@@ -76,7 +76,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						logger.info { "Sending username/discriminator change for $id with data ${meta.oldName}#${meta.oldDiscriminator} to the master server..." }
 						GlobalScope.launch(loritta.coroutineDispatcher) {
-							HttpRequest.post("https://${shard.getUrl()}/api/v1/loritta/user/$id/username-change")
+							HttpRequest.post("https://${shard.getUrl()}/api/v1/loritta/users/$id/username-change")
 									.userAgent(loritta.lorittaCluster.getUserAgent())
 									.header("Authorization", loritta.lorittaInternalApiKey.name)
 									.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)

@@ -22,6 +22,7 @@ class TwitchAPI {
 	}
 
 	val cachedStreamerInfo = Caffeine.newBuilder().expireAfterWrite(30, TimeUnit.MINUTES).maximumSize(7500).build<String, StreamerInfo>().asMap()
+	val cachedStreamerInfoById = Caffeine.newBuilder().expireAfterWrite(30, TimeUnit.MINUTES).maximumSize(7500).build<Long, StreamerInfo>().asMap()
 	val cachedGames = Caffeine.newBuilder().expireAfterWrite(8, TimeUnit.HOURS).maximumSize(1000).build<String, GameInfo>().asMap()
 
 	val isRatelimited: Boolean
@@ -76,6 +77,62 @@ class TwitchAPI {
 
 					cachedStreamerInfo[obj.login] = obj
 					results[obj.login] = obj
+				}
+			} catch (e: IllegalStateException) {
+				logger.error(e) { "Estado inválido ao manipular payload de queryUserLogins! ${payload}" }
+				throw e
+			}
+		}
+		return results
+	}
+
+	suspend fun getUserLoginById(login: Long): StreamerInfo? {
+		return getUserLoginsById(listOf(login))[login]
+	}
+
+	suspend fun getUserLoginsById(userLogins: List<Long>): Map<Long, StreamerInfo> {
+		// Vamos criar uma "lista" de IDs para serem procurados (batching)
+		val results = mutableMapOf<Long, StreamerInfo>()
+
+		val queryUserLogins = mutableSetOf<Long>()
+		for (login in userLogins) {
+			if (cachedStreamerInfoById.contains(login)) {
+				results[login] = cachedStreamerInfoById[login]!!
+			} else {
+				queryUserLogins.add(login)
+			}
+		}
+
+		val batches = queryUserLogins.chunked(100)
+		for (userLogins in batches) {
+			if (userLogins.isEmpty())
+				continue
+
+			logger.debug { "Pegando informações de usuários da Twitch: ${userLogins.joinToString(", ")}" }
+			var query = ""
+			userLogins.forEach {
+				if (query.isEmpty()) {
+					query += "?id=${URLEncoder.encode(it.toString(), "UTF-8")}"
+				} else {
+					query += "&id=${URLEncoder.encode(it.toString(), "UTF-8")}"
+				}
+			}
+
+			val url = "https://api.twitch.tv/helix/users$query"
+			val payload = makeTwitchApiRequest(url).body()
+			logger.trace { payload }
+
+			val response = jsonParser.parse(payload).obj
+
+			try {
+				val data = response["data"].array
+				logger.debug { "queryUserLogins payload contém ${data.size()} objetos!" }
+
+				data.forEach {
+					val obj = gson.fromJson<StreamerInfo>(it)
+
+					cachedStreamerInfo[obj.login] = obj
+					results[obj.id] = obj
 				}
 			} catch (e: IllegalStateException) {
 				logger.error(e) { "Estado inválido ao manipular payload de queryUserLogins! ${payload}" }
@@ -153,6 +210,6 @@ class TwitchAPI {
 			@SerializedName("display_name")
 			val displayName: String,
 			val login: String,
-			val id: String
+			val id: Long
 	)
 }

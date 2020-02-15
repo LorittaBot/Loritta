@@ -2,24 +2,24 @@ package com.mrpowergamerbr.loritta.website.views.subviews.configure
 
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
-import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler
 import com.mrpowergamerbr.loritta.oauth2.SimpleUserIdentification
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
-import com.mrpowergamerbr.loritta.userdata.*
-import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.website.LoriWebCodes
+import com.mrpowergamerbr.loritta.userdata.LivestreamConfig
+import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
+import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
+import com.mrpowergamerbr.loritta.userdata.TextChannelConfig
+import com.mrpowergamerbr.loritta.utils.LorittaPermission
+import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.save
 import com.mrpowergamerbr.loritta.website.evaluate
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.utils.ActionType
 import net.perfectdreams.loritta.utils.auditlog.WebAuditLogUtils
 import org.jooby.Request
 import org.jooby.Response
-import java.io.ByteArrayInputStream
-import java.io.File
-import javax.imageio.ImageIO
 
 class ConfigureServerView : ConfigureView() {
 	override fun handleRender(req: Request, res: Response, path: String, variables: MutableMap<String, Any?>): Boolean {
@@ -46,7 +46,6 @@ class ConfigureServerView : ConfigureView() {
 					"welcomer" -> serverConfig.joinLeaveConfig
 					"starboard" -> serverConfig.starboardConfig
 					"music" -> serverConfig.musicConfig
-					"youtube" -> serverConfig.youTubeConfig
 					"livestream" -> serverConfig.livestreamConfig
 					"nashorn_commands" -> serverConfig.nashornCommands
 					"event_handlers" -> serverConfig.nashornEventHandlers
@@ -60,10 +59,6 @@ class ConfigureServerView : ConfigureView() {
 
 				if (target is PermissionsConfig) {
 					response = handlePermissions(serverConfig, receivedPayload)
-				} else if (target is YouTubeConfig) {
-					response = handleYouTubeChannels(serverConfig, receivedPayload)
-				}  else if (target is LivestreamConfig) {
-					response = handleLivestreamChannels(serverConfig, receivedPayload)
 				} else if (type == "nashorn_commands") {
 					response = handleNashornCommands(serverConfig, receivedPayload)
 				} else if (type == "event_handlers") {
@@ -188,24 +183,6 @@ class ConfigureServerView : ConfigureView() {
 			config.permissionsConfig.roles[element.key] = roleConfig
 		}
 		return response
-	}
-
-	fun handleYouTubeChannels(config: MongoServerConfig, receivedPayload: JsonObject): String {
-		config.youTubeConfig.channels.clear()
-		val entries = receivedPayload["entries"].array
-
-		for (entry in entries) {
-			val repostToChannelId = entry["repostToChannelId"].string
-			val channelUrl = entry["channelUrl"].string
-			val channelId = entry["channelId"].string
-			val videoSentMessage = entry["videoSentMessage"].string
-
-			val channel = YouTubeConfig.YouTubeInfo(channelUrl, channelId, repostToChannelId, videoSentMessage)
-
-			config.youTubeConfig.channels.add(channel)
-		}
-
-		return "nice"
 	}
 
 	fun handleLivestreamChannels(config: MongoServerConfig, receivedPayload: JsonObject): String {
