@@ -15,7 +15,7 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class TwitchPayload : ConfigPayloadType("youtube") {
+class TwitchPayload : ConfigPayloadType("twitch") {
 	override fun process(payload: JsonObject, userIdentification: LorittaJsonWebSession.UserIdentification, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, guild: Guild) {
 		transaction(Databases.loritta) {
 			TrackedTwitchAccounts.deleteWhere {

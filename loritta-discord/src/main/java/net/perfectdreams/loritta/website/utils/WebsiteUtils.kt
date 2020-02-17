@@ -305,43 +305,6 @@ object WebsiteUtils {
 			)
 		}
 
-		guildJson["trackedTwitterAccounts"] = transaction(Databases.loritta) {
-			val array = JsonArray()
-
-			TrackedTwitterAccounts.select {
-				TrackedTwitterAccounts.guildId eq guild.idLong
-			}.forEach {
-				array.add(
-						jsonObject(
-								"channelId" to it[TrackedTwitterAccounts.channelId],
-								"twitterAccountId" to it[TrackedTwitterAccounts.twitterAccountId],
-								"message" to it[TrackedTwitterAccounts.message]
-						)
-				)
-			}
-
-			array
-		}
-
-		guildJson["trackedTwitchChannels"] = transaction(Databases.loritta) {
-			val array = JsonArray()
-
-			TrackedTwitchAccounts.select {
-				TrackedTwitchAccounts.guildId eq guild.idLong
-			}.forEach {
-				array.add(
-						jsonObject(
-								"channelId" to it[TrackedTwitchAccounts.channelId],
-								"twitchUserId" to it[TrackedTwitchAccounts.twitchUserId],
-								"message" to it[TrackedTwitchAccounts.message],
-								"webhookUrl" to it[TrackedTwitchAccounts.webhookUrl]
-						)
-				)
-			}
-
-			array
-		}
-
 		guildJson["trackedRssFeeds"] = transaction(Databases.loritta) {
 			val array = JsonArray()
 
