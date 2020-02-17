@@ -85,7 +85,7 @@ class LorittaWebsite(val loritta: Loritta) {
 						val matches = typesToCache.any { contentTypeWithoutParameters.match(it) || contentTypeWithoutParameters == it }
 
 						if (matches)
-							CachingOptions(CacheControl.MaxAge(maxAgeSeconds = 24 * 60 * 60))
+							CachingOptions(CacheControl.MaxAge(maxAgeSeconds = 365 * 24 * 3600))
 						else
 							null
 					} else null
