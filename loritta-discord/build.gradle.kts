@@ -77,7 +77,7 @@ dependencies {
     compile("org.jooby:jooby-mongodb:1.6.6")
     compile("com.github.FredBoat:Lavalink-Client:4.0")
     compile("io.ktor:ktor-server-core:$ktorVersion")
-    compile("io.ktor:ktor-server-cio:$ktorVersion")
+    compile("io.ktor:ktor-server-netty:$ktorVersion")
     compile("io.ktor:ktor-client-core:$ktorVersion")
     compile("io.ktor:ktor-client-apache:$ktorVersion")
     compile("io.github.microutils:kotlin-logging:1.7.8")

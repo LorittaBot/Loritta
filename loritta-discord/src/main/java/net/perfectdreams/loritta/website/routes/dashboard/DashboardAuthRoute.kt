@@ -46,6 +46,7 @@ class DashboardAuthRoute(loritta: LorittaDiscord) : LocalizedRoute(loritta, "/da
 		val code = call.parameters["code"]
 		val fromMaster = call.parameters["from_master"]
 
+		println("Dashboard Auth Route")
 		val session: LorittaJsonWebSession = call.sessions.get<LorittaJsonWebSession>() ?: LorittaJsonWebSession.empty()
 		val discordAuth = session.getDiscordAuthFromJson()
 

@@ -17,6 +17,7 @@ import org.jooby.Status
 
 class GetSelfInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/users/@me") {
 	override suspend fun onRequest(call: ApplicationCall) {
+		println("Get Self Info Route")
 		val session = call.sessions.get<LorittaJsonWebSession>()
 
 		val userIdentification = session?.getDiscordAuthFromJson()?.getUserIdentification() ?: throw WebsiteAPIException(Status.UNAUTHORIZED,

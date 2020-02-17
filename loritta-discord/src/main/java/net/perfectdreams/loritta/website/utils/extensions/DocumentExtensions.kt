@@ -67,8 +67,12 @@ fun ApplicationCall.legacyVariables(locale: BaseLocale): MutableMap<String, Any?
 }
 
 var ApplicationCall.lorittaSession: LorittaJsonWebSession
-	get() = this.sessions.get<LorittaJsonWebSession>() ?: LorittaJsonWebSession.empty()
+	get() {
+		println("Get LorittaSession")
+		return this.sessions.get<LorittaJsonWebSession>() ?: LorittaJsonWebSession.empty()
+	}
 	set(value) {
+		println("Set LorittaSession")
 		this.sessions.set(value)
 	}
 

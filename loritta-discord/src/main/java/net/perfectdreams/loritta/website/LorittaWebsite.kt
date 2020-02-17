@@ -6,8 +6,12 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.call
 import io.ktor.application.install
+import io.ktor.features.CachingHeaders
 import io.ktor.features.StatusPages
+import io.ktor.http.CacheControl
+import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.CachingOptions
 import io.ktor.http.content.files
 import io.ktor.http.content.static
 import io.ktor.http.content.staticRootFolder
@@ -20,9 +24,9 @@ import io.ktor.routing.Routing
 import io.ktor.routing.RoutingApplicationCall
 import io.ktor.routing.get
 import io.ktor.routing.routing
-import io.ktor.server.cio.CIO
-import io.ktor.server.cio.CIOApplicationEngine
 import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
+import io.ktor.server.netty.NettyApplicationEngine
 import io.ktor.sessions.SessionTransportTransformerMessageAuthentication
 import io.ktor.sessions.Sessions
 import io.ktor.sessions.cookie
@@ -59,40 +63,33 @@ class LorittaWebsite(val loritta: Loritta) {
 	val pathCache = ConcurrentHashMap<File, Any>()
 	var config = WebsiteConfig()
 	val blog = Blog()
-	lateinit var server: CIOApplicationEngine
+	lateinit var server: NettyApplicationEngine
+	private val typesToCache = listOf(
+			ContentType.Text.CSS,
+			ContentType.Text.JavaScript,
+			ContentType.Application.JavaScript,
+			ContentType.Image.Any
+	)
 
 	fun start() {
 		INSTANCE = this
 
 		val routes = DefaultRoutes.defaultRoutes(loritta)
 
-		val server = embeddedServer(CIO, loritta.instanceConfig.loritta.website.port) {
-			this.environment.monitor.subscribe(Routing.RoutingCallStarted) { call: RoutingApplicationCall ->
-				call.attributes.put(TimeToProcess, System.currentTimeMillis())
-				val userAgent = call.request.userAgent()
-				val trueIp = call.request.trueIp
-				val queryString = call.request.urlQueryString
-				val httpMethod = call.request.httpMethod.value
+		val server = embeddedServer(Netty, loritta.instanceConfig.loritta.website.port) {
+			install(CachingHeaders) {
+				options { outgoingContent ->
+					val contentType = outgoingContent.contentType
+					if (contentType != null) {
+						val contentTypeWithoutParameters = contentType.withoutParameters()
+						val matches = typesToCache.any { contentTypeWithoutParameters.match(it) || contentTypeWithoutParameters == it }
 
-				logger.info("${trueIp} (${userAgent}): ${httpMethod} ${call.request.path()}${queryString}")
-
-				/* if (loritta.config.loritta.website.blockedIps.contains(trueIp)) {
-					logger.warn("$trueIp ($userAgent): ${httpMethod} ${call.request.path()}$queryString - Request was IP blocked")
-					this.finish()
+						if (matches)
+							CachingOptions(CacheControl.MaxAge(maxAgeSeconds = 24 * 60 * 60))
+						else
+							null
+					} else null
 				}
-				if (loritta.config.loritta.website.blockedUserAgents.contains(trueIp)) {
-					logger.warn("$trueIp ($userAgent): ${httpMethod} ${call.request.path()}$queryString - Request was User-Agent blocked")
-					this.finish()
-				} */
-			}
-
-			this.environment.monitor.subscribe(Routing.RoutingCallFinished) { call: RoutingApplicationCall ->
-				val originalStartTime = call.attributes[TimeToProcess]
-
-				val queryString = call.request.urlQueryString
-				val userAgent = call.request.userAgent()
-
-				logger.info("${call.request.trueIp} (${userAgent}): ${call.request.httpMethod.value} ${call.request.path()}${queryString} - OK! ${System.currentTimeMillis() - originalStartTime}ms")
 			}
 
 			install(StatusPages) {
@@ -142,7 +139,6 @@ class LorittaWebsite(val loritta: Loritta) {
 
 			routing {
 				static {
-					// staticRootFolder = File("/home/loritta_canary/test_website/static/assets/")
 					staticRootFolder = File("${config.websiteFolder}/static/")
 					files(".")
 				}
@@ -156,6 +152,34 @@ class LorittaWebsite(val loritta: Loritta) {
 
 					route.register(this)
 				}
+			}
+
+			this.environment.monitor.subscribe(Routing.RoutingCallStarted) { call: RoutingApplicationCall ->
+				call.attributes.put(TimeToProcess, System.currentTimeMillis())
+				val userAgent = call.request.userAgent()
+				val trueIp = call.request.trueIp
+				val queryString = call.request.urlQueryString
+				val httpMethod = call.request.httpMethod.value
+
+				logger.info("${trueIp} (${userAgent}): ${httpMethod} ${call.request.path()}${queryString}")
+
+				/* if (loritta.config.loritta.website.blockedIps.contains(trueIp)) {
+					logger.warn("$trueIp ($userAgent): ${httpMethod} ${call.request.path()}$queryString - Request was IP blocked")
+					this.finish()
+				}
+				if (loritta.config.loritta.website.blockedUserAgents.contains(trueIp)) {
+					logger.warn("$trueIp ($userAgent): ${httpMethod} ${call.request.path()}$queryString - Request was User-Agent blocked")
+					this.finish()
+				} */
+			}
+
+			this.environment.monitor.subscribe(Routing.RoutingCallFinished) { call: RoutingApplicationCall ->
+				val originalStartTime = call.attributes[TimeToProcess]
+
+				val queryString = call.request.urlQueryString
+				val userAgent = call.request.userAgent()
+
+				logger.info("${call.request.trueIp} (${userAgent}): ${call.request.httpMethod.value} ${call.request.path()}${queryString} - OK! ${System.currentTimeMillis() - originalStartTime}ms")
 			}
 		}
 		this.server = server
