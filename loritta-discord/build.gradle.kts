@@ -80,6 +80,7 @@ dependencies {
     compile("io.ktor:ktor-server-netty:$ktorVersion")
     compile("io.ktor:ktor-client-core:$ktorVersion")
     compile("io.ktor:ktor-client-apache:$ktorVersion")
+    compile("com.google.code.gson:gson:2.8.6")
     compile("io.github.microutils:kotlin-logging:1.7.8")
     compile("io.pebbletemplates:pebble:3.1.2")
     compile("org.jsoup:jsoup:1.12.1")

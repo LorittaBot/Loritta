@@ -27,6 +27,7 @@ import net.perfectdreams.loritta.dao.ReactionOption
 import net.perfectdreams.loritta.tables.*
 import net.perfectdreams.loritta.utils.levels.RoleGiveType
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.website.utils.config.types.ConfigTransformers
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.lang.management.ManagementFactory
@@ -322,25 +323,6 @@ object WebsiteUtils {
 			array
 		}
 
-		guildJson["trackedYouTubeChannels"] = transaction(Databases.loritta) {
-			val array = JsonArray()
-
-			TrackedYouTubeAccounts.select {
-				TrackedYouTubeAccounts.guildId eq guild.idLong
-			}.forEach {
-				array.add(
-						jsonObject(
-								"channelId" to it[TrackedYouTubeAccounts.channelId],
-								"youTubeChannelId" to it[TrackedYouTubeAccounts.youTubeChannelId],
-								"message" to it[TrackedYouTubeAccounts.message],
-								"webhookUrl" to it[TrackedYouTubeAccounts.webhookUrl]
-						)
-				)
-			}
-
-			array
-		}
-
 		guildJson["trackedTwitchChannels"] = transaction(Databases.loritta) {
 			val array = JsonArray()
 
@@ -411,6 +393,9 @@ object WebsiteUtils {
 					"topic" to it.topic
 			)
 		}.toJsonArray()
+
+		for (transformer in ConfigTransformers.DEFAULT_TRANSFORMERS)
+			guildJson[transformer.configKey] = transformer.toJson(guild, serverConfig)
 
 		return guildJson
 	}

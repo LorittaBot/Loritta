@@ -139,6 +139,7 @@ object DefaultRoutes {
 
 			// Guild
 			GetServerConfigRoute(loritta),
+			GetServerConfigSectionRoute(loritta),
 			PatchServerConfigRoute(loritta),
 			GetGuildWebAuditLogRoute(loritta),
 			PostSendMessageGuildRoute(loritta),

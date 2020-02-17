@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.utils.auditlog.WebAuditLogUtils
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIGuildAuthRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.WebsiteUtils
+import net.perfectdreams.loritta.website.utils.config.types.ConfigTransformers
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jooby.Status
@@ -30,33 +31,12 @@ class PatchServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRout
 		val type = payload["type"].string
 		val config = payload["config"].obj
 
-		val payloadHandlers = mapOf(
-				"moderation" to ModerationPayload::class.java,
-				"autorole" to AutorolePayload::class.java,
-				"welcomer" to WelcomerPayload::class.java,
-				"miscellaneous" to MiscellaneousPayload::class.java,
-				"economy" to EconomyPayload::class.java,
-				"text_channels" to TextChannelsPayload::class.java,
-				"timers" to TimersPayload::class.java,
-				"premium" to PremiumKeyPayload::class.java,
-				"badge" to CustomBadgePayload::class.java,
-				"daily_multiplier" to DailyMultiplierPayload::class.java,
-				"level" to LevelPayload::class.java,
-				"reset_xp" to ResetXpPayload::class.java,
-				"twitter" to TwitterPayload::class.java,
-				"rss_feeds" to RssFeedsPayload::class.java,
-				"default" to GeneralConfigPayload::class.java,
-				"youtube" to YouTubePayload::class.java,
-				"twitch" to TwitchPayload::class.java
-		)
+		val transformer = ConfigTransformers.DEFAULT_TRANSFORMERS.firstOrNull { it.payloadType == type }
 
-		val payloadHandlerClass = payloadHandlers[type]
-
-		if (payloadHandlerClass != null) {
+		if (transformer != null) {
 			val guildId = guild.idLong
 
-			val payloadHandler = payloadHandlerClass.getDeclaredConstructor().newInstance()
-			payloadHandler.process(config, userIdentification, serverConfig, legacyServerConfig, guild)
+			transformer.fromJson(userIdentification, guild, serverConfig, config)
 
 			val actionType = WebAuditLogUtils.fromTargetType(type)
 
@@ -75,22 +55,70 @@ class PatchServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRout
 				)
 			}
 
-			com.mrpowergamerbr.loritta.utils.loritta save legacyServerConfig
-			val serverConfigJson = WebsiteUtils.transformToDashboardConfigurationJson(
-					userIdentification,
-					guild,
-					serverConfig
+			call.respondJson(jsonObject())
+		} else {
+			val payloadHandlers = mapOf(
+					"moderation" to ModerationPayload::class.java,
+					"autorole" to AutorolePayload::class.java,
+					"welcomer" to WelcomerPayload::class.java,
+					"miscellaneous" to MiscellaneousPayload::class.java,
+					"economy" to EconomyPayload::class.java,
+					"text_channels" to TextChannelsPayload::class.java,
+					"timers" to TimersPayload::class.java,
+					"premium" to PremiumKeyPayload::class.java,
+					"badge" to CustomBadgePayload::class.java,
+					"daily_multiplier" to DailyMultiplierPayload::class.java,
+					"level" to LevelPayload::class.java,
+					"reset_xp" to ResetXpPayload::class.java,
+					"twitter" to TwitterPayload::class.java,
+					"rss_feeds" to RssFeedsPayload::class.java,
+					"default" to GeneralConfigPayload::class.java,
+					"youtube" to YouTubePayload::class.java,
+					"twitch" to TwitchPayload::class.java
 			)
 
-			call.respondJson(serverConfigJson)
-		} else {
-			throw WebsiteAPIException(
-					Status.NOT_IMPLEMENTED,
-					com.mrpowergamerbr.loritta.utils.WebsiteUtils.createErrorPayload(
-							LoriWebCode.MISSING_PAYLOAD_HANDLER,
-							"I don't know how to handle a \"${type}\" payload yet!"
+			val payloadHandlerClass = payloadHandlers[type]
+
+			if (payloadHandlerClass != null) {
+				val guildId = guild.idLong
+
+				val payloadHandler = payloadHandlerClass.getDeclaredConstructor().newInstance()
+				payloadHandler.process(config, userIdentification, serverConfig, legacyServerConfig, guild)
+
+				val actionType = WebAuditLogUtils.fromTargetType(type)
+
+				val params = if (actionType == ActionType.UNKNOWN) {
+					jsonObject("target_type" to type)
+				} else {
+					jsonObject()
+				}
+
+				if (actionType != ActionType.RESET_XP) {
+					WebAuditLogUtils.addEntry(
+							guildId,
+							userIdentification.id.toLong(),
+							actionType,
+							params
 					)
-			)
+				}
+
+				com.mrpowergamerbr.loritta.utils.loritta save legacyServerConfig
+				val serverConfigJson = WebsiteUtils.transformToDashboardConfigurationJson(
+						userIdentification,
+						guild,
+						serverConfig
+				)
+
+				call.respondJson(serverConfigJson)
+			} else {
+				throw WebsiteAPIException(
+						Status.NOT_IMPLEMENTED,
+						com.mrpowergamerbr.loritta.utils.WebsiteUtils.createErrorPayload(
+								LoriWebCode.MISSING_PAYLOAD_HANDLER,
+								"I don't know how to handle a \"${type}\" payload yet!"
+						)
+				)
+			}
 		}
 	}
 }
