@@ -36,7 +36,7 @@ object ReputationView {
 
 		GlobalScope.launch {
 			val response = HttpRequest.post(
-					url = "${loriUrl}api/v1/user/$userId/reputation",
+					url = "${loriUrl}api/v1/users/$userId/reputation",
 					data = JSON.stringify(json)
 			)
 
