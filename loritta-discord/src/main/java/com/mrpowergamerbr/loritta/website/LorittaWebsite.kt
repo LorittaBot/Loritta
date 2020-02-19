@@ -6,10 +6,10 @@ import com.mitchellbosecke.pebble.cache.tag.CaffeineTagCache
 import com.mitchellbosecke.pebble.cache.template.CaffeineTemplateCache
 import com.mitchellbosecke.pebble.loader.FileLoader
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import com.mrpowergamerbr.loritta.utils.KtsObjectLoader
 import kotlinx.html.HtmlBlockTag
 import mu.KotlinLogging
+import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import java.io.File
 import java.io.StringWriter
 import kotlin.reflect.full.functions
@@ -24,31 +24,13 @@ class LorittaWebsite(val loritta: Loritta, val websiteUrl: String, var frontendF
 
 		const val API_V1 = "/api/v1/"
 
-		fun canManageGuild(g: TemmieDiscordAuth.DiscordGuild): Boolean {
+		fun canManageGuild(g: TemmieDiscordAuth.Guild): Boolean {
 			val isAdministrator = g.permissions shr 3 and 1 == 1
 			val isManager = g.permissions shr 5 and 1 == 1
 			return g.owner || isAdministrator || isManager
 		}
 
-		fun canManageGuild(g: net.perfectdreams.temmiediscordauth.TemmieDiscordAuth.Guild): Boolean {
-			val isAdministrator = g.permissions shr 3 and 1 == 1
-			val isManager = g.permissions shr 5 and 1 == 1
-			return g.owner || isAdministrator || isManager
-		}
-
-		fun getUserPermissionLevel(g: TemmieDiscordAuth.DiscordGuild): UserPermissionLevel {
-			val isAdministrator = g.permissions shr 3 and 1 == 1
-			val isManager = g.permissions shr 5 and 1 == 1
-
-			return when {
-				g.owner -> UserPermissionLevel.OWNER
-				isAdministrator -> UserPermissionLevel.ADMINISTRATOR
-				isManager -> UserPermissionLevel.MANAGER
-				else -> UserPermissionLevel.MEMBER
-			}
-		}
-
-		fun getUserPermissionLevel(g: net.perfectdreams.temmiediscordauth.TemmieDiscordAuth.Guild): UserPermissionLevel {
+		fun getUserPermissionLevel(g: TemmieDiscordAuth.Guild): UserPermissionLevel {
 			val isAdministrator = g.permissions shr 3 and 1 == 1
 			val isManager = g.permissions shr 5 and 1 == 1
 
