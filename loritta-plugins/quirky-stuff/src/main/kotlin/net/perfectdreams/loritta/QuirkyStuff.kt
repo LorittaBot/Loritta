@@ -148,9 +148,9 @@ class QuirkyStuff(name: String, loritta: LorittaBot) : DiscordPlugin(name, lorit
                                 if (member == null || member.timeBoosted == null) {
                                     logger.warn { "Deleting donation key via Nitro Boost by ${it.userId} because user is not boosting the guild anymore! (is member null? ${member != null})" }
 
-                                    ServerConfigs.update({ ServerConfigs.donationKey eq it.id }) {
+                                    /* ServerConfigs.update({ ServerConfigs.donationKey eq it.id }) {
                                         it[donationKey] = null
-                                    }
+                                    } */
 
                                     it.delete()
                                 }

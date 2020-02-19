@@ -9,6 +9,7 @@ kotlin {
     presets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJsTargetPreset>().forEach {
         targetFromPreset(it) {
             this.nodejs
+            this.browser
         }
     }
 
