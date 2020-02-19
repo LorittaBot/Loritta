@@ -108,13 +108,12 @@ object ScriptingUtils {
                 import com.mrpowergamerbr.loritta.utils.KtsObjectLoader
                 import net.perfectdreams.loritta.utils.*
 				import com.mrpowergamerbr.loritta.utils.*
-                // import net.perfectdreams.loritta.utils.locale.*
 				import com.mrpowergamerbr.loritta.utils.locale.*
                 import net.perfectdreams.loritta.website.*
                 import net.perfectdreams.loritta.api.entities.*
                 import net.perfectdreams.loritta.website.blog.*
                 import net.perfectdreams.loritta.website.utils.*
-                // import net.perfectdreams.loritta.website.utils.config.*
+                import net.perfectdreams.loritta.website.session.*
                 import org.w3c.dom.Document
                 import org.w3c.dom.Element
                 import java.io.File
