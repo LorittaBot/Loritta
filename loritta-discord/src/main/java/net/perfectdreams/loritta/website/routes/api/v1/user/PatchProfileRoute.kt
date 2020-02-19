@@ -20,7 +20,7 @@ import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jooby.Status
+import io.ktor.http.HttpStatusCode
 import java.util.regex.Pattern
 
 class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/self-profile") {
@@ -44,21 +44,21 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 
 				val userResults = lorittaShards.searchUserInAllLorittaClusters("^$quotedUserName$#${split[1]}")
 
-				val user = userResults.firstOrNull() ?: throw WebsiteAPIException(Status.NOT_FOUND,
+				val user = userResults.firstOrNull() ?: throw WebsiteAPIException(HttpStatusCode.NotFound,
 						WebsiteUtils.createErrorPayload(
 								LoriWebCode.UNKNOWN_USER
 						)
 				)
 
 				user["id"].long
-			} ?: throw WebsiteAPIException(Status.NOT_FOUND,
+			} ?: throw WebsiteAPIException(HttpStatusCode.NotFound,
 					WebsiteUtils.createErrorPayload(
 							LoriWebCode.UNKNOWN_USER
 					)
 			)
 
 			if (3000 > profile.money) {
-				throw WebsiteAPIException(Status.PAYMENT_REQUIRED,
+				throw WebsiteAPIException(HttpStatusCode.PaymentRequired,
 						WebsiteUtils.createErrorPayload(
 								LoriWebCode.INSUFFICIENT_FUNDS
 						)
@@ -96,14 +96,14 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 		if (config["buyItem"].nullString == "profile") {
 			val profileType = config["profileType"].string
 
-			val profileDesign = com.mrpowergamerbr.loritta.utils.loritta.profileDesignManager.publicDesigns.firstOrNull { it.clazz.simpleName == profileType } ?: throw WebsiteAPIException(Status.NOT_FOUND,
+			val profileDesign = com.mrpowergamerbr.loritta.utils.loritta.profileDesignManager.publicDesigns.firstOrNull { it.clazz.simpleName == profileType } ?: throw WebsiteAPIException(HttpStatusCode.NotFound,
 					WebsiteUtils.createErrorPayload(
 							LoriWebCode.ITEM_NOT_FOUND
 					)
 			)
 
 			if (profileSettings.boughtProfiles.contains(profileDesign.clazz.simpleName) || profileDesign.price == -1.0) {
-				throw WebsiteAPIException(Status.FORBIDDEN,
+				throw WebsiteAPIException(HttpStatusCode.Forbidden,
 						WebsiteUtils.createErrorPayload(
 								LoriWebCode.FORBIDDEN
 						)
@@ -111,7 +111,7 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 			}
 
 			if (profileDesign.price > profile.money) {
-				throw WebsiteAPIException(Status.PAYMENT_REQUIRED,
+				throw WebsiteAPIException(HttpStatusCode.PaymentRequired,
 						WebsiteUtils.createErrorPayload(
 								LoriWebCode.INSUFFICIENT_FUNDS
 						)
@@ -160,7 +160,7 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 			val profileType = config["setActiveProfileDesign"].string
 
 			if (profileType != NostalgiaProfileCreator::class.java.simpleName && !profileSettings.boughtProfiles.contains(profileType)) {
-				throw WebsiteAPIException(Status.FORBIDDEN,
+				throw WebsiteAPIException(HttpStatusCode.Forbidden,
 						WebsiteUtils.createErrorPayload(
 								LoriWebCode.FORBIDDEN
 						)

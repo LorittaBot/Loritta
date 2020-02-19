@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.website
 
 import com.google.gson.JsonElement
-import org.jooby.Status
+import io.ktor.http.HttpStatusCode
 
-class WebsiteAPIException(val status: Status, val payload: JsonElement) : RuntimeException()
+class WebsiteAPIException(val status: HttpStatusCode, val payload: JsonElement) : RuntimeException()

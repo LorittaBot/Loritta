@@ -12,9 +12,9 @@ import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.counter.CounterThemes
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
+import io.ktor.http.HttpStatusCode
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.utils.FeatureFlags
-import org.jooby.Status
 
 class TextChannelsPayload : ConfigPayloadType("text_channels") {
 	override fun process(payload: JsonObject, userIdentification: LorittaJsonWebSession.UserIdentification, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, guild: Guild) {
@@ -55,7 +55,7 @@ class TextChannelsPayload : ConfigPayloadType("text_channels") {
 					if (theme == "CUSTOM") {
 						val emojiJsonArray = memberCounterConfig["emojis"].nullArray
 						if (emojiJsonArray == null || emojiJsonArray.size() != 10)
-							throw WebsiteAPIException(Status.UNPROCESSABLE_ENTITY,
+							throw WebsiteAPIException(HttpStatusCode.UnprocessableEntity,
 									WebsiteUtils.createErrorPayload(
 											LoriWebCode.UNAUTHORIZED,
 											"Emojis array is null or doesn't have 10 elements!"

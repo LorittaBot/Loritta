@@ -14,7 +14,6 @@ import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
-import com.mrpowergamerbr.loritta.website.views.GlobalHandler
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.dao.LevelConfig
@@ -322,14 +321,13 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 		}
 
 		if (arg0 == "website") {
-			GlobalHandler.generateViews()
+			LorittaWebsite.kotlinTemplateCache.clear()
+			LorittaWebsite.ENGINE.templateCache.invalidateAll()
 			context.reply(
 					LoriReply(
 							"Views regeneradas!"
 					)
 			)
-			LorittaWebsite.kotlinTemplateCache.clear()
-			LorittaWebsite.ENGINE.templateCache.invalidateAll()
 			return
 		}
 
@@ -367,29 +365,6 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			context.reply(
 					LoriReply(
 							"Website ligado!"
-					)
-			)
-			return
-		}
-
-		if (arg0 == "fullwebsite" || arg0 == "full_website") {
-			logger.info("Parando o Jooby...")
-			loritta.website.stop()
-			logger.info("Interrompendo a Thread do Website...")
-			loritta.websiteThread.interrupt()
-			logger.info("Iniciando instância do Website...")
-			loritta.website = LorittaWebsite(loritta, loritta.instanceConfig.loritta.website.url, loritta.instanceConfig.loritta.website.folder)
-			logger.info("Iniciando website...")
-			loritta.websiteThread = thread(true, name = "Website Thread") {
-				loritta.website = LorittaWebsite(loritta, loritta.instanceConfig.loritta.website.url, loritta.instanceConfig.loritta.website.folder)
-				org.jooby.run({
-					loritta.website
-				})
-			}
-			LorittaWebsite.kotlinTemplateCache.clear()
-			context.reply(
-					LoriReply(
-							"Full website reload completado!"
 					)
 			)
 			return

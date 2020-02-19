@@ -18,7 +18,6 @@ import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.website.utils.extensions.trueIp
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
-import org.jooby.Status
 
 class PostSendMessageGuildRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRoute(loritta, "/send-message") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig) {
@@ -28,7 +27,7 @@ class PostSendMessageGuildRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthR
 		val diff = System.currentTimeMillis() - last
 		if (4000 >= diff)
 			throw WebsiteAPIException(
-					Status.TOO_MANY_REQUESTS,
+					HttpStatusCode.TooManyRequests,
 					com.mrpowergamerbr.loritta.utils.WebsiteUtils.createErrorPayload(
 							LoriWebCode.RATE_LIMIT,
 							"Rate limit!"
@@ -73,7 +72,7 @@ class PostSendMessageGuildRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthR
 			e.printStackTrace()
 			null
 		} ?: throw WebsiteAPIException(
-						Status.BAD_REQUEST,
+						HttpStatusCode.BadRequest,
 						com.mrpowergamerbr.loritta.utils.WebsiteUtils.createErrorPayload(
 								LoriWebCode.INVALID_MESSAGE,
 								"Invalid message"
@@ -83,7 +82,7 @@ class PostSendMessageGuildRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthR
 		if (channelId != null) {
 			val channel = guild.getTextChannelById(channelId)
 					?: throw WebsiteAPIException(
-							Status.BAD_REQUEST,
+							HttpStatusCode.BadRequest,
 							com.mrpowergamerbr.loritta.utils.WebsiteUtils.createErrorPayload(
 									LoriWebCode.CHANNEL_DOESNT_EXIST,
 									"Channel ${channelId} doesn't exist"
@@ -92,7 +91,7 @@ class PostSendMessageGuildRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthR
 
 			if (!channel.canTalk())
 				throw WebsiteAPIException(
-						Status.BAD_REQUEST,
+						HttpStatusCode.BadRequest,
 						com.mrpowergamerbr.loritta.utils.WebsiteUtils.createErrorPayload(
 								LoriWebCode.CANT_TALK_IN_CHANNEL,
 								"Channel ${channelId} doesn't exist"
@@ -105,7 +104,7 @@ class PostSendMessageGuildRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthR
 			return
 		} else {
 			val user = lorittaShards.getUserById(userIdentification.id) ?: throw WebsiteAPIException(
-					Status.BAD_REQUEST,
+					HttpStatusCode.BadRequest,
 					com.mrpowergamerbr.loritta.utils.WebsiteUtils.createErrorPayload(
 							LoriWebCode.MEMBER_DISABLED_DIRECT_MESSAGES,
 							"Member ${userIdentification.id} disabled direct messages"
@@ -119,7 +118,7 @@ class PostSendMessageGuildRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthR
 				return
 			} catch (e: Exception) {
 				throw WebsiteAPIException(
-						Status.BAD_REQUEST,
+						HttpStatusCode.BadRequest,
 						com.mrpowergamerbr.loritta.utils.WebsiteUtils.createErrorPayload(
 								LoriWebCode.MEMBER_DISABLED_DIRECT_MESSAGES,
 								"Member ${userIdentification.id} disabled direct messages"

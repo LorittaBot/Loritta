@@ -17,7 +17,6 @@ import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.WebsiteVoteSource
 import net.perfectdreams.loritta.utils.WebsiteVoteUtils
 import net.perfectdreams.loritta.website.routes.BaseRoute
-import org.jooby.Status
 
 class PostDiscordBotsCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/callbacks/discord-bots") {
 	companion object {
@@ -35,7 +34,7 @@ class PostDiscordBotsCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta,
 			logger.error { "Header de Autorização do request não existe!" }
 
 			throw WebsiteAPIException(
-					Status.UNAUTHORIZED,
+					HttpStatusCode.Unauthorized,
 					WebsiteUtils.createErrorPayload(LoriWebCode.UNAUTHORIZED, "Missing Authorization Header from Request")
 			)
 		}
@@ -44,7 +43,7 @@ class PostDiscordBotsCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta,
 			logger.error { "Header de Autorização do request não é igual ao nosso!" }
 
 			throw WebsiteAPIException(
-					Status.UNAUTHORIZED,
+					HttpStatusCode.Unauthorized,
 					WebsiteUtils.createErrorPayload(LoriWebCode.UNAUTHORIZED, "Missing Authorization Content from Request")
 			)
 		}

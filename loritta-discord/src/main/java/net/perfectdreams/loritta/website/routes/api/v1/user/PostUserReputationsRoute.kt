@@ -37,7 +37,7 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jooby.Status
+import io.ktor.http.HttpStatusCode
 
 class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/{userId}/reputation") {
 	companion object {
@@ -129,7 +129,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 
 		if (userIdentification.id == receiver) {
 			throw WebsiteAPIException(
-					Status.FORBIDDEN,
+					HttpStatusCode.Forbidden,
 					WebsiteUtils.createErrorPayload(
 							LoriWebCode.FORBIDDEN,
 							"You can't give a reputation to yourself, silly!"
@@ -145,7 +145,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 
 		if (!MiscUtils.checkRecaptcha(com.mrpowergamerbr.loritta.utils.loritta.config.googleRecaptcha.reputationToken, token))
 			throw WebsiteAPIException(
-					Status.FORBIDDEN,
+					HttpStatusCode.Forbidden,
 					WebsiteUtils.createErrorPayload(
 							LoriWebCode.INVALID_RECAPTCHA
 					)
@@ -165,7 +165,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 			val diff = System.currentTimeMillis() - (lastReputationGiven?.receivedAt ?: 0L)
 
 			if (3_600_000 > diff)
-				throw WebsiteAPIException(Status.FORBIDDEN,
+				throw WebsiteAPIException(HttpStatusCode.Forbidden,
 						WebsiteUtils.createErrorPayload(
 								LoriWebCode.COOLDOWN
 						)

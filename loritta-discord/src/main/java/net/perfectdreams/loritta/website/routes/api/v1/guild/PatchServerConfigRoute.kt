@@ -23,7 +23,7 @@ import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.website.utils.config.types.ConfigTransformers
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
-import org.jooby.Status
+import io.ktor.http.HttpStatusCode
 
 class PatchServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRoute(loritta, "/config") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig) {
@@ -112,7 +112,7 @@ class PatchServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRout
 				call.respondJson(serverConfigJson)
 			} else {
 				throw WebsiteAPIException(
-						Status.NOT_IMPLEMENTED,
+						HttpStatusCode.NotImplemented,
 						com.mrpowergamerbr.loritta.utils.WebsiteUtils.createErrorPayload(
 								LoriWebCode.MISSING_PAYLOAD_HANDLER,
 								"I don't know how to handle a \"${type}\" payload yet!"

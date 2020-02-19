@@ -106,7 +106,7 @@ class LorittaWebsite(val loritta: Loritta) {
 				}
 
 				exception<WebsiteAPIException> { cause ->
-					call.respondJson(cause.payload, HttpStatusCode.fromValue(cause.status.value()))
+					call.respondJson(cause.payload, cause.status)
 				}
 
 				exception<Throwable> { cause ->

@@ -9,10 +9,10 @@ import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
+import io.ktor.http.HttpStatusCode
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jooby.Status
 
 class PremiumKeyPayload : ConfigPayloadType("premium") {
 	override fun process(payload: JsonObject, userIdentification: LorittaJsonWebSession.UserIdentification, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, guild: Guild) {
@@ -20,7 +20,7 @@ class PremiumKeyPayload : ConfigPayloadType("premium") {
 
 		val donationKey = transaction(Databases.loritta) {
 			DonationKey.findById(keyId.toLong())
-		} ?: throw WebsiteAPIException(Status.FORBIDDEN,
+		} ?: throw WebsiteAPIException(HttpStatusCode.Forbidden,
 				WebsiteUtils.createErrorPayload(
 						LoriWebCode.FORBIDDEN,
 						"loritta.errors.keyDoesntExist"
@@ -28,7 +28,7 @@ class PremiumKeyPayload : ConfigPayloadType("premium") {
 		)
 
 		if (donationKey.userId != userIdentification.id.toLong())
-			throw WebsiteAPIException(Status.FORBIDDEN,
+			throw WebsiteAPIException(HttpStatusCode.Forbidden,
 					WebsiteUtils.createErrorPayload(
 							LoriWebCode.FORBIDDEN,
 							"loritta.errors.tryingToApplyKeyOfAnotherUser"

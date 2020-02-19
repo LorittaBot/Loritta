@@ -20,7 +20,7 @@ import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.mercadopago.dsl.paymentSettings
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jooby.Status
+import io.ktor.http.HttpStatusCode
 
 class PostDonationPaymentRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/donate") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
@@ -102,7 +102,7 @@ class PostDonationPaymentRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 				call.respondJson(jsonObject("redirectUrl" to payment.initPoint))
 			}
 			else -> {
-				throw WebsiteAPIException(Status.FORBIDDEN,
+				throw WebsiteAPIException(HttpStatusCode.Forbidden,
 						WebsiteUtils.createErrorPayload(
 								LoriWebCode.FORBIDDEN,
 								"Unsupported!"

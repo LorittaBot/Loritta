@@ -19,7 +19,7 @@ import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.extensions.urlQueryString
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
-import org.jooby.Status
+import io.ktor.http.HttpStatusCode
 
 abstract class RequiresAPIGuildAuthRoute(loritta: LorittaDiscord, originalDashboardPath: String) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/guilds/{guildId}$originalDashboardPath") {
 	abstract suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig)
@@ -41,7 +41,7 @@ abstract class RequiresAPIGuildAuthRoute(loritta: LorittaDiscord, originalDashbo
 
 		val jdaGuild = lorittaShards.getGuildById(guildId)
 				?: throw WebsiteAPIException(
-						Status.BAD_REQUEST,
+						HttpStatusCode.BadRequest,
 						WebsiteUtils.createErrorPayload(
 								LoriWebCode.UNKNOWN_GUILD,
 								"Guild $guildId doesn't exist or it isn't loaded yet"
@@ -63,7 +63,7 @@ abstract class RequiresAPIGuildAuthRoute(loritta: LorittaDiscord, originalDashbo
 		val canBypass = com.mrpowergamerbr.loritta.utils.loritta.config.isOwner(userIdentification.id) || canAccessDashboardViaPermission
 		if (!canBypass && !(member?.hasPermission(Permission.ADMINISTRATOR) == true || member?.hasPermission(Permission.MANAGE_SERVER) == true)) {
 			throw WebsiteAPIException(
-					Status.FORBIDDEN,
+					HttpStatusCode.Forbidden,
 					WebsiteUtils.createErrorPayload(
 							LoriWebCode.FORBIDDEN,
 							"User ${member?.user?.id} doesn't have permission to edit ${guildId}'s config"

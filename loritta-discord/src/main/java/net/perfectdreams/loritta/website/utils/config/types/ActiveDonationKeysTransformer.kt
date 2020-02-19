@@ -20,7 +20,7 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
-import org.jooby.Status
+import io.ktor.http.HttpStatusCode
 
 object ActiveDonationKeysTransformer : ConfigTransformer {
     override val payloadType: String = "activekeys"
@@ -38,7 +38,7 @@ object ActiveDonationKeysTransformer : ConfigTransformer {
         for (keyId in keyIds) {
             val donationKey = transaction(Databases.loritta) {
                 DonationKey.findById(keyId)
-            } ?: throw WebsiteAPIException(Status.FORBIDDEN,
+            } ?: throw WebsiteAPIException(HttpStatusCode.Forbidden,
                     WebsiteUtils.createErrorPayload(
                             LoriWebCode.FORBIDDEN,
                             "loritta.errors.keyDoesntExist"
@@ -46,7 +46,7 @@ object ActiveDonationKeysTransformer : ConfigTransformer {
             )
 
             if (donationKey.userId != userIdentification.id.toLong() && keyId !in currentlyActiveKeys)
-                throw WebsiteAPIException(Status.FORBIDDEN,
+                throw WebsiteAPIException(HttpStatusCode.Forbidden,
                         WebsiteUtils.createErrorPayload(
                                 LoriWebCode.FORBIDDEN,
                                 "loritta.errors.tryingToApplyKeyOfAnotherUser"

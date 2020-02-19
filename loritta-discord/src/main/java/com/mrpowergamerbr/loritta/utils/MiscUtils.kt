@@ -7,8 +7,8 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
+import io.ktor.http.HttpStatusCode
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
-import org.jooby.Status
 import org.json.XML
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -167,7 +167,7 @@ object MiscUtils {
 					// 0 = Stop Forum Spam
 					// 1 = Bad hostname
 					// 2 = OVH IP
-					throw WebsiteAPIException(Status.FORBIDDEN,
+					throw WebsiteAPIException(HttpStatusCode.Forbidden,
 							WebsiteUtils.createErrorPayload(
 									LoriWebCode.FORBIDDEN,
 									"Bad IP!"
@@ -183,7 +183,7 @@ object MiscUtils {
 					)
 				}
 				MiscUtils.AccountCheckResult.BAD_EMAIL -> {
-					throw WebsiteAPIException(Status.FORBIDDEN,
+					throw WebsiteAPIException(HttpStatusCode.Forbidden,
 							WebsiteUtils.createErrorPayload(
 									LoriWebCode.FORBIDDEN,
 									"Bad email!"
@@ -191,14 +191,14 @@ object MiscUtils {
 					)
 				}
 				MiscUtils.AccountCheckResult.NOT_VERIFIED -> {
-					throw WebsiteAPIException(Status.FORBIDDEN,
+					throw WebsiteAPIException(HttpStatusCode.Forbidden,
 							WebsiteUtils.createErrorPayload(
 									LoriWebCode.FORBIDDEN,
 									"Account is not verified!"
 							) { it["code"] = 1 }
 					)
 				}
-				else -> throw WebsiteAPIException(Status.SERVER_ERROR, jsonObject("reason" to "Missing !canAccess result! ${status.name}"))
+				else -> throw WebsiteAPIException(HttpStatusCode.InternalServerError, jsonObject("reason" to "Missing !canAccess result! ${status.name}"))
 			}
 		}
 	}

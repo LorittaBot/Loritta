@@ -13,14 +13,14 @@ import net.perfectdreams.loritta.website.routes.BaseRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jooby.Status
+import io.ktor.http.HttpStatusCode
 
 class GetSelfInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/users/@me") {
 	override suspend fun onRequest(call: ApplicationCall) {
 		println("Get Self Info Route")
 		val session = call.sessions.get<LorittaJsonWebSession>()
 
-		val userIdentification = session?.getDiscordAuthFromJson()?.getUserIdentification() ?: throw WebsiteAPIException(Status.UNAUTHORIZED,
+		val userIdentification = session?.getDiscordAuthFromJson()?.getUserIdentification() ?: throw WebsiteAPIException(HttpStatusCode.Unauthorized,
 				WebsiteUtils.createErrorPayload(
 						LoriWebCode.UNAUTHORIZED
 				)

@@ -31,7 +31,7 @@ import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.website.utils.extensions.urlQueryString
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jooby.Status
+import io.ktor.http.HttpStatusCode
 import org.jsoup.Jsoup
 import org.jsoup.parser.Parser
 import java.util.concurrent.TimeUnit
@@ -56,7 +56,7 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 
 		val originalSignature = call.request.header("X-Hub-Signature")
 				?: throw WebsiteAPIException(
-						Status.UNAUTHORIZED,
+						HttpStatusCode.Unauthorized,
 						WebsiteUtils.createErrorPayload(LoriWebCode.UNAUTHORIZED, "Missing X-Hub-Signature Header from Request")
 				)
 
@@ -90,7 +90,7 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 
 		if (originalSignature != output)
 			throw WebsiteAPIException(
-					Status.UNAUTHORIZED,
+					HttpStatusCode.Unauthorized,
 					WebsiteUtils.createErrorPayload(LoriWebCode.UNAUTHORIZED, "Invalid X-Hub-Signature Header from Request")
 			)
 

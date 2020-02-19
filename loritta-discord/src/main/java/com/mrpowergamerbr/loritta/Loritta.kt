@@ -35,7 +35,6 @@ import com.mrpowergamerbr.loritta.utils.locale.Gender
 import com.mrpowergamerbr.loritta.utils.networkbans.LorittaNetworkBanManager
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
-import com.mrpowergamerbr.loritta.website.views.GlobalHandler
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -189,7 +188,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 			loadFanArts()
 		Emotes.emoteManager = DiscordEmoteManager()
 		Emotes.emoteManager?.loadEmotes()
-		GlobalHandler.generateViews()
 
 		val dispatcher = Dispatcher()
 		dispatcher.maxRequestsPerHost = discordConfig.discord.maxRequestsPerHost

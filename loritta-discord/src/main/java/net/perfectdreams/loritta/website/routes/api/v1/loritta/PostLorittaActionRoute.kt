@@ -7,7 +7,6 @@ import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
-import com.mrpowergamerbr.loritta.website.views.GlobalHandler
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
@@ -57,7 +56,6 @@ class PostLorittaActionRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticatio
 				com.mrpowergamerbr.loritta.utils.loritta.loadLegacyLocales()
 			}
 			"website" -> {
-				GlobalHandler.generateViews()
 				LorittaWebsite.kotlinTemplateCache.clear()
 				LorittaWebsite.ENGINE.templateCache.invalidateAll()
 			}

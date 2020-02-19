@@ -4,7 +4,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kotson.jsonObject
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
-import com.mrpowergamerbr.loritta.website.views.GlobalHandler
 import io.ktor.application.ApplicationCall
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.Emotes
@@ -25,7 +24,6 @@ class GetLorittaActionRoute(loritta: LorittaDiscord) : RequiresAPIAuthentication
 				com.mrpowergamerbr.loritta.utils.loritta.loadLegacyLocales()
 			}
 			"website" -> {
-				GlobalHandler.generateViews()
 				LorittaWebsite.kotlinTemplateCache.clear()
 				LorittaWebsite.ENGINE.templateCache.invalidateAll()
 			}
