@@ -5,7 +5,6 @@ import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
-import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.dao.Mute
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.modules.AutoroleModule
@@ -28,7 +27,6 @@ import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.TextChannel
-import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
@@ -45,7 +43,6 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.dao.Giveaway
 import net.perfectdreams.loritta.dao.ReactionOption
 import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
-import net.perfectdreams.loritta.platform.discord.utils.RateLimitChecker
 import net.perfectdreams.loritta.tables.Giveaways
 import net.perfectdreams.loritta.tables.ReactionOptions
 import net.perfectdreams.loritta.utils.FeatureFlags
@@ -86,29 +83,26 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		private val requestLogger = LoggerFactory.getLogger("requests")
 
 		fun queueTextChannelTopicUpdates(guild: Guild, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, hideInEventLog: Boolean = false) {
-			val donationKey = transaction(Databases.loritta) {
-				loritta.getOrCreateServerConfig(guild.idLong).donationKey
-			}
+			val activeDonationValues = loritta.getOrCreateServerConfig(guild.idLong).getActiveDonationKeysValue()
 
-			logger.debug { "Creating text channel topic updates in $guild for ${guild.textChannels.size} channels! Donation key is $donationKey (${donationKey?.value}) Should hide in event log? $hideInEventLog" }
+			logger.debug { "Creating text channel topic updates in $guild for ${guild.textChannels.size} channels! Donation key value is $activeDonationValues Should hide in event log? $hideInEventLog" }
 
 			val validChannels = guild.textChannels.filter {
 				val memberCounterConfig = legacyServerConfig.getTextChannelConfig(it).memberCounterConfig
 				guild.selfMember.hasPermission(it, Permission.MANAGE_CHANNEL) && memberCounterConfig?.topic?.contains("{counter}") == true
 			}
 
-			val channelsThatWillBeChecked = if (donationKey?.isActive() == true && donationKey.value >= LorittaPrices.ALLOW_MORE_THAN_ONE_MEMBER_COUNTER && FeatureFlags.ALLOW_MORE_THAN_ONE_COUNTER_FOR_PREMIUM_USERS) {
+			val channelsThatWillBeChecked = if (activeDonationValues >= LorittaPrices.ALLOW_MORE_THAN_ONE_MEMBER_COUNTER && FeatureFlags.ALLOW_MORE_THAN_ONE_COUNTER_FOR_PREMIUM_USERS) {
 				validChannels.take(3)
 			} else {
 				validChannels.take(1)
 			}
 
-			for (textChannel in channelsThatWillBeChecked) {
-				queueTextChannelTopicUpdate(guild, serverConfig, legacyServerConfig, donationKey, textChannel, hideInEventLog)
-			}
+			for (textChannel in channelsThatWillBeChecked)
+				queueTextChannelTopicUpdate(guild, serverConfig, legacyServerConfig, textChannel, hideInEventLog)
 		}
 
-		fun queueTextChannelTopicUpdate(guild: Guild, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, donationKey: DonationKey?, textChannel: TextChannel, hideInEventLog: Boolean = false) {
+		fun queueTextChannelTopicUpdate(guild: Guild, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, textChannel: TextChannel, hideInEventLog: Boolean = false) {
 			if (!guild.selfMember.hasPermission(textChannel, Permission.MANAGE_CHANNEL))
 				return
 
@@ -117,8 +111,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val lastUpdate = memberCounterLastUpdate[textChannel.idLong] ?: 0L
 			val diff = System.currentTimeMillis() - lastUpdate
 
-			if (Companion.MEMBER_COUNTER_COOLDOWN > diff) { // Para evitar rate limits ao ter muitas entradas/saídas ao mesmo tempo, vamos esperar 60s entre cada update
-				logger.info { "Text channel $textChannel topic is on cooldown for guild $guild, donation key is $donationKey (${donationKey?.value}), waiting ${diff}ms until next update..."}
+			if (MEMBER_COUNTER_COOLDOWN > diff) { // Para evitar rate limits ao ter muitas entradas/saídas ao mesmo tempo, vamos esperar 60s entre cada update
+				logger.info { "Text channel $textChannel topic is on cooldown for guild $guild, waiting ${diff}ms until next update..."}
 
 				memberCounterLastUpdate[textChannel.idLong] = System.currentTimeMillis()
 				val currentJob = Companion.memberCounterUpdateJobs[textChannel.idLong]
@@ -128,27 +122,27 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					delay(diff)
 
 					if (!this.isActive) {
-						Companion.memberCounterUpdateJobs[textChannel.idLong] = null
+						memberCounterUpdateJobs[textChannel.idLong] = null
 						return@launch
 					}
 
-					updateTextChannelTopic(guild, serverConfig, donationKey, textChannel, memberCountConfig, hideInEventLog)
+					updateTextChannelTopic(guild, serverConfig, textChannel, memberCountConfig, hideInEventLog)
 					memberCounterUpdateJobs.remove(textChannel.idLong)
 				}
 				return
 			}
 
-			updateTextChannelTopic(guild, serverConfig, donationKey, textChannel, memberCountConfig, hideInEventLog)
+			updateTextChannelTopic(guild, serverConfig, textChannel, memberCountConfig, hideInEventLog)
 		}
 
-		fun updateTextChannelTopic(guild: Guild, serverConfig: ServerConfig, donationKey: DonationKey?, textChannel: TextChannel, memberCounterConfig: MemberCounterConfig, hideInEventLog: Boolean = false) {
+		fun updateTextChannelTopic(guild: Guild, serverConfig: ServerConfig, textChannel: TextChannel, memberCounterConfig: MemberCounterConfig, hideInEventLog: Boolean = false) {
 			val formattedTopic = memberCounterConfig.getFormattedTopic(guild)
 			if (hideInEventLog)
-				Companion.memberCounterJoinLeftCache.add(textChannel.idLong)
-			Companion.memberCounterLastUpdate[textChannel.idLong] = System.currentTimeMillis()
+				memberCounterJoinLeftCache.add(textChannel.idLong)
+			memberCounterLastUpdate[textChannel.idLong] = System.currentTimeMillis()
 
 			val locale = loritta.getLocaleById(serverConfig.localeId)
-			logger.info { "Updating text channel $textChannel topic in $guild! Donation key is $donationKey (${donationKey?.value}), hide in event log? $hideInEventLog" }
+			logger.info { "Updating text channel $textChannel topic in $guild! Hide in event log? $hideInEventLog" }
 			logger.trace { "Member Counter Theme = ${memberCounterConfig.theme}"}
 			logger.trace { "Member Counter Padding = ${memberCounterConfig.padding}"}
 			logger.trace { "Formatted Topic = $formattedTopic" }

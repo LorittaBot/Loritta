@@ -4,6 +4,14 @@ object ConfigTransformers {
     val DEFAULT_TRANSFORMERS = listOf(
             YouTubeConfigTransformer,
             TwitchConfigTransformer,
-            TwitterConfigTransformer
+            TwitterConfigTransformer,
+            TextChannelsTransformer,
+            UserDonationKeysTransformer,
+            ActiveDonationKeysTransformer,
+            GuildInfoTransformer,
+            GeneralConfigTransformer,
+            LevelUpConfigTransformer,
+            RolesTransformer,
+            DonationConfigTransformer
     )
 }

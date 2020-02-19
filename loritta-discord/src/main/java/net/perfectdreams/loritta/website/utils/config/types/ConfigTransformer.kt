@@ -10,9 +10,15 @@ interface ConfigTransformer {
     val payloadType: String
     val configKey: String
 
-    fun fromJson(guild: Guild, serverConfig: ServerConfig, payload: JsonObject)
+    suspend fun fromJson(guild: Guild, serverConfig: ServerConfig, payload: JsonObject) {
+        throw NotImplementedError()
+    }
 
-    fun fromJson(userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig, payload: JsonObject) = fromJson(guild, serverConfig, payload)
+    suspend fun fromJson(userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig, payload: JsonObject) = fromJson(guild, serverConfig, payload)
 
-    fun toJson(guild: Guild, serverConfig: ServerConfig): JsonElement
+    suspend fun toJson(guild: Guild, serverConfig: ServerConfig): JsonElement {
+        throw NotImplementedError()
+    }
+
+    suspend fun toJson(userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig): JsonElement = toJson(guild, serverConfig)
 }

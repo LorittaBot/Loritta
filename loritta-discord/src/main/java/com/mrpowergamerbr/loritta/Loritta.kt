@@ -27,7 +27,6 @@ import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.threads.RaffleThread
 import com.mrpowergamerbr.loritta.threads.RemindersThread
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
-import com.mrpowergamerbr.loritta.tictactoe.TicTacToeServer
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.*
@@ -146,7 +145,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	lateinit var raffleThread: RaffleThread
 	lateinit var bomDiaECia: BomDiaECia
 
-	var ticTacToeServer = TicTacToeServer()
 	val networkBanManager = LorittaNetworkBanManager()
 
 	lateinit var website: LorittaWebsite

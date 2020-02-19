@@ -25,6 +25,15 @@ object DashboardUtils {
 		return kotlinx.serialization.json.JSON.nonstrict.parse(result)
 	}
 
+	@ImplicitReflectionSerializer
+	suspend inline fun <reified T : Any> retrievePartialGuildConfiguration(guildId: String, vararg sections: String): T {
+		val result = http.get<String> {
+			url("${window.location.origin}/api/v1/guilds/${guildId}/config/${sections.joinToString(",")}")
+		}
+
+		return kotlinx.serialization.json.JSON.nonstrict.parse(result)
+	}
+
 	fun UpdateNavbarSizePostRender.switchContentAndFixLeftSidebarScroll(call: ApplicationCall) {
 		fixDummyNavbarHeight(call)
 		SpicyMorenitta.INSTANCE.fixLeftSidebarScroll {

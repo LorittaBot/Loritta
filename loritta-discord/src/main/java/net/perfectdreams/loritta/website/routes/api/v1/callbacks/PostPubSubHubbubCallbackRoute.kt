@@ -14,7 +14,7 @@ import com.mrpowergamerbr.loritta.youtube.CreateYouTubeWebhooksTask
 import io.ktor.application.ApplicationCall
 import io.ktor.client.request.header
 import io.ktor.client.request.post
-import io.ktor.client.statement.HttpStatement
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.userAgent
 import io.ktor.request.header
 import io.ktor.request.path
@@ -104,7 +104,7 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 					try {
 						withTimeout(25_000) {
 							logger.info { "Sending request to ${"https://${it.getUrl()}${call.request.path()}${call.request.urlQueryString}"}..." }
-							loritta.http.post<HttpStatement>("https://${it.getUrl()}${call.request.path()}${call.request.urlQueryString}") {
+							loritta.http.post<HttpResponse>("https://${it.getUrl()}${call.request.path()}${call.request.urlQueryString}") {
 								userAgent(com.mrpowergamerbr.loritta.utils.loritta.lorittaCluster.getUserAgent())
 								header("X-Hub-Signature", originalSignature)
 

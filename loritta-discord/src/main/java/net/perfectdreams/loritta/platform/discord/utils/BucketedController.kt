@@ -1,8 +1,10 @@
 package net.perfectdreams.loritta.platform.discord.utils
 
+import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import mu.KotlinLogging
 import net.dv8tion.jda.api.utils.SessionController
 import net.dv8tion.jda.api.utils.SessionController.SessionConnectNode
 import net.dv8tion.jda.api.utils.SessionControllerAdapter
@@ -15,9 +17,14 @@ import javax.annotation.Nonnegative
  * Thanks Mantaro! https://github.com/Mantaro/MantaroBot/blob/0abd5d98af728e24a5b0fb4a0ad63fc451ef8d0f/src/main/java/net/kodehawa/mantarobot/core/shard/jda/BucketedController.java
  */
 class BucketedController @JvmOverloads constructor(@Nonnegative bucketFactor: Int = 16) : SessionControllerAdapter() {
+	companion object {
+		private val logger = KotlinLogging.logger {}
+	}
+
 	private val shardControllers: Array<SessionController?>
 	private val rateLimits = mutableListOf<RateLimitHit>()
 	private val rateLimitListMutex = Mutex()
+	private var lastTooManyRequestsCheck = -1L
 
 	init {
 		require(bucketFactor >= 1) { "Bucket factor must be at least 1" }
@@ -36,6 +43,13 @@ class BucketedController @JvmOverloads constructor(@Nonnegative bucketFactor: In
 		runBlocking {
 			rateLimitListMutex.withLock {
 				removeOutdatedGlobalRateLimitHits()
+				val diff = System.currentTimeMillis() - lastTooManyRequestsCheck
+				if (diff >= 15_000) {
+					logger.info { "Doing self too many requests check... Last check was ${diff}ms ago" }
+					loritta.rateLimitChecker.checkIfRequestShouldBeIgnored()
+					lastTooManyRequestsCheck = System.currentTimeMillis()
+				}
+
 				rateLimits.add(
 						RateLimitHit(
 								ratelimit,

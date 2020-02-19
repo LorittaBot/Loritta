@@ -1,17 +1,13 @@
 package net.perfectdreams.loritta.website.utils
 
-import com.github.salomonbrys.kotson.jsonArray
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.toJsonArray
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.tables.DonationKeys
-import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
@@ -24,8 +20,8 @@ import io.ktor.request.path
 import io.ktor.util.AttributeKey
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.dao.ReactionOption
-import net.perfectdreams.loritta.tables.*
-import net.perfectdreams.loritta.utils.levels.RoleGiveType
+import net.perfectdreams.loritta.tables.ReactionOptions
+import net.perfectdreams.loritta.tables.TrackedRssFeeds
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.config.types.ConfigTransformers
 import org.jetbrains.exposed.sql.select
@@ -183,49 +179,12 @@ object WebsiteUtils {
 		} */
 	}
 
-	fun transformToDashboardConfigurationJson(user: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig): JsonObject {
+	suspend fun transformToDashboardConfigurationJson(user: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig): JsonObject {
 		val guildJson = jsonObject(
-				"name" to guild.name,
-				"localeId" to serverConfig.localeId,
-				"commandPrefix" to serverConfig.commandPrefix,
-				"deleteMessageAfterCommand" to serverConfig.deleteMessageAfterCommand,
-				"warnOnMissingPermission" to serverConfig.warnOnMissingPermission,
-				"warnOnUnknownCommand" to serverConfig.warnOnUnknownCommand,
-				"blacklistedChannels" to serverConfig.blacklistedChannels.toList().toJsonArray(),
-				"warnIfBlacklisted" to serverConfig.warnIfBlacklisted,
-				"blacklistedWarning" to serverConfig.blacklistedWarning
+				"name" to guild.name
 		)
 
 		val selfMember = WebsiteUtils.transformToJson(lorittaShards.getUserById(user.id)!!)
-		selfMember["donationKeys"] = transaction(Databases.loritta) {
-			val donationKeys = DonationKey.find {
-				DonationKeys.userId eq user.id.toLong()
-			}
-
-			jsonArray(
-					donationKeys.map {
-						val guildUsingKey = ServerConfig.find { ServerConfigs.donationKey eq it.id }.firstOrNull()
-						val obj = jsonObject(
-								"id" to it.id.value,
-								"value" to it.value,
-								"expiresAt" to it.expiresAt
-						)
-
-						if (guildUsingKey != null) {
-							val guild = lorittaShards.getGuildById(guildUsingKey.guildId)
-
-							if (guild != null) {
-								obj["usesKey"] = jsonObject(
-										"name" to guild.name,
-										"iconUrl" to guild.iconUrl
-								)
-							}
-						}
-
-						obj
-					}
-			)
-		}
 
 		guildJson["donationConfig"] = transaction(Databases.loritta) {
 			val donationConfig = serverConfig.donationConfig
@@ -251,60 +210,6 @@ object WebsiteUtils {
 			}.toJsonArray()
 		}
 
-		guildJson["levelUpConfig"] = transaction(Databases.loritta) {
-			val levelConfig = serverConfig.levelConfig
-			val announcements = LevelAnnouncementConfigs.select {
-				LevelAnnouncementConfigs.levelConfig eq (levelConfig?.id?.value ?: -1L)
-			}
-
-			val announcementArray = jsonArray()
-			for (announcement in announcements) {
-				announcementArray.add(
-						jsonObject(
-								"type" to announcement[LevelAnnouncementConfigs.type].toString(),
-								"channelId" to announcement[LevelAnnouncementConfigs.channelId]?.toString(),
-								"onlyIfUserReceivedRoles" to announcement[LevelAnnouncementConfigs.onlyIfUserReceivedRoles],
-								"message" to announcement[LevelAnnouncementConfigs.message].toString()
-						)
-				)
-			}
-
-			val rolesByExperience = RolesByExperience.select {
-				RolesByExperience.guildId eq guild.idLong
-			}
-			val rolesByExperienceArray = jsonArray()
-			for (roleByExperience in rolesByExperience) {
-				rolesByExperienceArray.add(
-						jsonObject(
-								"requiredExperience" to roleByExperience[RolesByExperience.requiredExperience].toString(),
-								"roles" to roleByExperience[RolesByExperience.roles].map { it.toString() }.toList().toJsonArray()
-						)
-				)
-			}
-
-			val experienceRoleRates = ExperienceRoleRates.select {
-				ExperienceRoleRates.guildId eq guild.idLong
-			}
-			val experienceRoleRatesArray = jsonArray()
-			for (experienceRoleRate in experienceRoleRates) {
-				experienceRoleRatesArray.add(
-						jsonObject(
-								"role" to experienceRoleRate[ExperienceRoleRates.role].toString(),
-								"rate" to experienceRoleRate[ExperienceRoleRates.rate].toDouble()
-						)
-				)
-			}
-
-			jsonObject(
-					"roleGiveType" to (levelConfig?.roleGiveType ?: RoleGiveType.STACK).toString(),
-					"noXpChannels" to (levelConfig?.noXpChannels?.toList()?.toJsonArray() ?: jsonArray()),
-					"noXpRoles" to (levelConfig?.noXpRoles?.toList()?.toJsonArray() ?: jsonArray()),
-					"announcements" to announcementArray,
-					"rolesByExperience" to rolesByExperienceArray,
-					"experienceRoleRates" to experienceRoleRatesArray
-			)
-		}
-
 		guildJson["trackedRssFeeds"] = transaction(Databases.loritta) {
 			val array = JsonArray()
 
@@ -324,38 +229,6 @@ object WebsiteUtils {
 		}
 
 		guildJson["selfMember"] = selfMember
-
-		transaction(Databases.loritta) {
-			val donationKey = serverConfig.donationKey
-			if (donationKey != null) {
-				guildJson["donationKey"] = jsonObject(
-						"id" to donationKey.id.value,
-						"value" to donationKey.value,
-						"expiresAt" to donationKey.expiresAt,
-						"user" to WebsiteUtils.transformToJson(lorittaShards.getUserById(donationKey.userId)!!)
-				)
-			}
-		}
-
-		guildJson["roles"] = guild.roles.map {
-			jsonObject(
-					"id" to it.id,
-					"name" to it.name,
-					"colorRaw" to it.colorRaw,
-					"canInteract" to guild.selfMember.canInteract(it),
-					"isHoisted" to it.isHoisted,
-					"isManaged" to it.isManaged
-			)
-		}.toJsonArray()
-
-		guildJson["textChannels"] = guild.textChannels.map {
-			jsonObject(
-					"id" to it.id,
-					"canTalk" to it.canTalk(),
-					"name" to it.name,
-					"topic" to it.topic
-			)
-		}.toJsonArray()
 
 		for (transformer in ConfigTransformers.DEFAULT_TRANSFORMERS)
 			guildJson[transformer.configKey] = transformer.toJson(guild, serverConfig)

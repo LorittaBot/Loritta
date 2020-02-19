@@ -6,7 +6,6 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
-import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
@@ -43,12 +42,12 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				.asMap()
 	}
 
-	fun getDailyMultiplier(donationKey: DonationKey): Double {
+	fun getDailyMultiplier(value: Double): Double {
 		return when {
-			donationKey.value >= 179.99 -> 2.0
-			donationKey.value >= 139.99 -> 1.75
-			donationKey.value >= 99.99 -> 1.5
-			donationKey.value >= 59.99 -> 1.25
+			value >= 179.99 -> 2.0
+			value >= 139.99 -> 1.75
+			value >= 99.99 -> 1.5
+			value >= 59.99 -> 1.25
 			else -> 1.0
 		}
 	}
@@ -201,12 +200,9 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 
 			transaction(Databases.loritta) {
 				// Pegar todos os servidores com sonhos patrocinados
-				val results = (ServerConfigs innerJoin DonationConfigs innerJoin DonationKeys).select {
+				val results = (ServerConfigs innerJoin DonationConfigs).select {
 					(ServerConfigs.id inList mutualGuilds.map { it["id"].string.toLong() }) and
-							(DonationConfigs.dailyMultiplier eq true) and
-							(ServerConfigs.donationKey.isNotNull()) and
-							(DonationKeys.expiresAt greaterEq System.currentTimeMillis()) and
-							(DonationKeys.value greaterEq 59.99)
+							(DonationConfigs.dailyMultiplier eq true)
 				}.orderBy(DonationKeys.value, SortOrder.DESC)
 
 				val serverConfigs = ServerConfig.wrapRows(results)
@@ -216,6 +212,10 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 
 				for (config in serverConfigs) {
 					logger.info { "Checking ${config.guildId}" }
+
+					val donationValue = config.getActiveDonationKeysValue()
+					if (59.99 > donationValue)
+						continue
 
 					val guild = mutualGuilds.firstOrNull { logger.info { "it[id] = ${it["id"].string.toLong()}" }; it["id"].string.toLong() == config.guildId }?.obj
 							?: continue
@@ -239,7 +239,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 										),
 										"type" to DailyGuildMissingRequirement.REQUIRES_MORE_TIME.toString(),
 										"data" to diff,
-										"multiplier" to config.donationKey?.let { getDailyMultiplier(it) }
+										"multiplier" to getDailyMultiplier(donationValue)
 								)
 						)
 						continue
@@ -258,7 +258,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 										),
 										"type" to DailyGuildMissingRequirement.REQUIRES_MORE_XP.toString(),
 										"data" to 500 - xp,
-										"multiplier" to config.donationKey?.let { getDailyMultiplier(it) }
+										"multiplier" to getDailyMultiplier(donationValue)
 								)
 						)
 						continue
@@ -271,10 +271,11 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 
 				if (bestServer != null) {
 					val donationConfig = bestServer.donationConfig
-					val donationKey = bestServer.donationKey
+					val donationKey = bestServer.getActiveDonationKeys().firstOrNull()
+					val totalDonationValue = bestServer.getActiveDonationKeysValue()
 
-					if (donationConfig != null && donationKey != null && donationKey.value >= 59.99) {
-						multipliedBy = getDailyMultiplier(donationKey)
+					if (donationConfig != null && donationKey != null && totalDonationValue >= 59.99) {
+						multipliedBy = getDailyMultiplier(totalDonationValue)
 						sponsoredBy = bestServerInfo
 						sponsoredByUserId = donationKey.userId
 					}

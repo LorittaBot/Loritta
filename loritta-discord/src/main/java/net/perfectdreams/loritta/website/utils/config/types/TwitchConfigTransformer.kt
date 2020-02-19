@@ -20,7 +20,7 @@ object TwitchConfigTransformer : ConfigTransformer {
     override val payloadType: String = "twitch"
     override val configKey: String = "trackedTwitchChannels"
 
-    override fun fromJson(guild: Guild, serverConfig: ServerConfig, payload: JsonObject) {
+    override suspend fun fromJson(guild: Guild, serverConfig: ServerConfig, payload: JsonObject) {
         transaction(Databases.loritta) {
             TrackedTwitchAccounts.deleteWhere {
                 TrackedTwitchAccounts.guildId eq guild.idLong
@@ -39,7 +39,7 @@ object TwitchConfigTransformer : ConfigTransformer {
         }
     }
 
-    override fun toJson(guild: Guild, serverConfig: ServerConfig): JsonElement {
+    override suspend fun toJson(guild: Guild, serverConfig: ServerConfig): JsonElement {
         return transaction(Databases.loritta) {
             val array = JsonArray()
 

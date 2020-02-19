@@ -228,7 +228,6 @@ object WebsiteUtils {
 		req.set("guild", server)
 
 		req.get<MutableMap<String, Any?>>("variables").put("serverConfig", serverConfig)
-		req.get<MutableMap<String, Any?>>("variables").put("serverConfigJson", gson.toJson(getServerConfigAsJson(server, serverConfig, userIdentification)))
 		req.get<MutableMap<String, Any?>>("variables").put("guild", server)
 
 		return true
@@ -350,93 +349,11 @@ object WebsiteUtils {
 		)
 	}
 
-	fun getServerConfigAsJson(guild: Guild, serverConfig: MongoServerConfig, userIdentification: SimpleUserIdentification): JsonElement {
-		val serverConfigJson = Gson().toJsonTree(serverConfig)
-
-		val donationKey = transaction(Databases.loritta) {
-			loritta.getOrCreateServerConfig(serverConfig.guildId.toLong()).donationKey
-		}
-
-		if (donationKey != null && donationKey.isActive()) {
-			serverConfigJson["donationKey"] = jsonObject(
-					"value" to donationKey.value,
-					"userId" to donationKey.userId.toString(),
-					"expiresAt" to donationKey.expiresAt.toString()
-			)
-		}
-
-		val textChannels = JsonArray()
-		for (textChannel in guild.textChannels) {
-			val json = JsonObject()
-
-			json["id"] = textChannel.id
-			json["canTalk"] = textChannel.canTalk()
-			json["name"] = textChannel.name
-			json["topic"] = textChannel.topic
-
-			textChannels.add(json)
-		}
-
-		serverConfigJson["textChannels"] = textChannels
-
-		val roles = JsonArray()
-		for (role in guild.roles) {
-			val json = JsonObject()
-
-			json["id"] = role.id
-			json["name"] = role.name
-			json["isPublicRole"] = role.isPublicRole
-			json["isManaged"] = role.isManaged
-			json["canInteract"] = guild.selfMember.canInteract(role)
-
-			if (role.color != null) {
-				json["color"] = jsonObject(
-						"red" to role.color!!.red,
-						"green" to role.color!!.green,
-						"blue" to role.color!!.blue
-				)
-			}
-
-			roles.add(json)
-		}
-
-		val emotes = JsonArray()
-		for (emote in guild.emotes) {
-			val json = JsonObject()
-
-			json["id"] = emote.id
-			json["name"] = emote.name
-
-			emotes.add(json)
-		}
-
-		serverConfigJson["roles"] = roles
-		serverConfigJson["emotes"] = emotes
-		serverConfigJson["permissions"] = gson.toJsonTree(guild.selfMember.permissions.map { it.name })
-
-		val user = lorittaShards.getUserById(userIdentification.id)
-
-		if (user != null) {
-			val selfUser = jsonObject(
-					"id" to userIdentification.id,
-					"name" to user.name,
-					"discriminator" to user.discriminator,
-					"avatar" to user.effectiveAvatarUrl
-			)
-			serverConfigJson["selfUser"] = selfUser
-		}
-
-		serverConfigJson["guildName"] = guild.name
-		serverConfigJson["memberCount"] = guild.members.size
-
-		return serverConfigJson
-	}
-
 	fun getServerConfigAsJson(guild: Guild, serverConfig: MongoServerConfig, userIdentification: LorittaJsonWebSession.UserIdentification): JsonElement {
 		val serverConfigJson = Gson().toJsonTree(serverConfig)
 
 		val donationKey = transaction(Databases.loritta) {
-			loritta.getOrCreateServerConfig(serverConfig.guildId.toLong()).donationKey
+			loritta.getOrCreateServerConfig(serverConfig.guildId.toLong()).getActiveDonationKeys().firstOrNull()
 		}
 
 		if (donationKey != null && donationKey.isActive()) {

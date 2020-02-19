@@ -4,19 +4,15 @@ import kotlinx.html.*
 import kotlinx.html.dom.create
 import kotlinx.html.js.onClickFunction
 import kotlinx.serialization.ImplicitReflectionSerializer
-import kotlinx.serialization.json.JSON
-import kotlinx.serialization.parse
+import kotlinx.serialization.Serializable
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
+import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
-import net.perfectdreams.spicymorenitta.utils.DashboardUtils
+import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.launchWithLoadingScreenAndFixContent
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.switchContentAndFixLeftSidebarScroll
-import net.perfectdreams.spicymorenitta.utils.DateUtils
-import net.perfectdreams.spicymorenitta.utils.SaveUtils
-import net.perfectdreams.spicymorenitta.utils.page
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
-import org.w3c.dom.HTMLInputElement
 import kotlin.browser.document
 import kotlin.dom.clear
 import kotlin.js.Date
@@ -25,51 +21,112 @@ class PremiumKeyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guil
 	override val keepLoadingScreen: Boolean
 		get() = true
 
+	@Serializable
+	class PartialGuildConfiguration(
+			val guildInfo: ServerConfig.MiniGuild,
+			val activeDonationKeys: List<ServerConfig.DonationKey>,
+			val donationKeys: Array<ServerConfig.DonationKey>
+	)
+
+	var guildId: Long? = null
+	var guildInfo: ServerConfig.MiniGuild? = null
+	var currentActiveKeys = mutableListOf<Long>()
+
 	@ImplicitReflectionSerializer
 	override fun onRender(call: ApplicationCall) {
 		launchWithLoadingScreenAndFixContent(call) {
-			val guild = DashboardUtils.retrieveGuildConfiguration(call.parameters["guildid"]!!)
+			guildId = call.parameters["guildid"]!!.toLong()
+			val guild = DashboardUtils.retrievePartialGuildConfiguration<PartialGuildConfiguration>(call.parameters["guildid"]!!, "userkeys", "activekeys", "guildinfo")
 			switchContentAndFixLeftSidebarScroll(call)
-
 			generateStuff(guild)
 		}
 	}
 
 	@ImplicitReflectionSerializer
-	fun generateStuff(guild: ServerConfig.Guild) {
+	fun generateStuff(guild: PartialGuildConfiguration) {
+		currentActiveKeys = guild.activeDonationKeys.map { it.id }.toMutableList()
+		guildInfo = guild.guildInfo
 		val premiumContent = page.getElementById("premium-content")
 		premiumContent.clear()
 
 		premiumContent.appendChild(
 				document.create.div {
 					id = "premium-stuff"
-					val donationKey = guild.donationKey
-					div {
-						style = "text-align: center;"
-						if (donationKey == null) {
-							h1 { +"Você não tem nenhuma key ativada neste servidor!" }
-						} else {
-							h1 { +"Você está usando key ${donationKey.id}" }
+					val activeDonationKeys = guild.activeDonationKeys.filter { it.expiresAt >= Date().getTime() }
+					h1 { + "Plano Atual:" }
+					val activeValue = activeDonationKeys.sumByDouble { it.value }
+					if (activeValue >= PremiumPlans.COMPLETE.value) {
+						p {
+							+ "Completo"
+						}
+					} else if (activeValue >= PremiumPlans.RECOMMENDED.value) {
+						p {
+							+ "Recomendado"
+						}
+					} else if (activeValue >= PremiumPlans.ESSENTIAL.value) {
+						p {
+							+"Essencial"
+						}
+					} else {
+						p {
+							+ "Grátis"
 						}
 					}
+
+					h1 { + "Keys ativas neste servidor" }
+					div {
+						if (activeDonationKeys.isEmpty()) {
+							div {
+								style = "text-align: center;font-size: 2em;opacity: 0.7;"
+								div {
+									img(src = "https://loritta.website/assets/img/blog/lori_calca.gif") {
+										style = "width: 20%; filter: grayscale(100%);"
+									}
+								}
+								+"${locale["website.empty"]}${locale.getList("website.funnyEmpty").random()}"
+							}
+						} else {
+							for (donationKey in activeDonationKeys) {
+								createKeyEntry(donationKey, true)
+							}
+						}
+
+					}
 					hr {}
-					h1 { +"Suas Keys" }
+					h1 { + "Suas Keys" }
 					// Apenas mostrar keys que estão ainda válidas (Ou seja, que ainda não expiraram!)
-					for (donationKey in guild.selfMember.donationKeys!!.filter { it.expiresAt >= Date().getTime() }) {
-						createKeyEntry(guild.selfMember, donationKey)
+					val userKeys = guild.donationKeys
+							.filter { it.expiresAt >= Date().getTime() }
+							.filter { it.id !in currentActiveKeys }
+					if (userKeys.isEmpty()) {
+						div {
+							style = "text-align: center;font-size: 2em;opacity: 0.7;"
+							div {
+								img(src = "https://loritta.website/assets/img/blog/lori_calca.gif") {
+									style = "width: 20%; filter: grayscale(100%);"
+								}
+							}
+							+"${locale["website.empty"]}${locale.getList("website.funnyEmpty").random()}"
+						}
+					} else {
+						for (donationKey in userKeys) {
+							createKeyEntry(donationKey, false)
+						}
 					}
 				})
 	}
 
 	@ImplicitReflectionSerializer
-	fun DIV.createKeyEntry(selfMember: ServerConfig.SelfMember, donationKey: ServerConfig.DonationKey) {
+	fun DIV.createKeyEntry(donationKey: ServerConfig.DonationKey, isActivatedHere: Boolean) {
 		this.div(classes = "discord-generic-entry timer-entry") {
 			img(classes = "amino-small-image") {
 				style = "width: 6%; height: auto; border-radius: 999999px; float: left; position: relative; bottom: 8px;"
-				if (donationKey.usesKey != null) {
-					src = donationKey.usesKey.iconUrl ?: selfMember.effectiveAvatarUrl
+				src = if (isActivatedHere) {
+					guildInfo?.iconUrl ?: ""
+				} else if (donationKey.activeIn != null) {
+					donationKey.activeIn.iconUrl ?: ""
 				} else {
-					src = selfMember.effectiveAvatarUrl
+					donationKey.user?.effectiveAvatarUrl ?: ""
 				}
 			}
 			div(classes = "pure-g") {
@@ -81,8 +138,8 @@ class PremiumKeyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guil
 							+ "Key ${donationKey.id}"
 						}
 						div(classes = "amino-title toggleSubText") {
-							if (donationKey.usesKey != null) {
-								+"R$${donationKey.value} • Ativado em ${donationKey.usesKey.name} • Expirará em ${DateUtils.formatDateDiff(Date().getTime(), donationKey.expiresAt.toDouble())}"
+							if (donationKey.activeIn != null) {
+								+"R$${donationKey.value} • Ativo em ${donationKey.activeIn.name} • Expirará em ${DateUtils.formatDateDiff(Date().getTime(), donationKey.expiresAt.toDouble())}"
 							} else {
 								+"R$${donationKey.value} • Expirará em ${DateUtils.formatDateDiff(Date().getTime(), donationKey.expiresAt.toDouble())}"
 							}
@@ -92,25 +149,26 @@ class PremiumKeyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guil
 				div(classes = "pure-u-1 pure-u-md-6-24 vertically-centered-right-aligned") {
 					button(classes="button-discord button-discord-edit pure-button edit-timer-button") {
 						onClickFunction = {
-							println("Saving!")
-							SaveUtils.prepareSave("premium", {
-								it["keyId"] = donationKey.id
-							}, onFinish = {
-								val guild = JSON.nonstrict.parse<ServerConfig.Guild>(it.body)
+							if (isActivatedHere)
+								currentActiveKeys.remove(donationKey.id)
+							else
+								currentActiveKeys.add(donationKey.id)
 
-								generateStuff(guild)
+							SaveUtils.prepareSave("activekeys", {
+								it["keyIds"] = currentActiveKeys.map { it.toString() }
+							}, onFinish = {
+								m.launch {
+									val guild = DashboardUtils.retrievePartialGuildConfiguration<PartialGuildConfiguration>(guildId.toString(), "userkeys", "activekeys", "guildinfo")
+
+									generateStuff(guild)
+								}
 							})
 						}
-						+ "Ativar"
+
+						+ if (isActivatedHere) "Desativar" else "Ativar"
 					}
 				}
 			}
 		}
-	}
-
-	fun prepareSave() {
-		SaveUtils.prepareSave("daily_multiplier", extras = {
-			it["dailyMultiplier"] = (page.getElementById("cmn-toggle-1") as HTMLInputElement).checked
-		})
 	}
 }

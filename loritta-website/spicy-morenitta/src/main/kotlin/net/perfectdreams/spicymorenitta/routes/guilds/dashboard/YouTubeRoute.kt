@@ -41,6 +41,12 @@ class YouTubeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 		private const val LOCALE_PREFIX = "modules.youtube"
 	}
 
+	@Serializable
+	class PartialGuildConfiguration(
+			val textChannels: List<ServerConfig.TextChannel>,
+			val trackedYouTubeChannels: List<ServerConfig.TrackedYouTubeAccount>
+	)
+
 	val trackedYouTubeAccounts = mutableListOf<ServerConfig.TrackedYouTubeAccount>()
 	val cachedChannelByChannelUrl = mutableMapOf<String, YouTubeAccountInfo>()
 
@@ -52,7 +58,7 @@ class YouTubeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 	@ImplicitReflectionSerializer
 	override fun onRender(call: ApplicationCall) {
 		launchWithLoadingScreenAndFixContent(call) {
-			val guild = DashboardUtils.retrieveGuildConfiguration(call.parameters["guildid"]!!)
+			val guild = DashboardUtils.retrievePartialGuildConfiguration<PartialGuildConfiguration>(call.parameters["guildid"]!!, "youtube", "textchannels")
 			switchContentAndFixLeftSidebarScroll(call)
 
 			document.select<HTMLButtonElement>("#save-button").onClick {
@@ -70,7 +76,14 @@ class YouTubeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 			val addEntryButton = document.select<HTMLButtonElement>("#add-new-entry")
 			addEntryButton.onClick {
 				if (trackedYouTubeAccounts.size >= 5) {
-					Stuff.showPremiumFeatureModal()
+					Stuff.showPremiumFeatureModal {
+						h2 {
+							+ "Adicione todos os seus amigos!"
+						}
+						p {
+							+ "Faça upgrade para o Plano Essencial para poder adicionar mais canais!"
+						}
+					}
 					return@onClick
 				}
 
@@ -92,7 +105,7 @@ class YouTubeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 	}
 
 	@ImplicitReflectionSerializer
-	private fun updateTrackedYouTubeAccountsList(guild: ServerConfig.Guild) {
+	private fun updateTrackedYouTubeAccountsList(guild: PartialGuildConfiguration) {
 		val trackedDiv = document.select<HTMLDivElement>(".tracked-youtube-accounts")
 
 		trackedDiv.clear()
@@ -117,7 +130,7 @@ class YouTubeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 	}
 
 	@ImplicitReflectionSerializer
-	fun TagConsumer<HTMLElement>.createTrackedYouTubeAccountEntry(guild: ServerConfig.Guild, trackedYouTubeAccount: ServerConfig.TrackedYouTubeAccount) {
+	private fun TagConsumer<HTMLElement>.createTrackedYouTubeAccountEntry(guild: PartialGuildConfiguration, trackedYouTubeAccount: ServerConfig.TrackedYouTubeAccount) {
 		this.div(classes = "discord-generic-entry timer-entry") {
 			attributes["data-youtube-account"] = trackedYouTubeAccount.youTubeChannelId
 
@@ -191,7 +204,7 @@ class YouTubeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 	}
 
 	@ImplicitReflectionSerializer
-	private fun editTrackedYouTubeAccount(guild: ServerConfig.Guild, accountInfo: YouTubeAccountInfo?, trackedYouTubeAccount: ServerConfig.TrackedYouTubeAccount) {
+	private fun editTrackedYouTubeAccount(guild: PartialGuildConfiguration, accountInfo: YouTubeAccountInfo?, trackedYouTubeAccount: ServerConfig.TrackedYouTubeAccount) {
 		val modal = TingleModal(
 				TingleOptions(
 						footer = true,
@@ -300,6 +313,19 @@ class YouTubeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 									style = "box-sizing: border-box !important; width: 100%;"
 
 									+trackedYouTubeAccount.message
+								}
+
+								createToggle(
+										"Utilizar Webhooks"
+								) {
+									Stuff.showPremiumFeatureModal {
+										h2 {
+											+ "Seja diferente d e diferente!"
+										}
+										p {
+											+ "Faça upgrade para o Plano Recomendado para poder customizar o nome e avatar as notificações!"
+										}
+									}
 								}
 							}
 						}

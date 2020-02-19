@@ -11,12 +11,13 @@ abstract class LocalizedRoute(loritta: LorittaDiscord, val originalPath: String)
 
 		// Pegar a locale da URL e, caso não existir, faça fallback para o padrão BR
 		val locale = loritta.locales.values.firstOrNull { it.path == localeIdFromPath }
-				?: loritta.locales.getValue("default")
 
-		return onLocalizedRequest(
-				call,
-				locale
-		)
+		if (locale != null) {
+			return onLocalizedRequest(
+					call,
+					locale
+			)
+		}
 	}
 
 	abstract suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale)

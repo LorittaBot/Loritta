@@ -11,10 +11,7 @@ import io.ktor.features.StatusPages
 import io.ktor.http.CacheControl
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.content.CachingOptions
-import io.ktor.http.content.files
-import io.ktor.http.content.static
-import io.ktor.http.content.staticRootFolder
+import io.ktor.http.content.*
 import io.ktor.request.httpMethod
 import io.ktor.request.path
 import io.ktor.request.uri
@@ -138,9 +135,15 @@ class LorittaWebsite(val loritta: Loritta) {
 			}
 
 			routing {
+				trace { logger.info(it.buildText()) }
+
 				static {
 					staticRootFolder = File("${config.websiteFolder}/static/")
 					files(".")
+				}
+
+				File("${config.websiteFolder}/static/").listFiles().filter { it.isFile }.forEach {
+					file(it.name, it)
 				}
 
 				for (route in (routes + loritta.pluginManager.plugins.filterIsInstance<LorittaDiscordPlugin>().flatMap { it.routes })) {

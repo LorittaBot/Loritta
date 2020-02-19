@@ -8,11 +8,7 @@ import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.tables.TrackedTwitchAccounts
 import net.perfectdreams.loritta.tables.TrackedTwitterAccounts
-import net.perfectdreams.loritta.tables.TrackedYouTubeAccounts
-import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -22,7 +18,7 @@ object TwitterConfigTransformer : ConfigTransformer {
     override val payloadType: String = "twitter"
     override val configKey: String = "trackedTwitterAccounts"
 
-    override fun fromJson(guild: Guild, serverConfig: ServerConfig, payload: JsonObject) {
+    override suspend fun fromJson(guild: Guild, serverConfig: ServerConfig, payload: JsonObject) {
         transaction(Databases.loritta) {
             TrackedTwitterAccounts.deleteWhere {
                 TrackedTwitterAccounts.guildId eq guild.idLong
@@ -43,7 +39,7 @@ object TwitterConfigTransformer : ConfigTransformer {
         lorittaShards.queryMasterLorittaCluster("/api/v1/twitter/update-stream")
     }
 
-    override fun toJson(guild: Guild, serverConfig: ServerConfig): JsonElement {
+    override suspend fun toJson(guild: Guild, serverConfig: ServerConfig): JsonElement {
         return transaction(Databases.loritta) {
             val array = JsonArray()
 

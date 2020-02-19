@@ -191,4 +191,10 @@ class MigrationTool(val discordConfig: GeneralDiscordConfig, val discordInstance
 
 		println("Sucesso! $totalChannelsMigrated canais da Twitch foram migrados ;3")
 	}
+
+	fun migrateDonationKeys() {
+		val loritta = Loritta(discordConfig, discordInstanceConfig, config, instanceConfig)
+
+		loritta.initPostgreSql()
+	}
 }

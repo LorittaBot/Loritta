@@ -125,8 +125,8 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 					if (specialCase && mutualGuilds.any { it["id"].string.toLong() == config.id.value })
 						continue
 
-					val donationKey = config.donationKey
-					if (donationKey != null && donationKey.isActive() && donationKey.value >= LorittaPrices.CUSTOM_BADGE) {
+					val donationKeysValue = config.getActiveDonationKeysValue()
+					if (donationKeysValue >= LorittaPrices.CUSTOM_BADGE) {
 						val badgeFile = File(Loritta.ASSETS, "badges/custom/${config.guildId}.png")
 
 						if (badgeFile.exists()) {

@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.utils.jsonParser
 import org.jetbrains.exposed.dao.LongIdTable
 
 object DonationKeys : LongIdTable() {
+	val activeIn = optReference("active_in", ServerConfigs)
 	val userId = long("user")
 	val value = double("value")
 	val expiresAt = long("expires_at")

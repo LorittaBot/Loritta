@@ -213,7 +213,6 @@ class CommandManager {
 		commandMap.add(LorittaBanCommand())
 		commandMap.add(LorittaUnbanCommand())
 		commandMap.add(LoriServerListConfigCommand())
-		commandMap.add(TicTacToeCommand())
 		commandMap.add(EvalKotlinCommand())
 		if (loritta.config.loritta.environment == EnvironmentType.CANARY)
 			commandMap.add(AntiRaidCommand())
@@ -354,13 +353,8 @@ class CommandManager {
 
 				var cooldown = command.cooldown
 				val donatorPaid = loritta.getActiveMoneyFromDonations(ev.author.idLong)
-				val guildPaid = transaction(Databases.loritta) {
-					val guildId = ev.guild?.idLong
-					if (guildId != null)
-						loritta.getOrCreateServerConfig(guildId).donationKey?.value
-					else
-						null
-				} ?: 0.0
+				val guildId = ev.guild?.idLong
+				val guildPaid = guildId?.let { serverConfig.getActiveDonationKeysValue() } ?: 0.0
 
 				if (donatorPaid >= 39.99 || guildPaid >= 59.99) {
 					cooldown /= 2
@@ -523,7 +517,7 @@ class CommandManager {
 
 					ExecutedCommandsLog.insert {
 						it[userId] = lorittaUser.user.idLong
-						it[guildId] = if (ev.message.isFromGuild) ev.message.guild.idLong else null
+						it[ExecutedCommandsLog.guildId] = if (ev.message.isFromGuild) ev.message.guild.idLong else null
 						it[channelId] = ev.message.channel.idLong
 						it[sentAt] = System.currentTimeMillis()
 						it[ExecutedCommandsLog.command] = command::class.simpleName ?: "UnknownCommand"

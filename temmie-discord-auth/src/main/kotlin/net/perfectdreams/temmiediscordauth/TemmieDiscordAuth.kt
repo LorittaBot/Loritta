@@ -1,11 +1,14 @@
 package net.perfectdreams.temmiediscordauth
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
+import com.github.salomonbrys.kotson.fromJson
+import com.github.salomonbrys.kotson.long
+import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.string
+import com.google.gson.Gson
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
+import com.google.gson.annotations.SerializedName
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.header
@@ -16,6 +19,9 @@ import io.ktor.http.Parameters
 import io.ktor.http.content.TextContent
 import io.ktor.http.formUrlEncode
 import io.ktor.http.userAgent
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 
 class TemmieDiscordAuth(val clientId: String,
@@ -35,15 +41,18 @@ class TemmieDiscordAuth(val clientId: String,
 		private const val USER_GUILDS_URL = "$USER_IDENTIFICATION_URL/guilds"
 		private const val TOKEN_BASE_URL = "$PREFIX/oauth2/token"
 		private const val USER_AGENT = "Loritta-Morenitta-Discord-Auth/1.0"
-		private val mapper = ObjectMapper()
+		private val gson = Gson()
 		private val logger = KotlinLogging.logger {}
 	}
+
+	private val mutex = Mutex()
 
 	val http = HttpClient {
 		this.expectSuccess = false
 	}
 
-	suspend fun doTokenExchange() {
+	suspend fun doTokenExchange(): JsonObject {
+		logger.info { "doTokenExchange()" }
 		val authCode = authCode ?: throw RuntimeException("Trying to do token exchange without authCode!")
 
 		val parameters = Parameters.build {
@@ -55,24 +64,29 @@ class TemmieDiscordAuth(val clientId: String,
 			append("scope", scope.joinToString(" "))
 		}
 
-		val result = http.post<String> {
-			url(TOKEN_BASE_URL)
-			userAgent(USER_AGENT)
+		return doStuff {
+			val result = http.post<String> {
+				url(TOKEN_BASE_URL)
+				userAgent(USER_AGENT)
 
-			body = TextContent(parameters.formUrlEncode(), ContentType.Application.FormUrlEncoded)
+				body = TextContent(parameters.formUrlEncode(), ContentType.Application.FormUrlEncoded)
+			}
+
+			logger.info { result }
+
+			val tree = JsonParser.parseString(result).asJsonObject
+
+			if (tree.has("error"))
+				throw TokenExchangeException("Error while exchanging token: ${tree["error"].asString}")
+
+			readTokenPayload(tree)
+
+			tree
 		}
-
-		logger.debug { result }
-
-		val tree = mapper.readTree(result)
-
-		if (tree["error"]?.textValue() != null)
-			throw TokenExchangeException("Error while exchanging token: ${tree["error"].textValue()}")
-
-		readTokenPayload(tree)
 	}
 
 	suspend fun refreshToken() {
+		logger.info { "refreshToken()" }
 		val refreshToken = refreshToken ?: throw RuntimeException()
 
 		val parameters = Parameters.build {
@@ -84,123 +98,193 @@ class TemmieDiscordAuth(val clientId: String,
 			append("scope", scope.joinToString(" "))
 		}
 
-		val result = http.post<String> {
-			url(TOKEN_BASE_URL)
-			userAgent(USER_AGENT)
+		doStuff {
+			val result = http.post<String> {
+				url(TOKEN_BASE_URL)
+				userAgent(USER_AGENT)
 
-			body = TextContent(parameters.formUrlEncode(), ContentType.Application.FormUrlEncoded)
+				body = TextContent(parameters.formUrlEncode(), ContentType.Application.FormUrlEncoded)
+			}
+
+			logger.info { result }
+
+			val tree = JsonParser.parseString(result).asJsonObject
+
+			if (tree.has("error"))
+				throw TokenExchangeException("Error while exchanging token: ${tree["error"].asString}")
+
+			val resultAsJson = JsonParser.parseString(result)
+			checkForRateLimit(resultAsJson)
+
+			readTokenPayload(resultAsJson.obj)
 		}
-
-		logger.debug { result }
-
-		val tree = mapper.readTree(result)
-
-		if (tree["error"]?.textValue() != null)
-			throw TokenExchangeException("Error while exchanging token: ${tree["error"].textValue()}")
-
-		readTokenPayload(tree)
 	}
 
 	suspend fun getUserIdentification(): UserIdentification {
-		val result = http.get<String> {
-			url(USER_IDENTIFICATION_URL)
-			userAgent(USER_AGENT)
-			header("Authorization", "Bearer $accessToken")
+		logger.info { "getUserIdentification()" }
+		return doStuff {
+			val result = http.get<String> {
+				url(USER_IDENTIFICATION_URL)
+				userAgent(USER_AGENT)
+				header("Authorization", "Bearer $accessToken")
+			}
+
+			logger.info { result }
+
+			val resultAsJson = JsonParser.parseString(result)
+			checkForRateLimit(resultAsJson)
+
+			return@doStuff gson.fromJson<UserIdentification>(resultAsJson)
 		}
-
-		logger.debug { result }
-
-		return mapper.readValue(result)
 	}
 
 	suspend fun getUserGuilds(): List<Guild> {
-		val result = http.get<String> {
-			url(USER_GUILDS_URL)
-			userAgent(USER_AGENT)
-			header("Authorization", "Bearer $accessToken")
+		logger.info { "getUserGuilds()" }
+		return doStuff {
+			val result = http.get<String> {
+				url(USER_GUILDS_URL)
+				userAgent(USER_AGENT)
+				header("Authorization", "Bearer $accessToken")
+			}
+
+			logger.info { result }
+
+			val resultAsJson = JsonParser.parseString(result)
+			checkForRateLimit(resultAsJson)
+
+			return@doStuff gson.fromJson<List<Guild>>(result)
 		}
-
-		logger.debug { result }
-
-		return mapper.readValue(result)
 	}
 
 	suspend fun getUserConnections(): List<Connection> {
-		val result = http.get<String> {
-			url(CONNECTIONS_URL)
-			userAgent(USER_AGENT)
-			header("Authorization", "Bearer $accessToken")
+		logger.info { "getUserConnections()" }
+		return doStuff {
+			val result = http.get<String> {
+				url(CONNECTIONS_URL)
+				userAgent(USER_AGENT)
+				header("Authorization", "Bearer $accessToken")
+			}
+
+			logger.info { result }
+
+			val resultAsJson = JsonParser.parseString(result)
+			checkForRateLimit(resultAsJson)
+
+			return@doStuff gson.fromJson<List<Connection>>(result)
 		}
-
-		logger.debug { result }
-
-		return mapper.readValue(result)
 	}
 
-	private fun readTokenPayload(payload: JsonNode) {
-		accessToken = payload["access_token"].textValue()
-		refreshToken = payload["refresh_token"].textValue()
-		expiresIn = payload["expires_in"].longValue()
+	private suspend fun refreshTokenIfNeeded() {
+		logger.info { "refreshTokenIfNeeded()" }
+		val generatedAt = generatedAt
+		val expiresIn = expiresIn
+
+		if (generatedAt != null && expiresIn != null) {
+			if (System.currentTimeMillis() >= generatedAt + expiresIn)
+				NeedsRefreshException()
+		}
+
+		return
+	}
+
+	private suspend fun <T> doStuff(callback: suspend () -> (T)): T {
+		logger.info { "doStuff(...) mutex locked? ${mutex.isLocked}" }
+		return try {
+			mutex.withLock {
+				callback.invoke()
+			}
+		} catch (e: RateLimitedException) {
+			logger.info { "rate limited exception! locked? ${mutex.isLocked}" }
+			return doStuff(callback)
+		} catch (e: NeedsRefreshException) {
+			logger.info { "refresh exception!" }
+			mutex.withLock {
+				refreshToken()
+			}
+			doStuff(callback)
+		}
+	}
+
+	private fun readTokenPayload(payload: JsonObject) {
+		accessToken = payload["access_token"].string
+		refreshToken = payload["refresh_token"].string
+		expiresIn = payload["expires_in"].long
 		generatedAt = System.currentTimeMillis()
 	}
 
+	private suspend fun checkForRateLimit(element: JsonElement): Boolean {
+		if (element.isJsonObject) {
+			val asObject = element.obj
+			if (asObject.has("retry_after")) {
+				val retryAfter = asObject["retry_after"].long
+
+				logger.info { "Got rate limited, oof! Retry After: $retryAfter" }
+				// oof, ratelimited!
+				delay(retryAfter)
+				throw RateLimitedException()
+			}
+		}
+
+		return false
+	}
+	
 	class TokenExchangeException(message: String) : RuntimeException(message)
 
-	@JsonIgnoreProperties(ignoreUnknown = true)
-	class UserIdentification @JsonCreator constructor(
-			@JsonProperty("id")
+	class UserIdentification constructor(
+			@SerializedName("id")
 			val id: String,
-			@JsonProperty("username")
+			@SerializedName("username")
 			val username: String,
-			@JsonProperty("discriminator")
+			@SerializedName("discriminator")
 			val discriminator: String,
-			@JsonProperty("avatar")
+			@SerializedName("avatar")
 			val avatar: String?,
-			@JsonProperty("bot")
+			@SerializedName("bot")
 			val bot: Boolean?,
-			@JsonProperty("mfa_enabled")
+			@SerializedName("mfa_enabled")
 			val mfaEnabled: Boolean?,
-			@JsonProperty("locale")
+			@SerializedName("locale")
 			val locale: String?,
-			@JsonProperty("verified")
+			@SerializedName("verified")
 			val verified: Boolean,
-			@JsonProperty("email")
+			@SerializedName("email")
 			val email: String?,
-			@JsonProperty("flags")
+			@SerializedName("flags")
 			val flags: Int?,
-			@JsonProperty("premium_type")
+			@SerializedName("premium_type")
 			val premiumType: Int?
 	)
 
-	@JsonIgnoreProperties(ignoreUnknown = true)
-	class Guild @JsonCreator constructor(
-			@JsonProperty("id")
+	class Guild constructor(
+			@SerializedName("id")
 			val id: String,
-			@JsonProperty("name")
+			@SerializedName("name")
 			val name: String,
-			@JsonProperty("icon")
+			@SerializedName("icon")
 			val icon: String?,
-			@JsonProperty("owner")
+			@SerializedName("owner")
 			val owner: Boolean,
-			@JsonProperty("permissions")
+			@SerializedName("permissions")
 			val permissions: Int
 	)
 
-	@JsonIgnoreProperties(ignoreUnknown = true)
-	class Connection @JsonCreator constructor(
-			@JsonProperty("id")
+	class Connection constructor(
+			@SerializedName("id")
 			val id: String,
-			@JsonProperty("name")
+			@SerializedName("name")
 			val name: String,
-			@JsonProperty("type")
+			@SerializedName("type")
 			val type: String,
-			@JsonProperty("verified")
+			@SerializedName("verified")
 			val verified: Boolean,
-			@JsonProperty("friend_sync")
+			@SerializedName("friend_sync")
 			val friendSync: Boolean,
-			@JsonProperty("show_activity")
+			@SerializedName("show_activity")
 			val showActivity: Boolean,
-			@JsonProperty("visibility")
+			@SerializedName("visibility")
 			val visibility: Int
 	)
+
+	private class RateLimitedException : RuntimeException()
+	private class NeedsRefreshException : RuntimeException()
 }

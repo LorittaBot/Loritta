@@ -2,10 +2,7 @@ package net.perfectdreams.loritta.website
 
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.routes.*
-import net.perfectdreams.loritta.website.routes.api.v1.callbacks.GetPubSubHubbubCallbackRoute
-import net.perfectdreams.loritta.website.routes.api.v1.callbacks.PostDiscordBotsCallbackRoute
-import net.perfectdreams.loritta.website.routes.api.v1.callbacks.PostMercadoPagoCallbackRoute
-import net.perfectdreams.loritta.website.routes.api.v1.callbacks.PostPubSubHubbubCallbackRoute
+import net.perfectdreams.loritta.website.routes.api.v1.callbacks.*
 import net.perfectdreams.loritta.website.routes.api.v1.economy.GetLoriDailyRewardRoute
 import net.perfectdreams.loritta.website.routes.api.v1.economy.GetLoriDailyRewardStatusRoute
 import net.perfectdreams.loritta.website.routes.api.v1.economy.PostTransferBalanceExternalRoute
@@ -83,6 +80,7 @@ object DefaultRoutes {
 			PostDiscordBotsCallbackRoute(loritta),
 			PostMercadoPagoCallbackRoute(loritta),
 			PostPubSubHubbubCallbackRoute(loritta),
+			CreateWebhookRoute(loritta),
 
 			// Economy
 			GetLoriDailyRewardRoute(loritta),

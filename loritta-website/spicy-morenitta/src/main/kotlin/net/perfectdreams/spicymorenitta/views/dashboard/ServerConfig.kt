@@ -7,14 +7,14 @@ import utils.LoriColor
 object ServerConfig {
 	@Serializable
 	class MiniGuild(
+			val id: Long,
 			val name: String,
 			@Optional val iconUrl: String? = null
 	)
 
 	@Serializable
-	class Guild(
+	class GeneralConfig(
 			// É deserializado para String pois JavaScript é burro e não funciona direito com Longs
-			val name: String,
 			val localeId: String,
 			val commandPrefix: String,
 			val deleteMessageAfterCommand: Boolean,
@@ -23,7 +23,14 @@ object ServerConfig {
 			val blacklistedChannels: Array<Long>,
 			val warnIfBlacklisted: Boolean,
 			@Optional
-			val blacklistedWarning: String? = null,
+			val blacklistedWarning: String? = null
+	)
+
+	@Serializable
+	class Guild(
+			// É deserializado para String pois JavaScript é burro e não funciona direito com Longs
+			val name: String,
+			val general: GeneralConfig,
 			val selfMember: SelfMember,
 			@Optional val donationKey: DonationKey? = null,
 			val donationConfig: DonationConfig,
@@ -49,11 +56,11 @@ object ServerConfig {
 
 	@Serializable
 	class DonationKey(
-			val id: String,
+			val id: Long,
 			val value: Double,
 			@Optional val user: SelfMember? = null,
 			val expiresAt: Long,
-			@Optional val usesKey: MiniGuild? = null
+			@Optional val activeIn: MiniGuild? = null
 	)
 
 	@Serializable

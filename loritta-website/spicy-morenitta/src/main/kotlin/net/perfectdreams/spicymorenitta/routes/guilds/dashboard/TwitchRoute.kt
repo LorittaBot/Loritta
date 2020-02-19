@@ -42,6 +42,12 @@ class TwitchRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{g
 		private const val LOCALE_PREFIX = "modules.twitch"
 	}
 
+	@Serializable
+	class PartialGuildConfiguration(
+			val textChannels: List<ServerConfig.TextChannel>,
+			val trackedTwitchChannels: Array<ServerConfig.TrackedTwitchAccount>
+	)
+
 	val trackedTwitchAccounts = mutableListOf<ServerConfig.TrackedTwitchAccount>()
 	val cachedChannelByUserId = mutableMapOf<Long, TwitchAccountInfo>()
 	val cachedChannelByUserLogin = mutableMapOf<String, TwitchAccountInfo>()
@@ -55,7 +61,7 @@ class TwitchRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{g
 	@ImplicitReflectionSerializer
 	override fun onRender(call: ApplicationCall) {
 		launchWithLoadingScreenAndFixContent(call) {
-			val guild = DashboardUtils.retrieveGuildConfiguration(call.parameters["guildid"]!!)
+			val guild = DashboardUtils.retrievePartialGuildConfiguration<PartialGuildConfiguration>(call.parameters["guildid"]!!, "twitch", "textchannels")
 			switchContentAndFixLeftSidebarScroll(call)
 
 			document.select<HTMLButtonElement>("#save-button").onClick {
@@ -95,7 +101,7 @@ class TwitchRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{g
 	}
 
 	@ImplicitReflectionSerializer
-	private fun updateTrackedTwitchAccountsList(guild: ServerConfig.Guild) {
+	private fun updateTrackedTwitchAccountsList(guild: PartialGuildConfiguration) {
 		val trackedDiv = document.select<HTMLDivElement>(".tracked-twitch-accounts")
 
 		trackedDiv.clear()
@@ -120,7 +126,7 @@ class TwitchRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{g
 	}
 
 	@ImplicitReflectionSerializer
-	fun TagConsumer<HTMLElement>.createTrackedTwitchAccountEntry(guild: ServerConfig.Guild, trackedTwitchAccount: ServerConfig.TrackedTwitchAccount) {
+	fun TagConsumer<HTMLElement>.createTrackedTwitchAccountEntry(guild: PartialGuildConfiguration, trackedTwitchAccount: ServerConfig.TrackedTwitchAccount) {
 		this.div(classes = "discord-generic-entry timer-entry") {
 			attributes["data-twitch-account"] = trackedTwitchAccount.twitchUserId.toString()
 
@@ -194,7 +200,7 @@ class TwitchRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{g
 	}
 
 	@ImplicitReflectionSerializer
-	private fun editTrackedTwitchAccount(guild: ServerConfig.Guild, accountInfo: TwitchAccountInfo?, trackedTwitchAccount: ServerConfig.TrackedTwitchAccount) {
+	private fun editTrackedTwitchAccount(guild: PartialGuildConfiguration, accountInfo: TwitchAccountInfo?, trackedTwitchAccount: ServerConfig.TrackedTwitchAccount) {
 		val modal = TingleModal(
 				TingleOptions(
 						footer = true,

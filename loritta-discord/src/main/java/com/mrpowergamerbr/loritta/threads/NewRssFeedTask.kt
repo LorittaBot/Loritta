@@ -43,8 +43,9 @@ class NewRssFeedTask : Runnable {
 
 			for (feed in allFeeds) {
 				val serverConfig = loritta.getOrCreateServerConfig(feed[TrackedRssFeeds.guildId])
+				val donationKeyValues = serverConfig.getActiveDonationKeysValue()
 
-				if (LorittaPrices.CUSTOM_RSS_FEEDS > (serverConfig.donationKey?.value ?: 0.0)) {
+				if (LorittaPrices.CUSTOM_RSS_FEEDS > donationKeyValues) {
 					// Usuário não é um doador! Será que nós devemos verificar essa feed?
 					val feedUrl = feed[TrackedRssFeeds.feedUrl]
 

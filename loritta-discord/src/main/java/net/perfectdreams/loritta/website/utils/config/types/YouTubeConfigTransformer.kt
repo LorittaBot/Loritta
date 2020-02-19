@@ -8,7 +8,6 @@ import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.tables.TrackedYouTubeAccounts
-import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -18,7 +17,7 @@ object YouTubeConfigTransformer : ConfigTransformer {
     override val payloadType: String = "youtube"
     override val configKey: String = "trackedYouTubeChannels"
 
-    override fun fromJson(guild: Guild, serverConfig: ServerConfig, payload: JsonObject) {
+    override suspend fun fromJson(guild: Guild, serverConfig: ServerConfig, payload: JsonObject) {
         transaction(Databases.loritta) {
             TrackedYouTubeAccounts.deleteWhere {
                 TrackedYouTubeAccounts.guildId eq guild.idLong
@@ -37,7 +36,7 @@ object YouTubeConfigTransformer : ConfigTransformer {
         }
     }
 
-    override fun toJson(guild: Guild, serverConfig: ServerConfig): JsonElement {
+    override suspend fun toJson(guild: Guild, serverConfig: ServerConfig): JsonElement {
         return transaction(Databases.loritta) {
             val array = JsonArray()
 
