@@ -135,8 +135,6 @@ class LorittaWebsite(val loritta: Loritta) {
 			}
 
 			routing {
-				trace { logger.info(it.buildText()) }
-
 				static {
 					staticRootFolder = File("${config.websiteFolder}/static/")
 					files(".")
