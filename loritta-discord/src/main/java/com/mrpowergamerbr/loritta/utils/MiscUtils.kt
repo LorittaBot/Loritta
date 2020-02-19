@@ -31,9 +31,8 @@ object MiscUtils {
 
 	fun getInviteId(url: String): String? {
 		val matcher = Constants.DISCORD_INVITE_PATTERN.matcher(url)
-		if (matcher.find()) {
+		if (matcher.find())
 			return matcher.group(3)
-		}
 		return null
 	}
 
@@ -52,15 +51,6 @@ object MiscUtils {
 			output = string.replace(url, "")
 		}
 		return output
-	}
-
-	fun isJSONValid(jsonInString: String): Boolean {
-		try {
-			GSON.fromJson(jsonInString, Any::class.java)
-			return true
-		} catch (ex: com.google.gson.JsonSyntaxException) {
-			return false
-		}
 	}
 
 	fun optimizeGIF(file: File, lossy: Int = 200) {

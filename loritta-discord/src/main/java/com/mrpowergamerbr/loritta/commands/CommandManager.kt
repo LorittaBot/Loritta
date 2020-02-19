@@ -228,10 +228,6 @@ class CommandManager {
 			commandMap.add(ExchangeCommand())
 	}
 
-	fun getCommandsDisabledIn(conf: MongoServerConfig): List<AbstractCommand> {
-		return commandMap.filter { conf.disabledCommands.contains(it.javaClass.simpleName) }
-	}
-
 	suspend fun matches(ev: LorittaMessageEvent, serverConfig: ServerConfig, conf: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
 		val rawMessage = ev.message.contentRaw
 

@@ -33,9 +33,6 @@ import javax.imageio.stream.FileImageOutputStream
 
 class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCategory.SOCIAL) {
 	companion object {
-		var userVotes: MutableList<DiscordBotVote>? = null
-		var lastQuery = 0L
-
 		fun getUserBadges(user: User, profile: Profile, mutualGuilds: List<JsonElement> = runBlocking { lorittaShards.queryMutualGuildsInAllLorittaClusters(user.id) }): List<BufferedImage> {
 			// Para pegar o "Jogando" do usuário, nós precisamos pegar uma guild que o usuário está
 			fun hasRole(guildId: String, roleId: String): Boolean {

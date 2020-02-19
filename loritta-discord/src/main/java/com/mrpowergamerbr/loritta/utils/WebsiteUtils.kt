@@ -19,8 +19,6 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import kotlin.collections.set
 
 object WebsiteUtils {
-	private val logger = KotlinLogging.logger {}
-
 	/**
 	 * Creates an JSON object wrapping the error object
 	 *

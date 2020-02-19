@@ -18,7 +18,6 @@ class NashornDocsRoute(loritta: LorittaDiscord) : LocalizedRoute(loritta, "/lori
 				listOf(
 						NashornPebbleClassWrapper(NashornContext::class.java, "docsNashContext"),
 						NashornPebbleClassWrapper(NashornGuild::class.java, "docsNashGuild"),
-						NashornPebbleClassWrapper(NashornImage::class.java, "docsNashImage"),
 						NashornPebbleClassWrapper(NashornLorittaUser::class.java, "docsNashLorittaUser"),
 						NashornPebbleClassWrapper(NashornMember::class.java, "docsNashMember"),
 						NashornPebbleClassWrapper(NashornMessage::class.java, "docsNashMessage"),

@@ -19,7 +19,6 @@ class GeneralConfig @JsonCreator constructor(
 		@JsonProperty("mercadopago")
 		val mercadoPago: MercadoPagoConfig,
 		val parallaxCodeServer: ParallaxCodeServerConfig,
-		val socket: SocketConfig,
 		val youtube: YouTubeConfig,
 		val mashape: MashapeConfig,
 		val openWeatherMap: OpenWeatherMapConfig,

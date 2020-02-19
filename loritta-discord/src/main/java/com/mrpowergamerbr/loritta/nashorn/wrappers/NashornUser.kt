@@ -43,11 +43,6 @@ reply("Seu verdadeiro nome no Discord: " + author().getName() + "#" + author().g
 	}
 
 	@NashornCommand.NashornDocs()
-	fun getAvatar(): NashornImage {
-		return NashornImage(LorittaUtils.downloadImage(getAvatarUrl())!!)
-	}
-
-	@NashornCommand.NashornDocs()
 	fun getAsMention(): String {
 		return user.asMention
 	}

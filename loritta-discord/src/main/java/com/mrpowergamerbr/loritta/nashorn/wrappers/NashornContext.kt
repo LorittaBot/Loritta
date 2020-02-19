@@ -90,49 +90,6 @@ sendMessage("Olá, eu ainda me chamo Loritta!");
 		return runBlocking { NashornMessage(context.sendMessage(mensagem)) }
 	}
 
-	@Throws(NoSuchFieldException::class, IllegalAccessException::class, IOException::class)
-	@NashornCommand.NashornDocs("Envia uma imagem no canal de texto atual.",
-			"imagem, mensagem",
-"""
-var imagem = getImageFromContext(0); // Se você escrever "comando @Loritta", a imagem será o meu avatar!
-imagem.write("fofa!", cor(128, 128, 128), 20, 20);
-sendImage(imagem, "😄");
-""")
-	fun sendImage(imagem: NashornImage, mensagem: String = " "): NashornMessage {
-		var diff = System.currentTimeMillis() - lastMessageSent
-
-		if (sentMessages >= 3) {
-			if (diff > 2000) {
-				throw LorittaNashornException("Mais de 3 mensagens em menos de 2 segundos!")
-			} else {
-				lastMessageSent = 0L
-				sentMessages = 0
-			}
-		}
-
-		sentMessages++
-		lastMessageSent = System.currentTimeMillis()
-
-		// Reflection, já que nós não podemos acessar o BufferedImage
-		val field = imagem.javaClass.getDeclaredField("bufferedImage")
-		field.isAccessible = true
-		val bufferedImage = field.get(imagem) as BufferedImage
-
-		val os = ByteArrayOutputStream()
-		ImageIO.write(bufferedImage, "png", os)
-		val `is` = ByteArrayInputStream(os.toByteArray())
-
-		if (mensagem.contains(loritta.discordConfig.discord.clientToken, true))
-			securityViolation(context.guild.id)
-
-		runBlocking {
-			val message = NashornMessage(context.sendFile(`is`, "Loritta-NashornCommand.png", mensagem))
-		}
-		`is`.close()
-		`os`.close()
-		return message
-	}
-
 	@NashornCommand.NashornDocs(arguments = "delimitador")
 	fun joinArguments(delimitador: String = " "): String {
 		return context.args.joinToString(delimitador).trim { it <= ' ' }
@@ -187,28 +144,6 @@ sendImage(imagem, "😄");
 	@NashornCommand.NashornDocs()
 	fun getStrippedArguments(): Array<out String> {
 		return context.strippedArgs
-	}
-
-	@NashornCommand.NashornDocs(arguments = "x, y")
-	fun createImage(x: Int, y: Int): NashornImage {
-		return NashornImage(x, y)
-	}
-
-	@NashornCommand.NashornDocs("Retorna uma imagem dependendo do contexto atual.",
-			"index",
-	"""
-var imagem = getImageFromContext(0); // Se você escrever "comando @Loritta", a imagem será o meu avatar!
-imagem.write("fofa!", cor(128, 128, 128), 20, 20);
-sendImage(imagem, "😄");
-""")
-	fun getImageFromContext(argumento: Int): NashornImage? {
-		val bufferedImage = runBlocking { context.getImageAt(argumento) }
-
-		if (bufferedImage != null) {
-			return NashornImage(bufferedImage)
-		} else {
-			return null
-		}
 	}
 
 	@NashornCommand.NashornDocs(

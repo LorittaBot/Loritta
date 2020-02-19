@@ -75,10 +75,6 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 		return true
 	}
 
-	open fun getExtendedDescription(): String? {
-		return null
-	}
-
 	open fun needsToUploadFiles(): Boolean {
 		return false
 	}

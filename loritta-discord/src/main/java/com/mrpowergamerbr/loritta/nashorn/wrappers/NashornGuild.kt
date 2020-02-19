@@ -21,12 +21,6 @@ class NashornGuild(private val guild: Guild, private val serverConfig: MongoServ
 	}
 
 	@NashornCommand.NashornDocs()
-	fun getIcon(): NashornImage? {
-		val image = LorittaUtils.downloadImage(guild.iconUrl!!) ?: return null
-		return NashornImage(image)
-	}
-
-	@NashornCommand.NashornDocs()
 	fun getMembers(): MutableList<NashornLorittaUser> {
 		val members = mutableListOf<NashornLorittaUser>()
 

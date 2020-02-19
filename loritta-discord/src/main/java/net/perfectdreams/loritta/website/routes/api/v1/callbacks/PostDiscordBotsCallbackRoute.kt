@@ -54,8 +54,6 @@ class PostDiscordBotsCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta,
 		val type = payload["type"].string
 
 		if (type == "upvote" || (type == "test" && com.mrpowergamerbr.loritta.utils.loritta.config.isOwner(userId))) {
-			PerfilCommand.userVotes?.add(PerfilCommand.DiscordBotVote(userId.toString()))
-
 			WebsiteVoteUtils.addVote(
 					userId,
 					WebsiteVoteSource.DISCORD_BOTS
