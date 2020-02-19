@@ -1,5 +1,7 @@
 package com.mrpowergamerbr.loritta.tables
 
+import org.jetbrains.exposed.sql.ReferenceOption
+
 object Profiles : SnowflakeTable() {
 	val xp = long("xp").index()
 	val isBanned = bool("banned")
@@ -14,6 +16,6 @@ object Profiles : SnowflakeTable() {
 	var donationExpiresIn = long("donation_expires_in")
 	var isAfk = bool("isAfk")
 	var afkReason = text("afkReason").nullable()
-	var settings = reference("settings", UserSettings)
+	var settings = reference("settings", UserSettings, onDelete = ReferenceOption.CASCADE)
 	var marriage = reference("marriage", Marriages).nullable()
 }

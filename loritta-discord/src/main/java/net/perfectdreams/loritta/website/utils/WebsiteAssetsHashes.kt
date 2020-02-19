@@ -9,7 +9,7 @@ object WebsiteAssetsHashes {
 	val legacyWebsiteFileHashes = ConcurrentHashMap<String, String>()
 
 	fun getAssetHash(assetName: String): String {
-		return if (websiteFileHashes.contains(assetName)) {
+		return if (websiteFileHashes.containsKey(assetName)) {
 			websiteFileHashes[assetName]!!
 		} else {
 			val md5 = DigestUtils.md5Hex(File("${com.mrpowergamerbr.loritta.website.LorittaWebsite.FOLDER}/static/v2/$assetName").inputStream())
@@ -19,7 +19,7 @@ object WebsiteAssetsHashes {
 	}
 
 	fun getLegacyAssetHash(assetName: String): String {
-		return if (legacyWebsiteFileHashes.contains(assetName)) {
+		return if (legacyWebsiteFileHashes.containsKey(assetName)) {
 			legacyWebsiteFileHashes[assetName]!!
 		} else {
 			val md5 = DigestUtils.md5Hex(File("${com.mrpowergamerbr.loritta.website.LorittaWebsite.FOLDER}/static/$assetName").inputStream())

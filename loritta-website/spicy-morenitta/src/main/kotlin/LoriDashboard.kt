@@ -378,7 +378,7 @@ object LoriDashboard {
 				)
 
 				val dynamic = object{}.asDynamic()
-				dynamic.url = "${loriUrl}api/v1/guild/$guildId/send-message"
+				dynamic.url = "${loriUrl}api/v1/guilds/$guildId/send-message"
 				dynamic.type = "POST"
 				dynamic.dataType = "json"
 				dynamic.data = JSON.stringify(json)

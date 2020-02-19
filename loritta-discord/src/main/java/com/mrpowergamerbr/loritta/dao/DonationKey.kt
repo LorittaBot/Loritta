@@ -12,6 +12,7 @@ class DonationKey(id: EntityID<Long>) : LongEntity(id) {
     var value by DonationKeys.value
     var expiresAt by DonationKeys.expiresAt
 	var metadata by DonationKeys.metadata
+	val activeIn by ServerConfig optionalReferencedOn DonationKeys.activeIn
 
     /**
      * Returns if the key is still active

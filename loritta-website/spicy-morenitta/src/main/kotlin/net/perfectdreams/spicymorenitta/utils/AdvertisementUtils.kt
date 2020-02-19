@@ -23,7 +23,7 @@ object AdvertisementUtils : Logging {
 
 				val (adCount, rand) = replaceAllGoogleAdSenseAdsWithFakeAds()
 
-				val replacedAds = document.selectAll<HTMLElement>(".lori$rand-help-plz-banner")
+				val replacedAds = document.selectAll<HTMLElement>(".lori-$rand-help-plz-banner")
 				debug("There are ${replacedAds.size} replaced ads")
 
 				val hasAnyRemovedAds = replacedAds.any { it.style.display == "none" } || adCount > replacedAds.size
@@ -46,7 +46,7 @@ object AdvertisementUtils : Logging {
 			val parentElement = it.parentElement!!
 
 			parentElement.append {
-				img(src = "https://loritta.website/assets/img/lori_helpplz.png", classes = "lori$rand-help-plz-banner")
+				img(src = "https://loritta.website/assets/img/lori_helpplz.png", classes = "lori-$rand-help-plz-banner")
 			}
 		}
 

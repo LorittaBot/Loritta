@@ -15,9 +15,6 @@ import com.mrpowergamerbr.loritta.utils.extensions.trueIp
 import com.mrpowergamerbr.loritta.utils.extensions.urlQueryString
 import com.mrpowergamerbr.loritta.utils.extensions.valueOrNull
 import com.mrpowergamerbr.loritta.utils.gson
-import com.mrpowergamerbr.loritta.website.requests.routes.APIRoute
-import com.mrpowergamerbr.loritta.website.requests.routes.GuildRoute
-import com.mrpowergamerbr.loritta.website.requests.routes.UserRoute
 import com.mrpowergamerbr.loritta.website.views.GlobalHandler
 import kotlinx.html.HtmlBlockTag
 import mu.KotlinLogging
@@ -136,11 +133,6 @@ class LorittaWebsite(val loritta: Loritta, val websiteUrl: String, var frontendF
 			}
 		}
 
-		val requiresVariables = req.route().attributes().entries.firstOrNull { it.key == "loriRequiresVariables" }
-
-		if (requiresVariables != null)
-			WebsiteUtils.initializeVariables(req, locale, lorittaLocale, languageCode, req.route().attributes().entries.any { it.key == "loriForceReauthentication" })
-
 		val requiresAuth = req.route().attributes().entries.firstOrNull { it.key == "loriRequiresAuth" }
 
 		if (requiresAuth != null) {
@@ -161,10 +153,6 @@ class LorittaWebsite(val loritta: Loritta, val websiteUrl: String, var frontendF
 
 		chain.next(req, res)
 	}
-
-	use(APIRoute())
-	use(UserRoute())
-	use(GuildRoute())
 
 	/* for (route in loritta.pluginManager.plugins.flatMap { it.routes }) {
 		use(route)
@@ -201,7 +189,25 @@ class LorittaWebsite(val loritta: Loritta, val websiteUrl: String, var frontendF
 			return g.owner || isAdministrator || isManager
 		}
 
+		fun canManageGuild(g: net.perfectdreams.temmiediscordauth.TemmieDiscordAuth.Guild): Boolean {
+			val isAdministrator = g.permissions shr 3 and 1 == 1
+			val isManager = g.permissions shr 5 and 1 == 1
+			return g.owner || isAdministrator || isManager
+		}
+
 		fun getUserPermissionLevel(g: TemmieDiscordAuth.DiscordGuild): UserPermissionLevel {
+			val isAdministrator = g.permissions shr 3 and 1 == 1
+			val isManager = g.permissions shr 5 and 1 == 1
+
+			return when {
+				g.owner -> UserPermissionLevel.OWNER
+				isAdministrator -> UserPermissionLevel.ADMINISTRATOR
+				isManager -> UserPermissionLevel.MANAGER
+				else -> UserPermissionLevel.MEMBER
+			}
+		}
+
+		fun getUserPermissionLevel(g: net.perfectdreams.temmiediscordauth.TemmieDiscordAuth.Guild): UserPermissionLevel {
 			val isAdministrator = g.permissions shr 3 and 1 == 1
 			val isManager = g.permissions shr 5 and 1 == 1
 
@@ -264,8 +270,9 @@ fun evaluateKotlin(fileName: String, function: String, vararg args: Any?): HtmlB
 			import com.mrpowergamerbr.loritta.dao.*
 			import com.mrpowergamerbr.loritta.tables.*
 			import com.mrpowergamerbr.loritta.userdata.*
-			import com.mrpowergamerbr.loritta.oauth2.*
-			import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth.*
+			import net.perfectdreams.temmiediscordauth.*
+			import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth.*
+			import net.perfectdreams.loritta.website.session.*
 			import com.mrpowergamerbr.loritta.website.*
             import com.mrpowergamerbr.loritta.network.*
             import net.perfectdreams.loritta.tables.*

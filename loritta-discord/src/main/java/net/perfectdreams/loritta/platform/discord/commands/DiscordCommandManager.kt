@@ -313,9 +313,8 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
 
                 var cooldown = command.cooldown
                 val donatorPaid = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonations(ev.author.idLong)
-                val guildPaid = transaction(Databases.loritta) {
-                    com.mrpowergamerbr.loritta.utils.loritta.getOrCreateServerConfig(ev.author.idLong).donationKey?.value
-                } ?: 0.0
+                val guildId = ev.guild?.idLong
+                val guildPaid = guildId?.let { serverConfig.getActiveDonationKeysValue() } ?: 0.0
 
                 if (donatorPaid >= 39.99 || guildPaid >= 59.99) {
                     cooldown /= 2
@@ -472,7 +471,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
 
                     ExecutedCommandsLog.insert {
                         it[userId] = lorittaUser.user.idLong
-                        it[guildId] = if (ev.message.isFromGuild) ev.message.guild.idLong else null
+                        it[ExecutedCommandsLog.guildId] = if (ev.message.isFromGuild) ev.message.guild.idLong else null
                         it[channelId] = ev.message.channel.idLong
                         it[sentAt] = System.currentTimeMillis()
                         it[ExecutedCommandsLog.command] = command::class.simpleName ?: "UnknownCommand"

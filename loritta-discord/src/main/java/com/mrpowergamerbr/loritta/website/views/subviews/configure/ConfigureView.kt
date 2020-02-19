@@ -65,7 +65,6 @@ abstract class ConfigureView : ProtectedView() {
 		variables["guild"] = jdaGuild
 		variables["serverConfig"] = legacyServerConfig
 		// TODO: Remover isto quando for removido o "server-config-json" do website
-		variables["serverConfigJson"] = gson.toJson(WebsiteUtils.getServerConfigAsJson(jdaGuild, legacyServerConfig, userIdentification))
 		return renderConfiguration(req, res, path, variables, discordAuth, jdaGuild, legacyServerConfig)
 	}
 

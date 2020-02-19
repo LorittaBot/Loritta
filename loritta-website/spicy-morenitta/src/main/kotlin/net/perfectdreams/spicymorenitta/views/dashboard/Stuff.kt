@@ -1,10 +1,7 @@
 package net.perfectdreams.spicymorenitta.views.dashboard
 
-import kotlinx.html.div
+import kotlinx.html.*
 import kotlinx.html.dom.create
-import kotlinx.html.img
-import kotlinx.html.p
-import kotlinx.html.style
 import net.perfectdreams.spicymorenitta.utils.loriUrl
 import utils.TingleModal
 import utils.TingleOptions
@@ -12,7 +9,7 @@ import kotlin.browser.document
 import kotlin.browser.window
 
 object Stuff {
-    fun showPremiumFeatureModal() {
+    fun showPremiumFeatureModal(description: (DIV.() -> (Unit))? = null) {
         val modal = TingleModal(
                 TingleOptions(
                         footer = true,
@@ -33,18 +30,22 @@ object Stuff {
                             width = "250"
                         }
 
-                        p {
-                            + "Você encontrou uma função premium minha! Legal, né?"
-                        }
-                        p {
-                            + "Para ter esta função e muito mais, veja a minha lista de vantagens que você pode ganhar doando!"
+                        if (description != null) {
+                            description.invoke(this)
+                        } else {
+                            p {
+                                +"Você encontrou uma função premium minha! Legal, né?"
+                            }
+                            p {
+                                +"Para ter esta função e muito mais, veja a minha lista de vantagens que você pode ganhar doando!"
+                            }
                         }
                     }
                 }
         )
 
         modal.addFooterBtn("<i class=\"fas fa-gift\"></i> Vamos lá!", "button-discord button-discord-info pure-button button-discord-modal") {
-            window.location.href = "${loriUrl}donate"
+            window.open("${loriUrl}donate", "_blank")
         }
 
         modal.addFooterBtn("<i class=\"fas fa-times\"></i> Fechar", "button-discord pure-button button-discord-modal button-discord-modal-secondary-action") {

@@ -3,7 +3,7 @@ import kotlin.js.*
 
 object SaveStuff {
 	@JsName("prepareSave")
-	fun prepareSave(type: String, extras: ((payload: Json) -> Unit)? = null, showSaveScreen: Boolean = true, endpoint: String = "${loriUrl}api/v1/guild/$guildId/config/") {
+	fun prepareSave(type: String, extras: ((payload: Json) -> Unit)? = null, showSaveScreen: Boolean = true, endpoint: String = "${loriUrl}api/v1/guilds/$guildId/config/") {
 		println("Preparing saving stuff...")
 
 		val json = json()

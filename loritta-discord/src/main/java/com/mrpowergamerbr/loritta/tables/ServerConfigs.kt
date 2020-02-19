@@ -16,7 +16,7 @@ object ServerConfigs : SnowflakeTable() {
 	val blacklistedChannels = array<Long>("blacklisted_channels", LongColumnType()).default(arrayOf())
 	val warnIfBlacklisted = bool("warn_if_blacklisted").default(false)
 	val blacklistedWarning = text("blacklisted_warning").nullable()
-	val donationKey = optReference("donation_key", DonationKeys)
+	// val donationKey = optReference("donation_key", DonationKeys)
 	val donationConfig = optReference("donation_config", DonationConfigs, onDelete = ReferenceOption.CASCADE)
 	val birthdayConfig = optReference("birthday_config", BirthdayConfigs, onDelete = ReferenceOption.CASCADE)
 	val economyConfig = optReference("economy_config", EconomyConfigs, onDelete = ReferenceOption.CASCADE)

@@ -41,7 +41,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			fun hasRole(guildId: String, roleId: String): Boolean {
 				val cluster = DiscordUtils.getLorittaClusterForGuildId(guildId.toLong())
 
-				val usersWithRolesPayload = runBlocking { lorittaShards.queryCluster(cluster, "/api/v1/loritta/guild/$guildId/users-with-any-role/$roleId").await() }
+				val usersWithRolesPayload = runBlocking { lorittaShards.queryCluster(cluster, "/api/v1/guilds/$guildId/users-with-any-role/$roleId").await() }
 
 				val membersArray = usersWithRolesPayload["members"].nullArray ?: return false
 
@@ -125,8 +125,8 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 					if (specialCase && mutualGuilds.any { it["id"].string.toLong() == config.id.value })
 						continue
 
-					val donationKey = config.donationKey
-					if (donationKey != null && donationKey.isActive() && donationKey.value >= LorittaPrices.CUSTOM_BADGE) {
+					val donationKeysValue = config.getActiveDonationKeysValue()
+					if (donationKeysValue >= LorittaPrices.CUSTOM_BADGE) {
 						val badgeFile = File(Loritta.ASSETS, "badges/custom/${config.guildId}.png")
 
 						if (badgeFile.exists()) {

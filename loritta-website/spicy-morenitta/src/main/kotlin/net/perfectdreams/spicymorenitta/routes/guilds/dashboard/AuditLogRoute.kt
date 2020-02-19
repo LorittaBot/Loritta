@@ -31,7 +31,7 @@ class AuditLogRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/
 
         SpicyMorenitta.INSTANCE.launch {
             val result = http.get<String> {
-                url("${window.location.origin}/api/v1/guild/${call.parameters["guildid"]}/audit-log")
+                url("${window.location.origin}/api/v1/guilds/${call.parameters["guildid"]}/audit-log")
             }
 
             val list = kotlinx.serialization.json.JSON.nonstrict.parse<ServerConfig.WebAuditLogWrapper>(result)

@@ -18,7 +18,7 @@ import kotlin.js.json
 external val guildId: String
 
 object SaveUtils {
-	fun prepareSave(type: String, extras: ((payload: Json) -> Unit), showSaveScreen: Boolean = true, onFinish: ((HttpResponse) -> (Unit))? = null, endpoint: String = "${loriUrl}api/v1/guild/$guildId/config") {
+	fun prepareSave(type: String, extras: ((payload: Json) -> Unit), showSaveScreen: Boolean = true, onFinish: ((HttpResponse) -> (Unit))? = null, endpoint: String = "${loriUrl}api/v1/guilds/$guildId/config") {
 		println("Preparing saving stuff...")
 
 		val json = json()

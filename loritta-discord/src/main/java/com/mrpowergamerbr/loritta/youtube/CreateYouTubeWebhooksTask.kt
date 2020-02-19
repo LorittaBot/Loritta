@@ -3,9 +3,8 @@ package com.mrpowergamerbr.loritta.youtube
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.fromJson
-import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.CoroutineStart
@@ -13,6 +12,9 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import net.perfectdreams.loritta.tables.TrackedYouTubeAccounts
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
@@ -32,38 +34,16 @@ class CreateYouTubeWebhooksTask : Runnable {
 
 		try {
 			// Servidores que usam o módulo do YouTube
-			val servers = loritta.serversColl.find(
-					Filters.gt("youTubeConfig.channels", listOf<Any>())
-			)
+			val allChannelIds = transaction(Databases.loritta) {
+				TrackedYouTubeAccounts.slice(TrackedYouTubeAccounts.youTubeChannelId)
+						.selectAll()
+						.groupBy(TrackedYouTubeAccounts.youTubeChannelId)
+						.toMutableList()
+			}
 
 			// IDs dos canais a serem verificados
 			val channelIds = mutableSetOf<String>()
-
-			val list = mutableListOf<MongoServerConfig>()
-
-			logger.info("Verificando canais do YouTube de ${servers.count()} servidores...")
-
-			servers.iterator().use {
-				while (it.hasNext()) {
-					val server = it.next()
-					// val guild = lorittaShards.getGuildById(server.guildId) ?: continue
-					val youTubeConfig = server.youTubeConfig
-
-					for (channel in youTubeConfig.channels) {
-						if (channel.channelId == null)
-							continue
-						if (!channel.channelUrl!!.startsWith("http"))
-							continue
-						/* val textChannel = guild.getTextChannelByNullableId(channel.repostToChannelId) ?: continue
-
-						if (!textChannel.canTalk())
-							continue */
-
-						channelIds.add(channel.channelId!!)
-					}
-					list.add(server)
-				}
-			}
+			channelIds.addAll(allChannelIds.map { it[TrackedYouTubeAccounts.youTubeChannelId] })
 
 			channelIds.forEach {
 				// Caso o channel ID não esteja na map de lastNotified, vamos salvar o tempo atual nela (para evitar que anuncie coisas "do passado")
@@ -80,7 +60,7 @@ class CreateYouTubeWebhooksTask : Runnable {
 
 			val notCreatedYetChannels = mutableListOf<String>()
 
-			logger.info { "Existem ${channelIds.size} canais no YouTube que eu irei verificar! Atualmente existem ${youtubeWebhooks.size} webhooks criadas!" }
+			logger.info { "There are ${channelIds.size} YouTube channels for verification! Currently there is ${youtubeWebhooks.size} created webhooks!" }
 
 			for (channelId in channelIds) {
 				val webhook = youtubeWebhooks[channelId]
@@ -91,13 +71,13 @@ class CreateYouTubeWebhooksTask : Runnable {
 				}
 
 				if (System.currentTimeMillis() > webhook.createdAt + (webhook.lease * 1000)) {
-					logger.debug { "Webhook de ${channelId} expirou! Nós iremos recriar ela..." }
+					logger.debug { "${channelId}'s webhook expired! We will recreate it..." }
 					youtubeWebhooks.remove(channelId)
 					notCreatedYetChannels.add(channelId)
 				}
 			}
 
-			logger.info { "Irei criar ${notCreatedYetChannels.size} webhooks para canais no YouTube!" }
+			logger.info { "I will create ${notCreatedYetChannels.size} YouTube channel webhooks!" }
 
 			val webhooksToBeCreatedCount = notCreatedYetChannels.size
 
@@ -108,7 +88,7 @@ class CreateYouTubeWebhooksTask : Runnable {
 					try {
 						HttpRequest.post("https://pubsubhubbub.appspot.com/subscribe")
 								.form(mapOf(
-										"hub.callback" to "https://loritta.website/api/v1/callbacks/pubsubhubbub?type=ytvideo",
+										"hub.callback" to "${loritta.instanceConfig.loritta.website.url}api/v1/callbacks/pubsubhubbub?type=ytvideo",
 										"hub.lease_seconds" to "",
 										"hub.mode" to "unsubscribe",
 										"hub.secret" to loritta.config.mixer.webhookSecret,
@@ -121,7 +101,7 @@ class CreateYouTubeWebhooksTask : Runnable {
 						// E agora realmente iremos criar!
 						val code = HttpRequest.post("https://pubsubhubbub.appspot.com/subscribe")
 								.form(mapOf(
-										"hub.callback" to "https://loritta.website/api/v1/callbacks/pubsubhubbub?type=ytvideo",
+										"hub.callback" to "${loritta.instanceConfig.loritta.website.url}api/v1/callbacks/pubsubhubbub?type=ytvideo",
 										"hub.lease_seconds" to "",
 										"hub.mode" to "subscribe",
 										"hub.secret" to loritta.config.mixer.webhookSecret,
@@ -132,11 +112,11 @@ class CreateYouTubeWebhooksTask : Runnable {
 								.code()
 
 						if (code != 204 && code != 202) { // code 204 = noop, 202 = accepted (porque pelo visto o PubSubHubbub usa os dois
-							logger.error { "Erro ao tentar criar Webhook de ${channelId}! Código: ${code}" }
+							logger.error { "Something went wrong while creating ${channelId}'s webhook! Status Code: ${code}" }
 							return@async null
 						}
 
-						logger.debug { "Webhook de $channelId criada com sucesso! Atualmente ${webhookCount.incrementAndGet()}/${webhooksToBeCreatedCount} webhooks foram criadas!" }
+						logger.debug { "$channelId's webhook was sucessfully created! Currently there is ${webhookCount.incrementAndGet()}/${webhooksToBeCreatedCount} created webhooks!" }
 						return@async Pair(
 								channelId,
 								YouTubeWebhook(
@@ -145,7 +125,7 @@ class CreateYouTubeWebhooksTask : Runnable {
 								)
 						)
 					} catch (e: Exception) {
-						logger.error("Erro ao criar subscription no YouTube", e)
+						logger.error(e) { "Something went wrong when creating a YouTube subscription" }
 						null
 					}
 				}
@@ -163,7 +143,7 @@ class CreateYouTubeWebhooksTask : Runnable {
 				youtubeWebhookFile.writeText(gson.toJson(youtubeWebhooks))
 			}
 		} catch (e: Exception) {
-			logger.error("Erro ao processar vídeos do YouTube", e)
+			logger.error(e) { "Error while processing YouTube channels" }
 		}
 	}
 }

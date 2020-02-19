@@ -7,6 +7,7 @@ import kotlinx.html.dom.append
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.js.onInputFunction
 import kotlinx.serialization.ImplicitReflectionSerializer
+import kotlinx.serialization.Serializable
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.locale
@@ -24,10 +25,16 @@ import kotlin.dom.addClass
 import kotlin.dom.clear
 import kotlin.dom.removeClass
 
-class GeneralConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/dashboard/configure/{guildid}") {
+class GeneralConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{guildid}/configure") {
 	companion object {
-		private const val LOCALE_PREFIX = "modules.levelUp"
+		private const val LOCALE_PREFIX = "website.dashboard.general"
 	}
+
+	@Serializable
+	class PartialGuildConfiguration(
+			val general: ServerConfig.GeneralConfig,
+			val textChannels: List<ServerConfig.TextChannel>
+	)
 
 	val blacklistedChannels = mutableListOf<Long>()
 
@@ -69,8 +76,8 @@ class GeneralConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/d
 	@ImplicitReflectionSerializer
 	override fun onRender(call: ApplicationCall) {
 		launchWithLoadingScreenAndFixContent(call) {
-			val guild = DashboardUtils.retrieveGuildConfiguration(call.parameters["guildid"]!!)
-			blacklistedChannels.addAll(guild.blacklistedChannels)
+			val guild = DashboardUtils.retrievePartialGuildConfiguration<PartialGuildConfiguration>(call.parameters["guildid"]!!, "general", "textchannels")
+			blacklistedChannels.addAll(guild.general.blacklistedChannels)
 
 			switchContentAndFixLeftSidebarScroll(call)
 
@@ -86,16 +93,16 @@ class GeneralConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/d
 						}
 						div(classes = "pure-u-1 pure-u-md-2-3") {
 							div(classes = "flavourText") {
-								+ locale["website.dashboard.general.commandPrefix.title"]
+								+ locale["${LOCALE_PREFIX}.commandPrefix.title"]
 							}
 
 							div(classes = "toggleSubText") {
-								+ locale["website.dashboard.general.commandPrefix.subtext"]
+								+ locale["${LOCALE_PREFIX}.commandPrefix.subtext"]
 							}
 
 							input(type = InputType.text) {
 								id = "command-prefix"
-								value = guild.commandPrefix
+								value = guild.general.commandPrefix
 
 								onInputFunction = {
 									document.select<HTMLSpanElement>("#command-prefix-preview")
@@ -111,7 +118,7 @@ class GeneralConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/d
 								) {
 									span {
 										id = "command-prefix-preview"
-										+ guild.commandPrefix
+										+ guild.general.commandPrefix
 									}
 									span {
 										+ "ping"
@@ -144,38 +151,38 @@ class GeneralConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/d
 
 				div {
 					createToggle(
-							locale["website.dashboard.general.deleteMessagesAfterExecuting.title"],
-							locale["website.dashboard.general.deleteMessagesAfterExecuting.subtext"],
+							locale["${LOCALE_PREFIX}.deleteMessagesAfterExecuting.title"],
+							locale["${LOCALE_PREFIX}.deleteMessagesAfterExecuting.subtext"],
 							"delete-message-after-command",
-							guild.deleteMessageAfterCommand
+							guild.general.deleteMessageAfterCommand
 					)
 
 					hr {}
 
 					createToggle(
-							locale["website.dashboard.general.tellMissingPermissionOnAChannel.title"],
-							locale["website.dashboard.general.tellMissingPermissionOnAChannel.subtext"],
+							locale["${LOCALE_PREFIX}.tellMissingPermissionOnAChannel.title"],
+							locale["${LOCALE_PREFIX}.tellMissingPermissionOnAChannel.subtext"],
 							"warn-on-missing-permission",
-							guild.warnOnMissingPermission
+							guild.general.warnOnMissingPermission
 					)
 
 					hr {}
 
 					createToggle(
-							locale["website.dashboard.general.tellUserWhenUsingUnknownCommand.title"],
-							locale["website.dashboard.general.tellUserWhenUsingUnknownCommand.subtext"],
+							locale["${LOCALE_PREFIX}.tellUserWhenUsingUnknownCommand.title"],
+							locale["${LOCALE_PREFIX}.tellUserWhenUsingUnknownCommand.subtext"],
 							"warn-on-unknown-command",
-							guild.warnOnUnknownCommand
+							guild.general.warnOnUnknownCommand
 					)
 
 					hr {}
 
 					div(classes = "flavourText") {
-						+ locale["website.dashboard.general.blacklistedChannels.title"]
+						+ locale["${LOCALE_PREFIX}.blacklistedChannels.title"]
 					}
 
 					div(classes = "toggleSubText") {
-						+ locale["website.dashboard.general.blacklistedChannels.subtext"]
+						+ locale["${LOCALE_PREFIX}.blacklistedChannels.subtext"]
 					}
 
 					select {
@@ -212,10 +219,10 @@ class GeneralConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/d
 					hr {}
 
 					createToggle(
-							locale["website.dashboard.general.tellUserWhenUsingCommandsOnABlacklistedChannel.title"],
-							locale["website.dashboard.general.tellUserWhenUsingCommandsOnABlacklistedChannel.subtext"],
+							locale["${LOCALE_PREFIX}.tellUserWhenUsingCommandsOnABlacklistedChannel.title"],
+							locale["${LOCALE_PREFIX}.tellUserWhenUsingCommandsOnABlacklistedChannel.subtext"],
 							"warn-if-blacklisted",
-							guild.warnIfBlacklisted
+							guild.general.warnIfBlacklisted
 					) {
 						updateDisabledSections()
 					}
@@ -226,12 +233,12 @@ class GeneralConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/d
 						id = "hidden-if-disabled-blacklist"
 
 						div(classes = "flavourText") {
-							+ locale["website.dashboard.general.messageWhenUsingACommandInABlockedChannel.title"]
+							+ locale["${LOCALE_PREFIX}.messageWhenUsingACommandInABlockedChannel.title"]
 						}
 
 						textArea {
 							id = "blacklisted-warning"
-							+ (guild.blacklistedWarning ?: "{@user} Você não pode usar comandos no {@channel}, bobinho(a)")
+							+ (guild.general.blacklistedWarning ?: "{@user} Você não pode usar comandos no {@channel}, bobinho(a)")
 						}
 					}
 
@@ -276,7 +283,7 @@ class GeneralConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/d
 		}
 	}
 
-	fun updateBlacklistedChannelsList(guild: ServerConfig.Guild) {
+	fun updateBlacklistedChannelsList(guild: PartialGuildConfiguration) {
 		val list = document.select<HTMLDivElement>("#channel-blacklisted-list")
 
 		list.clear()

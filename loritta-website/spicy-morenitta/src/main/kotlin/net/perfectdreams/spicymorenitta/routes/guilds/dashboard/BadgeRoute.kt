@@ -2,12 +2,14 @@ package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
 
 import LoriDashboard
 import kotlinx.serialization.ImplicitReflectionSerializer
+import kotlinx.serialization.Serializable
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
 import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.launchWithLoadingScreenAndFixContent
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.switchContentAndFixLeftSidebarScroll
+import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import net.perfectdreams.spicymorenitta.views.dashboard.Stuff
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLInputElement
@@ -18,10 +20,16 @@ class BadgeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{gu
 	override val keepLoadingScreen: Boolean
 		get() = true
 
+	@Serializable
+	class PartialGuildConfiguration(
+			val activeDonationKeys: List<ServerConfig.DonationKey>,
+			val donationConfig: ServerConfig.DonationConfig
+	)
+
 	@ImplicitReflectionSerializer
 	override fun onRender(call: ApplicationCall) {
 		launchWithLoadingScreenAndFixContent(call) {
-			val guild = DashboardUtils.retrieveGuildConfiguration(call.parameters["guildid"]!!)
+			val guild = DashboardUtils.retrievePartialGuildConfiguration<DailyMultiplierRoute.PartialGuildConfiguration>(call.parameters["guildid"]!!, "donation", "activekeys")
 			switchContentAndFixLeftSidebarScroll(call)
 
 			document.select<HTMLDivElement>("#save-button").onClick {
@@ -31,7 +39,9 @@ class BadgeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{gu
 			(page.getElementById("cmn-toggle-1") as HTMLInputElement).checked = guild.donationConfig.customBadge
 
 			LoriDashboard.applyBlur("#hiddenIfDisabled", "#cmn-toggle-1") {
-				if (guild.donationKey == null || 19.99 > guild.donationKey.value) {
+				val donationValue = guild.activeDonationKeys.sumByDouble { it.value }
+
+				if (19.99 > donationValue) {
 					Stuff.showPremiumFeatureModal()
 					return@applyBlur false
 				}
@@ -57,7 +67,7 @@ class BadgeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{gu
 	}
 
 	fun save(base64Image: String?) {
-		SaveUtils.prepareSave("badge", extras = {
+		SaveUtils.prepareSave("donation", extras = {
 			it["customBadge"] = (page.getElementById("cmn-toggle-1") as HTMLInputElement).checked
 			it["badgeImage"] = base64Image
 		})

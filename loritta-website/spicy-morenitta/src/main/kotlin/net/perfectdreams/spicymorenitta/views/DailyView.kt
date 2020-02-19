@@ -24,7 +24,7 @@ object DailyView {
 	fun start() {
 		LoriDashboard.showLoadingBar("Carregando...")
 
-		jQuery.post("${loriUrl}api/v1/economy/daily-reward-status", { data, b, c ->
+		jQuery.get("${loriUrl}api/v1/economy/daily-reward-status", { data, b, c ->
 			println("Status data: ${JSON.stringify(data)}")
 
 			val status = data.unsafeCast<Json>()
@@ -82,7 +82,7 @@ object DailyView {
 
 					jq(".daily-reward-button").addClass("button-discord-disabled")
 
-					jQuery.post("${loriUrl}api/v1/economy/daily-reward?recaptcha=$response", { data, b, c ->
+					jQuery.get("${loriUrl}api/v1/economy/daily-reward?recaptcha=$response", { data, b, c ->
 						println("Daily Reward: " + JSON.stringify(data))
 
 						val json = data.unsafeCast<Json>()

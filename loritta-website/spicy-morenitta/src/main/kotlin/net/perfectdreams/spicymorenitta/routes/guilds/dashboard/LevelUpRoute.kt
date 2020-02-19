@@ -8,6 +8,7 @@ import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.stream.createHTML
 import kotlinx.serialization.ImplicitReflectionSerializer
+import kotlinx.serialization.Serializable
 import legacyLocale
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
@@ -32,6 +33,13 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 		private const val LOCALE_PREFIX = "modules.levelUp"
 	}
 
+	@Serializable
+	class PartialGuildConfiguration(
+			val textChannels: List<ServerConfig.TextChannel>,
+			val roles: List<ServerConfig.Role>,
+			val levelUpConfig: ServerConfig.LevelUpConfig
+	)
+
 	val rolesByExperience = mutableListOf<ServerConfig.RoleByExperience>()
 	val experienceRoleRates = mutableListOf<ServerConfig.ExperienceRoleRate>()
 	val noXpRoles = mutableListOf<Long>()
@@ -50,7 +58,7 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 	@ImplicitReflectionSerializer
 	override fun onRender(call: ApplicationCall) {
 		launchWithLoadingScreenAndFixContent(call) {
-			val guild = DashboardUtils.retrieveGuildConfiguration(call.parameters["guildid"]!!)
+			val guild = DashboardUtils.retrievePartialGuildConfiguration<PartialGuildConfiguration>(call.parameters["guildid"]!!, "textchannels", "roles", "level")
 			switchContentAndFixLeftSidebarScroll(call)
 
 			document.select<HTMLButtonElement>("#save-button").onClick {
@@ -465,13 +473,13 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 		}
 	}
 
-	fun addRoleToRolesWithCustomRateList(guild: ServerConfig.Guild, experienceRoleRate: ServerConfig.ExperienceRoleRate) {
+	fun addRoleToRolesWithCustomRateList(guild: PartialGuildConfiguration, experienceRoleRate: ServerConfig.ExperienceRoleRate) {
 		experienceRoleRates.add(experienceRoleRate)
 
 		updateRolesWithCustomRateList(guild)
 	}
 
-	fun updateRolesWithCustomRateList(guild: ServerConfig.Guild) {
+	fun updateRolesWithCustomRateList(guild: PartialGuildConfiguration) {
 		val list = document.select<HTMLDivElement>(".roles-with-custom-rate-list")
 
 		list.clear()
@@ -529,13 +537,13 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 		experienceRoleRates.removeAll(invalidEntries)
 	}
 
-	fun addRoleToRoleByExperienceList(guild: ServerConfig.Guild, roleByExperience: ServerConfig.RoleByExperience) {
+	fun addRoleToRoleByExperienceList(guild: PartialGuildConfiguration, roleByExperience: ServerConfig.RoleByExperience) {
 		rolesByExperience.add(roleByExperience)
 
 		updateRoleByExperienceList(guild)
 	}
 
-	fun updateRoleByExperienceList(guild: ServerConfig.Guild) {
+	fun updateRoleByExperienceList(guild: PartialGuildConfiguration) {
 		val list = document.select<HTMLDivElement>(".roles-by-xp-list")
 
 		list.clear()
@@ -599,7 +607,7 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 		rolesByExperience.removeAll(invalidEntries)
 	}
 
-	fun updateNoXpRoleList(guild: ServerConfig.Guild) {
+	fun updateNoXpRoleList(guild: PartialGuildConfiguration) {
 		val list = document.select<HTMLDivElement>("#choose-role-no-xp-list")
 
 		list.clear()
@@ -637,7 +645,7 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 		}
 	}
 
-	fun updateNoXpChannelsList(guild: ServerConfig.Guild) {
+	fun updateNoXpChannelsList(guild: PartialGuildConfiguration) {
 		val list = document.select<HTMLDivElement>("#choose-channel-no-xp-list")
 
 		list.clear()
@@ -754,7 +762,7 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 		})
 	}
 
-	private fun TagConsumer<HTMLElement>.generateLevelUpAnnouncementSection(guild: ServerConfig.Guild) {
+	private fun TagConsumer<HTMLElement>.generateLevelUpAnnouncementSection(guild: PartialGuildConfiguration) {
 		val announcement = guild.levelUpConfig.announcements.firstOrNull()
 
 		div {

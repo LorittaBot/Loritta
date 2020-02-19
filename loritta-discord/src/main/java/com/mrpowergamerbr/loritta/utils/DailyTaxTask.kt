@@ -4,11 +4,9 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.dao.Marriage
 import com.mrpowergamerbr.loritta.dao.Profile
-import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.DonationKeys
 import com.mrpowergamerbr.loritta.tables.Profiles
-import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.dao.Payment
@@ -70,10 +68,7 @@ class DailyTaxTask : Runnable {
 					val soonToBeExpiredMatchingKeys = mutableListOf<Pair<DonationKey, Long>>()
 
 					for (key in soonToBeExpiredKeys) {
-						val serverUsingTheKey = ServerConfig.find {
-							ServerConfigs.donationKey eq key.id
-						}.firstOrNull()
-
+						val serverUsingTheKey = key.activeIn
 						if (serverUsingTheKey != null) {
 							soonToBeExpiredMatchingKeys.add(Pair(key, serverUsingTheKey.guildId))
 						}

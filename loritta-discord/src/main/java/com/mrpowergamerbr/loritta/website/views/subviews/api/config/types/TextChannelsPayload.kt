@@ -4,7 +4,7 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
-import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
+import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import com.mrpowergamerbr.loritta.userdata.MemberCounterConfig
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.userdata.TextChannelConfig
@@ -17,7 +17,7 @@ import net.perfectdreams.loritta.utils.FeatureFlags
 import org.jooby.Status
 
 class TextChannelsPayload : ConfigPayloadType("text_channels") {
-	override fun process(payload: JsonObject, userIdentification: TemmieDiscordAuth.UserIdentification, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, guild: Guild) {
+	override fun process(payload: JsonObject, userIdentification: LorittaJsonWebSession.UserIdentification, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, guild: Guild) {
 		// por enquanto não iremos apagar as configurações atuais
 		// para não limpar as coisas de anti spam
 		val entries = payload["entries"].array
