@@ -1,7 +1,6 @@
 plugins {
-	id("kotlin2js")
+	kotlin("js")
 	id("kotlinx-serialization") version "1.3.0" apply true
-	id("kotlin-dce-js") apply true
 }
 
 repositories {
@@ -10,54 +9,61 @@ repositories {
 	maven("https://kotlin.bintray.com/kotlinx")
 }
 
-dependencies {
-    compile(kotlin("stdlib-js"))
-	compile(project(":loritta-api"))
-    compile("org.jetbrains.kotlinx:kotlinx-html-js:0.6.11")
-	compile("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.0.1")
-	compile("org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.9.1")
-	compile("io.ktor:ktor-client-js:1.3.0")
-}
-
-tasks {
-	compileKotlin2Js {
-		kotlinOptions {
-			outputFile = "${sourceSets.main.get().output.resourcesDir}/SpicyMorenitta.js"
-			sourceMap = true
+kotlin {
+	target {
+		browser {
 		}
 	}
-	val unpackKotlinJsStdlib by registering {
-		group = "build"
-		description = "Unpack the Kotlin JavaScript standard library"
-		val outputDir = file("$buildDir/$name")
-		inputs.property("compileClasspath", configurations.compileClasspath.get())
-		outputs.dir(outputDir)
 
-		doLast {
-			configurations.compileClasspath.get().all {
-				copy {
-					includeEmptyDirs = false
-					from(zipTree(it))
-					into(outputDir)
-					include("**/*.js")
-					exclude("META-INF/**")
-				}
-				true
+	sourceSets["main"].dependencies {
+		implementation(project(":loritta-api"))
+		implementation("org.jetbrains.kotlinx:kotlinx-html-js:0.6.11")
+		implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.0.1")
+		implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.9.1")
+		implementation("io.ktor:ktor-client-js:1.3.0")
+	}
+
+
+	tasks {
+		compileKotlinJs {
+			kotlinOptions {
+				// outputFile = "${sourceSets["main"].resources.outputDir}/SpicyMorenitta.js"
+				sourceMap = true
 			}
 		}
-	}
-	val assembleWeb by registering(Copy::class) {
-		group = "build"
-		description = "Assemble the web application"
-		includeEmptyDirs = false
-		from(unpackKotlinJsStdlib)
-		// from(runDceKotlinJs)
-		from(sourceSets.main.get().output) {
-			exclude("**/*.kjsm")
+		val unpackKotlinJsStdlib by registering {
+			group = "build"
+			description = "Unpack the Kotlin JavaScript standard library"
+			val outputDir = file("$buildDir/$name")
+			inputs.property("compileClasspath", configurations.compileClasspath.get())
+			outputs.dir(outputDir)
+
+			doLast {
+				configurations.compileClasspath.get().all {
+					copy {
+						includeEmptyDirs = false
+						from(zipTree(it))
+						into(outputDir)
+						include("**/*.js")
+						exclude("META-INF/**")
+					}
+					true
+				}
+			}
 		}
-		into("$buildDir/web")
-	}
-	assemble {
-		dependsOn(assembleWeb)
+		val assembleWeb by registering(Copy::class) {
+			group = "build"
+			description = "Assemble the web application"
+			includeEmptyDirs = false
+			from(unpackKotlinJsStdlib)
+			from(compileKotlinJs.get().destinationDir) {
+				exclude("**/*.kjsm")
+			}
+			// from(runDceKotlinJs)
+			into("$buildDir/web")
+		}
+		assemble {
+			dependsOn(assembleWeb)
+		}
 	}
 }
