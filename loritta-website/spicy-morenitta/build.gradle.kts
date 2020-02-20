@@ -23,7 +23,6 @@ kotlin {
 		implementation("io.ktor:ktor-client-js:1.3.0")
 	}
 
-
 	tasks {
 		compileKotlinJs {
 			kotlinOptions {
@@ -64,8 +63,12 @@ kotlin {
 			// from(runDceKotlinJs)
 			into("$buildDir/web")
 		}
-		assemble {
-			dependsOn(assembleWeb)
-		}
+
+		build.get().finalizedBy(assembleWeb)
+
+		/* assemble {
+			dependsOn(compileKotlinJs)
+			// dependsOn(assembleWeb)
+		} */
 	}
 }
