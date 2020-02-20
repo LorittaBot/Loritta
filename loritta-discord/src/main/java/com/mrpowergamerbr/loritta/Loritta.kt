@@ -23,7 +23,6 @@ import com.mrpowergamerbr.loritta.livestreams.TwitchAPI
 import com.mrpowergamerbr.loritta.modules.ServerSupportModule
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.*
-import com.mrpowergamerbr.loritta.threads.NewLivestreamThread
 import com.mrpowergamerbr.loritta.threads.RaffleThread
 import com.mrpowergamerbr.loritta.threads.RemindersThread
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
@@ -309,9 +308,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		}
 
 		logger.info { "Sucesso! Iniciando threads da Loritta..." }
-
-		logger.info { "Iniciando Livestream Thread..." }
-		NewLivestreamThread().start() // Iniciar New Livestream Thread
 
 		logger.info { "Iniciando Update Status Thread..." }
 		UpdateStatusThread().start() // Iniciar thread para atualizar o status da Loritta

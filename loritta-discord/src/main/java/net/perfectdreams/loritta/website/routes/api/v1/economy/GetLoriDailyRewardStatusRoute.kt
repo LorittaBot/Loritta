@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.website.routes.api.v1.economy
 
-import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.bool
 import com.github.salomonbrys.kotson.get
@@ -8,15 +7,11 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Dailies
 import com.mrpowergamerbr.loritta.utils.jsonParser
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import io.ktor.application.ApplicationCall
-import kotlinx.coroutines.sync.Mutex
-import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.routes.BaseRoute
 import net.perfectdreams.loritta.website.utils.extensions.lorittaSession
@@ -28,27 +23,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.json.XML
 import java.net.InetAddress
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 class GetLoriDailyRewardStatusRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/economy/daily-reward-status") {
-	companion object {
-		private val logger = KotlinLogging.logger {}
-		private val mutexes = Caffeine.newBuilder()
-				.expireAfterAccess(60, TimeUnit.SECONDS)
-				.build<Long, Mutex>()
-				.asMap()
-	}
-
-	fun getDailyMultiplier(donationKey: DonationKey): Double {
-		return when {
-			donationKey.value >= 179.99 -> 2.0
-			donationKey.value >= 139.99 -> 1.75
-			donationKey.value >= 99.99 -> 1.5
-			donationKey.value >= 59.99 -> 1.25
-			else -> 1.0
-		}
-	}
-
 	override suspend fun onRequest(call: ApplicationCall) {
 		loritta as Loritta
 		val session = call.lorittaSession

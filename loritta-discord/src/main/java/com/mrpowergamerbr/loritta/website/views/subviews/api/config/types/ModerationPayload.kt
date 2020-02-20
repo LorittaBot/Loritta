@@ -6,16 +6,11 @@ import com.github.salomonbrys.kotson.string
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.ServerConfig
-import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
-import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 
 class ModerationPayload : ConfigPayloadType("moderation") {
-	companion object {
-		private val logger = KotlinLogging.logger {}
-	}
-
 	override fun process(payload: JsonObject, userIdentification: LorittaJsonWebSession.UserIdentification, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, guild: Guild) {
 		val moderationConfig = legacyServerConfig.moderationConfig
 		moderationConfig.sendPunishmentViaDm = payload["sendPunishmentViaDm"].bool
