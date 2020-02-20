@@ -316,7 +316,7 @@ class GeneralConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/g
 	}
 
 	fun prepareSave() {
-		SaveUtils.prepareSave("default", extras = {
+		SaveUtils.prepareSave("general", extras = {
 			it["commandPrefix"] = document.select<HTMLInputElement>("#command-prefix").value
 			it["deleteMessageAfterCommand"] = document.select<HTMLInputElement>("#delete-message-after-command").checked
 			it["warnOnMissingPermission"] = document.select<HTMLInputElement>("#warn-on-missing-permission").checked
