@@ -31,7 +31,7 @@ class PatchServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRout
 		val type = payload["type"].string
 		val config = payload["config"].obj
 
-		val transformer = ConfigTransformers.DEFAULT_TRANSFORMERS.firstOrNull { it.payloadType == type }
+		val transformer = ConfigTransformers.ALL_TRANSFORMERS.firstOrNull { it.payloadType == type }
 
 		if (transformer != null) {
 			val guildId = guild.idLong

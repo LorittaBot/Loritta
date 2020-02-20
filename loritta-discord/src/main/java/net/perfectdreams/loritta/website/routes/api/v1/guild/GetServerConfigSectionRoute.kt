@@ -20,7 +20,7 @@ class GetServerConfigSectionRoute(loritta: LorittaDiscord) : RequiresAPIGuildAut
 		val payload = jsonObject()
 
 		for (section in sections) {
-			val transformer = ConfigTransformers.DEFAULT_TRANSFORMERS.firstOrNull { it.payloadType == section }
+			val transformer = ConfigTransformers.ALL_TRANSFORMERS.firstOrNull { it.payloadType == section }
 
 			if (transformer != null)
 				payload[transformer.configKey] = transformer.toJson(userIdentification, guild, serverConfig)

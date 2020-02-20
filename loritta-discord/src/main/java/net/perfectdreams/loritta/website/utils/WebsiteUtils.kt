@@ -230,7 +230,7 @@ object WebsiteUtils {
 
 		guildJson["selfMember"] = selfMember
 
-		for (transformer in ConfigTransformers.DEFAULT_TRANSFORMERS)
+		for (transformer in ConfigTransformers.ALL_TRANSFORMERS)
 			guildJson[transformer.configKey] = transformer.toJson(guild, serverConfig)
 
 		return guildJson
