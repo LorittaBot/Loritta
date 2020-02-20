@@ -13,19 +13,19 @@ class UserIdentification(
         @SerialName("discriminator")
         val discriminator: String,
         @SerialName("avatar")
-        val avatar: String?,
+        @Optional val avatar: String? = null,
         @SerialName("bot")
-        val bot: Boolean?,
+        @Optional val bot: Boolean? = false,
         @SerialName("mfa_enabled")
         @Optional val mfaEnabled: Boolean? = false,
         @SerialName("locale")
-        val locale: String?,
+        @Optional val locale: String? = null,
         @SerialName("verified")
-        val verified: Boolean?,
+        @Optional val verified: Boolean? = null,
         @SerialName("email")
-        val email: String?,
+        @Optional val email: String? = null,
         @SerialName("flags")
-        val flags: Int?,
+        @Optional val flags: Int? = 0,
         @SerialName("premium_type")
         @Optional val premiumType: Int? = 0
 ) {
