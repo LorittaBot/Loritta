@@ -57,6 +57,8 @@ kotlin {
 			includeEmptyDirs = false
 			from(unpackKotlinJsStdlib)
 			from(compileKotlinJs.get().destinationDir) {
+				include("**/*.js")
+				include("**/*.map")
 				exclude("**/*.kjsm")
 			}
 			// from(runDceKotlinJs)
