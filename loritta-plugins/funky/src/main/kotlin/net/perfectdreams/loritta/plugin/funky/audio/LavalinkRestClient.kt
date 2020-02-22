@@ -2,7 +2,9 @@ package net.perfectdreams.loritta.plugin.funky.audio
 
 import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
+import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.audio.AudioManager
 import com.mrpowergamerbr.loritta.utils.encodeToUrl
 import com.mrpowergamerbr.loritta.utils.jsonParser
@@ -16,7 +18,7 @@ class LavalinkRestClient(val loritta: LorittaDiscord, val audioManager: AudioMan
 	private fun getLavalinkUrlForNode(node: LavalinkSocket) = node.remoteUri.toString().replace("ws", "http")
 	private fun getPasswordForNode(node: LavalinkSocket) = loritta.discordConfig.lavalink.nodes.first { node.name == it.name }.password
 
-	suspend fun searchTrackOnYouTube(query: String) {
+	suspend fun searchTrackOnYouTube(query: String): List<JsonObject> {
 		val lavalinkNode = getRandomLavalinkNode()
 
 		val response = loritta.http.get<String>("${getLavalinkUrlForNode(lavalinkNode)}/loadtracks?identifier=ytsearch:${query.encodeToUrl()}") {
@@ -26,10 +28,10 @@ class LavalinkRestClient(val loritta: LorittaDiscord, val audioManager: AudioMan
 		val json = jsonParser.parse(response)
 		val loadType = json["loadType"].string
 
-		if (loadType != "TRACK_LOADED")
+		if (loadType != "SEARCH_RESULT")
 			throw RuntimeException(loadType)
 
-		val track = json["tracks"].array.first()["track"].string
+		return json["tracks"].array.map { it.obj }
 	}
 
 	suspend fun loadTrack(audioId: String): String {

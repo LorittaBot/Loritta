@@ -70,6 +70,12 @@ object ServerConfig {
 	)
 
 	@Serializable
+	class MusicConfig(
+			val enabled: Boolean,
+			val channels: List<Long>
+	)
+
+	@Serializable
 	class LevelUpConfig(
 			val roleGiveType: String,
 			val noXpRoles: List<Long>,
@@ -176,6 +182,12 @@ object ServerConfig {
 
 	@Serializable
 	class TextChannel(
+			val id: String,
+			val name: String
+	)
+
+	@Serializable
+	class VoiceChannel(
 			val id: String,
 			val name: String
 	)

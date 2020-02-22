@@ -12,7 +12,9 @@ object PauseCommand : DSLCommandBase {
 		userRequiredLorittaPermissions = listOf(LorittaPermission.DJ)
 
 		executesDiscord {
-			val musicManager = m.funkyManager.getMusicManager(guild) ?: return@executesDiscord
+			checkMusicPremium()
+
+			val musicManager = checkIfMusicIsPlaying(m.funkyManager)
 			musicManager.scheduler.player.isPaused = true
 
 			reply(

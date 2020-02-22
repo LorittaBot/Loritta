@@ -223,8 +223,9 @@ class GeneralConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/g
 							locale["${LOCALE_PREFIX}.tellUserWhenUsingCommandsOnABlacklistedChannel.subtext"],
 							"warn-if-blacklisted",
 							guild.general.warnIfBlacklisted
-					) {
+					) { result ->
 						updateDisabledSections()
+						result
 					}
 
 					hr {}

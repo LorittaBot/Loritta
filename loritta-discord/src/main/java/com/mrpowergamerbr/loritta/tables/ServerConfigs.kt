@@ -3,7 +3,6 @@ package com.mrpowergamerbr.loritta.tables
 import com.mrpowergamerbr.loritta.utils.exposed.array
 import net.perfectdreams.loritta.tables.EconomyConfigs
 import net.perfectdreams.loritta.tables.LevelConfigs
-import net.perfectdreams.loritta.tables.MusicConfigs
 import org.jetbrains.exposed.sql.LongColumnType
 import org.jetbrains.exposed.sql.ReferenceOption
 
@@ -21,6 +20,5 @@ object ServerConfigs : SnowflakeTable() {
 	val birthdayConfig = optReference("birthday_config", BirthdayConfigs, onDelete = ReferenceOption.CASCADE)
 	val economyConfig = optReference("economy_config", EconomyConfigs, onDelete = ReferenceOption.CASCADE)
 	val levelConfig = optReference("level_config", LevelConfigs, onDelete = ReferenceOption.CASCADE)
-	val musicConfig = optReference("music_config", MusicConfigs, onDelete = ReferenceOption.CASCADE)
 	val migrationVersion = integer("migration_version").default(0)
 }

@@ -4,6 +4,8 @@ import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.plugin.funky.FunkyPlugin
+import net.perfectdreams.loritta.plugin.funky.commands.LoopCommand.checkIfMusicIsPlaying
+import net.perfectdreams.loritta.plugin.funky.commands.PlayCommand.checkMusicPremium
 import net.perfectdreams.loritta.plugin.funky.commands.base.DSLCommandBase
 
 object ShuffleCommand : DSLCommandBase {
@@ -13,9 +15,9 @@ object ShuffleCommand : DSLCommandBase {
 		userRequiredLorittaPermissions = listOf(LorittaPermission.DJ)
 
 		executesDiscord {
-			val audioManager = m.funkyManager
+			checkMusicPremium()
 
-			val musicManager = audioManager.getMusicManager(guild) ?: return@executesDiscord
+			val musicManager = checkIfMusicIsPlaying(m.funkyManager)
 
 			// Limpar lista de qualquer música que tenha
 			val shuffledQueue = musicManager.scheduler.queue.toList()

@@ -11,6 +11,7 @@ import net.perfectdreams.spicymorenitta.utils.select
 import org.w3c.dom.HTMLBodyElement
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
+import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.events.Event
 import kotlin.browser.document
 import kotlin.dom.addClass
@@ -21,7 +22,7 @@ object GuildDashboard {
     var isModified = false
 }
 
-fun DIV.createToggle(title: String, subText: String? = null, id: String? = null, isChecked: Boolean = false, onChange: (() -> (Unit))? = null) {
+fun DIV.createToggle(title: String, subText: String? = null, id: String? = null, isChecked: Boolean = false, onChange: ((Boolean) -> (Boolean))? = null) {
     div(classes = "toggleable-wrapper") {
         div(classes = "information") {
             div {
@@ -44,7 +45,13 @@ fun DIV.createToggle(title: String, subText: String? = null, id: String? = null,
                     attributes["checked"] = "true"
                 }
 
-                onChangeFunction = { onChange?.invoke() }
+                onChangeFunction = {
+                    val target = it.target as HTMLInputElement
+
+                    val result = onChange?.invoke(target.checked) ?: target.checked
+
+                    target.checked = result
+                }
             }
             div(classes = "slider round") {}
         }

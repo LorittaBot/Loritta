@@ -13,8 +13,37 @@ object PlayCommand : DSLCommandBase {
 		description { it["commands.audio.play.description"] }
 
 		executesDiscord {
+			checkMusicPremium()
+
+			val musicConfig = serverConfig.retrieveMusicConfig()
+
+			if (musicConfig == null || !musicConfig.enabled) {
+				reply(
+						LorittaReply(
+								"Sistema de música está desativado!"
+						)
+				)
+				return@executesDiscord
+			}
+
 			val audioManager = m.funkyManager
-			val channel = this.member?.voiceState?.channel ?: return@executesDiscord
+			val channel = this.member?.voiceState?.channel ?: run {
+				reply(
+						LorittaReply(
+								"Você não está em um canal de voz!"
+						)
+				)
+				return@executesDiscord
+			}
+
+			if (channel.idLong !in musicConfig.channels) {
+				reply(
+						LorittaReply(
+								"Você não está em um canal de música!"
+						)
+				)
+				return@executesDiscord
+			}
 
 			val link = audioManager.connect(channel)
 			val musicManager = audioManager.getOrCreateMusicManager(guild, link) ?: return@executesDiscord

@@ -4,6 +4,8 @@ import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.plugin.funky.FunkyPlugin
+import net.perfectdreams.loritta.plugin.funky.commands.LoopCommand.checkIfMusicIsPlaying
+import net.perfectdreams.loritta.plugin.funky.commands.PlayCommand.checkMusicPremium
 import net.perfectdreams.loritta.plugin.funky.commands.base.DSLCommandBase
 
 object ResumeCommand : DSLCommandBase {
@@ -13,7 +15,9 @@ object ResumeCommand : DSLCommandBase {
 		userRequiredLorittaPermissions = listOf(LorittaPermission.DJ)
 
 		executesDiscord {
-			val musicManager = m.funkyManager.getMusicManager(guild) ?: return@executesDiscord
+			checkMusicPremium()
+
+			val musicManager = checkIfMusicIsPlaying(m.funkyManager)
 			musicManager.scheduler.player.isPaused = false
 
 			reply(

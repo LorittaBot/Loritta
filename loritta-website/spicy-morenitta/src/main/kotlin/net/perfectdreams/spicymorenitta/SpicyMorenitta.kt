@@ -80,7 +80,8 @@ class SpicyMorenitta : Logging {
 			RssFeedsRoute(this),
 			TwitterRoute(this),
 			YouTubeRoute(this),
-			TwitchRoute(this)
+			TwitchRoute(this),
+			MusicConfigRoute(this)
 	)
 
 	val validWebsiteLocaleIds = mutableListOf(

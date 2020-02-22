@@ -12,6 +12,8 @@ object PlayNowCommand : DSLCommandBase {
 		description { it["commands.audio.playnow.description"] }
 
 		executesDiscord {
+			checkMusicPremium()
+
 			val audioManager = m.funkyManager
 			val channel = this.member?.voiceState?.channel ?: return@executesDiscord
 

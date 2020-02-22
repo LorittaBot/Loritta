@@ -11,22 +11,29 @@ object PlaylistCommand : DSLCommandBase {
 		description { it["commands.audio.playlist.description"] }
 
 		executesDiscord {
-			val musicManager = m.funkyManager.getMusicManager(guild) ?: return@executesDiscord
+			checkMusicPremium()
+
+			val musicManager = checkIfMusicIsPlaying(m.funkyManager)
 
 			val embed = EmbedBuilder()
-					.setTitle("Músicas na fila")
+					.setTitle("\uD83C\uDFB6 Músicas na fila")
 					.setColor(Constants.LORITTA_AQUA)
 					.setDescription(
-							musicManager.scheduler.queue.toList().joinToString("\n") {
+							(musicManager.scheduler.queue.toMutableList().apply { musicManager.scheduler.currentlyPlaying?.let { this.add(0, it) } }).joinToString("\n") {
 								buildString {
+									if (musicManager.scheduler.currentlyPlaying == it) {
+										this.append("▶️")
+										if (musicManager.scheduler.isLooping) {
+											this.append("\uD83D\uDD01")
+										}
+										this.append(' ')
+									}
 									this.append(it.requestedBy.asMention)
 									this.append(' ')
-									this.append(it.track.info.title)
+									this.append("[${it.track.info.title}](${it.track.info.uri})")
 								}
 							}
 					)
-
-			musicManager.scheduler.queue.toList()
 
 			sendMessage(embed.build())
 		}

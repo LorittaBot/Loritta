@@ -2,34 +2,35 @@ package net.perfectdreams.loritta.plugin.funky
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import io.ktor.application.ApplicationCall
+import com.mrpowergamerbr.loritta.tables.ServerConfigs
+import mu.KotlinLogging
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.plugin.funky.audio.FunkyManager
 import net.perfectdreams.loritta.plugin.funky.commands.*
+import net.perfectdreams.loritta.plugin.funky.routes.ConfigureMusicRoute
 import net.perfectdreams.loritta.plugin.funky.tables.LavalinkTracks
-import net.perfectdreams.loritta.website.routes.LocalizedRoute
-import net.perfectdreams.loritta.website.utils.extensions.respondHtml
+import net.perfectdreams.loritta.plugin.funky.tables.MusicConfigs
+import net.perfectdreams.loritta.plugin.funky.transformers.MusicConfigTransformer
+import net.perfectdreams.loritta.plugin.funky.transformers.VoiceChannelsTransformer
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class FunkyPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(name, loritta) {
-	val funkyManager = FunkyManager(loritta as Loritta, (loritta as Loritta).audioManager!!)
+	companion object {
+		private val logger = KotlinLogging.logger {}
+	}
+
+	val funkyManager = FunkyManager(loritta as Loritta, loritta.audioManager!!)
 
 	override fun onEnable() {
 		super.onEnable()
 
-		routes.add(
-				object: LocalizedRoute(lorittaDiscord, "/test-route") {
-					override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
-						call.respondHtml("Hello from test route! ^-^")
-					}
-				}
-		)
+		loritta as Loritta
 
 		registerCommands(
 				LoopCommand.command(loritta, this),
+				NowPlayingCommand.command(loritta, this),
 				PauseCommand.command(loritta, this),
 				PlayCommand.command(loritta, this),
 				PlaylistCommand.command(loritta, this),
@@ -41,9 +42,15 @@ class FunkyPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(name
 				VolumeCommand.command(loritta, this)
 		)
 
+		configTransformers.add(MusicConfigTransformer)
+		configTransformers.add(VoiceChannelsTransformer)
+		routes.add(ConfigureMusicRoute(loritta))
+
 		transaction(Databases.loritta) {
 			SchemaUtils.createMissingTablesAndColumns(
-					LavalinkTracks
+					ServerConfigs,
+					LavalinkTracks,
+					MusicConfigs
 			)
 		}
 	}

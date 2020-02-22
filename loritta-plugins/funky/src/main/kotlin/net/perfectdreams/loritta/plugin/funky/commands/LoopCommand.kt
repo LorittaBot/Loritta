@@ -12,9 +12,8 @@ object LoopCommand : DSLCommandBase {
 		userRequiredLorittaPermissions = listOf(LorittaPermission.DJ)
 
 		executesDiscord {
-			val audioManager = m.funkyManager
-
-			val musicManager = audioManager.getMusicManager(guild) ?: return@executesDiscord
+			checkMusicPremium()
+			val musicManager = checkIfMusicIsPlaying(m.funkyManager)
 
 			// Limpar lista de qualquer música que tenha
 			musicManager.scheduler.queue.clear()

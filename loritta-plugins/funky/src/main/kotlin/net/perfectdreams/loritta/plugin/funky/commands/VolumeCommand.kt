@@ -34,9 +34,9 @@ object VolumeCommand : DSLCommandBase {
 		userRequiredLorittaPermissions = listOf(LorittaPermission.DJ)
 
 		executesDiscord {
-			val audioManager = m.funkyManager
+			checkMusicPremium()
 
-			val musicManager = audioManager.getMusicManager(guild) ?: return@executesDiscord
+			val musicManager = checkIfMusicIsPlaying(m.funkyManager)
 
 			val link = musicManager.link
 			if (args[0] == "nightcore") {

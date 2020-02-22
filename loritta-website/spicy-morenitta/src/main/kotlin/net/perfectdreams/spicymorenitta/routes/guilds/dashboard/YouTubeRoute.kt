@@ -317,7 +317,7 @@ class YouTubeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 
 								createToggle(
 										"Utilizar Webhooks"
-								) {
+								) { result ->
 									Stuff.showPremiumFeatureModal {
 										h2 {
 											+ "Seja diferente d e diferente!"
@@ -326,6 +326,7 @@ class YouTubeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 											+ "Faça upgrade para o Plano Recomendado para poder customizar o nome e avatar as notificações!"
 										}
 									}
+									result
 								}
 							}
 						}
