@@ -140,7 +140,7 @@ class UndertaleProfileCreator : ProfileCreator {
 		}
 
 		userInfo.add("Sonhos")
-		userInfo.add("#$globalEconomyPosition / ${"%.2f".format(userProfile.money)}")
+		userInfo.add("#$globalEconomyPosition / ${userProfile.money}")
 
 		val biggestStrWidth = graphics.fontMetrics.stringWidth(userInfo.maxBy { graphics.fontMetrics.stringWidth(it) }!!)
 

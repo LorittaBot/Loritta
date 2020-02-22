@@ -71,7 +71,7 @@ class QuirkyStuff(name: String, loritta: LorittaBot) : DiscordPlugin(name, lorit
                     transaction(Databases.loritta) {
                         Profiles.update({ Profiles.id inList boosters.map { it.user.idLong } }) {
                             with(SqlExpressionBuilder) {
-                                it.update(money, money + 2.0)
+                                it.update(money, money + 2)
                             }
                         }
                     }
@@ -103,7 +103,7 @@ class QuirkyStuff(name: String, loritta: LorittaBot) : DiscordPlugin(name, lorit
                                 logger.info { "Giving $howMuchShouldBeGiven sonhos to ${profile[Profiles.id]}" }
 
                                 Profiles.update({ Profiles.id eq profile[Profiles.id] }) {
-                                    it[money] = profile[money] + howMuchShouldBeGiven
+                                    it[money] = profile[money] + howMuchShouldBeGiven.toLong()
                                 }
                             }
                         }

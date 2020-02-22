@@ -341,7 +341,7 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 			if (prize == 0) {
 				transaction(Databases.loritta) {
 					if (1000 > profile.money) {
-						profile.money = 0.0
+						profile.money = 0
 					} else {
 						profile.money -= 1000
 					}

@@ -14,7 +14,7 @@ class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaPlugin(name, lo
                         false,
                         DebugProfileCreator::class.java,
                         "debug",
-                        0.0,
+                        0,
                         listOf()
                 )
         )
@@ -23,7 +23,7 @@ class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaPlugin(name, lo
                         true,
                         PlainProfileCreator.PlainWhiteProfileCreator::class.java,
                         "plain_white",
-                        2500.0,
+                        2500,
                         listOf(321821618177310721L)
                 )
         )
@@ -32,7 +32,7 @@ class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaPlugin(name, lo
                         true,
                         PlainProfileCreator.PlainOrangeProfileCreator::class.java,
                         "plain_orange",
-                        2500.0,
+                        2500,
                         listOf(321821618177310721L)
                 )
         )
@@ -41,7 +41,7 @@ class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaPlugin(name, lo
                         true,
                         PlainProfileCreator.PlainPurpleProfileCreator::class.java,
                         "plain_purple",
-                        2500.0,
+                        2500,
                         listOf(321821618177310721L)
                 )
         )
@@ -50,7 +50,7 @@ class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaPlugin(name, lo
                         true,
                         PlainProfileCreator.PlainAquaProfileCreator::class.java,
                         "plain_aqua",
-                        2500.0,
+                        2500,
                         listOf(321821618177310721L)
                 )
         )
@@ -59,7 +59,7 @@ class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaPlugin(name, lo
                         true,
                         PlainProfileCreator.PlainGreenProfileCreator::class.java,
                         "plain_green",
-                        2500.0,
+                        2500,
                         listOf(321821618177310721L)
                 )
         )
@@ -68,7 +68,7 @@ class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaPlugin(name, lo
                         true,
                         PlainProfileCreator.PlainGreenHeartsProfileCreator::class.java,
                         "plain_green_hearts",
-                        3000.0,
+                        3000,
                         listOf(321821618177310721L)
                 )
         )
@@ -77,7 +77,7 @@ class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaPlugin(name, lo
                         true,
                         CowboyProfileCreator::class.java,
                         "cowboy",
-                        3500.0,
+                        3500,
                         listOf(321821618177310721L)
                 )
         )
@@ -86,7 +86,7 @@ class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaPlugin(name, lo
                         true,
                         NextGenProfileCreator::class.java,
                         "next_gen",
-                        3500.0,
+                        3500,
                         listOf(361977144445763585L)
                 )
         )
@@ -95,7 +95,7 @@ class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaPlugin(name, lo
                         true,
                         MonicaAtaProfileCreator::class.java,
                         "monica_ata",
-                        10000.0,
+                        10000,
                         listOf(321821618177310721L)
                 )
         )
@@ -104,7 +104,7 @@ class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaPlugin(name, lo
                         true,
                         UndertaleProfileCreator::class.java,
                         "undertale",
-                        12500.0,
+                        12500,
                         listOf(419125869475397633L)
                 )
         )
@@ -113,19 +113,19 @@ class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaPlugin(name, lo
                         true,
                         LoriAtaProfileCreator::class.java,
                         "lori_ata",
-                        15000.0,
+                        15000,
                         listOf(321821618177310721L, 419125869475397633L)
                 )
         )
 
         registeredProfiles.add(
-                ProfileDesign(true, Halloween2019ProfileCreator::class.java, "halloween_2019", -1.0, listOf())
+                ProfileDesign(true, Halloween2019ProfileCreator::class.java, "halloween_2019", -1, listOf())
         )
         registeredProfiles.add(
-                ProfileDesign(true, Christmas2019ProfileCreator::class.java, "christmas_2019", -1.0, listOf())
+                ProfileDesign(true, Christmas2019ProfileCreator::class.java, "christmas_2019", -1, listOf())
         )
         registeredProfiles.add(
-                ProfileDesign(true, LorittaChristmas2019ProfileCreator::class.java, "animated_christmas_2019", -1.0, listOf())
+                ProfileDesign(true, LorittaChristmas2019ProfileCreator::class.java, "animated_christmas_2019", -1, listOf())
         )
 
         lorittaDiscord.profileDesignManager.designs.removeAll(lorittaDiscord.profileDesignManager.designs.filter { it.internalType == "halloween_2019" })

@@ -377,7 +377,7 @@ class LoriToolsQuirkyStuffCommand(val m: QuirkyStuff) : LorittaDiscordCommand(ar
 				transaction(Databases.loritta) {
 					Profiles.update({ Profiles.id eq matcher.group(2).toLong() }) {
 						with(SqlExpressionBuilder) {
-							it.update(money, money - matcher.group(1).toDouble())
+							it.update(money, money - matcher.group(1).toLong())
 						}
 					}
 				}

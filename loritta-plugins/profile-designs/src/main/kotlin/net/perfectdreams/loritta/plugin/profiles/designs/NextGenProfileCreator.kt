@@ -161,7 +161,7 @@ class NextGenProfileCreator : ProfileCreator {
 		}
 
 		graphics.drawText("Sonhos", 631, 34)
-		graphics.drawText("#$globalEconomyPosition / ${"%.2f".format(userProfile.money)}", 631, 54)
+		graphics.drawText("#$globalEconomyPosition / ${userProfile.money}", 631, 54)
 		return 0
 	}
 }

@@ -71,7 +71,7 @@ class LoriAtaProfileCreator : ProfileCreator {
 		}
 
 		userInfo.add("Sonhos")
-		userInfo.add("#$globalEconomyPosition / ${"%.2f".format(userProfile.money)}")
+		userInfo.add("#$globalEconomyPosition / ${userProfile.money}")
 
 		graphics.font = KOMIKA.deriveFont(13f)
 		val biggestStrWidth = graphics.fontMetrics.stringWidth(userInfo.maxBy { graphics.fontMetrics.stringWidth(it) }!!)
