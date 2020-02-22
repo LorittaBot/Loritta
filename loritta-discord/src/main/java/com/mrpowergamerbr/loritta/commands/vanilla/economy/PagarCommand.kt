@@ -83,7 +83,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			}
 
 			val user = context.getUserAt(currentIdx++)
-			val howMuch = context.rawArgs.getOrNull(currentIdx++)?.toDoubleOrNull()
+			val howMuch = context.rawArgs.getOrNull(currentIdx++)?.toLongOrNull()
 
 			if (user == null || context.userHandle == user) {
 				context.reply(
@@ -95,7 +95,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 				return
 			}
 
-			if (howMuch == null || howMuch.isNaN()) {
+			if (howMuch == null) {
 				context.reply(
 						LoriReply(
 								locale["INVALID_NUMBER", context.rawArgs[1]],
@@ -229,7 +229,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 
 				context.reply(
 						LoriReply(
-								locale["PAY_TransactionComplete", user.asMention, howMuch, if (howMuch == 1.0) { economyConfig?.economyName } else { economyConfig?.economyNamePlural }],
+								locale["PAY_TransactionComplete", user.asMention, howMuch, if (howMuch == 1L) { economyConfig?.economyName } else { economyConfig?.economyNamePlural }],
 								"\uD83D\uDCB8"
 						)
 				)
