@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.platform.discord.plugin
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.plugin.InvalidPluginException
 import com.mrpowergamerbr.loritta.utils.Constants
 import mu.KotlinLogging
@@ -28,6 +29,7 @@ class JVMPluginManager(val loritta: LorittaDiscord) : PluginManager {
 
 		if (plugin is com.mrpowergamerbr.loritta.plugin.LorittaPlugin)
 			logger.warn { "Plugin ${plugin.name} is a legacy plugin. Legacy plugin support is deprecated and will be removed soon" }
+		val currentAvailableRoutes = plugins.filterIsInstance<LorittaDiscordPlugin>().flatMap { it.routes }
 		try {
 			plugin.onEnable()
 		} catch (e: Exception) {
@@ -35,10 +37,18 @@ class JVMPluginManager(val loritta: LorittaDiscord) : PluginManager {
 			unloadPlugin(plugin)
 		}
 		plugins.add(plugin)
+		val newlyAvailableRoutes = plugins.filterIsInstance<LorittaDiscordPlugin>().flatMap { it.routes }
+
+		if (!(currentAvailableRoutes.containsAll(newlyAvailableRoutes) && newlyAvailableRoutes.containsAll(currentAvailableRoutes)) && loritta is Loritta && loritta.newWebsiteThread != null) {
+			logger.info { "Plugin ${plugin.name} registered new routes! Restarting WebServer..." }
+			loritta.stopWebServer()
+			loritta.startWebServer()
+		}
 	}
 
 	override fun unloadPlugin(plugin: LorittaPlugin) {
 		logger.info { "Disabling ${plugin.name}" }
+		val currentAvailableRoutes = plugins.filterIsInstance<LorittaDiscordPlugin>().flatMap { it.routes }
 		try {
 			plugin.onDisable()
 		} catch (e: Exception) {
@@ -51,6 +61,14 @@ class JVMPluginManager(val loritta: LorittaDiscord) : PluginManager {
 
 		plugins.remove(plugin)
 		loadedFromFile.remove(plugin)
+
+		val newlyAvailableRoutes = plugins.filterIsInstance<LorittaDiscordPlugin>().flatMap { it.routes }
+
+		if (!(currentAvailableRoutes.containsAll(newlyAvailableRoutes) && newlyAvailableRoutes.containsAll(currentAvailableRoutes)) && loritta is Loritta && loritta.newWebsiteThread != null) {
+			logger.info { "Plugin ${plugin.name} unregistered routes! Restarting WebServer..." }
+			loritta.stopWebServer()
+			loritta.startWebServer()
+		}
 	}
 
 	fun reloadPlugin(plugin: LorittaPlugin) {

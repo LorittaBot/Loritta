@@ -119,7 +119,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		return Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat(name).build())
 	}
 
-	// var pluginManager = PluginManager(this)
 	lateinit var legacyCommandManager: CommandManager // Nosso command manager
 	val commandManager = DiscordCommandManager(this)
 	lateinit var dummyLegacyServerConfig: MongoServerConfig // Config utilizada em comandos no privado
@@ -299,13 +298,8 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 
 		logger.info("Sucesso! Iniciando Loritta (Website)...")
 
-		newWebsiteThread = thread(true, name = "Website Thread") {
-			website = LorittaWebsite(this, instanceConfig.loritta.website.url, instanceConfig.loritta.website.folder) // Apenas para rodar o init, que preenche uns companion objects marotos
-			val nWebsite = net.perfectdreams.loritta.website.LorittaWebsite(this)
-			newWebsite = nWebsite
-			nWebsite.start()
-			net.perfectdreams.loritta.website.LorittaWebsite.INSTANCE.blog.posts = net.perfectdreams.loritta.website.LorittaWebsite.INSTANCE.blog.loadAllBlogPosts()
-		}
+		website = LorittaWebsite(this, instanceConfig.loritta.website.url, instanceConfig.loritta.website.folder) // Apenas para rodar o init, que preenche uns companion objects marotos
+		startWebServer()
 
 		logger.info { "Sucesso! Iniciando threads da Loritta..." }
 
@@ -427,6 +421,20 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		val dbCodec = db.withCodecRegistry(pojoCodecRegistry)
 
 		serversColl = dbCodec.getCollection("servers", MongoServerConfig::class.java)
+	}
+
+	fun startWebServer() {
+		loritta.newWebsiteThread = thread(true, name = "Website Thread") {
+			val nWebsite = net.perfectdreams.loritta.website.LorittaWebsite(loritta)
+			loritta.newWebsite = nWebsite
+			nWebsite.start()
+			net.perfectdreams.loritta.website.LorittaWebsite.INSTANCE.blog.posts = net.perfectdreams.loritta.website.LorittaWebsite.INSTANCE.blog.loadAllBlogPosts()
+		}
+	}
+
+	fun stopWebServer() {
+		loritta.newWebsite?.stop()
+		loritta.newWebsiteThread?.interrupt()
 	}
 
 	/**
