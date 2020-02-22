@@ -36,6 +36,7 @@ include(":loritta-plugins:api-only-test")
 include(":loritta-plugins:rosbife")
 include(":loritta-plugins:funfunfun")
 include(":loritta-plugins:funky")
+include(":loritta-plugins:parallax-routes")
 
 // Website
 include(":loritta-website")
