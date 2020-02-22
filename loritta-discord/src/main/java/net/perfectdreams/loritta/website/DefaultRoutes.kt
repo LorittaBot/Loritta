@@ -98,6 +98,7 @@ object DefaultRoutes {
 			GetMembersWithRolesInGuildRoute(loritta),
 			GetServerConfigRoute(loritta),
 			PatchServerConfigRoute(loritta),
+			PostObsoleteServerConfigRoute(loritta),
 			PostSearchGuildsRoute(loritta),
 			PostSendMessageGuildRoute(loritta),
 

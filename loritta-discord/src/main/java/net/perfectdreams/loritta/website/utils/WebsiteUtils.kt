@@ -231,7 +231,7 @@ object WebsiteUtils {
 		guildJson["selfMember"] = selfMember
 
 		for (transformer in ConfigTransformers.ALL_TRANSFORMERS)
-			guildJson[transformer.configKey] = transformer.toJson(guild, serverConfig)
+			guildJson[transformer.configKey] = transformer.toJson(user, guild, serverConfig)
 
 		return guildJson
 	}
