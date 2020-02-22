@@ -9,7 +9,10 @@ import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.tables.*
+import com.mrpowergamerbr.loritta.tables.Dailies
+import com.mrpowergamerbr.loritta.tables.DonationConfigs
+import com.mrpowergamerbr.loritta.tables.GuildProfiles
+import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import io.ktor.application.ApplicationCall
@@ -25,7 +28,6 @@ import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.website.utils.extensions.trueIp
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
-import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -203,7 +205,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				val results = (ServerConfigs innerJoin DonationConfigs).select {
 					(ServerConfigs.id inList mutualGuilds.map { it["id"].string.toLong() }) and
 							(DonationConfigs.dailyMultiplier eq true)
-				}.orderBy(DonationKeys.value, SortOrder.DESC)
+				}
 
 				val serverConfigs = ServerConfig.wrapRows(results)
 

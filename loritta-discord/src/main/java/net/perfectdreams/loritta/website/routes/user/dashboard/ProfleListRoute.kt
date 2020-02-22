@@ -49,7 +49,7 @@ class ProfleListRoute(loritta: LorittaDiscord) : RequiresDiscordLoginLocalizedRo
 	}
 
 	companion object {
-		fun getProfileAsJson(userIdentification: LorittaJsonWebSession.UserIdentification, profile: Class<*>, shortName: String, settings: ProfileSettings, price: Double): JsonObject {
+		fun getProfileAsJson(userIdentification: LorittaJsonWebSession.UserIdentification, profile: Class<*>, shortName: String, settings: ProfileSettings, price: Long): JsonObject {
 			return jsonObject(
 					"internalName" to profile.simpleName,
 					"shortName" to shortName,

@@ -27,16 +27,16 @@ class ProfileDesignManager {
 
 	init {
 		registerDesign(
-				ProfileDesign(true, NostalgiaProfileCreator::class.java, "default", 0.0, listOf())
+				ProfileDesign(true, NostalgiaProfileCreator::class.java, "default", 0, listOf())
 		)
 		registerDesign(
-				ProfileDesign(true, DefaultProfileCreator::class.java, "modern", 2000.0, listOf())
+				ProfileDesign(true, DefaultProfileCreator::class.java, "modern", 2000, listOf())
 		)
 		registerDesign(
-				ProfileDesign(true, MSNProfileCreator::class.java, "msn", 7500.0, listOf())
+				ProfileDesign(true, MSNProfileCreator::class.java, "msn", 7500, listOf())
 		)
 		registerDesign(
-				ProfileDesign(true, OrkutProfileCreator::class.java, "orkut", 7500.0, listOf())
+				ProfileDesign(true, OrkutProfileCreator::class.java, "orkut", 7500, listOf())
 		)
 
 		registerBadge(

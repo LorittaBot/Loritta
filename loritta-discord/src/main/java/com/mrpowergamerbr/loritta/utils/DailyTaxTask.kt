@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit
 class DailyTaxTask : Runnable {
 	companion object {
 		private val logger = KotlinLogging.logger {}
-		const val MARRIAGE_DAILY_TAX = 100
+		const val MARRIAGE_DAILY_TAX = 100L
 		var alreadySentDMs = false
 	}
 
@@ -182,7 +182,7 @@ class DailyTaxTask : Runnable {
 
 				// MARRY - Aviar sobre sonhos
 				val documents = transaction(Databases.loritta) {
-					Profile.find { Profiles.marriage.isNotNull() and Profiles.money.less(MARRIAGE_DAILY_TAX.toDouble()) }.toMutableList()
+					Profile.find { Profiles.marriage.isNotNull() and Profiles.money.less(MARRIAGE_DAILY_TAX) }.toMutableList()
 				}
 
 				for (document in documents) {
@@ -209,15 +209,15 @@ class DailyTaxTask : Runnable {
 				// Primeiro iremos pegar todos os casamentos que serão deletados ANTES de retirar os sonhos
 				val usersThatShouldHaveTheirMarriageRemoved = transaction(Databases.loritta) {
 					Profile.find {
-						Profiles.marriage.isNotNull() and Profiles.money.less(MARRIAGE_DAILY_TAX.toDouble())
+						Profiles.marriage.isNotNull() and Profiles.money.less(MARRIAGE_DAILY_TAX)
 					}.toMutableList()
 				}
 
 				// MARRY - Remover sonhos de quem merece
 				transaction(Databases.loritta) {
-					Profiles.update({ Profiles.marriage.isNotNull() and Profiles.money.greaterEq(MARRIAGE_DAILY_TAX.toDouble()) }) {
+					Profiles.update({ Profiles.marriage.isNotNull() and Profiles.money.greaterEq(MARRIAGE_DAILY_TAX) }) {
 						with(SqlExpressionBuilder) {
-							it.update(money, money - MARRIAGE_DAILY_TAX.toDouble())
+							it.update(money, money - MARRIAGE_DAILY_TAX)
 						}
 					}
 				}

@@ -4,6 +4,6 @@ data class ProfileDesign(
 		val public: Boolean,
 		val clazz: Class<*>,
 		val internalType: String,
-		val price: Double,
+		val price: Long,
 		val createdBy: List<Long>
 )

@@ -8,8 +8,8 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.ApplicationCall
+import io.ktor.http.HttpStatusCode
 import io.ktor.request.receiveText
-import kotlinx.coroutines.runBlocking
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
@@ -20,7 +20,6 @@ import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
-import io.ktor.http.HttpStatusCode
 import java.util.regex.Pattern
 
 class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/self-profile") {
@@ -102,7 +101,7 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 					)
 			)
 
-			if (profileSettings.boughtProfiles.contains(profileDesign.clazz.simpleName) || profileDesign.price == -1.0) {
+			if (profileSettings.boughtProfiles.contains(profileDesign.clazz.simpleName) || profileDesign.price == -1L) {
 				throw WebsiteAPIException(HttpStatusCode.Forbidden,
 						WebsiteUtils.createErrorPayload(
 								LoriWebCode.FORBIDDEN
@@ -134,7 +133,7 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 			for (creatorId in profileDesign.createdBy) {
 				val creator = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(creatorId)
 				transaction(Databases.loritta) {
-					creator.money += profileDesign.price * 0.2
+					creator.money += (profileDesign.price.toDouble() * 0.2).toLong()
 
 					SonhosTransaction.insert {
 						it[givenBy] = null

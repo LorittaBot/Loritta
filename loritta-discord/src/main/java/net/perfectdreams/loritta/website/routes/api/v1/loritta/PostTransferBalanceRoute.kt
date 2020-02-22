@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.website.routes.api.v1.loritta
 
-import com.github.salomonbrys.kotson.double
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.long
@@ -31,21 +30,12 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 		val json = jsonParser.parse(call.receiveText())
 		val giverId = json["giverId"].long
 		val receiverId = json["receiverId"].long
-		val howMuch = json["howMuch"].double
+		val howMuch = json["howMuch"].long
 
 		logger.info { "Initializing transaction between $giverId and $receiverId, $howMuch sonhos will be transferred. Is mutex locked? ${mutex.isLocked}" }
 		mutex.withLock {
 			val receiverProfile = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(receiverId)
 			val giverProfile = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(giverId)
-
-			if (receiverProfile.money.isNaN() || giverProfile.money.isNaN()) {
-				call.respondJson(
-						jsonObject(
-								"status" to PagarCommand.PayStatus.INVALID_MONEY_STATUS.toString()
-						)
-				)
-				return@withLock
-			}
 
 			if (howMuch > giverProfile.money) {
 				call.respondJson(
@@ -63,7 +53,7 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 			val taxBypass = activeMoneyFromDonations >= LorittaPrices.NO_PAY_TAX
 
 			val taxedMoney = if (taxBypass) { 0.0 } else { Math.ceil(PagarCommand.TRANSACTION_TAX * howMuch.toDouble()) }
-			val finalMoney = howMuch - taxedMoney
+			val finalMoney = (howMuch - taxedMoney).toLong()
 
 			transaction(Databases.loritta) {
 				giverProfile.money -= howMuch

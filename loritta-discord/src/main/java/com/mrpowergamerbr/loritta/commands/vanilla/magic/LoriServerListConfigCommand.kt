@@ -121,7 +121,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				val user = context.getUserAt(2)!!
 				transaction(Databases.loritta) {
 					Profiles.update({ Profiles.id eq user.idLong }) {
-						it[money] = arg1.toDouble()
+						it[money] = arg1.toLong()
 					}
 				}
 
@@ -138,7 +138,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				transaction(Databases.loritta) {
 					Profiles.update({ Profiles.id eq user.idLong }) {
 						with(SqlExpressionBuilder) {
-							it.update(money, money + arg1.toDouble())
+							it.update(money, money + arg1.toLong())
 						}
 					}
 				}
@@ -156,7 +156,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				transaction(Databases.loritta) {
 					Profiles.update({ Profiles.id eq user.idLong }) {
 						with(SqlExpressionBuilder) {
-							it.update(money, money - arg1.toDouble())
+							it.update(money, money - arg1.toLong())
 						}
 					}
 				}

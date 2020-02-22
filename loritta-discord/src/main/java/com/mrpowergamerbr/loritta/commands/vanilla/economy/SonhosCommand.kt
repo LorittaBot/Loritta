@@ -25,13 +25,6 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 			loritta.getOrCreateLorittaProfile(retrieveDreamsFromUser.id)
 		}
 
-		if (lorittaProfile.money.isNaN()) {
-			transaction(Databases.loritta) {
-				lorittaProfile.money = 0.0
-			}
-			return
-		}
-
 		var localEconomyEnabled = false
 		var economyConfig: EconomyConfig? = null
 
@@ -50,7 +43,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 				context.reply(
 						true,
 						LoriReply(
-								locale["SONHOS_YouHave", lorittaProfile.money, if (lorittaProfile.money == 1.0) { locale["ECONOMY_Name"] } else { locale["ECONOMY_NamePlural"] }],
+								locale["SONHOS_YouHave", lorittaProfile.money, if (lorittaProfile.money == 1L) { locale["ECONOMY_Name"] } else { locale["ECONOMY_NamePlural"] }],
 								"<:loritta:331179879582269451>",
 								mentionUser = false
 						),
@@ -63,7 +56,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 			} else {
 				context.reply(
 						LoriReply(
-								locale["SONHOS_YouHave", lorittaProfile.money, if (lorittaProfile.money == 1.0) { locale["ECONOMY_Name"] } else { locale["ECONOMY_NamePlural"] }],
+								locale["SONHOS_YouHave", lorittaProfile.money, if (lorittaProfile.money == 1L) { locale["ECONOMY_Name"] } else { locale["ECONOMY_NamePlural"] }],
 								"<:loritta:331179879582269451>"
 						)
 				)
@@ -75,12 +68,12 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 				context.reply(
 						true,
 						LoriReply(
-								locale["SONHOS_UserHas", retrieveDreamsFromUser.asMention, lorittaProfile.money, if (lorittaProfile.money == 1.0) { locale["ECONOMY_Name"] } else { locale["ECONOMY_NamePlural"] }],
+								locale["SONHOS_UserHas", retrieveDreamsFromUser.asMention, lorittaProfile.money, if (lorittaProfile.money == 1L) { locale["ECONOMY_Name"] } else { locale["ECONOMY_NamePlural"] }],
 								"<:loritta:331179879582269451>",
 								mentionUser = false
 						),
 						LoriReply(
-								locale["SONHOS_UserHas", retrieveDreamsFromUser.asMention, localProfile.money, if (lorittaProfile.money == 1.0) { economyConfig.economyName } else { economyConfig.economyNamePlural }],
+								locale["SONHOS_UserHas", retrieveDreamsFromUser.asMention, localProfile.money, if (lorittaProfile.money == 1L) { economyConfig.economyName } else { economyConfig.economyNamePlural }],
 								"\uD83D\uDCB5",
 								mentionUser = false
 						)
@@ -88,7 +81,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 			} else {
 				context.reply(
 						LoriReply(
-								locale["SONHOS_UserHas", retrieveDreamsFromUser.asMention, lorittaProfile.money, if (lorittaProfile.money == 1.0) { locale["ECONOMY_Name"] } else { locale["ECONOMY_NamePlural"] }],
+								locale["SONHOS_UserHas", retrieveDreamsFromUser.asMention, lorittaProfile.money, if (lorittaProfile.money == 1L) { locale["ECONOMY_Name"] } else { locale["ECONOMY_NamePlural"] }],
 								"\uD83D\uDCB5"
 						)
 				)

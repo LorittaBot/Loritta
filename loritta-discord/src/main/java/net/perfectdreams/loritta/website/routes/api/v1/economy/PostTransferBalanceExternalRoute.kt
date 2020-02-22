@@ -32,7 +32,7 @@ class PostTransferBalanceExternalRoute(loritta: LorittaDiscord) : RequiresAPIAut
 		val finalMoney = (garticos * transferRate)
 
 		transaction(Databases.loritta) {
-			profile.money += finalMoney
+			profile.money += finalMoney.toLong()
 
 			SonhosTransaction.insert {
 				it[givenBy] = null
