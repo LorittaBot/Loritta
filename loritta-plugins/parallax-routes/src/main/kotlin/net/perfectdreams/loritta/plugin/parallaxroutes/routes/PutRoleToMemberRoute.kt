@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.plugin.parallaxroutes.routes
 
 import com.github.salomonbrys.kotson.jsonObject
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import io.ktor.application.ApplicationCall
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
@@ -19,7 +20,7 @@ class PutRoleToMemberRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationR
 			val role = guild.getRoleById(roleId)!!
 
 			if (guild.selfMember.canInteract(role)) {
-				guild.addRoleToMember(member, role).complete()
+				guild.addRoleToMember(member, role).await()
 
 				call.respondJson(jsonObject())
 			}
