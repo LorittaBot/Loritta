@@ -59,10 +59,10 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
             customizeClient {
                 // Maximum number of socket connections.
-                this.setMaxConnTotal(100_000)
+                this.setMaxConnTotal(100)
 
                 // Maximum number of requests for a specific endpoint route.
-                this.setMaxConnPerRoute(100_000)
+                this.setMaxConnPerRoute(100)
             }
         }
     }
