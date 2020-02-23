@@ -18,7 +18,7 @@ import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class PostReceivedTweetRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/twitter/users/show") {
+class PostReceivedTweetRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/twitter/received-tweet") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}
