@@ -124,10 +124,10 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 
 					val donationKeysValue = config.getActiveDonationKeysValue()
 					if (donationKeysValue >= LorittaPrices.CUSTOM_BADGE) {
-						val badgeFile = File(Loritta.ASSETS, "badges/custom/${config.guildId}.png")
+						val badge = LorittaUtils.downloadImage("${loritta.instanceConfig.loritta.website.url}/assets/img/badges/custom/${config.guildId}.png?t=${System.currentTimeMillis()}", bypassSafety = true)
 
-						if (badgeFile.exists()) {
-							badges += ImageIO.read(badgeFile)
+						if (badge != null) {
+							badges += badge
 						}
 					}
 				}

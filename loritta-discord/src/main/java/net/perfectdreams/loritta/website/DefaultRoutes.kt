@@ -102,6 +102,7 @@ object DefaultRoutes {
 			PostObsoleteServerConfigRoute(loritta),
 			PostSearchGuildsRoute(loritta),
 			PostSendMessageGuildRoute(loritta),
+			PatchUpdateServerConfigBadgeRoute(loritta),
 
 			// Loritta
 			GetCommandsRoute(loritta),

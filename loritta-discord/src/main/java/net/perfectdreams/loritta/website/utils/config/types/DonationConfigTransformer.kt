@@ -5,16 +5,17 @@ import com.github.salomonbrys.kotson.nullBool
 import com.github.salomonbrys.kotson.nullString
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.DonationConfig
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.utils.gson
+import com.mrpowergamerbr.loritta.utils.loritta
+import io.ktor.client.request.header
+import io.ktor.client.request.patch
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.userAgent
 import net.dv8tion.jda.api.entities.Guild
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.io.ByteArrayInputStream
-import java.io.File
-import java.util.*
-import javax.imageio.ImageIO
 
 object DonationConfigTransformer : ConfigTransformer {
     override val payloadType: String = "donation"
@@ -35,12 +36,15 @@ object DonationConfigTransformer : ConfigTransformer {
         val data = payload["badgeImage"].nullString
 
         if (data != null) {
-            val base64Image = data.split(",")[1]
-            val imageBytes = Base64.getDecoder().decode(base64Image)
-            val img = ImageIO.read(ByteArrayInputStream(imageBytes))
+            loritta.http.patch<HttpResponse>("${loritta.instanceConfig.loritta.website.url}/api/v1/guilds/${guild.idLong}/badge") {
+                userAgent(loritta.lorittaCluster.getUserAgent())
+                header("Authorization", loritta.lorittaInternalApiKey.name)
 
-            if (img != null) {
-                ImageIO.write(img, "png", File(Loritta.ASSETS, "badges/custom/${guild.id}.png"))
+                body = gson.toJson(
+                        jsonObject(
+                                "badge" to data
+                        )
+                )
             }
         }
     }
