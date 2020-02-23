@@ -59,7 +59,7 @@ class TemmieDiscordAuth(val clientId: String,
 			append("grant_type", "authorization_code")
 			append("code", authCode)
 			append("redirect_uri", redirectUri)
-			append("scope", scope.joinToString(" "))
+			// append("scope", scope.joinToString(" "))
 		}
 
 		return doStuff {
@@ -93,7 +93,7 @@ class TemmieDiscordAuth(val clientId: String,
 			append("grant_type", "refresh_token")
 			append("refresh_token", refreshToken)
 			append("redirect_uri", redirectUri)
-			append("scope", scope.joinToString(" "))
+			// append("scope", scope.joinToString(" "))
 		}
 
 		doStuff {
