@@ -139,11 +139,6 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 					return
 				if (!checkIfOtherAccountIsOldEnough(context, user))
 					return
-				if (!checkIfSelfAccountGotDailyToday(context))
-					return
-				val receiverProfile = loritta.getOrCreateLorittaProfile(user.idLong)
-				if (!checkIfOtherAccountGotDailyToday(context, user, receiverProfile))
-					return
 
 				val activeMoneyFromDonations = loritta.getActiveMoneyFromDonations(context.userHandle.idLong)
 				val taxBypass = activeMoneyFromDonations >= LorittaPrices.NO_PAY_TAX
