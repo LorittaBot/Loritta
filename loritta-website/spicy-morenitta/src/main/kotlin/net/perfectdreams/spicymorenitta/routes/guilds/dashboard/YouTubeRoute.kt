@@ -315,7 +315,7 @@ class YouTubeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 									+trackedYouTubeAccount.message
 								}
 
-								createToggle(
+								/* createToggle(
 										"Utilizar Webhooks"
 								) { result ->
 									Stuff.showPremiumFeatureModal {
@@ -327,7 +327,7 @@ class YouTubeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 										}
 									}
 									result
-								}
+								} */
 							}
 						}
 					}

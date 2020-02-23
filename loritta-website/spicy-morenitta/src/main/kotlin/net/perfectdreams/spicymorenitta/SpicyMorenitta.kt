@@ -24,7 +24,6 @@ import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.*
 import net.perfectdreams.spicymorenitta.trunfo.TrunfoGame
 import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.utils.locale.BaseLocale
-import net.perfectdreams.spicymorenitta.ws.PingCommand
 import oldMain
 import org.w3c.dom.*
 import kotlin.browser.document
@@ -56,9 +55,6 @@ class SpicyMorenitta : Logging {
 	}
 
 	val pageLoadLock = Mutex()
-	val wsCommands = mutableListOf(
-			PingCommand()
-	)
 	val routes = mutableListOf(
 			HomeRoute(),
 			DiscordBotBrasileiroRoute(),
@@ -103,7 +99,6 @@ class SpicyMorenitta : Logging {
 			"en-debug" to "en-debug"
 	)
 
-	lateinit var socket: WebSocket
 	val localeId: String
 		get() {
 			return websiteLocaleIdToLocaleId[websiteLocaleId] ?: "default"
@@ -171,59 +166,6 @@ class SpicyMorenitta : Logging {
 		}
 
 		debug("Is using http? ${window.location.protocol == "http:"}")
-		val url: String = if (window.location.protocol == "http:")
-			"ws://${window.location.origin.split("//").last()}/ws"
-		else
-			"wss://${window.location.origin.split("//").last()}/ws"
-
-		debug("Using protocol ${window.location.protocol} - WebSocket URL is $url")
-
-		socket = WebSocket(
-				url
-		)
-
-		socket.onopen = {
-			success("Socket opened! Setting up keep alive (${KEEP_ALIVE_DELAY}ms)")
-
-			GlobalScope.launch {
-				while (true) {
-					val obj = object {}.asDynamic()
-					obj["type"] = "ping"
-
-					socket.send(JSON.stringify(obj))
-
-					delay(KEEP_ALIVE_DELAY) // every 10s
-				}
-			}
-		}
-
-		socket.onclose = {
-			warn("Socket closed!")
-		}
-
-		socket.onerror = {
-			error("Socket error! Oh no... :(")
-		}
-
-		socket.onmessage = {
-			val data = it.asDynamic().data
-			// println("Message received: ${data}")
-
-			val d = data.toString()
-			if (d.startsWith("{")) {
-				val raw = JSON.parse<Json>(d)
-
-				val type = raw["type"].toString()
-
-				val command = wsCommands.firstOrNull { it.name == type }
-
-				if (command == null) {
-					error("Received payload $raw (type: $type) but I don't know how to handle it!")
-				} else {
-					command.process(socket, raw)
-				}
-			}
-		}
 
 		document.onDOMReady {
 			debug("DOM is ready!")
@@ -249,7 +191,7 @@ class SpicyMorenitta : Logging {
 				debug("Locale test: ${locale["commands.images.drawnword.description"]}")
 				debug("Locale test: ${locale["commands.fun.ship.bribeLove", ":3"]}")
 
-				onPageChange(socket, window.location.pathname, null)
+				onPageChange(window.location.pathname, null)
 			}
 		}
 
@@ -262,7 +204,7 @@ class SpicyMorenitta : Logging {
 				debug("History changed! Trying to load the new page... New pathname is ${window.location.pathname}")
 				currentPath = window.location.pathname
 				launch {
-					sendSwitchPageRequest(socket, window.location.pathname)
+					sendSwitchPageRequest(window.location.pathname)
 				}
 			}
 		}
@@ -333,9 +275,9 @@ class SpicyMorenitta : Logging {
 	}
 
 	@UseExperimental(ImplicitReflectionSerializer::class)
-	fun onPageChange(socket: WebSocket, path: String, content: Element?) {
+	fun onPageChange(path: String, content: Element?) {
 		if (!navbarIsSetup) {
-			addNavbarOptions(socket)
+			addNavbarOptions()
 			navbarIsSetup = true
 		}
 
@@ -372,7 +314,7 @@ class SpicyMorenitta : Logging {
 
 			launch {
 				// Switch page
-				sendSwitchPageRequest(socket, path)
+				sendSwitchPageRequest(path)
 			}
 		}
 
@@ -411,7 +353,7 @@ class SpicyMorenitta : Logging {
 		}
 	}
 
-	fun addNavbarOptions(socket: WebSocket) {
+	fun addNavbarOptions() {
 		debug("Adding navbar options!")
 		val navbar = document.select<Element>("#navigation-bar")
 
@@ -557,7 +499,7 @@ class SpicyMorenitta : Logging {
 		}
 	}
 
-	suspend fun sendSwitchPageRequest(socket: WebSocket, path: String) {
+	suspend fun sendSwitchPageRequest(path: String) {
 		if (pageLoadLock.isLocked) // Se está travado, vamos mostrar a tela de loading (normalmente é quando a página tá fazendo cache)
 			showLoadingScreen()
 
@@ -602,7 +544,7 @@ class SpicyMorenitta : Logging {
 		currentPath = path
 		window.history.pushState(null, "", path)
 
-		onPageChange(socket, path, temporaryBody)
+		onPageChange(path, temporaryBody)
 
 		val end = Date().getTime()
 
