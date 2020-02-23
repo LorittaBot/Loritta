@@ -107,18 +107,18 @@ class LorittaWebsite(val loritta: Loritta) {
 						logger.warn { "Unauthorized token! Throwing a WebsiteAPIException... $cause" }
 						call.sessions.clear<LorittaJsonWebSession>()
 
-						throw WebsiteAPIException(
-								HttpStatusCode.Unauthorized,
+						call.respondJson(
 								WebsiteUtils.createErrorPayload(
 										LoriWebCode.UNAUTHORIZED,
 										"Invalid Discord Authorization"
-								)
+								),
+								HttpStatusCode.Unauthorized
 						)
 					} else {
 						logger.warn { "Unauthorized token! Redirecting to dashboard... $cause" }
 						val hostHeader = call.request.host()
 						call.sessions.clear<LorittaJsonWebSession>()
-						redirect("https://$hostHeader/dashboard", true)
+						call.respondRedirect("https://$hostHeader/dashboard", true)
 					}
 				}
 

@@ -23,12 +23,9 @@ import io.ktor.client.statement.readBytes
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.userAgent
 import net.perfectdreams.loritta.api.LorittaBot
-import net.perfectdreams.loritta.api.commands.CommandCategory
-import net.perfectdreams.loritta.api.commands.command
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandMap
 import net.perfectdreams.loritta.platform.discord.plugin.JVMPluginManager
 import net.perfectdreams.loritta.platform.discord.utils.JVMLorittaAssets
-import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.config.FanArt
 import net.perfectdreams.loritta.utils.config.FanArtArtist
 import java.awt.image.BufferedImage
