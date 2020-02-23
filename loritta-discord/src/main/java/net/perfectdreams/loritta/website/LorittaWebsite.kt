@@ -24,6 +24,8 @@ import io.ktor.server.netty.NettyApplicationEngine
 import io.ktor.sessions.SessionTransportTransformerMessageAuthentication
 import io.ktor.sessions.Sessions
 import io.ktor.sessions.cookie
+import io.ktor.sessions.clear
+import io.ktor.sessions.sessions
 import io.ktor.util.AttributeKey
 import io.ktor.util.hex
 import mu.KotlinLogging
@@ -110,6 +112,7 @@ class LorittaWebsite(val loritta: Loritta) {
 				exception<TemmieDiscordAuth.TokenUnauthorizedException> { cause ->
 					logger.warn { "Unauthorized token! Redirecting to dashboard... $cause" }
 					val hostHeader = call.request.host()
+					call.sessions.clear<LorittaJsonWebSession>()
 					call.respondRedirect("https://$hostHeader/dashboard", true)
 				}
 
