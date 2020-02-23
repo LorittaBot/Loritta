@@ -195,6 +195,7 @@ class TemmieDiscordAuth(val clientId: String,
 	private suspend fun <T> doStuff(callback: suspend () -> (T)): T {
 		logger.info { "doStuff(...) mutex locked? ${mutex.isLocked}" }
 		return try {
+			refreshTokenIfNeeded()
 			mutex.withLock {
 				callback.invoke()
 			}
