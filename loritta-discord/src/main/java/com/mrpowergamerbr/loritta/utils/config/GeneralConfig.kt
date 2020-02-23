@@ -54,6 +54,8 @@ class GeneralConfig @JsonCreator constructor(
 				val enabled: Boolean,
 				val apiKeys: List<AuthenticationKey>,
 				val maxGuildTries: Int,
+				val sessionHex: String,
+				val sessionName: String,
 				val blockedIps: List<String>,
 				val blockedUserAgents: List<String>
 		) {

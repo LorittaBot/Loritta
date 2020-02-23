@@ -124,9 +124,9 @@ class LorittaWebsite(val loritta: Loritta) {
 			}
 
 			install(Sessions) {
-				val secretHashKey = hex("6819b57a326945c1968f45236589")
+				val secretHashKey = hex(loritta.config.loritta.website.sessionHex)
 
-				cookie<LorittaJsonWebSession>("SESSION_FEATURE_SESSION") {
+				cookie<LorittaJsonWebSession>(loritta.config.loritta.website.sessionName) {
 					cookie.path = "/"
 					cookie.domain = "loritta.website"
 					cookie.maxAgeInSeconds = 365L * 24 * 3600 // one year
