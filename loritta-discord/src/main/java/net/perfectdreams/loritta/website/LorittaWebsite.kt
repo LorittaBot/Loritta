@@ -1,8 +1,10 @@
 package net.perfectdreams.loritta.website
 
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.call
 import io.ktor.application.install
@@ -21,11 +23,7 @@ import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.netty.NettyApplicationEngine
-import io.ktor.sessions.SessionTransportTransformerMessageAuthentication
-import io.ktor.sessions.Sessions
-import io.ktor.sessions.cookie
-import io.ktor.sessions.clear
-import io.ktor.sessions.sessions
+import io.ktor.sessions.*
 import io.ktor.util.AttributeKey
 import io.ktor.util.hex
 import mu.KotlinLogging
@@ -105,15 +103,28 @@ class LorittaWebsite(val loritta: Loritta) {
 					call.respondHtml(html, HttpStatusCode.NotFound)
 				}
 
-				exception<WebsiteAPIException> { cause ->
-					call.respondJson(cause.payload, cause.status)
+				exception<TemmieDiscordAuth.TokenUnauthorizedException> { cause ->
+					if (call.request.path().startsWith("/api/v1/")) {
+						logger.warn { "Unauthorized token! Throwing a WebsiteAPIException... $cause" }
+						call.sessions.clear<LorittaJsonWebSession>()
+
+						throw WebsiteAPIException(
+								HttpStatusCode.Unauthorized,
+								WebsiteUtils.createErrorPayload(
+										LoriWebCode.UNAUTHORIZED,
+										"Invalid Discord Authorization"
+								)
+						)
+					} else {
+						logger.warn { "Unauthorized token! Redirecting to dashboard... $cause" }
+						val hostHeader = call.request.host()
+						call.sessions.clear<LorittaJsonWebSession>()
+						call.respondRedirect("https://$hostHeader/dashboard", true)
+					}
 				}
 
-				exception<TemmieDiscordAuth.TokenUnauthorizedException> { cause ->
-					logger.warn { "Unauthorized token! Redirecting to dashboard... $cause" }
-					val hostHeader = call.request.host()
-					call.sessions.clear<LorittaJsonWebSession>()
-					call.respondRedirect("https://$hostHeader/dashboard", true)
+				exception<WebsiteAPIException> { cause ->
+					call.respondJson(cause.payload, cause.status)
 				}
 
 				exception<Throwable> { cause ->
