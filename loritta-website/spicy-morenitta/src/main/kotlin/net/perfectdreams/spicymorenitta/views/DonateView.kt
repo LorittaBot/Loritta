@@ -342,7 +342,7 @@ object DonateView {
 											println(JSON.stringify(o))
 
 											GlobalScope.launch {
-												val response = HttpRequest.post("${loriUrl}api/v1/user/donate", JSON.stringify(o))
+												val response = HttpRequest.post("${loriUrl}api/v1/users/donate", JSON.stringify(o))
 
 												val payload = JSON.parse<Json>(response.body)
 												window.location.href = payload["redirectUrl"] as String
@@ -425,7 +425,7 @@ object DonateView {
 									println(JSON.stringify(o))
 
 									GlobalScope.launch {
-										val response = HttpRequest.post("${loriUrl}api/v1/user/donate", JSON.stringify(o))
+										val response = HttpRequest.post("${loriUrl}api/v1/users/donate", JSON.stringify(o))
 
 										val payload = JSON.parse<Json>(response.body)
 										window.location.href = payload["redirectUrl"] as String

@@ -59,9 +59,12 @@ object ProfileListView {
                                     "PlainPurpleProfileCreator" -> "Simplesmente Roxo"
                                     "PlainAquaProfileCreator" -> "Simplesmente Azul"
                                     "PlainGreenProfileCreator" -> "Simplesmente Verde"
+                                    "PlainGreenHeartsProfileCreator" -> "Simplesmente Verde com Flores"
                                     "NextGenProfileCreator" -> "Próxima Geração"
                                     "Halloween2019ProfileCreator" -> "Evento de Halloween 2019"
-                                    else -> "???"
+                                    "Christmas2019ProfileCreator" -> "Evento de Natal 2019"
+                                    "LorittaChristmas2019ProfileCreator" -> "Evento de Natal 2019"
+                                    else -> shipEffect.internalName
                                 }
                             }
                             h3 {
@@ -78,7 +81,7 @@ object ProfileListView {
                                     } else {
                                         classes += "button-discord-info"
                                         onClickFunction = {
-                                            SaveUtils.prepareSave("profile_design", endpoint = "${loriUrl}api/v1/user/self-profile", extras = {
+                                            SaveUtils.prepareSave("profile_design", endpoint = "${loriUrl}api/v1/users/self-profile", extras = {
                                                 it["buyItem"] = "profile"
                                                 it["profileType"] = shipEffect.internalName
                                             }, onFinish = {
@@ -99,7 +102,7 @@ object ProfileListView {
                                     classes += "button-discord-info"
 
                                     onClickFunction = {
-                                        SaveUtils.prepareSave("profile_design", endpoint = "${loriUrl}api/v1/user/self-profile", extras = {
+                                        SaveUtils.prepareSave("profile_design", endpoint = "${loriUrl}api/v1/users/self-profile", extras = {
                                             it["setActiveProfileDesign"] = shipEffect.internalName
                                         }, onFinish = {
                                             if (it.statusCode in 200..299) {

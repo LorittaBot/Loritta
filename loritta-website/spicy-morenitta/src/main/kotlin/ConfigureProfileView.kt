@@ -6,6 +6,6 @@ object ConfigureProfileView {
 	fun prepareSave() {
 		println("Preparing save... wow!")
 
-		SaveStuff.prepareSave("profile", endpoint = "${loriUrl}api/v1/user/self-profile")
+		SaveStuff.prepareSave("profile", endpoint = "${loriUrl}api/v1/users/self-profile")
 	}
 }

@@ -56,7 +56,7 @@ object ShipEffectsView {
 
     @JsName("buy")
     fun prepareSave() {
-        SaveUtils.prepareSave("ship_effect", endpoint = "${loriUrl}api/v1/user/self-profile", extras = {
+        SaveUtils.prepareSave("ship_effect", endpoint = "${loriUrl}api/v1/users/self-profile", extras = {
             it["buyItem"] = "ship_effect"
             it["editedValue"] = (page.getElementById("newShipValue") as HTMLInputElement).value
             it["user2NamePlusDiscriminator"] = (page.getElementById("userName") as HTMLInputElement).value
