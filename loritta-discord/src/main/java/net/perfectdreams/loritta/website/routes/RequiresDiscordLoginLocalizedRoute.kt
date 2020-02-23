@@ -24,10 +24,7 @@ import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
-import net.perfectdreams.loritta.website.utils.extensions.lorittaSession
-import net.perfectdreams.loritta.website.utils.extensions.respondHtml
-import net.perfectdreams.loritta.website.utils.extensions.toJson
-import net.perfectdreams.loritta.website.utils.extensions.trueIp
+import net.perfectdreams.loritta.website.utils.extensions.*
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
@@ -63,7 +60,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 					} else {
 						val state = JsonObject()
 						state["redirectUrl"] = "https://$hostHeader" + call.request.path()
-						call.respondRedirect(com.mrpowergamerbr.loritta.utils.loritta.discordInstanceConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}", false)
+						redirect(com.mrpowergamerbr.loritta.utils.loritta.discordInstanceConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}", false)
 					}
 				}
 			} else {
@@ -113,10 +110,8 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 					val jsonState = jsonParser.parse(decodedState).obj
 					val redirectUrl = jsonState["redirectUrl"].nullString
 
-					if (redirectUrl != null) {
-						call.respondRedirect(redirectUrl, false)
-						return
-					}
+					if (redirectUrl != null)
+						redirect(redirectUrl, false)
 				}
 
 				if (guildId != null) {
@@ -127,7 +122,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 							logger.info { "Received guild $guildId via OAuth2 scope, but the guild isn't in this cluster! Redirecting to where the user should be... $cluster" }
 
 							// Vamos redirecionar!
-							call.respondRedirect("https://${cluster.getUrl()}/dashboard?guild_id=${guildId}&code=from_master", true)
+							redirect("https://${cluster.getUrl()}/dashboard?guild_id=${guildId}&code=from_master", true)
 							return
 						}
 					}
@@ -237,11 +232,11 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 						return
 					}
 
-					call.respondRedirect("https://$hostHeader/dashboard/configure/${guildId}", false)
+					redirect("https://$hostHeader/dashboard/configure/${guildId}", false)
 					return
 				}
 
-				call.respondRedirect("https://$hostHeader/dashboard", false) // Redirecionar para a dashboard, mesmo que nós já estejamos lá... (remove o "code" da URL)
+				redirect("https://$hostHeader/dashboard", false) // Redirecionar para a dashboard, mesmo que nós já estejamos lá... (remove o "code" da URL)
 			}
 		}
 
@@ -260,7 +255,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 			// redirect to authentication owo
 			val state = JsonObject()
 			state["redirectUrl"] = LorittaWebsite.WEBSITE_URL.substring(0, LorittaWebsite.Companion.WEBSITE_URL.length - 1) + call.request.path()
-			call.respondRedirect(com.mrpowergamerbr.loritta.utils.loritta.discordInstanceConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}", false)
+			redirect(com.mrpowergamerbr.loritta.utils.loritta.discordInstanceConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}", false)
 			return
 		}
 

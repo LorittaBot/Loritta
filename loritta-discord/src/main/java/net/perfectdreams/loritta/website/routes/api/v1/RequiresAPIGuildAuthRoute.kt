@@ -9,17 +9,17 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.ApplicationCall
+import io.ktor.http.HttpStatusCode
 import io.ktor.request.host
 import io.ktor.request.path
-import io.ktor.response.respondRedirect
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.website.utils.extensions.redirect
 import net.perfectdreams.loritta.website.utils.extensions.urlQueryString
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
-import io.ktor.http.HttpStatusCode
 
 abstract class RequiresAPIGuildAuthRoute(loritta: LorittaDiscord, originalDashboardPath: String) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/guilds/{guildId}$originalDashboardPath") {
 	abstract suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig)
@@ -34,10 +34,8 @@ abstract class RequiresAPIGuildAuthRoute(loritta: LorittaDiscord, originalDashbo
 		val loriShardId = DiscordUtils.getLorittaClusterIdForShardId(shardId)
 		val theNewUrl = DiscordUtils.getUrlForLorittaClusterId(loriShardId)
 
-		if (host != theNewUrl) {
-			call.respondRedirect("https://$theNewUrl${call.request.path()}${call.request.urlQueryString}", false)
-			return
-		}
+		if (host != theNewUrl)
+			redirect("https://$theNewUrl${call.request.path()}${call.request.urlQueryString}", false)
 
 		val jdaGuild = lorittaShards.getGuildById(guildId)
 				?: throw WebsiteAPIException(

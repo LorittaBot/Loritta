@@ -15,6 +15,7 @@ import io.ktor.application.ApplicationCall
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.statement.HttpResponse
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.userAgent
 import io.ktor.request.header
 import io.ktor.request.path
@@ -31,7 +32,6 @@ import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.website.utils.extensions.urlQueryString
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
-import io.ktor.http.HttpStatusCode
 import org.jsoup.Jsoup
 import org.jsoup.parser.Parser
 import java.util.concurrent.TimeUnit

@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.website.routes.RequiresDiscordLoginLocalizedRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.extensions.legacyVariables
+import net.perfectdreams.loritta.website.utils.extensions.redirect
 import net.perfectdreams.loritta.website.utils.extensions.urlQueryString
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
@@ -40,14 +41,14 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaDiscord, original
 		start = System.currentTimeMillis()
 
 		if (host != theNewUrl) {
-			call.respondRedirect("https://$theNewUrl${call.request.path()}${call.request.urlQueryString}", false)
+			redirect("https://$theNewUrl${call.request.path()}${call.request.urlQueryString}", false)
 			return
 		}
 
 		val jdaGuild = lorittaShards.getGuildById(guildId)
 
 		if (jdaGuild == null) {
-			call.respondRedirect(com.mrpowergamerbr.loritta.utils.loritta.discordInstanceConfig.discord.addBotUrl, false)
+			redirect(com.mrpowergamerbr.loritta.utils.loritta.discordInstanceConfig.discord.addBotUrl, false)
 			return
 		}
 

@@ -32,10 +32,7 @@ import net.perfectdreams.loritta.website.blog.Blog
 import net.perfectdreams.loritta.website.routes.LocalizedRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.ScriptingUtils
-import net.perfectdreams.loritta.website.utils.extensions.respondHtml
-import net.perfectdreams.loritta.website.utils.extensions.respondJson
-import net.perfectdreams.loritta.website.utils.extensions.trueIp
-import net.perfectdreams.loritta.website.utils.extensions.urlQueryString
+import net.perfectdreams.loritta.website.utils.extensions.*
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.io.File
@@ -119,12 +116,16 @@ class LorittaWebsite(val loritta: Loritta) {
 						logger.warn { "Unauthorized token! Redirecting to dashboard... $cause" }
 						val hostHeader = call.request.host()
 						call.sessions.clear<LorittaJsonWebSession>()
-						call.respondRedirect("https://$hostHeader/dashboard", true)
+						redirect("https://$hostHeader/dashboard", true)
 					}
 				}
 
 				exception<WebsiteAPIException> { cause ->
 					call.respondJson(cause.payload, cause.status)
+				}
+
+				exception<HttpRedirectException> { e ->
+					call.respondRedirect(e.location, permanent = e.permanent)
 				}
 
 				exception<Throwable> { cause ->
@@ -165,7 +166,7 @@ class LorittaWebsite(val loritta: Loritta) {
 				for (route in (routes + loritta.pluginManager.plugins.filterIsInstance<LorittaDiscordPlugin>().flatMap { it.routes })) {
 					if (route is LocalizedRoute) {
 						get(route.originalPath) {
-							call.respondRedirect(config.websiteUrl + "/br${call.request.uri}")
+							redirect(config.websiteUrl + "/br${call.request.uri}")
 						}
 					}
 

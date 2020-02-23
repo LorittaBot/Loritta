@@ -8,11 +8,12 @@ import io.ktor.sessions.clear
 import io.ktor.sessions.sessions
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.website.utils.extensions.redirect
 
 class LogoutRoute(loritta: LorittaDiscord) : LocalizedRoute(loritta, "/logout") {
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
 		val hostHeader = call.request.host()
 		call.sessions.clear<LorittaJsonWebSession>()
-		call.respondRedirect("https://$hostHeader/", true)
+		redirect("https://$hostHeader/", true)
 	}
 }
