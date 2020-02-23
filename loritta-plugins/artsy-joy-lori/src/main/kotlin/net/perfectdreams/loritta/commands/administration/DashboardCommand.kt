@@ -1,13 +1,12 @@
 package net.perfectdreams.loritta.commands.administration
 
-import com.mrpowergamerbr.loritta.Loritta
-import net.perfectdreams.loritta.api.commands.*
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.LoriReply
-import net.dv8tion.jda.api.Permission
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
-import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.dv8tion.jda.api.Permission
 import net.perfectdreams.commands.annotation.Subcommand
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 
 class DashboardCommand : LorittaCommand(arrayOf("dashboard", "painel", "configurar", "config"), CommandCategory.ADMIN) {
@@ -29,7 +28,7 @@ class DashboardCommand : LorittaCommand(arrayOf("dashboard", "painel", "configur
         val dashboardUrl = "${loritta.instanceConfig.loritta.website.url}dashboard"
         var url = dashboardUrl
         if (!context.isPrivateChannel) {
-            url = "$dashboardUrl/configure/${context.discordGuild!!.id}"
+            url = "${loritta.instanceConfig.loritta.website.url}guild/${context.discordGuild!!.id}/configure/"
         }
 
         /*
