@@ -161,13 +161,13 @@ class AutomatedLocales(name: String, loritta: LorittaBot) : LorittaPlugin(name, 
             ">_<"
     )
 
-    fun convertLocaleToPseudoLocalization(localeId: String, originalLocale: BaseLocale): BaseLocale {
-        val doNotChangeThisKeys = listOf(
-                "loritta.inheritsFromLanguageId",
-                "commands.fortnite.shop.localeId",
-                "website.localePath"
-        )
+    val doNotChangeThisKeys = listOf(
+            "loritta.inheritsFromLanguageId",
+            "commands.fortnite.shop.localeId",
+            "website.localePath"
+    )
 
+    fun convertLocaleToPseudoLocalization(localeId: String, originalLocale: BaseLocale): BaseLocale {
         val newLocale = BaseLocale(localeId)
 
         for ((key, value) in originalLocale.localeEntries) {
@@ -194,7 +194,9 @@ class AutomatedLocales(name: String, loritta: LorittaBot) : LorittaPlugin(name, 
         val newLocale = BaseLocale(localeId)
 
         for ((key, value) in originalLocale.localeEntries) {
-            if (value is String) {
+            if (key in doNotChangeThisKeys) {
+                newLocale.localeEntries[key] = value
+            } else if (value is String) {
                 val furrifiedMessage = furrify(value)
                 if (furrifiedMessage != value)
                     newLocale.localeEntries[key] = furrifiedMessage
