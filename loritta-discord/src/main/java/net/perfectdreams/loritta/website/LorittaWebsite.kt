@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.website
 
+import com.google.common.collect.Lists
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -36,6 +37,7 @@ import net.perfectdreams.loritta.website.utils.extensions.*
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.io.File
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.full.createType
 
@@ -166,7 +168,22 @@ class LorittaWebsite(val loritta: Loritta) {
 				for (route in (routes + loritta.pluginManager.plugins.filterIsInstance<LorittaDiscordPlugin>().flatMap { it.routes })) {
 					if (route is LocalizedRoute) {
 						get(route.originalPath) {
-							redirect(config.websiteUrl + "/br${call.request.uri}")
+							val acceptLanguage = call.request.header("Accept-Language") ?: "en-US"
+							val ranges = Lists.reverse<Locale.LanguageRange>(Locale.LanguageRange.parse(acceptLanguage))
+							var localeId: String = "en-us"
+							for (range in ranges) {
+								localeId = range.range.toLowerCase()
+								if (localeId == "pt-br" || localeId == "pt") {
+									localeId = "default"
+								}
+								if (localeId == "en") {
+									localeId = "en-us"
+								}
+							}
+
+							val locale = loritta.getLocaleById(localeId)
+
+							redirect(config.websiteUrl + "/${locale.path}${call.request.uri}")
 						}
 					}
 
