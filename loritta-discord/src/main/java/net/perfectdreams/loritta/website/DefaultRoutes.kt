@@ -21,7 +21,10 @@ import net.perfectdreams.loritta.website.routes.dashboard.configure.*
 import net.perfectdreams.loritta.website.routes.extras.ExtrasViewerRoute
 import net.perfectdreams.loritta.website.routes.landingpages.BrazilianBotLandingPageRoute
 import net.perfectdreams.loritta.website.routes.sponsors.SponsorsRedirectRoute
+import net.perfectdreams.loritta.website.routes.user.UserDashboardRoute
 import net.perfectdreams.loritta.website.routes.user.UserReputationRoute
+import net.perfectdreams.loritta.website.routes.user.dashboard.ProfileListRoute
+import net.perfectdreams.loritta.website.routes.user.dashboard.ShipEffectsRoute
 
 object DefaultRoutes {
 	fun defaultRoutes(loritta: LorittaDiscord) = mutableListOf(
@@ -78,6 +81,11 @@ object DefaultRoutes {
 
 			// Reps
 			UserReputationRoute(loritta),
+
+			// Profiles
+			UserDashboardRoute(loritta),
+			ProfileListRoute(loritta),
+			ShipEffectsRoute(loritta),
 
 			// ===[ API ROUTES ]===
 			// Callbacks

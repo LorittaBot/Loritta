@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
-import net.perfectdreams.loritta.website.routes.user.dashboard.ProfleListRoute
+import net.perfectdreams.loritta.website.routes.user.dashboard.ProfileListRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
@@ -148,7 +148,7 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 			call.respondJson(
 					gson.toJsonTree(
 							com.mrpowergamerbr.loritta.utils.loritta.profileDesignManager.publicDesigns.map {
-								ProfleListRoute.getProfileAsJson(userIdentification, it.clazz, it.internalType, profileSettings, it.price)
+								ProfileListRoute.getProfileAsJson(userIdentification, it.clazz, it.internalType, profileSettings, it.price)
 							}
 					)
 			)
@@ -173,7 +173,7 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 			call.respondJson(
 					gson.toJsonTree(
 							com.mrpowergamerbr.loritta.utils.loritta.profileDesignManager.publicDesigns.map {
-								ProfleListRoute.getProfileAsJson(userIdentification, it.clazz, it.internalType, profileSettings, it.price)
+								ProfileListRoute.getProfileAsJson(userIdentification, it.clazz, it.internalType, profileSettings, it.price)
 							}
 					)
 			)
