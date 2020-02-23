@@ -43,12 +43,6 @@ class BucketedController @JvmOverloads constructor(@Nonnegative bucketFactor: In
 		runBlocking {
 			rateLimitListMutex.withLock {
 				removeOutdatedGlobalRateLimitHits()
-				val diff = System.currentTimeMillis() - lastTooManyRequestsCheck
-				if (diff >= 15_000) {
-					logger.info { "Doing self too many requests check... Last check was ${diff}ms ago" }
-					loritta.rateLimitChecker.checkIfRequestShouldBeIgnored()
-					lastTooManyRequestsCheck = System.currentTimeMillis()
-				}
 
 				rateLimits.add(
 						RateLimitHit(
@@ -57,6 +51,13 @@ class BucketedController @JvmOverloads constructor(@Nonnegative bucketFactor: In
 						)
 				)
 			}
+		}
+
+		val diff = System.currentTimeMillis() - lastTooManyRequestsCheck
+		if (diff >= 15_000) {
+			logger.info { "Doing self too many requests check... Last check was ${diff}ms ago" }
+			loritta.rateLimitChecker.checkIfRequestShouldBeIgnored()
+			lastTooManyRequestsCheck = System.currentTimeMillis()
 		}
 	}
 
