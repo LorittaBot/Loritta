@@ -44,6 +44,7 @@ object DefaultRoutes {
 			DailyRoute(loritta),
 			NashornDocsRoute(loritta),
 			DonateRoute(loritta),
+			LogoutRoute(loritta),
 
 			// Landing Pages
 			BrazilianBotLandingPageRoute(loritta),
