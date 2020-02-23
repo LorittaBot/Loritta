@@ -136,7 +136,7 @@ class MSNProfileCreator : ProfileCreator {
 		graphics.font = whitneyBold20
 		graphics.drawText("Sonhos", 4, 98  + shiftY, 244)
 		graphics.font = whitneySemiBold20
-		graphics.drawText("%.2f".format(userProfile.money), 4, 116  + shiftY, 244)
+		graphics.drawText(userProfile.money.toString(), 4, 116  + shiftY, 244)
 
 		var x = 272
 		for (badge in badges) {
