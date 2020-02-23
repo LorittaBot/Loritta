@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.threads
 
-import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.nullString
+import com.github.salomonbrys.kotson.obj
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -75,7 +75,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 			val minutes = calendar.get(Calendar.MINUTE) / 10
 			val diff = System.currentTimeMillis() - lastUpdate
 
-			if (fanArtMinutes != minutes) { // Diferente!
+			if (currentFanArt == null || fanArtMinutes != minutes) { // Diferente!
 				fanArtMinutes = minutes
 				if (currentIndex > loritta.discordConfig.discord.fanArtExtravaganza.fanArts.size - 1) {
 					currentIndex = 0
@@ -93,7 +93,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 			}
 
 			if (diff >= 25_000 && firstInstance != null) {
-				val currentFanArtInMasterCluster = runBlocking { lorittaShards.queryMasterLorittaCluster("/api/v1/loritta/current-fan-art-avatar").await() }
+				val currentFanArtInMasterCluster = runBlocking { lorittaShards.queryMasterLorittaCluster("/api/v1/loritta/current-fan-art-avatar").await() }.obj
 
 				val artistId = currentFanArtInMasterCluster["artistId"].nullString
 				if (artistId != null) { // Se o artistId for nulo, então ele não está marcado!
