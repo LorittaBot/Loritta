@@ -2193,13 +2193,6 @@ class LorittaImage {
 			dx3 = x0 - x1 + x2 - x3
 			dy3 = y0 - y1 + y2 - y3
 
-			println("dx1: $dx1")
-			println("dy1: $dy1")
-			println("dx2: $dx2")
-			println("dy2: $dy2")
-			println("dx3: $dx3")
-			println("dy3: $dy3")
-
 			val a11: Float
 			val a12: Float
 			val a13: Float
@@ -2239,16 +2232,6 @@ class LorittaImage {
 			H = a21 * a13 - a11 * a23
 			I = a11 * a22 - a21 * a12
 
-			println("A: $A")
-			println("B: $B")
-			println("C: $C")
-			println("D: $D")
-			println("E: $E")
-			println("F: $F")
-			println("G: $G")
-			println("H: $H")
-			println("I: $I")
-
 			return filter(src, dst)
 		}
 
@@ -2270,9 +2253,6 @@ class LorittaImage {
 			transformedSpace = Rectangle(0, 0, width, height)
 			transformSpace(transformedSpace)
 
-			println("originalSpace: $originalSpace")
-			println("transformedSpace: $transformedSpace")
-
 			if (dst == null) {
 				val dstCM = src.colorModel
 				dst = BufferedImage(
@@ -2284,8 +2264,6 @@ class LorittaImage {
 			//WritableRaster dstRaster = dst.getRaster();
 
 			val inPixels = getRGB(src, 0, 0, width, height, null)
-			println(inPixels.size)
-			println(inPixels[0])
 
 			if (interpolation == NEAREST_NEIGHBOUR)
 				return filterPixelsNN(dst, width, height, inPixels, transformedSpace)
