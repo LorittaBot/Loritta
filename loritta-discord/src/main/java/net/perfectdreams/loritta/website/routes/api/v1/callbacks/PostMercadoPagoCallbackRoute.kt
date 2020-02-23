@@ -17,7 +17,7 @@ import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.mercadopago.PaymentStatus
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class PostMercadoPagoCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/callbacks/pubsubhubbub") {
+class PostMercadoPagoCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/callbacks/mercadopago") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 		var allowAnyPayment = false
