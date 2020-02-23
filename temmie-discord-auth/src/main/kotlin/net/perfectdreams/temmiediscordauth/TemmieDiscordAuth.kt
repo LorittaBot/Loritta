@@ -42,13 +42,12 @@ class TemmieDiscordAuth(val clientId: String,
 		private const val USER_AGENT = "Loritta-Morenitta-Discord-Auth/1.0"
 		private val gson = Gson()
 		private val logger = KotlinLogging.logger {}
+		val http = HttpClient {
+			this.expectSuccess = false
+		}
 	}
 
 	private val mutex = Mutex()
-
-	val http = HttpClient {
-		this.expectSuccess = false
-	}
 
 	suspend fun doTokenExchange(): JsonObject {
 		logger.info { "doTokenExchange()" }
