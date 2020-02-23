@@ -234,7 +234,7 @@ class TemmieDiscordAuth(val clientId: String,
 	}
 
 	private suspend fun checkIfRequestWasValid(response: HttpResponse): String {
-		if (response.status.value in 400..499)
+		if (response.status.value == 401)
 			throw TokenUnauthorizedException(response.status)
 
 		return response.readText()
