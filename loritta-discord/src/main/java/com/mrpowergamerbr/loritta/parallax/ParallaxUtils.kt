@@ -164,7 +164,8 @@ object ParallaxUtils {
 				"author" to transformToJson(message.author),
 				"textChannelId" to message.channel.idLong,
 				"content" to message.contentRaw,
-				"cleanContent" to message.contentStripped
+				"cleanContent" to message.contentStripped,
+				"mentionedUsers" to message.mentionedUsers.map { transformToJson(it) }.toJsonArray()
 		)
 	}
 

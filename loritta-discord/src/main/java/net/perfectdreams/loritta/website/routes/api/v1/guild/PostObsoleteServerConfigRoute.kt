@@ -122,7 +122,7 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 				params
 		)
 
-		loritta save serverConfig
+		loritta save legacyServerConfig
 
 		call.respondJson(jsonObject())
 	}

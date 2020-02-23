@@ -8,7 +8,6 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornContext
 import com.mrpowergamerbr.loritta.parallax.ParallaxUtils
-import com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxContext
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -111,99 +110,63 @@ var getGuild=function() { return contexto.getGuild(); };"""
 			}
 			executor.shutdownNow()
 		} else {
-			if (javaScript.contains("// WEBSERVER")) {
-				val guild = ogContext.guild
+			val guild = ogContext.guild
 
-				val members = JsonArray()
+			val members = JsonArray()
 
-				guild.members.forEach {
-					members.add(
-							ParallaxUtils.transformToJson(it)
-					)
-				}
+			members.add(
+					ParallaxUtils.transformToJson(ogContext.message.member!!)
+			)
 
-				val channels = JsonArray()
+			val channels = JsonArray()
 
-				guild.channels.forEach {
-					channels.add(
-							jsonObject(
-									"id" to it.idLong,
-									"name" to it.name
-							)
-					)
-				}
-
-				val roles = JsonArray()
-
-				guild.roles.forEach {
-					roles.add(
-							jsonObject(
-									"id" to it.idLong,
-									"name" to it.name
-
-							)
-					)
-				}
-
-				val jsonGuild = jsonObject(
-						"id" to ogContext.guild.idLong,
-						"name" to ogContext.guild.name,
-						"members" to members,
-						"channels" to channels,
-						"roles" to roles
+			guild.channels.forEach {
+				channels.add(
+						jsonObject(
+								"id" to it.idLong,
+								"name" to it.name
+						)
 				)
-
-				val commandRequest = jsonObject(
-						"code" to javaScript,
-						"guild" to jsonGuild,
-						"message" to ParallaxUtils.transformToJson(ogContext.message),
-						"lorittaClusterId" to loritta.lorittaCluster.id,
-						"args" to ogContext.rawArgs.toList().toJsonArray(),
-						"clusterUrl" to "https://${loritta.lorittaCluster.getUrl()}"
-				)
-
-				logger.info { "Sending code to the Parallax Server Executor..." }
-
-				loritta.http.post<io.ktor.client.statement.HttpResponse>("http://${NetAddressUtils.fixIp(loritta.config.parallaxCodeServer.url)}/api/v1/parallax/process-command") {
-					userAgent(loritta.lorittaCluster.getUserAgent())
-
-					body = gson.toJson(commandRequest)
-				}
-
-				logger.info { "Parallax code sent to the server executor!" }
-			} else {
-				// Funções inline para facilitar a programação de comandos
-				val inlineMethods = """
-				var guild = context.guild;
-				var member = context.member;
-				var user = context.member;
-				var author = context.member;
-				var message = context.message;
-				var channel = context.message.channel;
-				var client = context.client;
-				var RichEmbed = Java.type('com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxEmbed')
-				var Attachment = Java.type('com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxAttachment')
-				var http = Java.type('com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxHttp')
-			""".trimIndent()
-				val executor = Executors.newSingleThreadExecutor(ThreadFactoryBuilder().setNameFormat("JavaScript (GraalJS) Evaluator Thread for Guild ${ogContext.guild.idLong} - %s").build())
-				try {
-					val parallaxContext = ParallaxContext(ogContext)
-					val future = executor.submit(
-							ParallaxTask(
-									graalContext,
-									"(function(context) { \n" +
-											"$inlineMethods\n" +
-											"$javaScript\n })",
-									ogContext,
-									parallaxContext
-							)
-					)
-					future.get(15, TimeUnit.SECONDS)
-				} catch (e: Throwable) {
-					ParallaxUtils.sendThrowableToChannel(e, ogContext.event.channel)
-				}
-				executor.shutdownNow()
 			}
+
+			val roles = JsonArray()
+
+			guild.roles.forEach {
+				roles.add(
+						jsonObject(
+								"id" to it.idLong,
+								"name" to it.name
+
+						)
+				)
+			}
+
+			val jsonGuild = jsonObject(
+					"id" to ogContext.guild.idLong,
+					"name" to ogContext.guild.name,
+					"members" to members,
+					"channels" to channels,
+					"roles" to roles
+			)
+
+			val commandRequest = jsonObject(
+					"code" to javaScript,
+					"guild" to jsonGuild,
+					"message" to ParallaxUtils.transformToJson(ogContext.message),
+					"lorittaClusterId" to loritta.lorittaCluster.id,
+					"args" to ogContext.rawArgs.toList().toJsonArray(),
+					"clusterUrl" to "https://${loritta.lorittaCluster.getUrl()}"
+			)
+
+			logger.info { "Sending code to the Parallax Server Executor..." }
+
+			loritta.http.post<io.ktor.client.statement.HttpResponse>("http://${NetAddressUtils.fixIp(loritta.config.parallaxCodeServer.url)}/api/v1/parallax/process-command") {
+				userAgent(loritta.lorittaCluster.getUserAgent())
+
+				body = gson.toJson(commandRequest)
+			}
+
+			logger.info { "Parallax code sent to the server executor!" }
 		}
 	}
 
