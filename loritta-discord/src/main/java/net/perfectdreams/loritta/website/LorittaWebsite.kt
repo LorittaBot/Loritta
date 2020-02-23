@@ -12,10 +12,7 @@ import io.ktor.http.CacheControl
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.*
-import io.ktor.request.httpMethod
-import io.ktor.request.path
-import io.ktor.request.uri
-import io.ktor.request.userAgent
+import io.ktor.request.*
 import io.ktor.response.respondRedirect
 import io.ktor.routing.Routing
 import io.ktor.routing.RoutingApplicationCall
@@ -39,6 +36,7 @@ import net.perfectdreams.loritta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.website.utils.extensions.trueIp
 import net.perfectdreams.loritta.website.utils.extensions.urlQueryString
+import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
@@ -107,6 +105,12 @@ class LorittaWebsite(val loritta: Loritta) {
 
 				exception<WebsiteAPIException> { cause ->
 					call.respondJson(cause.payload, cause.status)
+				}
+
+				exception<TemmieDiscordAuth.TokenUnauthorizedException> { cause ->
+					logger.warn { "Unauthorized token! Redirecting to dashboard... $cause" }
+					val hostHeader = call.request.host()
+					call.respondRedirect("https://$hostHeader/dashboard", true)
 				}
 
 				exception<Throwable> { cause ->

@@ -14,11 +14,10 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.url
-import io.ktor.http.ContentType
-import io.ktor.http.Parameters
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.readText
+import io.ktor.http.*
 import io.ktor.http.content.TextContent
-import io.ktor.http.formUrlEncode
-import io.ktor.http.userAgent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -99,12 +98,14 @@ class TemmieDiscordAuth(val clientId: String,
 		}
 
 		doStuff {
-			val result = http.post<String> {
-				url(TOKEN_BASE_URL)
-				userAgent(USER_AGENT)
+			val result = checkIfRequestWasValid(
+					http.post {
+						url(TOKEN_BASE_URL)
+						userAgent(USER_AGENT)
 
-				body = TextContent(parameters.formUrlEncode(), ContentType.Application.FormUrlEncoded)
-			}
+						body = TextContent(parameters.formUrlEncode(), ContentType.Application.FormUrlEncoded)
+					}
+			)
 
 			logger.info { result }
 
@@ -141,11 +142,13 @@ class TemmieDiscordAuth(val clientId: String,
 	suspend fun getUserGuilds(): List<Guild> {
 		logger.info { "getUserGuilds()" }
 		return doStuff {
-			val result = http.get<String> {
-				url(USER_GUILDS_URL)
-				userAgent(USER_AGENT)
-				header("Authorization", "Bearer $accessToken")
-			}
+			val result = checkIfRequestWasValid(
+					http.get {
+						url(USER_GUILDS_URL)
+						userAgent(USER_AGENT)
+						header("Authorization", "Bearer $accessToken")
+					}
+			)
 
 			logger.info { result }
 
@@ -159,11 +162,14 @@ class TemmieDiscordAuth(val clientId: String,
 	suspend fun getUserConnections(): List<Connection> {
 		logger.info { "getUserConnections()" }
 		return doStuff {
-			val result = http.get<String> {
-				url(CONNECTIONS_URL)
-				userAgent(USER_AGENT)
-				header("Authorization", "Bearer $accessToken")
-			}
+			val result =
+					checkIfRequestWasValid(
+							http.get {
+								url(CONNECTIONS_URL)
+								userAgent(USER_AGENT)
+								header("Authorization", "Bearer $accessToken")
+							}
+					)
 
 			logger.info { result }
 
@@ -227,7 +233,15 @@ class TemmieDiscordAuth(val clientId: String,
 
 		return false
 	}
-	
+
+	private suspend fun checkIfRequestWasValid(response: HttpResponse): String {
+		if (response.status.value in 400..499)
+			throw TokenUnauthorizedException(response.status)
+
+		return response.readText()
+	}
+
+	class TokenUnauthorizedException(status: HttpStatusCode) : RuntimeException()
 	class TokenExchangeException(message: String) : RuntimeException(message)
 
 	class UserIdentification constructor(
