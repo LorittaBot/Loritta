@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.runBlocking
+import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.Icon
@@ -24,6 +25,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 	companion object {
 		var skipToIndex = -1 // owo
 		var currentFanArt: GeneralConfig.LorittaAvatarFanArt? = null
+		private val logger = KotlinLogging.logger {}
 	}
 
 	var lastUpdate: Long = System.currentTimeMillis()
@@ -39,9 +41,9 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 			try {
 				updateStatus()
 			} catch (e: Exception) {
-				e.printStackTrace()
+				logger.error(e) { "Something went wrong while trying to update the bot status!" }
 			}
-			Thread.sleep(1000)
+			sleep(1000)
 		}
 	}
 
