@@ -22,7 +22,6 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.tables.BotVotes
 import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.FeatureFlags
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction

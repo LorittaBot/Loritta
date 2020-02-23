@@ -232,7 +232,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 						return
 					}
 
-					redirect("https://$hostHeader/dashboard/configure/${guildId}", false)
+					redirect("https://$hostHeader/guild/${guildId}/configure", false)
 					return
 				}
 
