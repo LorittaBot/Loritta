@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.watchdog.listeners
 
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.Gson
-import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.statement.HttpResponse
@@ -127,9 +126,14 @@ class MessageListener(val m: WatchdogBot) : ListenerAdapter() {
 							if (actions.contains("restart")) {
 								try {
 									withTimeout(25_000) {
-										m.http.get<HttpResponse>("https://${clusterInfo.getUrl(bot)}/api/v1/loritta/update") {
+										m.http.post<HttpResponse>("https://${clusterInfo.getUrl(bot)}/api/v1/loritta/update") {
 											header("Authorization", clusterInfo.apiKey)
 											userAgent(WatchdogBot.USER_AGENT)
+											body = Gson().toJson(
+													jsonObject(
+															"type" to "restart"
+													)
+											)
 										}
 									}
 								} catch (e: Exception) {}
