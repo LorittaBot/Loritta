@@ -7,7 +7,8 @@ class Message(
 		val author: User,
 		val textChannelId: Long,
 		val content: String,
-		val cleanContent: String
+		val cleanContent: String,
+		val mentionedUsers: List<User>
 ) {
 	lateinit var channel: TextChannel
 

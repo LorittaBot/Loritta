@@ -1,11 +1,14 @@
 package net.perfectdreams.loritta.parallax.wrapper
 
+import com.github.salomonbrys.kotson.set
 import io.ktor.client.request.delete
 import io.ktor.client.request.header
 import io.ktor.client.request.put
 import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.readText
 import io.ktor.http.userAgent
 import net.perfectdreams.loritta.parallax.ParallaxServer
+import net.perfectdreams.loritta.parallax.ParallaxServer.Companion.gson
 
 class Guild(
 		val id: Long,
@@ -45,6 +48,31 @@ class Guild(
 				this.userAgent(ParallaxServer.USER_AGENT)
 				this.header("Authorization", ParallaxServer.authKey)
 			}
+
+			null
+		}
+	}
+
+	/* @JvmOverloads
+	fun ban(user: User, options: Map<String, Any> = mapOf()) {
+		ban(user, ParallaxUser(guild.selfMember.user), options)
+	} */
+
+	@JvmOverloads
+	fun ban(user: User, punisher: User, options: Map<String, Any> = mapOf()): JavaScriptPromise {
+		println("ban(...)")
+		return context.rateLimiter.wrapPromise {
+			println("${context.clusterUrl}/api/v1/parallax/guilds/$id/bans/${user.id}")
+			val response = ParallaxServer.http.put<HttpResponse>("${context.clusterUrl}/api/v1/parallax/guilds/$id/bans/${user.id}") {
+				this.userAgent(ParallaxServer.USER_AGENT)
+				this.header("Authorization", ParallaxServer.authKey)
+
+				val payload = gson.toJsonTree(options)
+				payload["punisher"] = punisher.id
+				body = gson.toJson(payload)
+			}
+
+			println(response.readText())
 
 			null
 		}
