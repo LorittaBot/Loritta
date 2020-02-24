@@ -69,8 +69,7 @@ class NashornCommand : AbstractCommand {
 
 		if (!useNewAPI) {
 			// Funções inline para facilitar a programação de comandos
-			val inlineMethods = """var nashornUtils = Java.type("com.mrpowergamerbr.loritta.commands.nashorn.NashornUtils");
-var loritta=function(){ return nashornUtils.loritta(); };
+			val inlineMethods = """var loritta=function(){ return nashornUtils.loritta(); };
 var message=function(){ return contexto.getMessage(); };
 var author=function(){ return contexto.getSender(); };
 var getMessage=function(){ return contexto.getMessage(); };
