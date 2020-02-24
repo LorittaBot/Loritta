@@ -11,6 +11,7 @@ class DonatorsOstentationConfig @JsonCreator constructor(
 ) {
 	class BoostEnabledGuild @JsonCreator constructor(
 			val id: Long,
-			val inviteId: String
+			val inviteId: String,
+			val priority: Int
 	)
 }

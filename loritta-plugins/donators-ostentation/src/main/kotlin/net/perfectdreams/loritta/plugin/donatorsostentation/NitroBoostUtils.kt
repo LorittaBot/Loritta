@@ -191,7 +191,7 @@ object NitroBoostUtils {
 						canBoostGuilds.add(config.boostEnabledGuilds.first { queriedGuild["id"].long == it.id })
 				}
 
-				val bestGuildToBoost = canBoostGuilds.take(2)
+				val bestGuildToBoost = canBoostGuilds.sortedByDescending { it.priority }.take(2)
 
 				val newContent = buildString {
 					if (bestGuildToBoost.isEmpty())
