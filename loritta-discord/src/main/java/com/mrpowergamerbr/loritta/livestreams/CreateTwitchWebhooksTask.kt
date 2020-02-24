@@ -43,9 +43,6 @@ class CreateTwitchWebhooksTask : Runnable {
 			val userIds = mutableSetOf<Long>()
 			userIds.addAll(allChannelIds.map { it[TrackedTwitchAccounts.twitchUserId] })
 
-			// Transformar todos os nossos user logins em user IDs, para que seja usado depois
-			val streamerInfos = runBlocking { loritta.twitch.getUserLoginsById(userIds.toMutableList()) }
-
 			val twitchWebhookFile = File(Loritta.FOLDER, "twitch_webhook.json")
 
 			if (!fileLoaded && twitchWebhookFile.exists()) {
@@ -78,7 +75,7 @@ class CreateTwitchWebhooksTask : Runnable {
 
 			val webhookCount = AtomicInteger()
 
-			val tasks = notCreatedYetChannels.filter { streamerInfos[it] != null }.map { userId ->
+			val tasks = notCreatedYetChannels.map { userId ->
 				GlobalScope.async(loritta.coroutineDispatcher, start = CoroutineStart.LAZY) {
 					try {
 						// Iremos primeiro desregistrar todos os nossos testes marotos
