@@ -159,14 +159,18 @@ object NitroBoostUtils {
 			logger.info { "Updating Valid Guild Boost Messages..." }
 
 			try {
-				val channel = lorittaShards.getTextChannelById(config.channelId.toString()) ?: run {
+				val channel = lorittaShards.getTextChannelById(config.channelId.toString())
+
+				if (channel == null) {
 					logger.warn { "Nitro Guilds Channel not found!" }
-					return@update
+					continue
 				}
 
-				val message = channel.retrieveMessageById(config.messageId).await() ?: run {
+				val message = channel.retrieveMessageById(config.messageId).await()
+
+				if (message == null) {
 					logger.warn { "Nitro Guilds Message not found!" }
-					return@update
+					continue
 				}
 
 				val guilds = config.boostEnabledGuilds.map {
