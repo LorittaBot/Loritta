@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.plugin.LorittaPlugin
+import net.perfectdreams.loritta.commands.vanilla.magic.LoriToolsCommand
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.routes.BaseRoute
 import net.perfectdreams.loritta.website.utils.config.types.ConfigTransformer
@@ -18,6 +19,7 @@ open class LorittaDiscordPlugin(name: String, loritta: LorittaBot) : LorittaPlug
 	val serverConfigColumns = mutableListOf<Column<out Any?>>()
 	val dataFolder by lazy { File(Loritta.FOLDER, "plugins/$name") }
 	val eventListeners = mutableListOf<ListenerAdapter>()
+	val loriToolsExecutors = mutableListOf<LoriToolsCommand.LoriToolsExecutor>()
 
 	fun addEventListener(eventListener: ListenerAdapter) {
 		eventListeners.add(eventListener)

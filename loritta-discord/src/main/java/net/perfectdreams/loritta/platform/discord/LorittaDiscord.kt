@@ -23,6 +23,7 @@ import io.ktor.client.statement.readBytes
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.userAgent
 import net.perfectdreams.loritta.api.LorittaBot
+import net.perfectdreams.loritta.commands.vanilla.magic.LoriToolsCommand
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandMap
 import net.perfectdreams.loritta.platform.discord.plugin.JVMPluginManager
 import net.perfectdreams.loritta.platform.discord.utils.JVMLorittaAssets
@@ -41,7 +42,9 @@ import kotlin.random.Random
  * This should be extended by plataform specific Lori's
  */
 abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig: GeneralDiscordInstanceConfig, var config: GeneralConfig, var instanceConfig: GeneralInstanceConfig) : LorittaBot() {
-    override val commandMap = DiscordCommandMap(this)
+    override val commandMap = DiscordCommandMap(this).apply {
+        register(LoriToolsCommand.create(discordLoritta))
+    }
     override val pluginManager = JVMPluginManager(this)
     override val assets = JVMLorittaAssets(this)
     var locales = mapOf<String, BaseLocale>()
