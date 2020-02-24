@@ -8,17 +8,34 @@ import com.mrpowergamerbr.loritta.utils.PatchData
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
+import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
+import kotlin.concurrent.thread
+import kotlin.system.exitProcess
 
 class PostUpdateReadyRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/update") {
+	companion object {
+		val logger = KotlinLogging.logger {}
+	}
+
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
 		val json = jsonParser.parse(call.receiveText())
 
 		val type = json["type"].string
 
 		when (type) {
+			"restart" -> {
+				logger.info { "Received request to restart, waiting 2.5s and then shutting down..." }
+
+				thread {
+					Thread.sleep(2_500)
+					exitProcess(0)
+				}
+
+				call.respondJson(jsonObject())
+			}
 			"setRestartTimer" -> {
 				val willRestartAt = json["willRestartAt"].long
 
