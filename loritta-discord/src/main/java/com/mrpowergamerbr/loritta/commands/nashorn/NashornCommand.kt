@@ -69,11 +69,10 @@ class NashornCommand : AbstractCommand {
 
 		if (!useNewAPI) {
 			// Funções inline para facilitar a programação de comandos
-			val inlineMethods = """var loritta=function(){ return nashornUtils.loritta(); };
+			val inlineMethods = """
 var message=function(){ return contexto.getMessage(); };
 var author=function(){ return contexto.getSender(); };
 var getMessage=function(){ return contexto.getMessage(); };
-var getURL=function(url){ return nashornUtils.getURL(url); };
 var reply=function(mensagem){ return contexto.reply(mensagem); };
 var sendMessage=function(mensagem){ return contexto.sendMessage(mensagem); };
 var sendImage=function(imagem, mensagem){ return contexto.sendImage(imagem, mensagem || " "); };
@@ -85,8 +84,6 @@ var getRawArguments=function(){ return contexto.getRawArguments(); };
 var getStrippedArguments=function(){ return contexto.getStrippedArguments(); };
 var joinArguments=function(delimitador){ return contexto.joinArguments(delimitador || " "); };
 var createImage=function(x, y){ return contexto.createImage(x, y); };
-var downloadImage=function(url){ return nashornUtils.downloadImage(url); };
-var rgb=function(r, g, b) { return nashornUtils.createColor(r, g, b); };
 var getImageFromContext=function(argumento) { return contexto.pegarImagemDoContexto(argumento); };
 var getGuild=function() { return contexto.getGuild(); };"""
 			val executor = Executors.newSingleThreadExecutor(ThreadFactoryBuilder().setNameFormat("JavaScript (GraalJS (Old)) Evaluator Thread for Guild ${ogContext.guild.idLong} - %s").build())

@@ -38,8 +38,7 @@ class NashornEventHandler {
 		// Funções que jamais poderão ser usadas em comandos
 		val blacklisted = "var quit=function(){throw 'Operação não suportada: quit';};var exit=function(){throw 'Operação não suportada: exit';};var print=function(){throw 'Operação não suportada: print';};var echo=function(){throw 'Operação não suportada: echo';};var readLine=function(){throw 'Operação não suportada: readLine';};var readFully=function(){throw 'Operação não suportada: readFully';};var load=function(){throw 'Operação não suportada: load';};var loadWithNewGlobal=function(){throw 'Operação não suportada: loadWithNewGlobal';};"
 		// Funções inline para facilitar a programação de comandos
-		val inlineMethods = """var nashornUtils = Java.type("com.mrpowergamerbr.loritta.commands.nashorn.NashornUtils");
-var loritta=function(){ return nashornUtils.loritta(); };"""
+		val inlineMethods = """"""
 
 		val executor = Executors.newSingleThreadExecutor()
 		val future = executor.submit(NashornEventTask(engine, "$blacklisted $inlineMethods\n$javaScript", call, *objects))
