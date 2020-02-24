@@ -35,6 +35,7 @@ class JVMPluginManager(val loritta: LorittaDiscord) : PluginManager {
 		} catch (e: Exception) {
 			logger.error(e) { "Exception while enabling plugin ${plugin.name}" }
 			unloadPlugin(plugin)
+			return
 		}
 		plugins.add(plugin)
 		val newlyAvailableRoutes = plugins.filterIsInstance<LorittaDiscordPlugin>().flatMap { it.routes }
