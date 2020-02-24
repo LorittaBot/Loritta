@@ -203,7 +203,7 @@ class LorittaWebsite(val loritta: Loritta) {
 
 							val locale = loritta.getLocaleById(localeId)
 
-							redirect(config.websiteUrl + "/${locale.path}${call.request.uri}")
+							redirect("/${locale.path}${call.request.uri}")
 						}
 					}
 
