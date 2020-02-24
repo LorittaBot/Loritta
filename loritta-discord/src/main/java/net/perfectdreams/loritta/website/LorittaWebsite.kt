@@ -122,6 +122,26 @@ class LorittaWebsite(val loritta: Loritta) {
 					}
 				}
 
+				exception<TemmieDiscordAuth.TokenExchangeException> { cause ->
+					if (call.request.path().startsWith("/api/v1/")) {
+						logger.warn { "Token exchange exception! Throwing a WebsiteAPIException... $cause" }
+						call.sessions.clear<LorittaJsonWebSession>()
+
+						call.respondJson(
+								WebsiteUtils.createErrorPayload(
+										LoriWebCode.UNAUTHORIZED,
+										"Invalid Discord Authorization"
+								),
+								HttpStatusCode.Unauthorized
+						)
+					} else {
+						logger.warn { "Token exchange exception! Redirecting to dashboard... $cause" }
+						val hostHeader = call.request.host()
+						call.sessions.clear<LorittaJsonWebSession>()
+						call.respondRedirect("https://$hostHeader/dashboard", true)
+					}
+				}
+
 				exception<WebsiteAPIException> { cause ->
 					call.respondJson(cause.payload, cause.status)
 				}
