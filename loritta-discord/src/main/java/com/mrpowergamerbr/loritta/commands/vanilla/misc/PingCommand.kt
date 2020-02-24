@@ -55,6 +55,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 
 					val shardId = json["id"].long
 					val name = json["name"].string
+					val loriBuild = json["build"]["version"].int
 
 					val totalGuildCount = json["shards"].array.sumBy { it["guildCount"].int }
 					val totalUserCount = json["shards"].array.sumBy { it["userCount"].int }
@@ -80,7 +81,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 
 					val pingAverage = json["shards"].array.map { it["ping"].int }.average().toInt() // arredondar
 
-					row0.add("Loritta Cluster $shardId ($name)")
+					row0.add("Loritta Cluster $shardId ($name) [b$loriBuild]")
 					row1.add("~${pingAverage}ms")
 					row2.add(sb.toString())
 					row3.add("$totalGuildCount guilds")
