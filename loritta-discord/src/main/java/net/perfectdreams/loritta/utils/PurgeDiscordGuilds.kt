@@ -19,7 +19,6 @@ object PurgeDiscordGuilds {
 				Filters.lte("lastCommandReceivedAt", lastCommandReceivedBefore)
 		).toMutableList().filter {
 			!it.joinLeaveConfig.isEnabled &&
-					it.livestreamConfig.channels.isEmpty() &&
 					!it.starboardConfig.isEnabled &&
 					!it.eventLogConfig.isEnabled &&
 					!it.autoroleConfig.isEnabled &&

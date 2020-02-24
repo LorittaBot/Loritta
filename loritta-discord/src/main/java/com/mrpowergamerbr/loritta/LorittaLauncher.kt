@@ -84,8 +84,6 @@ object LorittaLauncher {
 			val tool = MigrationTool(discordConfig, discordInstanceConfig, config, instanceConfig)
 
 			when (arg1) {
-				"youtube" -> tool.migrateYouTubeChannels()
-				"twitch" -> tool.migrateTwitchChannels()
 			}
 			return
 		}

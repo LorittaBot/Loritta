@@ -451,10 +451,6 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 				if (serverConfig.joinLeaveConfig.isEnabled)
 					continue
 
-				// LIVESTREAM
-				if (serverConfig.livestreamConfig.channels.isNotEmpty())
-					continue
-
 				// MUSIC
 				if (serverConfig.musicConfig.isEnabled)
 					continue
