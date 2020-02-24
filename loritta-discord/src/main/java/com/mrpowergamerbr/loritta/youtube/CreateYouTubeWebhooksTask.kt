@@ -4,6 +4,7 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.fromJson
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -132,11 +133,15 @@ class CreateYouTubeWebhooksTask : Runnable {
 			}
 
 			runBlocking {
-				tasks.onEach {
-					val pair = it.await()
+				tasks.forEachIndexed { index, deferred ->
+					val pair = deferred.await()
 
-					if (pair != null) {
+					if (pair != null)
 						youtubeWebhooks[pair.first] = pair.second
+
+					if (index % 50 == 0) {
+						logger.info { "Saving YouTube Webhook File... $index channels were processed" }
+						youtubeWebhookFile.writeText(gson.toJson(youtubeWebhooks))
 					}
 				}
 

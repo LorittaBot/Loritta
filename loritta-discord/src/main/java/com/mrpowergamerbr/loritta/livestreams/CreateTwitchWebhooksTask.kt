@@ -123,11 +123,16 @@ class CreateTwitchWebhooksTask : Runnable {
 			}
 
 			runBlocking {
-				tasks.onEach {
-					val webhook = it.await()
+				tasks.forEachIndexed { index, deferred ->
+					val webhook = deferred.await()
 
 					if (webhook != null)
 						twitchWebhooks[webhook.first] = webhook.second
+
+					if (index % 50 == 0) {
+						logger.info { "Saving Twitch Webhook File... $index channels were processed" }
+						twitchWebhookFile.writeText(gson.toJson(twitchWebhooks))
+					}
 				}
 
 				twitchWebhookFile.writeText(gson.toJson(twitchWebhooks))
