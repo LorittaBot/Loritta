@@ -3,6 +3,9 @@ package net.perfectdreams.loritta.website.routes.api.v1.twitter
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.JsonObject
+import com.mrpowergamerbr.loritta.utils.WebsiteUtils
+import com.mrpowergamerbr.loritta.website.LoriWebCode
+import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.ApplicationCall
 import io.ktor.http.HttpStatusCode
 import mu.KotlinLogging
@@ -55,13 +58,23 @@ class GetShowTwitterUserRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/ap
 
 			twitter.users().showUser(screenName)
 		} else {
-			call.respondJson(jsonObject(), HttpStatusCode.NotFound)
-			return
+			throw WebsiteAPIException(
+					HttpStatusCode.NotFound,
+					WebsiteUtils.createErrorPayload(
+							LoriWebCode.ITEM_NOT_FOUND,
+							"Unknown Twitter Type"
+					)
+			)
 		}
 
 		if (twitterUser == null) {
-			call.respondJson(jsonObject(), HttpStatusCode.NotFound)
-			return
+			throw WebsiteAPIException(
+					HttpStatusCode.NotFound,
+					WebsiteUtils.createErrorPayload(
+							LoriWebCode.ITEM_NOT_FOUND,
+							"Unknown Twitter User"
+					)
+			)
 		} else {
 			val payload = jsonObject(
 					"id" to twitterUser.id,

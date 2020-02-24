@@ -4,8 +4,11 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.utils.MiscUtils
+import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.extensions.isValidUrl
 import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.mrpowergamerbr.loritta.website.LoriWebCode
+import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.ApplicationCall
 import io.ktor.http.HttpStatusCode
 import mu.KotlinLogging
@@ -97,8 +100,13 @@ class GetChannelInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1
 		} catch (e: Exception) {
 			json["exception"] = e::class.qualifiedName
 			logger.warn(e) { "Exception while retrieving channel information" }
-			call.respondJson(json, HttpStatusCode.NotFound)
-			return
+			throw WebsiteAPIException(
+					HttpStatusCode.NotFound,
+					WebsiteUtils.createErrorPayload(
+							LoriWebCode.ITEM_NOT_FOUND,
+							"Exception while retrieving channel information"
+					)
+			)
 		}
 	}
 }

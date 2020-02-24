@@ -1,5 +1,8 @@
 package net.perfectdreams.loritta.website.routes.api.v1.callbacks
 
+import com.mrpowergamerbr.loritta.utils.WebsiteUtils
+import com.mrpowergamerbr.loritta.website.LoriWebCode
+import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.ApplicationCall
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respondText
@@ -19,8 +22,13 @@ class GetPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta,
 
 		if (hubChallenge == null) {
 			logger.error { "Recebi um request para ativar uma subscription, mas o request não possuia o hub.challenge!" }
-			call.respondText(status = HttpStatusCode.NotFound) { "" }
-			return
+			throw WebsiteAPIException(
+					HttpStatusCode.NotFound,
+					WebsiteUtils.createErrorPayload(
+							LoriWebCode.FORBIDDEN,
+							"Missing hub.challenge"
+					)
+			)
 		}
 
 		// Já que a Twitch não suporta verify tokens, nós apenas iremos ignorar os tokens de verificação
