@@ -208,6 +208,7 @@ class LorittaWebsite(val loritta: Loritta) {
 					}
 
 					route.register(this)
+					logger.info { "Registered Route ${route.getMethod()} ${route.path}" }
 				}
 			}
 
