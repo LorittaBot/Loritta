@@ -52,7 +52,7 @@ class JVMPluginManager(val loritta: LorittaDiscord) : PluginManager {
 		try {
 			plugin.pluginTasks.forEach { it.cancel() }
 			if (plugin is LorittaDiscordPlugin)
-				plugin.unregisterEventListeners(*plugin.eventListeners.toTypedArray())
+				plugin.removeEventListeners(*plugin.eventListeners.toTypedArray())
 			plugin.onDisable()
 		} catch (e: Exception) {
 			logger.error(e) { "Exception while disabling plugin ${plugin.name}" }
