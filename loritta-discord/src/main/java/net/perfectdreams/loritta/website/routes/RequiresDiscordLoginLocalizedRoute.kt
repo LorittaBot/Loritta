@@ -14,7 +14,6 @@ import io.ktor.application.ApplicationCall
 import io.ktor.request.header
 import io.ktor.request.host
 import io.ktor.request.path
-import io.ktor.response.respondRedirect
 import io.ktor.sessions.get
 import io.ktor.sessions.sessions
 import io.ktor.sessions.set
@@ -64,11 +63,17 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 					}
 				}
 			} else {
-				val storedUserIdentification = null /* session.getCachedIdentification() */
+				val storedUserIdentification = session.getUserIdentification(call)
 
-				val userIdentification = if (code == "from_master" && storedUserIdentification != null) {
+				val userIdentification = if (code == "from_master") {
 					// Veio do master cluster, vamos apenas tentar autenticar com os dados existentes!
-					storedUserIdentification
+					storedUserIdentification ?: run {
+						// Okay... mas e se for nulo? Veio do master mas não tem session cache? Como pode??
+						// Iremos apenas pedir para o usuário reautenticar, porque alguma coisa deu super errado!
+						val state = JsonObject()
+						state["redirectUrl"] = "https://$hostHeader" + call.request.path()
+						redirect(com.mrpowergamerbr.loritta.utils.loritta.discordInstanceConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}", false)
+					}
 				} else {
 					val auth = TemmieDiscordAuth(
 							com.mrpowergamerbr.loritta.utils.loritta.discordConfig.discord.clientId,
@@ -82,9 +87,16 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 					val userIdentification = auth.getUserIdentification()
 
 					call.sessions.set(session.copy(storedDiscordAuthTokens = auth.toJson()))
+					val storedUserIdentification = call.lorittaSession.getUserIdentification(call) ?: run {
+						// Isto jamais deve acontecer, maaaas caso algum dia aconteça, iremos apenas redirecionar para o lugar certo.
+						logger.info { "Something went very wrong while retrieving the stored user identification for ${userIdentification}" }
+						val state = JsonObject()
+						state["redirectUrl"] = "https://$hostHeader" + call.request.path()
+						redirect(com.mrpowergamerbr.loritta.utils.loritta.discordInstanceConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}", false)
+					}
 
-					userIdentification
-				}!!
+					storedUserIdentification
+				}
 
 				// Verificar se o usuário é (possivelmente) alguém que foi banido de usar a Loritta
 				val trueIp = call.request.trueIp
@@ -123,7 +135,6 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 
 							// Vamos redirecionar!
 							redirect("https://${cluster.getUrl()}/dashboard?guild_id=${guildId}&code=from_master", true)
-							return
 						}
 					}
 
