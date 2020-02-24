@@ -208,7 +208,7 @@ class LorittaWebsite(val loritta: Loritta) {
 					}
 
 					route.register(this)
-					logger.info { "Registered Route ${route.getMethod()} ${route.path}" }
+					logger.info { "Registered ${route.getMethod().value} ${route.path} (${route::class.simpleName}" }
 				}
 			}
 

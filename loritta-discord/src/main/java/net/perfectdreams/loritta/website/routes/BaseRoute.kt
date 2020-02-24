@@ -22,7 +22,7 @@ abstract class BaseRoute(val loritta: LorittaDiscord, val path: String) {
 	}
 
 	open fun getMethod(): HttpMethod {
-		val className = this::class.java.simpleName.toLowerCase()
+		val className = this::class.simpleName.toLowerCase()
 		return when {
 			className.startsWith("get") -> HttpMethod.Get
 			className.startsWith("post") -> HttpMethod.Post
