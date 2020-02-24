@@ -37,6 +37,7 @@ include(":loritta-plugins:rosbife")
 include(":loritta-plugins:funfunfun")
 include(":loritta-plugins:funky")
 include(":loritta-plugins:parallax-routes")
+include(":loritta-plugins:donators-ostentation")
 
 // Website
 include(":loritta-website")

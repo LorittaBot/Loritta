@@ -41,7 +41,8 @@ class GetGuildInfoRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationRout
 						),
 						"timeCreated" to guild.timeCreated.toInstant().toEpochMilli(),
 						"timeJoined" to guild.selfMember.timeJoined.toInstant().toEpochMilli(),
-						"splashUrl" to guild.splashUrl
+						"splashUrl" to guild.splashUrl,
+						"boostCount" to guild.boostCount
 				)
 		)
 	}

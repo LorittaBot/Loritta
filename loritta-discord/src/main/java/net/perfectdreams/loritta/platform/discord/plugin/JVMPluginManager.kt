@@ -50,6 +50,9 @@ class JVMPluginManager(val loritta: LorittaDiscord) : PluginManager {
 		logger.info { "Disabling ${plugin.name}" }
 		val currentAvailableRoutes = plugins.filterIsInstance<LorittaDiscordPlugin>().flatMap { it.routes }
 		try {
+			plugin.pluginTasks.forEach { it.cancel() }
+			if (plugin is LorittaDiscordPlugin)
+				plugin.unregisterEventListeners(*plugin.eventListeners.toTypedArray())
 			plugin.onDisable()
 		} catch (e: Exception) {
 			logger.error(e) { "Exception while disabling plugin ${plugin.name}" }
@@ -58,6 +61,10 @@ class JVMPluginManager(val loritta: LorittaDiscord) : PluginManager {
 		logger.info { "Unregistering ${plugin.registeredCommands} commands..." }
 		loritta.commandMap.unregisterAll(*plugin.registeredCommands.toTypedArray())
 		plugin.registeredCommands.clear()
+		if (plugin is LorittaDiscordPlugin) {
+			plugin.eventListeners.clear()
+			plugin.routes.clear()
+		}
 
 		plugins.remove(plugin)
 		loadedFromFile.remove(plugin)
