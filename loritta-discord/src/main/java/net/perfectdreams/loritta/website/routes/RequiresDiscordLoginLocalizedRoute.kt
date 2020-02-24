@@ -44,7 +44,6 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 			val state = call.parameters["state"]
 			val guildId = call.parameters["guild_id"]
 			val code = call.parameters["code"]
-			val fromMaster = call.parameters["from_master"]
 
 			println("Dashboard Auth Route")
 			val session: LorittaJsonWebSession = call.sessions.get<LorittaJsonWebSession>() ?: LorittaJsonWebSession.empty()
@@ -127,7 +126,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 				}
 
 				if (guildId != null) {
-					if (fromMaster == null) {
+					if (code != "from_master") {
 						val cluster = DiscordUtils.getLorittaClusterForGuildId(guildId.toLong())
 
 						if (cluster.getUrl() != hostHeader) {
