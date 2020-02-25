@@ -46,21 +46,29 @@ class PostShopUpdateRoute(val m: FortniteStuff, loritta: LorittaDiscord) : Requi
 			}
 
 			loop@ for (serverConfig in broadcastServers) {
-				val guild = lorittaShards.getGuildById(serverConfig[ServerConfigs.id].value) ?: continue
+				try {
+					val guild = lorittaShards.getGuildById(serverConfig[ServerConfigs.id].value) ?: continue
 
-				val channel = guild.getTextChannelById(serverConfig[FortniteConfigs.channelToAdvertiseNewItems] ?: continue) ?: continue
+					val channel = guild.getTextChannelById(serverConfig[FortniteConfigs.channelToAdvertiseNewItems]
+							?: continue) ?: continue
 
-				val localeId = serverConfig[ServerConfigs.localeId]
+					val localeId = serverConfig[ServerConfigs.localeId]
 
-				val storeFileName = when {
-					m.storeFileNamesByLocaleId.containsKey(localeId) -> m.storeFileNamesByLocaleId[localeId]
-					m.storeFileNamesByLocaleId.containsKey(Constants.DEFAULT_LOCALE_ID) -> m.storeFileNamesByLocaleId[Constants.DEFAULT_LOCALE_ID]
-					else -> continue@loop
+					val storeFileName = when {
+						m.storeFileNamesByLocaleId.containsKey(localeId) -> m.storeFileNamesByLocaleId[localeId]
+						m.storeFileNamesByLocaleId.containsKey(Constants.DEFAULT_LOCALE_ID) -> m.storeFileNamesByLocaleId[Constants.DEFAULT_LOCALE_ID]
+						else -> continue@loop
+					}
+
+					if (!channel.canTalk())
+						continue
+
+					logger.info { "Broadcasting Fortnite shop update in $channel @ $guild!" }
+					channel.sendMessage("${Emotes.DEFAULT_DANCE} ${loritta.instanceConfig.loritta.website.url}assets/img/fortnite/shop/$storeFileName")
+							.queue()
+				} catch (e: Exception) {
+					logger.info { "Something went wrong while trying to send the shop update in ${serverConfig[ServerConfigs.id].value}" }
 				}
-
-				logger.info { "Broadcasting Fortnite shop update in $channel @ $guild!" }
-				channel.sendMessage("${Emotes.DEFAULT_DANCE} ${loritta.instanceConfig.loritta.website.url}assets/img/fortnite/shop/$storeFileName")
-						.queue()
 			}
 		}
 
