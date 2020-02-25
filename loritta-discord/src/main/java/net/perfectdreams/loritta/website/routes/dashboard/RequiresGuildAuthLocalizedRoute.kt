@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import io.ktor.application.ApplicationCall
 import io.ktor.request.host
 import io.ktor.request.path
-import io.ktor.response.respondRedirect
 import io.ktor.response.respondText
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
@@ -75,7 +74,7 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaDiscord, original
 		}
 
 		val canBypass = com.mrpowergamerbr.loritta.utils.loritta.config.isOwner(userIdentification.id) || canAccessDashboardViaPermission
-		if (!canBypass && !(member?.hasPermission(Permission.ADMINISTRATOR) == true || member?.hasPermission(Permission.MANAGE_SERVER) == true)) {
+		if (!canBypass && !(member?.hasPermission(Permission.ADMINISTRATOR) == true || member?.hasPermission(Permission.MANAGE_SERVER) == true || jdaGuild.ownerId == userIdentification.id)) {
 			call.respondText("Você não tem permissão!")
 			return
 		}
