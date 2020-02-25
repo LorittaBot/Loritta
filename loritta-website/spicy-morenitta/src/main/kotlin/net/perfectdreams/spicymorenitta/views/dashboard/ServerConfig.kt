@@ -172,7 +172,8 @@ object ServerConfig {
 			val colorRaw: Int,
 			val canInteract: Boolean,
 			val isManaged: Boolean,
-			val isHoisted: Boolean
+			val isHoisted: Boolean,
+			val isPublicRole: Boolean
 	) {
 		fun getColor(): LoriColor? {
 			if (colorRaw == 0x1FFFFFFF)

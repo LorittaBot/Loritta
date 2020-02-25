@@ -23,7 +23,8 @@ object RolesTransformer : ConfigTransformer {
                     "colorRaw" to it.colorRaw,
                     "canInteract" to guild.selfMember.canInteract(it),
                     "isHoisted" to it.isHoisted,
-                    "isManaged" to it.isManaged
+                    "isManaged" to it.isManaged,
+                    "isPublicRole" to it.isPublicRole
             )
         }.toJsonArray()
     }

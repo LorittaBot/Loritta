@@ -64,9 +64,7 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 			document.select<HTMLButtonElement>("#save-button").onClick {
 				prepareSave()
 			}
-
-			val optionData = mutableListOf<dynamic>()
-
+			
 			val stuff = document.select<HTMLDivElement>("#level-stuff")
 
 			stuff.append {
@@ -352,31 +350,39 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 				}
 			}
 
-			for (it in guild.roles/* .filter { !it.isPublicRole } */) {
+			val optionData = mutableListOf<dynamic>()
+			val chooseRoleToAddOptionData = mutableListOf<dynamic>()
+			
+			fun generateOptionForRole(role: ServerConfig.Role): dynamic {
 				val option = object {}.asDynamic()
-				option.id = it.id
-				var text = "<span style=\"font-weight: 600;\">${it.name}</span>"
+				option.id = role.id
+				var text = "<span style=\"font-weight: 600;\">${role.name}</span>"
 
-				val color = it.getColor()
+				val color = role.getColor()
 
 				if (color != null) {
-					text = "<span style=\"font-weight: 600; color: rgb(${color.red}, ${color.green}, ${color.blue})\">${it.name}</span>"
+					text = "<span style=\"font-weight: 600; color: rgb(${color.red}, ${color.green}, ${color.blue})\">${role.name}</span>"
 				}
 
 				option.text = text
 
-				/* if (serverConfig.autoroleConfig.roles.contains(it.id))
-				continue */
-
-				if (!it.canInteract || it.isManaged) {
-					if (it.isManaged) {
+				if (!role.canInteract || role.isManaged) {
+					if (role.isManaged) {
 						option.text = "${text} <span class=\"keyword\" style=\"background-color: rgb(225, 149, 23);\">${legacyLocale["DASHBOARD_RoleByIntegration"]}</span>"
 					} else {
 						option.text = "${text} <span class=\"keyword\" style=\"background-color: rgb(231, 76, 60);\">${legacyLocale["DASHBOARD_NoPermission"]}</span>"
 					}
 				}
+				
+				return option
+			}
 
-				optionData.add(option)
+			for (it in guild.roles.filter { !it.isPublicRole }) {
+				chooseRoleToAddOptionData.add(generateOptionForRole(it))
+			}
+			
+			for (it in guild.roles) {
+				optionData.add(generateOptionForRole(it))
 			}
 
 			val options = object {}.asDynamic()
@@ -386,23 +392,24 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 				str
 			}
 
+			val optionsRoleToAdd = object {}.asDynamic()
+
+			optionsRoleToAdd.data = chooseRoleToAddOptionData.toTypedArray()
+			optionsRoleToAdd.escapeMarkup = { str: dynamic ->
+				str
+			}
+
 			jq("#choose-role-no-xp").asDynamic().select2(
 					options
 			)
 
 			jq("#choose-role").asDynamic().select2(
-					options
+					optionsRoleToAdd
 			)
 
 			jq("#choose-role-custom-rate").asDynamic().select2(
 					options
 			)
-
-			val roleList = guild.roles
-
-			roleList.forEach {
-				addRoleToAutoroleList(it)
-			}
 
 			guild.levelUpConfig.rolesByExperience.forEach {
 				addRoleToRoleByExperienceList(guild, it)
@@ -675,37 +682,6 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 				}
 			}
 		}
-	}
-
-	fun addRoleToAutoroleList(role: ServerConfig.Role) {
-		// <span style="color: rgb(155, 89, 182); background-color: rgba(155, 89, 182, 0.298039);  font-family: Whitney, 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 600;">@💵🌆 Pagadores do Aluguel</span>
-		val td = jq("<td>")
-				.attr("role-id", role.id)
-				.addClass("role-entry")
-
-		val roleSpan = jq("<span>")
-				.text("@" + role.name)
-				.addClass("discord-mention")
-
-		val color = role.getColor()
-
-		if (color != null) {
-			roleSpan.css("color", "rgb(${color.red}, ${color.green}, ${color.blue})")
-			roleSpan.css("background-color", "rgba(${color.red}, ${color.green}, ${color.blue}, 0.298039)")
-		}
-
-		td.append(roleSpan)
-
-		val tr = jq("<tr>")
-				.append(td)
-
-		tr.click {
-			tr.remove()
-		}
-
-		jq("#roleTable").append(
-				tr
-		)
 	}
 
 	@JsName("prepareSave")
