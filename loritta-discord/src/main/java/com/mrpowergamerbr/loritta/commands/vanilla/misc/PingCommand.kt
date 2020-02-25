@@ -55,7 +55,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 
 					val shardId = json["id"].long
 					val name = json["name"].string
-					val loriBuild = try { json["build"]["buildNumber"].int } catch (e: Exception) { json["build"]["buildNumber"].string }
+					val loriBuild = json["build"]["buildNumber"]
 
 					val totalGuildCount = json["shards"].array.sumBy { it["guildCount"].int }
 					val totalUserCount = json["shards"].array.sumBy { it["userCount"].int }

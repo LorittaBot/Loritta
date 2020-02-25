@@ -1,17 +1,18 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.*
-import com.google.gson.JsonParser
+import com.github.salomonbrys.kotson.array
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.misc.YouTubeUtils
-import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.YouTubeItem
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.jsoup.parser.Parser
@@ -70,53 +71,26 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 					if (idx == -1 || !context.metadata.containsKey(idx.toString()))
 						return@onReactionAddByAuthor
 
-					var item: YouTubeItem = context.metadata[idx.toString()] as YouTubeItem
+					val item: YouTubeItem = context.metadata[idx.toString()] as YouTubeItem
 
 					// Remover todos os reactions
 					mensagem.clearReactions().queue {
 						if (item.id["kind"].string == "youtube#video") { // Se é um vídeo...
-							val response = HttpRequest.get("https://www.googleapis.com/youtube/v3/videos?id=${item.id["videoId"].string}&part=snippet,statistics&key=${loritta.config.youtube.apiKey}").body()
-							val parser = JsonParser()
-							val json = parser.parse(response).asJsonObject
-							val jsonItem = json["items"][0]
-							val snippet = jsonItem["snippet"].obj
-							val statistics = jsonItem["statistics"].obj
+							// Parece completamente idiota isto, mas não tem jeito de esconder uma embed já enviada :(
+							// Infelizmente é necessário reenviar a mensagem
+							mensagem.delete().queue()
 
-							val channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${snippet.get("channelId").asString}&fields=items%2Fsnippet%2Fthumbnails&key=${loritta.config.youtube.apiKey}").body()
-							val channelJson = parser.parse(channelResponse).obj
-
-							val viewCount = statistics["viewCount"].string
-							val likeCount = statistics["likeCount"].nullString ?: "???"
-							val dislikeCount = statistics["dislikeCount"].nullString ?: "???"
-							val commentCount = if (statistics.has("commentCount")) {
-								statistics["commentCount"].string
-							} else {
-								"Comentários desativados"
+							GlobalScope.launch(loritta.coroutineDispatcher) {
+								context.reply(
+										LoriReply(
+												"https://youtu.be/${item.id["videoId"].string}",
+												"\uD83D\uDCFA"
+										)
+								)
+								context.metadata.put("currentItem", item)
 							}
-
-							val thumbnail = snippet["thumbnails"]["high"]["url"].string
-							val channelIcon = channelJson["items"][0]["snippet"]["thumbnails"]["high"]["url"].string
-
-							val embed = EmbedBuilder()
-							embed.setTitle("<:youtube:314349922885566475> ${Parser.unescapeEntities(item.snippet.title, false)}", "https://youtu.be/${item.id["videoId"].string}")
-							embed.setDescription(item.snippet.description)
-							embed.addField("⛓ Link", "https://youtu.be/${item.id["videoId"].string}", true)
-
-							embed.addField("\uD83D\uDCFA ${context.legacyLocale["MUSICINFO_VIEWS"]}", viewCount, true)
-							embed.addField("\uD83D\uDE0D ${context.legacyLocale["MUSICINFO_LIKES"]}", likeCount, true)
-							embed.addField("\uD83D\uDE20 ${context.legacyLocale["MUSICINFO_DISLIKES"]}", dislikeCount, true)
-							embed.addField("\uD83D\uDCAC ${context.legacyLocale["MUSICINFO_COMMENTS"]}", commentCount, true)
-							embed.setThumbnail(thumbnail)
-							embed.setAuthor(item.snippet.channelTitle, "https://youtube.com/channel/${item.snippet.channelId}", channelIcon)
-
-							embed.setColor(Color(217, 66, 52))
-
-							// Criar novo embed!
-							mensagem.editMessage(embed.build()).queue()
-
-							context.metadata.put("currentItem", item)
 						} else {
-							val channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&id=${item.id["channelId"].string}&key=${loritta.config.youtube.apiKey}").body()
+							val channelResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${item.id["channelId"].string}&key=${loritta.config.youtube.apiKey}").body()
 
 							val channelJson = jsonParser.parse(channelResponse).obj
 
@@ -130,42 +104,6 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 							val viewCount = entry["statistics"]["viewCount"].string
 							val subscriberCount = entry["statistics"]["subscriberCount"].string
 							val videoCount = entry["statistics"]["videoCount"].string
-							val uploadsPlaylistId = if (entry["contentDetails"]["relatedPlaylists"].obj.has("uploads")) {
-								entry["contentDetails"]["relatedPlaylists"]["uploads"].string
-							} else {
-								null
-							}
-							val likesPlaylistId = if (entry["contentDetails"]["relatedPlaylists"].obj.has("likes")) {
-								entry["contentDetails"]["relatedPlaylists"]["likes"].string
-							} else {
-								null
-							}
-
-							var lastUploadedVideoName: String? = null
-							var lastUploadedVideoId: String? = null
-
-							var lastLikedVideoName: String? = null
-							var lastLikedVideoId: String? = null
-
-							if (uploadsPlaylistId != null) {
-								val uploadsPlaylistResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=$uploadsPlaylistId&maxResults=1&key=${loritta.config.youtube.apiKey}").body()
-								val uploadsPlaylist = jsonParser.parse(uploadsPlaylistResponse).obj
-
-								try {
-									lastUploadedVideoName = uploadsPlaylist["items"][0]["snippet"]["title"].string
-									lastUploadedVideoId = uploadsPlaylist["items"][0]["snippet"]["resourceId"]["videoId"].string
-								} catch (e: Exception) {}
-							}
-
-							if (likesPlaylistId != null) {
-								val likesPlaylistResponse = HttpRequest.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=$likesPlaylistId&maxResults=1&key=${loritta.config.youtube.apiKey}").body()
-								val likesPlaylist = jsonParser.parse(likesPlaylistResponse).obj
-
-								try {
-									lastLikedVideoName = likesPlaylist["items"][0]["snippet"]["title"].string
-									lastLikedVideoId = likesPlaylist["items"][0]["snippet"]["resourceId"]["videoId"].string
-								} catch (e: Exception) {}
-							}
 
 							embed.setTitle(title, "https://youtube.com/channel/${item.snippet.channelId}")
 							embed.setThumbnail(channelIcon)
@@ -174,11 +112,6 @@ class YouTubeCommand : AbstractCommand("youtube", listOf("yt"), category = Comma
 							embed.addField("\uD83D\uDCFA ${context.legacyLocale["MUSICINFO_VIEWS"]}", viewCount, true)
 							embed.addField("\uD83D\uDC3E ${context.legacyLocale["YOUTUBE_Subscribers"]}", subscriberCount, true)
 							embed.addField("\uD83C\uDFA5 ${context.legacyLocale["YOUTUBE_Videos"]}", videoCount, true)
-
-							if (lastUploadedVideoName != null)
-								embed.addField("\uD83D\uDCE5 ${context.legacyLocale["YOUTUBE_LastUploadedVideo"]}", "[$lastUploadedVideoName](https://youtu.be/$lastUploadedVideoId)", true)
-							if (lastLikedVideoName != null)
-								embed.addField("<:starstruck:540988091117076481> ${context.legacyLocale["YOUTUBE_LastLikedVideo"]}", "[$lastLikedVideoName](https://youtu.be/$lastLikedVideoId)", true)
 
 							embed.addField("⛓ Link", "https://youtube.com/channel/${item.snippet.channelId}", true)
 							// Criar novo embed!

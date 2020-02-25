@@ -3,6 +3,8 @@ package net.perfectdreams.loritta.website.routes.api.v1.youtube
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.extensions.isValidUrl
@@ -13,8 +15,14 @@ import io.ktor.application.ApplicationCall
 import io.ktor.http.HttpStatusCode
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.tables.CachedYouTubeChannelIds
 import net.perfectdreams.loritta.website.routes.BaseRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.net.URL
 
 class GetChannelInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/youtube/channel") {
@@ -60,7 +68,7 @@ class GetChannelInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1
 			} else {
 				// Se for um username, temos que converter de username -> ID
 				val username = urlPath.split("/").last()
-				logger.info { "Getting $username's channel ID..." }
+				logger.info { "Getting $username's channel ID from the username..." }
 				val httpRequest = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?key=$key&forUsername=$username&part=id")
 
 				val body = httpRequest.body()
@@ -75,26 +83,60 @@ class GetChannelInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1
 
 				items.first()["id"].string
 			}
+			logger.info { "Checking if $channelId's channel information is cached..." }
+
+			val cachedChannelInformation = transaction(Databases.loritta) {
+				// Remover do cache, caso tenha
+				CachedYouTubeChannelIds.deleteWhere {
+					CachedYouTubeChannelIds.channelId eq channelId and (CachedYouTubeChannelIds.retrievedAt lessEq System.currentTimeMillis() - Constants.ONE_WEEK_IN_MILLISECONDS)
+				}
+				// E agora pegar o canal!
+				CachedYouTubeChannelIds.select {
+					CachedYouTubeChannelIds.channelId eq channelId
+				}.firstOrNull()
+			}
+
+			if (cachedChannelInformation != null) {
+				logger.info { "$channelId's channel information is cached! Let's use the cache info then :3" }
+				val title = cachedChannelInformation[CachedYouTubeChannelIds.title]
+				val avatarUrl = cachedChannelInformation[CachedYouTubeChannelIds.avatarUrl]
+
+				json["title"] = title
+				json["avatarUrl"] = avatarUrl
+				json["channelId"] = channelId
+				call.respondJson(json)
+				return
+			}
+
 			logger.info { "Checking $channelId's channel information..." }
 
-			val response = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=contentDetails,snippet&id=$channelId&key=$key")
+			val response = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=$channelId&key=$key")
 					.body()
 
 			val youTubeJsonResponse = jsonParser.parse(response).obj
 			val responseError = MiscUtils.getResponseError(youTubeJsonResponse)
 			val error = responseError == "dailyLimitExceeded" || responseError == "quotaExceeded"
 
-			if (error) {
+			if (error)
 				throw RuntimeException("YouTube API key had its daily limit exceeded!")
-			} else {
-				val hasUploadsPlaylist = youTubeJsonResponse["items"].array[0]["contentDetails"].obj.get("relatedPlaylists").asJsonObject.has("uploads")
 
-				json["public_uploads_playlist"] = hasUploadsPlaylist
+			val title = youTubeJsonResponse["items"].array[0]["snippet"]["title"].string
+			val avatarUrl = youTubeJsonResponse["items"].array[0]["snippet"]["thumbnails"]["high"]["url"].string
+
+			json["title"] = title
+			json["avatarUrl"] = avatarUrl
+			json["channelId"] = channelId
+
+			// Cache
+			transaction(Databases.loritta) {
+				CachedYouTubeChannelIds.insert {
+					it[CachedYouTubeChannelIds.channelId] = channelId
+					it[CachedYouTubeChannelIds.avatarUrl] = avatarUrl
+					it[CachedYouTubeChannelIds.title] = title
+					it[retrievedAt] = System.currentTimeMillis()
+				}
 			}
 
-			json["title"] = youTubeJsonResponse["items"].array[0]["snippet"]["title"].string
-			json["avatarUrl"] = youTubeJsonResponse["items"].array[0]["snippet"]["thumbnails"]["high"]["url"].string
-			json["channelId"] = channelId
 			call.respondJson(json)
 			return
 		} catch (e: Exception) {
