@@ -2,6 +2,8 @@ package com.mrpowergamerbr.loritta.plugin
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.modules.MessageReceivedModule
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import java.io.File
@@ -63,5 +65,9 @@ open class LorittaPlugin(name: String, loritta: LorittaBot) : net.perfectdreams.
 
 	fun unregisterMessageEditedModules(vararg modules: MessageReceivedModule) {
 		messageEditedModules.removeAll(modules)
+	}
+
+	override fun launch(block: suspend CoroutineScope.() -> Unit): Job {
+		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 	}
 }
