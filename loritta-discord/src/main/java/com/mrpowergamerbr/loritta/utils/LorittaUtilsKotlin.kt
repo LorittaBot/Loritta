@@ -131,6 +131,7 @@ object LorittaUtilsKotlin {
 		return false
 	}
 
+
 	fun handleIfBanned(context: LorittaCommandContext, profile: Profile): Boolean {
 		if (context !is DiscordCommandContext)
 			throw UnsupportedOperationException("I don't know how to handle a $context yet!")
@@ -144,6 +145,23 @@ object LorittaUtilsKotlin {
 					.queue (
 							{ it.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.legacyLocale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() },
 							{ context.event.textChannel!!.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.legacyLocale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() }
+					)
+			return true
+		}
+		return false
+	}
+
+	fun handleIfBanned(context: net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext, profile: Profile): Boolean {
+		if (profile.isBanned) {
+			val legacyLocale = loritta.getLegacyLocaleById(context.locale.id)
+			LorittaLauncher.loritta.ignoreIds.add(context.user.idLong)
+
+			// Se um usuário está banido...
+			context.user
+					.openPrivateChannel()
+					.queue (
+							{ it.sendMessage("\uD83D\uDE45 **|** " + context.getUserMention(true) + legacyLocale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() },
+							{ context.discordMessage.channel.sendMessage("\uD83D\uDE45 **|** " + context.getUserMention(true) + legacyLocale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() }
 					)
 			return true
 		}
