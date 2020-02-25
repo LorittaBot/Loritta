@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.plugin.fortnite.extendedtables
+package net.perfectdreams.loritta.plugin.fortnite.tables
 
 import com.mrpowergamerbr.loritta.tables.Profiles
 import org.jetbrains.exposed.dao.LongIdTable

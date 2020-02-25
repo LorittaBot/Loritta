@@ -3,27 +3,31 @@ package net.perfectdreams.loritta.plugin.fortnite
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
-import com.mrpowergamerbr.loritta.LorittaLauncher
+import com.google.gson.JsonParser
+import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.readText
+import io.ktor.http.userAgent
 import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.plugin.fortnite.extendedtables.FortniteConfigs
-import net.perfectdreams.loritta.plugin.fortnite.extendedtables.FortniteServerConfigs
-import net.perfectdreams.loritta.plugin.fortnite.extendedtables.TrackedFortniteItems
+import net.perfectdreams.loritta.plugin.fortnite.tables.TrackedFortniteItems
 import net.perfectdreams.loritta.utils.Emotes
-import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.*
 import java.awt.geom.Point2D
 import java.awt.image.BufferedImage
-import java.io.ByteArrayOutputStream
+import java.io.File
 import java.net.URL
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import javax.imageio.ImageIO
 
@@ -36,15 +40,13 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 		private val ELEMENT_HEIGHT = 144
 	}
 
-	var task: Job? = null
-	// Locale ID -> ByteArray
-	var storeImages = ConcurrentHashMap<String, ByteArray>()
+	// Locale ID -> Last Update Epoch
 	val lastUpdatedAt = ConcurrentHashMap<String, Long>()
 
 	fun start() {
 		logger.info { "Starting Update Fortnite Store Items Task..." }
 
-		task = GlobalScope.launch(LorittaLauncher.loritta.coroutineDispatcher) {
+		m.launch {
 			while (true) {
 				try {
 					val distinctApiIds = loritta.locales.values.map {
@@ -62,7 +64,8 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 						)["data"].array
 					}
 
-					updateFortniteShop()
+					if (loritta.isMaster)
+						updateFortniteShop()
 
 					logger.info { "Waiting until 15000ms for the next update..." }
 				} catch (e: Exception) {
@@ -93,6 +96,11 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 
 		var alreadyNotifiedUsers = false
 
+		val calendar = Calendar.getInstance()
+		val year = calendar[Calendar.YEAR]
+		val month = calendar[Calendar.MONTH].toString().padStart(2, '0')
+		val day = calendar[Calendar.DAY_OF_MONTH].toString().padStart(2, '0')
+
 		for (locale in loritta.locales.values) {
 			val apiLocaleId = locale["commands.fortnite.shop.localeId"]
 			logger.info { "Updating shop for ${locale.id}... API Locale ID is $apiLocaleId, Shop Data is ${shopsData[apiLocaleId]}" }
@@ -102,20 +110,24 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 			val updatedAt = lastUpdatedAt.getOrDefault(apiLocaleId, 0L)
 
 			val firstUpdate = updatedAt == 0L
+			var isNew = false
 
 			logger.info { "Last shop update for $apiLocaleId was at ${shopData["updateAt"].long} New updated at = $newUpdatedAt"}
+
+			val fileName = "${locale.id}-${year}_${month}_${day}.png"
 
 			if (updatedAt != newUpdatedAt) {
 				lastUpdatedAt[apiLocaleId] = newUpdatedAt
 
 				logger.info { "Shop $locale was updated! Generating images and stuff..." }
 
-				generateAndSaveStoreImage(shopData, locale)
+				generateAndSaveStoreImage(shopData, locale, fileName)
 
 				if (firstUpdate) {
 					logger.info { "All shops were successfully updated! However this is the first update, so we won't broadcast it..." }
 				} else {
 					logger.info { "All shops were successfully updated! Broadcasting to every guild..." }
+					isNew = true
 
 					if (!alreadyNotifiedUsers && loritta.isMaster) { // Se todos os clusters enviarem, úsuários vão receber 4 mensagens diferentes para o mesmo item
 						GlobalScope.launch {
@@ -123,8 +135,38 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 						}
 						alreadyNotifiedUsers = true
 					}
+				}
+			}
 
-					broadcastNewFortniteShopItems(locale.id)
+			logger.info { "Relaying Fortnite shop info to other clusters..." }
+			val clusters = loritta.config.clusters
+
+			clusters.map {
+				GlobalScope.async(loritta.coroutineDispatcher) {
+					try {
+						withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
+							val response = loritta.http.post<HttpResponse>("https://${it.getUrl()}/api/v1/fortnite/shop") {
+								header("Authorization", loritta.lorittaInternalApiKey.name)
+								userAgent(loritta.lorittaCluster.getUserAgent())
+
+								body = gson.toJson(
+										jsonObject(
+												"fileName" to fileName,
+												"localeId" to locale.id,
+												"isNew" to isNew
+										)
+								)
+							}
+
+							val body = response.readText()
+							JsonParser.parseString(
+									body
+							)
+						}
+					} catch (e: Exception) {
+						logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
+						throw PingCommand.ShardOfflineException(it.id, it.name)
+					}
 				}
 			}
 		}
@@ -179,33 +221,6 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 		}
 	}
 
-	fun broadcastNewFortniteShopItems(localeId: String) {
-		val guildsWithNotificationsEnabled = transaction(Databases.loritta) {
-			(FortniteServerConfigs innerJoin FortniteConfigs).select {
-				FortniteConfigs.advertiseNewItems eq true and FortniteConfigs.channelToAdvertiseNewItems.isNotNull()
-			}.toMutableList()
-		}
-
-		guildsWithNotificationsEnabled.forEach {
-			val guild = lorittaShards.getGuildById(it[FortniteServerConfigs.id].value) ?: return@forEach
-			val channel = guild.getTextChannelById(it[FortniteConfigs.channelToAdvertiseNewItems] ?: return@forEach) ?: return@forEach
-			val guildLocaleId = loritta.getOrCreateServerConfig(guild.idLong).localeId
-
-			if (guildLocaleId == localeId) {
-				val storeImage = when {
-					m.updateStoreItems?.storeImages?.containsKey(localeId) == true -> m.updateStoreItems!!.storeImages[localeId]
-					m.updateStoreItems?.storeImages?.containsKey(Constants.DEFAULT_LOCALE_ID) == true -> m.updateStoreItems!!.storeImages[Constants.DEFAULT_LOCALE_ID]
-					else -> return@forEach
-				} ?: return@forEach
-
-				channel.sendFile(
-						storeImage,
-						"fortnite-shop.png"
-				).queue()
-			}
-		}
-	}
-
 	private fun getShopData(localeId: String): JsonObject {
 		logger.info { "Getting shop data for locale $localeId" }
 		val shop = HttpRequest.get("https://fnapi.me/api/shop?lang=$localeId")
@@ -229,12 +244,10 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 		return jsonParser.parse(news).obj
 	}
 
-	private fun generateAndSaveStoreImage(parse: JsonObject, locale: BaseLocale) {
+	private fun generateAndSaveStoreImage(parse: JsonObject, locale: BaseLocale, fileName: String) {
 		val storeBufferedImage = generateStoreImage(parse, locale)
-		val baos = ByteArrayOutputStream()
 
-		ImageIO.write(storeBufferedImage, "png", baos)
-		storeImages[locale.id] = baos.toByteArray()
+		ImageIO.write(storeBufferedImage, "png", File(loritta.instanceConfig.loritta.website.folder, "/static/assets/img/fortnite/shop/$fileName"))
 	}
 
 	private fun generateStoreImage(parse: JsonObject, locale: BaseLocale): BufferedImage {

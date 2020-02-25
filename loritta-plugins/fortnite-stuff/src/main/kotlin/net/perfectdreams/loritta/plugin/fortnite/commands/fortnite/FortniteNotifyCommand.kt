@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
 import net.perfectdreams.loritta.plugin.fortnite.FortniteStuff
 import net.perfectdreams.loritta.plugin.fortnite.commands.fortnite.base.DSLCommandBase
-import net.perfectdreams.loritta.plugin.fortnite.extendedtables.TrackedFortniteItems
+import net.perfectdreams.loritta.plugin.fortnite.tables.TrackedFortniteItems
 import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere

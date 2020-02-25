@@ -86,6 +86,12 @@ object ServerConfig {
 	)
 
 	@Serializable
+	class FortniteConfig(
+			val advertiseNewItems: Boolean,
+			@Optional val channelToAdvertiseNewItems: Long? = null
+	)
+
+	@Serializable
 	class Announcement(
 			val type: String,
 			@Optional val channelId: String? = null,

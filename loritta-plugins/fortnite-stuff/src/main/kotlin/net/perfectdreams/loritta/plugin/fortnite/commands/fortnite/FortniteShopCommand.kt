@@ -5,6 +5,7 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.plugin.fortnite.FortniteStuff
 import net.perfectdreams.loritta.plugin.fortnite.commands.fortnite.base.DSLCommandBase
+import net.perfectdreams.loritta.utils.Emotes
 
 object FortniteShopCommand : DSLCommandBase {
 	private val LOCALE_PREFIX = "commands.fortnite.shop"
@@ -13,14 +14,13 @@ object FortniteShopCommand : DSLCommandBase {
 		description { it["${LOCALE_PREFIX}.description"] }
 
 		executesDiscord {
-			var storeImage: ByteArray? = null
+			val storeFileName = when {
+				m.storeFileNamesByLocaleId.containsKey(locale.id) -> m.storeFileNamesByLocaleId[locale.id]
+				m.storeFileNamesByLocaleId.containsKey(Constants.DEFAULT_LOCALE_ID) -> m.storeFileNamesByLocaleId[Constants.DEFAULT_LOCALE_ID]
+				else -> null
+			}
 
-			if (m.updateStoreItems?.storeImages?.containsKey(locale.id) == true)
-				storeImage = m.updateStoreItems!!.storeImages[locale.id]
-			else if (m.updateStoreItems?.storeImages?.containsKey(Constants.DEFAULT_LOCALE_ID) == true)
-				storeImage = m.updateStoreItems!!.storeImages[Constants.DEFAULT_LOCALE_ID]
-
-			if (storeImage == null) {
+			if (storeFileName == null) {
 				reply(
 						LorittaReply(
 								locale["commands.fortnite.shop.notLoadedYet"],
@@ -30,9 +30,11 @@ object FortniteShopCommand : DSLCommandBase {
 				return@executesDiscord
 			}
 
-			sendFile(
-					storeImage.inputStream(),
-					"fortnite-shop.png"
+			reply(
+					LorittaReply(
+							"${loritta.instanceConfig.loritta.website.url}assets/img/fortnite/shop/$storeFileName",
+							Emotes.DEFAULT_DANCE
+					)
 			)
 		}
 	}

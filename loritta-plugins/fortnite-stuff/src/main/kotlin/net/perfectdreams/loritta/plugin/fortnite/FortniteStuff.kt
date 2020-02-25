@@ -1,19 +1,22 @@
 package net.perfectdreams.loritta.plugin.fortnite
 
 import com.google.gson.JsonArray
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import net.perfectdreams.loritta.api.LorittaBot
-import net.perfectdreams.loritta.api.plugin.LorittaPlugin
+import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.plugin.fortnite.commands.fortnite.*
-import net.perfectdreams.loritta.plugin.fortnite.extendedtables.FortniteConfigs
-import net.perfectdreams.loritta.plugin.fortnite.extendedtables.FortniteServerConfigs
-import net.perfectdreams.loritta.plugin.fortnite.extendedtables.TrackedFortniteItems
+import net.perfectdreams.loritta.plugin.fortnite.routes.ConfigureFortniteRoute
+import net.perfectdreams.loritta.plugin.fortnite.routes.PostShopUpdateRoute
+import net.perfectdreams.loritta.plugin.fortnite.tables.FakeTable
+import net.perfectdreams.loritta.plugin.fortnite.tables.FortniteConfigs
+import net.perfectdreams.loritta.plugin.fortnite.tables.TrackedFortniteItems
+import net.perfectdreams.loritta.plugin.fortnite.transformers.FortniteConfigTransformer
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 
-class FortniteStuff(name: String, loritta: LorittaBot) : LorittaPlugin(name, loritta) {
+class FortniteStuff(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(name, loritta) {
     companion object {
         fun convertRarityToColor(type: String): Color {
             return when (type) {
@@ -28,11 +31,13 @@ class FortniteStuff(name: String, loritta: LorittaBot) : LorittaPlugin(name, lor
                 else -> Color(176, 176, 150)
             }
         }
+
+        var forceNewBroadcast = false
     }
 
     var updateStoreItems: UpdateStoreItemsTask? = null
+    val storeFileNamesByLocaleId = mutableMapOf<String, String>()
     val itemsInfo = mutableMapOf<String, JsonArray>()
-    val lorittaDiscord = loritta as Loritta
 
     override fun onEnable() {
         updateStoreItems = UpdateStoreItemsTask(this).apply { start() }
@@ -45,16 +50,19 @@ class FortniteStuff(name: String, loritta: LorittaBot) : LorittaPlugin(name, lor
                 FortniteStatsCommand.command(lorittaDiscord, this)
         )
 
+        loriToolsExecutors.add(ForceShopUpdateExecutor)
+        configTransformers.add(FortniteConfigTransformer)
+        routes.add(PostShopUpdateRoute(this, lorittaDiscord))
+        routes.add(ConfigureFortniteRoute(lorittaDiscord))
+
+        // acessar qualquer coisa só para registrar corretamente
+        FakeTable.fortniteConfig
         transaction(Databases.loritta) {
             SchemaUtils.createMissingTablesAndColumns(
-                    FortniteServerConfigs,
+                    ServerConfigs,
                     FortniteConfigs,
                     TrackedFortniteItems
             )
         }
-    }
-
-    override fun onDisable() {
-        updateStoreItems?.task?.cancel()
     }
 }
