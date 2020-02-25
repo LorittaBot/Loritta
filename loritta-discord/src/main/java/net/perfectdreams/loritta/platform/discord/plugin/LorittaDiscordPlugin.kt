@@ -48,6 +48,7 @@ open class LorittaDiscordPlugin(name: String, loritta: LorittaBot) : LorittaPlug
 	}
 
 	override fun launch(block: suspend CoroutineScope.() -> Unit): Job {
+		pluginTasks.removeAll { it.isCompleted }
 		val job = GlobalScope.launch((lorittaDiscord as Loritta).coroutineDispatcher, block = block)
 		pluginTasks.add(job)
 		return job
