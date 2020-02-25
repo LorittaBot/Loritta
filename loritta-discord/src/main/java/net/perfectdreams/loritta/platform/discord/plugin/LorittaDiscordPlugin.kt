@@ -2,6 +2,10 @@ package net.perfectdreams.loritta.platform.discord.plugin
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.plugin.LorittaPlugin
@@ -41,5 +45,11 @@ open class LorittaDiscordPlugin(name: String, loritta: LorittaBot) : LorittaPlug
 		eventListeners.forEach {
 			removeEventListener(it)
 		}
+	}
+
+	override fun launch(block: suspend CoroutineScope.() -> Unit): Job {
+		val job = GlobalScope.launch((lorittaDiscord as Loritta).coroutineDispatcher, block = block)
+		pluginTasks.add(job)
+		return job
 	}
 }
