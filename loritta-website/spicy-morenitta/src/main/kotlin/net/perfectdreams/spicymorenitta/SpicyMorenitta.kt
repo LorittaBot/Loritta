@@ -242,7 +242,6 @@ class SpicyMorenitta : Logging {
 		loginButton.replaceWith(cloned)
 		cloned.clear()
 		cloned.setAttribute("href", "/br/dashboard")
-		setUpPageSwitcher(cloned, "/br/dashboard")
 
 		val extension = if (newUser.avatar?.startsWith("a_") == true) { // Avatares animados no Discord começam com "_a"
 			"gif"
