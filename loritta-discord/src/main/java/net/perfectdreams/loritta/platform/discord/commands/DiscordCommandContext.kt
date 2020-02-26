@@ -174,7 +174,7 @@ class DiscordCommandContext(
 	}
 
 	override suspend fun image(argument: Int, searchPreviousMessages: Int, createTextAsImageIfNotFound: Boolean): Image? {
-		var toBeDownloaded = imageUrl(argument)
+		var toBeDownloaded = imageUrl(argument, 0)
 
 		if (toBeDownloaded == null) {
 			if (args.isNotEmpty() && createTextAsImageIfNotFound) {
