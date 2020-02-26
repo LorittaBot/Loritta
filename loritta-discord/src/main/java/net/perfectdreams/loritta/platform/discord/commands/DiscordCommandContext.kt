@@ -128,6 +128,15 @@ class DiscordCommandContext(
 				}
 			}
 
+			for (embed in discordMessage.embeds) {
+				if (embed.image != null)
+					return embed.image!!.url
+			}
+			for (attachment in discordMessage.attachments) {
+				if (attachment.isImage)
+					return attachment.url
+			}
+
 			// Se não é nada... então talvez seja um emoji padrão do Discordão!
 			// Na verdade é um emoji padrão...
 			try {

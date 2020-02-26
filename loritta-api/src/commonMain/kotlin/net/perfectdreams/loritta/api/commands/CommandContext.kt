@@ -23,8 +23,8 @@ abstract class CommandContext(
 	suspend fun sendImage(image: Image, fileName: String = "image.png", content: String = getUserMention(true)) = message.channel.sendFile(image.toByteArray(), fileName, content)
 
 	abstract suspend fun user(argument: Int): User?
-	abstract suspend fun imageUrl(argument: Int, searchPreviousMessages: Int = 0): String?
-	abstract suspend fun image(argument: Int, searchPreviousMessages: Int = 0, createTextAsImageIfNotFound: Boolean = true): Image?
+	abstract suspend fun imageUrl(argument: Int, searchPreviousMessages: Int = 25): String?
+	abstract suspend fun image(argument: Int, searchPreviousMessages: Int = 25, createTextAsImageIfNotFound: Boolean = true): Image?
 
 	suspend fun reply(vararg replies: LorittaReply) = reply(replies.toList())
 	suspend fun reply(replies: List<LorittaReply>): Message {
