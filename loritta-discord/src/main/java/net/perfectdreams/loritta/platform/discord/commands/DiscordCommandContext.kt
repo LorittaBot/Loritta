@@ -151,21 +151,19 @@ class DiscordCommandContext(
 		}
 
 		// Ainda nada válido? Quer saber, desisto! Vamos pesquisar as mensagens antigas deste servidor & embeds então para encontrar attachments...
-		if (searchPreviousMessages > 0 && !this.isPrivateChannel && guild.selfMember.hasPermission(message.channel as TextChannel, Permission.MESSAGE_HISTORY)) {
-			val textChannel = message.channel as TextChannel
+		if (searchPreviousMessages > 0 && !this.isPrivateChannel && guild.selfMember.hasPermission(discordMessage.channel as TextChannel, Permission.MESSAGE_HISTORY)) {
+			val textChannel = discordMessage.channel as TextChannel
 			try {
 				val message = textChannel.history.retrievePast(searchPreviousMessages).await()
 
 				attach@ for (msg in message) {
 					for (embed in msg.embeds) {
-						if (embed.image != null) {
+						if (embed.image != null)
 							return embed.image!!.url
-						}
 					}
 					for (attachment in msg.attachments) {
-						if (attachment.isImage) {
+						if (attachment.isImage)
 							return attachment.url
-						}
 					}
 				}
 			} catch (e: PermissionException) {
