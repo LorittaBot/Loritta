@@ -102,7 +102,6 @@ class CommandManager {
 		commandMap.add(TodoGrupoTemCommand())
 		commandMap.add(TioDoPaveCommand())
 		commandMap.add(VemDeZapCommand())
-		commandMap.add(YouTubeCommand())
 
 		// =======[ MISC ]======
 		commandMap.add(AjudaCommand())

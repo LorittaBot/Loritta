@@ -39,7 +39,8 @@ class FunkyPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(name
 				ShuffleCommand.command(loritta, this),
 				SkipCommand.command(loritta, this),
 				StopCommand.command(loritta, this),
-				VolumeCommand.command(loritta, this)
+				VolumeCommand.command(loritta, this),
+				YouTubeCommand.command(loritta, this)
 		)
 
 		configTransformers.add(MusicConfigTransformer)
