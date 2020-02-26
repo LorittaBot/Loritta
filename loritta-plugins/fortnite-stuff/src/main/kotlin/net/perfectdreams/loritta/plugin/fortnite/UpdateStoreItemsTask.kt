@@ -112,7 +112,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 			val instantAtOffset = instant.atOffset(ZoneOffset.UTC)
 
 			val year = instantAtOffset.year
-			val month = instantAtOffset.month.toString().padStart(2, '0')
+			val month = instantAtOffset.monthValue.toString().padStart(2, '0')
 			val day = instantAtOffset.dayOfMonth.toString().padStart(2, '0')
 
 			logger.info { "Last shop update for $apiLocaleId was at ${shopData["updateAt"].long} (${year}_${month}_${day}) New updated at = $newUpdatedAt"}
