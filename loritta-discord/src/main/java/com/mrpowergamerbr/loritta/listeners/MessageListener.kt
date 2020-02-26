@@ -21,6 +21,9 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
+import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.FeatureFlags
@@ -246,7 +249,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 					AutoroleModule.giveRoles(member, legacyServerConfig.autoroleConfig)
 				logIfEnabled(enableProfiling) { "Giving auto role on message took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
-				for (module in (MESSAGE_RECEIVED_MODULES /* + loritta.pluginManager.plugins.flatMap { it.messageReceivedModules } */)) {
+				for (module in (MESSAGE_RECEIVED_MODULES + loritta.pluginManager.plugins.filterIsInstance<DiscordPlugin>().flatMap { it.messageReceivedModules } + loritta.pluginManager.plugins.filterIsInstance<LorittaDiscordPlugin>().flatMap { it.messageReceivedModules })) {
 					start = System.nanoTime()
 					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyServerConfig, legacyLocale) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyServerConfig, legacyLocale))
 						return@launch
@@ -462,7 +465,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						lorittaUser
 				)
 
-				for (module in (MESSAGE_EDITED_MODULES /* + loritta.pluginManager.plugins.flatMap { it.messageReceivedModules } */)) {
+				for (module in (MESSAGE_EDITED_MODULES + loritta.pluginManager.plugins.filterIsInstance<DiscordPlugin>().flatMap { it.messageEditedModules } + loritta.pluginManager.plugins.filterIsInstance<LorittaDiscordPlugin>().flatMap { it.messageEditedModules })) {
 					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyServerConfig, legacyLocale) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyServerConfig, legacyLocale))
 						return@launch
 				}

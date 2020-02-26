@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.platform.discord.plugin
 
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.modules.MessageReceivedModule
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
@@ -24,6 +25,8 @@ open class LorittaDiscordPlugin(name: String, loritta: LorittaBot) : LorittaPlug
 	val dataFolder by lazy { File(Loritta.FOLDER, "plugins/$name") }
 	val eventListeners = mutableListOf<ListenerAdapter>()
 	val loriToolsExecutors = mutableListOf<LoriToolsCommand.LoriToolsExecutor>()
+	val messageReceivedModules = mutableListOf<MessageReceivedModule>()
+	val messageEditedModules = mutableListOf<MessageReceivedModule>()
 
 	fun addEventListener(eventListener: ListenerAdapter) {
 		eventListeners.add(eventListener)
@@ -46,6 +49,15 @@ open class LorittaDiscordPlugin(name: String, loritta: LorittaBot) : LorittaPlug
 			removeEventListener(it)
 		}
 	}
+
+	fun addMessageReceivedModule(module: MessageReceivedModule) = messageReceivedModules.add(module)
+	fun addMessageReceivedModules(vararg modules: MessageReceivedModule) = messageReceivedModules.addAll(modules)
+	fun removeMessageReceivedModule(module: MessageReceivedModule) = messageReceivedModules.remove(module)
+	fun removeMessageReceivedModules(vararg modules: MessageReceivedModule) = messageReceivedModules.removeAll(modules)
+	fun addMessageEditedModule(module: MessageReceivedModule) = messageEditedModules.add(module)
+	fun addMessageEditedModules(vararg modules: MessageReceivedModule) = messageEditedModules.addAll(modules)
+	fun removeMessageEditedModule(module: MessageReceivedModule) = messageEditedModules.remove(module)
+	fun removeMessageEditedModules(vararg modules: MessageReceivedModule) = messageEditedModules.removeAll(modules)
 
 	override fun launch(block: suspend CoroutineScope.() -> Unit): Job {
 		pluginTasks.removeAll { it.isCompleted }
