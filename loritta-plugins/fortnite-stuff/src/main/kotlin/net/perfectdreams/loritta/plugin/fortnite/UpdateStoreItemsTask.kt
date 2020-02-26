@@ -108,7 +108,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 			val firstUpdate = updatedAt == 0L
 			var isNew = false
 
-			val instant = Instant.ofEpochSecond(shopData["general"]["dailyStoreUpdate"].long)
+			val instant = Instant.ofEpochSecond(shopData["updateAt"].long)
 			val instantAtOffset = instant.atOffset(ZoneOffset.UTC)
 
 			val year = instantAtOffset.year
