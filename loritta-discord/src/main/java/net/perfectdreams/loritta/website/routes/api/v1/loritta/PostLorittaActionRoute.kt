@@ -24,32 +24,41 @@ class PostLorittaActionRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticatio
 
 		when (actionType) {
 			"plugin_reload" -> {
-				val plugin = com.mrpowergamerbr.loritta.utils.loritta.pluginManager.getPlugin(json["pluginName"].string) ?: return
+				thread {
+					val plugin = com.mrpowergamerbr.loritta.utils.loritta.pluginManager.getPlugin(json["pluginName"].string)
+							?: return
 
-				com.mrpowergamerbr.loritta.utils.loritta.pluginManager.reloadPlugin(plugin)
+					com.mrpowergamerbr.loritta.utils.loritta.pluginManager.reloadPlugin(plugin)
+				}
 			}
 			"plugin_unload" -> {
-				val plugin = com.mrpowergamerbr.loritta.utils.loritta.pluginManager.getPlugin(json["pluginName"].string) ?: return
+				thread {
+					val plugin = com.mrpowergamerbr.loritta.utils.loritta.pluginManager.getPlugin(json["pluginName"].string)
+							?: return
 
-				com.mrpowergamerbr.loritta.utils.loritta.pluginManager.unloadPlugin(plugin)
+					com.mrpowergamerbr.loritta.utils.loritta.pluginManager.unloadPlugin(plugin)
+				}
 			}
 			"plugin_load" -> {
-				com.mrpowergamerbr.loritta.utils.loritta.pluginManager.loadPlugin(File(com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.folders.plugins, "${json["pluginName"].string}.jar"))
+				thread {
+					com.mrpowergamerbr.loritta.utils.loritta.pluginManager.loadPlugin(File(com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.folders.plugins, "${json["pluginName"].string}.jar"))
+				}
 			}
 			"plugin_update" -> {
 				val pluginName = json["pluginName"].string
 				val pluginFileName = json["pluginFileName"].string
 				val pluginData = json["pluginData"].string
 
-				val plugin = com.mrpowergamerbr.loritta.utils.loritta.pluginManager.getPlugin(pluginName)
-				if (plugin != null) {
-					com.mrpowergamerbr.loritta.utils.loritta.pluginManager.unloadPlugin(plugin)
+				thread {
+					val plugin = com.mrpowergamerbr.loritta.utils.loritta.pluginManager.getPlugin(pluginName)
+					if (plugin != null)
+						com.mrpowergamerbr.loritta.utils.loritta.pluginManager.unloadPlugin(plugin)
+
+					File(com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.folders.plugins, "${pluginFileName}.jar")
+							.writeBytes(Base64.getDecoder().decode(pluginData))
+
+					com.mrpowergamerbr.loritta.utils.loritta.pluginManager.loadPlugin(File(com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.folders.plugins, "${pluginFileName}.jar"))
 				}
-
-				File(com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.folders.plugins, "${pluginFileName}.jar")
-						.writeBytes(Base64.getDecoder().decode(pluginData))
-
-				com.mrpowergamerbr.loritta.utils.loritta.pluginManager.loadPlugin(File(com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.folders.plugins, "${pluginFileName}.jar"))
 			}
 			"locales" -> {
 				com.mrpowergamerbr.loritta.utils.loritta.loadLocales()
