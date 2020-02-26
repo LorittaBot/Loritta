@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthentication
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import java.io.File
 import java.util.*
+import kotlin.concurrent.thread
 
 class PostLorittaActionRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/action/{actionType}") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
@@ -26,7 +27,7 @@ class PostLorittaActionRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticatio
 			"plugin_reload" -> {
 				thread {
 					val plugin = com.mrpowergamerbr.loritta.utils.loritta.pluginManager.getPlugin(json["pluginName"].string)
-							?: return
+							?: return@thread
 
 					com.mrpowergamerbr.loritta.utils.loritta.pluginManager.reloadPlugin(plugin)
 				}
@@ -34,7 +35,7 @@ class PostLorittaActionRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticatio
 			"plugin_unload" -> {
 				thread {
 					val plugin = com.mrpowergamerbr.loritta.utils.loritta.pluginManager.getPlugin(json["pluginName"].string)
-							?: return
+							?: return@thread
 
 					com.mrpowergamerbr.loritta.utils.loritta.pluginManager.unloadPlugin(plugin)
 				}
