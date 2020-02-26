@@ -27,7 +27,8 @@ import java.awt.geom.Point2D
 import java.awt.image.BufferedImage
 import java.io.File
 import java.net.URL
-import java.util.*
+import java.time.Instant
+import java.time.ZoneOffset
 import java.util.concurrent.ConcurrentHashMap
 import javax.imageio.ImageIO
 
@@ -96,11 +97,6 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 
 		var alreadyNotifiedUsers = false
 
-		val calendar = Calendar.getInstance()
-		val year = calendar[Calendar.YEAR]
-		val month = calendar[Calendar.MONTH].toString().padStart(2, '0')
-		val day = calendar[Calendar.DAY_OF_MONTH].toString().padStart(2, '0')
-
 		for (locale in loritta.locales.values) {
 			val apiLocaleId = locale["commands.fortnite.shop.localeId"]
 			logger.info { "Updating shop for ${locale.id}... API Locale ID is $apiLocaleId, Shop Data is ${shopsData[apiLocaleId]}" }
@@ -112,7 +108,14 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 			val firstUpdate = updatedAt == 0L
 			var isNew = false
 
-			logger.info { "Last shop update for $apiLocaleId was at ${shopData["updateAt"].long} New updated at = $newUpdatedAt"}
+			val instant = Instant.ofEpochSecond(shopData["general"]["dailyStoreUpdate"].long)
+			val instantAtOffset = instant.atOffset(ZoneOffset.UTC)
+
+			val year = instantAtOffset.year
+			val month = instantAtOffset.month.toString().padStart(2, '0')
+			val day = instantAtOffset.dayOfMonth.toString().padStart(2, '0')
+
+			logger.info { "Last shop update for $apiLocaleId was at ${shopData["updateAt"].long} ($year_$month_$day) New updated at = $newUpdatedAt"}
 
 			val fileName = "${locale.id}-${year}_${month}_${day}.png"
 
