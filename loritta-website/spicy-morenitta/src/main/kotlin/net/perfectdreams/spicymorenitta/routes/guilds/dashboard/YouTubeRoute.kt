@@ -279,7 +279,7 @@ class YouTubeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 								if (accountInfo != null) {
 									value = "https://www.youtube.com/channel/${accountInfo.channelId}"
 								}
-								placeholder = "idk"
+								placeholder = "https://www.youtube.com/channel/UC-eeXSRZ8cO-i2NZYrWGDnQ"
 							}
 
 							div(classes = "account-config blurSection") {
@@ -385,11 +385,11 @@ class YouTubeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 				false,
 				null,
 				true,
-				Placeholders.DEFAULT_PLACEHOLDERS.toMutableMap().apply {
-					put("link", "Link do Tweet")
-				},
+				mapOf(
+						"link" to locale["${LOCALE_PREFIX}.videoLink"]
+				),
 				customTokens = mapOf(
-						"link" to "https://youtube.com/LorittaBot/status/1112093554174763008"
+						"link" to "https://youtu.be/p3G5IXn0K7A"
 				),
 				showTemplates = false
 		)

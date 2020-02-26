@@ -275,7 +275,7 @@ class TwitchRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{g
 								if (accountInfo != null) {
 									value = "https://www.twitch.com/channel/${accountInfo.login}"
 								}
-								placeholder = "idk"
+								placeholder = "https://www.twitch.tv/alanzoka"
 							}
 
 							div(classes = "account-config blurSection") {
@@ -369,11 +369,11 @@ class TwitchRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{g
 				false,
 				null,
 				true,
-				Placeholders.DEFAULT_PLACEHOLDERS.toMutableMap().apply {
-					put("link", "Link do Tweet")
-				},
+				mapOf(
+					"link" to locale["${LOCALE_PREFIX}.channelLink"]
+				),
 				customTokens = mapOf(
-						"link" to "https://twitch.com/LorittaBot/status/1112093554174763008"
+						"link" to "https://twitch.tv/alanzoka"
 				),
 				showTemplates = false
 		)

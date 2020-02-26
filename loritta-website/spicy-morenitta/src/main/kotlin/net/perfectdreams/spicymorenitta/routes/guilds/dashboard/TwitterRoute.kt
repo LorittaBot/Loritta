@@ -372,9 +372,9 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 				false,
 				null,
 				true,
-				Placeholders.DEFAULT_PLACEHOLDERS.toMutableMap().apply {
-					put("link", "Link do Tweet")
-				},
+				mapOf(
+					"link" to locale["$LOCALE_PREFIX.tweetLink"]
+				),
 				customTokens = mapOf(
 						"link" to "https://twitter.com/LorittaBot/status/1112093554174763008"
 				),
