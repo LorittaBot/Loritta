@@ -14,7 +14,6 @@ import net.perfectdreams.loritta.utils.jackson.FixedMapDeserializer
 import org.yaml.snakeyaml.Yaml
 import java.awt.Color
 import java.awt.Font
-import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
 import java.text.SimpleDateFormat

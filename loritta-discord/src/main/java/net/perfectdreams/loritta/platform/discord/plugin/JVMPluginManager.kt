@@ -66,6 +66,10 @@ class JVMPluginManager(val loritta: LorittaDiscord) : PluginManager {
 			plugin.eventListeners.clear()
 			plugin.routes.clear()
 		}
+		if (plugin is com.mrpowergamerbr.loritta.plugin.LorittaPlugin && loritta is Loritta) {
+			loritta.commandManager.unregisterCommands(*plugin.commands.toTypedArray())
+			plugin.commands.clear()
+		}
 
 		plugins.remove(plugin)
 		loadedFromFile.remove(plugin)
