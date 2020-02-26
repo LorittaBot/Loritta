@@ -170,7 +170,8 @@ object Constants {
 			"xereca",
 			"pepeca",
 			"pepeka",
-			"ppk"
+			"ppk",
+			"escrava sexual"
 	)
 
 	// Canais de textos utilizados na Loritta
