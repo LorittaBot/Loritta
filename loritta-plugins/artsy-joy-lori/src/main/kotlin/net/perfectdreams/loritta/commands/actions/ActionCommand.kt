@@ -136,7 +136,7 @@ abstract class ActionCommand(labels: Array<String>) : LorittaCommand(labels, Com
                 if (it.reactionEmote.name == "\uD83D\uDD01" && user.id == receiver.id) {
                     message.removeAllFunctions()
 
-                    runAction(context, receiver, recProfile, userThatSentTheHug, null)
+                    runAction(context, receiver, null, userThatSentTheHug, context.lorittaUser.profile)
                 }
             }
         }
