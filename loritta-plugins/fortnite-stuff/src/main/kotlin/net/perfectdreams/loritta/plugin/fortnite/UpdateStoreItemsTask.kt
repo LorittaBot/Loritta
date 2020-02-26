@@ -115,7 +115,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 			val month = instantAtOffset.month.toString().padStart(2, '0')
 			val day = instantAtOffset.dayOfMonth.toString().padStart(2, '0')
 
-			logger.info { "Last shop update for $apiLocaleId was at ${shopData["updateAt"].long} ($year_$month_$day) New updated at = $newUpdatedAt"}
+			logger.info { "Last shop update for $apiLocaleId was at ${shopData["updateAt"].long} (${year}_${month}_${day}) New updated at = $newUpdatedAt"}
 
 			val fileName = "${locale.id}-${year}_${month}_${day}.png"
 
