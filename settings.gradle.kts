@@ -38,6 +38,7 @@ include(":loritta-plugins:funfunfun")
 include(":loritta-plugins:funky")
 include(":loritta-plugins:parallax-routes")
 include(":loritta-plugins:donators-ostentation")
+include(":loritta-plugins:staff-lorittaban")
 
 // Website
 include(":loritta-website")

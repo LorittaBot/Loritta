@@ -11,7 +11,6 @@ class QuirkyConfig @JsonCreator constructor(
         val topDonatorsRank: TopDonatorsRankConfig,
         val topVotersRank: TopVotersRankConfig,
         val sponsorsAdvertisement: SponsorsAdvertisementConfig,
-        val loriBan: LoriBanConfig,
         val canecaUsers: List<Long>
 ) {
     class RandomReactionsConfig @JsonCreator constructor(
@@ -78,11 +77,5 @@ class QuirkyConfig @JsonCreator constructor(
     class SponsorsAdvertisementConfig @JsonCreator constructor(
             val enabled: Boolean,
             val channelId: Long
-    )
-
-    class LoriBanConfig @JsonCreator constructor(
-            val enabled: Boolean,
-            val requiredReactionCount: Int,
-            val channels: List<Long>
     )
 }

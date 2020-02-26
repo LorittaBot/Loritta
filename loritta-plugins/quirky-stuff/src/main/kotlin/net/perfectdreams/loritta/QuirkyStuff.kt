@@ -10,7 +10,6 @@ import net.perfectdreams.loritta.commands.BirthdayCommand
 import net.perfectdreams.loritta.commands.DocesCommand
 import net.perfectdreams.loritta.commands.LoriToolsQuirkyStuffCommand
 import net.perfectdreams.loritta.commands.SouTopDoadorCommand
-import net.perfectdreams.loritta.listeners.AddReactionForLoriBanListener
 import net.perfectdreams.loritta.listeners.AddReactionFurryAminoPtListener
 import net.perfectdreams.loritta.listeners.AddReactionListener
 import net.perfectdreams.loritta.listeners.GetCandyListener
@@ -26,8 +25,6 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 
 class QuirkyStuff(name: String, loritta: LorittaBot) : DiscordPlugin(name, loritta) {
-    private val REQUIRED_TO_RECEIVE_DREAM_BOOST = 20.00.toBigDecimal()
-
     var changeBanner: ChangeBanner? = null
     var topDonatorsRank: TopDonatorsRank? = null
     var topVotersRank: TopVotersRank? = null
@@ -75,7 +72,6 @@ class QuirkyStuff(name: String, loritta: LorittaBot) : DiscordPlugin(name, lorit
         registerEventListeners(
                 AddReactionListener(config),
                 GetCandyListener(config),
-                AddReactionForLoriBanListener(config),
                 AddReactionFurryAminoPtListener(config)
         )
 
@@ -83,7 +79,6 @@ class QuirkyStuff(name: String, loritta: LorittaBot) : DiscordPlugin(name, lorit
                 QuirkyModule(config),
                 ThankYouLoriModule(config),
                 DropCandyModule(config),
-                AddReactionForStaffLoriBanModule(config),
                 AddReactionForHeathecliffModule()
         )
 
