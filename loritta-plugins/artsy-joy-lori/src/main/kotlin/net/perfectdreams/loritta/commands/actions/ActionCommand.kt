@@ -4,9 +4,12 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.Gender
+import com.mrpowergamerbr.loritta.utils.onReactionAdd
+import com.mrpowergamerbr.loritta.utils.removeAllFunctions
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.commands.annotation.Subcommand
@@ -121,6 +124,8 @@ abstract class ActionCommand(labels: Array<String>) : LorittaCommand(labels, Com
         ).handle
 
         if (user != receiver) {
+            val userThatSentTheHug = user
+
             // Para evitar floods de actions, nós apenas iremos adicionar a reação *caso* o usuário tenha usado o comando em outra pessoa
             // Se fosse na mesma, o usuário pode ficar clicando na reação para "spammar" mensagens
             message.addReaction("\uD83D\uDD01").queue()
@@ -131,7 +136,7 @@ abstract class ActionCommand(labels: Array<String>) : LorittaCommand(labels, Com
                 if (it.reactionEmote.name == "\uD83D\uDD01" && user.id == receiver.id) {
                     message.removeAllFunctions()
 
-                    runAction(context, receiver, recProfile, user, null)
+                    runAction(context, receiver, recProfile, userThatSentTheHug, null)
                 }
             }
         }
