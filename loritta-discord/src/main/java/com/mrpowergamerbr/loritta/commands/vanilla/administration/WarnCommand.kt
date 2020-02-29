@@ -143,7 +143,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 
 				message?.delete()?.queue()
 
-				AdminUtils.sendSuccessfullyPunishedMessage(context)
+				AdminUtils.sendSuccessfullyPunishedMessage(context, reason)
 			}
 
 			if (skipConfirmation) {

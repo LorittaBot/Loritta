@@ -67,7 +67,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 
 				message?.delete()?.queue()
 
-				AdminUtils.sendSuccessfullyPunishedMessage(context)
+				AdminUtils.sendSuccessfullyPunishedMessage(context, reason)
 			}
 
 			if (skipConfirmation) {

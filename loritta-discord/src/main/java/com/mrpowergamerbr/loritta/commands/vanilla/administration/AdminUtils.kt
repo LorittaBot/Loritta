@@ -98,12 +98,32 @@ object AdminUtils {
 		return context.reply(*replies.toTypedArray())
 	}
 
-	suspend fun sendSuccessfullyPunishedMessage(context: CommandContext) {
-		context.reply(
+	suspend fun sendSuccessfullyPunishedMessage(context: CommandContext, reason: String) {
+		val replies = mutableListOf(
 				LoriReply(
 						context.locale["${LOCALE_PREFIX}.successfullyPunished"] + " ${Emotes.LORI_RAGE}",
 						"\uD83C\uDF89"
 				)
+		)
+
+		val reportExplanation = when {
+			reason.contains("raid", true) -> context.locale["${LOCALE_PREFIX}.reports.raidReport"]
+			reason.contains("porn", true) || reason.contains("nsfw", true) -> context.locale["${LOCALE_PREFIX}.reports.nsfwReport"]
+			else -> null
+		}
+
+		if (reportExplanation != null) {
+			replies.add(
+					LoriReply(
+							context.locale["${LOCALE_PREFIX}.reports.pleaseReportToDiscord", reportExplanation, Emotes.LORI_PAT, context.locale["${LOCALE_PREFIX}.reports.pleaseReportUrl"]],
+							Emotes.LORI_HM,
+							mentionUser = false
+					)
+			)
+		}
+
+		context.reply(
+				*replies.toTypedArray()
 		)
 	}
 

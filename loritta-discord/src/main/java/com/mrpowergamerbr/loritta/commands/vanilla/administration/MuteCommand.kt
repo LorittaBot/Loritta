@@ -96,7 +96,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 						return
 					}
 
-					AdminUtils.sendSuccessfullyPunishedMessage(context)
+					AdminUtils.sendSuccessfullyPunishedMessage(context, reason)
 					return
 				}
 
