@@ -8,6 +8,7 @@ import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.plugin.donatorsostentation.commands.DisableBoostExecutor
 import net.perfectdreams.loritta.plugin.donatorsostentation.commands.EnableBoostExecutor
 import net.perfectdreams.loritta.plugin.donatorsostentation.listeners.BoostGuildListener
+import net.perfectdreams.loritta.plugin.donatorsostentation.modules.CheckBoostStatusModule
 import java.io.File
 
 class DonatorsOstentationPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(name, loritta) {
@@ -23,12 +24,9 @@ class DonatorsOstentationPlugin(name: String, loritta: LorittaBot) : LorittaDisc
         addEventListener(BoostGuildListener(config))
         launch(NitroBoostUtils.createBoostTask(config))
         launch(NitroBoostUtils.updateValidBoostServers(config))
+        addMessageReceivedModule(CheckBoostStatusModule(config))
 
         loriToolsExecutors.add(EnableBoostExecutor)
         loriToolsExecutors.add(DisableBoostExecutor)
-    }
-
-    override fun onDisable() {
-        super.onDisable()
     }
 }
