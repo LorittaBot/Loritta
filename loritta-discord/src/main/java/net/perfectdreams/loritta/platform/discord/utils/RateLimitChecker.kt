@@ -68,7 +68,7 @@ class RateLimitChecker(val m: Loritta) {
 
 		if (shouldIgnore) {
 			val diff2 = System.currentTimeMillis() - this.lastConsoleWarn
-			if (2_500 >= diff2) {
+			if (diff2 >= 2_500) {
 				logger.warn { "All received events are cancelled and ignored due to too many global ratelimited requests being sent! $rateLimitHits >= $maxRequestsPer10Minutes" }
 				this.lastConsoleWarn = System.currentTimeMillis()
 			}
