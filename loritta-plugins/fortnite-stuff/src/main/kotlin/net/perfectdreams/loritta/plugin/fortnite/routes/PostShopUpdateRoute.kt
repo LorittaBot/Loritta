@@ -22,6 +22,7 @@ import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.util.concurrent.TimeUnit
 
 class PostShopUpdateRoute(val m: FortniteStuff, loritta: LorittaDiscord) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/fortnite/shop") {
 	private val logger = KotlinLogging.logger {}
@@ -45,6 +46,8 @@ class PostShopUpdateRoute(val m: FortniteStuff, loritta: LorittaDiscord) : Requi
 				}.toList()
 			}
 
+			var sendAfter = 0L
+
 			loop@ for (serverConfig in broadcastServers) {
 				try {
 					val guild = lorittaShards.getGuildById(serverConfig[ServerConfigs.id].value) ?: continue
@@ -65,7 +68,8 @@ class PostShopUpdateRoute(val m: FortniteStuff, loritta: LorittaDiscord) : Requi
 
 					logger.info { "Broadcasting Fortnite shop update in $channel @ $guild!" }
 					channel.sendMessage("${Emotes.DEFAULT_DANCE} ${loritta.instanceConfig.loritta.website.url}assets/img/fortnite/shop/$storeFileName")
-							.queue()
+							.queueAfter(sendAfter, TimeUnit.SECONDS)
+					sendAfter++
 				} catch (e: Exception) {
 					logger.info { "Something went wrong while trying to send the shop update in ${serverConfig[ServerConfigs.id].value}" }
 				}

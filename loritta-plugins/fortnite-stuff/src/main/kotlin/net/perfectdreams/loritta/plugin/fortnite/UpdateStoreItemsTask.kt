@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.statement.HttpResponse
@@ -43,6 +44,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 
 	// Locale ID -> Last Update Epoch
 	val lastUpdatedAt = ConcurrentHashMap<String, Long>()
+	var lastItemListPostUpdate = -1L
 
 	fun start() {
 		logger.info { "Starting Update Fortnite Store Items Task..." }
@@ -50,23 +52,38 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 		m.launch {
 			while (true) {
 				try {
-					val distinctApiIds = loritta.locales.values.map {
-						it["commands.fortnite.shop.localeId"]
-					}.distinct()
+					if (loritta.isMaster) {
+						if (System.currentTimeMillis() - lastItemListPostUpdate >= 60_000) {
+							lastItemListPostUpdate = System.currentTimeMillis()
+							logger.info { "Updating Fortnite Items..." }
+							val distinctApiIds = loritta.locales.values.map {
+								it["commands.fortnite.shop.localeId"]
+							}.distinct()
 
-					for (apiId in distinctApiIds) {
-						logger.info { "Updated ${apiId} items locale" }
-						m.itemsInfo[apiId] = jsonParser.parse(
-								HttpRequest.get("https://fnapi.me/api/items/all?lang=$apiId")
-										.connectTimeout(15_000)
-										.readTimeout(15_000)
-										.header("Authorization", com.mrpowergamerbr.loritta.utils.loritta.config.fortniteApi.token)
-										.body()
-						)["data"].array
-					}
+							for (apiId in distinctApiIds) {
+								val result = loritta.http.get<String>("https://fnapi.me/api/items/all?lang=$apiId") {
+									userAgent(loritta.lorittaCluster.getUserAgent())
+									header("Authorization", com.mrpowergamerbr.loritta.utils.loritta.config.fortniteApi.token)
+								}
 
-					if (loritta.isMaster)
+								val clusters = loritta.config.clusters
+
+								clusters.map {
+									GlobalScope.async(loritta.coroutineDispatcher) {
+										withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
+											loritta.http.post<String>("https://${it.getUrl()}/api/v1/fortnite/items/$apiId") {
+												userAgent(loritta.lorittaCluster.getUserAgent())
+												header("Authorization", loritta.lorittaInternalApiKey.name)
+												body = result
+											}
+										}
+									}
+								}
+							}
+						}
+
 						updateFortniteShop()
+					}
 
 					logger.info { "Waiting until 15000ms for the next update..." }
 				} catch (e: Exception) {

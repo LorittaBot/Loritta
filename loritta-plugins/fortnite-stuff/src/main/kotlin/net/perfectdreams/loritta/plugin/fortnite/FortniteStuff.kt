@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.plugin.fortnite.commands.fortnite.*
 import net.perfectdreams.loritta.plugin.fortnite.routes.ConfigureFortniteRoute
+import net.perfectdreams.loritta.plugin.fortnite.routes.PostItemListRoute
 import net.perfectdreams.loritta.plugin.fortnite.routes.PostShopUpdateRoute
 import net.perfectdreams.loritta.plugin.fortnite.tables.FakeTable
 import net.perfectdreams.loritta.plugin.fortnite.tables.FortniteConfigs
@@ -53,6 +54,7 @@ class FortniteStuff(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(na
         loriToolsExecutors.add(ForceShopUpdateExecutor)
         configTransformers.add(FortniteConfigTransformer)
         routes.add(PostShopUpdateRoute(this, lorittaDiscord))
+        routes.add(PostItemListRoute(this, lorittaDiscord))
         routes.add(ConfigureFortniteRoute(lorittaDiscord))
 
         // acessar qualquer coisa só para registrar corretamente

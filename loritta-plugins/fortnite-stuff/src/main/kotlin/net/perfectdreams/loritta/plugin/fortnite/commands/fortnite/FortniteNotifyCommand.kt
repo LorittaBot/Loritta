@@ -23,9 +23,9 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 
 object FortniteNotifyCommand : DSLCommandBase {
-	private val LOCALE_PREFIX = "commands.fortnite.shop"
+	private val LOCALE_PREFIX = "commands.fortnite.notify"
 
-	override fun command(loritta: LorittaDiscord, m: FortniteStuff) = create(loritta, listOf("fortniteshop", "fortniteloja", "fnshop", "fnloja")) {
+	override fun command(loritta: LorittaDiscord, m: FortniteStuff) = create(loritta, listOf("fnnotify", "fortnitenotify", "fnnotificar", "fortnitenotificar")) {
 		description { it["${LOCALE_PREFIX}.description"] }
 
 		usage {
@@ -54,7 +54,7 @@ object FortniteNotifyCommand : DSLCommandBase {
 				val embed = EmbedBuilder().setTitle("${Emotes.DEFAULT_DANCE} ${locale["${LOCALE_PREFIX}.itemsThatYouWantToBeNotified"]}")
 
 				for (tracked in alreadyTracking) {
-					val item = fortniteItemsInCurrentLocale.first { tracked[TrackedFortniteItems.itemId] == it["itemId"].string }
+					val item = fortniteItemsInCurrentLocale.firstOrNull { tracked[TrackedFortniteItems.itemId] == it["itemId"].string } ?: continue
 
 					embed.appendDescription("**${item["item"]["name"].string}**\n")
 				}
