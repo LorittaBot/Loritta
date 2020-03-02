@@ -98,7 +98,7 @@ object AdminUtils {
 		return context.reply(*replies.toTypedArray())
 	}
 
-	suspend fun sendSuccessfullyPunishedMessage(context: CommandContext, reason: String) {
+	suspend fun sendSuccessfullyPunishedMessage(context: CommandContext, reason: String, sendDiscordReportAdvise: Boolean) {
 		val replies = mutableListOf(
 				LoriReply(
 						context.locale["${LOCALE_PREFIX}.successfullyPunished"] + " ${Emotes.LORI_RAGE}",
@@ -158,7 +158,7 @@ object AdminUtils {
 
 		var usingPipedArgs = false
 		var skipConfirmation = context.legacyConfig.getUserData(context.userHandle.idLong).quickPunishment
-		var delDays = 7
+		var delDays = 0
 
 		var silent = false
 

@@ -77,7 +77,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 
 				message?.delete()?.queue()
 
-				AdminUtils.sendSuccessfullyPunishedMessage(context, reason)
+				AdminUtils.sendSuccessfullyPunishedMessage(context, reason, true)
 			}
 
 			if (skipConfirmation) {
