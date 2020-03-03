@@ -52,10 +52,4 @@ class LoriToolsQuirkyStuffCommand(val m: QuirkyStuff) : LorittaDiscordCommand(ar
 				"Role ativada!"
 		)
 	}
-
-	@Subcommand(["cycle_banner"])
-	suspend fun cycleBanner(context: DiscordCommandContext, args: Array<String>) {
-		m.changeBanner?.changeBanner()
-	}
-
 }

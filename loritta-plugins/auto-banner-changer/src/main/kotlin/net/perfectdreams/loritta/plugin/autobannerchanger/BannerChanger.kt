@@ -4,7 +4,10 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Icon
@@ -21,11 +24,16 @@ class BannerChanger(val loritta: Loritta, val m: AutoBannerChangerPlugin, val co
 
     fun start(): suspend CoroutineScope.() -> Unit = {
         while (true) {
-            val currentMillisRelativeToTheCurrentHour = System.currentTimeMillis() % config.timeMod
-            logger.info { "Banner will be changed in ${currentMillisRelativeToTheCurrentHour}ms!"}
-            delay(config.timeMod - currentMillisRelativeToTheCurrentHour) // Vamos esperar até a próxima hora!
 
-            changeBanner()
+                val currentMillisRelativeToTheCurrentHour = System.currentTimeMillis() % config.timeMod
+                logger.info { "Banner will be changed in ${currentMillisRelativeToTheCurrentHour}ms!" }
+                delay(config.timeMod - currentMillisRelativeToTheCurrentHour) // Vamos esperar até a próxima hora!
+
+            try {
+                changeBanner()
+            } catch (e: Exception) {
+                logger.warn(e) { "Something went wrong when updating the banner" }
+            }
         }
     }
 
