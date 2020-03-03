@@ -39,6 +39,7 @@ include(":loritta-plugins:funky")
 include(":loritta-plugins:parallax-routes")
 include(":loritta-plugins:donators-ostentation")
 include(":loritta-plugins:staff-lorittaban")
+include(":loritta-plugins:auto-banner-changer")
 
 // Website
 include(":loritta-website")
