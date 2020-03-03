@@ -71,11 +71,13 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 								clusters.map {
 									GlobalScope.async(loritta.coroutineDispatcher) {
 										withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
-											loritta.http.post<String>("https://${it.getUrl()}/api/v1/fortnite/items/$apiId") {
+											val response = loritta.http.post<HttpResponse>("https://${it.getUrl()}/api/v1/fortnite/items/$apiId") {
 												userAgent(loritta.lorittaCluster.getUserAgent())
 												header("Authorization", loritta.lorittaInternalApiKey.name)
 												body = result
 											}
+
+											logger.info { "${it.getUserAgent()} replied with ${response.status} when updating the Fortnite Item List!" }
 										}
 									}
 								}
