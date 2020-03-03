@@ -96,7 +96,7 @@ class TemmieDiscordAuth(val clientId: String,
 			// append("scope", scope.joinToString(" "))
 		}
 
-		doStuff {
+		doStuff(false) {
 			val result = checkIfRequestWasValid(
 					http.post {
 						url(TOKEN_BASE_URL)
@@ -164,12 +164,12 @@ class TemmieDiscordAuth(val clientId: String,
 		logger.info { "getUserConnections()" }
 		return doStuff {
 			val result = checkIfRequestWasValid(
-							http.get {
-								url(CONNECTIONS_URL)
-								userAgent(USER_AGENT)
-								header("Authorization", "Bearer $accessToken")
-							}
-					)
+					http.get {
+						url(CONNECTIONS_URL)
+						userAgent(USER_AGENT)
+						header("Authorization", "Bearer $accessToken")
+					}
+			)
 
 			logger.info { result }
 
@@ -193,22 +193,23 @@ class TemmieDiscordAuth(val clientId: String,
 		return
 	}
 
-	private suspend fun <T> doStuff(callback: suspend () -> (T)): T {
+	private suspend fun <T> doStuff(checkForRefresh: Boolean = true, callback: suspend () -> (T)): T {
 		logger.info { "doStuff(...) mutex locked? ${mutex.isLocked}" }
 		return try {
-			refreshTokenIfNeeded()
+			if (checkForRefresh)
+				refreshTokenIfNeeded()
 			mutex.withLock {
 				callback.invoke()
 			}
 		} catch (e: RateLimitedException) {
 			logger.info { "rate limited exception! locked? ${mutex.isLocked}" }
-			return doStuff(callback)
+			return doStuff(checkForRefresh, callback)
 		} catch (e: NeedsRefreshException) {
 			logger.info { "refresh exception!" }
 			mutex.withLock {
 				refreshToken()
 			}
-			doStuff(callback)
+			doStuff(checkForRefresh, callback)
 		}
 	}
 
