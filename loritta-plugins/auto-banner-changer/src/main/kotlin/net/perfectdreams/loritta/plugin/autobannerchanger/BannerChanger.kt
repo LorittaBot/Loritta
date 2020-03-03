@@ -24,10 +24,9 @@ class BannerChanger(val loritta: Loritta, val m: AutoBannerChangerPlugin, val co
 
     fun start(): suspend CoroutineScope.() -> Unit = {
         while (true) {
-
-                val currentMillisRelativeToTheCurrentHour = System.currentTimeMillis() % config.timeMod
-                logger.info { "Banner will be changed in ${currentMillisRelativeToTheCurrentHour}ms!" }
-                delay(config.timeMod - currentMillisRelativeToTheCurrentHour) // Vamos esperar até a próxima hora!
+            val currentMillisRelativeToTheCurrentHour = System.currentTimeMillis() % config.timeMod
+            logger.info { "Banner will be changed in ${currentMillisRelativeToTheCurrentHour}ms!" }
+            delay(config.timeMod - currentMillisRelativeToTheCurrentHour) // Vamos esperar até a próxima hora!
 
             try {
                 changeBanner()
