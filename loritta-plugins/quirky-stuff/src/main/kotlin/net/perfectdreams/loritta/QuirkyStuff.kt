@@ -25,7 +25,6 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 
 class QuirkyStuff(name: String, loritta: LorittaBot) : DiscordPlugin(name, loritta) {
-    var changeBanner: ChangeBanner? = null
     var topDonatorsRank: TopDonatorsRank? = null
     var topVotersRank: TopVotersRank? = null
     var birthdaysRank: BirthdaysRank? = null
@@ -33,13 +32,6 @@ class QuirkyStuff(name: String, loritta: LorittaBot) : DiscordPlugin(name, lorit
 
     override fun onEnable() {
         val config = Constants.HOCON_MAPPER.readValue<QuirkyConfig>(File(dataFolder, "config.conf"))
-
-        if (config.changeBanner.enabled) {
-            logger.info { "Change Banner is enabled! Enabling banner stuff... :3"}
-            changeBanner = ChangeBanner(this, config).apply {
-                this.start()
-            }
-        }
 
         if (config.topDonatorsRank.enabled) {
             logger.info { "Top Donators Rank is enabled! Enabling top donators rank stuff... :3"}
@@ -124,7 +116,6 @@ class QuirkyStuff(name: String, loritta: LorittaBot) : DiscordPlugin(name, lorit
 
     override fun onDisable() {
         super.onDisable()
-        changeBanner?.task?.cancel()
         topDonatorsRank?.task?.cancel()
         topVotersRank?.task?.cancel()
         birthdaysRank?.task?.cancel()
