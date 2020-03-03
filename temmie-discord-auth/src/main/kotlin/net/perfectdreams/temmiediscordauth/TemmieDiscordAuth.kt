@@ -123,11 +123,13 @@ class TemmieDiscordAuth(val clientId: String,
 	suspend fun getUserIdentification(): UserIdentification {
 		logger.info { "getUserIdentification()" }
 		return doStuff {
-			val result = http.get<String> {
-				url(USER_IDENTIFICATION_URL)
-				userAgent(USER_AGENT)
-				header("Authorization", "Bearer $accessToken")
-			}
+			val result = checkIfRequestWasValid(
+					http.get {
+						url(USER_IDENTIFICATION_URL)
+						userAgent(USER_AGENT)
+						header("Authorization", "Bearer $accessToken")
+					}
+			)
 
 			logger.info { result }
 
@@ -161,8 +163,7 @@ class TemmieDiscordAuth(val clientId: String,
 	suspend fun getUserConnections(): List<Connection> {
 		logger.info { "getUserConnections()" }
 		return doStuff {
-			val result =
-					checkIfRequestWasValid(
+			val result = checkIfRequestWasValid(
 							http.get {
 								url(CONNECTIONS_URL)
 								userAgent(USER_AGENT)
@@ -186,7 +187,7 @@ class TemmieDiscordAuth(val clientId: String,
 
 		if (generatedAt != null && expiresIn != null) {
 			if (System.currentTimeMillis() >= generatedAt + expiresIn)
-				NeedsRefreshException()
+				throw NeedsRefreshException()
 		}
 
 		return

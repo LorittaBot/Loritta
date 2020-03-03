@@ -115,7 +115,7 @@ object AdminUtils {
 		if (reportExplanation != null) {
 			replies.add(
 					LoriReply(
-							context.locale["${LOCALE_PREFIX}.reports.pleaseReportToDiscord", reportExplanation, Emotes.LORI_PAT, "<${context.locale["${LOCALE_PREFIX}.reports.pleaseReportUrl"]}"],
+							context.locale["${LOCALE_PREFIX}.reports.pleaseReportToDiscord", reportExplanation, Emotes.LORI_PAT, "<${context.locale["${LOCALE_PREFIX}.reports.pleaseReportUrl"]}>"],
 							Emotes.LORI_HM,
 							mentionUser = false
 					)
