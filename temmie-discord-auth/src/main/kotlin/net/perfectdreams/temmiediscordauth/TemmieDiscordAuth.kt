@@ -198,6 +198,7 @@ class TemmieDiscordAuth(val clientId: String,
 		return try {
 			if (checkForRefresh)
 				refreshTokenIfNeeded()
+
 			mutex.withLock {
 				callback.invoke()
 			}
@@ -206,9 +207,7 @@ class TemmieDiscordAuth(val clientId: String,
 			return doStuff(checkForRefresh, callback)
 		} catch (e: NeedsRefreshException) {
 			logger.info { "refresh exception!" }
-			mutex.withLock {
-				refreshToken()
-			}
+			refreshToken()
 			doStuff(checkForRefresh, callback)
 		}
 	}
