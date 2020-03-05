@@ -199,7 +199,7 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 		}
 
 		if (type == "twitch") {
-			val userId = call.parameters["user_id"]!!.toLong()
+			val userId = call.parameters["userid"]!!.toLong()
 
 			val payload = jsonParser.parse(response)
 			val data = payload["data"].array
