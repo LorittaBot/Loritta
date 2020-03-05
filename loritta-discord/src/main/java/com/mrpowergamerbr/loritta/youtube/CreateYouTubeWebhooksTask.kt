@@ -87,19 +87,7 @@ class CreateYouTubeWebhooksTask : Runnable {
 			val tasks = notCreatedYetChannels.map {channelId ->
 				GlobalScope.async(loritta.coroutineDispatcher, start = CoroutineStart.LAZY) {
 					try {
-						HttpRequest.post("https://pubsubhubbub.appspot.com/subscribe")
-								.form(mapOf(
-										"hub.callback" to "${loritta.instanceConfig.loritta.website.url}api/v1/callbacks/pubsubhubbub?type=ytvideo",
-										"hub.lease_seconds" to "",
-										"hub.mode" to "unsubscribe",
-										"hub.secret" to loritta.config.mixer.webhookSecret,
-										"hub.topic" to "https://www.youtube.com/xml/feeds/videos.xml?channel_id=$channelId",
-										"hub.verify" to "async",
-										"hub.verify_token" to loritta.config.mixer.webhookSecret
-								))
-								.ok()
-
-						// E agora realmente iremos criar!
+						// Vamos criar!
 						val code = HttpRequest.post("https://pubsubhubbub.appspot.com/subscribe")
 								.form(mapOf(
 										"hub.callback" to "${loritta.instanceConfig.loritta.website.url}api/v1/callbacks/pubsubhubbub?type=ytvideo",
