@@ -15,26 +15,27 @@ object LoriToolsCommand {
 		executes {
 			val validPlugins = loritta.pluginManager.plugins.filterIsInstance<LorittaDiscordPlugin>()
 
-			validPlugins.forEach {
-				it.loriToolsExecutors.forEach {
-					val result = it.executes().invoke(this)
+			val allExecutors = listOf(
+					RegisterTwitchChannelExecutor,
+					RegisterYouTubeChannelExecutor
+			) + validPlugins.flatMap { it.loriToolsExecutors }
 
-					if (result)
-						return@executes
-				}
+			allExecutors.forEach {
+				val result = it.executes().invoke(this)
+
+				if (result)
+					return@executes
 			}
 
 			val replies = mutableListOf<LorittaReply>()
 
-			validPlugins.forEach {
-				it.loriToolsExecutors.forEach {
-					replies.add(
-							LorittaReply(
-									"`${it.args}`",
-									mentionUser = false
-							)
-					)
-				}
+			allExecutors.forEach {
+				replies.add(
+						LorittaReply(
+								"`${it.args}`",
+								mentionUser = false
+						)
+				)
 			}
 
 			reply(replies)
