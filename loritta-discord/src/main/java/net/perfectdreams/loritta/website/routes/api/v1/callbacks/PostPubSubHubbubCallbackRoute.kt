@@ -159,6 +159,8 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 			val guildIds = mutableListOf<Long>()
 
 			for (trackedAccount in trackedAccounts) {
+				guildIds.add(trackedAccount[TrackedYouTubeAccounts.guildId])
+
 				val guild = lorittaShards.getGuildById(trackedAccount[TrackedYouTubeAccounts.guildId]) ?: continue
 
 				val textChannel = guild.getTextChannelById(trackedAccount[TrackedYouTubeAccounts.channelId]) ?: continue
@@ -186,7 +188,6 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 				) ?: continue
 
 				textChannel.sendMessage(discordMessage).queue()
-				guildIds.add(guild.idLong)
 			}
 
 			// Nós iremos fazer relay de todos os vídeos para o servidor da Lori
@@ -235,7 +236,7 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 					if (accountInfo == null) {
 						logger.info { "Received livestream (Twitch) notification $title ($gameId) for $userId, but I can't find the user" }
 					} else {
-						logger.info {"Received livestream notification (Twitch) $title ($gameId) of ${accountInfo.id} ($userId)" }
+						logger.info { "Received livestream notification (Twitch) $title ($gameId) of ${accountInfo.id} ($userId)" }
 
 						val trackedAccounts = transaction(Databases.loritta) {
 							TrackedTwitchAccounts.select {
@@ -244,6 +245,8 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 						}
 
 						for (trackedAccount in trackedAccounts) {
+							guildIds.add(trackedAccount[TrackedTwitchAccounts.guildId])
+
 							val guild = lorittaShards.getGuildById(trackedAccount[TrackedTwitchAccounts.guildId])
 									?: continue
 
@@ -268,7 +271,6 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 							)
 
 							textChannel.sendMessage(MessageUtils.generateMessage(message, null, guild, customTokens)!!).queue()
-							guildIds.add(guild.idLong)
 						}
 
 						// Nós iremos fazer relay de todos os vídeos para o servidor da Lori
