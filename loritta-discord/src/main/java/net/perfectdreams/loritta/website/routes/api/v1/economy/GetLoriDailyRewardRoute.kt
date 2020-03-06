@@ -21,6 +21,7 @@ import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.SonhosTransaction
+import net.perfectdreams.loritta.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.utils.daily.DailyGuildMissingRequirement
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
@@ -44,15 +45,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				.asMap()
 	}
 
-	fun getDailyMultiplier(value: Double): Double {
-		return when {
-			value >= 179.99 -> 2.0
-			value >= 139.99 -> 1.75
-			value >= 99.99 -> 1.5
-			value >= 59.99 -> 1.25
-			else -> 1.0
-		}
-	}
+	fun getDailyMultiplier(value: Double) = ServerPremiumPlans.getPlanFromValue(value).dailyMultiplier
 
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
 		loritta as Loritta
@@ -191,7 +184,6 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 			val originalPayout = dailyPayout
 
 			val mutualGuilds = lorittaShards.queryMutualGuildsInAllLorittaClusters(userIdentification.id)
-
 
 			var sponsoredBy: JsonObject? = null
 			var multipliedBy: Double? = null

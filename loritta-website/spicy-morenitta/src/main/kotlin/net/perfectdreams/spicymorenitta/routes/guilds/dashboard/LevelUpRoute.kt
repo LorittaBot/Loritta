@@ -20,6 +20,7 @@ import net.perfectdreams.spicymorenitta.utils.DashboardUtils.switchContentAndFix
 import net.perfectdreams.spicymorenitta.utils.levelup.LevelUpAnnouncementType
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import net.perfectdreams.spicymorenitta.views.dashboard.Stuff
+import net.perfectdreams.spicymorenitta.views.dashboard.getPlan
 import org.w3c.dom.*
 import kotlin.browser.document
 import kotlin.dom.addClass
@@ -35,6 +36,7 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 
 	@Serializable
 	class PartialGuildConfiguration(
+			val activeDonationKeys: List<ServerConfig.DonationKey>,
 			val textChannels: List<ServerConfig.TextChannel>,
 			val roles: List<ServerConfig.Role>,
 			val levelUpConfig: ServerConfig.LevelUpConfig
@@ -58,7 +60,7 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 	@ImplicitReflectionSerializer
 	override fun onRender(call: ApplicationCall) {
 		launchWithLoadingScreenAndFixContent(call) {
-			val guild = DashboardUtils.retrievePartialGuildConfiguration<PartialGuildConfiguration>(call.parameters["guildid"]!!, "textchannels", "roles", "level")
+			val guild = DashboardUtils.retrievePartialGuildConfiguration<PartialGuildConfiguration>(call.parameters["guildid"]!!, "activekeys", "textchannels", "roles", "level")
 			switchContentAndFixLeftSidebarScroll(call)
 
 			document.select<HTMLButtonElement>("#save-button").onClick {
@@ -146,8 +148,16 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 							+ locale["loritta.add"]
 
 							onClickFunction = {
-								if (rolesByExperience.size >= 15) {
-									Stuff.showPremiumFeatureModal()
+								val plan = guild.activeDonationKeys.getPlan()
+								if (rolesByExperience.size >= plan.maxLevelUpRoles) {
+									Stuff.showPremiumFeatureModal {
+										h2 {
+											+ "Adicione mais cargos para Level Up!"
+										}
+										p {
+											+ "Faça upgrade para poder adicionar mais cargos!"
+										}
+									}
 								} else {
 									addRoleToRoleByExperienceList(
 											guild,

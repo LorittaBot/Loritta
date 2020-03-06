@@ -22,6 +22,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.tables.BotVotes
 import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.ServerPremiumPlans
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -122,7 +123,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 						continue
 
 					val donationKeysValue = config.getActiveDonationKeysValue()
-					if (donationKeysValue >= LorittaPrices.CUSTOM_BADGE) {
+					if (ServerPremiumPlans.getPlanFromValue(donationKeysValue).hasCustomBadge) {
 						val badge = LorittaUtils.downloadImage("${loritta.instanceConfig.loritta.website.url}/assets/img/badges/custom/${config.guildId}.png?t=${System.currentTimeMillis()}", bypassSafety = true)
 
 						if (badge != null) {

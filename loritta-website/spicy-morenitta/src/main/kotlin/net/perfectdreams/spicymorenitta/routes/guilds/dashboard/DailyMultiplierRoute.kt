@@ -11,6 +11,7 @@ import net.perfectdreams.spicymorenitta.utils.DashboardUtils.launchWithLoadingSc
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.switchContentAndFixLeftSidebarScroll
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import net.perfectdreams.spicymorenitta.views.dashboard.Stuff
+import net.perfectdreams.spicymorenitta.views.dashboard.getPlan
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLInputElement
 import kotlin.browser.document
@@ -38,9 +39,9 @@ class DailyMultiplierRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("
 			(page.getElementById("cmn-toggle-1") as HTMLInputElement).checked = guild.donationConfig.dailyMultiplier
 
 			LoriDashboard.applyBlur("#hiddenIfDisabled", "#cmn-toggle-1") {
-				val donationValue = guild.activeDonationKeys.sumByDouble { it.value }
+				val donationValue = guild.activeDonationKeys.getPlan()
 
-				if (59.99 > donationValue) {
+				if (donationValue.dailyMultiplier != 1.0) {
 					Stuff.showPremiumFeatureModal()
 					return@applyBlur false
 				}

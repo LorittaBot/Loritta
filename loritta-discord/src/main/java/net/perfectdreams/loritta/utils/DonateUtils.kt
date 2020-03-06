@@ -53,7 +53,7 @@ object DonateUtils {
 
 		val shouldWeSentARandomMessage = Loritta.RANDOM.nextInt(0, 50)
 
-		if (shouldWeSentARandomMessage == 0 && 19.99 > donatorPaid && 19.99 > guildPaid) {
+		if (shouldWeSentARandomMessage == 0 && !ServerPremiumPlans.getPlanFromValue(guildPaid).doNotSendAds && !UserPremiumPlans.getPlanFromValue(donatorPaid).doNotSendAds) {
 			val randomValue = Loritta.RANDOM.nextInt(0, 5)
 
 			return if (randomValue == 0) { // Upvote

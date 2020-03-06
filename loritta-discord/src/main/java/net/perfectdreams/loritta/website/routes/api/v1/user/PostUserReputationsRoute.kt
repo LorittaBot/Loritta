@@ -38,6 +38,7 @@ import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import io.ktor.http.HttpStatusCode
+import net.perfectdreams.loritta.utils.UserPremiumPlans
 
 class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/{userId}/reputation") {
 	companion object {
@@ -181,20 +182,8 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 
 			giveReputation(userIdentification.id.toLong(), ip, userIdentification.email!!, receiver.toLong(), content)
 
-			var randomChance = 2.5
 			val donatorPaid = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonations(userIdentification.id.toLong())
-			if (donatorPaid != 0.0) {
-				randomChance = when {
-					donatorPaid >= 159.99 -> 20.0
-					donatorPaid >= 139.99 -> 17.5
-					donatorPaid >= 119.99 -> 15.0
-					donatorPaid >= 99.99 -> 12.5
-					donatorPaid >= 79.99 -> 10.0
-					donatorPaid >= 59.99 -> 7.5
-					donatorPaid >= 39.99 -> 5.0
-					else -> randomChance
-				}
-			}
+			var randomChance = UserPremiumPlans.getPlanFromValue(donatorPaid).loriReputationRetribution
 
 			if (chance(randomChance)) { // Lori é fofis e retribuiu reputações :eu_te_moido:
 				GlobalScope.launch(com.mrpowergamerbr.loritta.utils.loritta.coroutineDispatcher) {

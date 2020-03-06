@@ -15,6 +15,7 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
+import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import org.jetbrains.exposed.sql.insert
@@ -50,7 +51,7 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 			val beforeReceiver = receiverProfile.money
 
 			val activeMoneyFromDonations = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonations(giverId)
-			val taxBypass = activeMoneyFromDonations >= LorittaPrices.NO_PAY_TAX
+			val taxBypass = UserPremiumPlans.getPlanFromValue(activeMoneyFromDonations).noPaymentTax
 
 			val taxedMoney = if (taxBypass) { 0.0 } else { Math.ceil(PagarCommand.TRANSACTION_TAX * howMuch.toDouble()) }
 			val finalMoney = (howMuch - taxedMoney).toLong()

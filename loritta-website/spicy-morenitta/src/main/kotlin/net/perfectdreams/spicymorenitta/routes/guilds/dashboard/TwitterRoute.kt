@@ -26,6 +26,7 @@ import net.perfectdreams.spicymorenitta.utils.DashboardUtils.launchWithLoadingSc
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.switchContentAndFixLeftSidebarScroll
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import net.perfectdreams.spicymorenitta.views.dashboard.Stuff
+import net.perfectdreams.spicymorenitta.views.dashboard.getPlan
 import org.w3c.dom.*
 import kotlin.browser.document
 import kotlin.browser.window
@@ -43,6 +44,7 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 
 	@Serializable
 	class PartialGuildConfiguration(
+			val activeDonationKeys: List<ServerConfig.DonationKey>,
 			val textChannels: List<ServerConfig.TextChannel>,
 			val trackedTwitterAccounts: Array<ServerConfig.TrackedTwitterAccount>
 	)
@@ -60,7 +62,7 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 	@ImplicitReflectionSerializer
 	override fun onRender(call: ApplicationCall) {
 		launchWithLoadingScreenAndFixContent(call) {
-			val guild = DashboardUtils.retrievePartialGuildConfiguration<PartialGuildConfiguration>(call.parameters["guildid"]!!, "twitter", "textchannels")
+			val guild = DashboardUtils.retrievePartialGuildConfiguration<PartialGuildConfiguration>(call.parameters["guildid"]!!, "activekeys", "twitter", "textchannels")
 			switchContentAndFixLeftSidebarScroll(call)
 
 			document.select<HTMLButtonElement>("#save-button").onClick {
@@ -77,8 +79,17 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 
 			val addEntryButton = document.select<HTMLButtonElement>("#add-new-entry")
 			addEntryButton.onClick {
-				if (trackedTwitterAccounts.size >= 5) {
-					Stuff.showPremiumFeatureModal()
+				val premiumPlan = guild.activeDonationKeys.getPlan()
+
+				if (trackedTwitterAccounts.size >= premiumPlan.maxTwitterAccounts) {
+					Stuff.showPremiumFeatureModal {
+						h2 {
+							+ "Adicione todos os seus amigos!"
+						}
+						p {
+							+ "Faça upgrade para poder adicionar mais canais!"
+						}
+					}
 					return@onClick
 				}
 

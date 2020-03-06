@@ -2,6 +2,7 @@ package net.perfectdreams.spicymorenitta.views.dashboard
 
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
+import net.perfectdreams.loritta.utils.ServerPremiumPlans
 import utils.LoriColor
 
 object ServerConfig {
@@ -212,3 +213,6 @@ object ServerConfig {
 			val type: String
 	)
 }
+
+fun Collection<ServerConfig.DonationKey>.getValue() = this.sumByDouble { it.value }
+fun Collection<ServerConfig.DonationKey>.getPlan() = ServerPremiumPlans.getPlanFromValue(this.getValue())

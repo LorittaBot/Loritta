@@ -36,6 +36,7 @@ import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.utils.DonateUtils
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.FeatureFlags
+import net.perfectdreams.loritta.utils.UserPremiumPlans
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
@@ -351,7 +352,8 @@ class CommandManager {
 				val guildId = ev.guild?.idLong
 				val guildPaid = guildId?.let { serverConfig.getActiveDonationKeysValue() } ?: 0.0
 
-				if (donatorPaid >= 39.99 || guildPaid >= 59.99) {
+				val plan = UserPremiumPlans.getPlanFromValue(donatorPaid)
+				if (plan.lessCooldown) {
 					cooldown /= 2
 				}
 

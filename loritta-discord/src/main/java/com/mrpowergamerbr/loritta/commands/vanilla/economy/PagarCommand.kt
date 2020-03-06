@@ -17,6 +17,7 @@ import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.UserPremiumPlans
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.math.BigDecimal
 
@@ -141,7 +142,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 					return
 
 				val activeMoneyFromDonations = loritta.getActiveMoneyFromDonations(context.userHandle.idLong)
-				val taxBypass = activeMoneyFromDonations >= LorittaPrices.NO_PAY_TAX
+				val taxBypass = UserPremiumPlans.getPlanFromValue(activeMoneyFromDonations).noPaymentTax
 
 				val taxedMoney = if (taxBypass) { 0.0 } else { Math.ceil(TRANSACTION_TAX * howMuch.toDouble()) }
 				val finalMoney = howMuch - taxedMoney

@@ -8,6 +8,8 @@ import kotlinx.html.js.onClickFunction
 import kotlinx.html.stream.appendHTML
 import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.parseList
+import net.perfectdreams.loritta.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.locale
@@ -30,7 +32,51 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
         val plansTable = page.getElementById("plans-features") as HTMLDivElement
 
         val rewards = listOf(
-                DonationReward("Ajuda a Lori a Pagar o Aluguel", 0.99, true, callback = { column ->
+                DonationReward("ignore_me", 0.0, false),
+                DonationReward("ignore_me", 99.99, false),
+
+                // ===[  ESSENTIAL  ]===
+                DonationReward("Lori irá parar de perturbar você e os membros do seu servidor com pedidos de doação", 19.99, false) ,
+
+                // ===[ RECOMMENDED ]===
+                DonationReward("Badge EXCLUSIVA no \"+perfil\" para os membros do seu servidor", 39.99, false),
+                // DonationReward("Personalizar nome/avatar da Loritta nas notificações do YouTube/Twitch/Twitter", 39.99, false),
+                DonationReward("Tempo reduzido entre comandos", 39.99, false),
+                DonationReward("Não pagar taxas no +pay", 39.99, false),
+
+                // ===[  COMPLETE  ]===
+
+                // ===[   NUMBERS  ]===
+                DonationReward("Sonhos ganhos a cada minuto", 39.99, false, callback = { column ->
+                    when {
+                        column >= 99.99 -> +"10"
+                        column >= 39.99 -> +"4"
+                        column >= 19.99 -> +"2"
+                        else -> +"0"
+                    }
+                }),
+                DonationReward("Multiplicador de dailies de sonhos para membros do seu servidor", 19.99, false, callback = { column ->
+                    + (ServerPremiumPlans.getPlanFromValue(column).dailyMultiplier.toString() + "x")
+                }),
+                DonationReward("Máximo de cargos de Level Up", 19.99, false, callback = { column ->
+                    + ServerPremiumPlans.getPlanFromValue(column).maxLevelUpRoles.toString()
+                }),
+                DonationReward("Número de Contadores de Membros", 19.99, false, callback = { column ->
+                    + ServerPremiumPlans.getPlanFromValue(column).memberCounterCount.toString()
+                }),
+                DonationReward("Máximo de contas de notificações do YouTube/Twitch/Twitter", 19.99, false, callback = { column ->
+                    + ServerPremiumPlans.getPlanFromValue(column).maxYouTubeChannels.toString()
+                }),
+                DonationReward("Limite máximo de sonhos no +daily", 39.99, false, callback = { column ->
+                    + UserPremiumPlans.getPlanFromValue(column).maxDreamsInDaily.toString()
+                }),
+                DonationReward("Chance da Lori te dar uma reputação", 39.99, false, callback = { column ->
+                    + (UserPremiumPlans.getPlanFromValue(column).loriReputationRetribution.toString() + "%")
+                }),
+                DonationReward("Multiplicador de XP Global", 119.99, false, callback = { column ->
+                    + (ServerPremiumPlans.getPlanFromValue(column).globalXpMultiplier.toString() + "x")
+                })
+                /* DonationReward("Ajuda a Lori a Pagar o Aluguel", 0.99, true, callback = { column ->
                     if (column >= 0.99) {
                         i("fas fa-check") {}
                     } else {
@@ -100,14 +146,14 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                         else -> +"1.0x"
                     }
                 }),
-                /* DonationReward("Divulgar o seu Servidor na Sexta-Feira da Lori (desde que não seja sobre conteúdo NSFW)", 139.99, false, callback = { column ->
+                DonationReward("Divulgar o seu Servidor na Sexta-Feira da Lori (desde que não seja sobre conteúdo NSFW)", 139.99, false, callback = { column ->
 					when {
 						column >= 139.99 -> +"Em apenas três sexta-feiras"
 						column >= 99.99 -> +"Em apenas duas sexta-feiras"
 						column >= 59.99 -> +"Em apenas uma sexta-feira"
 						else -> i("fas fa-times") {}
 					}
-				}), */
+				}),
 
                 DonationReward("Uma versão premium minha! ...ela não faz NADA, só serve para você ostentar!", 59.99, true),
                 DonationReward("Mais outro cargo exclusivo no servidor de suporte", 59.99, true),
@@ -128,7 +174,7 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                 DonationReward("ignore_me", 139.99, false),
                 DonationReward("ignore_me", 159.99, false),
                 DonationReward("ignore_me", 179.99, false)
-                // DonationReward("Uma Lori EXCLUSIVA para você! (Pode alterar nome/avatar)", 159.99)
+                // DonationReward("Uma Lori EXCLUSIVA para você! (Pode alterar nome/avatar)", 159.99) */
         )
 
         plansTable.appendBuilder(
@@ -141,14 +187,19 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                         rewards.asSequence()
                                 .map { it.minimumDonation }
                                 .distinct()
-                                .filter { it == 19.99 || it == 39.99 || it == 119.99 }
+                                .filter { it == 0.0 || it == 19.99 || it == 39.99 || it == 99.99 }
                                 .sortedBy { it }.toList().forEach {
                                     th {
                                         val titlePrefix = when (it) {
-                                            19.99 -> "Essenciais"
+                                            0.0 -> "Grátis"
+                                            19.99 -> "Essencial"
                                             39.99 -> "Recomendado"
-                                            119.99 -> "O céu é o limite!"
+                                            99.99 -> "Completo"
                                             else -> "???"
+                                        }
+
+                                        if (it == 0.0) {
+                                            style = "opacity: 0.7; font-size: 0.9em;"
                                         }
 
                                         if (it == 39.99) {
@@ -169,6 +220,10 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                             }
                             for (column in rewardColumn) {
                                 td {
+                                    if (column == 0.0) {
+                                        style = "opacity: 0.7; font-size: 0.8em;"
+                                    }
+
                                     if (column == 39.99) {
                                         style = "background-color: #83ff836b;"
                                     }
@@ -186,6 +241,9 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                         val loginButton = document.getElementById("login-for-donate-url")
                         val needsToLogin = loginButton != null
                         val url = loginButton?.getAttribute("href")
+
+                        td {
+                        }
 
                         td {
                             if (needsToLogin) {
@@ -206,6 +264,7 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                                 }
                             }
                         }
+
                         td {
                             if (needsToLogin) {
                                 style = "background-color: #83ff836b;"
@@ -229,6 +288,7 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                                 }
                             }
                         }
+
                         td {
                             if (needsToLogin) {
                                 a(href = url) {

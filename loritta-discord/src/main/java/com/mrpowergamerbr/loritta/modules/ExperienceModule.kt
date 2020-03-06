@@ -22,6 +22,7 @@ import net.perfectdreams.loritta.tables.LevelAnnouncementConfigs
 import net.perfectdreams.loritta.tables.RolesByExperience
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.FeatureFlags
+import net.perfectdreams.loritta.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.utils.levels.LevelUpAnnouncementType
 import net.perfectdreams.loritta.utils.levels.RoleGiveType
 import org.jetbrains.exposed.sql.SortOrder
@@ -73,16 +74,8 @@ class ExperienceModule : MessageReceivedModule {
 
 					val donatorPaid = loritta.getActiveMoneyFromDonations(event.author.idLong)
 					if (donatorPaid != 0.0) {
-						globalGainedXp = when {
-							donatorPaid >= 159.99 -> (globalGainedXp * 2.5).toInt()
-							donatorPaid >= 139.99 -> (globalGainedXp * 2.25).toInt()
-							donatorPaid >= 119.99 -> (globalGainedXp * 2.0).toInt()
-							donatorPaid >= 99.99 -> (globalGainedXp * 1.75).toInt()
-							donatorPaid >= 79.99 -> (globalGainedXp * 1.5).toInt()
-							donatorPaid >= 59.99 -> (globalGainedXp * 1.25).toInt()
-							donatorPaid >= 39.99 -> (globalGainedXp * 1.1).toInt()
-							else -> globalGainedXp
-						}
+						val plan = ServerPremiumPlans.getPlanFromValue(donatorPaid)
+						globalGainedXp = (globalGainedXp * plan.globalXpMultiplier).toInt()
 					}
 
 					newProfileXp = lorittaProfile.xp + globalGainedXp

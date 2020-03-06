@@ -46,6 +46,7 @@ import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
 import net.perfectdreams.loritta.tables.Giveaways
 import net.perfectdreams.loritta.tables.ReactionOptions
 import net.perfectdreams.loritta.utils.FeatureFlags
+import net.perfectdreams.loritta.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
 import okio.Buffer
 import org.jetbrains.exposed.sql.and
@@ -92,11 +93,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				guild.selfMember.hasPermission(it, Permission.MANAGE_CHANNEL) && memberCounterConfig?.topic?.contains("{counter}") == true
 			}
 
-			val channelsThatWillBeChecked = if (activeDonationValues >= LorittaPrices.ALLOW_MORE_THAN_ONE_MEMBER_COUNTER && FeatureFlags.ALLOW_MORE_THAN_ONE_COUNTER_FOR_PREMIUM_USERS) {
-				validChannels.take(3)
-			} else {
-				validChannels.take(1)
-			}
+			val channelsThatWillBeChecked = validChannels.take(ServerPremiumPlans.getPlanFromValue(activeDonationValues).memberCounterCount)
 
 			for (textChannel in channelsThatWillBeChecked)
 				queueTextChannelTopicUpdate(guild, serverConfig, legacyServerConfig, textChannel, hideInEventLog)
