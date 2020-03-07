@@ -55,6 +55,8 @@ class DashboardRoute(loritta: LorittaDiscord) : RequiresDiscordLoginLocalizedRou
 		}
 		variables["userPermissionLevels"] = userPermissionLevels
 		variables["joinedServers"] = joinedServers
+		variables["saveType"] = "main"
+
 		call.respondHtml(
 				evaluate("dashboard.html", variables)
 		)

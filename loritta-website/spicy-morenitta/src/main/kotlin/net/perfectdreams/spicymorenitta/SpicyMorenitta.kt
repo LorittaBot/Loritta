@@ -21,6 +21,8 @@ import kotlinx.serialization.parse
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.routes.*
 import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.*
+import net.perfectdreams.spicymorenitta.routes.user.dashboard.ProfileListDashboardRoute
+import net.perfectdreams.spicymorenitta.routes.user.dashboard.ShipEffectsDashboardRoute
 import net.perfectdreams.spicymorenitta.trunfo.TrunfoGame
 import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.utils.locale.BaseLocale
@@ -62,6 +64,7 @@ class SpicyMorenitta : Logging {
 			UpdateNavbarSizePostRender("/support"),
 			UpdateNavbarSizePostRender("/blog"),
 			UpdateNavbarSizePostRender("/extended"),
+			UpdateNavbarSizePostRender("/guidelines"),
 			AuditLogRoute(this),
 			LevelUpRoute(this),
 			TwitterRoute(this),
@@ -79,7 +82,9 @@ class SpicyMorenitta : Logging {
 			TwitchRoute(this),
 			MusicConfigRoute(this),
 			DonateRoute(this),
-			FortniteConfigRoute(this)
+			FortniteConfigRoute(this),
+			ProfileListDashboardRoute(this),
+			ShipEffectsDashboardRoute(this)
 	)
 
 	val validWebsiteLocaleIds = mutableListOf(

@@ -1,4 +1,4 @@
-package net.perfectdreams.spicymorenitta.views
+package net.perfectdreams.spicymorenitta.routes.user.dashboard
 
 import kotlinx.html.*
 import kotlinx.html.dom.append
@@ -8,27 +8,30 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.parse
 import kotlinx.serialization.parseList
+import net.perfectdreams.spicymorenitta.SpicyMorenitta
+import net.perfectdreams.spicymorenitta.application.ApplicationCall
+import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
 import net.perfectdreams.spicymorenitta.utils.SaveUtils
 import net.perfectdreams.spicymorenitta.utils.loriUrl
 import net.perfectdreams.spicymorenitta.utils.page
 import kotlin.browser.document
 import kotlin.dom.clear
 
-@ImplicitReflectionSerializer
-object ProfileListView {
-    @JsName("start")
-    fun start() {
-        document.addEventListener("DOMContentLoaded", {
-            val premiumAsJson = document.getElementById("profile-list-json")?.innerHTML!!
-            val profileAsJson = document.getElementById("profile-json")?.innerHTML!!
+class ProfileListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/user/@me/dashboard/profiles") {
+    @UseExperimental(ImplicitReflectionSerializer::class)
+    override fun onRender(call: ApplicationCall) {
+        super.onRender(call)
 
-            val shipEffects = JSON.nonstrict.parseList<ProfileLayout>(premiumAsJson)
-            val profile = JSON.nonstrict.parse<Profile>(profileAsJson)
+        val premiumAsJson = document.getElementById("profile-list-json")?.innerHTML!!
+        val profileAsJson = document.getElementById("profile-json")?.innerHTML!!
 
-            generateEntries(profile, shipEffects)
-        })
+        val shipEffects = JSON.nonstrict.parseList<ProfileLayout>(premiumAsJson)
+        val profile = JSON.nonstrict.parse<Profile>(profileAsJson)
+
+        generateEntries(profile, shipEffects)
     }
 
+    @ImplicitReflectionSerializer
     fun generateEntries(profile: Profile, shipEffects: List<ProfileLayout>) {
         val el = page.getElementById("ship-active-effects")
 

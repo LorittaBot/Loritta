@@ -91,3 +91,7 @@ val ApplicationRequest.urlQueryString: String get() {
 
 class HttpRedirectException(val location: String, val permanent: Boolean = false) : RuntimeException()
 fun redirect(location: String, permanent: Boolean = false): Nothing = throw HttpRedirectException(location, permanent)
+
+var ApplicationCall.alreadyHandledStatus: Boolean
+	get() = this.attributes.getOrNull(WebsiteUtils.handledStatusBefore) ?: false
+	set(value) = this.attributes.put(WebsiteUtils.handledStatusBefore, value)

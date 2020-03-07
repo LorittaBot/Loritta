@@ -88,6 +88,9 @@ class LorittaWebsite(val loritta: Loritta) {
 
 			install(StatusPages) {
 				status(HttpStatusCode.NotFound) {
+					if (call.alreadyHandledStatus)
+						return@status
+
 					val html = ScriptingUtils.evaluateWebPageFromTemplate(
 							File(
 									"${INSTANCE.config.websiteFolder}/views/error_404.kts"
@@ -143,6 +146,7 @@ class LorittaWebsite(val loritta: Loritta) {
 				}
 
 				exception<WebsiteAPIException> { cause ->
+					call.alreadyHandledStatus = true
 					call.respondJson(cause.payload, cause.status)
 				}
 

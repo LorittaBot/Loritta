@@ -36,6 +36,7 @@ import kotlin.collections.set
 object WebsiteUtils {
 	val variablesKey = AttributeKey<MutableMap<String, Any?>>("variables")
 	val localeKey = AttributeKey<BaseLocale>("locale")
+	val handledStatusBefore = AttributeKey<Boolean>("handledStatusBefore")
 
 	fun initializeVariables(call: ApplicationCall, locale: BaseLocale, legacyLocale: LegacyBaseLocale, languageCode: String?) {
 		val req = call.request
