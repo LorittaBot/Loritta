@@ -186,7 +186,7 @@ class TemmieDiscordAuth(val clientId: String,
 		val expiresIn = expiresIn
 
 		if (generatedAt != null && expiresIn != null) {
-			if (System.currentTimeMillis() >= generatedAt + expiresIn)
+			if (System.currentTimeMillis() >= generatedAt + (expiresIn * 1000))
 				throw NeedsRefreshException()
 		}
 
