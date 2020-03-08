@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.plugin.profiles
 
 import com.mrpowergamerbr.loritta.profile.ProfileDesign
 import net.perfectdreams.loritta.api.LorittaBot
+import net.perfectdreams.loritta.api.utils.Rarity
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.plugin.profiles.designs.*
 
@@ -14,8 +15,10 @@ class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(n
                         false,
                         DebugProfileCreator::class.java,
                         "debug",
-                        0,
-                        listOf()
+                        Rarity.COMMON,
+                        listOf(),
+                        false,
+                        false
                 )
         )
         registeredProfiles.add(
@@ -23,8 +26,10 @@ class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(n
                         true,
                         PlainProfileCreator.PlainWhiteProfileCreator::class.java,
                         "plain_white",
-                        2500,
-                        listOf(321821618177310721L)
+                        Rarity.UNCOMMON,
+                        listOf(321821618177310721L),
+                        true,
+                        false
                 )
         )
         registeredProfiles.add(
@@ -32,8 +37,10 @@ class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(n
                         true,
                         PlainProfileCreator.PlainOrangeProfileCreator::class.java,
                         "plain_orange",
-                        2500,
-                        listOf(321821618177310721L)
+                        Rarity.UNCOMMON,
+                        listOf(321821618177310721L),
+                        true,
+                        false
                 )
         )
         registeredProfiles.add(
@@ -41,8 +48,10 @@ class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(n
                         true,
                         PlainProfileCreator.PlainPurpleProfileCreator::class.java,
                         "plain_purple",
-                        2500,
-                        listOf(321821618177310721L)
+                        Rarity.UNCOMMON,
+                        listOf(321821618177310721L),
+                        true,
+                        false
                 )
         )
         registeredProfiles.add(
@@ -50,8 +59,10 @@ class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(n
                         true,
                         PlainProfileCreator.PlainAquaProfileCreator::class.java,
                         "plain_aqua",
-                        2500,
-                        listOf(321821618177310721L)
+                        Rarity.UNCOMMON,
+                        listOf(321821618177310721L),
+                        true,
+                        false
                 )
         )
         registeredProfiles.add(
@@ -59,8 +70,10 @@ class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(n
                         true,
                         PlainProfileCreator.PlainGreenProfileCreator::class.java,
                         "plain_green",
-                        2500,
-                        listOf(321821618177310721L)
+                        Rarity.UNCOMMON,
+                        listOf(321821618177310721L),
+                        true,
+                        false
                 )
         )
         registeredProfiles.add(
@@ -68,8 +81,10 @@ class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(n
                         true,
                         PlainProfileCreator.PlainGreenHeartsProfileCreator::class.java,
                         "plain_green_hearts",
-                        3000,
-                        listOf(321821618177310721L)
+                        Rarity.UNCOMMON,
+                        listOf(321821618177310721L),
+                        true,
+                        false
                 )
         )
         registeredProfiles.add(
@@ -77,8 +92,10 @@ class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(n
                         true,
                         CowboyProfileCreator::class.java,
                         "cowboy",
-                        3500,
-                        listOf(321821618177310721L)
+                        Rarity.RARE,
+                        listOf(321821618177310721L),
+                        true,
+                        false
                 )
         )
         registeredProfiles.add(
@@ -86,8 +103,10 @@ class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(n
                         true,
                         NextGenProfileCreator::class.java,
                         "next_gen",
-                        3500,
-                        listOf(361977144445763585L)
+                        Rarity.RARE,
+                        listOf(361977144445763585L),
+                        true,
+                        false
                 )
         )
         registeredProfiles.add(
@@ -95,8 +114,10 @@ class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(n
                         true,
                         MonicaAtaProfileCreator::class.java,
                         "monica_ata",
-                        10000,
-                        listOf(321821618177310721L)
+                        Rarity.EPIC,
+                        listOf(321821618177310721L),
+                        true,
+                        false
                 )
         )
         registeredProfiles.add(
@@ -104,8 +125,10 @@ class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(n
                         true,
                         UndertaleProfileCreator::class.java,
                         "undertale",
-                        12500,
-                        listOf(419125869475397633L)
+                        Rarity.EPIC,
+                        listOf(419125869475397633L),
+                        true,
+                        false
                 )
         )
         registeredProfiles.add(
@@ -113,19 +136,45 @@ class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(n
                         true,
                         LoriAtaProfileCreator::class.java,
                         "lori_ata",
-                        15000,
-                        listOf(321821618177310721L, 419125869475397633L)
+                        Rarity.EPIC,
+                        listOf(321821618177310721L, 419125869475397633L),
+                        true,
+                        false
                 )
         )
 
         registeredProfiles.add(
-                ProfileDesign(true, Halloween2019ProfileCreator::class.java, "halloween_2019", -1, listOf())
+                ProfileDesign(
+                        true,
+                        Halloween2019ProfileCreator::class.java,
+                        "halloween_2019",
+                        Rarity.LEGENDARY,
+                        listOf(),
+                        false,
+                        true
+                )
         )
         registeredProfiles.add(
-                ProfileDesign(true, Christmas2019ProfileCreator::class.java, "christmas_2019", -1, listOf())
+                ProfileDesign(
+                        true,
+                        Christmas2019ProfileCreator::class.java,
+                        "christmas_2019",
+                        Rarity.LEGENDARY,
+                        listOf(),
+                        false,
+                        true
+                )
         )
         registeredProfiles.add(
-                ProfileDesign(true, LorittaChristmas2019ProfileCreator::class.java, "animated_christmas_2019", -1, listOf())
+                ProfileDesign(
+                        true,
+                        LorittaChristmas2019ProfileCreator::class.java,
+                        "animated_christmas_2019",
+                        Rarity.LEGENDARY,
+                        listOf(),
+                        false,
+                        true
+                )
         )
 
         registeredProfiles.forEach {
