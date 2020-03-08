@@ -5,6 +5,7 @@ import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.ProfileSettings
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.profile.NostalgiaProfileCreator
+import com.mrpowergamerbr.loritta.profile.ProfileDesign
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -37,7 +38,7 @@ class ProfileListRoute(loritta: LorittaDiscord) : RequiresDiscordLoginLocalizedR
 
 		variables["available_profiles_json"] = gson.toJson(
 				com.mrpowergamerbr.loritta.utils.loritta.profileDesignManager.publicDesigns.map {
-					getProfileAsJson(userIdentification, it.clazz, it.internalType, profileSettings, it.price)
+					getProfileAsJson(userIdentification, it.clazz, profileSettings, it)
 				}
 		)
 
@@ -49,13 +50,15 @@ class ProfileListRoute(loritta: LorittaDiscord) : RequiresDiscordLoginLocalizedR
 	}
 
 	companion object {
-		fun getProfileAsJson(userIdentification: LorittaJsonWebSession.UserIdentification, profile: Class<*>, shortName: String, settings: ProfileSettings, price: Long): JsonObject {
+		fun getProfileAsJson(userIdentification: LorittaJsonWebSession.UserIdentification, profile: Class<*>, settings: ProfileSettings, profileDesign: ProfileDesign): JsonObject {
 			return jsonObject(
 					"internalName" to profile.simpleName,
-					"shortName" to shortName,
-					"price" to price,
+					"shortName" to profileDesign.internalType,
+					"rarity" to profileDesign.rarity.toString(),
 					"alreadyBought" to if (profile == NostalgiaProfileCreator::class.java) true else settings.boughtProfiles.contains(profile.simpleName),
-					"activated" to (settings.activeProfile == profile.simpleName)
+					"activated" to (settings.activeProfile == profile.simpleName),
+					"availableToBuyViaDreams" to profileDesign.availableToBuyViaDreams,
+					"availableToBuyViaMoney" to profileDesign.availableToBuyViaMoney
 			)
 		}
 	}

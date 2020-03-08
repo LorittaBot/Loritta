@@ -8,6 +8,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.parse
 import kotlinx.serialization.parseList
+import net.perfectdreams.loritta.api.utils.Rarity
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
@@ -39,7 +40,7 @@ class ProfileListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRen
 
         el.append {
             div(classes = "pure-g vertically-centered-content") {
-                shipEffects.sortedBy { if (it.price == -1.0) 9999999.0 else it.price }.forEach { shipEffect ->
+                shipEffects.sortedBy { if (!it.availableToBuyViaDreams) 9999999 else it.rarity.getProfilePrice() }.forEach { shipEffect ->
                     println(shipEffect.internalName + " - " + shipEffect.activated)
                     div(classes = "pure-u-1 pure-u-md-1-3") {
                         div {
@@ -71,15 +72,19 @@ class ProfileListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRen
                                 }
                             }
                             h3 {
-                                if (shipEffect.price != -1.0) {
-                                    +"Preço: ${shipEffect.price} sonhos"
+                                if (shipEffect.availableToBuyViaDreams) {
+                                    + "Preço: ${shipEffect.rarity.getProfilePrice()} sonhos"
                                 }
                             }
-                            if (shipEffect.price != -1.0) {
+                            h4 {
+                                + shipEffect.rarity.toString()
+                            }
+                            if (shipEffect.availableToBuyViaDreams) {
                                 div(classes = "button-discord pure-button") {
                                     style = "font-size: 1.25em; margin: 5px;"
 
-                                    if (shipEffect.alreadyBought || shipEffect.price > profile.money) {
+                                    val price = shipEffect.rarity.getProfilePrice()
+                                    if (shipEffect.alreadyBought || price > profile.money) {
                                         classes += "button-discord-disabled"
                                     } else {
                                         classes += "button-discord-info"
@@ -135,8 +140,10 @@ class ProfileListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRen
     class ProfileLayout(
             val internalName: String,
             val shortName: String,
-            val price: Double,
+            val rarity: Rarity,
             val alreadyBought: Boolean,
-            val activated: Boolean
+            val activated: Boolean,
+            val availableToBuyViaDreams: Boolean,
+            val availableToBuyViaMoney: Boolean
     )
 }

@@ -101,7 +101,7 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 					)
 			)
 
-			if (profileSettings.boughtProfiles.contains(profileDesign.clazz.simpleName) || profileDesign.price == -1L) {
+			if (profileSettings.boughtProfiles.contains(profileDesign.clazz.simpleName) || !profileDesign.availableToBuyViaDreams) {
 				throw WebsiteAPIException(HttpStatusCode.Forbidden,
 						WebsiteUtils.createErrorPayload(
 								LoriWebCode.FORBIDDEN
@@ -109,7 +109,9 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 				)
 			}
 
-			if (profileDesign.price > profile.money) {
+			val price = profileDesign.rarity.getProfilePrice()
+
+			if (price > profile.money) {
 				throw WebsiteAPIException(HttpStatusCode.PaymentRequired,
 						WebsiteUtils.createErrorPayload(
 								LoriWebCode.INSUFFICIENT_FUNDS
@@ -119,13 +121,13 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 
 			transaction(Databases.loritta) {
 				profileSettings.boughtProfiles = profileSettings.boughtProfiles.toMutableList().apply { this.add(profileDesign.clazz.simpleName) }.toTypedArray()
-				profile.money -= profileDesign.price
+				profile.money -= price
 
 				SonhosTransaction.insert {
 					it[givenBy] = profile.id.value
 					it[receivedBy] = null
 					it[givenAt] = System.currentTimeMillis()
-					it[quantity] = profileDesign.price.toBigDecimal()
+					it[quantity] = price.toBigDecimal()
 					it[reason] = SonhosPaymentReason.PROFILE
 				}
 			}
@@ -133,13 +135,13 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 			for (creatorId in profileDesign.createdBy) {
 				val creator = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(creatorId)
 				transaction(Databases.loritta) {
-					creator.money += (profileDesign.price.toDouble() * 0.2).toLong()
+					creator.money += (price.toDouble() * 0.2).toLong()
 
 					SonhosTransaction.insert {
 						it[givenBy] = null
 						it[receivedBy] = creator.id.value
 						it[givenAt] = System.currentTimeMillis()
-						it[quantity] = (profileDesign.price * 0.2).toBigDecimal()
+						it[quantity] = (price * 0.2).toBigDecimal()
 						it[reason] = SonhosPaymentReason.PROFILE
 					}
 				}
@@ -148,7 +150,7 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 			call.respondJson(
 					gson.toJsonTree(
 							com.mrpowergamerbr.loritta.utils.loritta.profileDesignManager.publicDesigns.map {
-								ProfileListRoute.getProfileAsJson(userIdentification, it.clazz, it.internalType, profileSettings, it.price)
+								ProfileListRoute.getProfileAsJson(userIdentification, it.clazz, profileSettings, it)
 							}
 					)
 			)
@@ -173,7 +175,7 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 			call.respondJson(
 					gson.toJsonTree(
 							com.mrpowergamerbr.loritta.utils.loritta.profileDesignManager.publicDesigns.map {
-								ProfileListRoute.getProfileAsJson(userIdentification, it.clazz, it.internalType, profileSettings, it.price)
+								ProfileListRoute.getProfileAsJson(userIdentification, it.clazz, profileSettings, it)
 							}
 					)
 			)

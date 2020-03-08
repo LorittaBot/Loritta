@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.profile
 
+import net.perfectdreams.loritta.api.utils.Rarity
 import net.perfectdreams.loritta.profile.*
 
 class ProfileDesignManager {
@@ -27,16 +28,47 @@ class ProfileDesignManager {
 
 	init {
 		registerDesign(
-				ProfileDesign(true, NostalgiaProfileCreator::class.java, "default", 0, listOf())
+				ProfileDesign(true,
+						NostalgiaProfileCreator::class.java,
+						"default",
+						Rarity.COMMON,
+						listOf(),
+						false,
+						false
+				)
 		)
 		registerDesign(
-				ProfileDesign(true, DefaultProfileCreator::class.java, "modern", 2000, listOf())
+				ProfileDesign(
+						true,
+						DefaultProfileCreator::class.java,
+						"modern",
+						Rarity.COMMON,
+						listOf(),
+						true,
+						false
+				)
 		)
 		registerDesign(
-				ProfileDesign(true, MSNProfileCreator::class.java, "msn", 7500, listOf())
+				ProfileDesign(
+						true,
+						MSNProfileCreator::class.java,
+						"msn",
+						Rarity.RARE,
+						listOf(),
+						true,
+						false
+				)
 		)
 		registerDesign(
-				ProfileDesign(true, OrkutProfileCreator::class.java, "orkut", 7500, listOf())
+				ProfileDesign(
+						true,
+						OrkutProfileCreator::class.java,
+						"orkut",
+						Rarity.RARE,
+						listOf(),
+						true,
+						false
+				)
 		)
 
 		registerBadge(
