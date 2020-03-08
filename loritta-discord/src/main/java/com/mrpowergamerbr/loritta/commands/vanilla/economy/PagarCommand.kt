@@ -16,9 +16,14 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.utils.UserPremiumPlans
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.kotlin.utils.addToStdlib.sumByLong
 import java.math.BigDecimal
 
 class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECONOMY) {
@@ -136,12 +141,16 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			// Hora de transferir!
 			if (economySource == "global") {
 				// User checks
+				val activeMoneyFromDonations = loritta.getActiveMoneyFromDonations(context.userHandle.idLong)
+				val userPlan = UserPremiumPlans.getPlanFromValue(activeMoneyFromDonations)
+
 				if (!checkIfSelfAccountIsOldEnough(context))
 					return
 				if (!checkIfOtherAccountIsOldEnough(context, user))
 					return
+				if (!checkIfSelfAccountCanTransferQuantity(context, howMuch, userPlan))
+					return
 
-				val activeMoneyFromDonations = loritta.getActiveMoneyFromDonations(context.userHandle.idLong)
 				val taxBypass = UserPremiumPlans.getPlanFromValue(activeMoneyFromDonations).noPaymentTax
 
 				val taxedMoney = if (taxBypass) { 0.0 } else { Math.ceil(TRANSACTION_TAX * howMuch.toDouble()) }
@@ -296,6 +305,33 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			)
 			return false
 		}
+		return true
+	}
+
+	private suspend fun checkIfSelfAccountCanTransferQuantity(context: CommandContext, quantity: Long, plan: UserPremiumPlans): Boolean {
+		val time = System.currentTimeMillis() - Constants.ONE_DAY_IN_MILLISECONDS
+
+		if (plan.maxDreamsDailyTransaction == Long.MAX_VALUE)
+			return true
+
+		val transactionsInTheLast24Hours = transaction(Databases.loritta) {
+			SonhosTransaction.select {
+				(SonhosTransaction.givenBy eq context.userHandle.idLong) and
+						(SonhosTransaction.reason inList listOf(SonhosPaymentReason.PAYMENT, SonhosPaymentReason.PAYMENT_TAX)) and
+						(SonhosTransaction.givenAt greaterEq time)
+			}.sumByLong { it[SonhosTransaction.quantity].toLong() }
+		}
+
+		if (transactionsInTheLast24Hours + quantity > plan.maxDreamsDailyTransaction) {
+			context.reply(
+					LoriReply(
+							context.locale["commands.economy.pay.maxDailyPaymentReached", plan.maxDreamsDailyTransaction, loritta.instanceConfig.loritta.website.url + "donate"],
+							Constants.ERROR
+					)
+			)
+			return false
+		}
+
 		return true
 	}
 
