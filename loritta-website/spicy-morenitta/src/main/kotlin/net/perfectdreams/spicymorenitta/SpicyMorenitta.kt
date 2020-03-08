@@ -21,6 +21,7 @@ import kotlinx.serialization.parse
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.routes.*
 import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.*
+import net.perfectdreams.spicymorenitta.routes.user.dashboard.AvailableBundlesDashboardRoute
 import net.perfectdreams.spicymorenitta.routes.user.dashboard.ProfileListDashboardRoute
 import net.perfectdreams.spicymorenitta.routes.user.dashboard.ShipEffectsDashboardRoute
 import net.perfectdreams.spicymorenitta.trunfo.TrunfoGame
@@ -84,7 +85,8 @@ class SpicyMorenitta : Logging {
 			DonateRoute(this),
 			FortniteConfigRoute(this),
 			ProfileListDashboardRoute(this),
-			ShipEffectsDashboardRoute(this)
+			ShipEffectsDashboardRoute(this),
+			AvailableBundlesDashboardRoute(this)
 	)
 
 	val validWebsiteLocaleIds = mutableListOf(

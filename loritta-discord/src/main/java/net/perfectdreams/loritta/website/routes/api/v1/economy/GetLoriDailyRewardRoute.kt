@@ -180,7 +180,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				}
 			}
 
-			var dailyPayout = RANDOM.nextInt(555 /* Math.max(555, 555 * (multiplier - 1)) */, ((600 * multiplier) + 1).toInt()) // 555 (lower bound) -> 555 * sites de votação do PerfectDreams
+			var dailyPayout = RANDOM.nextInt(1800 /* Math.max(555, 555 * (multiplier - 1)) */, ((1800 * multiplier) + 1).toInt()) // 555 (lower bound) -> 555 * sites de votação do PerfectDreams
 			val originalPayout = dailyPayout
 
 			val mutualGuilds = lorittaShards.queryMutualGuildsInAllLorittaClusters(userIdentification.id)

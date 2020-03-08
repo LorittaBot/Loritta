@@ -40,7 +40,7 @@ class ProfileListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRen
 
         el.append {
             div(classes = "pure-g vertically-centered-content") {
-                shipEffects.sortedBy { if (!it.availableToBuyViaDreams) 9999999 else it.rarity.getProfilePrice() }.forEach { shipEffect ->
+                shipEffects.sortedBy { it.rarity.getProfilePrice() }.forEach { shipEffect ->
                     println(shipEffect.internalName + " - " + shipEffect.activated)
                     div(classes = "pure-u-1 pure-u-md-1-3") {
                         div {

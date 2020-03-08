@@ -4,5 +4,7 @@ enum class PaymentReason {
     OTHER,
     DONATION,
     GUILD_ITEM,
-    SPONSORED
+    SPONSORED,
+    SONHOS_BUNDLE,
+    ITEM_BUNDLE
 }

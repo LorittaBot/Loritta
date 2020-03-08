@@ -53,7 +53,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 			while (true) {
 				try {
 					if (loritta.isMaster) {
-						if (System.currentTimeMillis() - lastItemListPostUpdate >= 60_000) {
+						if (System.currentTimeMillis() - lastItemListPostUpdate >= 900_000) {
 							lastItemListPostUpdate = System.currentTimeMillis()
 							logger.info { "Updating Fortnite Items..." }
 							val distinctApiIds = loritta.locales.values.map {
@@ -87,12 +87,12 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 						updateFortniteShop()
 					}
 
-					logger.info { "Waiting until 15000ms for the next update..." }
+					logger.info { "Waiting until 60000ms for the next update..." }
 				} catch (e: Exception) {
 					logger.warn(e) { "Error while updating Fortnite Stuff" }
 				}
 
-				delay(15_000)
+				delay(60_000)
 			}
 		}
 	}

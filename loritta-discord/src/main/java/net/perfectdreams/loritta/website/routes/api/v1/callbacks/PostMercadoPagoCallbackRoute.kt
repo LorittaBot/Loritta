@@ -1,8 +1,11 @@
 package net.perfectdreams.loritta.website.routes.api.v1.callbacks
 
+import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
+import com.github.salomonbrys.kotson.long
 import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -11,11 +14,16 @@ import io.ktor.http.HttpStatusCode
 import mu.KotlinLogging
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.tables.SonhosBundles
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import net.perfectdreams.loritta.website.routes.BaseRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.mercadopago.PaymentStatus
+import org.jetbrains.exposed.sql.SqlExpressionBuilder
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 
 class PostMercadoPagoCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/callbacks/mercadopago") {
 	companion object {
@@ -37,40 +45,86 @@ class PostMercadoPagoCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta,
 
 		when (topic) {
 			"payment" -> {
+				// Verificar se o pagamento foi aprovado
 				val payment = com.mrpowergamerbr.loritta.utils.loritta.mercadoPago.getPaymentInfoById(id)
 				logger.info { "MercadoPago Payment $id is ${payment.description} - Reference ID: ${payment.externalReference}" }
 
-
 				if (payment.status == PaymentStatus.APPROVED || (com.mrpowergamerbr.loritta.utils.loritta.config.loritta.environment == EnvironmentType.CANARY && allowAnyPayment)) {
-					if (payment.externalReference?.startsWith("LORI-DONATE-MP-") == true) {
-						// Criação de nova key:
-						// LORI-DONATE-MP-InternalTransactionId
-						// Renovação de uma key
-						// LORI-DONATE-MP-RENEW-KEY-KeyId-InternalTransactionId
+					if (payment.externalReference == null) {
+						logger.warn { "MercadoPago Payment $id is ${payment.description} but it is missing the Reference ID!" }
+						call.respondJson(jsonObject())
+						return
+					}
 
-						val isKeyRenewal = payment.externalReference.startsWith("LORI-DONATE-MP-RENEW-KEY-")
+					val internalTransactionId = payment.externalReference.split("-").last()
 
-						val internalTransactionId = payment.externalReference.split("-").last()
+					val internalPayment = transaction(Databases.loritta) {
+						Payment.findById(internalTransactionId.toLong())
+					}
 
-						val internalPayment = transaction(Databases.loritta) {
-							Payment.findById(internalTransactionId.toLong())
-						}
+					if (internalPayment == null) {
+						logger.warn { "MercadoPago Payment $id with Reference ID: ${payment.externalReference} ($internalTransactionId) doesn't have a matching internal ID! Bug?" }
+						call.respondJson(jsonObject())
+						return
+					}
 
-						if (internalPayment == null) {
-							logger.warn { "MercadoPago Payment $id with Reference ID: ${payment.externalReference} ($internalTransactionId) doesn't have a matching internal ID! Bug?" }
+					if (internalPayment.paidAt != null) {
+						logger.warn { "MercadoPago Payment $id with Reference ID: ${payment.externalReference} ($internalTransactionId) is alredy paid! Ignoring..." }
+						call.respondJson(jsonObject())
+						return
+					}
+
+					logger.info { "Setting Payment $internalTransactionId as paid! (via MercadoPago payment $id) - Payment made by ${internalPayment.userId}" }
+
+					transaction(Databases.loritta) {
+						// Pagamento aprovado!
+						internalPayment.paidAt = System.currentTimeMillis()
+					}
+
+					if (payment.externalReference.startsWith("LORI-BUNDLE-")) {
+						// LORI-BUNDLE-InternalTransactionId
+						val paymentMetadata = internalPayment.metadata
+
+						if (paymentMetadata == null) {
+							logger.warn { "MercadoPago Payment $id with Reference ID: ${payment.externalReference} ($internalTransactionId) is a bundle, but it is missing the bundle metadata!" }
 							call.respondJson(jsonObject())
 							return
 						}
 
-						if (internalPayment.paidAt != null) {
+						val bundleId = paymentMetadata["bundleId"].long
+
+						val bundle = transaction(Databases.loritta) {
+							SonhosBundles.select {
+								SonhosBundles.id eq bundleId and (SonhosBundles.active eq true)
+							}.firstOrNull()
+						} ?: run {
 							logger.warn { "MercadoPago Payment $id with Reference ID: ${payment.externalReference} ($internalTransactionId) is alredy paid! Ignoring..." }
 							call.respondJson(jsonObject())
 							return
 						}
 
-						logger.info { "Setting Payment $internalTransactionId as paid! (via MercadoPago payment $id) - Payment made by ${internalPayment.userId}" }
-						transaction(Databases.loritta) { // Pagamento aprovado
-							internalPayment.paidAt = System.currentTimeMillis()
+						transaction(Databases.loritta) {
+							Profiles.update({ Profiles.id eq internalPayment.userId }) {
+								with(SqlExpressionBuilder) {
+									it.update(money, money + bundle[SonhosBundles.sonhos])
+								}
+							}
+						}
+
+						val user = lorittaShards.retrieveUserById(internalPayment.userId)
+						user?.openPrivateChannel()?.queue {
+							it.sendMessage("Seu pagamento foi aprovado com sucesso!").queue()
+						}
+					}
+
+					if (payment.externalReference.startsWith("LORI-DONATE-MP-")) {
+						// Criação de nova key:
+						// LORI-DONATE-MP-InternalTransactionId
+						// Renovação de uma key
+						// LORI-DONATE-MP-RENEW-KEY-KeyId-InternalTransactionId
+						val isKeyRenewal = payment.externalReference.startsWith("LORI-DONATE-MP-RENEW-KEY-")
+
+						transaction(Databases.loritta) {
 							internalPayment.expiresAt = System.currentTimeMillis() + Constants.DONATION_ACTIVE_MILLIS
 
 							if (internalPayment.reason == PaymentReason.DONATION) {

@@ -3,9 +3,7 @@ package net.perfectdreams.loritta.website
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.routes.*
 import net.perfectdreams.loritta.website.routes.api.v1.callbacks.*
-import net.perfectdreams.loritta.website.routes.api.v1.economy.GetLoriDailyRewardRoute
-import net.perfectdreams.loritta.website.routes.api.v1.economy.GetLoriDailyRewardStatusRoute
-import net.perfectdreams.loritta.website.routes.api.v1.economy.PostTransferBalanceExternalRoute
+import net.perfectdreams.loritta.website.routes.api.v1.economy.*
 import net.perfectdreams.loritta.website.routes.api.v1.guild.*
 import net.perfectdreams.loritta.website.routes.api.v1.loritta.*
 import net.perfectdreams.loritta.website.routes.api.v1.twitch.GetTwitchInfoRoute
@@ -23,6 +21,7 @@ import net.perfectdreams.loritta.website.routes.landingpages.BrazilianBotLanding
 import net.perfectdreams.loritta.website.routes.sponsors.SponsorsRedirectRoute
 import net.perfectdreams.loritta.website.routes.user.UserDashboardRoute
 import net.perfectdreams.loritta.website.routes.user.UserReputationRoute
+import net.perfectdreams.loritta.website.routes.user.dashboard.AvailableBundlesRoute
 import net.perfectdreams.loritta.website.routes.user.dashboard.ProfileListRoute
 import net.perfectdreams.loritta.website.routes.user.dashboard.ShipEffectsRoute
 
@@ -86,6 +85,7 @@ object DefaultRoutes {
 			UserDashboardRoute(loritta),
 			ProfileListRoute(loritta),
 			ShipEffectsRoute(loritta),
+			AvailableBundlesRoute(loritta),
 
 			// ===[ API ROUTES ]===
 			// Callbacks
@@ -99,6 +99,8 @@ object DefaultRoutes {
 			GetLoriDailyRewardRoute(loritta),
 			GetLoriDailyRewardStatusRoute(loritta),
 			PostTransferBalanceExternalRoute(loritta),
+			GetBundlesRoute(loritta),
+			PostBundlesRoute(loritta),
 
 			// Guild
 			GetGuildInfoRoute(loritta),

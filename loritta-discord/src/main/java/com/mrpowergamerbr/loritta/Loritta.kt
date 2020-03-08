@@ -396,7 +396,8 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					SonhosTransaction,
 					TrackedYouTubeAccounts,
 					TrackedTwitchAccounts,
-					CachedYouTubeChannelIds
+					CachedYouTubeChannelIds,
+					SonhosBundles
 			)
 		}
 	}
