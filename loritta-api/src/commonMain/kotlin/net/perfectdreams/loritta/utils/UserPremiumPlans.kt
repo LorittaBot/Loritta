@@ -25,7 +25,7 @@ interface UserPremiumPlans {
 		override val maxDreamsInDaily = 3600
 		override val loriReputationRetribution = 2.5
 		override val noPaymentTax = false
-		override val maxDreamsDailyTransaction = 500_000L
+		override val maxDreamsDailyTransaction = 300_000L
 	}
 
 	object Essential : UserPremiumPlans {
@@ -35,7 +35,7 @@ interface UserPremiumPlans {
 		override val maxDreamsInDaily = 4200
 		override val loriReputationRetribution = 5.0
 		override val noPaymentTax = false
-		override val maxDreamsDailyTransaction = 500_000L
+		override val maxDreamsDailyTransaction = 300_000L
 	}
 
 	object Recommended : UserPremiumPlans {
@@ -45,7 +45,7 @@ interface UserPremiumPlans {
 		override val maxDreamsInDaily = 4800
 		override val loriReputationRetribution = 10.0
 		override val noPaymentTax = true
-		override val maxDreamsDailyTransaction = 500_000L
+		override val maxDreamsDailyTransaction = 300_000L
 	}
 
 	object Complete : UserPremiumPlans {
