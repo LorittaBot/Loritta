@@ -11,11 +11,8 @@ import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.html.div
+import kotlinx.html.*
 import kotlinx.html.dom.append
-import kotlinx.html.img
-import kotlinx.html.span
-import kotlinx.html.style
 import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.parse
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
@@ -289,9 +286,26 @@ class SpicyMorenitta : Logging {
 			navbarIsSetup = true
 		}
 
+		val pathWithoutLocale = WebsiteUtils.getPathWithoutLocale()
 		debug("Current path is $path")
-		debug("Path without locale is ${WebsiteUtils.getPathWithoutLocale()}")
+		debug("Path without locale is ${pathWithoutLocale}")
 
+		document.select<Element?>("#languages")?.let {
+			it.clear()
+			it.append {
+				div {
+					a(href = "/br$pathWithoutLocale") {
+						+ "Português"
+					}
+				}
+				hr {}
+				div {
+					a(href = "/us$pathWithoutLocale") {
+						+ "English"
+					}
+				}
+			}
+		}
 		var route = routes.firstOrNull { it.matches(WebsiteUtils.getPathWithoutLocale()) }
 		if (route == null) {
 			warn("No route for ${WebsiteUtils.getPathWithoutLocale()} found! Bug? Defaulting to UpdateNavbarSizerPostRender!")
@@ -401,6 +415,8 @@ class SpicyMorenitta : Logging {
 				document.body!!.style.overflowY = "hidden" // Para remover as scrollbars e apenas deixar as scrollbars da navbar
 			}
 		}
+
+		val localeChangerButton = document.select<Element?>("#locale-changer-button")
 
 		setUpLinkPreloader()
 		setUpLazyLoad()
