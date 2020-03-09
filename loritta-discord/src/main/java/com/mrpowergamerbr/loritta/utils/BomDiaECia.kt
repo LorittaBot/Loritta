@@ -204,7 +204,7 @@ class BomDiaECia {
 		val messageForLocales = mutableMapOf<String, Message>()
 
 		loritta.legacyLocales.forEach { localeId, locale ->
-			val message = MessageBuilder().append("<:yudi:446394608256024597> **|** Parabéns `${user.name.stripCodeMarks()}#${user.discriminator}` por ter ligado primeiro no `${guild.name.stripCodeMarks().stripLinks()}`!")
+			val message = MessageBuilder().append("<:yudi:446394608256024597> **|** Parabéns `${user.name.stripCodeMarks().stripLinks()}#${user.discriminator}` por ter ligado primeiro no `${guild.name.stripCodeMarks().stripLinks()}`!")
 
 			messageForLocales[localeId] = message.build()
 		}
