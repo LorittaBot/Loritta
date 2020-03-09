@@ -11,9 +11,11 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import io.ktor.application.ApplicationCall
+import io.ktor.http.ContentType
 import io.ktor.request.header
 import io.ktor.request.host
 import io.ktor.request.path
+import io.ktor.response.respondText
 import io.ktor.sessions.get
 import io.ktor.sessions.sessions
 import io.ktor.sessions.set
@@ -23,11 +25,13 @@ import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.website.utils.ScriptingUtils
 import net.perfectdreams.loritta.website.utils.extensions.*
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.io.File
 import java.util.*
 
 abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path: String) : LocalizedRoute(loritta, path) {
@@ -266,6 +270,24 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 			val state = JsonObject()
 			state["redirectUrl"] = LorittaWebsite.WEBSITE_URL.substring(0, LorittaWebsite.Companion.WEBSITE_URL.length - 1) + call.request.path()
 			redirect(com.mrpowergamerbr.loritta.utils.loritta.discordInstanceConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}", false)
+		}
+
+		val profile = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(userIdentification.id)
+
+		if (profile.isBanned) {
+			val html = ScriptingUtils.evaluateWebPageFromTemplate(
+					File(
+							"${net.perfectdreams.loritta.website.LorittaWebsite.INSTANCE.config.websiteFolder}/views/user_banned.kts"
+					),
+					mapOf(
+							"path" to call.request.path().split("/").drop(2).joinToString("/"),
+							"websiteUrl" to net.perfectdreams.loritta.website.LorittaWebsite.INSTANCE.config.websiteUrl,
+							"locale" to locale,
+							"profile" to profile
+					)
+			)
+
+			call.respondText(html, ContentType.Text.Html)
 			return
 		}
 
