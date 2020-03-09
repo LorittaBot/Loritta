@@ -177,6 +177,10 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 						
 						logger.info { "Sending request to transfer sonhos between ${context.userHandle.id} and ${user.id}, $howMuch sonhos will be transferred. Is mutex locked? ${mutex.isLocked}" }
 						mutex.withLock {
+							// Verificar novamente para evitar pessoas enviando o mesmo comando X vezes seguidas para burlar a verificação
+							if (!checkIfSelfAccountCanTransferQuantity(context, howMuch, userPlan))
+								return@withLock
+
 							val shard = loritta.config.clusters.first { it.id == 1L }
 
 							val body = HttpRequest.post("https://${shard.getUrl()}/api/v1/loritta/transfer-balance")
