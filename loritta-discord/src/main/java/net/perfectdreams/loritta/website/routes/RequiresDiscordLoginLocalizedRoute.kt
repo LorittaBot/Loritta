@@ -267,10 +267,8 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 		logger.info { "Time to get User Identification: ${System.currentTimeMillis() - start}" }
 
 		if (discordAuth == null || userIdentification == null) {
-			// redirect to authentication owo
-			val state = JsonObject()
-			state["redirectUrl"] = LorittaWebsite.WEBSITE_URL.substring(0, LorittaWebsite.Companion.WEBSITE_URL.length - 1) + call.request.path()
-			redirect(com.mrpowergamerbr.loritta.utils.loritta.discordInstanceConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}", false)
+			onUnauthenticatedRequest(call, locale)
+			return
 		}
 
 		val profile = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(userIdentification.id)
@@ -293,5 +291,12 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 		}
 
 		onAuthenticatedRequest(call, locale, discordAuth, userIdentification)
+	}
+
+	open suspend fun onUnauthenticatedRequest(call: ApplicationCall, locale: BaseLocale) {
+		// redirect to authentication owo
+		val state = JsonObject()
+		state["redirectUrl"] = LorittaWebsite.WEBSITE_URL.substring(0, LorittaWebsite.Companion.WEBSITE_URL.length - 1) + call.request.path()
+		redirect(com.mrpowergamerbr.loritta.utils.loritta.discordInstanceConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}", false)
 	}
 }

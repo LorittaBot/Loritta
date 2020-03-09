@@ -3,9 +3,11 @@ package net.perfectdreams.loritta.website.routes.user
 import com.mrpowergamerbr.loritta.dao.Reputation
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Reputations
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import io.ktor.application.ApplicationCall
+import io.ktor.request.header
 import io.ktor.request.path
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
@@ -23,6 +25,44 @@ import kotlin.reflect.KTypeProjection
 import kotlin.reflect.full.createType
 
 class UserReputationRoute(loritta: LorittaDiscord) : RequiresDiscordLoginLocalizedRoute(loritta, "/user/{userId}/rep") {
+	override suspend fun onUnauthenticatedRequest(call: ApplicationCall, locale: BaseLocale) {
+		if (call.request.header("User-Agent") == Constants.DISCORD_CRAWLER_USER_AGENT) {
+			val userId = call.parameters["userId"] ?: return
+
+			val user = lorittaShards.retrieveUserById(userId)!!
+
+			// Vamos agora pegar todas as reputações
+			val reputations = transaction(Databases.loritta) {
+				Reputation.find { Reputations.receivedById eq user.idLong }.sortedByDescending { it.receivedAt }
+			}
+
+			val html = ScriptingUtils.evaluateWebPageFromTemplate(
+					File(
+							"${LorittaWebsite.INSTANCE.config.websiteFolder}/views/user/user_reputation.kts"
+					),
+					mapOf(
+							"path" to call.request.path().split("/").drop(2).joinToString("/"),
+							"websiteUrl" to LorittaWebsite.INSTANCE.config.websiteUrl,
+							"locale" to ScriptingUtils.WebsiteArgumentType(BaseLocale::class.createType(nullable = false), locale),
+							"userIdentification" to ScriptingUtils.WebsiteArgumentType(TemmieDiscordAuth.UserIdentification::class.createType(nullable = true), null, "LorittaJsonWebSession.UserIdentification"),
+							"user" to ScriptingUtils.WebsiteArgumentType(User::class.createType(nullable = true), user),
+							"lastReputationGiven" to ScriptingUtils.WebsiteArgumentType(Reputation::class.createType(nullable = true), null),
+							"reputations" to ScriptingUtils.WebsiteArgumentType(
+									List::class.createType(listOf(KTypeProjection.invariant(Reputation::class.createType()))),
+									reputations
+							),
+							"guildId" to ScriptingUtils.WebsiteArgumentType(String::class.createType(nullable = true), call.parameters["guild"]),
+							"channelId" to ScriptingUtils.WebsiteArgumentType(String::class.createType(nullable = true), call.parameters["channel"])
+					)
+			)
+
+			call.respondHtml(html)
+			return
+		}
+
+		super.onUnauthenticatedRequest(call, locale)
+	}
+
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
 		val userId = call.parameters["userId"] ?: return
 
