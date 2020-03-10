@@ -25,7 +25,6 @@ class GetMutualGuildsRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationR
 		}
 
 		val mutualGuilds = lorittaShards.getMutualGuilds(user)
-				.take(100)
 
 		call.respondJson(
 				jsonObject(
