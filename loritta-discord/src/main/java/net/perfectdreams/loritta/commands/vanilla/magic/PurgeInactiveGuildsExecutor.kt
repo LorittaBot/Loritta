@@ -2,11 +2,11 @@ package net.perfectdreams.loritta.commands.vanilla.magic
 
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
+import com.mrpowergamerbr.loritta.tables.Mutes
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.perfectdreams.loritta.api.commands.CommandContext
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import net.perfectdreams.loritta.dao.Giveaway
 import net.perfectdreams.loritta.tables.Giveaways
 import net.perfectdreams.loritta.utils.DiscordUtils
 import org.jetbrains.exposed.sql.deleteWhere
@@ -48,21 +48,29 @@ object PurgeInactiveGuildsExecutor : LoriToolsCommand.LoriToolsExecutor {
 					)
 			)
 
-			val count = transaction(Databases.loritta) {
-				GuildProfiles.deleteWhere {
-					GuildProfiles.guildId inList badGuildData
-				}
+			val idList = badGuildData.windowed(30_000)
 
-				ServerConfigs.deleteWhere { ServerConfigs.id inList badGuildData }
+			for (ids in idList) {
+				transaction(Databases.loritta) {
+					GuildProfiles.deleteWhere {
+						GuildProfiles.guildId inList ids
+					}
 
-				Giveaway.find {
-					Giveaways.guildId inList badGuildData
+					ServerConfigs.deleteWhere { ServerConfigs.id inList ids }
+
+					Giveaways.deleteWhere {
+						Giveaways.guildId inList ids
+					}
+
+					Mutes.deleteWhere {
+						Mutes.guildId inList ids
+					}
 				}
 			}
 
 			reply(
 					LorittaReply(
-							"Feito! $count guilds inativas foram deletadas!"
+							"Feito! Todas as guilds inativas foram deletadas!"
 					)
 			)
 		} else {

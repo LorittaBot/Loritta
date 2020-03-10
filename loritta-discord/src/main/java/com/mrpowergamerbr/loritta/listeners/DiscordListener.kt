@@ -322,6 +322,10 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					GiveawayManager.cancelGiveaway(it, true, true)
 				}
 
+				Mutes.deleteWhere {
+					Mutes.guildId inList ids
+				}
+				
 				logger.trace { "Done! Everything related to ${e.guild} was deleted!"}
 			}
 		}
