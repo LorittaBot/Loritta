@@ -7,7 +7,7 @@ import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
 
 object FakeTable : Table() {
-	val musicConfig = ServerConfigs.optReference("music_config", MusicConfigs, onDelete = ReferenceOption.CASCADE)
+	val musicConfig = ServerConfigs.optReference("music_config", MusicConfigs, onDelete = ReferenceOption.CASCADE).index()
 }
 
 var ServerConfig.musicConfig by MusicConfig optionalReferencedOn FakeTable.musicConfig

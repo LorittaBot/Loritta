@@ -16,6 +16,6 @@ object Profiles : SnowflakeTable() {
 	var donationExpiresIn = long("donation_expires_in")
 	var isAfk = bool("isAfk")
 	var afkReason = text("afkReason").nullable()
-	var settings = reference("settings", UserSettings, onDelete = ReferenceOption.CASCADE)
+	var settings = reference("settings", UserSettings, onDelete = ReferenceOption.CASCADE).index()
 	var marriage = reference("marriage", Marriages).nullable()
 }

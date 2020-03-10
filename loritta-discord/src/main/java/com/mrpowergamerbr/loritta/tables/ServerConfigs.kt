@@ -16,9 +16,9 @@ object ServerConfigs : SnowflakeTable() {
 	val warnIfBlacklisted = bool("warn_if_blacklisted").default(false)
 	val blacklistedWarning = text("blacklisted_warning").nullable()
 	// val donationKey = optReference("donation_key", DonationKeys)
-	val donationConfig = optReference("donation_config", DonationConfigs, onDelete = ReferenceOption.CASCADE)
-	val birthdayConfig = optReference("birthday_config", BirthdayConfigs, onDelete = ReferenceOption.CASCADE)
-	val economyConfig = optReference("economy_config", EconomyConfigs, onDelete = ReferenceOption.CASCADE)
-	val levelConfig = optReference("level_config", LevelConfigs, onDelete = ReferenceOption.CASCADE)
+	val donationConfig = optReference("donation_config", DonationConfigs, onDelete = ReferenceOption.CASCADE).index()
+	val birthdayConfig = optReference("birthday_config", BirthdayConfigs, onDelete = ReferenceOption.CASCADE).index()
+	val economyConfig = optReference("economy_config", EconomyConfigs, onDelete = ReferenceOption.CASCADE).index()
+	val levelConfig = optReference("level_config", LevelConfigs, onDelete = ReferenceOption.CASCADE).index()
 	val migrationVersion = integer("migration_version").default(0)
 }
