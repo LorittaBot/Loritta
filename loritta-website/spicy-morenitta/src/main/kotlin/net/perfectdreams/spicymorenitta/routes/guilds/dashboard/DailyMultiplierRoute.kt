@@ -41,7 +41,7 @@ class DailyMultiplierRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("
 			LoriDashboard.applyBlur("#hiddenIfDisabled", "#cmn-toggle-1") {
 				val donationValue = guild.activeDonationKeys.getPlan()
 
-				if (donationValue.dailyMultiplier != 1.0) {
+				if (donationValue.dailyMultiplier == 1.0) {
 					Stuff.showPremiumFeatureModal()
 					return@applyBlur false
 				}
