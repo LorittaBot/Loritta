@@ -26,6 +26,7 @@ import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
+import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.loritta.utils.daily.DailyGuildMissingRequirement
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
@@ -204,28 +205,33 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 			val status = MiscUtils.verifyAccount(userIdentification, ip)
 			val email = userIdentification.email
 
-			val random = RANDOM.nextInt(0, 30)
+			val random = RANDOM.nextInt(1, 101)
 			var multiplier = when (random) {
-				in 8..14 -> 3.0
-				in 15..20 -> 4.0
-				in 21..25 -> 5.0
-				in 26..29 -> 6.0
-				else -> 2.0
+				100 -> { // 1
+					6.0
+				}
+				in 94..99 -> { // 3
+					5.0
+				}
+				in 78..93 -> { // 6
+					4.0
+				}
+				in 59..77 -> { // 20
+					3.0
+				}
+				in 34..58 -> { // 25
+					2.0
+				}
+				in 0..33 -> { // 25
+					1.5
+				}
+				else -> 1.1
 			}
 
 			val donatorPaid = loritta.getActiveMoneyFromDonations(userIdentification.id.toLong())
+			val plan = UserPremiumPlans.getPlanFromValue(donatorPaid)
 
-			if (donatorPaid != 0.0) {
-				when {
-					donatorPaid >= 159.99 -> multiplier += 22.55
-					donatorPaid >= 139.99 -> multiplier += 16.85
-					donatorPaid >= 119.99 -> multiplier += 12.292
-					donatorPaid >= 99.99 -> multiplier += 8.634
-					donatorPaid >= 79.99 -> multiplier += 5.717
-					donatorPaid >= 59.99 -> multiplier += 3.375
-					donatorPaid >= 39.99 -> multiplier += 1.5
-				}
-			}
+			multiplier += plan.dailyMultiplier
 
 			var dailyPayout = RANDOM.nextInt(1800 /* Math.max(555, 555 * (multiplier - 1)) */, ((1800 * multiplier) + 1).toInt()) // 555 (lower bound) -> 555 * sites de votação do PerfectDreams
 			val originalPayout = dailyPayout

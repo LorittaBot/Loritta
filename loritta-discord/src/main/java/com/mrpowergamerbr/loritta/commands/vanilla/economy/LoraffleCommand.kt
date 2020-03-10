@@ -12,7 +12,7 @@ import java.util.*
 
 class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lorifa"), CommandCategory.ECONOMY) {
 	companion object {
-		const val MAX_TICKETS_BY_USER_PER_ROUND = 1000
+		const val MAX_TICKETS_BY_USER_PER_ROUND = 2500
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
