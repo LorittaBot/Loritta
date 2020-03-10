@@ -11,11 +11,11 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.plugin.stafflorittaban.StaffLorittaBanConfig
 
 class AddReactionForStaffLoriBanModule(val config: StaffLorittaBanConfig) : MessageReceivedModule {
-	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
+	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
 		return config.enabled && event.channel.idLong in config.channels
 	}
 
-	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
+	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
 		val message = event.message
 
 		val split = message.contentRaw.split(" ")

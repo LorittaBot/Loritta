@@ -111,7 +111,9 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				logIfEnabled(enableProfiling) { "Migration Checks took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
-				val lorittaProfile = loritta.getOrCreateLorittaProfile(event.author.idLong)
+
+				val lorittaProfile = loritta.getLorittaProfile(event.author.idLong)
+
 				logIfEnabled(enableProfiling) { "Loading user's profile took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
@@ -132,7 +134,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				logIfEnabled(enableProfiling) { "Wrapping $member $legacyServerConfig and $lorittaProfile in a GuildLorittaUser took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
-				if (lorittaProfile.isAfk) {
+				if (lorittaProfile != null && lorittaProfile.isAfk) {
 					transaction(Databases.loritta) {
 						lorittaProfile.isAfk = false
 						lorittaProfile.afkReason = null
@@ -266,7 +268,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				logIfEnabled(enableProfiling) { "Checking for ignore permission took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
-				if (isUserStillBanned(lorittaProfile))
+				if (lorittaProfile != null && isUserStillBanned(lorittaProfile))
 					return@launch
 				logIfEnabled(enableProfiling) { "Checking for user ban took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 

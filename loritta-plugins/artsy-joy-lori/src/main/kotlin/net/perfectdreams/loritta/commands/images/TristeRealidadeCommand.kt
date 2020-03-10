@@ -72,8 +72,8 @@ class TristeRealidadeCommand : LorittaCommand(arrayOf("sadreality", "tristereali
         val firstUser = users[0]
         if (firstUser is DiscordUser) {
             lovedGender = transaction(Databases.loritta) {
-                val profile = LorittaLauncher.loritta.getOrCreateLorittaProfile(firstUser.id)
-                profile.settings.gender
+                val profile = LorittaLauncher.loritta.getLorittaProfile(firstUser.id)
+                profile?.settings?.gender ?: Gender.UNKNOWN
             }
         }
 
@@ -103,8 +103,8 @@ class TristeRealidadeCommand : LorittaCommand(arrayOf("sadreality", "tristereali
                 var gender = Gender.UNKNOWN
 
                 gender = transaction(Databases.loritta) {
-                    val profile = LorittaLauncher.loritta.getOrCreateLorittaProfile(member.handle.idLong)
-                    profile.settings.gender
+                    val profile = LorittaLauncher.loritta.getLorittaProfile(firstUser.id)
+                    profile?.settings?.gender ?: Gender.UNKNOWN
                 }
 
                 if (gender == Gender.UNKNOWN)

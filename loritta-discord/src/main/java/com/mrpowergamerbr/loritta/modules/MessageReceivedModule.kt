@@ -16,7 +16,7 @@ interface MessageReceivedModule {
 	 * @param legacyServerConfig the server configuration
 	 * @return             if the event should be handled
 	 */
-	fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean
+	fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean
 
 	/**
 	 * What the module should do when it is executed
@@ -26,5 +26,5 @@ interface MessageReceivedModule {
 	 * @param legacyServerConfig the server configuration
 	 * @return             if true, the original event should be cancelled and nothing else should be processed
 	 */
-	suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean
+	suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean
 }

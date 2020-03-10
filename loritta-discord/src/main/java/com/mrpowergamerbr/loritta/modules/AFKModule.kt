@@ -11,17 +11,17 @@ import net.dv8tion.jda.api.entities.TextChannel
 import java.util.concurrent.TimeUnit
 
 class AFKModule : MessageReceivedModule {
-	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
+	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
 		return (event.channel as TextChannel).canTalk()
 	}
 
-	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
+	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
 		val afkMembers = mutableListOf<Pair<Member, String?>>()
 
 		for (mention in event.message.mentionedMembers) {
-			val lorittaProfile = loritta.getOrCreateLorittaProfile(mention.user.id)
+			val lorittaProfile = loritta.getLorittaProfile(mention.user.id)
 
-			if (lorittaProfile.isAfk) {
+			if (lorittaProfile != null && lorittaProfile.isAfk) {
 				var reason = lorittaProfile.afkReason
 
 				if (reason != null) {

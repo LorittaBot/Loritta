@@ -17,7 +17,7 @@ class InviteLinkModule : MessageReceivedModule {
 		val cachedInviteLinks = Caffeine.newBuilder().expireAfterWrite(30L, TimeUnit.MINUTES).build<Long, List<String>>().asMap()
 	}
 
-	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
+	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
 		if (!legacyServerConfig.inviteBlockerConfig.isEnabled)
 			return false
 
@@ -30,7 +30,7 @@ class InviteLinkModule : MessageReceivedModule {
 		return true
 	}
 
-	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
+	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
 		val message = event.message
 		val guild = message.guild
 		val inviteBlockerConfig = legacyServerConfig.inviteBlockerConfig

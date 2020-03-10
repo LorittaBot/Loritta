@@ -11,11 +11,11 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.utils.Emotes
 
 class AddReactionForHeathecliffModule : MessageReceivedModule {
-	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
+	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
 		return event.channel.idLong == 643828343325851648L || event.channel.idLong == 646871435465326592L
 	}
 
-	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
+	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
 		if (event.channel.idLong == 643828343325851648L) {
 			if (!event.message.contentRaw.startsWith(">")) {
 				event.message.addReaction("\uD83D\uDC4D").queue()

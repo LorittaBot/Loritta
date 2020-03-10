@@ -79,8 +79,8 @@ abstract class ActionCommand(labels: Array<String>) : LorittaCommand(labels, Com
     suspend fun runAction(context: DiscordCommandContext, user: User, userProfile: Profile?, receiver: User, receiverProfile: Profile?) {
         val response: String
         val locale = context.locale
-        val senderProfile = userProfile ?: LorittaLauncher.loritta.getOrCreateLorittaProfile(user.id)
-        val recProfile = receiverProfile ?: LorittaLauncher.loritta.getOrCreateLorittaProfile(receiver.id)
+        val senderProfile = userProfile ?: LorittaLauncher.loritta.getLorittaProfile(user.id)
+        val recProfile = receiverProfile ?: LorittaLauncher.loritta.getLorittaProfile(receiver.id)
 
         // Anti-gente idiota
         if (this is KissCommand && receiver.id == LorittaLauncher.loritta.discordConfig.discord.clientId) {
@@ -94,8 +94,8 @@ abstract class ActionCommand(labels: Array<String>) : LorittaCommand(labels, Com
         }
 
         // R U a boy or girl?
-        val userGender = transaction(Databases.loritta) { senderProfile.settings.gender }
-        val receiverGender = transaction(Databases.loritta) { recProfile.settings.gender }
+        val userGender = transaction(Databases.loritta) { senderProfile?.settings?.gender ?: Gender.UNKNOWN }
+        val receiverGender = transaction(Databases.loritta) { recProfile?.settings?.gender ?: Gender.UNKNOWN  }
 
         response = getResponse(locale, user, receiver)
 

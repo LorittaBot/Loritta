@@ -13,9 +13,13 @@ import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 /**
  * Um usuário que está comunicando com a Loritta
  */
-open class LorittaUser(val user: User, val config: MongoServerConfig, val profile: Profile) {
+open class LorittaUser(val user: User, val config: MongoServerConfig, val _profile: Profile?) {
 	val asMention: String
 		get() = getAsMention(false)
+	val profile by lazy {
+		println("LAZY LOAD GET PROFILE FOR ${user.idLong}")
+		loritta.getOrCreateLorittaProfile(user.idLong)
+	}
 
 	fun getAsMention(addSpace: Boolean): String {
 		return user.asMention + (if (addSpace) " " else "")
@@ -58,7 +62,7 @@ open class LorittaUser(val user: User, val config: MongoServerConfig, val profil
 /**
  * Um usuário que está comunicando com a Loritta em canais de texto
  */
-class GuildLorittaUser(val member: Member, config: MongoServerConfig, profile: Profile) : LorittaUser(member.user, config, profile) {
+class GuildLorittaUser(val member: Member, config: MongoServerConfig, _profile: Profile?) : LorittaUser(member.user, config, _profile) {
 	override fun hasPermission(lorittaPermission: LorittaPermission): Boolean {
 		val roles = member.roles.toMutableList()
 

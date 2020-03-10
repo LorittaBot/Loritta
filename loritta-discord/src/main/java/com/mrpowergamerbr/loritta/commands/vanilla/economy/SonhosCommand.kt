@@ -22,7 +22,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 		val lorittaProfile = if (retrieveDreamsFromUser == context.userHandle) {
 			context.lorittaUser.profile
 		} else {
-			loritta.getOrCreateLorittaProfile(retrieveDreamsFromUser.id)
+			loritta.getLorittaProfile(retrieveDreamsFromUser.id)
 		}
 
 		var localEconomyEnabled = false
@@ -38,12 +38,13 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 		}
 
 		if (context.userHandle == retrieveDreamsFromUser) {
+			val userSonhos = lorittaProfile?.money ?: 0L
 			if (localEconomyEnabled && economyConfig != null) { // Sistema de ecnomia local está ativado!
-				val localProfile = context.legacyConfig.getUserData(lorittaProfile.userId)
+				val localProfile = context.legacyConfig.getUserData(retrieveDreamsFromUser.idLong)
 				context.reply(
 						true,
 						LoriReply(
-								locale["SONHOS_YouHave", lorittaProfile.money, if (lorittaProfile.money == 1L) { locale["ECONOMY_Name"] } else { locale["ECONOMY_NamePlural"] }],
+								locale["SONHOS_YouHave", localProfile.money, if (userSonhos == 1L) { locale["ECONOMY_Name"] } else { locale["ECONOMY_NamePlural"] }],
 								"<:loritta:331179879582269451>",
 								mentionUser = false
 						),
@@ -56,24 +57,25 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 			} else {
 				context.reply(
 						LoriReply(
-								locale["SONHOS_YouHave", lorittaProfile.money, if (lorittaProfile.money == 1L) { locale["ECONOMY_Name"] } else { locale["ECONOMY_NamePlural"] }],
+								locale["SONHOS_YouHave", userSonhos, if (userSonhos == 1L) { locale["ECONOMY_Name"] } else { locale["ECONOMY_NamePlural"] }],
 								"<:loritta:331179879582269451>"
 						)
 				)
+				logger.info("Usuário ${retrieveDreamsFromUser.idLong} possui $userSonhos sonhos!")
 			}
-			logger.info("Usuário ${lorittaProfile.userId} possui ${lorittaProfile.money} sonhos!")
 		} else {
+			val userSonhos = lorittaProfile?.money ?: 0L
 			if (localEconomyEnabled && economyConfig != null) {
-				val localProfile = context.legacyConfig.getUserData(lorittaProfile.userId)
+				val localProfile = context.legacyConfig.getUserData(retrieveDreamsFromUser.idLong)
 				context.reply(
 						true,
 						LoriReply(
-								locale["SONHOS_UserHas", retrieveDreamsFromUser.asMention, lorittaProfile.money, if (lorittaProfile.money == 1L) { locale["ECONOMY_Name"] } else { locale["ECONOMY_NamePlural"] }],
+								locale["SONHOS_UserHas", retrieveDreamsFromUser.asMention, userSonhos, if (userSonhos == 1L) { locale["ECONOMY_Name"] } else { locale["ECONOMY_NamePlural"] }],
 								"<:loritta:331179879582269451>",
 								mentionUser = false
 						),
 						LoriReply(
-								locale["SONHOS_UserHas", retrieveDreamsFromUser.asMention, localProfile.money, if (lorittaProfile.money == 1L) { economyConfig.economyName } else { economyConfig.economyNamePlural }],
+								locale["SONHOS_UserHas", retrieveDreamsFromUser.asMention, localProfile.money, if (localProfile.money == BigDecimal.ONE) { economyConfig.economyName } else { economyConfig.economyNamePlural }],
 								"\uD83D\uDCB5",
 								mentionUser = false
 						)
@@ -81,12 +83,12 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 			} else {
 				context.reply(
 						LoriReply(
-								locale["SONHOS_UserHas", retrieveDreamsFromUser.asMention, lorittaProfile.money, if (lorittaProfile.money == 1L) { locale["ECONOMY_Name"] } else { locale["ECONOMY_NamePlural"] }],
+								locale["SONHOS_UserHas", retrieveDreamsFromUser.asMention, userSonhos, if (userSonhos == 1L) { locale["ECONOMY_Name"] } else { locale["ECONOMY_NamePlural"] }],
 								"\uD83D\uDCB5"
 						)
 				)
 			}
-			logger.info("Usuário ${retrieveDreamsFromUser.id} possui ${lorittaProfile.money} sonhos!")
+			logger.info("Usuário ${retrieveDreamsFromUser.id} possui ${userSonhos} sonhos!")
 		}
 	}
 }

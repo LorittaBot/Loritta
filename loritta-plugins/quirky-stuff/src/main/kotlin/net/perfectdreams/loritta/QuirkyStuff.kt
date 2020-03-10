@@ -13,7 +13,9 @@ import net.perfectdreams.loritta.commands.SouTopDoadorCommand
 import net.perfectdreams.loritta.listeners.AddReactionFurryAminoPtListener
 import net.perfectdreams.loritta.listeners.AddReactionListener
 import net.perfectdreams.loritta.listeners.GetCandyListener
-import net.perfectdreams.loritta.modules.*
+import net.perfectdreams.loritta.modules.AddReactionForHeathecliffModule
+import net.perfectdreams.loritta.modules.QuirkyModule
+import net.perfectdreams.loritta.modules.ThankYouLoriModule
 import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
 import net.perfectdreams.loritta.profile.badges.CanecaBadge
 import net.perfectdreams.loritta.profile.badges.HalloweenBadge
@@ -70,7 +72,6 @@ class QuirkyStuff(name: String, loritta: LorittaBot) : DiscordPlugin(name, lorit
         registerMessageReceivedModules(
                 QuirkyModule(config),
                 ThankYouLoriModule(config),
-                DropCandyModule(config),
                 AddReactionForHeathecliffModule()
         )
 

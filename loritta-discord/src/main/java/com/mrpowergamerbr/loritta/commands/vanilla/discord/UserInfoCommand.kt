@@ -99,8 +99,10 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 		val embed = getEmbedBase(user, member)
 
 		embed.apply {
-			val lorittaProfile = loritta.getOrCreateLorittaProfile(user.id)
-			val settings = transaction(Databases.loritta) { lorittaProfile.settings }
+			val lorittaProfile = loritta.getLorittaProfile(user.id)
+			val settings = transaction(Databases.loritta) { lorittaProfile?.settings }
+			val hideSharedServers = settings?.hideSharedServers ?: false
+			val lastMessageSentAt = lorittaProfile?.lastMessageSentAt ?: 0L
 
 			addField("\uD83D\uDD16 ${context.legacyLocale.get("USERINFO_TAG_DO_DISCORD")}", "`${user.name}#${user.discriminator}`", true)
 			addField("\uD83D\uDCBB ${context.legacyLocale.get("USERINFO_ID_DO_DISCORD")}", "`${user.id}`", true)
@@ -112,10 +114,8 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 				addField("\uD83C\uDF1F ${context.legacyLocale.toNewLocale()["commands.discord.userInfo.accountJoined"]}", accountJoinedDiff, true)
 			}
 
-			val offset = Instant.ofEpochMilli(lorittaProfile.lastMessageSentAt).atZone(ZoneId.systemDefault()).toOffsetDateTime()
-
-			if (lorittaProfile.lastMessageSentAt != 0L) {
-				val lastSeenDiff = DateUtils.formatDateDiff(lorittaProfile.lastMessageSentAt, context.legacyLocale)
+			if (lastMessageSentAt != 0L) {
+				val lastSeenDiff = DateUtils.formatDateDiff(lastMessageSentAt, context.legacyLocale)
 				addField("\uD83D\uDC40 ${context.legacyLocale["USERINFO_LAST_SEEN"]}", lastSeenDiff, true)
 			}
 
@@ -127,7 +127,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 				it["memberCount"].int
 			}
 
-			if (settings.hideSharedServers && !loritta.config.isOwner(context.handle.user.idLong)) {
+			if (hideSharedServers && !loritta.config.isOwner(context.handle.user.idLong)) {
 				servers = "*${context.legacyLocale["USERINFO_PrivacyOn"]}*"
 			} else {
 				servers = sharedServers.joinToString(separator = ", ", transform = { "`${it["name"].string}`" })
@@ -156,10 +156,11 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 		val locale = context.legacyLocale
 
 		embed.apply {
-			val lorittaProfile = loritta.getOrCreateLorittaProfile(user.id)
-			val settings = transaction(Databases.loritta) { lorittaProfile.settings }
+			val lorittaProfile = loritta.getLorittaProfile(user.id)
+			val settings = transaction(Databases.loritta) { lorittaProfile?.settings }
+			val hidePreviousUsernames = settings?.hidePreviousUsernames ?: false
 
-			if (settings.hidePreviousUsernames && !loritta.config.isOwner(context.handle.user.idLong)) {
+			if (hidePreviousUsernames && !loritta.config.isOwner(context.handle.user.idLong)) {
 				val alsoKnownAs = "**" + context.legacyLocale.get("USERINFO_ALSO_KNOWN_AS") + "**\n*${locale["USERINFO_PrivacyOn"]}*"
 				setDescription(alsoKnownAs)
 			} else {

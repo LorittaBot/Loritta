@@ -33,11 +33,11 @@ class DropChristmasStuffModule(val config: Christmas2019Config) : MessageReceive
         private val logger = KotlinLogging.logger {}
     }
 
-    override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
+    override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
         return event.guild?.selfMember?.hasPermission(Permission.MESSAGE_ADD_REACTION) == true && Calendar.getInstance().get(Calendar.MONTH) == 11
     }
 
-    override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
+    override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
         val date = System.currentTimeMillis()
 
         val millis = event.member!!.timeJoined.toInstant().toEpochMilli()

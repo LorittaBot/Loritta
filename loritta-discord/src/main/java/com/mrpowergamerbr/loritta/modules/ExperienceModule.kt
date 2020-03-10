@@ -44,25 +44,29 @@ class ExperienceModule : MessageReceivedModule {
 			.build<Long, Mutex>()
 			.asMap()
 
-	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
+	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
 		return true
 	}
 
-	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
+	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
 		if (!FeatureFlags.isEnabled("experience-gain"))
 			return false
 
 		// (copyright Loritta™)
-		var newProfileXp = lorittaProfile.xp
+		var newProfileXp = lorittaProfile?.xp ?: 0L
+		val currentXp = newProfileXp
+		val lastMessageSentAt = lorittaProfile?.lastMessageSentAt ?: 0L
+		val currentLastMessageSentHash = lorittaProfile?.lastMessageSentHash ?: 0L
 		var lastMessageSentHash: Int? = null
+		val retrievedProfile by lazy { loritta.getOrCreateLorittaProfile(event.author.idLong) }
 
 		// Primeiro iremos ver se a mensagem contém algo "interessante"
-		if (event.message.contentStripped.length >= 5 && lorittaProfile.lastMessageSentHash != event.message.contentStripped.hashCode()) {
+		if (event.message.contentStripped.length >= 5 && currentLastMessageSentHash != event.message.contentStripped.hashCode()) {
 			// Primeiro iremos verificar se a mensagem é "válida"
 			// 7 chars por millisegundo
 			val calculatedMessageSpeed = event.message.contentStripped.toLowerCase().length.toDouble() / 7
 
-			val diff = System.currentTimeMillis() - lorittaProfile.lastMessageSentAt
+			val diff = System.currentTimeMillis() - lastMessageSentAt
 
 			if (diff > calculatedMessageSpeed * 1000) {
 				val nonRepeatedCharsMessage = event.message.contentStripped.replace(Constants.REPEATING_CHARACTERS_REGEX, "$1")
@@ -78,27 +82,27 @@ class ExperienceModule : MessageReceivedModule {
 						globalGainedXp = (globalGainedXp * plan.globalXpMultiplier).toInt()
 					}
 
-					newProfileXp = lorittaProfile.xp + globalGainedXp
+					newProfileXp = currentXp + globalGainedXp
 					lastMessageSentHash = event.message.contentStripped.hashCode()
 
 					val profile = legacyServerConfig.getUserData(event.author.idLong)
 
 					if (FeatureFlags.isEnabled("experience-gain-locally")) {
-						handleLocalExperience(event, lorittaProfile, profile, gainedXp, locale.toNewLocale())
+						handleLocalExperience(event, retrievedProfile, profile, gainedXp, locale.toNewLocale())
 					}
 				}
 			}
 		}
 
-		if (lastMessageSentHash != null && lorittaProfile.xp != newProfileXp) {
+		if (lastMessageSentHash != null && currentXp != newProfileXp) {
 			val mutex = mutexes.getOrPut(event.author.idLong) { Mutex() }
 
 			if (FeatureFlags.isEnabled("experience-gain-globally")) {
 				mutex.withLock {
 					transaction(Databases.loritta) {
-						lorittaProfile.lastMessageSentHash = lastMessageSentHash
-						lorittaProfile.xp = newProfileXp
-						lorittaProfile.lastMessageSentAt = System.currentTimeMillis()
+						retrievedProfile.lastMessageSentHash = lastMessageSentHash
+						retrievedProfile.xp = newProfileXp
+						retrievedProfile.lastMessageSentAt = System.currentTimeMillis()
 					}
 				}
 			}
