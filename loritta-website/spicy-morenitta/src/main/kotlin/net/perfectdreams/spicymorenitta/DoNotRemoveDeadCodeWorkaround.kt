@@ -8,7 +8,6 @@ import ConfigureModerationView
 import ConfigureProfileView
 import ConfigureWelcomerView
 import kotlinx.serialization.ImplicitReflectionSerializer
-import net.perfectdreams.spicymorenitta.views.DailyView
 import net.perfectdreams.spicymorenitta.views.ReputationView
 
 object DoNotRemoveDeadCodeWorkaround {
@@ -29,8 +28,6 @@ object DoNotRemoveDeadCodeWorkaround {
 			ConfigureProfileView::prepareSave,
 			ConfigureWelcomerView::start,
 			ConfigureWelcomerView::prepareSave,
-			DailyView::start,
-			DailyView::recaptchaCallback,
 			ReputationView::recaptchaCallback
 	)
 }

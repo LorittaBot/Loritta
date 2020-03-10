@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.website
+package net.perfectdreams.spicymorenitta.utils
 
 enum class LoriWebCode(val errorId: Int, val fancyName: String) {
 	// 6xx - SUCCESS / INFO
@@ -29,5 +29,7 @@ enum class LoriWebCode(val errorId: Int, val fancyName: String) {
 
 	MISSING_PAYLOAD_HANDLER(810, "Missing Payload Handler");
 
-	fun fromErrorId(id: Int) = values().first { it.errorId == errorId }
+	companion object {
+		fun fromErrorId(id: Int) = values().first { it.errorId == id }
+	}
 }

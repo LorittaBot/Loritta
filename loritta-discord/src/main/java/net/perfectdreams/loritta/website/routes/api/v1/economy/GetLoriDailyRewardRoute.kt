@@ -14,8 +14,11 @@ import com.mrpowergamerbr.loritta.tables.DonationConfigs
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.LoriWebCodes
+import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.ApplicationCall
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
@@ -43,51 +46,23 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				.expireAfterAccess(60, TimeUnit.SECONDS)
 				.build<Long, Mutex>()
 				.asMap()
-	}
 
-	fun getDailyMultiplier(value: Double) = ServerPremiumPlans.getPlanFromValue(value).dailyMultiplier
-
-	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
-		loritta as Loritta
-		val recaptcha = call.parameters.get("recaptcha") ?: return
-
-		val body = HttpRequest.get("https://www.google.com/recaptcha/api/siteverify?secret=${loritta.config.googleRecaptcha.serverVoteToken}&response=$recaptcha")
-				.body()
-
-		val jsonParser = jsonParser.parse(body).obj
-
-		val success = jsonParser["success"].bool
-
-		if (!success) {
-			val payload = JsonObject()
-			payload["api:code"] = LoriWebCodes.INVALID_CAPTCHA_RESPONSE
-			call.respondJson(payload)
-			return
-		}
-
-		val ip = call.request.trueIp
-
-		val lorittaProfile = loritta.getOrCreateLorittaProfile(userIdentification.id)
-
-		val mutex = mutexes.getOrPut(lorittaProfile.userId) { Mutex() }
-		mutex.withLock {
+		fun checkIfUserCanPayout(userIdentification: LorittaJsonWebSession.UserIdentification, ip: String) {
 			// Para evitar pessoas criando várias contas e votando, nós iremos também verificar o IP dos usuários que votarem
 			// Isto evita pessoas farmando upvotes votando (claro que não é um método infalível, mas é melhor que nada, né?)
 			val lastReceivedDailyAt = transaction(Databases.loritta) {
-				com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.receivedById eq lorittaProfile.id.value }
+				com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.receivedById eq userIdentification.id.toLong() }
 						.orderBy(Dailies.receivedAt to false)
 						.limit(1)
 						.firstOrNull()
 			}?.get(Dailies.receivedAt) ?: 0L
 
-			val sameIpDaily = transaction(Databases.loritta) {
+			val sameIpDailyAt = transaction(Databases.loritta) {
 				com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.ip eq ip }
 						.orderBy(Dailies.receivedAt to false)
 						.limit(1)
 						.firstOrNull()
-			}
-
-			val sameIpDailyAt = sameIpDaily?.get(Dailies.receivedAt) ?: 0L
+			}?.get(Dailies.receivedAt) ?: 0L
 
 			run {
 				val calendar = Calendar.getInstance()
@@ -97,10 +72,16 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				calendar.add(Calendar.DAY_OF_MONTH, 1)
 				val tomorrow = calendar.timeInMillis
 
-				if (tomorrow > System.currentTimeMillis() && !loritta.config.isOwner(userIdentification.id.toLong())) {
-					val payload = JsonObject()
-					payload["api:code"] = LoriWebCodes.ALREADY_VOTED_TODAY
-					return@withLock payload.toString()
+				if (tomorrow > System.currentTimeMillis() && !com.mrpowergamerbr.loritta.utils.loritta.config.isOwner(userIdentification.id.toLong())) {
+					throw WebsiteAPIException(
+							HttpStatusCode.Forbidden,
+							WebsiteUtils.createErrorPayload(
+									LoriWebCode.ALREADY_GOT_THE_DAILY_REWARD_SAME_ACCOUNT_TODAY,
+									data = {
+										it["canPayoutAgain"] = tomorrow
+									}
+							)
+					)
 				}
 			}
 
@@ -112,15 +93,22 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				calendar.add(Calendar.DAY_OF_MONTH, 1)
 				val tomorrow = calendar.timeInMillis
 
-				if (tomorrow > System.currentTimeMillis() && !loritta.config.isOwner(userIdentification.id.toLong())) {
-					logger.warn { "User ${userIdentification.id} tried to get daily with the same IP as ${sameIpDaily?.get(Dailies.receivedById)}! IP = ${sameIpDaily?.get(Dailies.receivedById)}; Current User Email: ${userIdentification.email}; Daily User Email: ${sameIpDaily?.get(Dailies.email)}" }
-
-					val payload = JsonObject()
-					payload["api:code"] = LoriWebCodes.ALREADY_VOTED_TODAY
-					return@withLock payload.toString()
+				if (tomorrow > System.currentTimeMillis() && !com.mrpowergamerbr.loritta.utils.loritta.config.isOwner(userIdentification.id.toLong())) {
+					throw WebsiteAPIException(
+							HttpStatusCode.Forbidden,
+							WebsiteUtils.createErrorPayload(
+									LoriWebCode.ALREADY_GOT_THE_DAILY_REWARD_SAME_IP_TODAY,
+									data = {
+										it["canPayoutAgain"] = tomorrow
+										it["detectedIp"] = ip
+									}
+							)
+					)
 				}
 			}
+		}
 
+		fun verifyIfAccountAndIpAreSafe(userIdentification: LorittaJsonWebSession.UserIdentification, ip: String) {
 			val status = MiscUtils.verifyAccount(userIdentification, ip)
 			val email = userIdentification.email
 			logger.info { "AccountCheckResult for (${userIdentification.username}#${userIdentification.discriminator}) ${userIdentification.id} - ${status.name}" }
@@ -130,7 +118,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 
 			if (!status.canAccess) {
 				val payload = JsonObject()
-				return@withLock when (status) {
+				when (status) {
 					MiscUtils.AccountCheckResult.STOP_FORUM_SPAM,
 					MiscUtils.AccountCheckResult.BAD_HOSTNAME,
 					MiscUtils.AccountCheckResult.OVH_HOSTNAME -> {
@@ -138,24 +126,83 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 						// 0 = Stop Forum Spam
 						// 1 = Bad hostname
 						// 2 = OVH IP
-						payload["api:code"] = LoriWebCodes.BAD_IP
-						payload["reason"] = when (status) {
-							MiscUtils.AccountCheckResult.STOP_FORUM_SPAM -> 0
-							MiscUtils.AccountCheckResult.BAD_HOSTNAME -> 1
-							MiscUtils.AccountCheckResult.OVH_HOSTNAME -> 2
-							else -> -1
-						}
+						throw WebsiteAPIException(
+								HttpStatusCode.Forbidden,
+								WebsiteUtils.createErrorPayload(
+										LoriWebCode.BLACKLISTED_IP,
+										data = {
+											"reason" to when (status) {
+												MiscUtils.AccountCheckResult.STOP_FORUM_SPAM -> 0
+												MiscUtils.AccountCheckResult.BAD_HOSTNAME -> 1
+												MiscUtils.AccountCheckResult.OVH_HOSTNAME -> 2
+												else -> -1
+											}
+										}
+								)
+						)
 					}
 					MiscUtils.AccountCheckResult.BAD_EMAIL -> {
-						payload["api:code"] = LoriWebCodes.BAD_EMAIL
-
+						throw WebsiteAPIException(
+								HttpStatusCode.Forbidden,
+								WebsiteUtils.createErrorPayload(
+										LoriWebCode.BLACKLISTED_EMAIL
+								)
+						)
 					}
 					MiscUtils.AccountCheckResult.NOT_VERIFIED -> {
-						payload["api:code"] = LoriWebCodes.NOT_VERIFIED
+						throw WebsiteAPIException(
+								HttpStatusCode.Forbidden,
+								WebsiteUtils.createErrorPayload(
+										LoriWebCode.UNVERIFIED_ACCOUNT
+								)
+						)
 					}
 					else -> throw RuntimeException("Missing !canAccess result! ${status.name}")
 				}.toString()
 			}
+		}
+	}
+
+	fun getDailyMultiplier(value: Double) = ServerPremiumPlans.getPlanFromValue(value).dailyMultiplier
+
+	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
+		loritta as Loritta
+		val recaptcha = call.parameters["recaptcha"] ?: return
+
+		val body = HttpRequest.get("https://www.google.com/recaptcha/api/siteverify?secret=${loritta.config.googleRecaptcha.serverVoteToken}&response=$recaptcha")
+				.body()
+
+		val jsonParser = jsonParser.parse(body).obj
+
+		val success = jsonParser["success"].bool
+
+		if (!success) {
+			logger.warn { "User ${userIdentification.id} failed reCAPTCHA, error codes: ${jsonParser["error-codes"].array.joinToString(", ")}" }
+			throw WebsiteAPIException(
+					HttpStatusCode.Forbidden,
+					WebsiteUtils.createErrorPayload(
+							LoriWebCode.INVALID_RECAPTCHA,
+							data = {
+								"errorCodes" to jsonParser["error-codes"].array
+							}
+					)
+			)
+		}
+
+		val ip = call.request.trueIp
+
+		val lorittaProfile = loritta.getOrCreateLorittaProfile(userIdentification.id)
+
+		verifyIfAccountAndIpAreSafe(userIdentification, ip)
+
+		val mutex = mutexes.getOrPut(lorittaProfile.userId) { Mutex() }
+		mutex.withLock {
+			// Para evitar pessoas criando várias contas e votando, nós iremos também verificar o IP dos usuários que votarem
+			// Isto evita pessoas farmando upvotes votando (claro que não é um método infalível, mas é melhor que nada, né?)
+			checkIfUserCanPayout(userIdentification, ip)
+
+			val status = MiscUtils.verifyAccount(userIdentification, ip)
+			val email = userIdentification.email
 
 			val random = RANDOM.nextInt(0, 30)
 			var multiplier = when (random) {

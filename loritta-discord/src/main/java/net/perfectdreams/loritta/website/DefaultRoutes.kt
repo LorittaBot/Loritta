@@ -99,6 +99,7 @@ object DefaultRoutes {
 			PostTransferBalanceExternalRoute(loritta),
 			GetBundlesRoute(loritta),
 			PostBundlesRoute(loritta),
+			GetSonhosLeaderboardRoute(loritta),
 
 			// Guild
 			GetGuildInfoRoute(loritta),
@@ -111,6 +112,7 @@ object DefaultRoutes {
 			PostSearchGuildsRoute(loritta),
 			PostSendMessageGuildRoute(loritta),
 			PatchUpdateServerConfigBadgeRoute(loritta),
+			GetServerConfigSectionRoute(loritta),
 
 			// Loritta
 			GetCommandsRoute(loritta),
@@ -145,17 +147,6 @@ object DefaultRoutes {
 			PostDonationPaymentRoute(loritta),
 			PostSearchUsersRoute(loritta),
 			PostUserReputationsRoute(loritta),
-
-			// Daily
-			GetLoriDailyRewardRoute(loritta),
-			GetLoriDailyRewardStatusRoute(loritta),
-
-			// Guild
-			GetServerConfigRoute(loritta),
-			GetServerConfigSectionRoute(loritta),
-			PatchServerConfigRoute(loritta),
-			GetGuildWebAuditLogRoute(loritta),
-			PostSendMessageGuildRoute(loritta),
 
 			// Twitch
 			GetTwitchInfoRoute(loritta),

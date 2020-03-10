@@ -83,7 +83,8 @@ class SpicyMorenitta : Logging {
 			FortniteConfigRoute(this),
 			ProfileListDashboardRoute(this),
 			ShipEffectsDashboardRoute(this),
-			AvailableBundlesDashboardRoute(this)
+			AvailableBundlesDashboardRoute(this),
+			DailyRoute(this)
 	)
 
 	val validWebsiteLocaleIds = mutableListOf(
