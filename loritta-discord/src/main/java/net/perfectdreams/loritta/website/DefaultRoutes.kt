@@ -12,7 +12,6 @@ import net.perfectdreams.loritta.website.routes.api.v1.twitter.GetUpdateStreamCo
 import net.perfectdreams.loritta.website.routes.api.v1.twitter.PostReceivedTweetRoute
 import net.perfectdreams.loritta.website.routes.api.v1.user.*
 import net.perfectdreams.loritta.website.routes.api.v1.youtube.GetChannelInfoRoute
-import net.perfectdreams.loritta.website.routes.dashboard.DashboardAuthRoute
 import net.perfectdreams.loritta.website.routes.dashboard.DashboardRoute
 import net.perfectdreams.loritta.website.routes.dashboard.PostDashboardRoute
 import net.perfectdreams.loritta.website.routes.dashboard.configure.*
@@ -37,7 +36,6 @@ object DefaultRoutes {
 			FanArtsRoute(loritta),
 			SponsorsRoute(loritta),
 			TranslateRoute(loritta),
-			DashboardAuthRoute(loritta),
 			ExtrasRoute(loritta),
 			ExtrasViewerRoute(loritta),
 			SponsorsRedirectRoute(loritta),
