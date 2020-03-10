@@ -323,9 +323,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 
 				Mutes.deleteWhere {
-					Mutes.guildId inList ids
+					Mutes.guildId eq e.guild.idLong
 				}
-				
+
 				logger.trace { "Done! Everything related to ${e.guild} was deleted!"}
 			}
 		}
