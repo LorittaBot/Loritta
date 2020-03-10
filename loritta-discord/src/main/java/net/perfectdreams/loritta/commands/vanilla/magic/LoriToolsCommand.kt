@@ -17,7 +17,10 @@ object LoriToolsCommand {
 
 			val allExecutors = listOf(
 					RegisterTwitchChannelExecutor,
-					RegisterYouTubeChannelExecutor
+					RegisterYouTubeChannelExecutor,
+					PurgeInactiveGuildsExecutor,
+					PurgeInactiveUsersExecutor,
+					PurgeInactiveGuildUsersExecutor
 			) + validPlugins.flatMap { it.loriToolsExecutors }
 
 			allExecutors.forEach {
