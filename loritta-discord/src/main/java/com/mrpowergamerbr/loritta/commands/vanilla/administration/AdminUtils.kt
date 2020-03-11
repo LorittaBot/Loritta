@@ -179,7 +179,7 @@ object AdminUtils {
 					silent = true
 				}
 				if (arg.endsWith("days") || arg.endsWith("dias") || arg.endsWith("day") || arg.endsWith("dia")) {
-					delDays = it.split(" ")[0].toIntOrNull() ?: 0
+					delDays = arg.split(" ")[0].toIntOrNull() ?: 0
 
 					if (delDays > 7) {
 						context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["$LOCALE_PREFIX.cantDeleteMessagesMoreThan7Days"])
