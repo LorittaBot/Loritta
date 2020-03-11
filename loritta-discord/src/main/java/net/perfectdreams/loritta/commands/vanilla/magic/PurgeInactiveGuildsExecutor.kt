@@ -48,7 +48,7 @@ object PurgeInactiveGuildsExecutor : LoriToolsCommand.LoriToolsExecutor {
 					)
 			)
 
-			val idList = badGuildData.windowed(30_000)
+			val idList = badGuildData.chunked(30_000)
 
 			for (ids in idList) {
 				transaction(Databases.loritta) {
