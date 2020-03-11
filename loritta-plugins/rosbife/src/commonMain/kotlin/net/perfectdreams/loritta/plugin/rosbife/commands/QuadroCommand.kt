@@ -15,5 +15,5 @@ object QuadroCommand : BasicSkewedImageCommand {
 	override val sourceTemplatePath = "wolverine.png"
 	override val descriptionKey = "commands.images.wolverine.description"
 
-	override fun command(loritta: LorittaBot) = create(loritta, listOf("quadro", "frame", "picture")) {}
+	override fun command(loritta: LorittaBot) = create(loritta, listOf("quadro", "frame", "picture", "wolverine")) {}
 }
