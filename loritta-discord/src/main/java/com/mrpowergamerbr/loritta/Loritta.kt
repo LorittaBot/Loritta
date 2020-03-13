@@ -397,7 +397,9 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					TrackedYouTubeAccounts,
 					TrackedTwitchAccounts,
 					CachedYouTubeChannelIds,
-					SonhosBundles
+					SonhosBundles,
+					Backgrounds,
+					Sets
 			)
 		}
 	}
@@ -438,6 +440,14 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		loritta.newWebsite?.stop()
 		loritta.newWebsiteThread?.interrupt()
 	}
+
+	/**
+	 * Gets an user's profile background
+	 *
+	 * @param id the user's ID
+	 * @return the background image
+	 */
+	suspend fun getUserProfileBackground(id: Long) = getUserProfileBackground(getOrCreateLorittaProfile(id))
 
 	/**
 	 * Loads the server configuration of a guild

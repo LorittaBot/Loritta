@@ -20,7 +20,8 @@ object LoriToolsCommand {
 					RegisterYouTubeChannelExecutor,
 					PurgeInactiveGuildsExecutor,
 					PurgeInactiveUsersExecutor,
-					PurgeInactiveGuildUsersExecutor
+					PurgeInactiveGuildUsersExecutor,
+					SetSelfBackgroundExecutor
 			) + validPlugins.flatMap { it.loriToolsExecutors }
 
 			allExecutors.forEach {

@@ -215,7 +215,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			aboutMe = "A Loritta é a minha amiga! Sabia que você pode alterar este texto usando \"${context.config.commandPrefix}sobremim\"? :3"
 		}
 
-		val background = loritta.getUserProfileBackground(user.idLong)
+		val background = loritta.getUserProfileBackground(context.lorittaUser.profile)
 
 		val availableDesigns = if (loritta.config.isOwner(context.userHandle.idLong)) {
 			loritta.profileDesignManager.designs

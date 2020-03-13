@@ -6,6 +6,9 @@ import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.string
 import com.google.gson.GsonBuilder
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.dao.Background
+import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.profile.ProfileDesignManager
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
@@ -20,7 +23,6 @@ import io.ktor.client.engine.apache.Apache
 import io.ktor.client.request.get
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.readBytes
-import io.ktor.http.HttpStatusCode
 import io.ktor.http.userAgent
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.commands.vanilla.magic.LoriToolsCommand
@@ -29,6 +31,7 @@ import net.perfectdreams.loritta.platform.discord.plugin.JVMPluginManager
 import net.perfectdreams.loritta.platform.discord.utils.JVMLorittaAssets
 import net.perfectdreams.loritta.utils.config.FanArt
 import net.perfectdreams.loritta.utils.config.FanArtArtist
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.image.BufferedImage
 import java.io.File
 import java.lang.reflect.Modifier
@@ -81,22 +84,30 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
     /**
      * Gets an user's profile background
      *
-     * @param id the user's ID
+     * @param id the user's profile
      * @return the background image
      */
-    suspend fun getUserProfileBackground(id: Long): BufferedImage {
-        val response = loritta.http.get<HttpResponse>("${loritta.instanceConfig.loritta.website.url}assets/img/backgrounds/${id}.png?t=${System.currentTimeMillis()}") {
+    suspend fun getUserProfileBackground(profile: Profile): BufferedImage {
+        val background = transaction(Databases.loritta) { profile.settings.activeBackground }
+        return getUserProfileBackground(background)
+    }
+
+    /**
+     * Gets an user's profile background
+     *
+     * @param background the user's background
+     * @return the background image
+     */
+    suspend fun getUserProfileBackground(background: Background?): BufferedImage {
+        val backgroundOrDefault = background ?: transaction(Databases.loritta) {
+            Background.findById("defaultBlue")!!
+        }
+
+        val response = loritta.http.get<HttpResponse>("${loritta.instanceConfig.loritta.website.url}assets/img/profiles/backgrounds/${backgroundOrDefault.imageFile}") {
             userAgent(loritta.lorittaCluster.getUserAgent())
         }
 
-        val bytes = if (response.status != HttpStatusCode.OK) {
-            val response2 = loritta.http.get<HttpResponse>("${loritta.instanceConfig.loritta.website.url}assets/img/backgrounds/default_background.png") {
-                userAgent(loritta.lorittaCluster.getUserAgent())
-            }
-
-			response2.readBytes()
-        } else
-            response.readBytes()
+        val bytes = response.readBytes()
 
         return ImageIO.read(bytes.inputStream())
     }
