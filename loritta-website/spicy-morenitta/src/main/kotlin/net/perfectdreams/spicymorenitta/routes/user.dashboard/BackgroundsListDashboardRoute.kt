@@ -21,6 +21,7 @@ import kotlin.dom.addClass
 import kotlin.dom.clear
 import kotlin.dom.hasClass
 import kotlin.dom.removeClass
+import kotlin.js.Date
 
 class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/user/@me/dashboard/backgrounds") {
     override val keepLoadingScreen: Boolean
@@ -63,7 +64,7 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
             val profileWrapperJob = m.async {
                 val profileWrapper = Image()
                 debug("Awaiting load...")
-                profileWrapper.awaitLoad("${window.location.origin}/api/v1/users/@me/profile")
+                profileWrapper.awaitLoad("${window.location.origin}/api/v1/users/@me/profile?t=${Date().getTime()}")
                 debug("Load complete!")
                 profileWrapper
             }

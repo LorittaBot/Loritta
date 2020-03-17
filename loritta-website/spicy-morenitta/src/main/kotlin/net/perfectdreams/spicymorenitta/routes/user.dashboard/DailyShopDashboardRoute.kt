@@ -132,7 +132,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
         val profileWrapperJob = m.async {
             val profileWrapper = Image()
             debug("Awaiting load...")
-            profileWrapper.awaitLoad("${window.location.origin}/api/v1/users/@me/profile")
+            profileWrapper.awaitLoad("${window.location.origin}/api/v1/users/@me/profile?t=${Date().getTime()}")
             debug("Load complete!")
             profileWrapper
         }
