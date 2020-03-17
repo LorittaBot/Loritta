@@ -130,6 +130,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 							Filters.`in`("_id", guilds.map { it.id })
 					)
 			).iterator().use {
+				var idx = 0L
 				while (it.hasNext()) {
 					val legacyServerConfig = it.next()
 					val serverConfig = loritta.getOrCreateServerConfig(legacyServerConfig.guildId.toLong())
@@ -150,7 +151,8 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_NAME_CHANGED", user.asMention, "$oldName#$oldDiscriminator", "$newName#$newDiscriminator"]}")
 						embed.setFooter(locale["EVENTLOG_USER_ID", user.id], null)
 
-						textChannel.sendMessage(embed.build()).queue()
+						textChannel.sendMessage(embed.build()).queueAfter(idx, TimeUnit.SECONDS)
+						idx++
 					}
 				}
 			}
