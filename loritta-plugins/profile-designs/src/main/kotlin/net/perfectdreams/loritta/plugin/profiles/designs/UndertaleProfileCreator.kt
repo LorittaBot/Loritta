@@ -23,7 +23,7 @@ import java.io.File
 import javax.imageio.ImageIO
 
 class UndertaleProfileCreator : ProfileCreator {
-	override fun create(sender: User, user: User, userProfile: Profile, guild: Guild, serverConfig: MongoServerConfig, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
+	override fun create(sender: User, user: User, userProfile: Profile, guild: Guild?, serverConfig: MongoServerConfig?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
 		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/undertale/profile_wrapper.png"))
 
 		val determinationMono = Constants.DETERMINATION_MONO
@@ -107,7 +107,7 @@ class UndertaleProfileCreator : ProfileCreator {
 		ImageUtils.drawCenteredString(graphics, "$reputations reps", Rectangle(654, 543, 104, 37), font)
 	}
 
-	fun drawUserInfo(user: User, userProfile: Profile, guild: Guild, graphics: Graphics): Int {
+	fun drawUserInfo(user: User, userProfile: Profile, guild: Guild?, graphics: Graphics): Int {
 		val userInfo = mutableListOf<String>()
 		userInfo.add("Global")
 		val globalPosition = transaction(Databases.loritta) {
@@ -115,24 +115,28 @@ class UndertaleProfileCreator : ProfileCreator {
 		}
 		userInfo.add("#$globalPosition / ${userProfile.xp} XP")
 
-		val localProfile = transaction(Databases.loritta) {
-			GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.idLong) }.firstOrNull()
-		}
-
-		val localPosition = if (localProfile != null) {
-			transaction(Databases.loritta) {
-				GuildProfiles.select { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.xp greaterEq localProfile.xp) }.count()
+		if (guild != null) {
+			val localProfile = transaction(Databases.loritta) {
+				GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.idLong) }.firstOrNull()
 			}
-		} else { null }
 
-		val xpLocal = localProfile?.xp
+			val localPosition = if (localProfile != null) {
+				transaction(Databases.loritta) {
+					GuildProfiles.select { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.xp greaterEq localProfile.xp) }.count()
+				}
+			} else {
+				null
+			}
 
-		// Iremos remover os emojis do nome da guild, já que ele não calcula direito no stringWidth
-		userInfo.add(guild.name.replace(Constants.EMOJI_PATTERN.toRegex(), ""))
-		if (xpLocal != null) {
-			userInfo.add("#$localPosition / $xpLocal XP")
-		} else {
-			userInfo.add("???")
+			val xpLocal = localProfile?.xp
+
+			// Iremos remover os emojis do nome da guild, já que ele não calcula direito no stringWidth
+			userInfo.add(guild.name.replace(Constants.EMOJI_PATTERN.toRegex(), ""))
+			if (xpLocal != null) {
+				userInfo.add("#$localPosition / $xpLocal XP")
+			} else {
+				userInfo.add("???")
+			}
 		}
 
 		val globalEconomyPosition = transaction(Databases.loritta) {

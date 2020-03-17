@@ -25,7 +25,7 @@ import java.io.FileInputStream
 import javax.imageio.ImageIO
 
 class Christmas2019ProfileCreator : ProfileCreator {
-	override fun create(sender: User, user: User, userProfile: Profile, guild: Guild, serverConfig: MongoServerConfig, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
+	override fun create(sender: User, user: User, userProfile: Profile, guild: Guild?, serverConfig: MongoServerConfig?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
 		val list = mutableListOf<BufferedImage>()
 
 		val whitneySemiBold = FileInputStream(File(Loritta.ASSETS + "whitney-semibold.ttf")).use {
@@ -65,17 +65,23 @@ class Christmas2019ProfileCreator : ProfileCreator {
 			Profiles.select { Profiles.xp greaterEq userProfile.xp }.count()
 		}
 
-		val localProfile = transaction(Databases.loritta) {
-			GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.idLong) }.firstOrNull()
-		}
+		var xpLocal: Long? = null
+		var localPosition: Int? = null
 
-		val localPosition = if (localProfile != null) {
-			transaction(Databases.loritta) {
-				GuildProfiles.select { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.xp greaterEq localProfile.xp) }.count()
+		if (guild != null) {
+			val localProfile = transaction(Databases.loritta) {
+				GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.idLong) }.firstOrNull()
 			}
-		} else { null }
 
-		val xpLocal = localProfile?.xp
+			localPosition = if (localProfile != null) {
+				transaction(Databases.loritta) {
+					GuildProfiles.select { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.xp greaterEq localProfile.xp) }.count()
+				}
+			} else {
+				null
+			}
+			xpLocal = localProfile?.xp
+		}
 
 		val globalEconomyPosition = transaction(Databases.loritta) {
 			Profiles.select { Profiles.money greaterEq userProfile.money }.count()
@@ -165,22 +171,25 @@ class Christmas2019ProfileCreator : ProfileCreator {
 		ImageUtils.drawCenteredString(graphics, "$reputations reps", Rectangle(634, 454, 166, 52), font)
 	}
 
-	fun drawUserInfo(user: User, userProfile: Profile, guild: Guild, graphics: Graphics, globalPosition: Int, localPosition: Int?, xpLocal: Long?, globalEconomyPosition: Int): Int {
+	fun drawUserInfo(user: User, userProfile: Profile, guild: Guild?, graphics: Graphics, globalPosition: Int, localPosition: Int?, xpLocal: Long?, globalEconomyPosition: Int): Int {
 		val userInfo = mutableListOf<String>()
 		userInfo.add("Global")
 
 		userInfo.add("#$globalPosition / ${userProfile.xp} XP")
 
 		// Iremos remover os emojis do nome da guild, já que ele não calcula direito no stringWidth
-		userInfo.add(guild.name.replace(Constants.EMOJI_PATTERN.toRegex(), ""))
-		if (xpLocal != null) {
-			userInfo.add("#$localPosition / $xpLocal XP")
-		} else {
-			userInfo.add("???")
+		if (guild != null) {
+			userInfo.add(guild.name.replace(Constants.EMOJI_PATTERN.toRegex(), ""))
+			if (xpLocal != null) {
+				userInfo.add("#$localPosition / $xpLocal XP")
+			} else {
+				userInfo.add("???")
+			}
 		}
 
 		userInfo.add("Sonhos")
 		userInfo.add("#$globalEconomyPosition / ${userProfile.money}")
+
 
 		val biggestStrWidth = graphics.fontMetrics.stringWidth(userInfo.maxBy { graphics.fontMetrics.stringWidth(it) }!!)
 

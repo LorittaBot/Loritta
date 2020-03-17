@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.plugin.profiles.designs
 
-import com.google.common.cache.CacheBuilder
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.dao.Profile
@@ -11,7 +10,6 @@ import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.Guild
@@ -24,17 +22,14 @@ import java.awt.*
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
-import java.util.*
-import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
-import kotlin.system.measureTimeMillis
 
 class Halloween2019ProfileCreator : ProfileCreator {
-	override fun create(sender: User, user: User, userProfile: Profile, guild: Guild, serverConfig: MongoServerConfig, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
+	override fun create(sender: User, user: User, userProfile: Profile, guild: Guild?, serverConfig: MongoServerConfig?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
 		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 	}
 
-	override fun createGif(sender: User, user: User, userProfile: Profile, guild: Guild, serverConfig: MongoServerConfig, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): List<BufferedImage> {
+	override fun createGif(sender: User, user: User, userProfile: Profile, guild: Guild?, serverConfig: MongoServerConfig?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): List<BufferedImage> {
 		val list = mutableListOf<BufferedImage>()
 
 		val whitneySemiBold = FileInputStream(File(Loritta.ASSETS + "whitney-semibold.ttf")).use {
@@ -74,17 +69,23 @@ class Halloween2019ProfileCreator : ProfileCreator {
 			Profiles.select { Profiles.xp greaterEq userProfile.xp }.count()
 		}
 
-		val localProfile = transaction(Databases.loritta) {
-			GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.idLong) }.firstOrNull()
-		}
+		var xpLocal: Long? = null
+		var localPosition: Int? = null
 
-		val localPosition = if (localProfile != null) {
-			transaction(Databases.loritta) {
-				GuildProfiles.select { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.xp greaterEq localProfile.xp) }.count()
+		if (guild != null) {
+			val localProfile = transaction(Databases.loritta) {
+				GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.idLong) }.firstOrNull()
 			}
-		} else { null }
 
-		val xpLocal = localProfile?.xp
+			localPosition = if (localProfile != null) {
+				transaction(Databases.loritta) {
+					GuildProfiles.select { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.xp greaterEq localProfile.xp) }.count()
+				}
+			} else {
+				null
+			}
+			xpLocal = localProfile?.xp
+		}
 
 		val globalEconomyPosition = transaction(Databases.loritta) {
 			Profiles.select { Profiles.money greaterEq userProfile.money }.count()
@@ -163,18 +164,20 @@ class Halloween2019ProfileCreator : ProfileCreator {
 		ImageUtils.drawCenteredString(graphics, "$reputations reps", Rectangle(634, 404, 166, 52), font)
 	}
 
-	fun drawUserInfo(user: User, userProfile: Profile, guild: Guild, graphics: Graphics, globalPosition: Int, localPosition: Int?, xpLocal: Long?, globalEconomyPosition: Int): Int {
+	fun drawUserInfo(user: User, userProfile: Profile, guild: Guild?, graphics: Graphics, globalPosition: Int, localPosition: Int?, xpLocal: Long?, globalEconomyPosition: Int): Int {
 		val userInfo = mutableListOf<String>()
 		userInfo.add("Global")
 
 		userInfo.add("#$globalPosition / ${userProfile.xp} XP")
 
-		// Iremos remover os emojis do nome da guild, já que ele não calcula direito no stringWidth
-		userInfo.add(guild.name.replace(Constants.EMOJI_PATTERN.toRegex(), ""))
-		if (xpLocal != null) {
-			userInfo.add("#$localPosition / $xpLocal XP")
-		} else {
-			userInfo.add("???")
+		if (guild != null) {
+			// Iremos remover os emojis do nome da guild, já que ele não calcula direito no stringWidth
+			userInfo.add(guild.name.replace(Constants.EMOJI_PATTERN.toRegex(), ""))
+			if (xpLocal != null) {
+				userInfo.add("#$localPosition / $xpLocal XP")
+			} else {
+				userInfo.add("???")
+			}
 		}
 
 		userInfo.add("Sonhos")
