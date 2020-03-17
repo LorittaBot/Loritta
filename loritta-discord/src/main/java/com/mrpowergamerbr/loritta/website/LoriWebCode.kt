@@ -13,6 +13,7 @@ enum class LoriWebCode(val errorId: Int, val fancyName: String) {
 	INSUFFICIENT_FUNDS(711, "Insufficient Funds"),
 	ITEM_NOT_FOUND(712, "Item not found"),
 	COOLDOWN(713, "Can't act now, on cooldown"),
+	ALREADY_BOUGHT_THE_ITEM(714, "You already have the item"),
 	MEMBER_NOT_IN_GUILD(720, "Member is not in provided guild"),
 	MEMBER_DISABLED_DIRECT_MESSAGES(721, "Member disabled direct messages"),
 	CHANNEL_DOESNT_EXIST(722, "Channel doesn't exist"),

@@ -27,11 +27,20 @@ class GetFanArtsController(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v
 
 	override suspend fun onRequest(call: ApplicationCall) {
 		val query = call.parameters["query"]
+		val filter = call.parameters["filter"]?.split(",")
 
-		val fanArtists = Constants.JSON_MAPPER.valueToTree<JsonNode>(com.mrpowergamerbr.loritta.utils.loritta.fanArtArtists)
+		val fanArtArtists = com.mrpowergamerbr.loritta.utils.loritta.fanArtArtists
+				.let {
+					if (filter != null)
+						it.filter { it.id in filter }
+					else
+						it
+				}
+
+		val fanArtists = Constants.JSON_MAPPER.valueToTree<JsonNode>(fanArtArtists)
 
 		if (query == "all") {
-			val discordIds = com.mrpowergamerbr.loritta.utils.loritta.fanArtArtists
+			val discordIds = fanArtArtists
 					.mapNotNull {
 						it.socialNetworks?.asSequence()?.filterIsInstance<FanArtArtist.SocialNetwork.DiscordSocialNetwork>()
 								?.firstOrNull()?.let { discordInfo ->

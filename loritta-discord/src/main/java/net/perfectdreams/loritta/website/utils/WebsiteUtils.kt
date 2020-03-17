@@ -6,6 +6,7 @@ import com.github.salomonbrys.kotson.toJsonArray
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.dao.Background
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
@@ -20,10 +21,12 @@ import io.ktor.request.path
 import io.ktor.util.AttributeKey
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.dao.ReactionOption
+import net.perfectdreams.loritta.tables.Backgrounds
 import net.perfectdreams.loritta.tables.ReactionOptions
 import net.perfectdreams.loritta.tables.TrackedRssFeeds
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.config.types.ConfigTransformers
+import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.lang.management.ManagementFactory
@@ -139,46 +142,19 @@ object WebsiteUtils {
 		}
 
 		variables["asset_hash_app"] = WebsiteAssetsHashes.getAssetHash("assets/js/app.js")
-
-		/* val session = call.sessions.get<LorittaJsonWebSession>()
-		val discordAuth = session.getDiscordAuthFromJson()
-
-		if (discordAuth != null) {
-			try {
-				val storedIdMutant = req.session()["discordId"]
-				val storedId = if (storedIdMutant.isSet) {
-					storedIdMutant.value()
-				} else {
-					null
-				}
-
-				val user = lorittaShards.getUserById(storedId)
-
-				if (forceReauthentication || user == null) {
-					discordAuth.isReady(true)
-					val userIdentification = discordAuth.getUserIdentification() // Vamos pegar qualquer coisa para ver se não irá dar erro
-					variables["userIdentification"] = userIdentification
-					req.set("userIdentification", userIdentification)
-					req.session()["discordId"] = userIdentification.id
-				} else {
-					// Se não estamos forçando a reautenticação, vamos primeiro descobrir se a Lori conhece o usuário, se não, ai a gente irá utilizar a API
-					val simpleUserIdentification = SimpleUserIdentification(
-							user.name,
-							user.id,
-							(user.avatarId ?: user.defaultAvatarId),
-							user.discriminator
-					)
-
-					variables["userIdentification"] = simpleUserIdentification
-					req.set("userIdentification", simpleUserIdentification)
-				}
-				variables["discordAuth"] = discordAuth
-				req.set("discordAuth", discordAuth)
-			} catch (e: Exception) {
-				req.session().unset("discordAuth")
-			}
-		} */
 	}
+
+	fun toJson(background: Background) = fromBackgroundToJson(background.readValues)
+
+	fun fromBackgroundToJson(background: ResultRow) = jsonObject(
+			"internalName" to background[Backgrounds.id].value,
+			"imageFile" to background[Backgrounds.imageFile],
+			"enabled" to background[Backgrounds.enabled],
+			"createdBy" to background[Backgrounds.createdBy].toList().toJsonArray(),
+			"rarity" to background[Backgrounds.rarity].name,
+			"crop" to background[Backgrounds.crop],
+			"set" to background[Backgrounds.set]?.value
+	)
 
 	suspend fun transformToDashboardConfigurationJson(user: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig): JsonObject {
 		val guildJson = jsonObject(

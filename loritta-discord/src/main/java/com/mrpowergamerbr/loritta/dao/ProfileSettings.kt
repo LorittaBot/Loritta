@@ -14,6 +14,8 @@ class ProfileSettings(id: EntityID<Long>) : LongEntity(id) {
 	var hideSharedServers by UserSettings.hideSharedServers
 	var hideLastSeen by UserSettings.hideLastSeen
 	var activeProfile by UserSettings.activeProfile
+	var activeBackground by Background optionalReferencedOn UserSettings.activeBackground
+	var activeBackgroundInternalName by UserSettings.activeBackground
 	var boughtProfiles by UserSettings.boughtProfiles
 	var birthday by UserSettings.birthday
 	var doNotSendXpNotificationsInDm by UserSettings.doNotSendXpNotificationsInDm

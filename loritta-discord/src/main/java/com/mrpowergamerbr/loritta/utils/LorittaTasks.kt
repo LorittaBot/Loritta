@@ -11,9 +11,15 @@ import com.mrpowergamerbr.loritta.utils.eventlog.DeleteOldStoredMessagesTask
 import com.mrpowergamerbr.loritta.utils.networkbans.ApplyBansTask
 import com.mrpowergamerbr.loritta.website.OptimizeAssetsTask
 import com.mrpowergamerbr.loritta.youtube.CreateYouTubeWebhooksTask
+import net.perfectdreams.loritta.utils.LorittaDailyShopUpdateTask
 import net.perfectdreams.loritta.utils.giveaway.SpawnGiveawayTask
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneOffset
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+
 
 object LorittaTasks {
 	lateinit var DAILY_TAX_TASK: DailyTaxTask
@@ -39,9 +45,21 @@ object LorittaTasks {
 		scheduleWithFixedDelay(UpdateFanArtsTask(), 0L, 5L, TimeUnit.MINUTES)
 		if (loritta.isMaster)
 			scheduleWithFixedDelay(NewRssFeedTask(), 0L, 15L, TimeUnit.SECONDS)
+
+		val midnight = LocalTime.MIDNIGHT
+		val today = LocalDate.now(ZoneOffset.UTC)
+		val todayMidnight = LocalDateTime.of(today, midnight)
+		val tomorrowMidnight = todayMidnight.plusDays(1)
+		val diff = tomorrowMidnight.toInstant(ZoneOffset.UTC).toEpochMilli() - System.currentTimeMillis()
+
+		scheduleAtFixedRate(LorittaDailyShopUpdateTask(), diff, TimeUnit.DAYS.toMillis(1L), TimeUnit.MILLISECONDS)
 	}
 
 	fun scheduleWithFixedDelay(task: Runnable, initialDelay: Long, delay: Long, unit: TimeUnit) {
 		Executors.newScheduledThreadPool(1, ThreadFactoryBuilder().setNameFormat("${task::class.simpleName} Executor Thread-%d").build()).scheduleWithFixedDelay(task, initialDelay, delay, unit)
+	}
+
+	fun scheduleAtFixedRate(task: Runnable, initialDelay: Long, delay: Long, unit: TimeUnit) {
+		Executors.newScheduledThreadPool(1, ThreadFactoryBuilder().setNameFormat("${task::class.simpleName} Executor Thread-%d").build()).scheduleAtFixedRate(task, initialDelay, delay, unit)
 	}
 }

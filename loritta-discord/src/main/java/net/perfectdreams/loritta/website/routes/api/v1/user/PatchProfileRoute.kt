@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.website.routes.api.v1.user
 
 import com.github.salomonbrys.kotson.*
+import com.mrpowergamerbr.loritta.dao.Background
 import com.mrpowergamerbr.loritta.dao.ShipEffect
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.profile.NostalgiaProfileCreator
@@ -11,6 +12,7 @@ import io.ktor.application.ApplicationCall
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receiveText
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.tables.BackgroundPayments
 import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
@@ -18,7 +20,9 @@ import net.perfectdreams.loritta.website.routes.user.dashboard.ProfileListRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.regex.Pattern
 
@@ -145,6 +149,31 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 						it[reason] = SonhosPaymentReason.PROFILE
 					}
 				}
+			}
+
+			call.respondJson(
+					gson.toJsonTree(
+							com.mrpowergamerbr.loritta.utils.loritta.profileDesignManager.publicDesigns.map {
+								ProfileListRoute.getProfileAsJson(userIdentification, it.clazz, profileSettings, it)
+							}
+					)
+			)
+			return
+		}
+
+		if (config["setActiveBackground"].nullString != null) {
+			val internalName = config["setActiveBackground"].string
+
+			if (internalName != "defaultBlue" && internalName != "random" && transaction(Databases.loritta) { BackgroundPayments.select { BackgroundPayments.background eq internalName and (BackgroundPayments.userId eq userIdentification.id.toLong()) }.count() } == 0) {
+				throw WebsiteAPIException(HttpStatusCode.Forbidden,
+						WebsiteUtils.createErrorPayload(
+								LoriWebCode.FORBIDDEN
+						)
+				)
+			}
+
+			transaction(Databases.loritta) {
+				profileSettings.activeBackground = Background.findById(internalName)
 			}
 
 			call.respondJson(
