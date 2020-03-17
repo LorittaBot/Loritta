@@ -88,7 +88,7 @@ class PostBuyDailyShopItemRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLog
 					it[BackgroundPayments.userId] = profile.userId
 					it[BackgroundPayments.background] = background[Backgrounds.id]
 					it[BackgroundPayments.boughtAt] = System.currentTimeMillis()
-					it[BackgroundPayments.cost] = cost
+					it[BackgroundPayments.cost] = cost.toLong()
 				}
 
 				SonhosTransaction.insert {
