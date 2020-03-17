@@ -163,7 +163,8 @@ class LorittaWebsite(val loritta: Loritta) {
 					logger.error(cause) { "Something went wrong when processing ${trueIp} (${userAgent}): ${httpMethod} ${call.request.path()}${queryString}" }
 
 					call.respondHtml(
-							"<pre>${ExceptionUtils.getStackTrace(cause)}</pre>"
+							"<pre>${ExceptionUtils.getStackTrace(cause)}</pre>",
+							status = HttpStatusCode.InternalServerError
 					)
 				}
 			}

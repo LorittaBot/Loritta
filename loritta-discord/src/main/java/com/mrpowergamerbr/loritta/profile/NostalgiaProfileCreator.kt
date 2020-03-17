@@ -26,7 +26,7 @@ import java.io.FileInputStream
 import javax.imageio.ImageIO
 
 class NostalgiaProfileCreator : ProfileCreator {
-	override fun create(sender: User, user: User, userProfile: Profile, guild: Guild, serverConfig: MongoServerConfig, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
+	override fun create(sender: User, user: User, userProfile: Profile, guild: Guild?, serverConfig: MongoServerConfig?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
 		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/nostalgia/profile_wrapper.png"))
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
@@ -93,25 +93,29 @@ class NostalgiaProfileCreator : ProfileCreator {
 		}
 		graphics.drawText("#$globalPosition / ${userProfile.xp} XP", 159, 39  + shiftY, 800 - 6)
 
-		val localProfile = transaction(Databases.loritta) {
-			GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.idLong) }.firstOrNull()
-		}
-
-		val localPosition = if (localProfile != null) {
-			transaction(Databases.loritta) {
-				GuildProfiles.select { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.xp greaterEq localProfile.xp) }.count()
+		if (guild != null) {
+			val localProfile = transaction(Databases.loritta) {
+				GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.idLong) }.firstOrNull()
 			}
-		} else { null }
 
-		val xpLocal = localProfile?.xp
+			val localPosition = if (localProfile != null) {
+				transaction(Databases.loritta) {
+					GuildProfiles.select { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.xp greaterEq localProfile.xp) }.count()
+				}
+			} else {
+				null
+			}
 
-		graphics.font = whitneyBold20
-		graphics.drawText(guild.name, 159, 61  + shiftY, 800 - 6)
-		graphics.font = whitneySemiBold20
-		if (xpLocal != null) {
-			graphics.drawText("#$localPosition / $xpLocal XP", 159, 78 + shiftY, 800 - 6)
-		} else {
-			graphics.drawText("???", 159, 78 + shiftY, 800 - 6)
+			val xpLocal = localProfile?.xp
+
+			graphics.font = whitneyBold20
+			graphics.drawText(guild.name, 159, 61 + shiftY, 800 - 6)
+			graphics.font = whitneySemiBold20
+			if (xpLocal != null) {
+				graphics.drawText("#$localPosition / $xpLocal XP", 159, 78 + shiftY, 800 - 6)
+			} else {
+				graphics.drawText("???", 159, 78 + shiftY, 800 - 6)
+			}
 		}
 
 		val globalEconomyPosition = transaction(Databases.loritta) {
@@ -147,6 +151,6 @@ class NostalgiaProfileCreator : ProfileCreator {
 			}
 		}
 
-		return base.makeRoundedCorners(15)
+		return base
 	}
 }

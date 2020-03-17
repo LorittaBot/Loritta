@@ -23,7 +23,7 @@ import java.io.FileInputStream
 import javax.imageio.ImageIO
 
 class DefaultProfileCreator : ProfileCreator {
-	override fun create(sender: User, user: User, userProfile: Profile, guild: Guild, serverConfig: MongoServerConfig, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
+	override fun create(sender: User, user: User, userProfile: Profile, guild: Guild?, serverConfig: MongoServerConfig?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
 		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile_wrapper_v4.png"))
 		val profileWrapperOverlay = ImageIO.read(File(Loritta.ASSETS, "profile_wrapper_v4_overlay.png"))
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
@@ -66,8 +66,6 @@ class DefaultProfileCreator : ProfileCreator {
 			}
 		}
 
-		val guildIcon = LorittaUtils.downloadImage(guild.iconUrl?.replace("jpg", "png") ?: "https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/56/shrug_1f937.png")!!.getScaledInstance(38, 38, BufferedImage.SCALE_SMOOTH)
-
 		graphics.font = whitneyBold20
 		graphics.drawText("Global", 562, 21, 800 - 6)
 		graphics.font = whitneySemiBold20
@@ -76,25 +74,33 @@ class DefaultProfileCreator : ProfileCreator {
 		}
 		graphics.drawText("#$globalPosition / ${userProfile.xp} XP", 562, 39, 800 - 6)
 
-		val localProfile = transaction(Databases.loritta) {
-			GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.idLong) }.firstOrNull()
-		}
+		if (guild != null) {
+			val guildIcon = LorittaUtils.downloadImage(guild.iconUrl?.replace("jpg", "png") ?: "https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/56/shrug_1f937.png")!!.getScaledInstance(38, 38, BufferedImage.SCALE_SMOOTH)
 
-		val localPosition = if (localProfile != null) {
-			transaction(Databases.loritta) {
-				GuildProfiles.select { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.xp greaterEq localProfile.xp) }.count()
+			val localProfile = transaction(Databases.loritta) {
+				GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.idLong) }.firstOrNull()
 			}
-		} else { null }
 
-		val xpLocal = localProfile?.xp
+			val localPosition = if (localProfile != null) {
+				transaction(Databases.loritta) {
+					GuildProfiles.select { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.xp greaterEq localProfile.xp) }.count()
+				}
+			} else {
+				null
+			}
 
-		graphics.font = whitneyBold20
-		graphics.drawText(guild.name, 562, 61, 800 - 6)
-		graphics.font = whitneySemiBold20
-		if (xpLocal != null) {
-			graphics.drawText("#$localPosition / $xpLocal XP", 562, 78, 800 - 6)
-		} else {
-			graphics.drawText("???", 562, 78, 800 - 6)
+			val xpLocal = localProfile?.xp
+
+			graphics.font = whitneyBold20
+			graphics.drawText(guild.name, 562, 61, 800 - 6)
+			graphics.font = whitneySemiBold20
+			if (xpLocal != null) {
+				graphics.drawText("#$localPosition / $xpLocal XP", 562, 78, 800 - 6)
+			} else {
+				graphics.drawText("???", 562, 78, 800 - 6)
+			}
+
+			graphics.drawImage(guildIcon.toBufferedImage().makeRoundedCorners(38), 520, 44, null)
 		}
 
 		val reputations = transaction(Databases.loritta) {
@@ -115,13 +121,12 @@ class DefaultProfileCreator : ProfileCreator {
 		graphics.font = whitneySemiBold20
 		graphics.drawText("#$globalEconomyPosition / ${userProfile.money}", 562, 511, 800 - 6)
 
-		graphics.drawImage(guildIcon.toBufferedImage().makeRoundedCorners(38), 520, 44, null)
 		graphics.font = whitneyMedium22
 
 		ImageUtils.drawTextWrapSpaces(aboutMe, 6, 493, 517 - 6, 600, graphics.fontMetrics, graphics)
 
 		graphics.drawImage(profileWrapperOverlay, 0, 0, null)
 
-		return base.makeRoundedCorners(15)
+		return base
 	}
 }
