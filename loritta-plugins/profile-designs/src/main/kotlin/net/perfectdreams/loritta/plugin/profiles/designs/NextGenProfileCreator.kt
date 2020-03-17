@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.profile.ProfileCreator
+import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.tables.Reputations
@@ -13,7 +14,6 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.User
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -24,7 +24,7 @@ import java.io.FileInputStream
 import javax.imageio.ImageIO
 
 class NextGenProfileCreator : ProfileCreator {
-	override fun create(sender: User, user: User, userProfile: Profile, guild: Guild?, serverConfig: MongoServerConfig?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
+	override fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, serverConfig: MongoServerConfig?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
 		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/next_gen/profile_wrapper.png"))
 
 		val whitneySemiBold = FileInputStream(File(Loritta.ASSETS + "whitney-semibold.ttf")).use {
@@ -39,7 +39,7 @@ class NextGenProfileCreator : ProfileCreator {
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
 
-		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl)!!.getScaledInstance(167, 167, BufferedImage.SCALE_SMOOTH)
+		val avatar = LorittaUtils.downloadImage(user.avatarUrl)!!.getScaledInstance(167, 167, BufferedImage.SCALE_SMOOTH)
 
 		graphics.drawImage(background.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH), 0, 0, null)
 
@@ -48,7 +48,7 @@ class NextGenProfileCreator : ProfileCreator {
 		val marriage = transaction(Databases.loritta) { userProfile.marriage }
 
 		/* if (marriage != null) {
-			val marriedWithId = if (marriage.user1 == user.idLong) {
+			val marriedWithId = if (marriage.user1 == user.id) {
 				marriage.user2
 			} else {
 				marriage.user1
@@ -118,16 +118,16 @@ class NextGenProfileCreator : ProfileCreator {
 		}
 	}
 
-	fun drawReputations(user: User, graphics: Graphics) {
+	fun drawReputations(user: ProfileUserInfoData, graphics: Graphics) {
 		val font = graphics.font
 		val reputations = transaction(Databases.loritta) {
-			Reputations.select { Reputations.receivedById eq user.idLong }.count()
+			Reputations.select { Reputations.receivedById eq user.id }.count()
 		}
 
 		ImageUtils.drawCenteredString(graphics, "$reputations reps", Rectangle(620, 168, 180, 55), font)
 	}
 
-	fun drawUserInfo(user: User, userProfile: Profile, guild: Guild?, graphics: Graphics): Int {
+	fun drawUserInfo(user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, graphics: Graphics): Int {
 		val userInfo = mutableListOf<String>()
 		graphics.drawText("Global", 232, 157)
 		userInfo.add("Global")
@@ -138,7 +138,7 @@ class NextGenProfileCreator : ProfileCreator {
 
 		if (guild != null) {
 			val localProfile = transaction(Databases.loritta) {
-				GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.idLong) }.firstOrNull()
+				GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.id) }.firstOrNull()
 			}
 
 			val localPosition = if (localProfile != null) {

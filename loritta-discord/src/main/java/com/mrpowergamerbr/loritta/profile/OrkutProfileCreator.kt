@@ -5,11 +5,13 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.ImageUtils
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.drawText
+import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.User
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
@@ -20,13 +22,13 @@ import java.io.FileInputStream
 import javax.imageio.ImageIO
 
 class OrkutProfileCreator : ProfileCreator {
-	override fun create(sender: User, user: User, userProfile: Profile, guild: Guild?, serverConfig: MongoServerConfig?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
+	override fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, serverConfig: MongoServerConfig?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
 		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/orkut/profile_wrapper.png"))
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
 
-		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl)!!.getScaledInstance(200, 200, BufferedImage.SCALE_SMOOTH)
+		val avatar = LorittaUtils.downloadImage(user.avatarUrl)!!.getScaledInstance(200, 200, BufferedImage.SCALE_SMOOTH)
 
 		val whitneyMedium = 	FileInputStream(File(Loritta.ASSETS + "whitney-medium.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
@@ -66,7 +68,7 @@ class OrkutProfileCreator : ProfileCreator {
 		graphics.drawString("A Loritta e a Pantufa são suas amigas", 267, 276)
 
 		val reputations = transaction(Databases.loritta) {
-			Reputations.select { Reputations.receivedById eq user.idLong }.count()
+			Reputations.select { Reputations.receivedById eq user.id }.count()
 		}
 		val reversedRep = reputations.toString().reversed()
 
@@ -77,7 +79,7 @@ class OrkutProfileCreator : ProfileCreator {
 			graphics.drawString(ch.toString(), startX, 291)
 		}
 
-		val mutualGuildsByUsers = lorittaShards.getMutualGuilds(user).filter { it.iconUrl != null }.sortedByDescending { it.members.size }
+		/* val mutualGuildsByUsers = lorittaShards.getMutualGuilds(user).filter { it.iconUrl != null }.sortedByDescending { it.members.size }
 
 		var startGuildX = 252
 		var startGuildY = 400
@@ -101,7 +103,7 @@ class OrkutProfileCreator : ProfileCreator {
 		}
 
 		graphics.color = Color(51, 51, 93)
-		graphics.drawString("Comunidades (${mutualGuildsByUsers.size})", 226, 332)
+		graphics.drawString("Comunidades (${mutualGuildsByUsers.size})", 226, 332) */
 		return base
 	}
 }

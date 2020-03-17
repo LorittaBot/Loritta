@@ -2,18 +2,18 @@ package net.perfectdreams.loritta.plugin.profiles.designs
 
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.profile.ProfileCreator
+import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.makeRoundedCorners
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.User
 import java.awt.Color
 import java.awt.image.BufferedImage
 
 class DebugProfileCreator : ProfileCreator {
-	override fun create(sender: User, user: User, userProfile: Profile, guild: Guild?, serverConfig: MongoServerConfig?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
+	override fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, serverConfig: MongoServerConfig?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
 

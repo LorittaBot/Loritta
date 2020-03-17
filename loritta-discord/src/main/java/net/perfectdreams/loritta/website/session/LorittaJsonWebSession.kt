@@ -39,7 +39,8 @@ data class LorittaJsonWebSession(
 					userIdentification.username,
 					userIdentification.discriminator,
 					userIdentification.verified,
-					userIdentification.email
+					userIdentification.email,
+					userIdentification.avatar
 			)
 
 			call.lorittaSession = this.copy(
@@ -78,6 +79,7 @@ data class LorittaJsonWebSession(
 			val username: String,
 			val discriminator: String,
 			val verified: Boolean,
-			val email: String?
+			val email: String?,
+			val avatar: String?
 	)
 }

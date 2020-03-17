@@ -14,6 +14,7 @@ import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.gifs.GifSequenceWriter
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.profile.ProfileCreator
+import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
 import com.mrpowergamerbr.loritta.tables.DonationConfigs
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.*
@@ -249,7 +250,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			loritta.getUserProfileBackground(userProfile)
 		} catch (e: IsAnimatedBackgroundHack) {
 			// looks like it is animated, wow
-			val zip = ZipInputStream(e.bytes.inputStream())
+			/* val zip = ZipInputStream(e.bytes.inputStream())
 			val fileMap = mutableMapOf<String, ByteArray>()
 
 			while (true) {
@@ -300,12 +301,27 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			MiscUtils.optimizeGIF(outputFile)
 
 			context.sendFile(outputFile, "lori_profile.gif", "📝 **|** " + context.getAsMention(true) + context.legacyLocale["PEFIL_PROFILE"]) // E agora envie o arquivo
+			 */
 			return
 		}
 
+		val senderUserInfo = ProfileUserInfoData(
+				context.userHandle.idLong,
+				context.userHandle.name,
+				context.userHandle.discriminator,
+				context.userHandle.effectiveAvatarUrl
+		)
+
+		val profileUserInfo = ProfileUserInfoData(
+				user.idLong,
+				user.name,
+				user.discriminator,
+				user.effectiveAvatarUrl
+		)
+
 		val images = profileCreator.createGif(
-				context.userHandle,
-				user,
+				senderUserInfo,
+				profileUserInfo,
 				userProfile,
 				context.guild,
 				context.legacyConfig,

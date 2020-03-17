@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.profile.ProfileCreator
+import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.tables.Reputations
@@ -14,7 +15,6 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.User
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -25,7 +25,7 @@ import java.io.FileInputStream
 import javax.imageio.ImageIO
 
 class Christmas2019ProfileCreator : ProfileCreator {
-	override fun create(sender: User, user: User, userProfile: Profile, guild: Guild?, serverConfig: MongoServerConfig?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
+	override fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, serverConfig: MongoServerConfig?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
 		val list = mutableListOf<BufferedImage>()
 
 		val whitneySemiBold = FileInputStream(File(Loritta.ASSETS + "whitney-semibold.ttf")).use {
@@ -44,12 +44,12 @@ class Christmas2019ProfileCreator : ProfileCreator {
 		val oswaldRegular42 = Constants.OSWALD_REGULAR
 				.deriveFont(42F)
 
-		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl)!!.getScaledInstance(150, 150, BufferedImage.SCALE_SMOOTH)
+		val avatar = LorittaUtils.downloadImage(user.avatarUrl)!!.getScaledInstance(150, 150, BufferedImage.SCALE_SMOOTH)
 		val marrySection = ImageIO.read(File(Loritta.ASSETS, "profile/christmas_2019/marry.png"))
 
 		val marriage = transaction(Databases.loritta) { userProfile.marriage }
 
-		val marriedWithId = if (marriage?.user1 == user.idLong) {
+		val marriedWithId = if (marriage?.user1 == user.id) {
 			marriage.user2
 		} else {
 			marriage?.user1
@@ -58,7 +58,7 @@ class Christmas2019ProfileCreator : ProfileCreator {
 		val marriedWith = if (marriedWithId != null) { runBlocking { lorittaShards.retrieveUserById(marriedWithId) } } else { null }
 
 		val reputations = transaction(Databases.loritta) {
-			Reputations.select { Reputations.receivedById eq user.idLong }.count()
+			Reputations.select { Reputations.receivedById eq user.id }.count()
 		}
 
 		val globalPosition = transaction(Databases.loritta) {
@@ -70,7 +70,7 @@ class Christmas2019ProfileCreator : ProfileCreator {
 
 		if (guild != null) {
 			val localProfile = transaction(Databases.loritta) {
-				GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.idLong) }.firstOrNull()
+				GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.id) }.firstOrNull()
 			}
 
 			localPosition = if (localProfile != null) {
@@ -165,13 +165,13 @@ class Christmas2019ProfileCreator : ProfileCreator {
 		}
 	}
 
-	fun drawReputations(user: User, graphics: Graphics, reputations: Int) {
+	fun drawReputations(user: ProfileUserInfoData, graphics: Graphics, reputations: Int) {
 		val font = graphics.font
 
 		ImageUtils.drawCenteredString(graphics, "$reputations reps", Rectangle(634, 454, 166, 52), font)
 	}
 
-	fun drawUserInfo(user: User, userProfile: Profile, guild: Guild?, graphics: Graphics, globalPosition: Int, localPosition: Int?, xpLocal: Long?, globalEconomyPosition: Int): Int {
+	fun drawUserInfo(user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, graphics: Graphics, globalPosition: Int, localPosition: Int?, xpLocal: Long?, globalEconomyPosition: Int): Int {
 		val userInfo = mutableListOf<String>()
 		userInfo.add("Global")
 

@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.website.routes.api.v1.user
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.profile.NostalgiaProfileCreator
 import com.mrpowergamerbr.loritta.profile.ProfileCreator
-import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
 import io.ktor.application.ApplicationCall
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
@@ -27,11 +27,29 @@ class GetSelfUserProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 		val creator = NostalgiaProfileCreator::class.java
 		val profileCreator = creator.constructors.first().newInstance() as ProfileCreator
 
-		val user = lorittaShards.retrieveUserById(userIdentification.id) ?: return
+		val userId = userIdentification.id.toLong()
+		val avatarUrl = if (userIdentification.avatar != null) {
+			val extension = if (userIdentification.avatar.startsWith("a_")) { // Avatares animados no Discord começam com "_a"
+				"gif"
+			} else { "png" }
+
+			"https://cdn.discordapp.com/avatars/${userId}/${userIdentification.avatar}.${extension}?size=256"
+		} else {
+			val avatarId = userId % 5
+
+			"https://cdn.discordapp.com/embed/avatars/$avatarId.png?size=256"
+		}
+
+		val senderUserData = ProfileUserInfoData(
+				userIdentification.id.toLong(),
+				userIdentification.username,
+				userIdentification.discriminator,
+				avatarUrl
+		)
 
 		val images = profileCreator.createGif(
-				user,
-				user,
+				senderUserData,
+				senderUserData,
 				profile,
 				null,
 				null,

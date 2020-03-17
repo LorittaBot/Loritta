@@ -14,7 +14,6 @@ import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.User
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -26,14 +25,14 @@ import java.io.FileInputStream
 import javax.imageio.ImageIO
 
 class MSNProfileCreator : ProfileCreator {
-	override fun create(sender: User, user: User, userProfile: Profile, guild: Guild?, serverConfig: MongoServerConfig?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
+	override fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, serverConfig: MongoServerConfig?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
 		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/msn/profile_wrapper.png"))
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
 
-		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl)!!.getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
-		val imageToBeDownload = if (sender == user) { guild?.selfMember?.user?.avatarUrl } else { sender.effectiveAvatarUrl }
+		val avatar = LorittaUtils.downloadImage(user.avatarUrl)!!.getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
+		val imageToBeDownload = if (sender == user) { guild?.selfMember?.user?.avatarUrl } else { sender.avatarUrl }
 		val senderAvatar = LorittaUtils.downloadImage(imageToBeDownload!!)!!.getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
 
 		val msnFont = FileInputStream(File(Loritta.ASSETS + "micross.ttf")).use {
@@ -114,7 +113,7 @@ class MSNProfileCreator : ProfileCreator {
 
 		if (guild != null) {
 			val localProfile = transaction(Databases.loritta) {
-				GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.idLong) }.firstOrNull()
+				GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.id) }.firstOrNull()
 			}
 
 			val localPosition = if (localProfile != null) {

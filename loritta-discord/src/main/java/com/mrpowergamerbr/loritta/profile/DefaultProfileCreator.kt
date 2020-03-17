@@ -23,13 +23,13 @@ import java.io.FileInputStream
 import javax.imageio.ImageIO
 
 class DefaultProfileCreator : ProfileCreator {
-	override fun create(sender: User, user: User, userProfile: Profile, guild: Guild?, serverConfig: MongoServerConfig?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
+	override fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, serverConfig: MongoServerConfig?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
 		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile_wrapper_v4.png"))
 		val profileWrapperOverlay = ImageIO.read(File(Loritta.ASSETS, "profile_wrapper_v4_overlay.png"))
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
 
-		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl)!!.getScaledInstance(115, 115, BufferedImage.SCALE_SMOOTH)
+		val avatar = LorittaUtils.downloadImage(user.avatarUrl)!!.getScaledInstance(115, 115, BufferedImage.SCALE_SMOOTH)
 
 		graphics.drawImage(background.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH), 0, 0, null)
 
@@ -78,7 +78,7 @@ class DefaultProfileCreator : ProfileCreator {
 			val guildIcon = LorittaUtils.downloadImage(guild.iconUrl?.replace("jpg", "png") ?: "https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/56/shrug_1f937.png")!!.getScaledInstance(38, 38, BufferedImage.SCALE_SMOOTH)
 
 			val localProfile = transaction(Databases.loritta) {
-				GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.idLong) }.firstOrNull()
+				GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.id) }.firstOrNull()
 			}
 
 			val localPosition = if (localProfile != null) {
@@ -104,7 +104,7 @@ class DefaultProfileCreator : ProfileCreator {
 		}
 
 		val reputations = transaction(Databases.loritta) {
-			com.mrpowergamerbr.loritta.tables.Reputations.select { Reputations.receivedById eq user.idLong }.count()
+			com.mrpowergamerbr.loritta.tables.Reputations.select { Reputations.receivedById eq user.id }.count()
 		}
 
 		graphics.font = whitneyBold20

@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.profile.ProfileCreator
+import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.tables.Reputations
@@ -13,7 +14,6 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.User
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -23,7 +23,7 @@ import java.io.File
 import javax.imageio.ImageIO
 
 class UndertaleProfileCreator : ProfileCreator {
-	override fun create(sender: User, user: User, userProfile: Profile, guild: Guild?, serverConfig: MongoServerConfig?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
+	override fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, serverConfig: MongoServerConfig?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
 		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/undertale/profile_wrapper.png"))
 
 		val determinationMono = Constants.DETERMINATION_MONO
@@ -36,12 +36,12 @@ class UndertaleProfileCreator : ProfileCreator {
 		graphics.font = determinationMono.deriveFont(Font.PLAIN, 22f)
 		graphics.color = Color.WHITE
 
-		val avatar = LorittaUtils.downloadImage(user.effectiveAvatarUrl)!!.getScaledInstance(159, 159, BufferedImage.SCALE_SMOOTH)
+		val avatar = LorittaUtils.downloadImage(user.avatarUrl)!!.getScaledInstance(159, 159, BufferedImage.SCALE_SMOOTH)
 
 		val marriage = transaction(Databases.loritta) { userProfile.marriage }
 
 		/* if (marriage != null) {
-			val marriedWithId = if (marriage.user1 == user.idLong) {
+			val marriedWithId = if (marriage.user1 == user.id) {
 				marriage.user2
 			} else {
 				marriage.user1
@@ -98,16 +98,16 @@ class UndertaleProfileCreator : ProfileCreator {
 		}
 	}
 
-	fun drawReputations(user: User, graphics: Graphics) {
+	fun drawReputations(user: ProfileUserInfoData, graphics: Graphics) {
 		val font = graphics.font
 		val reputations = transaction(Databases.loritta) {
-			Reputations.select { Reputations.receivedById eq user.idLong }.count()
+			Reputations.select { Reputations.receivedById eq user.id }.count()
 		}
 
 		ImageUtils.drawCenteredString(graphics, "$reputations reps", Rectangle(654, 543, 104, 37), font)
 	}
 
-	fun drawUserInfo(user: User, userProfile: Profile, guild: Guild?, graphics: Graphics): Int {
+	fun drawUserInfo(user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, graphics: Graphics): Int {
 		val userInfo = mutableListOf<String>()
 		userInfo.add("Global")
 		val globalPosition = transaction(Databases.loritta) {
@@ -117,7 +117,7 @@ class UndertaleProfileCreator : ProfileCreator {
 
 		if (guild != null) {
 			val localProfile = transaction(Databases.loritta) {
-				GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.idLong) }.firstOrNull()
+				GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.id) }.firstOrNull()
 			}
 
 			val localPosition = if (localProfile != null) {
