@@ -106,9 +106,7 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
                     }
 
             entriesDiv.append {
-                div {
-                    style = "display: flex;"
-
+                div("loritta-items-list") {
                     div(classes = "loritta-items-wrapper") {
                         for (background in backgrounds) {
                             div(classes = "shop-item-entry rarity-${background.rarity.name.toLowerCase()}") {
@@ -130,8 +128,7 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
                         }
                     }
 
-                    div {
-                        style = "flex-grow: 1; min-width: 350px;"
+                    div(classes = "loritta-items-sidebar") {
                         div(classes = "canvas-preview-wrapper") {
                             canvas("canvas-preview-only-bg") {
                                 style = """width: 350px;"""

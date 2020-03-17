@@ -101,7 +101,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
             allBackgrounds.addAll(
                     transaction(Databases.loritta) {
                         (BackgroundPayments innerJoin Backgrounds).select {
-                            BackgroundPayments.userId eq BackgroundPayments.userId
+                            BackgroundPayments.userId eq profile.id.value
                         }.map { Background.wrapRow(it) }
                     }
             )
