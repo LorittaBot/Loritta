@@ -47,7 +47,6 @@ lateinit var locale: BaseLocale
 
 class SpicyMorenitta : Logging {
 	companion object {
-		const val KEEP_ALIVE_DELAY = 10_000L
 		const val CACHE_ON_HOVER_DELAY = 125L // milliseconds
 		lateinit var INSTANCE: SpicyMorenitta
 	}
@@ -249,12 +248,22 @@ class SpicyMorenitta : Logging {
 		cloned.clear()
 		cloned.setAttribute("href", "/br/dashboard")
 
-		val extension = if (newUser.avatar?.startsWith("a_") == true) { // Avatares animados no Discord começam com "_a"
-			"gif"
-		} else { "png" }
-
 		cloned.append {
-			img(src = "https://cdn.discordapp.com/avatars/${newUser.id}/${newUser.avatar}.${extension}?size=256") {
+			val userId = newUser.id.toLong()
+
+			val avatarUrl = if (newUser.avatar != null) {
+				val extension = if (newUser.avatar.startsWith("a_")) { // Avatares animados no Discord começam com "_a"
+					"gif"
+				} else { "png" }
+
+				"https://cdn.discordapp.com/avatars/${userId}/${newUser.avatar}.${extension}?size=256"
+			} else {
+				val avatarId = userId % 5
+
+				"https://cdn.discordapp.com/embed/avatars/$avatarId.png?size=256"
+			}
+
+			img(src = avatarUrl) {
 				style = """    font-size: 0px;
     line-height: 0px;
     width: 40px;
@@ -417,8 +426,6 @@ class SpicyMorenitta : Logging {
 				document.body!!.style.overflowY = "hidden" // Para remover as scrollbars e apenas deixar as scrollbars da navbar
 			}
 		}
-
-		val localeChangerButton = document.select<Element?>("#locale-changer-button")
 
 		setUpLinkPreloader()
 		setUpLazyLoad()
