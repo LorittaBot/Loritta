@@ -1,9 +1,11 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
+import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.nullArray
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonElement
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -28,6 +30,7 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.image.BufferedImage
 import java.io.File
+import java.util.zip.ZipInputStream
 import javax.imageio.ImageIO
 import javax.imageio.stream.FileImageOutputStream
 
@@ -215,8 +218,6 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			aboutMe = "A Loritta é a minha amiga! Sabia que você pode alterar este texto usando \"${context.config.commandPrefix}sobremim\"? :3"
 		}
 
-		val background = loritta.getUserProfileBackground(context.lorittaUser.profile)
-
 		val availableDesigns = if (loritta.config.isOwner(context.userHandle.idLong)) {
 			loritta.profileDesignManager.designs
 		} else {
@@ -244,6 +245,64 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 
 		val creator = availableDesigns.first { it.internalType == type }.clazz
 		val profileCreator = creator.constructors.first().newInstance() as ProfileCreator
+		val background = try {
+			loritta.getUserProfileBackground(userProfile)
+		} catch (e: IsAnimatedBackgroundHack) {
+			// looks like it is animated, wow
+			val zip = ZipInputStream(e.bytes.inputStream())
+			val fileMap = mutableMapOf<String, ByteArray>()
+
+			while (true) {
+				val next = zip.nextEntry ?: break
+				if (next.isDirectory)
+					continue
+
+				val fileAsByteArray = zip.readAllBytes()
+
+				fileMap[next.name] = fileAsByteArray
+			}
+
+			val json = JsonParser.parseString(fileMap["background.json"]!!.toString(Charsets.UTF_8))
+
+			val image = profileCreator.create(
+					context.userHandle,
+					user,
+					userProfile,
+					context.guild,
+					context.legacyConfig,
+					badges,
+					locale,
+					BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB),
+					aboutMe,
+					member
+			)
+
+			val frames = json["frames"].array
+
+			val fileName = Loritta.TEMP + "profile-" + System.currentTimeMillis() + ".gif"
+
+			val output = FileImageOutputStream(File(fileName))
+			val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 10, true)
+
+			for (frameName in frames.map { it.string }) {
+				val frame = ImageIO.read(fileMap["frames/$frameName"]!!.inputStream())
+				val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB)
+				val graphics = base.graphics
+				graphics.drawImage(frame.getScaledInstance(800, 600, BufferedImage.SCALE_FAST), 0, 0, null)
+				graphics.drawImage(image, 0, 0, null)
+				writer.writeToSequence(base)
+			}
+
+			writer.close()
+			output.close()
+
+			val outputFile = File(fileName)
+			MiscUtils.optimizeGIF(outputFile)
+
+			context.sendFile(outputFile, "lori_profile.gif", "📝 **|** " + context.getAsMention(true) + context.legacyLocale["PEFIL_PROFILE"]) // E agora envie o arquivo
+			return
+		}
+
 		val images = profileCreator.createGif(
 				context.userHandle,
 				user,
@@ -266,9 +325,8 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			val output = FileImageOutputStream(File(fileName))
 			val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 10, true)
 
-			for (image in images) {
+			for (image in images)
 				writer.writeToSequence(image)
-			}
 
 			writer.close()
 			output.close()
@@ -280,7 +338,5 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		}
 	}
 
-	class DiscordBotVote(
-			val id: String
-	)
+	class IsAnimatedBackgroundHack(val bytes: ByteArray) : RuntimeException()
 }

@@ -14,4 +14,6 @@ class Background(id: EntityID<String>) : Entity<String>(id) {
 	var createdBy by Backgrounds.createdBy
 	var availableToBuyViaDreams by Backgrounds.availableToBuyViaDreams
 	var availableToBuyViaMoney by Backgrounds.availableToBuyViaMoney
+	var crop by Backgrounds.crop
+	var set by Backgrounds.set
 }

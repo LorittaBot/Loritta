@@ -20,9 +20,7 @@ import net.perfectdreams.loritta.website.routes.landingpages.BrazilianBotLanding
 import net.perfectdreams.loritta.website.routes.sponsors.SponsorsRedirectRoute
 import net.perfectdreams.loritta.website.routes.user.UserDashboardRoute
 import net.perfectdreams.loritta.website.routes.user.UserReputationRoute
-import net.perfectdreams.loritta.website.routes.user.dashboard.AvailableBundlesRoute
-import net.perfectdreams.loritta.website.routes.user.dashboard.ProfileListRoute
-import net.perfectdreams.loritta.website.routes.user.dashboard.ShipEffectsRoute
+import net.perfectdreams.loritta.website.routes.user.dashboard.*
 
 object DefaultRoutes {
 	fun defaultRoutes(loritta: LorittaDiscord) = mutableListOf(
@@ -84,6 +82,9 @@ object DefaultRoutes {
 			ProfileListRoute(loritta),
 			ShipEffectsRoute(loritta),
 			AvailableBundlesRoute(loritta),
+			BackgroundsListRoute(loritta),
+			AllBackgroundsListRoute(loritta),
+			DailyShopRoute(loritta),
 
 			// ===[ API ROUTES ]===
 			// Callbacks
@@ -100,6 +101,8 @@ object DefaultRoutes {
 			GetBundlesRoute(loritta),
 			PostBundlesRoute(loritta),
 			GetSonhosLeaderboardRoute(loritta),
+			GetDailyShopRoute(loritta),
+			PostBuyDailyShopItemRoute(loritta),
 
 			// Guild
 			GetGuildInfoRoute(loritta),
@@ -123,6 +126,8 @@ object DefaultRoutes {
 			GetLorittaActionRoute(loritta),
 			GetRaffleStatusRoute(loritta),
 			GetStatusRoute(loritta),
+			GetAvailableBackgroundsRoute(loritta),
+			GetSelfUserProfileRoute(loritta),
 			PostLorittaActionRoute(loritta),
 			PostRaffleStatusRoute(loritta),
 			PostReputationMessageRoute(loritta),

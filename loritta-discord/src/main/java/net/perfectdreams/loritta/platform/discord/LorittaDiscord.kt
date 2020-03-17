@@ -1,11 +1,10 @@
 package net.perfectdreams.loritta.platform.discord
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.github.salomonbrys.kotson.obj
-import com.github.salomonbrys.kotson.set
-import com.github.salomonbrys.kotson.string
+import com.github.salomonbrys.kotson.*
 import com.google.gson.GsonBuilder
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand
 import com.mrpowergamerbr.loritta.dao.Background
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
@@ -18,6 +17,7 @@ import com.mrpowergamerbr.loritta.utils.config.GeneralInstanceConfig
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.request.get
@@ -29,8 +29,11 @@ import net.perfectdreams.loritta.commands.vanilla.magic.LoriToolsCommand
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandMap
 import net.perfectdreams.loritta.platform.discord.plugin.JVMPluginManager
 import net.perfectdreams.loritta.platform.discord.utils.JVMLorittaAssets
+import net.perfectdreams.loritta.tables.BackgroundPayments
+import net.perfectdreams.loritta.tables.Backgrounds
 import net.perfectdreams.loritta.utils.config.FanArt
 import net.perfectdreams.loritta.utils.config.FanArtArtist
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.image.BufferedImage
 import java.io.File
@@ -89,6 +92,22 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
      */
     suspend fun getUserProfileBackground(profile: Profile): BufferedImage {
         val background = transaction(Databases.loritta) { profile.settings.activeBackground }
+
+        if (background?.id?.value == "random") {
+            // Caso o usuário tenha pegado um background random, vamos pegar todos os backgrounds que o usuário comprou e pegar um aleatório de lá
+            val defaultBlueBackground = if (background.id.value != "defaultBlue") transaction(Databases.loritta) { Background.findById("defaultBlue")!! } else background
+            val allBackgrounds = mutableListOf(defaultBlueBackground)
+
+            allBackgrounds.addAll(
+                    transaction(Databases.loritta) {
+                        (BackgroundPayments innerJoin Backgrounds).select {
+                            BackgroundPayments.userId eq BackgroundPayments.userId
+                        }.map { Background.wrapRow(it) }
+                    }
+            )
+            return getUserProfileBackground(allBackgrounds.random())
+        }
+
         return getUserProfileBackground(background)
     }
 
@@ -109,7 +128,26 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
         val bytes = response.readBytes()
 
-        return ImageIO.read(bytes.inputStream())
+        if (backgroundOrDefault.imageFile.endsWith(".loribg"))
+            throw PerfilCommand.IsAnimatedBackgroundHack(bytes)
+
+        val image = ImageIO.read(bytes.inputStream())
+        val crop = backgroundOrDefault.crop
+        if (crop != null) {
+            // Perfil possível um crop diferenciado
+            val offsetX = crop["offsetX"].int
+            val offsetY = crop["offsetY"].int
+            val width = crop["width"].int
+            val height = crop["height"].int
+
+            // Se o background possui um width/height diferenciado, mas é idêntico ao tamanho correto do perfil... apenas faça nada
+            if (!(offsetX == 0 && offsetY == 0 && width == image.width && height == image.height)) {
+                // Mas... e se for diferente? sad_cat
+                return image.getSubimage(offsetX, offsetY, width, height).toBufferedImage()
+            }
+        }
+
+        return image
     }
 
     /**

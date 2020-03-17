@@ -399,7 +399,10 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					CachedYouTubeChannelIds,
 					SonhosBundles,
 					Backgrounds,
-					Sets
+					Sets,
+					DailyShops,
+					DailyShopItems,
+					BackgroundPayments
 			)
 		}
 	}

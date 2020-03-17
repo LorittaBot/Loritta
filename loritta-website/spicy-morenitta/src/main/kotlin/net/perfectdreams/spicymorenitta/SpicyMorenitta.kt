@@ -18,9 +18,7 @@ import kotlinx.serialization.parse
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.routes.*
 import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.*
-import net.perfectdreams.spicymorenitta.routes.user.dashboard.AvailableBundlesDashboardRoute
-import net.perfectdreams.spicymorenitta.routes.user.dashboard.ProfileListDashboardRoute
-import net.perfectdreams.spicymorenitta.routes.user.dashboard.ShipEffectsDashboardRoute
+import net.perfectdreams.spicymorenitta.routes.user.dashboard.*
 import net.perfectdreams.spicymorenitta.trunfo.TrunfoGame
 import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.utils.locale.BaseLocale
@@ -84,7 +82,10 @@ class SpicyMorenitta : Logging {
 			ProfileListDashboardRoute(this),
 			ShipEffectsDashboardRoute(this),
 			AvailableBundlesDashboardRoute(this),
-			DailyRoute(this)
+			DailyRoute(this),
+			BackgroundsListDashboardRoute(this),
+			AllBackgroundsListDashboardRoute(this),
+			DailyShopDashboardRoute(this)
 	)
 
 	val validWebsiteLocaleIds = mutableListOf(
@@ -612,6 +613,12 @@ class SpicyMorenitta : Logging {
 
 	fun launch(block: suspend CoroutineScope.() -> Unit): Job {
 		val job = GlobalScope.launch(block = block)
+		pageSpecificTasks.add(job)
+		return job
+	}
+
+	fun <T> async(block: suspend CoroutineScope.() -> T): Deferred<T> {
+		val job = GlobalScope.async(block = block)
 		pageSpecificTasks.add(job)
 		return job
 	}

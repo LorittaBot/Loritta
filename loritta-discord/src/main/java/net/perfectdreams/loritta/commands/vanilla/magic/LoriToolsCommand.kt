@@ -21,7 +21,8 @@ object LoriToolsCommand {
 					PurgeInactiveGuildsExecutor,
 					PurgeInactiveUsersExecutor,
 					PurgeInactiveGuildUsersExecutor,
-					SetSelfBackgroundExecutor
+					SetSelfBackgroundExecutor,
+					GenerateDailyShopExecutor
 			) + validPlugins.flatMap { it.loriToolsExecutors }
 
 			allExecutors.forEach {
