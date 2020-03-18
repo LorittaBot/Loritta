@@ -90,7 +90,7 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 
 						loritta.bomDiaECia.available = false
 
-						val randomPrize = RANDOM.nextInt(150, 376)
+						val randomPrize = RANDOM.nextInt(450, 701)
 						val guild = context.guild
 						val user = context.userHandle
 						val prizeAsBigDecimal = randomPrize.toBigDecimal()
