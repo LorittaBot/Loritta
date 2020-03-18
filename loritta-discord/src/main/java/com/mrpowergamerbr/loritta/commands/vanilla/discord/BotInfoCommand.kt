@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.select
@@ -55,6 +56,12 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		sb.append(seconds)
 		sb.append("s")
 
+		val commandsExecutedInTheLast24Hours = transaction(Databases.loritta) {
+			ExecutedCommandsLog.select {
+				ExecutedCommandsLog.sentAt greaterEq (System.currentTimeMillis() - Constants.ONE_DAY_IN_MILLISECONDS)
+			}.count()
+		}
+
 		embed.setAuthor("${locale["BOTINFO_TITLE"]} 💁", loritta.instanceConfig.loritta.website.url, "${loritta.instanceConfig.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
 		embed.setThumbnail("${loritta.instanceConfig.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
 		embed.setColor(Color(0, 193, 223))
@@ -65,7 +72,7 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 								guildCount,
 								sb.toString(),
 								LorittaLauncher.loritta.legacyCommandManager.commandMap.size + loritta.commandManager.commands.size + loritta.commandMap.commands.size,
-								loritta.legacyCommandManager.commandMap.sumBy { it.executedCount } + loritta.commandManager.commands.sumBy { it.executedCount },
+								commandsExecutedInTheLast24Hours,
 								Emotes.KOTLIN,
 								Emotes.JDA,
 								Emotes.LORI_SMILE,
