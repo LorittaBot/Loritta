@@ -54,6 +54,8 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
         get() = document.select<HTMLDivElement>("#daily-wrapper")
 
     companion object {
+        const val USER_PADDING = 2
+
         @ImplicitReflectionSerializer
         @JsName("recaptchaCallback")
         fun recaptchaCallback(response: String) {
@@ -153,7 +155,8 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
         m.launch {
             val leaderboardElement = document.select<HTMLElement>("#leaderboard")
             val response = http.get<HttpResponse> {
-                url("${window.location.origin}/api/v1/economy/sonhos-leaderboard/around?padding=3")
+                url("${window.location.origin}/api/v1/economy/sonhos-leaderboard/around")
+                parameter("padding", "2")
             }
 
             val payload = kotlinx.serialization.json.JSON.nonstrict.parse<LeaderboardResponse>(response.receive())
@@ -194,10 +197,10 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
                                             style = "opacity: 0.7;"
                                         }
                                     }
-                                    if (index == 5) {
+                                    if (index == (USER_PADDING + USER_PADDING + 1) - 2) {
                                         style = "opacity: 0.7;"
                                     }
-                                    if (index == 6) {
+                                    if (index == (USER_PADDING + USER_PADDING + 1) - 1) {
                                         style = "opacity: 0.35;"
                                     }
 

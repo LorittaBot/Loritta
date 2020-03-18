@@ -18,6 +18,7 @@ class GetSonhosLeaderboardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLog
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
 		val payload = jsonObject()
 		val type = call.parameters["type"]
+		val selfUserId = userIdentification.id.toLong()
 
 		if (type == "around") {
 			val padding = call.parameters["padding"]!!.toInt()
@@ -60,8 +61,20 @@ class GetSonhosLeaderboardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLog
 			if (rankPosition != null) {
 				payload["rankPosition"] = rankPosition
 
+				// O problema é quando tem muitas pessoas no mesmo ranking, por isso apenas iremos pegar quem está a frente do user e quem está atrás
+				// Por exemplo: Se tem 10 pessoas no ranking #10, a Loritta pega essas 10 pessoas, em vez de respeitar o padding
+				val fixedUsersAround = mutableListOf<SonhosLeaderboardUser>()
+				val indexOfSelf = usersAround.indexOfFirst { it.id == selfUserId }
+				if (indexOfSelf == -1) { // what? é meio impossivel isto acontecer, mas né...
+					call.respondJson(payload)
+					return
+				}
+
+				fixedUsersAround.addAll(usersAround.subList(Math.max(0, indexOfSelf - padding), indexOfSelf))
+				fixedUsersAround.addAll(usersAround.subList(indexOfSelf, Math.min(usersAround.size, (indexOfSelf + padding + 1))))
+
 				val usersAroundJson = jsonArray()
-				for (user in usersAround) {
+				for (user in fixedUsersAround) {
 					val retrieved = lorittaShards.retrieveUserById(user.id) ?: continue
 					usersAroundJson.add(
 							jsonObject(
