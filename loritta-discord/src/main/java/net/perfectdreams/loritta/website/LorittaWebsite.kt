@@ -258,6 +258,10 @@ class LorittaWebsite(val loritta: Loritta) {
 		start()
 	}
 
+	fun loadBlogPosts() {
+		blog.posts = blog.loadAllBlogPosts()
+	}
+
 	class WebsiteConfig {
 		val websiteUrl: String
 			get() = loritta.instanceConfig.loritta.website.url.removeSuffix("/")

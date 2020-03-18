@@ -44,8 +44,8 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 		val arg2 = context.rawArgs.getOrNull(2)
 
 		if (arg0 == "posts") {
-			net.perfectdreams.loritta.website.LorittaWebsite.INSTANCE.blog.posts = net.perfectdreams.loritta.website.LorittaWebsite.INSTANCE.blog.loadAllBlogPosts()
-
+			loritta.newWebsite?.loadBlogPosts()
+			
 			context.reply(
 					LoriReply(
 							"Posts recarregados!"
