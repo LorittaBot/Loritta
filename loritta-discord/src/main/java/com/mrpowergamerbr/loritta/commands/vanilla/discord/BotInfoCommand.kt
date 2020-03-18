@@ -64,7 +64,7 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 						.msgFormat(
 								guildCount,
 								sb.toString(),
-								LorittaLauncher.loritta.legacyCommandManager.commandMap.size + loritta.commandManager.commands.size,
+								LorittaLauncher.loritta.legacyCommandManager.commandMap.size + loritta.commandManager.commands.size + loritta.commandMap.commands.size,
 								loritta.legacyCommandManager.commandMap.sumBy { it.executedCount } + loritta.commandManager.commands.sumBy { it.executedCount },
 								Emotes.KOTLIN,
 								Emotes.JDA,
