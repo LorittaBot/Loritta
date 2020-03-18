@@ -45,7 +45,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 
 		if (arg0 == "posts") {
 			loritta.newWebsite?.loadBlogPosts()
-			
+
 			context.reply(
 					LoriReply(
 							"Posts recarregados!"
@@ -55,9 +55,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 		}
 
 		if (arg0 == "action") {
-			loritta.config.clusters.forEach {
-				lorittaShards.queryAllLorittaClusters("/api/v1/loritta/action/$arg1")
-			}
+			lorittaShards.queryAllLorittaClusters("/api/v1/loritta/action/$arg1")
 			context.reply(
 					LoriReply(
 							"Enviado ação para todos os clusters!"
