@@ -46,13 +46,15 @@ object LorittaTasks {
 		if (loritta.isMaster)
 			scheduleWithFixedDelay(NewRssFeedTask(), 0L, 15L, TimeUnit.SECONDS)
 
-		val midnight = LocalTime.MIDNIGHT
-		val today = LocalDate.now(ZoneOffset.UTC)
-		val todayMidnight = LocalDateTime.of(today, midnight)
-		val tomorrowMidnight = todayMidnight.plusDays(1)
-		val diff = tomorrowMidnight.toInstant(ZoneOffset.UTC).toEpochMilli() - System.currentTimeMillis()
+		if (loritta.isMaster) {
+			val midnight = LocalTime.MIDNIGHT
+			val today = LocalDate.now(ZoneOffset.UTC)
+			val todayMidnight = LocalDateTime.of(today, midnight)
+			val tomorrowMidnight = todayMidnight.plusDays(1)
+			val diff = tomorrowMidnight.toInstant(ZoneOffset.UTC).toEpochMilli() - System.currentTimeMillis()
 
-		scheduleAtFixedRate(LorittaDailyShopUpdateTask(), diff, TimeUnit.DAYS.toMillis(1L), TimeUnit.MILLISECONDS)
+			scheduleAtFixedRate(LorittaDailyShopUpdateTask(), diff, TimeUnit.DAYS.toMillis(1L), TimeUnit.MILLISECONDS)
+		}
 	}
 
 	fun scheduleWithFixedDelay(task: Runnable, initialDelay: Long, delay: Long, unit: TimeUnit) {
