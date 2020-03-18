@@ -20,6 +20,7 @@ class RosbifePlugin(name: String, loritta: LorittaBot) : LorittaPlugin(name, lor
 				DrakeCommand.command(loritta),
 				GessyAtaCommand.command(loritta),
 				LoriAtaCommand.command(loritta),
+				LoriDrakeCommand.command(loritta),
 				LoriSignCommand.command(loritta),
 				PassingPaperCommand.command(loritta),
 				PepeDreamCommand.command(loritta),

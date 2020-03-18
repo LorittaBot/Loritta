@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.plugin.rosbife.commands.base.DrakeBaseCommand
 object DrakeCommand : DrakeBaseCommand {
 	override val descriptionKey = "commands.images.drake.description"
 	override val sourceTemplatePath = "drake.png"
+	override val scale = 1
 
 	override fun command(loritta: LorittaBot) = create(
 			loritta,

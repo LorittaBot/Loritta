@@ -16,7 +16,6 @@ object SAMCommand : DSLCommandBase {
 
 		usage {
 			argument(ArgumentType.IMAGE) {}
-			argument(ArgumentType.IMAGE) {}
 		}
 
 		needsToUploadFiles = true

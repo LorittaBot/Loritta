@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.api.utils.image.Image
 interface DrakeBaseCommand : DSLCommandBase {
 	val descriptionKey: String
 	val sourceTemplatePath: String
+	val scale: Int
 
 	override fun command(loritta: LorittaBot): Command<CommandContext>
 
@@ -34,14 +35,14 @@ interface DrakeBaseCommand : DSLCommandBase {
 
 				run {
 					val avatarImg = validate(image(0))
-					val image = avatarImg.getScaledInstance(150, 150, Image.ScaleType.SMOOTH)
-					graph.drawImage(image, 150, 0)
+					val image = avatarImg.getScaledInstance(150 * scale, 150 * scale, Image.ScaleType.SMOOTH)
+					graph.drawImage(image, 150 * scale, 0)
 				}
 
 				run {
 					val avatarImg = validate(image(1))
-					val image = avatarImg.getScaledInstance(150, 150, Image.ScaleType.SMOOTH)
-					graph.drawImage(image, 150, 150)
+					val image = avatarImg.getScaledInstance(150 * scale, 150 * scale, Image.ScaleType.SMOOTH)
+					graph.drawImage(image, 150 * scale, 150 * scale)
 				}
 
 				sendImage(bi, sourceTemplatePath)
