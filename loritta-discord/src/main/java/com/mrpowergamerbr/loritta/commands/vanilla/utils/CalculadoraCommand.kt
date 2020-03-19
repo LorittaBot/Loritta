@@ -32,6 +32,31 @@ class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calcul
 					.replace("_", "")
 
 			try {
+				// Regra de três:tm:
+				if (expression.contains("---")) {
+					val split = expression.split("/")
+					val firstSide = split[0].split("---")
+					val secondSide = split[1].split("---")
+					val number0 = firstSide[0].trim()
+					val number1 = firstSide[1].trim()
+
+					val number2 = secondSide[0].trim()
+					val number3 = secondSide[1].trim()
+
+					val resultNumber0 = LorittaUtils.evalMath(number0)
+					val resultNumber1 = LorittaUtils.evalMath(number1)
+					val resultNumber2 = LorittaUtils.evalMath(number2)
+
+					// resultNumber0 --- resultNumber1
+					// resultNumber2 --- x
+					context.reply(
+							LoriReply(
+									context.locale["$LOCALE_PREFIX.result", (resultNumber2 * resultNumber1) / resultNumber0]
+							)
+					)
+					return
+				}
+
 				val result = LorittaUtils.evalMath(expression)
 
 				context.reply(
