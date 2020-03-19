@@ -98,6 +98,17 @@ class LorittaShards {
 		if (id == null)
 			return null
 
+		// Ao dar retrieve na info do user, primeiro iremos tentar verificar se a gente tem ele no user cache do JDA
+		val userInJdaCache = lorittaShards.getUserById(id)
+		if (userInJdaCache != null)
+			return transformUserToCachedUserInfo(userInJdaCache)
+
+		// Se não tiver, vamos verificar no cache local de retrieved users
+		val cachedRetrievedUser = cachedRetrievedUsers.getIfPresent(id)
+		if (cachedRetrievedUser != null)
+			return transformUserToCachedUserInfo(cachedRetrievedUser.get())
+
+		// Se não tiver, iremos verificar na database externa
 		val cachedUser = transaction(Databases.loritta) {
 			CachedDiscordUsers.select { CachedDiscordUsers.id eq id }
 					.firstOrNull()
@@ -111,15 +122,11 @@ class LorittaShards {
 					cachedUser[CachedDiscordUsers.avatarId]
 			)
 
+		// E se *ainda* não tiver, iremos dar retrieve
 		val discordUser = retrieveUserById(id)
 
 		return if (discordUser != null) {
-			CachedUserInfo(
-					discordUser.idLong,
-					discordUser.name,
-					discordUser.discriminator,
-					discordUser.avatarId
-			)
+			transformUserToCachedUserInfo(discordUser)
 		} else null
 	}
 
@@ -166,6 +173,13 @@ class LorittaShards {
 			}
 		}
 	}
+
+	private fun transformUserToCachedUserInfo(user: User) = CachedUserInfo(
+			user.idLong,
+			user.name,
+			user.discriminator,
+			user.avatarId
+	)
 
 	fun getMutualGuilds(user: User): List<Guild> = shardManager.getMutualGuilds(user)
 
