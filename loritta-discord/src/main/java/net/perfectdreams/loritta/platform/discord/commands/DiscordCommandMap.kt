@@ -351,6 +351,8 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 					}
 				}
 
+				lorittaShards.updateCachedUserData(user)
+
 				command.executor.invoke(context)
 
 				if (!isPrivateChannel && ev.guild != null) {

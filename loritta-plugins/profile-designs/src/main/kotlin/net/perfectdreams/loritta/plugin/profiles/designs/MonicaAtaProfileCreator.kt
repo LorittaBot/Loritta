@@ -132,7 +132,7 @@ class MonicaAtaProfileCreator : ProfileCreator {
 
 			val marrySection = ImageIO.read(File(Loritta.ASSETS, "profile/monica_ata/marry.png"))
 			graphics.drawImage(marrySection, 0, 0, null)
-			val marriedWith = runBlocking { lorittaShards.retrieveUserById(marriedWithId) }
+			val marriedWith = runBlocking { lorittaShards.retrieveUserInfoById(marriedWithId.toLong()) }
 
 			if (marriedWith != null) {
 				graphics.font = KOMIKA.deriveFont(21f)

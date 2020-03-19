@@ -136,10 +136,10 @@ class RepTopCommand : LorittaCommand(arrayOf("rep top", "reputation top", "reput
             }
 
             val userId = if (type == TopOrder.MOST_RECEIVED) { profile[receivedBy].toString() } else { profile[givenBy].toString() }
-            val member = lorittaShards.retrieveUserById(userId)
+            val member = lorittaShards.retrieveUserInfoById(userId.toLong())
 
             if (member != null) {
-                val rankBackground = com.mrpowergamerbr.loritta.utils.loritta.getUserProfileBackground(member.idLong)
+                val rankBackground = com.mrpowergamerbr.loritta.utils.loritta.getUserProfileBackground(member.id)
                 graphics.drawImage(rankBackground.getScaledInstance(400, 300, BufferedImage.SCALE_SMOOTH)
                         .toBufferedImage()
                         .getSubimage(0, idx * 52, 400, 53), 0, currentY, null)

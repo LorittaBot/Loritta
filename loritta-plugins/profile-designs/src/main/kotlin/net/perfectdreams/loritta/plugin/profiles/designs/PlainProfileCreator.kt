@@ -15,7 +15,6 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.User
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -65,7 +64,7 @@ open class PlainProfileCreator(val color: String) : ProfileCreator {
 
 			val marrySection = ImageIO.read(File(Loritta.ASSETS, "profile/plain/marry.png"))
 			graphics.drawImage(marrySection, 0, 0, null)
-			val marriedWith = runBlocking { lorittaShards.retrieveUserById(marriedWithId) }
+			val marriedWith = runBlocking { lorittaShards.retrieveUserInfoById(marriedWithId.toLong()) }
 
 			if (marriedWith != null) {
 				val whitneySemiBold16 = whitneySemiBold.deriveFont(16f)

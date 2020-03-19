@@ -5,6 +5,7 @@ import com.google.common.cache.CacheBuilder
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
@@ -25,7 +26,13 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.sharding.ShardManager
+import net.perfectdreams.loritta.tables.CachedDiscordUsers
+import net.perfectdreams.loritta.utils.CachedUserInfo
 import net.perfectdreams.loritta.utils.DiscordUtils
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -87,6 +94,36 @@ class LorittaShards {
 
 	suspend fun retrieveUserById(id: String?) = retrieveUserById(id?.toLongOrNull())
 
+	suspend fun retrieveUserInfoById(id: Long?): CachedUserInfo? {
+		if (id == null)
+			return null
+
+		val cachedUser = transaction(Databases.loritta) {
+			CachedDiscordUsers.select { CachedDiscordUsers.id eq id }
+					.firstOrNull()
+		}
+
+		if (cachedUser != null)
+			return CachedUserInfo(
+					cachedUser[CachedDiscordUsers.id].value,
+					cachedUser[CachedDiscordUsers.name],
+					cachedUser[CachedDiscordUsers.discriminator],
+					cachedUser[CachedDiscordUsers.avatarId]
+			)
+
+		val discordUser = retrieveUserById(id)
+
+		return if (discordUser != null) {
+			CachedUserInfo(
+					discordUser.idLong,
+					discordUser.name,
+					discordUser.discriminator,
+					discordUser.avatarId
+			)
+		} else null
+	}
+
+	@Suppress("IMPLICIT_CAST_TO_ANY")
 	suspend fun retrieveUserById(id: Long?): User? {
 		if (id == null)
 			return null
@@ -97,7 +134,37 @@ class LorittaShards {
 
 		val user = shardManager.retrieveUserById(id).await()
 		cachedRetrievedUsers.put(id, Optional.of(user))
+
+		if (user != null)
+			updateCachedUserData(user)
+
 		return user
+	}
+
+	@Suppress("IMPLICIT_CAST_TO_ANY")
+	suspend fun updateCachedUserData(user: User) {
+		val now = System.currentTimeMillis()
+		transaction(Databases.loritta) {
+			val cachedData = CachedDiscordUsers.select { CachedDiscordUsers.id eq user.idLong }.firstOrNull()
+
+			if (cachedData != null) {
+				CachedDiscordUsers.update({ CachedDiscordUsers.id eq user.idLong }) {
+					it[name] = user.name
+					it[discriminator] = user.discriminator
+					it[avatarId] = user.avatarId
+					it[updatedAt] = now
+				}
+			} else {
+				CachedDiscordUsers.insert {
+					it[CachedDiscordUsers.idColumn] = user.idLong
+					it[name] = user.name
+					it[discriminator] = user.discriminator
+					it[avatarId] = user.avatarId
+					it[createdAt] = now
+					it[updatedAt] = now
+				}
+			}
+		}
 	}
 
 	fun getMutualGuilds(user: User): List<Guild> = shardManager.getMutualGuilds(user)
@@ -183,7 +250,7 @@ class LorittaShards {
 
 						val body = response.readText()
 						jsonParser.parse(
-							body
+								body
 						)
 					}
 				} catch (e: Exception) {

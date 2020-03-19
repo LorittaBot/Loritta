@@ -104,10 +104,10 @@ class ScratchCardTopCommand : LorittaCommand(arrayOf("scratchcard top", "raspadi
 				break
 
 			val userId = profile[userId].toString()
-			val member = lorittaShards.retrieveUserById(userId)
+			val member = lorittaShards.retrieveUserInfoById(userId.toLong())
 
 			if (member != null) {
-				val rankBackground = loritta.getUserProfileBackground(member.idLong)
+				val rankBackground = loritta.getUserProfileBackground(member.id)
 				graphics.drawImage(rankBackground.getScaledInstance(400, 300, BufferedImage.SCALE_SMOOTH)
 						.toBufferedImage()
 						.getSubimage(0, idx * 52, 400, 53), 0, currentY, null)

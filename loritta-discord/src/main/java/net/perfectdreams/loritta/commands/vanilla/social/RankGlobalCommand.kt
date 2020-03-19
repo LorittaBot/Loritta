@@ -86,10 +86,10 @@ class RankGlobalCommand : LorittaCommand(arrayOf("rank global", "top global", "l
             }
 
             val profile = transaction(Databases.loritta) { Profile.wrapRow(resultRow) }
-            val user = lorittaShards.retrieveUserById(profile.userId)
+            val user = lorittaShards.retrieveUserInfoById(profile.userId)
 
             if (user != null) {
-                val rankBackground = com.mrpowergamerbr.loritta.utils.loritta.getUserProfileBackground(user.idLong)
+                val rankBackground = com.mrpowergamerbr.loritta.utils.loritta.getUserProfileBackground(user.id)
                 graphics.drawImage(rankBackground.getScaledInstance(400, 300, BufferedImage.SCALE_SMOOTH)
                         .toBufferedImage()
                         .getSubimage(0, idx * 52, 400, 53), 0, currentY, null)

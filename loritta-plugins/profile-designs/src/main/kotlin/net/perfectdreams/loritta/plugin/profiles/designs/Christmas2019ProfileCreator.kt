@@ -55,7 +55,7 @@ class Christmas2019ProfileCreator : ProfileCreator {
 			marriage?.user1
 		}
 
-		val marriedWith = if (marriedWithId != null) { runBlocking { lorittaShards.retrieveUserById(marriedWithId) } } else { null }
+		val marriedWith = if (marriedWithId != null) { runBlocking { lorittaShards.retrieveUserInfoById(marriedWithId.toLong()) } } else { null }
 
 		val reputations = transaction(Databases.loritta) {
 			Reputations.select { Reputations.receivedById eq user.id }.count()

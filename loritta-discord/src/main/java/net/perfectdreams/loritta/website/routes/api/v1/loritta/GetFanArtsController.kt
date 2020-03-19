@@ -6,8 +6,8 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
 import io.ktor.application.ApplicationCall
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.utils.config.FanArtArtist
+import net.perfectdreams.loritta.utils.extensions.objectNode
 import net.perfectdreams.loritta.website.routes.BaseRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 
@@ -49,19 +49,21 @@ class GetFanArtsController(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v
 					}
 
 			val users = discordIds.asSequence().mapNotNull { com.mrpowergamerbr.loritta.utils.loritta.cachedRetrievedArtists.getIfPresent(it)?.getOrNull() }
-					.map { JDAUser(it) }.toList()
 
 			fanArtists.map {
 				val discordInfo = it["networks"]?.firstOrNull { it["type"].textValue() == "discord" }
 
 				if (discordInfo != null) {
 					val id = discordInfo["id"].textValue()
-					val user = users.firstOrNull { it.idAsString == id }
+					val user = users.firstOrNull { it.id.toString() == id }
 
 					if (user != null) {
-						val node = filterEntries(Constants.JSON_MAPPER.valueToTree(user), "id", "name", "effectiveAvatarUrl")
 						it as ObjectNode
-						it.set<JsonNode>("user", node)
+						it.set<JsonNode>("user", objectNode(
+								"id" to user.id,
+								"name" to user.name,
+								"effectiveAvatarUrl" to user.effectiveAvatarUrl
+						))
 					}
 				}
 			}

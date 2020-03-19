@@ -14,6 +14,7 @@ import kotlinx.html.stream.createHTML
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.utils.CachedUserInfo
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import org.jetbrains.exposed.sql.transactions.transaction
 import kotlin.collections.set
@@ -54,6 +55,15 @@ object WebsiteUtils {
 	}
 
 	fun transformToJson(user: User): JsonObject {
+		return jsonObject(
+				"id" to user.id,
+				"name" to user.name,
+				"discriminator" to user.discriminator,
+				"effectiveAvatarUrl" to user.effectiveAvatarUrl
+		)
+	}
+
+	fun transformToJson(user: CachedUserInfo): JsonObject {
 		return jsonObject(
 				"id" to user.id,
 				"name" to user.name,

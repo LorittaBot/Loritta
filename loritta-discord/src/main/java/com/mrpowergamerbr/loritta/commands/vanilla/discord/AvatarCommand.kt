@@ -73,7 +73,7 @@ class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCO
 				val fancyName = currentFanArtInMasterCluster["fancyName"].nullString
 
 				if (artistId != null) {
-					val user = lorittaShards.retrieveUserById(artistId)
+					val user = lorittaShards.retrieveUserInfoById(artistId.toLong())
 
 					val displayName = fancyName ?: user?.name
 

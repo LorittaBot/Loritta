@@ -4,7 +4,8 @@ import org.jetbrains.exposed.dao.*
 import org.jetbrains.exposed.sql.Column
 
 open class SnowflakeTable(name: String = "", columnName: String = "id") : IdTable<Long>(name) {
-	override val id: Column<EntityID<Long>> = long(columnName).primaryKey().entityId()
+	val idColumn = long(columnName).primaryKey()
+	override val id: Column<EntityID<Long>> = idColumn.entityId()
 }
 
 abstract class SnowflakeEntity(id: EntityID<Long>) : Entity<Long>(id)

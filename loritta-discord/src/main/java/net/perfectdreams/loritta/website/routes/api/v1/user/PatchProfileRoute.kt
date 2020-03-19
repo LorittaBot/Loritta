@@ -39,7 +39,7 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 			val user2Name = config["user2NamePlusDiscriminator"].string
 
 			val user2Id = if (user2Name.isValidSnowflake()) {
-				lorittaShards.retrieveUserById(user2Name)?.idLong
+				lorittaShards.retrieveUserInfoById(user2Name.toLong())?.id
 			} else {
 				val split = user2Name.trim().split("#")
 

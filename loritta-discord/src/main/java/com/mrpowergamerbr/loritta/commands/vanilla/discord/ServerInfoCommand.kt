@@ -51,7 +51,7 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 		val shardId = guild["shardId"].int
 		val ownerId = guild["ownerId"].string
 		val region = Region.valueOf(guild["region"].string)
-		val owner = lorittaShards.retrieveUserById(ownerId)
+		val owner = lorittaShards.retrieveUserInfoById(ownerId.toLong())
 		val textChannelCount = guild["count"]["textChannels"].int
 		val voiceChannelCount = guild["count"]["voiceChannels"].int
 		val timeCreated = guild["timeCreated"].long

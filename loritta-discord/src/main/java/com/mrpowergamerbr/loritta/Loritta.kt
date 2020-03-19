@@ -51,10 +51,7 @@ import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandManager
 import net.perfectdreams.loritta.platform.discord.utils.BucketedController
 import net.perfectdreams.loritta.platform.discord.utils.RateLimitChecker
 import net.perfectdreams.loritta.tables.*
-import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.NetAddressUtils
-import net.perfectdreams.loritta.utils.Sponsor
-import net.perfectdreams.loritta.utils.TweetTracker
+import net.perfectdreams.loritta.utils.*
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import net.perfectdreams.mercadopago.MercadoPago
 import okhttp3.Dispatcher
@@ -156,7 +153,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	var patchData = PatchData()
 	var sponsors: List<Sponsor> = listOf()
 	val cachedRetrievedArtists = CacheBuilder.newBuilder().expireAfterWrite(7, TimeUnit.DAYS)
-			.build<Long, Optional<User>>()
+			.build<Long, Optional<CachedUserInfo>>()
 	val tweetTracker = TweetTracker(this)
 	var bucketedController: BucketedController? = null
 	val rateLimitChecker = RateLimitChecker(this)
@@ -402,7 +399,8 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					Sets,
 					DailyShops,
 					DailyShopItems,
-					BackgroundPayments
+					BackgroundPayments,
+					CachedDiscordUsers
 			)
 		}
 	}

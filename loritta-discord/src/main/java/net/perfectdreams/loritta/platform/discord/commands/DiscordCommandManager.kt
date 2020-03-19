@@ -24,7 +24,7 @@ import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.commands.LorittaCommandManager
 import net.perfectdreams.loritta.api.entities.User
 import net.perfectdreams.loritta.commands.vanilla.`fun`.*
-import net.perfectdreams.loritta.commands.vanilla.audio.*
+import net.perfectdreams.loritta.commands.vanilla.audio.RecordAudioCommand
 import net.perfectdreams.loritta.commands.vanilla.economy.TransactionsCommand
 import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaTopCommand
 import net.perfectdreams.loritta.commands.vanilla.social.RankGlobalCommand
@@ -478,6 +478,8 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                         it[ExecutedCommandsLog.message] = ev.message.contentRaw
                     }
                 }
+
+                lorittaShards.updateCachedUserData(context.userHandle)
 
                 val result = execute(context, command, rawArgs)
 

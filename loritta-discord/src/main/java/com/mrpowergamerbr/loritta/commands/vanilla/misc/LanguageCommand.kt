@@ -169,7 +169,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 		embed.setTitle("\uD83C\uDF0E " + locale["commands.miscellaneous.language.pleaseSelectYourLanguage"])
 
 		for (wrapper in languages) {
-			val translators = wrapper.locale.getWithType<List<String>>("loritta.translationAuthors").mapNotNull { lorittaShards.retrieveUserById(it) }
+			val translators = wrapper.locale.getWithType<List<String>>("loritta.translationAuthors").mapNotNull { lorittaShards.retrieveUserInfoById(it.toLong()) }
 
 			embed.addField(
 					wrapper.emoteName + " " + wrapper.name,

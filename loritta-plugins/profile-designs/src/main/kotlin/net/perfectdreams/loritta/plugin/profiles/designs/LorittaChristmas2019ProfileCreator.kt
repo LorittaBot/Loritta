@@ -15,7 +15,6 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.User
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -60,7 +59,7 @@ class LorittaChristmas2019ProfileCreator : ProfileCreator {
 			marriage?.user1
 		}
 
-		val marriedWith = if (marriedWithId != null) { runBlocking { lorittaShards.retrieveUserById(marriedWithId) } } else { null }
+		val marriedWith = if (marriedWithId != null) { runBlocking { lorittaShards.retrieveUserInfoById(marriedWithId.toLong()) } } else { null }
 
 		val reputations = transaction(Databases.loritta) {
 			Reputations.select { Reputations.receivedById eq user.id }.count()

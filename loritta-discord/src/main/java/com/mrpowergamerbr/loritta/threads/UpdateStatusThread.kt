@@ -99,7 +99,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 				if (artistId != null) { // Se o artistId for nulo, então ele não está marcado!
 					val fancyName = currentFanArtInMasterCluster["fancyName"].nullString
 
-					val artist = runBlocking { lorittaShards.retrieveUserById(artistId) }
+					val artist = runBlocking { lorittaShards.retrieveUserInfoById(artistId.toLong()) }
 
 					val displayName = fancyName
 							?: if (artist != null) {

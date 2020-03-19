@@ -48,7 +48,7 @@ class FanArtsCommand : LorittaCommand(arrayOf("fanarts", "fanart"), category = C
                     ?.firstIsInstanceOrNull<FanArtArtist.SocialNetwork.DiscordSocialNetwork>()
                     ?.id
 
-            val user = lorittaShards.retrieveUserById(discordId)
+            val user = lorittaShards.retrieveUserInfoById(discordId?.toLong())
 
             val displayName = fanArtArtist?.info?.override?.name ?: user?.name ?: fanArtArtist?.info?.name
 

@@ -33,7 +33,7 @@ class UpdateFanArtsTask : Runnable {
 			// Mesmo que a gente seja o cluster principal, existe algumas coisinhas que nós devemos fazer para vários requests ao acessar a página de fan arts
 			// Nós iremos manter um cache de users de artistas, assim evitando vários requests ao carregar a página de fan arts.
 			for (id in discordIds) {
-				val user = runBlocking { lorittaShards.retrieveUserById(id) }
+				val user = runBlocking { lorittaShards.retrieveUserInfoById(id) }
 				loritta.cachedRetrievedArtists.put(id, Optional.ofNullable(user))
 			}
 		}

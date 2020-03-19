@@ -75,7 +75,7 @@ class GetSonhosLeaderboardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLog
 
 				val usersAroundJson = jsonArray()
 				for (user in fixedUsersAround) {
-					val retrieved = lorittaShards.retrieveUserById(user.id) ?: continue
+					val retrieved = lorittaShards.retrieveUserInfoById(user.id) ?: continue
 					usersAroundJson.add(
 							jsonObject(
 									"id" to user.id,

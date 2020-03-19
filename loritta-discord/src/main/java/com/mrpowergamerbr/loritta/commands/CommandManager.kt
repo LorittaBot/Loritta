@@ -522,6 +522,8 @@ class CommandManager {
 					}
 				}
 
+				lorittaShards.updateCachedUserData(context.userHandle)
+
 				command.run(context, context.legacyLocale)
 
 				if (!isPrivateChannel && ev.guild != null) {
