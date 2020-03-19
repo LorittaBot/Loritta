@@ -220,7 +220,7 @@ class DiscordCommandContext(
 		loritta as LorittaDiscord
 		val embed = EmbedBuilder()
 				.setColor(Constants.LORITTA_AQUA)
-				.setAuthor(locale["commands.clickHereToSeeAllMyCommands"], "${loritta.instanceConfig.loritta.website.url}commands", discordMessage.jda.selfUser.effectiveAvatarUrl)
+				.setAuthor(locale["commands.explain.clickHereToSeeAllMyCommands"], "${loritta.instanceConfig.loritta.website.url}commands", discordMessage.jda.selfUser.effectiveAvatarUrl)
 				.setTitle("${Emotes.LORI_HM} `${serverConfig.commandPrefix}${executedCommandLabel}`")
 				.setFooter("${user.name + "#" + user.discriminator} • ${command.category.getLocalizedName(locale)}", user.effectiveAvatarUrl)
 				.setTimestamp(Instant.now())
@@ -229,7 +229,7 @@ class DiscordCommandContext(
 			this.append(command.description.invoke(locale))
 			this.append('\n')
 			this.append('\n')
-			this.append("${Emotes.LORI_SMILE} **${locale["commands.howToUse"]}** ")
+			this.append("${Emotes.LORI_SMILE} **${locale["commands.explain.howToUse"]}** ")
 			this.append('`')
 			this.append(serverConfig.commandPrefix)
 			this.append(command.labels.first())
@@ -253,7 +253,7 @@ class DiscordCommandContext(
 
 		if (examples != null) {
 			embed.addField(
-					"\uD83D\uDCD6 ${locale["commands.examples"]}",
+					"\uD83D\uDCD6 ${locale["commands.explain.examples"]}",
 					examples.joinToString("\n", transform = { "`${serverConfig.commandPrefix}${executedCommandLabel}` **`${it}`**" }),
 					false
 			)
@@ -269,7 +269,7 @@ class DiscordCommandContext(
 					field += "<:loritta:331179879582269451> ${locale["commands.explain.loriNeedToHavePermission", command.userRequiredPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })]}\n"
 				}
 				embed.addField(
-						"\uD83D\uDCDB ${locale["commands.permissions"]}",
+						"\uD83D\uDCDB ${locale["commands.explain.permissions"]}",
 						field,
 						false
 				)
@@ -280,7 +280,7 @@ class DiscordCommandContext(
 
 		if (otherAlternatives.isNotEmpty()) {
 			embed.addField(
-					"\uD83D\uDD00 ${locale["commands.aliases"]}",
+					"\uD83D\uDD00 ${locale["commands.explain.aliases"]}",
 					otherAlternatives.joinToString(transform = { "`${serverConfig.commandPrefix}$it`" }),
 					false
 			)
@@ -292,7 +292,7 @@ class DiscordCommandContext(
 
 		if (similarCommands.isNotEmpty()) {
 			embed.addField(
-					"${Emotes.LORI_WOW} ${locale["commands.relatedCommands"]}",
+					"${Emotes.LORI_WOW} ${locale["commands.explain.relatedCommands"]}",
 					similarCommands.joinToString(transform = { "`${serverConfig.commandPrefix}${it.labels.first()}`" }),
 					false
 			)
