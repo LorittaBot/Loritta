@@ -18,8 +18,8 @@ enum class Rarity {
 	fun getBackgroundPrice() = when (this) {
 		COMMON -> 2_500 // 900 * 1
 		UNCOMMON -> 5_000 // 900 * 3
-		RARE -> 20_000 // 900 * 14
-		EPIC -> 40_000
+		RARE -> 10_000 // 900 * 14
+		EPIC -> 25_000
 		LEGENDARY -> 80_000
 	}
 
