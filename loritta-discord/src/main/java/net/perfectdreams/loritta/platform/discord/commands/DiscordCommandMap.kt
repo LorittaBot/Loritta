@@ -72,6 +72,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 
 		// Comandos com espaços na label, yeah!
 		var valid = false
+		var validLabel: String? = null
 
 		val checkArguments = rawArguments.toMutableList()
 		val rawArgument0 = checkArguments.getOrNull(0)
@@ -106,11 +107,12 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 
 			if (validLabelCount == subLabels.size) {
 				valid = true
+				validLabel = subLabels.joinToString(" ")
 				break
 			}
 		}
 
-		if (valid) {
+		if (valid && validLabel != null) {
 			val isPrivateChannel = ev.isFromType(ChannelType.PRIVATE)
 			val start = System.currentTimeMillis()
 
@@ -131,7 +133,8 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 					ev.message,
 					locale,
 					serverConfig,
-					lorittaUser
+					lorittaUser,
+					validLabel
 			)
 
 			if (ev.message.isFromType(ChannelType.TEXT)) {

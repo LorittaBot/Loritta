@@ -8,7 +8,7 @@ import java.awt.Color
 import java.awt.image.BufferedImage
 
 object ToBeContinuedCommand : DSLCommandBase {
-	override fun command(loritta: LorittaBot) = DrakeCommand.create(
+	override fun command(loritta: LorittaBot) = create(
 			loritta,
 			listOf("tobecontinued")
 	) {

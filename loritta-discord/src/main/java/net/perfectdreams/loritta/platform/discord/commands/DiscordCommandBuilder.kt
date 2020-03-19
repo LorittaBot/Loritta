@@ -50,12 +50,11 @@ class DiscordCommandBuilder(
 				usage = usage,
 				examples = examplesCallback,
 				executor = executeCallback!!
-		).apply { build2().invoke(this) }
-				.also {
-					it.userRequiredPermissions = userRequiredPermissions
-					it.botRequiredPermissions = botRequiredPermissions
-					it.requiresMusic = requiresMusic
-					it.userRequiredLorittaPermissions = userRequiredLorittaPermissions
-				}
+		).apply { build2().invoke(this) }.also {
+			it.userRequiredPermissions = userRequiredPermissions
+			it.botRequiredPermissions = botRequiredPermissions
+			it.requiresMusic = requiresMusic
+			it.userRequiredLorittaPermissions = userRequiredLorittaPermissions
+		}
 	}
 }

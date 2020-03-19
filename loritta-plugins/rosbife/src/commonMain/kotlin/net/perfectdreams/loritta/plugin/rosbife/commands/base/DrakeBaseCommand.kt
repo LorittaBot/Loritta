@@ -29,6 +29,12 @@ interface DrakeBaseCommand : DSLCommandBase {
 				argument(ArgumentType.IMAGE) {}
 			}
 
+			similarCommands = listOf(
+					"DrakeCommand",
+					"BolsoDrakeCommand",
+					"LoriDrakeCommand"
+			)
+
 			executes {
 				val bi = this.loritta.assets.loadImage(sourceTemplatePath) // Primeiro iremos carregar o nosso template
 				val graph = bi.createGraphics()

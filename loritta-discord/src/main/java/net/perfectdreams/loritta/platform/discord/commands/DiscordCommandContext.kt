@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
@@ -26,6 +27,7 @@ import net.perfectdreams.loritta.utils.Emotes
 import org.jsoup.Jsoup
 import java.io.File
 import java.io.InputStream
+import java.time.Instant
 
 class DiscordCommandContext(
 		loritta: LorittaDiscord,
@@ -34,7 +36,8 @@ class DiscordCommandContext(
 		val discordMessage: Message,
 		locale: BaseLocale,
 		val serverConfig: ServerConfig,
-		val lorittaUser: LorittaUser
+		val lorittaUser: LorittaUser,
+		val executedCommandLabel: String
 ) : CommandContext(loritta, command, args, DiscordMessage(discordMessage), locale) {
 	val isPrivateChannel = discordMessage.channelType == ChannelType.PRIVATE
 	val guild: Guild
@@ -214,11 +217,86 @@ class DiscordCommandContext(
 	 * @param context the context of the command
 	 */
 	override suspend fun explain() {
+		loritta as LorittaDiscord
 		val embed = EmbedBuilder()
 				.setColor(Constants.LORITTA_AQUA)
-				.setAuthor(user.name + "#" + user.discriminator, null, user.effectiveAvatarUrl)
-				.setTitle("${Emotes.LORI_HM} `${serverConfig.commandPrefix}${command.labels.first()}`")
-				.setDescription(command.description.invoke(locale))
+				.setAuthor(locale["commands.clickHereToSeeAllMyCommands"], "${loritta.instanceConfig.loritta.website.url}commands", discordMessage.jda.selfUser.effectiveAvatarUrl)
+				.setTitle("${Emotes.LORI_HM} `${serverConfig.commandPrefix}${executedCommandLabel}`")
+				.setFooter("${user.name + "#" + user.discriminator} • ${command.category.getLocalizedName(locale)}", user.effectiveAvatarUrl)
+				.setTimestamp(Instant.now())
+
+		val description = buildString {
+			this.append(command.description.invoke(locale))
+			this.append('\n')
+			this.append('\n')
+			this.append("${Emotes.LORI_SMILE} **${locale["commands.howToUse"]}** ")
+			this.append('`')
+			this.append(serverConfig.commandPrefix)
+			this.append(command.labels.first())
+			this.append('`')
+			this.append(' ')
+			for ((index, argument) in command.usage.arguments.withIndex()) {
+				// <argumento> - Argumento obrigatório
+				// [argumento] - Argumento opcional
+				this.append("**")
+				this.append('`')
+				argument.build(this, locale)
+				this.append('`')
+				this.append("**")
+				if (index != command.usage.arguments.size - 1)
+					this.append(' ')
+			}
+		}
+
+		embed.setDescription(description)
+		val examples = command.examples?.invoke(locale)
+
+		if (examples != null) {
+			embed.addField(
+					"\uD83D\uDCD6 ${locale["commands.examples"]}",
+					examples.joinToString("\n", transform = { "`${serverConfig.commandPrefix}${executedCommandLabel}` **`${it}`**" }),
+					false
+			)
+		}
+
+		if (command is DiscordCommand) {
+			if (command.botRequiredPermissions.isNotEmpty() || command.userRequiredPermissions.isNotEmpty()) {
+				var field = ""
+				if (command.userRequiredPermissions.isNotEmpty()) {
+					field += "\uD83D\uDC81 ${locale["commands.explain.youNeedToHavePermission", command.userRequiredPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })]}\n"
+				}
+				if (command.botRequiredPermissions.isNotEmpty()) {
+					field += "<:loritta:331179879582269451> ${locale["commands.explain.loriNeedToHavePermission", command.userRequiredPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })]}\n"
+				}
+				embed.addField(
+						"\uD83D\uDCDB ${locale["commands.permissions"]}",
+						field,
+						false
+				)
+			}
+		}
+
+		val otherAlternatives = command.labels.filter { it != executedCommandLabel }
+
+		if (otherAlternatives.isNotEmpty()) {
+			embed.addField(
+					"\uD83D\uDD00 ${locale["commands.aliases"]}",
+					otherAlternatives.joinToString(transform = { "`${serverConfig.commandPrefix}$it`" }),
+					false
+			)
+		}
+
+		val similarCommands = loritta.commandMap.commands.filter {
+			it.commandName != command.commandName && it.commandName in command.similarCommands
+		}
+
+		if (similarCommands.isNotEmpty()) {
+			embed.addField(
+					"${Emotes.LORI_WOW} ${locale["commands.relatedCommands"]}",
+					similarCommands.joinToString(transform = { "`${serverConfig.commandPrefix}${it.labels.first()}`" }),
+					false
+			)
+		}
 
 		val messageBuilder = MessageBuilder()
 				.append(getUserMention(true))
