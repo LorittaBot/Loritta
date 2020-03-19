@@ -21,6 +21,7 @@ open class Command<T : CommandContext>(
 	var canUseInPrivateChannel = false
 	var onlyOwner = false
 	var requiredFeatures: List<PlatformFeature> = listOf()
+	var similarCommands: List<String> = listOf()
 
 	open val cooldown = 2_500
 	var executedCount = 0

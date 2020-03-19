@@ -21,6 +21,7 @@ open class CommandBuilder<context : CommandContext>(
 	var hideInHelp = false
 	var requiredFeatures = listOf<PlatformFeature>()
 	var onlyOwner = false
+	var similarCommands = listOf<String>()
 
 	var descriptionCallback: ((BaseLocale) -> (String))? = null
 	var usageCallback: (CommandArgumentsBuilder.() -> Unit)? = null
@@ -62,7 +63,12 @@ open class CommandBuilder<context : CommandContext>(
 
 	fun build2(): Command<context>.() -> (Unit) {
 		return {
-			this.canUseInPrivateChannel = false
+			this.canUseInPrivateChannel = this@CommandBuilder.canUseInPrivateChannel
+			this.needsToUploadFiles = this@CommandBuilder.needsToUploadFiles
+			this.hideInHelp = this@CommandBuilder.hideInHelp
+			this.requiredFeatures = this@CommandBuilder.requiredFeatures
+			this.onlyOwner = this@CommandBuilder.onlyOwner
+			this.similarCommands = this@CommandBuilder.similarCommands
 		}
 	}
 }
