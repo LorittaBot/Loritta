@@ -34,13 +34,13 @@ class DiscordWebhook(
 
 	suspend fun send(message: DiscordMessage, wait: Boolean = false): JsonObject {
 		if (isRateLimited) {
-			logger.trace { "Message $message to $url is rate limited! Adding to requestQueue..." }
+			logger.info { "Message $message to $url is rate limited! Adding to requestQueue..." }
 			return suspendCoroutine {
 				requestQueue.add(Pair(message, it))
 			}
 		}
 
-		logger.trace { "Sending $message to $url" }
+		logger.info { "Sending $message to $url" }
 
 		val result = GlobalScope.async(coroutineDispatcher) {
 			var url = url
@@ -53,13 +53,16 @@ class DiscordWebhook(
 				body = TextContent(GSON.toJson(message), ContentType.Application.Json)
 			}
 
+			logger.info { "Payload is ${GSON.toJson(message)}" }
+			logger.info { "Response is $response" }
+
 			if (response.isNotEmpty()) { // oh no
 				val json = jsonParser.parse(response).obj
 
 				if (json.contains("retry_after")) { // Rate limited, vamos colocar o request dentro de uma queue
 					isRateLimited = true
 
-					logger.debug { "Request $message to $url got rate limited! Retry after: ${json["retry_after"].long}"}
+					logger.info { "Request $message to $url got rate limited! Retry after: ${json["retry_after"].long}"}
 
 					delay(json["retry_after"].long)
 

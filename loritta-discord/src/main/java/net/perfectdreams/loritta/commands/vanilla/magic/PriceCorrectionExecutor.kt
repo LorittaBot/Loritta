@@ -48,7 +48,7 @@ object PriceCorrectionExecutor : LoriToolsCommand.LoriToolsExecutor {
 
 		reply(
 				LorittaReply(
-						"Loja atualizada!"
+						"Preços corrigidos!"
 				)
 		)
 		return@task true

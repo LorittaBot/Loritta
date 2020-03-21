@@ -47,6 +47,10 @@ class ParallaxEmbed {
 	}
 
 	// TODO: setColor
+	fun setColor(color: Color): ParallaxEmbed {
+		this.color = (color.rgb + 16777216)
+		return this
+	}
 
 	fun setDescription(description: String): ParallaxEmbed {
 		this.description = description

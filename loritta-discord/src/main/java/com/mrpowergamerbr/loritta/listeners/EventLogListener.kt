@@ -8,12 +8,15 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.StoredMessage
 import com.mrpowergamerbr.loritta.dao.UsernameChange
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxEmbed
 import com.mrpowergamerbr.loritta.tables.StoredMessages
 import com.mrpowergamerbr.loritta.tables.UsernameChanges
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
+import com.mrpowergamerbr.loritta.utils.eventlog.EventLog
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
+import com.mrpowergamerbr.loritta.utils.webhook.DiscordMessage
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -103,8 +106,8 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val oldDiscriminator = usernameChange.oldDiscriminator ?: user.discriminator
 			val newName = user.name
 			val newDiscriminator = user.discriminator
-			val embed = EmbedBuilder()
-			embed.setTimestamp(Instant.now())
+			val embed = ParallaxEmbed()
+			// embed.setTimestamp(Instant.now())
 			embed.setAuthor("$newName#$newDiscriminator", null, user.effectiveAvatarUrl)
 			embed.setColor(Constants.DISCORD_BLURPLE)
 
@@ -148,10 +151,23 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						if (!guild.selfMember.hasPermission(Permission.MESSAGE_READ))
 							continue
 
-						embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_NAME_CHANGED", user.asMention, "$oldName#$oldDiscriminator", "$newName#$newDiscriminator"]}")
-						embed.setFooter(locale["EVENTLOG_USER_ID", user.id], null)
+						GlobalScope.launch(loritta.coroutineDispatcher) {
+							val webhook = EventLog.getOrCreateEventLogWebhook(guild, legacyServerConfig) ?: return@launch
 
-						textChannel.sendMessage(embed.build()).queueAfter(idx, TimeUnit.SECONDS)
+							embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_NAME_CHANGED", user.asMention, "$oldName#$oldDiscriminator", "$newName#$newDiscriminator"]}")
+							embed.setFooter(locale["EVENTLOG_USER_ID", user.id], null)
+
+							webhook.send(
+									DiscordMessage(
+											guild.selfMember.user.name,
+											" ",
+											guild.selfMember.user.effectiveAvatarUrl,
+											listOf(
+													embed
+											)
+									)
+							)
+						}
 						idx++
 					}
 				}
@@ -335,8 +351,10 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					if (storedMessage != null) {
 						val user = lorittaShards.retrieveUserById(storedMessage.authorId.toString()) ?: return@launch
 
-						val embed = EmbedBuilder()
-						embed.setTimestamp(Instant.now())
+						val webhook = EventLog.getOrCreateEventLogWebhook(event.guild, legacyServerConfig) ?: return@launch
+
+						val embed = ParallaxEmbed()
+						// embed.setTimestamp(Instant.now())
 
 						embed.setColor(Color(221, 0, 0))
 
@@ -350,7 +368,16 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						embed.setDescription(deletedMessage)
 
-						textChannel.sendMessage(embed.build()).queue()
+						webhook.send(
+								DiscordMessage(
+										event.guild.selfMember.user.name,
+										" ",
+										event.guild.selfMember.user.effectiveAvatarUrl,
+										listOf(
+												embed
+										)
+								)
+						)
 
 						transaction(Databases.loritta) {
 							StoredMessages.deleteWhere { StoredMessages.id eq event.messageIdLong }
@@ -454,7 +481,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				if (relayTo != null) {
 					if (relayTo.retrieveBanList().await().firstOrNull { it.user == event.user } == null) {
-                        relayTo.ban(event.user, 7, "Banned on LorittaLand (Brazilian Server)").queue()
+						relayTo.ban(event.user, 7, "Banned on LorittaLand (Brazilian Server)").queue()
 					}
 				}
 			}
@@ -463,7 +490,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				if (relayTo != null) {
 					if (relayTo.retrieveBanList().await().firstOrNull { it.user == event.user } == null) {
-                        relayTo.ban(event.user, 7, "Banido na LorittaLand (English Server)").queue()
+						relayTo.ban(event.user, 7, "Banido na LorittaLand (English Server)").queue()
 					}
 				}
 			}
@@ -485,17 +512,28 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
 					return@launch
 
-				val embed = EmbedBuilder()
-				embed.setTimestamp(Instant.now())
+				val webhook = EventLog.getOrCreateEventLogWebhook(event.guild, legacyServerConfig) ?: return@launch
+
+				val embed = ParallaxEmbed()
+				// embed.setTimestamp(Instant.now())
 				embed.setColor(Color(35, 209, 96))
 
-				var message = "\uD83D\uDEAB **${locale["EVENTLOG_Banned", event.user.name]}**"
+				val message = "\uD83D\uDEAB **${locale["EVENTLOG_Banned", event.user.name]}**"
 
 				embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
 				embed.setDescription(message)
 				embed.setFooter(locale["EVENTLOG_USER_ID", event.user.id], null)
 
-				textChannel.sendMessage(embed.build()).queue()
+				webhook.send(
+						DiscordMessage(
+								event.guild.selfMember.user.name,
+								" ",
+								event.guild.selfMember.user.effectiveAvatarUrl,
+								listOf(
+										embed
+								)
+						)
+				)
 				return@launch
 			}
 		}
@@ -540,17 +578,28 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
 					return@launch
 
-				val embed = EmbedBuilder()
-				embed.setTimestamp(Instant.now())
+				val webhook = EventLog.getOrCreateEventLogWebhook(event.guild, legacyServerConfig) ?: return@launch
+
+				val embed = ParallaxEmbed()
+				// embed.setTimestamp(Instant.now())
 				embed.setColor(Color(35, 209, 96))
 
-				var message = "\uD83E\uDD1D **${locale["EVENTLOG_Unbanned", event.user.name]}**"
+				val message = "\uD83E\uDD1D **${locale["EVENTLOG_Unbanned", event.user.name]}**"
 
 				embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
 				embed.setDescription(message)
 				embed.setFooter(locale["EVENTLOG_USER_ID", event.user.id], null)
 
-				textChannel.sendMessage(embed.build()).queue()
+				webhook.send(
+						DiscordMessage(
+								event.guild.selfMember.user.name,
+								" ",
+								event.guild.selfMember.user.effectiveAvatarUrl,
+								listOf(
+										embed
+								)
+						)
+				)
 				return@launch
 			}
 		}
@@ -573,9 +622,9 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			if (eventLogConfig.isEnabled && eventLogConfig.nicknameChanges) {
 				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 				val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
-				val embed = EmbedBuilder()
+				val embed = ParallaxEmbed()
 				embed.setColor(Color(35, 209, 96))
-				embed.setTimestamp(Instant.now())
+				// embed.setTimestamp(Instant.now())
 				embed.setAuthor("${event.member.user.name}#${event.member.user.discriminator}", null, event.member.user.effectiveAvatarUrl)
 
 				// ===[ NICKNAME ]===
@@ -589,13 +638,24 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
 					return@launch
 
+				val webhook = EventLog.getOrCreateEventLogWebhook(event.guild, legacyServerConfig) ?: return@launch
+
 				val oldNickname = if (event.oldNickname == null) "\uD83E\uDD37 ${locale["EVENTLOG_NoNickname"]}" else event.oldNickname
 				val newNickname = if (event.newNickname == null) "\uD83E\uDD37 ${locale["EVENTLOG_NoNickname"]}" else event.newNickname
 
 				embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_NicknameChanged", oldNickname, newNickname]}")
 				embed.setFooter(locale["EVENTLOG_USER_ID", event.member.user.id], null)
 
-				textChannel.sendMessage(embed.build()).queue()
+				webhook.send(
+						DiscordMessage(
+								event.guild.selfMember.user.name,
+								" ",
+								event.guild.selfMember.user.effectiveAvatarUrl,
+								listOf(
+										embed
+								)
+						)
+				)
 				return@launch
 			}
 		}
