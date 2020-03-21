@@ -9,10 +9,12 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.utils.Emotes
 import org.bson.codecs.pojo.annotations.BsonIgnore
 import java.awt.Color
 import java.time.Instant
@@ -133,110 +135,102 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 	 * @param context the context of the command
 	 */
 	suspend fun explain(context: CommandContext) {
-		val conf = context.legacyConfig
-		val ev = context.event
-		val locale = context.legacyLocale
+		val serverConfig = context.config
+		val user = context.userHandle
+		val locale = context.locale
+		val legacyLocale = context.legacyLocale
+		val discordMessage = context.message
+		val commandDescription = getDescription(legacyLocale)
 
-		val rawArguments = context.message.contentRaw.split(" ")
-		var commandLabel = rawArguments[0]
-		if (rawArguments.getOrNull(1) != null && (rawArguments[0] == "<@${loritta.discordConfig.discord.clientId}>" || rawArguments[0] == "<@!${loritta.discordConfig.discord.clientId}>")) {
-			// Caso o usuário tenha usado "@Loritta comando", pegue o segundo argumento (no caso o "comando") em vez do primeiro (que é a mention da Lori)
-			commandLabel = rawArguments[1]
-		}
-		commandLabel = commandLabel.toLowerCase()
+		val executedCommandLabel = this.label
+		val commandLabel = "${serverConfig.commandPrefix}${executedCommandLabel}"
 
 		val embed = EmbedBuilder()
-		embed.setColor(Color(0, 193, 223))
-		embed.setTitle("\uD83E\uDD14 `$commandLabel`")
+				.setColor(Constants.LORITTA_AQUA)
+				.setAuthor(locale["commands.explain.clickHereToSeeAllMyCommands"], "${loritta.instanceConfig.loritta.website.url}commands", discordMessage.jda.selfUser.effectiveAvatarUrl)
+				.setTitle("${Emotes.LORI_HM} `${serverConfig.commandPrefix}${executedCommandLabel}`")
+				.setFooter("${user.name + "#" + user.discriminator} • ${this.category.getLocalizedName(locale)}", user.effectiveAvatarUrl)
+				.setTimestamp(Instant.now())
 
-		val commandArguments = getUsage(locale)
-		val usage = when {
-			commandArguments.arguments.isNotEmpty() -> " `${commandArguments.build(context.locale)}`"
-			getUsage() != null -> " `${getUsage()}`"
-			else -> ""
-		}
-
-		var cmdInfo = getDescription(context.legacyLocale) + "\n\n"
-
-		cmdInfo += "\uD83D\uDC81 **" + locale["HOW_TO_USE"] + ":** " + commandLabel + usage + "\n"
-
-		for (argument in commandArguments.arguments) {
-			if (argument.explanation != null) {
-				cmdInfo += "${Constants.LEFT_PADDING} `${argument.build(context.locale)}` - "
-				if (argument.defaultValue != null) {
-					cmdInfo += "(Padrão: ${argument.defaultValue}) "
-				}
-				cmdInfo += "${argument.explanation}\n"
+		val commandArguments = this.getUsage(legacyLocale)
+		val description = buildString {
+			this.append(commandDescription)
+			this.append('\n')
+			this.append('\n')
+			this.append("${Emotes.LORI_SMILE} **${locale["commands.explain.howToUse"]}** ")
+			this.append('`')
+			this.append(serverConfig.commandPrefix)
+			this.append(label)
+			this.append('`')
+			this.append(' ')
+			for ((index, argument) in commandArguments.arguments.withIndex()) {
+				// <argumento> - Argumento obrigatório
+				// [argumento] - Argumento opcional
+				this.append("**")
+				this.append('`')
+				argument.build(this, locale)
+				this.append('`')
+				this.append("**")
+				if (index != commandArguments.arguments.size - 1)
+					this.append(' ')
 			}
 		}
 
-		cmdInfo += "\n"
-
+		embed.setDescription(description)
 		// Criar uma lista de exemplos
 		val examples = ArrayList<String>()
 		for (example in this.getExamples()) { // Adicionar todos os exemplos simples
-			examples.add(commandLabel + if (example.isEmpty()) "" else " `$example`")
+			examples.add("`" + commandLabel + "`" + if (example.isEmpty()) "" else " **`$example`**")
 		}
 		if (this.getExamples(context.legacyLocale).isNotEmpty()) {
 			examples.clear()
 			for (example in this.getExamples(context.legacyLocale)) { // Adicionar todos os exemplos simples
-				examples.add(commandLabel + if (example.isEmpty()) "" else " `$example`")
+				examples.add("`" + commandLabel + "`" + if (example.isEmpty()) "" else " **`$example`**")
 			}
 		}
 		for ((key, value) in this.getExtendedExamples()) { // E agora vamos adicionar os exemplos mais complexos/extendidos
-			examples.add(commandLabel + if (key.isEmpty()) "" else " `$key` - **$value**")
+			examples.add("`" + commandLabel + "`" + if (key.isEmpty()) "" else " `$key` - **$value**")
 		}
-
-		if (examples.isEmpty()) {
+		if (examples.isNotEmpty()) {
 			embed.addField(
-					"\uD83D\uDCD6 " + context.legacyLocale["EXAMPLE"],
-					commandLabel,
-					false
-			)
-		} else {
-			var exampleList = ""
-			for (example in examples) {
-				exampleList += example + "\n"
-			}
-			embed.addField(
-					"\uD83D\uDCD6 " + context.legacyLocale["EXAMPLE"] + (if (this.getExamples().size == 1) "" else "s"),
-					exampleList,
+					"\uD83D\uDCD6 ${locale["commands.explain.examples"]}",
+					examples.joinToString("\n", transform = { "$it" }),
 					false
 			)
 		}
 
-		if (getBotPermissions().isNotEmpty() || getDiscordPermissions().isNotEmpty()) {
+		val botPermissions = getBotPermissions()
+		val discordPermissions = getDiscordPermissions()
+
+		if (botPermissions.isNotEmpty() || discordPermissions.isNotEmpty()) {
 			var field = ""
-			if (getDiscordPermissions().isNotEmpty()) {
-				field += "\uD83D\uDC81 Você precisa ter permissão para ${getDiscordPermissions().joinToString(", ", transform = { "`${it.localized(context.locale)}`" })} para utilizar este comando!\n"
+			if (discordPermissions.isNotEmpty()) {
+				field += "\uD83D\uDC81 ${locale["commands.explain.youNeedToHavePermission", discordPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })]}\n"
 			}
-			if (getBotPermissions().isNotEmpty()) {
-				field += "<:loritta:331179879582269451> Eu preciso de permissão para ${getBotPermissions().joinToString(", ", transform = { "`${it.localized(context.locale)}`" })} para poder executar este comando!\n"
+			if (botPermissions.isNotEmpty()) {
+				field += "<:loritta:331179879582269451> ${locale["commands.explain.loriNeedToHavePermission", botPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })]}\n"
 			}
 			embed.addField(
-					"\uD83D\uDCDB Permissões",
+					"\uD83D\uDCDB ${locale["commands.explain.permissions"]}",
 					field,
 					false
 			)
 		}
 
-		val aliases = mutableSetOf<String>()
-		aliases.add(this.label)
-		aliases.addAll(this.aliases)
+		val labels = this.aliases + this.label
+		val otherAlternatives = labels.filter { it != executedCommandLabel }
 
-		val onlyUnusedAliases = aliases.filter { it != commandLabel.replaceFirst(context.config.commandPrefix, "") }
-		if (onlyUnusedAliases.isNotEmpty()) {
+		if (otherAlternatives.isNotEmpty()) {
 			embed.addField(
-					"\uD83D\uDD00 ${context.locale["commands.aliases"]}",
-					onlyUnusedAliases.joinToString(", ", transform = { "`" + context.config.commandPrefix + it + "`" }),
-					true
+					"\uD83D\uDD00 ${locale["commands.explain.aliases"]}",
+					otherAlternatives.joinToString(transform = { "`${serverConfig.commandPrefix}$it`" }),
+					false
 			)
 		}
 
-		embed.setDescription(cmdInfo)
-		embed.setAuthor("${context.userHandle.name}#${context.userHandle.discriminator}", null, ev.author.effectiveAvatarUrl)
-		embed.setFooter(category.getLocalizedName(context.locale), "${loritta.instanceConfig.loritta.website.url}assets/img/loritta_gabizinha_v1.png") // Mostrar categoria do comando
-		embed.setTimestamp(Instant.now())
+		val messageBuilder = MessageBuilder()
+				.append(context.getAsMention(true))
+				.setEmbed(embed.build())
 
 		val message = context.sendMessage(context.getAsMention(true), embed.build())
 		message.addReaction("❓").queue()

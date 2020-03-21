@@ -266,7 +266,7 @@ class DiscordCommandContext(
 					field += "\uD83D\uDC81 ${locale["commands.explain.youNeedToHavePermission", command.userRequiredPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })]}\n"
 				}
 				if (command.botRequiredPermissions.isNotEmpty()) {
-					field += "<:loritta:331179879582269451> ${locale["commands.explain.loriNeedToHavePermission", command.userRequiredPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })]}\n"
+					field += "<:loritta:331179879582269451> ${locale["commands.explain.loriNeedToHavePermission", command.botRequiredPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })]}\n"
 				}
 				embed.addField(
 						"\uD83D\uDCDB ${locale["commands.explain.permissions"]}",
