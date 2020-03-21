@@ -9,6 +9,7 @@ interface UserPremiumPlans {
 	val noPaymentTax: Boolean
 	val maxDreamsDailyTransaction: Long
 	val dailyMultiplier: Double
+	val customBackground: Boolean
 
 	companion object {
 		fun getPlanFromValue(value: Double) = when {
@@ -29,6 +30,7 @@ interface UserPremiumPlans {
 		override val maxDreamsDailyTransaction = 300_000L
 		// O "multiplier" apenas soma o valor do multiplicador final, então pode ser 0.0
 		override val dailyMultiplier = 0.0
+		override val customBackground = false
 	}
 
 	object Essential : UserPremiumPlans {
@@ -40,6 +42,7 @@ interface UserPremiumPlans {
 		override val noPaymentTax = false
 		override val maxDreamsDailyTransaction = 300_000L
 		override val dailyMultiplier = 1.0
+		override val customBackground = false
 	}
 
 	object Recommended : UserPremiumPlans {
@@ -51,6 +54,7 @@ interface UserPremiumPlans {
 		override val noPaymentTax = true
 		override val maxDreamsDailyTransaction = 300_000L
 		override val dailyMultiplier = 2.0
+		override val customBackground = true
 	}
 
 	object Complete : UserPremiumPlans {
@@ -62,5 +66,6 @@ interface UserPremiumPlans {
 		override val noPaymentTax = true
 		override val maxDreamsDailyTransaction = Long.MAX_VALUE
 		override val dailyMultiplier = 6.0 // 6.0 em vez de 5.0 para ter aquele "wow"
+		override val customBackground = true
 	}
 }
