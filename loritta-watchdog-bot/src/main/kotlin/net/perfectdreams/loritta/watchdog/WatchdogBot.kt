@@ -1,9 +1,6 @@
 package net.perfectdreams.loritta.watchdog
 
-import com.github.salomonbrys.kotson.array
-import com.github.salomonbrys.kotson.get
-import com.github.salomonbrys.kotson.long
-import com.github.salomonbrys.kotson.string
+import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonParser
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
@@ -19,6 +16,7 @@ import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.utils.cache.CacheFlag
+import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.watchdog.listeners.MessageListener
 import net.perfectdreams.loritta.watchdog.utils.Bot
 import net.perfectdreams.loritta.watchdog.utils.Commands
@@ -159,11 +157,34 @@ class WatchdogBot(val config: WatchdogConfig) {
 							val result = deferred.await()
 
 							val uptime = result["uptime"].long
+							val isIgnoringRequests = result["isIgnoringRequests"].bool
 
 							val shards = result["shards"].array
 							val areAllConnected = !shards.any { it["status"].string != "CONNECTED" }
 
 							if (botCluster.isReady) {
+								if (botCluster.isIgnoringRequests != isIgnoringRequests) {
+									if (isIgnoringRequests) {
+										channel?.sendMessage(
+												EmbedBuilder()
+														.setTitle("\uD83D\uDD25 Cluster ${clusterInfo.id} (${clusterInfo.name}) está ignorando requests!")
+														.setDescription("Vamos esperar normalizar... já que se continuasse a enviar requests, talvez iria levar global ban... ${Emotes.LORI_CRYING}")
+														.setColor(Color.RED)
+														.setTimestamp(Instant.now())
+														.build()
+										)?.queue()
+									} else {
+										channel?.sendMessage(
+												EmbedBuilder()
+														.setTitle("${Emotes.LORI_TEMMIE} Cluster ${clusterInfo.id} (${clusterInfo.name}) voltou a processar requests!")
+														.setDescription("Yay, normalizado!")
+														.setColor(Color.GREEN)
+														.setTimestamp(Instant.now())
+														.build()
+										)?.queue()
+									}
+								}
+
 								if (botCluster.startedAt >= uptime) {
 									botCluster.areAllConnected = false
 
@@ -228,6 +249,7 @@ class WatchdogBot(val config: WatchdogConfig) {
 								}
 							}
 
+							botCluster.isIgnoringRequests = isIgnoringRequests
 							botCluster.areAllConnected = areAllConnected
 							botCluster.offlineForUpdates = false
 							botCluster.startedAt = uptime

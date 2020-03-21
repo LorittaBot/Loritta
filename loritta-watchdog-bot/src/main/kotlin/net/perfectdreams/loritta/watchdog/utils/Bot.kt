@@ -8,6 +8,7 @@ class Bot {
 		var dead = false
 		var areAllConnected = false
 		var offlineForUpdates = false
+		var isIgnoringRequests = false
 
 		val isReady: Boolean
 			get() = startedAt != Long.MAX_VALUE
