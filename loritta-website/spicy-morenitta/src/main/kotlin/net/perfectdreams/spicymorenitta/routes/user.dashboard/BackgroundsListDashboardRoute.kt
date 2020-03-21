@@ -4,17 +4,21 @@ import io.ktor.client.request.get
 import io.ktor.client.request.url
 import kotlinx.html.*
 import kotlinx.html.dom.append
+import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import kotlinx.serialization.*
 import kotlinx.serialization.json.JSON
 import net.perfectdreams.loritta.api.utils.Rarity
+import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
 import net.perfectdreams.spicymorenitta.utils.*
+import net.perfectdreams.spicymorenitta.views.dashboard.Stuff
 import org.w3c.dom.*
+import org.w3c.files.FileReader
 import kotlin.browser.document
 import kotlin.browser.window
 import kotlin.dom.addClass
@@ -52,7 +56,7 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
             val userBackgroundsJob = m.async {
                 debug("Retrieving profiles & background info...")
                 val payload = http.get<String> {
-                    url("${window.location.origin}/api/v1/users/@me/backgrounds,settings")
+                    url("${window.location.origin}/api/v1/users/@me/backgrounds,settings,donations")
                 }
 
                 debug("Retrieved profiles & background info!")
@@ -96,6 +100,18 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
                                 AllBackgroundsListDashboardRoute.Background(
                                         "random",
                                         "random.png",
+                                        true,
+                                        Rarity.COMMON,
+                                        listOf(),
+                                        null,
+                                        null,
+                                        null
+                                )
+                        )
+                        this.add(
+                                AllBackgroundsListDashboardRoute.Background(
+                                        "custom",
+                                        "custom.png",
                                         true,
                                         Rarity.COMMON,
                                         listOf(),
@@ -154,6 +170,36 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
                         }
 
                         div {
+                            id = "select-active-background-file"
+                            style = "display; none;"
+
+                            input(InputType.file) {
+                                id = "select-active-background-file-input"
+
+                                onClickFunction = {
+                                    val plan = UserPremiumPlans.getPlanFromValue(result.donations.value)
+
+                                    if (!plan.customBackground) {
+                                        it.preventDefault()
+                                        Stuff.showPremiumFeatureModal {
+                                            h2 {
+                                                + "Personalize o seu Perfil!"
+                                            }
+                                            p {
+                                                + "Faça upgrade para o Plano Recomendado para poder enviar as suas próprias imagens!"
+                                            }
+                                        }
+                                    }
+                                }
+
+                                onChangeFunction = {
+                                    activateBackgroundButtonElement.removeClass("button-discord-disabled")
+                                    activateBackgroundButtonElement.addClass("button-discord-success")
+                                }
+                            }
+                        }
+
+                        div {
                             id = "active-background-set"
                         }
 
@@ -162,11 +208,51 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
 
                             button(classes = "activate-button button-discord button-discord-success pure-button") {
                                 style = "font-size: 1.5em;"
-                                + "Ativar"
+                                +"Ativar"
 
                                 onClickFunction = {
                                     if (!activateBackgroundButtonElement.hasClass("button-discord-disabled")) {
                                         activeBackground?.let { activeBackground ->
+                                            if (activeBackground.internalName == "custom") {
+                                                val plan = UserPremiumPlans.getPlanFromValue(result.donations.value)
+
+                                                if (!plan.customBackground) {
+                                                    Stuff.showPremiumFeatureModal {
+                                                        h2 {
+                                                            + "Personalize o seu Perfil!"
+                                                        }
+                                                        p {
+                                                            + "Faça upgrade para o Plano Recomendado para poder enviar as suas próprias imagens!"
+                                                        }
+                                                    }
+                                                    return@let
+                                                }
+
+                                                val file = page.getElementById("select-active-background-file-input").asDynamic().files[0]
+
+                                                if (file != null) {
+                                                    val reader = FileReader()
+
+                                                    reader.readAsDataURL(file)
+                                                    reader.onload = {
+                                                        val imageAsBase64 = reader.result
+                                                        SaveUtils.prepareSave("profile_design", endpoint = "${loriUrl}api/v1/users/self-profile", extras = {
+                                                            it["setActiveBackground"] = activeBackground.internalName
+                                                            it["data"] = (imageAsBase64 as? String)
+                                                        }, onFinish = {
+                                                            if (it.statusCode in 200..299) {
+                                                                activateBackgroundButtonElement.addClass("button-discord-disabled")
+                                                                activateBackgroundButtonElement.removeClass("button-discord-success")
+
+                                                                enabledBackground = activeBackground
+                                                            }
+                                                        })
+                                                        asDynamic()
+                                                    }
+                                                    return@let
+                                                }
+                                            }
+
                                             SaveUtils.prepareSave("profile_design", endpoint = "${loriUrl}api/v1/users/self-profile", extras = {
                                                 it["setActiveBackground"] = activeBackground.internalName
                                             }, onFinish = {
@@ -215,6 +301,14 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
         } else {
             activateBackgroundButtonElement.removeClass("button-discord-disabled")
             activateBackgroundButtonElement.addClass("button-discord-success")
+        }
+
+        if (background.internalName == "custom") {
+            document.select<HTMLDivElement>("#select-active-background-file")
+                    .style.display = ""
+        } else {
+            document.select<HTMLDivElement>("#select-active-background-file")
+                    .style.display = "none"
         }
 
         val canvasCheckout = document.select<HTMLCanvasElement>(".canvas-preview")
@@ -291,12 +385,18 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
     @Serializable
     class UserInfoResult(
             val settings: Settings,
-            var backgrounds: MutableList<AllBackgroundsListDashboardRoute.Background>
+            var backgrounds: MutableList<AllBackgroundsListDashboardRoute.Background>,
+            val donations: DonationValues
     )
 
     @Serializable
     class Settings(
             @Optional val activeBackground: String? = null,
             @Optional val activeProfileDesign: String? = null
+    )
+
+    @Serializable
+    class DonationValues(
+            val value: Double
     )
 }

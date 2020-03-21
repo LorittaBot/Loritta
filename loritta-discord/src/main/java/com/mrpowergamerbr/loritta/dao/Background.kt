@@ -6,7 +6,11 @@ import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.EntityID
 
 class Background(id: EntityID<String>) : Entity<String>(id) {
-	companion object : EntityClass<String, Background>(Backgrounds)
+	companion object : EntityClass<String, Background>(Backgrounds) {
+		const val DEFAULT_BACKGROUND_ID = "defaultBlue"
+		const val RANDOM_BACKGROUND_ID = "random"
+		const val CUSTOM_BACKGROUND_ID = "custom"
+	}
 
 	var imageFile by Backgrounds.imageFile
 	var enabled by Backgrounds.enabled

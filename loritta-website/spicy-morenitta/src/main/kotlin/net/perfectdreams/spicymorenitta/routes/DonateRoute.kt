@@ -40,6 +40,8 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
 
                 // ===[ RECOMMENDED ]===
                 DonationReward("Badge EXCLUSIVA no \"+perfil\" para os membros do seu servidor", 39.99, false),
+                DonationReward("Faça seu PRÓPRIO background para o \"+perfil\"", 39.99, false),
+
                 // DonationReward("Personalizar nome/avatar da Loritta nas notificações do YouTube/Twitch/Twitter", 39.99, false),
                 DonationReward("Tempo reduzido entre comandos", 39.99, false),
                 DonationReward("Não pagar taxas no +pay", 39.99, false),

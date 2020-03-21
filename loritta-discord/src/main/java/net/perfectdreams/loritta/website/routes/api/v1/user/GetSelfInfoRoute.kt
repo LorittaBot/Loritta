@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.website.routes.api.v1.user
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.toJsonArray
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Background
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
@@ -23,6 +24,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class GetSelfInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/users/@me/{sections?}") {
 	override suspend fun onRequest(call: ApplicationCall) {
+		loritta as Loritta
 		val sections = call.parameters["sections"]?.split(",")?.toSet()
 
 		println("Get Self Info Route")
@@ -82,6 +84,12 @@ class GetSelfInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/us
 				)
 			}
 
+			if ("donations" in sections) {
+				payload["donations"] = jsonObject(
+						"value" to loritta.getActiveMoneyFromDonations(userIdentification.id.toLong())
+				)
+			}
+
 			if ("settings" in sections) {
 				val settings = transaction(Databases.loritta) {
 					profile.settings
@@ -106,7 +114,7 @@ class GetSelfInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/us
 								Background.wrapRow(it)
 						)
 					}.toJsonArray().apply {
-						this.add(net.perfectdreams.loritta.website.utils.WebsiteUtils.toJson(Background.findById("defaultBlue")!!))
+						this.add(net.perfectdreams.loritta.website.utils.WebsiteUtils.toJson(Background.findById(Background.DEFAULT_BACKGROUND_ID)!!))
 					}
 				}
 			}

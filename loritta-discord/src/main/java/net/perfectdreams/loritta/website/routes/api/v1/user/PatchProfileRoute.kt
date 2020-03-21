@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.website.routes.api.v1.user
 
 import com.github.salomonbrys.kotson.*
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Background
 import com.mrpowergamerbr.loritta.dao.ShipEffect
 import com.mrpowergamerbr.loritta.network.Databases
@@ -15,6 +16,7 @@ import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.BackgroundPayments
 import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
+import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.website.routes.user.dashboard.ProfileListRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
@@ -24,10 +26,14 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.io.File
+import java.util.*
 import java.util.regex.Pattern
+import javax.imageio.ImageIO
 
 class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/self-profile") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
+		loritta as Loritta
 		val profile = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(userIdentification.id)
 		val payload = jsonParser.parse(call.receiveText()).obj
 
@@ -164,12 +170,42 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 		if (config["setActiveBackground"].nullString != null) {
 			val internalName = config["setActiveBackground"].string
 
-			if (internalName != "defaultBlue" && internalName != "random" && transaction(Databases.loritta) { BackgroundPayments.select { BackgroundPayments.background eq internalName and (BackgroundPayments.userId eq userIdentification.id.toLong()) }.count() } == 0) {
+			if (internalName != Background.DEFAULT_BACKGROUND_ID && internalName != Background.RANDOM_BACKGROUND_ID && internalName != Background.CUSTOM_BACKGROUND_ID && transaction(Databases.loritta) { BackgroundPayments.select { BackgroundPayments.background eq internalName and (BackgroundPayments.userId eq userIdentification.id.toLong()) }.count() } == 0) {
 				throw WebsiteAPIException(HttpStatusCode.Forbidden,
 						WebsiteUtils.createErrorPayload(
 								LoriWebCode.FORBIDDEN
 						)
 				)
+			}
+
+			if (internalName == Background.CUSTOM_BACKGROUND_ID) {
+				val donationValue = loritta.getActiveMoneyFromDonations(profile.userId)
+				val plan = UserPremiumPlans.getPlanFromValue(donationValue)
+
+				if (!plan.customBackground)
+					throw WebsiteAPIException(HttpStatusCode.Forbidden,
+							WebsiteUtils.createErrorPayload(
+									LoriWebCode.FORBIDDEN
+							)
+					)
+			}
+
+			// Se é um background personalizado, vamos pegar a imagem e salvar!
+			// Mas apenas se o usuário enviou um background, altere o bg salvo, yay
+			val data = config["data"].nullString
+			if (internalName == Background.CUSTOM_BACKGROUND_ID && data != null) {
+				val decodedBytes = Base64.getDecoder().decode(data.split(",")[1])
+				val decodedImage = ImageIO.read(decodedBytes.inputStream())
+
+				if (decodedImage.width != 800 && decodedImage.height != 600)
+					throw WebsiteAPIException(HttpStatusCode.Forbidden,
+							WebsiteUtils.createErrorPayload(
+									LoriWebCode.INVALID_IMAGE_RESOLUTION
+							)
+					)
+
+				File(com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.folder, "static/assets/img/profiles/backgrounds/custom/${profile.id.value}.png")
+						.writeBytes(decodedBytes)
 			}
 
 			transaction(Databases.loritta) {
