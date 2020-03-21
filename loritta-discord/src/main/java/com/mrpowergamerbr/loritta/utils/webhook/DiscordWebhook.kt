@@ -1,14 +1,17 @@
 package com.mrpowergamerbr.loritta.utils.webhook
 
 import com.github.salomonbrys.kotson.contains
+import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.obj
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import io.ktor.client.HttpClient
+import io.ktor.client.call.receive
 import io.ktor.client.request.header
 import io.ktor.client.request.post
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.content.TextContent
 import kotlinx.coroutines.CoroutineDispatcher
@@ -40,7 +43,7 @@ class DiscordWebhook(
 			}
 		}
 
-		logger.info { "Sending $message to $url" }
+		logger.trace { "Sending $message to $url" }
 
 		val result = GlobalScope.async(coroutineDispatcher) {
 			var url = url
@@ -48,13 +51,20 @@ class DiscordWebhook(
 				url += "?wait=true"
 			}
 
-			val response = httpClient.post<String>(url) {
-				header("User-Agent", "Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11")
-				body = TextContent(GSON.toJson(message), ContentType.Application.Json)
+			val messageAsJson = GSON.toJson(message)
+			val httpResponse = httpClient.post<HttpResponse>(url) {
+				header("User-Agent", "Loritta Webhooks (https://loritta.website/)")
+				body = TextContent(messageAsJson, ContentType.Application.Json)
 			}
 
-			logger.info { "Payload is ${GSON.toJson(message)}" }
-			logger.info { "Response is $response" }
+			val response = httpResponse.receive<String>()
+			val statusCode = httpResponse.status
+
+			if (statusCode.value !in 200..299)
+				logger.info { "Weird response for $url and message $messageAsJson - Response is $response" }
+
+			logger.trace { "Payload is ${GSON.toJson(message)}" }
+			logger.trace { "Response is $response" }
 
 			if (response.isNotEmpty()) { // oh no
 				val json = jsonParser.parse(response).obj
@@ -79,7 +89,7 @@ class DiscordWebhook(
 				} else {
 					return@async json
 				}
-			} else { throw IllegalArgumentException("When sending $message to $url, the payload was empty!") }
+			} else { return@async jsonObject() }
 		}
 
 		return result.await()
