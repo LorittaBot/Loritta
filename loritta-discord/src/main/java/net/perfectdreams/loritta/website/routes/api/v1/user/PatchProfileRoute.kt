@@ -26,6 +26,9 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.awt.Image
+import java.awt.image.BufferedImage
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.*
 import java.util.regex.Pattern
@@ -197,15 +200,16 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 				val decodedBytes = Base64.getDecoder().decode(data.split(",")[1])
 				val decodedImage = ImageIO.read(decodedBytes.inputStream())
 
+				var writeImage = decodedImage
+
 				if (decodedImage.width != 800 && decodedImage.height != 600)
-					throw WebsiteAPIException(HttpStatusCode.Forbidden,
-							WebsiteUtils.createErrorPayload(
-									LoriWebCode.INVALID_IMAGE_RESOLUTION
-							)
-					)
+					writeImage = decodedImage.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH).toBufferedImage()
+
+				val baos = ByteArrayOutputStream()
+				ImageIO.write(writeImage, "png", baos)
 
 				File(com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.folder, "static/assets/img/profiles/backgrounds/custom/${profile.id.value}.png")
-						.writeBytes(decodedBytes)
+						.writeBytes(baos.toByteArray())
 			}
 
 			transaction(Databases.loritta) {
