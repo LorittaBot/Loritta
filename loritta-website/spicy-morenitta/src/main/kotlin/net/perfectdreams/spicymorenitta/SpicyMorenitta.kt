@@ -84,7 +84,9 @@ class SpicyMorenitta : Logging {
 			DailyRoute(this),
 			BackgroundsListDashboardRoute(this),
 			AllBackgroundsListDashboardRoute(this),
-			DailyShopDashboardRoute(this)
+			DailyShopDashboardRoute(this),
+			Birthday2020Route(this),
+			Birthday2020StatsRoute(this)
 	)
 
 	val validWebsiteLocaleIds = mutableListOf(

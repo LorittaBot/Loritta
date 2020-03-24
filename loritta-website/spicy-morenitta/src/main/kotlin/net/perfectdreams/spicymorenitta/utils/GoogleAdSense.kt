@@ -33,8 +33,9 @@ object GoogleAdSense : Logging {
 					console.log(it)
 					js("(adsbygoogle = window.adsbygoogle || []).push({});")
 					debug("Yay!")
-				} catch (e: Throwable) {}
-
+				} catch (e: Throwable) {
+					console.log(e)
+				}
 			}
 		}
 	}

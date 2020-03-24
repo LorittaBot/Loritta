@@ -13,11 +13,11 @@ import net.perfectdreams.loritta.website.utils.ScriptingUtils
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import java.io.File
 
-class ChooseTeamRoute(loritta: LorittaDiscord) : RequiresDiscordLoginLocalizedRoute(loritta, "/birthday-2020") {
+class ViewCurrentStatsRoute(loritta: LorittaDiscord) : RequiresDiscordLoginLocalizedRoute(loritta, "/birthday-2020/stats") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
 		val html = ScriptingUtils.evaluateWebPageFromTemplate(
 				File(
-						"${LorittaWebsite.INSTANCE.config.websiteFolder}/views/birthday_2020.kts"
+						"${LorittaWebsite.INSTANCE.config.websiteFolder}/views/birthday_2020_stats.kts"
 				),
 				mapOf(
 						"path" to call.request.path().split("/").drop(2).joinToString("/"),

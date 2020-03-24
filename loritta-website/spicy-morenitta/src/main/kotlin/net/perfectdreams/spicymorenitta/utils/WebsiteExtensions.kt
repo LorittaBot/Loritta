@@ -2,7 +2,7 @@ package net.perfectdreams.spicymorenitta.utils
 
 import kotlinx.html.*
 
-fun DIV.generateAd(adSlot: String, adName: String? = null) {
+fun DIV.generateAd(adSlot: String, adName: String? = null, insertAdsByGoogleScript: Boolean = true) {
     // O "adName" não é utilizado para nada, só está aí para que fique mais fácil de analisar aonde está cada ad (caso seja necessário)
     ins(classes = "adsbygoogle") {
         style = "display: block;"
@@ -13,9 +13,11 @@ fun DIV.generateAd(adSlot: String, adName: String? = null) {
         attributes["data-full-width-responsive"] = "true"
     }
 
-    script(type = ScriptType.textJavaScript) {
-        unsafe {
-            raw("(adsbygoogle = window.adsbygoogle || []).push({});")
+    if (insertAdsByGoogleScript) {
+        script(type = ScriptType.textJavaScript) {
+            unsafe {
+                raw("(adsbygoogle = window.adsbygoogle || []).push({});")
+            }
         }
     }
 }

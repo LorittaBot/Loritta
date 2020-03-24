@@ -85,11 +85,11 @@ class QuirkyStuff(name: String, loritta: LorittaBot) : DiscordPlugin(name, lorit
         registerBadge(CanecaBadge(config))
 
         transaction(Databases.loritta) {
-            SchemaUtils.createMissingTablesAndColumns(
+            /* SchemaUtils.createMissingTablesAndColumns(
                     Halloween2019Players,
                     CollectedCandies,
                     BoostedCandyChannels
-            )
+            ) */
         }
 
         onGuildReady { guild, mongoServerConfig ->
