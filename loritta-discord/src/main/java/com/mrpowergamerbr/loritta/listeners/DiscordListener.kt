@@ -371,7 +371,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		// E depois iremos salvar a configuração do servidor
 		GlobalScope.launch(loritta.coroutineDispatcher) {
-			loritta save serverConfig
+			loritta save legacyServerConfig
 		}
 	}
 
