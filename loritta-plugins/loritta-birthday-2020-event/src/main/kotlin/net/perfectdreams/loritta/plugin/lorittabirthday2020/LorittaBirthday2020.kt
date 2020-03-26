@@ -69,6 +69,7 @@ object LorittaBirthday2020 {
 	)
 
 	val openChannels = ConcurrentHashMap<Long, Channel<JsonObject>>()
+	val detectedBotGuilds = ConcurrentHashMap<Long, MutableList<DetectedInfractions>>()
 
 	val emojis = listOf(
 			"happy_birthday:692338660611457035",
@@ -123,4 +124,9 @@ object LorittaBirthday2020 {
 	open class Reward(val requiredPoints: Int)
 	class BackgroundReward(requiredPoints: Int, val internalName: String) : Reward(requiredPoints)
 	class SonhosReward(requiredPoints: Int, val sonhosReward: Int) : Reward(requiredPoints)
+	data class DetectedInfractions(
+			val guildId: Long,
+			val messageId: Long,
+			val detectedAt: Long
+	)
 }

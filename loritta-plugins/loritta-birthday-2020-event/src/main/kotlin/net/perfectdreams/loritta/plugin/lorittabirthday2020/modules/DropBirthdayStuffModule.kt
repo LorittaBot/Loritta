@@ -10,9 +10,12 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.LorittaBirthday2020
+import net.perfectdreams.loritta.plugin.lorittabirthday2020.listeners.GetBirthdayStuffListener
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.tables.Birthday2020Drops
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.tables.Birthday2020Players
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.tables.CollectedBirthday2020Points
@@ -50,7 +53,22 @@ class DropBirthdayStuffModule : MessageReceivedModule {
 
 		val diff = date - millis
 
-		val chance = (Math.min((diff.toDouble() * 100.0) / 1_296_000_000, 100.0) - 1).toInt()
+		var chance = (Math.min((diff.toDouble() * 100.0) / 1_296_000_000, 100.0) - 1).toInt()
+
+		val infractions = LorittaBirthday2020.detectedBotGuilds[event.guild!!.idLong]
+
+		if (infractions != null) {
+			val mutex = GetBirthdayStuffListener.mutexes.getOrPut(event.guild!!.idLong, { Mutex() })
+			mutex.withLock {
+				// Iremos apenas pegar infrações enviadas a menos de 30 minutos
+				val activeInfractions = infractions.filter { it.detectedAt >= System.currentTimeMillis() - 1_800_000 }
+				infractions.clear()
+				infractions.addAll(activeInfractions)
+				chance -= (activeInfractions.size * 2)
+				if (activeInfractions.isEmpty())
+					LorittaBirthday2020.detectedBotGuilds.remove(event.guild!!.idLong)
+			}
+		}
 
 		if (0 >= chance)
 			return false
@@ -62,13 +80,13 @@ class DropBirthdayStuffModule : MessageReceivedModule {
 
 		val randomNumber = Loritta.RANDOM.nextInt(0, 1500)
 
-		if (randomNumber in 0..chance && event.message.contentStripped.hashCode() != lorittaProfile.lastMessageSentHash) {
-			if (15_000 >= lastDropDiff)
+		if (randomNumber in 0..chance && event.message.contentStripped.hashCode() != lorittaProfile.lastMessageSentHash && event.message.contentRaw.length >= 5) {
+			if (5_000 >= lastDropDiff)
 				return false
 
 			val userDropTime = lastDropsByUserAt.getOrDefault(event.author.idLong, 0L)
 
-			if (60_000 >= date - userDropTime)
+			if (30_000 >= date - userDropTime)
 				return false
 
 			val collectedAll = transaction(Databases.loritta) {

@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.LorittaBirthday2020
@@ -30,8 +31,53 @@ import java.util.concurrent.TimeUnit
 class GetBirthdayStuffListener(val m: LorittaBirthday2020Event) : ListenerAdapter() {
 	companion object {
 		private val logger = KotlinLogging.logger {}
-		private val mutexes = CacheBuilder.newBuilder().expireAfterWrite(1L, TimeUnit.MINUTES).build<Long, Mutex>()
+		val mutexes = CacheBuilder.newBuilder().expireAfterWrite(1L, TimeUnit.MINUTES).build<Long, Mutex>()
 				.asMap()
+		val MESSAGE_URL_REGEX = "/channels/([0-9]+)/([0-9]+)/([0-9]+)".toRegex()
+	}
+
+	override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
+		if (!LorittaBirthday2020.isEventActive())
+			return
+
+		if (!event.author.isBot)
+			return
+
+		if (event.isWebhookMessage) // Já que o Dyno e outros bots usam webhooks para event log
+			return
+
+		if (event.author.idLong == 297153970613387264L || event.author.idLong == 395935916952256523L)
+			return
+
+		val message = event.message
+		val matcher = MESSAGE_URL_REGEX.find(message.contentRaw) ?: message.embeds.firstOrNull()?.description?.let { MESSAGE_URL_REGEX.find(it) } ?: return
+
+		// yeah, parece ser um bot de convites
+		val messageId = matcher.groupValues[3].toLong()
+		m.launch {
+			logger.info { "Bot ${event.author} sent a detected message @ ${event.guild.idLong} - Channel ID: ${event.channel.idLong} - Message ID: ${event.messageId} ${matcher.groupValues}"}
+
+			transaction(Databases.loritta) {
+				Birthday2020Drops.select {
+					Birthday2020Drops.messageId eq messageId
+				}.firstOrNull()
+			} ?: return@launch
+
+			val mutex = mutexes.getOrPut(event.guild.idLong, { Mutex() })
+			// É, realmente parece ser um bot de mandar presentes, vamos guardar em um lugar quantas vezes foi enviado
+			mutex.withLock {
+				val infractions = LorittaBirthday2020.detectedBotGuilds.getOrPut(event.guild.idLong) { mutableListOf() }
+				infractions.add(
+						LorittaBirthday2020.DetectedInfractions(
+								event.guild.idLong,
+								event.messageIdLong,
+								System.currentTimeMillis()
+						)
+				)
+				logger.info { "Detected infraction @ ${event.guild.idLong} - Current infraction count: ${infractions.size} - Channel ID: ${event.channel.idLong} - Message ID: ${event.messageId} - Author: ${event.author}"}
+				LorittaBirthday2020.detectedBotGuilds[event.guild.idLong] = infractions
+			}
+		}
 	}
 
 	override fun onGuildMessageReactionAdd(event: GuildMessageReactionAddEvent) {
