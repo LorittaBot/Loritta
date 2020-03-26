@@ -1,10 +1,14 @@
 package net.perfectdreams.spicymorenitta
 
 import kotlin.browser.document
+import kotlin.js.Date
 
 object CookiesUtils {
-	fun createCookie(name: String, value: String) {
-		val expires = ""
+	fun createCookie(name: String, value: String, days: Int? = null) {
+		val expires = if (days != null) {
+			"; expires=${(Date(Date.now() + (days * 86400) * 1000)).toUTCString()}"
+		} else ""
+
 		document.cookie = "$name=$value$expires; Path=/";
 	}
 

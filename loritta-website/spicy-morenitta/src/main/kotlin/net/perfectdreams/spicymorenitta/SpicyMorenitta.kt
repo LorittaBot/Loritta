@@ -181,10 +181,6 @@ class SpicyMorenitta : Logging {
 
 			debug(window.location.pathname + " - " + WebsiteUtils.getPathWithoutLocale())
 
-			GoogleAdSense.renderAds()
-
-			AdvertisementUtils.checkIfUserIsBlockingAds()
-
 			launch {
 				val deferred = listOf(
 						async {
@@ -199,6 +195,10 @@ class SpicyMorenitta : Logging {
 
 				debug("Locale test: ${locale["commands.images.drawnword.description"]}")
 				debug("Locale test: ${locale["commands.fun.ship.bribeLove", ":3"]}")
+
+				GoogleAdSense.renderAds()
+
+				AdvertisementUtils.checkIfUserIsBlockingAds()
 
 				onPageChange(window.location.pathname, null)
 			}

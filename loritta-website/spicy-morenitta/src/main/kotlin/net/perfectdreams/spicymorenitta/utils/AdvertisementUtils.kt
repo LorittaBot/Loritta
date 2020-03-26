@@ -1,9 +1,16 @@
 package net.perfectdreams.spicymorenitta.utils
 
 import kotlinx.coroutines.delay
+import kotlinx.html.div
 import kotlinx.html.dom.append
 import kotlinx.html.img
+import kotlinx.html.p
+import kotlinx.html.stream.createHTML
+import kotlinx.html.style
+import net.perfectdreams.spicymorenitta.CookiesUtils
+import net.perfectdreams.spicymorenitta.CookiesUtils.createCookie
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
+import net.perfectdreams.spicymorenitta.locale
 import org.w3c.dom.HTMLElement
 import kotlin.browser.document
 import kotlin.browser.window
@@ -11,12 +18,19 @@ import kotlin.dom.clear
 import kotlin.random.Random
 
 object AdvertisementUtils : Logging {
+	private const val DO_NOT_SHOW_ADBLOCK_POPUP_COOKIE = "doNotShowAdblockPopup"
+
 	val isUserBlockingAds: Boolean
 		get() = window.asDynamic().canRunAds == undefined
 
 	fun checkIfUserIsBlockingAds() {
 		if (isUserBlockingAds) {
-			debug("User is blocking ads... :(")
+			val cookie = CookiesUtils.readCookie(DO_NOT_SHOW_ADBLOCK_POPUP_COOKIE)
+
+			debug("User is blocking ads... :( Did the user ask us to not bother him? $cookie")
+
+			if (cookie != "true")
+				openDisableAdblockModal()
 
 			SpicyMorenitta.INSTANCE.launch {
 				delay(5_000)
@@ -70,4 +84,39 @@ object AdvertisementUtils : Logging {
 			val googleAdSenseAds: Int,
 			val randomLong: Long
 	)
+
+	fun openDisableAdblockModal() {
+		val modal = TingleModal(
+				TingleOptions(
+						footer = true,
+						cssClass = arrayOf("tingle-modal--overflow")
+				)
+		)
+
+		modal.addFooterBtn("<i class=\"far fa-thumbs-up\"></i> ${locale["website.antiAdblock.disabledAdblock"]}", "button-discord button-discord-info pure-button button-discord-modal") {
+			window.location.reload()
+		}
+
+		modal.addFooterBtn(locale["website.antiAdblock.maybeLater"], "button-discord button-discord-info pure-button button-discord-modal button-discord-modal-secondary-action") {
+			modal.close()
+			createCookie(DO_NOT_SHOW_ADBLOCK_POPUP_COOKIE, "true", 3)
+		}
+
+		modal.setContent(createHTML().div {
+			div {
+				style = "text-align: center;"
+				img(src = "https://loritta.website/assets/img/fanarts/l4.png") {
+					width = "250"
+				}
+
+				locale.getList("website.antiAdblock.pleaseDisable").forEach {
+					p {
+						+ it
+					}
+				}
+			}
+		})
+
+		modal.open()
+	}
 }
