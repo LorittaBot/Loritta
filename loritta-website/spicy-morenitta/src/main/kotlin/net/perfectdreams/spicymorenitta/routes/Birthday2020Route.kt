@@ -5,6 +5,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.url
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.html.*
 import kotlinx.html.dom.append
@@ -23,48 +24,75 @@ import kotlin.browser.document
 import kotlin.browser.window
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlin.dom.clear
 import kotlin.js.Json
 
 class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/birthday-2020"), Logging {
 	companion object {
 		val pantufaRewards = listOf(
 				BackgroundReward(100, "birthday2020TeamPantufa"),
-				BackgroundReward(300, "birthday2020Brabas"),
-				SonhosReward(400, 7_000),
-				BackgroundReward(500, "birthday2020PantufaHugoo"),
-				SonhosReward(600, 7_000),
-				BackgroundReward(700, "birthday2020Brabas"),
-				SonhosReward(800, 7_000),
-				BackgroundReward(900, "birthday2020Brabas"),
-				SonhosReward(1_000, 7_000),
-				BackgroundReward(1_100, "birthday2020Brabas"),
-				SonhosReward(1_200, 7_000),
-				BackgroundReward(1_300, "birthday2020Brabas"),
-				SonhosReward(1_400, 7_000)
 
+				SonhosReward(200, 7_000),
+
+				BackgroundReward(300, "birthday2020Brabas"),
+
+				SonhosReward(400, 7_000),
+
+				BackgroundReward(500, "birthday2020PantufaAllouette"),
+
+				SonhosReward(600, 7_000),
+
+				BackgroundReward(700, "birthday2020PantufaSonikaSan"),
+
+				SonhosReward(800, 7_000),
+
+				BackgroundReward(900, "birthday2020PantufaLaurenha"),
+
+				SonhosReward(1_000, 7_000),
+
+				BackgroundReward(1_100, "birthday2020PantufaDelly"),
+
+				SonhosReward(1_200, 7_000),
+
+				BackgroundReward(1_300, "birthday2020PantufaHugoo")
 		)
 		val gabrielaRewards = listOf(
 				BackgroundReward(100, "birthday2020TeamGabriela"),
+
 				SonhosReward(200, 7_000),
+
 				BackgroundReward(300, "birthday2020Brabas"),
+
 				SonhosReward(400, 7_000),
-				BackgroundReward(500, "birthday2020Brabas"),
+
+				BackgroundReward(500, "birthday2020PantufaAllouette"),
+
 				SonhosReward(600, 7_000),
-				BackgroundReward(700, "birthday2020Brabas"),
+
+				BackgroundReward(700, "birthday2020GabrielaCoffee"),
+
 				SonhosReward(800, 7_000),
-				BackgroundReward(900, "birthday2020Brabas"),
+
+				BackgroundReward(900, "birthday2020GabrielaInnerDesu"),
+
 				SonhosReward(1_000, 7_000),
-				BackgroundReward(1_100, "birthday2020Brabas"),
+
+				BackgroundReward(1_100, "birthday2020GabrielaStar"),
+
 				SonhosReward(1_200, 7_000),
-				BackgroundReward(1_300, "birthday2020Brabas"),
-				SonhosReward(1_400, 7_000)
+
+				BackgroundReward(1_300, "birthday2020GabrielaItsGabi")
 		)
 	}
 
 	val subText: HTMLDivElement
 		get() = document.select("#sub-text")
+	val whoDat: HTMLImageElement
+		get() = document.select("#who-dat")
 	val animationOverlay: HTMLDivElement
 		get() = document.select("#animation-overlay")
+	val preAnimationOverlay: HTMLDivElement
+		get() = document.select("#pre-animation-overlay")
 
 	@UseExperimental(ImplicitReflectionSerializer::class)
 	override fun onRender(call: ApplicationCall) {
@@ -116,7 +144,7 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 
 								onClickFunction = {
 									m.launch {
-										document.select<HTMLDivElement>("#play-intro-button").remove()
+										preAnimationOverlay.clear()
 										playIntro().await() // Esperar a intro carregar para depois continuar
 
 										animationOverlay.remove()
@@ -124,7 +152,7 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 										val backgrounds = backgroundsJob.await()
 										val profileWrapper = profileWrapperJob.await()
 
-										createBody(backgrounds, profileWrapper)
+										createBody(backgrounds, profileWrapper, currentTeam != null)
 										fillBodyStuff(backgrounds, profileWrapper)
 
 										val flashOverlay = document.select<HTMLImageElement>("#flash-overlay")
@@ -138,6 +166,22 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 									}
 								}
 							}
+							div("add-me button pink shadow big") {
+								id = "skip-intro-button"
+								+"Pular introdução"
+
+								onClickFunction = {
+									m.launch {
+										document.select<HTMLDivElement>("#pre-animation-overlay").remove()
+
+										val backgrounds = backgroundsJob.await()
+										val profileWrapper = profileWrapperJob.await()
+
+										createBody(backgrounds, profileWrapper, currentTeam != null)
+										fillBodyStuff(backgrounds, profileWrapper)
+									}
+								}
+							}
 						}
 					}
 				}
@@ -145,7 +189,7 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 				val backgrounds = backgroundsJob.await()
 				val profileWrapper = profileWrapperJob.await()
 
-				createBody(backgrounds, profileWrapper)
+				createBody(backgrounds, profileWrapper, currentTeam != null)
 				fillBodyStuff(backgrounds, profileWrapper)
 			}
 		}
@@ -238,27 +282,64 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 	}
 
 	suspend fun playIntro(): Deferred<Unit> {
-		val pantufaVoice = Audio("/assets/snd/birthday_pantufa.ogg")
-				.also { it.awaitLoad() }
-		val gabrielaVoice = Audio("/assets/snd/birthday_gabriela.ogg")
-				.also { it.awaitLoad() }
-		val watchOut = Audio("/assets/snd/snd_b.wav")
-				.also { it.awaitLoad() }
-		val damage = Audio("/assets/snd/snd_damage.wav")
-				.also { it.awaitLoad() }
-		val hyperGonerCharge = Audio("/assets/snd/mus_sfx_hypergoner_charge.ogg")
-				.also { it.awaitLoad() }
+		preAnimationOverlay.append {
+			div {
+				style = "color: white; font-size: 2em;"
+				+ "Carregando..."
+			}
+		}
+
+		val imagePreloadJobs = arrayOf(
+				"/assets/img/birthday2020/pantufa_braba.png",
+				"/assets/img/birthday2020/gabriela_braba.png",
+				"/assets/img/birthday2020/pantufa.png",
+				"/assets/img/birthday2020/gabriela.png",
+				"/assets/img/birthday2020/pantufa_hero.png",
+				"/assets/img/birthday2020/gabriela_hero.png"
+		).map {
+			m.async {
+				Image().awaitLoad(it)
+			}
+		}
+
+		val pantufaVoiceJob = m.async {
+			Audio("/assets/snd/birthday_pantufa.ogg")
+					.also { it.awaitLoad() }
+		}
+		val gabrielaVoiceJob = m.async {
+			Audio("/assets/snd/birthday_gabriela.ogg")
+					.also { it.awaitLoad() }
+		}
+		val watchOutJob = m.async {
+			Audio("/assets/snd/snd_b.wav")
+					.also { it.awaitLoad() }
+		}
+		val damageJob = m.async {
+			Audio("/assets/snd/snd_damage.wav")
+					.also { it.awaitLoad() }
+		}
+		val hyperGonerChargeJob = m.async {
+			Audio("/assets/snd/mus_sfx_hypergoner_charge.ogg")
+					.also { it.awaitLoad() }
+		}
+
+		val imagePreload = imagePreloadJobs.awaitAll()
+		val pantufaVoice = pantufaVoiceJob.await()
+		val gabrielaVoice = gabrielaVoiceJob.await()
+		val watchOut = watchOutJob.await()
+		val damage = damageJob.await()
+		val hyperGonerCharge = hyperGonerChargeJob.await()
 
 		document.body!!.append {
 			div {
 				id = "animation-overlay"
 				style = "position: fixed;background-color: black;width: 100vw;height: 100vh;"
 
-				img(src = "https://cdn.discordapp.com/attachments/513405772911345664/691728432710549545/pantufa_braba.png") {
+				img(src = "/assets/img/birthday2020/pantufa_braba.png") {
 					id = "pantufa-braba"
 					style = "position: absolute; left: 0px; height: 100vh;opacity:0;z-index:2;"
 				}
-				img(src = "https://cdn.discordapp.com/attachments/513405772911345664/691743122182504498/gabriela_braba.png") {
+				img(src = "/assets/img/birthday2020/gabriela_braba.png") {
 					id = "gabriela-braba"
 					style = "position: absolute; right: 0px; height: 100vh;opacity:0;z-index:1;"
 				}
@@ -266,7 +347,8 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 				div {
 					style = "color: yellow;position: fixed;bottom: 0.25em;font-weight: 1000;font-size: 4em;text-align: center;"
 
-					img(src = "https://cdn.discordapp.com/attachments/358774895850815488/691456209710219346/pantufa.png") {
+					img(src = "/assets/img/birthday2020/pantufa.png") {
+						id = "who-dat"
 						style = "max-height: 60vh;"
 					}
 
@@ -278,13 +360,14 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 			}
 		}
 
-		document.select<HTMLDivElement?>("#pre-animation-overlay")?.remove()
+		preAnimationOverlay.remove()
 
 		return m.async {
 			pantufaVoice.play()
 			delay(3_600)
 
 			subText.innerText = "Não, EU que vou fazer o melhor aniversário para a Loritta"
+			whoDat.src = "/assets/img/birthday2020/gabriela.png"
 			gabrielaVoice.play()
 			delay(3_800)
 			watchOut.play()
@@ -349,7 +432,7 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 		}
 	}
 
-	suspend fun createBody(backgrounds: List<AllBackgroundsListDashboardRoute.Background>, profileWrapper: Image) {
+	suspend fun createBody(backgrounds: List<AllBackgroundsListDashboardRoute.Background>, profileWrapper: Image, isAlreadyOnATeam: Boolean) {
 		document.select<HTMLDivElement>("#birthday-2020").append {
 			div {
 				style = "height: calc(100vh - 46px); display: flex; position: relative;"
@@ -366,7 +449,7 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 					div {
 						style = "background: linear-gradient(to bottom, #0000, #39c9ba), linear-gradient(to right, #0000001a, #0000, #0000001a); height: 100%;"
 
-						img(src = "https://cdn.discordapp.com/attachments/673660399953903641/691359278132363264/1584903170396.png") {
+						img(src = "/assets/img/birthday2020/pantufa_hero.png") {
 							style = "height: 100%;"
 						}
 
@@ -386,7 +469,7 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 
 					div {
 						style = "background: linear-gradient(to bottom, #0000, #a240b4), linear-gradient(to right, #0000001a, #0000, #0000001a); height: 100%;"
-						img(src = "https://cdn.discordapp.com/attachments/673660399953903641/691359278467907674/1584903228543.png") {
+						img(src = "/assets/img/birthday2020/gabriela_hero.png") {
 							style = "height: 100%;"
 						}
 
@@ -536,57 +619,84 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 			}
 
 			div {
-				style = "background: linear-gradient(90deg, #39C9BA 50%, #A240B4 50%);color: white;font-weight: 1000;font-size: 3em;text-align: center;"
+				div {
+					style = "background: linear-gradient(90deg, #39C9BA 50%, #A240B4 50%);color: white;font-weight: 1000;font-size: 3em;text-align: center;"
+
+					div {
+						style = "text-align: center;margin: auto;"
+						+ "10.000.000 sonhos serão distribuidos os membros da a equipe vencedora! (apenas para quem REALMENTE participou do evento ;))"
+					}
+				}
+			}
+
+			if (isAlreadyOnATeam) {
+				div {
+					style = "background: linear-gradient(90deg, #39C9BA 50%, #A240B4 50%);color: white;font-weight: 1000;font-size: 3em;text-align: center;"
+
+					div("add-me button pink shadow big") {
+						style = "display: inline-block; animation: 7s linear infinite forwards swing-button; cursor: pointer;"
+
+						+"Clique aqui para ver quantos presentes você já coletou!"
+
+						onClickFunction = {
+							window.location.replace("/birthday-2020/stats")
+						}
+					}
+				}
+			} else {
+				div {
+					style = "background: linear-gradient(90deg, #39C9BA 50%, #A240B4 50%);color: white;font-weight: 1000;font-size: 3em;text-align: center;"
+
+					div {
+						generateAd("8895970055", "Loritta Birthday 2020 Team Select", insertAdsByGoogleScript = false)
+					}
+
+					div {
+						style = "text-align: center;margin: auto;"
+						+"E aí, qual time você irá escolher?"
+					}
+				}
 
 				div {
+					style = "display: flex;"
+
+					div {
+						style = "width: 50vw; height: 100%; border-right: 20px solid #39c9ba; border-bottom: 20px solid #39c9ba; border-left: 20px solid #39c9ba; box-sizing: border-box; background-color: #39c9ba; padding: 10px; text-align: center;"
+
+						div("add-me button pink shadow big") {
+							style = "display: inline-block; animation: 7s linear infinite forwards swing-button; cursor: pointer;"
+
+							+"Entrar no Time da Pantufa #TeamPantufa"
+
+							onClickFunction = {
+								selectTeam("PANTUFA")
+							}
+						}
+					}
+
+					div {
+						style = "width: 50vw; height: 100%; border-left: 20px solid #a240b4; border-right: 20px solid #a240b4; border-bottom: 20px solid #a240b4; box-sizing: border-box; background-color: #a240b4; padding: 10px; text-align: center;"
+
+						div("add-me button pink shadow big") {
+							style = "display: inline-block; animation: 7s linear infinite forwards swing-button; cursor: pointer;"
+
+							+"Entrar no Time da Gabriela #TeamGabriela"
+
+							onClickFunction = {
+								selectTeam("GABRIELA")
+							}
+						}
+					}
+				}
+
+				div {
+					style = "background: linear-gradient(90deg, #39C9BA 50%, #A240B4 50%);color: white;font-weight: 500;font-size: 3em;text-align: center;"
+					div {
+						style = "text-align: center;margin: auto;"
+						+ "Mas lembre-se, após escolher você não poderá trocar de time!"
+					}
 					generateAd("8895970055", "Loritta Birthday 2020 Team Select", insertAdsByGoogleScript = false)
 				}
-
-				div {
-					style = "text-align: center;margin: auto;"
-					+ "E aí, qual time você irá escolher?"
-				}
-			}
-
-			div {
-				style = "display: flex;"
-
-				div {
-					style = "width: 50vw; height: 100%; border-right: 20px solid #39c9ba; border-bottom: 20px solid #39c9ba; border-left: 20px solid #39c9ba; box-sizing: border-box; background-color: #39c9ba; padding: 10px; text-align: center;"
-
-					div("add-me button pink shadow big") {
-						style = "display: inline-block; animation: 7s linear infinite forwards swing-button; cursor: pointer;"
-
-						+ "Entrar no Time da Pantufa #TeamPantufa"
-
-						onClickFunction = {
-							selectTeam("PANTUFA")
-						}
-					}
-				}
-
-				div {
-					style = "width: 50vw; height: 100%; border-left: 20px solid #a240b4; border-right: 20px solid #a240b4; border-bottom: 20px solid #a240b4; box-sizing: border-box; background-color: #a240b4; padding: 10px; text-align: center;"
-
-					div("add-me button pink shadow big") {
-						style = "display: inline-block; animation: 7s linear infinite forwards swing-button; cursor: pointer;"
-
-						+ "Entrar no Time da Gabriela #TeamGabriela"
-
-						onClickFunction = {
-							selectTeam("GABRIELA")
-						}
-					}
-				}
-			}
-
-			div {
-				style = "background: linear-gradient(90deg, #39C9BA 50%, #A240B4 50%);color: white;font-weight: 500;font-size: 3em;text-align: center;"
-				div {
-					style = "text-align: center;margin: auto;"
-					+ "Mas lembre-se, após escolher você não poderá trocar de time!"
-				}
-				generateAd("8895970055", "Loritta Birthday 2020 Team Select", insertAdsByGoogleScript = false)
 			}
 
 			div {
@@ -594,7 +704,7 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 				div {
 					style = "width: 100vw; text-align: center;border-right: 20px solid #29a6fe;border-bottom: 20px solid #29a6fe;border-left: 20px solid #29a6fe;box-sizing: border-box;background-color: #1e8fdf;padding: 10px;border-top: 20px solid #29a6fe;font-weight: 1000;"
 
-					img(src = "https://cdn.discordapp.com/attachments/513405772911345664/691403394312568862/lori_ameno.png") {
+					img(src = "/assets/img/birthday2020/lori_ameno.png") {
 						width = "150"
 					}
 
@@ -602,11 +712,6 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 						style = "font-size: 2em;color: white;"
 						+"Não seria mais fácil vocês apenas trabalharem... juntas?"
 					}
-				}
-			}
-			div {
-				h1 {
-					+"Qual será o seu time?"
 				}
 			}
 		}

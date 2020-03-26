@@ -15,48 +15,86 @@ import java.util.concurrent.ConcurrentHashMap
 object LorittaBirthday2020 {
 	val pantufaRewards = listOf(
 			BackgroundReward(100, "birthday2020TeamPantufa"),
-			SonhosReward(200, 7_000),
-			BackgroundReward(300, "birthday2020Brabas"),
-			SonhosReward(400, 7_000),
-			BackgroundReward(500, "birthday2020PantufaHugoo"),
-			SonhosReward(600, 7_000),
-			BackgroundReward(300, "birthday2020Brabas"),
-			SonhosReward(800, 7_000),
-			BackgroundReward(300, "birthday2020Brabas"),
-			SonhosReward(1_000, 7_000),
-			BackgroundReward(300, "birthday2020Brabas"),
-			SonhosReward(1_200, 7_000),
-			BackgroundReward(300, "birthday2020Brabas"),
-			SonhosReward(1_400, 7_000)
 
-			)
+			SonhosReward(200, 7_000),
+
+			BackgroundReward(300, "birthday2020Brabas"),
+
+			SonhosReward(400, 7_000),
+
+			BackgroundReward(500, "birthday2020PantufaAllouette"),
+
+			SonhosReward(600, 7_000),
+
+			BackgroundReward(700, "birthday2020PantufaSonikaSan"),
+
+			SonhosReward(800, 7_000),
+
+			BackgroundReward(900, "birthday2020PantufaLaurenha"),
+
+			SonhosReward(1_000, 7_000),
+
+			BackgroundReward(1_100, "birthday2020PantufaDelly"),
+
+			SonhosReward(1_200, 7_000),
+
+			BackgroundReward(1_300, "birthday2020PantufaHugoo")
+	)
 	val gabrielaRewards = listOf(
 			BackgroundReward(100, "birthday2020TeamGabriela"),
+
 			SonhosReward(200, 7_000),
+
 			BackgroundReward(300, "birthday2020Brabas"),
+
+			SonhosReward(400, 7_000),
+
+			BackgroundReward(500, "birthday2020PantufaAllouette"),
+
 			SonhosReward(600, 7_000),
-			BackgroundReward(300, "birthday2020Brabas"),
+
+			BackgroundReward(700, "birthday2020GabrielaCoffee"),
+
 			SonhosReward(800, 7_000),
-			BackgroundReward(300, "birthday2020Brabas"),
+
+			BackgroundReward(900, "birthday2020GabrielaInnerDesu"),
+
 			SonhosReward(1_000, 7_000),
-			BackgroundReward(300, "birthday2020Brabas"),
+
+			BackgroundReward(1_100, "birthday2020GabrielaStar"),
+
 			SonhosReward(1_200, 7_000),
-			BackgroundReward(300, "birthday2020Brabas"),
-			SonhosReward(1_400, 7_000)
+
+			BackgroundReward(1_300, "birthday2020GabrielaItsGabi")
 	)
 
 	val openChannels = ConcurrentHashMap<Long, Channel<JsonObject>>()
 
 	val emojis = listOf(
-			"lori_gift:653402818199158805",
-			"green_gift:659069659160772647",
-			"pink_gift:659069658833354773"
+			"happy_birthday:692338660611457035",
+			"loritta_morenitta:692338660577771590",
+			"para_mais_um_ano:692338660762320926",
+			"com_muita_alegria:692338660548411405",
+			"e_diversao:692338660632428574",
+			"continuando_a_alegrar:692338660712120341",
+			"mais_de_300k_guilds:692338660615389194",
+			"desde_2017:692338660393353226",
+			"tentando_transformar:692338660397416448",
+			"o_mundo_em_um_lugar_melhor:692338660414324756",
+			"obrigada_por_tudo:692338660263329793",
+			"voces_sao_incriveis:692338660254941254",
+			"ah_e_claro:692339142058573825",
+			"obrigada_a_pantufa:692339142209568848",
+			"e_a_gabriela:692339141995790436",
+			"por_me_ajudarem:692339142087933962",
+			"elas_tambem_sao_incriveis:692339142033539142",
+			"carinha_feliz:692339141790400603"
 	)
 
 	fun isEventActive(): Boolean {
 		// val calendar = Calendar.getInstance()
 		// return calendar.get(Calendar.YEAR) == 2020
-		val endOfEvent = LocalDateTime.of(2020, 3, 30, 17, 0)
+		val endOfEvent = LocalDateTime.of(2020, 3, 30, 15, 0)
 				.atZone(ZoneId.of("America/Sao_Paulo"))
 		val now = Instant.now().atZone(ZoneId.of("America/Sao_Paulo"))
 

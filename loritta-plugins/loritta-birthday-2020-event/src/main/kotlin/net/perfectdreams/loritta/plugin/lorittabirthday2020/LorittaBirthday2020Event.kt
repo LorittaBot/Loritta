@@ -41,7 +41,6 @@ class LorittaBirthday2020Event(name: String, loritta: LorittaBot) : LorittaDisco
 			while (true) {
 				LorittaBirthday2020.openChannels.entries.forEach { (idLong, channel) ->
 					try {
-						logger.info { "Sending a empty json to $idLong" }
 						channel.send(
 								jsonObject(
 										"type" to "ping",

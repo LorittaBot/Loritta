@@ -30,30 +30,30 @@ class ReceiveStatsRoute(val m: LorittaBirthday2020Event, loritta: LorittaDiscord
 		val idLong = userIdentification.id.toLong()
 
 		// Caso já tenha um channel aberto, feche ele
-		logger.info { "Checking open channels" }
+		logger.info { "Checking open channels for ${userIdentification.id}" }
 		val currentOpenChannel = LorittaBirthday2020.openChannels[idLong]
-		logger.info { "Closing ${currentOpenChannel}" }
+		logger.info { "Closing ${currentOpenChannel} for ${userIdentification.id}" }
 		currentOpenChannel?.close()
 
-		logger.info { "Creating a new channel" }
+		logger.info { "Creating a new channel for ${userIdentification.id}" }
 		val channel = Channel<JsonObject>()
-		logger.info { "Storing the new channel" }
+		logger.info { "Storing the new channel for ${userIdentification.id}" }
 		LorittaBirthday2020.openChannels[idLong] = channel
 		call.respondTextWriter(contentType = ContentType.Text.EventStream) {
 			// Enviar qualquer coisa só para deixar aberto
-			logger.info { "Synchronizing points on initial connection" }
+			logger.info { "Synchronizing points on initial connection for ${userIdentification.id}" }
 			LorittaBirthday2020.sendPresentCount(m, idLong, "syncPoints")
 
 			try {
-				logger.info { "waitin' and sending" }
+				logger.info { "Waitin' and sending" }
 				for (payload in channel) {
-					logger.info { "sending $payload" }
+					logger.info { "Sending $payload to ${userIdentification.id}" }
 					write("data: ${gson.toJson(payload)}\n")
 					write("\n")
 					flush()
 				}
 			} catch (e: Throwable) {
-				logger.warn(e) { "omg" }
+				logger.warn(e) { "Something went wrong when sending data for ${userIdentification.id}" }
 				LorittaBirthday2020.openChannels.remove(idLong, channel)
 				channel.close()
 			}

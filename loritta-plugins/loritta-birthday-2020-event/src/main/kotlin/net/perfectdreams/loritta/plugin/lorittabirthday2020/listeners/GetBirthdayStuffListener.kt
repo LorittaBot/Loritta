@@ -76,6 +76,13 @@ class GetBirthdayStuffListener(val m: LorittaBirthday2020Event) : ListenerAdapte
 			if (!event.reaction.retrieveUsers().await().any { it.id == loritta.discordConfig.discord.clientId })
 				return@launch
 
+			val createdAt = dropsForTheMessage[Birthday2020Drops.createdAt]
+
+			if (System.currentTimeMillis() - 300_000 >= createdAt) {
+				lorittaShards.queryMasterLorittaCluster("/api/v1/birthday-2020/sync-points/${event.user.idLong}/outdatedPoint")
+				return@launch
+			}
+
 			val rewards = if (birthdayPlayerParticipation[Birthday2020Players.team] == BirthdayTeam.PANTUFA) {
 				LorittaBirthday2020.pantufaRewards
 			} else {
@@ -107,7 +114,7 @@ class GetBirthdayStuffListener(val m: LorittaBirthday2020Event) : ListenerAdapte
 					}.count()
 				}
 
-				val newRewards = rewards.filter { it.requiredPoints in currentCount..newCount }
+				val newRewards = rewards.filter { it.requiredPoints in currentCount until newCount }
 
 				newRewards.forEach {
 					transaction(Databases.loritta) {
@@ -126,7 +133,7 @@ class GetBirthdayStuffListener(val m: LorittaBirthday2020Event) : ListenerAdapte
 				}
 
 				logger.info { "Sending stuff I guess idk lol" }
-				lorittaShards.queryMasterLorittaCluster("/api/v1/birthday-2020/sync-points/${event.user.idLong}")
+				lorittaShards.queryMasterLorittaCluster("/api/v1/birthday-2020/sync-points/${event.user.idLong}/collectedPoint")
 			}
 		}
 	}
