@@ -15,7 +15,6 @@ import org.w3c.dom.HTMLElement
 import kotlin.browser.document
 import kotlin.browser.window
 import kotlin.dom.clear
-import kotlin.dom.hasClass
 import kotlin.random.Random
 
 object AdvertisementUtils : Logging {
@@ -121,18 +120,5 @@ object AdvertisementUtils : Logging {
 		modal.open()
 
 		modal.trackOverflowChanges(SpicyMorenitta.INSTANCE)
-	}
-
-	fun TingleModal.trackOverflowChanges(m: SpicyMorenitta) {
-		debug("Tracking $this overflow changes...")
-
-		m.launch {
-			while (visibleModal.hasClass("tingle-modal--visible")) {
-				this@trackOverflowChanges.checkOverflow()
-				delay(100)
-			}
-
-			debug("Modal $this was closed, we will stop tracking overflow changes...")
-		}
 	}
 }

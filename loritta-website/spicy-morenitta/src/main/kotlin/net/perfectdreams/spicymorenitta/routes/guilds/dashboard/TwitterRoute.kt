@@ -7,7 +7,6 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.readText
 import io.ktor.http.HttpStatusCode
 import jq
-import kotlinx.coroutines.delay
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.js.onClickFunction
@@ -32,7 +31,6 @@ import kotlin.browser.document
 import kotlin.browser.window
 import kotlin.dom.addClass
 import kotlin.dom.clear
-import kotlin.dom.hasClass
 import kotlin.dom.removeClass
 import kotlin.js.Json
 import kotlin.js.json
@@ -453,19 +451,6 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 			val screenName: String,
 			val avatarUrl: String
 	)
-
-	fun TingleModal.trackOverflowChanges(m: SpicyMorenitta) {
-		debug("Tracking $this overflow changes...")
-
-		m.launch {
-			while (visibleModal.hasClass("tingle-modal--visible")) {
-				this@trackOverflowChanges.checkOverflow()
-				delay(100)
-			}
-
-			debug("Modal $this was closed, we will stop tracking overflow changes...")
-		}
-	}
 
 	@JsName("prepareSave")
 	fun prepareSave() {

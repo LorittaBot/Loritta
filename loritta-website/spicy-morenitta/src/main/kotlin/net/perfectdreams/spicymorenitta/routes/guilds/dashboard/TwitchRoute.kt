@@ -453,19 +453,6 @@ class TwitchRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{g
 			val profileImageUrl: String
 	)
 
-	fun TingleModal.trackOverflowChanges(m: SpicyMorenitta) {
-		debug("Tracking $this overflow changes...")
-
-		m.launch {
-			while (visibleModal.hasClass("tingle-modal--visible")) {
-				this@trackOverflowChanges.checkOverflow()
-				delay(100)
-			}
-
-			debug("Modal $this was closed, we will stop tracking overflow changes...")
-		}
-	}
-
 	@JsName("prepareSave")
 	fun prepareSave() {
 		SaveUtils.prepareSave("twitch", extras = {
