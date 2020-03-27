@@ -74,7 +74,7 @@ class GetBirthdayStuffListener(val m: LorittaBirthday2020Event) : ListenerAdapte
 								System.currentTimeMillis()
 						)
 				)
-				logger.info { "Detected infraction @ ${event.guild.idLong} - Current infraction count: ${infractions.size} - Channel ID: ${event.channel.idLong} - Message ID: ${event.messageId} - Author: ${event.author}"}
+				logger.info { "Detected infraction @ ${event.guild.idLong} - Current infraction count: ${infractions.size} - Channel ID: ${event.channel.idLong} - Message ID: ${event.messageId} - Author: ${event.author} - Is blacklisted? ${event.guild.idLong in LorittaBirthday2020.blacklistedGuilds}"}
 				LorittaBirthday2020.detectedBotGuilds[event.guild.idLong] = infractions
 			}
 		}

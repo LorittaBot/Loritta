@@ -64,11 +64,14 @@ class DropBirthdayStuffModule : MessageReceivedModule {
 				val activeInfractions = infractions.filter { it.detectedAt >= System.currentTimeMillis() - 1_800_000 }
 				infractions.clear()
 				infractions.addAll(activeInfractions)
-				chance -= (activeInfractions.size * 2)
+				chance -= (activeInfractions.size * 6)
 				if (activeInfractions.isEmpty())
 					LorittaBirthday2020.detectedBotGuilds.remove(event.guild!!.idLong)
 			}
 		}
+
+		if (event.guild!!.idLong in LorittaBirthday2020.blacklistedGuilds)
+			return false
 
 		if (0 >= chance)
 			return false

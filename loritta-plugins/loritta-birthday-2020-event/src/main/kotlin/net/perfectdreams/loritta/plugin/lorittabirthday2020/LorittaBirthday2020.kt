@@ -70,6 +70,10 @@ object LorittaBirthday2020 {
 
 	val openChannels = ConcurrentHashMap<Long, Channel<JsonObject>>()
 	val detectedBotGuilds = ConcurrentHashMap<Long, MutableList<DetectedInfractions>>()
+	val blacklistedGuilds = listOf(
+			623204625251827724L,
+			546027106895790081L
+	)
 
 	val emojis = listOf(
 			"happy_birthday:692338660611457035",
