@@ -7,6 +7,7 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
+import net.perfectdreams.loritta.plugin.lorittabirthday2020.commands.GiveBirthdayRewardsExecutor
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.listeners.GetBirthdayStuffListener
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.modules.DropBirthdayStuffModule
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.routes.*
@@ -28,6 +29,8 @@ class LorittaBirthday2020Event(name: String, loritta: LorittaBot) : LorittaDisco
 
 		this.addMessageReceivedModule(DropBirthdayStuffModule())
 		this.addEventListener(GetBirthdayStuffListener(this))
+
+		loriToolsExecutors += GiveBirthdayRewardsExecutor
 
 		transaction(Databases.loritta) {
 			SchemaUtils.createMissingTablesAndColumns(
