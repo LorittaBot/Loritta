@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import io.ktor.application.ApplicationCall
+import mu.KotlinLogging
 import net.perfectdreams.loritta.website.utils.extensions.lorittaSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
@@ -17,21 +18,23 @@ data class LorittaJsonWebSession(
 				null,
 				null
 		)
+
+		private val logger = KotlinLogging.logger {}
 	}
 
 	suspend fun getUserIdentification(call: ApplicationCall, loadFromCache: Boolean = true): UserIdentification? {
-		println("getUserIdentification($call, $loadFromCache)")
 		if (loadFromCache) {
-			println("Trying to load from cache...")
-			cachedIdentification?.let {
-				println(it + " -> " + gson.fromJson(it))
-				return gson.fromJson(it)
+			try {
+				cachedIdentification?.let {
+					return gson.fromJson(it)
+				}
+			} catch (e: Throwable) {
+				logger.error(e) { "Error while loading cached identification for $call" }
 			}
 		}
 
 		val discordIdentification = getDiscordAuthFromJson() ?: return null
 
-		println("Wasn't able to load from cache... :(")
 		try {
 			val now = System.currentTimeMillis()
 
