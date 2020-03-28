@@ -54,7 +54,17 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 
 				SonhosReward(1_200, 7_000),
 
-				BackgroundReward(1_300, "birthday2020PantufaHugoo")
+				BackgroundReward(1_300, "birthday2020PantufaHugoo"),
+
+				SonhosReward(1_400, 7_000),
+
+				BackgroundReward(1_500, "birthday2020PantufaOusado"),
+
+				SonhosReward(1_600, 7_000),
+
+				BackgroundReward(1_700, "birthday2020PantufaDezato"),
+
+				PremiumKeyReward(2_000)
 		)
 		val gabrielaRewards = listOf(
 				BackgroundReward(100, "birthday2020TeamGabriela"),
@@ -81,7 +91,17 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 
 				SonhosReward(1_200, 7_000),
 
-				BackgroundReward(1_300, "birthday2020GabrielaItsGabi")
+				BackgroundReward(1_300, "birthday2020GabrielaItsGabi"),
+
+				SonhosReward(1_200, 7_000),
+
+				BackgroundReward(1_500, "birthday2020GabrielaCoffee2"),
+
+				SonhosReward(1_600, 7_000),
+
+				BackgroundReward(1_700, "birthday2020GabrielaPinotti"),
+
+				PremiumKeyReward(2_000)
 		)
 	}
 
@@ -546,6 +566,24 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 											+"Você irá ganhar ${reward.sonhosReward} sonhos!"
 										}
 									}
+								} else if (reward is PremiumKeyReward) {
+									div {
+										i(classes = "fas fa-star")
+
+										style = "font-size: 2.5em; color: #0003;"
+									}
+									div {
+										style = "display: flex; color: white; flex-direction: column; margin-left: 20px; margin-right: 20px;"
+
+										div {
+											style = "font-size: 1.5em;"
+											+"Ao coletar ${reward.requiredPoints} presentes..."
+										}
+										div {
+											style = "font-size: 2em;"
+											+"Você irá ganhar uma key premium da Loritta que dura 30 dias com todas as vantagens para servidores disponíveis!"
+										}
+									}
 								}
 							}
 						}
@@ -608,6 +646,24 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 										div {
 											style = "font-size: 2em;"
 											+"Você irá ganhar ${reward.sonhosReward} sonhos!"
+										}
+									}
+								} else if (reward is PremiumKeyReward) {
+									div {
+										i(classes = "fas fa-star")
+
+										style = "font-size: 2.5em; color: #0003;"
+									}
+									div {
+										style = "display: flex; color: white; flex-direction: column; margin-left: 20px; margin-right: 20px;"
+
+										div {
+											style = "font-size: 1.5em;"
+											+"Ao coletar ${reward.requiredPoints} presentes..."
+										}
+										div {
+											style = "font-size: 2em;"
+											+"Você irá ganhar uma key premium da Loritta que dura 30 dias com todas as vantagens para servidores disponíveis!"
 										}
 									}
 								}
@@ -739,4 +795,5 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 	open class Reward(val requiredPoints: Int)
 	class BackgroundReward(requiredPoints: Int, val internalName: String) : Reward(requiredPoints)
 	class SonhosReward(requiredPoints: Int, val sonhosReward: Int) : Reward(requiredPoints)
+	class PremiumKeyReward(requiredPoints: Int) : Reward(requiredPoints)
 }

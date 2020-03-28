@@ -23,6 +23,9 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.concurrent.TimeUnit
 
 class DropBirthdayStuffModule : MessageReceivedModule {
@@ -55,18 +58,24 @@ class DropBirthdayStuffModule : MessageReceivedModule {
 
 		var chance = (Math.min((diff.toDouble() * 100.0) / 1_296_000_000, 100.0) - 1).toInt()
 
-		val infractions = LorittaBirthday2020.detectedBotGuilds[event.guild!!.idLong]
+		val endOfBotsRestriction = LocalDateTime.of(2020, 3, 29, 15, 0)
+				.atZone(ZoneId.of("America/Sao_Paulo"))
+		val now = Instant.now().atZone(ZoneId.of("America/Sao_Paulo"))
 
-		if (infractions != null) {
-			val mutex = GetBirthdayStuffListener.mutexes.getOrPut(event.guild!!.idLong, { Mutex() })
-			mutex.withLock {
-				// Iremos apenas pegar infrações enviadas a menos de 30 minutos
-				val activeInfractions = infractions.filter { it.detectedAt >= System.currentTimeMillis() - 1_800_000 }
-				infractions.clear()
-				infractions.addAll(activeInfractions)
-				chance -= (activeInfractions.size * 6)
-				if (activeInfractions.isEmpty())
-					LorittaBirthday2020.detectedBotGuilds.remove(event.guild!!.idLong)
+		if (endOfBotsRestriction.isBefore(now)) {
+			val infractions = LorittaBirthday2020.detectedBotGuilds[event.guild!!.idLong]
+
+			if (infractions != null) {
+				val mutex = GetBirthdayStuffListener.mutexes.getOrPut(event.guild!!.idLong, { Mutex() })
+				mutex.withLock {
+					// Iremos apenas pegar infrações enviadas a menos de 30 minutos
+					val activeInfractions = infractions.filter { it.detectedAt >= System.currentTimeMillis() - 1_800_000 }
+					infractions.clear()
+					infractions.addAll(activeInfractions)
+					chance -= (activeInfractions.size * 6)
+					if (activeInfractions.isEmpty())
+						LorittaBirthday2020.detectedBotGuilds.remove(event.guild!!.idLong)
+				}
 			}
 		}
 
@@ -81,7 +90,7 @@ class DropBirthdayStuffModule : MessageReceivedModule {
 		val lastDrop = lastDropsAt.getOrDefault(id, 0L)
 		val lastDropDiff = date - lastDrop
 
-		val randomNumber = Loritta.RANDOM.nextInt(0, 1500)
+		val randomNumber = Loritta.RANDOM.nextInt(0, 750) // Loritta.RANDOM.nextInt(0, 1500)
 
 		if (randomNumber in 0..chance && event.message.contentStripped.hashCode() != lorittaProfile.lastMessageSentHash && event.message.contentRaw.length >= 5) {
 			if (5_000 >= lastDropDiff)

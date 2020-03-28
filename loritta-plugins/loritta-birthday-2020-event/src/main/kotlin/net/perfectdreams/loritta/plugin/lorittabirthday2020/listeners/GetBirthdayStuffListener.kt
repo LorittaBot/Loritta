@@ -1,8 +1,11 @@
 package net.perfectdreams.loritta.plugin.lorittabirthday2020.listeners
 
+import com.github.salomonbrys.kotson.jsonObject
 import com.google.common.cache.CacheBuilder
 import com.mrpowergamerbr.loritta.dao.Background
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.DonationKeys
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -166,6 +169,7 @@ class GetBirthdayStuffListener(val m: LorittaBirthday2020Event) : ListenerAdapte
 					transaction(Databases.loritta) {
 						if (it is LorittaBirthday2020.SonhosReward) {
 							lorittaProfile.money += it.sonhosReward
+							return@transaction
 						} else if (it is LorittaBirthday2020.BackgroundReward) {
 							val internalName = it.internalName
 							BackgroundPayments.insert {
@@ -174,6 +178,15 @@ class GetBirthdayStuffListener(val m: LorittaBirthday2020Event) : ListenerAdapte
 								it[background] = Background.findById(internalName)!!.id
 								it[boughtAt] = System.currentTimeMillis()
 							}
+							return@transaction
+						} else if (it is LorittaBirthday2020.PremiumKeyReward) {
+							DonationKeys.insert {
+								it[userId] = event.userIdLong
+								it[value] = 100.0
+								it[expiresAt] = System.currentTimeMillis() + Constants.ONE_MONTH_IN_MILLISECONDS
+								it[metadata] = jsonObject("type" to "LorittaBirthday2020Event")
+							}
+							return@transaction
 						}
 					}
 				}

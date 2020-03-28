@@ -38,7 +38,17 @@ object LorittaBirthday2020 {
 
 			SonhosReward(1_200, 7_000),
 
-			BackgroundReward(1_300, "birthday2020PantufaHugoo")
+			BackgroundReward(1_300, "birthday2020PantufaHugoo"),
+
+			SonhosReward(1_400, 7_000),
+
+			BackgroundReward(1_500, "birthday2020PantufaOusado"),
+
+			SonhosReward(1_600, 7_000),
+
+			BackgroundReward(1_700, "birthday2020PantufaDezato"),
+
+			PremiumKeyReward(2_000)
 	)
 	val gabrielaRewards = listOf(
 			BackgroundReward(100, "birthday2020TeamGabriela"),
@@ -65,7 +75,17 @@ object LorittaBirthday2020 {
 
 			SonhosReward(1_200, 7_000),
 
-			BackgroundReward(1_300, "birthday2020GabrielaItsGabi")
+			BackgroundReward(1_300, "birthday2020GabrielaItsGabi"),
+
+			SonhosReward(1_400, 7_000),
+
+			BackgroundReward(1_500, "birthday2020GabrielaCoffee2"),
+
+			SonhosReward(1_600, 7_000),
+
+			BackgroundReward(1_700, "birthday2020GabrielaPinotti"),
+
+			PremiumKeyReward(2_000)
 	)
 
 	val openChannels = ConcurrentHashMap<Long, Channel<JsonObject>>()
@@ -129,6 +149,7 @@ object LorittaBirthday2020 {
 	open class Reward(val requiredPoints: Int)
 	class BackgroundReward(requiredPoints: Int, val internalName: String) : Reward(requiredPoints)
 	class SonhosReward(requiredPoints: Int, val sonhosReward: Int) : Reward(requiredPoints)
+	class PremiumKeyReward(requiredPoints: Int) : Reward(requiredPoints)
 	data class DetectedInfractions(
 			val guildId: Long,
 			val messageId: Long,
