@@ -4,6 +4,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.js.Js
 import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.request.post
 import io.ktor.client.request.url
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.readText
@@ -303,6 +304,21 @@ class SpicyMorenitta : Logging {
 		debug("Current path is $path")
 		debug("Path without locale is ${pathWithoutLocale}")
 
+		val logoutButton = document.select<HTMLElement?>("#logout-button")
+		logoutButton?.let {
+			if (!it.hasAttribute("data-login-button-enabled")) {
+				it.setAttribute("data-login-button-enabled", "true")
+
+				logoutButton.onClick {
+					showLoadingScreen()
+					launch {
+						http.post<String>("${window.location.origin}/api/v1/users/@me/logout") {}
+						window.location.href = "/"
+					}
+				}
+			}
+		}
+
 		document.select<Element?>("#languages")?.let {
 			it.clear()
 			it.append {
@@ -319,6 +335,7 @@ class SpicyMorenitta : Logging {
 				}
 			}
 		}
+
 		var route = routes.firstOrNull { it.matches(WebsiteUtils.getPathWithoutLocale()) }
 		if (route == null) {
 			warn("No route for ${WebsiteUtils.getPathWithoutLocale()} found! Bug? Defaulting to UpdateNavbarSizerPostRender!")

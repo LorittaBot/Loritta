@@ -42,7 +42,6 @@ object DefaultRoutes {
 			DailyRoute(loritta),
 			NashornDocsRoute(loritta),
 			DonateRoute(loritta),
-			LogoutRoute(loritta),
 
 			// Landing Pages
 			BrazilianBotLandingPageRoute(loritta),
@@ -152,6 +151,7 @@ object DefaultRoutes {
 			PostDonationPaymentRoute(loritta),
 			PostSearchUsersRoute(loritta),
 			PostUserReputationsRoute(loritta),
+			PostLogoutRoute(loritta),
 
 			// Twitch
 			GetTwitchInfoRoute(loritta),
