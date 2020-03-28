@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import mu.KotlinLogging
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
+import net.perfectdreams.loritta.plugin.donatorsostentation.commands.ActivePremiumSlotsExecutor
 import net.perfectdreams.loritta.plugin.donatorsostentation.commands.DisableBoostExecutor
 import net.perfectdreams.loritta.plugin.donatorsostentation.commands.EnableBoostExecutor
 import net.perfectdreams.loritta.plugin.donatorsostentation.listeners.BoostGuildListener
@@ -24,9 +25,12 @@ class DonatorsOstentationPlugin(name: String, loritta: LorittaBot) : LorittaDisc
         addEventListener(BoostGuildListener(config))
         launch(NitroBoostUtils.createBoostTask(config))
         launch(NitroBoostUtils.updateValidBoostServers(config))
+        launch(PremiumSlotsUtils.createPremiumSlotsAdvertisementTask(config))
+        launch(PremiumSlotsUtils.createPremiumSlotsCloseTask(config))
         addMessageReceivedModule(CheckBoostStatusModule(config))
 
         loriToolsExecutors.add(EnableBoostExecutor)
         loriToolsExecutors.add(DisableBoostExecutor)
+        loriToolsExecutors.add(ActivePremiumSlotsExecutor)
     }
 }

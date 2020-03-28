@@ -72,7 +72,8 @@ object LorittaBirthday2020 {
 	val detectedBotGuilds = ConcurrentHashMap<Long, MutableList<DetectedInfractions>>()
 	val blacklistedGuilds = listOf(
 			623204625251827724L,
-			546027106895790081L
+			546027106895790081L,
+			673036837324980238L
 	)
 
 	val emojis = listOf(
