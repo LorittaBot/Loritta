@@ -33,6 +33,8 @@ data class LorittaJsonWebSession(
 
 		println("Wasn't able to load from cache... :(")
 		try {
+			val now = System.currentTimeMillis()
+
 			val userIdentification = discordIdentification.getUserIdentification()
 			val forCache = UserIdentification(
 					userIdentification.id,
@@ -40,7 +42,9 @@ data class LorittaJsonWebSession(
 					userIdentification.discriminator,
 					userIdentification.verified,
 					userIdentification.email,
-					userIdentification.avatar
+					userIdentification.avatar,
+					now,
+					now
 			)
 
 			call.lorittaSession = this.copy(
@@ -80,6 +84,8 @@ data class LorittaJsonWebSession(
 			val discriminator: String,
 			val verified: Boolean,
 			val email: String?,
-			val avatar: String?
+			val avatar: String?,
+			val createdAt: Long,
+			val updatedAt: Long
 	)
 }
