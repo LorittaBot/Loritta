@@ -80,7 +80,7 @@ class QuirkyStuff(name: String, loritta: LorittaBot) : DiscordPlugin(name, lorit
         registerCommand(BirthdayCommand(this))
 
         // ===[ HALLOWEEN 2019 ]===
-        registerCommand(DocesCommand())
+        // registerCommand(DocesCommand())
         registerBadge(HalloweenBadge())
         registerBadge(CanecaBadge(config))
 

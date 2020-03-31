@@ -4,6 +4,7 @@ import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.network.Databases
 import kotlinx.coroutines.channels.Channel
+import mu.KotlinLogging
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.tables.CollectedBirthday2020Points
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -13,6 +14,8 @@ import java.time.ZoneId
 import java.util.concurrent.ConcurrentHashMap
 
 object LorittaBirthday2020 {
+	private val logger = KotlinLogging.logger {}
+
 	val pantufaRewards = listOf(
 			BackgroundReward(100, "birthday2020TeamPantufa"),
 
@@ -95,6 +98,7 @@ object LorittaBirthday2020 {
 			546027106895790081L,
 			673036837324980238L
 	)
+	val cachedPresentCount = ConcurrentHashMap<Long, CachedUserPresents>()
 
 	val emojis = listOf(
 			"happy_birthday:692338660611457035",
@@ -130,10 +134,41 @@ object LorittaBirthday2020 {
 	fun sendPresentCount(m: LorittaBirthday2020Event, id: Long, type: String = "collectedPoint") {
 		val channel = openChannels[id] ?: return
 
-		val points = transaction(Databases.loritta) {
-			CollectedBirthday2020Points.select {
-				CollectedBirthday2020Points.user eq id
-			}.count()
+		val cached = cachedPresentCount[id]
+
+		var points: Int? = null
+		var fromDb = false
+
+		if (cached != null) {
+			val time = System.currentTimeMillis()
+			if (60_000 >= time - cached.createdAt) {
+				logger.info { "Loading cached points for $id..." }
+				points = cached.points
+			}
+		}
+
+		if (points == null) {
+			logger.info { "Loading points from database for $id..." }
+			fromDb = true
+			points = transaction(Databases.loritta) {
+				CollectedBirthday2020Points.select {
+					CollectedBirthday2020Points.user eq id
+				}.count()
+			}
+		}
+
+		if (cached != null) {
+			if (fromDb) {
+				cached.points = points
+				cached.createdAt = System.currentTimeMillis()
+			} else {
+				cached.points++
+			}
+		} else {
+			cachedPresentCount[id] = CachedUserPresents(
+					points,
+					System.currentTimeMillis()
+			)
 		}
 
 		m.launch {
@@ -154,5 +189,9 @@ object LorittaBirthday2020 {
 			val guildId: Long,
 			val messageId: Long,
 			val detectedAt: Long
+	)
+	class CachedUserPresents(
+			var points: Int,
+			var createdAt: Long
 	)
 }

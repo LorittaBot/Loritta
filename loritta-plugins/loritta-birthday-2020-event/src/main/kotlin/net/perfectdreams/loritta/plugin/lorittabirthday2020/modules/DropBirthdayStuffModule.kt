@@ -18,10 +18,8 @@ import net.perfectdreams.loritta.plugin.lorittabirthday2020.LorittaBirthday2020
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.listeners.GetBirthdayStuffListener
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.tables.Birthday2020Drops
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.tables.Birthday2020Players
-import net.perfectdreams.loritta.plugin.lorittabirthday2020.tables.CollectedBirthday2020Points
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
 import java.time.LocalDateTime
@@ -101,22 +99,13 @@ class DropBirthdayStuffModule : MessageReceivedModule {
 			if (30_000 >= date - userDropTime)
 				return false
 
-			val collectedAll = transaction(Databases.loritta) {
-				CollectedBirthday2020Points.selectAll().count()
-			}
-
 			val getTheCandy = transaction(Databases.loritta) {
 				Birthday2020Players.select {
 					Birthday2020Players.user eq lorittaProfile.id
 				}.count() != 0
 			}
 
-			val emoteToBeUsed = try {
-				LorittaBirthday2020.emojis[(collectedAll / 50_000) % LorittaBirthday2020.emojis.size]
-			} catch (e: Exception) {
-				logger.warn(e) { "Invalid Birthday emote! ${(collectedAll / 50_000) % LorittaBirthday2020.emojis.size}" }
-				return false
-			}
+			val emoteToBeUsed = LorittaBirthday2020.emojis.random()
 
 			if (getTheCandy) {
 				lastDropsAt[id] = date

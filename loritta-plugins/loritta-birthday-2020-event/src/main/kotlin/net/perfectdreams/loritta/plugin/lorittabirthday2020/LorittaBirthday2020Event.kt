@@ -7,17 +7,24 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
+import net.perfectdreams.loritta.plugin.lorittabirthday2020.badges.GabrielaBadge
+import net.perfectdreams.loritta.plugin.lorittabirthday2020.badges.PantufaBadge
+import net.perfectdreams.loritta.plugin.lorittabirthday2020.commands.GiveBirthdayKeysExecutor
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.commands.GiveBirthdayRewardsExecutor
+import net.perfectdreams.loritta.plugin.lorittabirthday2020.commands.GiveSafeBirthdayRewardsExecutor
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.listeners.GetBirthdayStuffListener
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.modules.DropBirthdayStuffModule
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.routes.*
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.tables.Birthday2020Drops
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.tables.Birthday2020Players
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.tables.CollectedBirthday2020Points
+import net.perfectdreams.loritta.profile.Badge
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class LorittaBirthday2020Event(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(name, loritta) {
+	val badges = mutableListOf<Badge>()
+
 	override fun onEnable() {
 		loritta as LorittaDiscord
 		this.routes.add(ChooseTeamRoute(loritta))
@@ -31,6 +38,14 @@ class LorittaBirthday2020Event(name: String, loritta: LorittaBot) : LorittaDisco
 		this.addEventListener(GetBirthdayStuffListener(this))
 
 		loriToolsExecutors += GiveBirthdayRewardsExecutor
+		loriToolsExecutors += GiveBirthdayKeysExecutor
+		loriToolsExecutors += GiveSafeBirthdayRewardsExecutor
+		badges.add(PantufaBadge())
+		badges.add(GabrielaBadge())
+
+		badges.forEach {
+			loritta.profileDesignManager.registerBadge(it)
+		}
 
 		transaction(Databases.loritta) {
 			SchemaUtils.createMissingTablesAndColumns(
@@ -62,6 +77,11 @@ class LorittaBirthday2020Event(name: String, loritta: LorittaBot) : LorittaDisco
 
 	override fun onDisable() {
 		super.onDisable()
+		loritta as LorittaDiscord
+
+		badges.forEach {
+			loritta.profileDesignManager.unregisterBadge(it)
+		}
 	}
 
 	companion object {
