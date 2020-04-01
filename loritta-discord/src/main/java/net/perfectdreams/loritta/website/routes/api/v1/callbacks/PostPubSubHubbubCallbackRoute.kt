@@ -10,7 +10,6 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.bytesToHex
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
-import com.mrpowergamerbr.loritta.youtube.CreateYouTubeWebhooksTask
 import io.ktor.application.ApplicationCall
 import io.ktor.client.request.header
 import io.ktor.client.request.post
@@ -25,11 +24,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.tables.SentYouTubeVideoIds
 import net.perfectdreams.loritta.tables.TrackedTwitchAccounts
 import net.perfectdreams.loritta.tables.TrackedYouTubeAccounts
 import net.perfectdreams.loritta.website.routes.BaseRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.website.utils.extensions.urlQueryString
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jsoup.Jsoup
@@ -94,31 +95,6 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 					WebsiteUtils.createErrorPayload(LoriWebCode.UNAUTHORIZED, "Invalid X-Hub-Signature Header from Request")
 			)
 
-		if (com.mrpowergamerbr.loritta.utils.loritta.isMaster) {
-			logger.info { "Relaying PubSubHubbub request to other instances, because I'm the master server! :3" }
-
-			val shards = com.mrpowergamerbr.loritta.utils.loritta.config.clusters.filter { it.id != 1L }
-
-			shards.map {
-				GlobalScope.launch {
-					try {
-						withTimeout(25_000) {
-							logger.info { "Sending request to ${"https://${it.getUrl()}${call.request.path()}${call.request.urlQueryString}"}..." }
-							loritta.http.post<HttpResponse>("https://${it.getUrl()}${call.request.path()}${call.request.urlQueryString}") {
-								userAgent(com.mrpowergamerbr.loritta.utils.loritta.lorittaCluster.getUserAgent())
-								header("X-Hub-Signature", originalSignature)
-
-								body = response
-							}
-						}
-					} catch (e: Exception) {
-						logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
-						throw PingCommand.ShardOfflineException(it.id, it.name)
-					}
-				}
-			}
-		}
-
 		val type = call.parameters["type"]
 
 		if (type == "ytvideo") {
@@ -130,23 +106,32 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 
 			val videoId = lastVideo.getElementsByTag("yt:videoId").first().html()
 			val lastVideoTitle = lastVideo.getElementsByTag("title").first().html()
-			val published =lastVideo.getElementsByTag("published").first().html()
-			val channelId =lastVideo.getElementsByTag("yt:channelId").first().html()
+			val published = lastVideo.getElementsByTag("published").first().html()
+			val channelId = lastVideo.getElementsByTag("yt:channelId").first().html()
 
 			val publishedEpoch = Constants.YOUTUBE_DATE_FORMAT.parse(published).time
-			val storedEpoch = CreateYouTubeWebhooksTask.lastNotified[channelId]
 
-			if (storedEpoch != null) {
-				// Para evitar problemas (caso duas webhooks tenham sido criadas) e para evitar "atualizações de descrições causando updates", nós iremos verificar:
-				// 1. Se o vídeo foi enviado a mais de 1 minuto do que o anterior
-				// 2. Se o último vídeo foi enviado depois do último vídeo enviado
-				if (System.currentTimeMillis() >= (60000 - storedEpoch) && storedEpoch >= publishedEpoch) {
+			if (com.mrpowergamerbr.loritta.utils.loritta.isMaster) {
+				val wasAlreadySent = transaction(Databases.loritta) {
+					SentYouTubeVideoIds.select {
+						SentYouTubeVideoIds.channelId eq channelId
+					}.count() != 0
+				}
+
+				if (!wasAlreadySent) {
+					transaction(Databases.loritta) {
+						SentYouTubeVideoIds.insert {
+							it[SentYouTubeVideoIds.videoId] = videoId
+							it[SentYouTubeVideoIds.channelId] = channelId
+							it[receivedAt] = System.currentTimeMillis()
+						}
+					}
+					relayPubSubHubbubNotificationToOtherClusters(call, originalSignature, response)
+				} else {
+					logger.warn { "Video $lastVideoTitle ($videoId) from $channelId was already sent, so... bye!" }
 					return
 				}
 			}
-
-			// Vamos agora atualizar o map
-			CreateYouTubeWebhooksTask.lastNotified[channelId] = publishedEpoch
 
 			logger.info("Recebi notificação de vídeo $lastVideoTitle ($videoId) de $channelId")
 
@@ -200,6 +185,9 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 		}
 
 		if (type == "twitch") {
+			if (com.mrpowergamerbr.loritta.utils.loritta.isMaster)
+				relayPubSubHubbubNotificationToOtherClusters(call, originalSignature, response)
+
 			val userId = call.parameters["userid"]!!.toLong()
 
 			val payload = jsonParser.parse(response)
@@ -288,5 +276,30 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 			}
 		}
 		call.respondJson(jsonObject())
+	}
+
+	fun relayPubSubHubbubNotificationToOtherClusters(call: ApplicationCall, originalSignature: String, response: String) {
+		logger.info { "Relaying PubSubHubbub request to other instances, because I'm the master server! :3" }
+
+		val shards = com.mrpowergamerbr.loritta.utils.loritta.config.clusters.filter { it.id != 1L }
+
+		shards.map {
+			GlobalScope.launch {
+				try {
+					withTimeout(25_000) {
+						logger.info { "Sending request to ${"https://${it.getUrl()}${call.request.path()}${call.request.urlQueryString}"}..." }
+						loritta.http.post<HttpResponse>("https://${it.getUrl()}${call.request.path()}${call.request.urlQueryString}") {
+							userAgent(com.mrpowergamerbr.loritta.utils.loritta.lorittaCluster.getUserAgent())
+							header("X-Hub-Signature", originalSignature)
+
+							body = response
+						}
+					}
+				} catch (e: Exception) {
+					logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
+					throw PingCommand.ShardOfflineException(it.id, it.name)
+				}
+			}
+		}
 	}
 }

@@ -400,7 +400,8 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					DailyShops,
 					DailyShopItems,
 					BackgroundPayments,
-					CachedDiscordUsers
+					CachedDiscordUsers,
+					SentYouTubeVideoIds
 			)
 		}
 	}

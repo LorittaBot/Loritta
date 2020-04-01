@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class CreateYouTubeWebhooksTask : Runnable {
 	companion object {
-		val lastNotified = Caffeine.newBuilder().expireAfterAccess(12L, TimeUnit.HOURS).build<String, Long>().asMap()
 		private val logger = KotlinLogging.logger {}
 	}
 
