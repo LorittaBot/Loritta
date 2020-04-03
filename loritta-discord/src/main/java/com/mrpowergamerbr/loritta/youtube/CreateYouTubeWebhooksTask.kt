@@ -45,12 +45,6 @@ class CreateYouTubeWebhooksTask : Runnable {
 			val channelIds = mutableSetOf<String>()
 			channelIds.addAll(allChannelIds.map { it[TrackedYouTubeAccounts.youTubeChannelId] })
 
-			channelIds.forEach {
-				// Caso o channel ID não esteja na map de lastNotified, vamos salvar o tempo atual nela (para evitar que anuncie coisas "do passado")
-				if (!lastNotified.containsKey(it))
-					lastNotified[it] = System.currentTimeMillis()
-			}
-
 			val youtubeWebhookFile = File(Loritta.FOLDER, "youtube_webhook.json")
 
 			if (!fileLoaded && youtubeWebhookFile.exists()) {

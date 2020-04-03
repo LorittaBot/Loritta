@@ -4,7 +4,6 @@ import com.google.common.math.BigIntegerMath
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.Emotes
@@ -30,23 +29,21 @@ class AnagramaCommand : AbstractCommand("anagram", listOf("anagrama"), CommandCa
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val palavra = context.args.joinToString(separator = " ")
+			val currentWord = context.args.joinToString(separator = " ")
 
-			val shuffledChars = LorittaUtilsKotlin.shuffle(palavra.toCharArray().toMutableList())
+			var shuffledChars = currentWord.toCharArray().toList()
+
+			while (currentWord.length != 1 && shuffledChars.joinToString("") == currentWord)
+				shuffledChars = shuffledChars.shuffled()
 
 			val shuffledWord = shuffledChars.joinToString(separator = "")
 
-			val chars = mutableMapOf<Char, Int>()
-			for (ch in palavra) {
-				chars[ch] = chars.getOrDefault(ch, 0) + 1
-			}
-
 			var exp = 1.toBigInteger()
-			for ((_, value) in chars.entries) {
-				exp = exp.multiply(BigIntegerMath.factorial(value))
+			repeat(shuffledChars.size) {
+				exp = exp.multiply(BigIntegerMath.factorial(it))
 			}
 
-			val max = BigIntegerMath.factorial(palavra.length).divide(exp)
+			val max = BigIntegerMath.factorial(currentWord.length).divide(exp)
 
 			context.reply(
 					LoriReply(
@@ -54,7 +51,7 @@ class AnagramaCommand : AbstractCommand("anagram", listOf("anagrama"), CommandCa
 							prefix = "✍"
 					),
 					LoriReply(
-							message = context.locale["$LOCALE_PREFIX.stats", palavra, max],
+							message = context.locale["$LOCALE_PREFIX.stats", currentWord, max],
 							prefix = "\uD83E\uDD13"
 					)
 			)
