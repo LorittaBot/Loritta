@@ -37,15 +37,11 @@ data class LorittaJsonWebSession(
 		val discordIdentification = getDiscordAuthFromJson() ?: return null
 
 		try {
-			val now = System.currentTimeMillis()
-
 			val userIdentification = discordIdentification.getUserIdentification()
 			val forCache = userIdentification.toWebSessionIdentification()
 
 			call.lorittaSession = this.copy(
-					cachedIdentification = gson.toJson(
-							forCache
-					)
+					cachedIdentification = forCache.toJson()
 			)
 
 			return forCache
@@ -82,5 +78,7 @@ data class LorittaJsonWebSession(
 			val avatar: String?,
 			val createdAt: Long,
 			val updatedAt: Long
-	)
+	) {
+		fun toJson() = gson.toJson(this)
+	}
 }
