@@ -134,6 +134,8 @@ class SpicyMorenitta : Logging {
 	fun start() {
 		INSTANCE = this
 
+		ErrorTracker.start(this)
+
 		// Workaround for KotlinJS's DCE
 		DoNotRemoveDeadCodeWorkaround.methodRefs
 

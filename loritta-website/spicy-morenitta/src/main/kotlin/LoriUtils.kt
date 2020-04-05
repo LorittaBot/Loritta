@@ -1,13 +1,9 @@
 
-import kotlinx.html.*
-import kotlinx.html.stream.appendHTML
 import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.parse
 import net.perfectdreams.spicymorenitta.utils.locale.BaseLocale
 import utils.LegacyBaseLocale
 import utils.LorittaProfile
-import utils.TingleModal
-import utils.TingleOptions
 import kotlin.browser.document
 import kotlin.browser.window
 import kotlin.js.Json
@@ -86,85 +82,6 @@ fun oldMain(args: Array<String>) {
 
 		true
 	})
-
-	window.onerror = { message: dynamic, file: String, line: Int, col: Int, error: Any? ->
-		if (!message.unsafeCast<String>().contains("adsbygoogle")) {
-			// Ao dar um erro, nós iremos mostrar uma mensagem legal para o usuário, para que seja mais fácil resolver problema
-			println("Erro detectado! Abrindo modal...")
-
-			if (error == null) {
-				println("Error is null! Ignorning modal... (Mostly likely from AdSense!)")
-			} else {
-
-				println("Message: " + message)
-				println("file: " + file)
-				println("line: " + line)
-				println("col: " + col)
-				println("error: " + error)
-				println(error.asDynamic().stack)
-
-
-				val content = """Error: ${message}
-			|User Agent: ${window.navigator.userAgent}
-			|URL: ${window.location.href}
-			|User ID: ${selfProfile?.userId ?: "Unknown"}
-			|Stack:
-			|${error.asDynamic().stack}
-		""".trimMargin()
-
-				val modal = TingleModal(
-						TingleOptions(
-								footer = true,
-								cssClass = arrayOf("tingle-modal--overflow")
-						)
-				)
-
-				modal.addFooterBtn("<i class=\"fas fa-times\"></i> Fechar", "button-discord pure-button button-discord-modal button-discord-modal-secondary-action") {
-					modal.close()
-				}
-
-				val stringBuilder = StringBuilder()
-				stringBuilder.appendHTML(false).div(classes = "category-name") {
-					+"Oopsie Woopsie! $error"
-				}.appendHTML().div {
-					div("pure-g vertically-centered-content") {
-						style = "text-align: left;"
-						div("pure-u-1 pure-u-md-1-4") {
-							style = "overflow: hidden;"
-							img(alt = "Loritta Pobre", src = "${loriUrl}assets/img/loritta_pobre.png", classes = "animated fadeInUp") {
-								style = "width: 100%;"
-							}
-						}
-						div("pure-u-1 pure-u-md-3-4") {
-							div("sectionText") {
-								h3("sectionHeader") {
-									+legacyLocale?.get("ERROR_SomethingWentWrong") ?: "Alguma coisa deu errada..."
-								}
-								p {
-									unsafe {
-										raw(legacyLocale?.get("ERROR_WhatShouldIDo")
-												?: "Infelizmente ninguém é perfeito... e pelo visto você encontrou um problema no meu website... Tente recarregar a página e veja se o problema persiste, caso persista, entre no meu <a href='${loriUrl}support'>servidor de suporte</a> e envie o código abaixo junto com uma pequena explicação sobre o que você estava tentando fazer no momento que deu o erro!")
-									}
-								}
-								p {
-									+legacyLocale?.get("ERROR_SorryForTheInconvenience")
-											?: "Desculpe pela inconveniência..."
-								}
-								pre {
-									style = "word-wrap: break-word; white-space: pre-wrap;"
-									+window.btoa(content)
-								}
-							}
-						}
-					}
-				}
-
-				modal.setContent(stringBuilder.toString())
-				modal.open()
-			}
-		}
-		false
-	}
 }
 
 fun testError() {
