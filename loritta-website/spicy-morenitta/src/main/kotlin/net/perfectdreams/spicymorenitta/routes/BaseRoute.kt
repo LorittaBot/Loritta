@@ -22,6 +22,8 @@ import kotlin.math.max
 
 abstract class BaseRoute(val path: String) : Logging {
     open val keepLoadingScreen = false
+    open val requiresLocales = true
+    open val requiresUserIdentification = true
 
     // Implementação básica do sistema de paths do ktor
     fun matches(input: String): Boolean {

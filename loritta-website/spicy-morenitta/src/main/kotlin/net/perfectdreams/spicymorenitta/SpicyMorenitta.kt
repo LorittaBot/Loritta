@@ -57,10 +57,10 @@ class SpicyMorenitta : Logging {
 			HomeRoute(),
 			DiscordBotBrasileiroRoute(),
 			FanArtsRoute(this),
-			UpdateNavbarSizePostRender("/support"),
-			UpdateNavbarSizePostRender("/blog"),
-			UpdateNavbarSizePostRender("/extended"),
-			UpdateNavbarSizePostRender("/guidelines"),
+			UpdateNavbarSizePostRender("/support", false, false),
+			UpdateNavbarSizePostRender("/blog", false, false),
+			UpdateNavbarSizePostRender("/extended", false, false),
+			UpdateNavbarSizePostRender("/guidelines", false, false),
 			AuditLogRoute(this),
 			LevelUpRoute(this),
 			TwitterRoute(this),
@@ -188,6 +188,11 @@ class SpicyMorenitta : Logging {
 			window.asDynamic().spicyMorenittaLoaded = true
 
 			launch {
+				val currentRoute = getPageRouteForCurrentPath()
+
+				debug("Route for the current path: $currentRoute")
+				debug("Does the route need locale data? ${currentRoute.requiresLocales}")
+				debug("Does the route need user identification data? ${currentRoute.requiresUserIdentification}")
 				val deferred = listOf(
 						async {
 							loadLocale()
@@ -197,10 +202,14 @@ class SpicyMorenitta : Logging {
 						}
 				)
 
-				deferred.joinAll()
+				if (currentRoute.requiresUserIdentification)
+					deferred[0].join()
+				if (currentRoute.requiresLocales) {
+					deferred[1].join()
 
-				debug("Locale test: ${locale["commands.images.drawnword.description"]}")
-				debug("Locale test: ${locale["commands.fun.ship.bribeLove", ":3"]}")
+					debug("Locale test: ${locale["commands.images.drawnword.description"]}")
+					debug("Locale test: ${locale["commands.fun.ship.bribeLove", ":3"]}")
+				}
 
 				GoogleAdSense.renderAds()
 
@@ -298,6 +307,15 @@ class SpicyMorenitta : Logging {
 		}
 	}
 
+	fun getPageRouteForCurrentPath(): BaseRoute {
+		var route = routes.firstOrNull { it.matches(WebsiteUtils.getPathWithoutLocale()) }
+		if (route == null) {
+			warn("No route for ${WebsiteUtils.getPathWithoutLocale()} found! Bug? Defaulting to UpdateNavbarSizerPostRender!")
+			route = UpdateNavbarSizePostRender(WebsiteUtils.getPathWithoutLocale())
+		}
+		return route
+	}
+
 	@UseExperimental(ImplicitReflectionSerializer::class)
 	fun onPageChange(path: String, content: Element?) {
 		if (!navbarIsSetup) {
@@ -341,13 +359,9 @@ class SpicyMorenitta : Logging {
 			}
 		}
 
-		var route = routes.firstOrNull { it.matches(WebsiteUtils.getPathWithoutLocale()) }
-		if (route == null) {
-			warn("No route for ${WebsiteUtils.getPathWithoutLocale()} found! Bug? Defaulting to UpdateNavbarSizerPostRender!")
-			route = UpdateNavbarSizePostRender(WebsiteUtils.getPathWithoutLocale())
-		}
+		val route = getPageRouteForCurrentPath()
 
-		val params = route.getPathParameters(WebsiteUtils.getPathWithoutLocale())
+		val params = route.getPathParameters(pathWithoutLocale)
 		debug("Parameters: ${params.entries}")
 		val call = ApplicationCall(params, content)
 

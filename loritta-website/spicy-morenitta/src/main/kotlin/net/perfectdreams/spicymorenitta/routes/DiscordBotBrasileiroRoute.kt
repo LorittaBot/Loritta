@@ -14,6 +14,9 @@ import kotlin.dom.addClass
 import kotlin.dom.removeClass
 
 class DiscordBotBrasileiroRoute : BaseRoute("/discord-bot-brasileiro") {
+    override val requiresLocales = false
+    override val requiresUserIdentification = false
+
     @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         super.onRender(call)

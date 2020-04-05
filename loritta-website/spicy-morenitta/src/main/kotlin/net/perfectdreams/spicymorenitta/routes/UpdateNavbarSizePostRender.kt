@@ -5,7 +5,7 @@ import net.perfectdreams.spicymorenitta.utils.select
 import org.w3c.dom.HTMLDivElement
 import kotlin.browser.document
 
-open class UpdateNavbarSizePostRender(path: String) : BaseRoute(path) {
+open class UpdateNavbarSizePostRender(path: String, override val requiresUserIdentification: Boolean = true, override val requiresLocales: Boolean= true) : BaseRoute(path) {
     override fun onRender(call: ApplicationCall) {
         super.onRender(call)
         fixDummyNavbarHeight(call)

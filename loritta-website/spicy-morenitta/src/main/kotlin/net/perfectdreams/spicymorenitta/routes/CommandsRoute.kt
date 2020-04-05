@@ -21,6 +21,7 @@ import kotlin.browser.window
 class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/commands") {
     override val keepLoadingScreen: Boolean
         get() = true
+    override val requiresUserIdentification = false
 
     @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
