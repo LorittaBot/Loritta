@@ -1,10 +1,8 @@
 package com.mrpowergamerbr.loritta.youtube
 
-import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.fromJson
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -17,7 +15,6 @@ import net.perfectdreams.loritta.tables.TrackedYouTubeAccounts
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 class CreateYouTubeWebhooksTask : Runnable {

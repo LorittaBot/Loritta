@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import io.ktor.application.ApplicationCall
 import mu.KotlinLogging
 import net.perfectdreams.loritta.website.utils.extensions.lorittaSession
+import net.perfectdreams.loritta.website.utils.extensions.toWebSessionIdentification
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 data class LorittaJsonWebSession(
@@ -39,16 +40,7 @@ data class LorittaJsonWebSession(
 			val now = System.currentTimeMillis()
 
 			val userIdentification = discordIdentification.getUserIdentification()
-			val forCache = UserIdentification(
-					userIdentification.id,
-					userIdentification.username,
-					userIdentification.discriminator,
-					userIdentification.verified,
-					userIdentification.email,
-					userIdentification.avatar,
-					now,
-					now
-			)
+			val forCache = userIdentification.toWebSessionIdentification()
 
 			call.lorittaSession = this.copy(
 					cachedIdentification = gson.toJson(

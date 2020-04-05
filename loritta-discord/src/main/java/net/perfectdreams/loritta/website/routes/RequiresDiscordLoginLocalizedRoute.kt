@@ -89,17 +89,15 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 
 					auth.doTokenExchange()
 					val userIdentification = auth.getUserIdentification()
+					val forCache = userIdentification.toWebSessionIdentification()
+					call.sessions.set(
+							session.copy(
+									cachedIdentification = forCache,
+									storedDiscordAuthTokens = auth.toJson()
+							)
+					)
 
-					call.sessions.set(session.copy(storedDiscordAuthTokens = auth.toJson()))
-					val storedUserIdentification = call.lorittaSession.getUserIdentification(call) ?: run {
-						// Isto jamais deve acontecer, maaaas caso algum dia aconteça, iremos apenas redirecionar para o lugar certo.
-						logger.info { "Something went very wrong while retrieving the stored user identification for ${userIdentification}" }
-						val state = JsonObject()
-						state["redirectUrl"] = "https://$hostHeader" + call.request.path()
-						redirect(com.mrpowergamerbr.loritta.utils.loritta.discordInstanceConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}", false)
-					}
-
-					storedUserIdentification
+					forCache
 				}
 
 				// Verificar se o usuário é (possivelmente) alguém que foi banido de usar a Loritta
