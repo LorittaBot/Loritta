@@ -182,6 +182,9 @@ class SpicyMorenitta : Logging {
 
 			debug(window.location.pathname + " - " + WebsiteUtils.getPathWithoutLocale())
 
+			debug("Setting spicyMorenittaLoaded variable to true on the window object")
+			window.asDynamic().spicyMorenittaLoaded = true
+
 			launch {
 				val deferred = listOf(
 						async {
