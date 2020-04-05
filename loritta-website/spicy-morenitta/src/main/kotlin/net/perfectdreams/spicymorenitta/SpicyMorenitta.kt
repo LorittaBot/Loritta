@@ -216,6 +216,7 @@ class SpicyMorenitta : Logging {
 				AdvertisementUtils.checkIfUserIsBlockingAds()
 
 				onPageChange(window.location.pathname, null)
+				debug("Done! Current route is ${currentRoute::class.simpleName}")
 			}
 		}
 
