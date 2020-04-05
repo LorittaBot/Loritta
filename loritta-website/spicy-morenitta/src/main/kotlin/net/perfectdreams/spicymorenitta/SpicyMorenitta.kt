@@ -202,14 +202,14 @@ class SpicyMorenitta : Logging {
 						}
 				)
 
-				if (currentRoute.requiresUserIdentification)
-					deferred[0].join()
 				if (currentRoute.requiresLocales) {
-					deferred[1].join()
+					deferred[0].join()
 
 					debug("Locale test: ${locale["commands.images.drawnword.description"]}")
 					debug("Locale test: ${locale["commands.fun.ship.bribeLove", ":3"]}")
 				}
+				if (currentRoute.requiresUserIdentification)
+					deferred[1].join()
 
 				GoogleAdSense.renderAds()
 
