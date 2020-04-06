@@ -18,7 +18,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.SOCIAL) {
 	companion object {
-		val MARRIAGE_COST = 15000
+		val MARRIAGE_COST = 15_000
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -70,7 +70,7 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 				// Já está casado!
 				context.reply(
 						LoriReply(
-								locale["MARRY_AlreadyMarriedOther"],
+								locale["MARRY_AlreadyMarriedOther", proposeTo.asMention],
 								Constants.ERROR
 						)
 				)
