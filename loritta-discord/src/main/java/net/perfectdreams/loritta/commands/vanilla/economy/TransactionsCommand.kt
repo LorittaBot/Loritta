@@ -103,7 +103,13 @@ class TransactionsCommand : LorittaCommand(arrayOf("transactions", "transações
         }
 
         val embed = EmbedBuilder()
-                .setTitle("${Emotes.LORI_RICH} ${locale["commands.economy.transactions.title"]}")
+                .setTitle(
+                        "${Emotes.LORI_RICH} " +
+                                if (user != context.userHandle)
+                                    locale["commands.economy.transactions.otherUserTransactions", user.asTag]
+                                else
+                                    locale["commands.economy.transactions.title"]
+                )
                 .setColor(Constants.LORITTA_AQUA)
                 .setDescription(description)
 
