@@ -107,6 +107,8 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
 
                             div (classes = "media") {
                                 div(classes = "media-body") {
+                                    style = "overflow: auto;"
+                                    
                                     hr {}
 
                                     table(classes = "fancy-table") {
