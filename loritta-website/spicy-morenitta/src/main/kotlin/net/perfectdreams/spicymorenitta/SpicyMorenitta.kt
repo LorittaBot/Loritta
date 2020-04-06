@@ -280,52 +280,57 @@ class SpicyMorenitta : Logging {
 	fun updateLoggedInUser(newUser: UserIdentification) {
 		userIdentification = newUser
 		debug("New user is $newUser")
-		val loginButton = document.select<Element>("#login-button")
-		val cloned = loginButton.cloneNode(true) // Nós precisamos remover os event listeners (onClick)
-		cloned as Element
+		val loginButton = document.select<Element?>("#login-button")
+		if (loginButton != null) {
+			val cloned = loginButton.cloneNode(true) // Nós precisamos remover os event listeners (onClick)
+			cloned as Element
 
-		loginButton.replaceWith(cloned)
-		cloned.clear()
-		cloned.setAttribute("href", "/br/dashboard")
+			loginButton.replaceWith(cloned)
+			cloned.clear()
+			cloned.setAttribute("href", "/br/dashboard")
 
-		cloned.append {
-			val userId = newUser.id.toLong()
+			cloned.append {
+				val userId = newUser.id.toLong()
 
-			val avatarUrl = if (newUser.avatar != null) {
-				val extension = if (newUser.avatar.startsWith("a_")) { // Avatares animados no Discord começam com "_a"
-					"gif"
-				} else { "png" }
+				val avatarUrl = if (newUser.avatar != null) {
+					val extension = if (newUser.avatar.startsWith("a_")) { // Avatares animados no Discord começam com "_a"
+						"gif"
+					} else {
+						"png"
+					}
 
-				"https://cdn.discordapp.com/avatars/${userId}/${newUser.avatar}.${extension}?size=256"
-			} else {
-				val avatarId = userId % 5
+					"https://cdn.discordapp.com/avatars/${userId}/${newUser.avatar}.${extension}?size=256"
+				} else {
+					val avatarId = userId % 5
 
-				"https://cdn.discordapp.com/embed/avatars/$avatarId.png?size=256"
-			}
+					"https://cdn.discordapp.com/embed/avatars/$avatarId.png?size=256"
+				}
 
-			img(src = avatarUrl) {
-				style = """    font-size: 0px;
+				img(src = avatarUrl) {
+					style = """    font-size: 0px;
     line-height: 0px;
     width: 40px;
     height: 40px;
     position: absolute;
     top: 3px;
     border-radius: 100%;"""
-			}
+				}
 
-			div { // Dummy image que "ocupa" o espaço (já que a imagem usa position: absolute)
-				style = """    font-size: 0px;
+				div {
+					// Dummy image que "ocupa" o espaço (já que a imagem usa position: absolute)
+					style = """    font-size: 0px;
     line-height: 0px;
     width: 40px;
     visibility: hidden;
     height: 0px;
     display: inline-block;"""
-			}
+				}
 
-			span {
-				style = "padding-left: 4px;"
+				span {
+					style = "padding-left: 4px;"
 
-				+ newUser.username
+					+newUser.username
+				}
 			}
 		}
 	}
