@@ -239,6 +239,14 @@ class SpicyMorenitta : Logging {
 	suspend fun loadLocale() {
 		val payload = http.get<String>("${window.location.origin}/api/v1/loritta/locale/$localeId")
 		locale = kotlinx.serialization.json.JSON.nonstrict.parse(payload)
+
+		// Atualizar o locale que o moment utiliza, já que ele usa uma instância global para tuuuuudo
+		val momentLocaleId = when (locale.id) {
+			"default", "pt-pt" -> "pt-br"
+			"es-es" -> "es"
+			else -> "en"
+		}
+		Moment.locale(momentLocaleId)
 	}
 
 	@UseExperimental(ImplicitReflectionSerializer::class)

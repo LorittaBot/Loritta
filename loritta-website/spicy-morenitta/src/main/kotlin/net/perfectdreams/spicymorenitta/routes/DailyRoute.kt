@@ -100,7 +100,7 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
             } else {
                 locale["website.daily.alreadyReceivedPrizesWithTheSameIp"]
             }
-            
+
             GoogleRecaptchaUtils.render(jq("#daily-captcha").get()[0], RecaptchaOptions(
                     "6LfRyUkUAAAAAASo0YM4IZBqvkzxyRWJ1Ydw5weC",
                     "recaptchaCallback",
