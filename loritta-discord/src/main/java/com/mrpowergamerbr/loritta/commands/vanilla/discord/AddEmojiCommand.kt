@@ -28,7 +28,7 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.discord.addEmoji.description"]
+		return locale.toNewLocale()["commands.discord.addemoji.description"]
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
@@ -38,10 +38,10 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 	override fun getBotPermissions(): List<Permission> {
 		return listOf(Permission.MANAGE_EMOTES)
 	}
-	
+
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val imageUrl = context.getImageUrlAt(1, 1) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
-		
+
 		try {
 			val os = LorittaUtils.downloadFile(imageUrl, 5000)
 
@@ -50,7 +50,7 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 					val emote = context.guild.createEmote(context.rawArgs[0], Icon.from(inputStream)).await()
 					context.reply(
 							LoriReply(
-									context.legacyLocale.toNewLocale()["commands.discord.addEmoji.success"],
+									context.legacyLocale.toNewLocale()["commands.discord.addemoji.success"],
 									emote.asMention
 							)
 					)
@@ -63,15 +63,23 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 				if (e.errorCode == 30008) {
 					context.reply(
 							LoriReply(
-									context.legacyLocale.toNewLocale()["commands.discord.addEmoji.limitReached"],
+									context.legacyLocale.toNewLocale()["commands.discord.addemoji.limitReached"],
 									Constants.ERROR
 							)
 					)
-					
+					return
+				}
+				if (e.errorCode == 400) {
+					context.reply(
+							LoriReply(
+									context.legacyLocale.toNewLocale()["commands.discord.addemoji.emoteTooBig", "`256kb`"],
+									Constants.ERROR
+							)
+					)
 					return
 				}
 			}
-			
+
 			context.reply(
 					LoriReply(
 							context.legacyLocale.toNewLocale()["commands.discord.addEmoji.error"],
