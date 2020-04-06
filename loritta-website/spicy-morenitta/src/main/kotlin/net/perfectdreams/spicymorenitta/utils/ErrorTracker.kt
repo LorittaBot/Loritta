@@ -1,11 +1,15 @@
 package net.perfectdreams.spicymorenitta.utils
 
+import io.ktor.client.request.post
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
+import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.utils.locale.BaseLocale
+import org.w3c.dom.HTMLSpanElement
 import kotlin.browser.window
+import kotlin.js.Json
 
 object ErrorTracker : Logging {
 	private val isLocaleInitialized: Boolean
@@ -20,12 +24,21 @@ object ErrorTracker : Logging {
 	private val SORRY_FOR_THE_INCONVENIENCE: String
 		get() = if (isLocaleInitialized) locale["website.errorTracker.sorryForTheInconvenience"] else "Sorry for the inconvenience, I hope I can fix this issue soon!"
 
+	private val ERROR_CODE_ID: String
+		get() = if (isLocaleInitialized) locale["website.errorTracker.errorCodeId"] else "Error Code ID: {0}"
+
 	private val MY_SUPPORT_SERVER: String
 		get() = if (isLocaleInitialized) locale["website.errorTracker.mySupportServer"] else "my support server"
 
-	fun start(m: SpicyMorenitta) {
+	var isAlreadySending = false
 
+	fun start(m: SpicyMorenitta) {
 		debug("Starting Error Tracker...")
+
+		// Gambiarra, a gente só quer usar o buildAsHtml do BaseLocale
+		// Ele nem usa nenhuma das entries, então vamos apenas criar um dummy locale e utilizá-lo
+		// No futuro seria melhor mover o buildAsHtml para um código separado
+		val locale = BaseLocale("dummy", mutableMapOf())
 
 		window.onerror = callback@{ message: dynamic, file: String, line: Int, col: Int, error: Any? ->
 			if (message.unsafeCast<String>().contains("adsbygoogle")) // AdSense
@@ -41,6 +54,8 @@ object ErrorTracker : Logging {
 			warn("Error: $error")
 
 			val userIdentification = m.userIdentification
+			val currentRoute = m.currentRoute
+			val currentRouteClazz = currentRoute?.let { it::class.simpleName }
 
 			val content = buildString {
 				this.append("Message: $message")
@@ -57,7 +72,7 @@ object ErrorTracker : Logging {
 				else
 					this.append("Unknown")
 				this.append("\n")
-				this.append("Current Route: ${m.currentRoute ?: "Unknown"}")
+				this.append("Current Route: ${currentRouteClazz ?: "Unknown"}")
 				this.append("\n")
 				this.append("\n")
 				this.append("Stack:")
@@ -90,10 +105,6 @@ object ErrorTracker : Logging {
 							+SOMETHING_WENT_WRONG
 						}
 						p {
-							// Gambiarra, a gente só quer usar o buildAsHtml do BaseLocale
-							// Ele nem usa nenhuma das entries, então vamos apenas criar um dummy locale e utilizá-lo
-							// No futuro seria melhor mover o buildAsHtml para um código separado
-							val locale = BaseLocale("dummy", mutableMapOf())
 							locale.buildAsHtml(WHAT_SHOULD_I_DO, { control ->
 								if (control == 0) {
 									a(href = "/support") {
@@ -101,11 +112,22 @@ object ErrorTracker : Logging {
 									}
 								}
 							}, { str ->
-								+str
+								+ str
 							})
 						}
 						p {
 							+SORRY_FOR_THE_INCONVENIENCE
+						}
+						p {
+							locale.buildAsHtml(ERROR_CODE_ID, { control ->
+								if (control == 0) {
+									span(classes = "error-code-id") {
+										+"..."
+									}
+								}
+							}, { str ->
+								+ str
+							})
 						}
 					}
 					pre {
@@ -118,6 +140,41 @@ object ErrorTracker : Logging {
 			modal.setContent(stringBuilder.toString())
 			modal.open()
 			modal.trackOverflowChanges(m)
+
+			if (!isAlreadySending) {
+				debug("Sending stacktrace to Loritta...")
+				// Para evitar que vários erros fiquem spammando o console
+				m.launch {
+					val body = http.post<String>("${window.location.origin}/api/v1/loritta/error/spicy") {
+						body = JSON.stringify(
+								object {
+									val message: String = message
+									val file: String = file
+									val line = line
+									val column = col
+									val userAgent: String = window.navigator.userAgent
+									val url: String = window.location.href
+									val spicyPath: String? = m.currentPath
+									val localeId: String = m.localeId
+									val isLocaleInitialized: Boolean = this@ErrorTracker.isLocaleInitialized
+									val userId = userIdentification?.id
+									val currentRoute: String? = currentRouteClazz
+									val stack: String? = error.asDynamic().stack
+								}
+						)
+					}
+					val result = JSON.parse<Json>(body)
+					debug("Stacktrace sent!")
+					isAlreadySending = false
+					visibleModal.select<HTMLSpanElement?>(".error-code-id")?.innerText = result["errorCodeId"]?.toString() ?: "Failed to send error"
+				}
+			} else {
+				warn("Error detected, but client is already sending a stacktrace! ...bug?")
+			}
+
+			isAlreadySending = true
+
+			false
 		}
 		false
 	}

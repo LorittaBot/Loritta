@@ -134,6 +134,7 @@ object DefaultRoutes {
 			PostUpdateReadyRoute(loritta),
 			PostUpdateUserBackgroundRoute(loritta),
 			PostUsernameChangeRoute(loritta),
+			PostErrorRoute(loritta),
 
 			// Twitch
 			GetTwitchInfoRoute(loritta),
