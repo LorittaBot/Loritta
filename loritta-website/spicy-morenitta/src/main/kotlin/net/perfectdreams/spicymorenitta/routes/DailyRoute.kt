@@ -93,7 +93,14 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
             if (checkIfThereAreErrors(response, data))
                 return@launch
 
-            dailyNotification.textContent = locale["website.daily.pleaseCompleteReCaptcha"]
+            val receivedDailyWithSameIp = data["receivedDailyWithSameIp"] as Int
+
+            dailyNotification.textContent = if (receivedDailyWithSameIp == 0) {
+                locale["website.daily.pleaseCompleteReCaptcha"]
+            } else {
+                locale["website.daily.alreadyReceivedPrizesWithTheSameIp"]
+            }
+            
             GoogleRecaptchaUtils.render(jq("#daily-captcha").get()[0], RecaptchaOptions(
                     "6LfRyUkUAAAAAASo0YM4IZBqvkzxyRWJ1Ydw5weC",
                     "recaptchaCallback",

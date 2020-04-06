@@ -37,7 +37,8 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.util.*
+import java.time.Instant
+import java.time.ZoneId
 import java.util.concurrent.TimeUnit
 
 class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/economy/daily-reward") {
@@ -48,65 +49,72 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				.build<Long, Mutex>()
 				.asMap()
 
-		fun checkIfUserCanPayout(userIdentification: LorittaJsonWebSession.UserIdentification, ip: String) {
+		fun checkIfUserCanPayout(userIdentification: LorittaJsonWebSession.UserIdentification, ip: String): Int {
+			val todayAtMidnight = Instant.now()
+					.atZone(ZoneId.of("America/Sao_Paulo"))
+					.toOffsetDateTime()
+					.withHour(0)
+					.withMinute(0)
+					.withSecond(0)
+					.toInstant()
+					.toEpochMilli()
+			val tomorrowAtMidnight = Instant.now()
+					.atZone(ZoneId.of("America/Sao_Paulo"))
+					.toOffsetDateTime()
+					.plusDays(1)
+					.withHour(0)
+					.withMinute(0)
+					.withSecond(0)
+					.toInstant()
+					.toEpochMilli()
+
 			// Para evitar pessoas criando várias contas e votando, nós iremos também verificar o IP dos usuários que votarem
 			// Isto evita pessoas farmando upvotes votando (claro que não é um método infalível, mas é melhor que nada, né?)
 			val lastReceivedDailyAt = transaction(Databases.loritta) {
-				com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.receivedById eq userIdentification.id.toLong() }
-						.orderBy(Dailies.receivedAt to false)
-						.limit(1)
-						.firstOrNull()
-			}?.get(Dailies.receivedAt) ?: 0L
+				com.mrpowergamerbr.loritta.tables.Dailies.select {
+					Dailies.receivedById eq userIdentification.id.toLong() and (Dailies.receivedAt greaterEq todayAtMidnight)
+				}.orderBy(Dailies.receivedAt to false)
+			}.map {
+				it[Dailies.receivedAt]
+			}
 
 			val sameIpDailyAt = transaction(Databases.loritta) {
-				com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.ip eq ip }
+				com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.ip eq ip and (Dailies.receivedAt greaterEq todayAtMidnight) }
 						.orderBy(Dailies.receivedAt to false)
-						.limit(1)
-						.firstOrNull()
-			}?.get(Dailies.receivedAt) ?: 0L
+			}.map {
+				it[Dailies.receivedAt]
+			}
 
-			run {
-				val calendar = Calendar.getInstance()
-				calendar.timeInMillis = lastReceivedDailyAt
-				calendar.set(Calendar.HOUR_OF_DAY, 0)
-				calendar.set(Calendar.MINUTE, 0)
-				calendar.add(Calendar.DAY_OF_MONTH, 1)
-				val tomorrow = calendar.timeInMillis
-
-				if (tomorrow > System.currentTimeMillis() && !com.mrpowergamerbr.loritta.utils.loritta.config.isOwner(userIdentification.id.toLong())) {
+			if (lastReceivedDailyAt.isNotEmpty()) {
+				if (!com.mrpowergamerbr.loritta.utils.loritta.config.isOwner(userIdentification.id.toLong())) {
 					throw WebsiteAPIException(
 							HttpStatusCode.Forbidden,
 							WebsiteUtils.createErrorPayload(
 									LoriWebCode.ALREADY_GOT_THE_DAILY_REWARD_SAME_ACCOUNT_TODAY,
 									data = {
-										it["canPayoutAgain"] = tomorrow
+										it["canPayoutAgain"] = tomorrowAtMidnight
 									}
 							)
 					)
 				}
 			}
 
-			run {
-				val calendar = Calendar.getInstance()
-				calendar.timeInMillis = sameIpDailyAt
-				calendar.set(Calendar.HOUR_OF_DAY, 0)
-				calendar.set(Calendar.MINUTE, 0)
-				calendar.add(Calendar.DAY_OF_MONTH, 1)
-				val tomorrow = calendar.timeInMillis
-
-				if (tomorrow > System.currentTimeMillis() && !com.mrpowergamerbr.loritta.utils.loritta.config.isOwner(userIdentification.id.toLong())) {
+			if (sameIpDailyAt.isNotEmpty()) {
+				if (sameIpDailyAt.size >= 3) {
 					throw WebsiteAPIException(
 							HttpStatusCode.Forbidden,
 							WebsiteUtils.createErrorPayload(
 									LoriWebCode.ALREADY_GOT_THE_DAILY_REWARD_SAME_IP_TODAY,
 									data = {
-										it["canPayoutAgain"] = tomorrow
+										it["canPayoutAgain"] = tomorrowAtMidnight
 										it["detectedIp"] = ip
 									}
 							)
 					)
 				}
 			}
+
+			return sameIpDailyAt.size
 		}
 
 		fun verifyIfAccountAndIpAreSafe(userIdentification: LorittaJsonWebSession.UserIdentification, ip: String) {

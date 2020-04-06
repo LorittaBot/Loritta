@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.website.routes.api.v1.economy
 
-import com.google.gson.JsonObject
+import com.github.salomonbrys.kotson.jsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import io.ktor.application.ApplicationCall
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
@@ -16,9 +16,12 @@ class GetLoriDailyRewardStatusRoute(loritta: LorittaDiscord) : RequiresAPIDiscor
 		val ip = call.request.trueIp
 
 		GetLoriDailyRewardRoute.verifyIfAccountAndIpAreSafe(userIdentification, ip)
-		GetLoriDailyRewardRoute.checkIfUserCanPayout(userIdentification, ip)
+		val receivedDailyWithSameIp = GetLoriDailyRewardRoute.checkIfUserCanPayout(userIdentification, ip)
 
-		val payload = JsonObject()
+		val payload = jsonObject(
+				"receivedDailyWithSameIp" to receivedDailyWithSameIp
+		)
+
 		call.respondJson(payload)
 	}
 }
