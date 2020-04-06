@@ -1,20 +1,13 @@
 package net.perfectdreams.loritta.plugin.lorittabirthday2020
 
-import com.github.salomonbrys.kotson.jsonObject
 import com.mrpowergamerbr.loritta.network.Databases
-import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
+import net.perfectdreams.loritta.plugin.christmas2019.profile.badges.ChristmasBadge
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.badges.GabrielaBadge
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.badges.PantufaBadge
-import net.perfectdreams.loritta.plugin.lorittabirthday2020.commands.GiveBirthdayKeysExecutor
-import net.perfectdreams.loritta.plugin.lorittabirthday2020.commands.GiveBirthdayRewardsExecutor
-import net.perfectdreams.loritta.plugin.lorittabirthday2020.commands.GiveSafeBirthdayRewardsExecutor
-import net.perfectdreams.loritta.plugin.lorittabirthday2020.listeners.GetBirthdayStuffListener
-import net.perfectdreams.loritta.plugin.lorittabirthday2020.modules.DropBirthdayStuffModule
-import net.perfectdreams.loritta.plugin.lorittabirthday2020.routes.*
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.tables.Birthday2020Drops
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.tables.Birthday2020Players
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.tables.CollectedBirthday2020Points
@@ -27,21 +20,22 @@ class LorittaBirthday2020Event(name: String, loritta: LorittaBot) : LorittaDisco
 
 	override fun onEnable() {
 		loritta as LorittaDiscord
-		this.routes.add(ChooseTeamRoute(loritta))
-		this.routes.add(ReceiveStatsRoute(this, loritta))
-		this.routes.add(SyncPointsRoute(this, loritta))
-		this.routes.add(ViewCurrentStatsRoute(loritta))
-		this.routes.add(GetCurrentTeamRoute(this, loritta))
-		this.routes.add(PostJoinTeamRoute(this, loritta))
+		// this.routes.add(ChooseTeamRoute(loritta))
+		// this.routes.add(ReceiveStatsRoute(this, loritta))
+		// this.routes.add(SyncPointsRoute(this, loritta))
+		// this.routes.add(ViewCurrentStatsRoute(loritta))
+		// this.routes.add(GetCurrentTeamRoute(this, loritta))
+		// this.routes.add(PostJoinTeamRoute(this, loritta))
 
-		this.addMessageReceivedModule(DropBirthdayStuffModule())
-		this.addEventListener(GetBirthdayStuffListener(this))
+		// this.addMessageReceivedModule(DropBirthdayStuffModule())
+		// this.addEventListener(GetBirthdayStuffListener(this))
 
-		loriToolsExecutors += GiveBirthdayRewardsExecutor
-		loriToolsExecutors += GiveBirthdayKeysExecutor
-		loriToolsExecutors += GiveSafeBirthdayRewardsExecutor
+		// loriToolsExecutors += GiveBirthdayRewardsExecutor
+		// loriToolsExecutors += GiveBirthdayKeysExecutor
+		// loriToolsExecutors += GiveSafeBirthdayRewardsExecutor
 		badges.add(PantufaBadge())
 		badges.add(GabrielaBadge())
+		badges.add(ChristmasBadge())
 
 		badges.forEach {
 			loritta.profileDesignManager.registerBadge(it)
@@ -55,7 +49,7 @@ class LorittaBirthday2020Event(name: String, loritta: LorittaBot) : LorittaDisco
 			)
 		}
 
-		launch {
+		/* launch {
 			while (true) {
 				LorittaBirthday2020.openChannels.entries.forEach { (idLong, channel) ->
 					try {
@@ -72,7 +66,7 @@ class LorittaBirthday2020Event(name: String, loritta: LorittaBot) : LorittaDisco
 				}
 				delay(5_000)
 			}
-		}
+		} */
 	}
 
 	override fun onDisable() {

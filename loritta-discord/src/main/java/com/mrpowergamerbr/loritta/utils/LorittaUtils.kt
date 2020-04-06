@@ -204,6 +204,8 @@ object LorittaUtils {
 						x *= parseFactor() // multiplication
 					else if (eat('/'.toInt()))
 						x /= parseFactor() // division
+					else if (eat('%'.toInt())) // mod
+						x %= parseFactor()
 					else
 						return x
 				}
