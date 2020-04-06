@@ -18,7 +18,7 @@ class DrawnMaskCommand : AbstractCommand("drawnmasksign", listOf("drawnmaskplaca
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale().getWithType("commands.images.drawnMaskSign.description")
+		return locale.toNewLocale()["commands.images.drawnmasksign.description", "Drawn Mask"]
 	}
 
 	override fun getExamples(): List<String> {
