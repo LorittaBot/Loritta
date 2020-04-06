@@ -8,7 +8,6 @@ import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.extensions.retrieveAllMessages
-import com.mrpowergamerbr.loritta.utils.extensions.retrievePastChunked
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
@@ -89,6 +88,9 @@ class LorittaLandRoleSync : Runnable {
 					originalGuild.removeRoleFromMember(it, drawingRole).queue()
 				}
 			}
+
+			// ===[ TRADUTORES ]===
+			synchronizeTranslatorsRoles(originalGuild)
 
 			// ===[ PARCEIROS ]===
 			logger.info("Processando cargos de parceiros...")
@@ -301,7 +303,7 @@ class LorittaLandRoleSync : Runnable {
 					if (message != null) {
 						val embed = message.embeds.firstOrNull()
 						if (embed == null) {
-                            message.delete().queue()
+							message.delete().queue()
 						} else {
 							if (embed.description != newEmbed.description) {
 								message.editMessage(newMessage).queue()
@@ -372,6 +374,32 @@ class LorittaLandRoleSync : Runnable {
 
 				logger.info("Adicionado cargo ${giveRole.id} para ${usMember.effectiveName} (${usMember.user.id})...")
 				toGuild.addRoleToMember(usMember, giveRole).queue()
+			}
+		}
+	}
+
+	fun synchronizeTranslatorsRoles(originalGuild: Guild) {
+		val translatorRole = originalGuild.getRoleById("341343754336337921")
+
+		logger.info("Processing translators roles...")
+		val translators = loritta.locales.flatMap { it.value.getWithType<List<String>>("loritta.translationAuthors") }.distinct()
+
+		val validTranslators = translators.mapNotNull {
+			originalGuild.getMemberById(it)
+		}
+
+		if (translatorRole != null) {
+			for (translator in validTranslators) {
+				if (!translator.roles.contains(translatorRole)) {
+					logger.info("Giving translator role to ${translator.user.id}...")
+					originalGuild.addRoleToMember(translator, translatorRole).queue()
+				}
+			}
+
+			val invalidTranslators = originalGuild.getMembersWithRoles(translatorRole).filter { !validTranslators.contains(it) }
+			invalidTranslators.forEach {
+				logger.info("Removing translator role from ${it.user.id}...")
+				originalGuild.removeRoleFromMember(it, translatorRole).queue()
 			}
 		}
 	}
