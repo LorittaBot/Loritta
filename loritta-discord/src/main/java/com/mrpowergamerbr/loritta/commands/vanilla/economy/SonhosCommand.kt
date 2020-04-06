@@ -44,7 +44,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 				context.reply(
 						true,
 						LoriReply(
-								locale["SONHOS_YouHave", localProfile.money, if (userSonhos == 1L) { locale["ECONOMY_Name"] } else { locale["ECONOMY_NamePlural"] }],
+								locale["SONHOS_YouHave", userSonhos, if (userSonhos == 1L) { locale["ECONOMY_Name"] } else { locale["ECONOMY_NamePlural"] }],
 								"<:loritta:331179879582269451>",
 								mentionUser = false
 						),
