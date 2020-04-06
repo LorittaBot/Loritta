@@ -39,160 +39,163 @@ object ErrorTracker : Logging {
 	fun start(m: SpicyMorenitta) {
 		debug("Starting Error Tracker...")
 
+		window.onerror = callback@{ message: dynamic, file: String, line: Int, col: Int, error: Any? ->
+			// Ao dar um erro, nós iremos mostrar uma mensagem legal para o usuário, para que seja mais fácil resolver problema
+			warn("Error detected! Opening modal...")
+			
+			if (message.unsafeCast<String>().contains("adsbygoogle")) { // AdSense
+				warn("But looks like it is an AdSense error, we are going to ignore it because we don't need to track *that*")
+				return@callback false
+			}
+
+			processException(m, message as String, file, line, col, error)
+			false
+		}
+	}
+
+	fun processException(m: SpicyMorenitta, message: String, file: String, line: Int, col: Int, error: Any?) {
 		val selfScript = document.selectAll<HTMLScriptElement>("script").firstOrNull { it.src.contains("app.js") }
 
 		val selfHash = selfScript?.let {
 			try {
 				URLSearchParams(URL(it.src).search.substring(1)).get("hash")
 			} catch (e: Error) {
-				warn("Something went wrong while trying to get the app hash")
+				warn("Something went wrong while trying to get the app hashm upda")
 			}
 		}
 
 		debug("Script hash: $selfHash")
-
 		// Gambiarra, a gente só quer usar o buildAsHtml do BaseLocale
 		// Ele nem usa nenhuma das entries, então vamos apenas criar um dummy locale e utilizá-lo
 		// No futuro seria melhor mover o buildAsHtml para um código separado
 		val locale = BaseLocale("dummy", mutableMapOf())
 
-		window.onerror = callback@{ message: dynamic, file: String, line: Int, col: Int, error: Any? ->
-			if (message.unsafeCast<String>().contains("adsbygoogle")) // AdSense
-				return@callback false
+		warn("Message: $message")
+		warn("File: $file")
+		warn("Line: $line")
+		warn("Column: $col")
+		warn("Error: $error")
 
-			// Ao dar um erro, nós iremos mostrar uma mensagem legal para o usuário, para que seja mais fácil resolver problema
-			warn("Error detected! Opening modal...")
+		val userIdentification = m.userIdentification
+		val currentRoute = m.currentRoute
+		val currentRouteClazz = currentRoute?.let { it::class.simpleName }
 
-			warn("Message: $message")
-			warn("File: $file")
-			warn("Line: $line")
-			warn("Column: $col")
-			warn("Error: $error")
-
-			val userIdentification = m.userIdentification
-			val currentRoute = m.currentRoute
-			val currentRouteClazz = currentRoute?.let { it::class.simpleName }
-
-			val content = buildString {
-				this.append("Message: $message")
-				this.append("\n")
-				this.append("File: $file ($line;$col)")
-				this.append("\n")
-				this.append("User Agent: ${window.navigator.userAgent}")
-				this.append("\n")
-				this.append("URL: ${window.location.href} (Spicy Path: ${m.currentPath}; Locale ID: ${m.localeId}; Locale Initialized? ${isLocaleInitialized})")
-				this.append("\n")
-				this.append("User Identification: ")
-				if (userIdentification != null)
-					this.append("${userIdentification.username}#${userIdentification.discriminator} (${userIdentification.id})")
-				else
-					this.append("Unknown")
-				this.append("\n")
-				this.append("Current Route: ${currentRouteClazz ?: "Unknown"}")
-				this.append("\n")
-				this.append("\n")
-				this.append("Stack:")
-				this.append("\n")
-				this.append("${error.asDynamic().stack}")
-			}
-
-			val modal = TingleModal(
-					TingleOptions(
-							footer = true,
-							cssClass = arrayOf("tingle-modal--overflow")
-					)
-			)
-
-			modal.addFooterBtn("<i class=\"fas fa-times\"></i> Fechar", "button-discord pure-button button-discord-modal button-discord-modal-secondary-action") {
-				modal.close()
-			}
-
-			val stringBuilder = StringBuilder()
-			stringBuilder.appendHTML().div {
-				div("pure-g vertically-centered-content") {
-					div {
-						style = "text-align: center;"
-
-						img(src = "https://loritta.website/assets/img/fanarts/l4.png") {
-							width = "250"
-						}
-
-						h1 {
-							+SOMETHING_WENT_WRONG
-						}
-						p {
-							locale.buildAsHtml(WHAT_SHOULD_I_DO, { control ->
-								if (control == 0) {
-									a(href = "/support") {
-										+MY_SUPPORT_SERVER
-									}
-								}
-							}, { str ->
-								+ str
-							})
-						}
-						p {
-							+SORRY_FOR_THE_INCONVENIENCE
-						}
-						p {
-							locale.buildAsHtml(ERROR_CODE_ID, { control ->
-								if (control == 0) {
-									span(classes = "error-code-id") {
-										+"..."
-									}
-								}
-							}, { str ->
-								+ str
-							})
-						}
-					}
-					pre {
-						style = "word-wrap: break-word; white-space: pre-wrap;"
-						+content
-					}
-				}
-			}
-
-			modal.setContent(stringBuilder.toString())
-			modal.open()
-			modal.trackOverflowChanges(m)
-
-			if (!isAlreadySending) {
-				debug("Sending stacktrace to Loritta...")
-				// Para evitar que vários erros fiquem spammando o console
-				m.launch {
-					val body = http.post<String>("${window.location.origin}/api/v1/loritta/error/spicy") {
-						body = JSON.stringify(
-								object {
-									val message: String = message
-									val spicyHash = selfHash
-									val file: String = file
-									val line = line
-									val column = col
-									val userAgent: String = window.navigator.userAgent
-									val url: String = window.location.href
-									val spicyPath: String? = m.currentPath
-									val localeId: String = m.localeId
-									val isLocaleInitialized: Boolean = this@ErrorTracker.isLocaleInitialized
-									val userId = userIdentification?.id
-									val currentRoute: String? = currentRouteClazz
-									val stack: String? = error.asDynamic().stack
-								}
-						)
-					}
-					val result = JSON.parse<Json>(body)
-					debug("Stacktrace sent!")
-					isAlreadySending = false
-					visibleModal.select<HTMLSpanElement?>(".error-code-id")?.innerText = result["errorCodeId"]?.toString() ?: "Failed to send error"
-				}
-			} else {
-				warn("Error detected, but client is already sending a stacktrace! ...bug?")
-			}
-
-			isAlreadySending = true
-
-			false
+		val content = buildString {
+			this.append("Message: $message")
+			this.append("\n")
+			this.append("File: $file ($line;$col)")
+			this.append("\n")
+			this.append("User Agent: ${window.navigator.userAgent}")
+			this.append("\n")
+			this.append("URL: ${window.location.href} (Spicy Path: ${m.currentPath}; Locale ID: ${m.localeId}; Locale Initialized? ${isLocaleInitialized})")
+			this.append("\n")
+			this.append("User Identification: ")
+			if (userIdentification != null)
+				this.append("${userIdentification.username}#${userIdentification.discriminator} (${userIdentification.id})")
+			else
+				this.append("Unknown")
+			this.append("\n")
+			this.append("Current Route: ${currentRouteClazz ?: "Unknown"}")
+			this.append("\n")
+			this.append("\n")
+			this.append("Stack:")
+			this.append("\n")
+			this.append("${error.asDynamic().stack}")
 		}
-		false
+
+		val modal = TingleModal(
+				TingleOptions(
+						footer = true,
+						cssClass = arrayOf("tingle-modal--overflow")
+				)
+		)
+
+		modal.addFooterBtn("<i class=\"fas fa-times\"></i> Fechar", "button-discord pure-button button-discord-modal button-discord-modal-secondary-action") {
+			modal.close()
+		}
+
+		val stringBuilder = StringBuilder()
+		stringBuilder.appendHTML().div {
+			div("pure-g vertically-centered-content") {
+				div {
+					style = "text-align: center;"
+
+					img(src = "https://loritta.website/assets/img/fanarts/l4.png") {
+						width = "250"
+					}
+
+					h1 {
+						+SOMETHING_WENT_WRONG
+					}
+					p {
+						locale.buildAsHtml(WHAT_SHOULD_I_DO, { control ->
+							if (control == 0) {
+								a(href = "/support") {
+									+MY_SUPPORT_SERVER
+								}
+							}
+						}, { str ->
+							+ str
+						})
+					}
+					p {
+						+SORRY_FOR_THE_INCONVENIENCE
+					}
+					p {
+						locale.buildAsHtml(ERROR_CODE_ID, { control ->
+							if (control == 0) {
+								span(classes = "error-code-id") {
+									+"..."
+								}
+							}
+						}, { str ->
+							+ str
+						})
+					}
+				}
+				pre {
+					style = "word-wrap: break-word; white-space: pre-wrap;"
+					+content
+				}
+			}
+		}
+
+		modal.setContent(stringBuilder.toString())
+		modal.open()
+		modal.trackOverflowChanges(m)
+
+		if (!isAlreadySending) {
+			debug("Sending stacktrace to Loritta...")
+			// Para evitar que vários erros fiquem spammando o console
+			m.launch {
+				val body = http.post<String>("${window.location.origin}/api/v1/loritta/error/spicy") {
+					body = JSON.stringify(
+							object {
+								val message: String = message
+								val spicyHash = selfHash
+								val file: String = file
+								val line = line
+								val column = col
+								val userAgent: String = window.navigator.userAgent
+								val url: String = window.location.href
+								val spicyPath: String? = m.currentPath
+								val localeId: String = m.localeId
+								val isLocaleInitialized: Boolean = this@ErrorTracker.isLocaleInitialized
+								val userId = userIdentification?.id
+								val currentRoute: String? = currentRouteClazz
+								val stack: String? = error.asDynamic().stack
+							}
+					)
+				}
+				val result = JSON.parse<Json>(body)
+				debug("Stacktrace sent!")
+				isAlreadySending = false
+				visibleModal.select<HTMLSpanElement?>(".error-code-id")?.innerText = result["errorCodeId"]?.toString() ?: "Failed to send error"
+			}
+		} else {
+			warn("Error detected, but client is already sending a stacktrace! ...bug?")
+		}
+
+		isAlreadySending = true
 	}
 }

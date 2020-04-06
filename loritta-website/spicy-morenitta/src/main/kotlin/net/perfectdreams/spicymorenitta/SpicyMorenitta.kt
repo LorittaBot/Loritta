@@ -130,6 +130,20 @@ class SpicyMorenitta : Logging {
 	val pageSpecificTasks = mutableListOf<Job>()
 	var currentPath: String? = null
 
+	val DEFAULT_COROUTINE_EXCEPTION_HANDLER = CoroutineExceptionHandler { _, exception ->
+		error("Coroutine error! $exception")
+		val dynamicException = exception.asDynamic()
+		ErrorTracker.processException(
+				this,
+				dynamicException.message as String,
+				dynamicException.fileName as String,
+				dynamicException.lineNumber as Int,
+				dynamicException.columnNumber as Int,
+				dynamicException
+		)
+		throw exception
+	}
+
 	@UseExperimental(ImplicitReflectionSerializer::class)
 	fun start() {
 		INSTANCE = this
@@ -666,13 +680,13 @@ class SpicyMorenitta : Logging {
 	}
 
 	fun launch(block: suspend CoroutineScope.() -> Unit): Job {
-		val job = GlobalScope.launch(block = block)
+		val job = GlobalScope.launch(DEFAULT_COROUTINE_EXCEPTION_HANDLER, block = block)
 		pageSpecificTasks.add(job)
 		return job
 	}
 
 	fun <T> async(block: suspend CoroutineScope.() -> T): Deferred<T> {
-		val job = GlobalScope.async(block = block)
+		val job = GlobalScope.async(DEFAULT_COROUTINE_EXCEPTION_HANDLER, block = block)
 		pageSpecificTasks.add(job)
 		return job
 	}
