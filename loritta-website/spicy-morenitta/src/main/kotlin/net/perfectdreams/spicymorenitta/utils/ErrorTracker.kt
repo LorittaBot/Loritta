@@ -7,7 +7,11 @@ import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.utils.locale.BaseLocale
+import org.w3c.dom.HTMLScriptElement
 import org.w3c.dom.HTMLSpanElement
+import org.w3c.dom.url.URL
+import org.w3c.dom.url.URLSearchParams
+import kotlin.browser.document
 import kotlin.browser.window
 import kotlin.js.Json
 
@@ -34,6 +38,18 @@ object ErrorTracker : Logging {
 
 	fun start(m: SpicyMorenitta) {
 		debug("Starting Error Tracker...")
+
+		val selfScript = document.selectAll<HTMLScriptElement>("script").firstOrNull { it.src.contains("app.js") }
+
+		val selfHash = selfScript?.let {
+			try {
+				URLSearchParams(URL(it.src).search.substring(1)).get("hash")
+			} catch (e: Error) {
+				warn("Something went wrong while trying to get the app hash")
+			}
+		}
+
+		debug("Script hash: $selfHash")
 
 		// Gambiarra, a gente só quer usar o buildAsHtml do BaseLocale
 		// Ele nem usa nenhuma das entries, então vamos apenas criar um dummy locale e utilizá-lo
@@ -149,6 +165,7 @@ object ErrorTracker : Logging {
 						body = JSON.stringify(
 								object {
 									val message: String = message
+									val spicyHash = selfHash
 									val file: String = file
 									val line = line
 									val column = col

@@ -4,6 +4,7 @@ import org.jetbrains.exposed.dao.LongIdTable
 
 object SpicyStacktraces : LongIdTable() {
     val message = text("message").index()
+    val spicyHash = text("spicy_hash").nullable().index()
     val file = text("file")
     val line = integer("line")
     val column = integer("column")

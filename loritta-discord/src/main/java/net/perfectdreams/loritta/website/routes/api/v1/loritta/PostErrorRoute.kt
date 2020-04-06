@@ -28,6 +28,7 @@ class PostErrorRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/lori
 				val errorCodeId = transaction(Databases.loritta) {
 					SpicyStacktraces.insertAndGetId {
 						it[message] = json["message"].string
+						it[spicyHash] = json["spicyHash"].nullString
 						it[file] = json["file"].string
 						it[line] = json["line"].int
 						it[column] = json["column"].int
