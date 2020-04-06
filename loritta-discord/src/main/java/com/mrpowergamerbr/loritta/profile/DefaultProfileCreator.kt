@@ -12,7 +12,6 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.User
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -58,11 +57,18 @@ class DefaultProfileCreator : ProfileCreator {
 		} else { // Caso exista badges, nós iremos alterar um pouquinho aonde o nome é desenhado
 			graphics.drawText(user.name, 139, 61 - 4, 517 - 6)
 			var x = 139
+			var y = 40
+
 			// E agora desenhar as badges
-			badges.forEach {
-				val badge = it.getScaledInstance(27, 27, BufferedImage.SCALE_SMOOTH)
+			badges.withIndex().forEach { (index, originalBadge) ->
+				val badge = originalBadge.getScaledInstance(27, 27, BufferedImage.SCALE_SMOOTH)
 				graphics.drawImage(badge, x, 66 + 4, null)
 				x += 27 + 8
+
+				if (index % 10 == 9) {
+					x = 139
+					y += 27
+				}
 			}
 		}
 
