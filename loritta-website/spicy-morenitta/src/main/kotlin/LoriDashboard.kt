@@ -248,7 +248,6 @@ object LoriDashboard {
 			options.escapeMarkup = { str: dynamic ->
 				str
 			}
-			options.dropdownAutoWidth = true
 
 			select.asDynamic().select2(
 					options
