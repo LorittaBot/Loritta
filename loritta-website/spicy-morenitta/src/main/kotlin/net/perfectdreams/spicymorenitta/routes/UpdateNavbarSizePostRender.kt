@@ -13,11 +13,16 @@ open class UpdateNavbarSizePostRender(path: String, override val requiresUserIde
 
     open fun fixDummyNavbarHeight(call: ApplicationCall) {
         // Atualizar o tamanho da navbar dependendo do tamanho da navbar atualmente
-        val navbarHeight = document.select<HTMLDivElement>("#navigation-bar").clientHeight.toString()
+        val navigationBar = document.select<HTMLDivElement?>("#navigation-bar")
+        if (navigationBar != null) {
+            val navbarHeight = document.select<HTMLDivElement>("#navigation-bar").clientHeight.toString()
 
-        debug("Navbar height is $navbarHeight, fixing dummy navbar")
+            debug("Navbar height is $navbarHeight, fixing dummy navbar")
 
-        document.select<HTMLDivElement>("#dummy-navbar").style.height = "${navbarHeight}px"
-        document.select<HTMLDivElement?>("#sidebar-wrapper")?.style?.height = "calc(100% - ${navbarHeight}px);" // Arrumar o tamanho do wrapper, caso seja necessário
+            document.select<HTMLDivElement>("#dummy-navbar").style.height = "${navbarHeight}px"
+            document.select<HTMLDivElement?>("#sidebar-wrapper")?.style?.height = "calc(100% - ${navbarHeight}px);" // Arrumar o tamanho do wrapper, caso seja necessário
+        } else {
+            warn("Uhhhh, navigation bar doesn't exist so... We don't need to fix it. Yay?")
+        }
     }
 }
