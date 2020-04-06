@@ -51,6 +51,8 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 		}
 	}
 
+	override val canUseInPrivateChannel = false
+
 	@Subcommand
 	suspend fun root(context: DiscordCommandContext, locale: BaseLocale) {
 		if (context.args.firstOrNull() == "ganhar" || context.args.firstOrNull() == "win" || context.args.firstOrNull() == "claim") {
