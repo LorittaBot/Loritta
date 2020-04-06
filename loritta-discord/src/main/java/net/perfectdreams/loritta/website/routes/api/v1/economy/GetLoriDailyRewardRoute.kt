@@ -71,18 +71,18 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 			// Para evitar pessoas criando várias contas e votando, nós iremos também verificar o IP dos usuários que votarem
 			// Isto evita pessoas farmando upvotes votando (claro que não é um método infalível, mas é melhor que nada, né?)
 			val lastReceivedDailyAt = transaction(Databases.loritta) {
-				com.mrpowergamerbr.loritta.tables.Dailies.select {
-					Dailies.receivedById eq userIdentification.id.toLong() and (Dailies.receivedAt greaterEq todayAtMidnight)
-				}.orderBy(Dailies.receivedAt to false)
-			}.map {
-				it[Dailies.receivedAt]
+				com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.receivedById eq userIdentification.id.toLong() and (Dailies.receivedAt greaterEq todayAtMidnight) }.orderBy(Dailies.receivedAt to false)
+						.map {
+							it[Dailies.receivedAt]
+						}
 			}
 
 			val sameIpDailyAt = transaction(Databases.loritta) {
 				com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.ip eq ip and (Dailies.receivedAt greaterEq todayAtMidnight) }
 						.orderBy(Dailies.receivedAt to false)
-			}.map {
-				it[Dailies.receivedAt]
+						.map {
+							it[Dailies.receivedAt]
+						}
 			}
 
 			if (lastReceivedDailyAt.isNotEmpty()) {
