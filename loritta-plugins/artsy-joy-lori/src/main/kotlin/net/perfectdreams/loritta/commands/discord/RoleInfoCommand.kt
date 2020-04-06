@@ -65,7 +65,7 @@ class RoleInfoCommand : LorittaCommand(arrayOf("roleinfo", "taginfo"), CommandCa
             embed.addField("\uD83D\uDC65 ${locale["commands.discord.roleinfo.roleMembers"]}", context.discordGuild!!.getMembersWithRoles(role).size.toString(),true)
             if (role.color != null)
                 embed.addField("🎨 ${locale["commands.discord.roleinfo.roleColor"]}", "`#${Integer.toHexString(role.color!!.rgb).substring(2).toUpperCase()}`", true)
-            embed.addField("\uD83D\uDEE1 ${locale["commands.discord.roleinfo.rolePermissions"]}", permissions, true)
+            embed.addField("\uD83D\uDEE1 ${locale["commands.discord.roleinfo.rolePermissions"]}", permissions, false)
 
             context.sendMessage(context.getAsMention(true), embed.build())
         } else {
