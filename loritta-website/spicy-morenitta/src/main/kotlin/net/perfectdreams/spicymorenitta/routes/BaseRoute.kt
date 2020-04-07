@@ -11,6 +11,7 @@ import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.utils.GoogleAdSense
 import net.perfectdreams.spicymorenitta.utils.Logging
 import net.perfectdreams.spicymorenitta.utils.select
+import net.perfectdreams.spicymorenitta.utils.selectAll
 import org.w3c.dom.*
 import kotlin.browser.document
 import kotlin.browser.window
@@ -127,6 +128,9 @@ abstract class BaseRoute(val path: String) : Logging {
             // Cancelar todas as tasks
             SpicyMorenitta.INSTANCE.pageSpecificTasks.onEach { it.cancel() }
             SpicyMorenitta.INSTANCE.pageSpecificTasks.clear()
+
+            // Remover todas as modals
+            document.selectAll<HTMLDivElement>(".tingle-modal").forEach { it.remove() }
 
             val pageFooter = body.select<HTMLElement?>("footer")
             if (pageFooter != null) {
