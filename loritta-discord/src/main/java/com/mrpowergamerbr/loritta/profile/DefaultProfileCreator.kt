@@ -138,8 +138,12 @@ class DefaultProfileCreator : ProfileCreator {
 
 			val marriedWith = runBlocking { lorittaShards.retrieveUserInfoById(marriedWithId.toLong()) }
 
-			if (marriedWith != null)
-				drawSection(locale.toNewLocale()["profile.marriedWith"], marriedWith.name + "#" + marriedWith.discriminator, 562, 535)
+			if (marriedWith != null) {
+				val marrySection = ImageIO.read(File(Loritta.ASSETS, "profile/modern/marry.png"))
+				graphics.drawImage(marrySection, 0, 0, null)
+
+				drawSection(locale.toNewLocale()["profile.marriedWith"], marriedWith.name + "#" + marriedWith.discriminator, 562, 533)
+			}
 		}
 
 		graphics.font = whitneyMedium22
