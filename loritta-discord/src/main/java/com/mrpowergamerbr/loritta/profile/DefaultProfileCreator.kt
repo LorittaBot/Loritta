@@ -69,7 +69,7 @@ class DefaultProfileCreator : ProfileCreator {
 			var y = 70
 
 			// E agora desenhar as badges
-			badges.withIndex().forEach { (index, originalBadge) ->
+			badges.take(20).withIndex().forEach { (index, originalBadge) ->
 				val badge = originalBadge.getScaledInstance(27, 27, BufferedImage.SCALE_SMOOTH)
 				graphics.drawImage(badge, x, y, null)
 				x += 27 + 8
