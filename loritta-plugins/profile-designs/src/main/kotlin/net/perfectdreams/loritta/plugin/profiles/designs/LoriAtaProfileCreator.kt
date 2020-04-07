@@ -12,10 +12,8 @@ import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.User
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -121,27 +119,16 @@ class LoriAtaProfileCreator : ProfileCreator {
 			}
 		}
 
-		val marriage = transaction(Databases.loritta) { userProfile.marriage }
-
-		if (marriage != null) {
-			val marriedWithId = if (marriage.user1 == user.id) {
-				marriage.user2
-			} else {
-				marriage.user1
-			}.toString()
-
+		ProfileUtils.getMarriageInfo(userProfile)?.let { (marriage, marriedWith) ->
 			val marrySection = ImageIO.read(File(Loritta.ASSETS, "profile/monica_ata/marry.png"))
 			graphics.drawImage(marrySection, 200, 0, null)
-			val marriedWith = runBlocking { lorittaShards.retrieveUserInfoById(marriedWithId.toLong()) }
 
-			if (marriedWith != null) {
-				graphics.font = KOMIKA.deriveFont(21f)
-				ImageUtils.drawCenteredString(graphics, locale.toNewLocale()["profile.marriedWith"], Rectangle(200 + 280, 270, 218, 22), graphics.font)
-				graphics.font = KOMIKA.deriveFont(16f)
-				ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(200 + 280, 270 + 23, 218, 18), graphics.font)
-				graphics.font = KOMIKA.deriveFont(12f)
-				ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(200 + 280, 270 + 23 + 16, 218, 15), graphics.font)
-			}
+			graphics.font = KOMIKA.deriveFont(21f)
+			ImageUtils.drawCenteredString(graphics, locale.toNewLocale()["profile.marriedWith"], Rectangle(200 + 280, 270, 218, 22), graphics.font)
+			graphics.font = KOMIKA.deriveFont(16f)
+			ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(200 + 280, 270 + 23, 218, 18), graphics.font)
+			graphics.font = KOMIKA.deriveFont(12f)
+			ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(200 + 280, 270 + 23 + 16, 218, 15), graphics.font)
 		}
 
 		graphics.font = KOMIKA.deriveFont(13f)

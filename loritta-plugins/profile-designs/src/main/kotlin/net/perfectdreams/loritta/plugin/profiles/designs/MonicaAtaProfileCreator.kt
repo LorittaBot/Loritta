@@ -121,27 +121,16 @@ class MonicaAtaProfileCreator : ProfileCreator {
 			}
 		}
 
-		val marriage = transaction(Databases.loritta) { userProfile.marriage }
-
-		if (marriage != null) {
-			val marriedWithId = if (marriage.user1 == user.id) {
-				marriage.user2
-			} else {
-				marriage.user1
-			}.toString()
-
+		ProfileUtils.getMarriageInfo(userProfile)?.let { (marriage, marriedWith) ->
 			val marrySection = ImageIO.read(File(Loritta.ASSETS, "profile/monica_ata/marry.png"))
 			graphics.drawImage(marrySection, 0, 0, null)
-			val marriedWith = runBlocking { lorittaShards.retrieveUserInfoById(marriedWithId.toLong()) }
 
-			if (marriedWith != null) {
-				graphics.font = KOMIKA.deriveFont(21f)
-				ImageUtils.drawCenteredString(graphics, locale.toNewLocale()["profile.marriedWith"], Rectangle(280, 270, 218, 22), graphics.font)
-				graphics.font = KOMIKA.deriveFont(16f)
-				ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(280, 270 + 23, 218, 18), graphics.font)
-				graphics.font = KOMIKA.deriveFont(12f)
-				ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(280, 270 + 23 + 16, 218, 15), graphics.font)
-			}
+			graphics.font = KOMIKA.deriveFont(21f)
+			ImageUtils.drawCenteredString(graphics, locale.toNewLocale()["profile.marriedWith"], Rectangle(280, 270, 218, 22), graphics.font)
+			graphics.font = KOMIKA.deriveFont(16f)
+			ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(280, 270 + 23, 218, 18), graphics.font)
+			graphics.font = KOMIKA.deriveFont(12f)
+			ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(280, 270 + 23 + 16, 218, 15), graphics.font)
 		}
 
 		graphics.font = KOMIKA.deriveFont(13f)

@@ -12,7 +12,6 @@ import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import org.jetbrains.exposed.sql.and
@@ -53,30 +52,17 @@ open class PlainProfileCreator(val color: String) : ProfileCreator {
 
 		graphics.drawImage(background.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH), 0, 0, null)
 
-		val marriage = transaction(Databases.loritta) { userProfile.marriage }
-
-		if (marriage != null) {
-			val marriedWithId = if (marriage.user1 == user.id) {
-				marriage.user2
-			} else {
-				marriage.user1
-			}.toString()
-
+		ProfileUtils.getMarriageInfo(userProfile)?.let { (marriage, marriedWith) ->
 			val marrySection = ImageIO.read(File(Loritta.ASSETS, "profile/plain/marry.png"))
 			graphics.drawImage(marrySection, 0, 0, null)
-			val marriedWith = runBlocking { lorittaShards.retrieveUserInfoById(marriedWithId.toLong()) }
 
-			if (marriedWith != null) {
-				val whitneySemiBold16 = whitneySemiBold.deriveFont(16f)
-				val whitneyMedium20 = whitneyMedium22.deriveFont(20f)
-				graphics.color = Color.WHITE
-				graphics.font = whitneyBold12
-				ImageUtils.drawCenteredString(graphics, locale.toNewLocale()["profile.marriedWith"], Rectangle(635, 350, 165, 14), whitneyBold12)
-				graphics.font = whitneyMedium16
-				ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(635, 350 + 16, 165, 18), whitneyMedium16)
-				graphics.font = whitneyBold12
-				ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(635, 350 + 16 + 18, 165, 14), whitneyBold12)
-			}
+			graphics.color = Color.WHITE
+			graphics.font = whitneyBold12
+			ImageUtils.drawCenteredString(graphics, locale.toNewLocale()["profile.marriedWith"], Rectangle(635, 350, 165, 14), whitneyBold12)
+			graphics.font = whitneyMedium16
+			ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(635, 350 + 16, 165, 18), whitneyMedium16)
+			graphics.font = whitneyBold12
+			ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(635, 350 + 16 + 18, 165, 14), whitneyBold12)
 		}
 
 		graphics.color = Color.BLACK

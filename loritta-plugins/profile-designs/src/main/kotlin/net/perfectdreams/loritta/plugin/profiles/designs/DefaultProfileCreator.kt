@@ -10,9 +10,9 @@ import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
+import net.perfectdreams.loritta.plugin.profiles.designs.ProfileUtils
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -127,23 +127,11 @@ class DefaultProfileCreator : ProfileCreator {
 
 		drawSection(locale["ECONOMY_NamePlural"], "#$globalEconomyPosition / ${userProfile.money}", 562, 492)
 
-		val marriage = transaction(Databases.loritta) { userProfile.marriage }
+		ProfileUtils.getMarriageInfo(userProfile)?.let { (marriage, marriedWith) ->
+			val marrySection = ImageIO.read(File(Loritta.ASSETS, "profile/modern/marry.png"))
+			graphics.drawImage(marrySection, 0, 0, null)
 
-		if (marriage != null) {
-			val marriedWithId = if (marriage.user1 == user.id) {
-				marriage.user2
-			} else {
-				marriage.user1
-			}.toString()
-
-			val marriedWith = runBlocking { lorittaShards.retrieveUserInfoById(marriedWithId.toLong()) }
-
-			if (marriedWith != null) {
-				val marrySection = ImageIO.read(File(Loritta.ASSETS, "profile/modern/marry.png"))
-				graphics.drawImage(marrySection, 0, 0, null)
-
-				drawSection(locale.toNewLocale()["profile.marriedWith"], marriedWith.name + "#" + marriedWith.discriminator, 562, 533)
-			}
+			drawSection(locale.toNewLocale()["profile.marriedWith"], marriedWith.name + "#" + marriedWith.discriminator, 562, 533)
 		}
 
 		graphics.font = whitneyMedium22
