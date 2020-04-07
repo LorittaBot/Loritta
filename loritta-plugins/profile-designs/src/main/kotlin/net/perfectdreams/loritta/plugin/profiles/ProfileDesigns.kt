@@ -1,5 +1,8 @@
 package net.perfectdreams.loritta.plugin.profiles
 
+import com.mrpowergamerbr.loritta.profile.DefaultProfileCreator
+import com.mrpowergamerbr.loritta.profile.MSNProfileCreator
+import com.mrpowergamerbr.loritta.profile.OrkutProfileCreator
 import com.mrpowergamerbr.loritta.profile.ProfileDesign
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.utils.Rarity
@@ -18,6 +21,39 @@ class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(n
                         Rarity.COMMON,
                         listOf(),
                         false,
+                        false
+                )
+        )
+        registeredProfiles.add(
+                ProfileDesign(
+                        true,
+                        DefaultProfileCreator::class.java,
+                        "modern",
+                        Rarity.COMMON,
+                        listOf(),
+                        true,
+                        false
+                )
+        )
+        registeredProfiles.add(
+                ProfileDesign(
+                        true,
+                        MSNProfileCreator::class.java,
+                        "msn",
+                        Rarity.RARE,
+                        listOf(),
+                        true,
+                        false
+                )
+        )
+        registeredProfiles.add(
+                ProfileDesign(
+                        true,
+                        OrkutProfileCreator::class.java,
+                        "orkut",
+                        Rarity.RARE,
+                        listOf(),
+                        true,
                         false
                 )
         )

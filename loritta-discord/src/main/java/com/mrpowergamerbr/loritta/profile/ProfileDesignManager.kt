@@ -37,40 +37,7 @@ class ProfileDesignManager {
 						false
 				)
 		)
-		registerDesign(
-				ProfileDesign(
-						true,
-						DefaultProfileCreator::class.java,
-						"modern",
-						Rarity.COMMON,
-						listOf(),
-						true,
-						false
-				)
-		)
-		registerDesign(
-				ProfileDesign(
-						true,
-						MSNProfileCreator::class.java,
-						"msn",
-						Rarity.RARE,
-						listOf(),
-						true,
-						false
-				)
-		)
-		registerDesign(
-				ProfileDesign(
-						true,
-						OrkutProfileCreator::class.java,
-						"orkut",
-						Rarity.RARE,
-						listOf(),
-						true,
-						false
-				)
-		)
-
+		
 		registerBadge(
 				DiscordHouseBadge.DiscordBraveryHouseBadge()
 		)
