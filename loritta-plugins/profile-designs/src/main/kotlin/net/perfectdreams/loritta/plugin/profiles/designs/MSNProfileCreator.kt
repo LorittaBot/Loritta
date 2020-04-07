@@ -7,9 +7,11 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.ImageUtils
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.drawText
+import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.perfectdreams.loritta.plugin.profiles.designs.ProfileUtils
@@ -140,9 +142,18 @@ class MSNProfileCreator : ProfileCreator {
 		graphics.drawText(userProfile.money.toString(), 4, 116  + shiftY, 244)
 
 		var x = 272
-		for (badge in badges) {
-			graphics.drawImage(badge.getScaledInstance(29, 29, BufferedImage.SCALE_SMOOTH), x, 518, null)
+		var y = 518
+		for ((index, badge) in badges.withIndex()) {
+			graphics.drawImage(badge.getScaledInstance(29, 29, BufferedImage.SCALE_SMOOTH), x, y, null)
 			x += 35
+
+			if (index % 14 == 13) {
+				// Aumentar chat box
+				val extendedChatBox = ImageIO.read(File(Loritta.ASSETS, "profile/msn/extended_chat_box.png"))
+				graphics.drawImage(extendedChatBox, 266, y - 38, null)
+				x = 272
+				y -= 32
+			}
 		}
 
 		return base
