@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
@@ -38,32 +39,6 @@ class UndertaleProfileCreator : ProfileCreator {
 
 		val avatar = LorittaUtils.downloadImage(user.avatarUrl)!!.getScaledInstance(159, 159, BufferedImage.SCALE_SMOOTH)
 
-		val marriage = transaction(Databases.loritta) { userProfile.marriage }
-
-		/* if (marriage != null) {
-			val marriedWithId = if (marriage.user1 == user.id) {
-				marriage.user2
-			} else {
-				marriage.user1
-			}.toString()
-
-			val marrySection = ImageIO.read(File(Loritta.ASSETS, "profile/cowboy/marry.png"))
-			graphics.drawImage(marrySection, 0, 0, null)
-			val marriedWith = runBlocking { lorittaShards.retrieveUserById(marriedWithId) }
-
-			if (marriedWith != null) {
-				val whitneySemiBold16 = whitneySemiBold.deriveFont(16f)
-				val whitneyMedium20 = whitneyMedium22.deriveFont(20f)
-				graphics.color = Color.WHITE
-				graphics.font = whitneySemiBold16
-				ImageUtils.drawCenteredString(graphics, locale.toNewLocale()["profile.marriedWith"], Rectangle(311, 0, 216, 14), whitneySemiBold16)
-				graphics.font = whitneyMedium20
-				ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(311, 0 + 18, 216, 18), whitneyMedium20)
-				graphics.font = whitneySemiBold16
-				ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(311, 0 + 18 + 24, 216, 14), whitneySemiBold16)
-			}
-		} */
-
 		graphics.drawImage(profileWrapper, 0, 0, null)
 
 		drawAvatar(avatar, graphics)
@@ -73,6 +48,8 @@ class UndertaleProfileCreator : ProfileCreator {
 		drawReputations(user, graphics)
 
 		drawBadges(badges, graphics)
+
+		drawMarriageStatus(userProfile, locale.toNewLocale(), graphics)
 
 		val biggestStrWidth = drawUserInfo(user, userProfile, guild, graphics)
 
@@ -104,7 +81,17 @@ class UndertaleProfileCreator : ProfileCreator {
 			Reputations.select { Reputations.receivedById eq user.id }.count()
 		}
 
-		ImageUtils.drawCenteredString(graphics, "$reputations reps", Rectangle(654, 543, 104, 37), font)
+		ImageUtils.drawCenteredString(graphics, "$reputations reps", Rectangle(654, 546, 104, 37), font)
+	}
+
+	fun drawMarriageStatus(userProfile: Profile, locale: BaseLocale, graphics: Graphics) {
+		ProfileUtils.getMarriageInfo(userProfile)?.let { (marriage, marriedWith) ->
+			val font = graphics.font
+			val marriedWithText = "${locale["profile.marriedWith"]} ${marriedWith.name}#${marriedWith.discriminator}"
+			val gameIcon = ImageIO.read(File(Loritta.ASSETS, "profile/msn/game_icon.png"))
+
+			ImageUtils.drawCenteredString(graphics, marriedWithText, Rectangle(42, 543, 522, 47), font)
+		}
 	}
 
 	fun drawUserInfo(user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, graphics: Graphics): Int {

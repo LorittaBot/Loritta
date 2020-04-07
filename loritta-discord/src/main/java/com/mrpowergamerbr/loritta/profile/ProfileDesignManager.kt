@@ -37,7 +37,7 @@ class ProfileDesignManager {
 						false
 				)
 		)
-		
+
 		registerBadge(
 				DiscordHouseBadge.DiscordBraveryHouseBadge()
 		)
