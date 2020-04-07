@@ -649,6 +649,16 @@ class SpicyMorenitta : Logging {
 		val end = Date().getTime()
 
 		info("${end - switchPageStart}ms - Page: ${path}")
+
+		try {
+			val config = object {
+				val page_path: String = path
+			}
+
+			gtag("config", "UA-53518408-9", config)
+		} catch (e: Error) {
+			warn("Google Analytics not found or wasn't loaded!")
+		}
 	}
 
 	suspend fun cachePageRequest(path: String) {
