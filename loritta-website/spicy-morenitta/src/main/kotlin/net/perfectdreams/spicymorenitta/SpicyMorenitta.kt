@@ -134,6 +134,13 @@ class SpicyMorenitta : Logging {
 	val DEFAULT_COROUTINE_EXCEPTION_HANDLER = CoroutineExceptionHandler { _, exception ->
 		error("Coroutine error! $exception")
 		val dynamicException = exception.asDynamic()
+
+		console.log("Message: ${dynamicException.message}")
+		console.log("File Name: ${dynamicException.fileName}")
+		console.log("Line Number: ${dynamicException.lineNumber}")
+		console.log("Column Number: ${dynamicException.columnNumber}")
+		console.log("Stack: ${dynamicException.stack}")
+
 		ErrorTracker.processException(
 				this,
 				dynamicException.message as String,
@@ -205,7 +212,8 @@ class SpicyMorenitta : Logging {
 			launch {
 				val currentRoute = getPageRouteForCurrentPath()
 
-				debug("Route for the current path: $currentRoute")
+				val currentPathName = currentPath?.let { it::class.simpleName } ?: "Unknown"
+				debug("Route for the current path: $currentPathName")
 				debug("Does the route need locale data? ${currentRoute.requiresLocales}")
 				debug("Does the route need user identification data? ${currentRoute.requiresUserIdentification}")
 				val deferred = listOf(
@@ -226,12 +234,13 @@ class SpicyMorenitta : Logging {
 				if (currentRoute.requiresUserIdentification)
 					deferred[1].join()
 
+				onPageChange(window.location.pathname, null)
+
 				GoogleAdSense.renderAds()
 
 				AdvertisementUtils.checkIfUserIsBlockingAds()
 
-				onPageChange(window.location.pathname, null)
-				debug("Done! Current route is ${currentRoute::class.simpleName}")
+				debug("Done! Current route is $currentPathName")
 			}
 		}
 
@@ -390,6 +399,8 @@ class SpicyMorenitta : Logging {
 
 		val route = getPageRouteForCurrentPath()
 
+		debug("Route for current path is ${route::class.simpleName}")
+
 		val params = route.getPathParameters(pathWithoutLocale)
 		debug("Parameters: ${params.entries}")
 		val call = ApplicationCall(params, content)
@@ -397,9 +408,11 @@ class SpicyMorenitta : Logging {
 		if (!route.keepLoadingScreen) // Utilizado para coisas que querem mais http requests após carregar (página de fan arts!)
 			hideLoadingScreen()
 
+		debug("Unloading current route...")
 		this.currentRoute?.onUnload()
 		this.currentRoute = route
 
+		debug("Rendering ${route::class.simpleName}")
 		route.onRender(call)
 	}
 
@@ -455,43 +468,55 @@ class SpicyMorenitta : Logging {
 
 	fun addNavbarOptions() {
 		debug("Adding navbar options!")
-		val navbar = document.select<Element>("#navigation-bar")
+		val navbar = document.select<Element?>("#navigation-bar")
 
-		val loginButton = document.select<Element?>("#login-button")
+		if (navbar != null) {
+			debug("Navbar is $navbar")
 
-		loginButton?.onClick {
-			if (true) {
-				window.location.href = "${window.location.origin}/dashboard"
-			} else {
-				if (userIdentification == null) {
-					val popup = window.open("${window.location.origin}/auth", "popup", "height=700,width=400")
+			val loginButton = document.select<Element?>("#login-button")
+
+			debug("Setting up login button events...")
+
+			loginButton?.onClick {
+				if (true) {
+					window.location.href = "${window.location.origin}/dashboard"
+				} else {
+					if (userIdentification == null) {
+						val popup = window.open("${window.location.origin}/auth", "popup", "height=700,width=400")
+					}
 				}
 			}
-		}
 
-		val themeChangerButton = document.select<Element?>("#theme-changer-button")
+			debug("Setting up theme changer button events...")
 
-		themeChangerButton?.onClick {
-			val body = document.body!!
+			val themeChangerButton = document.select<Element?>("#theme-changer-button")
 
-			if (body.hasClass("dark")) {
-				WebsiteThemeUtils.changeWebsiteThemeTo(WebsiteThemeUtils.WebsiteTheme.DEFAULT, false)
-			} else {
-				WebsiteThemeUtils.changeWebsiteThemeTo(WebsiteThemeUtils.WebsiteTheme.DARK_THEME, false)
+			themeChangerButton?.onClick {
+				val body = document.body!!
+
+				if (body.hasClass("dark")) {
+					WebsiteThemeUtils.changeWebsiteThemeTo(WebsiteThemeUtils.WebsiteTheme.DEFAULT, false)
+				} else {
+					WebsiteThemeUtils.changeWebsiteThemeTo(WebsiteThemeUtils.WebsiteTheme.DARK_THEME, false)
+				}
 			}
-		}
 
-		val hamburgerButton = document.select<Element?>("#hamburger-menu-button")
+			debug("Setting up hamburger button events...")
 
-		hamburgerButton?.onClick {
-			debug("Clicked on the hamburger button!")
-			if (navbar.hasClass("expanded")) {
-				navbar.removeClass("expanded")
-				document.body!!.style.overflowY = ""
-			} else {
-				navbar.addClass("expanded")
-				document.body!!.style.overflowY = "hidden" // Para remover as scrollbars e apenas deixar as scrollbars da navbar
+			val hamburgerButton = document.select<Element?>("#hamburger-menu-button")
+
+			hamburgerButton?.onClick {
+				debug("Clicked on the hamburger button!")
+				if (navbar.hasClass("expanded")) {
+					navbar.removeClass("expanded")
+					document.body!!.style.overflowY = ""
+				} else {
+					navbar.addClass("expanded")
+					document.body!!.style.overflowY = "hidden" // Para remover as scrollbars e apenas deixar as scrollbars da navbar
+				}
 			}
+		} else {
+			warn("Navigation Bar does not exist! Ignorning...")
 		}
 
 		setUpLinkPreloader()
@@ -560,7 +585,7 @@ class SpicyMorenitta : Logging {
 			callback.invoke()
 		}
 
-		document.querySelectorAll("img[lazy-load-url]:not([lazy-load-activated=\"true\"]").asList().forEach {
+		document.querySelectorAll("img[lazy-load-url]:not([lazy-load-activated=\"true\"])").asList().forEach {
 			debug("Setting up image lazy load for $it")
 
 			val el = it as Element

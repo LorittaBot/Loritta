@@ -25,6 +25,7 @@ object AdvertisementUtils : Logging {
 
 	fun checkIfUserIsBlockingAds() {
 		if (isUserBlockingAds) {
+			debug("Reading adblock popup cookie...")
 			val cookie = CookiesUtils.readCookie(DO_NOT_SHOW_ADBLOCK_POPUP_COOKIE)
 
 			debug("User is blocking ads... :( Did the user ask us to not bother him? $cookie")
@@ -35,6 +36,8 @@ object AdvertisementUtils : Logging {
 			SpicyMorenitta.INSTANCE.launch {
 				delay(5_000)
 
+				debug("Replacing all Google AdSense ads with fake ads...")
+
 				val (adCount, rand) = replaceAllGoogleAdSenseAdsWithFakeAds()
 
 				val replacedAds = document.selectAll<HTMLElement>(".lori-$rand-help-plz-banner")
@@ -42,10 +45,11 @@ object AdvertisementUtils : Logging {
 
 				val hasAnyRemovedAds = replacedAds.any { it.style.display == "none" } || adCount > replacedAds.size
 
-				if (hasAnyRemovedAds) {
+				if (hasAnyRemovedAds)
 					forceUserToDisableAdBlock()
-				}
 			}
+		} else {
+			debug("User is not blocking ads, yay!")
 		}
 	}
 
