@@ -57,12 +57,12 @@ class DefaultProfileCreator : ProfileCreator {
 		} else { // Caso exista badges, nós iremos alterar um pouquinho aonde o nome é desenhado
 			graphics.drawText(user.name, 139, 61 - 4, 517 - 6)
 			var x = 139
-			var y = 40
+			var y = 70
 
 			// E agora desenhar as badges
 			badges.withIndex().forEach { (index, originalBadge) ->
 				val badge = originalBadge.getScaledInstance(27, 27, BufferedImage.SCALE_SMOOTH)
-				graphics.drawImage(badge, x, 66 + 4, null)
+				graphics.drawImage(badge, x, y, null)
 				x += 27 + 8
 
 				if (index % 10 == 9) {
