@@ -7,11 +7,9 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
-import com.mrpowergamerbr.loritta.utils.ImageUtils
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.drawText
-import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import org.jetbrains.exposed.sql.and
@@ -79,20 +77,33 @@ class MSNProfileCreator : ProfileCreator {
 		graphics.color = Color(255, 255, 255)
 		graphics.drawText(user.name, 269, 142)
 
-		/* if (member != null && member.game != null) {
-			val gameIcon = ImageIO.read(File(Loritta.ASSETS, "profile/msn/game_icon.png"))
-			graphics.drawImage(gameIcon, 0, 5, null)
-			graphics.font = msnFont24
-			graphics.color = Color(51, 51, 51)
-			graphics.drawText(member.game.name, 294, 169)
-			graphics.drawText(member.game.name, 296, 169)
-			graphics.drawText(member.game.name, 295, 168)
-			graphics.drawText(member.game.name, 295, 170)
+		val marriage = transaction(Databases.loritta) { userProfile.marriage }
 
-			// GAME
-			graphics.color = Color(255, 255, 255)
-			graphics.drawText(member.game.name, 295, 169)
-		} */
+		if (marriage != null) {
+			val marriedWithId = if (marriage.user1 == user.id) {
+				marriage.user2
+			} else {
+				marriage.user1
+			}.toString()
+
+			val marriedWith = runBlocking { lorittaShards.retrieveUserInfoById(marriedWithId.toLong()) }
+
+			if (marriedWith != null) {
+				val marriedWithText = "${locale.toNewLocale()["profile.marriedWith"]} ${marriedWith.name}#${marriedWith.discriminator}"
+				val gameIcon = ImageIO.read(File(Loritta.ASSETS, "profile/msn/game_icon.png"))
+				graphics.drawImage(gameIcon, 0, 5, null)
+				graphics.font = msnFont24
+				graphics.color = Color(51, 51, 51)
+				graphics.drawText(marriedWithText, 294, 169)
+				graphics.drawText(marriedWithText, 296, 169)
+				graphics.drawText(marriedWithText, 295, 168)
+				graphics.drawText(marriedWithText, 295, 170)
+
+				// GAME
+				graphics.color = Color(255, 255, 255)
+				graphics.drawText(marriedWithText, 295, 169)
+			}
+		}
 
 		graphics.font = msnFont20
 		graphics.color = Color(142, 124, 125)
