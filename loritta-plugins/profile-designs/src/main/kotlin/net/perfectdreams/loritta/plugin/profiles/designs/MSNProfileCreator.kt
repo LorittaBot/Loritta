@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Profiles
+import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
@@ -155,6 +156,14 @@ class MSNProfileCreator : ProfileCreator {
 				y -= 32
 			}
 		}
+
+		val reputations = transaction(Databases.loritta) {
+			com.mrpowergamerbr.loritta.tables.Reputations.select { Reputations.receivedById eq user.id }.count()
+		}
+
+		graphics.color = Color.WHITE
+		graphics.font = whitneySemiBold20
+		graphics.drawText("Reputações: $reputations reps", 11, 73)
 
 		return base
 	}
