@@ -379,7 +379,7 @@ class LorittaLandRoleSync : Runnable {
 	}
 
 	fun synchronizeTranslatorsRoles(originalGuild: Guild) {
-		val translatorRole = originalGuild.getRoleById("341343754336337921")
+		val translatorRole = originalGuild.getRoleById("385579854336360449")
 
 		logger.info("Processing translators roles...")
 		val translators = loritta.locales.flatMap { it.value.getWithType<List<String>>("loritta.translationAuthors") }.distinct()
