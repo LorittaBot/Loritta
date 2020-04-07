@@ -40,14 +40,30 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
-		val imageUrl = context.getImageUrlAt(1, 1) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
+		var imageArgument = 1
+		var emoteName: String? = null
+
+		if (context.message.emotes.isNotEmpty()) {
+			imageArgument = 0
+			emoteName = context.message.emotes[0].name
+		}
+
+		if (imageArgument > context.rawArgs.size) {
+			context.explain()
+			return
+		}
+
+		if (emoteName == null)
+			emoteName = context.rawArgs[0]
+
+		val imageUrl = context.getImageUrlAt(imageArgument, 1) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
 		try {
 			val os = LorittaUtils.downloadFile(imageUrl, 5000)
 
 			if (os != null) {
 				os.use { inputStream ->
-					val emote = context.guild.createEmote(context.rawArgs[0], Icon.from(inputStream)).await()
+					val emote = context.guild.createEmote(emoteName, Icon.from(inputStream)).await()
 					context.reply(
 							LoriReply(
 									context.legacyLocale.toNewLocale()["commands.discord.addemoji.success"],
