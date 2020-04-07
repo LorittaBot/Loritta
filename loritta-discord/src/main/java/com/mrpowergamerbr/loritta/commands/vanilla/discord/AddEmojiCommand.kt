@@ -82,7 +82,7 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 
 			context.reply(
 					LoriReply(
-							context.legacyLocale.toNewLocale()["commands.discord.addEmoji.error"],
+							context.legacyLocale.toNewLocale()["commands.discord.addemoji.error"],
 							Constants.ERROR
 					)
 			)
