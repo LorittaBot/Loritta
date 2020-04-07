@@ -42,7 +42,7 @@ object ErrorTracker : Logging {
 		window.onerror = callback@{ message: dynamic, file: String, line: Int, col: Int, error: Any? ->
 			// Ao dar um erro, nós iremos mostrar uma mensagem legal para o usuário, para que seja mais fácil resolver problema
 			warn("Error detected! Opening modal...")
-			
+
 			if (message.unsafeCast<String>().contains("adsbygoogle")) { // AdSense
 				warn("But looks like it is an AdSense error, we are going to ignore it because we don't need to track *that*")
 				return@callback false
@@ -116,47 +116,45 @@ object ErrorTracker : Logging {
 
 		val stringBuilder = StringBuilder()
 		stringBuilder.appendHTML().div {
-			div("pure-g vertically-centered-content") {
-				div {
-					style = "text-align: center;"
+			div {
+				style = "text-align: center;"
 
-					img(src = "https://loritta.website/assets/img/fanarts/l4.png") {
-						width = "250"
-					}
+				img(src = "https://loritta.website/assets/img/fanarts/l4.png") {
+					width = "250"
+				}
 
-					h1 {
-						+SOMETHING_WENT_WRONG
-					}
-					p {
-						locale.buildAsHtml(WHAT_SHOULD_I_DO, { control ->
-							if (control == 0) {
-								a(href = "/support") {
-									+MY_SUPPORT_SERVER
-								}
-							}
-						}, { str ->
-							+ str
-						})
-					}
-					p {
-						+SORRY_FOR_THE_INCONVENIENCE
-					}
-					p {
-						locale.buildAsHtml(ERROR_CODE_ID, { control ->
-							if (control == 0) {
-								span(classes = "error-code-id") {
-									+"..."
-								}
-							}
-						}, { str ->
-							+ str
-						})
-					}
+				h1 {
+					+SOMETHING_WENT_WRONG
 				}
-				pre {
-					style = "word-wrap: break-word; white-space: pre-wrap;"
-					+content
+				p {
+					locale.buildAsHtml(WHAT_SHOULD_I_DO, { control ->
+						if (control == 0) {
+							a(href = "/support") {
+								+MY_SUPPORT_SERVER
+							}
+						}
+					}, { str ->
+						+ str
+					})
 				}
+				p {
+					+SORRY_FOR_THE_INCONVENIENCE
+				}
+				p {
+					locale.buildAsHtml(ERROR_CODE_ID, { control ->
+						if (control == 0) {
+							span(classes = "error-code-id") {
+								+"..."
+							}
+						}
+					}, { str ->
+						+ str
+					})
+				}
+			}
+			pre {
+				style = "word-wrap: break-word; white-space: pre-wrap;"
+				+content
 			}
 		}
 
