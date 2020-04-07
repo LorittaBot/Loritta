@@ -88,7 +88,6 @@ class UndertaleProfileCreator : ProfileCreator {
 		ProfileUtils.getMarriageInfo(userProfile)?.let { (marriage, marriedWith) ->
 			val font = graphics.font
 			val marriedWithText = "${locale["profile.marriedWith"]} ${marriedWith.name}#${marriedWith.discriminator}"
-			val gameIcon = ImageIO.read(File(Loritta.ASSETS, "profile/msn/game_icon.png"))
 
 			ImageUtils.drawCenteredString(graphics, marriedWithText, Rectangle(42, 543, 522, 47), font)
 		}

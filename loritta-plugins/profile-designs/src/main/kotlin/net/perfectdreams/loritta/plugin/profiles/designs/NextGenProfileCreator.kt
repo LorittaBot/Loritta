@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
@@ -82,15 +83,25 @@ class NextGenProfileCreator : ProfileCreator {
 				.deriveFont(42F)
 
 		graphics.font = oswaldRegular36
-		graphics.drawText(user.name, 234, 143) // Nome do usuário
-		ImageUtils.drawCenteredString(graphics, locale.toNewLocale()["profile.aboutMe"], Rectangle(8, 427, 212, 51), oswaldRegular36)
+		graphics.drawText(user.name, 232, 143) // Nome do usuário
+
+		graphics.color = Color.BLACK
+		graphics.font = oswaldRegular42
+		ImageUtils.drawCenteredString(graphics, locale.toNewLocale()["profile.aboutMe"].toUpperCase(), Rectangle(0, 427, 221, 51), oswaldRegular42)
+		graphics.font = oswaldRegular36
 
 		drawReputations(user, graphics)
+
+		graphics.color = Color.WHITE
 
 		drawBadges(badges, graphics)
 
 		graphics.font = whitneyBold16
 		val biggestStrWidth = drawUserInfo(user, userProfile, guild, graphics)
+
+		graphics.color = Color.BLACK
+		drawMarriageStatus(userProfile, locale.toNewLocale(), graphics)
+		graphics.color = Color.WHITE
 
 		graphics.font = whitneyMedium22
 
@@ -160,12 +171,21 @@ class NextGenProfileCreator : ProfileCreator {
 			}
 		}
 
+		graphics.color = Color.BLACK
 		val globalEconomyPosition = transaction(Databases.loritta) {
 			Profiles.select { Profiles.money greaterEq userProfile.money }.count()
 		}
 
 		graphics.drawText("Sonhos", 631, 34)
 		graphics.drawText("#$globalEconomyPosition / ${userProfile.money}", 631, 54)
+		graphics.color = Color.WHITE
 		return 0
+	}
+
+	fun drawMarriageStatus(userProfile: Profile, locale: BaseLocale, graphics: Graphics) {
+		ProfileUtils.getMarriageInfo(userProfile)?.let { (marriage, marriedWith) ->
+			graphics.drawText(locale["profile.marriedWith"], 271, 34)
+			graphics.drawText("${marriedWith.name}#${marriedWith.discriminator}", 271, 54)
+		}
 	}
 }
