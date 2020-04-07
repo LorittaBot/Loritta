@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import org.jetbrains.exposed.sql.and
@@ -50,6 +51,14 @@ class DefaultProfileCreator : ProfileCreator {
 		val whitneyBold20 = whitneyBold.deriveFont(20f)
 		val whitneySemiBold20 = whitneySemiBold.deriveFont(20f)
 
+		fun drawSection(title: String, subtext: String, x: Int, y: Int): Pair<Int, Int> {
+			graphics.font = whitneyBold20
+			graphics.drawText(title, x, y, 800 - 6)
+			graphics.font = whitneySemiBold20
+			graphics.drawText(subtext, x, y + 19, 800 - 6)
+			return Pair(x, y + 19)
+		}
+
 		graphics.font = whitneySemiBold38
 
 		if (badges.isEmpty()) {
@@ -72,13 +81,10 @@ class DefaultProfileCreator : ProfileCreator {
 			}
 		}
 
-		graphics.font = whitneyBold20
-		graphics.drawText("Global", 562, 21, 800 - 6)
-		graphics.font = whitneySemiBold20
 		val globalPosition = transaction(Databases.loritta) {
 			Profiles.select { Profiles.xp greaterEq userProfile.xp }.count()
 		}
-		graphics.drawText("#$globalPosition / ${userProfile.xp} XP", 562, 39, 800 - 6)
+		drawSection("Global", "#$globalPosition / ${userProfile.xp} XP", 562, 21)
 
 		if (guild != null) {
 			val guildIcon = LorittaUtils.downloadImage(guild.iconUrl?.replace("jpg", "png") ?: "https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/56/shrug_1f937.png")!!.getScaledInstance(38, 38, BufferedImage.SCALE_SMOOTH)
@@ -113,19 +119,28 @@ class DefaultProfileCreator : ProfileCreator {
 			com.mrpowergamerbr.loritta.tables.Reputations.select { Reputations.receivedById eq user.id }.count()
 		}
 
-		graphics.font = whitneyBold20
-		graphics.drawText("Reputação", 562, 102, 800 - 6)
-		graphics.font = whitneySemiBold20
-		graphics.drawText("$reputations reps", 562, 120, 800 - 6)
+		drawSection("Reputação", "$reputations reps", 562, 102)
 
 		val globalEconomyPosition = transaction(Databases.loritta) {
 			Profiles.select { Profiles.money greaterEq userProfile.money }.count()
 		}
 
-		graphics.font = whitneyBold20
-		graphics.drawText(locale["ECONOMY_NamePlural"], 562, 492, 800 - 6)
-		graphics.font = whitneySemiBold20
-		graphics.drawText("#$globalEconomyPosition / ${userProfile.money}", 562, 511, 800 - 6)
+		drawSection(locale["ECONOMY_NamePlural"], "#$globalEconomyPosition / ${userProfile.money}", 562, 492)
+
+		val marriage = transaction(Databases.loritta) { userProfile.marriage }
+
+		if (marriage != null) {
+			val marriedWithId = if (marriage.user1 == user.id) {
+				marriage.user2
+			} else {
+				marriage.user1
+			}.toString()
+
+			val marriedWith = runBlocking { lorittaShards.retrieveUserInfoById(marriedWithId.toLong()) }
+
+			if (marriedWith != null)
+				drawSection(locale.toNewLocale()["profile.marriedWith"], marriedWith.name + "#" + marriedWith.discriminator, 562, 535)
+		}
 
 		graphics.font = whitneyMedium22
 
