@@ -55,8 +55,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				.build<String, Boolean>()
 	}
 
-	class UserMetaHolder(var oldName: String?, var oldDiscriminator: String?)
-
 	override fun onUserUpdateAvatar(event: UserUpdateAvatarEvent) {
 		if (DebugLog.cancelAllEvents)
 			return
