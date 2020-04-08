@@ -150,6 +150,7 @@ object DefaultRoutes {
 			PostSearchUsersRoute(loritta),
 			PostUserReputationsRoute(loritta),
 			PostLogoutRoute(loritta),
+			PostDeleteDataRoute(loritta),
 
 			// Twitch
 			GetTwitchInfoRoute(loritta),
