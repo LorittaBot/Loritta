@@ -1,21 +1,19 @@
 package com.mrpowergamerbr.loritta.listeners
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.jsonObject
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.StoredMessage
-import com.mrpowergamerbr.loritta.dao.UsernameChange
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxEmbed
 import com.mrpowergamerbr.loritta.tables.StoredMessages
-import com.mrpowergamerbr.loritta.tables.UsernameChanges
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.EventLog
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.webhook.DiscordMessage
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -31,12 +29,9 @@ import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameE
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent
 import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent
-import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent
-import net.dv8tion.jda.api.events.user.update.UserUpdateNameEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.utils.DateUtils
 import org.apache.commons.io.IOUtils
-import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
@@ -56,123 +51,8 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		private val logger = KotlinLogging.logger {}
 		val downloadedAvatarJobs = ConcurrentHashMap<String, Job>()
 
-		val handledUsernameChanges = Caffeine.newBuilder().expireAfterWrite(15, TimeUnit.SECONDS).maximumSize(100)
-				.removalListener { k1: Long?, v1: UserMetaHolder?, removalCause ->
-					// Removal listeners processam removals, expired, etc.
-					// Então não precisamos usar o sendUsernameChange em outros lugares :3
-					if (k1 != null && v1 != null) {
-						GlobalScope.launch(loritta.coroutineDispatcher) {
-							val user = lorittaShards.getUserById(k1) ?: return@launch
-							sendUsernameChange(user, v1)
-						}
-					}
-				}
-				.build<Long, UserMetaHolder>().asMap()
-
-		val cachedBeforeSending = Caffeine.newBuilder().expireAfterWrite(3, TimeUnit.SECONDS).maximumSize(100)
-				.removalListener { k1: Long?, v1: UserMetaHolder?, removalCause ->
-					// Para evitar que fique spammando o master cluster de requests, nós iremos manter os requests por 3 segundos antes de mandar
-					if (v1 != null && k1 != null) {
-						val shard = loritta.config.clusters.first { it.id == 1L }
-						val id = k1
-						val meta = v1
-
-						logger.info { "Sending username/discriminator change for $id with data ${meta.oldName}#${meta.oldDiscriminator} to the master server..." }
-						GlobalScope.launch(loritta.coroutineDispatcher) {
-							HttpRequest.post("https://${shard.getUrl()}/api/v1/loritta/users/$id/username-change")
-									.userAgent(loritta.lorittaCluster.getUserAgent())
-									.header("Authorization", loritta.lorittaInternalApiKey.name)
-									.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
-									.readTimeout(loritta.config.loritta.clusterReadTimeout)
-									.send(
-											gson.toJson(
-													jsonObject(
-															"name" to meta.oldName,
-															"discriminator" to meta.oldDiscriminator
-													)
-											)
-									)
-									.ok()
-						}
-					}
-				}
-				.build<Long, UserMetaHolder>().asMap()
-
 		val bannedUsers = Caffeine.newBuilder().expireAfterWrite(10, TimeUnit.SECONDS).maximumSize(100)
 				.build<String, Boolean>()
-
-		fun sendUsernameChange(user: User, usernameChange: UserMetaHolder) {
-			val oldName = usernameChange.oldName ?: user.name
-			val oldDiscriminator = usernameChange.oldDiscriminator ?: user.discriminator
-			val newName = user.name
-			val newDiscriminator = user.discriminator
-			val embed = ParallaxEmbed()
-			// embed.setTimestamp(Instant.now())
-			embed.setAuthor("$newName#$newDiscriminator", null, user.effectiveAvatarUrl)
-			embed.setColor(Constants.DISCORD_BLURPLE)
-
-			val changedAt = System.currentTimeMillis()
-
-			if (loritta.isMaster) { // Apenas a Lori mestre guarda as alterações necessárias :3
-				transaction(Databases.loritta) {
-					UsernameChange.new {
-						userId = user.idLong
-						username = newName
-						discriminator = newDiscriminator
-						writeValues[UsernameChanges.changedAt as Column<Any?>] = changedAt
-					}
-				}
-			}
-
-			val guilds = lorittaShards.getMutualGuilds(user)
-
-			loritta.serversColl.find(
-					Filters.and(
-							Filters.eq("eventLogConfig.usernameChanges", true),
-							Filters.eq("eventLogConfig.enabled", true),
-							Filters.`in`("_id", guilds.map { it.id })
-					)
-			).iterator().use {
-				var idx = 0L
-				while (it.hasNext()) {
-					val legacyServerConfig = it.next()
-					val serverConfig = loritta.getOrCreateServerConfig(legacyServerConfig.guildId.toLong())
-					val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
-
-					val guild = guilds.first { it.id == legacyServerConfig.guildId }
-
-					val textChannel = guild.getTextChannelByNullableId(legacyServerConfig.eventLogConfig.eventLogChannelId)
-
-					if (textChannel != null && textChannel.canTalk()) {
-						if (!guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
-							continue
-						if (!guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
-							continue
-						if (!guild.selfMember.hasPermission(Permission.MESSAGE_READ))
-							continue
-
-						GlobalScope.launch(loritta.coroutineDispatcher) {
-							val webhook = EventLog.getOrCreateEventLogWebhook(guild, legacyServerConfig) ?: return@launch
-
-							embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_NAME_CHANGED", user.asMention, "$oldName#$oldDiscriminator", "$newName#$newDiscriminator"]}")
-							embed.setFooter(locale["EVENTLOG_USER_ID", user.id], null)
-
-							webhook.send(
-									DiscordMessage(
-											guild.selfMember.user.name,
-											" ",
-											guild.selfMember.user.effectiveAvatarUrl,
-											listOf(
-													embed
-											)
-									)
-							)
-						}
-						idx++
-					}
-				}
-			}
-		}
 	}
 
 	class UserMetaHolder(var oldName: String?, var oldDiscriminator: String?)
@@ -265,54 +145,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			} catch (e: Exception) {
 				logger.error(e) { "Erro ao fazer download do avatar de ${event.entity.id} (Antigo: ${event.oldAvatarId} / Novo: ${event.newAvatarId})" }
 				downloadedAvatarJobs.remove(event.entity.id)
-			}
-		}
-	}
-
-	override fun onUserUpdateName(event: UserUpdateNameEvent) {
-		if (DebugLog.cancelAllEvents)
-			return
-
-		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
-			return
-
-		if (!handledUsernameChanges.containsKey(event.user.idLong)) {
-			handledUsernameChanges[event.user.idLong] = UserMetaHolder(event.oldName, null)
-		} else {
-			val usernameChange = handledUsernameChanges[event.user.idLong]!!
-			usernameChange.oldName = event.oldName
-		}
-
-		if (!loritta.isMaster) {
-			if (!cachedBeforeSending.containsKey(event.user.idLong)) {
-				cachedBeforeSending[event.user.idLong] = UserMetaHolder(event.oldName, null)
-			} else {
-				val usernameChange = cachedBeforeSending[event.user.idLong]!!
-				usernameChange.oldName = event.oldName
-			}
-		}
-	}
-
-	override fun onUserUpdateDiscriminator(event: UserUpdateDiscriminatorEvent) {
-		if (DebugLog.cancelAllEvents)
-			return
-
-		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
-			return
-
-		if (!handledUsernameChanges.containsKey(event.user.idLong)) {
-			handledUsernameChanges[event.user.idLong] = UserMetaHolder(null, event.oldDiscriminator)
-		} else {
-			val usernameChange = handledUsernameChanges[event.user.idLong]!!
-			usernameChange.oldDiscriminator = event.oldDiscriminator
-		}
-
-		if (!loritta.isMaster) {
-			if (!cachedBeforeSending.containsKey(event.user.idLong)) {
-				cachedBeforeSending[event.user.idLong] = UserMetaHolder(null, event.oldDiscriminator)
-			} else {
-				val usernameChange = cachedBeforeSending[event.user.idLong]!!
-				usernameChange.oldDiscriminator = event.oldDiscriminator
 			}
 		}
 	}

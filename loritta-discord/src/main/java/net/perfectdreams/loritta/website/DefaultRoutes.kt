@@ -13,7 +13,6 @@ import net.perfectdreams.loritta.website.routes.api.v1.twitter.PostReceivedTweet
 import net.perfectdreams.loritta.website.routes.api.v1.user.*
 import net.perfectdreams.loritta.website.routes.api.v1.youtube.GetChannelInfoRoute
 import net.perfectdreams.loritta.website.routes.dashboard.DashboardRoute
-import net.perfectdreams.loritta.website.routes.dashboard.PostDashboardRoute
 import net.perfectdreams.loritta.website.routes.dashboard.configure.*
 import net.perfectdreams.loritta.website.routes.extras.ExtrasViewerRoute
 import net.perfectdreams.loritta.website.routes.landingpages.BrazilianBotLandingPageRoute
@@ -48,7 +47,6 @@ object DefaultRoutes {
 
 			// Dashboard
 			DashboardRoute(loritta),
-			PostDashboardRoute(loritta),
 			ConfigureGeneralRoute(loritta),
 			AuditLogRoute(loritta),
 			ConfigureAutoroleRoute(loritta),
@@ -133,7 +131,6 @@ object DefaultRoutes {
 			PostTransferBalanceRoute(loritta),
 			PostUpdateReadyRoute(loritta),
 			PostUpdateUserBackgroundRoute(loritta),
-			PostUsernameChangeRoute(loritta),
 			PostErrorRoute(loritta),
 
 			// Twitch

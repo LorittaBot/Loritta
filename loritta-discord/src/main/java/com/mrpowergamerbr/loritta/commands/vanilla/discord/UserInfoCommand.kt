@@ -4,12 +4,8 @@ import com.github.salomonbrys.kotson.int
 import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.dao.UsernameChange
-import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.tables.UsernameChanges
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.edit
-import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
@@ -19,9 +15,6 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.Emotes
-import org.jetbrains.exposed.sql.transactions.transaction
-import java.time.Instant
-import java.time.ZoneId
 
 class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), CommandCategory.DISCORD) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -99,11 +92,6 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 		val embed = getEmbedBase(user, member)
 
 		embed.apply {
-			val lorittaProfile = loritta.getLorittaProfile(user.id)
-			val settings = transaction(Databases.loritta) { lorittaProfile?.settings }
-			val hideSharedServers = settings?.hideSharedServers ?: false
-			val lastMessageSentAt = lorittaProfile?.lastMessageSentAt ?: 0L
-
 			addField("\uD83D\uDD16 ${context.legacyLocale.get("USERINFO_TAG_DO_DISCORD")}", "`${user.name}#${user.discriminator}`", true)
 			addField("\uD83D\uDCBB ${context.legacyLocale.get("USERINFO_ID_DO_DISCORD")}", "`${user.id}`", true)
 
@@ -114,40 +102,33 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 				addField("\uD83C\uDF1F ${context.legacyLocale.toNewLocale()["commands.discord.userInfo.accountJoined"]}", accountJoinedDiff, true)
 			}
 
-			if (lastMessageSentAt != 0L) {
-				val lastSeenDiff = DateUtils.formatDateDiff(lastMessageSentAt, context.legacyLocale)
-				addField("\uD83D\uDC40 ${context.legacyLocale["USERINFO_LAST_SEEN"]}", lastSeenDiff, true)
-			}
+			if (context.message.channel.idLong == 358774895850815488L) {
+				var sharedServersFieldTitle = context.legacyLocale.toNewLocale()["commands.discord.userInfo.sharedServers"]
+				var servers: String?
 
-			var sharedServersFieldTitle = context.legacyLocale.toNewLocale()["commands.discord.userInfo.sharedServers"]
-			var servers: String?
+				val sharedServersResults = lorittaShards.queryMutualGuildsInAllLorittaClusters(user.id)
+				val sharedServers = sharedServersResults.sortedByDescending {
+					it["memberCount"].int
+				}
 
-			val sharedServersResults = lorittaShards.queryMutualGuildsInAllLorittaClusters(user.id)
-			val sharedServers = sharedServersResults.sortedByDescending {
-				it["memberCount"].int
-			}
-
-			if (hideSharedServers && !loritta.config.isOwner(context.handle.user.idLong)) {
-				servers = "*${context.legacyLocale["USERINFO_PrivacyOn"]}*"
-			} else {
 				servers = sharedServers.joinToString(separator = ", ", transform = { "`${it["name"].string}`" })
 				sharedServersFieldTitle = "$sharedServersFieldTitle (${sharedServers.size})"
+
+				if (servers.length >= 1024) {
+					servers = servers.substring(0..1020) + "..."
+				}
+
+				embed.addField("\uD83C\uDF0E $sharedServersFieldTitle", servers, false)
 			}
-
-			if (servers.length >= 1024) {
-				servers = servers.substring(0..1020) + "..."
-			}
-
-			embed.addField("\uD83C\uDF0E $sharedServersFieldTitle", servers, false)
-
-			embed.setFooter(context.legacyLocale["USERINFO_PrivacyInfo"], null)
 		}
-		
+
 		val _message = message?.edit(context.getAsMention(true), embed.build()) ?: context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
-		_message.onReactionAddByAuthor(context) {
-			showExtendedInfo(_message, context, user, member)
+		if (member != null) {
+			_message.onReactionAddByAuthor(context) {
+				showExtendedInfo(_message, context, user, member)
+			}
+			_message.addReaction("▶").queue()
 		}
-		_message.addReaction("▶").queue()
 		return _message
 	}
 
@@ -156,41 +137,6 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 		val locale = context.legacyLocale
 
 		embed.apply {
-			val lorittaProfile = loritta.getLorittaProfile(user.id)
-			val settings = transaction(Databases.loritta) { lorittaProfile?.settings }
-			val hidePreviousUsernames = settings?.hidePreviousUsernames ?: false
-
-			if (hidePreviousUsernames && !loritta.config.isOwner(context.handle.user.idLong)) {
-				val alsoKnownAs = "**" + context.legacyLocale.get("USERINFO_ALSO_KNOWN_AS") + "**\n*${locale["USERINFO_PrivacyOn"]}*"
-				setDescription(alsoKnownAs)
-			} else {
-				val usernameChanges = transaction(Databases.loritta) { UsernameChange.find { UsernameChanges.userId eq user.idLong }.sortedBy { it.changedAt }.toMutableList() }
-
-				if (usernameChanges.isNotEmpty() && usernameChanges[0].discriminator == user.discriminator && usernameChanges[0].username == user.name) {
-					usernameChanges.removeAt(0)
-				}
-
-				if (usernameChanges.isNotEmpty()) {
-					val alsoKnownAs = "**" + context.legacyLocale.get("USERINFO_ALSO_KNOWN_AS") + "**\n" + usernameChanges.joinToString(separator = "\n", transform = {
-						"${it.username}#${it.discriminator} (" + Instant.ofEpochMilli(it.changedAt).atZone(ZoneId.systemDefault()).toOffsetDateTime().humanize(locale) + ")"
-					})
-					// Verificar tamanho do "alsoKnownAs" e, se necessário, cortar
-					val alsoKnownAsLines = alsoKnownAs.split("\n").reversed()
-
-					val aux = mutableListOf<String>()
-
-					var length = 0
-					for (line in alsoKnownAsLines) {
-						if (length + line.length >= 2000) {
-							break
-						}
-						aux.add(line)
-						length += line.length
-					}
-					setDescription(aux.reversed().joinToString(separator = "\n"))
-				}
-			}
-
 			if (member != null) {
 				addField(
 						"\uD83D\uDC81 ${locale.toNewLocale()["commands.discord.userInfo.joinPosition"]}",
@@ -201,7 +147,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 				val permissions = member.getPermissions(context.message.textChannel).joinToString(", ", transform = { "`${it.localized(context.locale)}`" })
 				addField("\uD83D\uDEE1️ Permissões", permissions, true)
 
-			 	val roles = member.roles.joinToString(separator = ", ", transform = { "`${it.name}`" })
+				val roles = member.roles.joinToString(separator = ", ", transform = { "`${it.name}`" })
 				addField("\uD83D\uDCBC " + context.legacyLocale["USERINFO_ROLES"] + " (${member.roles.size})", if (roles.isNotEmpty()) roles.substringIfNeeded(0 until 1024) else context.legacyLocale.get("USERINFO_NO_ROLE") + " \uD83D\uDE2D", true)
 			}
 		}

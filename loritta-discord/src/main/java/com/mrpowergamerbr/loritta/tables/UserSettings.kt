@@ -9,9 +9,6 @@ import org.jetbrains.exposed.sql.TextColumnType
 object UserSettings : LongIdTable() {
 	val aboutMe = text("about_me").nullable()
 	val gender = enumeration("gender", Gender::class)
-	val hidePreviousUsernames = bool("hide_previous_usernames")
-	val hideSharedServers = bool("hide_shared_servers")
-	val hideLastSeen = bool("hide_last_seen")
 	val activeProfile = text("active_profile").nullable()
 	val activeBackground = optReference("active_background", Backgrounds)
 	val boughtProfiles = array<String>("bought_profiles", TextColumnType())

@@ -358,7 +358,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					UserSettings,
 					Reminders,
 					Reputations,
-					UsernameChanges,
 					Dailies,
 					Marriages,
 					RegisterConfigs,
@@ -519,9 +518,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 				isAfk = false
 				settings = ProfileSettings.new {
 					gender = Gender.UNKNOWN
-					hideSharedServers = false
-					hidePreviousUsernames = false
-					hideLastSeen = false
 					boughtProfiles = arrayOf()
 				}
 			}

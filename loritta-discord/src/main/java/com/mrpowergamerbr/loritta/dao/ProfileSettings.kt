@@ -10,9 +10,6 @@ class ProfileSettings(id: EntityID<Long>) : LongEntity(id) {
 
 	var aboutMe by UserSettings.aboutMe
 	var gender by UserSettings.gender
-	var hidePreviousUsernames by UserSettings.hidePreviousUsernames
-	var hideSharedServers by UserSettings.hideSharedServers
-	var hideLastSeen by UserSettings.hideLastSeen
 	var activeProfile by UserSettings.activeProfile
 	var activeBackground by Background optionalReferencedOn UserSettings.activeBackground
 	var activeBackgroundInternalName by UserSettings.activeBackground
