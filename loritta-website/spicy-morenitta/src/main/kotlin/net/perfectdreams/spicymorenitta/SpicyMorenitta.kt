@@ -14,6 +14,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.html.*
 import kotlinx.html.dom.append
+import kotlinx.html.stream.createHTML
 import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.parse
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
@@ -376,6 +377,57 @@ class SpicyMorenitta : Logging {
 						http.post<String>("${window.location.origin}/api/v1/users/@me/logout") {}
 						window.location.href = "/"
 					}
+				}
+			}
+		}
+
+		val deleteAccountButton = document.select<HTMLElement?>("#delete-account-button")
+		deleteAccountButton?.let {
+			if (!it.hasAttribute("data-delete-account-button-enabled")) {
+				it.setAttribute("data-delete-account-button-enabled", "true")
+
+				deleteAccountButton.onClick {
+					val modal = TingleModal(
+							TingleOptions(
+									footer = true,
+									cssClass = arrayOf("tingle-modal--overflow")
+							)
+					)
+
+					modal.addFooterBtn("<i class=\"fas fa-redo\"></i> ${locale["website.dashboard.profile.deleteAccount.deleteMyAccount"]}", "button-discord button-discord-attention pure-button button-discord-modal") {
+						showLoadingScreen()
+						launch {
+							http.post<String>("${window.location.origin}/api/v1/users/@me/delete") {}
+							window.location.href = "/"
+						}
+					}
+
+					modal.addFooterBtn("<i class=\"fas fa-times\"></i> ${locale["modules.levelUp.resetXp.cancel"]}", "button-discord pure-button button-discord-modal button-discord-modal-secondary-action") {
+						modal.close()
+					}
+
+					modal.setContent(
+							createHTML().div {
+								div(classes = "category-name") {
+									+ locale["modules.levelUp.resetXp.areYouSure"]
+								}
+
+								div {
+									style = "text-align: center;"
+
+									img(src = "https://loritta.website/assets/img/fanarts/l6.png") {
+										width = "250"
+									}
+
+									locale.getList("website.dashboard.profile.deleteAccount.description").forEach {
+										p {
+											+ it
+										}
+									}
+								}
+							}
+					)
+					modal.open()
 				}
 			}
 		}
