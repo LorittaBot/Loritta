@@ -88,7 +88,7 @@ dependencies {
     compile("com.fasterxml.jackson.module:jackson-module-kotlin:2.10.1")
     compile("com.fasterxml.jackson.module:jackson-module-parameter-names:2.10.1")
     compile("org.honton.chas.hocon:jackson-dataformat-hocon:1.1.1")
-    compile("com.github.markozajc:akiwrapper:1.4.3.1")
+    compile("com.github.markozajc:akiwrapper:1.4.3.2")
     compile("org.json:json:20190722")
     compile("com.github.salomonbrys.kotson:kotson:2.5.0")
     compile("com.vladsch.flexmark:flexmark-all:0.50.44")
