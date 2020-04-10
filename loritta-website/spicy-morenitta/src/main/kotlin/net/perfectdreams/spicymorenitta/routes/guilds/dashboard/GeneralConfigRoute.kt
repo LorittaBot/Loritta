@@ -160,15 +160,6 @@ class GeneralConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/g
 					hr {}
 
 					createToggle(
-							locale["${LOCALE_PREFIX}.tellMissingPermissionOnAChannel.title"],
-							locale["${LOCALE_PREFIX}.tellMissingPermissionOnAChannel.subtext"],
-							"warn-on-missing-permission",
-							guild.general.warnOnMissingPermission
-					)
-
-					hr {}
-
-					createToggle(
 							locale["${LOCALE_PREFIX}.tellUserWhenUsingUnknownCommand.title"],
 							locale["${LOCALE_PREFIX}.tellUserWhenUsingUnknownCommand.subtext"],
 							"warn-on-unknown-command",
