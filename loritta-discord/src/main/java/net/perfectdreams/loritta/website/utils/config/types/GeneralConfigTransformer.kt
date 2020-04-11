@@ -17,7 +17,6 @@ object GeneralConfigTransformer : ConfigTransformer {
                 "localeId" to serverConfig.localeId,
                 "commandPrefix" to serverConfig.commandPrefix,
                 "deleteMessageAfterCommand" to serverConfig.deleteMessageAfterCommand,
-                "warnOnMissingPermission" to serverConfig.warnOnMissingPermission,
                 "warnOnUnknownCommand" to serverConfig.warnOnUnknownCommand,
                 "blacklistedChannels" to serverConfig.blacklistedChannels.toList().toJsonArray(),
                 "warnIfBlacklisted" to serverConfig.warnIfBlacklisted,
@@ -30,7 +29,6 @@ object GeneralConfigTransformer : ConfigTransformer {
             serverConfig.commandPrefix = payload["commandPrefix"].string
             serverConfig.deleteMessageAfterCommand = payload["deleteMessageAfterCommand"].bool
             serverConfig.warnOnUnknownCommand = payload["warnOnUnknownCommand"].bool
-            serverConfig.warnOnMissingPermission = payload["warnOnMissingPermission"].bool
             serverConfig.warnIfBlacklisted = payload["warnIfBlacklisted"].bool
             serverConfig.blacklistedChannels = payload["blacklistedChannels"].array.map { it.long }.toTypedArray()
             serverConfig.blacklistedWarning = payload["blacklistedWarning"].nullString

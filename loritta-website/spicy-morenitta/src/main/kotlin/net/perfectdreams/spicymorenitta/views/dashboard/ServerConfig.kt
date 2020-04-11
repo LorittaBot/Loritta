@@ -19,7 +19,6 @@ object ServerConfig {
 			val localeId: String,
 			val commandPrefix: String,
 			val deleteMessageAfterCommand: Boolean,
-			val warnOnMissingPermission: Boolean,
 			val warnOnUnknownCommand: Boolean,
 			val blacklistedChannels: Array<Long>,
 			val warnIfBlacklisted: Boolean,
