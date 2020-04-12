@@ -356,9 +356,9 @@ object GiveawayManager {
 
                 if (winners.size == 1) { // Apenas um ganhador
                     val winner = winners.first()
-                    message.channel.sendMessageAsync("\uD83C\uDF89 **|** ${locale["commands.fun.giveaway.oneWinner", winner.asMention, "`${giveaway.reason}`"]} ${Emotes.LORI_HAPPY}")
+                    message.channel.sendMessageAsync("\uD83C\uDF89 **|** ${locale["commands.fun.giveaway.oneWinner", winner.asMention, "**${giveaway.reason}**"]} ${Emotes.LORI_HAPPY}")
                 } else { // Mais de um ganhador
-                    val replies = mutableListOf("\uD83C\uDF89 **|** ${locale["commands.fun.giveaway.multipleWinners", "`${giveaway.reason}`"]} ${Emotes.LORI_HAPPY}")
+                    val replies = mutableListOf("\uD83C\uDF89 **|** ${locale["commands.fun.giveaway.multipleWinners", "**${giveaway.reason}**"]} ${Emotes.LORI_HAPPY}")
 
                     repeat(giveaway.numberOfWinners) {
                         val user = winners.getOrNull(it)

@@ -41,6 +41,7 @@ include(":loritta-plugins:donators-ostentation")
 include(":loritta-plugins:staff-lorittaban")
 include(":loritta-plugins:auto-banner-changer")
 include(":loritta-plugins:loritta-birthday-2020-event")
+include(":loritta-plugins:helping-hands")
 
 // Website
 include(":loritta-website")

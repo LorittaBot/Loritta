@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.api.commands.*
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
+import net.perfectdreams.loritta.utils.CommandUtils
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.FeatureFlags
 import org.jetbrains.exposed.sql.insert
@@ -54,7 +55,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 		val rawArguments = rawMessage.replace("\n", "").split(" ")
 
 		// Primeiro os comandos vanilla da Loritta(tm)
-		for (command in commands.filter { !legacyServerConfig.disabledCommands.contains(it.commandName) }) {
+		for (command in commands) {
 			if (dispatch(command, rawArguments, ev, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser))
 				return true
 		}
@@ -203,6 +204,12 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 					} else {
 						ev.channel.sendTyping().await()
 					}
+				}
+
+				if (!isPrivateChannel && ev.guild != null && ev.member != null) {
+					// Verificar se o comando está ativado na guild atual
+					if (CommandUtils.checkIfCommandIsDisabledInGuild(legacyServerConfig, locale, ev.channel, ev.member, command.commandName))
+						return true
 				}
 
 				// Se estamos dentro de uma guild... (Já que mensagens privadas não possuem permissões)

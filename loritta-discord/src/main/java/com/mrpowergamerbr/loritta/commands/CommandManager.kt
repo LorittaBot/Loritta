@@ -23,6 +23,7 @@ import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.localized
@@ -33,10 +34,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
-import net.perfectdreams.loritta.utils.DonateUtils
-import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.FeatureFlags
-import net.perfectdreams.loritta.utils.UserPremiumPlans
+import net.perfectdreams.loritta.utils.*
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
@@ -235,7 +233,7 @@ class CommandManager {
 		val rawArguments = rawMessage.replace("\n", "").split(" ")
 
 		// Primeiro os comandos vanilla da Loritta(tm)
-		for (command in commandMap.filter { !conf.disabledCommands.contains(it.javaClass.simpleName) }) {
+		for (command in commandMap) {
 			if (matches(command, rawArguments, ev, serverConfig, conf, locale, legacyLocale, lorittaUser))
 				return true
 		}
@@ -379,6 +377,12 @@ class CommandManager {
 					} else {
 						ev.channel.sendTyping().await()
 					}
+				}
+
+				if (!isPrivateChannel && ev.guild != null && ev.member != null) {
+					// Verificar se o comando está ativado na guild atual
+					if (CommandUtils.checkIfCommandIsDisabledInGuild(legacyServerConfig, locale, ev.channel, ev.member, command::class.simpleName!!))
+						return true
 				}
 
 				// Se estamos dentro de uma guild... (Já que mensagens privadas não possuem permissões)

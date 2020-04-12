@@ -33,6 +33,7 @@ import net.perfectdreams.loritta.commands.vanilla.social.XpNotificationsCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
+import net.perfectdreams.loritta.utils.CommandUtils
 import net.perfectdreams.loritta.utils.DonateUtils
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.FeatureFlags
@@ -164,7 +165,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
         val rawArguments = rawMessage.replace("\n", "").split(" ")
 
         // Primeiro os comandos vanilla da Loritta(tm)
-        for (command in getRegisteredCommands().filter { !legacyServerConfig.disabledCommands.contains(it.javaClass.simpleName) }) {
+        for (command in getRegisteredCommands()) {
             if (verifyAndDispatch(command, rawArguments, ev, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser))
                 return true
         }
@@ -342,6 +343,12 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                     } else {
                         ev.channel.sendTyping().await()
                     }
+                }
+
+                if (!isPrivateChannel && ev.guild != null && ev.member != null) {
+                    // Verificar se o comando está ativado na guild atual
+                    if (CommandUtils.checkIfCommandIsDisabledInGuild(legacyServerConfig, locale, ev.channel, ev.member, command::class.simpleName!!))
+                        return true
                 }
 
                 // Se estamos dentro de uma guild... (Já que mensagens privadas não possuem permissões)

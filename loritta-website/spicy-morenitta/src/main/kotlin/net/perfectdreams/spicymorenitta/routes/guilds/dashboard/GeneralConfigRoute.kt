@@ -105,8 +105,12 @@ class GeneralConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/g
 								value = guild.general.commandPrefix
 
 								onInputFunction = {
+									val commandPrefix = document.select<HTMLInputElement>("#command-prefix")
+
+									commandPrefix.value = commandPrefix.value.trim()
+
 									document.select<HTMLSpanElement>("#command-prefix-preview")
-											.innerText = document.select<HTMLInputElement>("#command-prefix").value
+											.innerText = commandPrefix.value
 								}
 							}
 							div(classes = "discord-message-helper") {
@@ -311,7 +315,6 @@ class GeneralConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/g
 		SaveUtils.prepareSave("general", extras = {
 			it["commandPrefix"] = document.select<HTMLInputElement>("#command-prefix").value
 			it["deleteMessageAfterCommand"] = document.select<HTMLInputElement>("#delete-message-after-command").checked
-			it["warnOnMissingPermission"] = document.select<HTMLInputElement>("#warn-on-missing-permission").checked
 			it["warnOnUnknownCommand"] = document.select<HTMLInputElement>("#warn-on-unknown-command").checked
 			it["blacklistedChannels"] = blacklistedChannels.map { it.toString() }
 			val warnIfBlacklisted = document.select<HTMLInputElement>("#warn-if-blacklisted").checked
