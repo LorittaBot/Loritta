@@ -41,6 +41,9 @@ class CheckReactionsForPrivateSpamListener(val config: StaffLorittaBanConfig) : 
 				|| !event.member.roles.any { it.idLong == 351473717194522647L })
 			return
 
+		if (event.reactionEmote.idLong != 694273286284116029L)
+			return
+		
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val message = event.channel.retrieveMessageById(event.messageIdLong)
 					.await() ?: return@launch
