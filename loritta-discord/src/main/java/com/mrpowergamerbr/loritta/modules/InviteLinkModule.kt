@@ -5,10 +5,16 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
+import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.platform.discord.entities.DiscordEmote
+import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
+import net.perfectdreams.loritta.utils.Emotes
 import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
 
@@ -122,6 +128,48 @@ class InviteLinkModule : MessageReceivedModule {
 					message.delete().queue()
 
 				if (inviteBlockerConfig.tellUser && inviteBlockerConfig.warnMessage.isNotEmpty() && message.textChannel.canTalk()) {
+					if (event.member != null && event.member.hasPermission(Permission.MANAGE_SERVER)) {
+						// Se a pessoa tiver permissão para ativar a permissão de convites, faça que a Loritta recomende que ative a permissão
+						val topRole = event.member.roles.sortedByDescending { it.position }.firstOrNull { !it.isPublicRole }
+
+						if (topRole != null) {
+							val enableBypassMessage = message.textChannel.sendMessageAsync(
+									listOf(
+											LorittaReply(
+													locale.toNewLocale()["modules.inviteBlocker.activateInviteBlockerBypass", topRole.asMention, Emotes.LORI_PAT],
+													Emotes.LORI_SMILE
+											),
+											LorittaReply(
+													locale.toNewLocale()["modules.inviteBlocker.howToReEnableLater", "<${loritta.instanceConfig.loritta.website.url}guild/${event.member.guild.idLong}/configure/permissions>"],
+													Emotes.LORI_HM
+											)
+									).joinToString("\n") { it.build(JDAUser(event.member.user)) }
+							)
+
+							enableBypassMessage.onReactionAddByAuthor(event.author.id) {
+								if (it.reactionEmote.id == (Emotes.LORI_PAT as DiscordEmote).id) {
+									enableBypassMessage.removeAllFunctions()
+
+									legacyServerConfig.permissionsConfig.roles.getOrPut(topRole.id) { PermissionsConfig.PermissionRole() }
+											.apply {
+												this.permissions.add(LorittaPermission.ALLOW_INVITES)
+											}
+
+									loritta save legacyServerConfig
+
+									message.textChannel.sendMessage(
+											LorittaReply(
+													locale.toNewLocale()["modules.inviteBlocker.bypassEnabled", topRole.asMention],
+													Emotes.LORI_HAPPY
+											).build(JDAUser(event.member.user))
+									).queue()
+								}
+							}
+
+							enableBypassMessage.addReaction((Emotes.LORI_PAT as DiscordEmote).reactionCode).queue()
+						}
+					}
+
 					val toBeSent = MessageUtils.generateMessage(inviteBlockerConfig.warnMessage, listOf(message.author, guild), guild)
 							?: return true
 

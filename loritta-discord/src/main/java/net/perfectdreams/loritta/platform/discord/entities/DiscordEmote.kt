@@ -6,13 +6,15 @@ import net.perfectdreams.loritta.api.entities.LorittaEmote
 
 class DiscordEmote(code: String) : LorittaEmote(code) {
     private var jdaEmote: Emote? = null
-    private val id: String
+    val id: String
     private val name: String
+    val reactionCode: String
 
     init {
         val split = code.split(":")
         id = split.last()
         name = split[split.size - 2]
+        reactionCode = "$name:$id"
     }
 
     override val asMention: String

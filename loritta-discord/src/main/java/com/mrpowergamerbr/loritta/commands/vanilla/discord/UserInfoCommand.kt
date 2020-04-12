@@ -55,9 +55,8 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			setThumbnail(user.effectiveAvatarUrl)
 			var nickname = user.name
 
-			if (member != null) {
+			if (member != null)
 				nickname = member.effectiveName
-			}
 
 			val ownerEmote = when {
 				member?.isOwner == true -> "\uD83D\uDC51"
@@ -96,14 +95,19 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			addField("\uD83D\uDCBB ${context.legacyLocale.get("USERINFO_ID_DO_DISCORD")}", "`${user.id}`", true)
 
 			val accountCreatedDiff = DateUtils.formatDateDiff(user.timeCreated.toInstant().toEpochMilli(), context.legacyLocale)
-			addField("\uD83D\uDCC5 ${context.legacyLocale.toNewLocale()["commands.discord.userInfo.accountCreated"]}", accountCreatedDiff, true)
+			addField("\uD83D\uDCC5 ${context.locale["commands.discord.userinfo.accountCreated"]}", accountCreatedDiff, true)
 			if (member != null) {
 				val accountJoinedDiff = DateUtils.formatDateDiff(member.timeJoined.toInstant().toEpochMilli(), context.legacyLocale)
-				addField("\uD83C\uDF1F ${context.legacyLocale.toNewLocale()["commands.discord.userInfo.accountJoined"]}", accountJoinedDiff, true)
+				addField("\uD83C\uDF1F ${context.locale["commands.discord.userinfo.accountJoined"]}", accountJoinedDiff, true)
+
+				if (member.timeBoosted != null) {
+					val timeBoosted = DateUtils.formatDateDiff(member.timeBoosted!!.toInstant().toEpochMilli(), context.legacyLocale)
+					addField("${Emotes.LORI_NITRO_BOOST} ${context.locale["commands.discord.userinfo.boostingSince"]}", timeBoosted, true)
+				}
 			}
 
 			if (context.message.channel.idLong == 358774895850815488L) {
-				var sharedServersFieldTitle = context.legacyLocale.toNewLocale()["commands.discord.userInfo.sharedServers"]
+				var sharedServersFieldTitle = context.locale["commands.discord.userinfo.sharedServers"]
 				var servers: String?
 
 				val sharedServersResults = lorittaShards.queryMutualGuildsInAllLorittaClusters(user.id)
@@ -139,16 +143,16 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 		embed.apply {
 			if (member != null) {
 				addField(
-						"\uD83D\uDC81 ${locale.toNewLocale()["commands.discord.userInfo.joinPosition"]}",
-						locale.toNewLocale()["commands.discord.userInfo.joinPlace", "${member.guild.members.sortedBy { it.timeJoined }.indexOf(member) + 1}º"],
+						"\uD83D\uDC81 ${locale.toNewLocale()["commands.discord.userinfo.joinPosition"]}",
+						locale.toNewLocale()["commands.discord.userinfo.joinPlace", "${member.guild.members.sortedBy { it.timeJoined }.indexOf(member) + 1}º"],
 						true
 				)
 
-				val permissions = member.getPermissions(context.message.textChannel).joinToString(", ", transform = { "`${it.localized(context.locale)}`" })
-				addField("\uD83D\uDEE1️ Permissões", permissions, true)
-
 				val roles = member.roles.joinToString(separator = ", ", transform = { "`${it.name}`" })
 				addField("\uD83D\uDCBC " + context.legacyLocale["USERINFO_ROLES"] + " (${member.roles.size})", if (roles.isNotEmpty()) roles.substringIfNeeded(0 until 1024) else context.legacyLocale.get("USERINFO_NO_ROLE") + " \uD83D\uDE2D", true)
+
+				val permissions = member.getPermissions(context.message.textChannel).joinToString(", ", transform = { "`${it.localized(context.locale)}`" })
+				addField("\uD83D\uDEE1 Permissões", permissions, false)
 			}
 		}
 
