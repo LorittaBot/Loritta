@@ -401,7 +401,8 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					BackgroundPayments,
 					CachedDiscordUsers,
 					SentYouTubeVideoIds,
-					SpicyStacktraces
+					SpicyStacktraces,
+					BannedIps
 			)
 		}
 	}

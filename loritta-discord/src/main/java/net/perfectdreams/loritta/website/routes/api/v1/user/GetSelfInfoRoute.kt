@@ -7,22 +7,30 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Background
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
+import com.mrpowergamerbr.loritta.utils.networkbans.ApplyBansTask
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.ApplicationCall
 import io.ktor.http.HttpStatusCode
 import io.ktor.sessions.get
 import io.ktor.sessions.sessions
+import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.BackgroundPayments
 import net.perfectdreams.loritta.tables.Backgrounds
+import net.perfectdreams.loritta.tables.BannedIps
 import net.perfectdreams.loritta.website.routes.BaseRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
+import net.perfectdreams.loritta.website.utils.extensions.trueIp
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class GetSelfInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/users/@me/{sections?}") {
+	companion object {
+		private val logger = KotlinLogging.logger {}
+	}
+
 	override suspend fun onRequest(call: ApplicationCall) {
 		loritta as Loritta
 		val sections = call.parameters["sections"]?.split(",")?.toSet()
@@ -43,6 +51,15 @@ class GetSelfInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/us
 
 			if (profile != null) {
 				transaction(Databases.loritta) {
+					val isIpBanned = BannedIps.select { BannedIps.ip eq call.request.trueIp }
+							.firstOrNull()
+
+					if (isIpBanned != null) {
+						// Se o IP do usuário estiver banido, iremos fazer um "ban wave", assim a pessoa não sabe que ela tomou ban até bem depois do ocorrido
+						logger.warn { "User ${call.request.trueIp}/${userIdentification.id} is banned due to ${isIpBanned[BannedIps.reason]}! Adding to ban wave..." }
+						ApplyBansTask.banWaveUsers[userIdentification.id.toLong()] = isIpBanned[BannedIps.reason] ?: "???"
+					}
+
 					profile.settings.discordAccountFlags = userIdentification.flags ?: 0
 					profile.settings.discordPremiumType = userIdentification.premiumType
 				}
