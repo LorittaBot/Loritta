@@ -18,6 +18,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.userAgent
 import io.ktor.request.header
 import io.ktor.request.path
+import io.ktor.request.receiveStream
 import io.ktor.request.receiveText
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -51,7 +52,7 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 
 	override suspend fun onRequest(call: ApplicationCall) {
 		loritta as Loritta
-		val response = call.receiveText()
+		val response = call.receiveStream().bufferedReader(charset = Charsets.UTF_8).readText()
 
 		logger.info { "Recebi payload do PubSubHubbub!" }
 		logger.trace { response }
