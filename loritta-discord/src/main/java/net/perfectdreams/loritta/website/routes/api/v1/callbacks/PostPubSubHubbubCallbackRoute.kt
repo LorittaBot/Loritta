@@ -19,7 +19,6 @@ import io.ktor.http.userAgent
 import io.ktor.request.header
 import io.ktor.request.path
 import io.ktor.request.receiveStream
-import io.ktor.request.receiveText
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
