@@ -16,12 +16,14 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.BannedIps
 import net.perfectdreams.loritta.tables.SonhosTransaction
+import net.perfectdreams.loritta.tables.WhitelistedTransactionIds
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
@@ -85,50 +87,63 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 			val finalMoney = (howMuch - taxedMoney).toLong()
 
 			if (lastReceiverDailyAt != null && lastGiverDailyAt != null) {
-				if (lastReceiverDailyAt[Dailies.ip] == lastGiverDailyAt[Dailies.ip]) {
-					logger.warn { "Same IP detected for $receiverId and $giverId, banning all accounts with the same IP..." }
+				val receiverDailyIp = lastReceiverDailyAt[Dailies.ip]
+				val giverDailyIp = lastGiverDailyAt[Dailies.ip]
 
-					// Mesmo IP, vamos dar ban em todas as contas do IP atual
-					val sameIpDaily = transaction(Databases.loritta) {
-						com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.ip eq lastReceiverDailyAt[Dailies.ip] and (Dailies.receivedAt greaterEq todayAtMidnight) }.orderBy(Dailies.receivedAt to false)
-								.toList()
+				if (receiverDailyIp == giverDailyIp) {
+					val isWhitelisted = transaction(Databases.loritta) {
+						WhitelistedTransactionIds.select {
+							WhitelistedTransactionIds.userId eq giverId or (WhitelistedTransactionIds.userId eq receiverId)
+						}.firstOrNull()
 					}
 
-					val receivedByIds = sameIpDaily.map { it[Dailies.receivedById] }
+					if (isWhitelisted != null) {
+						logger.warn { "Same IP detected for $receiverId and $giverId ($receiverDailyIp), but the IP is whitelisted! Ignoring..." }
+					} else {
+						logger.warn { "Same IP detected for $receiverId and $giverId ($receiverDailyIp), banning all accounts with the same IP..." }
 
-					logger.warn { "Detected IDs: ${receivedByIds.joinToString(", ")}" }
+						// Mesmo IP, vamos dar ban em todas as contas do IP atual
+						val sameIpDaily = transaction(Databases.loritta) {
+							com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.ip eq lastReceiverDailyAt[Dailies.ip] and (Dailies.receivedAt greaterEq todayAtMidnight) }.orderBy(Dailies.receivedAt to false)
+									.toList()
+						}
 
-					val reason = "Criar Alt Accounts para farmar sonhos no daily, será que os avisos no website não foram suficientes para você? ¯\\_(ツ)_/¯"
+						val receivedByIds = sameIpDaily.map { it[Dailies.receivedById] }
 
-					for (id in receivedByIds) {
-						val profile = loritta.getLorittaProfile(id)
+						logger.warn { "Detected IDs: ${receivedByIds.joinToString(", ")}" }
 
-						if (profile != null) {
-							logger.warn { "Automatically banning $id due to daily abuse..." }
-							transaction(Databases.loritta) {
-								profile.isBanned = true
-								profile.bannedReason = reason
+						val reason = "Criar Alt Accounts para farmar sonhos no daily, será que os avisos no website não foram suficientes para você? ¯\\_(ツ)_/¯"
+
+						for (id in receivedByIds) {
+							val profile = loritta.getLorittaProfile(id)
+
+							if (profile != null) {
+								logger.warn { "Automatically banning $id due to daily abuse..." }
+								transaction(Databases.loritta) {
+									profile.isBanned = true
+									profile.bannedReason = reason
+								}
 							}
 						}
-					}
 
-					logger.warn { "Banning ${lastReceiverDailyAt[Dailies.ip]} due to IP abuse, not NAT'd so fuck you." }
-					transaction(Databases.loritta) {
-						BannedIps.insert {
-							it[ip] = lastReceiverDailyAt[Dailies.ip]
-							it[bannedAt] = System.currentTimeMillis()
-							it[BannedIps.reason] = reason
+						logger.warn { "Banning ${lastReceiverDailyAt[Dailies.ip]} due to IP abuse, not NAT'd so fuck you." }
+						transaction(Databases.loritta) {
+							BannedIps.insert {
+								it[ip] = lastReceiverDailyAt[Dailies.ip]
+								it[bannedAt] = System.currentTimeMillis()
+								it[BannedIps.reason] = reason
+							}
 						}
-					}
 
-					// Iremos fakear fingindo que foi um sucesso, mas na verdade foi um ban
-					call.respondJson(
-							jsonObject(
-									"status" to PagarCommand.PayStatus.SUCCESS.toString(),
-									"finalMoney" to finalMoney
-							)
-					)
-					return
+						// Iremos fakear fingindo que foi um sucesso, mas na verdade foi um ban
+						call.respondJson(
+								jsonObject(
+										"status" to PagarCommand.PayStatus.SUCCESS.toString(),
+										"finalMoney" to finalMoney
+								)
+						)
+						return
+					}
 				}
 			}
 
