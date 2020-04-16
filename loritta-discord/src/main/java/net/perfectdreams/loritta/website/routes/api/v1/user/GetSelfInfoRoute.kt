@@ -6,6 +6,7 @@ import com.github.salomonbrys.kotson.toJsonArray
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Background
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.networkbans.ApplyBansTask
 import com.mrpowergamerbr.loritta.website.LoriWebCode
@@ -23,6 +24,7 @@ import net.perfectdreams.loritta.website.routes.BaseRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.website.utils.extensions.trueIp
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -50,8 +52,11 @@ class GetSelfInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/us
 			val profile = com.mrpowergamerbr.loritta.utils.loritta.getLorittaProfile(userIdentification.id)
 
 			if (profile != null) {
+				val now = System.currentTimeMillis()
+				val yesterdayAtTheSameHour = now - Constants.ONE_HOUR_IN_MILLISECONDS
+
 				transaction(Databases.loritta) {
-					val isIpBanned = BannedIps.select { BannedIps.ip eq call.request.trueIp }
+					val isIpBanned = BannedIps.select { BannedIps.ip eq call.request.trueIp and (BannedIps.bannedAt greaterEq yesterdayAtTheSameHour) }
 							.firstOrNull()
 
 					if (isIpBanned != null) {
