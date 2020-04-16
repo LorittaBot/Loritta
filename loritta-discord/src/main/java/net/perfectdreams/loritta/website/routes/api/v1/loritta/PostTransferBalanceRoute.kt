@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.economy.PagarCommand
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Dailies
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
@@ -21,10 +22,7 @@ import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.or
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
 import java.time.ZoneId
@@ -151,6 +149,13 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 				giverProfile.money -= howMuch
 				receiverProfile.money += finalMoney
 
+				val hasMatchingPayment = SonhosTransaction.select {
+					SonhosTransaction.reason eq SonhosPaymentReason.DAILY and
+							(SonhosTransaction.quantity eq howMuch.toBigDecimal() ) and
+							(SonhosTransaction.receivedBy eq giverId) and
+							(SonhosTransaction.givenAt greaterEq System.currentTimeMillis() - Constants.ONE_DAY_IN_MILLISECONDS)
+				}.firstOrNull()
+
 				if (taxedMoney != 0.0) {
 					SonhosTransaction.insert {
 						it[givenBy] = giverProfile.id.value
@@ -161,13 +166,16 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 					}
 				}
 
-				SonhosTransaction.insert {
+				val transactionId = SonhosTransaction.insertAndGetId {
 					it[givenBy] = giverProfile.id.value
 					it[receivedBy] = receiverProfile.id.value
 					it[givenAt] = System.currentTimeMillis()
 					it[quantity] = finalMoney.toBigDecimal()
 					it[reason] = SonhosPaymentReason.PAYMENT
 				}
+
+				if (hasMatchingPayment != null)
+					logger.warn { "Suspicious payment $transactionId by $giverId to $receiverId, sending the same quantity received in the daily" }
 			}
 
 			logger.info { "$giverId (antes possuia ${beforeGiver} sonhos) transferiu ${howMuch} sonhos para ${receiverProfile.userId} (antes possuia ${beforeReceiver} sonhos, recebeu apenas $finalMoney (taxado!))" }
