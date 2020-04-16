@@ -32,7 +32,7 @@ object MiscUtils {
 	fun getInviteId(url: String): String? {
 		val matcher = Constants.DISCORD_INVITE_PATTERN.matcher(url)
 		if (matcher.find())
-			return matcher.group(3)
+			return matcher.group(2)
 		return null
 	}
 
