@@ -112,7 +112,7 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 						}
 					}
 
-					logger.warn { "Baning ${lastReceiverDailyAt[Dailies.ip]} due to IP abuse, not NAT'd so fuck you." }
+					logger.warn { "Banning ${lastReceiverDailyAt[Dailies.ip]} due to IP abuse, not NAT'd so fuck you." }
 					transaction(Databases.loritta) {
 						BannedIps.insert {
 							it[ip] = lastReceiverDailyAt[Dailies.ip]
