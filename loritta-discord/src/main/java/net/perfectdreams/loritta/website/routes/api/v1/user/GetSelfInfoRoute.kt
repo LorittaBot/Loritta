@@ -53,7 +53,7 @@ class GetSelfInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/us
 
 			if (profile != null) {
 				val now = System.currentTimeMillis()
-				val yesterdayAtTheSameHour = now - Constants.ONE_HOUR_IN_MILLISECONDS
+				val yesterdayAtTheSameHour = now - Constants.ONE_DAY_IN_MILLISECONDS
 
 				transaction(Databases.loritta) {
 					val isIpBanned = BannedIps.select { BannedIps.ip eq call.request.trueIp and (BannedIps.bannedAt greaterEq yesterdayAtTheSameHour) }
