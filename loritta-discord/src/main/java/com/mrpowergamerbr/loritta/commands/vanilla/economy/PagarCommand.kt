@@ -156,10 +156,20 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 				val taxedMoney = if (taxBypass) { 0.0 } else { Math.ceil(TRANSACTION_TAX * howMuch.toDouble()) }
 				val finalMoney = howMuch - taxedMoney
 
+				if (0 >= finalMoney) {
+					context.reply(
+							LoriReply(
+									locale.toNewLocale()["commands.economy.pay.cantTransferZeroWithTax"],
+									Constants.ERROR
+							)
+					)
+					return
+				}
+
 				val message = context.reply(
 						if (!taxBypass) {
 							LoriReply(
-									"Você irá transferir $howMuch sonhos ($taxedMoney sonhos de taxa) para ${user.asMention}! Ele irá receber ${howMuch - taxedMoney} sonhos"
+									"Você irá transferir $howMuch sonhos ($taxedMoney sonhos de taxa) para ${user.asMention}! Ele irá receber $finalMoney sonhos"
 							)
 						} else {
 							LoriReply(
