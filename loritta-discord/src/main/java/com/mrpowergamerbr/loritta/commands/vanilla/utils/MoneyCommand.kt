@@ -32,6 +32,9 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 					val exchangeRates = jsoup.select("Cube").filter { it.hasAttr("currency") }
 							.map { it.attr("currency") to it.attr("rate").toDouble() }
 							.toMap()
+							.toMutableMap()
+
+					exchangeRates["EUR"] = 1.0
 
 					updatedAt = System.currentTimeMillis()
 
