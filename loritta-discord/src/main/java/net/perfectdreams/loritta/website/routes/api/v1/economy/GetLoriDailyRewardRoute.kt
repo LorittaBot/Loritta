@@ -49,7 +49,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				.build<Long, Mutex>()
 				.asMap()
 
-		fun checkIfUserCanPayout(userIdentification: LorittaJsonWebSession.UserIdentification, ip: String): Int {
+		fun checkIfUserCanPayout(userIdentification: TemmieDiscordAuth.UserIdentification, ip: String): Int {
 			val todayAtMidnight = Instant.now()
 					.atZone(ZoneId.of("America/Sao_Paulo"))
 					.toOffsetDateTime()
@@ -100,6 +100,15 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 			}
 
 			if (sameIpDailyAt.isNotEmpty()) {
+				// Já pegaram daily no mesmo IP, mas não ativaram 2FA, vamos pedir para o usuário...
+				if (userIdentification.mfaEnabled == false)
+					throw WebsiteAPIException(
+							HttpStatusCode.Forbidden,
+							WebsiteUtils.createErrorPayload(
+									LoriWebCode.MFA_DISABLED
+							)
+					)
+
 				if (sameIpDailyAt.size >= 3) {
 					throw WebsiteAPIException(
 							HttpStatusCode.Forbidden,
@@ -117,7 +126,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 			return sameIpDailyAt.size
 		}
 
-		fun verifyIfAccountAndIpAreSafe(userIdentification: LorittaJsonWebSession.UserIdentification, ip: String) {
+		suspend fun verifyIfAccountAndIpAreSafe(userIdentification: TemmieDiscordAuth.UserIdentification, ip: String) {
 			val status = MiscUtils.verifyAccount(userIdentification, ip)
 			val email = userIdentification.email
 			logger.info { "AccountCheckResult for (${userIdentification.username}#${userIdentification.discriminator}) ${userIdentification.id} - ${status.name}" }
@@ -126,7 +135,6 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 			logger.info { "IP: $ip" }
 
 			if (!status.canAccess) {
-				val payload = JsonObject()
 				when (status) {
 					MiscUtils.AccountCheckResult.STOP_FORUM_SPAM,
 					MiscUtils.AccountCheckResult.BAD_HOSTNAME,
@@ -202,6 +210,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 
 		val lorittaProfile = loritta.getOrCreateLorittaProfile(userIdentification.id)
 
+		val userIdentification = discordAuth.getUserIdentification()
 		verifyIfAccountAndIpAreSafe(userIdentification, ip)
 
 		val mutex = mutexes.getOrPut(lorittaProfile.userId) { Mutex() }

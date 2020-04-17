@@ -15,6 +15,8 @@ class GetLoriDailyRewardStatusRoute(loritta: LorittaDiscord) : RequiresAPIDiscor
 		loritta as Loritta
 		val ip = call.request.trueIp
 
+		val userIdentification = discordAuth.getUserIdentification()
+
 		GetLoriDailyRewardRoute.verifyIfAccountAndIpAreSafe(userIdentification, ip)
 		val receivedDailyWithSameIp = GetLoriDailyRewardRoute.checkIfUserCanPayout(userIdentification, ip)
 

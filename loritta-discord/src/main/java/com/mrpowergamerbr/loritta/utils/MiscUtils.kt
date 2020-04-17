@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.http.HttpStatusCode
-import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
+import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.json.XML
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -68,7 +68,7 @@ object MiscUtils {
 		process.waitFor(10, TimeUnit.SECONDS)
 	}
 
-	fun verifyAccount(userIdentification: LorittaJsonWebSession.UserIdentification, ip: String): AccountCheckResult {
+	fun verifyAccount(userIdentification: TemmieDiscordAuth.UserIdentification, ip: String): AccountCheckResult {
 		if (!userIdentification.verified)
 			return AccountCheckResult.NOT_VERIFIED
 
