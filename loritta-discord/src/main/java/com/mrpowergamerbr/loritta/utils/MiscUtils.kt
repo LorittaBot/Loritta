@@ -78,14 +78,8 @@ object MiscUtils {
 		if (2 > domain.size) // na verdade seria "INVALID_EMAIL" mas...
 			return AccountCheckResult.NOT_VERIFIED
 
-		val list = HttpRequest.get("https://raw.githubusercontent.com/martenson/disposable-email-domains/master/disposable_email_blocklist.conf")
-				.body()
-				.split("\n")
-				.toMutableList()
 
-		// Alguns emails que não estão na lista
-		list.add("sparklmail.com")
-		list.add("l8oaypr.com")
+		val list = File(Loritta.ASSETS, "data/blacklisted-emails.txt").readLines()
 
 		val matches = list.any { it == domain[1] }
 
