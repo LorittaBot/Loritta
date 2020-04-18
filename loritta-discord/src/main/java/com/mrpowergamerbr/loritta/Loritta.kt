@@ -403,7 +403,8 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					SentYouTubeVideoIds,
 					SpicyStacktraces,
 					BannedIps,
-					WhitelistedTransactionIds
+					WhitelistedTransactionIds,
+					Requires2FAChecksUsers
 			)
 		}
 	}
