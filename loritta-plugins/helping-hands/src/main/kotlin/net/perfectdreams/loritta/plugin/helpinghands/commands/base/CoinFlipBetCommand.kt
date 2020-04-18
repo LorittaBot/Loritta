@@ -24,7 +24,8 @@ object CoinFlipBetCommand : DSLCommandBase {
 
 	override fun command(plugin: HelpingHandsPlugin, loritta: LorittaBot) = create(
 			loritta,
-			listOf("coinflip bet", "flipcoin bet", "girarmoeda apostar", "flip bet", "toss bet", "coin bet")
+			listOf("coinflip", "flipcoin", "girarmoeda", "caracoroa")
+					.flatMap { listOf("$it bet", "$it apostar") }
 	) {
 		description { it["commands.economy.flipcoinbet.description"] }
 

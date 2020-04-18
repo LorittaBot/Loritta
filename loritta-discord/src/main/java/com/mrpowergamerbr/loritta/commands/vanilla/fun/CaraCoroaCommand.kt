@@ -5,9 +5,9 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.CommandCategor
 
-class CaraCoroaCommand : AbstractCommand("flipcoin", listOf("girarmoeda", "flip", "toss", "moeda", "coin", "flipcoin"), CommandCategory.FUN) {
+class CaraCoroaCommand : AbstractCommand("coinflip", listOf("girarmoeda", "flipcoin", "caracoroa"), CommandCategory.FUN) {
 	companion object {
 		const val LOCALE_PREFIX = "commands.fun.flipcoin"
 	}
