@@ -102,13 +102,15 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 
 			if (sameIpDailyAt.isNotEmpty()) {
 				// Já pegaram daily no mesmo IP, mas não ativaram 2FA, vamos pedir para o usuário...
-				if (userIdentification.mfaEnabled == false)
+				if (userIdentification.mfaEnabled == false) {
+					logger.warn { "User ${userIdentification.id} requires 2FA enabled because they have multiple accounts in the same email, but they didn't enable it yet! Asking them to turn it on..." }
 					throw WebsiteAPIException(
 							HttpStatusCode.Forbidden,
 							WebsiteUtils.createErrorPayload(
 									LoriWebCode.MFA_DISABLED
 							)
 					)
+				}
 
 				if (sameIpDailyAt.size >= 3) {
 					throw WebsiteAPIException(
@@ -128,13 +130,15 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				Requires2FAChecksUsers.select { Requires2FAChecksUsers.userId eq userIdentification.id.toLong() }.count() != 0
 			}
 
-			if (requires2FA && userIdentification.mfaEnabled == false)
+			if (requires2FA && userIdentification.mfaEnabled == false) {
+				logger.warn { "User ${userIdentification.id} requires 2FA enabled, but they didn't enable it yet! Asking them to turn it on..." }
 				throw WebsiteAPIException(
 						HttpStatusCode.Forbidden,
 						WebsiteUtils.createErrorPayload(
 								LoriWebCode.MFA_DISABLED
 						)
 				)
+			}
 
 			return sameIpDailyAt.size
 		}
