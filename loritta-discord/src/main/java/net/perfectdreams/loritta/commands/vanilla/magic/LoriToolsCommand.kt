@@ -23,7 +23,9 @@ object LoriToolsCommand {
 					PurgeInactiveGuildUsersExecutor,
 					SetSelfBackgroundExecutor,
 					GenerateDailyShopExecutor,
-					PriceCorrectionExecutor
+					PriceCorrectionExecutor,
+					LoriBanIpExecutor,
+					LoriUnbanIpExecutor
 			) + validPlugins.flatMap { it.loriToolsExecutors }
 
 			allExecutors.forEach {
