@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.CaraCoroaCommand
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MessageInteractionFunctions
+import com.mrpowergamerbr.loritta.utils.removeAllFunctions
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.perfectdreams.loritta.api.LorittaBot
@@ -89,7 +90,7 @@ object CoinFlipBetCommand : DSLCommandBase {
 
 			val invitedUserProfile = loritta.getOrCreateLorittaProfile(invitedUser.id)
 
-			if (number > invitedUserProfile.money) {
+			if (number > invitedUserProfile.money || invitedUserProfile.isBanned) {
 				context.reply(
 						LorittaReply(
 								locale["commands.economy.flipcoinbet.notEnoughMoneyInvited", invitedUser.asMention],
@@ -117,6 +118,7 @@ object CoinFlipBetCommand : DSLCommandBase {
 			val functions = com.mrpowergamerbr.loritta.utils.loritta.messageInteractionCache.getOrPut(message.idLong) { MessageInteractionFunctions(message.guild.idLong, message.channel.idLong, context.user.id) }
 			functions.onReactionAdd = {
 				if (it.userIdLong == invitedUser.idLong && it.reactionEmote.name == "✅") {
+					message.removeAllFunctions()
 					plugin.launch {
 						mutex.withLock {
 							selfUserProfile.dbRefresh()
