@@ -356,6 +356,7 @@ class TwitchRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{g
 
 			val screenName = youTubeAccountInput.value
 					.split("/")
+					.filter { it.isNotEmpty() }
 					.last()
 
 			m.launch {
