@@ -23,6 +23,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.tables.Requires2FAChecksUsers
 import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
@@ -122,6 +123,18 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 					)
 				}
 			}
+
+			val requires2FA = transaction(Databases.loritta) {
+				Requires2FAChecksUsers.select { Requires2FAChecksUsers.userId eq userIdentification.id.toLong() }.count() != 0
+			}
+
+			if (requires2FA && userIdentification.mfaEnabled == false)
+				throw WebsiteAPIException(
+						HttpStatusCode.Forbidden,
+						WebsiteUtils.createErrorPayload(
+								LoriWebCode.MFA_DISABLED
+						)
+				)
 
 			return sameIpDailyAt.size
 		}

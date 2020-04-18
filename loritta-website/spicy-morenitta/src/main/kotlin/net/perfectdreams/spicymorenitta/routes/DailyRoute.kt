@@ -150,6 +150,7 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
                 LoriWebCode.BLACKLISTED_IP -> locale["website.daily.blacklistedIp"]
                 LoriWebCode.UNVERIFIED_ACCOUNT -> locale["website.daily.unverifiedAccount"]
                 LoriWebCode.INVALID_RECAPTCHA -> locale["website.daily.invalidReCaptcha"]
+                LoriWebCode.MFA_DISABLED -> locale["website.daily.pleaseActivate2FA"]
                 else -> locale["website.daily.thisShouldNeverHappen", webCode.name]
             }
             return true
