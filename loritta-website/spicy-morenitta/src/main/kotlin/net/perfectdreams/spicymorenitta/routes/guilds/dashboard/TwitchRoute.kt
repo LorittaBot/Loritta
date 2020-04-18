@@ -7,7 +7,6 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.readText
 import io.ktor.http.HttpStatusCode
 import jq
-import kotlinx.coroutines.delay
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.js.onClickFunction
@@ -33,7 +32,6 @@ import kotlin.browser.document
 import kotlin.browser.window
 import kotlin.dom.addClass
 import kotlin.dom.clear
-import kotlin.dom.hasClass
 import kotlin.dom.removeClass
 import kotlin.js.Json
 import kotlin.js.json
@@ -355,9 +353,7 @@ class TwitchRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{g
 			info("Finished typing! Loading data...")
 
 			val screenName = youTubeAccountInput.value
-					.split("/")
-					.filter { it.isNotEmpty() }
-					.last()
+					.split("/").last { it.isNotEmpty() }
 
 			m.launch {
 				val accountInfo = loadAccountInfoFromUserLogin(screenName)
