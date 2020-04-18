@@ -32,7 +32,6 @@ class FanArtsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/fanarts
     var filterTag: String? = null
     var watchingUser: FanArtArtist? = null
     var fanArtArtists = listOf<FanArtArtist>()
-    override val requiresLocales = false
     override val requiresUserIdentification = false
 
     @UseExperimental(ImplicitReflectionSerializer::class)
