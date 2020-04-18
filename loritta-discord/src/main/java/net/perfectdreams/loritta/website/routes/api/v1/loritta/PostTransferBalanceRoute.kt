@@ -110,38 +110,6 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 						val receivedByIds = sameIpDaily.map { it[Dailies.receivedById] }
 
 						logger.warn { "Detected IDs: ${receivedByIds.joinToString(", ")}" }
-
-						val reason = "Criar Alt Accounts para farmar sonhos no daily, será que os avisos no website não foram suficientes para você? ¯\\_(ツ)_/¯"
-
-						for (id in receivedByIds) {
-							val profile = loritta.getLorittaProfile(id)
-
-							if (profile != null) {
-								logger.warn { "Automatically banning $id due to daily abuse..." }
-								transaction(Databases.loritta) {
-									profile.isBanned = true
-									profile.bannedReason = reason
-								}
-							}
-						}
-
-						logger.warn { "Banning ${lastReceiverDailyAt[Dailies.ip]} due to IP abuse, not NAT'd so fuck you." }
-						transaction(Databases.loritta) {
-							BannedIps.insert {
-								it[ip] = lastReceiverDailyAt[Dailies.ip]
-								it[bannedAt] = System.currentTimeMillis()
-								it[BannedIps.reason] = reason
-							}
-						}
-
-						// Iremos fakear fingindo que foi um sucesso, mas na verdade foi um ban
-						call.respondJson(
-								jsonObject(
-										"status" to PagarCommand.PayStatus.SUCCESS.toString(),
-										"finalMoney" to finalMoney
-								)
-						)
-						return
 					}
 				}
 			}
