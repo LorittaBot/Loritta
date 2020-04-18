@@ -112,7 +112,8 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 					)
 				}
 
-				if (sameIpDailyAt.size >= 3) {
+				// Se o IP for IPv4 e tiver mais de uma conta no IP ou se for IPv6 e já tiver qualquer daily na conta
+				if (sameIpDailyAt.size >= 3 || ip.contains(":")) {
 					throw WebsiteAPIException(
 							HttpStatusCode.Forbidden,
 							WebsiteUtils.createErrorPayload(

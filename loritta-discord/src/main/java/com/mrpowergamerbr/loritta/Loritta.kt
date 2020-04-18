@@ -40,7 +40,6 @@ import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.perfectdreams.loritta.api.platform.PlatformFeature
