@@ -143,7 +143,7 @@ object CoinFlipBetCommand : DSLCommandBase {
 							val winner: net.dv8tion.jda.api.entities.User
 							val loser: net.dv8tion.jda.api.entities.User
 
-							if (isTails) {
+							if (!isTails) {
 								winner = context.user
 								loser = invitedUser
 								transaction(Databases.loritta) {
