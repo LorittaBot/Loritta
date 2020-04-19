@@ -26,7 +26,7 @@ enum class LoriWebCode(val errorId: Int, val fancyName: String) {
 	BLACKLISTED_IP(732, "IP is blacklisted"),
 	UNVERIFIED_ACCOUNT(733, "Your account is unverified!"),
 	BLACKLISTED_EMAIL(734, "Email is blacklisted"),
-	MFA_DISABLED(733, "Your account does not have MFA enabled!"),
+	MFA_DISABLED(735, "Your account does not have MFA enabled!"),
 
 	RATE_LIMIT(799, "Rate limited!"),
 
