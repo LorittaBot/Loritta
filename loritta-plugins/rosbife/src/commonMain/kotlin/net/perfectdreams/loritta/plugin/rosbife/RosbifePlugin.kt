@@ -11,6 +11,7 @@ class RosbifePlugin(name: String, loritta: LorittaBot) : LorittaPlugin(name, lor
 				AtaCommand.command(loritta),
 				BobBurningPaperCommand.command(loritta),
 				BolsoDrakeCommand.command(loritta),
+				BolsoFrameCommand.command(loritta),
 				Bolsonaro2Command.command(loritta),
 				BolsonaroCommand.command(loritta),
 				BriggsCoverCommand.command(loritta),

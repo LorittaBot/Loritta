@@ -24,7 +24,7 @@ object ToBeContinuedCommand : DSLCommandBase {
 			// TODO: Multiplatform
 			val mppImage = validate(image(0))
 			mppImage as JVMImage
-			val mppImageArrow = loritta.assets.loadImage("to_be_continued_arrow.png", loadFromCache = true)
+			val mppImageArrow = loritta.assets.loadImage("terminator_anime.png", loadFromCache = true)
 			val template = (mppImageArrow as JVMImage).handle as BufferedImage
 
 			val contextImage = mppImage.handle as BufferedImage
