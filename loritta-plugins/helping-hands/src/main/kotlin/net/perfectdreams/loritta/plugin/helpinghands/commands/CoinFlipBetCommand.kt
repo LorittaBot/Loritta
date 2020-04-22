@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.plugin.helpinghands.commands.base
+package net.perfectdreams.loritta.plugin.helpinghands.commands
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.CaraCoroaCommand
@@ -14,6 +14,9 @@ import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
 import net.perfectdreams.loritta.plugin.helpinghands.HelpingHandsPlugin
+import net.perfectdreams.loritta.plugin.helpinghands.commands.base.DSLCommandBase
+import net.perfectdreams.loritta.plugin.helpinghands.commands.base.dbRefresh
+import net.perfectdreams.loritta.plugin.helpinghands.commands.base.toJDA
 import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
