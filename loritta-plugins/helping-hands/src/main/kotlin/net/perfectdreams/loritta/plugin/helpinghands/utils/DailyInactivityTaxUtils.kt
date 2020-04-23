@@ -46,13 +46,14 @@ object DailyInactivityTaxUtils {
 				.toInstant()
 				.toEpochMilli()
 
-		// select dailies.received_by, profiles.money from dailies inner join profiles on profiles.id = dailies.received_by where received_at < 1587178800000 and received_by not in (select received_by from dailies where received_at > 1587178800000 group by received_by) group by received_by, money order by money desc;
+		val receivedBy = Dailies.receivedById
+		val money = Profiles.money
 
-		// (select received_by from dailies where received_at > 1587178800000 group by received_by)
-		transaction(Databases.loritta) {
-			val receivedBy = Dailies.receivedById
-			val money = Profiles.money
+		// Feito de forma "separada" para evitar erros de concurrent updates, se um falhar, não vai fazer rollback na transação inteira
+		val inactiveUsers = transaction(Databases.loritta) {
+			// select dailies.received_by, profiles.money from dailies inner join profiles on profiles.id = dailies.received_by where received_at < 1587178800000 and received_by not in (select received_by from dailies where received_at > 1587178800000 group by received_by) group by received_by, money order by money desc;
 
+			// (select received_by from dailies where received_at > 1587178800000 group by received_by)
 			Dailies.join(Profiles, JoinType.INNER, Dailies.receivedById, Profiles.id)
 					.slice(receivedBy, money)
 					.select {
@@ -66,26 +67,30 @@ object DailyInactivityTaxUtils {
 					}
 					.groupBy(receivedBy, money)
 					.also { logger.info { "There are ${it.count()} inactive daily users!" } }
-					.forEach {
-						val userId = it[receivedBy]
+					.toList()
+		}
 
-						val removeMoney = (it[money] * 0.05).toLong()
+		inactiveUsers.forEach {
+			val userId = it[receivedBy]
 
-						logger.info { "Removing $removeMoney from $userId, current total is ${it[Profiles.money]}" }
+			val removeMoney = (it[money] * 0.05).toLong()
 
-						Profiles.update({ Profiles.id eq userId }) {
-							with(SqlExpressionBuilder) {
-								it.update(Profiles.money, money - removeMoney)
-							}
-						}
+			logger.info { "Removing $removeMoney from $userId, current total is ${it[Profiles.money]}" }
 
-						SonhosTransaction.insert {
-							it[givenAt] = System.currentTimeMillis()
-							it[quantity] = removeMoney.toBigDecimal()
-							it[reason] = SonhosPaymentReason.INACTIVE_DAILY_TAX
-							it[givenBy] = userId
-						}
+			transaction(Databases.loritta) {
+				Profiles.update({ Profiles.id eq userId }) {
+					with(SqlExpressionBuilder) {
+						it.update(Profiles.money, money - removeMoney)
 					}
+				}
+
+				SonhosTransaction.insert {
+					it[givenAt] = System.currentTimeMillis()
+					it[quantity] = removeMoney.toBigDecimal()
+					it[reason] = SonhosPaymentReason.INACTIVE_DAILY_TAX
+					it[givenBy] = userId
+				}
+			}
 		}
 	}
 
