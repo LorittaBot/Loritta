@@ -20,7 +20,6 @@ import com.mrpowergamerbr.loritta.dao.ProfileSettings
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.listeners.*
 import com.mrpowergamerbr.loritta.livestreams.TwitchAPI
-import com.mrpowergamerbr.loritta.modules.ServerSupportModule
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.*
 import com.mrpowergamerbr.loritta.threads.RaffleThread
@@ -339,11 +338,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		GlobalScope.launch(coroutineDispatcher) {
 			connectionManager.updateProxies()
 		}
-
-		try { ServerSupportModule.loadResponses() } catch (e: FileNotFoundException) {
-			logger.error(e) { "Erro ao carregar as respostas automáticas!" }
-		}
-
 		// Ou seja, agora a Loritta está funcionando, Yay!
 	}
 

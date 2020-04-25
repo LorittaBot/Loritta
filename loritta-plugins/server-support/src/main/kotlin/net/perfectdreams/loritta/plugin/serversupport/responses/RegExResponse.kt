@@ -1,11 +1,9 @@
-package com.mrpowergamerbr.loritta.utils.response.responses
+package net.perfectdreams.loritta.plugin.serversupport.responses
 
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-import com.mrpowergamerbr.loritta.utils.response.LorittaResponse
 import java.util.regex.Pattern
 
 open class RegExResponse : LorittaResponse {
-	val regex = mutableListOf<String>()
 	val patterns = mutableListOf<Pattern>()
 	var response: String = "???"
 

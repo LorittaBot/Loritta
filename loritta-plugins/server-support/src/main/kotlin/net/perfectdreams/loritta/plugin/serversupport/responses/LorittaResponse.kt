@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.utils.response
+package net.perfectdreams.loritta.plugin.serversupport.responses
 
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 

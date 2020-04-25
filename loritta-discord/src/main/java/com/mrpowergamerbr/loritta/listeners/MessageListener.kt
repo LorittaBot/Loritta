@@ -38,7 +38,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 		val MESSAGE_RECEIVED_MODULES = mutableListOf(
 				Modules.AUTOMOD,
 				Modules.INVITE_LINK,
-				Modules.SERVER_SUPPORT,
 				Modules.EXPERIENCE,
 				Modules.AFK,
 				Modules.BOM_DIA_E_CIA
@@ -46,8 +45,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 		val MESSAGE_EDITED_MODULES = mutableListOf(
 				Modules.INVITE_LINK,
-				Modules.AUTOMOD,
-				Modules.SERVER_SUPPORT
+				Modules.AUTOMOD
 		)
 	}
 

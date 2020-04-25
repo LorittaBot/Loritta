@@ -6,7 +6,6 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.RegisterConfig
-import com.mrpowergamerbr.loritta.modules.ServerSupportModule
 import com.mrpowergamerbr.loritta.modules.register.RegisterHolder
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.RegisterConfigs
@@ -127,21 +126,6 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			context.reply(
 					LoriReply(
 							"Comandos recarregados com sucesso! **(${loritta.legacyCommandManager.commandMap.size} comandos ativados, ${loritta.legacyCommandManager.commandMap.size - oldCommandCount} comandos adicionados)**"
-					)
-			)
-			return
-		}
-
-		if (arg0 == "responses") {
-			context.reply(
-					LoriReply(
-							"Carregando respostas automáticas..."
-					)
-			)
-			ServerSupportModule.loadResponses()
-			context.reply(
-					LoriReply(
-							"Prontinho! ${ServerSupportModule.responses.size} respostas automáticas foram carregadas com sucesso! ^-^"
 					)
 			)
 			return
