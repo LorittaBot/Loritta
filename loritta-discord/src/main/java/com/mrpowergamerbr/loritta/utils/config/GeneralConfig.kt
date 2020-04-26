@@ -27,6 +27,7 @@ class GeneralConfig @JsonCreator constructor(
 		val github: GitHubConfig,
 		val twitter: TwitterConfig,
 		val twitch: TwitchConfig,
+		val twitch2: TwitchConfig,
 		val mixer: MixerConfig,
 		val fortniteApi: FortniteApiConfig
 ) {

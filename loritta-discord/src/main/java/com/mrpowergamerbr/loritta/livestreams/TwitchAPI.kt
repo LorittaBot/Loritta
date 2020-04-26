@@ -16,7 +16,7 @@ import mu.KotlinLogging
 import java.net.URLEncoder
 import java.util.concurrent.TimeUnit
 
-class TwitchAPI {
+class TwitchAPI(val clientId: String) {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}

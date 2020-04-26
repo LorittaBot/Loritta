@@ -62,7 +62,6 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 import java.io.File
-import java.io.FileNotFoundException
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -145,7 +144,8 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	var newWebsite: net.perfectdreams.loritta.website.LorittaWebsite? = null
 	var newWebsiteThread: Thread? = null
 
-	var twitch = TwitchAPI()
+	var twitch = TwitchAPI(loritta.config.twitch.clientId)
+	var twitch2 = TwitchAPI(loritta.config.twitch2.clientId)
 	val connectionManager = ConnectionManager()
 	val mercadoPago: MercadoPago
 	var patchData = PatchData()

@@ -78,8 +78,13 @@ class CreateTwitchWebhooksTask : Runnable {
 			val tasks = notCreatedYetChannels.map { userId ->
 				GlobalScope.async(loritta.coroutineDispatcher, start = CoroutineStart.LAZY) {
 					try {
+						val whatApiShouldBeUsed = if (userId.rem(2) == 1L)
+							loritta.twitch2
+						else
+							loritta.twitch
+
 						// Vamos criar!
-						val code = loritta.twitch.makeTwitchApiRequest("https://api.twitch.tv/helix/webhooks/hub", "POST",
+						val code = whatApiShouldBeUsed.makeTwitchApiRequest("https://api.twitch.tv/helix/webhooks/hub", "POST",
 								mapOf(
 										"hub.callback" to "${loritta.instanceConfig.loritta.website.url}api/v1/callbacks/pubsubhubbub?type=twitch&userid=$userId",
 										"hub.lease_seconds" to "864000",
@@ -94,7 +99,7 @@ class CreateTwitchWebhooksTask : Runnable {
 							return@async null
 						}
 
-						logger.debug { "$userId's webhook was sucessfully created! Currently there is ${webhookCount.incrementAndGet()}/${webhooksToBeCreatedCount} created webhooks!" }
+						logger.debug { "$userId's webhook was sucessfully created! ${userId.rem(2)} Currently there is ${webhookCount.incrementAndGet()}/${webhooksToBeCreatedCount} created webhooks!" }
 
 						return@async Pair(
 								userId,
