@@ -71,11 +71,11 @@ object NitroBoostUtils {
 					val mostPayingUsers = transaction(Databases.loritta) {
 						Payments.slice(Payments.userId, moneySumId)
 								.select {
-									Payments.paidAt.isNotNull() and
-											(Payments.reason eq PaymentReason.DONATION) or (Payments.reason eq PaymentReason.SPONSORED) and
-											(Payments.expiresAt greaterEq System.currentTimeMillis()) and (Payments.money greaterEq REQUIRED_TO_RECEIVE_DREAM_BOOST)
+									Payments.paidAt.isNotNull() and (Payments.expiresAt greaterEq System.currentTimeMillis()) and
+											((Payments.reason eq PaymentReason.DONATION) or (Payments.reason eq PaymentReason.SPONSORED))
 								}
 								.groupBy(Payments.userId)
+								.having { moneySumId greaterEq REQUIRED_TO_RECEIVE_DREAM_BOOST }
 								.orderBy(moneySumId, SortOrder.DESC)
 								.toMutableList()
 					}
