@@ -33,7 +33,7 @@ class AnagramaCommand : AbstractCommand("anagram", listOf("anagrama"), CommandCa
 
 			var shuffledChars = currentWord.toCharArray().toList()
 
-			while (shuffledChars.size != 1 && shuffledChars.joinToString("") == currentWord)
+			while (shuffledChars.size != 1 && shuffledChars.joinToString("") == currentWord && currentWord.groupBy { it }.size >= 2)
 				shuffledChars = shuffledChars.shuffled()
 
 			val shuffledWord = shuffledChars.joinToString(separator = "")
