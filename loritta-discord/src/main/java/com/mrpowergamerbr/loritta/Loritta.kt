@@ -429,6 +429,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		// Carregar os blog posts
 		loritta.newWebsiteThread = thread(true, name = "Website Thread") {
 			val nWebsite = net.perfectdreams.loritta.website.LorittaWebsite(loritta)
+			nWebsite.loadBlogPosts()
 			loritta.newWebsite = nWebsite
 			nWebsite.start()
 		}
