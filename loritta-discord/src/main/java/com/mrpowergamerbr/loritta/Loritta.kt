@@ -144,8 +144,8 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	var newWebsite: net.perfectdreams.loritta.website.LorittaWebsite? = null
 	var newWebsiteThread: Thread? = null
 
-	var twitch = TwitchAPI(loritta.config.twitch.clientId)
-	var twitch2 = TwitchAPI(loritta.config.twitch2.clientId)
+	var twitch by lazy { TwitchAPI(loritta.config.twitch.clientId) }
+	var twitch2 by lazy { TwitchAPI(loritta.config.twitch2.clientId) }
 	val connectionManager = ConnectionManager()
 	val mercadoPago: MercadoPago
 	var patchData = PatchData()
