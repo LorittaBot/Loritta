@@ -39,8 +39,8 @@ class AnagramaCommand : AbstractCommand("anagram", listOf("anagrama"), CommandCa
 			val shuffledWord = shuffledChars.joinToString(separator = "")
 
 			var exp = 1.toBigInteger()
-			repeat(shuffledChars.size) {
-				exp = exp.multiply(BigIntegerMath.factorial(it))
+			currentWord.groupingBy { it }.eachCount().forEach { (_, value) ->
+				exp = exp.multiply(BigIntegerMath.factorial(value))
 			}
 
 			val max = BigIntegerMath.factorial(currentWord.length).divide(exp)
