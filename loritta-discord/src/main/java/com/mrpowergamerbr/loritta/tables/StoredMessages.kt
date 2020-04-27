@@ -5,7 +5,7 @@ import org.jetbrains.exposed.dao.LongIdTable
 import org.jetbrains.exposed.sql.TextColumnType
 
 object StoredMessages : LongIdTable() {
-	val authorId = long("author_id")
+	val authorId = long("author_id").index()
 	val channelId = long("channel_id")
 	val content = text("content")
 	val createdAt = long("created_at")
