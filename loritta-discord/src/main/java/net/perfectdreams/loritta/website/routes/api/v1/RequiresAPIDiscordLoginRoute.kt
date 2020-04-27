@@ -34,6 +34,17 @@ abstract class RequiresAPIDiscordLoginRoute(loritta: LorittaDiscord, path: Strin
 					)
 			)
 
+		val profile = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(userIdentification.id)
+
+		if (profile.isBanned)
+			throw WebsiteAPIException(
+					HttpStatusCode.Unauthorized,
+					WebsiteUtils.createErrorPayload(
+							LoriWebCode.BANNED,
+							"You are Loritta Banned!"
+					)
+			)
+
 		onAuthenticatedRequest(call, discordAuth, userIdentification)
 	}
 }
