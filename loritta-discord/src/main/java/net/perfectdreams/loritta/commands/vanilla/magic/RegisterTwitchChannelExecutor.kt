@@ -19,7 +19,7 @@ object RegisterTwitchChannelExecutor : LoriToolsCommand.LoriToolsExecutor {
 
 		val code = whatApiShouldBeUsed.makeTwitchApiRequest("https://api.twitch.tv/helix/webhooks/hub", "POST",
 				mapOf(
-						"hub.callback" to "${com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url}api/v1/callbacks/pubsubhubbub?type=twitch&userid=${args.getOrNull(2)}",
+						"hub.callback" to "${com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url}api/v1/callbacks/pubsubhubbub?type=twitch&userid=${args.getOrNull(3)}",
 						"hub.lease_seconds" to "864000",
 						"hub.mode" to "subscribe",
 						"hub.secret" to com.mrpowergamerbr.loritta.utils.loritta.config.mixer.webhookSecret,

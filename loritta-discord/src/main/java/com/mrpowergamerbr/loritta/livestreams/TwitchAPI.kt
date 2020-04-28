@@ -170,7 +170,7 @@ class TwitchAPI(val clientId: String) {
 			delay(delay)
 		}
 
-		val request = HttpRequest(url, method).userAgent(Constants.USER_AGENT).header("Client-ID", loritta.config.twitch.clientId)
+		val request = HttpRequest(url, method).userAgent(Constants.USER_AGENT).header("Client-ID", clientId)
 
 		if (form != null)
 			request.form(form)
