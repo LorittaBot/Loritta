@@ -292,7 +292,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				var bestServer: ServerConfig? = null
 				var bestServerInfo: JsonObject? = null
 
-				for (pair in serverConfigs.map { Pair(it, it.getActiveDonationKeysValue()) }.filter { it.second > 59.99 }.sortedByDescending { it.second  }) {
+				for (pair in serverConfigs.map { Pair(it, it.getActiveDonationKeysValue()) }.filter { ServerPremiumPlans.getPlanFromValue(it.second).dailyMultiplier > 1.0 }.sortedByDescending { it.second  }) {
 					val (config, donationValue) = pair
 					logger.info { "Checking ${config.guildId}" }
 

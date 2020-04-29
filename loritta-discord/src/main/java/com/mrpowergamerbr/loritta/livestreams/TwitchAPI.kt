@@ -10,7 +10,6 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.jsonParser
-import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import java.net.URLEncoder
