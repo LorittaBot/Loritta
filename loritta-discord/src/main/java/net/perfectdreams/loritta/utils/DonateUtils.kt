@@ -73,7 +73,7 @@ object DonateUtils {
 				)
 			} else if (randomValue == 3 && FeatureFlags.ADVERTISE_SPARKLYPOWER && (locale.id == "default" || locale.id == "pt-funk" || locale.id == "pt-pt" || locale.id == "pt-furry")) { // SparklyPower
 				LoriReply(
-						locale["commands.checkOutSparklyPower", "Minecraft 1.14.4 Survival", "mc.sparklypower.net"],
+						locale["commands.checkOutSparklyPower", "Minecraft: Java Edition", "mc.sparklypower.net"],
 						Emotes.MINECRAFT_GRASS
 				)
 			} else if (randomValue == 4 && FeatureFlags.ADVERTISE_SPONSORS) { // Sponsors
