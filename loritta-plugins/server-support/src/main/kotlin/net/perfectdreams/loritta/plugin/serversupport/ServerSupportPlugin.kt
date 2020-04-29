@@ -125,7 +125,7 @@ class ServerSupportPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlu
 						import java.util.regex.Pattern
 						
 						${scriptContent.replace("init {", """init {
-							|val WHERE_IT_IS = "como|onde|qual.*(e|é)|existe"
+							|val WHERE_IT_IS = "como|onde|qual.*(e|é)|existe|tem( )?jeito"
 							|val ACTIVATE_OR_CHANGE = "pega|pego|coloc|clc|faço|faco|fasso|alter|boto|bota|alter"
 							|
 						""".trimMargin())}
