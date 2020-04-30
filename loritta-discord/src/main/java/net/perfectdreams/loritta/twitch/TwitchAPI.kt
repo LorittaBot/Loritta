@@ -74,7 +74,7 @@ class TwitchAPI(val clientId: String,
 			append("grant_type", "client_credentials")
 		}
 
-		return doStuff {
+		return doStuff(checkForRefresh = false) {
 			val result = http.post<String> {
 				url(TOKEN_BASE_URL)
 				userAgent(USER_AGENT)
