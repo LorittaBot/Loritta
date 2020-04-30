@@ -35,7 +35,8 @@ class DiscordBotListConfig@JsonCreator constructor(
 )
 
 class TwitchConfig @JsonCreator constructor(
-        val clientId: String
+        val clientId: String,
+		val clientSecret: String
 )
 
 class MixerConfig @JsonCreator constructor(

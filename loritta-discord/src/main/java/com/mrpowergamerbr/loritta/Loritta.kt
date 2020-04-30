@@ -19,7 +19,7 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ProfileSettings
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.listeners.*
-import com.mrpowergamerbr.loritta.livestreams.TwitchAPI
+import net.perfectdreams.loritta.twitch.TwitchAPI
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.*
 import com.mrpowergamerbr.loritta.threads.RaffleThread
@@ -144,8 +144,8 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	var newWebsite: net.perfectdreams.loritta.website.LorittaWebsite? = null
 	var newWebsiteThread: Thread? = null
 
-	var twitch = TwitchAPI(config.twitch.clientId)
-	var twitch2 = TwitchAPI(config.twitch2.clientId)
+	var twitch = TwitchAPI(config.twitch.clientId, config.twitch.clientSecret)
+	var twitch2 = TwitchAPI(config.twitch2.clientId, config.twitch.clientSecret)
 	val connectionManager = ConnectionManager()
 	val mercadoPago: MercadoPago
 	var patchData = PatchData()
