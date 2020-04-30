@@ -20,7 +20,11 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.VoiceChannel
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
+import java.util.*
 import java.util.concurrent.TimeUnit
+import javax.crypto.Cipher
+import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.SecretKeySpec
 
 object EventLog {
 	val logger = KotlinLogging.logger {}
@@ -239,4 +243,36 @@ object EventLog {
 			logger.error(e) { "Erro ao sair do canal de voz do event log" }
 		}
 	}
+
+	fun generateRandomInitVector() = ByteArray(16).apply {
+		loritta.random.nextBytes(this)
+	}
+
+	fun encryptMessage(content: String): EncryptedMessage {
+		val initVector = generateRandomInitVector()
+
+		val iv = IvParameterSpec(initVector)
+		val skeySpec = SecretKeySpec(loritta.discordConfig.messageEncryption.encryptionKey.toByteArray(charset("UTF-8")), "AES")
+
+		val cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
+		cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv)
+		val encrypted = cipher.doFinal(content.toByteArray())
+		return EncryptedMessage(Base64.getEncoder().encodeToString(initVector), Base64.getEncoder().encodeToString(encrypted))
+	}
+
+	fun decryptMessage(initVector: String, encryptedContent: String): String {
+		val iv = IvParameterSpec(Base64.getDecoder().decode(initVector))
+		val skeySpec = SecretKeySpec(loritta.discordConfig.messageEncryption.encryptionKey.toByteArray(charset("UTF-8")), "AES")
+
+		val cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
+		cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv)
+		val original = cipher.doFinal(Base64.getDecoder().decode(encryptedContent))
+
+		return String(original)
+	}
+
+	data class EncryptedMessage(
+			val initializationVector: String,
+			val encryptedMessage: String
+	)
 }

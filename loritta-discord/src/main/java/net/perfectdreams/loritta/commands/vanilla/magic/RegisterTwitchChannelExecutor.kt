@@ -25,7 +25,7 @@ object RegisterTwitchChannelExecutor : LoriToolsCommand.LoriToolsExecutor {
 						"hub.secret" to com.mrpowergamerbr.loritta.utils.loritta.config.mixer.webhookSecret,
 						"hub.topic" to "https://api.twitch.tv/helix/streams?user_id=${args.getOrNull(3)}"
 				))
-				.code()
+				.status
 
 		reply(
 				LorittaReply(

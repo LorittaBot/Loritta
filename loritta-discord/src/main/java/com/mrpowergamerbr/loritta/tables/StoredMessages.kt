@@ -11,4 +11,5 @@ object StoredMessages : LongIdTable() {
 	val createdAt = long("created_at")
 	val editedAt = long("edited_at").nullable()
 	val storedAttachments = array<String>("stored_attachments", TextColumnType())
+	val initializationVector = text("initialization_vector")
 }

@@ -19,7 +19,6 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ProfileSettings
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.listeners.*
-import net.perfectdreams.loritta.twitch.TwitchAPI
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.*
 import com.mrpowergamerbr.loritta.threads.RaffleThread
@@ -49,6 +48,7 @@ import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandManager
 import net.perfectdreams.loritta.platform.discord.utils.BucketedController
 import net.perfectdreams.loritta.platform.discord.utils.RateLimitChecker
 import net.perfectdreams.loritta.tables.*
+import net.perfectdreams.loritta.twitch.TwitchAPI
 import net.perfectdreams.loritta.utils.*
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import net.perfectdreams.mercadopago.MercadoPago

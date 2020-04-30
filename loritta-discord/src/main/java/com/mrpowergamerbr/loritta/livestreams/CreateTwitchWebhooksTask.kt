@@ -92,9 +92,9 @@ class CreateTwitchWebhooksTask : Runnable {
 										"hub.secret" to loritta.config.mixer.webhookSecret,
 										"hub.topic" to "https://api.twitch.tv/helix/streams?user_id=$userId"
 								))
-								.code()
+								.status
 
-						if (code != 204 && code != 202) { // code 204 = noop, 202 = accepted (porque pelo visto o PubSubHubbub usa os dois
+						if (code.value != 204 && code.value != 202) { // code 204 = noop, 202 = accepted (porque pelo visto o PubSubHubbub usa os dois
 							logger.error { "Something went wrong while creating ${userId}'s webhook! Status Code: $code" }
 							return@async null
 						}
