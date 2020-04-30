@@ -26,18 +26,8 @@ import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import java.net.URLEncoder
 import java.util.concurrent.TimeUnit
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.collections.chunked
 import kotlin.collections.component1
 import kotlin.collections.component2
-import kotlin.collections.contains
-import kotlin.collections.forEach
-import kotlin.collections.iterator
-import kotlin.collections.joinToString
-import kotlin.collections.listOf
-import kotlin.collections.mutableMapOf
-import kotlin.collections.mutableSetOf
 import kotlin.collections.set
 
 class TwitchAPI(val clientId: String,
