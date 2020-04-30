@@ -193,7 +193,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 						)
 					}
 					else -> throw RuntimeException("Missing !canAccess result! ${status.name}")
-				}.toString()
+				}
 			}
 		}
 	}
@@ -353,7 +353,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 					val donationKey = bestServer.getActiveDonationKeys().firstOrNull()
 					val totalDonationValue = bestServer.getActiveDonationKeysValue()
 
-					if (donationConfig != null && donationKey != null && totalDonationValue >= 59.99) {
+					if (donationConfig != null && donationKey != null) {
 						multipliedBy = getDailyMultiplier(totalDonationValue)
 						sponsoredBy = bestServerInfo
 						sponsoredByUserId = donationKey.userId
