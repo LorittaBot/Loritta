@@ -145,7 +145,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	var newWebsiteThread: Thread? = null
 
 	var twitch = TwitchAPI(config.twitch.clientId, config.twitch.clientSecret)
-	var twitch2 = TwitchAPI(config.twitch2.clientId, config.twitch.clientSecret)
+	var twitch2 = TwitchAPI(config.twitch2.clientId, config.twitch2.clientSecret)
 	val connectionManager = ConnectionManager()
 	val mercadoPago: MercadoPago
 	var patchData = PatchData()
