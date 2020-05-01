@@ -40,10 +40,6 @@ class RateLimitChecker(val m: Loritta) {
 		}
 	}
 
-	// O certo era ser 20k, mas parece que o Discord é muito trigger happy com bans, então é melhor deixar um valor
-	// extremamente baixo porque ficar alguns minutos sem responder comandos é bem melhor do que ser banido por
-	// uma hora
-	val maxRequestsPer10Minutes =  3_000 / m.config.clusters.size
 	var lastRequestWipe = System.currentTimeMillis()
 	var lastConsoleWarn = System.currentTimeMillis()
 
@@ -58,24 +54,32 @@ class RateLimitChecker(val m: Loritta) {
 	}
 
 	fun checkIfRequestShouldBeIgnored(): Boolean {
+		if (m.discordConfig.discord.requestLimiter.enabled)
+			return false
+
 		// https://i.imgur.com/crENfcG.png
 		// Um bot pode fazer 25k requests inválidos em 10 minutos
 		// O limite é 25k https://cdn.discordapp.com/attachments/409847691896422410/672573213284237312/unknown.png
 		// Para calcular, vamos fazer que seja (25k / número de clusters)
 		// Mas para a gente não ficar muito "em cima do muro", vamos colocar (20k / número de clusters)
+		//
+		// O certo era ser 20k, mas parece que o Discord é muito trigger happy com bans, então é melhor deixar um valor
+		// extremamente baixo porque ficar alguns minutos sem responder comandos é bem melhor do que ser banido por
+		// uma hora
 		val rateLimitHits = m.bucketedController?.getGlobalRateLimitHitsInTheLastMinute() ?: 0
+		val maxRequestsPer10Minutes = m.discordConfig.discord.requestLimiter.maxRequestsPer10Minutes
 		val shouldIgnore = rateLimitHits >= maxRequestsPer10Minutes
 
 		if (shouldIgnore) {
 			val diff2 = System.currentTimeMillis() - this.lastConsoleWarn
-			if (diff2 >= 2_500) {
+			if (diff2 >= m.discordConfig.discord.requestLimiter.consoleWarnCooldown) {
 				logger.warn { "All received events are cancelled and ignored due to too many global ratelimited requests being sent! $rateLimitHits >= $maxRequestsPer10Minutes" }
 				this.lastConsoleWarn = System.currentTimeMillis()
 			}
 
 			val diff = System.currentTimeMillis() - lastRequestWipe
 
-			if (diff >= 60_000) {
+			if (diff >= m.discordConfig.discord.requestLimiter.removePendingRequestsCooldown) {
 				logger.info { "Cancelling and removing outdated global rate limit hits..." }
 				m.bucketedController?.removeOutdatedGlobalRateLimitHits()
 
