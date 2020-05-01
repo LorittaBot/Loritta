@@ -40,7 +40,7 @@ class DiscordPingStatusTracker(val bot: WatchdogBot) {
 		logger.info { "Current API latency is ${discordPing}ms, difference between then and now is ${difference}ms (raw: $rawDifference})" }
 
 		if (lastLatencyResult != -1) {
-			if (difference >= 75 && (discordPing >= 500 || 0 > rawDifference)) {
+			if (difference >= 50 && (discordPing >= 250 || 0 > rawDifference)) {
 				logger.info { "Tweeting about the API latency change!" }
 				// broadcast
 				lastBroadcastedPing = discordPing
@@ -48,10 +48,10 @@ class DiscordPingStatusTracker(val bot: WatchdogBot) {
 				if (bot.config.discordStatusCheck.tweet) {
 					val tweet = if (0 >= rawDifference) {
 						// latency down
-						"\uD83D\uDE0A↘️ A latência (ping) da API do Discord está diminuindo!"
+						"\uD83D\uDE0A↘️ Discord's REST API latency is decreasing!"
 					} else {
 						// latency up
-						"\uD83D\uDE2D↗️ A latência (ping) da API do Discord está subindo... Talvez você poderá enfrentar problemas ao enviar mensagens, conectar ao Discord ou ao usar bots!"
+						"\uD83D\uDE2D↗️ Discord's REST API latency is increasing... You may encounter issues when sending messages, connecting to Discord and when trying to use bots!"
 					} + "\n\n\uD83D\uDCE1 Ping: ${discordPing}ms"
 
 					val status = StatusUpdate(tweet)
