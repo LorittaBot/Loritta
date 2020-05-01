@@ -14,10 +14,7 @@ import com.mrpowergamerbr.loritta.utils.webhook.DiscordMessage
 import com.mrpowergamerbr.loritta.utils.webhook.DiscordWebhook
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.VoiceChannel
+import net.dv8tion.jda.api.entities.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.util.*
@@ -47,6 +44,10 @@ object EventLog {
 			return null
 
 		val webhooks = channel.retrieveWebhooks().await()
+				.filter {
+					// Webhooks criadas pelo usuário são INCOMING
+					it.type == WebhookType.INCOMING
+				}
 
 		// Reutilizar webhook já criada
 		if (webhooks.isNotEmpty()) {

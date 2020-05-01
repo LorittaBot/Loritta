@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.entities.WebhookType
 import net.dv8tion.jda.api.exceptions.PermissionException
 
 object WebhookUtils {
@@ -26,6 +27,10 @@ object WebhookUtils {
 			return null
 
 		val webhookList = textChannel.guild.retrieveWebhooks().await()
+				.filter {
+					// Webhooks criadas pelo usuário são INCOMING
+					it.type == WebhookType.INCOMING
+				}
 
 		val webhooks = webhookList.filter { it.channel == textChannel }
 		val webhook = if (webhooks.isEmpty()) {
