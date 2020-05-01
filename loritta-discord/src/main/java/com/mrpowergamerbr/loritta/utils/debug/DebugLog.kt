@@ -49,7 +49,7 @@ object DebugLog {
 		logger.info("Max Memory:" + runtime.maxMemory() / mb)
 		logger.info("coroutineExecutor: ${(loritta.coroutineExecutor as ThreadPoolExecutor).activeCount}")
 		logger.info("Pending Requests: ${loritta.rateLimitChecker.getAllPendingRequests().size}")
-		logger.info("Global Rate Limit Hits in the last 10m: ${loritta.bucketedController?.getGlobalRateLimitHitsInTheLastMinute()} / ${m.discordConfig.discord.requestLimiter.maxRequestsPer10Minutes}")
+		logger.info("Global Rate Limit Hits in the last 10m: ${loritta.bucketedController?.getGlobalRateLimitHitsInTheLastMinute()} / ${loritta.discordConfig.discord.requestLimiter.maxRequestsPer10Minutes}")
 		logger.info("> Command Stuff")
 		logger.info("commandManager.commandMap.size: ${loritta.legacyCommandManager.commandMap.size}")
 		logger.info("messageInteractionCache.size: ${loritta.messageInteractionCache.size}")
