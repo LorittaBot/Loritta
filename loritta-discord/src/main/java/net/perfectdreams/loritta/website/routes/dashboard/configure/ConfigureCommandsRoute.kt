@@ -22,9 +22,35 @@ class ConfigureCommandsRoute(loritta: LorittaDiscord) : RequiresGuildAuthLocaliz
 
 		variables["enabledCommands"] = com.mrpowergamerbr.loritta.utils.loritta.commandManager.commands.filter { !serverConfig.disabledCommands.contains(it.javaClass.simpleName) }
 		variables["enabledLegacyCommands"] = com.mrpowergamerbr.loritta.utils.loritta.legacyCommandManager.commandMap.filter { !serverConfig.disabledCommands.contains(it.javaClass.simpleName) }
+		variables["enabledNewCommands"] = com.mrpowergamerbr.loritta.utils.loritta.commandMap.commands.filter { !serverConfig.disabledCommands.contains(it.commandName) }
+				.map {
+					NewCommandWrapper(
+							it.commandName,
+							it.labels.toTypedArray()
+					)
+				}
+
 		variables["disabledCommands"] = com.mrpowergamerbr.loritta.utils.loritta.commandManager.commands.filter { serverConfig.disabledCommands.contains(it.javaClass.simpleName) }
 		variables["disabledLegacyCommands"] = com.mrpowergamerbr.loritta.utils.loritta.legacyCommandManager.commandMap.filter { serverConfig.disabledCommands.contains(it.javaClass.simpleName) }
+		variables["disabledNewCommands"] = com.mrpowergamerbr.loritta.utils.loritta.commandMap.commands.filter { serverConfig.disabledCommands.contains(it.commandName) }
+				.map {
+					NewCommandWrapper(
+							it.commandName,
+							it.labels.toTypedArray()
+					)
+				}
 
 		call.respondHtml(evaluate("configure_commands.html", variables))
 	}
+
+	/**
+	 * Command Wrapper for the new commands that do use the DSL syntax
+	 *
+	 * We create a wrapper because the frontend still uses Pebble, and Pebble ain't that smart to figure out static methods (sadly), this
+	 * will be removed when this route frontend is migrated to Kotlin/JS
+	 */
+	class NewCommandWrapper(
+			val commandName: String,
+			val labels: Array<String>
+	)
 }
