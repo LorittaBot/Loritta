@@ -3,8 +3,10 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.dao.Marriage
 import com.mrpowergamerbr.loritta.dao.ShipEffect
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.Marriages
 import com.mrpowergamerbr.loritta.tables.ShipEffects
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
@@ -83,6 +85,18 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 
 			// Loritta presa amanhã por manipulação de resultados
 			if (user1 != null && user2 != null) {
+				val marriage = transaction(Databases.loritta) {
+					Marriage.find {
+						(Marriages.user1 eq user1.idLong and (Marriages.user2 eq user2.idLong)) or
+								(Marriages.user2 eq user1.idLong and (Marriages.user1 eq user2.idLong))
+					}.firstOrNull()
+				}
+
+				// If the user is married, we are going to set the ship % to 100
+				if (marriage != null)
+					percentage = 100
+
+				// But effects can override the percentage!
 				val effect = transaction(Databases.loritta) {
 					ShipEffect.find {
 						(((ShipEffects.user1Id eq user1.idLong) and (ShipEffects.user2Id eq user2.idLong)) or
