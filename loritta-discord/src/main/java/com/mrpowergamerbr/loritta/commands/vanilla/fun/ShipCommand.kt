@@ -21,9 +21,9 @@ import java.util.*
 import javax.imageio.ImageIO
 
 class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.FUN) {
-    override fun getDescription(locale: LegacyBaseLocale): String {
-        return locale["SHIP_DESCRIPTION"]
-    }
+	override fun getDescription(locale: LegacyBaseLocale): String {
+		return locale["SHIP_DESCRIPTION"]
+	}
 
 	override fun getExamples(): List<String> {
 		return listOf("@Loritta @SparklyBot")
@@ -37,7 +37,7 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 		return true
 	}
 
-    override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		var user1Name: String? = context.rawArgs.getOrNull(0)
 		var user2Name: String? = context.rawArgs.getOrNull(1)
 		var user1AvatarUrl: String? = context.userHandle.defaultAvatarUrl
@@ -95,10 +95,8 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 					percentage = effect.editedShipValue
 				}
 
-				if (user1.id == loritta.discordConfig.discord.clientId || user2.id == loritta.discordConfig.discord.clientId) {
-					if ((!loritta.config.isOwner(user1.id) && !loritta.config.isOwner(user2.id)) && (user1.id != "377571754698080256" && user2.id != "377571754698080256")) {
-						percentage = random.nextInt(0, 51)
-					}
+				if ((user1.id == loritta.discordConfig.discord.clientId || user2.id == loritta.discordConfig.discord.clientId) && (!loritta.config.isOwner(user1.id) && !loritta.config.isOwner(user2.id))) {
+					percentage = random.nextInt(0, 51)
 				}
 			}
 
@@ -115,7 +113,7 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 			} else {
 				user2Name
 			}
-			
+
 			val messages: List<String> = when {
 				percentage >= 90 -> context.locale.getWithType("commands.fun.ship.value90")
 				percentage >= 80 -> context.locale.getWithType("commands.fun.ship.value80")
@@ -187,5 +185,5 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 		} else {
 			this.explain(context)
 		}
-    }
+	}
 }
