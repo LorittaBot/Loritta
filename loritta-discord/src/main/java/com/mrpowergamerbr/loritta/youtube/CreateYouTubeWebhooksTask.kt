@@ -11,7 +11,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import net.perfectdreams.loritta.tables.TrackedYouTubeAccounts
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedYouTubeAccounts
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File

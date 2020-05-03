@@ -12,7 +12,7 @@ import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.tables.TrackedTwitterAccounts
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedTwitterAccounts
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import org.jetbrains.exposed.sql.select

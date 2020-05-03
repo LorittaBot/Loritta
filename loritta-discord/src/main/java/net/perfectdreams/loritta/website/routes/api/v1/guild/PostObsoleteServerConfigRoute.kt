@@ -15,8 +15,8 @@ import com.mrpowergamerbr.loritta.utils.save
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.dao.EventLogConfig
-import net.perfectdreams.loritta.dao.StarboardConfig
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.EventLogConfig
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.StarboardConfig
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.ActionType
 import net.perfectdreams.loritta.utils.auditlog.WebAuditLogUtils

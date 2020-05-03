@@ -48,6 +48,8 @@ import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandManager
 import net.perfectdreams.loritta.platform.discord.utils.BucketedController
 import net.perfectdreams.loritta.platform.discord.utils.RateLimitChecker
 import net.perfectdreams.loritta.tables.*
+import net.perfectdreams.loritta.tables.servers.Giveaways
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.twitch.TwitchAPI
 import net.perfectdreams.loritta.utils.*
 import net.perfectdreams.loritta.utils.payments.PaymentReason

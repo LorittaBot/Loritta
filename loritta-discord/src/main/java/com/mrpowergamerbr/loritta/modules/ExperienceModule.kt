@@ -17,9 +17,9 @@ import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Role
-import net.perfectdreams.loritta.tables.ExperienceRoleRates
-import net.perfectdreams.loritta.tables.LevelAnnouncementConfigs
-import net.perfectdreams.loritta.tables.RolesByExperience
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.ExperienceRoleRates
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.LevelAnnouncementConfigs
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.RolesByExperience
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.FeatureFlags
 import net.perfectdreams.loritta.utils.ServerPremiumPlans

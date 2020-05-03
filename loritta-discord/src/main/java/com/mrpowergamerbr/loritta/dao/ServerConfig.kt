@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.dao
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.DonationKeys
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
-import net.perfectdreams.loritta.dao.*
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.*
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.EntityID

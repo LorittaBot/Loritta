@@ -29,7 +29,7 @@ import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent
 import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.perfectdreams.loritta.tables.EventLogConfigs
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.EventLogConfigs
 import net.perfectdreams.loritta.utils.DateUtils
 import org.apache.commons.io.IOUtils
 import org.jetbrains.exposed.sql.and

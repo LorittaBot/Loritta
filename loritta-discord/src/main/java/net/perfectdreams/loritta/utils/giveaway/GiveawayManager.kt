@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-import net.perfectdreams.loritta.dao.Giveaway
+import net.perfectdreams.loritta.dao.servers.Giveaway
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.FeatureFlags
 import org.jetbrains.exposed.sql.transactions.transaction

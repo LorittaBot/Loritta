@@ -20,10 +20,10 @@ import io.ktor.application.ApplicationCall
 import io.ktor.request.path
 import io.ktor.util.AttributeKey
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.dao.ReactionOption
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.ReactionOption
 import net.perfectdreams.loritta.tables.Backgrounds
-import net.perfectdreams.loritta.tables.ReactionOptions
-import net.perfectdreams.loritta.tables.TrackedRssFeeds
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.ReactionOptions
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedRssFeeds
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.config.types.ConfigTransformers
 import org.jetbrains.exposed.sql.ResultRow

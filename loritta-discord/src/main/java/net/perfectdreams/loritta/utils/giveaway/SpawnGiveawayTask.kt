@@ -3,8 +3,8 @@ package net.perfectdreams.loritta.utils.giveaway
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import mu.KotlinLogging
-import net.perfectdreams.loritta.dao.Giveaway
-import net.perfectdreams.loritta.tables.Giveaways
+import net.perfectdreams.loritta.dao.servers.Giveaway
+import net.perfectdreams.loritta.tables.servers.Giveaways
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class SpawnGiveawayTask : Runnable {

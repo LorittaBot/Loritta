@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.tables
 
 import com.mrpowergamerbr.loritta.utils.exposed.array
-import net.perfectdreams.loritta.tables.*
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.*
 import org.jetbrains.exposed.sql.LongColumnType
 import org.jetbrains.exposed.sql.ReferenceOption
 

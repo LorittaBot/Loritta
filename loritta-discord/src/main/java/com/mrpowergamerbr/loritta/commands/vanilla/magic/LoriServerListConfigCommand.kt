@@ -22,7 +22,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import net.perfectdreams.loritta.dao.EconomyConfig
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.EconomyConfig
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.tables.BlacklistedUsers

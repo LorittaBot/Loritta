@@ -6,7 +6,7 @@ import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.dao.MiscellaneousConfig
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.MiscellaneousConfig
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import org.jetbrains.exposed.sql.transactions.transaction
 

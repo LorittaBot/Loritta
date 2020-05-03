@@ -10,7 +10,7 @@ import com.mrpowergamerbr.loritta.network.Databases
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.tables.TrackedRssFeeds
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedRssFeeds
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction

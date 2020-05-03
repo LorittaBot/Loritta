@@ -1,6 +1,6 @@
-package net.perfectdreams.loritta.dao
+package net.perfectdreams.loritta.dao.servers.moduleconfigs
 
-import net.perfectdreams.loritta.tables.MiscellaneousConfigs
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.MiscellaneousConfigs
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.EntityID

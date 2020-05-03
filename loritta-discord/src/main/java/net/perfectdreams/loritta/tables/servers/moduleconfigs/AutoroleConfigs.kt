@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.tables
+package net.perfectdreams.loritta.tables.servers.moduleconfigs
 
 import com.mrpowergamerbr.loritta.utils.exposed.array
 import org.jetbrains.exposed.dao.LongIdTable

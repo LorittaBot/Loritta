@@ -10,10 +10,10 @@ import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import net.perfectdreams.loritta.dao.Giveaway
+import net.perfectdreams.loritta.dao.servers.Giveaway
 import net.perfectdreams.loritta.platform.discord.commands.LorittaDiscordCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
-import net.perfectdreams.loritta.tables.Giveaways
+import net.perfectdreams.loritta.tables.servers.Giveaways
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
 import org.jetbrains.exposed.sql.and

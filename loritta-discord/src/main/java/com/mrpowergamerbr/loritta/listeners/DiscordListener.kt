@@ -40,11 +40,11 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.perfectdreams.loritta.dao.Giveaway
-import net.perfectdreams.loritta.dao.ReactionOption
+import net.perfectdreams.loritta.dao.servers.Giveaway
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.ReactionOption
 import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
-import net.perfectdreams.loritta.tables.Giveaways
-import net.perfectdreams.loritta.tables.ReactionOptions
+import net.perfectdreams.loritta.tables.servers.Giveaways
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.utils.FeatureFlags
 import net.perfectdreams.loritta.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager

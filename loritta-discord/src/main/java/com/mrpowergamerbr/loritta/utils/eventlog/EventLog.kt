@@ -14,7 +14,7 @@ import com.mrpowergamerbr.loritta.utils.webhook.DiscordWebhook
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
-import net.perfectdreams.loritta.dao.EventLogConfig
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.EventLogConfig
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.util.*

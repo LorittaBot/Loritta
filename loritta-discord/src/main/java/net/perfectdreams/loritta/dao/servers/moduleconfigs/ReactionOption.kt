@@ -1,6 +1,6 @@
-package net.perfectdreams.loritta.dao
+package net.perfectdreams.loritta.dao.servers.moduleconfigs
 
-import net.perfectdreams.loritta.tables.ReactionOptions
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.ReactionOptions
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass

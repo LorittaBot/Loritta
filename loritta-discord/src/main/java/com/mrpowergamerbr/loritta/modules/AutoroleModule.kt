@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.modules
 
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
-import net.perfectdreams.loritta.dao.AutoroleConfig
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.AutoroleConfig
 import java.util.concurrent.TimeUnit
 
 object AutoroleModule {

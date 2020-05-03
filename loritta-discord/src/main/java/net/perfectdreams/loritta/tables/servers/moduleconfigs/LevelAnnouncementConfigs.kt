@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.tables
+package net.perfectdreams.loritta.tables.servers.moduleconfigs
 
 import net.perfectdreams.loritta.utils.levels.LevelUpAnnouncementType
 import org.jetbrains.exposed.dao.LongIdTable

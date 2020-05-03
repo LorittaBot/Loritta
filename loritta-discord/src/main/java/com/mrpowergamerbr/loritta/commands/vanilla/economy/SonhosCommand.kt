@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import net.perfectdreams.loritta.dao.EconomyConfig
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.EconomyConfig
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.math.BigDecimal
 

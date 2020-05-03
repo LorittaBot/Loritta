@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent
-import net.perfectdreams.loritta.dao.StarboardConfig
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.StarboardConfig
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color

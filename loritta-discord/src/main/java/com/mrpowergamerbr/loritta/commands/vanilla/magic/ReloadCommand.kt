@@ -15,11 +15,11 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import net.perfectdreams.loritta.dao.LevelConfig
-import net.perfectdreams.loritta.dao.ReactionOption
-import net.perfectdreams.loritta.tables.LevelAnnouncementConfigs
-import net.perfectdreams.loritta.tables.RolesByExperience
-import net.perfectdreams.loritta.tables.TrackedTwitterAccounts
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.LevelConfig
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.ReactionOption
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.LevelAnnouncementConfigs
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.RolesByExperience
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedTwitterAccounts
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.levels.LevelUpAnnouncementType
 import net.perfectdreams.loritta.utils.levels.RoleGiveType
