@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.userdata
 
+@Deprecated("Migrated to PostgreSQL")
 class InviteBlockerConfig {
 	var isEnabled: Boolean = false
 	var whitelistedIds = mutableListOf<String>()

@@ -16,6 +16,7 @@ import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.EventLogConfig
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.InviteBlockerConfig
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.StarboardConfig
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.ActionType
@@ -36,7 +37,7 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 
 		val target = when (type) {
 			"event_log" -> "dummy"
-			"invite_blocker" -> legacyServerConfig.inviteBlockerConfig
+			"invite_blocker" -> "dummy"
 			"permissions" -> legacyServerConfig.permissionsConfig
 			"welcomer" -> legacyServerConfig.joinLeaveConfig
 			"starboard" -> "dummy"
@@ -117,6 +118,42 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 					newConfig.voiceChannelLeaves = voiceChannelLeaves
 
 					serverConfig.eventLogConfig = newConfig
+				}
+			}
+		} else if (type == "invite_blocker") {
+			val isEnabled = receivedPayload["isEnabled"].bool
+			val whitelistServerInvites = receivedPayload["whitelistServerInvites"].bool
+			val deleteMessage = receivedPayload["deleteMessage"].bool
+			val tellUser = receivedPayload["tellUser"].bool
+			val warnMessage = receivedPayload["warnMessage"].string
+			val whitelistedChannels = receivedPayload["whitelistedChannels"].array
+					.map { it.long }
+					.toTypedArray()
+
+			transaction(Databases.loritta) {
+				val inviteBlockerConfig = serverConfig.inviteBlockerConfig
+
+				if (!isEnabled) {
+					serverConfig.inviteBlockerConfig = null
+					inviteBlockerConfig?.delete()
+				} else {
+					val newConfig = inviteBlockerConfig ?: InviteBlockerConfig.new {
+						this.enabled = isEnabled
+						this.whitelistServerInvites = whitelistServerInvites
+						this.deleteMessage = deleteMessage
+						this.tellUser = tellUser
+						this.warnMessage = warnMessage
+						this.whitelistedChannels = whitelistedChannels
+					}
+
+					newConfig.enabled = isEnabled
+					newConfig.whitelistServerInvites = whitelistServerInvites
+					newConfig.deleteMessage = deleteMessage
+					newConfig.tellUser = tellUser
+					newConfig.warnMessage = warnMessage
+					newConfig.whitelistedChannels = whitelistedChannels
+
+					serverConfig.inviteBlockerConfig = newConfig
 				}
 			}
 		} else {

@@ -18,8 +18,7 @@ object PurgeDiscordGuilds {
 		val stuff = loritta.serversColl.find(
 				Filters.lte("lastCommandReceivedAt", lastCommandReceivedBefore)
 		).toMutableList().filter {
-			!it.joinLeaveConfig.isEnabled &&
-					!it.inviteBlockerConfig.isEnabled
+			!it.joinLeaveConfig.isEnabled
 		}
 
 		return stuff.mapNotNull {

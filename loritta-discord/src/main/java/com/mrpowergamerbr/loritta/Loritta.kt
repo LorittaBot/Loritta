@@ -400,7 +400,8 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					StarboardConfigs,
 					MiscellaneousConfigs,
 					EventLogConfigs,
-					AutoroleConfigs
+					AutoroleConfigs,
+					InviteBlockerConfigs
 			)
 		}
 	}

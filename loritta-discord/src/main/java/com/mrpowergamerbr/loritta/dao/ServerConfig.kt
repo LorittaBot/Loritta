@@ -31,6 +31,7 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 	var miscellaneousConfig by MiscellaneousConfig optionalReferencedOn ServerConfigs.miscellaneousConfig
 	var eventLogConfig by EventLogConfig optionalReferencedOn ServerConfigs.eventLogConfig
 	var autoroleConfig by AutoroleConfig optionalReferencedOn ServerConfigs.autoroleConfig
+	var inviteBlockerConfig by InviteBlockerConfig optionalReferencedOn ServerConfigs.inviteBlockerConfig
 	var migrationVersion by ServerConfigs.migrationVersion
 
 	fun getActiveDonationKeys() = transaction(Databases.loritta) {

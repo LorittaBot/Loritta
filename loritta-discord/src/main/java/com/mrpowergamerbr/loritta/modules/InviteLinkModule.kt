@@ -4,6 +4,7 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.utils.*
@@ -15,6 +16,7 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.entities.DiscordEmote
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.utils.Emotes
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
 
@@ -24,10 +26,14 @@ class InviteLinkModule : MessageReceivedModule {
 	}
 
 	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
-		if (!legacyServerConfig.inviteBlockerConfig.isEnabled)
+		val inviteBlockerConfig = transaction(Databases.loritta) {
+			serverConfig.inviteBlockerConfig
+		} ?: return false
+
+		if (!inviteBlockerConfig.enabled)
 			return false
 
-		if (legacyServerConfig.inviteBlockerConfig.whitelistedChannels.contains(event.channel.id))
+		if (inviteBlockerConfig.whitelistedChannels.contains(event.channel.idLong))
 			return false
 
 		if (lorittaUser.hasPermission(LorittaPermission.ALLOW_INVITES))
@@ -39,7 +45,9 @@ class InviteLinkModule : MessageReceivedModule {
 	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
 		val message = event.message
 		val guild = message.guild
-		val inviteBlockerConfig = legacyServerConfig.inviteBlockerConfig
+		val inviteBlockerConfig = transaction(Databases.loritta) {
+			serverConfig.inviteBlockerConfig
+		} ?: return false
 
 		val content = message.contentRaw
 				.replace("\u200B", "")
@@ -106,7 +114,7 @@ class InviteLinkModule : MessageReceivedModule {
 			}
 		}
 
-		whitelisted.addAll(inviteBlockerConfig.whitelistedIds)
+		// whitelisted.addAll(inviteBlockerConfig.whitelistedIds)
 
 		for (matcher in validMatchers) {
 			val urls = mutableSetOf<String>()
@@ -127,7 +135,9 @@ class InviteLinkModule : MessageReceivedModule {
 				if (inviteBlockerConfig.deleteMessage && guild.selfMember.hasPermission(message.textChannel, Permission.MESSAGE_MANAGE))
 					message.delete().queue()
 
-				if (inviteBlockerConfig.tellUser && inviteBlockerConfig.warnMessage.isNotEmpty() && message.textChannel.canTalk()) {
+				val warnMessage = inviteBlockerConfig.warnMessage
+
+				if (inviteBlockerConfig.tellUser && !warnMessage.isNullOrEmpty() && message.textChannel.canTalk()) {
 					if (event.member != null && event.member.hasPermission(Permission.MANAGE_SERVER)) {
 						// Se a pessoa tiver permissão para ativar a permissão de convites, faça que a Loritta recomende que ative a permissão
 						val topRole = event.member.roles.sortedByDescending { it.position }.firstOrNull { !it.isPublicRole }
@@ -170,7 +180,7 @@ class InviteLinkModule : MessageReceivedModule {
 						}
 					}
 
-					val toBeSent = MessageUtils.generateMessage(inviteBlockerConfig.warnMessage, listOf(message.author, guild), guild)
+					val toBeSent = MessageUtils.generateMessage(warnMessage, listOf(message.author, guild), guild)
 							?: return true
 
 					message.textChannel.sendMessage(toBeSent).queue()

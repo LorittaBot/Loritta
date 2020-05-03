@@ -417,10 +417,6 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			for (serverConfig in uselessServers) {
 				val guild = lorittaShards.getGuildById(serverConfig.guildId) ?: continue
 
-				// INVITE BLOCKER
-				if (serverConfig.inviteBlockerConfig.isEnabled)
-					continue
-
 				// JOIN/LEAVE
 				if (serverConfig.joinLeaveConfig.isEnabled)
 					continue

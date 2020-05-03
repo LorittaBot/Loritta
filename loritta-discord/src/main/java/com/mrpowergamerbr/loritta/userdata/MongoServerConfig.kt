@@ -32,7 +32,7 @@ class MongoServerConfig @BsonCreator constructor(
 	// var starboardConfig = StarboardConfig()
 	// var eventLogConfig = EventLogConfig()
 	// var autoroleConfig = AutoroleConfig()
-	var inviteBlockerConfig = InviteBlockerConfig()
+	// var inviteBlockerConfig = InviteBlockerConfig()
 	var permissionsConfig = PermissionsConfig()
 	var moderationConfig = ModerationConfig()
 	// var serverListConfig = ServerListConfig()
