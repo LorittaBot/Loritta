@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.userdata
 import org.bson.codecs.pojo.annotations.BsonCreator
 import org.bson.codecs.pojo.annotations.BsonProperty
 
+@Deprecated("Migrated to PostgreSQL")
 class AutoroleConfig {
 	var isEnabled: Boolean = false
 	var giveOnlyAfterMessageWasSent: Boolean = false

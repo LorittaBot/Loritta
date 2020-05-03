@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.userdata
 
+@Deprecated("Migrated to PostgreSQL")
 class EventLogConfig {
 	var isEnabled: Boolean = false // Está ativado?
 	var eventLogChannelId: String? = null // ID do Canal
