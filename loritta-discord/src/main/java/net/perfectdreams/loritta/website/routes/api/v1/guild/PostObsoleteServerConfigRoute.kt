@@ -15,6 +15,7 @@ import com.mrpowergamerbr.loritta.utils.save
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.dao.EventLogConfig
 import net.perfectdreams.loritta.dao.StarboardConfig
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.ActionType
@@ -34,7 +35,7 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 		receivedPayload.remove("type")
 
 		val target = when (type) {
-			"event_log" -> legacyServerConfig.eventLogConfig
+			"event_log" -> "dummy"
 			"invite_blocker" -> legacyServerConfig.inviteBlockerConfig
 			"autorole" -> legacyServerConfig.autoroleConfig
 			"permissions" -> legacyServerConfig.permissionsConfig
@@ -80,6 +81,43 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 					newConfig.requiredStars = requiredStars
 
 					serverConfig.starboardConfig = newConfig
+				}
+			}
+		} else if (type == "event_log") {
+			val isEnabled = receivedPayload["isEnabled"].bool
+			val eventLogChannelId = receivedPayload["eventLogChannelId"].long
+			val memberBanned = receivedPayload["memberBanned"].bool
+			val memberUnbanned = receivedPayload["memberUnbanned"].bool
+			val messageEdited = receivedPayload["messageEdit"].bool
+			val messageDeleted = receivedPayload["messageDeleted"].bool
+			val nicknameChanges = receivedPayload["nicknameChanges"].bool
+			val avatarChanges = receivedPayload["avatarChanges"].bool
+			val voiceChannelJoins = receivedPayload["voiceChannelJoins"].bool
+			val voiceChannelLeaves = receivedPayload["voiceChannelLeaves"].bool
+
+			transaction(Databases.loritta) {
+				val eventLogConfig = serverConfig.eventLogConfig
+
+				if (!isEnabled) {
+					serverConfig.eventLogConfig = null
+					eventLogConfig?.delete()
+				} else {
+					val newConfig = eventLogConfig ?: EventLogConfig.new {
+						this.eventLogChannelId = -1
+					}
+
+					newConfig.enabled = isEnabled
+					newConfig.eventLogChannelId = eventLogChannelId
+					newConfig.memberBanned = memberBanned
+					newConfig.memberUnbanned = memberUnbanned
+					newConfig.messageEdited = messageEdited
+					newConfig.messageDeleted = messageDeleted
+					newConfig.nicknameChanges = nicknameChanges
+					newConfig.avatarChanges = avatarChanges
+					newConfig.voiceChannelJoins = voiceChannelJoins
+					newConfig.voiceChannelLeaves = voiceChannelLeaves
+
+					serverConfig.eventLogConfig = newConfig
 				}
 			}
 		} else {

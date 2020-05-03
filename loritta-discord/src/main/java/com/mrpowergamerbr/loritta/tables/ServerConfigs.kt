@@ -1,10 +1,7 @@
 package com.mrpowergamerbr.loritta.tables
 
 import com.mrpowergamerbr.loritta.utils.exposed.array
-import net.perfectdreams.loritta.tables.EconomyConfigs
-import net.perfectdreams.loritta.tables.LevelConfigs
-import net.perfectdreams.loritta.tables.MiscellaneousConfigs
-import net.perfectdreams.loritta.tables.StarboardConfigs
+import net.perfectdreams.loritta.tables.*
 import org.jetbrains.exposed.sql.LongColumnType
 import org.jetbrains.exposed.sql.ReferenceOption
 
@@ -24,5 +21,6 @@ object ServerConfigs : SnowflakeTable() {
 	val levelConfig = optReference("level_config", LevelConfigs, onDelete = ReferenceOption.CASCADE).index()
 	val starboardConfig = optReference("starboard_config", StarboardConfigs, onDelete = ReferenceOption.CASCADE).index()
 	val miscellaneousConfig = optReference("miscellaneous_config", MiscellaneousConfigs, onDelete = ReferenceOption.CASCADE).index()
+	val eventLogConfig = optReference("event_log_config", EventLogConfigs, onDelete = ReferenceOption.CASCADE).index()
 	val migrationVersion = integer("migration_version").default(0)
 }

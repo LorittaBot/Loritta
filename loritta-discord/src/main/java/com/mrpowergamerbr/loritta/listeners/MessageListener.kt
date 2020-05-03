@@ -142,7 +142,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				logIfEnabled(enableProfiling) { "Checking for user global/network ban took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
-				EventLog.onMessageReceived(legacyServerConfig, event.message)
+				EventLog.onMessageReceived(serverConfig, event.message)
 				logIfEnabled(enableProfiling) { "Logging to EventLog took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
@@ -437,7 +437,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				val locale = loritta.getLocaleById(serverConfig.localeId)
 				val lorittaUser = GuildLorittaUser(event.member!!, legacyServerConfig, lorittaProfile)
 
-				EventLog.onMessageUpdate(legacyServerConfig, legacyLocale, event.message)
+				EventLog.onMessageUpdate(serverConfig, legacyLocale, event.message)
 
 				val lorittaMessageEvent = LorittaMessageEvent(
 						event.author,

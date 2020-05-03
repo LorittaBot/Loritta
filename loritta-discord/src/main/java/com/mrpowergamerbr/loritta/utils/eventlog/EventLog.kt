@@ -7,7 +7,6 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxEmbed
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.webhook.DiscordMessage
@@ -15,6 +14,7 @@ import com.mrpowergamerbr.loritta.utils.webhook.DiscordWebhook
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
+import net.perfectdreams.loritta.dao.EventLogConfig
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.util.*
@@ -31,9 +31,8 @@ object EventLog {
 			.build<Long, DiscordWebhook>()
 			.asMap()
 
-	suspend fun getOrCreateEventLogWebhook(guild: Guild, serverConfig: MongoServerConfig): DiscordWebhook? {
-		val eventLogConfig = serverConfig.eventLogConfig
-		val channel = guild.getTextChannelByNullableId(eventLogConfig.eventLogChannelId) ?: return null
+	suspend fun getOrCreateEventLogWebhook(guild: Guild, eventLogConfig: EventLogConfig): DiscordWebhook? {
+		val channel = guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return null
 
 		val webhook = cachedEventLogWebhooks[channel.idLong]
 
@@ -76,11 +75,13 @@ object EventLog {
 		return loriWebhook
 	}
 
-	fun onMessageReceived(serverConfig: MongoServerConfig, message: Message) {
+	fun onMessageReceived(serverConfig: ServerConfig, message: Message) {
 		try {
-			val eventLogConfig = serverConfig.eventLogConfig
+			val eventLogConfig = transaction(Databases.loritta) {
+				serverConfig.eventLogConfig
+			} ?: return
 
-			if (eventLogConfig.isEnabled && (eventLogConfig.messageDeleted || eventLogConfig.messageEdit)) {
+			if (eventLogConfig.enabled && (eventLogConfig.messageDeleted || eventLogConfig.messageEdited)) {
 				val attachments = mutableListOf<String>()
 
 				message.attachments.forEach {
@@ -103,13 +104,16 @@ object EventLog {
 		}
 	}
 
-	suspend fun onMessageUpdate(serverConfig: MongoServerConfig, locale: LegacyBaseLocale, message: Message) {
-		val eventLogConfig = serverConfig.eventLogConfig
-
+	suspend fun onMessageUpdate(serverConfig: ServerConfig, locale: LegacyBaseLocale, message: Message) {
 		try {
-			if (eventLogConfig.isEnabled && (eventLogConfig.messageEdit || eventLogConfig.messageDeleted)) {
-				val textChannel = message.guild.getTextChannelByNullableId(eventLogConfig.eventLogChannelId)
-				if (textChannel != null && textChannel.canTalk()) {
+			val eventLogConfig = transaction(Databases.loritta) {
+				serverConfig.eventLogConfig
+			} ?: return
+
+			if (eventLogConfig.enabled && (eventLogConfig.messageEdited || eventLogConfig.messageDeleted)) {
+				val textChannel = message.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return
+
+				if (textChannel.canTalk()) {
 					if (!message.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
 						return
 					if (!message.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
@@ -121,8 +125,8 @@ object EventLog {
 						StoredMessage.findById(message.idLong)
 					}
 
-					if (storedMessage != null && storedMessage.content != message.contentRaw && eventLogConfig.messageEdit) {
-						val webhook = getOrCreateEventLogWebhook(message.guild, serverConfig)
+					if (storedMessage != null && storedMessage.content != message.contentRaw && eventLogConfig.messageEdited) {
+						val webhook = getOrCreateEventLogWebhook(message.guild, eventLogConfig)
 						if (webhook != null) {
 							val embed = ParallaxEmbed()
 							// embed.setTimestamp(Instant.now())
@@ -160,10 +164,12 @@ object EventLog {
 
 	suspend fun onVoiceJoin(serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, member: Member, channelJoined: VoiceChannel) {
 		try {
-			val eventLogConfig = legacyServerConfig.eventLogConfig
+			val eventLogConfig = transaction(Databases.loritta) {
+				serverConfig.eventLogConfig
+			} ?: return
 
-			if (eventLogConfig.isEnabled && eventLogConfig.voiceChannelJoins) {
-				val textChannel = member.guild.getTextChannelByNullableId(eventLogConfig.eventLogChannelId) ?: return
+			if (eventLogConfig.enabled && eventLogConfig.voiceChannelJoins) {
+				val textChannel = member.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return
 				val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 
 				if (!textChannel.canTalk())
@@ -175,7 +181,7 @@ object EventLog {
 				if (!member.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
 					return
 
-				val webhook = getOrCreateEventLogWebhook(channelJoined.guild, legacyServerConfig) ?: return
+				val webhook = getOrCreateEventLogWebhook(channelJoined.guild, eventLogConfig) ?: return
 
 				val embed = ParallaxEmbed()
 				// embed.setTimestamp(Instant.now())
@@ -205,10 +211,12 @@ object EventLog {
 
 	suspend fun onVoiceLeave(serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, member: Member, channelLeft: VoiceChannel) {
 		try {
-			val eventLogConfig = legacyServerConfig.eventLogConfig
+			val eventLogConfig = transaction(Databases.loritta) {
+				serverConfig.eventLogConfig
+			} ?: return
 
-			if (eventLogConfig.isEnabled && eventLogConfig.voiceChannelLeaves) {
-				val textChannel = member.guild.getTextChannelByNullableId(eventLogConfig.eventLogChannelId) ?: return
+			if (eventLogConfig.enabled && eventLogConfig.voiceChannelLeaves) {
+				val textChannel = member.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return
 				val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 				if (!textChannel.canTalk())
 					return
@@ -219,7 +227,7 @@ object EventLog {
 				if (!member.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
 					return
 
-				val webhook = getOrCreateEventLogWebhook(channelLeft.guild, legacyServerConfig) ?: return
+				val webhook = getOrCreateEventLogWebhook(channelLeft.guild, eventLogConfig) ?: return
 
 				val embed = ParallaxEmbed()
 				// embed.setTimestamp(Instant.now())

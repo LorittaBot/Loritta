@@ -425,10 +425,6 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 				if (serverConfig.autoroleConfig.isEnabled)
 					continue
 
-				// EVENT LOG
-				if (serverConfig.eventLogConfig.isEnabled)
-					continue
-
 				// JOIN/LEAVE
 				if (serverConfig.joinLeaveConfig.isEnabled)
 					continue

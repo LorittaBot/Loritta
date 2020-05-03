@@ -41,7 +41,7 @@ class ConfigureStarboardRoute(loritta: LorittaDiscord) : RequiresGuildAuthLocali
 	/**
 	 * Fake Server Config for Pebble, in the future this will be removed
 	 */
-	class FakeServerConfig(val starboardConfig: FakeStarboardConfig) {
+	private class FakeServerConfig(val starboardConfig: FakeStarboardConfig) {
 		class FakeStarboardConfig(
 				val isEnabled: Boolean,
 				val starboardId: String?,
