@@ -84,7 +84,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				logIfEnabled(enableProfiling) { "Loading Server Config took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
-				
+
 				logIfEnabled(enableProfiling) { "Migration Checks took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
