@@ -84,28 +84,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				logIfEnabled(enableProfiling) { "Loading Server Config took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
-				if (serverConfig.migrationVersion == 0) {
-					logger.info { "Migrating ${event.guild}'s general config to PSQL..." }
-					transaction(Databases.loritta) {
-						MigrationTool.migrateGeneralConfig(
-								serverConfig,
-								legacyServerConfig
-						)
-						serverConfig.migrationVersion = 1
-					}
-				}
-
-				if (serverConfig.migrationVersion == 1) {
-					logger.info { "Fixing ${event.guild}'s warn if blacklisted message on PSQL db..." }
-					transaction(Databases.loritta) {
-						MigrationTool.fixWarnIfBlacklistedMessage(
-								serverConfig,
-								legacyServerConfig
-						)
-						serverConfig.migrationVersion = 2
-					}
-				}
-
+				
 				logIfEnabled(enableProfiling) { "Migration Checks took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()

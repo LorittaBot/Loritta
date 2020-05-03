@@ -224,9 +224,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 
 	// Gera uma configuração "dummy" para comandos enviados no privado
 	fun generateDummyServerConfig() {
-		val dummy = MongoServerConfig("-1").apply { // É usado -1 porque -1 é um número de guild inexistente
-			commandPrefix = ""
-		}
+		val dummy = MongoServerConfig("-1") // É usado -1 porque -1 é um número de guild inexistente
 
 		dummyLegacyServerConfig = dummy
 	}
