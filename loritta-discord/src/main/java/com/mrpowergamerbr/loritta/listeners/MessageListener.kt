@@ -81,6 +81,13 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				start = System.nanoTime()
 				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
+
+				val miscellaneousConfig = transaction(Databases.loritta) {
+					serverConfig.miscellaneousConfig
+				}
+
+				val enableQuirky = miscellaneousConfig?.enableQuirky ?: false
+
 				logIfEnabled(enableProfiling) { "Loading Server Config took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
@@ -140,7 +147,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				start = System.nanoTime()
 				if (isMentioningMe(event.message))
-					if (chance(25.0) && legacyServerConfig.miscellaneousConfig.enableQuirky && event.member!!.hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI))
+					if (chance(25.0) && enableQuirky && event.member!!.hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI))
 						event.message.addReaction("smol_lori_putassa_ping:397748526362132483").queue()
 				logIfEnabled(enableProfiling) { "Checking user mention took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 

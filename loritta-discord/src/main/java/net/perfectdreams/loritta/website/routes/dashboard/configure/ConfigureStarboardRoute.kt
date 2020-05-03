@@ -20,7 +20,7 @@ class ConfigureStarboardRoute(loritta: LorittaDiscord) : RequiresGuildAuthLocali
 		loritta as Loritta
 		val serverConfig = loritta.getOrCreateServerConfig(guild.idLong)
 
-		transaction(Databases.loritta) {
+		val starboardConfig = transaction(Databases.loritta) {
 			serverConfig.starboardConfig
 		}
 
@@ -29,15 +29,18 @@ class ConfigureStarboardRoute(loritta: LorittaDiscord) : RequiresGuildAuthLocali
 		variables["saveType"] = "starboard"
 		variables["serverConfig"] = FakeServerConfig(
 				FakeServerConfig.FakeStarboardConfig(
-						serverConfig.starboardConfig?.enabled ?: false,
-						serverConfig.starboardConfig?.starboardChannelId?.toString(),
-						serverConfig.starboardConfig?.requiredStars ?: 1
+						starboardConfig?.enabled ?: false,
+						starboardConfig?.starboardChannelId?.toString(),
+						starboardConfig?.requiredStars ?: 1
 				)
 		)
 
 		call.respondHtml(evaluate("starboard.html", variables))
 	}
 
+	/**
+	 * Fake Server Config for Pebble, in the future this will be removed
+	 */
 	class FakeServerConfig(val starboardConfig: FakeStarboardConfig) {
 		class FakeStarboardConfig(
 				val isEnabled: Boolean,

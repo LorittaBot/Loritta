@@ -1,13 +1,32 @@
 package com.mrpowergamerbr.loritta.website.views.subviews.api.config.types
 
+import com.github.salomonbrys.kotson.bool
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.ServerConfig
-import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.dao.MiscellaneousConfig
+import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class MiscellaneousPayload : ConfigPayloadType("miscellaneous") {
 	override fun process(payload: JsonObject, userIdentification: LorittaJsonWebSession.UserIdentification, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, guild: Guild) {
-		applyReflection(payload, legacyServerConfig.miscellaneousConfig)
+		val enableQuirky = payload["enableQuirky"].bool
+		val enableBomDiaECia = payload["enableBomDiaECia"].bool
+
+		transaction(Databases.loritta) {
+			val miscellaneousConfig = serverConfig.miscellaneousConfig
+
+			val newConfig = miscellaneousConfig ?: MiscellaneousConfig.new {
+				this.enableQuirky = enableQuirky
+				this.enableBomDiaECia = enableBomDiaECia
+			}
+
+			newConfig.enableQuirky = enableQuirky
+			newConfig.enableBomDiaECia = enableBomDiaECia
+
+			serverConfig.miscellaneousConfig = newConfig
+		}
 	}
 }

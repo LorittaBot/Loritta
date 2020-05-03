@@ -321,8 +321,14 @@ class CommandManager {
 					return true
 				}
 
+				val miscellaneousConfig = transaction(Databases.loritta) {
+					serverConfig.miscellaneousConfig
+				}
+
+				val enableBomDiaECia = miscellaneousConfig?.enableBomDiaECia ?: false
+
 				if (serverConfig.blacklistedChannels.contains(ev.channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
-					if (!legacyServerConfig.miscellaneousConfig.enableBomDiaECia || (legacyServerConfig.miscellaneousConfig.enableBomDiaECia && command !is LigarCommand)) {
+					if (!enableBomDiaECia || (enableBomDiaECia && command !is LigarCommand)) {
 						if (serverConfig.warnIfBlacklisted) {
 							if (serverConfig.blacklistedWarning?.isNotEmpty() == true && ev.guild != null && ev.member != null && ev.textChannel != null) {
 								val generatedMessage = MessageUtils.generateMessage(

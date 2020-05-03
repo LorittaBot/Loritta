@@ -5,7 +5,9 @@ import com.mrpowergamerbr.loritta.tables.DonationKeys
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import net.perfectdreams.loritta.dao.EconomyConfig
 import net.perfectdreams.loritta.dao.LevelConfig
+import net.perfectdreams.loritta.dao.MiscellaneousConfig
 import net.perfectdreams.loritta.dao.StarboardConfig
+import net.perfectdreams.loritta.tables.MiscellaneousConfigs
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.EntityID
@@ -30,6 +32,7 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 	var economyConfig by EconomyConfig optionalReferencedOn ServerConfigs.economyConfig
 	var levelConfig by LevelConfig optionalReferencedOn ServerConfigs.levelConfig
 	var starboardConfig by StarboardConfig optionalReferencedOn ServerConfigs.starboardConfig
+	var miscellaneousConfig by MiscellaneousConfig optionalReferencedOn ServerConfigs.miscellaneousConfig
 	var migrationVersion by ServerConfigs.migrationVersion
 
 	fun getActiveDonationKeys() = transaction(Databases.loritta) {

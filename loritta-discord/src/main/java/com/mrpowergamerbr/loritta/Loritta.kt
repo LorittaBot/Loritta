@@ -395,7 +395,8 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					BannedIps,
 					WhitelistedTransactionIds,
 					Requires2FAChecksUsers,
-					StarboardConfigs
+					StarboardConfigs,
+					MiscellaneousConfigs
 			)
 		}
 	}
