@@ -117,7 +117,6 @@ class CommandManager {
 		commandMap.add(PerfilCommand())
 		commandMap.add(BackgroundCommand())
 		commandMap.add(SobreMimCommand())
-		commandMap.add(DiscriminatorCommand())
 		commandMap.add(RepCommand())
 		commandMap.add(RankCommand())
 		commandMap.add(EditarXPCommand())

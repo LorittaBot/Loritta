@@ -118,7 +118,6 @@ object MessageUtils {
 					mentionOwner = source.owner?.asMention ?: "???"
 					owner = source.owner?.effectiveName ?: "???"
 					tokens["guild-icon-url"] = source.iconUrl?.replace("jpg", "png")
-					tokens["lsl-url"] = "${loritta.instanceConfig.loritta.website.url}s/${source.id}"
 				}
 				if (source is TextChannel) {
 					tokens["channel"] = source.name
@@ -172,9 +171,6 @@ object MessageUtils {
 			}
 			for (roles in guild.roles) {
 				message = message.replace("@${roles.name}", roles.asMention)
-			}
-			for (member in guild.members) {
-				message = message.replace("@${member.user.name}#${member.user.discriminator}", member.asMention)
 			}
 		}
 

@@ -58,7 +58,7 @@ class ExperienceModule : MessageReceivedModule {
 		val lastMessageSentAt = lorittaProfile?.lastMessageSentAt ?: 0L
 		val currentLastMessageSentHash = lorittaProfile?.lastMessageSentHash ?: 0L
 		var lastMessageSentHash: Int? = null
-		val retrievedProfile by lazy { loritta.getOrCreateLorittaProfile(event.author.idLong) }
+		val retrievedProfile by lazy { lorittaProfile ?: loritta.getOrCreateLorittaProfile(event.author.idLong) }
 
 		// Primeiro iremos ver se a mensagem contém algo "interessante"
 		if (event.message.contentStripped.length >= 5 && currentLastMessageSentHash != event.message.contentStripped.hashCode()) {
@@ -88,7 +88,7 @@ class ExperienceModule : MessageReceivedModule {
 					val profile = legacyServerConfig.getUserData(event.author.idLong)
 
 					if (FeatureFlags.isEnabled("experience-gain-locally")) {
-						handleLocalExperience(event, retrievedProfile, profile, gainedXp, locale.toNewLocale())
+						handleLocalExperience(event, retrievedProfile, serverConfig, profile, gainedXp, locale.toNewLocale())
 					}
 				}
 			}
@@ -110,14 +110,14 @@ class ExperienceModule : MessageReceivedModule {
 		return false
 	}
 
-	suspend fun handleLocalExperience(event: LorittaMessageEvent, profile: Profile, guildProfile: GuildProfile, gainedXp: Int, locale: BaseLocale) {
+	suspend fun handleLocalExperience(event: LorittaMessageEvent, profile: Profile, serverConfig: ServerConfig, guildProfile: GuildProfile, gainedXp: Int, locale: BaseLocale) {
 		val mutex = mutexes.getOrPut(event.author.idLong) { Mutex() }
 
 		val guild = event.guild!!
 		val member = event.member!!
 
 		val levelConfig = transaction(Databases.loritta) {
-			loritta.getOrCreateServerConfig(guild.idLong).levelConfig
+			serverConfig.levelConfig
 		}
 
 		if (levelConfig != null) {
@@ -136,16 +136,18 @@ class ExperienceModule : MessageReceivedModule {
 
 		val (previousLevel, previousXp) = guildProfile.getCurrentLevel()
 
+		val customRoleRates = transaction(Databases.loritta) {
+			ExperienceRoleRates.select {
+				ExperienceRoleRates.guildId eq event.guild.idLong and
+						(ExperienceRoleRates.role inList member.roles.map { it.idLong })
+			}.orderBy(ExperienceRoleRates.rate, SortOrder.DESC)
+					.firstOrNull()
+		}
+
+		val rate = customRoleRates?.getOrNull(ExperienceRoleRates.rate) ?: 1.0
+
 		mutex.withLock {
 			transaction(Databases.loritta) {
-				val customRoleRates = ExperienceRoleRates.select {
-					ExperienceRoleRates.guildId eq event.guild.idLong and
-							(ExperienceRoleRates.role inList member.roles.map { it.idLong })
-				}.orderBy(ExperienceRoleRates.rate, SortOrder.DESC)
-						.firstOrNull()
-
-				val rate = customRoleRates?.getOrNull(ExperienceRoleRates.rate) ?: 1.0
-
 				guildProfile.xp += (gainedXp * rate).toLong()
 			}
 		}
