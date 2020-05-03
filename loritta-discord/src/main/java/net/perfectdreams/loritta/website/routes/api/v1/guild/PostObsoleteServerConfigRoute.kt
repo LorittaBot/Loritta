@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
@@ -14,6 +15,7 @@ import com.mrpowergamerbr.loritta.utils.save
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.dao.StarboardConfig
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.ActionType
 import net.perfectdreams.loritta.utils.auditlog.WebAuditLogUtils
@@ -21,6 +23,7 @@ import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIGuildAuthRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRoute(loritta, "/old-config") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig) {
@@ -36,7 +39,7 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 			"autorole" -> legacyServerConfig.autoroleConfig
 			"permissions" -> legacyServerConfig.permissionsConfig
 			"welcomer" -> legacyServerConfig.joinLeaveConfig
-			"starboard" -> legacyServerConfig.starboardConfig
+			"starboard" -> "dummy"
 			"nashorn_commands" -> legacyServerConfig.nashornCommands
 			"event_handlers" -> legacyServerConfig.nashornEventHandlers
 			"vanilla_commands" -> legacyServerConfig.disabledCommands
@@ -54,6 +57,31 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 			response = handleEventHandlers(legacyServerConfig, receivedPayload)
 		} else if (type == "vanilla_commands") {
 			response = handleVanillaCommands(legacyServerConfig, receivedPayload)
+		} else if (type == "starboard") {
+			val isEnabled = receivedPayload["isEnabled"].bool
+			val starboardChannelId = receivedPayload["starboardId"].long
+			val requiredStars = receivedPayload["requiredStars"].int
+
+			transaction(Databases.loritta) {
+				val starboardConfig = serverConfig.starboardConfig
+
+				if (!isEnabled) {
+					serverConfig.starboardConfig = null
+					starboardConfig?.delete()
+				} else {
+					val newConfig = starboardConfig ?: StarboardConfig.new {
+						this.enabled = false
+						this.starboardChannelId = -1
+						this.requiredStars = 1
+					}
+
+					newConfig.enabled = isEnabled
+					newConfig.starboardChannelId = starboardChannelId
+					newConfig.requiredStars = requiredStars
+
+					serverConfig.starboardConfig = newConfig
+				}
+			}
 		} else {
 			for (element in receivedPayload.entrySet()) {
 				if (element.key == "guildId") {

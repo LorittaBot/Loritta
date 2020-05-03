@@ -258,12 +258,15 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		GlobalScope.launch {
 			if (e.isFromType(ChannelType.TEXT)) {
 				try {
-					val conf = loritta.getServerConfigForGuild(e.guild.id)
+					val conf = loritta.getOrCreateServerConfig(e.guild.idLong)
 
 					// Sistema de Starboard
-					if (conf.starboardConfig.isEnabled) {
-						StarboardModule.handleStarboardReaction(e, conf)
+					val starboardConfig = transaction(Databases.loritta) {
+						conf.starboardConfig
 					}
+
+					if (starboardConfig != null && starboardConfig.enabled)
+						StarboardModule.handleStarboardReaction(e, starboardConfig)
 				} catch (exception: Exception) {
 					logger.error("[${e.guild.name}] Starboard ${e.member?.user?.name}", exception)
 				}
