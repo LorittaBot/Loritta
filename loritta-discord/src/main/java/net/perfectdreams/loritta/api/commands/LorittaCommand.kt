@@ -40,7 +40,6 @@ open class LorittaCommand(override val labels: Array<String>, val category: Comm
 	open val hasCommandFeedback: Boolean = true
 	open val lorittaPermissions = listOf<LorittaPermission>()
 	open val canUseInPrivateChannel: Boolean = true
-	open val requiresMusic: Boolean = false
 	open val needsToUploadFiles = false
 
 	open fun getDescription(locale: BaseLocale): String? {

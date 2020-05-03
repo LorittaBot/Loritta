@@ -434,14 +434,6 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                     }
                 } */
 
-                if (command.requiresMusic) {
-                    if (!context.legacyConfig.musicConfig.isEnabled) {
-                        val canManage = context.handle.hasPermission(Permission.MANAGE_SERVER) || context.handle.hasPermission(Permission.ADMINISTRATOR)
-                        context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + legacyLocale["DJ_LORITTA_DISABLED"] + " \uD83D\uDE1E" + if (canManage) legacyLocale["DJ_LORITTA_HOW_TO_ENABLE", "${loritta.instanceConfig.loritta.website.url}dashboard"] else "")
-                        return true
-                    }
-                }
-
                 // Vamos pegar uma mensagem aleatória de doação, se não for nula, iremos enviar ela :3
                 DonateUtils.getRandomDonationMessage(
                         locale,

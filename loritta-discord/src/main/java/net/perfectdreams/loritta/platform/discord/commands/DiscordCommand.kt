@@ -21,7 +21,6 @@ class DiscordCommand(
 ) : Command<CommandContext>(lorittaDiscord, labels, commandName, category, description, usage, examples, executor) {
 	var userRequiredPermissions = listOf<Permission>()
 	var botRequiredPermissions = listOf<Permission>()
-	var requiresMusic = false
 	var userRequiredLorittaPermissions = listOf<LorittaPermission>()
 
 	override val cooldown: Int

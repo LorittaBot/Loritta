@@ -45,7 +45,6 @@ class MongoServerConfig @BsonCreator constructor(
 	var nashornEventHandlers = ArrayList<NashornEventHandler>()
 
 	var joinLeaveConfig = WelcomerConfig()
-	var musicConfig = MusicConfig()
 	var starboardConfig = StarboardConfig()
 	var eventLogConfig = EventLogConfig()
 	var autoroleConfig = AutoroleConfig()

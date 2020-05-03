@@ -38,7 +38,6 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 			"permissions" -> legacyServerConfig.permissionsConfig
 			"welcomer" -> legacyServerConfig.joinLeaveConfig
 			"starboard" -> legacyServerConfig.starboardConfig
-			"music" -> legacyServerConfig.musicConfig
 			"nashorn_commands" -> legacyServerConfig.nashornCommands
 			"event_handlers" -> legacyServerConfig.nashornEventHandlers
 			"vanilla_commands" -> legacyServerConfig.disabledCommands

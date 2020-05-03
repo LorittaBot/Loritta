@@ -22,7 +22,6 @@ class DiscordCommandBuilder(
 ) : CommandBuilder<CommandContext>(lorittaDiscord, commandName, labels, category) {
 	var userRequiredPermissions = listOf<Permission>()
 	var botRequiredPermissions = listOf<Permission>()
-	var requiresMusic = false
 	var executeDiscordCallback: (suspend DiscordCommandContext.() -> (Unit))? = null
 	var userRequiredLorittaPermissions = listOf<LorittaPermission>()
 
@@ -53,7 +52,6 @@ class DiscordCommandBuilder(
 		).apply { build2().invoke(this) }.also {
 			it.userRequiredPermissions = userRequiredPermissions
 			it.botRequiredPermissions = botRequiredPermissions
-			it.requiresMusic = requiresMusic
 			it.userRequiredLorittaPermissions = userRequiredLorittaPermissions
 		}
 	}

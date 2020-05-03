@@ -104,15 +104,6 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 	}
 
 	/**
-	 * Retorna se o comando precisa ter o sistema de música ativado
-
-	 * @return Se o comando precisa ter o sistema de música ativado
-	 */
-	open fun requiresMusicEnabled(): Boolean {
-		return false
-	}
-
-	/**
 	 * Retorna um valor boolean para verificar se o usuário pode rodar o comando
 	 *
 	 * @return um valor boolean para verificar se o usuário pode rodar o comando

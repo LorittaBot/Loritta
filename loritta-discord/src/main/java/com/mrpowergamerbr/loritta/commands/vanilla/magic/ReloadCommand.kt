@@ -433,10 +433,6 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 				if (serverConfig.joinLeaveConfig.isEnabled)
 					continue
 
-				// MUSIC
-				if (serverConfig.musicConfig.isEnabled)
-					continue
-
 				reallyUselessServers.add(guild)
 			}
 
