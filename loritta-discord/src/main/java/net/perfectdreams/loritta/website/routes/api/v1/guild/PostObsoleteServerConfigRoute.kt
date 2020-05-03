@@ -37,7 +37,6 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 		val target = when (type) {
 			"event_log" -> "dummy"
 			"invite_blocker" -> legacyServerConfig.inviteBlockerConfig
-			"autorole" -> legacyServerConfig.autoroleConfig
 			"permissions" -> legacyServerConfig.permissionsConfig
 			"welcomer" -> legacyServerConfig.joinLeaveConfig
 			"starboard" -> "dummy"

@@ -88,6 +88,10 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				val enableQuirky = miscellaneousConfig?.enableQuirky ?: false
 
+				val autoroleConfig = transaction(Databases.loritta) {
+					serverConfig.autoroleConfig
+				}
+
 				logIfEnabled(enableProfiling) { "Loading Server Config took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
@@ -230,8 +234,10 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				logIfEnabled(enableProfiling) { "Updating In Guild Status took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
-				if (legacyServerConfig.autoroleConfig.isEnabled && legacyServerConfig.autoroleConfig.giveOnlyAfterMessageWasSent && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) // Está ativado?
-					AutoroleModule.giveRoles(member, legacyServerConfig.autoroleConfig)
+
+				if (autoroleConfig != null && autoroleConfig.enabled && autoroleConfig.giveOnlyAfterMessageWasSent && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) // Está ativado?
+					AutoroleModule.giveRoles(member, autoroleConfig)
+
 				logIfEnabled(enableProfiling) { "Giving auto role on message took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				for (module in (MESSAGE_RECEIVED_MODULES + loritta.pluginManager.plugins.filterIsInstance<DiscordPlugin>().flatMap { it.messageReceivedModules } + loritta.pluginManager.plugins.filterIsInstance<LorittaDiscordPlugin>().flatMap { it.messageReceivedModules })) {

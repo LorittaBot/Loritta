@@ -19,7 +19,6 @@ object PurgeDiscordGuilds {
 				Filters.lte("lastCommandReceivedAt", lastCommandReceivedBefore)
 		).toMutableList().filter {
 			!it.joinLeaveConfig.isEnabled &&
-					!it.autoroleConfig.isEnabled &&
 					!it.inviteBlockerConfig.isEnabled
 		}
 

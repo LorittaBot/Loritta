@@ -397,7 +397,8 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					Requires2FAChecksUsers,
 					StarboardConfigs,
 					MiscellaneousConfigs,
-					EventLogConfigs
+					EventLogConfigs,
+					AutoroleConfigs
 			)
 		}
 	}

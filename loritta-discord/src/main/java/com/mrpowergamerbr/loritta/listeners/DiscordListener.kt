@@ -428,11 +428,14 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 				}
 
+				val autoroleConfig = transaction(Databases.loritta) {
+					serverConfig.autoroleConfig
+				}
+
 				queueTextChannelTopicUpdates(event.guild, serverConfig, legacyServerConfig, true)
 
-				if (legacyServerConfig.autoroleConfig.isEnabled && !legacyServerConfig.autoroleConfig.giveOnlyAfterMessageWasSent && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) { // Está ativado?
-					AutoroleModule.giveRoles(event.member, legacyServerConfig.autoroleConfig)
-				}
+				if (autoroleConfig != null && autoroleConfig.enabled && !autoroleConfig.giveOnlyAfterMessageWasSent && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) // Está ativado?
+					AutoroleModule.giveRoles(event.member, autoroleConfig)
 
 				if (legacyServerConfig.joinLeaveConfig.isEnabled) { // Está ativado?
 					WelcomeModule.handleJoin(event, serverConfig, legacyServerConfig)

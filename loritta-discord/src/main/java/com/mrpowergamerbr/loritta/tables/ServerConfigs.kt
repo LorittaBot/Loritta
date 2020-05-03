@@ -22,5 +22,6 @@ object ServerConfigs : SnowflakeTable() {
 	val starboardConfig = optReference("starboard_config", StarboardConfigs, onDelete = ReferenceOption.CASCADE).index()
 	val miscellaneousConfig = optReference("miscellaneous_config", MiscellaneousConfigs, onDelete = ReferenceOption.CASCADE).index()
 	val eventLogConfig = optReference("event_log_config", EventLogConfigs, onDelete = ReferenceOption.CASCADE).index()
+	val autoroleConfig = optReference("autorole_config", AutoroleConfigs, onDelete = ReferenceOption.CASCADE).index()
 	val migrationVersion = integer("migration_version").default(0)
 }
