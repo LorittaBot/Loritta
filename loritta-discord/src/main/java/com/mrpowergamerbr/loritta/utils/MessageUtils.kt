@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.utils
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
@@ -21,13 +22,7 @@ object MessageUtils {
 
 	fun generateMessage(message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf<String, String>(), safe: Boolean = true): Message? {
 		val jsonObject = try {
-			if (message.startsWith("---\n")) { // Se existe o header de um arquivo YAML... vamos processar como se fosse YAML!
-				val map = Constants.YAML.load(message) as Map<String, Object>
-				gson.toJsonTree(map).obj
-			} else {
-				// Se não, vamos processar como se fosse JSON
-				jsonParser.parse(message).obj
-			}
+			JsonParser.parseString(message).obj
 		} catch (ex: Exception) {
 			null
 		}
