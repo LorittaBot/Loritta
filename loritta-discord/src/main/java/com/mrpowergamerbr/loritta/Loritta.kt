@@ -139,7 +139,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	val networkBanManager = LorittaNetworkBanManager()
 
 	lateinit var website: LorittaWebsite
-	lateinit var websiteThread: Thread
 
 	var newWebsite: net.perfectdreams.loritta.website.LorittaWebsite? = null
 	var newWebsiteThread: Thread? = null
