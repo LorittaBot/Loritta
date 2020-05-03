@@ -45,36 +45,33 @@ object MessageUtils {
 		return messageBuilder.build()
 	}
 
-	fun handleJsonTokenReplacer(jsonObject: JsonObject, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf<String, String>()) {
+	private fun handleJsonTokenReplacer(jsonObject: JsonObject, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf<String, String>()) {
 		for ((key, value) in jsonObject.entrySet()) {
-			if (value.isJsonObject) {
-				handleJsonTokenReplacer(value.obj, sources, guild, customTokens)
-			}
-			if (value.isJsonArray) {
-				val array = JsonArray()
-				for (it in value.array) {
-					if (it.isJsonPrimitive) {
-						if (it.asJsonPrimitive.isString) {
+			when {
+				value.isJsonPrimitive && value.asJsonPrimitive.isString -> {
+					jsonObject[key] = replaceTokens(value.string, sources, guild, customTokens)
+				}
+				value.isJsonObject -> {
+					handleJsonTokenReplacer(value.obj, sources, guild, customTokens)
+				}
+				value.isJsonArray -> {
+					val array = JsonArray()
+					for (it in value.array) {
+						if (it.isJsonPrimitive && it.asJsonPrimitive.isString) {
 							array.add(replaceTokens(it.string, sources, guild, customTokens))
 							continue
+						} else if (it.isJsonObject) {
+							handleJsonTokenReplacer(it.obj, sources, guild, customTokens)
 						}
+						array.add(it)
 					}
-					if (it.isJsonObject) {
-						handleJsonTokenReplacer(it.obj, sources, guild, customTokens)
-					}
-					array.add(it)
-				}
-				jsonObject[key] = array
-			}
-			if (value.isJsonPrimitive) {
-				if (value.asJsonPrimitive.isString) {
-					jsonObject[key] = replaceTokens(value.string, sources, guild, customTokens)
+					jsonObject[key] = array
 				}
 			}
 		}
 	}
 
-	fun replaceTokens(text: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String?> = mutableMapOf<String, String?>()): String {
+	private fun replaceTokens(text: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String?> = mutableMapOf<String, String?>()): String {
 		var mentionUser = ""
 		var user = ""
 		var userDiscriminator = ""
@@ -183,7 +180,7 @@ object MessageUtils {
 fun Message.onReactionAdd(context: CommandContext, function: suspend (MessageReactionAddEvent) -> Unit): Message {
 	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
 	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
-	
+
 	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.id) }
 	functions.onReactionAdd = function
 	return this
