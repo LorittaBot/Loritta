@@ -136,16 +136,18 @@ class ExperienceModule : MessageReceivedModule {
 
 		val (previousLevel, previousXp) = guildProfile.getCurrentLevel()
 
+		val customRoleRates = transaction(Databases.loritta) {
+			ExperienceRoleRates.select {
+				ExperienceRoleRates.guildId eq event.guild.idLong and
+						(ExperienceRoleRates.role inList member.roles.map { it.idLong })
+			}.orderBy(ExperienceRoleRates.rate, SortOrder.DESC)
+					.firstOrNull()
+		}
+
+		val rate = customRoleRates?.getOrNull(ExperienceRoleRates.rate) ?: 1.0
+
 		mutex.withLock {
 			transaction(Databases.loritta) {
-				val customRoleRates = ExperienceRoleRates.select {
-					ExperienceRoleRates.guildId eq event.guild.idLong and
-							(ExperienceRoleRates.role inList member.roles.map { it.idLong })
-				}.orderBy(ExperienceRoleRates.rate, SortOrder.DESC)
-						.firstOrNull()
-
-				val rate = customRoleRates?.getOrNull(ExperienceRoleRates.rate) ?: 1.0
-
 				guildProfile.xp += (gainedXp * rate).toLong()
 			}
 		}
