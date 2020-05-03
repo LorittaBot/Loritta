@@ -173,9 +173,6 @@ object MessageUtils {
 			for (roles in guild.roles) {
 				message = message.replace("@${roles.name}", roles.asMention)
 			}
-			for (member in guild.members) {
-				message = message.replace("@${member.user.name}#${member.user.discriminator}", member.asMention)
-			}
 		}
 
 		return message
