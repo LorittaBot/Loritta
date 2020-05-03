@@ -13,7 +13,5 @@ class TextChannelConfig @BsonCreator constructor(
 	@AllowReflection
 	var isBlacklisted = false
 	@AllowReflection
-	var automodConfig = AutomodConfig()
-	@AllowReflection
 	var memberCounterConfig: MemberCounterConfig? = null
 }

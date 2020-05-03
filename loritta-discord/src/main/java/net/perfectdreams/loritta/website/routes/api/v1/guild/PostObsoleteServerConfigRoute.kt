@@ -9,7 +9,6 @@ import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
-import com.mrpowergamerbr.loritta.userdata.TextChannelConfig
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.save
 import io.ktor.application.ApplicationCall
@@ -41,7 +40,6 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 			"nashorn_commands" -> legacyServerConfig.nashornCommands
 			"event_handlers" -> legacyServerConfig.nashornEventHandlers
 			"vanilla_commands" -> legacyServerConfig.disabledCommands
-			"text_channels" -> legacyServerConfig.textChannelConfigs
 			"moderation" -> legacyServerConfig.moderationConfig
 			else -> null
 		} ?: return
@@ -56,8 +54,6 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 			response = handleEventHandlers(legacyServerConfig, receivedPayload)
 		} else if (type == "vanilla_commands") {
 			response = handleVanillaCommands(legacyServerConfig, receivedPayload)
-		} else if (type == "text_channels") {
-			response = handleTextChannels(legacyServerConfig, receivedPayload)
 		} else {
 			for (element in receivedPayload.entrySet()) {
 				if (element.key == "guildId") {
@@ -200,38 +196,5 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 		}
 
 		return "nice"
-	}
-
-	fun handleTextChannels(config: MongoServerConfig, receivedPayload: JsonObject): String {
-		config.textChannelConfigs.clear()
-		val entries = receivedPayload["entries"].array
-
-		for (entry in entries) {
-			val id = entry["id"].nullString ?: continue
-
-			var config = if (id == "default") {
-				// Config default
-				val textChannelConfig = TextChannelConfig("default")
-				config.defaultTextChannelConfig = textChannelConfig
-				textChannelConfig
-			} else {
-				val textChannelConfig = TextChannelConfig(id)
-				config.textChannelConfigs.add(textChannelConfig)
-				textChannelConfig
-			}
-
-			config.automodConfig.automodCaps.apply {
-				this.isEnabled = entry["isEnabled"].bool
-				this.capsThreshold = entry["capsThreshold"].int
-				this.lengthThreshold = entry["lengthThreshold"].int
-				this.deleteMessage = entry["deleteMessage"].bool
-				this.replyToUser = entry["replyToUser"].bool
-				this.replyMessage = entry["replyMessage"].string
-			}
-
-
-		}
-
-		return "Saved textChannel Configuration!"
 	}
 }
