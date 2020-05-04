@@ -42,6 +42,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.dao.servers.Giveaway
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.ReactionOption
 import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
+import net.perfectdreams.loritta.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.tables.servers.Giveaways
 import net.perfectdreams.loritta.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.ReactionOptions
@@ -316,6 +317,12 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				if (serverConfig != null)
 					ServerRolePermissions.deleteWhere {
 						ServerRolePermissions.guild eq serverConfig.id
+					}
+
+				logger.trace { "Deleting all ${e.guild} custom comamnds..."}
+				if (serverConfig != null)
+					CustomGuildCommands.deleteWhere {
+						CustomGuildCommands.guild eq serverConfig.id
 					}
 
 				logger.trace { "Deleting ${e.guild} config..."}

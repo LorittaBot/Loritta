@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.commands
 
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Updates
+import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.*
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.*
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.*
@@ -34,8 +33,11 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
+import net.perfectdreams.loritta.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.utils.*
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 import java.util.concurrent.CancellationException
@@ -111,7 +113,6 @@ class CommandManager {
 		commandMap.add(LanguageCommand())
 		commandMap.add(PatreonCommand())
 		commandMap.add(DiscordBotListCommand())
-		commandMap.add(ParallaxCommand())
 
 		// =======[ SOCIAL ]======
 		commandMap.add(PerfilCommand())
@@ -238,7 +239,18 @@ class CommandManager {
 		}
 
 		// E depois os comandos usando JavaScript (Nashorn)
-		for (command in conf.nashornCommands) {
+		val nashornCommands = transaction(Databases.loritta) {
+			CustomGuildCommands.select {
+				CustomGuildCommands.guild eq serverConfig.id and (CustomGuildCommands.enabled eq true)
+			}.toList()
+		}.map {
+			NashornCommand(
+					it[CustomGuildCommands.label],
+					it[CustomGuildCommands.code]
+			)
+		}
+
+		for (command in nashornCommands) {
 			if (matches(command, rawArguments, ev, serverConfig, conf, locale, legacyLocale, lorittaUser))
 				return true
 		}

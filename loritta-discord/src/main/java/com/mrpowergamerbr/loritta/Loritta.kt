@@ -48,6 +48,7 @@ import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandManager
 import net.perfectdreams.loritta.platform.discord.utils.BucketedController
 import net.perfectdreams.loritta.platform.discord.utils.RateLimitChecker
 import net.perfectdreams.loritta.tables.*
+import net.perfectdreams.loritta.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.tables.servers.Giveaways
 import net.perfectdreams.loritta.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.*
@@ -404,7 +405,8 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					AutoroleConfigs,
 					InviteBlockerConfigs,
 					ServerRolePermissions,
-					WelcomerConfigs
+					WelcomerConfigs,
+					CustomGuildCommands
 			)
 		}
 	}

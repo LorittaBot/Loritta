@@ -16,46 +16,19 @@ import io.ktor.http.userAgent
 import jdk.nashorn.api.scripting.ClassFilter
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.NetAddressUtils
-import org.bson.types.ObjectId
 import org.graalvm.polyglot.Context
-import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 /**
  * Comandos usando a Nashorn Engine
  */
-class NashornCommand : AbstractCommand {
-	var id = ObjectId() // Object ID único para cada comando
-	var jsLabel = "loritta" // label do comando
-	lateinit var javaScript: String // código em JS do comando
-	var jsAliases: List<String> = ArrayList() // aliases
-	var isEnabled = true // Se o comando está ativado
-	// var createdDate = LocalDateTime.now() // Data criada
-	// var editedDate = LocalDateTime.now() // Data editada
-	var authors: List<String> = ArrayList() // Autores do comando (ou seja, quem mexeu)
-	var isPublic = false // Se o comando é público no repositório de comandos
-	var isForked = false // Se é uma cópia de outro comando na repo de cmds
-	var upstreamId: ObjectId? = null // Caso seja forked, o upstreamId irá ter o Object ID original
-	var useNewAPI: Boolean = false
-	var description: String? = null
-
-	override val label: String
-		get() = jsLabel
-
-	constructor() : super("javascript-command-label", listOf(), CommandCategory.MISC)
-
-	constructor(label: String, javaScript: String) : super(label, listOf(), CommandCategory.MISC) {
-		this.jsLabel = label
-		this.javaScript = javaScript
-		this.aliases = jsAliases
-	}
-
+class NashornCommand(label: String, val javaScriptCode: String) : AbstractCommand(label, category = CommandCategory.MISC) {
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
-		nashornRun(context, NashornContext(context))
+		nashornRun(context)
 	}
 
-	suspend fun nashornRun(ogContext: CommandContext, context: NashornContext) {
+	private suspend fun nashornRun(ogContext: CommandContext) {
 		// Funções que jamais poderão ser usadas em comandos
 		val blacklisted = "var quit=function(){throw 'Operação não suportada: quit';};var exit=function(){throw 'Operação não suportada: exit';};var print=function(){throw 'Operação não suportada: print';};var echo=function(){throw 'Operação não suportada: echo';};var readLine=function(){throw 'Operação não suportada: readLine';};var readFully=function(){throw 'Operação não suportada: readFully';};var load=function(){throw 'Operação não suportada: load';};var loadWithNewGlobal=function(){throw 'Operação não suportada: loadWithNewGlobal';};"
 
@@ -67,7 +40,7 @@ class NashornCommand : AbstractCommand {
 				.option("js.nashorn-compat", "true")
 				.build()
 
-		if (!useNewAPI) {
+		if (!javaScriptCode.contains("// USE NEW API")) {
 			// Funções inline para facilitar a programação de comandos
 			val inlineMethods = """
 var message=function(){ return contexto.getMessage(); };
@@ -95,7 +68,7 @@ var getGuild=function() { return contexto.getGuild(); };"""
 								"(function(contexto) { \n" +
 										"$blacklisted\n" +
 										"$inlineMethods\n" +
-										"$javaScript\n })",
+										"$javaScriptCode\n })",
 								ogContext,
 								nashornContext
 						)
@@ -146,7 +119,7 @@ var getGuild=function() { return contexto.getGuild(); };"""
 			)
 
 			val commandRequest = jsonObject(
-					"code" to javaScript,
+					"code" to javaScriptCode,
 					"guild" to jsonGuild,
 					"message" to ParallaxUtils.transformToJson(ogContext.message),
 					"lorittaClusterId" to loritta.lorittaCluster.id,

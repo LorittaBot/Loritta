@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.userdata
 
-import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler
 import com.mrpowergamerbr.loritta.network.Databases
@@ -24,7 +23,7 @@ class MongoServerConfig @BsonCreator constructor(
 	// Os command options são salvos assim:
 	// AbstractCommand.getClass().getSimpleName() - CommandOptions
 
-	var nashornCommands = ArrayList<NashornCommand>() // Comandos customizados
+	// var nashornCommands = ArrayList<NashornCommand>() // Comandos customizados
 
 	var nashornEventHandlers = ArrayList<NashornEventHandler>()
 
