@@ -175,6 +175,7 @@ fun Permission.localized(locale: BaseLocale): String {
 		MANAGE_WEBHOOKS -> locale["discord.permissions.manageWebhooks"]
 		MANAGE_EMOTES -> locale["discord.permissions.manageEmotes"]
 		VOICE_STREAM -> locale["discord.permissions.voiceStream"]
+		VIEW_GUILD_INSIGHTS -> locale["discord.permissions.viewGuildInsights"]
 		UNKNOWN -> "This should never, ever happen!"
 	}
 }
