@@ -122,7 +122,7 @@ open class LorittaUser(val user: User, val permissions: EnumSet<LorittaPermissio
 
 	val asMention: String
 		get() = getAsMention(false)
-	val profile by lazy { loritta.getOrCreateLorittaProfile(user.idLong) }
+	val profile by lazy { _profile ?: loritta.getOrCreateLorittaProfile(user.idLong) }
 
 	fun getAsMention(addSpace: Boolean): String {
 		return user.asMention + (if (addSpace) " " else "")
