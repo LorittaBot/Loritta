@@ -29,7 +29,6 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.locale.Gender
-import com.mrpowergamerbr.loritta.utils.networkbans.LorittaNetworkBanManager
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import kotlinx.coroutines.GlobalScope
@@ -139,8 +138,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 
 	lateinit var raffleThread: RaffleThread
 	lateinit var bomDiaECia: BomDiaECia
-
-	val networkBanManager = LorittaNetworkBanManager()
 
 	lateinit var website: LorittaWebsite
 
@@ -407,7 +404,9 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					ServerRolePermissions,
 					WelcomerConfigs,
 					CustomGuildCommands,
-					MemberCounterChannelConfigs
+					MemberCounterChannelConfigs,
+					ModerationConfigs,
+					WarnActions
 			)
 		}
 	}

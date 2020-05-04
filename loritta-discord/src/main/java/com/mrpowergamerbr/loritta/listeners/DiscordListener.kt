@@ -3,7 +3,6 @@ package com.mrpowergamerbr.loritta.listeners
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
 import com.mrpowergamerbr.loritta.dao.Mute
 import com.mrpowergamerbr.loritta.dao.ServerConfig
@@ -15,9 +14,12 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Mutes
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.save
 import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
@@ -47,6 +49,7 @@ import net.perfectdreams.loritta.tables.servers.Giveaways
 import net.perfectdreams.loritta.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.MemberCounterChannelConfigs
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.ReactionOptions
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.WarnActions
 import net.perfectdreams.loritta.utils.FeatureFlags
 import net.perfectdreams.loritta.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
@@ -330,10 +333,17 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						ServerRolePermissions.guild eq serverConfig.id
 					}
 
-				logger.trace { "Deleting all ${e.guild} custom comamnds..."}
+				logger.trace { "Deleting all ${e.guild} custom commands..."}
 				if (serverConfig != null)
 					CustomGuildCommands.deleteWhere {
 						CustomGuildCommands.guild eq serverConfig.id
+					}
+
+				val moderationConfig = serverConfig?.moderationConfig
+				logger.trace { "Deleting all ${e.guild} warn actions..."}
+				if (serverConfig != null && moderationConfig != null)
+					WarnActions.deleteWhere {
+						WarnActions.config eq moderationConfig.id
 					}
 
 				logger.trace { "Deleting ${e.guild} config..."}
@@ -423,29 +433,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			try {
 				val legacyServerConfig = loritta.getServerConfigForGuild(event.guild.id)
 				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
-
-				if (loritta.networkBanManager.checkIfUserShouldBeBanned(event.user, event.guild, serverConfig, legacyServerConfig))
-					return@launch
-
-				val miscellaneousConfig = transaction(Databases.loritta) {
-					serverConfig.miscellaneousConfig
-				}
-
-				val enableQuirky = miscellaneousConfig?.enableQuirky ?: false
-
-				if (enableQuirky && event.user.name.contains("lori", true) && MiscUtils.hasInappropriateWords(event.user.name)) { // #LoritaTambémTemSentimentos
-					BanCommand.ban(
-							legacyServerConfig,
-							event.guild,
-							event.guild.selfMember.user,
-							com.mrpowergamerbr.loritta.utils.loritta.getLegacyLocaleById(serverConfig.localeId),
-							event.user,
-							"Sim, eu também tenho sentimentos. (Usar nomes inapropriados que ofendem outros usuários!)",
-							false,
-							7
-					)
-					return@launch
-				}
 
 				if (FeatureFlags.UPDATE_IN_GUILD_STATS_ON_GUILD_JOIN) {
 					val profile = serverConfig.getUserDataIfExists(event.guild.idLong)

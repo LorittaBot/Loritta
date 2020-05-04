@@ -26,7 +26,7 @@ class MongoServerConfig @BsonCreator constructor(
 	// var autoroleConfig = AutoroleConfig()
 	// var inviteBlockerConfig = InviteBlockerConfig()
 	// var permissionsConfig = PermissionsConfig()
-	var moderationConfig = ModerationConfig()
+	// var moderationConfig = ModerationConfig()
 	// var serverListConfig = ServerListConfig()
 	// var miscellaneousConfig = MiscellaneousConfig()
 	// var defaultTextChannelConfig = TextChannelConfig("default")

@@ -3,7 +3,6 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.Permission
@@ -119,10 +118,10 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 
 				var str = locale["BAN_ReadyToPunish", locale["SOFTBAN_PunishName"], member.asMention, member.user.name + "#" + member.user.discriminator, member.user.id]
 
-				val hasSilent = context.legacyConfig.moderationConfig.sendPunishmentViaDm || context.legacyConfig.moderationConfig.sendToPunishLog
-				if (context.legacyConfig.moderationConfig.sendPunishmentViaDm || context.legacyConfig.moderationConfig.sendToPunishLog) {
+				val settings = AdminUtils.retrieveModerationInfo(context.config)
+				val hasSilent = settings.sendPunishmentViaDm || settings.sendPunishmentToPunishLog
+				if (hasSilent)
 					str += " ${locale["BAN_SilentTip"]}"
-				}
 
 				val message = context.reply(
 						LoriReply(
@@ -135,7 +134,7 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 					if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
 						var isSilent = it.reactionEmote.isEmote("\uD83D\uDE4A")
 
-						SoftBanCommand.softBan(context, locale, member, 7, user, reason, isSilent)
+						SoftBanCommand.softBan(context, settings, locale, member, 7, user, reason, isSilent)
 
 						message.delete().queue()
 
@@ -162,9 +161,9 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 	}
 
 	companion object {
-		fun softBan(context: CommandContext, locale: LegacyBaseLocale, member: Member, days: Int, user: User, reason: String, isSilent: Boolean) {
+		fun softBan(context: CommandContext, settings: AdminUtils.ModerationConfigSettings, locale: LegacyBaseLocale, member: Member, days: Int, user: User, reason: String, isSilent: Boolean) {
 			if (!isSilent) {
-				if (context.legacyConfig.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
+				if (settings.sendPunishmentViaDm && context.guild.isMember(user)) {
 					try {
 						val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, locale["SOFTBAN_PunishAction"], reason)
 
@@ -176,12 +175,12 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 					}
 				}
 
-				if (context.legacyConfig.moderationConfig.sendToPunishLog) {
-					val textChannel = context.guild.getTextChannelByNullableId(context.legacyConfig.moderationConfig.punishmentLogChannelId)
+				if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && settings.punishLogMessage != null) {
+					val textChannel = context.guild.getTextChannelById(settings.punishLogChannelId)
 
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
-								context.legacyConfig.moderationConfig.punishmentLogMessage,
+								settings.punishLogMessage,
 								listOf(user),
 								context.guild,
 								mutableMapOf(

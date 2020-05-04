@@ -36,6 +36,7 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 	var autoroleConfig by AutoroleConfig optionalReferencedOn ServerConfigs.autoroleConfig
 	var inviteBlockerConfig by InviteBlockerConfig optionalReferencedOn ServerConfigs.inviteBlockerConfig
 	var welcomerConfig by WelcomerConfig optionalReferencedOn ServerConfigs.welcomerConfig
+	var moderationConfig by ModerationConfig optionalReferencedOn ServerConfigs.moderationConfig
 	var migrationVersion by ServerConfigs.migrationVersion
 
 	fun getActiveDonationKeys() = transaction(Databases.loritta) {

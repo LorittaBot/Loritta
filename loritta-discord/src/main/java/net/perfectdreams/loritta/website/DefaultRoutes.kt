@@ -117,7 +117,6 @@ object DefaultRoutes {
 			GetCommandsRoute(loritta),
 			GetCurrentFanMadeAvatarRoute(loritta),
 			GetFanArtsController(loritta),
-			GetGlobalBansRoute(loritta),
 			GetLocaleRoute(loritta),
 			GetLorittaActionRoute(loritta),
 			GetRaffleStatusRoute(loritta),

@@ -27,5 +27,6 @@ object ServerConfigs : SnowflakeTable() {
 	val autoroleConfig = optReference("autorole_config", AutoroleConfigs, onDelete = ReferenceOption.CASCADE).index()
 	val inviteBlockerConfig = optReference("invite_blocker_config", InviteBlockerConfigs, onDelete = ReferenceOption.CASCADE).index()
 	val welcomerConfig = optReference("welcomer_config", WelcomerConfigs, onDelete = ReferenceOption.CASCADE).index()
+	val moderationConfig = optReference("moderation_config", ModerationConfigs, onDelete = ReferenceOption.CASCADE).index()
 	val migrationVersion = integer("migration_version").default(0)
 }

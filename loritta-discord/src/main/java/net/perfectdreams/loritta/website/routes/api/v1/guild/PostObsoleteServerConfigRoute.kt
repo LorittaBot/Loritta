@@ -46,7 +46,6 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 			"nashorn_commands" -> "dummy"
 			"event_handlers" -> legacyServerConfig.nashornEventHandlers
 			"vanilla_commands" -> "dummy"
-			"moderation" -> legacyServerConfig.moderationConfig
 			else -> null
 		} ?: return
 

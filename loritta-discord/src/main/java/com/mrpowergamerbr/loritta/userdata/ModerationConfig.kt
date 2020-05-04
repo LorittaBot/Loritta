@@ -29,15 +29,6 @@ class ModerationConfig {
 		var customMetadata1: Int = 0 // usado para punições que permitem deletar os dias (como ban, softban)
 	}
 
-	class Warn @BsonCreator constructor(
-			@BsonProperty("reason")
-			var reason: String,
-			@BsonProperty("time")
-			var time: Long,
-			@BsonProperty("punishedBy")
-			var punishedBy: String
-	)
-
 	enum class PunishmentAction {
 		BAN,
 		SOFT_BAN,
