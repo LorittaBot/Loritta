@@ -16,7 +16,7 @@ import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 open class LorittaUser(val user: User, val config: MongoServerConfig, val _profile: Profile?) {
 	val asMention: String
 		get() = getAsMention(false)
-	val profile by lazy { loritta.getOrCreateLorittaProfile(user.idLong) }
+	val profile by lazy { _profile ?: loritta.getOrCreateLorittaProfile(user.idLong) }
 
 	fun getAsMention(addSpace: Boolean): String {
 		return user.asMention + (if (addSpace) " " else "")
