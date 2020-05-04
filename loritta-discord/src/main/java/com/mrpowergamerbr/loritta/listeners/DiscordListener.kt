@@ -16,7 +16,6 @@ import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Mutes
 import com.mrpowergamerbr.loritta.userdata.MemberCounterConfig
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
-import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.extensions.await
@@ -44,13 +43,15 @@ import net.perfectdreams.loritta.dao.servers.Giveaway
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.ReactionOption
 import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
 import net.perfectdreams.loritta.tables.servers.Giveaways
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.*
+import net.perfectdreams.loritta.tables.servers.ServerRolePermissions
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.ReactionOptions
 import net.perfectdreams.loritta.utils.FeatureFlags
 import net.perfectdreams.loritta.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
 import okio.Buffer
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.kotlin.utils.getOrPutNullable
 import org.slf4j.LoggerFactory
@@ -311,6 +312,12 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				logger.trace { "Deleting all ${e.guild} configurations..."}
 				val serverConfig = ServerConfig.findById(e.guild.idLong)
 
+				logger.trace { "Deleting all ${e.guild} role perms..."}
+				if (serverConfig != null)
+					ServerRolePermissions.deleteWhere {
+						ServerRolePermissions.guild eq serverConfig.id
+					}
+
 				logger.trace { "Deleting ${e.guild} config..."}
 				serverConfig?.delete()
 
@@ -364,10 +371,14 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		logger.debug { "Adding DJ permission to all roles with ADMINISTRATOR or MANAGE_SERVER permission at ${event.guild}"}
 
 		// Adicionar a permissão de DJ para alguns cargos
-		event.guild.roles.forEach {
-			if (it.hasPermission(Permission.ADMINISTRATOR) || it.hasPermission(Permission.MANAGE_SERVER)) {
-				legacyServerConfig.permissionsConfig.roles[it.id] = PermissionsConfig.PermissionRole().apply {
-					this.permissions.add(LorittaPermission.DJ)
+		event.guild.roles.forEach { role ->
+			if (role.hasPermission(Permission.ADMINISTRATOR) || role.hasPermission(Permission.MANAGE_SERVER)) {
+				transaction(Databases.loritta) {
+					ServerRolePermissions.insert {
+						it[ServerRolePermissions.guild] = serverConfig.id
+						it[ServerRolePermissions.roleId] = role.idLong
+						it[ServerRolePermissions.permission] = LorittaPermission.DJ
+					}
 				}
 			}
 		}

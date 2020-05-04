@@ -1,9 +1,11 @@
 package net.perfectdreams.loritta.website.routes.dashboard
 
-import com.mongodb.client.model.Filters
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
+import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
@@ -28,15 +30,17 @@ class DashboardRoute(loritta: LorittaDiscord) : RequiresDiscordLoginLocalizedRou
 		variables["settings"] = settings
 
 		val userGuilds = discordAuth.getUserGuilds()
-		val mongoServerConfigs = com.mrpowergamerbr.loritta.utils.loritta.serversColl.find(Filters.`in`("_id", userGuilds.map { it.id })).toMutableList()
+		val serverConfigs = transaction(Databases.loritta) {
+			ServerConfig.find { ServerConfigs.id inList userGuilds.map { it.id.toLong() } }
+		}
 
 		val guilds = userGuilds.filter {
 			val guild = lorittaShards.getGuildById(it.id)
 			if (guild != null) {
 				val member = guild.getMemberById(lorittaProfile.userId)
-				val config = mongoServerConfigs.firstOrNull { config -> config.guildId == it.id }
+				val config = serverConfigs.firstOrNull { config -> config.guildId.toString() == it.id }
 				if (member != null && config != null) { // As vezes member == null, então vamos verificar se não é null antes de verificar as permissões
-					val lorittaUser = GuildLorittaUser(member, config, lorittaProfile)
+					val lorittaUser = GuildLorittaUser(member, LorittaUser.loadMemberLorittaPermissions(config, member), lorittaProfile)
 					LorittaWebsite.canManageGuild(it) || lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
 				} else {
 					LorittaWebsite.canManageGuild(it)

@@ -2,10 +2,7 @@ package net.perfectdreams.loritta.website.routes.api.v1
 
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
-import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
-import com.mrpowergamerbr.loritta.utils.LorittaPermission
-import com.mrpowergamerbr.loritta.utils.WebsiteUtils
-import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.ApplicationCall
@@ -46,14 +43,14 @@ abstract class RequiresAPIGuildAuthRoute(loritta: LorittaDiscord, originalDashbo
 						)
 				)
 
-		val legacyServerConfig = com.mrpowergamerbr.loritta.utils.loritta.getServerConfigForGuild(guildId)
+		val serverConfig = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateServerConfig(guildId.toLong()) // get server config for guild
 
 		val id = userIdentification.id
 		val member = jdaGuild.getMemberById(id)
 		var canAccessDashboardViaPermission = false
 
 		if (member != null) {
-			val lorittaUser = GuildLorittaUser(member, legacyServerConfig, com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(id.toLong()))
+			val lorittaUser = GuildLorittaUser(member, LorittaUser.loadMemberLorittaPermissions(serverConfig, member), com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(id.toLong()))
 
 			canAccessDashboardViaPermission = lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
 		}
@@ -69,8 +66,8 @@ abstract class RequiresAPIGuildAuthRoute(loritta: LorittaDiscord, originalDashbo
 			)
 		}
 
-		val newServerConfig = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateServerConfig(guildId.toLong()) // get server config for guild
+		val legacyServerConfig = com.mrpowergamerbr.loritta.utils.loritta.getServerConfigForGuild(guildId)
 
-		return onGuildAuthenticatedRequest(call, discordAuth, userIdentification, jdaGuild, newServerConfig, legacyServerConfig)
+		return onGuildAuthenticatedRequest(call, discordAuth, userIdentification, jdaGuild, serverConfig, legacyServerConfig)
 	}
 }

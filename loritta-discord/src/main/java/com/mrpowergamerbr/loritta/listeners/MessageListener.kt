@@ -7,7 +7,6 @@ import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.modules.AutoroleModule
 import com.mrpowergamerbr.loritta.modules.Modules
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.EventLog
@@ -29,6 +28,7 @@ import net.perfectdreams.loritta.utils.FeatureFlags
 import org.apache.commons.text.similarity.LevenshteinDistance
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
@@ -68,7 +68,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			try {
 				val member = event.member
-				if (member == null) { // Isto parece estúpido, mas realmente funciona
+				if (member == null) { // This may seem dumb, but it works!
 					logger.warn { "${event.author} saiu do servidor ${event.guild.id} antes de eu poder processar a mensagem"}
 					return@launch
 				}
@@ -118,7 +118,16 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				logIfEnabled(enableProfiling) { "Loading ${serverConfig.localeId} legacy locale took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
-				val lorittaUser = GuildLorittaUser(member, legacyServerConfig, lorittaProfile)
+				// We use "loadMemberRolesLorittaPermissions(...)" to avoid unnecessary retrievals later on, because we recheck the role permission later
+				val rolesLorittaPermissions = LorittaUser.loadMemberRolesLorittaPermissions(serverConfig, member)
+				logIfEnabled(enableProfiling) { "Loading Loritta's role permissions in ${event.guild.idLong} took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
+
+				start = System.nanoTime()
+				val memberLorittaPermissions = LorittaUser.convertRolePermissionsMapToMemberPermissionList(member, rolesLorittaPermissions)
+				logIfEnabled(enableProfiling) { "Converting Loritta's role permissions to member permissions in ${event.guild.idLong} took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
+
+				start = System.nanoTime()
+				val lorittaUser = GuildLorittaUser(member, memberLorittaPermissions, lorittaProfile)
 				logIfEnabled(enableProfiling) { "Wrapping $member $legacyServerConfig and $lorittaProfile in a GuildLorittaUser took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
@@ -170,8 +179,8 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 						var ignoringCommandsRole: Role? = null
 						for (role in roles) {
-							val permissionRole = legacyServerConfig.permissionsConfig.roles.getOrDefault(role.id, PermissionsConfig.PermissionRole())
-							if (permissionRole.permissions.contains(LorittaPermission.IGNORE_COMMANDS)) {
+							val permissions = rolesLorittaPermissions[role.idLong] ?: continue
+							if (permissions.contains(LorittaPermission.IGNORE_COMMANDS)) {
 								ignoringCommandsRole = role
 								break
 							}
@@ -382,7 +391,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			val serverConfig = loritta.getOrCreateServerConfig(-1)
 			val legacyServerConfig = LorittaLauncher.loritta.dummyLegacyServerConfig
 			val profile = loritta.getOrCreateLorittaProfile(event.author.idLong) // Carregar perfil do usuário
-			val lorittaUser = LorittaUser(event.author, legacyServerConfig, profile)
+			val lorittaUser = LorittaUser(event.author, EnumSet.noneOf(LorittaPermission::class.java), profile)
 			// TODO: Usuários deverão poder escolher a linguagem que eles preferem via mensagem direta
 			val locale = loritta.getLocaleById(serverConfig.localeId)
 			val legacyLocale = loritta.getLegacyLocaleById("default")
@@ -436,12 +445,20 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 		if (event.channel.type == ChannelType.TEXT) { // Mensagens em canais de texto
 			GlobalScope.launch(loritta.coroutineDispatcher) {
+				val member = event.member
+
+				if (member == null) { // This may seem dumb, but it works!
+					logger.warn { "${event.author} saiu do servidor ${event.guild.id} antes de eu poder processar a mensagem" }
+					return@launch
+				}
+
 				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 				val legacyServerConfig = loritta.getServerConfigForGuild(event.guild.id)
 				val lorittaProfile = loritta.getOrCreateLorittaProfile(event.author.idLong)
 				val legacyLocale = loritta.getLegacyLocaleById(serverConfig.localeId)
 				val locale = loritta.getLocaleById(serverConfig.localeId)
-				val lorittaUser = GuildLorittaUser(event.member!!, legacyServerConfig, lorittaProfile)
+				val permissions = LorittaUser.loadMemberLorittaPermissions(serverConfig, member)
+				val lorittaUser = GuildLorittaUser(member, permissions, lorittaProfile)
 
 				EventLog.onMessageUpdate(serverConfig, legacyLocale, event.message)
 

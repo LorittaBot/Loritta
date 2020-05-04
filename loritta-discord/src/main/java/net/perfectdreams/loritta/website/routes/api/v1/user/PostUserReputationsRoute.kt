@@ -92,13 +92,12 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 						return
 
 					val serverConfig = loritta.getOrCreateServerConfig(guildId.toLong())
-					val legacyServerConfig = loritta.getServerConfigForGuild(guildId)
 					val receiverProfile = loritta.getOrCreateLorittaProfile(giverId)
 					val receiverSettings = transaction(Databases.loritta) {
 						receiverProfile.settings
 					}
 
-					val lorittaUser = GuildLorittaUser(member, legacyServerConfig, giverProfile)
+					val lorittaUser = GuildLorittaUser(member, LorittaUser.loadMemberLorittaPermissions(serverConfig, member), giverProfile)
 
 					if (serverConfig.blacklistedChannels.contains(channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) // O usuário não pode enviar comandos no canal
 						return

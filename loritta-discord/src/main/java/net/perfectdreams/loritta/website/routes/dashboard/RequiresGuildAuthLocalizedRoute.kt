@@ -54,7 +54,7 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaDiscord, original
 		logger.info { "JDA Guild get and check: ${System.currentTimeMillis() - start}" }
 		start = System.currentTimeMillis()
 
-		val legacyServerConfig = com.mrpowergamerbr.loritta.utils.loritta.getServerConfigForGuild(guildId)
+		val serverConfig = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateServerConfig(guildId.toLong()) // get server config for guild
 
 		logger.info { "Getting legacy config: ${System.currentTimeMillis() - start}" }
 		start = System.currentTimeMillis()
@@ -67,7 +67,7 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaDiscord, original
 
 		if (member != null) {
 			start = System.currentTimeMillis()
-			val lorittaUser = GuildLorittaUser(member, legacyServerConfig, com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(id.toLong()))
+			val lorittaUser = GuildLorittaUser(member, LorittaUser.loadMemberLorittaPermissions(serverConfig, member), com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(id.toLong()))
 
 			canAccessDashboardViaPermission = lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
 			logger.info { "Lori User Perm Check: ${System.currentTimeMillis() - start}" }
@@ -78,6 +78,8 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaDiscord, original
 			call.respondText("Você não tem permissão!")
 			return
 		}
+
+		val legacyServerConfig = com.mrpowergamerbr.loritta.utils.loritta.getServerConfigForGuild(guildId)
 
 		// variables["serverConfig"] = legacyServerConfig
 		// TODO: Remover isto quando for removido o "server-config-json" do website

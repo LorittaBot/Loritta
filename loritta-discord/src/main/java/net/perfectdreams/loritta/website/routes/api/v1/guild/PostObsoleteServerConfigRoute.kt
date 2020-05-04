@@ -9,7 +9,6 @@ import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
-import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.save
 import io.ktor.application.ApplicationCall
@@ -19,12 +18,15 @@ import net.perfectdreams.loritta.dao.servers.moduleconfigs.EventLogConfig
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.InviteBlockerConfig
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.StarboardConfig
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.utils.ActionType
 import net.perfectdreams.loritta.utils.auditlog.WebAuditLogUtils
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIGuildAuthRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRoute(loritta, "/old-config") {
@@ -38,7 +40,7 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 		val target = when (type) {
 			"event_log" -> "dummy"
 			"invite_blocker" -> "dummy"
-			"permissions" -> legacyServerConfig.permissionsConfig
+			"permissions" -> "dummy"
 			"welcomer" -> legacyServerConfig.joinLeaveConfig
 			"starboard" -> "dummy"
 			"nashorn_commands" -> legacyServerConfig.nashornCommands
@@ -50,8 +52,8 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 
 		var response = ""
 
-		if (target is PermissionsConfig) {
-			response = handlePermissions(legacyServerConfig, receivedPayload)
+		if (type == "permissions") {
+			response = handlePermissions(serverConfig, guild, receivedPayload)
 		} else if (type == "nashorn_commands") {
 			response = handleNashornCommands(legacyServerConfig, receivedPayload)
 		} else if (type == "event_handlers") {
@@ -234,33 +236,29 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 		return "${serverConfig.disabledCommands.size} comandos bloqueados!"
 	}
 
-	fun handlePermissions(config: MongoServerConfig, receivedPayload: JsonObject): String {
-		var response = ""
-		val permissions = config.permissionsConfig
+	private fun handlePermissions(serverConfig: ServerConfig, guild: Guild, receivedPayload: JsonObject): String {
+		transaction(Databases.loritta) {
+			// First we delete all of them...
+			ServerRolePermissions.deleteWhere {
+				ServerRolePermissions.guild eq serverConfig.id
+			}
 
-		for (element in receivedPayload.entrySet()) {
-			val roleConfig = permissions.roles.getOrDefault(element.key, PermissionsConfig.PermissionRole())
-			roleConfig.permissions.clear()
-
-			response += "ROLE ${element.key}...\n"
-
-			for (element in element.value.obj.entrySet()) {
-				for (permission in LorittaPermission.values()) {
-					if (permission.internalName == element.key) {
-						if (element.value.bool) {
-							roleConfig.permissions.add(permission)
-							response += "+ ${permission.internalName} ✓\n"
-						} else {
-							roleConfig.permissions.remove(permission)
-							response += "- ${permission.internalName} ✓\n"
-						}
+			for (role in guild.roles) {
+				// Instead of checking the values in the payload, we will just check against our role list
+				// This avoids users inserting anything into the request to cause havoc
+				val rolePermissionData = receivedPayload[role.id] ?: continue
+				val obj = rolePermissionData.obj
+				val validRolePermissions = LorittaPermission.values().filter { obj[it.internalName].nullBool == true }
+				for (permission in validRolePermissions) {
+					ServerRolePermissions.insert {
+						it[ServerRolePermissions.guild] = serverConfig.id
+						it[ServerRolePermissions.roleId] = role.idLong
+						it[ServerRolePermissions.permission] = permission
 					}
 				}
 			}
-
-			config.permissionsConfig.roles[element.key] = roleConfig
 		}
-		return response
+		return ""
 	}
 
 	fun handleNashornCommands(config: MongoServerConfig, receivedPayload: JsonObject): String {

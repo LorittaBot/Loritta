@@ -15,7 +15,9 @@ import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.entities.DiscordEmote
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
+import net.perfectdreams.loritta.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.utils.Emotes
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
@@ -160,12 +162,13 @@ class InviteLinkModule : MessageReceivedModule {
 								if (it.reactionEmote.id == (Emotes.LORI_PAT as DiscordEmote).id) {
 									enableBypassMessage.removeAllFunctions()
 
-									legacyServerConfig.permissionsConfig.roles.getOrPut(topRole.id) { PermissionsConfig.PermissionRole() }
-											.apply {
-												this.permissions.add(LorittaPermission.ALLOW_INVITES)
-											}
-
-									loritta save legacyServerConfig
+									transaction(Databases.loritta) {
+										ServerRolePermissions.insert {
+											it[ServerRolePermissions.guild] = serverConfig.id
+											it[ServerRolePermissions.roleId] = topRole.idLong
+											it[ServerRolePermissions.permission] = LorittaPermission.ALLOW_INVITES
+										}
+									}
 
 									message.textChannel.sendMessage(
 											LorittaReply(
