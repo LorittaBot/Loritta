@@ -41,7 +41,6 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 			"event_log" -> "dummy"
 			"invite_blocker" -> "dummy"
 			"permissions" -> "dummy"
-			"welcomer" -> legacyServerConfig.joinLeaveConfig
 			"starboard" -> "dummy"
 			"nashorn_commands" -> legacyServerConfig.nashornCommands
 			"event_handlers" -> legacyServerConfig.nashornEventHandlers

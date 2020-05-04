@@ -403,7 +403,8 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					EventLogConfigs,
 					AutoroleConfigs,
 					InviteBlockerConfigs,
-					ServerRolePermissions
+					ServerRolePermissions,
+					WelcomerConfigs
 			)
 		}
 	}

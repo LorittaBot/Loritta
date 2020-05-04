@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.userdata
 
+@Deprecated("Migrated to PostgreSQL")
 class WelcomerConfig {
 	@AllowReflection
 	var isEnabled: Boolean = false

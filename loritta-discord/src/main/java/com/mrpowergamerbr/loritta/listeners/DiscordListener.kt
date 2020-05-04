@@ -443,14 +443,17 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					serverConfig.autoroleConfig
 				}
 
+				val welcomerConfig = transaction(Databases.loritta) {
+					serverConfig.welcomerConfig
+				}
+
 				queueTextChannelTopicUpdates(event.guild, serverConfig, legacyServerConfig, true)
 
 				if (autoroleConfig != null && autoroleConfig.enabled && !autoroleConfig.giveOnlyAfterMessageWasSent && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) // Está ativado?
 					AutoroleModule.giveRoles(event.member, autoroleConfig)
 
-				if (legacyServerConfig.joinLeaveConfig.isEnabled) { // Está ativado?
-					WelcomeModule.handleJoin(event, serverConfig, legacyServerConfig)
-				}
+				if (welcomerConfig != null) // Está ativado?
+					WelcomeModule.handleJoin(event, serverConfig, welcomerConfig)
 
 				val mute = transaction(Databases.loritta) {
 					Mute.find { (Mutes.guildId eq event.guild.idLong) and (Mutes.userId eq event.member.user.idLong) }.firstOrNull()
@@ -518,9 +521,12 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				DiscordListener.queueTextChannelTopicUpdates(event.guild, serverConfig, legacyServerConfig, true)
 
-				if (legacyServerConfig.joinLeaveConfig.isEnabled) {
-					WelcomeModule.handleLeave(event, serverConfig, legacyServerConfig)
+				val welcomerConfig = transaction(Databases.loritta) {
+					serverConfig.welcomerConfig
 				}
+
+				if (welcomerConfig != null)
+					WelcomeModule.handleLeave(event, serverConfig, welcomerConfig)
 
 				loritta.pluginManager.plugins.filterIsInstance(DiscordPlugin::class.java).flatMap {
 					it.onGuildMemberLeaveListeners

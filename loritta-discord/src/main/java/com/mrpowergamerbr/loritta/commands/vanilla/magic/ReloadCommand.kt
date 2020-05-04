@@ -405,43 +405,6 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			return
 		}
 
-		if (arg0 == "queryuseless") {
-			val uselessServers = loritta.serversColl.find(
-					Filters.lt("lastCommandReceivedAt", System.currentTimeMillis() - 2592000000L)
-			)
-
-			val reallyUselessServers = mutableListOf<Guild>()
-
-			var str = ""
-
-			for (serverConfig in uselessServers) {
-				val guild = lorittaShards.getGuildById(serverConfig.guildId) ?: continue
-
-				// JOIN/LEAVE
-				if (serverConfig.joinLeaveConfig.isEnabled)
-					continue
-
-				reallyUselessServers.add(guild)
-			}
-
-			context.reply("Existem ${reallyUselessServers.size} servidores inúteis!")
-
-			if (context.rawArgs.getOrNull(1) == "leave") {
-				context.reply("...e eu irei sair de todos eles!")
-
-				for (guild in reallyUselessServers) {
-					guild.leave().queue()
-				}
-			} else {
-				for (guild in reallyUselessServers.sortedByDescending { it.members.size }) {
-					str += "[${guild.id}] ${guild.name} - ${guild.members.size} membros (${guild.members.count { it.user.isBot }} bots)\n"
-				}
-
-				File("/home/servers/loritta/useless-servers.txt").writeText(str)
-			}
-			return
-		}
-
 		context.reply(
 				LoriReply(
 						"Mas... cadê o sub argumento?",
