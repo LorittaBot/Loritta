@@ -64,7 +64,6 @@ class GetSelfUserProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				senderUserData,
 				profile,
 				null,
-				null,
 				listOf(),
 				locale,
 				BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB),

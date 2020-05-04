@@ -4,14 +4,13 @@ import com.github.salomonbrys.kotson.bool
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.MiscellaneousConfig
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class MiscellaneousPayload : ConfigPayloadType("miscellaneous") {
-	override fun process(payload: JsonObject, userIdentification: LorittaJsonWebSession.UserIdentification, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, guild: Guild) {
+	override fun process(payload: JsonObject, userIdentification: LorittaJsonWebSession.UserIdentification, serverConfig: ServerConfig, guild: Guild) {
 		val enableQuirky = payload["enableQuirky"].bool
 		val enableBomDiaECia = payload["enableBomDiaECia"].bool
 

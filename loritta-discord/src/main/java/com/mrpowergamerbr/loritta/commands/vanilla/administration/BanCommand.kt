@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
@@ -64,7 +63,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 			val settings = AdminUtils.retrieveModerationInfo(context.config)
 
 			val banCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
-				ban(settings, context.legacyConfig, context.guild, context.userHandle, locale, user, reason, isSilent, delDays)
+				ban(settings, context.guild, context.userHandle, locale, user, reason, isSilent, delDays)
 
 				message?.delete()?.queue()
 
@@ -98,7 +97,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 	companion object {
 		private val LOCALE_PREFIX = "commands.moderation"
 
-		fun ban(settings: AdminUtils.ModerationConfigSettings, serverConfig: MongoServerConfig, guild: Guild, punisher: User, locale: LegacyBaseLocale, user: User, reason: String, isSilent: Boolean, delDays: Int) {
+		fun ban(settings: AdminUtils.ModerationConfigSettings, guild: Guild, punisher: User, locale: LegacyBaseLocale, user: User, reason: String, isSilent: Boolean, delDays: Int) {
 			if (!isSilent) {
 				if (settings.sendPunishmentViaDm && guild.isMember(user)) {
 					try {

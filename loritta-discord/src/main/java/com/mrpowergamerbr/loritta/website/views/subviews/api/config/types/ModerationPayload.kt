@@ -4,7 +4,6 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.ModerationConfig
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.WarnActions
@@ -15,7 +14,7 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class ModerationPayload : ConfigPayloadType("moderation") {
-	override fun process(payload: JsonObject, userIdentification: LorittaJsonWebSession.UserIdentification, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, guild: Guild) {
+	override fun process(payload: JsonObject, userIdentification: LorittaJsonWebSession.UserIdentification, serverConfig: ServerConfig, guild: Guild) {
 		val sendPunishmentViaDm = payload["sendPunishmentViaDm"].bool
 		val sendPunishmentToPunishLog = payload["sendToPunishLog"].bool
 		val punishmentLogChannelId = payload["punishmentLogChannelId"].nullLong

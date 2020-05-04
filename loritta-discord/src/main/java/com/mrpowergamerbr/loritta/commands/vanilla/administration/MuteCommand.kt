@@ -464,7 +464,6 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 					val settings = AdminUtils.retrieveModerationInfo(loritta.getOrCreateServerConfig(guildId))
 
 					UnmuteCommand.unmute(
-							loritta.getServerConfigForGuild(guild.id),
 							settings,
 							guild,
 							guild.selfMember.user,

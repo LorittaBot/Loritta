@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.utils.debug
 
-import com.mongodb.Mongo
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.modules.InviteLinkModule
@@ -89,11 +88,6 @@ object DebugLog {
 					println("${com.mrpowergamerbr.loritta.utils.loritta.legacyCommandManager.commandMap.size} comandos carregados")
 					return
 				}
-				if (arg0 == "mongo") {
-					LorittaLauncher.loritta.initMongo()
-					println("MongoDB recarregado!")
-					return
-				}
 			}
 			"info" -> {
 				val mb = 1024 * 1024
@@ -122,27 +116,6 @@ object DebugLog {
 				println("===[ ACTIVE THREADS ]===")
 				println("coroutineExecutor: ${(loritta.coroutineExecutor as ThreadPoolExecutor).activeCount}")
 				println("Total Thread Count: ${ManagementFactory.getThreadMXBean().threadCount}")
-			}
-			"mongo" -> {
-				println("===[ MONGODB ]===")
-				println("isLocked: " + loritta.mongo.isLocked)
-
-				val clusterField = Mongo::class.java.getDeclaredField("cluster")
-				clusterField.isAccessible = true
-				val cluster = clusterField.get(loritta.mongo)
-				println(cluster)
-				val serverField = cluster::class.java.getDeclaredField("server")
-				serverField.isAccessible = true
-				val defServer = serverField.get(cluster)
-				println(defServer)
-				val conPoolField = defServer::class.java.getDeclaredField("connectionPool")
-				conPoolField.isAccessible = true
-				val conPool = conPoolField.get(defServer)
-				println(conPool)
-				val waitQueueField = conPool::class.java.getDeclaredField("waitQueueSize")
-				waitQueueField.isAccessible = true
-				val waitQueueSize = waitQueueField.get(conPool) as AtomicInteger
-				println("Wait Queue Size: " + waitQueueSize.get())
 			}
 			"bomdiaecia" -> {
 				loritta.bomDiaECia.handleBomDiaECia(true)

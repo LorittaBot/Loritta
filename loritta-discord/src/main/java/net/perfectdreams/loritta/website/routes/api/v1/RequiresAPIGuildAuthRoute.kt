@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.website.routes.api.v1
 
 import com.mrpowergamerbr.loritta.dao.ServerConfig
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
@@ -19,7 +18,7 @@ import net.perfectdreams.loritta.website.utils.extensions.urlQueryString
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 abstract class RequiresAPIGuildAuthRoute(loritta: LorittaDiscord, originalDashboardPath: String) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/guilds/{guildId}$originalDashboardPath") {
-	abstract suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig)
+	abstract suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig)
 
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
 		val guildId = call.parameters["guildId"] ?: return
@@ -66,8 +65,6 @@ abstract class RequiresAPIGuildAuthRoute(loritta: LorittaDiscord, originalDashbo
 			)
 		}
 
-		val legacyServerConfig = com.mrpowergamerbr.loritta.utils.loritta.getServerConfigForGuild(guildId)
-
-		return onGuildAuthenticatedRequest(call, discordAuth, userIdentification, jdaGuild, serverConfig, legacyServerConfig)
+		return onGuildAuthenticatedRequest(call, discordAuth, userIdentification, jdaGuild, serverConfig)
 	}
 }

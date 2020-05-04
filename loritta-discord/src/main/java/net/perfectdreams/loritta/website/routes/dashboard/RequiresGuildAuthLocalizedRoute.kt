@@ -1,7 +1,10 @@
 package net.perfectdreams.loritta.website.routes.dashboard
 
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
+import com.mrpowergamerbr.loritta.utils.LorittaPermission
+import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import io.ktor.application.ApplicationCall
 import io.ktor.request.host
 import io.ktor.request.path
@@ -79,18 +82,12 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaDiscord, original
 			return
 		}
 
-		val legacyServerConfig = com.mrpowergamerbr.loritta.utils.loritta.getServerConfigForGuild(guildId)
-
 		// variables["serverConfig"] = legacyServerConfig
 		// TODO: Remover isto quando for removido o "server-config-json" do website
 		start = System.currentTimeMillis()
 		val variables = call.legacyVariables(locale)
 		logger.info { "Legacy Vars Creation: ${System.currentTimeMillis() - start}" }
-		start = System.currentTimeMillis()
-		variables["serverConfigJson"] = gson.toJson(WebsiteUtils.getServerConfigAsJson(jdaGuild, legacyServerConfig, userIdentification))
-		logger.info { "getServerConfigAsJson: ${System.currentTimeMillis() - start}" }
 		variables["guild"] = jdaGuild
-		variables["serverConfig"] = legacyServerConfig
 
 		return onGuildAuthenticatedRequest(call, locale, discordAuth, userIdentification, jdaGuild)
 	}

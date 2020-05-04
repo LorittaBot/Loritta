@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.dao.StoredMessage
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxEmbed
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -162,7 +161,7 @@ object EventLog {
 		}
 	}
 
-	suspend fun onVoiceJoin(serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, member: Member, channelJoined: VoiceChannel) {
+	suspend fun onVoiceJoin(serverConfig: ServerConfig, member: Member, channelJoined: VoiceChannel) {
 		try {
 			val eventLogConfig = transaction(Databases.loritta) {
 				serverConfig.eventLogConfig
@@ -209,7 +208,7 @@ object EventLog {
 		}
 	}
 
-	suspend fun onVoiceLeave(serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, member: Member, channelLeft: VoiceChannel) {
+	suspend fun onVoiceLeave(serverConfig: ServerConfig, member: Member, channelLeft: VoiceChannel) {
 		try {
 			val eventLogConfig = transaction(Databases.loritta) {
 				serverConfig.eventLogConfig

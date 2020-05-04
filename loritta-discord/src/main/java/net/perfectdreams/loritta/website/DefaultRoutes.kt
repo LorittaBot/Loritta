@@ -54,7 +54,6 @@ object DefaultRoutes {
 			ConfigureCustomBadgeRoute(loritta),
 			ConfigureDailyMultiplierRoute(loritta),
 			ConfigureEconomyRoute(loritta),
-			ConfigureEventHandlersRoute(loritta),
 			ConfigureEventLogRoute(loritta),
 			ConfigureInviteBlockerRoute(loritta),
 			ConfigureLevelUpRoute(loritta),

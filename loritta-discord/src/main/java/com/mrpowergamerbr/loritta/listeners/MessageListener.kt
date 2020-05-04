@@ -76,7 +76,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				val enableProfiling = loritta.config.isOwner(member.idLong)
 
 				var start = System.nanoTime()
-				val legacyServerConfig = loritta.getServerConfigForGuild(event.guild.id)
 				logIfEnabled(enableProfiling) { "Loading Legacy Server Config took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
@@ -128,7 +127,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				start = System.nanoTime()
 				val lorittaUser = GuildLorittaUser(member, memberLorittaPermissions, lorittaProfile)
-				logIfEnabled(enableProfiling) { "Wrapping $member $legacyServerConfig and $lorittaProfile in a GuildLorittaUser took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
+				logIfEnabled(enableProfiling) { "Wrapping $member and $lorittaProfile in a GuildLorittaUser took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
 				if (lorittaProfile != null && lorittaProfile.isAfk) {
@@ -219,7 +218,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						event.channel,
 						event.channel,
 						serverConfig,
-						legacyServerConfig,
 						legacyLocale,
 						lorittaUser
 				)
@@ -246,15 +244,10 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				for (module in (MESSAGE_RECEIVED_MODULES + loritta.pluginManager.plugins.filterIsInstance<DiscordPlugin>().flatMap { it.messageReceivedModules } + loritta.pluginManager.plugins.filterIsInstance<LorittaDiscordPlugin>().flatMap { it.messageReceivedModules })) {
 					start = System.nanoTime()
-					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyServerConfig, legacyLocale) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyServerConfig, legacyLocale))
+					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyLocale) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyLocale))
 						return@launch
 					logIfEnabled(enableProfiling) { "Executing ${module::class.simpleName} took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 				}
-
-				start = System.nanoTime()
-				for (eventHandler in legacyServerConfig.nashornEventHandlers)
-					eventHandler.handleMessageReceived(event, legacyServerConfig)
-				logIfEnabled(enableProfiling) { "Executing event handlers took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
 				if (lorittaUser.hasPermission(LorittaPermission.IGNORE_COMMANDS))
@@ -268,18 +261,18 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				// Executar comandos
 				start = System.nanoTime()
-				if (loritta.commandMap.dispatch(lorittaMessageEvent, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser))
+				if (loritta.commandMap.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 					return@launch
 				logIfEnabled(enableProfiling) { "Checking for command map commands took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 
 				start = System.nanoTime()
-				if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser))
+				if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 					return@launch
 				logIfEnabled(enableProfiling) { "Checking for command manager commands took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
-				if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser))
+				if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 					return@launch
 				logIfEnabled(enableProfiling) { "Checking for legacy command manager commands took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
@@ -384,7 +377,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = loritta.getOrCreateServerConfig(-1)
-			val legacyServerConfig = LorittaLauncher.loritta.dummyLegacyServerConfig
 			val profile = loritta.getOrCreateLorittaProfile(event.author.idLong) // Carregar perfil do usuário
 			val lorittaUser = LorittaUser(event.author, EnumSet.noneOf(LorittaPermission::class.java), profile)
 			// TODO: Usuários deverão poder escolher a linguagem que eles preferem via mensagem direta
@@ -408,19 +400,18 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 					event.channel,
 					null,
 					serverConfig,
-					legacyServerConfig,
 					legacyLocale,
 					lorittaUser
 			)
 
 			// Executar comandos
-			if (loritta.commandMap.dispatch(lorittaMessageEvent, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser))
+			if (loritta.commandMap.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 				return@launch
 
-			if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser))
+			if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 				return@launch
 
-			if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser))
+			if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 				return@launch
 		}
 	}
@@ -448,7 +439,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				}
 
 				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
-				val legacyServerConfig = loritta.getServerConfigForGuild(event.guild.id)
 				val lorittaProfile = loritta.getOrCreateLorittaProfile(event.author.idLong)
 				val legacyLocale = loritta.getLegacyLocaleById(serverConfig.localeId)
 				val locale = loritta.getLocaleById(serverConfig.localeId)
@@ -466,24 +456,23 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						event.channel,
 						event.channel,
 						serverConfig,
-						legacyServerConfig,
 						legacyLocale,
 						lorittaUser
 				)
 
 				for (module in (MESSAGE_EDITED_MODULES + loritta.pluginManager.plugins.filterIsInstance<DiscordPlugin>().flatMap { it.messageEditedModules } + loritta.pluginManager.plugins.filterIsInstance<LorittaDiscordPlugin>().flatMap { it.messageEditedModules })) {
-					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyServerConfig, legacyLocale) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyServerConfig, legacyLocale))
+					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyLocale) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyLocale))
 						return@launch
 				}
 
 				// Executar comandos
-				if (loritta.commandMap.dispatch(lorittaMessageEvent, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser))
+				if (loritta.commandMap.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 					return@launch
 
-				if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser))
+				if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 					return@launch
 
-				if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser))
+				if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 					return@launch
 			}
 		}

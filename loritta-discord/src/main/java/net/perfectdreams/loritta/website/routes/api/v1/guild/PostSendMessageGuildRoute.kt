@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.website.routes.api.v1.guild
 
 import com.github.salomonbrys.kotson.*
 import com.mrpowergamerbr.loritta.dao.ServerConfig
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -20,7 +19,7 @@ import net.perfectdreams.loritta.website.utils.extensions.trueIp
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 class PostSendMessageGuildRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRoute(loritta, "/send-message") {
-	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig) {
+	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
 		// Rate Limit
 		val last = com.mrpowergamerbr.loritta.utils.loritta.apiCooldown.getOrDefault(call.request.trueIp, 0L)
 

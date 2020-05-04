@@ -6,8 +6,6 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.dao.ServerConfig
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
-import com.mrpowergamerbr.loritta.utils.save
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.*
@@ -26,7 +24,7 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import io.ktor.http.HttpStatusCode
 
 class PatchServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRoute(loritta, "/config") {
-	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig) {
+	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
 		val payload = JsonParser.parseString(call.receiveText())
 		val type = payload["type"].string
 		val config = payload["config"].obj
@@ -83,7 +81,7 @@ class PatchServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRout
 				val guildId = guild.idLong
 
 				val payloadHandler = payloadHandlerClass.getDeclaredConstructor().newInstance()
-				payloadHandler.process(config, userIdentification, serverConfig, legacyServerConfig, guild)
+				payloadHandler.process(config, userIdentification, serverConfig, guild)
 
 				val actionType = WebAuditLogUtils.fromTargetType(type)
 
@@ -102,7 +100,6 @@ class PatchServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRout
 					)
 				}
 
-				com.mrpowergamerbr.loritta.utils.loritta save legacyServerConfig
 				val serverConfigJson = WebsiteUtils.transformToDashboardConfigurationJson(
 						userIdentification,
 						guild,

@@ -6,12 +6,11 @@ import com.mrpowergamerbr.loritta.dao.DonationConfig
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import net.dv8tion.jda.api.entities.Guild
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class DailyMultiplierPayload : ConfigPayloadType("daily_multiplier") {
-	override fun process(payload: JsonObject, userIdentification: LorittaJsonWebSession.UserIdentification, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, guild: Guild) {
+	override fun process(payload: JsonObject, userIdentification: LorittaJsonWebSession.UserIdentification, serverConfig: ServerConfig, guild: Guild) {
 		transaction(Databases.loritta) {
 			val donationConfig = serverConfig.donationConfig ?: DonationConfig.new {
                 this.dailyMultiplier = false

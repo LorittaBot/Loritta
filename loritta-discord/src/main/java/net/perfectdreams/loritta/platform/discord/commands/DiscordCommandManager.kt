@@ -1,7 +1,5 @@
 package net.perfectdreams.loritta.platform.discord.commands
 
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Updates
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.ChannelInfoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.PluginsCommand
@@ -9,7 +7,6 @@ import com.mrpowergamerbr.loritta.commands.vanilla.misc.MagicPingCommand
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.extensions.await
@@ -158,7 +155,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
         )
     }
 
-    suspend fun dispatch(ev: LorittaMessageEvent, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
+    suspend fun dispatch(ev: LorittaMessageEvent, serverConfig: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
         val rawMessage = ev.message.contentRaw
 
         // É necessário remover o new line para comandos como "+eval", etc
@@ -166,26 +163,26 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
 
         // Primeiro os comandos vanilla da Loritta(tm)
         for (command in getRegisteredCommands()) {
-            if (verifyAndDispatch(command, rawArguments, ev, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser))
+            if (verifyAndDispatch(command, rawArguments, ev, serverConfig, locale, legacyLocale, lorittaUser))
                 return true
         }
 
         return false
     }
 
-    suspend fun verifyAndDispatch(command: LorittaCommand, rawArguments: List<String>, ev: LorittaMessageEvent, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
+    suspend fun verifyAndDispatch(command: LorittaCommand, rawArguments: List<String>, ev: LorittaMessageEvent, serverConfig: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
         for (subCommand in command.subcommands) {
-            if (dispatch(subCommand as LorittaCommand, rawArguments.drop(1).toMutableList(), ev, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser, true))
+            if (dispatch(subCommand as LorittaCommand, rawArguments.drop(1).toMutableList(), ev, serverConfig, locale, legacyLocale, lorittaUser, true))
                 return true
         }
 
-        if (dispatch(command, rawArguments, ev, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser, false))
+        if (dispatch(command, rawArguments, ev, serverConfig, locale, legacyLocale, lorittaUser, false))
             return true
 
         return false
     }
 
-    suspend fun dispatch(command: LorittaCommand, rawArguments: List<String>, ev: LorittaMessageEvent, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser, isSubcommand: Boolean): Boolean {
+    suspend fun dispatch(command: LorittaCommand, rawArguments: List<String>, ev: LorittaMessageEvent, serverConfig: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser, isSubcommand: Boolean): Boolean {
         val message = ev.message.contentDisplay
         val member = ev.message.member
 
@@ -265,7 +262,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                 }
             }
 
-            val context = DiscordCommandContext(serverConfig, legacyServerConfig, lorittaUser, locale, legacyLocale, ev, command, rawArgs, args, strippedArgs)
+            val context = DiscordCommandContext(serverConfig, lorittaUser, locale, legacyLocale, ev, command, rawArgs, args, strippedArgs)
 
             if (ev.message.isFromType(ChannelType.TEXT)) {
                 logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
@@ -274,7 +271,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
             }
 
             try {
-                if (legacyServerConfig != discordLoritta.dummyLegacyServerConfig && ev.textChannel != null && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
+                if (serverConfig.guildId == -1L && ev.textChannel != null && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
                     LorittaUtils.warnOwnerNoPermission(ev.guild, ev.textChannel, serverConfig)
                     return true
                 }

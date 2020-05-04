@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -347,16 +346,6 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			context.reply(
 					LoriReply(
 							"Website ligado!"
-					)
-			)
-			return
-		}
-
-		if (arg0 == "mongo") {
-			loritta.initMongo()
-			context.reply(
-					LoriReply(
-							"MongoDB recarregado!"
 					)
 			)
 			return

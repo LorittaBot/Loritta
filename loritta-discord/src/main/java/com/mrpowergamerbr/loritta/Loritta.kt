@@ -8,10 +8,6 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.Gson
 import com.google.gson.JsonParser
-import com.mongodb.MongoClient
-import com.mongodb.MongoClientOptions
-import com.mongodb.client.MongoCollection
-import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.audio.AudioManager
 import com.mrpowergamerbr.loritta.audio.AudioRecorder
 import com.mrpowergamerbr.loritta.commands.CommandManager
@@ -24,7 +20,6 @@ import com.mrpowergamerbr.loritta.tables.*
 import com.mrpowergamerbr.loritta.threads.RaffleThread
 import com.mrpowergamerbr.loritta.threads.RemindersThread
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
@@ -58,8 +53,6 @@ import net.perfectdreams.mercadopago.MercadoPago
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
-import org.bson.codecs.configuration.CodecRegistries
-import org.bson.codecs.pojo.PojoCodecProvider
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -118,16 +111,11 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 
 	lateinit var legacyCommandManager: CommandManager // Nosso command manager
 	val commandManager = DiscordCommandManager(this)
-	lateinit var dummyLegacyServerConfig: MongoServerConfig // Config utilizada em comandos no privado
 	var messageInteractionCache = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<Long, MessageInteractionFunctions>().asMap()
 
 	var ignoreIds = mutableSetOf<Long>() // IDs para serem ignorados nesta sessão
 	val userCooldown = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<Long, Long>().asMap()
 	val apiCooldown = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<String, Long>().asMap()
-
-	// ===[ MONGODB ]===
-	lateinit var mongo: MongoClient // MongoDB
-	lateinit var serversColl: MongoCollection<MongoServerConfig>
 
 	var discordListener = DiscordListener(this) // Vamos usar a mesma instância para todas as shards
 	var eventLogListener = EventLogListener(this) // Vamos usar a mesma instância para todas as shards
@@ -222,13 +210,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 				)
 	}
 
-	// Gera uma configuração "dummy" para comandos enviados no privado
-	fun generateDummyServerConfig() {
-		val dummy = MongoServerConfig("-1") // É usado -1 porque -1 é um número de guild inexistente
-
-		dummyLegacyServerConfig = dummy
-	}
-
 	val isMainAccount: Boolean
 		get() {
 			if (config.loritta.environment != EnvironmentType.PRODUCTION)
@@ -268,12 +249,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 
 	// Inicia a Loritta
 	fun start() {
-		// Mandar o MongoDB calar a boca
-		val loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
-		val rootLogger = loggerContext.getLogger("org.mongodb.driver")
-		rootLogger.level = Level.OFF
-
-		initMongo()
 		initPostgreSql()
 
 		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
@@ -281,8 +256,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 
 		val shardManager = builder.build()
 		lorittaShards.shardManager = shardManager
-
-		generateDummyServerConfig()
 
 		logger.info { "Sucesso! Iniciando comandos e plugins da Loritta..." }
 
@@ -411,29 +384,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		}
 	}
 
-	fun initMongo() {
-		logger.info("Iniciando MongoDB...")
-
-		val pojoCodecRegistry = CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry(),
-				CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()))
-
-		val mongoBuilder = MongoClientOptions.Builder().apply {
-			codecRegistry(pojoCodecRegistry)
-		}
-
-		val options = mongoBuilder
-				.connectionsPerHost(config.mongoDb.maxConnectionsPerHost)
-				.build()
-
-		mongo = MongoClient(NetAddressUtils.fixIp(NetAddressUtils.getWithPortIfMissing(config.mongoDb.address, 27017)), options) // Hora de iniciar o MongoClient
-
-		val db = mongo.getDatabase(config.mongoDb.databaseName)
-
-		val dbCodec = db.withCodecRegistry(pojoCodecRegistry)
-
-		serversColl = dbCodec.getCollection("servers", MongoServerConfig::class.java)
-	}
-
 	fun startWebServer() {
 		// Carregar os blog posts
 		loritta.newWebsiteThread = thread(true, name = "Website Thread") {
@@ -462,19 +412,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	 *
 	 * @param guildId the guild's ID
 	 * @return        the server configuration
-	 * @see           MongoServerConfig
-	 */
-	fun getServerConfigForGuild(guildId: String): MongoServerConfig {
-		val serverConfig = serversColl.find(Filters.eq("_id", guildId)).first()
-		return serverConfig ?: MongoServerConfig(guildId)
-	}
-
-	/**
-	 * Loads the server configuration of a guild
-	 *
-	 * @param guildId the guild's ID
-	 * @return        the server configuration
-	 * @see           MongoServerConfig
 	 */
 	fun getOrCreateServerConfig(guildId: Long): com.mrpowergamerbr.loritta.dao.ServerConfig {
 		return transaction(Databases.loritta) {
@@ -491,7 +428,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	 *
 	 * @param userId the user's ID
 	 * @return       the user profile
-	 * @see          MongoLorittaProfile
 	 */
 	fun getLorittaProfile(userId: Long): Profile? {
 		return transaction(Databases.loritta) {

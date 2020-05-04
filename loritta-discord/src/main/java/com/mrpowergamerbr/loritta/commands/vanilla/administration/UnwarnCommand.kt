@@ -9,7 +9,6 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
@@ -81,8 +80,6 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 				Warn.find { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) }.maxBy { it.receivedAt }!!
 						.delete()
 			}
-
-			loritta save context.legacyConfig
 
 			context.reply(
 					LoriReply(

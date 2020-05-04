@@ -84,7 +84,6 @@ object LorittaLauncher {
 			val tool = MigrationTool(discordConfig, discordInstanceConfig, config, instanceConfig)
 
 			when (arg1) {
-				"mongo" -> tool.mongo()
 			}
 			return
 		}

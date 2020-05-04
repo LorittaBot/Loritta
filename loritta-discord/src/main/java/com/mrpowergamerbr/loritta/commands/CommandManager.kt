@@ -20,7 +20,6 @@ import com.mrpowergamerbr.loritta.commands.vanilla.utils.*
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
@@ -226,7 +225,7 @@ class CommandManager {
 			commandMap.add(ExchangeCommand())
 	}
 
-	suspend fun matches(ev: LorittaMessageEvent, serverConfig: ServerConfig, conf: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun matches(ev: LorittaMessageEvent, serverConfig: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
 		val rawMessage = ev.message.contentRaw
 
 		// É necessário remover o new line para comandos como "+eval", etc
@@ -234,7 +233,7 @@ class CommandManager {
 
 		// Primeiro os comandos vanilla da Loritta(tm)
 		for (command in commandMap) {
-			if (matches(command, rawArguments, ev, serverConfig, conf, locale, legacyLocale, lorittaUser))
+			if (matches(command, rawArguments, ev, serverConfig, locale, legacyLocale, lorittaUser))
 				return true
 		}
 
@@ -251,7 +250,7 @@ class CommandManager {
 		}
 
 		for (command in nashornCommands) {
-			if (matches(command, rawArguments, ev, serverConfig, conf, locale, legacyLocale, lorittaUser))
+			if (matches(command, rawArguments, ev, serverConfig, locale, legacyLocale, lorittaUser))
 				return true
 		}
 
@@ -267,7 +266,7 @@ class CommandManager {
 	 * @param lorittaUser the user that is executing this command
 	 * @return            if the command was handled or not
 	 */
-	suspend fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, serverConfig: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
 		val message = ev.message.contentDisplay
 		val baseLocale = locale
 
@@ -312,7 +311,7 @@ class CommandManager {
 				}
 			}
 
-			val context = CommandContext(serverConfig, legacyServerConfig, lorittaUser, baseLocale, legacyLocale, ev, command, args, rawArgs, strippedArgs)
+			val context = CommandContext(serverConfig, lorittaUser, baseLocale, legacyLocale, ev, command, args, rawArgs, strippedArgs)
 
 			try {
 				if (ev.message.isFromType(ChannelType.TEXT)) {
@@ -321,7 +320,7 @@ class CommandManager {
 					logger.info("(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
 				}
 
-				if (legacyServerConfig != loritta.dummyLegacyServerConfig && ev.textChannel != null && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
+				if (serverConfig.guildId == -1L && ev.textChannel != null && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
 					LorittaUtils.warnOwnerNoPermission(ev.guild, ev.textChannel, serverConfig)
 					return true
 				}

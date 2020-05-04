@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.listeners
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
 import com.mrpowergamerbr.loritta.dao.Mute
@@ -13,13 +12,11 @@ import com.mrpowergamerbr.loritta.modules.WelcomeModule
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Mutes
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.save
 import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
@@ -89,7 +86,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		private val logger = KotlinLogging.logger {}
 		private val requestLogger = LoggerFactory.getLogger("requests")
 
-		fun queueTextChannelTopicUpdates(guild: Guild, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, hideInEventLog: Boolean = false) {
+		fun queueTextChannelTopicUpdates(guild: Guild, serverConfig: ServerConfig, hideInEventLog: Boolean = false) {
 			val activeDonationValues = loritta.getOrCreateServerConfig(guild.idLong).getActiveDonationKeysValue()
 
 			logger.debug { "Creating text channel topic updates in $guild for ${guild.textChannels.size} channels! Donation key value is $activeDonationValues Should hide in event log? $hideInEventLog" }
@@ -108,10 +105,10 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val channelsThatWillBeChecked = validChannels.take(ServerPremiumPlans.getPlanFromValue(activeDonationValues).memberCounterCount)
 
 			for (textChannel in channelsThatWillBeChecked)
-				queueTextChannelTopicUpdate(guild, serverConfig, legacyServerConfig, textChannel, hideInEventLog)
+				queueTextChannelTopicUpdate(guild, serverConfig, textChannel, hideInEventLog)
 		}
 
-		fun queueTextChannelTopicUpdate(guild: Guild, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, textChannel: TextChannel, hideInEventLog: Boolean = false) {
+		fun queueTextChannelTopicUpdate(guild: Guild, serverConfig: ServerConfig, textChannel: TextChannel, hideInEventLog: Boolean = false) {
 			if (!guild.selfMember.hasPermission(textChannel, Permission.MANAGE_CHANNEL))
 				return
 
@@ -310,11 +307,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		logger.debug { "Deleting all ${e.guild} related stuff..." }
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
-			logger.trace { "Deleting MongoDB ${e.guild} config..."}
-
-			// Quando a Loritta sair de uma guild, automaticamente remova o ServerConfig daquele servidor
-			loritta.serversColl.deleteOne(Filters.eq("_id", e.guild.id))
-
 			transaction(Databases.loritta) {
 				logger.trace { "Deleting all ${e.guild} profiles..."}
 
@@ -379,8 +371,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		val region = event.guild.region
 		val regionName = region.getName()
 		val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
-		val legacyServerConfig = loritta.getServerConfigForGuild(event.guild.id)
-
 		logger.trace { "regionName = $regionName" }
 
 		// Portuguese
@@ -410,11 +400,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 			}
 		}
-
-		// E depois iremos salvar a configuração do servidor
-		GlobalScope.launch(loritta.coroutineDispatcher) {
-			loritta save legacyServerConfig
-		}
 	}
 
 	override fun onGuildMemberJoin(event: GuildMemberJoinEvent) {
@@ -431,7 +416,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			try {
-				val legacyServerConfig = loritta.getServerConfigForGuild(event.guild.id)
 				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 
 				if (FeatureFlags.UPDATE_IN_GUILD_STATS_ON_GUILD_JOIN) {
@@ -452,7 +436,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					serverConfig.welcomerConfig
 				}
 
-				queueTextChannelTopicUpdates(event.guild, serverConfig, legacyServerConfig, true)
+				queueTextChannelTopicUpdates(event.guild, serverConfig, true)
 
 				if (autoroleConfig != null && autoroleConfig.enabled && !autoroleConfig.giveOnlyAfterMessageWasSent && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) // Está ativado?
 					AutoroleModule.giveRoles(event.member, autoroleConfig)
@@ -511,7 +495,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				if (event.user.id == loritta.discordConfig.discord.clientId)
 					return@launch
 
-				val legacyServerConfig = loritta.getServerConfigForGuild(event.guild.id)
 				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 
 				if (FeatureFlags.UPDATE_IN_GUILD_STATS_ON_GUILD_QUIT) {
@@ -524,7 +507,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 				}
 
-				DiscordListener.queueTextChannelTopicUpdates(event.guild, serverConfig, legacyServerConfig, true)
+				DiscordListener.queueTextChannelTopicUpdates(event.guild, serverConfig, true)
 
 				val welcomerConfig = transaction(Databases.loritta) {
 					serverConfig.welcomerConfig

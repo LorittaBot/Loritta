@@ -5,11 +5,8 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.ServerConfig
-import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
-import com.mrpowergamerbr.loritta.utils.save
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
 import net.dv8tion.jda.api.entities.Guild
@@ -31,7 +28,7 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRoute(loritta, "/old-config") {
-	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig) {
+	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
 		loritta as Loritta
 		val payload = JsonParser.parseString(call.receiveText())
 		val receivedPayload = payload.obj
@@ -44,7 +41,6 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 			"permissions" -> "dummy"
 			"starboard" -> "dummy"
 			"nashorn_commands" -> "dummy"
-			"event_handlers" -> legacyServerConfig.nashornEventHandlers
 			"vanilla_commands" -> "dummy"
 			else -> null
 		} ?: return
@@ -55,8 +51,6 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 			response = handlePermissions(serverConfig, guild, receivedPayload)
 		} else if (type == "nashorn_commands") {
 			response = handleNashornCommands(serverConfig, receivedPayload)
-		} else if (type == "event_handlers") {
-			response = handleEventHandlers(legacyServerConfig, receivedPayload)
 		} else if (type == "vanilla_commands") {
 			response = handleVanillaCommands(serverConfig, receivedPayload)
 		} else if (type == "starboard") {
@@ -220,8 +214,6 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 				params
 		)
 
-		loritta save legacyServerConfig
-
 		call.respondJson(jsonObject())
 	}
 
@@ -282,23 +274,6 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 					it[CustomGuildCommands.code] = code
 				}
 			}
-		}
-
-		return "nice"
-	}
-
-	fun handleEventHandlers(config: MongoServerConfig, receivedPayload: JsonObject): String {
-		config.nashornEventHandlers.clear()
-		val entries = receivedPayload["entries"].array
-
-		for (entry in entries) {
-			val code = entry["javaScript"].string
-
-			val command = NashornEventHandler().apply {
-				this.javaScript = code
-			}
-
-			config.nashornEventHandlers.add(command)
 		}
 
 		return "nice"

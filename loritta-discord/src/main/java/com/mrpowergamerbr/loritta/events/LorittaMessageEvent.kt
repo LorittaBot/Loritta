@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.events
 
 import com.mrpowergamerbr.loritta.dao.ServerConfig
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.JDA
@@ -16,7 +15,6 @@ class LorittaMessageEvent(
 		val channel: MessageChannel,
 		val textChannel: TextChannel?,
 		val serverConfig: ServerConfig,
-		val legacyServerConfig: MongoServerConfig,
 		val locale: LegacyBaseLocale,
 		val lorittaUser: LorittaUser
 ) {

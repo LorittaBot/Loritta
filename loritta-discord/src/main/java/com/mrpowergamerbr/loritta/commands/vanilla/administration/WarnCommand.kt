@@ -112,8 +112,6 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 					}
 				}
 
-				val config = loritta.getServerConfigForGuild(context.guild.id)
-
 				val warnCount = transaction(Databases.loritta) {
 					Warns.select { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) }.count()
 				} + 1
@@ -122,7 +120,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 
 				loop@ for (punishment in punishments) {
 					when {
-						punishment.punishmentAction == PunishmentAction.BAN -> BanCommand.ban(settings, context.legacyConfig, context.guild, context.userHandle, locale, user, reason, isSilent, 0)
+						punishment.punishmentAction == PunishmentAction.BAN -> BanCommand.ban(settings, context.guild, context.userHandle, locale, user, reason, isSilent, 0)
 						member != null && punishment.punishmentAction == PunishmentAction.SOFT_BAN -> SoftBanCommand.softBan(context, settings, locale, member, 7, user, reason, isSilent)
 						member != null && punishment.punishmentAction == PunishmentAction.KICK -> KickCommand.kick(context, settings, locale, member, user, reason, isSilent)
 						member != null && punishment.punishmentAction == PunishmentAction.MUTE -> {
@@ -143,8 +141,6 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 						this.content = reason
 					}
 				}
-
-				loritta save config
 
 				message?.delete()?.queue()
 
