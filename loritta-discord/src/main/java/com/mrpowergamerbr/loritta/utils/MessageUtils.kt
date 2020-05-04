@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.utils
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
@@ -19,77 +20,12 @@ import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 object MessageUtils {
 	private val logger = KotlinLogging.logger {}
 
-	fun generateMessage(message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf<String, String>(), safe: Boolean = true): Message? {
+	fun generateMessage(message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf(), safe: Boolean = true): Message? {
 		val jsonObject = try {
-			if (message.startsWith("---\n")) { // Se existe o header de um arquivo YAML... vamos processar como se fosse YAML!
-				val map = Constants.YAML.load(message) as Map<String, Object>
-				gson.toJsonTree(map).obj
-			} else {
-				// Se não, vamos processar como se fosse JSON
-				jsonParser.parse(message).obj
-			}
+			JsonParser.parseString(message).obj
 		} catch (ex: Exception) {
 			null
 		}
-
-		val messageBuilder = MessageBuilder()
-		if (jsonObject != null) {
-			// alterar tokens
-			handleJsonTokenReplacer(jsonObject, sources, guild, customTokens)
-			val jsonEmbed = jsonObject["embed"].nullObj
-			if (jsonEmbed != null) {
-				val parallaxEmbed = Loritta.GSON.fromJson<ParallaxEmbed>(jsonObject["embed"])
-				messageBuilder.setEmbed(parallaxEmbed.toDiscordEmbed(safe))
-			}
-			messageBuilder.append(jsonObject.obj["content"].nullString ?: " ")
-		} else {
-			messageBuilder.append(replaceTokens(message, sources, guild, customTokens).substringIfNeeded())
-		}
-		if (messageBuilder.isEmpty)
-			return null
-		return messageBuilder.build()
-	}
-
-	fun handleJsonTokenReplacer(jsonObject: JsonObject, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf<String, String>()) {
-		for ((key, value) in jsonObject.entrySet()) {
-			if (value.isJsonObject) {
-				handleJsonTokenReplacer(value.obj, sources, guild, customTokens)
-			}
-			if (value.isJsonArray) {
-				val array = JsonArray()
-				for (it in value.array) {
-					if (it.isJsonPrimitive) {
-						if (it.asJsonPrimitive.isString) {
-							array.add(replaceTokens(it.string, sources, guild, customTokens))
-							continue
-						}
-					}
-					if (it.isJsonObject) {
-						handleJsonTokenReplacer(it.obj, sources, guild, customTokens)
-					}
-					array.add(it)
-				}
-				jsonObject[key] = array
-			}
-			if (value.isJsonPrimitive) {
-				if (value.asJsonPrimitive.isString) {
-					jsonObject[key] = replaceTokens(value.string, sources, guild, customTokens)
-				}
-			}
-		}
-	}
-
-	fun replaceTokens(text: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String?> = mutableMapOf<String, String?>()): String {
-		var mentionUser = ""
-		var user = ""
-		var userDiscriminator = ""
-		var userId = ""
-		var nickname = ""
-		var avatarUrl = ""
-		var guildName = ""
-		var guildSize = ""
-		var mentionOwner = ""
-		var owner = ""
 
 		val tokens = mutableMapOf<String, String?>()
 		tokens.putAll(customTokens)
@@ -97,26 +33,29 @@ object MessageUtils {
 		if (sources != null) {
 			for (source in sources) {
 				if (source is User) {
-					mentionUser = source.asMention
-					user = source.name
-					userDiscriminator = source.discriminator
-					userId = source.id
-					user = source.name
-					avatarUrl = source.effectiveAvatarUrl
+					tokens["@user"] = source.asMention
+					tokens["user"] = source.name
+					tokens["user-discriminator"] = source.discriminator
+					tokens["user-id"] = source.id
+					tokens["user-avatar-url"] = source.effectiveAvatarUrl
 				}
 				if (source is Member) {
-					mentionUser = source.asMention
-					user = source.user.name
-					userDiscriminator = source.user.discriminator
-					userId = source.user.id
-					nickname = source.effectiveName
-					avatarUrl = source.user.effectiveAvatarUrl
+					tokens["@user"] = source.asMention
+					tokens["user"] = source.user.name
+					tokens["user-discriminator"] = source.user.discriminator
+					tokens["user-id"] = source.id
+					tokens["user-avatar-url"] = source.user.effectiveAvatarUrl
+					tokens["nickname"] = source.effectiveName
 				}
 				if (source is Guild) {
-					guildName = source.name
-					guildSize = source.members.size.toString()
-					mentionOwner = source.owner?.asMention ?: "???"
-					owner = source.owner?.effectiveName ?: "???"
+					val guildSize = source.members.size.toString()
+					val mentionOwner = source.owner?.asMention ?: "???"
+					val owner = source.owner?.effectiveName ?: "???"
+					tokens["guild"] = source.name
+					tokens["guildsize"] = guildSize
+					tokens["guild-size"] = guildSize
+					tokens["@owner"] = mentionOwner
+					tokens["owner"] = owner
 					tokens["guild-icon-url"] = source.iconUrl?.replace("jpg", "png")
 				}
 				if (source is TextChannel) {
@@ -127,23 +66,55 @@ object MessageUtils {
 			}
 		}
 
+		val messageBuilder = MessageBuilder()
+		if (jsonObject != null) {
+			// alterar tokens
+			handleJsonTokenReplacer(jsonObject, sources, guild, tokens)
+			val jsonEmbed = jsonObject["embed"].nullObj
+			if (jsonEmbed != null) {
+				val parallaxEmbed = Loritta.GSON.fromJson<ParallaxEmbed>(jsonObject["embed"])
+				messageBuilder.setEmbed(parallaxEmbed.toDiscordEmbed(safe))
+			}
+			messageBuilder.append(jsonObject.obj["content"].nullString ?: " ")
+		} else {
+			messageBuilder.append(replaceTokens(message, sources, guild, tokens).substringIfNeeded())
+		}
+		if (messageBuilder.isEmpty)
+			return null
+		return messageBuilder.build()
+	}
+
+	private fun handleJsonTokenReplacer(jsonObject: JsonObject, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String?> = mutableMapOf()) {
+		for ((key, value) in jsonObject.entrySet()) {
+			when {
+				value.isJsonPrimitive && value.asJsonPrimitive.isString -> {
+					jsonObject[key] = replaceTokens(value.string, sources, guild, customTokens)
+				}
+				value.isJsonObject -> {
+					handleJsonTokenReplacer(value.obj, sources, guild, customTokens)
+				}
+				value.isJsonArray -> {
+					val array = JsonArray()
+					for (it in value.array) {
+						if (it.isJsonPrimitive && it.asJsonPrimitive.isString) {
+							array.add(replaceTokens(it.string, sources, guild, customTokens))
+							continue
+						} else if (it.isJsonObject) {
+							handleJsonTokenReplacer(it.obj, sources, guild, customTokens)
+						}
+						array.add(it)
+					}
+					jsonObject[key] = array
+				}
+			}
+		}
+	}
+
+	private fun replaceTokens(text: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String?> = mutableMapOf()): String {
 		var message = text
 
-		for ((token, value) in tokens) {
+		for ((token, value) in customTokens)
 			message = message.replace("{$token}", value ?: "\uD83E\uDD37")
-		}
-
-		message = message.replace("{@user}", mentionUser)
-		message = message.replace("{user}", user.escapeMentions())
-		message = message.replace("{user-id}", userId)
-		message = message.replace("{user-avatar-url}", avatarUrl)
-		message = message.replace("{user-discriminator}", userDiscriminator)
-		message = message.replace("{nickname}", nickname.escapeMentions())
-		message = message.replace("{guild}", guildName.escapeMentions())
-		message = message.replace("{guildsize}", guildSize)
-		message = message.replace("{guild-size}", guildSize)
-		message = message.replace("{@owner}", mentionOwner)
-		message = message.replace("{owner}", owner.escapeMentions())
 
 		// Para evitar pessoas perguntando "porque os emojis não funcionam???", nós iremos dar replace automaticamente em algumas coisas
 		// para que elas simplesmente "funcionem:tm:"
@@ -188,7 +159,7 @@ object MessageUtils {
 fun Message.onReactionAdd(context: CommandContext, function: suspend (MessageReactionAddEvent) -> Unit): Message {
 	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
 	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
-	
+
 	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.id) }
 	functions.onReactionAdd = function
 	return this
