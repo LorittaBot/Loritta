@@ -22,7 +22,7 @@ class AutoPurgeGuildsTask : Runnable {
 
 			guildsToBePurged.forEach { (guild, serverConfig) ->
 				try {
-					logger.info { "Leaving ${guild.name} (${guild.idLong}), owner ${guild.owner?.user?.name} (${guild.ownerIdLong}) due to guild inactivity... Member quantity: ${guild.members.size}; Last command was executed at ${serverConfig.lastCommandReceivedAt}" }
+					logger.info { "Leaving ${guild.name} (${guild.idLong}), owner ${guild.owner?.user?.name} (${guild.ownerIdLong}) due to guild inactivity... Member quantity: ${guild.members.size}" }
 
 					guild.leave().complete()
 				} catch (e: Exception) {

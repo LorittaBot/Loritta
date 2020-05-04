@@ -40,8 +40,6 @@ class MongoServerConfig @BsonCreator constructor(
 	var defaultTextChannelConfig = TextChannelConfig("default")
 	var textChannelConfigs = mutableListOf<TextChannelConfig>()
 
-	var lastCommandReceivedAt = 0L
-
 	fun getUserData(id: Long): GuildProfile {
 		val t = this
 		return transaction(Databases.loritta) {

@@ -1,8 +1,6 @@
 package net.perfectdreams.loritta.platform.discord.commands
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Updates
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.network.Databases
@@ -145,12 +143,6 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 			}
 
 			try {
-				legacyServerConfig.lastCommandReceivedAt = System.currentTimeMillis()
-				com.mrpowergamerbr.loritta.utils.loritta.serversColl.updateOne(
-						Filters.eq("_id", legacyServerConfig.guildId),
-						Updates.set("lastCommandReceivedAt", legacyServerConfig.lastCommandReceivedAt)
-				)
-
 				if (serverConfig.blacklistedChannels.contains(ev.channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
 					if (serverConfig.warnIfBlacklisted) {
 						if (serverConfig.blacklistedChannels.isNotEmpty() && ev.guild != null && ev.member != null && ev.textChannel != null) {

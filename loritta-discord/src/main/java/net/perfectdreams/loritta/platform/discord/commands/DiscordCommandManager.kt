@@ -274,12 +274,6 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
             }
 
             try {
-                legacyServerConfig.lastCommandReceivedAt = System.currentTimeMillis()
-                com.mrpowergamerbr.loritta.utils.loritta.serversColl.updateOne(
-                        Filters.eq("_id", legacyServerConfig.guildId),
-                        Updates.set("lastCommandReceivedAt", legacyServerConfig.lastCommandReceivedAt)
-                )
-
                 if (legacyServerConfig != discordLoritta.dummyLegacyServerConfig && ev.textChannel != null && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
                     LorittaUtils.warnOwnerNoPermission(ev.guild, ev.textChannel, serverConfig)
                     return true
