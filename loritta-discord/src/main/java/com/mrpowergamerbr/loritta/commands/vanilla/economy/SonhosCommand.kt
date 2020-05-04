@@ -40,7 +40,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 		if (context.userHandle == retrieveDreamsFromUser) {
 			val userSonhos = lorittaProfile?.money ?: 0L
 			if (localEconomyEnabled && economyConfig != null) { // Sistema de ecnomia local está ativado!
-				val localProfile = context.legacyConfig.getUserData(retrieveDreamsFromUser.idLong)
+				val localProfile = context.config.getUserData(retrieveDreamsFromUser.idLong)
 				context.reply(
 						true,
 						LoriReply(
@@ -66,7 +66,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 		} else {
 			val userSonhos = lorittaProfile?.money ?: 0L
 			if (localEconomyEnabled && economyConfig != null) {
-				val localProfile = context.legacyConfig.getUserData(retrieveDreamsFromUser.idLong)
+				val localProfile = context.config.getUserData(retrieveDreamsFromUser.idLong)
 				context.reply(
 						true,
 						LoriReply(

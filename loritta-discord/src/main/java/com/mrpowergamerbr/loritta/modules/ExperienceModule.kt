@@ -85,7 +85,7 @@ class ExperienceModule : MessageReceivedModule {
 					newProfileXp = currentXp + globalGainedXp
 					lastMessageSentHash = event.message.contentStripped.hashCode()
 
-					val profile = legacyServerConfig.getUserData(event.author.idLong)
+					val profile = serverConfig.getUserData(event.author.idLong)
 
 					if (FeatureFlags.isEnabled("experience-gain-locally")) {
 						handleLocalExperience(event, retrievedProfile, serverConfig, profile, gainedXp, locale.toNewLocale())

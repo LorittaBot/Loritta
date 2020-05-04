@@ -232,7 +232,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				start = System.nanoTime()
 				if (FeatureFlags.UPDATE_IN_GUILD_STATS_ON_MESSAGE_SEND) {
-					val profile = legacyServerConfig.getUserDataIfExists(member.idLong)
+					val profile = serverConfig.getUserDataIfExists(member.idLong)
 
 					if (profile != null && !profile.isInGuild) {
 						transaction(Databases.loritta) {

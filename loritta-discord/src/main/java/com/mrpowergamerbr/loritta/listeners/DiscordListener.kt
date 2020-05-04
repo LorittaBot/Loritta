@@ -448,7 +448,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 
 				if (FeatureFlags.UPDATE_IN_GUILD_STATS_ON_GUILD_JOIN) {
-					val profile = legacyServerConfig.getUserDataIfExists(event.guild.idLong)
+					val profile = serverConfig.getUserDataIfExists(event.guild.idLong)
 
 					if (profile != null) {
 						transaction(Databases.loritta) {
@@ -528,7 +528,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 
 				if (FeatureFlags.UPDATE_IN_GUILD_STATS_ON_GUILD_QUIT) {
-					val profile = legacyServerConfig.getUserDataIfExists(event.guild.idLong)
+					val profile = serverConfig.getUserDataIfExists(event.guild.idLong)
 
 					if (profile != null) {
 						transaction(Databases.loritta) {

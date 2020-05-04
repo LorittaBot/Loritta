@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.dao
 
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.DonationKeys
+import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.*
 import org.jetbrains.exposed.dao.Entity
@@ -9,6 +10,7 @@ import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.math.BigDecimal
 
 class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 	companion object : EntityClass<Long, ServerConfig>(ServerConfigs)
@@ -42,4 +44,24 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 	}
 
 	fun getActiveDonationKeysValue() = getActiveDonationKeys().sumByDouble { it.value }
+
+	fun getUserData(id: Long): GuildProfile {
+		val t = this
+		return transaction(Databases.loritta) {
+			getUserDataIfExists(id) ?: GuildProfile.new {
+				this.guildId = t.guildId
+				this.userId = id
+				this.money = BigDecimal(0)
+				this.quickPunishment = false
+				this.xp = 0
+				this.isInGuild = true
+			}
+		}
+	}
+
+	fun getUserDataIfExists(id: Long): GuildProfile? {
+		return transaction(Databases.loritta) {
+			GuildProfile.find { (GuildProfiles.guildId eq guildId) and (GuildProfiles.userId eq id) }.firstOrNull()
+		}
+	}
 }

@@ -1,12 +1,12 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category = CommandCategory.SOCIAL) {
@@ -41,7 +41,7 @@ class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category =
 				return
 			}
 
-			val userData = context.legacyConfig.getUserData(user.idLong)
+			val userData = context.config.getUserData(user.idLong)
 
 			transaction(Databases.loritta) {
 				userData.xp = newXp
