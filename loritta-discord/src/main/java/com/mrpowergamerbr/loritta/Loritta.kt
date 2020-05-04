@@ -406,7 +406,8 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					InviteBlockerConfigs,
 					ServerRolePermissions,
 					WelcomerConfigs,
-					CustomGuildCommands
+					CustomGuildCommands,
+					MemberCounterChannelConfigs
 			)
 		}
 	}

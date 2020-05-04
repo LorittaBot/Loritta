@@ -66,7 +66,6 @@ object DefaultRoutes {
 			ConfigurePermissionsRoute(loritta),
 			ConfigurePremiumKeyRoute(loritta),
 			ConfigureStarboardRoute(loritta),
-			ConfigureTextChannelsRoute(loritta),
 			ConfigureTrackedTwitterAccountsRoute(loritta),
 			ConfigureWelcomerRoute(loritta),
 			ConfigureYouTubeRoute(loritta),

@@ -4,40 +4,29 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
-import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
-import com.mrpowergamerbr.loritta.userdata.MemberCounterConfig
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
-import com.mrpowergamerbr.loritta.userdata.TextChannelConfig
-import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.counter.CounterThemes
-import com.mrpowergamerbr.loritta.website.LoriWebCode
-import com.mrpowergamerbr.loritta.website.WebsiteAPIException
-import io.ktor.http.HttpStatusCode
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.MemberCounterChannelConfigs
 import net.perfectdreams.loritta.utils.FeatureFlags
+import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class TextChannelsPayload : ConfigPayloadType("text_channels") {
 	override fun process(payload: JsonObject, userIdentification: LorittaJsonWebSession.UserIdentification, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, guild: Guild) {
-		// por enquanto não iremos apagar as configurações atuais
-		// para não limpar as coisas de anti spam
+		transaction(Databases.loritta) {
+			MemberCounterChannelConfigs.deleteWhere {
+				MemberCounterChannelConfigs.guild eq serverConfig.id
+			}
+		}
+
 		val entries = payload["entries"].array
 
-		legacyServerConfig.textChannelConfigs.clear() // oof anti spam is broken
 		for (entry in entries) {
-			val id = entry["id"].nullString ?: continue
-
-			val config = if (id == "default") {
-				// Config default
-				legacyServerConfig.defaultTextChannelConfig
-			} else {
-				if (legacyServerConfig.hasTextChannelConfig(id)) {
-					legacyServerConfig.getTextChannelConfig(id)
-				} else {
-					val textChannelConfig = TextChannelConfig(id)
-					legacyServerConfig.textChannelConfigs.add(textChannelConfig)
-					textChannelConfig
-				}
-			}
+			val id = entry["id"].nullLong ?: continue
 
 			val obj = entry.obj
 			if (obj.has("memberCounterConfig")) {
@@ -46,32 +35,20 @@ class TextChannelsPayload : ConfigPayloadType("text_channels") {
 				val theme = memberCounterConfig["theme"].string
 				val padding = memberCounterConfig["padding"].int
 
-				config.memberCounterConfig = MemberCounterConfig(
-						topic,
-						CounterThemes.valueOf(theme)
-				).apply {
-					this.padding = padding
-
-					if (theme == "CUSTOM") {
-						val emojiJsonArray = memberCounterConfig["emojis"].nullArray
-						if (emojiJsonArray == null || emojiJsonArray.size() != 10)
-							throw WebsiteAPIException(HttpStatusCode.UnprocessableEntity,
-									WebsiteUtils.createErrorPayload(
-											LoriWebCode.UNAUTHORIZED,
-											"Emojis array is null or doesn't have 10 elements!"
-									)
-							)
-
-						this.emojis = memberCounterConfig["emojis"].array.map { it.string }
+				transaction(Databases.loritta) {
+					MemberCounterChannelConfigs.insert {
+						it[MemberCounterChannelConfigs.guild] = serverConfig.id
+						it[MemberCounterChannelConfigs.channelId] = id
+						it[MemberCounterChannelConfigs.topic] = topic
+						it[MemberCounterChannelConfigs.theme] = CounterThemes.valueOf(theme)
+						it[MemberCounterChannelConfigs.padding] = padding
 					}
 				}
 
+
 				if (FeatureFlags.isEnabled("member-counter-update"))
 					DiscordListener.queueTextChannelTopicUpdates(guild, serverConfig, legacyServerConfig, true)
-			} else {
-				config.memberCounterConfig = null
 			}
-			// applyReflection(entry.obj, config)
 		}
 	}
 }

@@ -14,7 +14,6 @@ import com.mrpowergamerbr.loritta.modules.WelcomeModule
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Mutes
-import com.mrpowergamerbr.loritta.userdata.MemberCounterConfig
 import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
@@ -40,11 +39,13 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.dao.servers.Giveaway
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.MemberCounterChannelConfig
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.ReactionOption
 import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
 import net.perfectdreams.loritta.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.tables.servers.Giveaways
 import net.perfectdreams.loritta.tables.servers.ServerRolePermissions
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.MemberCounterChannelConfigs
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.ReactionOptions
 import net.perfectdreams.loritta.utils.FeatureFlags
 import net.perfectdreams.loritta.utils.ServerPremiumPlans
@@ -90,9 +91,15 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			logger.debug { "Creating text channel topic updates in $guild for ${guild.textChannels.size} channels! Donation key value is $activeDonationValues Should hide in event log? $hideInEventLog" }
 
-			val validChannels = guild.textChannels.filter {
-				val memberCounterConfig = legacyServerConfig.getTextChannelConfig(it).memberCounterConfig
-				guild.selfMember.hasPermission(it, Permission.MANAGE_CHANNEL) && memberCounterConfig?.topic?.contains("{counter}") == true
+			val memberCountConfigs = transaction(Databases.loritta) {
+				MemberCounterChannelConfig.find {
+					MemberCounterChannelConfigs.channelId inList guild.channels.map { it.idLong }
+				}.toList()
+			}
+
+			val validChannels = guild.textChannels.filter { channel ->
+				val memberCounterConfig = memberCountConfigs.firstOrNull { it.channelId == channel.idLong }
+				memberCounterConfig != null && guild.selfMember.hasPermission(channel, Permission.MANAGE_CHANNEL) && memberCounterConfig.topic.contains("{counter}")
 			}
 
 			val channelsThatWillBeChecked = validChannels.take(ServerPremiumPlans.getPlanFromValue(activeDonationValues).memberCounterCount)
@@ -105,7 +112,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			if (!guild.selfMember.hasPermission(textChannel, Permission.MANAGE_CHANNEL))
 				return
 
-			val memberCountConfig = legacyServerConfig.getTextChannelConfig(textChannel).memberCounterConfig ?: return
+			val memberCountConfig = transaction(Databases.loritta) {
+				MemberCounterChannelConfig.find {
+					MemberCounterChannelConfigs.channelId eq textChannel.idLong
+				}.firstOrNull()
+			} ?: return
 
 			val lastUpdate = memberCounterLastUpdate[textChannel.idLong] ?: 0L
 			val diff = System.currentTimeMillis() - lastUpdate
@@ -134,7 +145,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			updateTextChannelTopic(guild, serverConfig, textChannel, memberCountConfig, hideInEventLog)
 		}
 
-		fun updateTextChannelTopic(guild: Guild, serverConfig: ServerConfig, textChannel: TextChannel, memberCounterConfig: MemberCounterConfig, hideInEventLog: Boolean = false) {
+		fun updateTextChannelTopic(guild: Guild, serverConfig: ServerConfig, textChannel: TextChannel, memberCounterConfig: MemberCounterChannelConfig, hideInEventLog: Boolean = false) {
 			val formattedTopic = memberCounterConfig.getFormattedTopic(guild)
 			if (hideInEventLog)
 				memberCounterJoinLeftCache.add(textChannel.idLong)

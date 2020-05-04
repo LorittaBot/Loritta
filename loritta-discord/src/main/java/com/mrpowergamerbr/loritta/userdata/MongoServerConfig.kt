@@ -4,7 +4,6 @@ import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
-import net.dv8tion.jda.api.entities.TextChannel
 import org.bson.codecs.pojo.annotations.BsonCreator
 import org.bson.codecs.pojo.annotations.BsonIgnore
 import org.bson.codecs.pojo.annotations.BsonProperty
@@ -36,8 +35,8 @@ class MongoServerConfig @BsonCreator constructor(
 	var moderationConfig = ModerationConfig()
 	// var serverListConfig = ServerListConfig()
 	// var miscellaneousConfig = MiscellaneousConfig()
-	var defaultTextChannelConfig = TextChannelConfig("default")
-	var textChannelConfigs = mutableListOf<TextChannelConfig>()
+	// var defaultTextChannelConfig = TextChannelConfig("default")
+	// var textChannelConfigs = mutableListOf<TextChannelConfig>()
 
 	fun getUserData(id: Long): GuildProfile {
 		val t = this
@@ -59,7 +58,7 @@ class MongoServerConfig @BsonCreator constructor(
 		}
 	}
 
-	fun getTextChannelConfig(textChannel: TextChannel): TextChannelConfig {
+	/* fun getTextChannelConfig(textChannel: TextChannel): TextChannelConfig {
 		return getTextChannelConfig(textChannel.id)
 	}
 
@@ -73,5 +72,5 @@ class MongoServerConfig @BsonCreator constructor(
 
 	fun hasTextChannelConfig(id: String): Boolean {
 		return textChannelConfigs.firstOrNull { it.id == id } != null
-	}
+	} */
 }
