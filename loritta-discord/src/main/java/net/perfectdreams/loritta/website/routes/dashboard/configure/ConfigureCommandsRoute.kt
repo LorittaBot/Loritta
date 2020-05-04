@@ -18,7 +18,7 @@ class ConfigureCommandsRoute(loritta: LorittaDiscord) : RequiresGuildAuthLocaliz
 		val variables = call.legacyVariables(locale)
 		variables["saveType"] = "vanilla_commands"
 
-		val serverConfig = loritta.getServerConfigForGuild(guild.id)
+		val serverConfig = loritta.getOrCreateServerConfig(guild.idLong)
 
 		variables["enabledCommands"] = com.mrpowergamerbr.loritta.utils.loritta.commandManager.commands.filter { !serverConfig.disabledCommands.contains(it.javaClass.simpleName) }
 		variables["enabledLegacyCommands"] = com.mrpowergamerbr.loritta.utils.loritta.legacyCommandManager.commandMap.filter { !serverConfig.disabledCommands.contains(it.javaClass.simpleName) }

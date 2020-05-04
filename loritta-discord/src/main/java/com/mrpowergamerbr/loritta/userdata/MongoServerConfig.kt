@@ -17,7 +17,7 @@ class MongoServerConfig @BsonCreator constructor(
 		@get:[BsonIgnore]
 		val guildId: String // Guild ID
 ) {
-	var disabledCommands = ArrayList<String>() // Comandos desativados
+	// var disabledCommands = ArrayList<String>() // Comandos desativados
 
 	// Os command options são salvos assim:
 	// AbstractCommand.getClass().getSimpleName() - CommandOptions

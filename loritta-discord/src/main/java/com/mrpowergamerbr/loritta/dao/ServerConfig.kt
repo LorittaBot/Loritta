@@ -22,6 +22,7 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 	var blacklistedChannels by ServerConfigs.blacklistedChannels
 	var warnIfBlacklisted by ServerConfigs.warnIfBlacklisted
 	var blacklistedWarning by ServerConfigs.blacklistedWarning
+	var disabledCommands by ServerConfigs.disabledCommands
 	// var donationKey by DonationKey optionalReferencedOn ServerConfigs.donationKey
 	var donationConfig by DonationConfig optionalReferencedOn ServerConfigs.donationConfig
 	var birthdayConfig by BirthdayConfig optionalReferencedOn ServerConfigs.birthdayConfig

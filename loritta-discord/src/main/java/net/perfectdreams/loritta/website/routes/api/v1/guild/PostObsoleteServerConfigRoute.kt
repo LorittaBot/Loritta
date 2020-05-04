@@ -45,7 +45,7 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 			"starboard" -> "dummy"
 			"nashorn_commands" -> "dummy"
 			"event_handlers" -> legacyServerConfig.nashornEventHandlers
-			"vanilla_commands" -> legacyServerConfig.disabledCommands
+			"vanilla_commands" -> "dummy"
 			"moderation" -> legacyServerConfig.moderationConfig
 			else -> null
 		} ?: return
@@ -59,7 +59,7 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 		} else if (type == "event_handlers") {
 			response = handleEventHandlers(legacyServerConfig, receivedPayload)
 		} else if (type == "vanilla_commands") {
-			response = handleVanillaCommands(legacyServerConfig, receivedPayload)
+			response = handleVanillaCommands(serverConfig, receivedPayload)
 		} else if (type == "starboard") {
 			val isEnabled = receivedPayload["isEnabled"].bool
 			val starboardChannelId = receivedPayload["starboardId"].long
@@ -226,12 +226,12 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 		call.respondJson(jsonObject())
 	}
 
-	fun handleVanillaCommands(serverConfig: MongoServerConfig, receivedPayload: JsonObject): String {
-		val list = arrayListOf<String>()
-		receivedPayload["disabledCommands"].array.forEach {
-			list.add(it.string)
+	fun handleVanillaCommands(serverConfig: ServerConfig, receivedPayload: JsonObject): String {
+		transaction(Databases.loritta) {
+			serverConfig.disabledCommands = receivedPayload["disabledCommands"].array
+					.map { it.string }
+					.toTypedArray()
 		}
-		serverConfig.disabledCommands = list
 
 		return "${serverConfig.disabledCommands.size} comandos bloqueados!"
 	}

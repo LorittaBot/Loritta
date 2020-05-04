@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.utils.exposed.array
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.*
 import org.jetbrains.exposed.sql.LongColumnType
 import org.jetbrains.exposed.sql.ReferenceOption
+import org.jetbrains.exposed.sql.TextColumnType
 
 object ServerConfigs : SnowflakeTable() {
 	val commandPrefix = text("prefix").default("+")
@@ -14,6 +15,7 @@ object ServerConfigs : SnowflakeTable() {
 	val blacklistedChannels = array<Long>("blacklisted_channels", LongColumnType()).default(arrayOf())
 	val warnIfBlacklisted = bool("warn_if_blacklisted").default(false)
 	val blacklistedWarning = text("blacklisted_warning").nullable()
+	val disabledCommands = array<String>("disabled_commands", TextColumnType()).default(arrayOf())
 	// val donationKey = optReference("donation_key", DonationKeys)
 	val donationConfig = optReference("donation_config", DonationConfigs, onDelete = ReferenceOption.CASCADE).index()
 	val birthdayConfig = optReference("birthday_config", BirthdayConfigs, onDelete = ReferenceOption.CASCADE).index()
