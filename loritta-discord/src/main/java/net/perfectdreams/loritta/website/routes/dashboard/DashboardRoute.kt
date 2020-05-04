@@ -32,6 +32,7 @@ class DashboardRoute(loritta: LorittaDiscord) : RequiresDiscordLoginLocalizedRou
 		val userGuilds = discordAuth.getUserGuilds()
 		val serverConfigs = transaction(Databases.loritta) {
 			ServerConfig.find { ServerConfigs.id inList userGuilds.map { it.id.toLong() } }
+					.toList()
 		}
 
 		val guilds = userGuilds.filter {
