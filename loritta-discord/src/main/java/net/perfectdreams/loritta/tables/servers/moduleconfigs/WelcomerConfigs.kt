@@ -4,12 +4,12 @@ import org.jetbrains.exposed.dao.LongIdTable
 
 object WelcomerConfigs : LongIdTable() {
     val tellOnJoin = bool("tell_on_join").default(false)
-    val channelJoinId = long("channel_join")
+    val channelJoinId = long("channel_join").nullable()
     val joinMessage = text("join_message").nullable()
     val deleteJoinMessagesAfter = long("delete_join_messages_after").nullable()
 
     val tellOnRemove = bool("tell_on_remove").default(false)
-    val channelRemoveId = long("channel_remove")
+    val channelRemoveId = long("channel_remove").nullable()
     val removeMessage = text("remove_message").nullable()
     val deleteRemoveMessagesAfter = long("delete_remove_messages_after").nullable()
 

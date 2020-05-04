@@ -41,10 +41,11 @@ object WelcomeModule {
 						}
 
 						if (welcomerConfig != null) {
-							if (welcomerConfig.tellOnJoin && !welcomerConfig.joinMessage.isNullOrEmpty()) {
+							val channelJoinId = welcomerConfig.channelJoinId
+							if (welcomerConfig.tellOnJoin && !welcomerConfig.joinMessage.isNullOrEmpty() && channelJoinId != null) {
 								val guild = lorittaShards.getGuildById(k1) ?: return@removalListener
 
-								val textChannel = guild.getTextChannelById(welcomerConfig.channelJoinId)
+								val textChannel = guild.getTextChannelById(channelJoinId)
 
 								if (textChannel != null) {
 									if (textChannel.canTalk()) {
@@ -83,10 +84,11 @@ object WelcomeModule {
 						}
 
 						if (welcomerConfig != null) {
-							if (welcomerConfig.tellOnRemove && !welcomerConfig.removeMessage.isNullOrEmpty()) {
+							val channelRemoveId = welcomerConfig.channelRemoveId
+							if (welcomerConfig.tellOnRemove && !welcomerConfig.removeMessage.isNullOrEmpty() && channelRemoveId != null) {
 								val guild = lorittaShards.getGuildById(k1) ?: return@removalListener
 
-								val textChannel = guild.getTextChannelById(welcomerConfig.channelRemoveId)
+								val textChannel = guild.getTextChannelById(channelRemoveId)
 
 								if (textChannel != null) {
 									if (textChannel.canTalk()) {
@@ -119,7 +121,8 @@ object WelcomeModule {
 
 		logger.trace { "Member = ${event.member}, Guild ${event.guild} has tellOnJoin = ${joinLeaveConfig.tellOnJoin} and the joinMessage is ${joinLeaveConfig.joinMessage}, canalJoinId = ${joinLeaveConfig.channelJoinId}" }
 
-		if (joinLeaveConfig.tellOnJoin && !joinLeaveConfig.joinMessage.isNullOrEmpty()) { // E o sistema de avisar ao entrar está ativado?
+		val channelJoinId = welcomerConfig.channelJoinId
+		if (joinLeaveConfig.tellOnJoin && !joinLeaveConfig.joinMessage.isNullOrEmpty() && channelJoinId != null) { // E o sistema de avisar ao entrar está ativado?
 			logger.trace { "Guild ${event.guild} has tellOnJoin enabled and the joinMessage isn't empty!" }
 			val guild = event.guild
 
@@ -137,7 +140,7 @@ object WelcomeModule {
 
 			logger.trace { "Member = ${event.member}, canalJoinId is not null for $guild, canalJoinId = ${joinLeaveConfig.channelJoinId}"}
 
-			val textChannel = guild.getTextChannelById(joinLeaveConfig.channelJoinId)
+			val textChannel = guild.getTextChannelById(channelJoinId)
 
 			logger.trace { "Member = ${event.member}, canalLeaveId = ${joinLeaveConfig.channelRemoveId}, it is $textChannel for $guild"}
 			if (textChannel != null) {
@@ -182,7 +185,9 @@ object WelcomeModule {
 		val joinLeaveConfig = welcomerConfig
 
 		logger.trace { "Member = ${event.member}, Guild ${event.guild} has tellOnLeave = ${joinLeaveConfig.tellOnRemove} and the leaveMessage is ${joinLeaveConfig.removeMessage}, canalLeaveId = ${joinLeaveConfig.channelRemoveId}" }
-		if (joinLeaveConfig.tellOnRemove && !joinLeaveConfig.removeMessage.isNullOrEmpty()) {
+
+		val channelRemoveId = welcomerConfig.channelRemoveId
+		if (joinLeaveConfig.tellOnRemove && !joinLeaveConfig.removeMessage.isNullOrEmpty() && channelRemoveId != null) {
 			logger.trace { "Member = ${event.member}, Guild ${event.guild} has tellOnLeave enabled and the leaveMessage isn't empty!" }
 			val guild = event.guild
 
@@ -200,7 +205,7 @@ object WelcomeModule {
 
 			logger.trace { "Member = ${event.member}, canalLeaveId is not null for $guild, canalLeaveId = ${joinLeaveConfig.channelRemoveId}"}
 
-			val textChannel = guild.getTextChannelById(joinLeaveConfig.channelRemoveId)
+			val textChannel = guild.getTextChannelById(channelRemoveId)
 
 			logger.trace { "Member = ${event.member}, canalLeaveId = ${joinLeaveConfig.channelRemoveId}, it is $textChannel for $guild"}
 			if (textChannel != null) {

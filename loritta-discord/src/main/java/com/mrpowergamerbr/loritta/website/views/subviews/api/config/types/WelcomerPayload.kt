@@ -66,7 +66,7 @@ class WelcomerPayload : ConfigPayloadType("welcomer") {
 				newConfig.tellOnPrivateJoin = tellOnPrivate
 				newConfig.joinPrivateMessage = joinPrivateMessage
 
-				serverConfig.welcomerConfig = welcomerConfig
+				serverConfig.welcomerConfig = newConfig
 			}
 		}
 	}

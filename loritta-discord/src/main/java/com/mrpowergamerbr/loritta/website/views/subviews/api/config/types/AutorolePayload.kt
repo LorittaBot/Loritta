@@ -39,7 +39,7 @@ class AutorolePayload : ConfigPayloadType("autorole") {
 				newConfig.giveRolesAfter = giveRolesAfter
 				newConfig.roles = roles.toTypedArray()
 
-				serverConfig.autoroleConfig = autoroleConfig
+				serverConfig.autoroleConfig = newConfig
 			}
 		}
 	}
