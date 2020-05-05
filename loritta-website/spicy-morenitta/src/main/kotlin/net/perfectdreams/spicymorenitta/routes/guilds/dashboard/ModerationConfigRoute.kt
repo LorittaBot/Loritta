@@ -1,30 +1,57 @@
+package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
 
+import LoriDashboard
+import SaveStuff
+import jQuery
+import jq
+import kotlinx.serialization.ImplicitReflectionSerializer
+import kotlinx.serialization.Serializable
+import legacyLocale
+import net.perfectdreams.spicymorenitta.SpicyMorenitta
+import net.perfectdreams.spicymorenitta.application.ApplicationCall
+import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
+import net.perfectdreams.spicymorenitta.utils.DashboardUtils
+import net.perfectdreams.spicymorenitta.utils.DashboardUtils.launchWithLoadingScreenAndFixContent
+import net.perfectdreams.spicymorenitta.utils.DashboardUtils.switchContentAndFixLeftSidebarScroll
 import net.perfectdreams.spicymorenitta.utils.Placeholders
+import net.perfectdreams.spicymorenitta.utils.onClick
+import net.perfectdreams.spicymorenitta.utils.select
+import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
+import org.w3c.dom.HTMLButtonElement
 import userdata.ModerationConfig
 import kotlin.browser.document
 import kotlin.js.Json
 import kotlin.js.json
 
-object 
+class ModerationConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{guildid}/configure/moderation") {
+	override val keepLoadingScreen: Boolean
+		get() = true
 
-ConfigureModerationView {
-	fun start() {
-		document.addEventListener("DOMContentLoaded", {
-			val serverConfig = LoriDashboard.loadServerConfig()
+	@Serializable
+	class PartialGuildConfiguration(
+			val textChannels: List<ServerConfig.TextChannel>,
+			val moderationConfig: ServerConfig.ModerationConfig
+	)
+	
+	@ImplicitReflectionSerializer
+	override fun onRender(call: ApplicationCall) {
+		launchWithLoadingScreenAndFixContent(call) {
+			val guild = DashboardUtils.retrievePartialGuildConfiguration<PartialGuildConfiguration>(call.parameters["guildid"]!!, "textchannels", "moderation")
+			switchContentAndFixLeftSidebarScroll(call)
 
-			for (punishment in serverConfig.moderationConfig.punishmentActions) {
+			for (punishment in guild.moderationConfig.punishmentActions) {
 				addPunishment(punishment)
 			}
 
 			LoriDashboard.applyBlur("#hiddenIfDisabled", "#cmn-toggle-2")
 
-			LoriDashboard.configureTextChannelSelect(jq("#punishmentLogChannelId"), serverConfig, serverConfig.moderationConfig.punishmentLogChannelId)
+			LoriDashboard.configureTextChannelSelect(jq("#punishmentLogChannelId"),  guild.textChannels, guild.moderationConfig.punishmentLogChannelId)
 
 			jq(".add-new-action").click {
 				addPunishment(
-						ModerationConfig.WarnAction(
+						ServerConfig.WarnAction(
 								1,
-								ModerationConfig.PunishmentAction.BAN,
+								ServerConfig.PunishmentAction.BAN,
 								null
 						)
 				)
@@ -33,7 +60,7 @@ ConfigureModerationView {
 			LoriDashboard.configureTextArea(
 					jq("#punishmentLogMessage"),
 					true,
-					serverConfig,
+					null,
 					true,
 					jq("#punishmentLogChannelId"),
 					true,
@@ -47,10 +74,15 @@ ConfigureModerationView {
 						put("staff-avatar-url", "Mostra a URL do avatar do usuário que fez a punição")
 					}
 			)
-		})
+
+			document.select<HTMLButtonElement>("#save-button").onClick {
+				prepareSave()
+			}
+		}
 	}
 
-	fun addPunishment(warnAction: ModerationConfig.WarnAction) {
+
+	fun addPunishment(warnAction: ServerConfig.WarnAction) {
 		val action = jq("<div>")
 				.append(
 						jq("<button>")

@@ -1,27 +1,54 @@
+package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
 
+import LoriDashboard
+import SaveStuff
+import jq
+import kotlinx.serialization.ImplicitReflectionSerializer
+import kotlinx.serialization.Serializable
+import net.perfectdreams.spicymorenitta.SpicyMorenitta
+import net.perfectdreams.spicymorenitta.application.ApplicationCall
+import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
+import net.perfectdreams.spicymorenitta.utils.DashboardUtils
+import net.perfectdreams.spicymorenitta.utils.DashboardUtils.launchWithLoadingScreenAndFixContent
+import net.perfectdreams.spicymorenitta.utils.DashboardUtils.switchContentAndFixLeftSidebarScroll
 import net.perfectdreams.spicymorenitta.utils.Placeholders
+import net.perfectdreams.spicymorenitta.utils.onClick
+import net.perfectdreams.spicymorenitta.utils.select
+import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
+import org.w3c.dom.HTMLButtonElement
 import kotlin.browser.document
 
-object ConfigureWelcomerView {
-	fun start() {
-		document.addEventListener("DOMContentLoaded", {
-			val serverConfig = LoriDashboard.loadServerConfig()
+class WelcomerConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{guildid}/configure/welcomer") {
+	override val keepLoadingScreen: Boolean
+		get() = true
 
-			if (serverConfig.joinLeaveConfig.deleteJoinMessagesAfter != null)
-				jq("#deleteJoinMessagesAfter").`val`(serverConfig.joinLeaveConfig.deleteJoinMessagesAfter!!)
+	@Serializable
+	class PartialGuildConfiguration(
+			val textChannels: List<ServerConfig.TextChannel>,
+			val welcomerConfig: ServerConfig.WelcomerConfig
+	)
+	
+	@ImplicitReflectionSerializer
+	override fun onRender(call: ApplicationCall) {
+		launchWithLoadingScreenAndFixContent(call) {
+			val guild = DashboardUtils.retrievePartialGuildConfiguration<PartialGuildConfiguration>(call.parameters["guildid"]!!, "textchannels", "welcomer")
+			switchContentAndFixLeftSidebarScroll(call)
 
-			if (serverConfig.joinLeaveConfig.deleteLeaveMessagesAfter != null)
-				jq("#deleteLeaveMessagesAfter").`val`(serverConfig.joinLeaveConfig.deleteLeaveMessagesAfter!!)
+			if (guild.welcomerConfig.deleteJoinMessagesAfter != null)
+				jq("#deleteJoinMessagesAfter").`val`(guild.welcomerConfig.deleteJoinMessagesAfter)
+
+			if (guild.welcomerConfig.deleteRemoveMessagesAfter != null)
+				jq("#deleteLeaveMessagesAfter").`val`(guild.welcomerConfig.deleteRemoveMessagesAfter)
 
 			LoriDashboard.applyBlur("#hiddenIfDisabled", "#cmn-toggle-1")
 
-			LoriDashboard.configureTextChannelSelect(jq("#canalJoinId"), serverConfig, serverConfig.joinLeaveConfig.canalJoinId)
-			LoriDashboard.configureTextChannelSelect(jq("#canalLeaveId"), serverConfig, serverConfig.joinLeaveConfig.canalLeaveId)
+			LoriDashboard.configureTextChannelSelect(jq("#canalJoinId"), guild.textChannels, guild.welcomerConfig.channelJoinId)
+			LoriDashboard.configureTextChannelSelect(jq("#canalLeaveId"), guild.textChannels, guild.welcomerConfig.channelRemoveId)
 
 			LoriDashboard.configureTextArea(
 					jq("#joinMessage"),
 					true,
-					serverConfig,
+					null,
 					true,
 					jq("#canalJoinId"),
 					true,
@@ -162,7 +189,7 @@ Aliás, continue sendo incrível! (E eu sou muito fofa! :3)""",
 			LoriDashboard.configureTextArea(
 					jq("#leaveMessage"),
 					true,
-					serverConfig,
+					null,
 					true,
 					jq("#canalLeaveId"),
 					true,
@@ -224,7 +251,7 @@ Aliás, continue sendo incrível! (E eu sou muito fofa! :3)""",
 			LoriDashboard.configureTextArea(
 					jq("#joinPrivateMessage"),
 					true,
-					serverConfig,
+					null,
 					true,
 					null,
 					true,
@@ -234,13 +261,17 @@ Aliás, continue sendo incrível! (E eu sou muito fofa! :3)""",
 			LoriDashboard.configureTextArea(
 					jq("#banMessage"),
 					true,
-					serverConfig,
+					null,
 					true,
 					jq("#canalLeaveId"),
 					true,
 					Placeholders.DEFAULT_PLACEHOLDERS
 			)
-		})
+
+			document.select<HTMLButtonElement>("#save-button").onClick {
+				prepareSave()
+			}
+		}
 	}
 
 	@JsName("prepareSave")
@@ -251,9 +282,9 @@ Aliás, continue sendo incrível! (E eu sou muito fofa! :3)""",
 				it["deleteJoinMessagesAfter"] = null
 			}
 
-			val deleteLeaveMessagesAfter = (jq("#deleteLeaveMessagesAfter").`val`() as String).toIntOrNull()
+			val deleteLeaveMessagesAfter = (jq("#deleteRemoveMessagesAfter").`val`() as String).toIntOrNull()
 			if (deleteLeaveMessagesAfter == 0) {
-				it["deleteLeaveMessagesAfter"] = null
+				it["deleteRemoveMessagesAfter"] = null
 			}
 		})
 	}

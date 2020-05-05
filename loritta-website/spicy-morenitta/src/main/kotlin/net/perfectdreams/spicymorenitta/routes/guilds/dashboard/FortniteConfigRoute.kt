@@ -91,10 +91,10 @@ class FortniteConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 								option {
 									+("#${channel.name}")
 
-									if (channel.id == guild.fortniteConfig.channelToAdvertiseNewItems?.toString())
+									if (channel.id == guild.fortniteConfig.channelToAdvertiseNewItems)
 										selected = true
 
-									value = channel.id
+									value = channel.id.toString()
 								}
 							}
 						}

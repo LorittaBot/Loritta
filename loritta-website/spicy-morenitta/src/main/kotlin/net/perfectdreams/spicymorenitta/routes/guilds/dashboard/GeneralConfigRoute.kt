@@ -188,7 +188,7 @@ class GeneralConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/g
 							option {
 								+ ("#${channel.name}")
 
-								value = channel.id
+								value = channel.id.toString()
 							}
 						}
 					}

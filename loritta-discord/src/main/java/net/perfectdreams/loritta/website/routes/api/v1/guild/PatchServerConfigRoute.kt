@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.*
 import io.ktor.application.ApplicationCall
+import io.ktor.http.HttpStatusCode
 import io.ktor.request.receiveText
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
@@ -21,7 +22,6 @@ import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.website.utils.config.types.ConfigTransformers
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
-import io.ktor.http.HttpStatusCode
 
 class PatchServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRoute(loritta, "/config") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
@@ -58,10 +58,8 @@ class PatchServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRout
 			val payloadHandlers = mapOf(
 					"moderation" to ModerationPayload::class.java,
 					"autorole" to AutorolePayload::class.java,
-					"welcomer" to WelcomerPayload::class.java,
 					"miscellaneous" to MiscellaneousPayload::class.java,
 					"economy" to EconomyPayload::class.java,
-					"text_channels" to TextChannelsPayload::class.java,
 					"timers" to TimersPayload::class.java,
 					"premium" to PremiumKeyPayload::class.java,
 					"badge" to CustomBadgePayload::class.java,

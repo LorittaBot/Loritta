@@ -165,7 +165,7 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 													document.select<HTMLInputElement>(".add-role .required-xp")
 															.valueOrPlaceholderIfEmpty("1000"),
 													listOf(
-															document.select<HTMLSelectElement>("#choose-role").value
+															document.select<HTMLSelectElement>("#choose-role").value.toLong()
 													)
 											)
 									)
@@ -287,7 +287,7 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 							option {
 								+ ("#${channel.name}")
 
-								value = channel.id
+								value = channel.id.toString()
 							}
 						}
 					}
@@ -506,7 +506,7 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 		for (experienceRoleRate in experienceRoleRates.sortedByDescending { it.rate.toLong() }) {
 			val theRealRoleId = experienceRoleRate.role
 
-			val guildRole = guild.roles.firstOrNull { it.id == theRealRoleId.toString() }
+			val guildRole = guild.roles.firstOrNull { it.id == theRealRoleId }
 
 			if (guildRole == null) {
 				debug("Role ${theRealRoleId} not found! Removing $experienceRoleRate")
@@ -726,7 +726,7 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 			this.rolesByExperience.forEach {
 				val inner = json(
 						"requiredExperience" to it.requiredExperience,
-						"roles" to it.roles
+						"roles" to it.roles.map { it.toString() }
 				)
 
 				rolesByExperience.add(inner)
@@ -819,7 +819,7 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 								option {
 									+("#${channel.name}")
 
-									value = channel.id
+									value = channel.id.toString()
 
 									if (channel.id == announcement?.channelId) {
 										selected = true

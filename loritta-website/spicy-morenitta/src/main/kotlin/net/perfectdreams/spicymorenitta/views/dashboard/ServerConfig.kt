@@ -46,7 +46,7 @@ object ServerConfig {
 
 	@Serializable
 	class SelfMember(
-			val id: String,
+			val id: Long,
 			val name: String,
 			val discriminator: String,
 			val effectiveAvatarUrl: String,
@@ -67,6 +67,60 @@ object ServerConfig {
 	class DonationConfig(
 			val customBadge: Boolean,
 			val dailyMultiplier: Boolean
+	)
+
+	@Serializable
+	class MiscellaneousConfig(
+			val enableQuirky: Boolean,
+			val enableBomDiaECia: Boolean
+	)
+
+	@Serializable
+	class MemberCounterConfig(
+			val channelId: Long,
+			var topic: String,
+			var theme: String,
+			var padding: Int
+	)
+
+	@Serializable
+	class ModerationConfig(
+		var sendPunishmentViaDm: Boolean = false,
+		var sendPunishmentToPunishLog: Boolean = false,
+		@Optional var punishmentLogChannelId: Long? = null,
+		@Optional var punishmentLogMessage: String? = null,
+		var punishmentActions: Array<WarnAction>
+	)
+
+	@Serializable
+	class WarnAction(
+			var warnCount: Int,
+			var punishmentAction: PunishmentAction,
+			@Optional var customMetadata0: String? = null
+	)
+
+	enum class PunishmentAction {
+		BAN,
+		SOFT_BAN,
+		KICK,
+		MUTE
+	}
+
+	@Serializable
+	class WelcomerConfig(
+			@Optional val enabled: Boolean = true,
+			val tellOnJoin: Boolean,
+			var tellOnRemove: Boolean,
+			@Optional var joinMessage: String? = null,
+			@Optional var removeMessage: String? = null,
+			@Optional var channelJoinId: Long? = null,
+			@Optional var channelRemoveId: Long? = null,
+			var tellOnPrivateJoin: Boolean = false,
+			@Optional var joinPrivateMessage: String? = null,
+			var tellOnBan: Boolean,
+			@Optional var bannedMessage: String? = null,
+			@Optional val deleteJoinMessagesAfter: Long? = null,
+			@Optional val deleteRemoveMessagesAfter: Long? = null
 	)
 
 	@Serializable
@@ -94,7 +148,7 @@ object ServerConfig {
 	@Serializable
 	class Announcement(
 			val type: String,
-			@Optional val channelId: String? = null,
+			@Optional val channelId: Long? = null,
 			val onlyIfUserReceivedRoles: Boolean,
 			val message: String
 	)
@@ -102,7 +156,7 @@ object ServerConfig {
 	@Serializable
 	class RoleByExperience(
 			val requiredExperience: String,
-			val roles: List<String>
+			val roles: List<Long>
 	)
 
 	@Serializable
@@ -142,6 +196,14 @@ object ServerConfig {
 	)
 
 	@Serializable
+	class AutoroleConfig(
+			var enabled: Boolean = false,
+			var roles: Array<Long>,
+			@Optional var giveRolesAfter: Long? = null,
+			var giveOnlyAfterMessageWasSent: Boolean
+	)
+
+	@Serializable
 	class ReactionOption(
 			val textChannelId: String,
 			val messageId: String,
@@ -152,8 +214,8 @@ object ServerConfig {
 
 	@Serializable
 	class DiscordMessage(
-			val id: String,
-			val channelId: String,
+			val id: Long,
+			val channelId: Long,
 			val content: String,
 			val reactions: Array<DiscordReaction>
 	)
@@ -167,7 +229,7 @@ object ServerConfig {
 
 	@Serializable
 	class Role(
-			val id: String,
+			val id: Long,
 			val name: String,
 			val colorRaw: Int,
 			val canInteract: Boolean,
@@ -189,8 +251,10 @@ object ServerConfig {
 
 	@Serializable
 	class TextChannel(
-			val id: String,
-			val name: String
+			val id: Long,
+			val name: String,
+			val canTalk: Boolean,
+			@Optional val topic: String? = null
 	)
 
 	@Serializable

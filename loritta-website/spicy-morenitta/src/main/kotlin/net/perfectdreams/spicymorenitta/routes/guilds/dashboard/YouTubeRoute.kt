@@ -182,7 +182,7 @@ class YouTubeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 				trackedYouTubeAccounts.remove(trackedYouTubeAccount)
 				updateTrackedYouTubeAccountsList(guild)
 			} else {
-				val currentChannel = guild.textChannels.firstOrNull { it.id == trackedYouTubeAccount.channelId.toString() }
+				val currentChannel = guild.textChannels.firstOrNull { it.id == trackedYouTubeAccount.channelId }
 
 				val channelName = currentChannel?.let { "#${it.name}" } ?: "???"
 
@@ -296,9 +296,9 @@ class YouTubeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 
 									for (channel in guild.textChannels) {
 										option {
-											value = channel.id
+											value = channel.id.toString()
 
-											if (channel.id == trackedYouTubeAccount.channelId.toString()) {
+											if (channel.id == trackedYouTubeAccount.channelId) {
 												selected = true
 											}
 

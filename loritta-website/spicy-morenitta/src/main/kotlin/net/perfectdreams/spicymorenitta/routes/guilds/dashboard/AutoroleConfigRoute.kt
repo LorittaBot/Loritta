@@ -1,29 +1,55 @@
+package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
 
+import LoriDashboard
+import SaveStuff
+import jQuery
+import jq
+import kotlinx.serialization.ImplicitReflectionSerializer
+import kotlinx.serialization.Serializable
+import legacyLocale
+import net.perfectdreams.spicymorenitta.SpicyMorenitta
+import net.perfectdreams.spicymorenitta.application.ApplicationCall
+import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
+import net.perfectdreams.spicymorenitta.utils.DashboardUtils
+import net.perfectdreams.spicymorenitta.utils.DashboardUtils.launchWithLoadingScreenAndFixContent
+import net.perfectdreams.spicymorenitta.utils.DashboardUtils.switchContentAndFixLeftSidebarScroll
+import net.perfectdreams.spicymorenitta.utils.onClick
 import net.perfectdreams.spicymorenitta.utils.page
+import net.perfectdreams.spicymorenitta.utils.select
+import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
+import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.HTMLInputElement
-import utils.Role
-import utils.ServerConfig
 import utils.TingleModal
 import utils.TingleOptions
 import kotlin.browser.document
 import kotlin.browser.window
 
-object ConfigureAutoroleView {
-	lateinit var serverConfig: ServerConfig
+class AutoroleConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{guildid}/configure/autorole") {
+	override val keepLoadingScreen: Boolean
+		get() = true
 
-	fun start() {
-		document.addEventListener("DOMContentLoaded", {
-			serverConfig = LoriDashboard.loadServerConfig()
+	@Serializable
+	class PartialGuildConfiguration(
+			val roles: List<ServerConfig.Role>,
+			val autoroleConfig: ServerConfig.AutoroleConfig
+	)
+	
+	@ImplicitReflectionSerializer
+	override fun onRender(call: ApplicationCall) {
+		launchWithLoadingScreenAndFixContent(call) {
+			val guild = DashboardUtils.retrievePartialGuildConfiguration<PartialGuildConfiguration>(call.parameters["guildid"]!!, "roles", "autorole")
+			switchContentAndFixLeftSidebarScroll(call)
 
 			val optionData = mutableListOf<dynamic>()
 
-			for (it in serverConfig.roles.filter { !it.isPublicRole }) {
+			for (it in guild.roles.filter { !it.isPublicRole }) {
 				val option = object {}.asDynamic()
 				option.id = it.id
 				var text = "<span style=\"font-weight: 600;\">${it.name}</span>"
 
-				if (it.color != null) {
-					text = "<span style=\"font-weight: 600; color: rgb(${it.color.red}, ${it.color.green}, ${it.color.blue})\">${it.name}</span>"
+				val color = it.getColor()
+				if (color != null) {
+					text = "<span style=\"font-weight: 600; color: rgb(${color.red}, ${color.green}, ${color.blue})\">${it.name}</span>"
 				}
 
 				option.text = text
@@ -53,7 +79,7 @@ object ConfigureAutoroleView {
 					options
 			)
 
-			val roleList = serverConfig.autoroleConfig.roles.mapNotNull { roleId -> serverConfig.roles.firstOrNull { it.id == roleId } }
+			val roleList = guild.autoroleConfig.roles.mapNotNull { roleId -> guild.roles.firstOrNull { it.id == roleId } }
 
 			roleList.forEach {
 				addRoleToAutoroleList(it)
@@ -61,14 +87,23 @@ object ConfigureAutoroleView {
 
 			LoriDashboard.applyBlur("#hiddenIfDisabled", "#cmn-toggle-1")
 
-			if (!serverConfig.permissions.contains("ADMINISTRATOR") && !serverConfig.permissions.contains("MANAGE_ROLES")) {
+			document.select<HTMLButtonElement>("#add-role-button").onClick {
+				addRoleFromSelection(guild)
+			}
+
+			document.select<HTMLButtonElement>("#save-button").onClick {
+				prepareSave()
+			}
+
+			/* if (!serverConfig.permissions.contains("ADMINISTRATOR") && !serverConfig.permissions.contains("MANAGE_ROLES")) {
 				LoriDashboard.enableBlur("#autoroleConfigurationWrapper")
 				jq("#requiresPermission").html(legacyLocale["DASHBOARD_HeyINeedPermission", "<b>${legacyLocale["PERMISSION_MANAGE_ROLES"]}</b>"])
-			}
-		})
+			} */
+		}
 	}
 
-	fun addRoleToAutoroleList(role: Role) {
+
+	fun addRoleToAutoroleList(role: ServerConfig.Role) {
 		// <span style="color: rgb(155, 89, 182); background-color: rgba(155, 89, 182, 0.298039);  font-family: Whitney, 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 600;">@💵🌆 Pagadores do Aluguel</span>
 		val td = jq("<td>")
 				.attr("role-id", role.id)
@@ -78,9 +113,10 @@ object ConfigureAutoroleView {
 				.text("@" + role.name)
 				.addClass("discord-mention")
 
-		if (role.color != null) {
-			roleSpan.css("color", "rgb(${role.color.red}, ${role.color.green}, ${role.color.blue})")
-			roleSpan.css("background-color", "rgba(${role.color.red}, ${role.color.green}, ${role.color.blue}, 0.298039)")
+		val color = role.getColor()
+		if (color != null) {
+			roleSpan.css("color", "rgb(${color.red}, ${color.green}, ${color.blue})")
+			roleSpan.css("background-color", "rgba(${color.red}, ${color.green}, ${color.blue}, 0.298039)")
 		}
 
 		td.append(roleSpan)
@@ -98,11 +134,11 @@ object ConfigureAutoroleView {
 	}
 
 	@JsName("addRoleFromSelection")
-	fun addRoleFromSelection() {
+	fun addRoleFromSelection(serverConfig: PartialGuildConfiguration) {
 		val roleId = jq("#chooseRole option:selected").`val`() as String
 
 		println("Adding role ${roleId} to the selection...")
-		val role = serverConfig.roles.firstOrNull { it.id == roleId }
+		val role = serverConfig.roles.firstOrNull { it.id == roleId.toLong() }
 
 		if (role != null) {
 			if (role.isManaged || !role.canInteract) {
@@ -165,7 +201,6 @@ object ConfigureAutoroleView {
 	fun prepareSave() {
 		SaveStuff.prepareSave("autorole", { payload ->
 			val roles = mutableListOf<String>()
-			val rolesVoteRewards = mutableListOf<String>()
 
 			jq("#roleTable").children().each { index, elem ->
 				val el = jQuery(elem)
@@ -175,7 +210,6 @@ object ConfigureAutoroleView {
 
 			payload["roles"] = roles
 			payload["giveRolesAfter"] = (page.getElementById("give-roles-after") as HTMLInputElement).value.toIntOrNull()
-			payload["rolesVoteRewards"] = rolesVoteRewards
 		})
 	}
 }

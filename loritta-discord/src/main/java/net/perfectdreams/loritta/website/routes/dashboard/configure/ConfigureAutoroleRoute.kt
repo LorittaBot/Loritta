@@ -34,7 +34,7 @@ class ConfigureAutoroleRoute(loritta: LorittaDiscord) : RequiresGuildAuthLocaliz
 				)
 		)
 
-		val validEnabledRoles = serverConfig.autoroleConfig?.roles?.filter {
+		val validEnabledRoles = autoroleConfig?.roles?.filter {
 			try {
 				guild.getRoleById(it) != null
 			} catch (e: Exception) {

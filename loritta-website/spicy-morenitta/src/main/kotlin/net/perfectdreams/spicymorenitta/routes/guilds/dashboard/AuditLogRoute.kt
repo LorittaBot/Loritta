@@ -44,7 +44,7 @@ class AuditLogRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/
             val entriesDiv = document.select<HTMLDivElement>("#audit-log-entries")
 
             for (entry in list.entries) {
-                val user = list.users.first { it.id == entry.id.toString() }
+                val user = list.users.first { it.id == entry.id }
 
                 entriesDiv.append {
                     div {

@@ -18,6 +18,10 @@ object ConfigTransformers {
             GeneralConfigTransformer,
             LevelUpConfigTransformer,
             RolesTransformer,
-            DonationConfigTransformer
+            DonationConfigTransformer,
+            AutoroleConfigTransformer,
+            WelcomerConfigTransformer,
+            MemberCountersTransformer,
+            ModerationConfigTransformer
     )
 }

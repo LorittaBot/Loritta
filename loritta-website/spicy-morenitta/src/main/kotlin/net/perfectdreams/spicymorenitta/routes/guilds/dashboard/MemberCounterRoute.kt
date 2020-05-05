@@ -1,45 +1,71 @@
+package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
 
+import LoriDashboard
+import SaveStuff
+import jQuery
+import jq
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
-import net.perfectdreams.spicymorenitta.utils.appendBuilder
-import net.perfectdreams.spicymorenitta.utils.selectAll
+import kotlinx.serialization.ImplicitReflectionSerializer
+import kotlinx.serialization.Serializable
+import net.perfectdreams.spicymorenitta.SpicyMorenitta
+import net.perfectdreams.spicymorenitta.application.ApplicationCall
+import net.perfectdreams.spicymorenitta.locale
+import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
+import net.perfectdreams.spicymorenitta.utils.*
+import net.perfectdreams.spicymorenitta.utils.DashboardUtils.launchWithLoadingScreenAndFixContent
+import net.perfectdreams.spicymorenitta.utils.DashboardUtils.switchContentAndFixLeftSidebarScroll
+import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import net.perfectdreams.spicymorenitta.views.dashboard.Stuff
+import net.perfectdreams.spicymorenitta.views.dashboard.getValue
+import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.HTMLSelectElement
 import userdata.CounterThemes
 import userdata.CounterUtils
 import userdata.MemberCounterConfig
-import utils.ServerConfig
-import utils.getTextChannelConfig
 import kotlin.browser.document
 import kotlin.dom.clear
 
-object ConfigureMemberCounterView {
-	const val MAX_DONATOR_TOGGLES = 3
-	const val MAX_USER_TOGGLES = 1
+class MemberCounterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{guildid}/configure/member-counter") {
+	override val keepLoadingScreen: Boolean
+		get() = true
+	companion object {
+		const val MAX_DONATOR_TOGGLES = 3
+		const val MAX_USER_TOGGLES = 1
+	}
 
-	lateinit var serverConfig: ServerConfig
+	@Serializable
+	class PartialGuildConfiguration(
+			val activeDonationKeys: List<ServerConfig.DonationKey>,
+			val textChannels: List<ServerConfig.TextChannel>,
+			val memberCounters: List<ServerConfig.MemberCounterConfig>
+	)
 
-	fun start() {
-		document.addEventListener("DOMContentLoaded", {
-			serverConfig = LoriDashboard.loadServerConfig()
+	@ImplicitReflectionSerializer
+	override fun onRender(call: ApplicationCall) {
+		launchWithLoadingScreenAndFixContent(call) {
+			val guild = DashboardUtils.retrievePartialGuildConfiguration<PartialGuildConfiguration>(call.parameters["guildid"]!!, "textchannels", "member_counter", "activekeys")
+			switchContentAndFixLeftSidebarScroll(call)
 
-			println(serverConfig.donationKey?.value)
-			val howManyTogglesCanBeEnabled = if ((serverConfig.donationKey?.value ?: 0.0) >= 19.99) {
+			val donationValue = guild.activeDonationKeys.getValue()
+			val howManyTogglesCanBeEnabled = if (donationValue >= 19.99) {
 				MAX_DONATOR_TOGGLES
 			} else {
 				MAX_USER_TOGGLES
 			}
 
-			println("User can enable $howManyTogglesCanBeEnabled toggles! ${(serverConfig.donationKey?.value ?: 0.0) >= 19.99}")
 			val textChannels = jq("#member-counter-list")
 
-			for (textChannel in serverConfig.textChannels) {
-				val memberCounterConfig = serverConfig.getTextChannelConfig(textChannel).memberCounterConfig
+			for (textChannel in guild.textChannels) {
+				val idAsString = textChannel.id.toString()
+				println("as str: ${idAsString}")
+
+				val memberCounterConfig = guild.memberCounters.firstOrNull { textChannel.id == it.channelId }
 
 				val entry = jq("<div>")
-						.attr("data-text-channel-id", textChannel.id)
+						.attr("data-text-channel-id", idAsString)
 
 				entry.append(
 						jq("<div>")
@@ -54,7 +80,7 @@ object ConfigureMemberCounterView {
 				)
 
 				val textAreaWrapper = jq("<div>")
-						.attr("id", "text-area-wrapper-${textChannel.id}")
+						.attr("id", "text-area-wrapper-${idAsString}")
 
 				entry.append(
 						jq("<div>")
@@ -64,7 +90,7 @@ object ConfigureMemberCounterView {
 
 				textAreaWrapper.append(
 						jq("<textarea>")
-								.attr("id", "text-area-${textChannel.id}")
+								.attr("id", "text-area-${idAsString}")
 								.`val`(
 										if (memberCounterConfig == null) {
 											println("Using text channel's topic!")
@@ -79,7 +105,7 @@ object ConfigureMemberCounterView {
 				textAreaWrapper[0]!!.appendBuilder(
 						StringBuilder().appendHTML(false).div {
 							div(classes = "flavourText") {
-								+ "Tema do contador de membros"
+								+"Tema do contador de membros"
 							}
 							select(classes = "counter-theme") {
 								for (theme in CounterThemes.values()) {
@@ -91,12 +117,12 @@ object ConfigureMemberCounterView {
 										}
 										// println(locale[theme.localizedName])
 										value = theme.name
-										+ locale[theme.localizedName]
+										+locale[theme.localizedName]
 									}
 								}
 							}
 							div(classes = "flavourText") {
-								+ "Preenchimento com Zeros"
+								+"Preenchimento com Zeros"
 							}
 							input(InputType.number, classes = "counter-padding") {
 								min = "1"
@@ -104,7 +130,7 @@ object ConfigureMemberCounterView {
 								value = (memberCounterConfig?.padding ?: 5).toString()
 							}
 							div(classes = "counter-preview") {
-								+ "Aqui irá ficar a preview do contador, quando existir... algum dia"
+								+"Aqui irá ficar a preview do contador, quando existir... algum dia"
 							}
 						}
 				)
@@ -146,7 +172,7 @@ object ConfigureMemberCounterView {
 
 				textChannels.append(entry)
 
-				LoriDashboard.applyBlur("#text-area-wrapper-${textChannel.id}", "#cmn-toggle-${toggle.first.toString()}")
+				LoriDashboard.applyBlur("#text-area-wrapper-$idAsString", "#cmn-toggle-${toggle.first.toString()}")
 
 				jq("#cmn-toggle-${toggle.first}").click {
 					// it.preventDefault()
@@ -176,12 +202,16 @@ object ConfigureMemberCounterView {
 					}
 				}
 			}
-		})
+
+			document.select<HTMLButtonElement>("#save-button").onClick {
+				prepareSave()
+			}
+		}
 	}
 
 	@JsName("prepareSave")
 	fun prepareSave() {
-		SaveStuff.prepareSave("text_channels", {
+		SaveStuff.prepareSave("member_counter", {
 			val entries = mutableListOf<dynamic>()
 
 			val divs = jq("[data-text-channel-id]")
@@ -194,6 +224,14 @@ object ConfigureMemberCounterView {
 				val isEnabled = elem.find(".cmn-toggle").`is`(":checked")
 
 				if (isEnabled) {
+					println(textChannelId)
+					println("#1")
+					println(elem.find("#text-area-${textChannelId}").`val`())
+					println("#2")
+					println(elem.find(".counter-theme").`val`() as String)
+					println("#3")
+					println(elem.find(".counter-padding").`val`() as String)
+
 					val dyn = object{}.asDynamic()
 					dyn.id = textChannelId
 					dyn.memberCounterConfig = MemberCounterConfig(
