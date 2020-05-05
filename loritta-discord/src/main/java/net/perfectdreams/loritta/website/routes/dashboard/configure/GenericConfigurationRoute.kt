@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.website.routes.dashboard.configure
 
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.website.evaluate
@@ -15,14 +16,12 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.transactions.transaction
 
 open class GenericConfigurationRoute(loritta: LorittaDiscord, path: String, val type: String, val file: String) : RequiresGuildAuthLocalizedRoute(loritta, path) {
-	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild) {
+	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
 		loritta as Loritta
 		val variables = call.legacyVariables(locale)
 		variables["saveType"] = type
 
 		if (type == "miscellaneous") {
-			val serverConfig = loritta.getOrCreateServerConfig(guild.idLong)
-
 			val miscellaneousConfig = transaction(Databases.loritta) {
 				serverConfig.miscellaneousConfig
 			}

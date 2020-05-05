@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.website.routes.dashboard.configure
 
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.website.evaluate
 import io.ktor.application.ApplicationCall
@@ -13,12 +14,10 @@ import net.perfectdreams.loritta.website.utils.extensions.respondHtml
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 class ConfigureCommandsRoute(loritta: LorittaDiscord) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/commands") {
-	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild) {
+	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
 		loritta as Loritta
 		val variables = call.legacyVariables(locale)
 		variables["saveType"] = "vanilla_commands"
-
-		val serverConfig = loritta.getOrCreateServerConfig(guild.idLong)
 
 		variables["enabledCommands"] = com.mrpowergamerbr.loritta.utils.loritta.commandManager.commands.filter { !serverConfig.disabledCommands.contains(it.javaClass.simpleName) }
 		variables["enabledLegacyCommands"] = com.mrpowergamerbr.loritta.utils.loritta.legacyCommandManager.commandMap.filter { !serverConfig.disabledCommands.contains(it.javaClass.simpleName) }

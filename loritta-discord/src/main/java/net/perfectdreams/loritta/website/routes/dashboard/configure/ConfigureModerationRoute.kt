@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.website.routes.dashboard.configure
 
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.website.evaluate
@@ -16,9 +17,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import kotlin.collections.set
 
 class ConfigureModerationRoute(loritta: LorittaDiscord) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/moderation") {
-	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild) {
+	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
 		loritta as Loritta
-		val serverConfig = loritta.getOrCreateServerConfig(guild.idLong)
 
 		val moderationConfig = transaction(Databases.loritta) {
 			serverConfig.moderationConfig

@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.website.routes.dashboard
 
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
@@ -26,7 +27,7 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaDiscord, original
 		private val logger = KotlinLogging.logger {}
 	}
 
-	abstract suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild)
+	abstract suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig)
 
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
 		var start = System.currentTimeMillis()
@@ -89,6 +90,6 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaDiscord, original
 		logger.info { "Legacy Vars Creation: ${System.currentTimeMillis() - start}" }
 		variables["guild"] = jdaGuild
 
-		return onGuildAuthenticatedRequest(call, locale, discordAuth, userIdentification, jdaGuild)
+		return onGuildAuthenticatedRequest(call, locale, discordAuth, userIdentification, jdaGuild, serverConfig)
 	}
 }
