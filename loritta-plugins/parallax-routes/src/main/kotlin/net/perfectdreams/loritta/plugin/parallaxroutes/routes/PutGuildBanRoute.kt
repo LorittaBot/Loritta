@@ -1,17 +1,12 @@
 package net.perfectdreams.loritta.plugin.parallaxroutes.routes
 
-import com.github.salomonbrys.kotson.*
-import com.google.gson.JsonParser
-import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
-import com.mrpowergamerbr.loritta.utils.lorittaShards
 import io.ktor.application.ApplicationCall
-import io.ktor.request.receiveText
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 
 class PutGuildBanRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/parallax/guilds/{guildId}/bans/{userId}") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
-		println("Received auth")
+		/* println("Received auth")
 		val guildId = call.parameters["guildId"] ?: return
 		println("#1 $guildId")
 		val userId = call.parameters["userId"] ?: return
@@ -33,6 +28,6 @@ class PutGuildBanRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationRoute
 				options["reason"].nullString ?: "",
 				options["isSilent"].nullBool ?: false,
 				options["days"].nullInt ?: 0
-		)
+		) */
 	}
 }

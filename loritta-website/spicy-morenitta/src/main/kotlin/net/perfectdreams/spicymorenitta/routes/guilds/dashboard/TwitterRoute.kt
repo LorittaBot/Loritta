@@ -184,7 +184,7 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 				trackedTwitterAccounts.remove(trackedTwitterAccount)
 				updateTrackedTwitterAccountsList(guild)
 			} else {
-				val currentChannel = guild.textChannels.firstOrNull { it.id == trackedTwitterAccount.channelId.toString() }
+				val currentChannel = guild.textChannels.firstOrNull { it.id == trackedTwitterAccount.channelId }
 
 				val channelName = currentChannel?.let { "#${it.name}" } ?: "???"
 
@@ -300,9 +300,9 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 									for (channel in guild.textChannels) {
 										option {
 
-											value = channel.id
+											value = channel.id.toString()
 
-											if (channel.id == trackedTwitterAccount.channelId.toString()) {
+											if (channel.id == trackedTwitterAccount.channelId) {
 												selected = true
 											}
 

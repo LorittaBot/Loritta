@@ -1,9 +1,7 @@
 package com.mrpowergamerbr.loritta.listeners
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
 import com.mrpowergamerbr.loritta.dao.Mute
 import com.mrpowergamerbr.loritta.dao.ServerConfig
@@ -14,12 +12,11 @@ import com.mrpowergamerbr.loritta.modules.WelcomeModule
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Mutes
-import com.mrpowergamerbr.loritta.userdata.MemberCounterConfig
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
-import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
@@ -40,17 +37,23 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.perfectdreams.loritta.dao.Giveaway
-import net.perfectdreams.loritta.dao.ReactionOption
+import net.perfectdreams.loritta.dao.servers.Giveaway
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.MemberCounterChannelConfig
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.ReactionOption
 import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
-import net.perfectdreams.loritta.tables.Giveaways
-import net.perfectdreams.loritta.tables.ReactionOptions
+import net.perfectdreams.loritta.tables.servers.CustomGuildCommands
+import net.perfectdreams.loritta.tables.servers.Giveaways
+import net.perfectdreams.loritta.tables.servers.ServerRolePermissions
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.MemberCounterChannelConfigs
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.ReactionOptions
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.WarnActions
 import net.perfectdreams.loritta.utils.FeatureFlags
 import net.perfectdreams.loritta.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
 import okio.Buffer
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.kotlin.utils.getOrPutNullable
 import org.slf4j.LoggerFactory
@@ -83,27 +86,37 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		private val logger = KotlinLogging.logger {}
 		private val requestLogger = LoggerFactory.getLogger("requests")
 
-		fun queueTextChannelTopicUpdates(guild: Guild, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, hideInEventLog: Boolean = false) {
+		fun queueTextChannelTopicUpdates(guild: Guild, serverConfig: ServerConfig, hideInEventLog: Boolean = false) {
 			val activeDonationValues = loritta.getOrCreateServerConfig(guild.idLong).getActiveDonationKeysValue()
 
 			logger.debug { "Creating text channel topic updates in $guild for ${guild.textChannels.size} channels! Donation key value is $activeDonationValues Should hide in event log? $hideInEventLog" }
 
-			val validChannels = guild.textChannels.filter {
-				val memberCounterConfig = legacyServerConfig.getTextChannelConfig(it).memberCounterConfig
-				guild.selfMember.hasPermission(it, Permission.MANAGE_CHANNEL) && memberCounterConfig?.topic?.contains("{counter}") == true
+			val memberCountConfigs = transaction(Databases.loritta) {
+				MemberCounterChannelConfig.find {
+					MemberCounterChannelConfigs.channelId inList guild.channels.map { it.idLong }
+				}.toList()
+			}
+
+			val validChannels = guild.textChannels.filter { channel ->
+				val memberCounterConfig = memberCountConfigs.firstOrNull { it.channelId == channel.idLong }
+				memberCounterConfig != null && guild.selfMember.hasPermission(channel, Permission.MANAGE_CHANNEL) && memberCounterConfig.topic.contains("{counter}")
 			}
 
 			val channelsThatWillBeChecked = validChannels.take(ServerPremiumPlans.getPlanFromValue(activeDonationValues).memberCounterCount)
 
 			for (textChannel in channelsThatWillBeChecked)
-				queueTextChannelTopicUpdate(guild, serverConfig, legacyServerConfig, textChannel, hideInEventLog)
+				queueTextChannelTopicUpdate(guild, serverConfig, textChannel, hideInEventLog)
 		}
 
-		fun queueTextChannelTopicUpdate(guild: Guild, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, textChannel: TextChannel, hideInEventLog: Boolean = false) {
+		fun queueTextChannelTopicUpdate(guild: Guild, serverConfig: ServerConfig, textChannel: TextChannel, hideInEventLog: Boolean = false) {
 			if (!guild.selfMember.hasPermission(textChannel, Permission.MANAGE_CHANNEL))
 				return
 
-			val memberCountConfig = legacyServerConfig.getTextChannelConfig(textChannel).memberCounterConfig ?: return
+			val memberCountConfig = transaction(Databases.loritta) {
+				MemberCounterChannelConfig.find {
+					MemberCounterChannelConfigs.channelId eq textChannel.idLong
+				}.firstOrNull()
+			} ?: return
 
 			val lastUpdate = memberCounterLastUpdate[textChannel.idLong] ?: 0L
 			val diff = System.currentTimeMillis() - lastUpdate
@@ -132,7 +145,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			updateTextChannelTopic(guild, serverConfig, textChannel, memberCountConfig, hideInEventLog)
 		}
 
-		fun updateTextChannelTopic(guild: Guild, serverConfig: ServerConfig, textChannel: TextChannel, memberCounterConfig: MemberCounterConfig, hideInEventLog: Boolean = false) {
+		fun updateTextChannelTopic(guild: Guild, serverConfig: ServerConfig, textChannel: TextChannel, memberCounterConfig: MemberCounterChannelConfig, hideInEventLog: Boolean = false) {
 			val formattedTopic = memberCounterConfig.getFormattedTopic(guild)
 			if (hideInEventLog)
 				memberCounterJoinLeftCache.add(textChannel.idLong)
@@ -258,12 +271,15 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		GlobalScope.launch {
 			if (e.isFromType(ChannelType.TEXT)) {
 				try {
-					val conf = loritta.getServerConfigForGuild(e.guild.id)
+					val conf = loritta.getOrCreateServerConfig(e.guild.idLong)
 
 					// Sistema de Starboard
-					if (conf.starboardConfig.isEnabled) {
-						StarboardModule.handleStarboardReaction(e, conf)
+					val starboardConfig = transaction(Databases.loritta) {
+						conf.starboardConfig
 					}
+
+					if (starboardConfig != null && starboardConfig.enabled)
+						StarboardModule.handleStarboardReaction(e, starboardConfig)
 				} catch (exception: Exception) {
 					logger.error("[${e.guild.name}] Starboard ${e.member?.user?.name}", exception)
 				}
@@ -291,11 +307,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		logger.debug { "Deleting all ${e.guild} related stuff..." }
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
-			logger.trace { "Deleting MongoDB ${e.guild} config..."}
-
-			// Quando a Loritta sair de uma guild, automaticamente remova o ServerConfig daquele servidor
-			loritta.serversColl.deleteOne(Filters.eq("_id", e.guild.id))
-
 			transaction(Databases.loritta) {
 				logger.trace { "Deleting all ${e.guild} profiles..."}
 
@@ -307,6 +318,25 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				// Deletar configurações
 				logger.trace { "Deleting all ${e.guild} configurations..."}
 				val serverConfig = ServerConfig.findById(e.guild.idLong)
+
+				logger.trace { "Deleting all ${e.guild} role perms..."}
+				if (serverConfig != null)
+					ServerRolePermissions.deleteWhere {
+						ServerRolePermissions.guild eq serverConfig.id
+					}
+
+				logger.trace { "Deleting all ${e.guild} custom commands..."}
+				if (serverConfig != null)
+					CustomGuildCommands.deleteWhere {
+						CustomGuildCommands.guild eq serverConfig.id
+					}
+
+				val moderationConfig = serverConfig?.moderationConfig
+				logger.trace { "Deleting all ${e.guild} warn actions..."}
+				if (serverConfig != null && moderationConfig != null)
+					WarnActions.deleteWhere {
+						WarnActions.config eq moderationConfig.id
+					}
 
 				logger.trace { "Deleting ${e.guild} config..."}
 				serverConfig?.delete()
@@ -341,8 +371,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		val region = event.guild.region
 		val regionName = region.getName()
 		val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
-		val legacyServerConfig = loritta.getServerConfigForGuild(event.guild.id)
-
 		logger.trace { "regionName = $regionName" }
 
 		// Portuguese
@@ -361,17 +389,16 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		logger.debug { "Adding DJ permission to all roles with ADMINISTRATOR or MANAGE_SERVER permission at ${event.guild}"}
 
 		// Adicionar a permissão de DJ para alguns cargos
-		event.guild.roles.forEach {
-			if (it.hasPermission(Permission.ADMINISTRATOR) || it.hasPermission(Permission.MANAGE_SERVER)) {
-				legacyServerConfig.permissionsConfig.roles[it.id] = PermissionsConfig.PermissionRole().apply {
-					this.permissions.add(LorittaPermission.DJ)
+		event.guild.roles.forEach { role ->
+			if (role.hasPermission(Permission.ADMINISTRATOR) || role.hasPermission(Permission.MANAGE_SERVER)) {
+				transaction(Databases.loritta) {
+					ServerRolePermissions.insert {
+						it[ServerRolePermissions.guild] = serverConfig.id
+						it[ServerRolePermissions.roleId] = role.idLong
+						it[ServerRolePermissions.permission] = LorittaPermission.DJ
+					}
 				}
 			}
-		}
-
-		// E depois iremos salvar a configuração do servidor
-		GlobalScope.launch(loritta.coroutineDispatcher) {
-			loritta save legacyServerConfig
 		}
 	}
 
@@ -389,28 +416,10 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			try {
-				val legacyServerConfig = loritta.getServerConfigForGuild(event.guild.id)
 				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 
-				if (loritta.networkBanManager.checkIfUserShouldBeBanned(event.user, event.guild, serverConfig, legacyServerConfig))
-					return@launch
-
-				if (legacyServerConfig.miscellaneousConfig.enableQuirky && event.user.name.contains("lori", true) && MiscUtils.hasInappropriateWords(event.user.name)) { // #LoritaTambémTemSentimentos
-					BanCommand.ban(
-							legacyServerConfig,
-							event.guild,
-							event.guild.selfMember.user,
-							com.mrpowergamerbr.loritta.utils.loritta.getLegacyLocaleById(serverConfig.localeId),
-							event.user,
-							"Sim, eu também tenho sentimentos. (Usar nomes inapropriados que ofendem outros usuários!)",
-							false,
-							7
-					)
-					return@launch
-				}
-
 				if (FeatureFlags.UPDATE_IN_GUILD_STATS_ON_GUILD_JOIN) {
-					val profile = legacyServerConfig.getUserDataIfExists(event.guild.idLong)
+					val profile = serverConfig.getUserDataIfExists(event.guild.idLong)
 
 					if (profile != null) {
 						transaction(Databases.loritta) {
@@ -419,15 +428,21 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 				}
 
-				queueTextChannelTopicUpdates(event.guild, serverConfig, legacyServerConfig, true)
-
-				if (legacyServerConfig.autoroleConfig.isEnabled && !legacyServerConfig.autoroleConfig.giveOnlyAfterMessageWasSent && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) { // Está ativado?
-					AutoroleModule.giveRoles(event.member, legacyServerConfig.autoroleConfig)
+				val autoroleConfig = transaction(Databases.loritta) {
+					serverConfig.autoroleConfig
 				}
 
-				if (legacyServerConfig.joinLeaveConfig.isEnabled) { // Está ativado?
-					WelcomeModule.handleJoin(event, serverConfig, legacyServerConfig)
+				val welcomerConfig = transaction(Databases.loritta) {
+					serverConfig.welcomerConfig
 				}
+
+				queueTextChannelTopicUpdates(event.guild, serverConfig, true)
+
+				if (autoroleConfig != null && autoroleConfig.enabled && !autoroleConfig.giveOnlyAfterMessageWasSent && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) // Está ativado?
+					AutoroleModule.giveRoles(event.member, autoroleConfig)
+
+				if (welcomerConfig != null) // Está ativado?
+					WelcomeModule.handleJoin(event, serverConfig, welcomerConfig)
 
 				val mute = transaction(Databases.loritta) {
 					Mute.find { (Mutes.guildId eq event.guild.idLong) and (Mutes.userId eq event.member.user.idLong) }.firstOrNull()
@@ -480,11 +495,10 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				if (event.user.id == loritta.discordConfig.discord.clientId)
 					return@launch
 
-				val legacyServerConfig = loritta.getServerConfigForGuild(event.guild.id)
 				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 
 				if (FeatureFlags.UPDATE_IN_GUILD_STATS_ON_GUILD_QUIT) {
-					val profile = legacyServerConfig.getUserDataIfExists(event.guild.idLong)
+					val profile = serverConfig.getUserDataIfExists(event.guild.idLong)
 
 					if (profile != null) {
 						transaction(Databases.loritta) {
@@ -493,11 +507,14 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 				}
 
-				DiscordListener.queueTextChannelTopicUpdates(event.guild, serverConfig, legacyServerConfig, true)
+				DiscordListener.queueTextChannelTopicUpdates(event.guild, serverConfig, true)
 
-				if (legacyServerConfig.joinLeaveConfig.isEnabled) {
-					WelcomeModule.handleLeave(event, serverConfig, legacyServerConfig)
+				val welcomerConfig = transaction(Databases.loritta) {
+					serverConfig.welcomerConfig
 				}
+
+				if (welcomerConfig != null)
+					WelcomeModule.handleLeave(event, serverConfig, welcomerConfig)
 
 				loritta.pluginManager.plugins.filterIsInstance(DiscordPlugin::class.java).flatMap {
 					it.onGuildMemberLeaveListeners

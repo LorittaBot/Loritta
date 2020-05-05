@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.nashorn.wrappers
 
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.entities.Guild
@@ -9,7 +8,7 @@ import net.dv8tion.jda.api.entities.Guild
 /**
  * Wrapper para a Guild, usado para imagens de comandos Nashorn
  */
-class NashornGuild(private val guild: Guild, private val serverConfig: MongoServerConfig) {
+class NashornGuild(private val guild: Guild) {
 	@NashornCommand.NashornDocs()
 	fun getName(): String {
 		return guild.name
@@ -25,7 +24,7 @@ class NashornGuild(private val guild: Guild, private val serverConfig: MongoServ
 		val members = mutableListOf<NashornLorittaUser>()
 
 		guild.members.forEach {
-			members.add(NashornLorittaUser(it, serverConfig))
+			members.add(NashornLorittaUser(it))
 		}
 
 		return members
@@ -49,6 +48,6 @@ class NashornGuild(private val guild: Guild, private val serverConfig: MongoServ
 
 	@NashornCommand.NashornDocs()
 	fun getMemberById(id: String): NashornLorittaUser {
-		return NashornLorittaUser(guild.getMemberById(id)!!, serverConfig)
+		return NashornLorittaUser(guild.getMemberById(id)!!)
 	}
 }

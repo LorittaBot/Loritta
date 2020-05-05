@@ -132,7 +132,7 @@ class RssFeedsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/
 							+ trackedTwitterAccount.feedUrl
 						}
 						div(classes = "amino-title toggleSubText") {
-							val currentChannel = guild.textChannels.firstOrNull { it.id == trackedTwitterAccount.channelId.toString() }
+							val currentChannel = guild.textChannels.firstOrNull { it.id == trackedTwitterAccount.channelId }
 
 							val channelName = currentChannel?.let { "#${it.name}" } ?: "???"
 
@@ -285,9 +285,9 @@ class RssFeedsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/
 									for (channel in guild.textChannels) {
 										option {
 
-											value = channel.id
+											value = channel.id.toString()
 
-											if (channel.id == trackedTwitterAccount.channelId.toString()) {
+											if (channel.id == trackedTwitterAccount.channelId) {
 												selected = true
 											}
 

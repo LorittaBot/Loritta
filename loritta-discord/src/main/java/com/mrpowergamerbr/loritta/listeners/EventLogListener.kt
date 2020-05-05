@@ -1,18 +1,17 @@
 package com.mrpowergamerbr.loritta.listeners
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.StoredMessage
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxEmbed
+import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.tables.StoredMessages
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.EventLog
 import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.webhook.DiscordMessage
 import kotlinx.coroutines.GlobalScope
@@ -30,9 +29,12 @@ import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent
 import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.EventLogConfigs
 import net.perfectdreams.loritta.utils.DateUtils
 import org.apache.commons.io.IOUtils
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -101,40 +103,40 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						// E agora nós iremos anunciar a troca para todos os servidores
 						val guilds = event.jda.guilds.filter { it.isMember(event.user) }
 
-						loritta.serversColl.find(
-								Filters.and(
-										Filters.eq("eventLogConfig.avatarChanges", true),
-										Filters.eq("eventLogConfig.enabled", true),
-										Filters.`in`("_id", guilds.map { it.id })
-								)
+						transaction(Databases.loritta) {
+							(ServerConfigs innerJoin EventLogConfigs)
+									.select {
+										EventLogConfigs.enabled eq true and
+												(EventLogConfigs.avatarChanges eq true) and
+												(ServerConfigs.id inList guilds.map { it.idLong })
+									}
+									.toList()
+						}.forEach {
+							val guildId = it[ServerConfigs.id].value
+							val eventLogChannelId = it[EventLogConfigs.eventLogChannelId]
 
-						).iterator().use {
-							while (it.hasNext()) {
-								val legacyServerConfig = it.next()
-								val serverConfig = loritta.getOrCreateServerConfig(legacyServerConfig.guildId.toLong())
-								val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
+							val locale = loritta.getLegacyLocaleById(it[ServerConfigs.localeId])
 
-								val guild = guilds.first { it.id == legacyServerConfig.guildId }
+							val guild = guilds.first { it.idLong == guildId }
 
-								val textChannel = guild.getTextChannelByNullableId(legacyServerConfig.eventLogConfig.eventLogChannelId)
+							val textChannel = guild.getTextChannelById(eventLogChannelId)
 
-								if (textChannel != null && textChannel.canTalk()) {
-									if (!guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_EMBED_LINKS))
-										continue
-									if (!guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_ATTACH_FILES))
-										continue
-									if (!guild.selfMember.hasPermission(textChannel, Permission.VIEW_CHANNEL))
-										continue
-									if (!guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_READ))
-										continue
+							if (textChannel != null && textChannel.canTalk()) {
+								if (!guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_EMBED_LINKS))
+									return@forEach
+								if (!guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_ATTACH_FILES))
+									return@forEach
+								if (!guild.selfMember.hasPermission(textChannel, Permission.VIEW_CHANNEL))
+									return@forEach
+								if (!guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_READ))
+									return@forEach
 
-									embed.setDescription("\uD83D\uDDBC ${locale.get("EVENTLOG_AVATAR_CHANGED", event.user.asMention)}")
-									embed.setFooter(locale["EVENTLOG_USER_ID", event.user.id], null)
+								embed.setDescription("\uD83D\uDDBC ${locale.get("EVENTLOG_AVATAR_CHANGED", event.user.asMention)}")
+								embed.setFooter(locale["EVENTLOG_USER_ID", event.user.id], null)
 
-									val message = MessageBuilder().append(" ").setEmbed(embed.build())
+								val message = MessageBuilder().append(" ").setEmbed(embed.build())
 
-									textChannel.sendMessage(message.build()).addFile(bais, "avatar.png").queue()
-								}
+								textChannel.sendMessage(message.build()).addFile(bais, "avatar.png").queue()
 							}
 						}
 					}
@@ -159,13 +161,14 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
-			val legacyServerConfig = loritta.getServerConfigForGuild(event.guild.id)
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 			val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
-			val eventLogConfig = legacyServerConfig.eventLogConfig
+			val eventLogConfig = transaction(Databases.loritta) {
+				serverConfig.eventLogConfig
+			} ?: return@launch
 
-			if (eventLogConfig.isEnabled && eventLogConfig.messageDeleted) {
-				val textChannel = event.guild.getTextChannelByNullableId(eventLogConfig.eventLogChannelId)
+			if (eventLogConfig.enabled && eventLogConfig.messageDeleted) {
+				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
 					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
@@ -181,7 +184,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					if (storedMessage != null) {
 						val user = lorittaShards.retrieveUserById(storedMessage.authorId.toString()) ?: return@launch
 
-						val webhook = EventLog.getOrCreateEventLogWebhook(event.guild, legacyServerConfig) ?: return@launch
+						val webhook = EventLog.getOrCreateEventLogWebhook(event.guild, eventLogConfig) ?: return@launch
 
 						val embed = ParallaxEmbed()
 						// embed.setTimestamp(Instant.now())
@@ -230,13 +233,14 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
-			val legacyServerConfig = loritta.getServerConfigForGuild(event.guild.id)
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 			val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
-			val eventLogConfig = legacyServerConfig.eventLogConfig
+			val eventLogConfig = transaction(Databases.loritta) {
+				serverConfig.eventLogConfig
+			} ?: return@launch
 
-			if (eventLogConfig.isEnabled && eventLogConfig.messageDeleted) {
-				val textChannel = event.guild.getTextChannelByNullableId(eventLogConfig.eventLogChannelId)
+			if (eventLogConfig.enabled && eventLogConfig.messageDeleted) {
+				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
 					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
@@ -325,11 +329,14 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 			}
 
-			val legacyServerConfig = loritta.getServerConfigForGuild(event.guild.id)
-			val eventLogConfig = legacyServerConfig.eventLogConfig
+			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
+			val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
+			val eventLogConfig = transaction(Databases.loritta) {
+				serverConfig.eventLogConfig
+			} ?: return@launch
 
-			if (eventLogConfig.isEnabled && eventLogConfig.memberBanned) {
-				val textChannel = event.guild.getTextChannelByNullableId(eventLogConfig.eventLogChannelId) ?: return@launch
+			if (eventLogConfig.enabled && eventLogConfig.memberBanned) {
+				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
 				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 				val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 
@@ -342,7 +349,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
 					return@launch
 
-				val webhook = EventLog.getOrCreateEventLogWebhook(event.guild, legacyServerConfig) ?: return@launch
+				val webhook = EventLog.getOrCreateEventLogWebhook(event.guild, eventLogConfig) ?: return@launch
 
 				val embed = ParallaxEmbed()
 				// embed.setTimestamp(Instant.now())
@@ -392,12 +399,14 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				relayTo?.unban(event.user)?.queue()
 			}
 
-			val legacyServerConfig = loritta.getServerConfigForGuild(event.guild.id)
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
-			val eventLogConfig = legacyServerConfig.eventLogConfig
+			val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
+			val eventLogConfig = transaction(Databases.loritta) {
+				serverConfig.eventLogConfig
+			} ?: return@launch
 
-			if (eventLogConfig.isEnabled && eventLogConfig.memberUnbanned) {
-				val textChannel = event.guild.getTextChannelByNullableId(eventLogConfig.eventLogChannelId) ?: return@launch
+			if (eventLogConfig.enabled && eventLogConfig.memberUnbanned) {
+				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
 				val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 				if (!textChannel.canTalk())
 					return@launch
@@ -408,7 +417,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
 					return@launch
 
-				val webhook = EventLog.getOrCreateEventLogWebhook(event.guild, legacyServerConfig) ?: return@launch
+				val webhook = EventLog.getOrCreateEventLogWebhook(event.guild, eventLogConfig) ?: return@launch
 
 				val embed = ParallaxEmbed()
 				// embed.setTimestamp(Instant.now())
@@ -446,10 +455,13 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
-			val legacyServerConfig = loritta.getServerConfigForGuild(event.guild.id)
-			val eventLogConfig = legacyServerConfig.eventLogConfig
+			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
+			val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
+			val eventLogConfig = transaction(Databases.loritta) {
+				serverConfig.eventLogConfig
+			} ?: return@launch
 
-			if (eventLogConfig.isEnabled && eventLogConfig.nicknameChanges) {
+			if (eventLogConfig.enabled && eventLogConfig.nicknameChanges) {
 				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 				val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 				val embed = ParallaxEmbed()
@@ -458,7 +470,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				embed.setAuthor("${event.member.user.name}#${event.member.user.discriminator}", null, event.member.user.effectiveAvatarUrl)
 
 				// ===[ NICKNAME ]===
-				val textChannel = event.guild.getTextChannelByNullableId(eventLogConfig.eventLogChannelId) ?: return@launch
+				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
 				if (!textChannel.canTalk())
 					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
@@ -468,7 +480,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
 					return@launch
 
-				val webhook = EventLog.getOrCreateEventLogWebhook(event.guild, legacyServerConfig) ?: return@launch
+				val webhook = EventLog.getOrCreateEventLogWebhook(event.guild, eventLogConfig) ?: return@launch
 
 				val oldNickname = if (event.oldNickname == null) "\uD83E\uDD37 ${locale["EVENTLOG_NoNickname"]}" else event.oldNickname
 				val newNickname = if (event.newNickname == null) "\uD83E\uDD37 ${locale["EVENTLOG_NoNickname"]}" else event.newNickname

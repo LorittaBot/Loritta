@@ -1,12 +1,9 @@
 package net.perfectdreams.loritta.platform.discord.commands
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Updates
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.localized
@@ -48,7 +45,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 		commands.remove(command)
 	}
 
-	suspend fun dispatch(ev: LorittaMessageEvent, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun dispatch(ev: LorittaMessageEvent, serverConfig: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
 		val rawMessage = ev.message.contentRaw
 
 		// É necessário remover o new line para comandos como "+eval", etc
@@ -56,14 +53,14 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 
 		// Primeiro os comandos vanilla da Loritta(tm)
 		for (command in commands) {
-			if (dispatch(command, rawArguments, ev, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser))
+			if (dispatch(command, rawArguments, ev, serverConfig, locale, legacyLocale, lorittaUser))
 				return true
 		}
 
 		return false
 	}
 
-	suspend fun dispatch(command: Command<CommandContext>, rawArguments: List<String>, ev: LorittaMessageEvent, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun dispatch(command: Command<CommandContext>, rawArguments: List<String>, ev: LorittaMessageEvent, serverConfig: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
 		val message = ev.message.contentDisplay
 		val user = ev.author
 
@@ -145,12 +142,6 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 			}
 
 			try {
-				legacyServerConfig.lastCommandReceivedAt = System.currentTimeMillis()
-				com.mrpowergamerbr.loritta.utils.loritta.serversColl.updateOne(
-						Filters.eq("_id", legacyServerConfig.guildId),
-						Updates.set("lastCommandReceivedAt", legacyServerConfig.lastCommandReceivedAt)
-				)
-
 				if (serverConfig.blacklistedChannels.contains(ev.channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
 					if (serverConfig.warnIfBlacklisted) {
 						if (serverConfig.blacklistedChannels.isNotEmpty() && ev.guild != null && ev.member != null && ev.textChannel != null) {
@@ -208,7 +199,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 
 				if (!isPrivateChannel && ev.guild != null && ev.member != null) {
 					// Verificar se o comando está ativado na guild atual
-					if (CommandUtils.checkIfCommandIsDisabledInGuild(legacyServerConfig, locale, ev.channel, ev.member, command.commandName))
+					if (CommandUtils.checkIfCommandIsDisabledInGuild(serverConfig, locale, ev.channel, ev.member, command.commandName))
 						return true
 				}
 

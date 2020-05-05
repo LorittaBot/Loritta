@@ -25,8 +25,8 @@ import kotlinx.coroutines.withTimeout
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.SentYouTubeVideoIds
-import net.perfectdreams.loritta.tables.TrackedTwitchAccounts
-import net.perfectdreams.loritta.tables.TrackedYouTubeAccounts
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedTwitchAccounts
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedYouTubeAccounts
 import net.perfectdreams.loritta.website.routes.BaseRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.website.utils.extensions.urlQueryString

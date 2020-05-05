@@ -4,7 +4,6 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.mrpowergamerbr.loritta.analytics.AnalyticSender
 import com.mrpowergamerbr.loritta.analytics.InternalAnalyticSender
 import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
-import com.mrpowergamerbr.loritta.threads.AutoPurgeGuildsTask
 import com.mrpowergamerbr.loritta.threads.NewRssFeedTask
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.eventlog.DeleteOldStoredMessagesTask
@@ -19,7 +18,6 @@ import java.time.LocalTime
 import java.time.ZoneOffset
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-
 
 object LorittaTasks {
 	lateinit var DAILY_TAX_TASK: DailyTaxTask
@@ -41,7 +39,6 @@ object LorittaTasks {
 		scheduleWithFixedDelay(ApplyBansTask(), 0L, 60L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(SpawnGiveawayTask(), 0L, 1L, TimeUnit.HOURS)
 		scheduleWithFixedDelay(DeleteOldStoredMessagesTask(), 0L, 1L, TimeUnit.HOURS)
-		scheduleWithFixedDelay(AutoPurgeGuildsTask(), 0L, 15L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(UpdateFanArtsTask(), 0L, 5L, TimeUnit.MINUTES)
 		if (loritta.isMaster)
 			scheduleWithFixedDelay(NewRssFeedTask(), 0L, 15L, TimeUnit.SECONDS)

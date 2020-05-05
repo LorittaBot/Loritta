@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.tables.TrackedTwitterAccounts
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.*
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select

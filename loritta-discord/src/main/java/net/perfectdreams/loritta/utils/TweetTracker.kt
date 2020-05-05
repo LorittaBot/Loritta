@@ -14,7 +14,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import net.perfectdreams.loritta.tables.TrackedTwitterAccounts
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedTwitterAccounts
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import twitter4j.*

@@ -125,18 +125,19 @@ object LoriDashboard {
 		return Pair(cnt, jq(html))
 	}
 
-	fun configureTextChannelSelect(selectChannelDropdown: JQuery, serverConfig: ServerConfig, selectedChannelId: String?) {
+	fun configureTextChannelSelect(selectChannelDropdown: JQuery, textChannels: List<net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig.TextChannel>, selectedChannelId: Long?) {
 		val optionData = mutableListOf<dynamic>()
 
-		for (it in serverConfig.textChannels) {
+		for (it in textChannels) {
 			val option = object{}.asDynamic()
 			option.id = it.id
 			val text = "<span style=\"font-weight: 600;\">#${it.name}</span>"
 			option.text = text
 
-			if (!it.canTalk) {
+			// TODO: Please fix
+			/* if (!it.canTalk) {
 				option.text = "${text} <span class=\"keyword\" style=\"background-color: rgb(231, 76, 60);\">${legacyLocale["DASHBOARD_NoPermission"].replace("!", "")}</span>"
-			}
+			} */
 
 			if (it.id == selectedChannelId)
 				option.selected = true
@@ -158,7 +159,7 @@ object LoriDashboard {
 		selectChannelDropdown.on("select2:select") { event, a ->
 			val channelId = selectChannelDropdown.`val`() as String
 
-			val channel = serverConfig.textChannels.firstOrNull { it.id == channelId }
+			val channel = textChannels.firstOrNull { it.id.toString() == channelId }
 
 			if (channel != null && !channel.canTalk) {
 				event.preventDefault()

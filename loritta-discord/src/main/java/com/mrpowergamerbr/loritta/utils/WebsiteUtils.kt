@@ -6,12 +6,11 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
-import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.utils.CachedUserInfo
@@ -72,11 +71,35 @@ object WebsiteUtils {
 		)
 	}
 
-	fun getServerConfigAsJson(guild: Guild, serverConfig: MongoServerConfig, userIdentification: LorittaJsonWebSession.UserIdentification): JsonElement {
+	fun getProfileAsJson(profile: Profile): JsonObject {
+		return jsonObject(
+				"id" to profile.id.value,
+				"money" to profile.money
+		)
+	}
+
+	fun transformProfileToJson(profile: Profile): JsonObject {
+		// TODO: É necessário alterar o frontend para usar os novos valores
+		val jsonObject = JsonObject()
+		jsonObject["userId"] = profile.id.value
+		jsonObject["money"] = profile.money
+		jsonObject["dreams"] = profile.money // Deprecated
+		return jsonObject
+	}
+
+
+	/**
+	 * Legacy way for converting the server configuration + guild information into JSON
+	 *
+	 * This should *not* be used, and it is only used by legacy methods
+	 *
+	 * @return the server config as json
+	 */
+	fun getServerConfigAsJson(guild: Guild, serverConfig: ServerConfig, userIdentification: LorittaJsonWebSession.UserIdentification): JsonElement {
 		val serverConfigJson = Gson().toJsonTree(serverConfig)
 
 		val donationKey = transaction(Databases.loritta) {
-			loritta.getOrCreateServerConfig(serverConfig.guildId.toLong()).getActiveDonationKeys().firstOrNull()
+			loritta.getOrCreateServerConfig(serverConfig.guildId).getActiveDonationKeys().firstOrNull()
 		}
 
 		if (donationKey != null && donationKey.isActive()) {
@@ -148,22 +171,6 @@ object WebsiteUtils {
 		serverConfigJson["memberCount"] = guild.members.size
 
 		return serverConfigJson
-	}
-
-	fun getProfileAsJson(profile: Profile): JsonObject {
-		return jsonObject(
-				"id" to profile.id.value,
-				"money" to profile.money
-		)
-	}
-
-	fun transformProfileToJson(profile: Profile): JsonObject {
-		// TODO: É necessário alterar o frontend para usar os novos valores
-		val jsonObject = JsonObject()
-		jsonObject["userId"] = profile.id.value
-		jsonObject["money"] = profile.money
-		jsonObject["dreams"] = profile.money // Deprecated
-		return jsonObject
 	}
 
 	fun getDiscordCrawlerAuthenticationPage(): String {

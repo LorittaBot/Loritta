@@ -4,21 +4,20 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
-import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.dao.LevelConfig
-import net.perfectdreams.loritta.tables.ExperienceRoleRates
-import net.perfectdreams.loritta.tables.LevelAnnouncementConfigs
-import net.perfectdreams.loritta.tables.RolesByExperience
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.LevelConfig
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.ExperienceRoleRates
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.LevelAnnouncementConfigs
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.RolesByExperience
 import net.perfectdreams.loritta.utils.levels.LevelUpAnnouncementType
 import net.perfectdreams.loritta.utils.levels.RoleGiveType
+import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class LevelPayload : ConfigPayloadType("level") {
-	override fun process(payload: JsonObject, userIdentification: LorittaJsonWebSession.UserIdentification, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, guild: Guild) {
+	override fun process(payload: JsonObject, userIdentification: LorittaJsonWebSession.UserIdentification, serverConfig: ServerConfig, guild: Guild) {
 		transaction(Databases.loritta) {
 			val levelConfig = serverConfig.levelConfig ?: LevelConfig.new {
 				this.roleGiveType = RoleGiveType.STACK

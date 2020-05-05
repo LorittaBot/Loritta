@@ -7,7 +7,6 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Mutes
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
@@ -86,11 +85,13 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 					)
 			)
 
+			val settings = AdminUtils.retrieveModerationInfo(context.config)
+
 			suspend fun punishUser(time: Long?) {
 				val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context) ?: return
 
 				if (skipConfirmation) {
-					val result = muteUser(context, member, time, locale, user, reason, silent)
+					val result = muteUser(context, settings, member, time, locale, user, reason, silent)
 
 					if (!result) {
 						return
@@ -100,7 +101,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 					return
 				}
 
-				val hasSilent = context.legacyConfig.moderationConfig.sendPunishmentViaDm || context.legacyConfig.moderationConfig.sendToPunishLog
+				val hasSilent = settings.sendPunishmentViaDm || settings.sendPunishmentToPunishLog
 				val message = AdminUtils.sendConfirmationMessage(context, user, hasSilent, "mute")
 
 				message.onReactionAddByAuthor(context) {
@@ -109,7 +110,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 
 						message.delete().queue()
 
-						val result = muteUser(context, member, time, locale, user, reason, isSilent)
+						val result = muteUser(context, settings, member, time, locale, user, reason, isSilent)
 
 						if (!result) {
 							return@onReactionAddByAuthor
@@ -159,7 +160,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 		// 297732013006389252#123170274651668480
 		val roleRemovalJobs = ConcurrentHashMap<String, Job>()
 
-		suspend fun muteUser(context: CommandContext, member: Member, time: Long?, locale: LegacyBaseLocale, user: User, reason: String, isSilent: Boolean): Boolean {
+		suspend fun muteUser(context: CommandContext, settings: AdminUtils.ModerationConfigSettings, member: Member, time: Long?, locale: LegacyBaseLocale, user: User, reason: String, isSilent: Boolean): Boolean {
 			val delay = if (time != null) {
 				time - System.currentTimeMillis()
 			} else {
@@ -178,7 +179,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			}
 
 			if (!isSilent) {
-				if (context.legacyConfig.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
+				if (settings.sendPunishmentViaDm && context.guild.isMember(user)) {
 					try {
 						val embed = AdminUtils.createPunishmentEmbedBuilderSentViaDirectMessage(context.guild, locale, context.userHandle, locale["MUTE_PunishAction"], reason)
 
@@ -198,12 +199,12 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 					}
 				}
 
-				if (context.legacyConfig.moderationConfig.sendToPunishLog) {
-					val textChannel = context.guild.getTextChannelByNullableId(context.legacyConfig.moderationConfig.punishmentLogChannelId)
+				if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && settings.punishLogMessage != null) {
+					val textChannel = context.guild.getTextChannelById(settings.punishLogChannelId)
 
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
-								context.legacyConfig.moderationConfig.punishmentLogMessage,
+								settings.punishLogMessage,
 								listOf(user),
 								context.guild,
 								mutableMapOf(
@@ -460,8 +461,10 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 
 					val member = guild.getMemberById(userId) ?: return@launch
 
+					val settings = AdminUtils.retrieveModerationInfo(loritta.getOrCreateServerConfig(guildId))
+
 					UnmuteCommand.unmute(
-							loritta.getServerConfigForGuild(guild.id),
+							settings,
 							guild,
 							guild.selfMember.user,
 							locale,

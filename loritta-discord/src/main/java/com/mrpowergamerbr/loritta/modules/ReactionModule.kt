@@ -11,8 +11,8 @@ import net.dv8tion.jda.api.entities.MessageReaction
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveEvent
-import net.perfectdreams.loritta.dao.ReactionOption
-import net.perfectdreams.loritta.tables.ReactionOptions
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.ReactionOption
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.ReactionOptions
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*

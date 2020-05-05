@@ -13,10 +13,10 @@ import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
-import net.perfectdreams.loritta.dao.Giveaway
+import net.perfectdreams.loritta.dao.servers.Giveaway
 import net.perfectdreams.loritta.platform.discord.commands.LorittaDiscordCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
-import net.perfectdreams.loritta.tables.Giveaways
+import net.perfectdreams.loritta.tables.servers.Giveaways
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
 import org.jetbrains.exposed.sql.and

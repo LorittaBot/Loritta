@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.perfectdreams.loritta.api.commands.CommandContext
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import net.perfectdreams.loritta.tables.Giveaways
+import net.perfectdreams.loritta.tables.servers.Giveaways
 import net.perfectdreams.loritta.utils.DiscordUtils
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.selectAll

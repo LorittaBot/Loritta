@@ -2,11 +2,9 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.MessageUtils
-import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
@@ -66,9 +64,10 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 			}
 
 			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context) ?: return
+			val settings = AdminUtils.retrieveModerationInfo(context.config)
 
 			val banCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
-				unban(context.legacyConfig, context.guild, context.userHandle, locale, user, reason, isSilent)
+				unban(settings, context.guild, context.userHandle, locale, user, reason, isSilent)
 
 				message?.delete()?.queue()
 
@@ -85,7 +84,7 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 				return
 			}
 
-			val hasSilent = context.legacyConfig.moderationConfig.sendPunishmentViaDm || context.legacyConfig.moderationConfig.sendToPunishLog
+			val hasSilent = settings.sendPunishmentViaDm || settings.sendPunishmentToPunishLog
 			val message = AdminUtils.sendConfirmationMessage(context, user, hasSilent, "unban")
 
 			message.onReactionAddByAuthor(context) {
@@ -107,14 +106,14 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 	companion object {
 		private const val LOCALE_PREFIX = "commands.moderation"
 
-		fun unban(serverConfig: MongoServerConfig, guild: Guild, punisher: User, locale: LegacyBaseLocale, user: User, reason: String, isSilent: Boolean) {
+		fun unban(settings: AdminUtils.ModerationConfigSettings, guild: Guild, punisher: User, locale: LegacyBaseLocale, user: User, reason: String, isSilent: Boolean) {
 			if (!isSilent) {
-				if (serverConfig.moderationConfig.sendToPunishLog) {
-					val textChannel = guild.getTextChannelByNullableId(serverConfig.moderationConfig.punishmentLogChannelId)
+				if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && settings.punishLogMessage != null) {
+					val textChannel = guild.getTextChannelById(settings.punishLogChannelId)
 
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
-								serverConfig.moderationConfig.punishmentLogMessage,
+								settings.punishLogMessage,
 								listOf(user),
 								guild,
 								mutableMapOf(

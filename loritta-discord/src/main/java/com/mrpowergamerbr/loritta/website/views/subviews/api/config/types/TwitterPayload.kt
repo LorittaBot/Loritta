@@ -8,16 +8,15 @@ import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.tables.TrackedTwitterAccounts
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedTwitterAccounts
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class TwitterPayload : ConfigPayloadType("twitter") {
-	override fun process(payload: JsonObject, userIdentification: LorittaJsonWebSession.UserIdentification, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, guild: Guild) {
+	override fun process(payload: JsonObject, userIdentification: LorittaJsonWebSession.UserIdentification, serverConfig: ServerConfig, guild: Guild) {
 		transaction(Databases.loritta) {
 			TrackedTwitterAccounts.deleteWhere {
 				TrackedTwitterAccounts.guildId eq guild.idLong

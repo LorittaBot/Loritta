@@ -7,7 +7,6 @@ import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.modules.AutoroleModule
 import com.mrpowergamerbr.loritta.modules.Modules
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.userdata.PermissionsConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.EventLog
@@ -29,6 +28,7 @@ import net.perfectdreams.loritta.utils.FeatureFlags
 import org.apache.commons.text.similarity.LevenshteinDistance
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
@@ -68,7 +68,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			try {
 				val member = event.member
-				if (member == null) { // Isto parece estúpido, mas realmente funciona
+				if (member == null) { // This may seem dumb, but it works!
 					logger.warn { "${event.author} saiu do servidor ${event.guild.id} antes de eu poder processar a mensagem"}
 					return@launch
 				}
@@ -76,11 +76,21 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				val enableProfiling = loritta.config.isOwner(member.idLong)
 
 				var start = System.nanoTime()
-				val legacyServerConfig = loritta.getServerConfigForGuild(event.guild.id)
 				logIfEnabled(enableProfiling) { "Loading Legacy Server Config took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
 				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
+
+				val miscellaneousConfig = transaction(Databases.loritta) {
+					serverConfig.miscellaneousConfig
+				}
+
+				val enableQuirky = miscellaneousConfig?.enableQuirky ?: false
+
+				val autoroleConfig = transaction(Databases.loritta) {
+					serverConfig.autoroleConfig
+				}
+
 				logIfEnabled(enableProfiling) { "Loading Server Config took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
@@ -107,8 +117,17 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				logIfEnabled(enableProfiling) { "Loading ${serverConfig.localeId} legacy locale took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
-				val lorittaUser = GuildLorittaUser(member, legacyServerConfig, lorittaProfile)
-				logIfEnabled(enableProfiling) { "Wrapping $member $legacyServerConfig and $lorittaProfile in a GuildLorittaUser took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
+				// We use "loadMemberRolesLorittaPermissions(...)" to avoid unnecessary retrievals later on, because we recheck the role permission later
+				val rolesLorittaPermissions = LorittaUser.loadMemberRolesLorittaPermissions(serverConfig, member)
+				logIfEnabled(enableProfiling) { "Loading Loritta's role permissions in ${event.guild.idLong} took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
+
+				start = System.nanoTime()
+				val memberLorittaPermissions = LorittaUser.convertRolePermissionsMapToMemberPermissionList(member, rolesLorittaPermissions)
+				logIfEnabled(enableProfiling) { "Converting Loritta's role permissions to member permissions in ${event.guild.idLong} took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
+
+				start = System.nanoTime()
+				val lorittaUser = GuildLorittaUser(member, memberLorittaPermissions, lorittaProfile)
+				logIfEnabled(enableProfiling) { "Wrapping $member and $lorittaProfile in a GuildLorittaUser took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
 				if (lorittaProfile != null && lorittaProfile.isAfk) {
@@ -130,17 +149,12 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				logIfEnabled(enableProfiling) { "Checking for guild ban took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
-				if (FeatureFlags.CHECK_IF_USER_IS_BANNED_IN_EVERY_MESSAGE && loritta.networkBanManager.checkIfUserShouldBeBanned(event.author, event.guild, serverConfig, legacyServerConfig))
-					return@launch
-				logIfEnabled(enableProfiling) { "Checking for user global/network ban took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
-
-				start = System.nanoTime()
-				EventLog.onMessageReceived(legacyServerConfig, event.message)
+				EventLog.onMessageReceived(serverConfig, event.message)
 				logIfEnabled(enableProfiling) { "Logging to EventLog took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
 				if (isMentioningMe(event.message))
-					if (chance(25.0) && legacyServerConfig.miscellaneousConfig.enableQuirky && event.member!!.hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI))
+					if (chance(25.0) && enableQuirky && event.member!!.hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI))
 						event.message.addReaction("smol_lori_putassa_ping:397748526362132483").queue()
 				logIfEnabled(enableProfiling) { "Checking user mention took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
@@ -159,8 +173,8 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 						var ignoringCommandsRole: Role? = null
 						for (role in roles) {
-							val permissionRole = legacyServerConfig.permissionsConfig.roles.getOrDefault(role.id, PermissionsConfig.PermissionRole())
-							if (permissionRole.permissions.contains(LorittaPermission.IGNORE_COMMANDS)) {
+							val permissions = rolesLorittaPermissions[role.idLong] ?: continue
+							if (permissions.contains(LorittaPermission.IGNORE_COMMANDS)) {
 								ignoringCommandsRole = role
 								break
 							}
@@ -204,7 +218,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						event.channel,
 						event.channel,
 						serverConfig,
-						legacyServerConfig,
 						legacyLocale,
 						lorittaUser
 				)
@@ -212,7 +225,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				start = System.nanoTime()
 				if (FeatureFlags.UPDATE_IN_GUILD_STATS_ON_MESSAGE_SEND) {
-					val profile = legacyServerConfig.getUserDataIfExists(member.idLong)
+					val profile = serverConfig.getUserDataIfExists(member.idLong)
 
 					if (profile != null && !profile.isInGuild) {
 						transaction(Databases.loritta) {
@@ -223,21 +236,18 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				logIfEnabled(enableProfiling) { "Updating In Guild Status took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
-				if (legacyServerConfig.autoroleConfig.isEnabled && legacyServerConfig.autoroleConfig.giveOnlyAfterMessageWasSent && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) // Está ativado?
-					AutoroleModule.giveRoles(member, legacyServerConfig.autoroleConfig)
+
+				if (autoroleConfig != null && autoroleConfig.enabled && autoroleConfig.giveOnlyAfterMessageWasSent && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) // Está ativado?
+					AutoroleModule.giveRoles(member, autoroleConfig)
+
 				logIfEnabled(enableProfiling) { "Giving auto role on message took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				for (module in (MESSAGE_RECEIVED_MODULES + loritta.pluginManager.plugins.filterIsInstance<DiscordPlugin>().flatMap { it.messageReceivedModules } + loritta.pluginManager.plugins.filterIsInstance<LorittaDiscordPlugin>().flatMap { it.messageReceivedModules })) {
 					start = System.nanoTime()
-					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyServerConfig, legacyLocale) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyServerConfig, legacyLocale))
+					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyLocale) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyLocale))
 						return@launch
 					logIfEnabled(enableProfiling) { "Executing ${module::class.simpleName} took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 				}
-
-				start = System.nanoTime()
-				for (eventHandler in legacyServerConfig.nashornEventHandlers)
-					eventHandler.handleMessageReceived(event, legacyServerConfig)
-				logIfEnabled(enableProfiling) { "Executing event handlers took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
 				if (lorittaUser.hasPermission(LorittaPermission.IGNORE_COMMANDS))
@@ -251,18 +261,18 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				// Executar comandos
 				start = System.nanoTime()
-				if (loritta.commandMap.dispatch(lorittaMessageEvent, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser))
+				if (loritta.commandMap.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 					return@launch
 				logIfEnabled(enableProfiling) { "Checking for command map commands took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 
 				start = System.nanoTime()
-				if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser))
+				if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 					return@launch
 				logIfEnabled(enableProfiling) { "Checking for command manager commands took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
-				if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser))
+				if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 					return@launch
 				logIfEnabled(enableProfiling) { "Checking for legacy command manager commands took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
@@ -301,17 +311,17 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						val allCommandLabels = mutableListOf<String>()
 
 						loritta.commandMap.commands.forEach {
-							if (!it.onlyOwner && !legacyServerConfig.disabledCommands.contains(it.javaClass.simpleName))
+							if (!it.onlyOwner && !serverConfig.disabledCommands.contains(it.javaClass.simpleName))
 								allCommandLabels.addAll(it.labels)
 						}
 
 						loritta.commandManager.commands.forEach {
-							if (!it.onlyOwner && !legacyServerConfig.disabledCommands.contains(it.javaClass.simpleName))
+							if (!it.onlyOwner && !serverConfig.disabledCommands.contains(it.javaClass.simpleName))
 								allCommandLabels.addAll(it.labels)
 						}
 
 						loritta.legacyCommandManager.commandMap.forEach {
-							if (!it.onlyOwner && !legacyServerConfig.disabledCommands.contains(it.javaClass.simpleName)) {
+							if (!it.onlyOwner && !serverConfig.disabledCommands.contains(it.javaClass.simpleName)) {
 								allCommandLabels.add(it.label)
 								allCommandLabels.addAll(it.aliases)
 							}
@@ -367,9 +377,8 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = loritta.getOrCreateServerConfig(-1)
-			val legacyServerConfig = LorittaLauncher.loritta.dummyLegacyServerConfig
 			val profile = loritta.getOrCreateLorittaProfile(event.author.idLong) // Carregar perfil do usuário
-			val lorittaUser = LorittaUser(event.author, legacyServerConfig, profile)
+			val lorittaUser = LorittaUser(event.author, EnumSet.noneOf(LorittaPermission::class.java), profile)
 			// TODO: Usuários deverão poder escolher a linguagem que eles preferem via mensagem direta
 			val locale = loritta.getLocaleById(serverConfig.localeId)
 			val legacyLocale = loritta.getLegacyLocaleById("default")
@@ -391,19 +400,18 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 					event.channel,
 					null,
 					serverConfig,
-					legacyServerConfig,
 					legacyLocale,
 					lorittaUser
 			)
 
 			// Executar comandos
-			if (loritta.commandMap.dispatch(lorittaMessageEvent, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser))
+			if (loritta.commandMap.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 				return@launch
 
-			if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser))
+			if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 				return@launch
 
-			if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser))
+			if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 				return@launch
 		}
 	}
@@ -423,14 +431,21 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 		if (event.channel.type == ChannelType.TEXT) { // Mensagens em canais de texto
 			GlobalScope.launch(loritta.coroutineDispatcher) {
+				val member = event.member
+
+				if (member == null) { // This may seem dumb, but it works!
+					logger.warn { "${event.author} saiu do servidor ${event.guild.id} antes de eu poder processar a mensagem" }
+					return@launch
+				}
+
 				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
-				val legacyServerConfig = loritta.getServerConfigForGuild(event.guild.id)
 				val lorittaProfile = loritta.getOrCreateLorittaProfile(event.author.idLong)
 				val legacyLocale = loritta.getLegacyLocaleById(serverConfig.localeId)
 				val locale = loritta.getLocaleById(serverConfig.localeId)
-				val lorittaUser = GuildLorittaUser(event.member!!, legacyServerConfig, lorittaProfile)
+				val permissions = LorittaUser.loadMemberLorittaPermissions(serverConfig, member)
+				val lorittaUser = GuildLorittaUser(member, permissions, lorittaProfile)
 
-				EventLog.onMessageUpdate(legacyServerConfig, legacyLocale, event.message)
+				EventLog.onMessageUpdate(serverConfig, legacyLocale, event.message)
 
 				val lorittaMessageEvent = LorittaMessageEvent(
 						event.author,
@@ -441,24 +456,23 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						event.channel,
 						event.channel,
 						serverConfig,
-						legacyServerConfig,
 						legacyLocale,
 						lorittaUser
 				)
 
 				for (module in (MESSAGE_EDITED_MODULES + loritta.pluginManager.plugins.filterIsInstance<DiscordPlugin>().flatMap { it.messageEditedModules } + loritta.pluginManager.plugins.filterIsInstance<LorittaDiscordPlugin>().flatMap { it.messageEditedModules })) {
-					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyServerConfig, legacyLocale) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyServerConfig, legacyLocale))
+					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyLocale) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyLocale))
 						return@launch
 				}
 
 				// Executar comandos
-				if (loritta.commandMap.dispatch(lorittaMessageEvent, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser))
+				if (loritta.commandMap.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 					return@launch
 
-				if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser))
+				if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 					return@launch
 
-				if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, legacyServerConfig, locale, legacyLocale, lorittaUser))
+				if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 					return@launch
 			}
 		}

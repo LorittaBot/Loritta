@@ -4,7 +4,6 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.string
-import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
@@ -14,19 +13,14 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanEntry
-import com.mrpowergamerbr.loritta.utils.networkbans.NetworkBanType
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import net.perfectdreams.loritta.dao.EconomyConfig
 import net.perfectdreams.loritta.dao.Payment
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.EconomyConfig
 import net.perfectdreams.loritta.tables.BlacklistedGuilds
-import net.perfectdreams.loritta.tables.BlacklistedUsers
-import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.dao.EntityID
@@ -220,148 +214,10 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				)
 				return
 			}
-
-			if (arg0 == "sync_ban") {
-				context.reply(
-						LoriReply(
-								"Forçando a sincronização de bans globais de $arg1..."
-						)
-				)
-				lorittaShards.queryAllLorittaClusters("/api/v1/loritta/global-bans/sync/${arg1}")
-				return
-			}
-
-			if (arg0 == "commit_bans") {
-				val replies = mutableListOf<LoriReply>()
-				replies.add(
-						LoriReply(
-								"**Lista de usuários a serem banidos *GLOBALMENTE*...**",
-								Emotes.ONLINE
-						)
-				)
-
-				loritta.networkBanManager.notVerifiedEntries.forEach {
-					if (replies.sumBy { it.build(context).length } >= 2000) {
-						context.reply(*replies.toTypedArray())
-						replies.clear()
-					}
-
-					val user = lorittaShards.retrieveUserById(it.id) ?: return@forEach
-
-					val typeEmote = when {
-						user.isBot -> Emotes.BOT_TAG
-						else -> Emotes.WUMPUS_BASIC
-					}
-
-					val mutualGuilds = lorittaShards.getMutualGuilds(user)
-					val serverConfigs = loritta.serversColl.find(
-							Filters.and(
-									Filters.`in`("_id", mutualGuilds.map { it.id }),
-									Filters.eq("moderationConfig.useLorittaBansNetwork", true)
-							)
-					).toMutableList()
-
-					replies.add(
-							LoriReply(
-									"$typeEmote `${user.name.stripCodeMarks()}#${user.discriminator}` (${user.id}/${it.type.name}) — ${mutualGuilds.size} servidores compartilhados (${serverConfigs.size} com os bans globais ativados)",
-									mentionUser = false
-							)
-					)
-				}
-
-				context.reply(*replies.toTypedArray())
-				replies.clear()
-
-				val message = context.reply(
-						LoriReply(
-								"Veja se tudo está correto, caso esteja, veja de novo e caso realmente esteja certo, aperte no ✅",
-								Emotes.DO_NOT_DISTURB
-						)
-				)
-
-				message.addReaction("✅").queue()
-				message.addReaction("error:412585701054611458").queue()
-
-				message.onReactionAddByAuthor(context) {
-					if (it.reactionEmote.isEmote("✅")) {
-						loritta.networkBanManager.notVerifiedEntries.forEach { entry ->
-							loritta.networkBanManager.addBanEntry(entry)
-						}
-
-						loritta.networkBanManager.notVerifiedEntries.clear()
-						context.reply(
-								LoriReply(
-										"Todos os usuários da lista foram adicionados na lista de bans globais, yay!"
-								)
-						)
-					} else {
-						loritta.networkBanManager.notVerifiedEntries.clear()
-						context.reply(
-								LoriReply(
-										"A lista de bans não verificados foi limpa, whoosh!"
-								)
-						)
-					}
-				}
-				return
-			}
 		}
 
 		// Sub-comandos que o dono e os Supervisores de Lori podem usar
 		if (loritta.config.isOwner(context.userHandle.id) || context.userHandle.lorittaSupervisor) {
-			if (arg0 == "network_ban" && arg1 != null && arg2 != null && arg3 != null) {
-				val userId = arg1
-				var guildId = arg2
-				if (guildId == "null")
-					guildId = null
-
-				val rawArgs = context.rawArgs.toMutableList()
-				rawArgs.removeAt(0)
-				rawArgs.removeAt(0)
-				rawArgs.removeAt(0)
-				rawArgs.removeAt(0)
-
-				loritta.networkBanManager.addNonVerifiedEntry(
-						NetworkBanEntry(
-								userId.toLong(),
-								guildId?.toLong(),
-								NetworkBanType.valueOf(arg3),
-								rawArgs.joinToString(" ")
-						)
-				)
-
-				val user = lorittaShards.retrieveUserById(userId) ?: run {
-					context.reply(
-							LoriReply(
-									"Usuário ${userId} não existe!"
-							)
-					)
-					return
-				}
-
-				context.reply(
-						LoriReply(
-								"Usuário $userId (`${user.name}`) adicionado na lista de usuários a serem banidos na Loritta Bans Network! Use `+lslc commit_bans` para confirmar"
-						)
-				)
-			}
-
-			if (arg0 == "network_unban" && arg1 != null) {
-				val userId = arg1
-
-				transaction(Databases.loritta) {
-					BlacklistedUsers.deleteWhere {
-						BlacklistedUsers.id eq userId.toLong()
-					}
-				}
-
-				context.reply(
-						LoriReply(
-								"Usuário desbanido na Loritta Bans Network!"
-						)
-				)
-			}
-
 			if (arg0 == "guild_ban" && arg1 != null) {
 				val guildId = arg1.toLong()
 

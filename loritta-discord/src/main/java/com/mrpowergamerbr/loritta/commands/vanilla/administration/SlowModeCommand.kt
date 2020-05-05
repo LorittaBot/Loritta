@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.save
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
@@ -54,8 +53,6 @@ class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), Command
 				if (context.guild.selfMember.hasPermission(Permission.MANAGE_CHANNEL))
 					context.message.textChannel.manager.setSlowmode(0).queue()
 
-				loritta save context.legacyConfig
-
 				context.sendMessage("\uD83C\uDFC3 **|** " + context.getAsMention(true) + context.legacyLocale["SLOWMODE_DisabledInChannel", context.event.textChannel!!.asMention])
 				return
 			}
@@ -67,8 +64,6 @@ class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), Command
 				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["INVALID_NUMBER", context.args[0]])
 				return
 			}
-
-			loritta save context.legacyConfig
 
 			context.sendMessage("\uD83D\uDC0C **|** " + context.getAsMention(true) + context.legacyLocale["SLOWMODE_EnabledInChannel", context.event.textChannel!!.asMention, seconds])
 		} else {

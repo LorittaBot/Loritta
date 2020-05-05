@@ -61,7 +61,6 @@ dependencies {
     compile("com.sun.xml.bind:jaxb-impl:2.3.2")
     compile("javax.activation:activation:1.1.1")
     compile("net.dv8tion:JDA:$jdaVersion")
-    compile("org.mongodb:mongodb-driver:3.11.2")
     compile("org.postgresql:postgresql:42.2.8")
     compile("com.zaxxer:HikariCP:3.4.1")
     compile("org.jetbrains.exposed:exposed:0.17.7")

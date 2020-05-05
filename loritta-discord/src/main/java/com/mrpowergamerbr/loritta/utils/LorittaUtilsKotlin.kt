@@ -2,13 +2,10 @@ package com.mrpowergamerbr.loritta.utils
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.google.gson.stream.JsonReader
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.ReplaceOptions
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.utils.MiscUtil
@@ -82,22 +79,6 @@ val lorittaShards get() = LorittaLauncher.loritta.lorittaShards
 
 val gson get() = Loritta.GSON
 val jsonParser get() = Loritta.JSON_PARSER
-
-/**
- * Salva um objeto usando o Datastore do MongoDB
- */
-infix fun <T> Loritta.save(obj: T) {
-	val updateOptions = ReplaceOptions().upsert(true)
-	if (obj is MongoServerConfig) {
-		loritta.serversColl.replaceOne(
-				Filters.eq("_id", obj.guildId),
-				obj,
-				updateOptions
-		)
-		return
-	}
-	throw RuntimeException("Trying to save $obj but no collection for that type exists!")
-}
 
 fun String.isValidSnowflake(): Boolean {
 	try {

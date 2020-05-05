@@ -1,18 +1,61 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.dao.ServerConfig
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.WarnAction
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.WarnActions
 import net.perfectdreams.loritta.utils.Emotes
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.time.Instant
 
 object AdminUtils {
 	private val LOCALE_PREFIX = "commands.moderation"
+
+	/**
+	 * Retrieves the moderation settings for the [serverConfig]
+	 *
+	 * @return the settings of the server or, if the server didn't configure the moderation module, default values
+	 */
+	fun retrieveModerationInfo(serverConfig: ServerConfig): ModerationConfigSettings {
+		val moderationConfig = transaction(Databases.loritta) {
+			serverConfig.moderationConfig
+		}
+
+		return ModerationConfigSettings(
+				moderationConfig?.sendPunishmentViaDm ?: false,
+				moderationConfig?.sendPunishmentToPunishLog ?: false,
+				moderationConfig?.punishLogChannelId,
+				moderationConfig?.punishLogMessage
+		)
+	}
+
+	/**
+	 * Retrieves the punishment actions for warns, ordered by required warn count (ascending)
+	 *
+	 * @return the list of warn punishments, can be empty
+	 */
+	fun retrieveWarnPunishmentActions(serverConfig: ServerConfig): List<WarnAction> {
+		val moderationConfig = transaction(Databases.loritta) {
+			serverConfig.moderationConfig
+		} ?: return listOf()
+
+		val warnActions = transaction(Databases.loritta) {
+			WarnAction.find {
+				WarnActions.config eq moderationConfig.id
+			}.toList()
+					.sortedBy { it.warnCount }
+		}
+
+		return warnActions
+	}
 
 	suspend fun checkForUser(context: CommandContext): User? {
 		val user = context.getUserAt(0)
@@ -88,7 +131,7 @@ object AdminUtils {
 			)
 		}
 
-		if (!context.legacyConfig.getUserData(context.userHandle.idLong).quickPunishment) {
+		if (!context.config.getUserData(context.userHandle.idLong).quickPunishment) {
 			replies += LoriReply(
 					context.locale["${LOCALE_PREFIX}.skipConfirmationTip", "`${context.config.commandPrefix}quickpunishment`"],
 					mentionUser = false
@@ -157,7 +200,7 @@ object AdminUtils {
 		val pipedReason = reason.split("|")
 
 		var usingPipedArgs = false
-		var skipConfirmation = context.legacyConfig.getUserData(context.userHandle.idLong).quickPunishment
+		var skipConfirmation = context.config.getUserData(context.userHandle.idLong).quickPunishment
 		var delDays = 0
 
 		var silent = false
@@ -207,4 +250,10 @@ object AdminUtils {
 	}
 
 	data class AdministrationOptions(val reason: String, val skipConfirmation: Boolean, val silent: Boolean, val delDays: Int)
+	data class ModerationConfigSettings(
+			val sendPunishmentViaDm: Boolean,
+			val sendPunishmentToPunishLog: Boolean,
+			val punishLogChannelId: Long? = null,
+			val punishLogMessage: String? = null
+	)
 }

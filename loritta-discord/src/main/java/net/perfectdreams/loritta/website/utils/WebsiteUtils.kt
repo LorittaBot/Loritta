@@ -20,18 +20,16 @@ import io.ktor.application.ApplicationCall
 import io.ktor.request.path
 import io.ktor.util.AttributeKey
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.dao.ReactionOption
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.ReactionOption
 import net.perfectdreams.loritta.tables.Backgrounds
-import net.perfectdreams.loritta.tables.ReactionOptions
-import net.perfectdreams.loritta.tables.TrackedRssFeeds
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.ReactionOptions
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedRssFeeds
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.config.types.ConfigTransformers
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.lang.management.ManagementFactory
 import java.text.MessageFormat
-import java.util.concurrent.TimeUnit
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -49,9 +47,6 @@ object WebsiteUtils {
 				"discordAuth" to null,
 				"userIdentification" to null,
 				"epochMillis" to System.currentTimeMillis(),
-				"guildCount" to lorittaShards.getCachedGuildCount(),
-				"availableCommandsCount" to loritta.legacyCommandManager.commandMap.size + loritta.commandManager.commands.size,
-				"commandMap" to loritta.legacyCommandManager.commandMap + loritta.commandManager.commands.size,
 				"path" to req.path(),
 				"clientId" to loritta.discordConfig.discord.clientId,
 				"cssAssetVersion" to OptimizeAssets.cssAssetVersion,
@@ -80,21 +75,7 @@ object WebsiteUtils {
 
 		variables["addBotUrl"] = loritta.discordInstanceConfig.discord.addBotUrl
 
-		var jvmUpTime = ManagementFactory.getRuntimeMXBean().uptime
-
-		val days = TimeUnit.MILLISECONDS.toDays(jvmUpTime)
-		jvmUpTime -= TimeUnit.DAYS.toMillis(days)
-		val hours = TimeUnit.MILLISECONDS.toHours(jvmUpTime)
-		jvmUpTime -= TimeUnit.HOURS.toMillis(hours)
-		val minutes = TimeUnit.MILLISECONDS.toMinutes(jvmUpTime)
-		jvmUpTime -= TimeUnit.MINUTES.toMillis(minutes)
-		val seconds = TimeUnit.MILLISECONDS.toSeconds(jvmUpTime)
-
 		val correctUrl = LorittaWebsite.WEBSITE_URL.replace("https://", "https://$languageCode.")
-		variables["uptimeDays"] = days
-		variables["uptimeHours"] = hours
-		variables["uptimeMinutes"] = minutes
-		variables["uptimeSeconds"] = seconds
 		variables["currentUrl"] = correctUrl + req.path().substring(1)
 
 		// Já que Reflection não existe em Kotlin/JS, o Kotlin Serialization não suporta "Any?" em JavaScript.

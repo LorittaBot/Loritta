@@ -1,7 +1,10 @@
 package net.perfectdreams.loritta.website.routes.dashboard
 
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
+import com.mrpowergamerbr.loritta.utils.LorittaPermission
+import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import io.ktor.application.ApplicationCall
 import io.ktor.request.host
 import io.ktor.request.path
@@ -54,7 +57,7 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaDiscord, original
 		logger.info { "JDA Guild get and check: ${System.currentTimeMillis() - start}" }
 		start = System.currentTimeMillis()
 
-		val legacyServerConfig = com.mrpowergamerbr.loritta.utils.loritta.getServerConfigForGuild(guildId)
+		val serverConfig = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateServerConfig(guildId.toLong()) // get server config for guild
 
 		logger.info { "Getting legacy config: ${System.currentTimeMillis() - start}" }
 		start = System.currentTimeMillis()
@@ -67,7 +70,7 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaDiscord, original
 
 		if (member != null) {
 			start = System.currentTimeMillis()
-			val lorittaUser = GuildLorittaUser(member, legacyServerConfig, com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(id.toLong()))
+			val lorittaUser = GuildLorittaUser(member, LorittaUser.loadMemberLorittaPermissions(serverConfig, member), com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(id.toLong()))
 
 			canAccessDashboardViaPermission = lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
 			logger.info { "Lori User Perm Check: ${System.currentTimeMillis() - start}" }
@@ -84,11 +87,7 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaDiscord, original
 		start = System.currentTimeMillis()
 		val variables = call.legacyVariables(locale)
 		logger.info { "Legacy Vars Creation: ${System.currentTimeMillis() - start}" }
-		start = System.currentTimeMillis()
-		variables["serverConfigJson"] = gson.toJson(WebsiteUtils.getServerConfigAsJson(jdaGuild, legacyServerConfig, userIdentification))
-		logger.info { "getServerConfigAsJson: ${System.currentTimeMillis() - start}" }
 		variables["guild"] = jdaGuild
-		variables["serverConfig"] = legacyServerConfig
 
 		return onGuildAuthenticatedRequest(call, locale, discordAuth, userIdentification, jdaGuild)
 	}

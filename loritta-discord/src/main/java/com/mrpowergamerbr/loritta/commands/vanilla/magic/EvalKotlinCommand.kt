@@ -24,7 +24,6 @@ class EvalKotlinCommand : AbstractCommand("eval", listOf("evalkt", "evalkotlin",
 			import com.mrpowergamerbr.loritta.utils.locale.*
 			import com.mrpowergamerbr.loritta.utils.loritta
 			import com.mrpowergamerbr.loritta.utils.lorittaShards
-			import com.mrpowergamerbr.loritta.utils.save
 			import com.mrpowergamerbr.loritta.utils.Constants
 			import com.mrpowergamerbr.loritta.utils.LorittaImage
 			import com.mrpowergamerbr.loritta.utils.toBufferedImage

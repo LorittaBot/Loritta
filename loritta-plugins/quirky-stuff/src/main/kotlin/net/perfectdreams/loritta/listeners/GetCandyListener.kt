@@ -14,10 +14,10 @@ import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEve
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.Halloween2019
 import net.perfectdreams.loritta.QuirkyConfig
-import net.perfectdreams.loritta.dao.Giveaway
+import net.perfectdreams.loritta.dao.servers.Giveaway
 import net.perfectdreams.loritta.tables.CollectedCandies
-import net.perfectdreams.loritta.tables.Giveaways
 import net.perfectdreams.loritta.tables.Halloween2019Players
+import net.perfectdreams.loritta.tables.servers.Giveaways
 import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.and

@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.website.routes.dashboard.configure
 
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.website.evaluate
 import io.ktor.application.ApplicationCall
@@ -11,16 +12,40 @@ import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.extensions.legacyVariables
 import net.perfectdreams.loritta.website.utils.extensions.respondHtml
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
+import org.jetbrains.exposed.sql.transactions.transaction
 import kotlin.collections.set
 
 class ConfigureStarboardRoute(loritta: LorittaDiscord) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/starboard") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild) {
 		loritta as Loritta
-		val serverConfig = loritta.getServerConfigForGuild(guild.id)
+		val serverConfig = loritta.getOrCreateServerConfig(guild.idLong)
+
+		val starboardConfig = transaction(Databases.loritta) {
+			serverConfig.starboardConfig
+		}
 
 		val variables = call.legacyVariables(locale)
 
 		variables["saveType"] = "starboard"
+		variables["serverConfig"] = FakeServerConfig(
+				FakeServerConfig.FakeStarboardConfig(
+						starboardConfig?.enabled ?: false,
+						starboardConfig?.starboardChannelId?.toString(),
+						starboardConfig?.requiredStars ?: 1
+				)
+		)
+
 		call.respondHtml(evaluate("starboard.html", variables))
+	}
+
+	/**
+	 * Fake Server Config for Pebble, in the future this will be removed
+	 */
+	private class FakeServerConfig(val starboardConfig: FakeStarboardConfig) {
+		class FakeStarboardConfig(
+				val isEnabled: Boolean,
+				val starboardId: String?,
+				val requiredStars: Int
+		)
 	}
 }

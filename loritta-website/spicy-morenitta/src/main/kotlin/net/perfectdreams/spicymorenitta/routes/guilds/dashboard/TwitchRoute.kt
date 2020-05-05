@@ -185,7 +185,7 @@ class TwitchRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{g
 				trackedTwitchAccounts.remove(trackedTwitchAccount)
 				updateTrackedTwitchAccountsList(guild)
 			} else {
-				val currentChannel = guild.textChannels.firstOrNull { it.id == trackedTwitchAccount.channelId.toString() }
+				val currentChannel = guild.textChannels.firstOrNull { it.id == trackedTwitchAccount.channelId }
 
 				val channelName = currentChannel?.let { "#${it.name}" } ?: "???"
 
@@ -299,9 +299,9 @@ class TwitchRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{g
 
 									for (channel in guild.textChannels) {
 										option {
-											value = channel.id
+											value = channel.id.toString()
 
-											if (channel.id == trackedTwitchAccount.channelId.toString()) {
+											if (channel.id == trackedTwitchAccount.channelId) {
 												selected = true
 											}
 

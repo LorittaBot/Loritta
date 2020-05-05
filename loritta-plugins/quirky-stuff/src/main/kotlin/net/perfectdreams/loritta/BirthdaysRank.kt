@@ -7,7 +7,6 @@ import com.mrpowergamerbr.loritta.tables.BirthdayConfigs
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.tables.UserSettings
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.editMessageIfContentWasChanged
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale

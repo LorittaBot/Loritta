@@ -89,7 +89,12 @@ class SpicyMorenitta : Logging {
 			DailyShopDashboardRoute(this),
 			Birthday2020Route(this),
 			Birthday2020StatsRoute(this),
-			ReputationRoute()
+			ReputationRoute(),
+			MiscellaneousConfigRoute(this),
+			AutoroleConfigRoute(this),
+			MemberCounterRoute(this),
+			ModerationConfigRoute(this),
+			WelcomerConfigRoute(this)
 	)
 
 	val validWebsiteLocaleIds = mutableListOf(

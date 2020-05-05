@@ -4,10 +4,9 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.LorittaLauncher.loritta
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.MessageUtils
-import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import mu.KotlinLogging
@@ -16,8 +15,10 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.WelcomerConfig
 import net.perfectdreams.loritta.utils.Emotes
 import org.apache.commons.io.IOUtils
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.nio.charset.Charset
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
@@ -34,15 +35,17 @@ object WelcomeModule {
 					if (v1.size > 20) {
 						logger.info("Mais de 20 membros entraram em menos de 15 segundos em $k1! Que triste, né? Vamos enviar um arquivo com todos que sairam!")
 
-						val legacyServerConfig = loritta.getServerConfigForGuild(k1.toString())
 						val serverConfig = loritta.getOrCreateServerConfig(k1)
-						val joinLeaveConfig = legacyServerConfig.joinLeaveConfig
+						val welcomerConfig = transaction(Databases.loritta) {
+							serverConfig.welcomerConfig
+						}
 
-						if (joinLeaveConfig.tellOnJoin && joinLeaveConfig.joinMessage.isNotEmpty()) {
-							val guild = lorittaShards.getGuildById(k1) ?: return@removalListener
+						if (welcomerConfig != null) {
+							val channelJoinId = welcomerConfig.channelJoinId
+							if (welcomerConfig.tellOnJoin && !welcomerConfig.joinMessage.isNullOrEmpty() && channelJoinId != null) {
+								val guild = lorittaShards.getGuildById(k1) ?: return@removalListener
 
-							if (joinLeaveConfig.canalJoinId != null) {
-								val textChannel = guild.getTextChannelByNullableId(joinLeaveConfig.canalJoinId)
+								val textChannel = guild.getTextChannelById(channelJoinId)
 
 								if (textChannel != null) {
 									if (textChannel.canTalk()) {
@@ -75,15 +78,17 @@ object WelcomeModule {
 					if (v1.size > 20) {
 						logger.info("Mais de 20 membros sairam em menos de 15 segundos em $k1! Que triste, né? Vamos enviar um arquivo com todos que sairam!")
 
-						val legacyServerConfig = loritta.getServerConfigForGuild(k1.toString())
 						val serverConfig = loritta.getOrCreateServerConfig(k1)
-						val joinLeaveConfig = legacyServerConfig.joinLeaveConfig
+						val welcomerConfig = transaction(Databases.loritta) {
+							serverConfig.welcomerConfig
+						}
 
-						if (joinLeaveConfig.tellOnLeave && joinLeaveConfig.leaveMessage.isNotEmpty()) {
-							val guild = lorittaShards.getGuildById(k1) ?: return@removalListener
+						if (welcomerConfig != null) {
+							val channelRemoveId = welcomerConfig.channelRemoveId
+							if (welcomerConfig.tellOnRemove && !welcomerConfig.removeMessage.isNullOrEmpty() && channelRemoveId != null) {
+								val guild = lorittaShards.getGuildById(k1) ?: return@removalListener
 
-							if (joinLeaveConfig.canalLeaveId != null) {
-								val textChannel = guild.getTextChannelByNullableId(joinLeaveConfig.canalLeaveId)
+								val textChannel = guild.getTextChannelById(channelRemoveId)
 
 								if (textChannel != null) {
 									if (textChannel.canTalk()) {
@@ -95,7 +100,7 @@ object WelcomeModule {
 											val targetStream = IOUtils.toInputStream(lines.joinToString("\n"), Charset.defaultCharset())
 
 											val locale = loritta.getLocaleById(serverConfig.localeId)
-											
+
 											textChannel.sendMessage(MessageBuilder().setContent(locale["module.welcomer.tooManyUsersLeaving", Emotes.LORI_OWO]).build()).addFile(targetStream, "left-users.log").queue()
 											logger.info("Enviado arquivo de texto em $k1 com todas as pessoas que sairam, yay!")
 										}
@@ -108,15 +113,16 @@ object WelcomeModule {
 			}
 			.build<Long, CopyOnWriteArrayList<User>>()
 
-	suspend fun handleJoin(event: GuildMemberJoinEvent, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig) {
-		val joinLeaveConfig = legacyServerConfig.joinLeaveConfig
+	suspend fun handleJoin(event: GuildMemberJoinEvent, serverConfig: ServerConfig, welcomerConfig: WelcomerConfig) {
+		val joinLeaveConfig = welcomerConfig
 		val tokens = mapOf(
 				"humanized-date" to event.member.timeJoined.humanize(loritta.getLegacyLocaleById(serverConfig.localeId))
 		)
 
-		logger.trace { "Member = ${event.member}, Guild ${event.guild} has tellOnJoin = ${joinLeaveConfig.tellOnJoin} and the joinMessage is ${joinLeaveConfig.joinMessage}, canalJoinId = ${joinLeaveConfig.canalJoinId}" }
+		logger.trace { "Member = ${event.member}, Guild ${event.guild} has tellOnJoin = ${joinLeaveConfig.tellOnJoin} and the joinMessage is ${joinLeaveConfig.joinMessage}, canalJoinId = ${joinLeaveConfig.channelJoinId}" }
 
-		if (joinLeaveConfig.tellOnJoin && joinLeaveConfig.joinMessage.isNotEmpty()) { // E o sistema de avisar ao entrar está ativado?
+		val channelJoinId = welcomerConfig.channelJoinId
+		if (joinLeaveConfig.tellOnJoin && !joinLeaveConfig.joinMessage.isNullOrEmpty() && channelJoinId != null) { // E o sistema de avisar ao entrar está ativado?
 			logger.trace { "Guild ${event.guild} has tellOnJoin enabled and the joinMessage isn't empty!" }
 			val guild = event.guild
 
@@ -132,43 +138,42 @@ object WelcomeModule {
 			if (list.size > 20)
 				return
 
-			if (joinLeaveConfig.canalJoinId != null) {
-				logger.trace { "Member = ${event.member}, canalJoinId is not null for $guild, canalJoinId = ${joinLeaveConfig.canalJoinId}"}
+			logger.trace { "Member = ${event.member}, canalJoinId is not null for $guild, canalJoinId = ${joinLeaveConfig.channelJoinId}"}
 
-				val textChannel = guild.getTextChannelByNullableId(joinLeaveConfig.canalJoinId)
+			val textChannel = guild.getTextChannelById(channelJoinId)
 
-				logger.trace { "Member = ${event.member}, canalLeaveId = ${joinLeaveConfig.canalLeaveId}, it is $textChannel for $guild"}
-				if (textChannel != null) {
-					logger.trace { "Member = ${event.member}, Text channel $textChannel is not null for $guild! Can I talk? ${textChannel.canTalk()}" }
+			logger.trace { "Member = ${event.member}, canalLeaveId = ${joinLeaveConfig.channelRemoveId}, it is $textChannel for $guild"}
+			if (textChannel != null) {
+				logger.trace { "Member = ${event.member}, Text channel $textChannel is not null for $guild! Can I talk? ${textChannel.canTalk()}" }
 
-					if (textChannel.canTalk()) {
-						val msg = joinLeaveConfig.joinMessage
-						logger.trace { "Member = ${event.member}, Join message is $msg for $guild, it will be sent at $textChannel"}
+				if (textChannel.canTalk()) {
+					val msg = joinLeaveConfig.joinMessage
+					logger.trace { "Member = ${event.member}, Join message is $msg for $guild, it will be sent at $textChannel"}
 
-						if (msg.isNotEmpty() && event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
-							logger.debug { "Member = ${event.member}, Sending quit message \"$msg\" in $textChannel at $guild"}
+					if (!msg.isNullOrEmpty() && event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+						val deleteJoinMessagesAfter = welcomerConfig.deleteJoinMessagesAfter
+						logger.debug { "Member = ${event.member}, Sending join message \"$msg\" in $textChannel at $guild"}
 
-							textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(guild, event.member), guild, tokens)!!).queue {
-								if (legacyServerConfig.joinLeaveConfig.deleteJoinMessagesAfter != null)
-									it.delete().queueAfter(legacyServerConfig.joinLeaveConfig.deleteJoinMessagesAfter!!, TimeUnit.SECONDS)
-							}
+						textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(guild, event.member), guild, tokens)!!).queue {
+							if (deleteJoinMessagesAfter != null && deleteJoinMessagesAfter != 0L)
+								it.delete().queueAfter(deleteJoinMessagesAfter, TimeUnit.SECONDS)
 						}
-					} else {
-						logger.debug { "Member = ${event.member} (Join), I don't have permission to send messages in $textChannel on guild $guild!" }
-						LorittaUtils.warnOwnerNoPermission(guild, textChannel, serverConfig)
 					}
+				} else {
+					logger.debug { "Member = ${event.member} (Join), I don't have permission to send messages in $textChannel on guild $guild!" }
+					LorittaUtils.warnOwnerNoPermission(guild, textChannel, serverConfig)
 				}
 			}
 		}
 
-		logger.trace { "Member = ${event.member}, Guild ${event.guild} has tellOnPrivate = ${joinLeaveConfig.tellOnPrivate} and the joinMessage is ${joinLeaveConfig.joinPrivateMessage}" }
+		logger.trace { "Member = ${event.member}, Guild ${event.guild} has tellOnPrivate = ${joinLeaveConfig.tellOnPrivateJoin} and the joinMessage is ${joinLeaveConfig.joinPrivateMessage}" }
 
-		if (!event.user.isBot && joinLeaveConfig.tellOnPrivate && joinLeaveConfig.joinPrivateMessage.isNotEmpty()) { // Talvez o sistema de avisar no privado esteja ativado!
+		if (!event.user.isBot && joinLeaveConfig.tellOnPrivateJoin && !joinLeaveConfig.joinPrivateMessage.isNullOrEmpty()) { // Talvez o sistema de avisar no privado esteja ativado!
 			val msg = joinLeaveConfig.joinPrivateMessage
 
 			logger.debug { "Member = ${event.member}, sending join message (private channel) \"$msg\" at ${event.guild}"}
 
-			if (msg.isNotEmpty()) {
+			if (!msg.isNullOrEmpty()) {
 				event.user.openPrivateChannel().queue {
 					it.sendMessage(MessageUtils.generateMessage(msg, listOf(event.guild, event.member), event.guild, tokens)!!).queue() // Pronto!
 				}
@@ -176,11 +181,13 @@ object WelcomeModule {
 		}
 	}
 
-	suspend fun handleLeave(event: GuildMemberLeaveEvent, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig) {
-		val joinLeaveConfig = legacyServerConfig.joinLeaveConfig
+	suspend fun handleLeave(event: GuildMemberLeaveEvent, serverConfig: ServerConfig, welcomerConfig: WelcomerConfig) {
+		val joinLeaveConfig = welcomerConfig
 
-		logger.trace { "Member = ${event.member}, Guild ${event.guild} has tellOnLeave = ${joinLeaveConfig.tellOnLeave} and the leaveMessage is ${joinLeaveConfig.leaveMessage}, canalLeaveId = ${joinLeaveConfig.canalLeaveId}" }
-		if (joinLeaveConfig.tellOnLeave && joinLeaveConfig.leaveMessage.isNotEmpty()) {
+		logger.trace { "Member = ${event.member}, Guild ${event.guild} has tellOnLeave = ${joinLeaveConfig.tellOnRemove} and the leaveMessage is ${joinLeaveConfig.removeMessage}, canalLeaveId = ${joinLeaveConfig.channelRemoveId}" }
+
+		val channelRemoveId = welcomerConfig.channelRemoveId
+		if (joinLeaveConfig.tellOnRemove && !joinLeaveConfig.removeMessage.isNullOrEmpty() && channelRemoveId != null) {
 			logger.trace { "Member = ${event.member}, Guild ${event.guild} has tellOnLeave enabled and the leaveMessage isn't empty!" }
 			val guild = event.guild
 
@@ -196,43 +203,42 @@ object WelcomeModule {
 			if (list.size > 20)
 				return
 
-			if (joinLeaveConfig.canalLeaveId != null) {
-				logger.trace { "Member = ${event.member}, canalLeaveId is not null for $guild, canalLeaveId = ${joinLeaveConfig.canalLeaveId}"}
+			logger.trace { "Member = ${event.member}, canalLeaveId is not null for $guild, canalLeaveId = ${joinLeaveConfig.channelRemoveId}"}
 
-				val textChannel = guild.getTextChannelByNullableId(joinLeaveConfig.canalLeaveId)
+			val textChannel = guild.getTextChannelById(channelRemoveId)
 
-				logger.trace { "Member = ${event.member}, canalLeaveId = ${joinLeaveConfig.canalLeaveId}, it is $textChannel for $guild"}
-				if (textChannel != null) {
-					logger.trace { "Member = ${event.member}, Text channel $textChannel is not null for $guild! Can I talk? ${textChannel.canTalk()}" }
+			logger.trace { "Member = ${event.member}, canalLeaveId = ${joinLeaveConfig.channelRemoveId}, it is $textChannel for $guild"}
+			if (textChannel != null) {
+				logger.trace { "Member = ${event.member}, Text channel $textChannel is not null for $guild! Can I talk? ${textChannel.canTalk()}" }
 
-					if (textChannel.canTalk()) {
-						var msg = joinLeaveConfig.leaveMessage
-						logger.trace { "Member = ${event.member}, Leave message is $msg for $guild, it will be sent at $textChannel"}
+				if (textChannel.canTalk()) {
+					var msg = joinLeaveConfig.removeMessage
+					logger.trace { "Member = ${event.member}, Leave message is $msg for $guild, it will be sent at $textChannel"}
 
-						val customTokens = mutableMapOf<String, String>()
+					val customTokens = mutableMapOf<String, String>()
 
-						// Verificar se o usuário foi banido e, se sim, mudar a mensagem caso necessário
-						val bannedUserKey = "${event.guild.id}#${event.user.id}"
+					// Verificar se o usuário foi banido e, se sim, mudar a mensagem caso necessário
+					val bannedUserKey = "${event.guild.id}#${event.user.id}"
 
-						if (joinLeaveConfig.tellOnBan && EventLogListener.bannedUsers.getIfPresent(bannedUserKey) == true) {
-							if (joinLeaveConfig.banMessage.isNotEmpty())
-								msg = joinLeaveConfig.banMessage
-						}
-						// Invalidar, já que a Loritta faz cache mesmo que o servidor não use a função
-						EventLogListener.bannedUsers.invalidate(bannedUserKey)
-
-						if (msg.isNotEmpty()) {
-							logger.debug { "Member = ${event.member}, Sending quit message \"$msg\" in $textChannel at $guild"}
-
-							textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(event.guild, event.member), guild, customTokens)!!).queue {
-								if (legacyServerConfig.joinLeaveConfig.deleteLeaveMessagesAfter != null)
-									it.delete().queueAfter(legacyServerConfig.joinLeaveConfig.deleteLeaveMessagesAfter!!, TimeUnit.SECONDS)
-							}
-						}
-					} else {
-						logger.debug { "Member = ${event.member} (Quit), I don't have permission to send messages in $textChannel on guild $guild!" }
-						LorittaUtils.warnOwnerNoPermission(guild, textChannel, serverConfig)
+					if (joinLeaveConfig.tellOnBan && EventLogListener.bannedUsers.getIfPresent(bannedUserKey) == true) {
+						if (!joinLeaveConfig.bannedMessage.isNullOrEmpty())
+							msg = joinLeaveConfig.bannedMessage
 					}
+					// Invalidar, já que a Loritta faz cache mesmo que o servidor não use a função
+					EventLogListener.bannedUsers.invalidate(bannedUserKey)
+
+					if (!msg.isNullOrEmpty()) {
+						val deleteRemoveMessagesAfter = welcomerConfig.deleteRemoveMessagesAfter
+						logger.debug { "Member = ${event.member}, Sending quit message \"$msg\" in $textChannel at $guild"}
+
+						textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(event.guild, event.member), guild, customTokens)!!).queue {
+							if (deleteRemoveMessagesAfter != null && deleteRemoveMessagesAfter != 0L)
+								it.delete().queueAfter(deleteRemoveMessagesAfter, TimeUnit.SECONDS)
+						}
+					}
+				} else {
+					logger.debug { "Member = ${event.member} (Quit), I don't have permission to send messages in $textChannel on guild $guild!" }
+					LorittaUtils.warnOwnerNoPermission(guild, textChannel, serverConfig)
 				}
 			}
 		}

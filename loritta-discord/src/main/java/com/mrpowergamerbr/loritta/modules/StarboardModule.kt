@@ -4,7 +4,6 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.dao.StarboardMessage
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.StarboardMessages
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import kotlinx.coroutines.sync.Mutex
@@ -15,6 +14,7 @@ import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.StarboardConfig
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
@@ -27,16 +27,17 @@ object StarboardModule {
 			.build<Long, Mutex>()
 			.asMap()
 
-	suspend fun handleStarboardReaction(e: GenericMessageReactionEvent, serverConfig: MongoServerConfig) {
+	suspend fun handleStarboardReaction(e: GenericMessageReactionEvent, starboardConfig: StarboardConfig) {
 		// Não enviar mensagens para o starboard se o canal é NSFW
 		if (e.textChannel.isNSFW)
 			return
 
 		val guild = e.guild
-		val starboardConfig = serverConfig.starboardConfig
-		val starboardId = starboardConfig.starboardId
+		val starboardId = starboardConfig.starboardChannelId
 
-		if (e.reactionEmote.isEmote("⭐") && starboardId != null) {
+		if (e.reactionEmote.isEmote("⭐")) {
+			val textChannel = guild.getTextChannelById(starboardId) ?: return
+
 			// Caso não tenha permissão para ver o histórico de mensagens, retorne!
 			if (!e.guild.selfMember.hasPermission(e.textChannel, Permission.MESSAGE_HISTORY, Permission.MESSAGE_EMBED_LINKS))
 				return
@@ -46,8 +47,6 @@ object StarboardModule {
 
 			mutex.withLock {
 				val msg = e.textChannel.retrieveMessageById(e.messageId).await() ?: return@withLock
-
-				val textChannel = guild.getTextChannelById(starboardId) ?: return@withLock
 
 				// Se algum "engracadinho" está enviando reações nas mensagens do starboard, apenas ignore.
 				// Também verifique se a Lori pode falar no canal!

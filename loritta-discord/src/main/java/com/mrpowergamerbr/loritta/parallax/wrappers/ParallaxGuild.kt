@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.parallax.wrappers
 
-import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.entities.Guild
 
@@ -62,7 +61,7 @@ class ParallaxGuild(private val guild: Guild) {
 	@JvmOverloads
 	fun ban(user: ParallaxUser, punisher: ParallaxUser, options: Map<String, Any> = mapOf()) {
 		val serverConfig = loritta.getOrCreateServerConfig(guild.idLong)
-		BanCommand.ban(
+		/* BanCommand.ban(
 				loritta.getServerConfigForGuild(guild.id),
 				guild,
 				punisher.user,
@@ -71,6 +70,6 @@ class ParallaxGuild(private val guild: Guild) {
 				options["reason"] as String? ?: "",
 				options["isSilent"] as Boolean? ?: false,
 				options["days"] as Int? ?: 0
-		)
+		) */
 	}
 }

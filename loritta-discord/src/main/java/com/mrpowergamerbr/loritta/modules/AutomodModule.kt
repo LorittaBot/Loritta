@@ -3,11 +3,11 @@ package com.mrpowergamerbr.loritta.modules
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.google.common.collect.EvictingQueue
 import com.google.common.collect.Queues
+import com.mrpowergamerbr.loritta.commands.vanilla.administration.AdminUtils
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
@@ -77,14 +77,14 @@ class AutomodModule : MessageReceivedModule {
 		private val logger = KotlinLogging.logger {}
 	}
 
-	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
+	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
 		if (lorittaUser.hasPermission(LorittaPermission.BYPASS_AUTO_MOD))
 			return false
 
 		return true
 	}
 
-	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
+	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
 		if (ANTIRAID_ENABLED && (loritta.discordConfig.antiRaidIds.contains(event.channel.id)) && loritta.config.loritta.environment == EnvironmentType.CANARY) {
 			val messages = MESSAGES.getOrPut(event.textChannel!!.id) { Queues.synchronizedQueue(EvictingQueue.create<Message>(50)) }
 
@@ -212,6 +212,7 @@ class AutomodModule : MessageReceivedModule {
 				logger.info("Aplicando punimentos em ${event.guild.name} -> ${event.channel.name}, causado por ${event.author.id}!")
 				synchronized(event.guild) {
 					val alreadyBanned = mutableListOf<User>()
+					val settings = AdminUtils.retrieveModerationInfo(serverConfig)
 
 					for (storedMessage in messages) {
 						if (!event.guild.isMember(event.author) || alreadyBanned.contains(storedMessage.author)) // O usuário já pode estar banido
@@ -223,7 +224,7 @@ class AutomodModule : MessageReceivedModule {
 							alreadyBanned.add(storedMessage.author)
 							if (event.guild.selfMember.canInteract(event.member!!)) {
 								logger.info("Punindo ${storedMessage.author.id} em ${event.guild.name} -> ${event.channel.name} por tentativa de raid! ($percentage%)!")
-								BanCommand.ban(legacyServerConfig, event.guild, event.guild.selfMember.user, locale, storedMessage.author, "Tentativa de Raid (Spam/Flood)! Que feio, para que fazer isto? Vá procurar algo melhor para fazer em vez de incomodar outros servidores. ᕙ(⇀‸↼‶)ᕗ", false, 7)
+								BanCommand.ban(settings, event.guild, event.guild.selfMember.user, locale, storedMessage.author, "Tentativa de Raid (Spam/Flood)! Que feio, para que fazer isto? Vá procurar algo melhor para fazer em vez de incomodar outros servidores. ᕙ(⇀‸↼‶)ᕗ", false, 7)
 							}
 						}
 					}
@@ -233,7 +234,7 @@ class AutomodModule : MessageReceivedModule {
 
 					if (event.guild.selfMember.canInteract(event.member!!)) {
 						logger.info("Punindo ${event.author.id} em ${event.guild.name} -> ${event.channel.name} por tentativa de raid! ($raidingPercentage%)!")
-						BanCommand.ban(legacyServerConfig, event.guild, event.guild.selfMember.user, locale, event.author, "Tentativa de Raid (Spam/Flood)! Que feio, para que fazer isto? Vá procurar algo melhor para fazer em vez de incomodar outros servidores. ᕙ(⇀‸↼‶)ᕗ", false, 7)
+						BanCommand.ban(settings, event.guild, event.guild.selfMember.user, locale, event.author, "Tentativa de Raid (Spam/Flood)! Que feio, para que fazer isto? Vá procurar algo melhor para fazer em vez de incomodar outros servidores. ᕙ(⇀‸↼‶)ᕗ", false, 7)
 					}
 				}
 				return true

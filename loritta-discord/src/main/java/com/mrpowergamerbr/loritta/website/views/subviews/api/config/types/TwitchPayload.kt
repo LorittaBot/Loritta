@@ -7,16 +7,15 @@ import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.tables.TrackedTwitchAccounts
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedTwitchAccounts
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class TwitchPayload : ConfigPayloadType("twitch") {
-	override fun process(payload: JsonObject, userIdentification: LorittaJsonWebSession.UserIdentification, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, guild: Guild) {
+	override fun process(payload: JsonObject, userIdentification: LorittaJsonWebSession.UserIdentification, serverConfig: ServerConfig, guild: Guild) {
 		transaction(Databases.loritta) {
 			TrackedTwitchAccounts.deleteWhere {
 				TrackedTwitchAccounts.guildId eq guild.idLong

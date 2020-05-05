@@ -10,7 +10,7 @@ import com.rometools.rome.io.SyndFeedInput
 import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.tables.DefaultRssFeeds
-import net.perfectdreams.loritta.tables.TrackedRssFeeds
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedRssFeeds
 import net.perfectdreams.loritta.utils.FeatureFlags
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.selectAll

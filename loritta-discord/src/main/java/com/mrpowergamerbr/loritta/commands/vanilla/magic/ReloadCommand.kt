@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -15,11 +14,11 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import net.perfectdreams.loritta.dao.LevelConfig
-import net.perfectdreams.loritta.dao.ReactionOption
-import net.perfectdreams.loritta.tables.LevelAnnouncementConfigs
-import net.perfectdreams.loritta.tables.RolesByExperience
-import net.perfectdreams.loritta.tables.TrackedTwitterAccounts
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.LevelConfig
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.ReactionOption
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.LevelAnnouncementConfigs
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.RolesByExperience
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedTwitterAccounts
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.levels.LevelUpAnnouncementType
 import net.perfectdreams.loritta.utils.levels.RoleGiveType
@@ -352,16 +351,6 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			return
 		}
 
-		if (arg0 == "mongo") {
-			loritta.initMongo()
-			context.reply(
-					LoriReply(
-							"MongoDB recarregado!"
-					)
-			)
-			return
-		}
-
 		if (arg0 == "exportdate") {
 			val dates = mutableMapOf<String, Int>()
 
@@ -402,55 +391,6 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 							"Config recarregada!"
 					)
 			)
-			return
-		}
-
-		if (arg0 == "queryuseless") {
-			val uselessServers = loritta.serversColl.find(
-					Filters.lt("lastCommandReceivedAt", System.currentTimeMillis() - 2592000000L)
-			)
-
-			val reallyUselessServers = mutableListOf<Guild>()
-
-			var str = ""
-
-			for (serverConfig in uselessServers) {
-				val guild = lorittaShards.getGuildById(serverConfig.guildId) ?: continue
-
-				// INVITE BLOCKER
-				if (serverConfig.inviteBlockerConfig.isEnabled)
-					continue
-
-				// AUTOROLE
-				if (serverConfig.autoroleConfig.isEnabled)
-					continue
-
-				// EVENT LOG
-				if (serverConfig.eventLogConfig.isEnabled)
-					continue
-
-				// JOIN/LEAVE
-				if (serverConfig.joinLeaveConfig.isEnabled)
-					continue
-
-				reallyUselessServers.add(guild)
-			}
-
-			context.reply("Existem ${reallyUselessServers.size} servidores inúteis!")
-
-			if (context.rawArgs.getOrNull(1) == "leave") {
-				context.reply("...e eu irei sair de todos eles!")
-
-				for (guild in reallyUselessServers) {
-					guild.leave().queue()
-				}
-			} else {
-				for (guild in reallyUselessServers.sortedByDescending { it.members.size }) {
-					str += "[${guild.id}] ${guild.name} - ${guild.members.size} membros (${guild.members.count { it.user.isBot }} bots)\n"
-				}
-
-				File("/home/servers/loritta/useless-servers.txt").writeText(str)
-			}
 			return
 		}
 

@@ -4,7 +4,6 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.MessageUtils
-import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
@@ -70,10 +69,11 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 			if (!AdminUtils.checkForPermissions(context, member))
 				return
 
+			val settings = AdminUtils.retrieveModerationInfo(context.config)
 			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context) ?: return
 
 			val kickCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
-				kick(context, locale, member, user, reason, isSilent)
+				kick(context, settings, locale, member, user, reason, isSilent)
 
 				message?.delete()?.queue()
 
@@ -85,7 +85,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 				return
 			}
 
-			val hasSilent = context.legacyConfig.moderationConfig.sendPunishmentViaDm || context.legacyConfig.moderationConfig.sendToPunishLog
+			val hasSilent = settings.sendPunishmentViaDm || settings.sendPunishmentToPunishLog
 			val message = AdminUtils.sendConfirmationMessage(context, user, hasSilent, "kick")
 
 			message.onReactionAddByAuthor(context) {
@@ -107,9 +107,9 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 	companion object {
 		private val LOCALE_PREFIX = "commands.moderation"
 
-		fun kick(context: CommandContext, locale: LegacyBaseLocale, member: Member, user: User, reason: String, isSilent: Boolean) {
+		fun kick(context: CommandContext, settings: AdminUtils.ModerationConfigSettings, locale: LegacyBaseLocale, member: Member, user: User, reason: String, isSilent: Boolean) {
 			if (!isSilent) {
-				if (context.legacyConfig.moderationConfig.sendPunishmentViaDm && context.guild.isMember(user)) {
+				if (settings.sendPunishmentViaDm && context.guild.isMember(user)) {
 					try {
 						val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, locale["KICK_PunishAction"], reason)
 
@@ -121,12 +121,12 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 					}
 				}
 
-				if (context.legacyConfig.moderationConfig.sendToPunishLog) {
-					val textChannel = context.guild.getTextChannelByNullableId(context.legacyConfig.moderationConfig.punishmentLogChannelId)
+				if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && settings.punishLogMessage != null) {
+					val textChannel = context.guild.getTextChannelById(settings.punishLogChannelId)
 
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
-								context.legacyConfig.moderationConfig.punishmentLogMessage,
+								settings.punishLogMessage,
 								listOf(user),
 								context.guild,
 								mutableMapOf(

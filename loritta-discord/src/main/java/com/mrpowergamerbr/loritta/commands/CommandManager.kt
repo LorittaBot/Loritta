@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.commands
 
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Updates
+import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.*
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.*
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.*
@@ -21,7 +20,6 @@ import com.mrpowergamerbr.loritta.commands.vanilla.utils.*
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
@@ -34,8 +32,11 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
+import net.perfectdreams.loritta.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.utils.*
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 import java.util.concurrent.CancellationException
@@ -111,7 +112,6 @@ class CommandManager {
 		commandMap.add(LanguageCommand())
 		commandMap.add(PatreonCommand())
 		commandMap.add(DiscordBotListCommand())
-		commandMap.add(ParallaxCommand())
 
 		// =======[ SOCIAL ]======
 		commandMap.add(PerfilCommand())
@@ -225,7 +225,7 @@ class CommandManager {
 			commandMap.add(ExchangeCommand())
 	}
 
-	suspend fun matches(ev: LorittaMessageEvent, serverConfig: ServerConfig, conf: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun matches(ev: LorittaMessageEvent, serverConfig: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
 		val rawMessage = ev.message.contentRaw
 
 		// É necessário remover o new line para comandos como "+eval", etc
@@ -233,13 +233,24 @@ class CommandManager {
 
 		// Primeiro os comandos vanilla da Loritta(tm)
 		for (command in commandMap) {
-			if (matches(command, rawArguments, ev, serverConfig, conf, locale, legacyLocale, lorittaUser))
+			if (matches(command, rawArguments, ev, serverConfig, locale, legacyLocale, lorittaUser))
 				return true
 		}
 
 		// E depois os comandos usando JavaScript (Nashorn)
-		for (command in conf.nashornCommands) {
-			if (matches(command, rawArguments, ev, serverConfig, conf, locale, legacyLocale, lorittaUser))
+		val nashornCommands = transaction(Databases.loritta) {
+			CustomGuildCommands.select {
+				CustomGuildCommands.guild eq serverConfig.id and (CustomGuildCommands.enabled eq true)
+			}.toList()
+		}.map {
+			NashornCommand(
+					it[CustomGuildCommands.label],
+					it[CustomGuildCommands.code]
+			)
+		}
+
+		for (command in nashornCommands) {
+			if (matches(command, rawArguments, ev, serverConfig, locale, legacyLocale, lorittaUser))
 				return true
 		}
 
@@ -255,7 +266,7 @@ class CommandManager {
 	 * @param lorittaUser the user that is executing this command
 	 * @return            if the command was handled or not
 	 */
-	suspend fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, serverConfig: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
 		val message = ev.message.contentDisplay
 		val baseLocale = locale
 
@@ -300,7 +311,7 @@ class CommandManager {
 				}
 			}
 
-			val context = CommandContext(serverConfig, legacyServerConfig, lorittaUser, baseLocale, legacyLocale, ev, command, args, rawArgs, strippedArgs)
+			val context = CommandContext(serverConfig, lorittaUser, baseLocale, legacyLocale, ev, command, args, rawArgs, strippedArgs)
 
 			try {
 				if (ev.message.isFromType(ChannelType.TEXT)) {
@@ -309,19 +320,19 @@ class CommandManager {
 					logger.info("(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
 				}
 
-				legacyServerConfig.lastCommandReceivedAt = System.currentTimeMillis()
-				loritta.serversColl.updateOne(
-						Filters.eq("_id", legacyServerConfig.guildId),
-						Updates.set("lastCommandReceivedAt", legacyServerConfig.lastCommandReceivedAt)
-				)
-
-				if (legacyServerConfig != loritta.dummyLegacyServerConfig && ev.textChannel != null && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
+				if (serverConfig.guildId == -1L && ev.textChannel != null && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
 					LorittaUtils.warnOwnerNoPermission(ev.guild, ev.textChannel, serverConfig)
 					return true
 				}
 
+				val miscellaneousConfig = transaction(Databases.loritta) {
+					serverConfig.miscellaneousConfig
+				}
+
+				val enableBomDiaECia = miscellaneousConfig?.enableBomDiaECia ?: false
+
 				if (serverConfig.blacklistedChannels.contains(ev.channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
-					if (!legacyServerConfig.miscellaneousConfig.enableBomDiaECia || (legacyServerConfig.miscellaneousConfig.enableBomDiaECia && command !is LigarCommand)) {
+					if (!enableBomDiaECia || (enableBomDiaECia && command !is LigarCommand)) {
 						if (serverConfig.warnIfBlacklisted) {
 							if (serverConfig.blacklistedWarning?.isNotEmpty() == true && ev.guild != null && ev.member != null && ev.textChannel != null) {
 								val generatedMessage = MessageUtils.generateMessage(
@@ -380,7 +391,7 @@ class CommandManager {
 
 				if (!isPrivateChannel && ev.guild != null && ev.member != null) {
 					// Verificar se o comando está ativado na guild atual
-					if (CommandUtils.checkIfCommandIsDisabledInGuild(legacyServerConfig, locale, ev.channel, ev.member, command::class.simpleName!!))
+					if (CommandUtils.checkIfCommandIsDisabledInGuild(serverConfig, locale, ev.channel, ev.member, command::class.simpleName!!))
 						return true
 				}
 

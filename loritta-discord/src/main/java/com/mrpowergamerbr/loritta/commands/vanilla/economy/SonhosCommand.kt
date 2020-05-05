@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import net.perfectdreams.loritta.dao.EconomyConfig
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.EconomyConfig
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.math.BigDecimal
 
@@ -40,7 +40,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 		if (context.userHandle == retrieveDreamsFromUser) {
 			val userSonhos = lorittaProfile?.money ?: 0L
 			if (localEconomyEnabled && economyConfig != null) { // Sistema de ecnomia local está ativado!
-				val localProfile = context.legacyConfig.getUserData(retrieveDreamsFromUser.idLong)
+				val localProfile = context.config.getUserData(retrieveDreamsFromUser.idLong)
 				context.reply(
 						true,
 						LoriReply(
@@ -66,7 +66,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = Comman
 		} else {
 			val userSonhos = lorittaProfile?.money ?: 0L
 			if (localEconomyEnabled && economyConfig != null) {
-				val localProfile = context.legacyConfig.getUserData(retrieveDreamsFromUser.idLong)
+				val localProfile = context.config.getUserData(retrieveDreamsFromUser.idLong)
 				context.reply(
 						true,
 						LoriReply(

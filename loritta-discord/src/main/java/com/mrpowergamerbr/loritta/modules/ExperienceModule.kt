@@ -7,7 +7,6 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -17,9 +16,9 @@ import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Role
-import net.perfectdreams.loritta.tables.ExperienceRoleRates
-import net.perfectdreams.loritta.tables.LevelAnnouncementConfigs
-import net.perfectdreams.loritta.tables.RolesByExperience
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.ExperienceRoleRates
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.LevelAnnouncementConfigs
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.RolesByExperience
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.FeatureFlags
 import net.perfectdreams.loritta.utils.ServerPremiumPlans
@@ -44,11 +43,11 @@ class ExperienceModule : MessageReceivedModule {
 			.build<Long, Mutex>()
 			.asMap()
 
-	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
+	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
 		return true
 	}
 
-	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
+	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
 		if (!FeatureFlags.isEnabled("experience-gain"))
 			return false
 
@@ -85,7 +84,7 @@ class ExperienceModule : MessageReceivedModule {
 					newProfileXp = currentXp + globalGainedXp
 					lastMessageSentHash = event.message.contentStripped.hashCode()
 
-					val profile = legacyServerConfig.getUserData(event.author.idLong)
+					val profile = serverConfig.getUserData(event.author.idLong)
 
 					if (FeatureFlags.isEnabled("experience-gain-locally")) {
 						handleLocalExperience(event, retrievedProfile, serverConfig, profile, gainedXp, locale.toNewLocale())

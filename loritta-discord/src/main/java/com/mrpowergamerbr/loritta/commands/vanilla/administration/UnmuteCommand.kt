@@ -4,10 +4,8 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Mutes
-import com.mrpowergamerbr.loritta.userdata.MongoServerConfig
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.MessageUtils
-import com.mrpowergamerbr.loritta.utils.extensions.getTextChannelByNullableId
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
@@ -64,9 +62,10 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 			}
 
 			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context) ?: return
+			val settings = AdminUtils.retrieveModerationInfo(context.config)
 
 			val banCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
-				UnmuteCommand.unmute(context.legacyConfig, context.guild, context.userHandle, locale, user, reason, isSilent)
+				UnmuteCommand.unmute(settings, context.guild, context.userHandle, locale, user, reason, isSilent)
 
 				message?.delete()?.queue()
 
@@ -83,7 +82,7 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 				return
 			}
 
-			val hasSilent = context.legacyConfig.moderationConfig.sendPunishmentViaDm || context.legacyConfig.moderationConfig.sendToPunishLog
+			val hasSilent = settings.sendPunishmentViaDm || settings.sendPunishmentToPunishLog
 			val message = AdminUtils.sendConfirmationMessage(context, user, hasSilent, "unmute")
 
 			message.onReactionAddByAuthor(context) {
@@ -103,14 +102,14 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 	}
 
 	companion object {
-		fun unmute(serverConfig: MongoServerConfig, guild: Guild, punisher: User, locale: LegacyBaseLocale, user: User, reason: String, isSilent: Boolean) {
+		fun unmute(settings: AdminUtils.ModerationConfigSettings, guild: Guild, punisher: User, locale: LegacyBaseLocale, user: User, reason: String, isSilent: Boolean) {
 			if (!isSilent) {
-				if (serverConfig.moderationConfig.sendToPunishLog) {
-					val textChannel = guild.getTextChannelByNullableId(serverConfig.moderationConfig.punishmentLogChannelId)
+				if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && settings.punishLogMessage != null) {
+					val textChannel = guild.getTextChannelById(settings.punishLogChannelId)
 
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
-								serverConfig.moderationConfig.punishmentLogMessage,
+								settings.punishLogMessage,
 								listOf(user),
 								guild,
 								mutableMapOf(

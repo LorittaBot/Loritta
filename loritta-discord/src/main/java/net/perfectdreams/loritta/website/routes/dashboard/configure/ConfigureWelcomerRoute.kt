@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.website.routes.dashboard.configure
 
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.website.evaluate
 import io.ktor.application.ApplicationCall
@@ -11,14 +12,52 @@ import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.extensions.legacyVariables
 import net.perfectdreams.loritta.website.utils.extensions.respondHtml
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
+import org.jetbrains.exposed.sql.transactions.transaction
 import kotlin.collections.set
 
 class ConfigureWelcomerRoute(loritta: LorittaDiscord) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/welcomer") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild) {
 		loritta as Loritta
+		val serverConfig = loritta.getOrCreateServerConfig(guild.idLong)
+
+		val welcomerConfig = transaction(Databases.loritta) {
+			serverConfig.welcomerConfig
+		}
+
 		val variables = call.legacyVariables(locale)
-		
+
 		variables["saveType"] = "welcomer"
+		variables["serverConfig"] = FakeServerConfig(
+				FakeServerConfig.FakeWelcomerConfig(
+						welcomerConfig != null,
+						welcomerConfig?.tellOnJoin ?: false,
+						welcomerConfig?.tellOnRemove ?: false,
+						welcomerConfig?.tellOnBan ?: false,
+						welcomerConfig?.tellOnPrivateJoin ?: false,
+						welcomerConfig?.joinMessage ?: "\uD83D\uDC49 {@user} entrou no servidor!",
+						welcomerConfig?.removeMessage ?: "\uD83D\uDC48 {nickname} saiu do servidor!",
+						welcomerConfig?.joinPrivateMessage ?: "Obrigado por entrar na {guild} {@user}! Espero que você curta o nosso servidor!",
+						welcomerConfig?.bannedMessage ?: "{user} foi banido do servidor!"
+				)
+		)
+
 		call.respondHtml(evaluate("welcomer.html", variables))
+	}
+
+	/**
+	 * Fake Server Config for Pebble, in the future this will be removed
+	 */
+	private class FakeServerConfig(val joinLeaveConfig: FakeWelcomerConfig) {
+		class FakeWelcomerConfig(
+				val isEnabled: Boolean,
+				val tellOnJoin: Boolean,
+				val tellOnLeave: Boolean,
+				val tellOnBan: Boolean,
+				val tellOnPrivate: Boolean,
+				val joinMessage: String,
+				val removeMessage: String,
+				val joinPrivateMessage: String,
+				val bannedMessage: String
+		)
 	}
 }
