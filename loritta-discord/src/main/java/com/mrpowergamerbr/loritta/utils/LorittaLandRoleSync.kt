@@ -4,7 +4,6 @@ import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.string
-import com.mongodb.client.model.Filters
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.extensions.retrieveAllMessages
