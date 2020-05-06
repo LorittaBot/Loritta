@@ -44,7 +44,7 @@ class AutoroleConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 
 			for (it in guild.roles.filter { !it.isPublicRole }) {
 				val option = object {}.asDynamic()
-				option.id = it.id
+				option.id = it.id.toString()
 				var text = "<span style=\"font-weight: 600;\">${it.name}</span>"
 
 				val color = it.getColor()
@@ -106,7 +106,7 @@ class AutoroleConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 	fun addRoleToAutoroleList(role: ServerConfig.Role) {
 		// <span style="color: rgb(155, 89, 182); background-color: rgba(155, 89, 182, 0.298039);  font-family: Whitney, 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 600;">@💵🌆 Pagadores do Aluguel</span>
 		val td = jq("<td>")
-				.attr("role-id", role.id)
+				.attr("role-id", role.id.toString())
 				.addClass("role-entry")
 
 		val roleSpan = jq("<span>")
