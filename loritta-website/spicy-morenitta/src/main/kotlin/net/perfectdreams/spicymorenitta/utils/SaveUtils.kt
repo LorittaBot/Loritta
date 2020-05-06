@@ -2,14 +2,13 @@ package net.perfectdreams.spicymorenitta.utils
 
 import LoriDashboard
 import io.ktor.client.request.patch
-import io.ktor.client.response.readText
 import io.ktor.client.statement.readText
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
-import locale
 import net.perfectdreams.spicymorenitta.http
+import net.perfectdreams.spicymorenitta.locale
 import utils.TingleModal
 import utils.TingleOptions
 import kotlin.js.Json

@@ -1,4 +1,5 @@
 
+import net.perfectdreams.spicymorenitta.locale
 import kotlin.js.*
 
 object SaveStuff {

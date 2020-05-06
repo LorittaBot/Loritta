@@ -78,18 +78,6 @@ object WebsiteUtils {
 		val correctUrl = LorittaWebsite.WEBSITE_URL.replace("https://", "https://$languageCode.")
 		variables["currentUrl"] = correctUrl + req.path().substring(1)
 
-		// Já que Reflection não existe em Kotlin/JS, o Kotlin Serialization não suporta "Any?" em JavaScript.
-		// Então vamos fazer algumas pequenas gambiarras para retirar as listas antes de enviar para o website
-		val patchedLocales = BaseLocale(locale.id)
-		patchedLocales.localeEntries.putAll(locale.localeEntries.filter { it.value is String })
-		// Mas nós *precisamos* de listas no Kotlin/JS, então...
-		locale.localeEntries.filter { it.value is List<*> }.forEach {
-			val value = it.value as List<String>
-			// no frontend iremos apenas verificar se começa com "list::" e, se começar, iremos transformar em uma lista
-			patchedLocales.localeEntries[it.key] = "list::${value.joinToString("\n")}"
-		}
-
-		variables["baseLocale"] = Loritta.GSON.toJson(patchedLocales)
 		variables["localeAsJson"] = Loritta.GSON.toJson(legacyLocale.strings)
 		variables["websiteUrl"] = LorittaWebsite.WEBSITE_URL
 		variables["locale"] = locale

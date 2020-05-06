@@ -1,7 +1,5 @@
 
 import kotlinx.serialization.ImplicitReflectionSerializer
-import kotlinx.serialization.parse
-import net.perfectdreams.spicymorenitta.utils.locale.BaseLocale
 import utils.LegacyBaseLocale
 import utils.LorittaProfile
 import kotlin.browser.document
@@ -9,7 +7,6 @@ import kotlin.browser.window
 import kotlin.js.Json
 
 lateinit var legacyLocale: LegacyBaseLocale
-lateinit var locale: BaseLocale
 var selfProfile: LorittaProfile? = null
 
 val loriUrl: String
@@ -34,20 +31,7 @@ fun Any.stringify(): String {
 @ImplicitReflectionSerializer
 fun loadEmbeddedLocale() {
 	println("Loading locale from embedded data... (if available)")
-	val localeJson = document.getElementById("base-locale-json")?.innerHTML
 	val legacyLocaleJson = document.getElementById("locale-json")?.innerHTML
-
-	if (localeJson != null) {
-		println("Embedded locale found!")
-		println("base-locale-json: $localeJson")
-		// Já que Reflection não existe em Kotlin/JS, o Kotlin Serialization não suporta "Any?" em JavaScript.
-		// A Lori envia o locale sem listas, apenas com strings, yay!
-		val baseLocale = kotlinx.serialization.json.JSON.parse<BaseLocale>(localeJson)
-		println("Parsed BaseLocale from embedded locale within body!")
-
-		println("There is ${baseLocale.localeEntries.size} keys!")
-		locale = baseLocale
-	}
 
 	if (legacyLocaleJson != null) {
 		println("Embedded *legacy* locale found!")
