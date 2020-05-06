@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.listeners
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.modules.AutoroleModule
@@ -77,7 +76,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				var start = System.nanoTime()
 				
-				start = System.nanoTime()
 				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 
 				val miscellaneousConfig = transaction(Databases.loritta) {
