@@ -32,7 +32,7 @@ open class LorittaUser(val user: User, val permissions: EnumSet<LorittaPermissio
 		 */
 		fun loadGuildRolesLorittaPermissions(serverConfig: ServerConfig, guild: Guild) = transaction(Databases.loritta) {
 			val permissions = ServerRolePermissions.select {
-				ServerRolePermissions.guild eq serverConfig.id and (ServerRolePermissions.guild eq guild.idLong)
+				ServerRolePermissions.guild eq serverConfig.id
 			}
 
 			permissions
