@@ -76,8 +76,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				val enableProfiling = loritta.config.isOwner(member.idLong)
 
 				var start = System.nanoTime()
-				logIfEnabled(enableProfiling) { "Loading Legacy Server Config took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
-
+				
 				start = System.nanoTime()
 				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 

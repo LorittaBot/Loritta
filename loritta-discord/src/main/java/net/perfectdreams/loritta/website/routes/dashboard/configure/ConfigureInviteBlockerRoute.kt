@@ -18,7 +18,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class ConfigureInviteBlockerRoute(loritta: LorittaDiscord) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/invite-blocker") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
 		loritta as Loritta
-		
+
 		val inviteBlockerConfig = transaction(Databases.loritta) {
 			serverConfig.inviteBlockerConfig
 		}
