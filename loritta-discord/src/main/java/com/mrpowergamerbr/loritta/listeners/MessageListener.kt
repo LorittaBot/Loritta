@@ -75,14 +75,8 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				val enableProfiling = loritta.config.isOwner(member.idLong)
 
 				var start = System.nanoTime()
-				
+
 				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
-
-				val miscellaneousConfig = transaction(Databases.loritta) {
-					serverConfig.miscellaneousConfig
-				}
-
-				val enableQuirky = miscellaneousConfig?.enableQuirky ?: false
 
 				val autoroleConfig = transaction(Databases.loritta) {
 					serverConfig.autoroleConfig
@@ -150,9 +144,10 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				logIfEnabled(enableProfiling) { "Logging to EventLog took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
-				if (isMentioningMe(event.message))
-					if (chance(25.0) && enableQuirky && event.member!!.hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI))
-						event.message.addReaction("smol_lori_putassa_ping:397748526362132483").queue()
+
+				if (chance(25.0) && event.guild.selfMember.hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI) && isMentioningMe(event.message))
+					event.message.addReaction("smol_lori_putassa_ping:397748526362132483").queue()
+
 				logIfEnabled(enableProfiling) { "Checking user mention took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
