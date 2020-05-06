@@ -95,8 +95,9 @@ open class LorittaUser(val user: User, val permissions: EnumSet<LorittaPermissio
 				// We are only going to check if the set already contains the IGNORE_COMMANDS permission,
 				// no need to check if the user doesn't have it, right?
 				for (role in roles) {
-					val permissions = rolePermissions[role.idLong] ?: continue
-					if (!permissions.contains(LorittaPermission.IGNORE_COMMANDS)) {
+					val permissions = rolePermissions[role.idLong]
+
+					if (permissions == null || !permissions.contains(LorittaPermission.IGNORE_COMMANDS)) {
 						enumSet.remove(LorittaPermission.IGNORE_COMMANDS)
 						break
 					}
