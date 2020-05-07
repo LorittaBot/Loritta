@@ -1,11 +1,9 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
-import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.nullArray
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonElement
-import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -31,7 +29,6 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.image.BufferedImage
 import java.io.File
-import java.util.zip.ZipInputStream
 import javax.imageio.ImageIO
 import javax.imageio.stream.FileImageOutputStream
 

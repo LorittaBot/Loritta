@@ -23,11 +23,11 @@ class PostSearchUsersRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationR
 			val regex = Regex(userName);
 
 			{
-				discriminator == it.discriminator && it.name.contains(regex)
+				(if (discriminator != null) discriminator == it.discriminator else true) && it.name.contains(regex)
 			}
 		} else {
 			{
-				discriminator == it.discriminator && it.name == userName
+				(if (discriminator != null) discriminator == it.discriminator else true) && it.name == userName
 			}
 		}
 
