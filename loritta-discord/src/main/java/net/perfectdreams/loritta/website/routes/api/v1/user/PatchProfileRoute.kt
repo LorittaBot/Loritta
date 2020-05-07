@@ -30,7 +30,6 @@ import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.*
-import java.util.regex.Pattern
 import javax.imageio.ImageIO
 
 class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/self-profile") {
@@ -51,17 +50,19 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 			} else {
 				val split = user2Name.trim().split("#")
 
-				val quotedUserName = Pattern.quote(split.first())
+				val username = split[0].trim()
+				if (2 > username.length)
+					throw WebsiteAPIException(HttpStatusCode.NotFound,
+							WebsiteUtils.createErrorPayload(
+									LoriWebCode.UNKNOWN_USER
+							)
+					)
 
-				val userResults = lorittaShards.searchUserInAllLorittaClusters("^$quotedUserName$#${split[1]}")
+				val discriminator = split[1].trim()
 
-				val user = userResults.firstOrNull() ?: throw WebsiteAPIException(HttpStatusCode.NotFound,
-						WebsiteUtils.createErrorPayload(
-								LoriWebCode.UNKNOWN_USER
-						)
-				)
+				val userInfo = lorittaShards.retrieveUserInfoByTag(username, discriminator)
 
-				user["id"].long
+				userInfo?.id
 			} ?: throw WebsiteAPIException(HttpStatusCode.NotFound,
 					WebsiteUtils.createErrorPayload(
 							LoriWebCode.UNKNOWN_USER

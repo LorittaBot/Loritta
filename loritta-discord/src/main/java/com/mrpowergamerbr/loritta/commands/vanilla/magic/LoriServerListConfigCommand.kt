@@ -261,9 +261,11 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 			}
 
 			if (arg0 == "search_user") {
-				val pattern = context.rawArgs.toMutableList().drop(1).joinToString(" ")
+				val split = context.rawArgs.toMutableList().drop(1).joinToString(" ").split("#")
+				val name = split[0]
+				val discriminator = split.getOrNull(1)
 
-				val allUsers = lorittaShards.searchUserInAllLorittaClusters(pattern)
+				val allUsers = lorittaShards.searchUserInAllLorittaClusters(name, discriminator, isRegExPattern = true)
 
 				val strBuilder = StringBuilder()
 

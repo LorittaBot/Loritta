@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.sharding.ShardManager
 import net.perfectdreams.loritta.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.utils.CachedUserInfo
 import net.perfectdreams.loritta.utils.DiscordUtils
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -130,6 +131,53 @@ class LorittaShards {
 		} else null
 	}
 
+	suspend fun retrieveUserInfoByTag(username: String, discriminator: String): CachedUserInfo? {
+		// When retrieving the user's info via tag, we will search in JDA's user cache
+		val userInJdaCache = lorittaShards.shardManager.getUserByTag(username, discriminator)
+		if (userInJdaCache != null)
+			return transformUserToCachedUserInfo(userInJdaCache)
+
+		// If not, we will check on the local cache of retrieved users
+		val cachedRetrievedUser = cachedRetrievedUsers.asMap().values
+				.asSequence()
+				.filter { it.isPresent }
+				.map { it.get() }
+				.filter { it.name == username && it.discriminator == discriminator }
+				.firstOrNull()
+
+		if (cachedRetrievedUser != null)
+			return transformUserToCachedUserInfo(cachedRetrievedUser)
+
+		// If it doesn't exist, check on the external database
+		val cachedUser = transaction(Databases.loritta) {
+			CachedDiscordUsers.select { CachedDiscordUsers.name eq username and (CachedDiscordUsers.discriminator eq discriminator) }
+					.firstOrNull()
+		}
+
+		if (cachedUser != null)
+			return CachedUserInfo(
+					cachedUser[CachedDiscordUsers.id].value,
+					cachedUser[CachedDiscordUsers.name],
+					cachedUser[CachedDiscordUsers.discriminator],
+					cachedUser[CachedDiscordUsers.avatarId]
+			)
+
+		// And if it doesn't exist... oh well, let's try finding it in another cluster
+		val results = searchUserInAllLorittaClusters(username, discriminator, limit = 1)
+		val result = results.firstOrNull()
+		if (result != null) {
+			updateCachedUserData(result["id"].long, result["name"].string, result["discriminator"].string, result["avatarId"].nullString)
+			return CachedUserInfo(
+					result["id"].long,
+					result["name"].string,
+					result["discriminator"].string,
+					result["avatarId"].nullString
+			)
+		}
+
+		return null
+	}
+
 	@Suppress("IMPLICIT_CAST_TO_ANY")
 	suspend fun retrieveUserById(id: Long?): User? {
 		if (id == null)
@@ -148,25 +196,27 @@ class LorittaShards {
 		return user
 	}
 
+	suspend fun updateCachedUserData(user: User) = updateCachedUserData(user.idLong, user.name, user.discriminator, user.avatarId)
+
 	@Suppress("IMPLICIT_CAST_TO_ANY")
-	suspend fun updateCachedUserData(user: User) {
+	suspend fun updateCachedUserData(id: Long, name: String, discriminator: String, avatarId: String?) {
 		val now = System.currentTimeMillis()
 		transaction(Databases.loritta) {
-			val cachedData = CachedDiscordUsers.select { CachedDiscordUsers.id eq user.idLong }.firstOrNull()
+			val cachedData = CachedDiscordUsers.select { CachedDiscordUsers.id eq id }.firstOrNull()
 
 			if (cachedData != null) {
-				CachedDiscordUsers.update({ CachedDiscordUsers.id eq user.idLong }) {
-					it[name] = user.name
-					it[discriminator] = user.discriminator
-					it[avatarId] = user.avatarId
-					it[updatedAt] = now
+				CachedDiscordUsers.update({ CachedDiscordUsers.id eq id }) {
+					it[CachedDiscordUsers.name] = name
+					it[CachedDiscordUsers.discriminator] = discriminator
+					it[CachedDiscordUsers.avatarId] = avatarId
+					it[CachedDiscordUsers.updatedAt] = now
 				}
 			} else {
 				CachedDiscordUsers.insert {
-					it[CachedDiscordUsers.idColumn] = user.idLong
-					it[name] = user.name
-					it[discriminator] = user.discriminator
-					it[avatarId] = user.avatarId
+					it[CachedDiscordUsers.idColumn] = id
+					it[CachedDiscordUsers.name] = name
+					it[CachedDiscordUsers.discriminator] = discriminator
+					it[CachedDiscordUsers.avatarId] = avatarId
 					it[createdAt] = now
 					it[updatedAt] = now
 				}
@@ -293,7 +343,7 @@ class LorittaShards {
 		return allGuilds
 	}
 
-	suspend fun searchUserInAllLorittaClusters(pattern: String): List<JsonObject> {
+	suspend fun searchUserInAllLorittaClusters(username: String, discriminator: String? = null, isRegExPattern: Boolean = false, limit: Int? = null): List<JsonObject> {
 		val shards = loritta.config.clusters
 
 		val results = shards.map {
@@ -305,7 +355,12 @@ class LorittaShards {
 							userAgent(loritta.lorittaCluster.getUserAgent())
 
 							body = gson.toJson(
-									jsonObject("pattern" to pattern)
+									jsonObject(
+											"isRegExPattern" to isRegExPattern,
+											"limit" to limit,
+											"username" to username,
+											"discriminator" to discriminator
+									)
 							)
 						}
 
