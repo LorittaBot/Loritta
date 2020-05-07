@@ -17,5 +17,5 @@ object Profiles : SnowflakeTable() {
 	var isAfk = bool("isAfk")
 	var afkReason = text("afkReason").nullable()
 	var settings = reference("settings", UserSettings, onDelete = ReferenceOption.CASCADE).index()
-	var marriage = reference("marriage", Marriages).nullable()
+	var marriage = reference("marriage", Marriages).nullable().index()
 }
