@@ -531,6 +531,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
 			return
 
+		val guild = event.guild
+
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 
@@ -541,12 +543,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			}
 
 			for (mute in mutes) {
-				val guild = lorittaShards.getGuildById(mute.guildId)
-				if (guild == null) {
-					logger.debug { "Guild \"${mute.guildId}\" não existe ou está indisponível!" }
-					continue
-				}
-
 				val member = guild.getMemberById(mute.userId) ?: continue
 
 				logger.info("Adicionado removal thread pelo MutedUsersThread já que a guild iniciou! ~ Guild: ${mute.guildId} - User: ${mute.userId}")
