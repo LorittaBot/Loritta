@@ -17,6 +17,7 @@ object Databases {
 		config.driverClassName = "org.postgresql.Driver"
 
 		config.maximumPoolSize = LorittaLauncher.loritta.config.postgreSql.maximumPoolSize
+		config.minimumIdle = LorittaLauncher.loritta.config.postgreSql.minimumIdle
 		return@lazy config
 	}
 	val dataSourceLoritta by lazy { HikariDataSource(hikariConfigLoritta) }
