@@ -23,7 +23,6 @@ import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.FeatureFlags
 import org.apache.commons.text.similarity.LevenshteinDistance
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -214,18 +213,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						lorittaUser
 				)
 				logIfEnabled(enableProfiling) { "Creating a LorittaMessageEvent took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
-
-				start = System.nanoTime()
-				if (FeatureFlags.UPDATE_IN_GUILD_STATS_ON_MESSAGE_SEND) {
-					val profile = serverConfig.getUserDataIfExists(member.idLong)
-
-					if (profile != null && !profile.isInGuild) {
-						transaction(Databases.loritta) {
-							profile.isInGuild = true
-						}
-					}
-				}
-				logIfEnabled(enableProfiling) { "Updating In Guild Status took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
 

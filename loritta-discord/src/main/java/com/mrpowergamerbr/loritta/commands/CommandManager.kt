@@ -518,6 +518,11 @@ class CommandManager {
 						it[ExecutedCommandsLog.command] = command::class.simpleName ?: "UnknownCommand"
 						it[ExecutedCommandsLog.message] = ev.message.contentRaw
 					}
+
+					val profile = serverConfig.getUserDataIfExists(lorittaUser.profile.userId)
+
+					if (profile != null && !profile.isInGuild)
+						profile.isInGuild = true
 				}
 
 				lorittaShards.updateCachedUserData(context.userHandle)

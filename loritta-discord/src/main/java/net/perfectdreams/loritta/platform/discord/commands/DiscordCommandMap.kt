@@ -340,6 +340,11 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 						it[ExecutedCommandsLog.command] = command.commandName ?: "UnknownCommand"
 						it[ExecutedCommandsLog.message] = ev.message.contentRaw
 					}
+
+					val profile = serverConfig.getUserDataIfExists(lorittaUser.profile.userId)
+
+					if (profile != null && !profile.isInGuild)
+						profile.isInGuild = true
 				}
 
 				lorittaShards.updateCachedUserData(user)
