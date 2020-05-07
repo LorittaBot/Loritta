@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.tables.servers.moduleconfigs
 
 import net.perfectdreams.loritta.utils.levels.LevelUpAnnouncementType
-import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 
 object LevelAnnouncementConfigs : LongIdTable() {
     val levelConfig = reference("config", LevelConfigs)

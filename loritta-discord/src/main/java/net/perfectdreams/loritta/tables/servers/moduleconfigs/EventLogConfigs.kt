@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.tables.servers.moduleconfigs
 
-import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 
 object EventLogConfigs : LongIdTable() {
     val enabled = bool("enabled").default(false)

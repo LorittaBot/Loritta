@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.tables
 
 import net.perfectdreams.loritta.utils.WebsiteVoteSource
-import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 
 object BotVotes : LongIdTable() {
     val userId = long("user").index()

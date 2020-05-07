@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.dao
 import net.perfectdreams.loritta.tables.Backgrounds
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
-import org.jetbrains.exposed.dao.EntityID
+import org.jetbrains.exposed.dao.id.EntityID
 
 class Background(id: EntityID<String>) : Entity<String>(id) {
 	companion object : EntityClass<String, Background>(Backgrounds) {

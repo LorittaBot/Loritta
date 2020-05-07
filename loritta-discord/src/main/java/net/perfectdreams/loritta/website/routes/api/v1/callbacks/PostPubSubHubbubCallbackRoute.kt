@@ -116,7 +116,7 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 				val wasAlreadySent = transaction(Databases.loritta) {
 					SentYouTubeVideoIds.select {
 						SentYouTubeVideoIds.channelId eq channelId and (SentYouTubeVideoIds.videoId eq videoId)
-					}.count() != 0
+					}.count() != 0L
 				}
 
 				if (!wasAlreadySent) {

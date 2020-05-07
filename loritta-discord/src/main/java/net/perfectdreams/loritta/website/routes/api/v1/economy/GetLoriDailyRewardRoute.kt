@@ -34,6 +34,7 @@ import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.website.utils.extensions.trueIp
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -72,7 +73,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 			// Para evitar pessoas criando várias contas e votando, nós iremos também verificar o IP dos usuários que votarem
 			// Isto evita pessoas farmando upvotes votando (claro que não é um método infalível, mas é melhor que nada, né?)
 			val lastReceivedDailyAt = transaction(Databases.loritta) {
-				com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.receivedById eq userIdentification.id.toLong() and (Dailies.receivedAt greaterEq todayAtMidnight) }.orderBy(Dailies.receivedAt to false)
+				com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.receivedById eq userIdentification.id.toLong() and (Dailies.receivedAt greaterEq todayAtMidnight) }.orderBy(Dailies.receivedAt, SortOrder.DESC)
 						.map {
 							it[Dailies.receivedAt]
 						}
@@ -80,7 +81,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 
 			val sameIpDailyAt = transaction(Databases.loritta) {
 				com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.ip eq ip and (Dailies.receivedAt greaterEq todayAtMidnight) }
-						.orderBy(Dailies.receivedAt to false)
+						.orderBy(Dailies.receivedAt, SortOrder.DESC)
 						.map {
 							it[Dailies.receivedAt]
 						}
@@ -128,7 +129,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 			}
 
 			val requires2FA = transaction(Databases.loritta) {
-				Requires2FAChecksUsers.select { Requires2FAChecksUsers.userId eq userIdentification.id.toLong() }.count() != 0
+				Requires2FAChecksUsers.select { Requires2FAChecksUsers.userId eq userIdentification.id.toLong() }.count() != 0L
 			}
 
 			if (requires2FA && userIdentification.mfaEnabled == false) {

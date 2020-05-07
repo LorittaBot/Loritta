@@ -5,8 +5,8 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.utils.exposed.array
 import com.mrpowergamerbr.loritta.utils.exposed.rawJsonb
 import net.perfectdreams.loritta.api.utils.Rarity
-import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.dao.IdTable
+import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.dao.id.IdTable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.TextColumnType
 

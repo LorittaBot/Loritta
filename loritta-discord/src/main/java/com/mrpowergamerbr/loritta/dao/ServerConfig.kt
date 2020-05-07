@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.*
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
-import org.jetbrains.exposed.dao.EntityID
+import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.math.BigDecimal
@@ -40,7 +40,7 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 	var migrationVersion by ServerConfigs.migrationVersion
 
 	fun getActiveDonationKeys() = transaction(Databases.loritta) {
-		DonationKey.find { DonationKeys.activeIn eq id and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
+		DonationKey.find { DonationKeys.activeIn eq this@ServerConfig.id and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
 				.toList()
 	}
 

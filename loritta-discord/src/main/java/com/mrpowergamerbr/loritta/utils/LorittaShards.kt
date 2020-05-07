@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.sharding.ShardManager
 import net.perfectdreams.loritta.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.utils.CachedUserInfo
 import net.perfectdreams.loritta.utils.DiscordUtils
+import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -213,7 +214,7 @@ class LorittaShards {
 				}
 			} else {
 				CachedDiscordUsers.insert {
-					it[CachedDiscordUsers.idColumn] = id
+					it[CachedDiscordUsers.id] = EntityID(id, CachedDiscordUsers)
 					it[CachedDiscordUsers.name] = name
 					it[CachedDiscordUsers.discriminator] = discriminator
 					it[CachedDiscordUsers.avatarId] = avatarId

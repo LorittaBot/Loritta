@@ -6,8 +6,8 @@ import com.google.gson.JsonParser
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ColumnType
 import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.statements.api.PreparedStatementApi
 import org.postgresql.util.PGobject
-import java.sql.PreparedStatement
 
 fun Table.rawJsonb(name: String, gson: Gson, jsonParser: JsonParser): Column<JsonElement>
 		= registerColumn(name, RawJson(gson, jsonParser))
@@ -15,11 +15,11 @@ fun Table.rawJsonb(name: String, gson: Gson, jsonParser: JsonParser): Column<Jso
 class RawJson(private val gson: Gson, private val jsonParser: JsonParser) : ColumnType() {
 	override fun sqlType() = "jsonb"
 
-	override fun setParameter(stmt: PreparedStatement, index: Int, value: Any?) {
+	override fun setParameter(stmt: PreparedStatementApi, index: Int, value: Any?) {
 		val obj = PGobject()
 		obj.type = "jsonb"
 		obj.value = value as String?
-		stmt.setObject(index, obj)
+		stmt[index] = obj
 	}
 
 	override fun valueFromDB(value: Any): Any {

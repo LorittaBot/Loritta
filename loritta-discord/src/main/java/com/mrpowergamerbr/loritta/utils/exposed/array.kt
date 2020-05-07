@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.utils.exposed
 
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.statements.jdbc.JdbcConnectionImpl
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 
 fun <T> Table.array(name: String, columnType: ColumnType): Column<Array<T>> = registerColumn(name, ArrayColumnType(columnType))
@@ -13,7 +14,8 @@ class ArrayColumnType(private val type: ColumnType) : ColumnType() {
 	override fun valueToDB(value: Any?): Any? {
 		if (value is Array<*>) {
 			val columnType = type.sqlType().split("(")[0]
-			return TransactionManager.currentOrNull()?.connection?.createArrayOf(columnType, value)
+			val jdbcConnection = (TransactionManager.current().connection as JdbcConnectionImpl).connection
+			return jdbcConnection.createArrayOf(columnType, value)
 		} else {
 			return super.valueToDB(value)
 		}
@@ -34,7 +36,8 @@ class ArrayColumnType(private val type: ColumnType) : ColumnType() {
 				return "'{}'"
 
 			val columnType = type.sqlType().split("(")[0]
-			return TransactionManager.currentOrNull()?.connection?.createArrayOf(columnType, value) ?: error("Can't create non null array for $value")
+			val jdbcConnection = (TransactionManager.current().connection as JdbcConnectionImpl).connection
+			return jdbcConnection.createArrayOf(columnType, value) ?: error("Can't create non null array for $value")
 		} else {
 			return super.notNullValueToDB(value)
 		}

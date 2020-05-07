@@ -112,9 +112,11 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 					}
 				}
 
-				val warnCount = transaction(Databases.loritta) {
-					Warns.select { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) }.count()
-				} + 1
+				val warnCount = (
+						transaction(Databases.loritta) {
+							Warns.select { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) }.count()
+						} + 1
+						).toInt()
 
 				val punishments = punishmentActions.filter { it.warnCount == warnCount }
 

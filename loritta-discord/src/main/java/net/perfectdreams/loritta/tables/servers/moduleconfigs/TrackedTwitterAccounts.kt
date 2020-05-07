@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.tables.servers.moduleconfigs
 
-import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 
 object TrackedTwitterAccounts : LongIdTable() {
     val guildId = long("guild").index()

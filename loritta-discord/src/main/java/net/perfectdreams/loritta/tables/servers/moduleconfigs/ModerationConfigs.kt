@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.tables.servers.moduleconfigs
 
-import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 
 object ModerationConfigs : LongIdTable() {
     val sendPunishmentViaDm = bool("send_punishment_via_dm").default(false)

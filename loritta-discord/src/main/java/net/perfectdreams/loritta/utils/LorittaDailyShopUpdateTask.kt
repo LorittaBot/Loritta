@@ -36,7 +36,7 @@ class LorittaDailyShopUpdateTask : Runnable {
 					DailyShopItems.insert {
 						it[shop] = newShop
 						it[item] = background[Backgrounds.id]
-						it[tag] = if (DailyShopItems.select { item eq background[Backgrounds.id] }.count() == 0) { "website.dailyShop.new" } else null
+						it[tag] = if (DailyShopItems.select { item eq background[Backgrounds.id] }.count() == 0L) { "website.dailyShop.new" } else null
 					}
 				}
 			}

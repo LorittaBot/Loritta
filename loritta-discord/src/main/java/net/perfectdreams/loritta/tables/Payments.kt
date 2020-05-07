@@ -6,7 +6,7 @@ import com.mrpowergamerbr.loritta.utils.jsonParser
 import net.perfectdreams.loritta.tables.SonhosTransaction.nullable
 import net.perfectdreams.loritta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.utils.payments.PaymentReason
-import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 
 object Payments : LongIdTable() {
     val userId = long("user").index()

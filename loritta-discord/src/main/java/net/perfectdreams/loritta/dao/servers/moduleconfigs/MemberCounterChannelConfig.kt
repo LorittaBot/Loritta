@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.MemberCounterChannelConfigs
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
-import org.jetbrains.exposed.dao.EntityID
+import org.jetbrains.exposed.dao.id.EntityID
 
 class MemberCounterChannelConfig(id: EntityID<Long>) : Entity<Long>(id) {
 	companion object : EntityClass<Long, MemberCounterChannelConfig>(MemberCounterChannelConfigs)

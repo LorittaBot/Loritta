@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.tables.servers.moduleconfigs
 
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.counter.CounterThemes
-import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 
 object MemberCounterChannelConfigs : LongIdTable() {
     val guild = reference("guild", ServerConfigs).index()

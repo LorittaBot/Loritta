@@ -73,7 +73,7 @@ class PostBuyDailyShopItemRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLog
 
 				val alreadyBoughtTheBackground = BackgroundPayments.select {
 					BackgroundPayments.userId eq profile.userId and (BackgroundPayments.background eq background[Backgrounds.id])
-				}.count() != 0
+				}.count() != 0L
 
 				if (alreadyBoughtTheBackground)
 					throw WebsiteAPIException(

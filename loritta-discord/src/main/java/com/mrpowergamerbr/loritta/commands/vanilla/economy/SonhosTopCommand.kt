@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
@@ -32,7 +33,7 @@ class SonhosTopCommand : AbstractCommand("sonhostop", listOf("topsonhos"), Comma
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
-		var page = context.args.getOrNull(0)?.toIntOrNull()
+		var page = context.args.getOrNull(0)?.toLongOrNull()
 
 		if (page != null)
 			page -= 1
@@ -41,7 +42,7 @@ class SonhosTopCommand : AbstractCommand("sonhostop", listOf("topsonhos"), Comma
 			page = 0
 
 		val userData = transaction(Databases.loritta) {
-			Profiles.selectAll().orderBy(Profiles.money to false).limit(5, page * 5).toMutableList()
+			Profiles.selectAll().orderBy(Profiles.money, SortOrder.DESC).limit(5, page * 5).toMutableList()
 		}
 
 		val list = userData.toMutableList()

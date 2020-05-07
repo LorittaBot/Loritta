@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.tables.servers
 
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import net.perfectdreams.loritta.utils.CustomCommandCodeType
-import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 
 object CustomGuildCommands : LongIdTable() {
 	val guild = reference("guild", ServerConfigs).index()

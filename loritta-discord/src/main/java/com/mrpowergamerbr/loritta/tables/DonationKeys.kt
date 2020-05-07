@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.tables
 import com.mrpowergamerbr.loritta.utils.exposed.rawJsonb
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.jsonParser
-import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 
 object DonationKeys : LongIdTable() {
 	val activeIn = optReference("active_in", ServerConfigs)

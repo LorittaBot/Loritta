@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.dao.servers.moduleconfigs
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.EventLogConfigs
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
-import org.jetbrains.exposed.dao.EntityID
+import org.jetbrains.exposed.dao.id.EntityID
 
 class EventLogConfig(id: EntityID<Long>) : Entity<Long>(id) {
 	companion object : EntityClass<Long, EventLogConfig>(EventLogConfigs)

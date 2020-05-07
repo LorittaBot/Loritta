@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.tables
 import com.mrpowergamerbr.loritta.utils.exposed.rawJsonb
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.jsonParser
-import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 
 object Sponsors : LongIdTable() {
     val name = text("name")

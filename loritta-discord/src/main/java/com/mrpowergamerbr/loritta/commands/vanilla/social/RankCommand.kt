@@ -37,7 +37,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		var global = false
-		var page = context.args.getOrNull(0)?.toIntOrNull()
+		var page = context.args.getOrNull(0)?.toLongOrNull()
 
 		if (page != null)
 			page -= 1

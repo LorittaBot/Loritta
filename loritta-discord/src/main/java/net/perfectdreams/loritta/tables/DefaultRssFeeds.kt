@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.tables
 
-import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 
 object DefaultRssFeeds : LongIdTable() {
     val feedId = text("feed_id").index()

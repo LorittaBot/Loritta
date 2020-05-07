@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.tables
 
-import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 
 object Reminders : LongIdTable() {
 	val userId = long("user_id").index()

@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.tables.servers
 
 import com.mrpowergamerbr.loritta.utils.exposed.array
-import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.TextColumnType
 
 object Giveaways : LongIdTable() {

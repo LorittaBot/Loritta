@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.tables
 
-import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 
 object Dailies : LongIdTable() {
 	val receivedById = long("received_by").index()

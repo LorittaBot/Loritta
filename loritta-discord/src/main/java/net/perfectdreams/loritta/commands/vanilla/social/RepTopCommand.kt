@@ -64,7 +64,7 @@ class RepTopCommand : LorittaCommand(arrayOf("rep top", "reputation top", "reput
         else
             TopOrder.MOST_RECEIVED
 
-        var page = context.args.getOrNull(1)?.toIntOrNull()
+        var page = context.args.getOrNull(1)?.toLongOrNull()
 
         if (page != null)
             page -= 1

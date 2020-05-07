@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.dao
 
 import net.perfectdreams.loritta.tables.BotVotes
-import org.jetbrains.exposed.dao.EntityID
+import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
 

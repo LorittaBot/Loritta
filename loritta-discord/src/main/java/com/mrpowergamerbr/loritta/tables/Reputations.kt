@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.tables
 
-import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 
 object Reputations : LongIdTable() {
 	val givenById = long("given_by").index()

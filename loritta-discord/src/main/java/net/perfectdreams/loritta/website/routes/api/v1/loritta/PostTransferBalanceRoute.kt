@@ -67,12 +67,12 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 					.toEpochMilli()
 
 			val lastReceiverDailyAt = transaction(Databases.loritta) {
-				com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.receivedById eq receiverId and (Dailies.receivedAt greaterEq todayAtMidnight) }.orderBy(Dailies.receivedAt to false)
+				com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.receivedById eq receiverId and (Dailies.receivedAt greaterEq todayAtMidnight) }.orderBy(Dailies.receivedAt, SortOrder.DESC)
 						.firstOrNull()
 			}
 
 			val lastGiverDailyAt = transaction(Databases.loritta) {
-				com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.receivedById eq giverId and (Dailies.receivedAt greaterEq todayAtMidnight) }.orderBy(Dailies.receivedAt to false)
+				com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.receivedById eq giverId and (Dailies.receivedAt greaterEq todayAtMidnight) }.orderBy(Dailies.receivedAt, SortOrder.DESC)
 						.firstOrNull()
 			}
 
@@ -103,7 +103,7 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 
 						// Mesmo IP, vamos dar ban em todas as contas do IP atual
 						val sameIpDaily = transaction(Databases.loritta) {
-							com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.ip eq lastReceiverDailyAt[Dailies.ip] and (Dailies.receivedAt greaterEq todayAtMidnight) }.orderBy(Dailies.receivedAt to false)
+							com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.ip eq lastReceiverDailyAt[Dailies.ip] and (Dailies.receivedAt greaterEq todayAtMidnight) }.orderBy(Dailies.receivedAt, SortOrder.DESC)
 									.toList()
 						}
 
@@ -148,8 +148,8 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 					var giverAlreadyRequires2FA = false
 
 					transaction(Databases.loritta) {
-						receiverAlreadyRequires2FA = Requires2FAChecksUsers.select { Requires2FAChecksUsers.userId eq receiverId }.count() != 0
-						giverAlreadyRequires2FA = Requires2FAChecksUsers.select { Requires2FAChecksUsers.userId eq giverId }.count() != 0
+						receiverAlreadyRequires2FA = Requires2FAChecksUsers.select { Requires2FAChecksUsers.userId eq receiverId }.count() != 0L
+						giverAlreadyRequires2FA = Requires2FAChecksUsers.select { Requires2FAChecksUsers.userId eq giverId }.count() != 0L
 					}
 
 					logger.warn { "Suspicious payment $transactionId by $giverId to $receiverId, sending the same quantity received in the daily. Receiver already requires 2FA? $receiverAlreadyRequires2FA; Giver already requires 2FA? $giverAlreadyRequires2FA" }

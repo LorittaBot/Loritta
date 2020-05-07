@@ -6,7 +6,8 @@ import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.loritta
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
-import org.jetbrains.exposed.dao.EntityID
+import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
@@ -40,7 +41,7 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 	fun canGetDaily(): Pair<Boolean, Long> {
 		val receivedDailyAt = transaction(Databases.loritta) {
 			com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.receivedById eq userId }
-					.orderBy(Dailies.receivedAt to false)
+					.orderBy(Dailies.receivedAt, SortOrder.DESC)
 					.limit(1)
 					.firstOrNull()
 		}?.get(Dailies.receivedAt) ?: 0L

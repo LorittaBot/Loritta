@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.tables
 
-import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 
 object BannedIps : LongIdTable() {
 	val ip = text("ip").index()

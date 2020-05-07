@@ -1,7 +1,5 @@
 package com.mrpowergamerbr.loritta
 
-import ch.qos.logback.classic.Level
-import ch.qos.logback.classic.LoggerContext
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.salomonbrys.kotson.*
 import com.google.common.cache.CacheBuilder
@@ -47,7 +45,10 @@ import net.perfectdreams.loritta.tables.servers.Giveaways
 import net.perfectdreams.loritta.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.twitch.TwitchAPI
-import net.perfectdreams.loritta.utils.*
+import net.perfectdreams.loritta.utils.CachedUserInfo
+import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.Sponsor
+import net.perfectdreams.loritta.utils.TweetTracker
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import net.perfectdreams.mercadopago.MercadoPago
 import okhttp3.Dispatcher
@@ -56,7 +57,6 @@ import okhttp3.Protocol
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.*
 import java.util.concurrent.ExecutorService

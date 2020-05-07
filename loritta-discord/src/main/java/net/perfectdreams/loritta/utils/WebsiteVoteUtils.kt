@@ -46,7 +46,7 @@ object WebsiteVoteUtils {
 
 		val user = lorittaShards.getUserById(userId)
 
-		if (voteCount % 60 == 0) {
+		if (voteCount % 60 == 0L) {
 			// Can give reward!
 			transaction(Databases.loritta) {
 				DonationKey.new {

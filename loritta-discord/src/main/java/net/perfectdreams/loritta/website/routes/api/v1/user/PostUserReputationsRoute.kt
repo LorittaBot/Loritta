@@ -45,7 +45,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 		private val logger = KotlinLogging.logger {}
 		private val mutex = Mutex()
 
-		fun sendReputationToCluster(guildId: String, channelId: String, giverId: String, receiverId: String, reputationCount: Int) {
+		fun sendReputationToCluster(guildId: String, channelId: String, giverId: String, receiverId: String, reputationCount: Long) {
 			if (guildId.isValidSnowflake() && channelId.isValidSnowflake()) {
 				val cluster = DiscordUtils.getLorittaClusterForGuildId(guildId.toLong())
 
@@ -212,7 +212,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 			}
 
 			if (guildId != null && channelId != null)
-				sendReputationToCluster(guildId, channelId, userIdentification.id, receiver, reputations.size)
+				sendReputationToCluster(guildId, channelId, userIdentification.id, receiver, reputations.size.toLong())
 
 			val rank = StringBuilder().appendHTML().div(classes = "box-item") {
 				val map = reputations.groupingBy { it.givenById }.eachCount()

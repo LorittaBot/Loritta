@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.tables.servers.moduleconfigs
 
 import com.mrpowergamerbr.loritta.utils.exposed.array
 import net.perfectdreams.loritta.utils.levels.RoleGiveType
-import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.LongColumnType
 
 object LevelConfigs : LongIdTable() {
