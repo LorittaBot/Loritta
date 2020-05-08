@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.listeners
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.modules.AutoroleModule
 import com.mrpowergamerbr.loritta.modules.Modules
@@ -9,6 +10,8 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.EventLog
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
@@ -240,20 +243,9 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				// Executar comandos
 				start = System.nanoTime()
-				if (loritta.commandMap.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
+				if (checkCommandsAndDispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 					return@launch
-				logIfEnabled(enableProfiling) { "Checking for command map commands took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
-
-
-				start = System.nanoTime()
-				if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
-					return@launch
-				logIfEnabled(enableProfiling) { "Checking for command manager commands took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
-
-				start = System.nanoTime()
-				if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
-					return@launch
-				logIfEnabled(enableProfiling) { "Checking for legacy command manager commands took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
+				logIfEnabled(enableProfiling) { "All commands check took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
 				loritta.messageInteractionCache.values.toMutableList().forEach {
@@ -384,13 +376,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			)
 
 			// Executar comandos
-			if (loritta.commandMap.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
-				return@launch
-
-			if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
-				return@launch
-
-			if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
+			if (checkCommandsAndDispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 				return@launch
 		}
 	}
@@ -444,14 +430,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						return@launch
 				}
 
-				// Executar comandos
-				if (loritta.commandMap.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
-					return@launch
-
-				if (loritta.commandManager.dispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
-					return@launch
-
-				if (loritta.legacyCommandManager.matches(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
+				if (checkCommandsAndDispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
 					return@launch
 			}
 		}
@@ -459,6 +438,54 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 	override fun onMessageDelete(event: MessageDeleteEvent) {
 		loritta.messageInteractionCache.remove(event.messageIdLong)
+	}
+
+	/**
+	 * Checks and dispatches commands
+	 *
+	 * @return if a command was dispatched
+	 */
+	suspend fun checkCommandsAndDispatch(lorittaMessageEvent: LorittaMessageEvent, serverConfig: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
+		val author = lorittaMessageEvent.author
+		val enableProfiling = loritta.config.isOwner(author.idLong)
+
+		val rawMessage = lorittaMessageEvent.message.contentRaw
+
+		// É necessário remover o new line para comandos como "+eval", etc
+		val rawArguments = rawMessage.replace("\n", "").split(" ")
+				.toMutableList()
+
+		val firstLabel = rawArguments.first()
+		val startsWithCommandPrefix = firstLabel.startsWith(serverConfig.commandPrefix)
+		val startsWithLorittaMention = firstLabel == "<@${com.mrpowergamerbr.loritta.utils.loritta.discordConfig.discord.clientId}>" || firstLabel == "<@!${com.mrpowergamerbr.loritta.utils.loritta.discordConfig.discord.clientId}>"
+
+		if (startsWithCommandPrefix || startsWithLorittaMention) {
+			if (startsWithCommandPrefix) // If it is a command prefix, remove the prefix
+				rawArguments[0] = rawArguments[0].removePrefix(serverConfig.commandPrefix)
+			else if (startsWithLorittaMention) { // If it is a mention, remove the first argument (which is Loritta's mention)
+				rawArguments.removeAt(0)
+				if (rawArguments.isEmpty()) // If it is empty, then it means that it was only Loritta's mention, so just return false
+					return false
+			}
+
+			// Executar comandos
+			var start = System.nanoTime()
+			if (loritta.commandMap.dispatch(lorittaMessageEvent, rawArguments, serverConfig, locale, legacyLocale, lorittaUser))
+				return true
+			logIfEnabled(enableProfiling) { "Checking for command map commands took ${System.nanoTime() - start}ns for ${author.idLong}" }
+
+			start = System.nanoTime()
+			if (loritta.commandManager.dispatch(lorittaMessageEvent, rawArguments, serverConfig, locale, legacyLocale, lorittaUser))
+				return true
+			logIfEnabled(enableProfiling) { "Checking for command manager commands took ${System.nanoTime() - start}ns for ${author.idLong}" }
+
+			start = System.nanoTime()
+			if (loritta.legacyCommandManager.matches(lorittaMessageEvent, rawArguments, serverConfig, locale, legacyLocale, lorittaUser))
+				return true
+			logIfEnabled(enableProfiling) { "Checking for legacy command manager commands took ${System.nanoTime() - start}ns for ${author.idLong}" }
+		}
+
+		return false
 	}
 
 	/**

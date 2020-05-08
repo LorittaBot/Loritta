@@ -31,6 +31,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.utils.MarkdownSanitizer
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.utils.*
@@ -225,12 +226,7 @@ class CommandManager {
 			commandMap.add(ExchangeCommand())
 	}
 
-	suspend fun matches(ev: LorittaMessageEvent, serverConfig: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
-		val rawMessage = ev.message.contentRaw
-
-		// É necessário remover o new line para comandos como "+eval", etc
-		val rawArguments = rawMessage.replace("\n", "").split(" ")
-
+	suspend fun matches(ev: LorittaMessageEvent, rawArguments: List<String>, serverConfig: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
 		// Primeiro os comandos vanilla da Loritta(tm)
 		for (command in commandMap) {
 			if (matches(command, rawArguments, ev, serverConfig, locale, legacyLocale, lorittaUser))
@@ -239,23 +235,20 @@ class CommandManager {
 
 		// Checking custom commands
 		// To avoid unnecessary databases retrievals, we are going to check if the message starts with the server prefix or with Loritta's mention
-		val firstLabel = rawArguments.first()
-		if (firstLabel.startsWith(serverConfig.commandPrefix) || firstLabel == "<@${loritta.discordConfig.discord.clientId}>" || firstLabel == "<@!${loritta.discordConfig.discord.clientId}>") {
-			val nashornCommands = transaction(Databases.loritta) {
-				CustomGuildCommands.select {
-					CustomGuildCommands.guild eq serverConfig.id and (CustomGuildCommands.enabled eq true)
-				}.toList()
-			}.map {
-				NashornCommand(
-						it[CustomGuildCommands.label],
-						it[CustomGuildCommands.code]
-				)
-			}
+		val nashornCommands = transaction(Databases.loritta) {
+			CustomGuildCommands.select {
+				CustomGuildCommands.guild eq serverConfig.id and (CustomGuildCommands.enabled eq true)
+			}.toList()
+		}.map {
+			NashornCommand(
+					it[CustomGuildCommands.label],
+					it[CustomGuildCommands.code]
+			)
+		}
 
-			for (command in nashornCommands) {
-				if (matches(command, rawArguments, ev, serverConfig, locale, legacyLocale, lorittaUser))
-					return true
-			}
+		for (command in nashornCommands) {
+			if (matches(command, rawArguments, ev, serverConfig, locale, legacyLocale, lorittaUser))
+				return true
 		}
 
 		return false
@@ -274,35 +267,20 @@ class CommandManager {
 		val message = ev.message.contentDisplay
 		val baseLocale = locale
 
-		val prefix = serverConfig.commandPrefix
-
 		val labels = mutableListOf(command.label)
 
 		labels.addAll(command.aliases)
 
 		// ignoreCase = true ~ Permite usar "+cOmAnDo"
-		var valid = labels.any { rawArguments[0].equals(prefix + it, true) }
-		var byMention = false
-
-		if (rawArguments.getOrNull(1) != null && (rawArguments[0] == "<@${loritta.discordConfig.discord.clientId}>" || rawArguments[0] == "<@!${loritta.discordConfig.discord.clientId}>")) {
-			// by mention
-			valid = labels.any { rawArguments[1].equals(it, true) }
-			byMention = true
-		}
+		val valid = labels.any { rawArguments[0].equals(it, true) }
 
 		if (valid) {
 			val isPrivateChannel = ev.isFromType(ChannelType.PRIVATE)
 			val start = System.currentTimeMillis()
 
-			var args = message.replace("@${ev.guild?.selfMember?.effectiveName
-					?: ""}", "").stripCodeMarks().split(Constants.WHITE_SPACE_MULTIPLE_REGEX).toTypedArray().remove(0)
-			var rawArgs = ev.message.contentRaw.stripCodeMarks().split(Constants.WHITE_SPACE_MULTIPLE_REGEX).toTypedArray().remove(0)
-			var strippedArgs = ev.message.contentStripped.stripCodeMarks().split(Constants.WHITE_SPACE_MULTIPLE_REGEX).toTypedArray().remove(0)
-			if (byMention) {
-				args = args.remove(0)
-				rawArgs = rawArgs.remove(0)
-				strippedArgs = strippedArgs.remove(0)
-			}
+			val rawArgs = ev.message.contentRaw.stripCodeMarks().split(Constants.WHITE_SPACE_MULTIPLE_REGEX).toTypedArray()
+			val strippedArgs = MarkdownSanitizer.sanitize(rawArguments.joinToString(" ")).split(" ").toTypedArray()
+			val args = strippedArgs
 
 			var reparsedLegacyLocale = legacyLocale
 			if (!isPrivateChannel) { // TODO: Migrar isto para que seja customizável

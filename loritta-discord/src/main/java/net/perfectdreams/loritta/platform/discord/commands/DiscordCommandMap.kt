@@ -13,6 +13,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.utils.MarkdownSanitizer
 import net.perfectdreams.loritta.api.commands.*
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
@@ -45,13 +46,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 		commands.remove(command)
 	}
 
-	suspend fun dispatch(ev: LorittaMessageEvent, serverConfig: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
-		val rawMessage = ev.message.contentRaw
-
-		// É necessário remover o new line para comandos como "+eval", etc
-		val rawArguments = rawMessage.replace("\n", "").split(" ")
-
-		// Primeiro os comandos vanilla da Loritta(tm)
+	suspend fun dispatch(ev: LorittaMessageEvent, rawArguments: List<String>, serverConfig: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
 		for (command in commands) {
 			if (dispatch(command, rawArguments, ev, serverConfig, locale, legacyLocale, lorittaUser))
 				return true
@@ -64,8 +59,6 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 		val message = ev.message.contentDisplay
 		val user = ev.author
 
-		var prefix = serverConfig.commandPrefix
-
 		val labels = command.labels.toMutableList()
 
 		// Comandos com espaços na label, yeah!
@@ -73,31 +66,18 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 		var validLabel: String? = null
 
 		val checkArguments = rawArguments.toMutableList()
-		val rawArgument0 = checkArguments.getOrNull(0)
 		var removeArgumentCount = 0
-		val byMention = (rawArgument0 == "<@${discordLoritta.discordConfig.discord.clientId}>" || rawArgument0 == "<@!${discordLoritta.discordConfig.discord.clientId}>")
-
-		if (byMention) {
-			removeArgumentCount++
-			checkArguments.removeAt(0)
-			prefix = ""
-		}
 
 		for (label in labels) {
 			val subLabels = label.split(" ")
 
-			removeArgumentCount = if (byMention) { 1 } else { 0 }
+			removeArgumentCount = 0
 			var validLabelCount = 0
 
 			for ((index, subLabel) in subLabels.withIndex()) {
 				val rawArgumentAt = checkArguments.getOrNull(index) ?: break
 
-				val subLabelPrefix = if (index == 0)
-					prefix
-				else
-					""
-
-				if (rawArgumentAt.equals(subLabelPrefix + subLabel, true)) { // ignoreCase = true ~ Permite usar "+cOmAnDo"
+				if (rawArgumentAt.equals(subLabel, true)) { // ignoreCase = true ~ Permite usar "+cOmAnDo"
 					validLabelCount++
 					removeArgumentCount++
 				}
@@ -114,14 +94,14 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 			val isPrivateChannel = ev.isFromType(ChannelType.PRIVATE)
 			val start = System.currentTimeMillis()
 
-			val args = message.replace("@${ev.guild?.selfMember?.effectiveName ?: ""}", "").stripCodeMarks().split(Constants.WHITE_SPACE_MULTIPLE_REGEX).toMutableList()
-			val rawArgs = ev.message.contentRaw.stripCodeMarks().split(Constants.WHITE_SPACE_MULTIPLE_REGEX).toMutableList()
-			val strippedArgs = ev.message.contentStripped.stripCodeMarks().split(Constants.WHITE_SPACE_MULTIPLE_REGEX).toMutableList()
+			val rawArgs = rawArguments.joinToString(" ").stripCodeMarks()
+					.split(Constants.WHITE_SPACE_MULTIPLE_REGEX)
+					.toMutableList()
+			val strippedArgs = MarkdownSanitizer.sanitize(rawArguments.joinToString(" ")).split(" ").toTypedArray()
+			val args = strippedArgs
 
 			repeat(removeArgumentCount) {
-				args.removeAt(0)
 				rawArgs.removeAt(0)
-				strippedArgs.removeAt(0)
 			}
 
 			val context = DiscordCommandContext(
