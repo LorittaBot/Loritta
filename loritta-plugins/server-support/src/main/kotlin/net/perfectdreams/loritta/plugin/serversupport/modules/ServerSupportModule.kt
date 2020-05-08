@@ -16,11 +16,11 @@ class ServerSupportModule(val plugin: ServerSupportPlugin) : MessageReceivedModu
 		private val logger = KotlinLogging.logger {}
 	}
 
-	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
+	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
 		return (event.channel.idLong == 398987569485971466L || event.channel.idLong == 393332226881880074L || event.channel.idLong == 547119872568459284L) && loritta.config.loritta.environment == EnvironmentType.CANARY
 	}
 
-	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, legacyServerConfig: MongoServerConfig, locale: LegacyBaseLocale): Boolean {
+	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
 		val content = event.message.contentRaw
 				.replace("\u200B", "")
 				.replace("\\", "")

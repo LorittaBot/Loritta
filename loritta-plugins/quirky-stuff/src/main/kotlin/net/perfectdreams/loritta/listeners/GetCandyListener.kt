@@ -124,7 +124,7 @@ class GetCandyListener(val config: QuirkyConfig) : ListenerAdapter() {
 
 						val dreams = howMuchDidTheUserCollect % 125
 
-						if (dreams == 0 && 1250 >= howMuchDidTheUserCollect) {
+						if (dreams == 0L && 1250 >= howMuchDidTheUserCollect) {
 							transaction(Databases.loritta) {
 								lorittaProfile.money += 10_000
 							}
@@ -136,7 +136,7 @@ class GetCandyListener(val config: QuirkyConfig) : ListenerAdapter() {
 							}
 						}
 
-						if (howMuchDidTheUserCollect == 400) {
+						if (howMuchDidTheUserCollect == 400L) {
 							try {
 								event.user.openPrivateChannel().await().sendMessage("Você coletou **$howMuchDidTheUserCollect doces**, como recompensa você ganhou uma badge exclusiva para o seu `+perfil`!\n\nAgora me dê esses doces para eu poder me esbaldar neles. ${Emotes.LORI_TEMMIE}")
 										.await()
@@ -144,7 +144,7 @@ class GetCandyListener(val config: QuirkyConfig) : ListenerAdapter() {
 							}
 						}
 
-						if (howMuchDidTheUserCollect == 777) {
+						if (howMuchDidTheUserCollect == 777L) {
 							transaction(Databases.loritta) {
 								val settings = lorittaProfile.settings
 								settings.boughtProfiles = settings.boughtProfiles.toMutableList().apply { this.add("Halloween2019ProfileCreator") }.toTypedArray()

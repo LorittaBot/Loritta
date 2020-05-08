@@ -63,7 +63,7 @@ object GiveSafeBirthdayRewardsExecutor : LoriToolsCommand.LoriToolsExecutor {
 							BackgroundPayments.background eq internalName and (BackgroundPayments.userId eq lorittaProfile.id.value)
 						}.count()
 
-						if (hasTheBackground == 0) {
+						if (hasTheBackground == 0L) {
 							BackgroundPayments.insert {
 								it[userId] = lorittaProfile.id.value
 								it[cost] = 0

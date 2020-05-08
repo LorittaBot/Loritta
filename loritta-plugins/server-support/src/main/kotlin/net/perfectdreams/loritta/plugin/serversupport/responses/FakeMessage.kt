@@ -90,6 +90,14 @@ class FakeMessage : Message {
 		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 	}
 
+	override fun clearReactions(unicode: String): RestAction<Void> {
+		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+	}
+
+	override fun clearReactions(emote: Emote): RestAction<Void> {
+		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+	}
+
 	override fun formatTo(formatter: Formatter?, flags: Int, width: Int, precision: Int) {
 		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 	}

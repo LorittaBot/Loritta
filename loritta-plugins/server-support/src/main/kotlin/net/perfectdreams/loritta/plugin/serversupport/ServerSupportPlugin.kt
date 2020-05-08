@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.utils.KtsObjectLoader
+import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.extensions.await
@@ -25,6 +26,7 @@ import net.perfectdreams.loritta.plugin.serversupport.responses.RegExResponse
 import java.io.File
 import java.io.FileNotFoundException
 import java.nio.file.Paths
+import java.util.*
 import java.util.jar.Attributes
 import java.util.jar.JarFile
 
@@ -168,9 +170,8 @@ class ServerSupportPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlu
 		val sortedResponsesByPriority = responses.sortedByDescending { it.getPriority() }
 
 		val selfUser = channel.guild.jda.selfUser
-		val legacyServerConfig = loritta.getServerConfigForGuild(channel.guild.id)
 		val serverConfig = loritta.getOrCreateServerConfig(channel.guild.idLong)
-		val lorittaUser = LorittaUser(selfUser, legacyServerConfig, loritta.getOrCreateLorittaProfile(selfUser.idLong))
+		val lorittaUser = LorittaUser(selfUser, EnumSet.noneOf(LorittaPermission::class.java), loritta.getOrCreateLorittaProfile(selfUser.idLong))
 
 		// 		val author: User,
 		//		val member: Member?,
@@ -215,7 +216,6 @@ class ServerSupportPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlu
 										channel,
 										channel,
 										serverConfig,
-										legacyServerConfig,
 										loritta.getLegacyLocaleById("default"),
 										lorittaUser
 								),

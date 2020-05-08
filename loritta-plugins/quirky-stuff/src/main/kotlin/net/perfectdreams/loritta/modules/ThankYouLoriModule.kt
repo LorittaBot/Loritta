@@ -33,7 +33,7 @@ class ThankYouLoriModule(val config: QuirkyConfig) : MessageReceivedModule {
                     }.count()
                 }
 
-                if (keyCount == 0) {
+                if (keyCount == 0L) {
                     transaction(Databases.loritta) {
                         DonationKey.new {
                             this.userId = event.author.idLong

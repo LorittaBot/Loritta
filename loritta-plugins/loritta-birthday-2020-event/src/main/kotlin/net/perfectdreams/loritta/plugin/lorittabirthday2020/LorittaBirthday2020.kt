@@ -153,7 +153,7 @@ object LorittaBirthday2020 {
 			points = transaction(Databases.loritta) {
 				CollectedBirthday2020Points.select {
 					CollectedBirthday2020Points.user eq id
-				}.count()
+				}.count().toInt()
 			}
 		}
 

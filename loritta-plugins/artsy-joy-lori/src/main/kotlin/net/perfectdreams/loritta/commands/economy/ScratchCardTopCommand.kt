@@ -40,7 +40,7 @@ class ScratchCardTopCommand : LorittaCommand(arrayOf("scratchcard top", "raspadi
 
 	@Subcommand
 	suspend fun run(context: DiscordCommandContext, locale: BaseLocale) {
-		var page = context.args.getOrNull(0)?.toIntOrNull()
+		var page = context.args.getOrNull(0)?.toLongOrNull()
 
 		if (page != null)
 			page -= 1

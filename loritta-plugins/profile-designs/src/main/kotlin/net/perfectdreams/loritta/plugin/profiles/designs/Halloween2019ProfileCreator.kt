@@ -14,7 +14,6 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.User
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -70,7 +69,7 @@ class Halloween2019ProfileCreator : ProfileCreator {
 		}
 
 		var xpLocal: Long? = null
-		var localPosition: Int? = null
+		var localPosition: Long? = null
 
 		if (guild != null) {
 			val localProfile = transaction(Databases.loritta) {
@@ -158,13 +157,13 @@ class Halloween2019ProfileCreator : ProfileCreator {
 		}
 	}
 
-	fun drawReputations(user: ProfileUserInfoData, graphics: Graphics, reputations: Int) {
+	fun drawReputations(user: ProfileUserInfoData, graphics: Graphics, reputations: Long) {
 		val font = graphics.font
 
 		ImageUtils.drawCenteredString(graphics, "$reputations reps", Rectangle(634, 404, 166, 52), font)
 	}
 
-	fun drawUserInfo(user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, graphics: Graphics, globalPosition: Int, localPosition: Int?, xpLocal: Long?, globalEconomyPosition: Int): Int {
+	fun drawUserInfo(user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, graphics: Graphics, globalPosition: Long, localPosition: Long?, xpLocal: Long?, globalEconomyPosition: Long): Int {
 		val userInfo = mutableListOf<String>()
 		userInfo.add("Global")
 
