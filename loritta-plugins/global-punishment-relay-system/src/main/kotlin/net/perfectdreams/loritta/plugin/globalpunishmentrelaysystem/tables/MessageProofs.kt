@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.plugin.globalpunishmentrelaysystem.tables
 
-import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 
 object MessageProofs : LongIdTable() {
 	val reportId = reference("report", UserReports).index()

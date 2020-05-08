@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.plugin.lorittabirthday2020.tables
 
-import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 
 object Birthday2020Drops : LongIdTable() {
 	val guildId = long("guild")

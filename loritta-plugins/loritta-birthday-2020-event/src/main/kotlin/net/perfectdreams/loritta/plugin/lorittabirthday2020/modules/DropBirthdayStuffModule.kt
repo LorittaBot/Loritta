@@ -101,7 +101,7 @@ class DropBirthdayStuffModule : MessageReceivedModule {
 			val getTheCandy = transaction(Databases.loritta) {
 				Birthday2020Players.select {
 					Birthday2020Players.user eq lorittaProfile.id
-				}.count() != 0
+				}.count() != 0L
 			}
 
 			val emoteToBeUsed = LorittaBirthday2020.emojis.random()

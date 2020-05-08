@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.plugin.githubissuesync.tables
 
-import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 
 object GitHubIssues : LongIdTable() {
     val channelId = long("channel").index()

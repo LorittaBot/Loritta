@@ -80,7 +80,7 @@ class GetChristmasStuffListener(val config: Christmas2019Config) : ListenerAdapt
 			val isParticipating = transaction(Databases.loritta) {
 				Christmas2019Players.select {
 					Christmas2019Players.user eq lorittaProfile.id
-				}.count() != 0
+				}.count() != 0L
 			}
 
 			val getTheCandy = isParticipating && Christmas2019.isEventActive()
@@ -91,7 +91,7 @@ class GetChristmasStuffListener(val config: Christmas2019Config) : ListenerAdapt
 			val isGiveaway = transaction(Databases.loritta) {
 				Giveaway.find {
 					Giveaways.messageId eq event.messageIdLong
-				}.count() != 0
+				}.count() != 0L
 			}
 
 			if (isGiveaway)

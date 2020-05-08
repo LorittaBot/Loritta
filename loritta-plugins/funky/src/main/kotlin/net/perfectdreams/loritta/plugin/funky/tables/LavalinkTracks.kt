@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.plugin.funky.tables
 
-import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 
 object LavalinkTracks : LongIdTable() {
 	val identifier = text("identifier").uniqueIndex()

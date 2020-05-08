@@ -70,7 +70,7 @@ class DropChristmasStuffModule(val config: Christmas2019Config) : MessageReceive
             val isParticipating = transaction(Databases.loritta) {
                 Christmas2019Players.select {
                     Christmas2019Players.user eq lorittaProfile.id
-                }.count() != 0
+                }.count() != 0L
             }
 
             val collectedAll = transaction(Databases.loritta) {

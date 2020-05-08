@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.tables
 
 import com.mrpowergamerbr.loritta.tables.Profiles
-import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 
 object CollectedChristmas2019Points : LongIdTable() {
 	val user = reference("user", Profiles)

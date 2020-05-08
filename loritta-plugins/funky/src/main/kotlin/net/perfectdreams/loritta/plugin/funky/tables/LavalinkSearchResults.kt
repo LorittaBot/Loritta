@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.plugin.funky.tables
 
-import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 
 object LavalinkSearchResults : LongIdTable() {
 	val identifier = text("search_query").index()

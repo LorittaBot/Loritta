@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.plugin.lorittabirthday2020.tables
 
 import com.mrpowergamerbr.loritta.tables.Profiles
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.utils.BirthdayTeam
-import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 
 object Birthday2020Players : LongIdTable() {
 	val user = reference("user", Profiles).index()

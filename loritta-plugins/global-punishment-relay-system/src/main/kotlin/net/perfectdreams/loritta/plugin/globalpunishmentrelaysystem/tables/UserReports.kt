@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.plugin.globalpunishmentrelaysystem.tables
 
 import net.perfectdreams.loritta.plugin.globalpunishmentrelaysystem.utils.PunishmentCategory
-import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 
 object UserReports : LongIdTable() {
 	val userId = long("user").index()

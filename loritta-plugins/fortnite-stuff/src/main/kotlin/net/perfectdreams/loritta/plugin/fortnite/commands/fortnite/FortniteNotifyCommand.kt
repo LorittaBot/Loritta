@@ -136,7 +136,7 @@ object FortniteNotifyCommand : DSLCommandBase {
 			val alreadyTracking = transaction(Databases.loritta) {
 				TrackedFortniteItems.select {
 					(TrackedFortniteItems.trackedBy eq context.lorittaUser.profile.id) and (TrackedFortniteItems.itemId eq item["itemId"].string)
-				}.count() != 0
+				}.count() != 0L
 			}
 
 			if (alreadyTracking) {

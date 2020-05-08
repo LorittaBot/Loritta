@@ -55,7 +55,7 @@ class Christmas2019Command : LorittaDiscordCommand(arrayOf("natal"), CommandCate
 		val isAlreadyParticipating = transaction(Databases.loritta) {
 			Christmas2019Players.select {
 				Christmas2019Players.user eq context.lorittaUser.profile.id
-			}.count() != 0
+			}.count() != 0L
 		}
 
 		if (isAlreadyParticipating) {

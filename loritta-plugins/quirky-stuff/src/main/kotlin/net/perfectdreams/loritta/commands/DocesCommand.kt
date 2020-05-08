@@ -200,7 +200,7 @@ class DocesCommand : LorittaDiscordCommand(arrayOf("doces"), CommandCategory.MAG
 		val isAlreadyParticipating = transaction(Databases.loritta) {
 			Halloween2019Players.select {
 				Halloween2019Players.user eq context.lorittaUser.profile.id
-			}.count() != 0
+			}.count() != 0L
 		}
 
 		if (isAlreadyParticipating) {

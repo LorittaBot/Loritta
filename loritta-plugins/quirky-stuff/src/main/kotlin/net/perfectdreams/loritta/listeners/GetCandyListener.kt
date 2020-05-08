@@ -47,7 +47,7 @@ class GetCandyListener(val config: QuirkyConfig) : ListenerAdapter() {
 			val isParticipating = transaction(Databases.loritta) {
 				Halloween2019Players.select {
 					Halloween2019Players.user eq lorittaProfile.id
-				}.count() != 0
+				}.count() != 0L
 			}
 
 			val getTheCandy = isParticipating && Calendar.getInstance()[Calendar.MONTH] == 9
@@ -58,7 +58,7 @@ class GetCandyListener(val config: QuirkyConfig) : ListenerAdapter() {
 			val isGiveaway = transaction(Databases.loritta) {
 				Giveaway.find {
 					Giveaways.messageId eq event.messageIdLong
-				}.count() != 0
+				}.count() != 0L
 			}
 
 			if (isGiveaway)

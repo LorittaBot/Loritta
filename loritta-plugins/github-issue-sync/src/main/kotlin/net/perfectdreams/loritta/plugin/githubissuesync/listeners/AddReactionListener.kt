@@ -31,7 +31,7 @@ class AddReactionListener(val config: GitHubConfig) : ListenerAdapter() {
 			GlobalScope.launch(loritta.coroutineDispatcher) {
 				issueMutex.withLock {
 					val alreadySent = transaction(Databases.loritta) {
-						GitHubIssues.select { GitHubIssues.messageId eq event.messageIdLong }.count() != 0
+						GitHubIssues.select { GitHubIssues.messageId eq event.messageIdLong }.count() != 0L
 					}
 
 					if (alreadySent)
