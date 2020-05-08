@@ -13,8 +13,6 @@ class GeneralConfig @JsonCreator constructor(
 		@JsonProperty("postgresql")
 		val postgreSql: PostgreSqlConfig,
 		@JsonProperty("mongodb")
-		@Deprecated("MongoDB is unstable")
-		val mongoDb: MongoDbConfig,
 		val connectionManager: ConnectionManagerConfig,
 		@JsonProperty("mercadopago")
 		val mercadoPago: MercadoPagoConfig,
