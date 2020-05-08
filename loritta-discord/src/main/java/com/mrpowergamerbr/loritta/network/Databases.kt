@@ -5,19 +5,58 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import net.perfectdreams.loritta.utils.NetAddressUtils
 import org.jetbrains.exposed.sql.Database
+import java.io.File
 
 object Databases {
 	val hikariConfigLoritta by lazy {
 		val loritta = com.mrpowergamerbr.loritta.utils.loritta
-		val config = HikariConfig()
-		config.jdbcUrl = "jdbc:postgresql://${NetAddressUtils.fixIp(NetAddressUtils.getWithPortIfMissing(loritta.config.postgreSql.address, 5432))}/${loritta.config.postgreSql.databaseName}"
-		config.username = loritta.config.postgreSql.username
-		if (loritta.config.postgreSql.password.isNotEmpty())
-			config.password = loritta.config.postgreSql.password
-		config.driverClassName = "org.postgresql.Driver"
 
-		config.maximumPoolSize = LorittaLauncher.loritta.config.postgreSql.maximumPoolSize
-		config.minimumIdle = LorittaLauncher.loritta.config.postgreSql.minimumIdle
+		var jdbcUrlPrefix: String? = null
+		var driverClassName: String? = null
+		var dbPath: String? = null
+		val sqLiteDbFile = File("loritta.db")
+
+		val databaseType = loritta.config.database.type
+		val config = HikariConfig()
+
+		when (databaseType) {
+			"SQLite" -> {
+				jdbcUrlPrefix = "sqlite"
+				driverClassName = "org.sqlite.JDBC"
+				dbPath = "${sqLiteDbFile.toPath()}"
+			}
+			"SQLiteMemory" -> {
+				jdbcUrlPrefix = "sqlite"
+				driverClassName = "org.sqlite.JDBC"
+				dbPath = "file:loritta?mode=memory&cache=shared"
+				config.addDataSourceProperty("cache", "shared")
+			}
+			"PostgreSQL" -> {
+				jdbcUrlPrefix = "postgresql"
+				driverClassName = "org.postgresql.Driver"
+				dbPath = "//${NetAddressUtils.fixIp(NetAddressUtils.getWithPortIfMissing(loritta.config.database.address, 5432))}/${loritta.config.database.databaseName}"
+			}
+			"PGJDBC-NG" -> {
+				jdbcUrlPrefix = "pgsql"
+				driverClassName = "com.impossibl.postgres.jdbc.PGDriver"
+				dbPath = "//${NetAddressUtils.fixIp(NetAddressUtils.getWithPortIfMissing(loritta.config.database.address, 5432))}/${loritta.config.database.databaseName}"
+			}
+			else -> throw RuntimeException("Unsupported Database Dialect $databaseType")
+		}
+
+		config.jdbcUrl = "jdbc:$jdbcUrlPrefix:$dbPath"
+		config.username = loritta.config.database.username
+		if (loritta.config.database.password.isNotEmpty())
+			config.password = loritta.config.database.password
+		config.driverClassName = driverClassName
+
+		config.maximumPoolSize = LorittaLauncher.loritta.config.database.maximumPoolSize
+		config.minimumIdle = LorittaLauncher.loritta.config.database.minimumIdle
+
+		// config.addDataSourceProperty("prepStmtCacheSize", "500")
+		// config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")
+		// config.addDataSourceProperty("cachePrepStmts", "true")
+		// config.addDataSourceProperty("useServerPrepStmts", "true")
 		return@lazy config
 	}
 	val dataSourceLoritta by lazy { HikariDataSource(hikariConfigLoritta) }

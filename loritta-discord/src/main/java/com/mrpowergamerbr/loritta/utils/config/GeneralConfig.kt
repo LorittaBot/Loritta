@@ -10,8 +10,7 @@ import net.perfectdreams.loritta.utils.DiscordUtils
 class GeneralConfig @JsonCreator constructor(
 		val loritta: LorittaConfig,
 		val clusters: List<LorittaClusterConfig>,
-		@JsonProperty("postgresql")
-		val postgreSql: PostgreSqlConfig,
+		val database: DatabaseConfig,
 		val connectionManager: ConnectionManagerConfig,
 		@JsonProperty("mercadopago")
 		val mercadoPago: MercadoPagoConfig,

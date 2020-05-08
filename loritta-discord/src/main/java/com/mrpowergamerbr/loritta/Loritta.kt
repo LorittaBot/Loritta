@@ -440,13 +440,19 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	}
 
 	fun getOrCreateLorittaProfile(userId: Long): Profile {
+		val sqlProfile = transaction(Databases.loritta) { Profile.findById(userId) }
+		if (sqlProfile != null)
+			return sqlProfile
+
+		val profileSettings = transaction(Databases.loritta) {
+			ProfileSettings.new {
+				gender = Gender.UNKNOWN
+				boughtProfiles = arrayOf()
+			}
+		}
+
 		return transaction(Databases.loritta) {
-			val sqlProfile = Profile.findById(userId)
-
-			if (sqlProfile != null)
-				return@transaction sqlProfile
-
-			val newProfile = Profile.new(userId) {
+			Profile.new(userId) {
 				xp = 0
 				isBanned = false
 				bannedReason = null
@@ -458,13 +464,8 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 				donatedAt = 0L
 				donationExpiresIn = 0L
 				isAfk = false
-				settings = ProfileSettings.new {
-					gender = Gender.UNKNOWN
-					boughtProfiles = arrayOf()
-				}
+				settings = profileSettings
 			}
-
-			return@transaction newProfile
 		}
 	}
 

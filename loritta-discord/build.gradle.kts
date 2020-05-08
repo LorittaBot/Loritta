@@ -61,6 +61,8 @@ dependencies {
     compile("javax.activation:activation:1.1.1")
     compile("net.dv8tion:JDA:$jdaVersion")
     compile("org.postgresql:postgresql:42.2.12")
+    compile("com.impossibl.pgjdbc-ng:pgjdbc-ng:0.8.4")
+    compile("org.xerial:sqlite-jdbc:3.31.1")
     compile("com.zaxxer:HikariCP:3.4.3")
     // compile("org.jetbrains.exposed:exposed-core:0.24.1")
     // compile("org.jetbrains.exposed:exposed-dao:0.24.1")

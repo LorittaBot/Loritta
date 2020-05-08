@@ -2,7 +2,8 @@ package com.mrpowergamerbr.loritta.utils.config
 
 import com.fasterxml.jackson.annotation.JsonCreator
 
-class PostgreSqlConfig @JsonCreator constructor(
+class DatabaseConfig @JsonCreator constructor(
+		val type: String,
         val databaseName: String,
         val address: String,
         val username: String,
