@@ -237,21 +237,25 @@ class CommandManager {
 				return true
 		}
 
-		// E depois os comandos usando JavaScript (Nashorn)
-		val nashornCommands = transaction(Databases.loritta) {
-			CustomGuildCommands.select {
-				CustomGuildCommands.guild eq serverConfig.id and (CustomGuildCommands.enabled eq true)
-			}.toList()
-		}.map {
-			NashornCommand(
-					it[CustomGuildCommands.label],
-					it[CustomGuildCommands.code]
-			)
-		}
+		// Checking custom commands
+		// To avoid unnecessary databases retrievals, we are going to check if the message starts with the server prefix or with Loritta's mention
+		val firstLabel = rawArguments.first()
+		if (firstLabel.startsWith(serverConfig.commandPrefix) || firstLabel == "<@${loritta.discordConfig.discord.clientId}>" || firstLabel == "<@!${loritta.discordConfig.discord.clientId}>") {
+			val nashornCommands = transaction(Databases.loritta) {
+				CustomGuildCommands.select {
+					CustomGuildCommands.guild eq serverConfig.id and (CustomGuildCommands.enabled eq true)
+				}.toList()
+			}.map {
+				NashornCommand(
+						it[CustomGuildCommands.label],
+						it[CustomGuildCommands.code]
+				)
+			}
 
-		for (command in nashornCommands) {
-			if (matches(command, rawArguments, ev, serverConfig, locale, legacyLocale, lorittaUser))
-				return true
+			for (command in nashornCommands) {
+				if (matches(command, rawArguments, ev, serverConfig, locale, legacyLocale, lorittaUser))
+					return true
+			}
 		}
 
 		return false
