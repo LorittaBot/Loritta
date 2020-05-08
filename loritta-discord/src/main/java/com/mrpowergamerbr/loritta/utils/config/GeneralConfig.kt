@@ -12,7 +12,6 @@ class GeneralConfig @JsonCreator constructor(
 		val clusters: List<LorittaClusterConfig>,
 		@JsonProperty("postgresql")
 		val postgreSql: PostgreSqlConfig,
-		@JsonProperty("mongodb")
 		val connectionManager: ConnectionManagerConfig,
 		@JsonProperty("mercadopago")
 		val mercadoPago: MercadoPagoConfig,
