@@ -21,11 +21,8 @@ class ArrayColumnType(private val type: ColumnType) : ColumnType() {
 	}
 
 	override fun valueToDB(value: Any?): Any? {
-		println("Value to DB: ${value}")
-		if (!supportsArrays()) {
-			println("wow it is unsupported, how cool is that")
+		if (!supportsArrays())
 			return "'NOT SUPPORTED'"
-		}
 
 		if (value is Array<*>) {
 			val columnType = type.sqlType().split("(")[0]
@@ -37,12 +34,9 @@ class ArrayColumnType(private val type: ColumnType) : ColumnType() {
 	}
 
 	override fun valueFromDB(value: Any): Any {
-		println("Getting value from database, value: $value; ${supportsArrays()}")
 		if (!supportsArrays()) {
-			println("does not support")
 			val clazz = type::class
 			val clazzName = clazz.simpleName
-			println(clazzName)
 			if (clazzName == "LongColumnType")
 				return arrayOf<Long>()
 			if (clazzName == "TextColumnType")
@@ -60,11 +54,8 @@ class ArrayColumnType(private val type: ColumnType) : ColumnType() {
 	}
 
 	override fun notNullValueToDB(value: Any): Any {
-		println("Getting not null to database, value: $value; supports array? ${supportsArrays()}")
-		if (!supportsArrays()) {
-			println("Returing not supported")
+		if (!supportsArrays())
 			return "'NOT SUPPORTED'"
-		}
 
 		if (value is Array<*>) {
 			if (value.isEmpty())
