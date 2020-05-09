@@ -22,4 +22,5 @@ object Backgrounds : IdTable<String>() {
     val availableToBuyViaDreams = bool("available_to_buy_via_dreams").index()
     val availableToBuyViaMoney = bool("available_to_buy_via_money").index()
     val set = optReference("set", Sets)
+    val addedAt = long("added_at").default(System.currentTimeMillis())
 }
