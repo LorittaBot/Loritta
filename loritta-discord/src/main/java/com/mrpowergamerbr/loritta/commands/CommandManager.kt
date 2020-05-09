@@ -281,8 +281,16 @@ class CommandManager {
 			val rawArgs = rawArguments.joinToString(" ").stripCodeMarks().split(Constants.WHITE_SPACE_MULTIPLE_REGEX)
 					.drop(1)
 					.toTypedArray()
-			val strippedArgs = MarkdownSanitizer.sanitize(rawArgs.joinToString(" ")).split(" ").toTypedArray()
-			val args = strippedArgs
+			val strippedArgs: Array<String>
+			val args: Array<String>
+
+			if (rawArgs.isNotEmpty()) {
+				strippedArgs = MarkdownSanitizer.sanitize(rawArgs.joinToString(" ")).split(" ").toTypedArray()
+				args = strippedArgs
+			} else {
+				strippedArgs = rawArgs
+				args = rawArgs
+			}
 
 			var reparsedLegacyLocale = legacyLocale
 			if (!isPrivateChannel) { // TODO: Migrar isto para que seja customizável
