@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.internal.JDAImpl
 import net.dv8tion.jda.internal.requests.RateLimiter
 import net.dv8tion.jda.internal.requests.Requester
+import net.dv8tion.jda.internal.requests.ratelimit.BotRateLimiter
 import net.dv8tion.jda.internal.requests.ratelimit.IBucket
 import java.util.concurrent.ConcurrentHashMap
 
@@ -27,7 +28,7 @@ class RateLimitChecker(val m: Loritta) {
 		}
 
 		val bucketsField by lazy {
-			val field = RateLimiter::class.java.getDeclaredField("buckets")
+			val field = BotRateLimiter::class.java.getDeclaredField("buckets")
 			field.isAccessible = true
 			field
 		}
