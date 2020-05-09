@@ -278,8 +278,10 @@ class CommandManager {
 			val isPrivateChannel = ev.isFromType(ChannelType.PRIVATE)
 			val start = System.currentTimeMillis()
 
-			val rawArgs = ev.message.contentRaw.stripCodeMarks().split(Constants.WHITE_SPACE_MULTIPLE_REGEX).toTypedArray()
-			val strippedArgs = MarkdownSanitizer.sanitize(rawArguments.joinToString(" ")).split(" ").toTypedArray()
+			val rawArgs = rawArguments.joinToString(" ").stripCodeMarks().split(Constants.WHITE_SPACE_MULTIPLE_REGEX)
+					.drop(1)
+					.toTypedArray()
+			val strippedArgs = MarkdownSanitizer.sanitize(rawArgs.joinToString(" ")).split(" ").toTypedArray()
 			val args = strippedArgs
 
 			var reparsedLegacyLocale = legacyLocale

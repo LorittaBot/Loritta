@@ -96,13 +96,11 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 
 			val rawArgs = rawArguments.joinToString(" ").stripCodeMarks()
 					.split(Constants.WHITE_SPACE_MULTIPLE_REGEX)
+					.drop(removeArgumentCount)
 					.toMutableList()
-			val strippedArgs = MarkdownSanitizer.sanitize(rawArguments.joinToString(" ")).split(" ").toTypedArray()
-			val args = strippedArgs
 
-			repeat(removeArgumentCount) {
-				rawArgs.removeAt(0)
-			}
+			val strippedArgs = MarkdownSanitizer.sanitize(rawArgs.joinToString(" ")).split(" ").toTypedArray()
+			val args = strippedArgs
 
 			val context = DiscordCommandContext(
 					loritta,

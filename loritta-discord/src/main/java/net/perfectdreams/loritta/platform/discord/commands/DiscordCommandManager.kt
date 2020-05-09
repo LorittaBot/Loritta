@@ -214,13 +214,13 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
             val isPrivateChannel = ev.isFromType(ChannelType.PRIVATE)
             val start = System.currentTimeMillis()
 
-            var rawArgs = rawArguments.joinToString(" ").stripCodeMarks().split(Constants.WHITE_SPACE_MULTIPLE_REGEX).toTypedArray()
+            val rawArgs = rawArguments.joinToString(" ").stripCodeMarks()
+                    .split(Constants.WHITE_SPACE_MULTIPLE_REGEX)
+                    .drop(removeArgumentCount)
+                    .toTypedArray()
+
             val strippedArgs = MarkdownSanitizer.sanitize(rawArguments.joinToString(" ")).split(" ").toTypedArray()
             val args = strippedArgs
-
-            repeat(removeArgumentCount) {
-                rawArgs = rawArgs.remove(0)
-            }
 
             var legacyLocale = legacyLocale
 
