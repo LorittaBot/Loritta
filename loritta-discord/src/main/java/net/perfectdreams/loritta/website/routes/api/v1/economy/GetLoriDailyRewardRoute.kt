@@ -129,7 +129,9 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 			}
 
 			val requires2FA = transaction(Databases.loritta) {
-				Requires2FAChecksUsers.select { Requires2FAChecksUsers.userId eq userIdentification.id.toLong() }.count() != 0L
+				Requires2FAChecksUsers.select {
+					Requires2FAChecksUsers.userId eq userIdentification.id.toLong() and (Requires2FAChecksUsers.triggeredAt greaterEq (System.currentTimeMillis() - (Constants.ONE_DAY_IN_MILLISECONDS * 3)))
+				}.count() != 0L
 			}
 
 			if (requires2FA && userIdentification.mfaEnabled == false) {
