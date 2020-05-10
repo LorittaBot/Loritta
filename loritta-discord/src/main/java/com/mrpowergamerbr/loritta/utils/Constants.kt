@@ -37,6 +37,7 @@ object Constants {
 	const val SIX_MONTHS_IN_MILLISECONDS = ONE_MONTH_IN_MILLISECONDS * 8
 	const val DELAY_CUT_OFF = SIX_MONTHS_IN_MILLISECONDS // six months
 	const val CLUSTER_USER_AGENT = "Loritta Cluster %s (%s)"
+	const val CANARY_CLUSTER_USER_AGENT = "Canary Cluster %s (%s)"
 	val DEFAULT_DISCORD_BLUE_AVATAR by lazy {
 		LorittaUtils.downloadImage(
 				"https://cdn.discordapp.com/embed/avatars/0.png?size=256",

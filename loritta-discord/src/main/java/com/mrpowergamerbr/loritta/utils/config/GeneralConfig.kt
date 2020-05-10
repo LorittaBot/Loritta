@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.utils.DiscordUtils
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -35,7 +36,13 @@ class GeneralConfig @JsonCreator constructor(
 			val maxShard: Long
 	) {
 		fun getUrl() = DiscordUtils.getUrlForLorittaClusterId(id)
-		fun getUserAgent() = Constants.CLUSTER_USER_AGENT.format(id, name)
+		fun getUserAgent() = getUserAgent(loritta.config.loritta.environment)
+		fun getUserAgent(environmentType: EnvironmentType) = (
+				if (environmentType == EnvironmentType.CANARY)
+					Constants.CANARY_CLUSTER_USER_AGENT
+				else
+					Constants.CLUSTER_USER_AGENT
+				).format(id, name)
 	}
 
 	class LorittaConfig @JsonCreator constructor(

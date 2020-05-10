@@ -239,12 +239,12 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 
 	val lorittaCluster: GeneralConfig.LorittaClusterConfig
 		get() {
-			return loritta.config.clusters.first { it.id == loritta.instanceConfig.loritta.currentClusterId }
+			return config.clusters.first { it.id == instanceConfig.loritta.currentClusterId }
 		}
 
 	val lorittaInternalApiKey: GeneralConfig.LorittaConfig.WebsiteConfig.AuthenticationKey
 		get() {
-			return loritta.config.loritta.website.apiKeys.first { it.description == "Loritta Internal Key" }
+			return config.loritta.website.apiKeys.first { it.description == "Loritta Internal Key" }
 		}
 
 	// Inicia a Loritta

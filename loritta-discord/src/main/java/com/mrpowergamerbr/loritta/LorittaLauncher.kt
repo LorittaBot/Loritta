@@ -77,6 +77,8 @@ object LorittaLauncher {
 		val instanceConfig = readConfigurationFromFile<GeneralInstanceConfig>(configurationInstanceFile)
 		val discordInstanceConfig = readConfigurationFromFile<GeneralDiscordInstanceConfig>(discordInstanceConfigurationFile)
 
+		System.setProperty("cluster.name", config.clusters.first { it.id == instanceConfig.loritta.currentClusterId }.getUserAgent(config.loritta.environment))
+
 		val arg0 = args.getOrNull(0)
 		val arg1 = args.getOrNull(1)
 
