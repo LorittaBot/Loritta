@@ -367,32 +367,35 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		// Vamos alterar a minha linguagem quando eu entrar em um servidor, baseando na localização dele
 		val region = event.guild.region
 		val regionName = region.getName()
-		val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
-		logger.trace { "regionName = $regionName" }
 
-		// Portuguese
-		if (regionName.startsWith("Brazil")) {
-			logger.debug { "Setting localeId to default at ${event.guild}, regionName = $regionName" }
-			transaction(Databases.loritta) {
-				serverConfig.localeId = "default"
-			}
-		} else {
-			logger.debug { "Setting localeId to en-us at ${event.guild}, regionName = $regionName" }
-			transaction(Databases.loritta) {
-				serverConfig.localeId = "en-us"
-			}
-		}
+		GlobalScope.launch(loritta.coroutineDispatcher) {
+			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
+			logger.trace { "regionName = $regionName" }
 
-		logger.debug { "Adding DJ permission to all roles with ADMINISTRATOR or MANAGE_SERVER permission at ${event.guild}"}
-
-		// Adicionar a permissão de DJ para alguns cargos
-		event.guild.roles.forEach { role ->
-			if (role.hasPermission(Permission.ADMINISTRATOR) || role.hasPermission(Permission.MANAGE_SERVER)) {
+			// Portuguese
+			if (regionName.startsWith("Brazil")) {
+				logger.debug { "Setting localeId to default at ${event.guild}, regionName = $regionName" }
 				transaction(Databases.loritta) {
-					ServerRolePermissions.insert {
-						it[ServerRolePermissions.guild] = serverConfig.id
-						it[ServerRolePermissions.roleId] = role.idLong
-						it[ServerRolePermissions.permission] = LorittaPermission.DJ
+					serverConfig.localeId = "default"
+				}
+			} else {
+				logger.debug { "Setting localeId to en-us at ${event.guild}, regionName = $regionName" }
+				transaction(Databases.loritta) {
+					serverConfig.localeId = "en-us"
+				}
+			}
+
+			logger.debug { "Adding DJ permission to all roles with ADMINISTRATOR or MANAGE_SERVER permission at ${event.guild}"}
+
+			// Adicionar a permissão de DJ para alguns cargos
+			event.guild.roles.forEach { role ->
+				if (role.hasPermission(Permission.ADMINISTRATOR) || role.hasPermission(Permission.MANAGE_SERVER)) {
+					transaction(Databases.loritta) {
+						ServerRolePermissions.insert {
+							it[ServerRolePermissions.guild] = serverConfig.id
+							it[ServerRolePermissions.roleId] = role.idLong
+							it[ServerRolePermissions.permission] = LorittaPermission.DJ
+						}
 					}
 				}
 			}
