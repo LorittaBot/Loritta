@@ -51,7 +51,7 @@ dependencies {
     compile("com.oracle.tregex:tregex:1.0.0-rc9")
     compile("com.oracle.truffle:truffle-api:1.0.0-rc7")
     compile("org.graalvm:graal-sdk:1.0.0-rc7")
-    compile("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.1")
+    compile("org.jetbrains.kotlinx:kotlinx-html-jvm:0.6.12")
     compile("org.twitter4j:twitter4j-core:[4.0,)")
     compile("org.twitter4j:twitter4j-stream:[4.0,)")
     compile("com.github.ben-manes.caffeine:caffeine:2.8.2")
