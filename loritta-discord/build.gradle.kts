@@ -93,6 +93,7 @@ dependencies {
     compile("org.json:json:20190722")
     compile("com.github.salomonbrys.kotson:kotson:2.5.0")
     compile("com.vladsch.flexmark:flexmark-all:0.50.44")
+    compile("de.siegmar:logback-gelf:3.0.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.0-M1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.0-M1")
     testImplementation("io.mockk:mockk:1.9.3")
