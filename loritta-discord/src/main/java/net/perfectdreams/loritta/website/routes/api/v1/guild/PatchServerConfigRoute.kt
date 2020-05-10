@@ -44,6 +44,8 @@ class PatchServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRout
 				jsonObject()
 			}
 
+			loritta.cachedServerConfigs.invalidate(guildId)
+
 			if (actionType != ActionType.RESET_XP) {
 				WebAuditLogUtils.addEntry(
 						guildId,
@@ -88,6 +90,8 @@ class PatchServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRout
 				} else {
 					jsonObject()
 				}
+
+				loritta.cachedServerConfigs.invalidate(guildId)
 
 				if (actionType != ActionType.RESET_XP) {
 					WebAuditLogUtils.addEntry(

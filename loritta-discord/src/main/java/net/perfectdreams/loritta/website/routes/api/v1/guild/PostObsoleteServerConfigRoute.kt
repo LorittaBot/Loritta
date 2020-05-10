@@ -214,6 +214,8 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 				params
 		)
 
+		loritta.cachedServerConfigs.invalidate(serverConfig.guildId)
+
 		call.respondJson(jsonObject())
 	}
 

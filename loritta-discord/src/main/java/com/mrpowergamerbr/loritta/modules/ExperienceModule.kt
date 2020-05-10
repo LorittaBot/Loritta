@@ -16,6 +16,7 @@ import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Role
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.LevelConfig
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.ExperienceRoleRates
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.LevelAnnouncementConfigs
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.RolesByExperience
@@ -115,9 +116,7 @@ class ExperienceModule : MessageReceivedModule {
 		val guild = event.guild!!
 		val member = event.member!!
 
-		val levelConfig = transaction(Databases.loritta) {
-			serverConfig.levelConfig
-		}
+		val levelConfig = serverConfig.getCachedOrRetreiveFromDatabase<LevelConfig?>(ServerConfig::levelConfig)
 
 		if (levelConfig != null) {
 			logger.info { "Level Config isn't null in $guild" }

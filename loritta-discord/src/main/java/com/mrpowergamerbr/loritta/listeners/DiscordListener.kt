@@ -16,7 +16,6 @@ import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
@@ -38,8 +37,7 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.dao.servers.Giveaway
-import net.perfectdreams.loritta.dao.servers.moduleconfigs.MemberCounterChannelConfig
-import net.perfectdreams.loritta.dao.servers.moduleconfigs.ReactionOption
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.*
 import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
 import net.perfectdreams.loritta.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.tables.servers.Giveaways
@@ -271,12 +269,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		GlobalScope.launch {
 			if (e.isFromType(ChannelType.TEXT)) {
 				try {
-					val conf = loritta.getOrCreateServerConfig(e.guild.idLong)
-
-					// Sistema de Starboard
-					val starboardConfig = transaction(Databases.loritta) {
-						conf.starboardConfig
-					}
+					// Starboard
+					val config = loritta.getOrCreateServerConfig(e.guild.idLong, true)
+					val starboardConfig = config.getCachedOrRetreiveFromDatabase<StarboardConfig?>(ServerConfig::starboardConfig)
 
 					if (starboardConfig != null && starboardConfig.enabled)
 						StarboardModule.handleStarboardReaction(e, starboardConfig)
@@ -292,6 +287,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		logger.info { "Someone removed me @ ${e.guild}! :(" }
+
+		loritta.cachedServerConfigs.invalidate(e.guild.idLong)
 
 		// Remover threads de role removal caso a Loritta tenha saido do servidor
 		val toRemove = mutableListOf<String>()
@@ -416,7 +413,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			try {
-				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
+				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong, true)
 
 				if (FeatureFlags.UPDATE_IN_GUILD_STATS_ON_GUILD_JOIN) {
 					val profile = serverConfig.getUserDataIfExists(event.guild.idLong)
@@ -428,13 +425,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 				}
 
-				val autoroleConfig = transaction(Databases.loritta) {
-					serverConfig.autoroleConfig
-				}
-
-				val welcomerConfig = transaction(Databases.loritta) {
-					serverConfig.welcomerConfig
-				}
+				val autoroleConfig = serverConfig.getCachedOrRetreiveFromDatabase<AutoroleConfig?>(ServerConfig::autoroleConfig)
+				val welcomerConfig = serverConfig.getCachedOrRetreiveFromDatabase<WelcomerConfig?>(ServerConfig::welcomerConfig)
 
 				queueTextChannelTopicUpdates(event.guild, serverConfig, true)
 
@@ -495,7 +487,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				if (event.user.id == loritta.discordConfig.discord.clientId)
 					return@launch
 
-				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
+				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong, true)
 
 				if (FeatureFlags.UPDATE_IN_GUILD_STATS_ON_GUILD_QUIT) {
 					val profile = serverConfig.getUserDataIfExists(event.guild.idLong)
@@ -509,9 +501,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				DiscordListener.queueTextChannelTopicUpdates(event.guild, serverConfig, true)
 
-				val welcomerConfig = transaction(Databases.loritta) {
-					serverConfig.welcomerConfig
-				}
+				val welcomerConfig = serverConfig.getCachedOrRetreiveFromDatabase<WelcomerConfig?>(ServerConfig::welcomerConfig)
 
 				if (welcomerConfig != null)
 					WelcomeModule.handleLeave(event, serverConfig, welcomerConfig)

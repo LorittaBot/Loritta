@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.DonationKeys
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
+import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.*
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
@@ -11,6 +12,9 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.math.BigDecimal
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+import kotlin.reflect.KMutableProperty1
 
 class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 	companion object : EntityClass<Long, ServerConfig>(ServerConfigs)
@@ -64,5 +68,21 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 		return transaction(Databases.loritta) {
 			GuildProfile.find { (GuildProfiles.guildId eq guildId) and (GuildProfiles.userId eq id) }.firstOrNull()
 		}
+	}
+
+	private val cachedData = ConcurrentHashMap<KMutableProperty1<ServerConfig, *>, Optional<Any>>()
+
+	/**
+	 * Gets or retrieves from the database the object you've requested
+	 */
+	fun <T> getCachedOrRetreiveFromDatabase(property: KMutableProperty1<ServerConfig, *>): T {
+		if (!cachedData.containsKey(property)) {
+			val databaseObject = transaction(Databases.loritta) {
+				property.call(this@ServerConfig)
+			}
+			cachedData[property] = Optional.ofNullable(databaseObject)
+			return databaseObject as T
+		}
+		return cachedData[property]?.getOrNull() as T
 	}
 }

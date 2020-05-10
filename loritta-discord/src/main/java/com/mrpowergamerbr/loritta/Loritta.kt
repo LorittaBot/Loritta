@@ -413,10 +413,18 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	 * @param guildId the guild's ID
 	 * @return        the server configuration
 	 */
-	fun getOrCreateServerConfig(guildId: Long): com.mrpowergamerbr.loritta.dao.ServerConfig {
-		return transaction(Databases.loritta) {
+	fun getOrCreateServerConfig(guildId: Long, loadFromCache: Boolean = false): com.mrpowergamerbr.loritta.dao.ServerConfig {
+		if (loadFromCache)
+			cachedServerConfigs.getIfPresent(guildId)?.let { return it }
+
+		val serverConfig = transaction(Databases.loritta) {
 			ServerConfig.findById(guildId) ?: ServerConfig.new(guildId) {}
 		}
+
+		if (loritta.config.caches.serverConfigs.maximumSize != 0L)
+			cachedServerConfigs.put(guildId, serverConfig)
+
+		return serverConfig
 	}
 
 	fun getLorittaProfile(userId: String): Profile? {

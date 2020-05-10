@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.InviteBlockerConfig
 import net.perfectdreams.loritta.platform.discord.entities.DiscordEmote
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.tables.servers.ServerRolePermissions
@@ -26,9 +27,8 @@ class InviteLinkModule : MessageReceivedModule {
 	}
 
 	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
-		val inviteBlockerConfig = transaction(Databases.loritta) {
-			serverConfig.inviteBlockerConfig
-		} ?: return false
+		val inviteBlockerConfig = serverConfig.getCachedOrRetreiveFromDatabase<InviteBlockerConfig?>(ServerConfig::inviteBlockerConfig)
+				?: return false
 
 		if (!inviteBlockerConfig.enabled)
 			return false
@@ -45,9 +45,8 @@ class InviteLinkModule : MessageReceivedModule {
 	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
 		val message = event.message
 		val guild = message.guild
-		val inviteBlockerConfig = transaction(Databases.loritta) {
-			serverConfig.inviteBlockerConfig
-		} ?: return false
+		val inviteBlockerConfig = serverConfig.getCachedOrRetreiveFromDatabase<InviteBlockerConfig?>(ServerConfig::inviteBlockerConfig)
+				?: return false
 
 		val content = message.contentRaw
 				.replace("\u200B", "")

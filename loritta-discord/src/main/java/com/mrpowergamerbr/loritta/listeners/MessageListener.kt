@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.AutoroleConfig
 import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.tables.BlacklistedGuilds
@@ -78,11 +79,8 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				var start = System.nanoTime()
 
-				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
-
-				val autoroleConfig = transaction(Databases.loritta) {
-					serverConfig.autoroleConfig
-				}
+				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong, true)
+				val autoroleConfig = serverConfig.getCachedOrRetreiveFromDatabase<AutoroleConfig?>(ServerConfig::autoroleConfig)
 
 				logIfEnabled(enableProfiling) { "Loading Server Config took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
@@ -347,7 +345,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
-			val serverConfig = loritta.getOrCreateServerConfig(-1)
+			val serverConfig = loritta.getOrCreateServerConfig(-1, true)
 			val profile = loritta.getOrCreateLorittaProfile(event.author.idLong) // Carregar perfil do usuário
 			val lorittaUser = LorittaUser(event.author, EnumSet.noneOf(LorittaPermission::class.java), profile)
 			// TODO: Usuários deverão poder escolher a linguagem que eles preferem via mensagem direta
@@ -403,7 +401,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 					return@launch
 				}
 
-				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
+				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong, true)
 				val lorittaProfile = loritta.getOrCreateLorittaProfile(event.author.idLong)
 				val legacyLocale = loritta.getLegacyLocaleById(serverConfig.localeId)
 				val locale = loritta.getLocaleById(serverConfig.localeId)

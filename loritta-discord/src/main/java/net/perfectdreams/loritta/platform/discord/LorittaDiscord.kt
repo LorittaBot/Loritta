@@ -1,12 +1,14 @@
 package net.perfectdreams.loritta.platform.discord
 
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.salomonbrys.kotson.*
 import com.google.gson.GsonBuilder
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand
 import com.mrpowergamerbr.loritta.dao.Background
 import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.profile.ProfileDesignManager
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -40,6 +42,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.lang.reflect.Modifier
 import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 import kotlin.random.Random
 
@@ -84,6 +87,11 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         get() {
             return loritta.instanceConfig.loritta.currentClusterId == 1L
         }
+
+    val cachedServerConfigs = Caffeine.newBuilder()
+            .maximumSize(config.caches.serverConfigs.maximumSize)
+            .expireAfterWrite(config.caches.serverConfigs.expireAfterWrite, TimeUnit.SECONDS)
+            .build<Long, ServerConfig>()
 
     /**
      * Gets an user's profile background

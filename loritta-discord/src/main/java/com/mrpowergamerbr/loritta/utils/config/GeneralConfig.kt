@@ -25,7 +25,8 @@ class GeneralConfig @JsonCreator constructor(
 		val twitch: TwitchConfig,
 		val twitch2: TwitchConfig,
 		val mixer: MixerConfig,
-		val fortniteApi: FortniteApiConfig
+		val fortniteApi: FortniteApiConfig,
+		val caches: CacheConfig
 ) {
 	class LorittaClusterConfig @JsonCreator constructor(
 			val id: Long,
