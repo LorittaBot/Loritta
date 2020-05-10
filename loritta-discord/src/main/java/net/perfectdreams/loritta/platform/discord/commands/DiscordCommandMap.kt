@@ -347,7 +347,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 				return true
 			} catch (e: Exception) {
 				if (e is CancellationException) {
-					logger.error(e) { "RestAction in command ${command::class.simpleName} has been cancelled" }
+					logger.error(e) { "RestAction in command ${command.commandName} has been cancelled" }
 					return true
 				}
 
@@ -377,7 +377,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 					return true
 				}
 
-				logger.error("Exception ao executar comando ${command.javaClass.simpleName}", e)
+				logger.error("Exception ao executar comando ${command.commandName}", e)
 
 				// Avisar ao usuário que algo deu muito errado
 				val mention = "${ev.author.asMention} "
