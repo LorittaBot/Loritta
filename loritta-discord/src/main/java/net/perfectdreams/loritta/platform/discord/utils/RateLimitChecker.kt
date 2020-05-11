@@ -55,7 +55,7 @@ class RateLimitChecker(val m: Loritta) {
 	}
 
 	fun checkIfRequestShouldBeIgnored(): Boolean {
-		if (m.discordConfig.discord.requestLimiter.enabled)
+		if (!m.discordConfig.discord.requestLimiter.enabled)
 			return false
 
 		// https://i.imgur.com/crENfcG.png
