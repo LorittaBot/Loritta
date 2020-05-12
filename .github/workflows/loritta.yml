@@ -41,24 +41,49 @@ jobs:
     # Upload Artifacts to GitHub
     # Loritta
     - uses: actions/upload-artifact@v2
-      name: Loritta Discord
+      name: "Upload Loritta (Discord)"
       with:
+        name: Loritta (Discord)
         path: loritta-discord/build/libs/loritta-discord-*.jar
 
     # Loritta Plugins
     - uses: actions/upload-artifact@v2
+      name: "Upload Loritta (Plugins)"
       with:
-        name: Loritta Plugins
+        name: Loritta (Plugins)
         path: loritta-plugins/*/build/libs/*.jar
 
     # Spicy Morenitta
     - uses: actions/upload-artifact@v2
+      name: "Upload Spicy Morenitta"
       with:
         name: Spicy Morenitta
-        path: loritta-plugins/*/build/web/*.js
+        path: loritta-website/spicy-morenitta/build/web/*.js
+
+    # Loritta Watchdog
+    - uses: actions/upload-artifact@v2
+      name: "Upload Loritta Watchdog"
+      with:
+        name: Loritta Watchdog
+        path: loritta-watchdog-bot/build/libs/*.jar
+
+    # Parallax Code Server
+    - uses: actions/upload-artifact@v2
+      name: "Upload Parallax Code Server"
+      with:
+        name: Parallax Code Server
+        path: parallax-code-server/build/libs/*.jar
+
+    # Shard Controller
+    - uses: actions/upload-artifact@v2
+      name: "Upload Shard Controller"
+      with:
+        name: Shard Controller
+        path: shard-controller/build/libs/*.jar
 
     # Libs
     - uses: actions/upload-artifact@v2
+      name: "Upload Loritta's Libs"
       with:
-        name: Loritta Libs
+        name: Loritta (Libs)
         path: libs/*
