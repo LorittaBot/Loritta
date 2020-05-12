@@ -28,7 +28,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.utils.cache.CacheFlag
@@ -135,7 +134,10 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	var twitch = TwitchAPI(config.twitch.clientId, config.twitch.clientSecret)
 	var twitch2 = TwitchAPI(config.twitch2.clientId, config.twitch2.clientSecret)
 	val connectionManager = ConnectionManager()
-	val mercadoPago: MercadoPago
+	val mercadoPago = MercadoPago(
+			clientId = config.mercadoPago.clientId,
+			clientSecret = config.mercadoPago.clientSecret
+	)
 	var patchData = PatchData()
 	var sponsors: List<Sponsor> = listOf()
 	val cachedRetrievedArtists = CacheBuilder.newBuilder().expireAfterWrite(7, TimeUnit.DAYS)
@@ -158,17 +160,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		TEMP = instanceConfig.loritta.folders.temp
 		LOCALES = instanceConfig.loritta.folders.locales
 		FRONTEND = instanceConfig.loritta.website.folder
-		loadLocales()
-		loadLegacyLocales()
-		mercadoPago = MercadoPago(
-				clientId = config.mercadoPago.clientId,
-				clientSecret = config.mercadoPago.clientSecret
-		)
-		youtube = TemmieYouTube()
-		if (loritta.isMaster) // Apenas o master cluster deve carregar as fan arts, os outros clusters irão carregar pela API
-			loadFanArts()
-		Emotes.emoteManager = DiscordEmoteManager()
-		Emotes.emoteManager?.loadEmotes()
 
 		val dispatcher = Dispatcher()
 		dispatcher.maxRequestsPerHost = discordConfig.discord.maxRequestsPerHost
@@ -217,25 +208,9 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 			return discordConfig.discord.clientId == "297153970613387264"
 		}
 
-	fun isMainAccountOnlineAndWeAreNotTheMainAccount(): Boolean {
-		if (isMainAccount)
-			return false
+	fun isMainAccountOnlineAndWeAreNotTheMainAccount() = false
 
-		return lorittaShards.getGuilds()
-				.first()
-				.getMemberById(297153970613387264L)
-				?.onlineStatus?.let {
-			it != OnlineStatus.OFFLINE && it != OnlineStatus.UNKNOWN
-		} ?: false
-	}
-
-	fun isMainAccountOnlineAndWeAreNotTheMainAccount(guild: Guild): Boolean {
-		if (isMainAccount)
-			return false
-
-		val member = guild.getMemberById(297153970613387264L) ?: return false
-		return member.onlineStatus != OnlineStatus.OFFLINE && member.onlineStatus != OnlineStatus.UNKNOWN
-	}
+	fun isMainAccountOnlineAndWeAreNotTheMainAccount(guild: Guild) = false
 
 	val lorittaCluster: GeneralConfig.LorittaClusterConfig
 		get() {
@@ -249,6 +224,34 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 
 	// Inicia a Loritta
 	fun start() {
+		logger.info { "Creating folders..." }
+		File(FOLDER).mkdirs()
+		File(ASSETS).mkdirs()
+		File(TEMP).mkdirs()
+		File(LOCALES).mkdirs()
+		File(FRONTEND).mkdirs()
+		File(loritta.instanceConfig.loritta.folders.plugins).mkdirs()
+		File(loritta.instanceConfig.loritta.folders.fanArts).mkdirs()
+
+		logger.info { "Success! Loading locales..." }
+
+		loadLocales()
+		loadLegacyLocales()
+
+		youtube = TemmieYouTube()
+
+		logger.info { "Success! Loading fan arts..." }
+		if (loritta.isMaster) // Apenas o master cluster deve carregar as fan arts, os outros clusters irão carregar pela API
+			loadFanArts()
+
+		logger.info { "Success! Loading emotes..." }
+
+		Emotes.emoteManager = DiscordEmoteManager()
+		Emotes.emoteManager?.loadEmotes()
+
+		logger.info { "Success! Connecting to the database..." }
+
+
 		initPostgreSql()
 
 		// Vamos criar todas as instâncias necessárias do JDA para nossas shards

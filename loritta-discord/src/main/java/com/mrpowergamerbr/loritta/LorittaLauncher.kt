@@ -67,6 +67,7 @@ object LorittaLauncher {
 			copyFromJar("/loritta.instance.conf", "./loritta.instance.conf")
 			copyFromJar("/discord.conf", "./discord.conf")
 			copyFromJar("/discord.instance.conf", "./discord.instance.conf")
+			copyFromJar("/emotes.conf", "./emotes.conf")
 
 			System.exit(1)
 			return
