@@ -1,171 +1,150 @@
 
+
 <p align="center">
-<img height="384" src="https://loritta.website/v2/assets/img/loritta.png">
+<img width="65%" src="https://cdn.discordapp.com/attachments/708017680677863505/709793353478176768/lori_github_logo.png">
 <br>
-<a href="https://loritta.website"><img src="https://img.shields.io/badge/website-loritta-blue.svg"></a>
-<a href="https://perfectdreams.net/"><img src="https://perfectdreams.net/assets/img/perfectdreams_badge.png?v2"></a>
-<a href="https://loritta.website/donate"><img src="https://img.shields.io/badge/donate-loritta-00CE44.svg"></a>
-<a href="https://loritta.website/support"><img src="https://discordapp.com/api/guilds/297732013006389252/widget.png"></a>
-<a href="https://mrpowergamerbr.com/"><img src="https://img.shields.io/badge/website-mrpowergamerbr-blue.svg"></a>
-</p>
-<p align="center">
-<a href="https://twitter.com/intent/user?screen_name=perfectdreamsmc"><img src="https://img.shields.io/badge/👍 Curtir-PerfectDreams 🎮-3B5998.svg?longCache=true"></a>
-<a href="https://twitter.com/intent/user?screen_name=perfectdreamsmc"><img src="https://img.shields.io/twitter/follow/perfectdreamsmc.svg?style=social&label=Seguir%20PerfectDreams"></a>
-<a href="https://twitter.com/intent/user?screen_name=MrPowerGamerBR"><img src="https://img.shields.io/twitter/follow/mrpowergamerbr.svg?style=social&label=Seguir%20MrPowerGamerBR"></a>
-</p>
-<h1 align="center">💁 Loritta 💁</h1>
+
+<h1 align="center">⭐ Loritta Morenitta ⭐</h1>
+
 <p align="center">
 <a href="https://discordbots.org/bot/297153970613387264?utm_source=widget">
   <img src="https://discordbots.org/api/widget/297153970613387264.png?test=123456" alt="Discord Bots" />
 </a>
  </p>
 <p align="center">
+<a href="https://loritta.website"><img src="https://img.shields.io/badge/website-loritta-blue.svg"></a>
+</a>
+<a href="https://loritta.website/donate"><img src="https://img.shields.io/badge/donate-loritta-00CE44.svg"></a>
+<a href="https://loritta.website/support"><img src="https://discordapp.com/api/guilds/297732013006389252/widget.png"></a>
+<a href="https://mrpowergamerbr.com/"><img src="https://img.shields.io/badge/website-mrpowergamerbr-blue.svg"></a>
+</p>
+<p align="center">
 <a href="https://github.com/LorittaBot/Loritta/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-AGPL%20v3-lightgray.svg"></a>
 </p>
-<p align="center">
-<a href="README_EN.md"><img src="https://img.shields.io/badge/🌐_Readme_📖-Read_In_English-03ebfc.svg"></a>
-<a href="README.md"><img src="https://img.shields.io/badge/🌐_Readme_📖-Leia_em_Português-03fc41.svg"></a>
-</p>
-<p align="center">
-<a href="https://github.com/LorittaBot/Loritta/stargazers"><img src="https://img.shields.io/github/stars/LorittaBot/Loritta.svg?style=social&label=Stars"></a>
-<a href="https://github.com/LorittaBot/Loritta/watchers"><img src="https://img.shields.io/github/watchers/LorittaBot/Loritta.svg?style=social&label=Watch"></a>
-</p>
 
-Olá, eu me chamo Loritta (ou, como meus amigos próximos me chamam, "Lori") e sou apenas um simples bot brasileiro para o Discord com várias funções jamais vistas!
+All Discord servers have the same problems. Members want entertainment, moderators want automation... and you just want to rest.
 
-Eu tenho várias funções para entretenimento (como comandos engraçados e memes), funções sociais (sistema de perfil com XP e reputação), extremamente customizável (você pode ativar/desativar qualquer comando meu, alterar meu prefixo para o que você quiser e muito mais!) e com um simples foco: Ser o melhor bot brasileiro para o Discord!
+Your life is too precious to spend your time with useless junk, let me take care of the boring parts while you have fun on your server!
 
-Um dos motivos que me fizeram me tornar o que eu sou hoje é a falta de bots brasileiros para o Discord, já que muitos servidores brasileiros no Discord usam bots "de baixa qualidade" em português ou usam bots que falam (na verdade escrevem) em inglês... e convenhamos, nenhuma dessas opções parece agradável para os usuários... e por isto que eu prometo mudar isto!
+With features to entertain and engage your members, moderation features to keep your server always safe and enjoyable, and with an easy way to set up but with an unmatched power of customization...
 
-## 🤔 Como adiciono ela ao meu servidor?
+And everything thanks to a 16 year old girl trying to make the world a better place!
 
-Se você quiser usar a Loritta no seu servidor, você pode adicionar ela clicando [aqui](http://loritta.website/dashboard).
+_Making your server unique and extraordinary has never been easier!_
 
-Enquanto é possível fazer "self hosting" (hospedar você mesmo) ela, eu não irei dar suporte para quem quiser fazer isto para evitar pessoas criando "clones" e levando todo o crédito por terem criado o bot, eu dou suporte se você quer fazer "self hosting" para ajudar e contribuir para ela.
+## 🤔 How can I add her?
 
-## 💁 Suporte
+If you want to use Loritta on your server, you can add our public instance by [clicking here](https://loritta.website/dashboard)! We recommend using the public instance, after all, more than 400k guilds already use, trust and love her, so why not try it out?
 
-Você pode obter suporte sobre a Loritta [clicando aqui](https://loritta.website/support)!
+You can also host Loritta yourself, however we won't give support for people that are trying to selfhost her, we don't want to spend hours trying to troubleshoot other people issues that only happens on selfhosted instances, so you should at least know how to troubleshoot issues, if you find any.
 
-## 🙋 Como ajudar?
+## 📁 Project Structure
+* 📜 **Loritta's API** [`loritta-api`]
 
-Existem vários repositórios [na nossa organização](https://github.com/LorittaBot) de várias partes da Loritta, caso você queria contribuir em outras partes da Loritta, clique nos links abaixo para ir no repositório deles.
-* [Loritta](https://github.com/LorittaBot/Loritta): Código-fonte da Loritta ("backend"), isto inclui toda a parte do bot em si (comandos, funcionalidades, etc) e a parte "backend" do website dela.
-* [LorittaLocales](https://github.com/LorittaBot/LorittaLocales): Arquivos de tradução da Loritta.
-* [LorittaWebsite](https://github.com/LorittaBot/LorittaWebsite): "Frontend" do website da Loritta, isto inclui imagens, CSS, HTML, etc do website dela.
-* [PerfectDreams](https://github.com/PerfectDreams): Servidor de Minecraft da Loritta!
+> Multiplatform Loritta API, commands and features that only depend on the Loritta's API can be ported to other platforms, as long as they implement Loritta's API.
 
-### 💵 Como Doar?
+* 🎀 **Loritta (Discord/JDA)** [`loritta-discord` ]
 
-Mesmo que você não saiba programar, você pode ajudar no desenvolvimento da Loritta doando! https://loritta.website/donate
+> Discord implementation of Loritta's API, this is the public bot you all know and love so much! If you are planning to help Loritta's development, this is where to start!
 
-### 🙌 Como Usar?
-#### 👨‍💻 Como Compilar e Selfhostear?
+* 🔌**Loritta's Plugins** [`loritta-plugins`]
 
-Você também pode hospedar a Loritta você mesmo (afinal, é por isso que se chama *self*hosting) caso você preferia ter total controle sobre os bots que você tem no seu servidor, mas lembre-se...
-* Nós deixamos o código-fonte de nossos projetos para que outras pessoas possam se inspirar e aprender com nossos projetos, o objetivo é que pessoas que são fãs da Loritta aprendam como ela funciona e, caso queiram, podem ajudar ela com bug fixes e novas funcionalidades.
-* Eu não irei dar suporte caso você queria fazer self hosting apenas para você querer fazer "fama" falando que você criou um bot, mesmo que na verdade você apenas pegou o código-fonte dela e hospedou, lembre-se, a licença do projeto é [AGPL v3](https://github.com/LorittaBot/Loritta/blob/master/LICENSE), você é **obrigado a deixar todas as suas alterações no projeto públicas**!
-* Eu não irei ficar explicando e te ajudando a como arrumar problemas na sua versão selfhosted dela, **você está por sua conta e risco**. A única exceção é se você está planejando selfhostear para ajudar a desenvolver ela.
-* A Lori precisa de várias API Keys para várias funcionalidades diferentes, enquanto nem todas são obrigatórias, a falta de alguma irá causar problemas em algumas funcionalidades dela.
-* Os "assets" (imagens, fontes, etc) não são distribuídos junto com o código-fonte, você terá que criar e incluir seus próprios assets.
-* Nós utilizamos Ubuntu 18.04, talvez ela irá funcionar em outros sistemas Linux ou até em Windows, mas recomendamos que você tente hospedar em uma máquina que rode Ubuntu ou derivados.
-* Para evitar confusões e problemas, você **não pode** utilizar o nome ou a personagem "Loritta", "Lori" ou nomes parecidos na sua versão selfhosted.
+> Sometimes restarting Loritta just to fix a small bug in a command can be a pain, that's why plugins exist! Plugins can be loaded/unloaded/updated during runtime, so you don't need to restart just to add a new cool command.
+* * 🥩 **Rosbife** [`rosbife`]
 
-Nós [recomendamos utilizar a versão pública da Loritta](https://loritta.website/), mas se você *realmente* quiser hospedar ou ajudar a desenvolver a Loritta, siga os seguintes passos:
-1. Tenha o [JDK 11 (ou superior)](https://adoptopenjdk.net/) instalado na sua máquina e certifique-se que o Java está acessível pelo terminal. (Tente executar `java` no terminal, caso não funcione, procure como incluir a pasta do JDK no `PATH` do seu sistema operacional)
-2. Tenha o MongoDB instalado na sua máquina. (No futuro o MongoDB será removido da Loritta e será 100% substituido pelo PostgreSQL)
-3. Tenha o PostgreSQL instalado na sua máquina. (No futuro será possível executar a Loritta utilizando uma database SQLite)
-4. Tenha o `git-shell` ou o `git-cli` instalados. No Windows você pode utilizar o Git Bash.
-5. Caso você precise fazer modificações no código-fonte da Lori, é recomendado utilizar o IntelliJ IDEA.
-6. Faça `git clone https://github.com/LorittaBot/Loritta.git` em alguma pasta no seu computador.
-7. Agora, usando o PowerShell (ou o Git Bash), entre na pasta criada e utilize `gradle w build`
-8. Ao terminar de compilar todos os módulos, vá em `loritta-discord\build\libs`. (Troque `loritta-discord` pelo módulo da Loritta que você deseja utilizar)
-9. Caso tenha uma JAR `loritta-discord-fat-YYYY.MM.DD-SNAPSHOT.jar`, quer dizer que tudo compilou corretamente, yay! 🎉
-10. Copie a JAR acima para uma nova pasta.
-11. Vá para a pasta principal do repositório, copie a pasta `libs` para a nova pasta que você tinha criado anteriormente.
-12. Antes de inicializar a Lori, você deverá criar quatro arquivos para configurar a Loritta, sendo eles...
-* [loritta.conf](https://gist.github.com/MrPowerGamerBR/5446ac25980eb951db74a4c75501d36f#file-loritta-conf)
-* [loritta.instance.conf](https://gist.github.com/MrPowerGamerBR/5446ac25980eb951db74a4c75501d36f#file-loritta-instance-conf)
-* [discord.conf](https://gist.github.com/MrPowerGamerBR/5446ac25980eb951db74a4c75501d36f#file-discord-conf)
-* [discord.instance.conf](https://gist.github.com/MrPowerGamerBR/5446ac25980eb951db74a4c75501d36f#file-discord-instance-conf)
-* [emotes.conf](https://gist.github.com/MrPowerGamerBR/5446ac25980eb951db74a4c75501d36f#file-emotes-conf)
+>> Commands related to image edits.
 
-Salve cada arquivo na mesma pasta da JAR e configure cada um utilizando o seu editor de texto favorito. (Visual Studio Code, Notepad++, etc)
+* * 🎨 **Profile Designs** [`profile-designs`]
 
-Você pode pegar os arquivos de linguagem "locales" utilizando `git clone https://github.com/LorittaBot/LorittaLocales`
+>> Defines the profiles users can buy for their `+profile`.
 
-Você pode pegar os arquivos do website utilizando `git clone https://github.com/LorittaBot/LorittaWebsite`
+* * 🤑 **Donators Ostentation** [`donators-ostentation`]
 
-Algumas funcionalidades da Lori estão em plugins separados, você pode pegar eles na pasta `loritta-plugins/nome-do-plugin/build/libs/`.
+>> Handles Nitro Boost features, premium slots channels automation, auto sonhos payout and other miscellaneous features.
 
-13. Pelo terminal, utilize `java -Xmx1G -Xms1G -jar NomeDaJarQueVocêCopiouAnteriormente.jar`.
-14. Caso tenha dado tudo certo, a sua versão selfhosted da Lori irá iniciar e você poderá utilizar os comandos dela! 🎉
+* * 🖼️ **Auto Banner Changer** [`auto-banner-changer`]
 
-Para editar o código-fonte da Loritta, abra o IntelliJ IDEA e importe o `build.gradle.kts`, espere o IDEA baixar todas as dependências e divirta-se aprendendo, modificando e melhorando a Loritta!
+>> Automatically changes the banner in the offical Loritta support servers... yup, that's it.
 
-#### 🔀 Pull Requests
+* * 👩‍💻 **Parallax Routes** [`parallax-routes`]
 
-No seu Pull Request, você deverá seguir o meu estilo de código bonitinho que eu faço, é recomendado que você coloque comentários nas partes do seu código para que seja mais fácil na hora da leitura.
+>> Creates endpoints for the Parallax Code Server.
 
-Caso o seu código possua texto, você é obrigado a utilizar o sistema de localização da Loritta, para que o seu Pull Request possa ser traduzido para outras linguagens, ou seja, após criar o seu Pull Request, crie um Pull Request no [repositório de linguagens da Loritta](https://github.com/LorittaBot/LorittaLocales) com as keys necessárias.
+* * And many others!
 
-O seu código não pode ser algo "gambiarra", meu código pode ter algumas gambiarras mas isto não significa que você também deve encher a Lori com mais gambiarras no seu Pull Request.
+* 🔗 **Loritta Website** [`loritta-website`]
+* * 🌶️ **Spicy Morenitta** [`spicy-morenitta`]
 
-Você precisa pensar "será que alguém iria utilizar isto?", se você criar um comando que só seja útil no seu servidor, provavelmente eu irei negar o seu Pull Request, se for algo apenas útil para o seu servidor, seria melhor você criar o comando utilizando a [API de comandos em JavaScript da Loritta](https://loritta.website/loriapi).
+>> Spicying up Loritta's frontend! This is the code that gets executed in the browser.
 
-Funcionalidades (como comandos) relacionados a coisas NSFW **não serão** adicionadas na Loritta e seu Pull Request será negado, eu prefiro que as pessoas, ao olharem o avatar dela, pensem que ela é um bot que cria memes toscos do que um bot que fica mandando coisas NSFW no chat.
+* 🐶 **Loritta Watchdog (Discord/JDA)** [`loritta-watchdog-bot`]
 
-## 📦 Dependências
+> bark bark! Used to track Loritta's cluster statuses and other miscellaneous stuff.
 
-A Lori utiliza várias [dependências no código-fonte dela](https://github.com/LorittaBot/Loritta/blob/master/pom.xml), obrigado a todos os mantenedores das dependências! Sem vocês, talvez a Loritta não iria existir (ou teria várias funcionalidades reduzidas ou talvez até inexistentes!)
+* 🐱‍💻 **Parallax Code Server** [`parallax-code-server`]
 
-| Nome  | Mantenedor |
-| ------------- | ------------- |
-| [Kotlin](https://kotlinlang.org/) | JetBrains  |
-| [Kotlin Coroutines](https://github.com/Kotlin/kotlinx.coroutines) | JetBrains  |
-| [Guava](https://github.com/google/guava) | Google  |
-| [Caffeine](https://github.com/ben-manes/caffeine) | Ben Manes  |
-| [JDA](https://github.com/DV8FromTheWorld/JDA) | DV8FromTheWorld, kantenkugel, MinnDevelopment, Almighty-Alpaca, etc  |
-| [MongoDB Java Driver](https://github.com/mongodb/mongo-java-driver) |  MongoDB  |
-| [TemmieWebhook](https://github.com/MrPowerGamerBR/TemmieWebhook) |  MrPowerGamerBR  |
-| [TemmieMercadoPago](https://github.com/MrPowerGamerBR/TemmieMercadoPago) |  MrPowerGamerBR  |
-| [AminoREAPI](https://github.com/MrPowerGamerBR/AminoREAPI) |  MrPowerGamerBR  |
-| [Apache Commons Lang](https://github.com/apache/commons-lang) |  Apache  |
-| [Apache Commons Codec](https://github.com/apache/commons-codec) |  Apache  |
-| [Apache Commons IO](https://github.com/apache/commons-io) |  Apache  |
-| [Apache Commons Text](https://github.com/apache/commons-text) |  Apache  |
-| [Jooby](https://github.com/jooby-project/jooby) |  Jooby Project  |
-| [Jooby Netty](https://github.com/jooby-project/jooby) |  Jooby Project  |
-| [Jooby Kotlin](https://github.com/jooby-project/jooby) |  Jooby Project  |
-| [Jooby MongoDB](https://github.com/jooby-project/jooby) |  Jooby Project  |
-| [Pebble](https://github.com/PebbleTemplates/pebble) |  Pebble Templates |
-| [jsoup](https://github.com/jhy/jsoup) |  jhy |
-| [Http Request](https://github.com/kevinsawicki/http-request) |  kevinsawicki |
-| [LavaPlayer](https://github.com/sedmelluq/lavaplayer) |  sedmelluq |
-| [JDA-NAS](https://github.com/PebbleTemplates/pebble) |  sedmelluq |
-| [JRakNet](https://github.com/JRakNet/JRakNet) | Whirvis |
-| [Kotson](https://github.com/SalomonBrys/Kotson) | SalomonBrys |
+> Executes custom JavaScript commands with GraalJS. Runs in a separate JVM to avoid malicious users crashing Loritta or breaking out of the sandbox, also because it is easier to update the code server with new features!
 
-## 💫 Agradecimentos especiais para...
+* 💫 **Shard Controller** [`shard-controller`]
 
-![YourKit-Logo](https://www.yourkit.com/images/yklogo.png)
+> Large bots with the "Sharding for very large bots" feature requires something to synchronize their shard login status to avoid getting ratelimited during login. The shard controller (named [Tsuki](https://fortnite.fandom.com/wiki/Tsuki)) is a very small http server that controls what shards can login at any given time.
 
-[YourKit](http://www.yourkit.com/), criadores do YourKit Java Profiler, suportam projetos open source de todos os tipos com o excelente profiler de aplicações [Java](https://www.yourkit.com/java/profiler/index.jsp) e [.NET](https://www.yourkit.com/.net/profiler/index.jsp). Nós agradecemos por darem uma licença open source para conseguir deixar a Lori mais incrível e maravilhosa para todos os nossos usuários!
+* 💸 **Loritta Premium** [`loritta-premium`]
 
-## 📄 Licença
+> Does absolutely nothing! No, really, this is just a bot for premium users to show off that they bought premium features. All premium features are in the main bot.
 
-O código-fonte da Loritta está licenciado sob a [GNU Affero General Public License v3.0](https://github.com/LorittaBot/Loritta/blob/master/LICENSE)
+* 🚧 **Loritta (Discord/Eris)** [`loritta-eris`]
 
-A personagem Loritta é © MrPowerGamerBR & PerfectDreams — Todos os direitos reservados
+> *Very* experimental (proof of concept) implementation of Loritta's API on a node.js environment using Kotlin/JS. This is just a "Hey look at this! *Code sharing* between modules! Sooooo cool!" project.
 
-Ao utilizar a Loritta você aceita os [termos de uso dela](https://loritta.website/privacy).
+* 🐱 **Temmie Discord Auth** [`temmie-discord-auth`]
 
-<hr>
+> Discord OAuth2 Client, named after [Temmie](https://youtu.be/_BD140nCDps). Why Temmie? Why *not* Temmie!
+
+## 👨‍💻 Compiling Loritta
+0. *(Pre-requisite)* You need to have the [Java Development Kit](https://adoptopenjdk.net/) and Git installed on your machine. Check if you can access `java` from your OS command line. If yes, then great!
+1. Clone the repository with git: `git clone https://github.com/LorittaBot/Loritta.git`
+2. Go inside the newly created folder and open the command prompt, terminal or PowerShell inside the folder.
+3. Build Loritta with Gradle: `./gradlew build`
+4. If the build is successful, then congratulations 🎉! You successfully compiled Loritta! Now why not run it?
+
+## 🚀 Selfhosting Loritta (Discord)
+
+If you are planning to selfhost Loritta, here are some stuff that you should keep in mind...
+1. We keep the source code open so people can see, learn and be inspired by how Loritta was made and, if they want to, they can help the project with features and bug fixes.
+2. This is a community project, if you make changes to Loritta's source code you need to follow the [AGPL-3.0](LICENSE) and keep the changes open source! And, if you want to help Loritta, why not create a pull request? 😉
+3. We **do not** give support for selfhosted instances, you need to know how to troubleshoot the issues yourself. We tried to make the selfhost process as painless as possible, but it is impossible to know all the different issues you may find.
+4. Don't lie saying that you "created Loritta". Please give credits to the creators!
+5. Loritta requires a lot of different API keys for a lot of features. While they aren't required, you may encounter issues when trying to use some of the features.
+6. Loritta's assets (fonts, images, etc) aren't not distributed with the source code, you will need to create and include your own assets.
+7. We use Ubuntu 18.04 to run her, she may work on other Linux operating systems or even in Windows, but we recommend hosting her on Ubuntu!
+8. To avoid problems and confusions, we **do not allow** using the name "Loritta", "Lori" or any similar names on your selfhosted versions. Call her "Nicole" if you don't have a creative name to give to your selfhosted version.
+
+Seems too hard but you *really* want to use Loritta? Don't worry, you can use our free public instance by clicking here [clicking here](https://loritta.website/dashboard)!
+
+Feeling adventurous? Then follow the steps! 
+
+0. *(Pre-requisite)* You need to have the [Java Development Kit](https://adoptopenjdk.net/) and Git installed on your machine. Check if you can access `java` from your OS command line. If yes, then great!
+1. *(Optional, but highly recommended)* Install PostgreSQL, while Loritta also supports SQLite as a database, we recommend and support using PostgreSQL as the database!
+2. Create a empty folder somewhere in your OS, why an empty folder? Just to keep things tidy! :3
+3. In the folder, you will need to have Loritta's JAR and Loritta's libraries.
+* **If you compiled it yourself:**
+* * **Loritta (Discord) JAR:** `loritta-discord/build/libs/` (get the Fat JAR version!)
+* * **Loritta Libraries:** `libs/`
+* **If you are lazy and don't want to compile it yourself:**
+* * **You can find precompiled artifacts here:** https://github.com/LorittaBot/Loritta/actions?query=workflow%3A%22Build+Loritta%22
+* * You will need to get `Loritta (Discord)` and `Loritta (Libs)`
+* **If you did everything correctly, you will have two files on your folder:** `loritta-discord-fat.jar` and a folder named `libs` with all the libraries Loritta uses inside of it.
+4. Run Loritta with `java -jar loritta-discord-fat.jar`, this will create the default configurations to run her.
+5. Update the configurations with your own values. You don't need to configure everything, just the bare minimum (bot token, folders, etc) to get her up and running!
+6. Download the locales from the [LorittaLocales repository](https://github.com/LorittaBot/LorittaLocales) and extract the files inside the locales folder you configured in the previous step.
+7. Run Loritta again with `java -jar loritta-discord-fat.jar`
+8. After booting up, try using `+ping` on your Discord server.
+9. If everything went well, your very own Loritta instance should be up and running! Congratulations! 🎉
+10. *(Optional)* You can add plugins to your instance!
+11. *(Optional)* Set up the Parallax Code Server + Parallax Routes plugin if you want to be able to execute custom JavaScript commands.
+12. *(Optional)* If you are planning on using it on a bot that has the "Sharding for very large bots" feature, set up the Shard Controller.
 
 <p align="center">
-<a href="https://perfectdreams.net/open-source">
-<img src="https://perfectdreams.net/assets/img/perfectdreams_opensource_iniciative_rounded.png">
-</a>
+<img src="https://cdn.discordapp.com/attachments/708017680677863505/709834156145770534/lori_deitada.png">
 </p>
-<br>
-<p align="center">"Discord", "DiscordApp" and any associated logos are registered trademarks of Discord Inc.</p>
