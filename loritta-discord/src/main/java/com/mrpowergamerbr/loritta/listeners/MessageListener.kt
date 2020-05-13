@@ -449,8 +449,8 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 		val rawMessage = lorittaMessageEvent.message.contentRaw
 
-		// É necessário remover o new line para comandos como "+eval", etc
-		val rawArguments = rawMessage.replace("\n", "").split(" ")
+		val rawArguments = rawMessage
+				.split(" ")
 				.toMutableList()
 
 		val firstLabel = rawArguments.first()
@@ -464,6 +464,15 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				rawArguments.removeAt(0)
 				if (rawArguments.isEmpty()) // If it is empty, then it means that it was only Loritta's mention, so just return false
 					return false
+			}
+
+			// To fix commands like "+eval" *line break* "code code code", we are going to remove the first new line from the first argument
+			if (rawArguments[0].contains("\n")) {
+				val splitNewLines = rawArguments[0].split(Regex("(?=\n+)", RegexOption.MULTILINE))
+				rawArguments[0] = splitNewLines[0]
+						.replace("\n", "")
+
+				rawArguments.addAll(1, splitNewLines.drop(1))
 			}
 
 			// Executar comandos
