@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.Permission
@@ -49,12 +50,22 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 			val toClear = context.args[0].toIntOrNull()
 
 			if (toClear == null) {
-				context.sendMessage("${Constants.ERROR} **|** ${context.getAsMention(true)}${context.legacyLocale["INVALID_NUMBER", context.args[0]]}")
+				context.reply(
+						LoriReply(
+								"${context.legacyLocale["INVALID_NUMBER", context.args[0]]}",
+								Constants.ERROR
+						)
+				)
 				return
 			}
 
 			if (toClear !in 2..100) {
-				context.sendMessage("${Constants.ERROR} **|** ${context.getAsMention(true)}${locale.toNewLocale()["commands.moderation.clear.invalidClearRange"]}")
+				context.reply(
+						LoriReply(
+								"${context.locale["commands.moderation.clear.invalidClearRange"]}",
+								Constants.ERROR
+						)
+				)
 				return
 			}
 
@@ -67,25 +78,35 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 			val allowedMessages  = messages.filter {(context.message.mentionedUsers.isEmpty() || (context.message.mentionedUsers.isNotEmpty() && context.message.mentionedUsers.contains(it.author))) && !oldMessages.contains(it) && !pinnedMessages.contains(it) }
 
 			if (allowedMessages.isEmpty()) {
-				context.sendMessage("${Constants.ERROR} **|** ${context.userHandle.asMention} ${locale.toNewLocale()["commands.moderation.clear.couldNotFindMessages"]}")
+				context.reply(
+						LoriReply(
+								"${context.locale["commands.moderation.clear.couldNotFindMessages"]}",
+								Constants.ERROR
+						)
+				)
 				return
 			}
 
 			if (allowedMessages.size !in 2..100) {
-				context.sendMessage("${Constants.ERROR} **|** ${context.userHandle.asMention} ${locale.toNewLocale()["commands.moderation.clear.couldNotFindMessages"]}")
+				context.reply(
+						LoriReply(
+								"${context.locale["commands.moderation.clear.couldNotFindMessages"]}",
+								Constants.ERROR
+						)
+				)
 				return
 			}
 
 			// E agora realmente iremos apagar as mensagens!
 			context.message.textChannel.deleteMessages(allowedMessages).await()
 			if (oldMessages.size > 0 && pinnedMessages.size > 0) {
-				context.sendMessage(locale.toNewLocale()["commands.moderation.clear.ignoredTooOldAndPinnedMessages", context.userHandle.asMention, oldMessages.size, pinnedMessages.size])
+				context.sendMessage(context.locale["commands.moderation.clear.ignoredTooOldAndPinnedMessages", context.userHandle.asMention, oldMessages.size, pinnedMessages.size])
 			} else if (oldMessages.size > 0) {
-				context.sendMessage(locale.toNewLocale()["commands.moderation.clear.ignoredTooOldMessages", context.userHandle.asMention, oldMessages.size])
+				context.sendMessage(context.locale["commands.moderation.clear.ignoredTooOldMessages", context.userHandle.asMention, oldMessages.size])
 			} else if (pinnedMessages.size > 0) {
-				context.sendMessage(locale.toNewLocale()["commands.moderation.clear.ignoredPinnedMessages", context.userHandle.asMention, pinnedMessages.size])
+				context.sendMessage(context.locale["commands.moderation.clear.ignoredPinnedMessages", context.userHandle.asMention, pinnedMessages.size])
 			} else {
-				context.sendMessage(locale.toNewLocale()["commands.moderation.clear.sucess", context.userHandle.asMention])
+				context.sendMessage(context.locale["commands.moderation.clear.sucess", context.userHandle.asMention])
 			}
 		} else {
 			this.explain(context)
