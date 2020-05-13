@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.PunishmentAction
 
 class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -108,12 +109,18 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 
 		fun unban(settings: AdminUtils.ModerationConfigSettings, guild: Guild, punisher: User, locale: LegacyBaseLocale, user: User, reason: String, isSilent: Boolean) {
 			if (!isSilent) {
-				if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && settings.punishLogMessage != null) {
+				val punishLogMessage = AdminUtils.getPunishmentForMessage(
+						settings,
+						guild,
+						PunishmentAction.UNBAN
+				)
+
+				if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && punishLogMessage != null) {
 					val textChannel = guild.getTextChannelById(settings.punishLogChannelId)
 
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
-								settings.punishLogMessage,
+								punishLogMessage,
 								listOf(user),
 								guild,
 								mutableMapOf(

@@ -10,8 +10,12 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.WarnAction
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.WarnActions
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.PunishmentAction
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.time.Instant
@@ -189,6 +193,17 @@ object AdminUtils {
 
 	fun createPunishmentMessageSentViaDirectMessage(guild: Guild, locale: LegacyBaseLocale, punisher: User, punishmentAction: String, reason: String): MessageEmbed {
 		return createPunishmentEmbedBuilderSentViaDirectMessage(guild, locale, punisher, punishmentAction, reason).build()
+	}
+
+	fun getPunishmentForMessage(settings: ModerationConfigSettings, guild: Guild, punishmentAction: PunishmentAction): String? {
+		val messageConfig = transaction(Databases.loritta) {
+			ModerationPunishmentMessagesConfig.select {
+				ModerationPunishmentMessagesConfig.guild eq guild.idLong and
+						(ModerationPunishmentMessagesConfig.punishmentAction eq punishmentAction)
+			}.firstOrNull()
+		}
+
+		return messageConfig?.get(ModerationPunishmentMessagesConfig.punishLogMessage) ?: settings.punishLogMessage
 	}
 
 	suspend fun getOptions(context: CommandContext): AdministrationOptions? {

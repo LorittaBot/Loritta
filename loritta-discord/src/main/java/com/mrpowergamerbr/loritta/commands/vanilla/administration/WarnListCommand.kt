@@ -75,6 +75,7 @@ class WarnListCommand : AbstractCommand("punishmentlist", listOf("listadeavisos"
 						PunishmentAction.SOFT_BAN -> locale["SOFTBAN_PunishAction"]
 						PunishmentAction.KICK -> locale["KICK_PunishAction"]
 						PunishmentAction.MUTE -> locale["MUTE_PunishAction"]
+						else -> throw RuntimeException("Punishment $nextPunishment is not supported")
 					}.toLowerCase()
 					setFooter("No próximo aviso, o usuário irá ser $type!", null)
 				}

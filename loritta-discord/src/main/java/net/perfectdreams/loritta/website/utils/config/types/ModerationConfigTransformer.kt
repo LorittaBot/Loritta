@@ -8,10 +8,12 @@ import com.mrpowergamerbr.loritta.network.Databases
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.ModerationConfig
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.WarnAction
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.WarnActions
 import net.perfectdreams.loritta.utils.PunishmentAction
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object ModerationConfigTransformer : ConfigTransformer {
@@ -46,12 +48,28 @@ object ModerationConfigTransformer : ConfigTransformer {
             punishmentActions.add(obj)
         }
 
+        val punishmentMessages = jsonArray()
+
+        transaction(Databases.loritta) {
+            ModerationPunishmentMessagesConfig.select {
+                ModerationPunishmentMessagesConfig.guild eq serverConfig.id
+            }.toList()
+        }.forEach {
+            punishmentMessages.add(
+                    jsonObject(
+                            "action" to it[ModerationPunishmentMessagesConfig.punishmentAction].name,
+                            "message" to it[ModerationPunishmentMessagesConfig.punishLogMessage]
+                    )
+            )
+        }
+
         return jsonObject(
                 "sendPunishmentViaDm" to (moderationConfig?.sendPunishmentViaDm ?: false),
                 "sendPunishmentToPunishLog" to (moderationConfig?.sendPunishmentToPunishLog ?: false),
                 "punishLogChannelId" to moderationConfig?.punishLogChannelId,
                 "punishLogMessage" to (moderationConfig?.punishLogMessage ?: "**Usuário punido:** {user}#{user-discriminator}\n**Punido por** {@staff}\n**Motivo:** {reason}"),
-                "punishmentActions" to punishmentActions
+                "punishmentActions" to punishmentActions,
+                "punishmentMessages" to punishmentMessages
         )
     }
 
@@ -61,6 +79,7 @@ object ModerationConfigTransformer : ConfigTransformer {
         val punishLogChannelId = payload["punishLogChannelId"].nullLong
         val punishLogMessage = payload["punishLogMessage"].nullString
         val punishmentActions = payload["punishmentActions"].array
+        val punishmentMessages = payload["punishmentMessages"].array
 
         transaction(Databases.loritta) {
             val moderationConfig = serverConfig.moderationConfig ?: ModerationConfig.new {
@@ -72,6 +91,10 @@ object ModerationConfigTransformer : ConfigTransformer {
 
             WarnActions.deleteWhere {
                 WarnActions.config eq moderationConfig.id
+            }
+
+            ModerationPunishmentMessagesConfig.deleteWhere {
+                ModerationPunishmentMessagesConfig.guild eq serverConfig.id
             }
 
             moderationConfig.sendPunishmentViaDm = sendPunishmentViaDm
@@ -100,6 +123,17 @@ object ModerationConfigTransformer : ConfigTransformer {
                                 "time" to time
                         )
                     }
+                }
+            }
+
+            for (punishmentMessage in punishmentMessages.map { it.obj }) {
+                val action = punishmentMessage["action"].string
+                val message = punishmentMessage["message"].string
+
+                ModerationPunishmentMessagesConfig.insert {
+                    it[ModerationPunishmentMessagesConfig.guild] = serverConfig.id
+                    it[ModerationPunishmentMessagesConfig.punishmentAction] = PunishmentAction.valueOf(action)
+                    it[ModerationPunishmentMessagesConfig.punishLogMessage] = message
                 }
             }
         }

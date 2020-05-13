@@ -12,6 +12,7 @@ import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.utils.PunishmentAction
 
 class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADMIN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -175,12 +176,18 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 					}
 				}
 
-				if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && settings.punishLogMessage != null) {
+				val punishLogMessage = AdminUtils.getPunishmentForMessage(
+						settings,
+						context.guild,
+						PunishmentAction.SOFT_BAN
+				)
+
+				if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && punishLogMessage != null) {
 					val textChannel = context.guild.getTextChannelById(settings.punishLogChannelId)
 
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
-								settings.punishLogMessage,
+								punishLogMessage,
 								listOf(user),
 								context.guild,
 								mutableMapOf(

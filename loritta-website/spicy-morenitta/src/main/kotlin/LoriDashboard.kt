@@ -35,24 +35,6 @@ object LoriDashboard {
 		jq("#loading-screen")
 	}
 
-	fun loadServerConfig(): ServerConfig {
-		println("Loading config from embedded data... (if available)")
-
-		val serverConfigJson = document.getElementById("server-config-json")?.innerHTML
-
-		println("Config (as JSON): ${serverConfigJson}")
-
-		if (serverConfigJson != null) {
-			println("Parsing the configuration...")
-			val serverConfig = JSON.parse<ServerConfig>(serverConfigJson)
-			println("Server's Command Prefix: ${serverConfig.commandPrefix}")
-			return serverConfig
-		} else {
-			println("Couldn't find embedded config data in body!")
-			throw RuntimeException("Couldn't find embedded config data in body!")
-		}
-	}
-
 	fun showLoadingBar(text: String? = "Salvando...") {
 		document.select<HTMLDivElement>("#loading-screen").apply {
 			select<HTMLDivElement>(".loading-text").apply {

@@ -89,7 +89,8 @@ object ServerConfig {
 		var sendPunishmentToPunishLog: Boolean = false,
 		@Optional var punishmentLogChannelId: Long? = null,
 		@Optional var punishmentLogMessage: String? = null,
-		var punishmentActions: Array<WarnAction>
+		var punishmentActions: Array<WarnAction>,
+		var punishmentMessages: Array<ModerationPunishmentMessageConfig>
 	)
 
 	@Serializable
@@ -99,11 +100,20 @@ object ServerConfig {
 			@Optional var customMetadata0: String? = null
 	)
 
-	enum class PunishmentAction {
-		BAN,
-		SOFT_BAN,
-		KICK,
-		MUTE
+	@Serializable
+	class ModerationPunishmentMessageConfig(
+			var action: PunishmentAction,
+			var message: String
+	)
+
+	enum class PunishmentAction(val canChainWithWarn: Boolean) {
+		BAN(false),
+		SOFT_BAN(false),
+		KICK(false),
+		MUTE(false),
+		WARN(true),
+		UNBAN(true),
+		UNMUTE(true)
 	}
 
 	@Serializable

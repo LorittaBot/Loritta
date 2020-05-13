@@ -4,5 +4,8 @@ enum class PunishmentAction {
 	BAN,
 	SOFT_BAN,
 	KICK,
-	MUTE
+	MUTE,
+	WARN,
+	UNBAN,
+	UNMUTE
 }

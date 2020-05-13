@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -104,12 +105,18 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 	companion object {
 		fun unmute(settings: AdminUtils.ModerationConfigSettings, guild: Guild, punisher: User, locale: LegacyBaseLocale, user: User, reason: String, isSilent: Boolean) {
 			if (!isSilent) {
-				if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && settings.punishLogMessage != null) {
+				val punishLogMessage = AdminUtils.getPunishmentForMessage(
+						settings,
+						guild,
+						PunishmentAction.UNMUTE
+				)
+
+				if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && punishLogMessage != null) {
 					val textChannel = guild.getTextChannelById(settings.punishLogChannelId)
 
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
-								settings.punishLogMessage,
+								punishLogMessage,
 								listOf(user),
 								guild,
 								mutableMapOf(

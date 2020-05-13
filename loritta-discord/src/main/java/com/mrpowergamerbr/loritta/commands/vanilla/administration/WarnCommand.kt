@@ -7,9 +7,11 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Warn
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Warns
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.MessageUtils
+import com.mrpowergamerbr.loritta.utils.convertToEpochMillisRelativeToNow
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.perfectdreams.loritta.api.commands.ArgumentType
@@ -87,12 +89,18 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 						}
 					}
 
-					if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && settings.punishLogMessage != null) {
+					val punishLogMessage = AdminUtils.getPunishmentForMessage(
+							settings,
+							context.guild,
+							PunishmentAction.WARN
+					)
+
+					if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && punishLogMessage != null) {
 						val textChannel = context.guild.getTextChannelById(settings.punishLogChannelId)
 
 						if (textChannel != null && textChannel.canTalk()) {
 							val message = MessageUtils.generateMessage(
-									settings.punishLogMessage,
+									punishLogMessage,
 									listOf(user),
 									context.guild,
 									mutableMapOf(

@@ -382,7 +382,8 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					CustomGuildCommands,
 					MemberCounterChannelConfigs,
 					ModerationConfigs,
-					WarnActions
+					WarnActions,
+					ModerationPunishmentMessagesConfig
 			)
 		}
 	}

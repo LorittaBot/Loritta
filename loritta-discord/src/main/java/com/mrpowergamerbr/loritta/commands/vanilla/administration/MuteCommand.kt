@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -199,12 +200,18 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 					}
 				}
 
-				if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && settings.punishLogMessage != null) {
+				val punishLogMessage = AdminUtils.getPunishmentForMessage(
+						settings,
+						context.guild,
+						PunishmentAction.MUTE
+				)
+
+				if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && punishLogMessage != null) {
 					val textChannel = context.guild.getTextChannelById(settings.punishLogChannelId)
 
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
-								settings.punishLogMessage,
+								punishLogMessage,
 								listOf(user),
 								context.guild,
 								mutableMapOf(

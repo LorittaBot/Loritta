@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.utils.PunishmentAction
 
 class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -111,12 +112,18 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 					}
 				}
 
-				if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && settings.punishLogMessage != null) {
+				val punishLogMessage = AdminUtils.getPunishmentForMessage(
+						settings,
+						guild,
+						PunishmentAction.BAN
+				)
+
+				if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && punishLogMessage != null) {
 					val textChannel = guild.getTextChannelById(settings.punishLogChannelId)
 
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
-								settings.punishLogMessage,
+								punishLogMessage,
 								listOf(user),
 								guild,
 								mutableMapOf(
