@@ -1,3 +1,4 @@
+
 <p align="center">
 <img width="65%" src="https://cdn.discordapp.com/attachments/708017680677863505/709793353478176768/lori_github_logo.png">
 <br>
@@ -6,18 +7,21 @@
 
 <p align="center">
 <a href="https://discordbots.org/bot/297153970613387264?utm_source=widget">
-  <img src="https://discordbots.org/api/widget/297153970613387264.png?test=123456" alt="Discord Bots" />
+<img src="https://discordbots.org/api/widget/297153970613387264.png?test=123456" alt="Discord Bots" />
 </a>
  </p>
 <p align="center">
-<a href="https://loritta.website"><img src="https://img.shields.io/badge/website-loritta-blue.svg"></a>
-</a>
-<a href="https://loritta.website/donate"><img src="https://img.shields.io/badge/donate-loritta-00CE44.svg"></a>
-<a href="https://loritta.website/support"><img src="https://discordapp.com/api/guilds/297732013006389252/widget.png"></a>
-<a href="https://mrpowergamerbr.com/"><img src="https://img.shields.io/badge/website-mrpowergamerbr-blue.svg"></a>
-</p>
-<p align="center">
+<a href="https://github.com/LorittaBot/Loritta/actions?query=workflow%3A%22Build+Loritta%22"><img src="https://github.com/LorittaBot/Loritta/workflows/Build%20Loritta/badge.svg?event=push"></a>
+<a href="https://loritta.crowdin.com/"><img src="https://badges.crowdin.net/e/6c10e98cefdc325e76bd33fb9952e616/localized.svg"></a>
 <a href="https://github.com/LorittaBot/Loritta/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-AGPL%20v3-lightgray.svg"></a>
+</p>
+
+<p align="center">
+<a href="https://loritta.website"><img src="https://img.shields.io/badge/website-loritta-4daff8.svg"></a>
+</a>
+<a href="https://loritta.website/donate"><img src="https://img.shields.io/badge/donate-loritta-33cf57.svg"></a>
+<a href="https://mrpowergamerbr.com/"><img src="https://img.shields.io/badge/website-mrpowergamerbr-fe4221.svg"></a>
+<a href="https://loritta.website/support"><img src="https://discordapp.com/api/guilds/297732013006389252/widget.png"></a>
 </p>
 
 All Discord servers have the same problems. Members want entertainment, moderators want automation... and you just want to rest.
@@ -101,7 +105,9 @@ You can also host Loritta yourself, however we won't give support for people tha
 
 ## 👨‍💻 Compiling Loritta
 
-### `0.` Prerequisites
+### [](https://emojipedia.org/construction-worker/)
+
+### `0.` 👷 Prerequisites
 
 * PowerShell (Windows) or Terminal (Linux).
 > ⚠️ While Windows' command prompt may work, it is better to use PowerShell!
@@ -110,13 +116,13 @@ You can also host Loritta yourself, however we won't give support for people tha
 * Check if your machine has the `JAVA_HOME` property set correctly, newer JDK versions downloaded from AdoptOpenJDK may already have the variable set correctly. You can check if the variable is set by using `echo $env:JAVA_HOME` in PowerShell.
 * If you want to help to develop Loritta, or if you only want a good Kotlin IDE, then download [JetBrains IntelliJ IDEA](https://www.jetbrains.com/pt-br/idea/)! The community edition is enough, so you don't need to be like "oh my god I need to *pay* for it". 😉
 
-### `1.` Preparing the environment
+### `1.` 🧹 Preparing the environment
 * Clone the repository with git:
 ```bash
 git clone https://github.com/LorittaBot/Loritta.git`
 ```
 
-### `2.` Compiling
+### `2.` 💻 Compiling
 * Go inside the source code folder and open PowerShell or the terminal inside of it.
 * Build Loritta with Gradle:
 ```bash
@@ -132,7 +138,7 @@ git clone https://github.com/LorittaBot/Loritta.git`
 
 ## 🚀 Selfhosting Loritta (Discord)
 
-### `X.` Selfhosting conditions and warnings
+### `X.` 📜 Selfhosting conditions and warnings
 If you are planning to selfhost Loritta, here are some stuff that you should keep in mind...
 1. We keep the source code open so people can see, learn and be inspired by how Loritta was made and, if they want to, they can help the project with features and bug fixes.
 2. This is a community project, if you make changes to Loritta's source code you need to follow the [AGPL-3.0](LICENSE) and keep the changes open source! And, if you want to help Loritta, why not create a pull request? 😉
@@ -141,40 +147,40 @@ If you are planning to selfhost Loritta, here are some stuff that you should kee
 5. Loritta requires a lot of different API keys for a lot of features. While they aren't required, you may encounter issues when trying to use some of the features.
 6. Loritta's assets (fonts, images, etc) aren't not distributed with the source code, you will need to create and include your own assets.
 7. We use Ubuntu 18.04 to run her, she may work on other Linux operating systems or even in Windows, but we recommend hosting her on Ubuntu!
-8. To avoid problems and confusions, we **do not allow** using the name "Loritta", "Lori" or any similar names on your selfhosted versions. Call her "Nicole" if you don't have a creative name to give to your selfhosted version. Don't like "Nicole"? Generate your own [here](https://www.behindthename.com/random/)!
+8. To avoid problems and confusions, we **do not allow** using the name "Loritta", "Lori" or any similar names on your selfhosted versions. Call her "Nicole" if you aren't creative enough to create your own name to give to your selfhosted version. Don't like "Nicole"? Generate your own [here](https://www.behindthename.com/random/)!
 
 Seems too hard but you *really* want to use Loritta? Don't worry, you can use our free public instance by clicking here [clicking here](https://loritta.website/dashboard)!
 
-### `0.` Prerequisites
+### `0.` 👷 Prerequisites
 
 * You will need the same prerequisites from the Compiling Loritta section, please check that section first.
-* *(Optional, but highly recommended)* Install PostgreSQL, while Loritta also supports SQLite as a database, we recommend and support using PostgreSQL as the database!
+* *(Optional, but highly recommended)* Install PostgreSQL, while Loritta also supports SQLite as a database, we only support and recommend using PostgreSQL as the database! (that's what the public Loritta instance uses!)
 
-### `1.` Preparing the environment
+### `1.` 🧹 Preparing the environment
 * Create a empty folder somewhere in your OS, why an empty folder? Just to keep things tidy! :3
 
-### `2.` Getting the required JARs
+### `2.` 📥 Getting the required JARs
 
 #### If you compiled it yourself...
 
 **Loritta's Discord JAR**: `loritta-discord/build/libs/` (get the Fat JAR version!)
-**Loritta Libraries:** `libs/`
+**Loritta's Libraries:** `libs/`
 
 #### If you are lazy and don't want to compile it yourself...
 **You can find precompiled artifacts here:** https://github.com/LorittaBot/Loritta/actions?query=workflow%3A%22Build+Loritta%22
 
 You will need to get `Loritta (Discord)` and `Loritta (Libs)`
 
-### `3.` Preparing the environment²
+### `3.` 🧹 Preparing the environment²
 * Copy the `loritta-discord-*-fat.jar` to your created folder.
 * Copy the `libs` folder to your created folder.
 * If you did everything right, you should have in the root folder...
 * * A file named `loritta-discord-*.jar`, this is Loritta's executable.
 * * A folder named `libs` containing all Loritta dependencies.
 
-### `4.` The pre-start saga
+### `4.` 🚶 The pre-start saga
 
-* Run Loritta with `java -jar loritta-discord-fat.jar`, this will create the default configurations to run her.
+* Run Loritta again with `java -jar loritta-discord-*-fat.jar` (replace the JAR name with the JAR in your folder)
 * Update the configurations with your own values. You don't *need* to configure everything, just the bare minimum (bot token, folders, databases, etc) to get her up and running!
 
 #### ⚠️ Values that you *need* to change before starting Loritta
@@ -190,7 +196,7 @@ You will need to get `Loritta (Discord)` and `Loritta (Libs)`
     └── folders
         ├── root
         ├── * If you are on Windows, you need to use \\ as the path separator!
-        └── * Don't forget to add your OS path separator at the end of the
+        └── * Don't forget to add your OS path separator at the end of the root value!
 
 📄 discord.conf
 └── discord
@@ -206,9 +212,10 @@ You will need to get `Loritta (Discord)` and `Loritta (Libs)`
 
 * Download the locales from the [LorittaLocales repository](https://github.com/LorittaBot/LorittaLocales) and extract the files inside the locales folder you configured in the previous step.
 
-### `5.` Starting Loritta
+### `5.` 🏃‍♂️ Starting Loritta
 * Run Loritta again with `java -jar loritta-discord-*-fat.jar` (replace the JAR name with the JAR in your folder)
-* Check the console to see if there are any errors... I hope there are not.
+* Check the console to see if there are any errors... Well, we hope that there are none. :3
+* If you haven't, add your bot to a Discord server.
 * After booting up, try using `+ping` on your Discord server.
 * If everything went well, your very own Loritta instance should be up and running! Congratulations! 🎉
 * *(Optional)* You can add plugins to your instance!
