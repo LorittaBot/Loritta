@@ -150,7 +150,7 @@ abstract class ActionCommand(labels: Array<String>) : LorittaCommand(labels, Com
             if (user == null) {
                 context.reply(
                         LoriReply(
-                                locale["commands.userDoesNotExist"],
+                                locale["commands.userDoesNotExist", "`${context.args[0]}`"],
                                 Constants.ERROR
                         )
                 )
