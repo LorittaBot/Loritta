@@ -335,6 +335,12 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						WarnActions.config eq moderationConfig.id
 					}
 
+				logger.trace { "Deleting all ${e.guild} member counters..."}
+				if (serverConfig != null)
+					MemberCounterChannelConfigs.deleteWhere {
+						MemberCounterChannelConfigs.guild eq serverConfig.id
+					}
+
 				logger.trace { "Deleting ${e.guild} config..."}
 				serverConfig?.delete()
 
