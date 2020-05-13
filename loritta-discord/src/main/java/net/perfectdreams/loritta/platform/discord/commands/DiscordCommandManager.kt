@@ -218,15 +218,13 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                     .split(Constants.WHITE_SPACE_MULTIPLE_REGEX)
                     .drop(removeArgumentCount)
                     .toTypedArray()
+            val args = rawArgs
             val strippedArgs: Array<String>
-            val args: Array<String>
 
             if (rawArgs.isNotEmpty()) {
                 strippedArgs = MarkdownSanitizer.sanitize(rawArgs.joinToString(" ")).split(" ").toTypedArray()
-                args = strippedArgs
             } else {
                 strippedArgs = rawArgs
-                args = rawArgs
             }
 
             var legacyLocale = legacyLocale
