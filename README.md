@@ -195,7 +195,7 @@ You will need to get `Loritta (Discord)` and `Loritta (Libs)`
 └── loritta
     └── folders
         ├── root
-        ├── * If you are on Windows, you need to use \\ as the path separator!
+        │   * If you are on Windows, you need to use \\ as the path separator!
         └── * Don't forget to add your OS path separator at the end of the root value!
 
 📄 discord.conf
