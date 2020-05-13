@@ -106,7 +106,7 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 			} else if (pinnedMessages.size > 0) {
 				context.sendMessage(context.locale["commands.moderation.clear.ignoredPinnedMessages", context.userHandle.asMention, pinnedMessages.size])
 			} else {
-				context.sendMessage(context.locale["commands.moderation.clear.sucess", context.userHandle.asMention])
+				context.sendMessage(context.locale["commands.moderation.clear.success", context.userHandle.asMention])
 			}
 		} else {
 			this.explain(context)
