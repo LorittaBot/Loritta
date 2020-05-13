@@ -61,23 +61,29 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 			}
 
 			// Primeiros iremos deletar a mensagem do comando que o usuário enviou
-			try { context.message.delete().await() } catch (e: Exception) {}
+			try {
+				context.message.delete().await()
+			} catch (e: Exception) {
+			}
 
-			var hasTooOldMessages = false
+			val (reason, skipConfirmation) = AdminUtils.getOptions(context) ?: return
+			var tooOldMessagesCount = 0;
+			var pinnedMessagesCount = 0;
 			val messages = context.event.textChannel!!.history.retrievePast(toClear).await()
 			val allowedMessages = messages.asSequence().filter {
-				if (context.message.mentionedUsers.isNotEmpty()) {
-					context.message.mentionedUsers.contains(it.author)
+				if (context.message.mentionedUsers.isNotEmpty() && !context.message.mentionedUsers.contains(it.author)) {
+					false
+				} else if (it.isPinned && !skipConfirmation) {
+					pinnedMessagesCount += 1
+					false
 				} else {
-					true
+					val twoWeeksAgo = System.currentTimeMillis() - 14 * 24 * 60 * 60 * 1000 - Constants.DISCORD_EPOCH shl Constants.TIMESTAMP_OFFSET.toInt()
+					val isTooOld = MiscUtil.parseSnowflake(it.id) > twoWeeksAgo
+					if (isTooOld) {
+						tooOldMessagesCount += 1
+					}
+					isTooOld
 				}
-			}.filter {
-				val twoWeeksAgo = System.currentTimeMillis() - 14 * 24 * 60 * 60 * 1000 - Constants.DISCORD_EPOCH shl Constants.TIMESTAMP_OFFSET.toInt()
-				val isTooOld = MiscUtil.parseSnowflake(it.id) > twoWeeksAgo
-				if (isTooOld) {
-					hasTooOldMessages = true
-				}
-				isTooOld
 			}.toList()
 
 			if (allowedMessages.isEmpty()) {
@@ -92,11 +98,10 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 
 			// E agora realmente iremos apagar as mensagens!
 			context.message.textChannel.deleteMessages(allowedMessages).await()
-
-			if (allowedMessages.size == messages.size) {
+			if (tooOldMessagesCount > 0 || pinnedMessagesCount > 0) {
+				context.sendMessage(context.legacyLocale["LIMPAR_SUCCESS_IGNORED_TOO_OLD_OR_PINNED", context.userHandle.asMention, tooOldMessagesCount, pinnedMessagesCount])
+			} else {
 				context.sendMessage(context.legacyLocale["LIMPAR_SUCCESS", context.userHandle.asMention])
-			} else if (hasTooOldMessages) {
-				context.sendMessage(context.legacyLocale["LIMPAR_SUCCESS_IGNORED_TOO_OLD", context.userHandle.asMention, messages.size - allowedMessages.size])
 			}
 		} else {
 			this.explain(context)
