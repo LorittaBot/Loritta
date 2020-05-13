@@ -371,7 +371,7 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 		if (!songTitle.contains(musicName, true))
 			return null
 
-		val songLyricsDiv = document.getElementsByTag("article").firstOrNull() ?: return null
+		val songLyricsDiv = document.getElementsByClass("cnt-letra").firstOrNull() ?: return null
 
 		val lyrics = songLyricsDiv.html()
 		val avatarUrl = headTitle.getElementsByTag("img").firstOrNull()?.attr("src")
@@ -380,7 +380,13 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 				h2.text() ?: artist,
 				songTitle ?: musicName,
 				avatarUrl,
-				Jsoup.clean(lyrics.replace("<br>", "\n"), "localhost", Whitelist.none(), Document.OutputSettings().prettyPrint(false))
+				Jsoup.clean(lyrics
+						.replace("<br>", "\n")
+						.replace("<p>", "\n"),
+						"localhost",
+						Whitelist.none(),
+						Document.OutputSettings().prettyPrint(false)
+				)
 		)
 	}
 
