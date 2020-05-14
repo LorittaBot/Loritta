@@ -5,10 +5,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
 import com.mrpowergamerbr.loritta.dao.Mute
 import com.mrpowergamerbr.loritta.dao.ServerConfig
-import com.mrpowergamerbr.loritta.modules.AutoroleModule
-import com.mrpowergamerbr.loritta.modules.ReactionModule
-import com.mrpowergamerbr.loritta.modules.StarboardModule
-import com.mrpowergamerbr.loritta.modules.WelcomeModule
+import com.mrpowergamerbr.loritta.modules.*
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Mutes
@@ -26,6 +23,8 @@ import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
+import net.dv8tion.jda.api.events.guild.invite.GuildInviteCreateEvent
+import net.dv8tion.jda.api.events.guild.invite.GuildInviteDeleteEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent
 import net.dv8tion.jda.api.events.http.HttpRequestEvent
@@ -173,6 +172,14 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		} else {
 			requestLogger.info("${event.route.method.name} ${event.route.compiledRoute} -> ${event.response?.code}\n$input")
 		}
+	}
+
+	override fun onGuildInviteCreate(event: GuildInviteCreateEvent) {
+		InviteLinkModule.cachedInviteLinks.remove(event.guild.idLong)
+	}
+
+	override fun onGuildInviteDelete(event: GuildInviteDeleteEvent) {
+		InviteLinkModule.cachedInviteLinks.remove(event.guild.idLong)
 	}
 
 	override fun onGuildMessageReactionAdd(event: GuildMessageReactionAddEvent) {
