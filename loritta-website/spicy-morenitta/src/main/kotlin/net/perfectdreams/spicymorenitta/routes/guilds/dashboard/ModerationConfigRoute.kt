@@ -293,7 +293,7 @@ class ModerationConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender(
 				json["warnCount"] = el.find(".warnCount").`val`().unsafeCast<Int>()
 
 				if (punishmentAction.toString() == ServerConfig.PunishmentAction.MUTE.toString())
-					json["customMetadata0"] = el.find(".customMetadata0").`val`().unsafeCast<String>()
+					json["time"] = el.find(".customMetadata0").`val`().unsafeCast<String>()
 
 				actions.add(
 						json
