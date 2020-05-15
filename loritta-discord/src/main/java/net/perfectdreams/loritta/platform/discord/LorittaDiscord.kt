@@ -40,11 +40,18 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.image.BufferedImage
 import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
 import java.lang.reflect.Modifier
+import java.net.URL
 import java.util.*
 import java.util.concurrent.TimeUnit
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
 import javax.imageio.ImageIO
 import kotlin.random.Random
+import kotlin.system.exitProcess
+import mu.KotlinLogging
 
 /**
  * Loritta Morenitta :3
@@ -77,6 +84,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         }
     }
     override val random = Random(System.currentTimeMillis())
+    private val logger = KotlinLogging.logger {}
 
     var fanArtArtists = listOf<FanArtArtist>()
     val fanArts: List<FanArt>
@@ -272,10 +280,60 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
     fun loadLocales() {
         val locales = mutableMapOf<String, BaseLocale>()
 
+        val localeFolder = File(instanceConfig.loritta.folders.locales)
+
+        if (!File(localeFolder, "default").exists()) {
+            logger.info("Since you don't have any locales downloaded, I'll download them for you!")
+
+            var success: Int = 0
+            var failed: Int = 0
+            val localesInputStream = URL("https://github.com/LorittaBot/LorittaLocales/archive/master.zip").openStream();
+
+            val localesZip = ZipInputStream(localesInputStream)
+            val fileMap = mutableMapOf<String, ByteArray>()
+
+            while (true) {
+                val next = localesZip.nextEntry ?: break
+                if (next.isDirectory)
+                    continue
+
+                val fileAsByteArray = localesZip.readAllBytes()
+
+                fileMap[next.name] = fileAsByteArray
+            }
+
+            fileMap.forEach { file -> 
+
+                var fileName = file.key
+
+                fileName = fileName.substring(fileName.indexOf("/") + 1)
+
+                val fileObj = File(localeFolder, fileName)
+                val dir = if (fileName.endsWith("/")) fileObj else fileObj.getParentFile()
+
+                if (!dir.isDirectory && !dir.mkdirs()) {
+                    failed++
+                    throw FileNotFoundException("Invalid path: " + dir.getAbsolutePath())
+                }
+
+                val fout = FileOutputStream(fileObj)
+
+                fout.write(file.value)
+
+                fout.close()
+                success++
+            
+            }
+
+            if (failed > 0)
+                logger.warn("$success locales downloaded successfully, $failed failed.")
+            else
+                logger.info("$success locales downloaded successfully.")
+        }
+
         val defaultLocale = loadLocale(Constants.DEFAULT_LOCALE_ID, null)
         locales[Constants.DEFAULT_LOCALE_ID] = defaultLocale
 
-        val localeFolder = File(instanceConfig.loritta.folders.locales)
         localeFolder.listFiles().filter { it.isDirectory && it.name != Constants.DEFAULT_LOCALE_ID && !it.name.startsWith(".") /* ignorar .git */ }.forEach {
             locales[it.name] = loadLocale(it.name, defaultLocale)
         }
