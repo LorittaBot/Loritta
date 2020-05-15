@@ -283,7 +283,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         val localeFolder = File(instanceConfig.loritta.folders.locales)
 
         if (!File(localeFolder, "default").exists()) {
-            logger.info("Since you don't have any locales downloaded, I'll download them for you!")
+            logger.info { "Since you don't have any locales downloaded, I'll download them for you!" }
 
             var success: Int = 0
             var failed: Int = 0
@@ -313,7 +313,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
                 if (!dir.isDirectory && !dir.mkdirs()) {
                     failed++
-                    throw FileNotFoundException("Invalid path: " + dir.getAbsolutePath())
+                    logger.error(FileNotFoundException("Invalid path: " + dir.getAbsolutePath())) { "An error has occurred" }
                 }
 
                 val fout = FileOutputStream(fileObj)
@@ -326,9 +326,9 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
             }
 
             if (failed > 0)
-                logger.warn("$success locales downloaded successfully, $failed failed.")
+                logger.warn { "$success locales downloaded successfully, $failed failed." }
             else
-                logger.info("$success locales downloaded successfully.")
+                logger.info { "$success locales downloaded successfully." }
         }
 
         val defaultLocale = loadLocale(Constants.DEFAULT_LOCALE_ID, null)
