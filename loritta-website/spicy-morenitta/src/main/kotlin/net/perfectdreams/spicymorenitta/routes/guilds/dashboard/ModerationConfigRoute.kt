@@ -50,7 +50,7 @@ class ModerationConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender(
 
 			LoriDashboard.applyBlur("#hiddenIfDisabled", "#cmn-toggle-2")
 
-			LoriDashboard.configureTextChannelSelect(jq("#punishmentLogChannelId"),  guild.textChannels, guild.moderationConfig.punishmentLogChannelId)
+			LoriDashboard.configureTextChannelSelect(jq("#punishmentLogChannelId"),  guild.textChannels, guild.moderationConfig.punishLogChannelId)
 
 			jq(".add-new-action").click {
 				addPunishment(

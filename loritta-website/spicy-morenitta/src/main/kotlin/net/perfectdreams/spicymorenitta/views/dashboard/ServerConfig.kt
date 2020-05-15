@@ -87,8 +87,8 @@ object ServerConfig {
 	class ModerationConfig(
 		var sendPunishmentViaDm: Boolean = false,
 		var sendPunishmentToPunishLog: Boolean = false,
-		@Optional var punishmentLogChannelId: Long? = null,
-		@Optional var punishmentLogMessage: String? = null,
+		@Optional var punishLogChannelId: Long? = null,
+		@Optional var punishLogMessage: String? = null,
 		var punishmentActions: Array<WarnAction>,
 		var punishmentMessages: Array<ModerationPunishmentMessageConfig>
 	)
