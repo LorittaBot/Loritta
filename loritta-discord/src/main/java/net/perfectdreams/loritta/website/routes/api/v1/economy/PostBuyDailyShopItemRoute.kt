@@ -116,7 +116,7 @@ class PostBuyDailyShopItemRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLog
 							it[receivedBy] = creator.id.value
 							it[givenAt] = System.currentTimeMillis()
 							it[quantity] = creatorReceived.toBigDecimal()
-							it[reason] = SonhosPaymentReason.PROFILE
+							it[reason] = SonhosPaymentReason.BACKGROUND
 						}
 					}
 				}
