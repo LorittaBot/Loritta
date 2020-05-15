@@ -210,7 +210,7 @@ You will need to get `Loritta (Discord)` and `Loritta (Libs)`
 
 > ⚠️ Those are only the values that you *will* need to change before starting Loritta, there are other recommended values that you need to change too, but they aren't required to start Loritta.
 
-* Download the locales from the [LorittaLocales repository](https://github.com/LorittaBot/LorittaLocales) and extract the files inside the locales folder you configured in the previous step.
+* Locales are downloaded automatically by Loritta when the default locale isn't found on the locales folder you configured in the previous step, but you can still download them from the [LorittaLocales repository](https://github.com/LorittaBot/LorittaLocales).
 
 ### `5.` 🏃‍♂️ Starting Loritta
 * Run Loritta again with `java -jar loritta-discord-*-fat.jar` (replace the JAR name with the JAR in your folder)
