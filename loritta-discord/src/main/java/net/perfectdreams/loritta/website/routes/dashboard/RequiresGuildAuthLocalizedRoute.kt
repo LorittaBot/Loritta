@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import io.ktor.application.ApplicationCall
+import io.ktor.features.origin
 import io.ktor.request.path
 import io.ktor.response.respondText
 import mu.KotlinLogging
@@ -44,7 +45,7 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaDiscord, original
 		start = System.currentTimeMillis()
 
 		if (host != theNewUrl) {
-			redirect("https://$theNewUrl${call.request.path()}${call.request.urlQueryString}", false)
+			redirect("${call.request.origin.scheme}://$theNewUrl${call.request.path()}${call.request.urlQueryString}", false)
 			return
 		}
 
