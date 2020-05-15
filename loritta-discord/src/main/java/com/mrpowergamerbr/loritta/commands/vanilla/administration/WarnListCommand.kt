@@ -64,7 +64,7 @@ class WarnListCommand : AbstractCommand("punishmentlist", listOf("listadeavisos"
 			val embed = EmbedBuilder().apply {
 				setColor(Constants.DISCORD_BLURPLE)
 				setAuthor(user.name, null, user.effectiveAvatarUrl)
-				setTitle("\uD83D\uDE94 Lista de Avisos")
+				setTitle("\uD83D\uDE94 ${locale["WARN_Title"]}")
 
 				val warn = warns.size
 				val nextPunishment = warnPunishments.firstOrNull { it.warnCount == warn + 1 }
@@ -77,19 +77,20 @@ class WarnListCommand : AbstractCommand("punishmentlist", listOf("listadeavisos"
 						PunishmentAction.MUTE -> locale["MUTE_PunishAction"]
 						else -> throw RuntimeException("Punishment $nextPunishment is not supported")
 					}.toLowerCase()
-					setFooter("No próximo aviso, o usuário irá ser $type!", null)
+					setFooter(locale["WARN_NextPunishment", type], null)
 				}
 
-				warns.forEach {
+				warns.forEachIndexed({ idx, warn -> 
 					addField(
-							"Avisado",
-							"""**${locale["BAN_PunishedBy"]}:** <@${it.punishedById}>
-								|**${locale["BAN_PunishmentReason"]}:** ${it.content}
-								|**${locale["KYM_DATE"]}:** ${it.receivedAt.humanize(locale)}
+							locale["WARN_PunishAction"],
+							"""**${locale["WARN_Common"]} #${idx + 1}**
+								|**${locale["BAN_PunishedBy"]}:** <@${warn.punishedById}>
+								|**${locale["BAN_PunishmentReason"]}:** ${warn.content}
+								|**${locale["KYM_DATE"]}:** ${warn.receivedAt.humanize(locale)}
 							""".trimMargin(),
 							false
 					)
-				}
+				})
 			}
 
 			val message = context.sendMessage(context.getAsMention(true), embed.build())
