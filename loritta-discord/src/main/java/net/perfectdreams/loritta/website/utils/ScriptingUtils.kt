@@ -122,7 +122,9 @@ object ScriptingUtils {
                 $code
             """.trimIndent()
 
-        File("${LorittaWebsite.INSTANCE.config.websiteFolder}/generated_views/${file.name}").writeText(editedCode)
+	val generatedViewsFolder = File("${LorittaWebsite.INSTANCE.config.websiteFolder}/generated_views/")
+	generatedViewsFolder.mkdirs()
+        File(generatedViewsFolder, file.name).writeText(editedCode)
 
         logger.info { "Compiling ${file.name}..." }
 
