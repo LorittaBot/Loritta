@@ -35,7 +35,7 @@ object ScriptingUtils {
         val argTypes = modifiedArgs.map {
             it.key to it.value.run {
                 if (this is WebsiteArgumentType) {
-					val clazzName = this.overrideClassName ?: (this.kType.classifier as KClass<*>).qualifiedName
+                    val clazzName = this.overrideClassName ?: (this.kType.classifier as KClass<*>).qualifiedName
 
                     var str = clazzName
 
@@ -122,7 +122,9 @@ object ScriptingUtils {
                 $code
             """.trimIndent()
 
-        File("${LorittaWebsite.INSTANCE.config.websiteFolder}/generated_views/${file.name}").writeText(editedCode)
+        val generatedViewsFolder = File("${LorittaWebsite.INSTANCE.config.websiteFolder}/generated_views/")
+        generatedViewsFolder.mkdirs()
+        File(generatedViewsFolder, file.name).writeText(editedCode)
 
         logger.info { "Compiling ${file.name}..." }
 

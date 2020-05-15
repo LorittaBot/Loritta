@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.website.utils.extensions.hostFromHeader
 import net.perfectdreams.loritta.website.utils.extensions.redirect
 import net.perfectdreams.loritta.website.utils.extensions.urlQueryString
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
@@ -25,7 +26,7 @@ abstract class RequiresAPIGuildAuthRoute(loritta: LorittaDiscord, originalDashbo
 
 		val shardId = DiscordUtils.getShardIdFromGuildId(guildId.toLong())
 
-		val host = call.request.host()
+		val host = call.request.hostFromHeader()
 
 		val loriShardId = DiscordUtils.getLorittaClusterIdForShardId(shardId)
 		val theNewUrl = DiscordUtils.getUrlForLorittaClusterId(loriShardId)
