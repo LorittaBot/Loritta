@@ -43,7 +43,7 @@ object LorittaLauncher {
 		// By the way, don't forget to append your original JAR at the end of the string!
 		val clazz = LorittaLauncher::class.java
 		val protectionDomain = clazz.protectionDomain
-		val propClassPath = manifestClassPath.replace(" ", ":") + ":${Paths.get(protectionDomain.codeSource.location.toURI()).fileName}"
+		val propClassPath = manifestClassPath.replace(" ", File.pathSeparator) + "${File.pathSeparator}${Paths.get(protectionDomain.codeSource.location.toURI()).fileName}"
 
 		// Now we set it to our own classpath
 		System.setProperty("kotlin.script.classpath", propClassPath)
