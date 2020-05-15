@@ -82,7 +82,19 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 
 			var warnIndex: Int = 0
 
-			if (context.args.size > 1) warnIndex = context.args[1].toInt() else warnIndex = warns.size
+			if (context.args.size >= 2) {
+				if (context.args[1].toIntOrNull() == null) {
+					context.reply(
+							LoriReply(
+									"${context.legacyLocale["INVALID_NUMBER", context.args[1]]}",
+									Constants.ERROR
+							)
+					)
+					return	
+				}
+				
+				warnIndex = context.args[1].toInt()
+			} else warnIndex = warns.size
 
 			if (warnIndex > warns.size) {
 				context.reply(
