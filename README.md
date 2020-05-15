@@ -224,6 +224,14 @@ You will need to get `Loritta (Discord)` and `Loritta (Libs)`
 
 ___
 
+## 💫 Special thanks to...
+
+![YourKit-Logo](https://www.yourkit.com/images/yklogo.png)
+
+[YourKit](http://www.yourkit.com/), creators of the YourKit Java Profiler, providing support for open-source projects of all forms and shapes with their awesome Java-Application profiler. [Java](https://www.yourkit.com/java/profiler/index.jsp) and [.NET](https://www.yourkit.com/.net/profiler/index.jsp). Thank you for granting us an open source licenses that helps us to make Lori more useful and awesome for all our users!
+
+___
+
 <p align="center">
 <img src="https://cdn.discordapp.com/attachments/708017680677863505/709834156145770534/lori_deitada.png">
 </p>
