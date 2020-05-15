@@ -7,7 +7,6 @@ import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import io.ktor.application.ApplicationCall
-import io.ktor.request.host
 import io.ktor.request.path
 import io.ktor.response.respondText
 import mu.KotlinLogging
@@ -17,6 +16,7 @@ import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.website.routes.RequiresDiscordLoginLocalizedRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.website.utils.extensions.hostFromHeader
 import net.perfectdreams.loritta.website.utils.extensions.legacyVariables
 import net.perfectdreams.loritta.website.utils.extensions.redirect
 import net.perfectdreams.loritta.website.utils.extensions.urlQueryString
@@ -35,7 +35,7 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaDiscord, original
 
 		val shardId = DiscordUtils.getShardIdFromGuildId(guildId.toLong())
 
-		val host = call.request.host()
+		val host = call.request.hostFromHeader()
 
 		val loriShardId = DiscordUtils.getLorittaClusterIdForShardId(shardId)
 		val theNewUrl = DiscordUtils.getUrlForLorittaClusterId(loriShardId)

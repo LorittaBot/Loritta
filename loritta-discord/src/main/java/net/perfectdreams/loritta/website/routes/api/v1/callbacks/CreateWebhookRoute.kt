@@ -5,6 +5,7 @@ import io.ktor.request.host
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.routes.BaseRoute
+import net.perfectdreams.loritta.website.utils.extensions.hostFromHeader
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
@@ -14,7 +15,7 @@ class CreateWebhookRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/
 	}
 
 	override suspend fun onRequest(call: ApplicationCall) {
-		val hostHeader = call.request.host()
+		val hostHeader = call.request.hostFromHeader()
 		val code = call.parameters["code"]
 
 		val auth = TemmieDiscordAuth(

@@ -44,7 +44,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
 		if (call.request.path().endsWith("/dashboard")) {
-			val hostHeader = call.request.host()
+			val hostHeader = call.request.hostFromHeader()
 
 			val state = call.parameters["state"]
 			val guildId = call.parameters["guild_id"]

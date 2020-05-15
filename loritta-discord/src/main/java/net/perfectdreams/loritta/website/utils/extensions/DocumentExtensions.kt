@@ -11,6 +11,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.ApplicationRequest
 import io.ktor.request.header
+import io.ktor.request.host
 import io.ktor.request.queryString
 import io.ktor.response.respondText
 import io.ktor.sessions.get
@@ -88,6 +89,13 @@ val ApplicationRequest.urlQueryString: String get() {
 		""
 	}
 }
+
+/**
+ * Returns the host from the "Host" header, if the header is missing, defaults to [ApplicationRequest.host]
+ *
+ * This is used when we need to get the user's host port too, due to [ApplicationRequest.host] not returing the host + port
+ */
+fun ApplicationRequest.hostFromHeader() = this.header("Host") ?: this.host()
 
 class HttpRedirectException(val location: String, val permanent: Boolean = false) : RuntimeException()
 fun redirect(location: String, permanent: Boolean = false): Nothing = throw HttpRedirectException(location, permanent)
