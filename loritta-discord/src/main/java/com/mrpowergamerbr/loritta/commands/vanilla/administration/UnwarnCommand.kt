@@ -33,13 +33,13 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 				optional = false
 			}
 			argument(ArgumentType.NUMBER) {
-				optional = false
+				optional = true
 			}
 		}
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("159985870458322944 2")
+		return listOf("159985870458322944", "312632996119445504 2")
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
@@ -66,7 +66,7 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 			}
 
 			val warns = transaction(Databases.loritta) {
-				Warn.find { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) }.toMutableList()
+				Warn.find { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) }.toList()
 			}
 
 			if (warns.isEmpty()) {
@@ -79,9 +79,12 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 				return
 			}
 
-			val warnIndex = context.args[1].toInt()
 
-			if (warns.count() < warnIndex) {
+			var warnIndex: Int = 0
+
+			if (context.args.size > 1) warnIndex = context.args[1].toInt() else warnIndex = warns.size
+
+			if (warnIndex > warns.size) {
 				context.reply(
 						LoriReply(
 								context.locale["$LOCALE_PREFIX.unwarn.notEnoughWarns", warnIndex, "`${context.config.commandPrefix}warnlist`"],
@@ -94,8 +97,7 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 			val warn = warns[warnIndex - 1]
 
 			transaction(Databases.loritta) {
-				Warn.find { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) and (Warns.receivedAt eq warn.receivedAt) }.maxBy { it.receivedAt }!!
-						.delete()
+				warn.delete()
 			}
 
 			context.reply(
