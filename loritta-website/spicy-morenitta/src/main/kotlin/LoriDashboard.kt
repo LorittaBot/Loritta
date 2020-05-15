@@ -117,10 +117,8 @@ object LoriDashboard {
 			val text = "<span style=\"font-weight: 600;\">#${it.name}</span>"
 			option.text = text
 
-			// TODO: Please fix
-			/* if (!it.canTalk) {
+			if (!it.canTalk)
 				option.text = "${text} <span class=\"keyword\" style=\"background-color: rgb(231, 76, 60);\">${legacyLocale["DASHBOARD_NoPermission"].replace("!", "")}</span>"
-			} */
 
 			if (it.id == selectedChannelId)
 				option.selected = true
