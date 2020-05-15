@@ -282,6 +282,8 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
         if (!File(localeFolder, "default").exists()) {
             logger.info { "Since you don't have any locales downloaded, I'll download them for you!" }
+            logger.info { "For future reference, you can check out and update your locally downloaded locales by cloning the LorittaLocales repository" }
+            logger.info { "Repository URL: https://github.com/LorittaBot/LorittaLocales" }
 
             var success: Int = 0
             var failed: Int = 0
