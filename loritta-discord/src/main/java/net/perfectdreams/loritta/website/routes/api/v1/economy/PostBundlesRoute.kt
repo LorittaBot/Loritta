@@ -70,7 +70,7 @@ class PostBundlesRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(l
 
 				Payment.new {
 					this.userId = userIdentification.id.toLong()
-					this.gateway = PaymentGateway.MERCADOPAGO
+					this.gateway = paymentGateway
 					this.reason = PaymentReason.SONHOS_BUNDLE
 
 					this.money = grana.toBigDecimal()
