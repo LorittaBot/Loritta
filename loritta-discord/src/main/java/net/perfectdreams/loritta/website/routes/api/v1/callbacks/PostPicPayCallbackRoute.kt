@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import io.ktor.application.ApplicationCall
 import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.readText
 import io.ktor.http.ContentType
@@ -52,6 +53,7 @@ class PostPicPayCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/ap
 
 		val httpResponse = loritta.http.get<HttpResponse>("https://appws.picpay.com/ecommerce/public/payments/$referenceId/status") {
 			contentType(ContentType.Application.Json)
+			header("x-picpay-token", loritta.config.picPay.picPayToken)
 		}
 
 		val payloadAsString = httpResponse.readText()
