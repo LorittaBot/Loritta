@@ -32,11 +32,14 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 			argument(ArgumentType.USER) {
 				optional = false
 			}
+			argument(ArgumentType.NUMBER) {
+				optional = true
+			}
 		}
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("159985870458322944")
+		return listOf("159985870458322944", "312632996119445504 2")
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
@@ -63,7 +66,7 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 			}
 
 			val warns = transaction(Databases.loritta) {
-				Warn.find { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) }.toMutableList()
+				Warn.find { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) }.toList()
 			}
 
 			if (warns.isEmpty()) {
@@ -76,9 +79,37 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 				return
 			}
 
+
+			var warnIndex: Int = 0
+
+			if (context.args.size >= 2) {
+				if (context.args[1].toIntOrNull() == null) {
+					context.reply(
+							LoriReply(
+									"${context.legacyLocale["INVALID_NUMBER", context.args[1]]}",
+									Constants.ERROR
+							)
+					)
+					return	
+				}
+				
+				warnIndex = context.args[1].toInt()
+			} else warnIndex = warns.size
+
+			if (warnIndex > warns.size) {
+				context.reply(
+						LoriReply(
+								context.locale["$LOCALE_PREFIX.unwarn.notEnoughWarns", warnIndex, "`${context.config.commandPrefix}warnlist`"],
+								Constants.ERROR
+						)
+				)
+				return
+			}
+
+			val warn = warns[warnIndex - 1]
+
 			transaction(Databases.loritta) {
-				Warn.find { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) }.maxBy { it.receivedAt }!!
-						.delete()
+				warn.delete()
 			}
 
 			context.reply(

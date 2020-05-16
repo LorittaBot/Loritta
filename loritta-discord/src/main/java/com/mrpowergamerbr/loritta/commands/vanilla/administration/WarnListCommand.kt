@@ -19,6 +19,10 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class WarnListCommand : AbstractCommand("punishmentlist", listOf("listadeavisos", "modlog", "modlogs", "infractions", "warnlist", "warns"), CommandCategory.ADMIN) {
+	companion object {
+		private val LOCALE_PREFIX = "commands.moderation"
+	}
+
 	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["WARNLIST_Description"]
 	}
@@ -53,7 +57,7 @@ class WarnListCommand : AbstractCommand("punishmentlist", listOf("listadeavisos"
 
 			if (warns.isEmpty()) {
 				context.reply(
-						locale["WARNLIST_UserDoesntHaveWarns", user.asMention],
+						context.locale["$LOCALE_PREFIX.warnlist.userDoesntHaveWarns", user.asMention],
 						Constants.ERROR
 				)
 				return
@@ -64,32 +68,33 @@ class WarnListCommand : AbstractCommand("punishmentlist", listOf("listadeavisos"
 			val embed = EmbedBuilder().apply {
 				setColor(Constants.DISCORD_BLURPLE)
 				setAuthor(user.name, null, user.effectiveAvatarUrl)
-				setTitle("\uD83D\uDE94 Lista de Avisos")
+				setTitle("\uD83D\uDE94 ${context.locale["$LOCALE_PREFIX.warnlist.title"]}")
 
 				val warn = warns.size
 				val nextPunishment = warnPunishments.firstOrNull { it.warnCount == warn + 1 }
 
 				if (nextPunishment != null) {
 					val type = when (nextPunishment.punishmentAction) {
-						PunishmentAction.BAN -> locale["BAN_PunishAction"]
-						PunishmentAction.SOFT_BAN -> locale["SOFTBAN_PunishAction"]
-						PunishmentAction.KICK -> locale["KICK_PunishAction"]
-						PunishmentAction.MUTE -> locale["MUTE_PunishAction"]
+						PunishmentAction.BAN -> context.locale["$LOCALE_PREFIX.ban.punishAction"]
+						PunishmentAction.SOFT_BAN -> context.locale["$LOCALE_PREFIX.softban.punishAction"]
+						PunishmentAction.KICK -> context.locale["$LOCALE_PREFIX.kick.punishAction"]
+						PunishmentAction.MUTE -> context.locale["$LOCALE_PREFIX.mute.punishAction"]
 						else -> throw RuntimeException("Punishment $nextPunishment is not supported")
 					}.toLowerCase()
-					setFooter("No próximo aviso, o usuário irá ser $type!", null)
+					setFooter(context.locale["$LOCALE_PREFIX.warnlist.nextPunishment", type], null)
 				}
 
-				warns.forEach {
+				warns.forEachIndexed({ idx, warn -> 
 					addField(
-							"Avisado",
-							"""**${locale["BAN_PunishedBy"]}:** <@${it.punishedById}>
-								|**${locale["BAN_PunishmentReason"]}:** ${it.content}
-								|**${locale["KYM_DATE"]}:** ${it.receivedAt.humanize(locale)}
+							context.locale["$LOCALE_PREFIX.warn.punishAction"],
+							"""**${context.locale["$LOCALE_PREFIX.warnlist.common"]} #${idx + 1}**
+								|**${context.locale["$LOCALE_PREFIX.ban.punishedBy"]}:** <@${warn.punishedById}>
+								|**${context.locale["$LOCALE_PREFIX.ban.punishmentReason"]}:** ${warn.content}
+								|**${context.locale["$LOCALE_PREFIX.warnlist.date"]}:** ${warn.receivedAt.humanize(locale)}
 							""".trimMargin(),
 							false
 					)
-				}
+				})
 			}
 
 			val message = context.sendMessage(context.getAsMention(true), embed.build())
