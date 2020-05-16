@@ -96,7 +96,6 @@ class CommandManager {
 		commandMap.add(KnuxThrowCommand())
 		commandMap.add(TextCraftCommand())
 		commandMap.add(DrawnMaskCommand())
-		commandMap.add(MorrePragaCommand())
 
 		// =======[ DIVERSÃO ]======
 		commandMap.add(CongaParrotCommand())
