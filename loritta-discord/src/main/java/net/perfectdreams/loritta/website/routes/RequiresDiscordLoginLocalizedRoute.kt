@@ -11,7 +11,6 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import io.ktor.application.ApplicationCall
-import io.ktor.features.origin
 import io.ktor.http.ContentType
 import io.ktor.request.header
 import io.ktor.request.path
@@ -45,7 +44,8 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
 		if (call.request.path().endsWith("/dashboard")) {
 			val hostHeader = call.request.hostFromHeader()
-
+			val scheme = LorittaWebsite.WEBSITE_URL.split(":").first()
+			
 			val state = call.parameters["state"]
 			val guildId = call.parameters["guild_id"]
 			val code = call.parameters["code"]
@@ -62,7 +62,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 						call.respondHtml(WebsiteUtils.getDiscordCrawlerAuthenticationPage())
 					} else {
 						val state = JsonObject()
-						state["redirectUrl"] = "${call.request.origin.scheme}://$hostHeader" + call.request.path()
+						state["redirectUrl"] = "$scheme://$hostHeader" + call.request.path()
 						redirect(com.mrpowergamerbr.loritta.utils.loritta.discordInstanceConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}", false)
 					}
 				}
@@ -75,7 +75,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 						// Okay... mas e se for nulo? Veio do master mas não tem session cache? Como pode??
 						// Iremos apenas pedir para o usuário reautenticar, porque alguma coisa deu super errado!
 						val state = JsonObject()
-						state["redirectUrl"] = "${call.request.origin.scheme}://$hostHeader" + call.request.path()
+						state["redirectUrl"] = "$scheme://$hostHeader" + call.request.path()
 						redirect(com.mrpowergamerbr.loritta.utils.loritta.discordInstanceConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}", false)
 					}
 				} else {
@@ -83,7 +83,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 							com.mrpowergamerbr.loritta.utils.loritta.discordConfig.discord.clientId,
 							com.mrpowergamerbr.loritta.utils.loritta.discordConfig.discord.clientSecret,
 							code,
-							"${call.request.origin.scheme}://$hostHeader/dashboard",
+							"$scheme://$hostHeader/dashboard",
 							listOf("identify", "guilds", "email", "guilds.join")
 					)
 
@@ -136,7 +136,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 							logger.info { "Received guild $guildId via OAuth2 scope, but the guild isn't in this cluster! Redirecting to where the user should be... $cluster" }
 
 							// Vamos redirecionar!
-							redirect("${call.request.origin.scheme}://${cluster.getUrl()}/dashboard?guild_id=${guildId}&code=from_master", true)
+							redirect("$scheme://${cluster.getUrl()}/dashboard?guild_id=${guildId}&code=from_master", true)
 						}
 					}
 
@@ -230,7 +230,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 								"""
 							|<p>Parece que você tentou me adicionar no seu servidor, mas mesmo assim eu não estou nele!</p>
 							|<ul>
-							|<li>Tente me readicionar, as vezes isto acontece devido a um delay entre o tempo até o Discord atualizar os servidores que eu estou. <a href="${call.request.origin.scheme}://loritta.website/dashboard">${call.request.origin.scheme}://loritta.website/dashboard</a></li>
+							|<li>Tente me readicionar, as vezes isto acontece devido a um delay entre o tempo até o Discord atualizar os servidores que eu estou. <a href="$scheme://loritta.website/dashboard">$scheme://loritta.website/dashboard</a></li>
 							|<li>
 							|Verifique o registro de auditoria do seu servidor, alguns bots expulsam/banem ao adicionar novos bots. Caso isto tenha acontecido, expulse o bot que me puniu e me readicione!
 							|<ul>
@@ -245,11 +245,11 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 						return
 					}
 
-					redirect("${call.request.origin.scheme}://$hostHeader/guild/${guildId}/configure", false)
+					redirect("$scheme://$hostHeader/guild/${guildId}/configure", false)
 					return
 				}
 
-				redirect("${call.request.origin.scheme}://$hostHeader/dashboard", false) // Redirecionar para a dashboard, mesmo que nós já estejamos lá... (remove o "code" da URL)
+				redirect("$scheme://$hostHeader/dashboard", false) // Redirecionar para a dashboard, mesmo que nós já estejamos lá... (remove o "code" da URL)
 			}
 		}
 

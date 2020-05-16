@@ -6,8 +6,8 @@ import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import io.ktor.application.ApplicationCall
-import io.ktor.features.origin
 import io.ktor.request.path
 import io.ktor.response.respondText
 import mu.KotlinLogging
@@ -37,6 +37,7 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaDiscord, original
 		val shardId = DiscordUtils.getShardIdFromGuildId(guildId.toLong())
 
 		val host = call.request.hostFromHeader()
+		val scheme = LorittaWebsite.WEBSITE_URL.split(":").first()
 
 		val loriShardId = DiscordUtils.getLorittaClusterIdForShardId(shardId)
 		val theNewUrl = DiscordUtils.getUrlForLorittaClusterId(loriShardId)
@@ -44,17 +45,13 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaDiscord, original
 		logger.info { "Getting some stuff lol: ${System.currentTimeMillis() - start}" }
 		start = System.currentTimeMillis()
 
-		if (host != theNewUrl) {
-			redirect("${call.request.origin.scheme}://$theNewUrl${call.request.path()}${call.request.urlQueryString}", false)
-			return
-		}
+		if (host != theNewUrl)
+			redirect("$scheme://$theNewUrl${call.request.path()}${call.request.urlQueryString}", false)
 
 		val jdaGuild = lorittaShards.getGuildById(guildId)
 
-		if (jdaGuild == null) {
+		if (jdaGuild == null)
 			redirect(com.mrpowergamerbr.loritta.utils.loritta.discordInstanceConfig.discord.addBotUrl, false)
-			return
-		}
 
 		logger.info { "JDA Guild get and check: ${System.currentTimeMillis() - start}" }
 		start = System.currentTimeMillis()
