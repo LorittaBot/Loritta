@@ -54,7 +54,7 @@ object CoinFlipBetCommand : DSLCommandBase {
 
 			val context = checkType<DiscordCommandContext>(this)
 
-			val _user = context.user(0) ?: return@executes
+			val _user = validate(context.user(0))
 			val invitedUser = _user.toJDA()
 
 			if (invitedUser == context.user) {

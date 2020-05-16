@@ -60,5 +60,18 @@ abstract class CommandContext(
 		return image
 	}
 
+	suspend fun validate(user: User?): User {
+		if (user == null) {
+			if (args.isEmpty()) {
+				explain()
+				throw SilentCommandException()
+			} else {
+				throw CommandException(locale["commands.userDoesNotExist", "`${args[0].replace("`", "")}`"], Emotes.LORI_CRYING.toString())
+			}
+		}
+
+		return user
+	}
+
 	abstract suspend fun explain()
 }
