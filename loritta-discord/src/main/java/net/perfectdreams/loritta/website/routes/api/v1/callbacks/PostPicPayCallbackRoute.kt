@@ -38,7 +38,8 @@ class PostPicPayCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/ap
 	override suspend fun onRequest(call: ApplicationCall) {
 		val sellerTokenHeader = call.request.header("x-seller-token")
 
-		if (sellerTokenHeader == null || loritta.config.picPay.sellerToken == sellerTokenHeader) {
+		if (sellerTokenHeader == null || loritta.config.picPay.sellerToken != sellerTokenHeader) {
+			logger.warn { "Request Seller Token is different than what it is expected or null! Received Seller Token: $sellerTokenHeader"}
 			call.respondJson(jsonObject(), status = HttpStatusCode.Forbidden)
 			return
 		}
