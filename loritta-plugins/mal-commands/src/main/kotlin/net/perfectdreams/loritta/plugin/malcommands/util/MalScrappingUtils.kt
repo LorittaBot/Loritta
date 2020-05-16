@@ -12,5 +12,9 @@ object MalScrappingUtils {
                 .trim()
                 .split(':')
                 .toTypedArray()[1]
+                .trim()
+    }
+    fun getAltTitles(document: Document): Array<String> {
+        TODO("soon")
     }
 }

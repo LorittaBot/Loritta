@@ -1,32 +1,38 @@
 package net.perfectdreams.loritta.plugin.malcommands.util
 
 import com.mrpowergamerbr.loritta.utils.encodeToUrl
+import mu.KotlinLogging
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
 object MalUtils {
     private const val MAL_URL = "https://myanimelist.net/"
+    private val logger = KotlinLogging.logger {  }
 
     private fun requestDom(endpoint: String): Document? {
-        val response = Jsoup.connect("${MAL_URL}${endpoint.replace(MAL_URL, "")}")
+        val req = "${MAL_URL}${endpoint.replace(MAL_URL, "")}"
+        val response = Jsoup.connect(req)
                 .ignoreHttpErrors(true)
                 .execute()
+        logger.debug { "Feito conexão ${req}" }
 
         if (response.statusCode() == 404)
             return null
 
         return response.parse()
     }
-    fun queryAnime(q: String): String? {
+    private fun queryAnime(q: String): String? {
         val document = requestDom("search/all?q=${q.encodeToUrl()}")
         return try {
             // o primeiro article seria as queries de anime
-            val animeArticle = document!!.selectFirst("article")
+            val animeArticle = document!!.selectFirst("article > .list > .information > a")
             // só precisamos pegar o primeiro anime que vier xisde
-            val firstList = animeArticle.getElementsByClass("list").firstOrNull()
-            val infoList = firstList!!.getElementsByClass("information")!!.firstOrNull()
+//            val firstList = animeArticle.getElementsByClass("list").firstOrNull()
+//            val infoList = firstList!!.getElementsByClass("information")!!.firstOrNull()
             // Só nos resta pegar o elemento "a" que está com o atributo que nós leva à página do anime
-            infoList!!.select("a").attr("href")
+            if (animeArticle != null)
+            logger.debug { "Peguei o elemento!" }
+            animeArticle!!.attr("href")
         } catch(e: Exception) {
             null
         }
@@ -35,25 +41,36 @@ object MalUtils {
         val document = requestDom(url)
         val u = MalScrappingUtils
         return try {
-            val anime = MalAnime(
-                    info = AnimeInfo(
-                            name = document!!.select("span").attr("itemprop"),
-                            type = when (u.getContentBySpan(document, "Type:")) {
-                                "TV" -> AnimeType.TV
-                                "ONA" -> AnimeType.ONA
-                                "Movie" -> AnimeType.MOVIE
-                                "OVA" -> AnimeType.OVA
-                                "Special" -> AnimeType.SPECIAL
-                                else -> AnimeType.UNKNOWN
-                            },
-                            episodes = u.getContentBySpan(document, "Episodes:")?.toInt(),
-
-                    ),
-                    score = document.getElementsByClass("score-label").text()
+            // Workarounds
+            // This is needed for some animes with english titles
+            document!!.selectFirst("span[itemprop=\"name\"] span").remove()
+            val animeInfo = AnimeInfo(
+                    name = document.selectFirst("span[itemprop=\"name\"]").text().trim(),
+                    type = when (u.getContentBySpan(document, "Type:")) {
+                        "TV" -> AnimeType.TV
+                        "ONA" -> AnimeType.ONA
+                        "Movie" -> AnimeType.MOVIE
+                        "OVA" -> AnimeType.OVA
+                        "Special" -> AnimeType.SPECIAL
+                        else -> AnimeType.UNKNOWN
+                    },
+                    episodes = u.getContentBySpan(document, "Episodes:")?.toInt()
             )
-            TODO("fazer todo o paranue")
+
+            MalAnime(
+                    url = url,
+                    info = animeInfo,
+                    image = document.selectFirst("img[itemprop=\"image\"][alt=\"${animeInfo.name}\"]").attr("data-src"),
+                    score = document.selectFirst(".score-label").text(),
+                    synopsis = document.selectFirst("span[itemprop=\"description\"]").text()
+
+            )
         } catch (e: Exception) {
+            logger.debug { e }
             null
         }
+    }
+    fun parseAnimeByQuery(q: String): MalAnime? {
+        return this.parseAnime(this.queryAnime(q)!!)
     }
 }
