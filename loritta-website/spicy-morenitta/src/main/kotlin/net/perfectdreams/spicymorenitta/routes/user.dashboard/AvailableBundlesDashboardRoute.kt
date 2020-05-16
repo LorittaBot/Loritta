@@ -2,8 +2,6 @@ package net.perfectdreams.spicymorenitta.routes.user.dashboard
 
 import io.ktor.client.request.get
 import io.ktor.client.request.url
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.html.button
 import kotlinx.html.div
 import kotlinx.html.dom.append
@@ -17,13 +15,12 @@ import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
-import net.perfectdreams.spicymorenitta.utils.HttpRequest
+import net.perfectdreams.spicymorenitta.utils.PaymentUtils
 import net.perfectdreams.spicymorenitta.utils.loriUrl
 import net.perfectdreams.spicymorenitta.utils.select
 import org.w3c.dom.HTMLDivElement
 import kotlin.browser.document
 import kotlin.browser.window
-import kotlin.js.Json
 
 class AvailableBundlesDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/user/@me/dashboard/bundles") {
     override val keepLoadingScreen: Boolean
@@ -64,18 +61,12 @@ class AvailableBundlesDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePo
 
                                 onClickFunction = {
                                     val o = object {
-                                        val gateway = "MERCADOPAGO"
                                         val id = entry.id.toString()
                                     }
 
-                                    println(kotlin.js.JSON.stringify(o))
+                                    println(JSON.stringify(o))
 
-                                    GlobalScope.launch {
-                                        val response = HttpRequest.post("${loriUrl}api/v1/economy/bundles/sonhos/${entry.id}", kotlin.js.JSON.stringify(o))
-
-                                        val payload = kotlin.js.JSON.parse<Json>(response.body)
-                                        window.location.href = payload["redirectUrl"] as String
-                                    }
+                                    PaymentUtils.openPaymentSelectionModal(o, "${loriUrl}api/v1/economy/bundles/sonhos/${entry.id}")
                                 }
                             }
                         }

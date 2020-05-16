@@ -1,7 +1,5 @@
 package net.perfectdreams.spicymorenitta.routes
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.html.*
 import kotlinx.html.dom.create
 import kotlinx.html.js.onClickFunction
@@ -13,7 +11,10 @@ import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.locale
-import net.perfectdreams.spicymorenitta.utils.*
+import net.perfectdreams.spicymorenitta.utils.PaymentUtils
+import net.perfectdreams.spicymorenitta.utils.appendBuilder
+import net.perfectdreams.spicymorenitta.utils.page
+import net.perfectdreams.spicymorenitta.utils.visibleModal
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLInputElement
@@ -21,9 +22,7 @@ import org.w3c.dom.get
 import utils.TingleModal
 import utils.TingleOptions
 import kotlin.browser.document
-import kotlin.browser.window
 import kotlin.collections.set
-import kotlin.js.Json
 
 class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
     @UseExperimental(ImplicitReflectionSerializer::class)
@@ -388,23 +387,19 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
 
                                 div(classes = "button-discord button-discord-info pure-button") {
                                     style = "font-size: 1.25em; margin: 5px;"
-                                    + "Renovar via MercadoPago"
+                                    + "Renovar"
 
                                     onClickFunction = {
                                         val o = object {
-                                            val gateway = "MERCADOPAGO"
                                             val money = key.value // unused
-                                            val keyId = key.id
+                                            val keyId = key.id.toString()
                                         }
 
                                         println(JSON.stringify(o))
 
-                                        GlobalScope.launch {
-                                            val response = HttpRequest.post("${loriUrl}api/v1/users/donate", JSON.stringify(o))
+                                        modal.close()
 
-                                            val payload = JSON.parse<Json>(response.body)
-                                            window.location.href = payload["redirectUrl"] as String
-                                        }
+                                        PaymentUtils.openPaymentSelectionModal(o)
                                     }
                                 }
                             }
@@ -467,37 +462,6 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                         p {
                             + "Não se esqueça de entrar no meu servidor de suporte caso você tenha dúvidas sobre as vantagens, formas de pagamento e, na pior das hipóteses, se der algum problema. (vai se dá algum problema, né?)"
                         }
-
-                        div {
-                            div(classes = "button-discord button-discord-info pure-button") {
-                                style = "font-size: 1.25em; margin: 5px;"
-                                + "MercadoPago (Boleto, Cartão de Crédito e Saldo do MercadoPago)"
-
-                                onClickFunction = {
-                                    val o = object {
-                                        val gateway = "MERCADOPAGO"
-                                        val money = (visibleModal.getElementsByClassName("how-much-money")[0] as HTMLInputElement).value
-                                    }
-
-                                    println(JSON.stringify(o))
-
-                                    GlobalScope.launch {
-                                        val response = HttpRequest.post("${loriUrl}api/v1/users/donate", JSON.stringify(o))
-
-                                        val payload = JSON.parse<Json>(response.body)
-                                        window.location.href = payload["redirectUrl"] as String
-                                    }
-                                }
-                            }
-                        }
-
-                        p {
-                            + "Se você deseja doar via PayPal, contate "
-                            code {
-                                + "MrPowerGamerBR#4185"
-                            }
-                            + " no meu servidor de suporte!"
-                        }
                         /* div {
 							div(classes = "button-discord button-discord-info pure-button") {
 								style = "font-size: 1.25em; margin: 5px;"
@@ -507,6 +471,16 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                     }
                 }
         )
+
+        modal.addFooterBtn("<i class=\"fas fa-cash-register\"></i> Escolher Forma de Pagamento", "button-discord button-discord-info pure-button button-discord-modal") {
+            val o = object {
+                val money = (visibleModal.getElementsByClassName("how-much-money")[0] as HTMLInputElement).value
+            }
+
+            modal.close()
+
+            PaymentUtils.openPaymentSelectionModal(o)
+        }
 
         modal.addFooterBtn("<i class=\"fas fa-times\"></i> Fechar", "button-discord pure-button button-discord-modal button-discord-modal-secondary-action") {
             modal.close()
