@@ -50,14 +50,14 @@ object MorrePragaCommand : DSLCommandBase {
 				locale["commands.images.morrepraga.topText"],
 				Rectangle(25, 38, 502, 132),
 				graphics.font
-			);
+			)
 
 			ImageUtils.drawCenteredString(
 				graphics,
 				locale["commands.images.morrepraga.bottomText"],
 				Rectangle(43, 480, 468, 139),
 				graphics.font
-			);
+			)
 			
         	graphics.drawImage(scaled, 115, 183, null)
 
