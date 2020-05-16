@@ -12,9 +12,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.readText
-import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.contentType
 import io.ktor.request.header
 import io.ktor.request.receiveText
 import mu.KotlinLogging
@@ -53,7 +51,6 @@ class PostPicPayCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/ap
 		logger.info { "Received PicPay callback: Reference ID: $referenceId; Authorization ID: $authorizationId" }
 
 		val httpResponse = loritta.http.get<HttpResponse>("https://appws.picpay.com/ecommerce/public/payments/$referenceId/status") {
-			contentType(ContentType.Application.Json)
 			header("x-picpay-token", loritta.config.picPay.picPayToken)
 		}
 
