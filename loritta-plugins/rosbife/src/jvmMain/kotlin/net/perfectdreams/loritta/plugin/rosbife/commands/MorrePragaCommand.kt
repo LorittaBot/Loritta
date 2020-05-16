@@ -29,15 +29,15 @@ object MorrePragaCommand : DSLCommandBase {
 
 		executes {
 			// TODO: Multiplatform
-            val mppImage = validate(image(0))
-            mppImage as JVMImage
-            val mppMorrePraga = loritta.assets.loadImage("morre_praga.png", loadFromCache = false)
-            val template = (mppMorrePraga as JVMImage).handle as BufferedImage
+			val mppImage = validate(image(0))
+			mppImage as JVMImage
+			val mppMorrePraga = loritta.assets.loadImage("morre_praga.png", loadFromCache = false)
+			val template = (mppMorrePraga as JVMImage).handle as BufferedImage
 
 			val contextImage = mppImage.handle as BufferedImage
 			val graphics = template.createGraphics()
 
-	        val scaled = contextImage.getScaledInstance(312, 312, BufferedImage.SCALE_SMOOTH)
+			val scaled = contextImage.getScaledInstance(312, 312, BufferedImage.SCALE_SMOOTH)
 			
 			graphics.enableFontAntiAliasing()
 			val lato = Font.createFont(Font.TRUETYPE_FONT, File(Loritta.ASSETS, "fonts/Cambria-Italic.ttf"))
@@ -59,9 +59,9 @@ object MorrePragaCommand : DSLCommandBase {
 				graphics.font
 			)
 			
-        	graphics.drawImage(scaled, 115, 183, null)
+			graphics.drawImage(scaled, 115, 183, null)
 
-        	sendImage(JVMImage(template), "morre_praga.png")
+			sendImage(JVMImage(template), "morre_praga.png")
 		}
 	}
 }
