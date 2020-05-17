@@ -93,7 +93,8 @@ class ParallaxServer {
 								it.startsWith("net.perfectdreams.loritta.parallax.wrapper")
 							}
 							.allowHostAccess(true) // Permite usar coisas da JVM dentro do GraalJS
-							.allowExperimentalOptions(true)  // doesn't seem to be needed
+							.allowCreateThread(true)
+							.allowExperimentalOptions(true)
 							.option("js.ecmascript-version", "11") // EMCAScript 2020
 							.option("js.nashorn-compat", "true")
 							.option("js.experimental-foreign-object-prototype", "true") // Allow array extension methods for arrays
@@ -178,7 +179,6 @@ class ParallaxServer {
 				var u = context.utils
 				
 				let MessageEmbed = Java.type('net.perfectdreams.loritta.parallax.wrapper.ParallaxEmbed')
-				let LorittaReply = Java.type('net.perfectdreams.loritta.api.messages.LorittaReply')
 				
 				// ===[ HELPER FUNCTIONS ]===
 				var send = channel.send
