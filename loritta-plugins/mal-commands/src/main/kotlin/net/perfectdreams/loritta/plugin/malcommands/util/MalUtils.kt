@@ -15,7 +15,7 @@ object MalUtils {
         val response = Jsoup.connect(req)
                 .ignoreHttpErrors(true)
                 .execute()
-        logger.debug { "Feito conexão ${req}" }
+        logger.debug { "Made request to ${req}" }
 
         if (response.statusCode() == 404)
             return null
@@ -26,12 +26,12 @@ object MalUtils {
     private fun queryAnime(q: String): String? {
         val document = requestDom("search/all?q=${q.encodeToUrl()}")
         return try {
-            // o primeiro article seria as queries de anime
+            // The first article found would be animes page
             // For now, we only need the first anime found from queries
             val animeArticle = document!!.selectFirst("article > .list > .information > a")
             // Só nos resta pegar o elemento "a" que está com o atributo que nós leva à página do anime
             if (animeArticle != null)
-                logger.debug { "Peguei o elemento!" }
+                logger.debug { "Got the element \"a\"!" }
             animeArticle!!.attr("href")
         } catch (e: Exception) {
             null

@@ -37,9 +37,10 @@ object MalAnimeCommand: DSLCommandBase {
             }
 
             val embed = EmbedBuilder()
-            val anime = MalUtils.parseAnimeByQuery(args.joinToString(" "))
+	    val query = args.joinToString(" ")
+            val anime = MalUtils.parseAnimeByQuery(query)
             if (anime != null) {
-                logger.debug { "O anime não é nulo! Vamos fazer uma embed! A avaliação do anime é ${anime.score}" }
+                logger.debug { "The anime is notnull! The anime's score is ${anime.score}!" }
                 logger.debug { anime.info.genres!! }
                 logger.debug { anime.image }
                 
@@ -77,7 +78,7 @@ object MalAnimeCommand: DSLCommandBase {
                 }
                 sendMessage(embed.build())
             } else {
-                logger.debug { "Anime nulo" }
+                logger.debug { "Anime is null, thr query was \"${query}\"" }
                 reply(
                         LorittaReply(
                                 locale["${LOCALE_PREFIX}.notfound"],
