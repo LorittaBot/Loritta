@@ -29,7 +29,7 @@ object MalUtils {
             // The first article found would be animes page
             // For now, we only need the first anime found from queries
             val animeArticle = document!!.selectFirst("article > .list > .information > a")
-            // Só nos resta pegar o elemento "a" que está com o atributo que nós leva à página do anime
+            // Now we just need to get the "a" element
             if (animeArticle != null)
                 logger.debug { "Got the element \"a\"!" }
             animeArticle!!.attr("href")
