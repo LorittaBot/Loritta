@@ -8,13 +8,14 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.plugin.malcommands.MalCommandsPlugin
 import net.perfectdreams.loritta.plugin.malcommands.commands.base.DSLCommandBase
+import net.perfectdreams.loritta.plugin.malcommands.util.AnimeStatus
+import net.perfectdreams.loritta.plugin.malcommands.util.AnimeType
+import net.perfectdreams.loritta.plugin.malcommands.util.MalConstants.MAL_COLOR
 import net.perfectdreams.loritta.plugin.malcommands.util.MalUtils
-import java.awt.Color
 
 object MalAnimeCommand: DSLCommandBase {
     private const val LOCALE_PREFIX = "commands.anime.mal.anime"
     private val logger = KotlinLogging.logger {  }
-    private val MAL_COLOR = Color(46,81,162)
 
     override fun command(loritta: LorittaDiscord, m: MalCommandsPlugin) = create(loritta, listOf("malanime")) {
         description { it["${LOCALE_PREFIX}.description"] }
@@ -39,14 +40,39 @@ object MalAnimeCommand: DSLCommandBase {
             val anime = MalUtils.parseAnimeByQuery(args.joinToString(" "))
             if (anime != null) {
                 logger.debug { "O anime não é nulo! Vamos fazer uma embed! A avaliação do anime é ${anime.score}" }
+                logger.debug { anime.info.genres!! }
                 logger.debug { anime.image }
+                
+                val emoji = when (anime.info.type) {
+                    AnimeType.MOVIE -> "\uD83C\uDFA5 "
+                    else -> "\uD83D\uDCFA "
+                }
 
                 embed.apply {
-                    setTitle(anime.info.name, anime.url)
+                    setTitle(emoji + anime.info.name, anime.url)
                     setColor(MAL_COLOR)
                     setThumbnail(anime.image)
-                    addField(locale["${LOCALE_PREFIX}.score"], anime.score, true)
+                    addField(locale["${LOCALE_PREFIX}.type.name"], when (anime.info.type) {
+                        AnimeType.TV -> locale["${LOCALE_PREFIX}.type.tv"]
+                        AnimeType.SPECIAL -> locale["${LOCALE_PREFIX}.type.special"]
+                        AnimeType.OVA -> locale["${LOCALE_PREFIX}.type.ova"]
+                        AnimeType.ONA -> locale["${LOCALE_PREFIX}.type.ona"]
+                        AnimeType.MOVIE -> locale["${LOCALE_PREFIX}.type.movie"]
+                        AnimeType.UNKNOWN -> locale["${LOCALE_PREFIX}.type.unknown"]
+                    }, true)
+                    addField(locale["${LOCALE_PREFIX}.status.name"], when (anime.info.status) {
+                        AnimeStatus.CURRENTLY_AIRING -> locale["${LOCALE_PREFIX}.status.airing"]
+                        AnimeStatus.NOT_YET_AIRED -> locale["${LOCALE_PREFIX}.status.not_yet_aired"]
+                        AnimeStatus.FINISHED_AIRING -> locale["${LOCALE_PREFIX}.status.finished"]
+                        AnimeStatus.UNKNOWN -> locale["${LOCALE_PREFIX}.status.unknown"]
+                    }, true)
+                    addField("\uD83D\uDCC6 " + locale["${LOCALE_PREFIX}.status.aired"], anime.info.aired, true)
+                    addField("⭐ " + locale["${LOCALE_PREFIX}.score"], anime.score, true)
+                    addField("\uD83C\uDF1F " + locale["${LOCALE_PREFIX}.rank"], anime.rank, true)
+                    addField("\uD83E\uDD29 " + locale["${LOCALE_PREFIX}.popularity"], anime.popularity, true)
                     addField(locale["${LOCALE_PREFIX}.episodes"], anime.info.episodes.toString(), true)
+                    addField(locale["${LOCALE_PREFIX}.genres"], anime.info.genres!!.joinToString(", "), true)
+                    addField(locale["${LOCALE_PREFIX}.source"], anime.info.source, true)
                     setDescription(anime.synopsis)
                 }
                 sendMessage(embed.build())

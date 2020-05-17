@@ -1,20 +1,19 @@
 package net.perfectdreams.loritta.plugin.malcommands.util
 
+import mu.KotlinLogging
 import org.jsoup.nodes.Document
-
-object MalScrappingUtils {
+class MalScrappingUtils(private val document: Document?) {
+    private val logger = KotlinLogging.logger { }
     // gambiarra that might work?
-    fun getContentBySpan(document: Document, q: String): String? {
-        return document.select("span:contains(${q})")
+    fun getContentBySpan(q: String): String? {
+        val content = document!!.selectFirst("span:contains(${q})")
                 .parents()
                 .first()
                 .text()
                 .trim()
-                .split(':')
-                .toTypedArray()[1]
+                .replace(q, "")
                 .trim()
-    }
-    fun getAltTitles(document: Document): Array<String> {
-        TODO("soon")
+        logger.debug { content }
+        return content
     }
 }
