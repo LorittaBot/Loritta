@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.nashorn
 
+import com.github.salomonbrys.kotson.addAll
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.toJsonArray
 import com.google.common.util.concurrent.ThreadFactoryBuilder
@@ -83,9 +84,9 @@ var getGuild=function() { return contexto.getGuild(); };"""
 
 			val members = JsonArray()
 
-			members.add(
-					ParallaxUtils.transformToJson(ogContext.message.member!!)
-			)
+			members.add(ParallaxUtils.transformToJson(ogContext.guild.selfMember))
+			members.add(ParallaxUtils.transformToJson(ogContext.message.member!!))
+			members.addAll(ogContext.message.mentionedMembers.map { ParallaxUtils.transformToJson(it) })
 
 			val channels = JsonArray()
 
