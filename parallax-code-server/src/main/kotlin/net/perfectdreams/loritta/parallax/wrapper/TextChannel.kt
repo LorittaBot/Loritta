@@ -52,4 +52,6 @@ class TextChannel(
 			message
 		}
 	}
+
+	override fun toString() = "<#$id>"
 }

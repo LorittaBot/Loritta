@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.parallax.wrapper
 
+import net.perfectdreams.loritta.api.commands.SilentCommandException
 import org.graalvm.polyglot.Context
 
 class JSCommandContext(
@@ -11,9 +12,11 @@ class JSCommandContext(
 		val args: Array<String>,
 		val clusterUrl: String
 ) {
+	val utils = JSContextUtils(this)
 	val rateLimiter = ParallaxRateLimiter(context)
 
 	fun jsStacktrace(throwable: Any?) {
-		message.channel.send(throwable.toString())
+		if (throwable !is SilentCommandException)
+			message.channel.send(throwable.toString())
 	}
 }

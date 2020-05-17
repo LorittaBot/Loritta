@@ -19,4 +19,6 @@ class GuildMember(
 
 	fun addRole(role: Role) = guild.addRoleToMember(this, role)
 	fun removeRole(role: Role) = guild.removeRoleFromMember(this, role)
+
+	override fun toString() = user.toString()
 }

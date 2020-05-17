@@ -59,11 +59,14 @@ class Guild(
 	} */
 
 	@JvmOverloads
-	fun ban(user: User, punisher: User, options: Map<String, Any> = mapOf()): JavaScriptPromise {
+	fun ban(user: User, punisher: User, options: Map<String, Any> = mapOf()) = ban(user.id, punisher, options)
+
+	@JvmOverloads
+	fun ban(userId: Long, punisher: User, options: Map<String, Any> = mapOf()): JavaScriptPromise {
 		println("ban(...)")
 		return context.rateLimiter.wrapPromise {
-			println("${context.clusterUrl}/api/v1/parallax/guilds/$id/bans/${user.id}")
-			val response = ParallaxServer.http.put<HttpResponse>("${context.clusterUrl}/api/v1/parallax/guilds/$id/bans/${user.id}") {
+			println("${context.clusterUrl}/api/v1/parallax/guilds/$id/bans/$userId")
+			val response = ParallaxServer.http.put<HttpResponse>("${context.clusterUrl}/api/v1/parallax/guilds/$id/bans/${userId}") {
 				this.userAgent(ParallaxServer.USER_AGENT)
 				this.header("Authorization", ParallaxServer.authKey)
 
