@@ -183,7 +183,7 @@ class ParallaxServer {
 				// ===[ HELPER FUNCTIONS ]===
 				var send = channel.send
 				var reply = channel.reply
-				var fail = context.fail
+				var fail = context.utils.fail
 				
 				// Random for Arrays
 				Array.prototype.random = function () {
