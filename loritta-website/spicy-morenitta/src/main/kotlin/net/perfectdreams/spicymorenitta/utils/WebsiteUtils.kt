@@ -9,6 +9,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.html.*
 import kotlinx.html.js.onChangeFunction
+import kotlinx.serialization.Serializable
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.http
 import org.w3c.dom.HTMLInputElement
@@ -91,6 +92,7 @@ object WebsiteUtils : Logging {
         }
     }
 
+    @Serializable
     enum class UserPermissionLevel(val canAddBots: Boolean) {
         OWNER(true),
         ADMINISTRATOR(true),

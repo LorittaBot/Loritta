@@ -105,6 +105,7 @@ object ServerConfig {
 			var message: String
 	)
 
+	@Serializable
 	enum class PunishmentAction(val canChainWithWarn: Boolean) {
 		BAN(true),
 		SOFT_BAN(true),
