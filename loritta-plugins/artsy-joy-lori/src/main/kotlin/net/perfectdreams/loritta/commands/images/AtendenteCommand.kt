@@ -28,7 +28,7 @@ class AtendenteCommand : LorittaCommand(arrayOf("atendente"), CommandCategory.IM
     }
 
     override fun getExamples(locale: BaseLocale): List<String> {
-        return locale.getWithType("commands.images.atendente.examples")
+        return locale.getList("commands.images.atendente.examples")
     }
 
     @Subcommand
