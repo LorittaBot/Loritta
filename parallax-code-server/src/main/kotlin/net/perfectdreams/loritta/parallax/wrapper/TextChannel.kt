@@ -23,12 +23,12 @@ class TextChannel(
 
 	fun send(embed: ParallaxEmbed) = send(" ", embed)
 
-	fun send(message: Map<*, *>) { // mensagens/embeds em JSON
+	fun send(message: Map<*, *>): Message { // mensagens/embeds em JSON
 		val wrapper = ParallaxUtils.toParallaxMessage(message)
 		return send(wrapper.content ?: " ", wrapper.embed)
 	}
 
-	fun send(message: String, embed: ParallaxEmbed?) {
+	fun send(message: String, embed: ParallaxEmbed?): Message {
 		guild.context.rateLimiter.addAndCheck()
 
 		val body = jsonObject(
@@ -40,7 +40,7 @@ class TextChannel(
 
 		val payload = gson.toJson(body)
 
-		runBlocking {
+		return runBlocking {
 			val response = ParallaxServer.http.post<HttpResponse>("${guild.context.clusterUrl}/api/v1/parallax/channels/${id}/messages") {
 				this.userAgent(ParallaxServer.USER_AGENT)
 				this.header("Authorization", ParallaxServer.authKey)

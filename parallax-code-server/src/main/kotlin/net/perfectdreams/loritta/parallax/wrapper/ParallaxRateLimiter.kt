@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.parallax.wrapper
 import kotlinx.coroutines.Job
 import mu.KotlinLogging
 import org.graalvm.polyglot.Context
-import java.util.concurrent.Executors
 
 class ParallaxRateLimiter(private val jsContext: JSCommandContext, private val context: Context) {
 	companion object {
@@ -12,7 +11,6 @@ class ParallaxRateLimiter(private val jsContext: JSCommandContext, private val c
 
 	private var requestCount = 0
 	private val commandSpecificTasks = mutableListOf<Job>()
-	val executor = Executors.newSingleThreadExecutor()
 
 	internal fun reset() {
 		requestCount = 0

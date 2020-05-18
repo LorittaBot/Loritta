@@ -28,7 +28,7 @@ class Message(
 
 	fun reply(embed: ParallaxEmbed) = channel.send("$author", embed)
 
-	fun reply(message: Map<*, *>) { // mensagens/embeds em JSON
+	fun reply(message: Map<*, *>): Message { // mensagens/embeds em JSON
 		val wrapper = ParallaxUtils.toParallaxMessage(message)
 		return channel.send(wrapper.content ?: "$author", wrapper.embed)
 	}
