@@ -24,7 +24,7 @@ import javax.imageio.ImageIO
 
 class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.FUN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["SHIP_DESCRIPTION"]
+		return locale.toNewLocale()["commands.fun.ship.description"]
 	}
 
 	override fun getExamples(): List<String> {

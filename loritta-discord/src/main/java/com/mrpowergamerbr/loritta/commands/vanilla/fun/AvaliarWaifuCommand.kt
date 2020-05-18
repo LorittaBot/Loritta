@@ -15,7 +15,7 @@ class AvaliarWaifuCommand : AbstractCommand("ratewaifu", listOf("avaliarwaifu", 
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["RATEWAIFU_DESCRIPTION"]
+		return locale.toNewLocale()["$LOCALE_PREFIX.description"]
 	}
 
 	override fun getExamples(): List<String> {

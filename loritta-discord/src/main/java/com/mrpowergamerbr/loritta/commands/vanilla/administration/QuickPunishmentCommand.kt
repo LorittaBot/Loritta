@@ -10,7 +10,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class QuickPunishmentCommand : AbstractCommand("quickpunishment", category = CommandCategory.ADMIN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["QUICKPUNISHMENT_Description"]
+		return locale.toNewLocale()["commands.moderation.quickpunishment.description"]
 	}
 
 	override fun getExamples(): List<String> {

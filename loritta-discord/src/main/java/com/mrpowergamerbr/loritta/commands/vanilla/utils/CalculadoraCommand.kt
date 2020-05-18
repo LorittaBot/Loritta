@@ -19,7 +19,7 @@ class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calcul
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["CALC_DESCRIPTION"]
+		return locale.toNewLocale()["$LOCALE_PREFIX.description"]
 	}
 
 	override fun getExamples(): List<String> {
