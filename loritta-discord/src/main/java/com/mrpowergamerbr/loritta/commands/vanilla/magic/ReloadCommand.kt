@@ -12,7 +12,6 @@ import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
-import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.LevelConfig
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.ReactionOption
@@ -29,7 +28,6 @@ import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.transactions.transaction
 import twitter4j.TwitterFactory
 import java.io.File
-import kotlin.concurrent.thread
 
 class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC, onlyOwner = true) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -324,9 +322,20 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			return
 		}
 
+		if (arg0 == "restartweb") {
+			loritta.stopWebServer()
+			loritta.startWebServer()
+
+			context.reply(
+					LoriReply(
+							"Website reiniciando!"
+					)
+			)
+			return
+		}
+
 		if (arg0 == "stopweb") {
-			loritta.newWebsite?.stop()
-			loritta.newWebsiteThread?.interrupt()
+			loritta.stopWebServer()
 
 			context.reply(
 					LoriReply(
@@ -337,11 +346,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 		}
 
 		if (arg0 == "startweb") {
-			loritta.newWebsiteThread = thread(true, name = "Website Thread") {
-				val nWebsite = net.perfectdreams.loritta.website.LorittaWebsite(loritta)
-				loritta.newWebsite = nWebsite
-				nWebsite.start()
-			}
+			loritta.startWebServer()
 
 			context.reply(
 					LoriReply(

@@ -250,7 +250,7 @@ class LorittaWebsite(val loritta: Loritta) {
 	}
 
 	fun stop() {
-		server.stop(0L, 0L)
+		server.stop(1000L, 5000L)
 	}
 
 	fun restart() {
