@@ -179,10 +179,11 @@ class ParallaxServer {
 				var u = context.utils
 				
 				let MessageEmbed = Java.type('net.perfectdreams.loritta.parallax.wrapper.ParallaxEmbed')
+				let LorittaReply = Java.type('net.perfectdreams.loritta.parallax.wrapper.JSLorittaReply')
 				
 				// ===[ HELPER FUNCTIONS ]===
 				var send = channel.send
-				var reply = channel.reply
+				var reply = message.reply
 				var fail = context.utils.fail
 				
 				// Random for Arrays

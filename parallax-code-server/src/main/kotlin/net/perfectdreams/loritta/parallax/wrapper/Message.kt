@@ -7,6 +7,7 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.http.encodeURLQueryComponent
 import io.ktor.http.userAgent
 import kotlinx.coroutines.runBlocking
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.parallax.ParallaxServer
 import net.perfectdreams.loritta.parallax.ParallaxUtils
 import java.util.*
@@ -33,6 +34,18 @@ class Message(
 	}
 
 	fun reply(message: String, embed: ParallaxEmbed?) = channel.send("$author, ", embed)
+
+	fun reply(lorittaReply: JSLorittaReply) = channel.send(
+			LorittaReply(lorittaReply.message, lorittaReply.emote, mentionUser = lorittaReply.mentionUser).build(this.author.toString())
+	)
+
+	fun reply(vararg lorittaReply: JSLorittaReply) = channel.send(
+			lorittaReply.map {
+				LorittaReply(it.message, it.emote, mentionUser = it.mentionUser)
+			}.map {
+				it.build(this.author.toString())
+			}.joinToString("\n")
+	)
 
 	fun react(reactionCode: String): JavaScriptPromise {
 		return channel.guild.context.rateLimiter.wrapPromise {
