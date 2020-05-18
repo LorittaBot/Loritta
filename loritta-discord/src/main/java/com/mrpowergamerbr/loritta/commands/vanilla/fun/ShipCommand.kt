@@ -129,16 +129,16 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 			}
 
 			val messages: List<String> = when {
-				percentage >= 90 -> context.locale.getWithType("commands.fun.ship.value90")
-				percentage >= 80 -> context.locale.getWithType("commands.fun.ship.value80")
-				percentage >= 70 -> context.locale.getWithType("commands.fun.ship.value70")
-				percentage >= 60 -> context.locale.getWithType("commands.fun.ship.value60")
-				percentage >= 50 -> context.locale.getWithType("commands.fun.ship.value50")
-				percentage >= 40 -> context.locale.getWithType("commands.fun.ship.value40")
-				percentage >= 30 -> context.locale.getWithType("commands.fun.ship.value30")
-				percentage >= 20 -> context.locale.getWithType("commands.fun.ship.value20")
-				percentage >= 10 -> context.locale.getWithType("commands.fun.ship.value10")
-				percentage >= 0  -> context.locale.getWithType("commands.fun.ship.value0")
+				percentage >= 90 -> context.locale.getList("commands.fun.ship.value90")
+				percentage >= 80 -> context.locale.getList("commands.fun.ship.value80")
+				percentage >= 70 -> context.locale.getList("commands.fun.ship.value70")
+				percentage >= 60 -> context.locale.getList("commands.fun.ship.value60")
+				percentage >= 50 -> context.locale.getList("commands.fun.ship.value50")
+				percentage >= 40 -> context.locale.getList("commands.fun.ship.value40")
+				percentage >= 30 -> context.locale.getList("commands.fun.ship.value30")
+				percentage >= 20 -> context.locale.getList("commands.fun.ship.value20")
+				percentage >= 10 -> context.locale.getList("commands.fun.ship.value10")
+				percentage >= 0  -> context.locale.getList("commands.fun.ship.value0")
 				else -> {
 					throw RuntimeException("Can't find ship value for percentage $percentage")
 				}

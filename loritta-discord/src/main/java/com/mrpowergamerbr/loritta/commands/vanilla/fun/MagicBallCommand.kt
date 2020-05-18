@@ -24,7 +24,7 @@ class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball
 	}
 
 	override fun getExamples(locale: LegacyBaseLocale): List<String> {
-		return locale.toNewLocale().getWithType("commands.entertainment.vieirinha.examples")
+		return locale.toNewLocale().getList("commands.entertainment.vieirinha.examples")
 	}
 
 	override fun hasCommandFeedback(): Boolean {
@@ -41,7 +41,7 @@ class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball
 
 			context.sendMessage(temmie, DiscordMessage.builder()
 					.username("Vieirinha")
-					.content(context.getAsMention(true) + locale.toNewLocale().getWithType<List<String>>("commands.entertainment.vieirinha.responses").random())
+					.content(context.getAsMention(true) + locale.toNewLocale().getList("commands.entertainment.vieirinha.responses").random())
 					.avatarUrl("http://i.imgur.com/rRtHdti.png")
 					.build())
 		} else {
