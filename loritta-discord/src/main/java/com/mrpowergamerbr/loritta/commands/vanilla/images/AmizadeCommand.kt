@@ -11,7 +11,6 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.Color
 import java.awt.GradientPaint
-import java.awt.Graphics2D
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
 import java.io.File
@@ -23,7 +22,7 @@ class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), CommandC
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.get("AMIZADE_DESCRIPTION")
+		return locale.toNewLocale()["commands.discord.friendship.description"]
 	}
 
 	override fun getExamples(): List<String> {

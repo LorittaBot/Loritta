@@ -33,7 +33,7 @@ class ChannelInfoCommand : LorittaCommand(arrayOf("channelinfo", "channel"), cat
 		builder.setTitle("\uD83D\uDC81 ${context.locale["commands.discord.channelinfo.channelInfo", "#${channel.name}"]}")
 		
 		builder.addField("\uD83D\uDD39 ${context.locale["commands.discord.channelinfo.channelMention"]}", channel.asMention, true)
-		builder.addField("\uD83D\uDCBB ${context.legacyLocale.get("USERINFO_ID_DO_DISCORD")}", "`${channel.id}`", true)
+		builder.addField("\uD83D\uDCBB ${context.locale["commands.discord.userinfo.discordId"]}", "`${channel.id}`", true)
 		builder.addField("\uD83D\uDD1E NSFW", if (channel.isNSFW) context.legacyLocale["LORITTA_Yes"] else context.legacyLocale["LORITTA_No"], true)
 		builder.addField("\uD83D\uDCC5 ${context.locale["commands.discord.channelinfo.channelCreated"]}", channelCreatedDiff, true)
 		builder.addField("\uD83D\uDCD8 ${context.locale["commands.discord.channelinfo.channelTopic"]}", if (channel.topic.isNullOrEmpty()) context.locale["commands.discord.channelinfo.undefined"] else "```${channel.topic}```", true)

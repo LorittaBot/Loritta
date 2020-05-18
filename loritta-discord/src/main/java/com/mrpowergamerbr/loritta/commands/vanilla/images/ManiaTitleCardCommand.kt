@@ -2,10 +2,10 @@ package com.mrpowergamerbr.loritta.commands.vanilla.images
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
@@ -13,7 +13,7 @@ import javax.imageio.ImageIO
 
 class ManiaTitleCardCommand : AbstractCommand("maniatitlecard", category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.get("MANIATITLECARD_DESCRIPTION")
+		return locale.toNewLocale()["commands.images.maniatitlecard.description"]
 	}
 
 	override fun getExamples(): List<String> {

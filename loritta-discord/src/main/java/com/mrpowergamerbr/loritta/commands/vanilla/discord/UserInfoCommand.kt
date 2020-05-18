@@ -18,7 +18,7 @@ import net.perfectdreams.loritta.utils.Emotes
 
 class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), CommandCategory.DISCORD) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.get("USERINFO_DESCRIPTION")
+		return locale.toNewLocale()["commands.discord.userinfo.description"]
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {
@@ -92,7 +92,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 
 		embed.apply {
 			addField("\uD83D\uDD16 ${context.legacyLocale.get("USERINFO_TAG_DO_DISCORD")}", "`${user.name}#${user.discriminator}`", true)
-			addField("\uD83D\uDCBB ${context.legacyLocale.get("USERINFO_ID_DO_DISCORD")}", "`${user.id}`", true)
+			addField("\uD83D\uDCBB ${context.locale["commands.discord.userinfo.discordId"]}", "`${user.id}`", true)
 
 			val accountCreatedDiff = DateUtils.formatDateDiff(user.timeCreated.toInstant().toEpochMilli(), context.legacyLocale)
 			addField("\uD83D\uDCC5 ${context.locale["commands.discord.userinfo.accountCreated"]}", accountCreatedDiff, true)

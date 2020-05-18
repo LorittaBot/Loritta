@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), category = CommandCategory.DISCORD) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.get("SERVERINFO_DESCRIPTION")
+		return locale.toNewLocale()["commands.discord.serverinfo.description"]
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {

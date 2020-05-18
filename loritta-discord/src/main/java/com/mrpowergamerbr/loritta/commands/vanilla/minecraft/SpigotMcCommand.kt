@@ -21,7 +21,7 @@ import java.util.*
 
 class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.MINECRAFT) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.get("SPIGOTMC_DESCRIPTION")
+		return locale.toNewLocale()["commands.minecraft.spigotmc.description"]
 	}
 
 	override fun getUsage(): String {

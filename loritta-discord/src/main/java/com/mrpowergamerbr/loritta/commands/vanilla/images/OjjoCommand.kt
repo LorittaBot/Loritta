@@ -2,17 +2,17 @@ package com.mrpowergamerbr.loritta.commands.vanilla.images
 
 import com.google.common.collect.ImmutableMap
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
 import java.util.*
 
 class OjjoCommand : AbstractCommand("ojjo", category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.get("OJJO_DESCRIPTION")
+		return locale.toNewLocale()["commands.images.ojjo.description"]
 	}
 
 	override fun getExamples(): List<String> {

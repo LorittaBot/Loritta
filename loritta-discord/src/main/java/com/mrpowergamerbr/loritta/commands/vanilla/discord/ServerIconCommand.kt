@@ -19,7 +19,7 @@ class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "ico
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.get("SERVERICON_DESCRIPTION")
+		return locale.toNewLocale()["commands.discord.servericon.description"]
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {

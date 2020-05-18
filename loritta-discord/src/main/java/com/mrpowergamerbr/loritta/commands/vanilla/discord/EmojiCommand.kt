@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Emote
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.Emotes
 
 class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -67,7 +68,12 @@ class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD
 				val value = ImageUtils.getTwitterEmojiUrlId(arg0)
 				try {
 					if (HttpRequest.get("https://twemoji.maxcdn.com/2/72x72/$value.png").code() != 200) {
-						context.sendMessage(Constants.ERROR + " **|** ${context.getAsMention(true)}${context.legacyLocale.get("EMOJI_ERROR_WHILE_DOWNLOADING")}")
+						context.reply(
+								LoriReply(
+										context.locale["commands.discord.emoji.errorWhileDownloadingEmoji", Emotes.LORI_SHRUG],
+										Constants.ERROR
+								)
+						)
 						return
 					}
 					val emojiImage = LorittaUtils.downloadImage("https://twemoji.maxcdn.com/2/72x72/$value.png")
