@@ -21,6 +21,7 @@ import net.perfectdreams.loritta.parallax.wrapper.Guild
 import net.perfectdreams.loritta.parallax.wrapper.JSCommandContext
 import net.perfectdreams.loritta.parallax.wrapper.Message
 import org.graalvm.polyglot.Context
+import org.graalvm.polyglot.PolyglotException
 import org.graalvm.polyglot.management.ExecutionEvent
 import org.graalvm.polyglot.management.ExecutionListener
 import java.io.File
@@ -43,7 +44,42 @@ class ParallaxServer {
 		val authKey = File("./auth-key.txt").readText()
 		val dataStoreFolder = File("./datastore")
 		val cachedInteractions = mutableMapOf<UUID, java.util.function.Function<Void?, Any?>>()
+		val MAX_INSTRUCTIONS = 1000
+		val INLINE_METHODS = """
+				// ===[ HELPER VARIABLES ]===
+				var message = context.message
+				var channel = context.message.channel
+				var guild = context.message.channel.guild
+				var member = context.member
+				var user = context.member.user
+				var client = context.client
+				var args = context.args
+				var c = context
+				var utils = context.utils
+				var u = context.utils
+				
+				let MessageEmbed = Java.type('net.perfectdreams.loritta.parallax.wrapper.ParallaxEmbed')
+				let LorittaReply = Java.type('net.perfectdreams.loritta.parallax.wrapper.JSLorittaReply')
+				
+				// ===[ HELPER FUNCTIONS ]===
+				var send = channel.send
+				var reply = message.reply
+				var fail = context.utils.fail
+				
+				// Random for Arrays
+				Array.prototype.random = function () {
+				  return this[Math.floor((Math.random()*this.length))];
+				}
+				
+				// Check if it is a valid Discord snowflake
+				function isValidSnowflake(input) {
+					return Number(input) != NaN
+				}
+			""".trimIndent()
+
+		val SHIFT_STACKTRACE_BY = INLINE_METHODS.lines().size + 3 // 3 = header
 	}
+
 	val client = Client()
 
 	fun start() {
@@ -102,22 +138,6 @@ class ParallaxServer {
 							.option("js.experimental-foreign-object-prototype", "true") // Allow array extension methods for arrays
 							.build()
 
-					val listener = ExecutionListener.newBuilder()
-							.collectInputValues(true)
-							.collectReturnValue(true)
-							.collectExceptions(true)
-							/* .onEnter { e: ExecutionEvent ->
-								println(e.location.characters)
-							} */
-							.onReturn { e: ExecutionEvent ->
-								println(e.location.characters)
-								println("Input: ${e.inputValues}")
-								println("Return Value: ${e.returnValue}")
-								println("Exception: ${e.exception}")
-							}
-							.statements(true)
-							.attach(graalContext.engine)
-
 					val executor = Executors.newSingleThreadExecutor()
 
 					val member = guild.members.firstOrNull { it.id == message.author.id }
@@ -159,6 +179,33 @@ class ParallaxServer {
 
 					guild.context = context
 
+					var executedInstructions = 0
+
+					val listener = ExecutionListener.newBuilder()
+							.collectInputValues(true)
+							.collectReturnValue(true)
+							.collectExceptions(true)
+							/* .onEnter { e: ExecutionEvent ->
+								println(e.location.characters)
+							} */
+							.onReturn { e: ExecutionEvent ->
+								if (executedInstructions >= MAX_INSTRUCTIONS) {
+									val tooManyInstructionsException = RuntimeException("Too many instructions!")
+									context.lastThrow = tooManyInstructionsException
+									throw tooManyInstructionsException
+								}
+
+								println(e.location.characters)
+								println("Input: ${e.inputValues}")
+								println("Return Value: ${e.returnValue}")
+								println("Exception: ${e.exception}")
+								if (e.exception != null)
+									context.lastThrow = e.exception
+								executedInstructions++
+							}
+							.statements(true)
+							.attach(graalContext.engine)
+
 					/* val inlineMethods = """
 				var guild = context.guild;
 				var member = context.member;
@@ -172,48 +219,18 @@ class ParallaxServer {
 				var http = Java.type('com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxHttp')
 			""".trimIndent() */
 
-					val inlineMethods = """
-				// ===[ HELPER VARIABLES ]===
-				var message = context.message
-				var channel = context.message.channel
-				var guild = context.message.channel.guild
-				var member = context.member
-				var user = context.member.user
-				var client = context.client
-				var args = context.args
-				var c = context
-				var utils = context.utils
-				var u = context.utils
-				
-				let MessageEmbed = Java.type('net.perfectdreams.loritta.parallax.wrapper.ParallaxEmbed')
-				let LorittaReply = Java.type('net.perfectdreams.loritta.parallax.wrapper.JSLorittaReply')
-				
-				// ===[ HELPER FUNCTIONS ]===
-				var send = channel.send
-				var reply = message.reply
-				var fail = context.utils.fail
-				
-				// Random for Arrays
-				Array.prototype.random = function () {
-				  return this[Math.floor((Math.random()*this.length))];
-				}
-				
-				// Check if it is a valid Discord snowflake
-				function isValidSnowflake(input) {
-					return Number(input) != NaN
-				}
-			""".trimIndent()
+
 
 					executor.submit {
 						logger.info { "Executing the command!" }
 
 						val source = """(async function(context) {
 							|	try {
-							|		$inlineMethods
+							|		$INLINE_METHODS
 							|		
 							|		$javaScriptCode
 							|	} catch (e) {
-							|		context.jsStacktrace(e);
+							|		context.logLastPolyglotException();
 							|	}
 							|})
 						""".trimMargin()
@@ -227,14 +244,20 @@ class ParallaxServer {
 
 							value.execute(context)
 
-							logger.info { "Execution finished!" }
+							logger.info { "Execution finished! $executedInstructions instructions executed" }
 						} catch (e: Throwable) {
 							println("Exception thrown.")
 							if (e is SilentCommandException) {
 								logger.info { "Silent Command Exception thrown, shhh" }
 								return@submit
 							}
+
 							logger.warn(e) { "Error while processing custom command!" }
+
+							if (e is PolyglotException) {
+								context.lastThrow = e
+								context.logLastPolyglotException()
+							}
 						}
 					}
 				}

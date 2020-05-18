@@ -15,10 +15,10 @@ fun main() {
 
 	val value = graalContext.eval(
 			"js",
-			"(function(customList) { \n" +
-					"customList[\"hello\"] = \"owo\";\n" +
+			"(async function(customList) { \n" +
+					"hahaYes()\n" +
 			"})"
 	)
 
-	value.execute(ProxyTest())
+	val result = value.execute(ProxyTest())
 }

@@ -1,8 +1,9 @@
 package net.perfectdreams.loritta.parallax.wrapper
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import net.perfectdreams.loritta.api.commands.SilentCommandException
+import net.perfectdreams.loritta.parallax.ParallaxServer
 import org.graalvm.polyglot.Context
+import org.graalvm.polyglot.PolyglotException
 
 class JSCommandContext(
 		private val context: Context,
@@ -16,9 +17,48 @@ class JSCommandContext(
 ) {
 	val utils = JSContextUtils(this)
 	val rateLimiter = ParallaxRateLimiter(context)
+	var lastThrow: Throwable? = null
 
-	fun jsStacktrace(throwable: Any?) {
-		if (throwable !is SilentCommandException)
-			message.channel.send(throwable.toString())
+	fun logLastPolyglotException() {
+		println("jsStacktrace")
+		val lastThrow = lastThrow
+		if (lastThrow != null) {
+			if (lastThrow is PolyglotException) {
+				lastThrow.printStackTrace()
+
+				val embed = ParallaxEmbed()
+						.setTitle("\uD83D\uDC1B ${lastThrow.message}")
+
+				if (lastThrow.sourceLocation != null) {
+					val shiftedLine = lastThrow.sourceLocation.startLine - ParallaxServer.SHIFT_STACKTRACE_BY
+					lastThrow.sourceLocation.source.getLineNumber(lastThrow.sourceLocation.startLine)
+
+					var build = "at **line ${shiftedLine}**, **column ${lastThrow.sourceLocation.startColumn}**"
+					build += "\n"
+					build += "```js"
+					build += "\n"
+					val line = lastThrow.sourceLocation.source.getCharacters(lastThrow.sourceLocation.startLine)
+					build += line
+					build += "\n"
+					val charArray = Array(line.length) { ' ' }
+
+					for (x in (lastThrow.sourceLocation.startColumn - 1) until lastThrow.sourceLocation.endColumn) {
+						charArray[x] = '^'
+					}
+
+					build += charArray.joinToString("")
+					build += "```"
+
+					embed.setDescription(build)
+				}
+
+				message.channel.send(message.author.toString(), embed)
+			} else if (lastThrow is Exception) {
+				val embed = ParallaxEmbed()
+						.setTitle("\uD83D\uDC1B ${lastThrow.message}")
+
+				message.channel.send(message.author.toString(), embed)
+			}
+		}
 	}
 }
