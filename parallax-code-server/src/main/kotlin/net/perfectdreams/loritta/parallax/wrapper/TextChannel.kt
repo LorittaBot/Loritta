@@ -8,6 +8,7 @@ import io.ktor.client.request.post
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.readText
 import io.ktor.http.userAgent
+import kotlinx.coroutines.runBlocking
 import net.perfectdreams.loritta.parallax.ParallaxServer
 import net.perfectdreams.loritta.parallax.ParallaxServer.Companion.gson
 import net.perfectdreams.loritta.parallax.ParallaxUtils
@@ -22,12 +23,12 @@ class TextChannel(
 
 	fun send(embed: ParallaxEmbed) = send(" ", embed)
 
-	fun send(message: Map<*, *>): JavaScriptPromise { // mensagens/embeds em JSON
+	fun send(message: Map<*, *>) { // mensagens/embeds em JSON
 		val wrapper = ParallaxUtils.toParallaxMessage(message)
 		return send(wrapper.content ?: " ", wrapper.embed)
 	}
 
-	fun send(message: String, embed: ParallaxEmbed?): JavaScriptPromise {
+	fun send(message: String, embed: ParallaxEmbed?) {
 		guild.context.rateLimiter.addAndCheck()
 
 		val body = jsonObject(
@@ -39,7 +40,7 @@ class TextChannel(
 
 		val payload = gson.toJson(body)
 
-		return guild.context.rateLimiter.wrapPromise {
+		runBlocking {
 			val response = ParallaxServer.http.post<HttpResponse>("${guild.context.clusterUrl}/api/v1/parallax/channels/${id}/messages") {
 				this.userAgent(ParallaxServer.USER_AGENT)
 				this.header("Authorization", ParallaxServer.authKey)

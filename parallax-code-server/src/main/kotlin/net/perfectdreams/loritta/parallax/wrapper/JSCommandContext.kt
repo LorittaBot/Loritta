@@ -16,13 +16,20 @@ class JSCommandContext(
 		val locale: BaseLocale
 ) {
 	val utils = JSContextUtils(this)
-	val rateLimiter = ParallaxRateLimiter(context)
+	val rateLimiter = ParallaxRateLimiter(this, context)
 	var lastThrow: Throwable? = null
 
-	fun logLastPolyglotException() {
+	fun throwAndHalt(throwable: Throwable) {
+		lastThrow = throwable
+		logLastThrow()
+		throw throwable
+	}
+
+	fun logLastThrow() {
 		println("jsStacktrace")
 		val lastThrow = lastThrow
 		if (lastThrow != null) {
+			rateLimiter.reset()
 			if (lastThrow is PolyglotException) {
 				lastThrow.printStackTrace()
 

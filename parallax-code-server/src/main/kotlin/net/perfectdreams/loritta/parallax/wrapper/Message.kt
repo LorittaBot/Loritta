@@ -28,7 +28,7 @@ class Message(
 
 	fun reply(embed: ParallaxEmbed) = channel.send("$author", embed)
 
-	fun reply(message: Map<*, *>): JavaScriptPromise { // mensagens/embeds em JSON
+	fun reply(message: Map<*, *>) { // mensagens/embeds em JSON
 		val wrapper = ParallaxUtils.toParallaxMessage(message)
 		return channel.send(wrapper.content ?: "$author", wrapper.embed)
 	}
@@ -47,14 +47,12 @@ class Message(
 			}.joinToString("\n")
 	)
 
-	fun react(reactionCode: String): JavaScriptPromise {
-		return channel.guild.context.rateLimiter.wrapPromise {
+	fun react(reactionCode: String) {
+		runBlocking {
 			val response = ParallaxServer.http.put<HttpResponse>("${channel.guild.context.clusterUrl}/api/v1/parallax/channels/${channel.id}/messages/$id/reactions/${reactionCode.encodeURLQueryComponent()}/@me") {
 				this.userAgent(ParallaxServer.USER_AGENT)
 				this.header("Authorization", ParallaxServer.authKey)
 			}
-
-			null
 		}
 	}
 

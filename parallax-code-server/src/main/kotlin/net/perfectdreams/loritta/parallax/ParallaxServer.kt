@@ -206,31 +206,16 @@ class ParallaxServer {
 							.statements(true)
 							.attach(graalContext.engine)
 
-					/* val inlineMethods = """
-				var guild = context.guild;
-				var member = context.member;
-				var user = context.member;
-				var author = context.member;
-				var message = context.message;
-				var channel = context.message.channel;
-				var client = context.client;
-				var RichEmbed = Java.type('com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxEmbed')
-				var Attachment = Java.type('com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxAttachment')
-				var http = Java.type('com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxHttp')
-			""".trimIndent() */
-
-
-
 					executor.submit {
 						logger.info { "Executing the command!" }
 
-						val source = """(async function(context) {
+						val source = """(function(context) {
 							|	try {
 							|		$INLINE_METHODS
 							|		
 							|		$javaScriptCode
 							|	} catch (e) {
-							|		context.logLastPolyglotException();
+							|		context.logLastThrow();
 							|	}
 							|})
 						""".trimMargin()
@@ -242,7 +227,7 @@ class ParallaxServer {
 									source
 							)
 
-							value.execute(context)
+							val result = value.execute(context)
 
 							logger.info { "Execution finished! $executedInstructions instructions executed" }
 						} catch (e: Throwable) {
@@ -256,7 +241,7 @@ class ParallaxServer {
 
 							if (e is PolyglotException) {
 								context.lastThrow = e
-								context.logLastPolyglotException()
+								context.logLastThrow()
 							}
 						}
 					}
