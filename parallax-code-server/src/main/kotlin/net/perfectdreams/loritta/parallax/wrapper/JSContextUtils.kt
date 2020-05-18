@@ -37,9 +37,32 @@ class JSContextUtils(val context: JSCommandContext) {
 
 	fun member(argumentIndex: Int) = user(argumentIndex)
 
-	fun fail(content: String) {
-		context.message.channel.send(content)
+	fun fail(message: String) {
+		context.message.channel.send(message)
 		throw SilentCommandException()
+	}
+
+	fun fail(embed: ParallaxEmbed) {
+		context.message.channel.send(embed)
+		throw SilentCommandException()
+	}
+
+	fun send(message: Map<*, *>) {
+		context.message.channel.send(message)
+		throw SilentCommandException()
+	}
+
+	fun send(message: String, embed: ParallaxEmbed?) {
+		context.message.channel.send(message, embed)
+		throw SilentCommandException()
+	}
+
+	fun validateUser(user: User?): User {
+		// We use "any" due to type erasure
+		return user ?: run {
+			context.message.channel.send(context.locale["commands.userDoesNotExist"])
+			throw SilentCommandException()
+		}
 	}
 
 	fun loadDataStore(): ProxyObject {

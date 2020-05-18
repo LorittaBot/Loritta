@@ -3,8 +3,10 @@ package net.perfectdreams.loritta.parallax
 import com.github.salomonbrys.kotson.*
 import com.google.gson.Gson
 import com.google.gson.JsonParser
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import io.ktor.application.call
 import io.ktor.client.HttpClient
+import io.ktor.client.request.get
 import io.ktor.request.receiveText
 import io.ktor.routing.get
 import io.ktor.routing.post
@@ -140,6 +142,10 @@ class ParallaxServer {
 						}
 					}
 
+					val response = http.get<String>(body["clusterUrl"].string + "/api/v1/loritta/locale/default")
+
+					val locale = gson.fromJson<BaseLocale>(response)
+
 					val context = JSCommandContext(
 							graalContext,
 							body["lorittaClusterId"].int,
@@ -147,7 +153,8 @@ class ParallaxServer {
 							member,
 							message,
 							body["args"].array.map { it.string }.toTypedArray(),
-							body["clusterUrl"].string
+							body["clusterUrl"].string,
+							locale
 					)
 
 					guild.context = context
