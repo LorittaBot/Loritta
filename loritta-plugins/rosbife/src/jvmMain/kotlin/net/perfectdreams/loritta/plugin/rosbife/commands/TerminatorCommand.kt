@@ -20,7 +20,7 @@ object TerminatorCommand : DSLCommandBase {
 		description { it["commands.images.terminator.description"] }
 
 		examples {
-			it.getWithType<List<String>>("commands.images.terminator.examples")
+			it.getList("commands.images.terminator.examples")
 		}
 		usage {
 			argument(ArgumentType.TEXT) {}
