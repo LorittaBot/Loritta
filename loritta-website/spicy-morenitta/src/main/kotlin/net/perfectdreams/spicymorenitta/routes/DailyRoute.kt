@@ -11,7 +11,6 @@ import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.dom.prepend
 import kotlinx.serialization.ImplicitReflectionSerializer
-import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.parse
 import loriUrl
@@ -22,6 +21,7 @@ import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.utils.GoogleRecaptchaUtils
 import net.perfectdreams.spicymorenitta.utils.LoriWebCode
+import net.perfectdreams.spicymorenitta.utils.locale.buildAsHtml
 import net.perfectdreams.spicymorenitta.utils.onClick
 import net.perfectdreams.spicymorenitta.utils.select
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
@@ -75,7 +75,6 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
         )
     }
 
-    @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         super.onRender(call)
 
@@ -414,7 +413,7 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
     class DailyResponse(
             val receivedDailyAt: String,
             val dailyPayout: Int,
-            @Optional val sponsoredBy: Sponsored? = null,
+            val sponsoredBy: Sponsored? = null,
             val currentBalance: Double,
             val failedGuilds: Array<FailedGuildDailyStats>
     )
@@ -430,7 +429,7 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
     @Serializable
     class Sponsored(
             val guild: Guild,
-            @Optional val user: ServerConfig.SelfMember? = null,
+            val user: ServerConfig.SelfMember? = null,
             val multipliedBy: Double,
             val originalPayout: Double
     )
@@ -445,8 +444,8 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
 
     @Serializable
     class LeaderboardResponse(
-            @Optional val rankPosition: Int? = null,
-            @Optional val usersAround: List<UserAround>? = null
+            val rankPosition: Int? = null,
+            val usersAround: List<UserAround>? = null
     )
 
     @Serializable

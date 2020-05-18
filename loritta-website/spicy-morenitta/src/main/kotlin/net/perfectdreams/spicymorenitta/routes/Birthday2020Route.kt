@@ -114,7 +114,6 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 	val preAnimationOverlay: HTMLDivElement
 		get() = document.select("#pre-animation-overlay")
 
-	@UseExperimental(ImplicitReflectionSerializer::class)
 	override fun onRender(call: ApplicationCall) {
 		super.onRender(call)
 

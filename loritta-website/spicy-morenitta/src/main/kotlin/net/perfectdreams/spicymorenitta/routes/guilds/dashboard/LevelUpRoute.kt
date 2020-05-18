@@ -18,6 +18,7 @@ import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.launchWithLoadingScreenAndFixContent
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.switchContentAndFixLeftSidebarScroll
 import net.perfectdreams.spicymorenitta.utils.levelup.LevelUpAnnouncementType
+import net.perfectdreams.spicymorenitta.utils.locale.buildAsHtml
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import net.perfectdreams.spicymorenitta.views.dashboard.Stuff
 import net.perfectdreams.spicymorenitta.views.dashboard.getPlan

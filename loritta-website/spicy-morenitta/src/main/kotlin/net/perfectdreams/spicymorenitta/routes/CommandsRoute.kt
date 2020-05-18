@@ -5,7 +5,6 @@ import io.ktor.client.request.url
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.serialization.ImplicitReflectionSerializer
-import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.parseList
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -23,7 +22,6 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
         get() = true
     override val requiresUserIdentification = false
 
-    @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         super.onRender(call)
 
@@ -171,9 +169,9 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
                 val label: String,
                 val aliases: Array<String>,
                 val category: CommandCategory,
-                @Optional
+
                 val description: String? = null,
-                @Optional
+
                 val usage: String? = null
         )
     }

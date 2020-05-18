@@ -17,7 +17,6 @@ import org.w3c.dom.*
 import kotlin.browser.document
 
 class AudioRecordingRoute(val m: SpicyMorenitta) : BaseRoute("/audio/{guildid}/{timestamp}") {
-    @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         super.onRender(call)
 

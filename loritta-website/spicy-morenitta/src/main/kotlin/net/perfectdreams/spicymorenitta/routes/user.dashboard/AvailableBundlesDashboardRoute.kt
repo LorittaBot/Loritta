@@ -26,7 +26,6 @@ class AvailableBundlesDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePo
     override val keepLoadingScreen: Boolean
         get() = true
 
-    @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         super.onRender(call)
 

@@ -25,7 +25,6 @@ import kotlin.browser.document
 import kotlin.collections.set
 
 class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
-    @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         val table = page.getElementById("donate-features") as HTMLDivElement
         val plansTable = page.getElementById("plans-features") as HTMLDivElement

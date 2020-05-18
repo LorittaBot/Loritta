@@ -33,7 +33,6 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
         get() = true
     var generatedAt = -1L
 
-    @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         super.onRender(call)
 

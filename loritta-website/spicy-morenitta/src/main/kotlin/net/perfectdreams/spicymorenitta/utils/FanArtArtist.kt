@@ -2,7 +2,6 @@ package net.perfectdreams.spicymorenitta.utils
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -13,7 +12,7 @@ data class FanArtArtist @JsonCreator constructor(
         @param:JsonProperty("info")
         @field:JsonProperty("info")
         val info: Info,
-        @Optional val user: User? = null,
+        val user: User? = null,
         @param:JsonProperty("fanArts")
         @field:JsonProperty("fanArts")
         val fanArts: List<FanArt>
@@ -28,7 +27,7 @@ data class FanArtArtist @JsonCreator constructor(
             val avatarUrl: String?,
             @param:JsonProperty("override")
             @field:JsonProperty("override")
-            @Optional val override: Info? = null
+            val override: Info? = null
     )
 
     @Serializable

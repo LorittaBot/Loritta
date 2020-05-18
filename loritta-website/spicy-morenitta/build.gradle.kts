@@ -1,6 +1,6 @@
 plugins {
 	kotlin("js")
-	id("kotlinx-serialization") version "1.3.0" apply true
+	kotlin("plugin.serialization") version "1.3.70"
 }
 
 repositories {
@@ -19,7 +19,7 @@ kotlin {
 		implementation(project(":loritta-api"))
 		implementation("org.jetbrains.kotlinx:kotlinx-html-js:0.6.11")
 		implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.0.1")
-		implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.9.1")
+		implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.20.0")
 		implementation("io.ktor:ktor-client-js:1.3.0")
 	}
 
