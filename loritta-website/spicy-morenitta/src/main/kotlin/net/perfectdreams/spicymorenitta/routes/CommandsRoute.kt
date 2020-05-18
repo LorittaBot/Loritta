@@ -4,7 +4,6 @@ import io.ktor.client.request.get
 import io.ktor.client.request.url
 import kotlinx.html.*
 import kotlinx.html.dom.append
-import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.parseList
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -94,11 +93,11 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
                                     div {
                                         style = "text-align: center;"
                                         h1 {
-                                            // + category.getLocalizedName(locale)
+                                            + category.getLocalizedName(locale)
                                         }
                                     }
                                     p {
-                                        // + category.getLocalizedDescription(locale)
+                                        + category.getLocalizedDescription(locale)
                                     }
                                 }
                             }
