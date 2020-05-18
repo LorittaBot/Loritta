@@ -13,11 +13,11 @@ import net.perfectdreams.loritta.plugin.malcommands.util.AnimeType
 import net.perfectdreams.loritta.plugin.malcommands.util.MalConstants.MAL_COLOR
 import net.perfectdreams.loritta.plugin.malcommands.util.MalUtils
 
-object MalAnimeCommand: DSLCommandBase {
+object MalAnimeCommand : DSLCommandBase {
     private const val LOCALE_PREFIX = "commands.anime.mal.anime"
-    private val logger = KotlinLogging.logger {  }
+    private val logger = KotlinLogging.logger { }
 
-    override fun command(loritta: LorittaDiscord, m: MalCommandsPlugin) = create(loritta, listOf("malanime")) {
+    override fun command(loritta: LorittaDiscord, m: MalCommandsPlugin) = create(loritta, listOf("malanime", "anime")) {
         description { it["${LOCALE_PREFIX}.description"] }
 
         examples {
@@ -37,13 +37,13 @@ object MalAnimeCommand: DSLCommandBase {
             }
 
             val embed = EmbedBuilder()
-	    	val query = args.joinToString(" ")
+            val query = args.joinToString(" ")
             val anime = MalUtils.parseAnimeByQuery(query)
             if (anime != null) {
                 logger.debug { "The anime is not null! The anime's score is ${anime.score}!" }
                 logger.debug { anime.info.genres!! }
                 logger.debug { anime.image }
-                
+
                 val emoji = when (anime.info.type) {
                     AnimeType.MOVIE -> "\uD83C\uDFA5 "
                     else -> "\uD83D\uDCFA "
@@ -78,7 +78,7 @@ object MalAnimeCommand: DSLCommandBase {
                 }
                 sendMessage(embed.build())
             } else {
-                logger.debug { "MalAnime is null, thr query was \"${query}\"" }
+                logger.debug { "The anime is null, the query was \"${query}\"" }
                 reply(
                         LorittaReply(
                                 locale["${LOCALE_PREFIX}.notfound"],

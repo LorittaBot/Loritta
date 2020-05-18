@@ -4,7 +4,7 @@ import mu.KotlinLogging
 import org.jsoup.nodes.Document
 class MalScrappingUtils(private val document: Document?) {
     private val logger = KotlinLogging.logger { }
-    // gambiarra that might work?
+    // https://www.urbandictionary.com/define.php?term=Gambiarra
     fun getContentBySpan(q: String): String? {
         val content = document!!.selectFirst("span:contains(${q})")
                 .parents()
