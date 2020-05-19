@@ -38,6 +38,8 @@ abstract class CommandContext(
 		return sendMessage(message.toString())
 	}
 
+	suspend fun fail(message: String, prefix: String? = null): Nothing = throw CommandException(message, prefix ?: Emotes.LORI_CRYING.toString())
+
 	fun getUserMention(addSpace: Boolean): String {
 		return message.author.asMention + (if (addSpace) " " else "")
 	}
