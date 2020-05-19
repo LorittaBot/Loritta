@@ -8,10 +8,11 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.Emotes
 
 class DailyCommand : AbstractCommand("daily", listOf("diário", "bolsafamilia", "bolsafamília"), CommandCategory.ECONOMY) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["DAILY_Description"]
+		return locale.toNewLocale()["commands.economy.daily.description"]
 	}
 
 	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
@@ -22,15 +23,25 @@ class DailyCommand : AbstractCommand("daily", listOf("diário", "bolsafamilia", 
 
 		if (!canGetDaily) {
 			context.reply(
-					locale["DAILY_PleaseWait", DateUtils.formatDateDiff(tomorrow, locale)],
-					Constants.ERROR
+					LoriReply(
+							locale.toNewLocale()["commands.economy.daily.pleaseWait", DateUtils.formatDateDiff(tomorrow, locale)],
+							Constants.ERROR
+					),
+					LoriReply(
+							locale.toNewLocale()["commands.economy.daily.pleaseWaitBuySonhos", "<${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/daily-shop>"],
+							"\uD83D\uDCB3"
+					)
 			)
 			return
 		}
 
 		context.reply(
 				LoriReply(
-						locale["DAILY_DailyLink", "${loritta.instanceConfig.loritta.website.url}daily"],
+						locale.toNewLocale()["commands.economy.daily.dailyLink", "${loritta.instanceConfig.loritta.website.url}daily"],
+						Emotes.LORI_RICH
+				),
+				LoriReply(
+						locale.toNewLocale()["commands.economy.daily.dailyLinkBuySonhos", "<${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/daily-shop>"],
 						"\uD83D\uDCB3"
 				)
 		)
