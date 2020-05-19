@@ -36,7 +36,6 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
 
                 // DonationReward("Personalizar nome/avatar da Loritta nas notificações do YouTube/Twitch/Twitter", 39.99, false),
                 DonationReward("Tempo reduzido entre comandos", 39.99, false),
-                DonationReward("Não pagar taxas no +pay", 39.99, false),
 
                 // ===[  COMPLETE  ]===
 
@@ -70,105 +69,6 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                 DonationReward("Multiplicador de XP Global", 119.99, false, callback = { column ->
                     + (ServerPremiumPlans.getPlanFromValue(column).globalXpMultiplier.toString() + "x")
                 })
-                /* DonationReward("Ajuda a Lori a Pagar o Aluguel", 0.99, true, callback = { column ->
-                    if (column >= 0.99) {
-                        i("fas fa-check") {}
-                    } else {
-                        +"Só se você incentiva as outras pessoas a usarem a Lori"
-                    }
-                }),
-                DonationReward("A Sensação de ser Incrível", 0.99, true),
-                DonationReward("Cargo exclusivo no Servidor de Suporte", 4.99, true),
-                DonationReward("Emblema exclusivo no +perfil", 4.99, true),
-
-
-                DonationReward("Cargos coloridos no Servidor de Suporte", 9.99, true),
-                // DonationReward("Colocar o seu servidor como patrocinado na Lori's Server List", 9.99),
-                DonationReward("Acesso exclusivo ao canal de doadores", 19.99, true, callback = { column ->
-                    if (column >= 9.99) {
-                        i("fas fa-check") {}
-                    } else {
-                        +"Apenas leitura"
-                    }
-                }),
-                DonationReward("Número de Contadores de Membros", 19.99, false, callback = { column ->
-                    if (column >= 19.99) {
-                        +"3"
-                    } else {
-                        +"1"
-                    }
-                }),
-                DonationReward("Badge EXCLUSIVA para os membros do seu servidor", 19.99, false),
-
-                DonationReward("Lori irá parar de te perturbar para doar ao usar um comando", 19.99, false),
-                DonationReward("Tempo reduzido entre comandos", 39.99, false),
-                DonationReward("Não pagar taxas no +pay", 39.99, false),
-                DonationReward("Pode enviar convites no canal de divulgação no servidor de suporte da Lori", 39.99, true),
-                DonationReward("Limite máximo de sonhos no +daily", 39.99, false, callback = { column ->
-                    when {
-                        column >= 149.99 -> +"17130"
-                        column >= 139.99 -> +"13710"
-                        column >= 119.99 -> +"10975"
-                        column >= 99.99 -> +"8780"
-                        column >= 79.99 -> +"7030"
-                        column >= 59.99 -> +"5625"
-                        column >= 39.99 -> +"4500"
-                        else -> +"3600"
-                    }
-                }),
-                DonationReward("Chance da Lori te dar uma reputação", 39.99, false, callback = { column ->
-                    when {
-                        column >= 149.99 -> +"20.0%"
-                        column >= 139.99 -> +"17.5%"
-                        column >= 119.99 -> +"15.0%"
-                        column >= 99.99 -> +"12.5%"
-                        column >= 79.99 -> +"10.0%"
-                        column >= 59.99 -> +"7.5%"
-                        column >= 39.99 -> +"5.0%"
-                        else -> +"2.5%"
-                    }
-                }),
-                DonationReward("Multiplicador de XP Global", 119.99, false, callback = { column ->
-                    when {
-                        column >= 159.99 -> +"2.50x"
-                        column >= 139.99 -> +"2.25x"
-                        column >= 119.99 -> +"2.0x"
-                        column >= 99.99 -> +"1.75x"
-                        column >= 79.99 -> +"1.5x"
-                        column >= 59.99 -> +"1.25x"
-                        column >= 39.99 -> +"1.1x"
-                        else -> +"1.0x"
-                    }
-                }),
-                DonationReward("Divulgar o seu Servidor na Sexta-Feira da Lori (desde que não seja sobre conteúdo NSFW)", 139.99, false, callback = { column ->
-					when {
-						column >= 139.99 -> +"Em apenas três sexta-feiras"
-						column >= 99.99 -> +"Em apenas duas sexta-feiras"
-						column >= 59.99 -> +"Em apenas uma sexta-feira"
-						else -> i("fas fa-times") {}
-					}
-				}),
-
-                DonationReward("Uma versão premium minha! ...ela não faz NADA, só serve para você ostentar!", 59.99, true),
-                DonationReward("Mais outro cargo exclusivo no servidor de suporte", 59.99, true),
-                DonationReward("Lori irá parar de perturbar os membros do seu servidor com pedidos de doação", 59.99, false),
-
-                DonationReward("Multiplicador de dailies de sonhos para membros do seu servidor", 79.99, false, callback = { column ->
-                    when {
-                        column >= 179.99 -> +"x2.0"
-                        column >= 139.99 -> +"x1.75"
-                        column >= 99.99 -> +"x1.5"
-                        column >= 59.99 -> +"x1.25"
-                        else -> i("fas fa-times") {}
-                    }
-                }),
-
-                DonationReward("Mais outro emblema exclusivo no +perfil", 99.99, true),
-                DonationReward("Mais OUTRO cargo exclusivo no servidor de suporte", 99.99, true),
-                DonationReward("ignore_me", 139.99, false),
-                DonationReward("ignore_me", 159.99, false),
-                DonationReward("ignore_me", 179.99, false)
-                // DonationReward("Uma Lori EXCLUSIVA para você! (Pode alterar nome/avatar)", 159.99) */
         )
 
         plansTable.appendBuilder(
