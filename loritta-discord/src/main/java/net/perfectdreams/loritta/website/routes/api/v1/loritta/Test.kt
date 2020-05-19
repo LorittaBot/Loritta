@@ -4,6 +4,7 @@ import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.api.utils.Rarity
 import net.perfectdreams.loritta.datawrapper.Background
 
+@kotlinx.serialization.ImplicitReflectionSerializer
 fun main() {
 	val background = Background(
 			"test",
