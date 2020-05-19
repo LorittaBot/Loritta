@@ -18,7 +18,7 @@ class GetAvailableBackgroundsRoute(loritta: LorittaDiscord) : BaseRoute(loritta,
 			Background.find {
 				Backgrounds.enabled eq true
 			}.toList()
-		}.map { WebsiteUtils.toJson(it) }
+		}.map { WebsiteUtils.toSerializable(it) }
 				.let {
 					Json.toJson(net.perfectdreams.loritta.datawrapper.Background.serializer().list, it)
 				}

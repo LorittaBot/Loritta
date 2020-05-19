@@ -10,9 +10,7 @@ import jq
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.dom.prepend
-import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.parse
 import loriUrl
 import net.perfectdreams.loritta.utils.daily.DailyGuildMissingRequirement
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
@@ -218,7 +216,7 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
                                         }
                                     }
                                     td {
-                                        if (user.id.toString() == m.userIdentification?.id) {
+                                        if (user.id == m.userIdentification?.id) {
                                             classes += "rainbow-animated-text"
                                         }
                                         + user.name

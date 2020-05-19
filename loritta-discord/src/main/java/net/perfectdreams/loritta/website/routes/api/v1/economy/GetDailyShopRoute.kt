@@ -36,7 +36,7 @@ class GetDailyShopRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/e
 
 		for (background in backgrounds) {
 			backgroundsInShop.add(
-					WebsiteUtils.fromBackgroundToJson(background)
+					WebsiteUtils.fromBackgroundToSerializable(background)
 							.also { it.tag = background[DailyShopItems.tag] }
 			)
 		}
