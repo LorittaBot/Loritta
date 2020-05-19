@@ -5,7 +5,6 @@ import io.ktor.client.request.url
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.serialization.ImplicitReflectionSerializer
-import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.parseList
 import net.perfectdreams.loritta.api.utils.Rarity
@@ -27,7 +26,6 @@ class AllBackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSize
     override val keepLoadingScreen: Boolean
         get() = true
 
-    @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         super.onRender(call)
 
@@ -143,10 +141,10 @@ class AllBackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSize
             val imageFile: String,
             val enabled: Boolean,
             val rarity: Rarity,
-            @Optional val createdBy: List<String>? = null,
-            @Optional val crop: Crop? = null,
-            @Optional val set: String? = null,
-            @Optional val tag: String? = null
+            val createdBy: List<String>? = null,
+            val crop: Crop? = null,
+            val set: String? = null,
+            val tag: String? = null
     )
 
     @Serializable

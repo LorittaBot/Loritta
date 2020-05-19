@@ -84,7 +84,7 @@ object WebsiteUtils {
 
 		attributes.put(localeKey, locale)
 
-		for ((key, value) in locale.localeEntries) {
+		for ((key, value) in locale.localeStringEntries) {
 			if (value is String) {
 				variables[key.replace(".", "_")] = MessageFormat.format(value)
 			}

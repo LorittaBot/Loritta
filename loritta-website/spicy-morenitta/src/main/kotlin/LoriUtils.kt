@@ -1,13 +1,11 @@
 
 import kotlinx.serialization.ImplicitReflectionSerializer
 import utils.LegacyBaseLocale
-import utils.LorittaProfile
 import kotlin.browser.document
 import kotlin.browser.window
 import kotlin.js.Json
 
 lateinit var legacyLocale: LegacyBaseLocale
-var selfProfile: LorittaProfile? = null
 
 val loriUrl: String
 	get() = "${window.location.protocol}//${window.location.host}/"

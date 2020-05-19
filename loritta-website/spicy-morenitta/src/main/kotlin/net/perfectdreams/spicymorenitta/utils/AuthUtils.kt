@@ -22,7 +22,6 @@ object AuthUtils {
         }
     }
 
-    @UseExperimental(ImplicitReflectionSerializer::class)
     @JsName("handlePostAuth")
     fun handlePostAuth(payload: String) {
         val userIdentification = JSON.nonstrict.parse<UserIdentification>(payload)

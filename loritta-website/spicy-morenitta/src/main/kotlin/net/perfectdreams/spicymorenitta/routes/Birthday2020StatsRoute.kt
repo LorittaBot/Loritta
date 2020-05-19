@@ -32,7 +32,6 @@ class Birthday2020StatsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender
 	val stuffLog: HTMLDivElement
 		get() = document.select("#stuff-log")
 
-	@UseExperimental(ImplicitReflectionSerializer::class)
 	override fun onRender(call: ApplicationCall) {
 		super.onRender(call)
 

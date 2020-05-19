@@ -19,7 +19,6 @@ import kotlin.browser.document
 import kotlin.dom.clear
 
 class ProfileListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/user/@me/dashboard/profiles") {
-    @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         super.onRender(call)
 
@@ -132,7 +131,7 @@ class ProfileListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRen
 
     @Serializable
     class Profile(
-            val id: String,
+            val id: Long,
             val money: Double
     )
 

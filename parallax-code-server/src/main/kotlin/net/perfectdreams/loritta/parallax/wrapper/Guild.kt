@@ -7,6 +7,7 @@ import io.ktor.client.request.put
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.readText
 import io.ktor.http.userAgent
+import kotlinx.coroutines.runBlocking
 import net.perfectdreams.loritta.parallax.ParallaxServer
 import net.perfectdreams.loritta.parallax.ParallaxServer.Companion.gson
 
@@ -25,11 +26,11 @@ class Guild(
 	fun getTextChannelById(id: String) = channels.firstOrNull { it.id.toString() == id }
 	fun getTextChannelById(id: Long) = channels.firstOrNull { it.id == id }
 
-	fun addRoleToMember(member: GuildMember, role: Role): JavaScriptPromise {
+	fun addRoleToMember(member: GuildMember, role: Role) {
 		if (role in member.roles)
-			return null
+			return
 
-		return context.rateLimiter.wrapPromise {
+		runBlocking {
 			val response = ParallaxServer.http.put<HttpResponse>("${context.clusterUrl}/api/v1/parallax/guilds/$id/members/${member.id}/roles/${role.id}") {
 				this.userAgent(ParallaxServer.USER_AGENT)
 				this.header("Authorization", ParallaxServer.authKey)
@@ -39,11 +40,11 @@ class Guild(
 		}
 	}
 
-	fun removeRoleFromMember(member: GuildMember, role: Role): JavaScriptPromise {
+	fun removeRoleFromMember(member: GuildMember, role: Role) {
 		if (role !in member.roles)
-			return null
+			return
 
-		return context.rateLimiter.wrapPromise {
+		runBlocking {
 			val response = ParallaxServer.http.delete<HttpResponse>("${context.clusterUrl}/api/v1/parallax/guilds/$id/members/${member.id}/roles/${role.id}") {
 				this.userAgent(ParallaxServer.USER_AGENT)
 				this.header("Authorization", ParallaxServer.authKey)
@@ -59,11 +60,14 @@ class Guild(
 	} */
 
 	@JvmOverloads
-	fun ban(user: User, punisher: User, options: Map<String, Any> = mapOf()): JavaScriptPromise {
+	fun ban(user: User, punisher: User, options: Map<String, Any> = mapOf()) = ban(user.id, punisher, options)
+
+	@JvmOverloads
+	fun ban(userId: Long, punisher: User, options: Map<String, Any> = mapOf()) {
 		println("ban(...)")
-		return context.rateLimiter.wrapPromise {
-			println("${context.clusterUrl}/api/v1/parallax/guilds/$id/bans/${user.id}")
-			val response = ParallaxServer.http.put<HttpResponse>("${context.clusterUrl}/api/v1/parallax/guilds/$id/bans/${user.id}") {
+		runBlocking {
+			println("${context.clusterUrl}/api/v1/parallax/guilds/$id/bans/$userId")
+			val response = ParallaxServer.http.put<HttpResponse>("${context.clusterUrl}/api/v1/parallax/guilds/$id/bans/${userId}") {
 				this.userAgent(ParallaxServer.USER_AGENT)
 				this.header("Authorization", ParallaxServer.authKey)
 

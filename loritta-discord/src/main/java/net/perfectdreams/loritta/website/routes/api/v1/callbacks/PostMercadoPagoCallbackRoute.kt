@@ -69,7 +69,7 @@ class PostMercadoPagoCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta,
 					}
 
 					if (internalPayment.paidAt != null) {
-						logger.warn { "MercadoPago Payment $id with Reference ID: ${payment.externalReference} ($internalTransactionId) is alredy paid! Ignoring..." }
+						logger.warn { "MercadoPago Payment $id with Reference ID: ${payment.externalReference} ($internalTransactionId) is already paid! Ignoring..." }
 						call.respondJson(jsonObject())
 						return
 					}

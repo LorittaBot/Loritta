@@ -20,7 +20,6 @@ import kotlin.browser.window
 import kotlin.dom.addClass
 
 class ShipEffectsDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/user/@me/dashboard/ship-effects") {
-    @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         super.onRender(call)
 

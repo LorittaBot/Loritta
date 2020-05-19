@@ -1,10 +1,14 @@
 package com.mrpowergamerbr.loritta.dao
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.DonationKeys
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.*
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
@@ -84,5 +88,36 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 			return databaseObject as T
 		}
 		return cachedData[property]?.getOrNull() as T
+	}
+
+	/**
+	 * Gets or retrieves from the database the object you've requested
+	 */
+	suspend fun <T> getCachedOrRetreiveFromDatabaseAsync(loritta: Loritta, property: KMutableProperty1<ServerConfig, *>): T {
+		if (!cachedData.containsKey(property)) {
+			val databaseObject = loritta.newSuspendedTransaction {
+				property.call(this@ServerConfig)
+			}
+			cachedData[property] = Optional.ofNullable(databaseObject)
+			return databaseObject as T
+		}
+		return cachedData[property]?.getOrNull() as T
+	}
+
+	/**
+	 * Gets or retrieves from the database the object you've requested
+	 */
+	suspend fun <T> getCachedOrRetreiveFromDatabaseDeferred(loritta: Loritta, property: KMutableProperty1<ServerConfig, *>): Deferred<T> {
+		if (!cachedData.containsKey(property)) {
+			val job = loritta.suspendedTransactionAsync {
+				val result = property.call(this@ServerConfig)
+
+				cachedData[property] = Optional.ofNullable(result)
+
+				return@suspendedTransactionAsync result
+			}
+			return job as Deferred<T>
+		}
+		return GlobalScope.async(loritta.coroutineDispatcher) { cachedData[property]?.getOrNull() as T }
 	}
 }

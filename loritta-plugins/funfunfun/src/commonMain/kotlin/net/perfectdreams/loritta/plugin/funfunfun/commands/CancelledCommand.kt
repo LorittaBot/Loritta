@@ -19,7 +19,7 @@ object CancelledCommand : DSLCommandBase {
 
 			reply(
 					LorittaReply(
-							locale["commands.fun.cancelled.wasCancelled", user.asMention, locale.getWithType<List<String>>("commands.fun.cancelled.reasons").random()],
+							locale["commands.fun.cancelled.wasCancelled", user.asMention, locale.getList("commands.fun.cancelled.reasons").random()],
 							Emotes.LORI_HMPF
 					)
 			)

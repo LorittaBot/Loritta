@@ -29,7 +29,7 @@ class JVMPluginManager(val loritta: LorittaDiscord) : PluginManager {
 
 		if (plugin is com.mrpowergamerbr.loritta.plugin.LorittaPlugin)
 			logger.warn { "Plugin ${plugin.name} is a legacy plugin. Legacy plugin support is deprecated and will be removed soon" }
-		val currentAvailableRoutes = plugins.filterIsInstance<LorittaDiscordPlugin>().flatMap { it.routes }
+
 		try {
 			plugin.onEnable()
 		} catch (e: Exception) {
@@ -38,18 +38,10 @@ class JVMPluginManager(val loritta: LorittaDiscord) : PluginManager {
 			return
 		}
 		plugins.add(plugin)
-		val newlyAvailableRoutes = plugins.filterIsInstance<LorittaDiscordPlugin>().flatMap { it.routes }
-
-		if (!(currentAvailableRoutes.containsAll(newlyAvailableRoutes) && newlyAvailableRoutes.containsAll(currentAvailableRoutes)) && loritta is Loritta && loritta.newWebsiteThread != null) {
-			logger.info { "Plugin ${plugin.name} registered new routes! Restarting WebServer..." }
-			loritta.stopWebServer()
-			loritta.startWebServer()
-		}
 	}
 
 	override fun unloadPlugin(plugin: LorittaPlugin) {
 		logger.info { "Disabling ${plugin.name}" }
-		val currentAvailableRoutes = plugins.filterIsInstance<LorittaDiscordPlugin>().flatMap { it.routes }
 		try {
 			plugin.pluginTasks.forEach { it.cancel() }
 			if (plugin is LorittaDiscordPlugin)
@@ -73,6 +65,15 @@ class JVMPluginManager(val loritta: LorittaDiscord) : PluginManager {
 
 		plugins.remove(plugin)
 		loadedFromFile.remove(plugin)
+	}
+
+	fun reloadPlugin(plugin: LorittaPlugin) {
+		val file = loadedFromFile[plugin] ?: throw RuntimeException("$plugin does not have an associated file with it! Was it loaded directly via another plugin source code?")
+
+		val currentAvailableRoutes = plugins.filterIsInstance<LorittaDiscordPlugin>().flatMap { it.routes }
+
+		unloadPlugin(plugin)
+		loadPlugin(file)
 
 		val newlyAvailableRoutes = plugins.filterIsInstance<LorittaDiscordPlugin>().flatMap { it.routes }
 
@@ -81,13 +82,6 @@ class JVMPluginManager(val loritta: LorittaDiscord) : PluginManager {
 			loritta.stopWebServer()
 			loritta.startWebServer()
 		}
-	}
-
-	fun reloadPlugin(plugin: LorittaPlugin) {
-		val file = loadedFromFile[plugin] ?: throw RuntimeException("$plugin does not have an associated file with it! Was it loaded directly via another plugin source code?")
-
-		unloadPlugin(plugin)
-		loadPlugin(file)
 	}
 
 	fun loadPlugins() {

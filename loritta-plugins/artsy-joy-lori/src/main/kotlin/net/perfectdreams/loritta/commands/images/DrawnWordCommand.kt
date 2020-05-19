@@ -28,7 +28,7 @@ class DrawnWordCommand : LorittaCommand(arrayOf("drawnword"), CommandCategory.IM
     }
 
     override fun getExamples(locale: BaseLocale): List<String> {
-        return locale.getWithType("commands.images.drawnword.examples")
+        return locale.getList("commands.images.drawnword.examples")
     }
 
     @Subcommand

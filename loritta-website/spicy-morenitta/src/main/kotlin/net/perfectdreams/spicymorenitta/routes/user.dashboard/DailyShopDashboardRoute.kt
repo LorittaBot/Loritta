@@ -21,7 +21,6 @@ import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
 import net.perfectdreams.spicymorenitta.utils.*
 import org.w3c.dom.*
 import utils.Audio
-import utils.TingleOptions
 import kotlin.browser.document
 import kotlin.browser.window
 import kotlin.dom.clear
@@ -33,7 +32,6 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
         get() = true
     var generatedAt = -1L
 
-    @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         super.onRender(call)
 
@@ -305,7 +303,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
 
     @ImplicitReflectionSerializer
     fun openBackgroundInformation(result: UserInfoResult, background: AllBackgroundsListDashboardRoute.Background, alreadyBought: Boolean, backgroundImg: BackgroundImage, profileWrapper: Image, fanArtArtists: List<FanArtArtist>) {
-        val modal = utils.TingleModal(
+        val modal = TingleModal(
                 TingleOptions(
                         footer = true,
                         cssClass = arrayOf("tingle-modal--overflow")

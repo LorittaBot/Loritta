@@ -87,6 +87,7 @@ object DefaultRoutes {
 			PostDiscordBotsCallbackRoute(loritta),
 			PostMercadoPagoCallbackRoute(loritta),
 			PostPubSubHubbubCallbackRoute(loritta),
+			PostPicPayCallbackRoute(loritta),
 			CreateWebhookRoute(loritta),
 
 			// Economy

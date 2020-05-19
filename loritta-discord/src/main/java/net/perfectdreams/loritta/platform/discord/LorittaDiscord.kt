@@ -244,7 +244,8 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         val locale = BaseLocale(id)
         if (defaultLocale != null) {
             // Colocar todos os valores padrões
-            locale.localeEntries.putAll(defaultLocale.localeEntries)
+            locale.localeStringEntries.putAll(defaultLocale.localeStringEntries)
+            locale.localeListEntries.putAll(defaultLocale.localeListEntries)
         }
 
         val localeFolder = File(instanceConfig.loritta.folders.locales, id)
@@ -258,7 +259,11 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
                         if (value is Map<*, *>) {
                             transformIntoFlatMap(value as MutableMap<String, Any?>, "$prefix$key.")
                         } else {
-                            locale.localeEntries[prefix + key] = value
+                            if (value is List<*>) {
+                                locale.localeListEntries[prefix + key] = value as List<String>
+                            } else if (value is String) {
+                                locale.localeStringEntries[prefix + key] = value
+                            } else throw IllegalArgumentException("Invalid object type detected in YAML! $value")
                         }
                     }
                 }

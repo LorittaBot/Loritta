@@ -22,7 +22,7 @@ object MorrePragaCommand : DSLCommandBase {
 		description { it["commands.images.morrepraga.description"] }
 
 		usage {
-			argument(ArgumentType.IMAGE) { }
+			argument(ArgumentType.IMAGE) {}
 		}
 
 		needsToUploadFiles = true

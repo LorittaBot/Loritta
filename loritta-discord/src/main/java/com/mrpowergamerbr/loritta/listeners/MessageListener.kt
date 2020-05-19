@@ -12,6 +12,7 @@ import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.EventLog
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
@@ -79,20 +80,22 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				var start = System.nanoTime()
 
-				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong, true)
-				val autoroleConfig = serverConfig.getCachedOrRetreiveFromDatabase<AutoroleConfig?>(ServerConfig::autoroleConfig)
+				val serverConfigJob = loritta.getOrCreateServerConfigDeferred(event.guild.idLong, true)
+						.logOnCompletion(enableProfiling) { "Loading Server Config took {time}ns for ${event.author.idLong}" }
+				val lorittaProfileJob = loritta.getLorittaProfileDeferred(event.author.idLong)
+						.logOnCompletion(enableProfiling) { "Loading user's profile took {time}ns for ${event.author.idLong}" }
 
-				logIfEnabled(enableProfiling) { "Loading Server Config took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
+				val serverConfig = serverConfigJob.await()
+
+				val autoroleConfigJob = serverConfig.getCachedOrRetreiveFromDatabaseDeferred<AutoroleConfig?>(loritta, ServerConfig::autoroleConfig)
+						.logOnCompletion(enableProfiling) { "Loading Server Config's autorole took {time}ns for ${event.author.idLong}" }
+
+				val lorittaProfile = lorittaProfileJob.await()
+				val autoroleConfig = autoroleConfigJob.await()
 
 				start = System.nanoTime()
 
 				logIfEnabled(enableProfiling) { "Migration Checks took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
-
-				start = System.nanoTime()
-
-				val lorittaProfile = loritta.getLorittaProfile(event.author.idLong)
-
-				logIfEnabled(enableProfiling) { "Loading user's profile took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
 				// Se o dono do servidor for o usuário que está executando o comando, não é necessário pegar o perfil novamente
@@ -122,7 +125,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				start = System.nanoTime()
 				if (lorittaProfile != null && lorittaProfile.isAfk) {
-					transaction(Databases.loritta) {
+					loritta.newSuspendedTransaction {
 						lorittaProfile.isAfk = false
 						lorittaProfile.afkReason = null
 					}
@@ -575,5 +578,16 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	fun logIfEnabled(doLog: Boolean, msg: () -> Any?) {
 		if (doLog)
 			logger.info(msg)
+	}
+
+	fun <T> Deferred<T>.logOnCompletion(doLog: Boolean, msg: () -> Any?): Deferred<T> {
+		val start = System.nanoTime()
+
+		if (doLog)
+			this.invokeOnCompletion {
+				logger.info(msg.invoke().toString().replace("{time}", (System.nanoTime() - start).toString()))
+			}
+
+		return this
 	}
 }

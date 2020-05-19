@@ -5,4 +5,6 @@ class Role(
 		val name: String
 ) {
 	lateinit var guild: Guild
+
+	override fun toString() = "<@&$id>"
 }

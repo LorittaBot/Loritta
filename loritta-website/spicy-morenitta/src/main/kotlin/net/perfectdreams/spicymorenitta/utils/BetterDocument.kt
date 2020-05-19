@@ -18,10 +18,6 @@ class BetterDocument(val document: Document) {
 	fun <T> getElementById(name: String): T {
 		return document.getElementById(name)!! as T
 	}
-
-	fun <T> getElementByClass(name: String): T {
-		return document.getElementsByClassName(name)[0]!! as T
-	}
 }
 
 fun Element.appendBuilder(builder: StringBuilder) {

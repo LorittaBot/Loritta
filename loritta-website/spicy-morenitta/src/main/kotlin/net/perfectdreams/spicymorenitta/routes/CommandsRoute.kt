@@ -4,9 +4,8 @@ import io.ktor.client.request.get
 import io.ktor.client.request.url
 import kotlinx.html.*
 import kotlinx.html.dom.append
-import kotlinx.serialization.ImplicitReflectionSerializer
-import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JSON
 import kotlinx.serialization.parseList
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
@@ -23,7 +22,6 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
         get() = true
     override val requiresUserIdentification = false
 
-    @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         super.onRender(call)
 
@@ -32,17 +30,13 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
                 url("${window.location.origin}/api/v1/loritta/commands/${locale.id}")
             }
 
-            val list = kotlinx.serialization.json.JSON.nonstrict.parseList<Command>(result)
+            val list = JSON.nonstrict.parseList<Command>(result)
 
             fixDummyNavbarHeight(call)
 
             val entriesDiv = document.select<HTMLDivElement>("#commands")
 
             var index = 0
-
-            entriesDiv.append {
-
-            }
 
             for (category in CommandCategory.values().filter { it != CommandCategory.MAGIC }) {
                 val commands = list.filter { it.category == category }
@@ -96,11 +90,11 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
                                     div {
                                         style = "text-align: center;"
                                         h1 {
-                                            // + category.getLocalizedName(locale)
+                                            + category.getLocalizedName(locale)
                                         }
                                     }
                                     p {
-                                        // + category.getLocalizedDescription(locale)
+                                        + category.getLocalizedDescription(locale)
                                     }
                                 }
                             }
@@ -160,20 +154,14 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
         }
     }
 
-    fun DIV.createCommandEntry(entry: Command) {
-    }
-
     companion object {
         @Serializable
         class Command(
-                // É deserializado para String pois JavaScript é burro e não funciona direito com Longs
                 val name: String,
                 val label: String,
                 val aliases: Array<String>,
                 val category: CommandCategory,
-                @Optional
                 val description: String? = null,
-                @Optional
                 val usage: String? = null
         )
     }

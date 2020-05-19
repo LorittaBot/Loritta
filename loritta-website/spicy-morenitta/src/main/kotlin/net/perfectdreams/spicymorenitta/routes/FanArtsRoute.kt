@@ -34,7 +34,6 @@ class FanArtsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/fanarts
     var fanArtArtists = listOf<FanArtArtist>()
     override val requiresUserIdentification = false
 
-    @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         m.showLoadingScreen()
         currentArtistSortingMethod = ArtistSortingMethod.ALPHABETIC

@@ -41,7 +41,6 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
     private var activeBackground: AllBackgroundsListDashboardRoute.Background? = null
     private var enabledBackground: AllBackgroundsListDashboardRoute.Background? = null
 
-    @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         super.onRender(call)
 
@@ -391,8 +390,8 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
 
     @Serializable
     class Settings(
-            @Optional val activeBackground: String? = null,
-            @Optional val activeProfileDesign: String? = null
+            val activeBackground: String? = null,
+            val activeProfileDesign: String? = null
     )
 
     @Serializable

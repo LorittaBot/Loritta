@@ -1,5 +1,6 @@
 package net.perfectdreams.spicymorenitta
 
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.js.Js
 import io.ktor.client.request.get
@@ -23,7 +24,6 @@ import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.*
 import net.perfectdreams.spicymorenitta.routes.user.dashboard.*
 import net.perfectdreams.spicymorenitta.trunfo.TrunfoGame
 import net.perfectdreams.spicymorenitta.utils.*
-import net.perfectdreams.spicymorenitta.utils.locale.BaseLocale
 import oldMain
 import org.w3c.dom.*
 import kotlin.browser.document
@@ -67,7 +67,6 @@ class SpicyMorenitta : Logging {
 			TwitterRoute(this),
 			RssFeedsRoute(this),
 			CommandsRoute(this),
-			TranslateRoute(this),
 			GeneralConfigRoute(this),
 			BadgeRoute(this),
 			DailyMultiplierRoute(this),
@@ -158,7 +157,6 @@ class SpicyMorenitta : Logging {
 		throw exception
 	}
 
-	@UseExperimental(ImplicitReflectionSerializer::class)
 	fun start() {
 		INSTANCE = this
 
@@ -232,13 +230,13 @@ class SpicyMorenitta : Logging {
 				)
 
 				if (currentRoute.requiresLocales) {
-					deferred[0].join()
+					deferred[0].await()
 
 					debug("Locale test: ${locale["commands.images.drawnword.description"]}")
 					debug("Locale test: ${locale["commands.fun.ship.bribeLove", ":3"]}")
 				}
 				if (currentRoute.requiresUserIdentification)
-					deferred[1].join()
+					deferred[1].await()
 
 				onPageChange(window.location.pathname, null)
 
@@ -265,7 +263,6 @@ class SpicyMorenitta : Logging {
 		}
 	}
 
-	@UseExperimental(ImplicitReflectionSerializer::class)
 	suspend fun loadLocale() {
 		val payload = http.get<String>("${window.location.origin}/api/v1/loritta/locale/$localeId")
 		locale = kotlinx.serialization.json.JSON.nonstrict.parse(payload)
@@ -279,7 +276,6 @@ class SpicyMorenitta : Logging {
 		Moment.locale(momentLocaleId)
 	}
 
-	@UseExperimental(ImplicitReflectionSerializer::class)
 	suspend fun loadLoggedInUser() {
 		val httpResponse = http.get<HttpResponse>("${window.location.origin}/api/v1/users/@me")
 		val payload = httpResponse.readText()
@@ -360,7 +356,6 @@ class SpicyMorenitta : Logging {
 		return route
 	}
 
-	@UseExperimental(ImplicitReflectionSerializer::class)
 	fun onPageChange(path: String, content: Element?) {
 		if (!navbarIsSetup) {
 			addNavbarOptions()

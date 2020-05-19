@@ -24,9 +24,7 @@ import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.locale.Gender
 import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
@@ -55,6 +53,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import org.jetbrains.exposed.sql.transactions.experimental.suspendedTransactionAsync
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.util.*
@@ -417,7 +417,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	 * @param guildId the guild's ID
 	 * @return        the server configuration
 	 */
-	fun getOrCreateServerConfig(guildId: Long, loadFromCache: Boolean = false): com.mrpowergamerbr.loritta.dao.ServerConfig {
+	fun getOrCreateServerConfig(guildId: Long, loadFromCache: Boolean = false): ServerConfig {
 		if (loadFromCache)
 			cachedServerConfigs.getIfPresent(guildId)?.let { return it }
 
@@ -429,6 +429,60 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 			cachedServerConfigs.put(guildId, serverConfig)
 
 		return serverConfig
+	}
+
+	/**
+	 * Loads the server configuration of a guild in a coroutine
+	 *
+	 * @param guildId the guild's ID
+	 * @return        the server configuration
+	 */
+	suspend fun getOrCreateServerConfigAsync(guildId: Long, loadFromCache: Boolean = false): ServerConfig {
+		if (loadFromCache)
+			cachedServerConfigs.getIfPresent(guildId)?.let { return it }
+
+		val serverConfig = newSuspendedTransaction(Dispatchers.IO, Databases.loritta) {
+			ServerConfig.findById(guildId) ?: ServerConfig.new(guildId) {}
+		}
+
+		if (loritta.config.caches.serverConfigs.maximumSize != 0L)
+			cachedServerConfigs.put(guildId, serverConfig)
+
+		return serverConfig
+	}
+
+	/**
+	 * Loads the server configuration of a guild, deferred
+	 *
+	 * @param guildId the guild's ID
+	 * @return        the server configuration
+	 */
+	suspend fun getOrCreateServerConfigDeferred(guildId: Long, loadFromCache: Boolean = false): Deferred<ServerConfig> {
+		if (loadFromCache)
+			cachedServerConfigs.getIfPresent(guildId)?.let { return GlobalScope.async(coroutineDispatcher) { it } }
+
+		val job = suspendedTransactionAsync(Dispatchers.IO, Databases.loritta) {
+			val result = ServerConfig.findById(guildId) ?: ServerConfig.new(guildId) {}
+
+			if (loritta.config.caches.serverConfigs.maximumSize != 0L)
+				cachedServerConfigs.put(guildId, result)
+
+			return@suspendedTransactionAsync result
+		}
+
+		return job
+	}
+
+	fun <T> transaction(statement: org.jetbrains.exposed.sql.Transaction.() -> T) = transaction(Databases.loritta) {
+		statement.invoke(this)
+	}
+
+	suspend fun <T> newSuspendedTransaction(statement: org.jetbrains.exposed.sql.Transaction.() -> T) = newSuspendedTransaction(Dispatchers.IO, Databases.loritta) {
+		statement.invoke(this)
+	}
+
+	suspend fun <T> suspendedTransactionAsync(statement: org.jetbrains.exposed.sql.Transaction.() -> T) = suspendedTransactionAsync(Dispatchers.IO, Databases.loritta) {
+		statement.invoke(this)
 	}
 
 	fun getLorittaProfile(userId: String): Profile? {
@@ -443,6 +497,30 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	 */
 	fun getLorittaProfile(userId: Long): Profile? {
 		return transaction(Databases.loritta) {
+			Profile.findById(userId)
+		}
+	}
+
+	/**
+	 * Loads the profile of an user in a coroutine
+	 *
+	 * @param userId the user's ID
+	 * @return       the user profile
+	 */
+	suspend fun getLorittaProfileAsync(userId: Long): Profile? {
+		return newSuspendedTransaction {
+			Profile.findById(userId)
+		}
+	}
+
+	/**
+	 * Loads the profile of an user deferred
+	 *
+	 * @param userId the user's ID
+	 * @return       the user profile
+	 */
+	suspend fun getLorittaProfileDeferred(userId: Long): Deferred<Profile?> {
+		return suspendedTransactionAsync {
 			Profile.findById(userId)
 		}
 	}

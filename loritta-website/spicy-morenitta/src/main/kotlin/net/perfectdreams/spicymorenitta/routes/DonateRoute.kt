@@ -1,12 +1,9 @@
 package net.perfectdreams.spicymorenitta.routes
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.html.*
 import kotlinx.html.dom.create
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.stream.appendHTML
-import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.parseList
 import net.perfectdreams.loritta.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.utils.UserPremiumPlans
@@ -18,15 +15,10 @@ import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.get
-import utils.TingleModal
-import utils.TingleOptions
 import kotlin.browser.document
-import kotlin.browser.window
 import kotlin.collections.set
-import kotlin.js.Json
 
 class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
-    @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         val table = page.getElementById("donate-features") as HTMLDivElement
         val plansTable = page.getElementById("plans-features") as HTMLDivElement
@@ -44,7 +36,6 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
 
                 // DonationReward("Personalizar nome/avatar da Loritta nas notificações do YouTube/Twitch/Twitter", 39.99, false),
                 DonationReward("Tempo reduzido entre comandos", 39.99, false),
-                DonationReward("Não pagar taxas no +pay", 39.99, false),
 
                 // ===[  COMPLETE  ]===
 
@@ -78,105 +69,6 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                 DonationReward("Multiplicador de XP Global", 119.99, false, callback = { column ->
                     + (ServerPremiumPlans.getPlanFromValue(column).globalXpMultiplier.toString() + "x")
                 })
-                /* DonationReward("Ajuda a Lori a Pagar o Aluguel", 0.99, true, callback = { column ->
-                    if (column >= 0.99) {
-                        i("fas fa-check") {}
-                    } else {
-                        +"Só se você incentiva as outras pessoas a usarem a Lori"
-                    }
-                }),
-                DonationReward("A Sensação de ser Incrível", 0.99, true),
-                DonationReward("Cargo exclusivo no Servidor de Suporte", 4.99, true),
-                DonationReward("Emblema exclusivo no +perfil", 4.99, true),
-
-
-                DonationReward("Cargos coloridos no Servidor de Suporte", 9.99, true),
-                // DonationReward("Colocar o seu servidor como patrocinado na Lori's Server List", 9.99),
-                DonationReward("Acesso exclusivo ao canal de doadores", 19.99, true, callback = { column ->
-                    if (column >= 9.99) {
-                        i("fas fa-check") {}
-                    } else {
-                        +"Apenas leitura"
-                    }
-                }),
-                DonationReward("Número de Contadores de Membros", 19.99, false, callback = { column ->
-                    if (column >= 19.99) {
-                        +"3"
-                    } else {
-                        +"1"
-                    }
-                }),
-                DonationReward("Badge EXCLUSIVA para os membros do seu servidor", 19.99, false),
-
-                DonationReward("Lori irá parar de te perturbar para doar ao usar um comando", 19.99, false),
-                DonationReward("Tempo reduzido entre comandos", 39.99, false),
-                DonationReward("Não pagar taxas no +pay", 39.99, false),
-                DonationReward("Pode enviar convites no canal de divulgação no servidor de suporte da Lori", 39.99, true),
-                DonationReward("Limite máximo de sonhos no +daily", 39.99, false, callback = { column ->
-                    when {
-                        column >= 149.99 -> +"17130"
-                        column >= 139.99 -> +"13710"
-                        column >= 119.99 -> +"10975"
-                        column >= 99.99 -> +"8780"
-                        column >= 79.99 -> +"7030"
-                        column >= 59.99 -> +"5625"
-                        column >= 39.99 -> +"4500"
-                        else -> +"3600"
-                    }
-                }),
-                DonationReward("Chance da Lori te dar uma reputação", 39.99, false, callback = { column ->
-                    when {
-                        column >= 149.99 -> +"20.0%"
-                        column >= 139.99 -> +"17.5%"
-                        column >= 119.99 -> +"15.0%"
-                        column >= 99.99 -> +"12.5%"
-                        column >= 79.99 -> +"10.0%"
-                        column >= 59.99 -> +"7.5%"
-                        column >= 39.99 -> +"5.0%"
-                        else -> +"2.5%"
-                    }
-                }),
-                DonationReward("Multiplicador de XP Global", 119.99, false, callback = { column ->
-                    when {
-                        column >= 159.99 -> +"2.50x"
-                        column >= 139.99 -> +"2.25x"
-                        column >= 119.99 -> +"2.0x"
-                        column >= 99.99 -> +"1.75x"
-                        column >= 79.99 -> +"1.5x"
-                        column >= 59.99 -> +"1.25x"
-                        column >= 39.99 -> +"1.1x"
-                        else -> +"1.0x"
-                    }
-                }),
-                DonationReward("Divulgar o seu Servidor na Sexta-Feira da Lori (desde que não seja sobre conteúdo NSFW)", 139.99, false, callback = { column ->
-					when {
-						column >= 139.99 -> +"Em apenas três sexta-feiras"
-						column >= 99.99 -> +"Em apenas duas sexta-feiras"
-						column >= 59.99 -> +"Em apenas uma sexta-feira"
-						else -> i("fas fa-times") {}
-					}
-				}),
-
-                DonationReward("Uma versão premium minha! ...ela não faz NADA, só serve para você ostentar!", 59.99, true),
-                DonationReward("Mais outro cargo exclusivo no servidor de suporte", 59.99, true),
-                DonationReward("Lori irá parar de perturbar os membros do seu servidor com pedidos de doação", 59.99, false),
-
-                DonationReward("Multiplicador de dailies de sonhos para membros do seu servidor", 79.99, false, callback = { column ->
-                    when {
-                        column >= 179.99 -> +"x2.0"
-                        column >= 139.99 -> +"x1.75"
-                        column >= 99.99 -> +"x1.5"
-                        column >= 59.99 -> +"x1.25"
-                        else -> i("fas fa-times") {}
-                    }
-                }),
-
-                DonationReward("Mais outro emblema exclusivo no +perfil", 99.99, true),
-                DonationReward("Mais OUTRO cargo exclusivo no servidor de suporte", 99.99, true),
-                DonationReward("ignore_me", 139.99, false),
-                DonationReward("ignore_me", 159.99, false),
-                DonationReward("ignore_me", 179.99, false)
-                // DonationReward("Uma Lori EXCLUSIVA para você! (Pode alterar nome/avatar)", 159.99) */
         )
 
         plansTable.appendBuilder(
@@ -388,23 +280,19 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
 
                                 div(classes = "button-discord button-discord-info pure-button") {
                                     style = "font-size: 1.25em; margin: 5px;"
-                                    + "Renovar via MercadoPago"
+                                    + "Renovar"
 
                                     onClickFunction = {
                                         val o = object {
-                                            val gateway = "MERCADOPAGO"
                                             val money = key.value // unused
-                                            val keyId = key.id
+                                            val keyId = key.id.toString()
                                         }
 
                                         println(JSON.stringify(o))
 
-                                        GlobalScope.launch {
-                                            val response = HttpRequest.post("${loriUrl}api/v1/users/donate", JSON.stringify(o))
+                                        modal.close()
 
-                                            val payload = JSON.parse<Json>(response.body)
-                                            window.location.href = payload["redirectUrl"] as String
-                                        }
+                                        PaymentUtils.openPaymentSelectionModal(o)
                                     }
                                 }
                             }
@@ -467,37 +355,6 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                         p {
                             + "Não se esqueça de entrar no meu servidor de suporte caso você tenha dúvidas sobre as vantagens, formas de pagamento e, na pior das hipóteses, se der algum problema. (vai se dá algum problema, né?)"
                         }
-
-                        div {
-                            div(classes = "button-discord button-discord-info pure-button") {
-                                style = "font-size: 1.25em; margin: 5px;"
-                                + "MercadoPago (Boleto, Cartão de Crédito e Saldo do MercadoPago)"
-
-                                onClickFunction = {
-                                    val o = object {
-                                        val gateway = "MERCADOPAGO"
-                                        val money = (visibleModal.getElementsByClassName("how-much-money")[0] as HTMLInputElement).value
-                                    }
-
-                                    println(JSON.stringify(o))
-
-                                    GlobalScope.launch {
-                                        val response = HttpRequest.post("${loriUrl}api/v1/users/donate", JSON.stringify(o))
-
-                                        val payload = JSON.parse<Json>(response.body)
-                                        window.location.href = payload["redirectUrl"] as String
-                                    }
-                                }
-                            }
-                        }
-
-                        p {
-                            + "Se você deseja doar via PayPal, contate "
-                            code {
-                                + "MrPowerGamerBR#4185"
-                            }
-                            + " no meu servidor de suporte!"
-                        }
                         /* div {
 							div(classes = "button-discord button-discord-info pure-button") {
 								style = "font-size: 1.25em; margin: 5px;"
@@ -507,6 +364,16 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                     }
                 }
         )
+
+        modal.addFooterBtn("<i class=\"fas fa-cash-register\"></i> Escolher Forma de Pagamento", "button-discord button-discord-info pure-button button-discord-modal") {
+            val o = object {
+                val money = (visibleModal.getElementsByClassName("how-much-money")[0] as HTMLInputElement).value
+            }
+
+            modal.close()
+
+            PaymentUtils.openPaymentSelectionModal(o)
+        }
 
         modal.addFooterBtn("<i class=\"fas fa-times\"></i> Fechar", "button-discord pure-button button-discord-modal button-discord-modal-secondary-action") {
             modal.close()
