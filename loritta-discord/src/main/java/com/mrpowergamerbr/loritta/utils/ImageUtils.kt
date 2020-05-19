@@ -418,4 +418,27 @@ object ImageUtils {
 
 		return image
 	}
+
+	/**
+	 * Draws a string with a outline around it, the text will be drawn with the current color set in the graphics object
+	 *
+	 * @param graphics     the image graphics
+	 * @param text         the text that will be drawn
+	 * @param x            where the text will be drawn in the x-axis
+	 * @param y            where the text will be drawn in the y-axis
+	 * @param outlineColor the color of the outline
+	 * @param power        the thickness of the outline
+	 */
+	fun drawStringWithOutline(graphics: Graphics, text: String, x: Int, y: Int, outlineColor: Color = Color.BLACK, power: Int = 2) {
+		val originalColor = graphics.color
+		graphics.color = outlineColor
+		for (powerX in -power..power) {
+			for (powerY in -power..power) {
+				graphics.drawString(text, x + powerX, y + powerY)
+			}
+		}
+
+		graphics.color = originalColor
+		graphics.drawString(text, x, y)
+	}
 }
