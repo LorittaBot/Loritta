@@ -131,7 +131,7 @@ class ProfileListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRen
 
     @Serializable
     class Profile(
-            val id: String,
+            val id: Long,
             val money: Double
     )
 
