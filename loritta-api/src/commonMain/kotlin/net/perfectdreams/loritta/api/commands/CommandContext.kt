@@ -23,8 +23,10 @@ abstract class CommandContext(
 	suspend fun sendImage(image: Image, fileName: String = "image.png", content: String = getUserMention(true)) = message.channel.sendFile(image.toByteArray(), fileName, content)
 
 	abstract suspend fun user(argument: Int): User?
+	suspend fun userOrFail(argument: Int) = validate(user(argument), argument)
 	abstract suspend fun imageUrl(argument: Int, searchPreviousMessages: Int = 25): String?
 	abstract suspend fun image(argument: Int, searchPreviousMessages: Int = 25, createTextAsImageIfNotFound: Boolean = true): Image?
+	suspend fun imageOrFail(argument: Int) = validate(image(argument))
 
 	suspend fun reply(vararg replies: LorittaReply) = reply(replies.toList())
 	suspend fun reply(replies: List<LorittaReply>): Message {
@@ -60,13 +62,13 @@ abstract class CommandContext(
 		return image
 	}
 
-	suspend fun validate(user: User?): User {
+	suspend fun validate(user: User?, argumentIndex: Int = 0): User {
 		if (user == null) {
 			if (args.isEmpty()) {
 				explain()
 				throw SilentCommandException()
 			} else {
-				throw CommandException(locale["commands.userDoesNotExist", "`${args[0].replace("`", "")}`"], Emotes.LORI_CRYING.toString())
+				throw CommandException(locale["commands.userDoesNotExist", "`${args.getOrNull(argumentIndex)?.replace("`", "")}`"], Emotes.LORI_CRYING.toString())
 			}
 		}
 
