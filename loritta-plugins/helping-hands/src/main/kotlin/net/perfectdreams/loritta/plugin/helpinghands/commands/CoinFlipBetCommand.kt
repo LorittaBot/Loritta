@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MessageInteractionFunctions
 import com.mrpowergamerbr.loritta.utils.removeAllFunctions
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.perfectdreams.loritta.api.LorittaBot
@@ -15,11 +16,11 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
 import net.perfectdreams.loritta.plugin.helpinghands.HelpingHandsPlugin
 import net.perfectdreams.loritta.plugin.helpinghands.commands.base.DSLCommandBase
-import net.perfectdreams.loritta.plugin.helpinghands.commands.base.dbRefresh
-import net.perfectdreams.loritta.plugin.helpinghands.commands.base.toJDA
 import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
+import net.perfectdreams.loritta.utils.extensions.refreshInDeferredTransaction
+import net.perfectdreams.loritta.utils.extensions.toJDA
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -96,8 +97,10 @@ object CoinFlipBetCommand : DSLCommandBase {
 					message.removeAllFunctions()
 					plugin.launch {
 						mutex.withLock {
-							selfUserProfile.dbRefresh()
-							invitedUserProfile.dbRefresh()
+							listOf(
+									selfUserProfile.refreshInDeferredTransaction(),
+									invitedUserProfile.refreshInDeferredTransaction()
+							).awaitAll()
 
 							if (number > selfUserProfile.money)
 								return@withLock
