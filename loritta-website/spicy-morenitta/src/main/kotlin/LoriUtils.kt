@@ -1,5 +1,4 @@
 
-import kotlinx.serialization.ImplicitReflectionSerializer
 import utils.LegacyBaseLocale
 import kotlin.browser.document
 import kotlin.browser.window
@@ -26,7 +25,6 @@ fun Any.stringify(): String {
 	return JSON.stringify(this)
 }
 
-@ImplicitReflectionSerializer
 fun loadEmbeddedLocale() {
 	println("Loading locale from embedded data... (if available)")
 	val legacyLocaleJson = document.getElementById("locale-json")?.innerHTML
@@ -55,7 +53,6 @@ fun loadEmbeddedLocale() {
 	}
 }
 
-@ImplicitReflectionSerializer
 fun oldMain(args: Array<String>) {
 	println("LoriUtils! ^-^")
 

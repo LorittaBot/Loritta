@@ -8,8 +8,7 @@ import kotlinx.html.dom.append
 import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.js.onInputFunction
-import kotlinx.serialization.ImplicitReflectionSerializer
-import kotlinx.serialization.parseList
+import kotlinx.serialization.builtins.list
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
@@ -46,7 +45,7 @@ class FanArtsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/fanarts
                 url("${window.location.origin}/api/v1/loritta/fan-arts?query=all")
             }
 
-            val list = kotlinx.serialization.json.JSON.nonstrict.parseList<FanArtArtist>(result)
+            val list = kotlinx.serialization.json.JSON.nonstrict.parse(FanArtArtist.serializer().list, result)
 
             fanArtArtists = list
 

@@ -19,8 +19,10 @@ import com.mrpowergamerbr.loritta.website.OptimizeAssets
 import io.ktor.application.ApplicationCall
 import io.ktor.request.path
 import io.ktor.util.AttributeKey
+import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.ReactionOption
+import net.perfectdreams.loritta.datawrapper.Crop
 import net.perfectdreams.loritta.tables.Backgrounds
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.ReactionOptions
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedRssFeeds
@@ -115,14 +117,14 @@ object WebsiteUtils {
 
 	fun toJson(background: Background) = fromBackgroundToJson(background.readValues)
 
-	fun fromBackgroundToJson(background: ResultRow) = jsonObject(
-			"internalName" to background[Backgrounds.id].value,
-			"imageFile" to background[Backgrounds.imageFile],
-			"enabled" to background[Backgrounds.enabled],
-			"createdBy" to background[Backgrounds.createdBy].toList().toJsonArray(),
-			"rarity" to background[Backgrounds.rarity].name,
-			"crop" to background[Backgrounds.crop],
-			"set" to background[Backgrounds.set]?.value
+	fun fromBackgroundToJson(background: ResultRow) = net.perfectdreams.loritta.datawrapper.Background(
+			background[Backgrounds.id].value,
+			background[Backgrounds.imageFile],
+			background[Backgrounds.enabled],
+			background[Backgrounds.rarity],
+			background[Backgrounds.createdBy].toList(),
+			background[Backgrounds.crop]?.let { println(it.toString()); Json.parse(Crop.serializer(), it.toString()) },
+			background[Backgrounds.set]?.value
 	)
 
 	suspend fun transformToDashboardConfigurationJson(user: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig): JsonObject {

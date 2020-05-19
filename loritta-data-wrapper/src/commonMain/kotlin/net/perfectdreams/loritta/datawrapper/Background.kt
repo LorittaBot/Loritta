@@ -12,5 +12,5 @@ class Background(
 		val createdBy: List<String>? = null,
 		val crop: Crop? = null,
 		val set: String? = null,
-		val tag: String? = null
+		var tag: String? = null
 )

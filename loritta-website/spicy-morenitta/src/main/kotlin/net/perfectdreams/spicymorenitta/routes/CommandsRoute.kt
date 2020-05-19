@@ -5,8 +5,8 @@ import io.ktor.client.request.url
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.list
 import kotlinx.serialization.json.JSON
-import kotlinx.serialization.parseList
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
@@ -30,7 +30,7 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
                 url("${window.location.origin}/api/v1/loritta/commands/${locale.id}")
             }
 
-            val list = JSON.nonstrict.parseList<Command>(result)
+            val list = JSON.nonstrict.parse(Command.serializer().list, result)
 
             fixDummyNavbarHeight(call)
 

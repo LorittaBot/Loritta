@@ -24,7 +24,7 @@ object AuthUtils {
 
     @JsName("handlePostAuth")
     fun handlePostAuth(payload: String) {
-        val userIdentification = JSON.nonstrict.parse<UserIdentification>(payload)
+        val userIdentification = JSON.nonstrict.parse(UserIdentification.serializer(), payload)
         SpicyMorenitta.INSTANCE.updateLoggedInUser(userIdentification)
     }
 }

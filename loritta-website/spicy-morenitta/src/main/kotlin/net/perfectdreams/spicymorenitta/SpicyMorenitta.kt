@@ -16,8 +16,6 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.stream.createHTML
-import kotlinx.serialization.ImplicitReflectionSerializer
-import kotlinx.serialization.parse
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.routes.*
 import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.*
@@ -265,7 +263,7 @@ class SpicyMorenitta : Logging {
 
 	suspend fun loadLocale() {
 		val payload = http.get<String>("${window.location.origin}/api/v1/loritta/locale/$localeId")
-		locale = kotlinx.serialization.json.JSON.nonstrict.parse(payload)
+		locale = kotlinx.serialization.json.JSON.nonstrict.parse(BaseLocale.serializer(), payload)
 
 		// Atualizar o locale que o moment utiliza, já que ele usa uma instância global para tuuuuudo
 		val momentLocaleId = when (locale.id) {
@@ -283,7 +281,7 @@ class SpicyMorenitta : Logging {
 		if (httpResponse.status != HttpStatusCode.OK/* jsonPayload["code"] != null */) {
 			debug("Get User Request failed - ${jsonPayload["code"]}")
 		} else {
-			val userIdentification = kotlinx.serialization.json.JSON.nonstrict.parse<UserIdentification>(payload)
+			val userIdentification = kotlinx.serialization.json.JSON.nonstrict.parse(UserIdentification.serializer(), payload)
 			debug("Get User Request success! - ${userIdentification.username} (${userIdentification.id})")
 			SpicyMorenitta.INSTANCE.updateLoggedInUser(userIdentification)
 		}

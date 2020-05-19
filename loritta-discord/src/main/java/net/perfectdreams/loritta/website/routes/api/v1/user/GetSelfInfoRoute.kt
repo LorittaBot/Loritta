@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.website.routes.api.v1.user
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.toJsonArray
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Background
 import com.mrpowergamerbr.loritta.network.Databases
@@ -15,6 +16,7 @@ import io.ktor.application.ApplicationCall
 import io.ktor.http.HttpStatusCode
 import io.ktor.sessions.get
 import io.ktor.sessions.sessions
+import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.BackgroundPayments
@@ -132,11 +134,23 @@ class GetSelfInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/us
 					}
 
 					backgrounds.map {
-						net.perfectdreams.loritta.website.utils.WebsiteUtils.toJson(
-								Background.wrapRow(it)
+						JsonParser.parseString(
+								Json.stringify(
+										net.perfectdreams.loritta.datawrapper.Background.serializer(),
+										net.perfectdreams.loritta.website.utils.WebsiteUtils.toJson(
+												Background.wrapRow(it)
+										)
+								)
 						)
 					}.toJsonArray().apply {
-						this.add(net.perfectdreams.loritta.website.utils.WebsiteUtils.toJson(Background.findById(Background.DEFAULT_BACKGROUND_ID)!!))
+						this.add(
+								JsonParser.parseString(
+										Json.stringify(
+												net.perfectdreams.loritta.datawrapper.Background.serializer(),
+												net.perfectdreams.loritta.website.utils.WebsiteUtils.toJson(Background.findById(Background.DEFAULT_BACKGROUND_ID)!!)
+										)
+								)
+						)
 					}
 				}
 			}

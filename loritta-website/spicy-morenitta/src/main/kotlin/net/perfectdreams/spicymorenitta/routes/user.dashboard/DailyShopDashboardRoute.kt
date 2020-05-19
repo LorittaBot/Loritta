@@ -8,11 +8,11 @@ import kotlinx.coroutines.delay
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.dom.create
-import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.list
 import kotlinx.serialization.json.JSON
-import kotlinx.serialization.parse
-import kotlinx.serialization.parseList
+import net.perfectdreams.loritta.datawrapper.Background
+import net.perfectdreams.loritta.datawrapper.DailyShopResult
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
@@ -89,7 +89,6 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
         }
     }
 
-    @ImplicitReflectionSerializer
     suspend fun regen(keepRechecking: Boolean) {
         // ===[ DAILY SHOP ]===
         val dailyJob = m.async {
@@ -98,7 +97,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
                     url("${window.location.origin}/api/v1/economy/daily-shop")
                 }
 
-                val result = kotlinx.serialization.json.JSON.nonstrict.parse<DailyShopResult>(payload)
+                val result = kotlinx.serialization.json.JSON.nonstrict.parse(DailyShopResult.serializer(), payload)
 
                 if (keepRechecking && generatedAt == result.generatedAt) {
                     info("Waiting for 5_000ms until we recheck the shop again, looks like it wasn't fully updated yet...")
@@ -122,7 +121,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
             }
 
             debug("Retrieved profiles & background info!")
-            val result = kotlinx.serialization.json.JSON.nonstrict.parse<UserInfoResult>(payload)
+            val result = kotlinx.serialization.json.JSON.nonstrict.parse(UserInfoResult.serializer(), payload)
             return@async result
         }
 
@@ -153,7 +152,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
                 url("${window.location.origin}/api/v1/loritta/fan-arts?query=all&filter=${allArtists.joinToString(",")}")
             }
 
-            JSON.nonstrict.parseList<FanArtArtist>(payload)
+            JSON.nonstrict.parse(FanArtArtist.serializer().list, payload)
         }
 
         val fanArtArtists = fanArtArtistsJob.await()
@@ -171,7 +170,6 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
         return diff
     }
 
-    @ImplicitReflectionSerializer
     fun generateShop(dailyShop: DailyShopResult, userBackgrounds: UserInfoResult, profileWrapper: Image, fanArtArtists: List<FanArtArtist>) {
         info("Generating Shop...")
         val entriesDiv = document.select<HTMLDivElement>("#bundles-content")
@@ -249,7 +247,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
 
                                 if (background.tag != null) {
                                     div(classes = "item-new-tag") {
-                                        +locale[background.tag]
+                                        +locale[background.tag!!]
                                     }
                                 }
                             }
@@ -285,15 +283,9 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
     }
 
     @Serializable
-    class DailyShopResult(
-            val backgrounds: List<AllBackgroundsListDashboardRoute.Background>,
-            val generatedAt: Long
-    )
-
-    @Serializable
     class UserInfoResult(
             val profile: Profile,
-            var backgrounds: MutableList<AllBackgroundsListDashboardRoute.Background>
+            var backgrounds: MutableList<Background>
     )
 
     @Serializable
@@ -301,8 +293,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
             val money: Long
     )
 
-    @ImplicitReflectionSerializer
-    fun openBackgroundInformation(result: UserInfoResult, background: AllBackgroundsListDashboardRoute.Background, alreadyBought: Boolean, backgroundImg: BackgroundImage, profileWrapper: Image, fanArtArtists: List<FanArtArtist>) {
+    fun openBackgroundInformation(result: UserInfoResult, background: Background, alreadyBought: Boolean, backgroundImg: BackgroundImage, profileWrapper: Image, fanArtArtists: List<FanArtArtist>) {
         val modal = TingleModal(
                 TingleOptions(
                         footer = true,
@@ -324,7 +315,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
                             +(locale["backgrounds.${background.internalName}.description"])
 
                             if (background.createdBy != null) {
-                                val artists = fanArtArtists.filter { it.id in background.createdBy }
+                                val artists = fanArtArtists.filter { it.id in background.createdBy!! }
                                 if (artists.isNotEmpty()) {
                                     artists.forEach {
                                         div {

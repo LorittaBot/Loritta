@@ -442,7 +442,7 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 	}
 
 	@ImplicitReflectionSerializer
-	private fun parseAccountInfo(payload: String) = JSON.nonstrict.parse<TwitterAccountInfo>(payload)
+	private fun parseAccountInfo(payload: String) = JSON.nonstrict.parse(TwitterAccountInfo.serializer(), payload)
 
 	@Serializable
 	class TwitterAccountInfo(
