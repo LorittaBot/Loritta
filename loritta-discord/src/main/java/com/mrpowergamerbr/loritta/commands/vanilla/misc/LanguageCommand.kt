@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
@@ -135,8 +136,9 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 				}
 			}
 
-			activateLanguage(context, newLanguage ?: validLanguages.first { it.locale.id == "default" })
+
 			message.delete().queue()
+			activateLanguage(context, newLanguage ?: validLanguages.first { it.locale.id == "default" }, context.isPrivateChannel)
 		}
 
 		for (wrapper in validLanguages.subList(0, 2)) {
@@ -147,11 +149,15 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 		message.addReaction("lori_ok_hand:426183783008698391").queue()
 	}
 
-	private suspend fun activateLanguage(context: CommandContext, newLanguage: LocaleWrapper) {
+	private suspend fun activateLanguage(context: CommandContext, newLanguage: LocaleWrapper, isPrivateChannel: Boolean = false) {
 		var localeId = newLanguage.locale.id
 
+		val profile = loritta.getOrCreateLorittaProfile(context.userHandle.idLong)
 		transaction(Databases.loritta) {
-			context.config.localeId = localeId
+			if (isPrivateChannel) // If command was executed in DM channel, will be set only to user
+				profile.settings.language = localeId
+			else
+				context.config.localeId = localeId
 		}
 
 		val newLocale = loritta.getLocaleById(localeId)
@@ -159,7 +165,10 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 			localeId = "pt-br" // Já que nós já salvamos, vamos trocar o localeId para algo mais "decente"
 		}
 
-		context.reply(newLocale["commands.miscellaneous.language.languageChanged", "`$localeId`"], "\uD83C\uDFA4")
+		if(isPrivateChannel)
+			context.reply(newLocale["commands.miscellaneous.language.languageChanged", "`${localeId}`"], "\uD83C\uDFA4")
+		else
+			context.reply(newLocale["commands.miscellaneous.language.serverLanguageChanged", "`${localeId}`"], "\uD83C\uDFA4")
 	}
 
 	private suspend fun buildLanguageEmbed(locale: BaseLocale, languages: List<LocaleWrapper>): MessageEmbed {
