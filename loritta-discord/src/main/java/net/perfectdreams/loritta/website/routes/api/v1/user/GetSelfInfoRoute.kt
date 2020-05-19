@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.website.routes.api.v1.user
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.toJsonArray
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Background
 import com.mrpowergamerbr.loritta.network.Databases
@@ -15,7 +16,9 @@ import io.ktor.application.ApplicationCall
 import io.ktor.http.HttpStatusCode
 import io.ktor.sessions.get
 import io.ktor.sessions.sessions
+import kotlinx.serialization.json.Json
 import mu.KotlinLogging
+import net.perfectdreams.loritta.serializable.UserIdentification
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.BackgroundPayments
 import net.perfectdreams.loritta.tables.Backgrounds
@@ -71,18 +74,21 @@ class GetSelfInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/us
 			}
 
 			call.respondJson(
-					jsonObject(
-							"id" to userIdentification.id,
-							"username" to userIdentification.username,
-							"discriminator" to userIdentification.discriminator,
-							"avatar" to userIdentification.avatar,
-							"bot" to (userIdentification.bot ?: false),
-							"mfaEnabled" to userIdentification.mfaEnabled,
-							"locale" to userIdentification.locale,
-							"verified" to userIdentification.verified,
-							"email" to userIdentification.email,
-							"flags" to userIdentification.flags,
-							"premiumType" to userIdentification.premiumType
+					Json.stringify(
+							UserIdentification.serializer(),
+							UserIdentification(
+									userIdentification.id.toLong(),
+									userIdentification.username,
+									userIdentification.discriminator,
+									userIdentification.avatar,
+									(userIdentification.bot ?: false),
+									userIdentification.mfaEnabled,
+									userIdentification.locale,
+									userIdentification.verified,
+									userIdentification.email,
+									userIdentification.flags,
+									userIdentification.premiumType
+							)
 					)
 			)
 		} else {
@@ -132,11 +138,23 @@ class GetSelfInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/us
 					}
 
 					backgrounds.map {
-						net.perfectdreams.loritta.website.utils.WebsiteUtils.toJson(
-								Background.wrapRow(it)
+						JsonParser.parseString(
+								Json.stringify(
+										net.perfectdreams.loritta.serializable.Background.serializer(),
+										net.perfectdreams.loritta.website.utils.WebsiteUtils.toSerializable(
+												Background.wrapRow(it)
+										)
+								)
 						)
 					}.toJsonArray().apply {
-						this.add(net.perfectdreams.loritta.website.utils.WebsiteUtils.toJson(Background.findById(Background.DEFAULT_BACKGROUND_ID)!!))
+						this.add(
+								JsonParser.parseString(
+										Json.stringify(
+												net.perfectdreams.loritta.serializable.Background.serializer(),
+												net.perfectdreams.loritta.website.utils.WebsiteUtils.toSerializable(Background.findById(Background.DEFAULT_BACKGROUND_ID)!!)
+										)
+								)
+						)
 					}
 				}
 			}

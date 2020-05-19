@@ -34,7 +34,7 @@ class AuditLogRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/
                 url("${window.location.origin}/api/v1/guilds/${call.parameters["guildid"]}/audit-log")
             }
 
-            val list = kotlinx.serialization.json.JSON.nonstrict.parse<ServerConfig.WebAuditLogWrapper>(result)
+            val list = kotlinx.serialization.json.JSON.nonstrict.parse(ServerConfig.WebAuditLogWrapper.serializer(), result)
 
             fixDummyNavbarHeight(call)
             m.fixLeftSidebarScroll {
@@ -118,7 +118,7 @@ class AuditLogRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/
                             SaveUtils.prepareSave("premium", {
                                 it["keyId"] = donationKey.id
                             }, onFinish = {
-                                val guild = JSON.nonstrict.parse<ServerConfig.Guild>(it.body)
+                                val guild = JSON.nonstrict.parse(ServerConfig.Guild.serializer(), it.body)
 
                                 PremiumKeyView.generateStuff(guild)
                             })

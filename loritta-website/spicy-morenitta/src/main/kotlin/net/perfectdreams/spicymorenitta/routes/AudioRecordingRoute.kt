@@ -6,10 +6,9 @@ import kotlinx.html.dom.append
 import kotlinx.html.id
 import kotlinx.html.js.*
 import kotlinx.html.style
-import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.list
 import kotlinx.serialization.json.JSON
-import kotlinx.serialization.parseList
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.utils.select
@@ -21,7 +20,7 @@ class AudioRecordingRoute(val m: SpicyMorenitta) : BaseRoute("/audio/{guildid}/{
         super.onRender(call)
 
         println("f1")
-        val trackedData = JSON.nonstrict.parseList<TrackedAudioData>(TEST_DATA)
+        val trackedData = JSON.nonstrict.parse(TrackedAudioData.serializer().list, TEST_DATA)
                 .sortedBy { it.at }
         println("f2")
 

@@ -4,7 +4,7 @@ import kotlinx.html.*
 import kotlinx.html.dom.create
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.stream.appendHTML
-import kotlinx.serialization.parseList
+import kotlinx.serialization.builtins.list
 import net.perfectdreams.loritta.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
@@ -250,7 +250,7 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
         (document.getElementById("donate-button") as HTMLDivElement?)?.onclick = {
             val donationKeysJson = document.getElementById("donation-keys-json")?.innerHTML!!
 
-            val donationKeys = kotlinx.serialization.json.JSON.nonstrict.parseList<ServerConfig.DonationKey>(donationKeysJson)
+            val donationKeys = kotlinx.serialization.json.JSON.nonstrict.parse(ServerConfig.DonationKey.serializer().list, donationKeysJson)
 
             if (donationKeys.isNotEmpty()) {
                 val modal = TingleModal(

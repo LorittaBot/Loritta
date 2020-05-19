@@ -16,8 +16,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.stream.createHTML
-import kotlinx.serialization.ImplicitReflectionSerializer
-import kotlinx.serialization.parse
+import net.perfectdreams.loritta.serializable.UserIdentification
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.routes.*
 import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.*
@@ -265,7 +264,7 @@ class SpicyMorenitta : Logging {
 
 	suspend fun loadLocale() {
 		val payload = http.get<String>("${window.location.origin}/api/v1/loritta/locale/$localeId")
-		locale = kotlinx.serialization.json.JSON.nonstrict.parse(payload)
+		locale = kotlinx.serialization.json.JSON.nonstrict.parse(BaseLocale.serializer(), payload)
 
 		// Atualizar o locale que o moment utiliza, já que ele usa uma instância global para tuuuuudo
 		val momentLocaleId = when (locale.id) {
@@ -283,7 +282,7 @@ class SpicyMorenitta : Logging {
 		if (httpResponse.status != HttpStatusCode.OK/* jsonPayload["code"] != null */) {
 			debug("Get User Request failed - ${jsonPayload["code"]}")
 		} else {
-			val userIdentification = kotlinx.serialization.json.JSON.nonstrict.parse<UserIdentification>(payload)
+			val userIdentification = kotlinx.serialization.json.JSON.nonstrict.parse(UserIdentification.serializer(), payload)
 			debug("Get User Request success! - ${userIdentification.username} (${userIdentification.id})")
 			SpicyMorenitta.INSTANCE.updateLoggedInUser(userIdentification)
 		}
@@ -302,21 +301,7 @@ class SpicyMorenitta : Logging {
 			cloned.setAttribute("href", "/br/dashboard")
 
 			cloned.append {
-				val userId = newUser.id.toLong()
-
-				val avatarUrl = if (newUser.avatar != null) {
-					val extension = if (newUser.avatar.startsWith("a_")) { // Avatares animados no Discord começam com "_a"
-						"gif"
-					} else {
-						"png"
-					}
-
-					"https://cdn.discordapp.com/avatars/${userId}/${newUser.avatar}.${extension}?size=256"
-				} else {
-					val avatarId = userId % 5
-
-					"https://cdn.discordapp.com/embed/avatars/$avatarId.png?size=256"
-				}
+				val avatarUrl = newUser.effectiveAvatarUrl
 
 				img(src = avatarUrl) {
 					style = """    font-size: 0px;

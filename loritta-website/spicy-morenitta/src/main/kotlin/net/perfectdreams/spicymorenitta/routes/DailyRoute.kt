@@ -10,9 +10,7 @@ import jq
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.dom.prepend
-import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.parse
 import loriUrl
 import net.perfectdreams.loritta.utils.daily.DailyGuildMissingRequirement
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
@@ -56,7 +54,6 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
     companion object {
         const val USER_PADDING = 2
 
-        @ImplicitReflectionSerializer
         @JsName("recaptchaCallback")
         fun recaptchaCallback(response: String) {
             val currentRoute = SpicyMorenitta.INSTANCE.currentRoute
@@ -156,7 +153,6 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
         } else return false
     }
 
-    @ImplicitReflectionSerializer
     fun updateLeaderboard() {
         // Iremos pegar o leaderboard em uma task separada, já que o endpoint é diferente :)
         m.launch {
@@ -166,7 +162,7 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
                 parameter("padding", "2")
             }
 
-            val payload = kotlinx.serialization.json.JSON.nonstrict.parse<LeaderboardResponse>(response.receive())
+            val payload = kotlinx.serialization.json.JSON.nonstrict.parse(LeaderboardResponse.serializer(), response.receive())
 
             val rankPosition = payload.rankPosition
             val usersAround = payload.usersAround
@@ -220,7 +216,7 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
                                         }
                                     }
                                     td {
-                                        if (user.id.toString() == m.userIdentification?.id) {
+                                        if (user.id == m.userIdentification?.id) {
                                             classes += "rainbow-animated-text"
                                         }
                                         + user.name
@@ -241,7 +237,6 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
         }
     }
 
-    @ImplicitReflectionSerializer
     @JsName("recaptchaCallback")
     fun recaptchaCallback(response: String) {
         val ts1Promotion2 = Audio("${loriUrl}assets/snd/ts1_promotion2.mp3")
@@ -271,7 +266,7 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
                 if (checkIfThereAreErrors(response, data))
                     return@launch
 
-                val payload = kotlinx.serialization.json.JSON.nonstrict.parse<DailyResponse>(JSON.stringify(data))
+                val payload = kotlinx.serialization.json.JSON.nonstrict.parse(DailyResponse.serializer(), JSON.stringify(data))
 
                 jq("#daily-wrapper").fadeTo(500, 0, {
                     dailyWrapper.asDynamic().style.position = "absolute"

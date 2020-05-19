@@ -48,6 +48,14 @@ suspend fun ApplicationCall.respondJson(json: JsonNode, status: HttpStatusCode? 
 	Constants.JSON_MAPPER.writeValueAsString(json)
 }
 
+suspend fun ApplicationCall.respondJson(json: kotlinx.serialization.json.JsonElement, status: HttpStatusCode? = null) = this.respondText(ContentType.Application.Json, status) {
+	json.toString()
+}
+
+suspend fun ApplicationCall.respondJson(json: String, status: HttpStatusCode? = null) = this.respondText(ContentType.Application.Json, status) {
+	json
+}
+
 suspend fun ApplicationCall.respondHtml(html: String, status: HttpStatusCode? = null) = this.respondText(ContentType.Text.Html, status) { html }
 
 /**

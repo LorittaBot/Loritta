@@ -21,7 +21,6 @@ import io.ktor.request.path
 import io.ktor.util.AttributeKey
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.ReactionOption
-import net.perfectdreams.loritta.tables.Backgrounds
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.ReactionOptions
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedRssFeeds
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
@@ -113,17 +112,9 @@ object WebsiteUtils {
 		variables["asset_hash_app"] = WebsiteAssetsHashes.getAssetHash("assets/js/app.js")
 	}
 
-	fun toJson(background: Background) = fromBackgroundToJson(background.readValues)
+	fun toSerializable(background: Background) = fromBackgroundToSerializable(background.readValues)
 
-	fun fromBackgroundToJson(background: ResultRow) = jsonObject(
-			"internalName" to background[Backgrounds.id].value,
-			"imageFile" to background[Backgrounds.imageFile],
-			"enabled" to background[Backgrounds.enabled],
-			"createdBy" to background[Backgrounds.createdBy].toList().toJsonArray(),
-			"rarity" to background[Backgrounds.rarity].name,
-			"crop" to background[Backgrounds.crop],
-			"set" to background[Backgrounds.set]?.value
-	)
+	fun fromBackgroundToSerializable(background: ResultRow) = Background.wrapRow(background).toSerializable()
 
 	suspend fun transformToDashboardConfigurationJson(user: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig): JsonObject {
 		val guildJson = jsonObject(
