@@ -41,23 +41,5 @@ class HttpRequest {
 				xmlHttp.send(data)
 			}
 		}
-
-		suspend fun patch(url: String, data: String): HttpResponse {
-			val xmlHttp = XMLHttpRequest()
-			xmlHttp.open("PATCH", url, true) // true for asynchronous
-			return suspendCoroutine { cont ->
-				xmlHttp.onreadystatechange = {
-					if (xmlHttp.readyState == 4.toShort()) {
-						cont.resume(
-								HttpResponse(
-										xmlHttp.status.toInt(),
-										xmlHttp.responseText
-								)
-						)
-					}
-				}
-				xmlHttp.send(data)
-			}
-		}
 	}
 }

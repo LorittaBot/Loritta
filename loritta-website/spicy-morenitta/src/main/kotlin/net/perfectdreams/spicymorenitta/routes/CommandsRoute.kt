@@ -6,8 +6,6 @@ import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.parseList
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
@@ -154,9 +152,6 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
 
             m.hideLoadingScreen()
         }
-    }
-
-    fun DIV.createCommandEntry(entry: Command) {
     }
 
     companion object {

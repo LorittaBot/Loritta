@@ -4,23 +4,17 @@ import kotlinx.html.*
 import kotlinx.html.dom.create
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.stream.appendHTML
-import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.parseList
 import net.perfectdreams.loritta.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.locale
-import net.perfectdreams.spicymorenitta.utils.PaymentUtils
-import net.perfectdreams.spicymorenitta.utils.appendBuilder
-import net.perfectdreams.spicymorenitta.utils.page
-import net.perfectdreams.spicymorenitta.utils.visibleModal
+import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.get
-import utils.TingleModal
-import utils.TingleOptions
 import kotlin.browser.document
 import kotlin.collections.set
 

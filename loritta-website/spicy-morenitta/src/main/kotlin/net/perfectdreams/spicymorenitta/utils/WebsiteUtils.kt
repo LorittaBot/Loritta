@@ -1,17 +1,8 @@
 package net.perfectdreams.spicymorenitta.utils
 
-import io.ktor.client.request.patch
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.response.readText
-import io.ktor.client.statement.readText
-import io.ktor.http.HttpStatusCode
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.html.*
 import kotlinx.html.js.onChangeFunction
 import kotlinx.serialization.Serializable
-import net.perfectdreams.spicymorenitta.SpicyMorenitta
-import net.perfectdreams.spicymorenitta.http
 import org.w3c.dom.HTMLInputElement
 import kotlin.browser.document
 import kotlin.browser.window
@@ -50,33 +41,6 @@ object WebsiteUtils : Logging {
         // /br/...
         // Então nós removemos o primeiro (que será vazio) e pegamos o primeiro que aparecer
         return split.drop(1).first()
-    }
-
-    fun patchGuildConfigById(
-            id: String,
-            patchCode: Int,
-            data: Any
-    ) {
-        val obj = object {}.asDynamic()
-        obj.patchCode = patchCode
-        obj.data = data
-
-        GlobalScope.launch {
-            SpicyMorenitta.INSTANCE.showLoadingScreen("Salvando...")
-
-            val result = http.patch<HttpResponse>("https://spicy.loritta.website/api/v1/guilds/$id/config") {
-                body = JSON.stringify(data)
-            }
-
-            val asJson = result.readText()
-            debug(asJson)
-
-            SpicyMorenitta.INSTANCE.hideLoadingScreen()
-
-            if (result.status != HttpStatusCode.OK) {
-                error("Something went wrong! ${result.status}")
-            }
-        }
     }
 
     fun canManageGuild(g: TemmieDiscordGuild) = getUserPermissionLevel(g).canAddBots
