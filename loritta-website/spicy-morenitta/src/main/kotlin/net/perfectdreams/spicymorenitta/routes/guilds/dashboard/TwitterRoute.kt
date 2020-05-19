@@ -14,7 +14,7 @@ import kotlinx.html.stream.createHTML
 import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
-import kotlinx.serialization.parse
+import net.perfectdreams.loritta.serializable.TrackedTwitterAccount
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
@@ -44,10 +44,10 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 	class PartialGuildConfiguration(
 			val activeDonationKeys: List<ServerConfig.DonationKey>,
 			val textChannels: List<ServerConfig.TextChannel>,
-			val trackedTwitterAccounts: Array<ServerConfig.TrackedTwitterAccount>
+			val trackedTwitterAccounts: Array<TrackedTwitterAccount>
 	)
 
-	val trackedTwitterAccounts = mutableListOf<ServerConfig.TrackedTwitterAccount>()
+	val trackedTwitterAccounts = mutableListOf<TrackedTwitterAccount>()
 	val cachedUsersById = mutableMapOf<Long, TwitterAccountInfo>()
 	val cachedUsersByScreenName = mutableMapOf<String, TwitterAccountInfo>()
 
@@ -94,7 +94,7 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 				editTrackedTwitterAccount(
 						guild,
 						null,
-						ServerConfig.TrackedTwitterAccount(
+						TrackedTwitterAccount(
 								-1L,
 								-1L,
 								"{link}"
@@ -134,7 +134,7 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 	}
 
 	@ImplicitReflectionSerializer
-	fun TagConsumer<HTMLElement>.createTrackedTwitterAccountEntry(guild: PartialGuildConfiguration, trackedTwitterAccount: ServerConfig.TrackedTwitterAccount) {
+	fun TagConsumer<HTMLElement>.createTrackedTwitterAccountEntry(guild: PartialGuildConfiguration, trackedTwitterAccount: TrackedTwitterAccount) {
 		this.div(classes = "discord-generic-entry timer-entry") {
 			attributes["data-twitter-account"] = trackedTwitterAccount.twitterAccountId.toString()
 
@@ -208,7 +208,7 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 	}
 
 	@ImplicitReflectionSerializer
-	private fun editTrackedTwitterAccount(guild: PartialGuildConfiguration, accountInfo: TwitterAccountInfo?, trackedTwitterAccount: ServerConfig.TrackedTwitterAccount) {
+	private fun editTrackedTwitterAccount(guild: PartialGuildConfiguration, accountInfo: TwitterAccountInfo?, trackedTwitterAccount: TrackedTwitterAccount) {
 		val modal = TingleModal(
 				TingleOptions(
 						footer = true,
@@ -235,7 +235,7 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 					.value
 
 			debug("Adding ${visibleModal.getAttribute("data-twitter-account-id")} account to the tracked twitter accounts list...")
-			val account = ServerConfig.TrackedTwitterAccount(
+			val account = TrackedTwitterAccount(
 					channelId.toLong(),
 					visibleModal.getAttribute("data-twitter-account-id")?.toLong() ?: 0L,
 					text
@@ -460,7 +460,7 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 			for (tracked in trackedTwitterAccounts) {
 				accounts.add(
 						json(
-								"channel" to tracked.channelId.toString(),
+								"channelId" to tracked.channelId.toString(),
 								"twitterAccountId" to tracked.twitterAccountId.toString(),
 								"message" to tracked.message
 						)

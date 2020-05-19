@@ -27,7 +27,8 @@ allprojects {
                     return task("fatJar", type = Jar::class) {
                         println("Building fat jar for ${project.name}...")
                         val addToFinalJarSourceProjects = arrayOf(
-                                "loritta-api-"
+                                "loritta-api-",
+                                "loritta-serializable-commons-"
                         )
 
                         archiveBaseName.set("${project.name}-fat")
