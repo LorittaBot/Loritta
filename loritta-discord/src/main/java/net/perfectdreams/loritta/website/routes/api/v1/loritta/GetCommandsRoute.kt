@@ -1,16 +1,9 @@
 package net.perfectdreams.loritta.website.routes.api.v1.loritta
 
-import com.github.salomonbrys.kotson.jsonObject
-import com.github.salomonbrys.kotson.set
-import com.github.salomonbrys.kotson.toJsonArray
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
-import com.mrpowergamerbr.loritta.Loritta
 import io.ktor.application.ApplicationCall
 import kotlinx.serialization.builtins.list
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.commands.LorittaDiscordCommand
 import net.perfectdreams.loritta.serializable.CommandInfo
 import net.perfectdreams.loritta.website.routes.BaseRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
@@ -35,7 +28,7 @@ class GetCommandsRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/lo
 			CommandInfo(
 					it::class.java.simpleName,
 					it.labels.first(),
-					it.labels.toList(),
+					it.labels.drop(1).toList(),
 					it.category,
 					it.getDescription(locale),
 					it.getUsage(locale).build(locale)
@@ -44,7 +37,7 @@ class GetCommandsRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/lo
 			CommandInfo(
 					it.commandName,
 					it.labels.first(),
-					it.labels.toList(),
+					it.labels.drop(1).toList(),
 					it.category,
 					it.description.invoke(locale),
 					it.usage.build(locale)
