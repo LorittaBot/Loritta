@@ -153,7 +153,8 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 								Emotes.LORI_RICH
 						),
 						LoriReply(
-								context.locale["commands.economy.pay.clickToAcceptTheTransaction", "✅"]
+								context.locale["commands.economy.pay.clickToAcceptTheTransaction", "✅"],
+								"🤝",
 						)
 				)
 

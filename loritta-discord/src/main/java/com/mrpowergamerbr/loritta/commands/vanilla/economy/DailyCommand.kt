@@ -28,7 +28,7 @@ class DailyCommand : AbstractCommand("daily", listOf("diário", "bolsafamilia", 
 							Constants.ERROR
 					),
 					LoriReply(
-							locale.toNewLocale()["commands.economy.daily.pleaseWaitBuySonhos", "<${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/daily-shop>"],
+							locale.toNewLocale()["commands.economy.daily.pleaseWaitBuySonhos", "<${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/bundles>"],
 							"\uD83D\uDCB3"
 					)
 			)
@@ -41,7 +41,7 @@ class DailyCommand : AbstractCommand("daily", listOf("diário", "bolsafamilia", 
 						Emotes.LORI_RICH
 				),
 				LoriReply(
-						locale.toNewLocale()["commands.economy.daily.dailyLinkBuySonhos", "<${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/daily-shop>"],
+						locale.toNewLocale()["commands.economy.daily.dailyLinkBuySonhos", "<${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/bundles>"],
 						"\uD83D\uDCB3"
 				)
 		)
