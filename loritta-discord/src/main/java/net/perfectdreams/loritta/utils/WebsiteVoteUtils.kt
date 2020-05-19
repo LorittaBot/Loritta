@@ -35,7 +35,7 @@ object WebsiteVoteUtils {
 		transaction(Databases.loritta) {
 			Profiles.update({ Profiles.id eq userId }) {
 				with(SqlExpressionBuilder) {
-					it.update(money, money + 500L)
+					it.update(money, money + 1200L)
 				}
 			}
 		}
