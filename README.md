@@ -123,7 +123,7 @@ You can also host Loritta yourself, however we won't give support for people tha
 ### `1.` 🧹 Preparing the environment
 * Clone the repository with git:
 ```bash
-git clone https://github.com/LorittaBot/Loritta.git`
+git clone https://github.com/LorittaBot/Loritta.git
 ```
 
 ### `2.` 💻 Compiling
@@ -168,6 +168,7 @@ Seems too hard but you *really* want to use Loritta? Don't worry, you can use ou
 #### If you compiled it yourself...
 
 **Loritta's Discord JAR**: `loritta-discord/build/libs/` (get the Fat JAR version!)
+
 **Loritta's Libraries:** `libs/`
 
 #### If you are lazy and don't want to compile it yourself...
