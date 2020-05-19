@@ -155,6 +155,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 						LoriReply(
 								context.locale["commands.economy.pay.clickToAcceptTheTransaction", "✅"],
 								"🤝",
+								mentionUser = false
 						)
 				)
 
