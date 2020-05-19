@@ -4,10 +4,10 @@ import io.ktor.client.request.get
 import io.ktor.client.request.url
 import kotlinx.html.*
 import kotlinx.html.dom.append
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.list
 import kotlinx.serialization.json.JSON
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.serializable.CommandInfo
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
@@ -30,7 +30,7 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
                 url("${window.location.origin}/api/v1/loritta/commands/${locale.id}")
             }
 
-            val list = JSON.nonstrict.parse(Command.serializer().list, result)
+            val list = JSON.nonstrict.parse(CommandInfo.serializer().list, result)
 
             fixDummyNavbarHeight(call)
 
@@ -126,10 +126,12 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
                                             tr {
                                                 td {
                                                     + command.label
-                                                    if (command.usage != null) {
+
+                                                    val usage = command.usage
+                                                    if (usage != null) {
                                                         + " "
                                                         code {
-                                                            + command.usage
+                                                            + usage
                                                         }
                                                     }
                                                 }
@@ -152,17 +154,5 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
 
             m.hideLoadingScreen()
         }
-    }
-
-    companion object {
-        @Serializable
-        class Command(
-                val name: String,
-                val label: String,
-                val aliases: Array<String>,
-                val category: CommandCategory,
-                val description: String? = null,
-                val usage: String? = null
-        )
     }
 }
