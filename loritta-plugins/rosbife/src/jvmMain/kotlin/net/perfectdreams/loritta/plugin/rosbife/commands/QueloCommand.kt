@@ -23,7 +23,7 @@ object QueloCommand : DSLCommandBase {
 		description { it["commands.images.quelo.description"] }
 
 		examples {
-			it.getWithType<List<String>>("commands.images.quelo.examples")
+			it.getList("commands.images.quelo.examples")
 		}
 
 		usage {
