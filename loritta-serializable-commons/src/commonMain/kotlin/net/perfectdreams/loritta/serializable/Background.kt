@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.datawrapper
+package net.perfectdreams.loritta.serializable
 
 import kotlinx.serialization.Serializable
 import net.perfectdreams.loritta.api.utils.Rarity

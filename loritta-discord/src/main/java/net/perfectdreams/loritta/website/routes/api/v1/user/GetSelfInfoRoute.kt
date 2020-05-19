@@ -18,7 +18,7 @@ import io.ktor.sessions.get
 import io.ktor.sessions.sessions
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
-import net.perfectdreams.loritta.datawrapper.UserIdentification
+import net.perfectdreams.loritta.serializable.UserIdentification
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.BackgroundPayments
 import net.perfectdreams.loritta.tables.Backgrounds
@@ -140,7 +140,7 @@ class GetSelfInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/us
 					backgrounds.map {
 						JsonParser.parseString(
 								Json.stringify(
-										net.perfectdreams.loritta.datawrapper.Background.serializer(),
+										net.perfectdreams.loritta.serializable.Background.serializer(),
 										net.perfectdreams.loritta.website.utils.WebsiteUtils.toSerializable(
 												Background.wrapRow(it)
 										)
@@ -150,7 +150,7 @@ class GetSelfInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/us
 						this.add(
 								JsonParser.parseString(
 										Json.stringify(
-												net.perfectdreams.loritta.datawrapper.Background.serializer(),
+												net.perfectdreams.loritta.serializable.Background.serializer(),
 												net.perfectdreams.loritta.website.utils.WebsiteUtils.toSerializable(Background.findById(Background.DEFAULT_BACKGROUND_ID)!!)
 										)
 								)

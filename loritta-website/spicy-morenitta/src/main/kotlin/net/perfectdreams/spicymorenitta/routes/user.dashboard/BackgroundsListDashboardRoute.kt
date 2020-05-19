@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.list
 import kotlinx.serialization.json.JSON
 import net.perfectdreams.loritta.api.utils.Rarity
-import net.perfectdreams.loritta.datawrapper.Background
+import net.perfectdreams.loritta.serializable.Background
 import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall

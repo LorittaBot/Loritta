@@ -7,7 +7,7 @@ import kotlinx.coroutines.await
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.serialization.json.JSON
-import net.perfectdreams.loritta.datawrapper.Background
+import net.perfectdreams.loritta.serializable.Background
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.routes.user.dashboard.DailyShopDashboardRoute

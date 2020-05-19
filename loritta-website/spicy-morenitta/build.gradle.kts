@@ -17,7 +17,7 @@ kotlin {
 
 	sourceSets["main"].dependencies {
 		implementation(project(":loritta-api"))
-		implementation(project(":loritta-data-wrapper"))
+		implementation(project(":loritta-serializable-commons"))
 		// Hacky workaround due to "Can't resolve xyz" dependency
 		// https://github.com/Kotlin/kotlinx-io/issues/57
 		api(npm("text-encoding"))

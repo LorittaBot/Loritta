@@ -45,6 +45,10 @@ You can also host Loritta yourself, however we won't give support for people tha
 
 > Multiplatform Loritta API, commands and features that only depend on the Loritta's API can be ported to other platforms, as long as they implement Loritta's API.
 
+* 🍃 **Loritta's Serializable Commons** [`loritta-serializable-commons`]
+
+> Serializable classes that are shared between `loritta-discord`, `spicy-morenitta` and other modules. The main purpose of it is to share data between the backend and the frontend in a easy way without messing around with different libraries.They aren't in the `loritta-api` module to avoid filling the `loritta-api` with module-specific classes that aren't needed to implement Loritta!
+
 * 🎀 **Loritta (Discord/JDA)** [`loritta-discord` ]
 
 > Discord implementation of Loritta's API, this is the public bot you all know and love so much! If you are planning to help Loritta's development, this is where to start!

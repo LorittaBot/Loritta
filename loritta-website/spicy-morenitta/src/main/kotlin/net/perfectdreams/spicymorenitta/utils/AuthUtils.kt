@@ -1,7 +1,7 @@
 package net.perfectdreams.spicymorenitta.utils
 
 import kotlinx.serialization.json.JSON
-import net.perfectdreams.loritta.datawrapper.UserIdentification
+import net.perfectdreams.loritta.serializable.UserIdentification
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import org.w3c.dom.HTMLDivElement
 import kotlin.browser.document

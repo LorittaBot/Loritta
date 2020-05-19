@@ -40,7 +40,7 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     compile(project(":loritta-api"))
-    compile(project(":loritta-data-wrapper"))
+    compile(project(":loritta-serializable-commons"))
     compile(project(":temmie-discord-auth"))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
     compile("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5")
