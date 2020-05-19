@@ -15,12 +15,10 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.tables.BannedIps
 import net.perfectdreams.loritta.tables.Requires2FAChecksUsers
 import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.tables.WhitelistedTransactionIds
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
-import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import org.jetbrains.exposed.sql.*
@@ -79,12 +77,6 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 			val beforeGiver = giverProfile.money
 			val beforeReceiver = receiverProfile.money
 
-			val activeMoneyFromDonations = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonations(giverId)
-			val taxBypass = UserPremiumPlans.getPlanFromValue(activeMoneyFromDonations).noPaymentTax
-
-			val taxedMoney = if (taxBypass) { 0.0 } else { Math.ceil(PagarCommand.TRANSACTION_TAX * howMuch.toDouble()) }
-			val finalMoney = (howMuch - taxedMoney).toLong()
-
 			if (lastReceiverDailyAt != null && lastGiverDailyAt != null) {
 				val receiverDailyIp = lastReceiverDailyAt[Dailies.ip]
 				val giverDailyIp = lastGiverDailyAt[Dailies.ip]
@@ -116,7 +108,7 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 
 			transaction(Databases.loritta) {
 				giverProfile.money -= howMuch
-				receiverProfile.money += finalMoney
+				receiverProfile.money += howMuch
 
 				val hasMatchingPayment = SonhosTransaction.select {
 					SonhosTransaction.reason eq SonhosPaymentReason.DAILY and
@@ -125,21 +117,11 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 							(SonhosTransaction.givenAt greaterEq System.currentTimeMillis() - Constants.ONE_DAY_IN_MILLISECONDS)
 				}.firstOrNull()
 
-				if (taxedMoney != 0.0) {
-					SonhosTransaction.insert {
-						it[givenBy] = giverProfile.id.value
-						it[receivedBy] = null
-						it[givenAt] = System.currentTimeMillis()
-						it[quantity] = taxedMoney.toBigDecimal()
-						it[reason] = SonhosPaymentReason.PAYMENT_TAX
-					}
-				}
-
 				val transactionId = SonhosTransaction.insertAndGetId {
 					it[givenBy] = giverProfile.id.value
 					it[receivedBy] = receiverProfile.id.value
 					it[givenAt] = System.currentTimeMillis()
-					it[quantity] = finalMoney.toBigDecimal()
+					it[quantity] = howMuch.toBigDecimal()
 					it[reason] = SonhosPaymentReason.PAYMENT
 				}
 
@@ -174,12 +156,12 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 				}
 			}
 
-			logger.info { "$giverId (antes possuia ${beforeGiver} sonhos) transferiu ${howMuch} sonhos para ${receiverProfile.userId} (antes possuia ${beforeReceiver} sonhos, recebeu apenas $finalMoney (taxado!))" }
+			logger.info { "$giverId (antes possuia ${beforeGiver} sonhos) transferiu ${howMuch} sonhos para ${receiverProfile.userId} (antes possuia ${beforeReceiver} sonhos, recebeu apenas $howMuch (taxado!))" }
 
 			call.respondJson(
 					jsonObject(
 							"status" to PagarCommand.PayStatus.SUCCESS.toString(),
-							"finalMoney" to finalMoney
+							"finalMoney" to howMuch
 					)
 			)
 		}
