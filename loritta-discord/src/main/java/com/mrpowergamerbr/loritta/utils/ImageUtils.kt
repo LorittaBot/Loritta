@@ -124,47 +124,6 @@ object ImageUtils {
 		return currentY
 	}
 
-	fun drawTextWrapUndertale(text: String, startX: Int, startY: Int, endX: Int, endY: Int, fontMetrics: FontMetrics, graphics: Graphics): Int {
-		val temp = BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
-
-		val lineHeight = fontMetrics.height // Aqui é a altura da nossa fonte
-		val font = graphics.font // Font original
-		var currentX = startX // X atual
-		var currentY = startY // Y atual
-
-		var idx = 0
-		for (c in text.toCharArray()) {
-			idx++
-			val width = fontMetrics.charWidth(c) // Width do char (normalmente é 16)
-			if (currentX + width > endX) { // Se o currentX é maior que o endX... (Nós usamos currentX + width para verificar "ahead of time")
-				currentX = startX // Nós iremos fazer wrapping do texto
-				currentY += lineHeight
-			}
-			if (font.canDisplay(c)) {
-				graphics.drawString(c.toString(), currentX, currentY) // Escreva o char na imagem
-			} else {
-				// Talvez seja um emoji!
-				val emoteImage = getTwitterEmoji(text, idx)
-				if (emoteImage != null) {
-					graphics.drawImage(emoteImage.getScaledInstance(width, width, BufferedImage.SCALE_SMOOTH), currentX, currentY - width, null)
-					currentX += width
-					continue
-				}
-
-				if (temp.graphics.font.canDisplay(c)) {
-					graphics.font = temp.graphics.font
-					graphics.drawString(c.toString(), currentX, currentY) // Escreva o char na imagem
-
-					graphics.font = font
-				} else {
-					continue
-				}
-			}
-			currentX += width // E adicione o width no nosso currentX
-		}
-		return currentY
-	}
-
 	fun makeRoundedCorner(image: BufferedImage, cornerRadius: Int): BufferedImage {
 		val w = image.width
 		val h = image.height
