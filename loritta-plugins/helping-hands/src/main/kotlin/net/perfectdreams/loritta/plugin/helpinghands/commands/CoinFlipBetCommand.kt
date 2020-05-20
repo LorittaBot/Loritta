@@ -176,7 +176,7 @@ object CoinFlipBetCommand : DSLCommandBase {
 											mentionUser = false
 									),
 									LorittaReply(
-											locale["commands.economy.flipcoinbet.congratulations", winner.asMention, number, loser.asMention],
+											locale["commands.economy.flipcoinbet.congratulations", winner.asMention, money, loser.asMention],
 											Emotes.LORI_RICH,
 											mentionUser = false
 									)
