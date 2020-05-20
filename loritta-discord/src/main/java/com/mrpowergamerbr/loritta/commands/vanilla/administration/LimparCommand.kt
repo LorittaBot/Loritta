@@ -30,7 +30,7 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 	}
 
 	override fun getExamples(locale: LegacyBaseLocale): List<String> {
-		return locale.toNewLocale().getWithType("commands.moderation.clear.examples")
+		return locale.toNewLocale().getList("commands.moderation.clear.examples")
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {

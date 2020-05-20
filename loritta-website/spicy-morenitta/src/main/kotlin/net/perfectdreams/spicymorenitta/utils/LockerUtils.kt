@@ -6,12 +6,10 @@ import io.ktor.client.statement.readBytes
 import kotlinx.coroutines.await
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
-import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.json.JSON
-import kotlinx.serialization.parse
+import net.perfectdreams.loritta.serializable.Background
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.http
-import net.perfectdreams.spicymorenitta.routes.user.dashboard.AllBackgroundsListDashboardRoute
 import net.perfectdreams.spicymorenitta.routes.user.dashboard.DailyShopDashboardRoute
 import org.khronos.webgl.Uint8Array
 import org.w3c.dom.CanvasRenderingContext2D
@@ -20,8 +18,7 @@ import org.w3c.dom.Image
 import kotlin.browser.window
 
 object LockerUtils : Logging {
-	@ImplicitReflectionSerializer
-	suspend fun prepareBackgroundCanvasPreview(m: SpicyMorenitta, background: AllBackgroundsListDashboardRoute.Background, canvasPreview: HTMLCanvasElement): CanvasPreviewDownload {
+	suspend fun prepareBackgroundCanvasPreview(m: SpicyMorenitta, background: Background, canvasPreview: HTMLCanvasElement): CanvasPreviewDownload {
 		val job = m.async {
 			if (background.imageFile.endsWith(".loribg")) {
 				// Animated BG
@@ -35,7 +32,7 @@ object LockerUtils : Logging {
 				val zip = jsZip.loadAsync(array).await()
 				debug("Zip: $zip")
 				val backgroundDataAsString = zip.file("background.json").async("string").await()
-				val backgroundData = JSON.nonstrict.parse<DailyShopDashboardRoute.AnimatedBackground>(backgroundDataAsString as String)
+				val backgroundData = JSON.nonstrict.parse(DailyShopDashboardRoute.AnimatedBackground.serializer(), backgroundDataAsString as String)
 
 				val frames = mutableListOf<Image>()
 				val jobs = backgroundData.frames.map {

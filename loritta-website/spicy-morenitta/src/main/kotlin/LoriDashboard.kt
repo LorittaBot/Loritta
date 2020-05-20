@@ -2,6 +2,8 @@
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import net.perfectdreams.spicymorenitta.locale
+import net.perfectdreams.spicymorenitta.utils.TingleModal
+import net.perfectdreams.spicymorenitta.utils.TingleOptions
 import net.perfectdreams.spicymorenitta.utils.select
 import org.w3c.dom.HTMLDivElement
 import utils.*

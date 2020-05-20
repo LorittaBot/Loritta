@@ -3,11 +3,9 @@ package net.perfectdreams.spicymorenitta.routes.user.dashboard
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.js.onClickFunction
-import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.list
 import kotlinx.serialization.json.JSON
-import kotlinx.serialization.parse
-import kotlinx.serialization.parseList
 import net.perfectdreams.loritta.api.utils.Rarity
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
@@ -19,20 +17,18 @@ import kotlin.browser.document
 import kotlin.dom.clear
 
 class ProfileListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/user/@me/dashboard/profiles") {
-    @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         super.onRender(call)
 
         val premiumAsJson = document.getElementById("profile-list-json")?.innerHTML!!
         val profileAsJson = document.getElementById("profile-json")?.innerHTML!!
 
-        val shipEffects = JSON.nonstrict.parseList<ProfileLayout>(premiumAsJson)
-        val profile = JSON.nonstrict.parse<Profile>(profileAsJson)
+        val shipEffects = JSON.nonstrict.parse(ProfileLayout.serializer().list, premiumAsJson)
+        val profile = JSON.nonstrict.parse(Profile.serializer(), profileAsJson)
 
         generateEntries(profile, shipEffects)
     }
 
-    @ImplicitReflectionSerializer
     fun generateEntries(profile: Profile, shipEffects: List<ProfileLayout>) {
         val el = page.getElementById("ship-active-effects")
 
@@ -94,7 +90,7 @@ class ProfileListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRen
                                                 it["profileType"] = shipEffect.internalName
                                             }, onFinish = {
                                                 if (it.statusCode in 200..299) {
-                                                    generateEntries(profile, JSON.nonstrict.parseList(it.body))
+                                                    generateEntries(profile, JSON.nonstrict.parse(ProfileLayout.serializer().list, it.body))
                                                 }
                                             })
                                         }
@@ -114,7 +110,7 @@ class ProfileListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRen
                                             it["setActiveProfileDesign"] = shipEffect.internalName
                                         }, onFinish = {
                                             if (it.statusCode in 200..299) {
-                                                generateEntries(profile, JSON.nonstrict.parseList(it.body))
+                                                generateEntries(profile, JSON.nonstrict.parse(ProfileLayout.serializer().list, it.body))
                                             }
                                         })
                                     }
@@ -132,7 +128,7 @@ class ProfileListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRen
 
     @Serializable
     class Profile(
-            val id: String,
+            val id: Long,
             val money: Double
     )
 

@@ -424,7 +424,7 @@ class YouTubeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 	}
 
 	@ImplicitReflectionSerializer
-	private fun parseAccountInfo(payload: String) = JSON.nonstrict.parse<YouTubeAccountInfo>(payload)
+	private fun parseAccountInfo(payload: String) = JSON.nonstrict.parse(YouTubeAccountInfo.serializer(), payload)
 
 	@Serializable
 	class YouTubeAccountInfo(

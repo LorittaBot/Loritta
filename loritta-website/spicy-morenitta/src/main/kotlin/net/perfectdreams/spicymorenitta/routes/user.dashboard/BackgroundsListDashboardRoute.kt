@@ -6,9 +6,11 @@ import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
-import kotlinx.serialization.*
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.list
 import kotlinx.serialization.json.JSON
 import net.perfectdreams.loritta.api.utils.Rarity
+import net.perfectdreams.loritta.serializable.Background
 import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
@@ -38,10 +40,9 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
         get() = document.select("#active-background-set")
     private val activateBackgroundButtonElement: HTMLButtonElement
         get() = document.select(".activate-button")
-    private var activeBackground: AllBackgroundsListDashboardRoute.Background? = null
-    private var enabledBackground: AllBackgroundsListDashboardRoute.Background? = null
+    private var activeBackground: Background? = null
+    private var enabledBackground: Background? = null
 
-    @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         super.onRender(call)
 
@@ -60,7 +61,7 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
                 }
 
                 debug("Retrieved profiles & background info!")
-                val result = kotlinx.serialization.json.JSON.nonstrict.parse<UserInfoResult>(payload)
+                val result = kotlinx.serialization.json.JSON.nonstrict.parse(UserInfoResult.serializer(), payload)
                 return@async result
             }
 
@@ -86,7 +87,7 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
                     url("${window.location.origin}/api/v1/loritta/fan-arts?query=all&filter=${allArtists.joinToString(",")}")
                 }
 
-                JSON.nonstrict.parseList<FanArtArtist>(payload)
+                JSON.nonstrict.parse(FanArtArtist.serializer().list, payload)
             }
 
             val fanArtArtists = fanArtArtistsJob.await()
@@ -97,7 +98,7 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
                     .toMutableList()
                     .apply {
                         this.add(
-                                AllBackgroundsListDashboardRoute.Background(
+                                Background(
                                         "random",
                                         "random.png",
                                         true,
@@ -109,7 +110,7 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
                                 )
                         )
                         this.add(
-                                AllBackgroundsListDashboardRoute.Background(
+                                Background(
                                         "custom",
                                         "custom.png",
                                         true,
@@ -292,7 +293,7 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
         }
     }
 
-    fun updateActiveBackground(profileWrapper: Image, background: AllBackgroundsListDashboardRoute.Background, backgroundImg: Image, fanArtArtists: List<FanArtArtist>) {
+    fun updateActiveBackground(profileWrapper: Image, background: Background, backgroundImg: Image, fanArtArtists: List<FanArtArtist>) {
         this.activeBackground = background
 
         if (enabledBackground == background) {
@@ -348,7 +349,7 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
         activeBackgroundDescriptionElement.textContent = locale["backgrounds.${background.internalName}.description"]
 
         if (background.createdBy != null) {
-            val artists = fanArtArtists.filter { it.id in background.createdBy }
+            val artists = fanArtArtists.filter { it.id in background.createdBy!! }
             if (artists.isNotEmpty()) {
                 activeBackgroundDescriptionElement.append {
                     artists.forEach {
@@ -385,14 +386,14 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
     @Serializable
     class UserInfoResult(
             val settings: Settings,
-            var backgrounds: MutableList<AllBackgroundsListDashboardRoute.Background>,
+            var backgrounds: MutableList<Background>,
             val donations: DonationValues
     )
 
     @Serializable
     class Settings(
-            @Optional val activeBackground: String? = null,
-            @Optional val activeProfileDesign: String? = null
+            val activeBackground: String? = null,
+            val activeProfileDesign: String? = null
     )
 
     @Serializable

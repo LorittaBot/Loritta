@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.parallax.wrapper
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.api.commands.SilentCommandException
 import net.perfectdreams.loritta.parallax.ParallaxServer
 import org.graalvm.polyglot.Context
 import org.graalvm.polyglot.PolyglotException
@@ -29,8 +30,17 @@ class JSCommandContext(
 		println("jsStacktrace")
 		val lastThrow = lastThrow
 		if (lastThrow != null) {
+			if (lastThrow is SilentCommandException)
+				return
+
 			rateLimiter.reset()
 			if (lastThrow is PolyglotException) {
+				if (lastThrow.isHostException) {
+					val hostException = lastThrow.asHostException()
+					if (hostException is SilentCommandException)
+						return
+				}
+
 				lastThrow.printStackTrace()
 
 				val embed = ParallaxEmbed()

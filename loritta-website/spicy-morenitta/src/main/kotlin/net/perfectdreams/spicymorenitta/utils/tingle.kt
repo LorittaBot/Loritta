@@ -5,7 +5,7 @@ package net.perfectdreams.spicymorenitta.utils
 external class TingleModal(options: TingleOptions) {
 	fun addFooterBtn(label: String, classes: String, callback: () -> Unit)
 
-	fun setContent(html: String)
+	fun setContent(html: dynamic)
 
 	fun getContent(): String
 

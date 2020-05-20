@@ -1,14 +1,17 @@
 package net.perfectdreams.loritta.website.utils.config.types
 
-import com.github.salomonbrys.kotson.*
-import com.google.gson.JsonArray
+import com.github.salomonbrys.kotson.array
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import kotlinx.serialization.builtins.list
+import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.*
+import net.perfectdreams.loritta.serializable.TrackedTwitterAccount
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedTwitterAccounts
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -24,14 +27,14 @@ object TwitterConfigTransformer : ConfigTransformer {
                 TrackedTwitterAccounts.guildId eq guild.idLong
             }
 
-            val accounts = payload["accounts"].array
+            val accounts = Json.parse(TrackedTwitterAccount.serializer().list, payload["accounts"].array.toString())
 
             for (account in accounts) {
                 TrackedTwitterAccounts.insert {
                     it[guildId] = guild.idLong
-                    it[channelId] = account["channel"].long
-                    it[twitterAccountId] = account["twitterAccountId"].long
-                    it[message] = account["message"].string
+                    it[channelId] = account.channelId
+                    it[twitterAccountId] = account.twitterAccountId
+                    it[message] = account.message
                 }
             }
         }
@@ -41,21 +44,19 @@ object TwitterConfigTransformer : ConfigTransformer {
 
     override suspend fun toJson(guild: Guild, serverConfig: ServerConfig): JsonElement {
         return transaction(Databases.loritta) {
-            val array = JsonArray()
-
-            TrackedTwitterAccounts.select {
+            val trackedTwitterAccounts = TrackedTwitterAccounts.select {
                 TrackedTwitterAccounts.guildId eq guild.idLong
-            }.forEach {
-                array.add(
-                        jsonObject(
-                                "channelId" to it[TrackedTwitterAccounts.channelId],
-                                "twitterAccountId" to it[TrackedTwitterAccounts.twitterAccountId],
-                                "message" to it[TrackedTwitterAccounts.message]
-                        )
+            }.map {
+                TrackedTwitterAccount(
+                        it[TrackedTwitterAccounts.channelId],
+                        it[TrackedTwitterAccounts.twitterAccountId],
+                        it[TrackedTwitterAccounts.message]
                 )
             }
 
-            array
+            JsonParser.parseString(
+                    Json.stringify(TrackedTwitterAccount.serializer().list, trackedTwitterAccounts)
+            )
         }
     }
 }

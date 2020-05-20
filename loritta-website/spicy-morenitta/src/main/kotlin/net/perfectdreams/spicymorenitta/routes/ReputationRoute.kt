@@ -72,7 +72,6 @@ class ReputationRoute : BaseRoute("/user/{userId}/rep") {
         }
     }
 
-    @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         super.onRender(call)
 

@@ -438,7 +438,7 @@ class TwitchRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{g
 	}
 
 	@ImplicitReflectionSerializer
-	private fun parseAccountInfo(payload: String) = JSON.nonstrict.parse<TwitchAccountInfo>(payload)
+	private fun parseAccountInfo(payload: String) = JSON.nonstrict.parse(TwitchAccountInfo.serializer(), payload)
 
 	@Serializable
 	class TwitchAccountInfo(

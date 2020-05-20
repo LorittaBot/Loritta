@@ -66,7 +66,7 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		embed.setThumbnail("${loritta.instanceConfig.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
 		embed.setColor(Color(0, 193, 223))
 		embed.setDescription(
-				locale.toNewLocale().getWithType<List<String>>("commands.discord.botinfo.embedDescription")
+				locale.toNewLocale().getList("commands.discord.botinfo.embedDescription")
 						.joinToString("\n\n")
 						.msgFormat(
 								guildCount,
@@ -97,7 +97,7 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 
 		embed.addField(
 				"\uD83C\uDFC5 ${locale["BOTINFO_HONORABLE_MENTIONS"]}",
-				locale.toNewLocale().getWithType<List<String>>("commands.discord.botinfo.honorableMentions").joinToString("\n") { "• $it" }
+				locale.toNewLocale().getList("commands.discord.botinfo.honorableMentions").joinToString("\n") { "• $it" }
 						.msgFormat(
 								numberOfUniqueDonators,
 								loritta.fanArtArtists.size,
