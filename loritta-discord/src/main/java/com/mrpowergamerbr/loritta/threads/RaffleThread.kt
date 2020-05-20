@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
 import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
+import net.perfectdreams.loritta.utils.UserPremiumPlans
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
@@ -82,8 +83,11 @@ class RaffleThread : Thread("Raffle Thread") {
 			val winnerId = winner.first
 			lastWinnerId = winnerId
 
+			val currentActiveDonations = loritta.getActiveMoneyFromDonations(winnerId.toLong())
+			val plan = UserPremiumPlans.getPlanFromValue(currentActiveDonations)
+
 			val moneyWithoutTaxes = userIds.size * 250
-			val money = (moneyWithoutTaxes * 0.95).toInt()
+			val money = (moneyWithoutTaxes * plan.totalLoraffleReward).toInt()
 			lastWinnerPrize = money
 
 			val lorittaProfile = loritta.getOrCreateLorittaProfile(winnerId)

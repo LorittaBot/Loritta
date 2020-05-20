@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.arguments
@@ -20,6 +21,7 @@ import net.perfectdreams.loritta.plugin.helpinghands.commands.base.DSLCommandBas
 import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
+import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.loritta.utils.extensions.refreshInDeferredTransaction
 import net.perfectdreams.loritta.utils.extensions.toJDA
 import org.jetbrains.exposed.sql.insert
@@ -67,12 +69,36 @@ object CoinFlipBetCommand : DSLCommandBase {
 			if (invitedUser == context.user)
 				fail(locale["commands.economy.flipcoinbet.cantBetSelf"], Constants.ERROR)
 
+			val selfActiveDonations = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonations(context.discordMessage.author.idLong)
+			val otherActiveDonations = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonations(invitedUser.idLong)
+
+			val selfPlan = UserPremiumPlans.getPlanFromValue(selfActiveDonations)
+			val otherPlan = UserPremiumPlans.getPlanFromValue(otherActiveDonations)
+
+			val hasNoTax: Boolean
+			val whoHasTheNoTaxReward: User?
+			val plan: UserPremiumPlans?
+
+			if (selfPlan.totalCoinFlipReward == 1.0) {
+				whoHasTheNoTaxReward = context.discordMessage.author
+				hasNoTax = true
+				plan = selfPlan
+			} else if (otherPlan.totalCoinFlipReward == 1.0) {
+				whoHasTheNoTaxReward = invitedUser
+				hasNoTax = true
+				plan = otherPlan
+			} else {
+				whoHasTheNoTaxReward = null
+				hasNoTax = false
+				plan = UserPremiumPlans.Essential
+			}
+
 			val number = context.args[1].toLongOrNull()
 					?: fail(locale["commands.invalidNumber", context.args[1].stripCodeMarks()], Emotes.LORI_CRYING.toString())
-			val tax = (number * 0.05).toLong()
+			val tax = (number * (1.0 - plan.totalCoinFlipReward)).toLong()
 			val money = number - tax
 
-			if (tax == 0L)
+			if (!hasNoTax && tax == 0L)
 				fail(locale["commands.economy.flipcoinbet.youNeedToBetMore"], Constants.ERROR)
 
 			if (0 >= number)
@@ -90,16 +116,29 @@ object CoinFlipBetCommand : DSLCommandBase {
 
 			val message = context.reply(
 					LorittaReply(
-							locale[
-									"commands.economy.flipcoinbet.startBet",
-									invitedUser.asMention,
-									context.user.asMention,
-									locale["commands.fun.flipcoin.heads"],
-									money,
-									locale["commands.fun.flipcoin.tails"],
-									number,
-									tax
-							],
+							(
+									if (hasNoTax)
+										locale[
+												"commands.economy.flipcoinbet.startBetNoTax",
+												invitedUser.asMention,
+												context.user.asMention,
+												locale["commands.fun.flipcoin.heads"],
+												money,
+												locale["commands.fun.flipcoin.tails"],
+												whoHasTheNoTaxReward?.asMention ?: "???"
+										]
+									else
+										locale[
+												"commands.economy.flipcoinbet.startBet",
+												invitedUser.asMention,
+												context.user.asMention,
+												locale["commands.fun.flipcoin.heads"],
+												money,
+												locale["commands.fun.flipcoin.tails"],
+												number,
+												tax
+										]
+									),
 							Emotes.LORI_RICH,
 							mentionUser = false
 					)
