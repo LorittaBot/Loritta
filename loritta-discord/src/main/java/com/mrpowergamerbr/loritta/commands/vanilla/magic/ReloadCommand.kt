@@ -79,8 +79,10 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			return
 		}
 		if (arg0 == "shard") {
-			val shardId = context.rawArgs.getOrNull(1)!!.toInt()
-			lorittaShards.shardManager.restart(shardId)
+			val shardId = context.rawArgs.getOrNull(1)!!.split(",").map { it.toInt() }
+			shardId.forEach {
+				lorittaShards.shardManager.restart(it)
+			}
 			context.reply(
 					LoriReply(
 							message = "Shard $shardId está sendo reiniciada... Gotta go fast!!!"
