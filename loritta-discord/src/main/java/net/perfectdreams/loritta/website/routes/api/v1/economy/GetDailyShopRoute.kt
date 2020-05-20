@@ -19,11 +19,9 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class GetDailyShopRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/economy/daily-shop") {
 	override suspend fun onRequest(call: ApplicationCall) {
-		val backgroundsInShop = mutableListOf<Background>()
-
 		var generatedAt: Long? = null
 
-		val backgrounds = transaction(Databases.loritta) {
+		val backgroundsInShop = transaction(Databases.loritta) {
 			val shop = DailyShops.selectAll().orderBy(DailyShops.generatedAt, SortOrder.DESC).limit(1).first()
 
 			generatedAt = shop[DailyShops.generatedAt]
