@@ -82,11 +82,12 @@ class RaffleThread : Thread("Raffle Thread") {
 			val winnerId = winner.first
 			lastWinnerId = winnerId
 
-			val money = userIds.size * 250
+			val moneyWithoutTaxes = userIds.size * 250
+			val money = (moneyWithoutTaxes * 0.95).toInt()
 			lastWinnerPrize = money
 
 			val lorittaProfile = loritta.getOrCreateLorittaProfile(winnerId)
-			logger.info("$lastWinnerId ganhou $lastWinnerPrize sonhos (antes ele possuia ${lorittaProfile.money} sonhos) na Rifa!")
+			logger.info("$lastWinnerId ganhou $lastWinnerPrize sonhos ($moneyWithoutTaxes without taxes; antes ele possuia ${lorittaProfile.money} sonhos) na Rifa!")
 
 			transaction(Databases.loritta){
 				lorittaProfile.money += money
