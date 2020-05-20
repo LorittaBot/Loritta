@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MessageInteractionFunctions
 import com.mrpowergamerbr.loritta.utils.removeAllFunctions
+import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -53,6 +54,11 @@ object CoinFlipBetCommand : DSLCommandBase {
 		executes {
 			loritta as Loritta
 
+			if (2 > args.size) {
+				this.explain()
+				return@executes
+			}
+
 			val context = checkType<DiscordCommandContext>(this)
 
 			val _user = validate(context.user(0))
@@ -61,7 +67,13 @@ object CoinFlipBetCommand : DSLCommandBase {
 			if (invitedUser == context.user)
 				fail(locale["commands.economy.flipcoinbet.cantBetSelf"], Constants.ERROR)
 
-			val number = context.args[1].toLong()
+			val number = context.args[1].toLongOrNull()
+					?: fail(locale["commands.invalidNumber", context.args[1].stripCodeMarks()], Emotes.LORI_CRYING.toString())
+			val tax = (number * 0.05).toLong()
+			val money = number - tax
+
+			if (tax == 0L)
+				fail(locale["commands.economy.flipcoinbet.youNeedToBetMore"], Constants.ERROR)
 
 			if (0 >= number)
 				fail(locale["commands.economy.flipcoinbet.zeroMoney"], Constants.ERROR)
@@ -83,8 +95,10 @@ object CoinFlipBetCommand : DSLCommandBase {
 									invitedUser.asMention,
 									context.user.asMention,
 									locale["commands.fun.flipcoin.heads"],
+									money,
+									locale["commands.fun.flipcoin.tails"],
 									number,
-									locale["commands.fun.flipcoin.tails"]
+									tax
 							],
 							Emotes.LORI_RICH,
 							mentionUser = false
@@ -127,7 +141,7 @@ object CoinFlipBetCommand : DSLCommandBase {
 								winner = context.user
 								loser = invitedUser
 								transaction(Databases.loritta) {
-									selfUserProfile.money += number
+									selfUserProfile.money += money
 									invitedUserProfile.money -= number
 
 									SonhosTransaction.insert {
@@ -142,7 +156,7 @@ object CoinFlipBetCommand : DSLCommandBase {
 								winner = invitedUser
 								loser = context.user
 								transaction(Databases.loritta) {
-									invitedUserProfile.money += number
+									invitedUserProfile.money += money
 									selfUserProfile.money -= number
 
 									SonhosTransaction.insert {
