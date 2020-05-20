@@ -3,9 +3,9 @@ package net.perfectdreams.loritta.website.routes.api.v1.economy
 import com.mrpowergamerbr.loritta.network.Databases
 import io.ktor.application.ApplicationCall
 import kotlinx.serialization.json.Json
+import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.serializable.Background
 import net.perfectdreams.loritta.serializable.DailyShopResult
-import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.Backgrounds
 import net.perfectdreams.loritta.tables.DailyShopItems
 import net.perfectdreams.loritta.tables.DailyShops
@@ -31,14 +31,13 @@ class GetDailyShopRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/e
 			(DailyShopItems innerJoin Backgrounds)
 					.select {
 						DailyShopItems.shop eq shop[DailyShops.id]
-					}.toList()
-		}
-
-		for (background in backgrounds) {
-			backgroundsInShop.add(
-					WebsiteUtils.fromBackgroundToSerializable(background)
-							.also { it.tag = background[DailyShopItems.tag] }
-			)
+					}
+					.map {
+						WebsiteUtils.fromBackgroundToSerializable(it).also { background ->
+							background.tag = it[DailyShopItems.tag]
+						}
+					}
+					.toList()
 		}
 
 		val shopPayload = DailyShopResult(
