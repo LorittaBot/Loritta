@@ -106,7 +106,8 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 				context.getAsMention(true),
 				buildLanguageEmbed(
 						locale.toNewLocale(),
-						validLanguages.subList(0, 2)
+						validLanguages.subList(0, 2),
+						context.isPrivateChannel
 				)
 		)
 
@@ -116,7 +117,8 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 						" ",
 						buildLanguageEmbed(
 								locale.toNewLocale(),
-								validLanguages.subList(2, validLanguages.size)
+								validLanguages.subList(2, validLanguages.size),
+								context.isPrivateChannel
 						),
 						true
 				)
@@ -135,7 +137,6 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 					it.reactionEmote.isEmote(language.emoteName)
 				}
 			}
-
 
 			message.delete().queue()
 			activateLanguage(context, newLanguage ?: validLanguages.first { it.locale.id == "default" }, context.isPrivateChannel)
@@ -171,22 +172,24 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 			context.reply(newLocale["commands.miscellaneous.language.serverLanguageChanged", "`${localeId}`"], "\uD83C\uDFA4")
 	}
 
-	private suspend fun buildLanguageEmbed(locale: BaseLocale, languages: List<LocaleWrapper>): MessageEmbed {
+	private suspend fun buildLanguageEmbed(locale: BaseLocale, languages: List<LocaleWrapper>, isPrivateChannel: Boolean): MessageEmbed {
 		val embed = EmbedBuilder()
 		embed.setColor(Color(0, 193, 223))
-
 		embed.setTitle("\uD83C\uDF0E " + locale["commands.miscellaneous.language.pleaseSelectYourLanguage"])
+		if (isPrivateChannel) {
+			embed.setDescription(locale["commands.miscellaneous.language.changeLanguageDescription"])
+		} else {
+			embed.setDescription(locale["commands.miscellaneous.language.changeServerLanguageDescription"])
+		}
 
 		for (wrapper in languages) {
 			val translators = wrapper.locale.getWithType<List<String>>("loritta.translationAuthors").mapNotNull { lorittaShards.retrieveUserInfoById(it.toLong()) }
-
 			embed.addField(
 					wrapper.emoteName + " " + wrapper.name,
 					"**${locale["commands.miscellaneous.language.translatedBy"]}:** ${translators.joinToString(transform = { "`${it.name}`" })}",
 					true
 			)
 		}
-
 		return embed.build()
 	}
 
