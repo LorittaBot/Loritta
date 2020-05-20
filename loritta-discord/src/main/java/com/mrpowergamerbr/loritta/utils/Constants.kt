@@ -10,6 +10,7 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import com.jasonclawson.jackson.dataformat.hocon.HoconFactory
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.jackson.FixedMapDeserializer
 import org.yaml.snakeyaml.Yaml
 import java.awt.Color
@@ -192,7 +193,7 @@ object Constants {
 		} else {
 			context.reply(
 					LoriReply(
-							message = context.legacyLocale["NO_VALID_IMAGE"],
+							message = context.locale["commands.noValidImageFound", Emotes.LORI_CRYING.toString()],
 							prefix = Constants.ERROR
 					)
 			)

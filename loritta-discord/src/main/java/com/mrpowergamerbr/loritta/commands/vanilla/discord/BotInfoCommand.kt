@@ -22,7 +22,7 @@ import java.util.jar.JarFile
 
 class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DISCORD) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.get("BOTINFO_DESCRIPTION")
+		return locale.toNewLocale()["commands.discord.botinfo.description"]
 	}
 
 	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {

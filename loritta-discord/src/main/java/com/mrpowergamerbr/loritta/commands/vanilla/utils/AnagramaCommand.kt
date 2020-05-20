@@ -19,7 +19,7 @@ class AnagramaCommand : AbstractCommand("anagram", listOf("anagrama"), CommandCa
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["ANAGRAMA_DESCRIPTION"]
+		return locale.toNewLocale()["$LOCALE_PREFIX.description"]
 	}
 
 	override fun getExtendedExamples(): Map<String, String> {

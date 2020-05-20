@@ -24,7 +24,7 @@ class WarnListCommand : AbstractCommand("punishmentlist", listOf("listadeavisos"
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["WARNLIST_Description"]
+		return locale.toNewLocale()["$LOCALE_PREFIX.warnlist.description"]
 	}
 
 	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {

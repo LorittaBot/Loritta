@@ -27,7 +27,7 @@ class NyanCatCommand : AbstractCommand("nyan", category = CommandCategory.IMAGES
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.get("NYANCAT_DESCRIPTION")
+		return locale.toNewLocale()["commands.images.nyancat.description"]
 	}
 
 	override fun getUsage(): String {

@@ -11,7 +11,7 @@ import com.mrpowergamerbr.loritta.utils.minecraft.MCUtils
 
 class McSkinCommand : AbstractCommand("mcskin", listOf("skinsteal", "skinstealer"), CommandCategory.MINECRAFT) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.get("MCSKIN_Description")
+		return locale.toNewLocale()["commands.minecraft.mcskin.description"]
 	}
 
 	override fun getUsage(): String {

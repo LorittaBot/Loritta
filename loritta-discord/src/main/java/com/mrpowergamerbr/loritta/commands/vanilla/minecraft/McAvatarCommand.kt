@@ -1,17 +1,17 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.minecraft
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.minecraft.MCUtils
+import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class McAvatarCommand : AbstractCommand("mcavatar", category = CommandCategory.MINECRAFT) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.get("MCAVATAR_DESCRIPTION")
+		return locale.toNewLocale()["commands.minecraft.mcavatar.description"]
 	}
 
 	override fun getUsage(): String {
