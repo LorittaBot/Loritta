@@ -4,7 +4,6 @@ import com.mrpowergamerbr.loritta.network.Databases
 import io.ktor.application.ApplicationCall
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.serializable.Background
 import net.perfectdreams.loritta.serializable.DailyShopResult
 import net.perfectdreams.loritta.tables.Backgrounds
 import net.perfectdreams.loritta.tables.DailyShopItems
