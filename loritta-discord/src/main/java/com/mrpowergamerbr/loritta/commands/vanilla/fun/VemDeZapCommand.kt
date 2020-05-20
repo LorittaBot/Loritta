@@ -12,11 +12,11 @@ import net.perfectdreams.loritta.api.commands.arguments
 
 class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.FUN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale().getWithType("commands.entertainment.vemDeZap.description")
+		return locale.toNewLocale()["commands.entertainment.vemDeZap.description"]
 	}
 
 	override fun getExamples(locale: LegacyBaseLocale): List<String> {
-		return locale.toNewLocale().getWithType("commands.entertainment.vemDeZap.examples")
+		return locale.toNewLocale().getList("commands.entertainment.vemDeZap.examples")
 	}
 
 	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {

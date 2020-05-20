@@ -1,10 +1,10 @@
 package net.perfectdreams.loritta.website.routes.api.v1.economy
 
-import com.github.salomonbrys.kotson.jsonObject
-import com.github.salomonbrys.kotson.set
-import com.google.gson.JsonArray
 import com.mrpowergamerbr.loritta.network.Databases
 import io.ktor.application.ApplicationCall
+import kotlinx.serialization.json.Json
+import net.perfectdreams.loritta.serializable.Background
+import net.perfectdreams.loritta.serializable.DailyShopResult
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.Backgrounds
 import net.perfectdreams.loritta.tables.DailyShopItems
@@ -19,8 +19,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class GetDailyShopRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/economy/daily-shop") {
 	override suspend fun onRequest(call: ApplicationCall) {
-		val array = JsonArray()
-		val shopPayload = jsonObject()
+		val backgroundsInShop = mutableListOf<Background>()
 
 		var generatedAt: Long? = null
 
@@ -36,15 +35,17 @@ class GetDailyShopRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/e
 		}
 
 		for (background in backgrounds) {
-			array.add(
-					WebsiteUtils.fromBackgroundToJson(background)
-							.also { it["tag"] = background[DailyShopItems.tag] }
+			backgroundsInShop.add(
+					WebsiteUtils.fromBackgroundToSerializable(background)
+							.also { it.tag = background[DailyShopItems.tag] }
 			)
 		}
 
-		shopPayload["backgrounds"] = array
-		shopPayload["generatedAt"] = generatedAt
+		val shopPayload = DailyShopResult(
+				backgroundsInShop,
+				generatedAt ?: -1L
+		)
 
-		call.respondJson(shopPayload)
+		call.respondJson(Json.stringify(DailyShopResult.serializer(), shopPayload))
 	}
 }

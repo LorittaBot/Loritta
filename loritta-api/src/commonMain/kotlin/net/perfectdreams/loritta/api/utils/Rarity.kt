@@ -1,5 +1,8 @@
 package net.perfectdreams.loritta.api.utils
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 enum class Rarity {
 	COMMON,
 	UNCOMMON,

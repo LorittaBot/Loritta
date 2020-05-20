@@ -1,5 +1,8 @@
 package net.perfectdreams.spicymorenitta.utils
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 enum class LoriWebCode(val errorId: Int, val fancyName: String) {
 	// 6xx - SUCCESS / INFO
 	// 7xx - USER ERROR

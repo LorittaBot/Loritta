@@ -6,8 +6,8 @@ import kotlinx.html.*
 import kotlinx.html.dom.create
 import kotlinx.html.js.onClickFunction
 import org.w3c.dom.HTMLInputElement
-import utils.TingleModal
-import utils.TingleOptions
+import net.perfectdreams.spicymorenitta.utils.TingleModal
+import net.perfectdreams.spicymorenitta.utils.TingleOptions
 import kotlin.browser.document
 import kotlin.browser.window
 import kotlin.js.Json

@@ -183,8 +183,9 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 		}
 
 		for (wrapper in languages) {
-			val translators = wrapper.locale.getWithType<List<String>>("loritta.translationAuthors").mapNotNull { lorittaShards.retrieveUserInfoById(it.toLong()) }
-			embed.addField(
+			val translators = wrapper.locale.getList("loritta.translationAuthors").mapNotNull { lorittaShards.retrieveUserInfoById(it.toLong()) }
+			
+      embed.addField(
 					wrapper.emoteName + " " + wrapper.name,
 					"**${locale["commands.miscellaneous.language.translatedBy"]}:** ${translators.joinToString(transform = { "`${it.name}`" })}",
 					true

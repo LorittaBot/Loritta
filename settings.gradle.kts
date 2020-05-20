@@ -18,6 +18,7 @@ pluginManagement {
 
 rootProject.name = "loritta-parent"
 include(":loritta-api")
+include(":loritta-serializable-commons")
 include(":loritta-discord")
 include(":loritta-eris")
 
@@ -31,7 +32,7 @@ include(":loritta-plugins:fortnite-stuff")
 include(":loritta-plugins:profile-designs")
 // include(":loritta-plugins:cloudflare-web-firewall")
 // include(":loritta-plugins:christmas-2019-event")
-include(":loritta-plugins:automated-locales")
+// include(":loritta-plugins:automated-locales")
 include(":loritta-plugins:api-only-test")
 include(":loritta-plugins:rosbife")
 include(":loritta-plugins:funfunfun")

@@ -65,7 +65,7 @@ abstract class ActionCommand(labels: Array<String>) : LorittaCommand(labels, Com
     }
 
     override fun getExamples(locale: BaseLocale): List<String> {
-        return locale.getWithType("commands.actions.examples")
+        return locale.getList("commands.actions.examples")
     }
 
     private fun getGifsFor(userGender: Gender, receiverGender: Gender): List<CachedGif> {

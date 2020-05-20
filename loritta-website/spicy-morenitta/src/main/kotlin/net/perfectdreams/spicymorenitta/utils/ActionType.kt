@@ -1,5 +1,8 @@
 package net.perfectdreams.spicymorenitta.utils
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 enum class ActionType(val updateType: String, val sectionName: String) {
 	UNKNOWN("generic", "unknown"),
 

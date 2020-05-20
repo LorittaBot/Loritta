@@ -4,11 +4,8 @@ import io.ktor.client.request.get
 import io.ktor.client.request.url
 import kotlinx.html.*
 import kotlinx.html.dom.append
-import kotlinx.serialization.ImplicitReflectionSerializer
-import kotlinx.serialization.Optional
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.parseList
-import net.perfectdreams.loritta.api.utils.Rarity
+import kotlinx.serialization.builtins.list
+import net.perfectdreams.loritta.serializable.Background
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
@@ -27,7 +24,6 @@ class AllBackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSize
     override val keepLoadingScreen: Boolean
         get() = true
 
-    @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         super.onRender(call)
 
@@ -38,7 +34,7 @@ class AllBackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSize
                 url("${window.location.origin}/api/v1/loritta/backgrounds")
             }
 
-            val list = kotlinx.serialization.json.JSON.nonstrict.parseList<Background>(result)
+            val list = kotlinx.serialization.json.JSON.nonstrict.parse(Background.serializer().list, result)
 
             val profileWrapper = Image()
             debug("Awaiting load...")
@@ -136,24 +132,4 @@ class AllBackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSize
             m.hideLoadingScreen()
         }
     }
-
-    @Serializable
-    class Background(
-            val internalName: String,
-            val imageFile: String,
-            val enabled: Boolean,
-            val rarity: Rarity,
-            @Optional val createdBy: List<String>? = null,
-            @Optional val crop: Crop? = null,
-            @Optional val set: String? = null,
-            @Optional val tag: String? = null
-    )
-
-    @Serializable
-    class Crop(
-            val offsetX: Int,
-            val offsetY: Int,
-            val width: Int,
-            val height: Int
-    )
 }

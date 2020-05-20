@@ -19,8 +19,8 @@ import net.perfectdreams.spicymorenitta.utils.select
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.HTMLInputElement
-import utils.TingleModal
-import utils.TingleOptions
+import net.perfectdreams.spicymorenitta.utils.TingleModal
+import net.perfectdreams.spicymorenitta.utils.TingleOptions
 import kotlin.browser.document
 import kotlin.browser.window
 
