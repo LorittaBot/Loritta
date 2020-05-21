@@ -149,7 +149,7 @@ class DailyTaxTask : Runnable {
 				}
 
 				// Hora de avisar aos usuários que a doação deles irá acabar!
-				for (soonToBeExpiredDonation in soonToBeExpiredDonations.distinctBy { it.userId }) {
+				for ((index, soonToBeExpiredDonation) in soonToBeExpiredDonations.distinctBy { it.userId }.withIndex()) {
 					val user = lorittaShards.getUserById(soonToBeExpiredDonation.userId) ?: continue // Ignorar caso o usuário não exista
 
 					val embed = EmbedBuilder()
@@ -175,7 +175,7 @@ class DailyTaxTask : Runnable {
 						}
 					}
 
-					user.openPrivateChannel().queue {
+					user.openPrivateChannel().queueAfter(index.toLong(), TimeUnit.SECONDS) {
 						it.sendMessage(embed.build()).queue()
 					}
 				}
@@ -185,12 +185,13 @@ class DailyTaxTask : Runnable {
 					Profile.find { Profiles.marriage.isNotNull() and Profiles.money.less(MARRIAGE_DAILY_TAX) }.toMutableList()
 				}
 
-				for (document in documents) {
+				for ((index, document) in documents.withIndex()) {
 					val user = lorittaShards.getUserById(document.userId.toString()) ?: continue
 
 					try {
-						user.openPrivateChannel().queue {
-							it.sendMessage("Atenção! Você precisa ter no mínimo 100 Sonhos até as 19:00 de hoje para você continuar o seu casamento! Casamentos custam caro, e você precisa ter no mínimo 100 Sonhos todos os dias para conseguir manter ele!").queue()
+						user.openPrivateChannel().queueAfter(index.toLong(), TimeUnit.SECONDS) {
+							it.sendMessage("Atenção! Você precisa ter no mínimo 100 Sonhos até as 19:00 de hoje para você continuar o seu casamento! Casamentos custam caro, e você precisa ter no mínimo 100 Sonhos todos os dias para conseguir manter ele!")
+									.queue()
 						}
 					} catch (e: Exception) {}
 				}
@@ -214,10 +215,12 @@ class DailyTaxTask : Runnable {
 				}
 
 				// MARRY - Remover sonhos de quem merece
-				transaction(Databases.loritta) {
-					Profiles.update({ Profiles.marriage.isNotNull() and Profiles.money.greaterEq(MARRIAGE_DAILY_TAX) }) {
-						with(SqlExpressionBuilder) {
-							it.update(money, money - MARRIAGE_DAILY_TAX)
+				usersThatShouldHaveTheirMarriageRemoved.forEach {
+					transaction(Databases.loritta) {
+						Profiles.update({ Profiles.id eq it.id }) {
+							with(SqlExpressionBuilder) {
+								it.update(money, money - MARRIAGE_DAILY_TAX)
+							}
 						}
 					}
 				}
@@ -225,7 +228,7 @@ class DailyTaxTask : Runnable {
 				val removeMarriages = mutableListOf<Marriage>()
 
 				// Okay, tudo certo, vamos lá!
-				for (document in usersThatShouldHaveTheirMarriageRemoved) {
+				for ((index, document) in usersThatShouldHaveTheirMarriageRemoved.withIndex()) {
 					val marriage = transaction(Databases.loritta) { document.marriage } ?: continue
 
 					removeMarriages.add(marriage)
@@ -239,10 +242,12 @@ class DailyTaxTask : Runnable {
 					val marriedWith = lorittaShards.getUserById(marriedWithId)
 					val user = lorittaShards.getUserById(document.userId.toString())
 
+					// The "queueAfter" is to avoid too many requests at the same time
 					if (user != null) {
 						try {
-							user.openPrivateChannel().queue {
-								it.sendMessage("Você não teve dinheiro suficiente para manter o casamento... Infelizmente você foi divorciado...").queue()
+							user.openPrivateChannel().queueAfter(index.toLong(), TimeUnit.SECONDS) {
+								it.sendMessage("Você não teve dinheiro suficiente para manter o casamento... Infelizmente você foi divorciado...")
+										.queue()
 							}
 						} catch (e: Exception) {
 						}
@@ -250,8 +255,9 @@ class DailyTaxTask : Runnable {
 
 					if (marriedWith != null) {
 						try {
-							marriedWith.openPrivateChannel().queue {
-								it.sendMessage("Seu parceiro não teve dinheiro suficiente para manter o casamento... Infelizmente você foi divorciado...").queue()
+							marriedWith.openPrivateChannel().queueAfter(index.toLong(), TimeUnit.SECONDS) {
+								it.sendMessage("Seu parceiro não teve dinheiro suficiente para manter o casamento... Infelizmente você foi divorciado...")
+										.queue()
 							}
 						} catch (e: Exception) {
 						}
