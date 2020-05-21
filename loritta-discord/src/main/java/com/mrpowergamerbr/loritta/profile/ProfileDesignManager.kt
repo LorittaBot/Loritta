@@ -1,7 +1,10 @@
 package com.mrpowergamerbr.loritta.profile
 
 import net.perfectdreams.loritta.api.utils.Rarity
-import net.perfectdreams.loritta.profile.*
+import net.perfectdreams.loritta.profile.ArtistBadge
+import net.perfectdreams.loritta.profile.Badge
+import net.perfectdreams.loritta.profile.DiscordNitroBadge
+import net.perfectdreams.loritta.profile.DiscordUserFlagBadge
 
 class ProfileDesignManager {
 	val designs = mutableListOf<ProfileDesign>()
@@ -38,21 +41,15 @@ class ProfileDesignManager {
 				)
 		)
 
-		registerBadge(
-				DiscordHouseBadge.DiscordBraveryHouseBadge()
-		)
-
-		registerBadge(
-				DiscordHouseBadge.DiscordBrillanceHouseBadge()
-		)
-
-		registerBadge(
-				DiscordHouseBadge.DiscordBalanceHouseBadge()
-		)
-
-		registerBadge(
-				DiscordEarlySupporterBadge()
-		)
+		// ===[ DISCORD USER FLAGS BADGES ]===
+		registerBadge(DiscordUserFlagBadge.DiscordStaffBadge())
+		registerBadge(DiscordUserFlagBadge.DiscordPartnerBadge())
+		registerBadge(DiscordUserFlagBadge.DiscordVerifiedDeveloperBadge())
+		registerBadge(DiscordUserFlagBadge.DiscordHypesquadEventsBadge())
+		registerBadge(DiscordUserFlagBadge.DiscordEarlySupporterBadge())
+		registerBadge(DiscordUserFlagBadge.DiscordBraveryHouseBadge())
+		registerBadge(DiscordUserFlagBadge.DiscordBrillanceHouseBadge())
+		registerBadge(DiscordUserFlagBadge.DiscordBalanceHouseBadge())
 
 		registerBadge(
 				DiscordNitroBadge()
