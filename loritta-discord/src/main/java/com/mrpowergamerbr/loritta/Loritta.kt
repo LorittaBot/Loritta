@@ -175,7 +175,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 				.apply {
 					if (loritta.discordConfig.shardController.enabled) {
 						logger.info { "Using shard controller (for bots with \"sharding for very large bots\" to manage shards!" }
-						bucketedController = BucketedController()
+						bucketedController = BucketedController(discordConfig.shardController.buckets)
 						this.setSessionController(bucketedController)
 					}
 
