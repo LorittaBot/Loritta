@@ -113,14 +113,14 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 			val publishedEpoch = Constants.YOUTUBE_DATE_FORMAT.parse(published).time
 
 			if (com.mrpowergamerbr.loritta.utils.loritta.isMaster) {
-				val wasAlreadySent = transaction(Databases.loritta) {
+				val wasAlreadySent = loritta.newSuspendedTransaction {
 					SentYouTubeVideoIds.select {
 						SentYouTubeVideoIds.channelId eq channelId and (SentYouTubeVideoIds.videoId eq videoId)
 					}.count() != 0L
 				}
 
 				if (!wasAlreadySent) {
-					transaction(Databases.loritta) {
+					loritta.newSuspendedTransaction {
 						SentYouTubeVideoIds.insert {
 							it[SentYouTubeVideoIds.videoId] = videoId
 							it[SentYouTubeVideoIds.channelId] = channelId
@@ -136,7 +136,7 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 
 			logger.info("Recebi notificação de vídeo $lastVideoTitle ($videoId) de $channelId")
 
-			val trackedAccounts = transaction(Databases.loritta) {
+			val trackedAccounts = loritta.newSuspendedTransaction {
 				TrackedYouTubeAccounts.select {
 					TrackedYouTubeAccounts.youTubeChannelId eq channelId
 				}.toList()
@@ -227,7 +227,7 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 					} else {
 						logger.info { "Received livestream notification (Twitch) $title ($gameId) of ${accountInfo.id} ($userId)" }
 
-						val trackedAccounts = transaction(Databases.loritta) {
+						val trackedAccounts = loritta.newSuspendedTransaction {
 							TrackedTwitchAccounts.select {
 								TrackedTwitchAccounts.twitchUserId eq userId
 							}.toList()

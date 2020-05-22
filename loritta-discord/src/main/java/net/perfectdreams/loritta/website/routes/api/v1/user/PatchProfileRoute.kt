@@ -77,7 +77,7 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 				)
 			}
 
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				ShipEffect.new {
 					this.buyerId = userIdentification.id.toLong()
 					this.user1Id = userIdentification.id.toLong()
@@ -101,7 +101,7 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 			return
 		}
 
-		val profileSettings = transaction(Databases.loritta) {
+		val profileSettings = loritta.newSuspendedTransaction {
 			profile.settings
 		}
 
@@ -132,7 +132,7 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 				)
 			}
 
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				profileSettings.boughtProfiles = profileSettings.boughtProfiles.toMutableList().apply { this.add(profileDesign.clazz.simpleName) }.toTypedArray()
 				profile.money -= price
 
@@ -147,7 +147,7 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 
 			for (creatorId in profileDesign.createdBy) {
 				val creator = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(creatorId)
-				transaction(Databases.loritta) {
+				loritta.newSuspendedTransaction {
 					creator.money += (price.toDouble() * 0.2).toLong()
 
 					SonhosTransaction.insert {
@@ -173,7 +173,7 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 		if (config["setActiveBackground"].nullString != null) {
 			val internalName = config["setActiveBackground"].string
 
-			if (internalName != Background.DEFAULT_BACKGROUND_ID && internalName != Background.RANDOM_BACKGROUND_ID && internalName != Background.CUSTOM_BACKGROUND_ID && transaction(Databases.loritta) { BackgroundPayments.select { BackgroundPayments.background eq internalName and (BackgroundPayments.userId eq userIdentification.id.toLong()) }.count() } == 0L) {
+			if (internalName != Background.DEFAULT_BACKGROUND_ID && internalName != Background.RANDOM_BACKGROUND_ID && internalName != Background.CUSTOM_BACKGROUND_ID && loritta.newSuspendedTransaction { BackgroundPayments.select { BackgroundPayments.background eq internalName and (BackgroundPayments.userId eq userIdentification.id.toLong()) }.count() } == 0L) {
 				throw WebsiteAPIException(HttpStatusCode.Forbidden,
 						WebsiteUtils.createErrorPayload(
 								LoriWebCode.FORBIDDEN
@@ -212,7 +212,7 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 						.writeBytes(baos.toByteArray())
 			}
 
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				profileSettings.activeBackground = Background.findById(internalName)
 			}
 
@@ -237,7 +237,7 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 				)
 			}
 
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				profileSettings.activeProfile = profileType
 			}
 
@@ -251,7 +251,7 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 			return
 		}
 
-		transaction(Databases.loritta) {
+		loritta.newSuspendedTransaction {
 			profile.settings.aboutMe = config["aboutMe"].string
 		}
 

@@ -58,7 +58,7 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 			val starboardChannelId = receivedPayload["starboardId"].long
 			val requiredStars = receivedPayload["requiredStars"].int
 
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				val starboardConfig = serverConfig.starboardConfig
 
 				if (!isEnabled) {
@@ -90,7 +90,7 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 			val voiceChannelJoins = receivedPayload["voiceChannelJoins"].bool
 			val voiceChannelLeaves = receivedPayload["voiceChannelLeaves"].bool
 
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				val eventLogConfig = serverConfig.eventLogConfig
 
 				if (!isEnabled) {
@@ -125,7 +125,7 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 					.map { it.long }
 					.toTypedArray()
 
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				val inviteBlockerConfig = serverConfig.inviteBlockerConfig
 
 				if (!isEnabled) {
@@ -219,8 +219,8 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 		call.respondJson(jsonObject())
 	}
 
-	fun handleVanillaCommands(serverConfig: ServerConfig, receivedPayload: JsonObject): String {
-		transaction(Databases.loritta) {
+	suspend fun handleVanillaCommands(serverConfig: ServerConfig, receivedPayload: JsonObject): String {
+		loritta.newSuspendedTransaction {
 			serverConfig.disabledCommands = receivedPayload["disabledCommands"].array
 					.map { it.string }
 					.toTypedArray()
@@ -229,8 +229,8 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 		return "${serverConfig.disabledCommands.size} comandos bloqueados!"
 	}
 
-	private fun handlePermissions(serverConfig: ServerConfig, guild: Guild, receivedPayload: JsonObject): String {
-		transaction(Databases.loritta) {
+	private suspend fun handlePermissions(serverConfig: ServerConfig, guild: Guild, receivedPayload: JsonObject): String {
+		loritta.newSuspendedTransaction {
 			// First we delete all of them...
 			ServerRolePermissions.deleteWhere {
 				ServerRolePermissions.guild eq serverConfig.id
@@ -254,8 +254,8 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 		return ""
 	}
 
-	private fun handleNashornCommands(config: ServerConfig, receivedPayload: JsonObject): String {
-		transaction(Databases.loritta) {
+	private suspend fun handleNashornCommands(config: ServerConfig, receivedPayload: JsonObject): String {
+		loritta.newSuspendedTransaction {
 			// First we delete all of them...
 			CustomGuildCommands.deleteWhere {
 				CustomGuildCommands.guild eq config.id

@@ -44,7 +44,7 @@ class PostBuyDailyShopItemRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLog
 		// de requests faça a pessoa comprar o mesmo perfil várias vezes
 		val mutex = mutexes.getOrPut(profile.userId) { Mutex() }
 		mutex.withLock {
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				val backgrounds = run {
 					val shop = DailyShops.selectAll().orderBy(DailyShops.generatedAt, SortOrder.DESC).limit(1).first()
 
@@ -108,16 +108,14 @@ class PostBuyDailyShopItemRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLog
 							?: continue
 
 					val creator = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(discordId)
-					transaction(Databases.loritta) {
-						creator.money += creatorReceived
+					creator.money += creatorReceived
 
-						SonhosTransaction.insert {
-							it[givenBy] = null
-							it[receivedBy] = creator.id.value
-							it[givenAt] = System.currentTimeMillis()
-							it[quantity] = creatorReceived.toBigDecimal()
-							it[reason] = SonhosPaymentReason.BACKGROUND
-						}
+					SonhosTransaction.insert {
+						it[givenBy] = null
+						it[receivedBy] = creator.id.value
+						it[givenAt] = System.currentTimeMillis()
+						it[quantity] = creatorReceived.toBigDecimal()
+						it[reason] = SonhosPaymentReason.BACKGROUND
 					}
 				}
 			}

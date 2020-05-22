@@ -16,7 +16,6 @@ import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedTwitterAcco
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class PostReceivedTweetRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/twitter/received-tweet") {
 	companion object {
@@ -30,7 +29,7 @@ class PostReceivedTweetRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticatio
 		val screenName = json["screenName"].string
 
 		logger.info { "Received status $tweetId from $screenName (${tweetId}), relayed from the master cluster!" }
-		val configsTrackingAccount = transaction(Databases.loritta) {
+		val configsTrackingAccount = loritta.newSuspendedTransaction {
 			TrackedTwitterAccounts.select {
 				TrackedTwitterAccounts.twitterAccountId eq userId
 			}.toMutableList()

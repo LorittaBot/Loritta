@@ -25,7 +25,7 @@ class DonateRoute(loritta: LorittaDiscord) : LocalizedRoute(loritta, "/donate") 
 		val keys = jsonArray()
 
 		if (userIdentification != null) {
-			val donationKeys = transaction(Databases.loritta) {
+			val donationKeys = loritta.newSuspendedTransaction {
 				// Pegar keys ativas
 				DonationKey.find {
 					(DonationKeys.expiresAt greaterEq System.currentTimeMillis()) and (DonationKeys.userId eq userIdentification.id.toLong())

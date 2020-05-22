@@ -85,7 +85,7 @@ class GetChannelInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1
 			}
 			logger.info { "Checking if $channelId's channel information is cached..." }
 
-			val cachedChannelInformation = transaction(Databases.loritta) {
+			val cachedChannelInformation = loritta.newSuspendedTransaction {
 				// Remover do cache, caso tenha
 				CachedYouTubeChannelIds.deleteWhere {
 					CachedYouTubeChannelIds.channelId eq channelId and (CachedYouTubeChannelIds.retrievedAt lessEq System.currentTimeMillis() - Constants.ONE_WEEK_IN_MILLISECONDS)
@@ -128,7 +128,7 @@ class GetChannelInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1
 			json["channelId"] = channelId
 
 			// Cache
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				CachedYouTubeChannelIds.insert {
 					it[CachedYouTubeChannelIds.channelId] = channelId
 					it[CachedYouTubeChannelIds.avatarUrl] = avatarUrl

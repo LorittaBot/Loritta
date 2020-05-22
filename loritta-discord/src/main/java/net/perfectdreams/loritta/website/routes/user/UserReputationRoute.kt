@@ -46,12 +46,12 @@ class UserReputationRoute(loritta: LorittaDiscord) : RequiresDiscordLoginLocaliz
 		val user = lorittaShards.retrieveUserById(userId)!!
 
 		// Vamos agora pegar todas as reputações
-		val reputations = transaction(Databases.loritta) {
+		val reputations = loritta.newSuspendedTransaction {
 			Reputation.find { Reputations.receivedById eq user.idLong }.sortedByDescending { it.receivedAt }
 		}
 
 		val lastReputationGiven = if (userIdentification != null) {
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				Reputation.find {
 					(Reputations.givenById eq userIdentification.id.toLong()) or
 							(Reputations.givenByEmail eq userIdentification.email!!) or

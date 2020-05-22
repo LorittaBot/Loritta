@@ -58,7 +58,7 @@ class GetSelfInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/us
 				val now = System.currentTimeMillis()
 				val yesterdayAtTheSameHour = now - Constants.ONE_DAY_IN_MILLISECONDS
 
-				transaction(Databases.loritta) {
+				loritta.newSuspendedTransaction {
 					val isIpBanned = BannedIps.select { BannedIps.ip eq call.request.trueIp and (BannedIps.bannedAt greaterEq yesterdayAtTheSameHour) }
 							.firstOrNull()
 
@@ -119,7 +119,7 @@ class GetSelfInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/us
 			}
 
 			if ("settings" in sections) {
-				val settings = transaction(Databases.loritta) {
+				val settings = loritta.newSuspendedTransaction {
 					profile.settings
 				}
 
@@ -130,7 +130,7 @@ class GetSelfInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/us
 			}
 
 			if ("backgrounds" in sections) {
-				payload["backgrounds"] = transaction(Databases.loritta) {
+				payload["backgrounds"] = loritta.newSuspendedTransaction {
 					val backgrounds = Backgrounds.select {
 						Backgrounds.internalName inList BackgroundPayments.select {
 							BackgroundPayments.userId eq userIdentification.id.toLong()

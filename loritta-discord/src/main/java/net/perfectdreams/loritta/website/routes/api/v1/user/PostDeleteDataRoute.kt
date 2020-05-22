@@ -27,7 +27,7 @@ class PostDeleteDataRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRout
 
 		logger.info { "User $userId requested to delete the account data!" }
 
-		transaction(Databases.loritta) {
+		loritta.newSuspendedTransaction {
 			logger.info { "Deleting $userId's 2FA checks..." }
 			Requires2FAChecksUsers.deleteWhere {
 				Requires2FAChecksUsers.userId eq userId

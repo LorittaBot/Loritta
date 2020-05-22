@@ -26,6 +26,7 @@ import io.ktor.client.request.get
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.readBytes
 import io.ktor.http.userAgent
+import kotlinx.coroutines.Dispatchers
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.commands.vanilla.magic.LoriToolsCommand
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandMap
@@ -473,5 +474,17 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
      */
     fun getLegacyLocaleById(localeId: String): LegacyBaseLocale {
         return legacyLocales.getOrDefault(localeId, legacyLocales["default"]!!)
+    }
+
+    fun <T> transaction(statement: org.jetbrains.exposed.sql.Transaction.() -> T) = transaction(Databases.loritta) {
+        statement.invoke(this)
+    }
+
+    suspend fun <T> newSuspendedTransaction(statement: org.jetbrains.exposed.sql.Transaction.() -> T) = org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction(Dispatchers.IO, Databases.loritta) {
+        statement.invoke(this)
+    }
+
+    suspend fun <T> suspendedTransactionAsync(statement: org.jetbrains.exposed.sql.Transaction.() -> T) = org.jetbrains.exposed.sql.transactions.experimental.suspendedTransactionAsync(Dispatchers.IO, Databases.loritta) {
+        statement.invoke(this)
     }
 }

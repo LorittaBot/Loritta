@@ -26,7 +26,7 @@ class GetGuildWebAuditLogRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRo
 		val users = jsonArray()
 		val entries = jsonArray()
 
-		val auditEntries = transaction(Databases.loritta) {
+		val auditEntries = loritta.newSuspendedTransaction {
 			AuditLog.select {
 				AuditLog.guildId eq guildId
 			}.orderBy(AuditLog.executedAt, SortOrder.DESC)

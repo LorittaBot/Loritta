@@ -31,7 +31,7 @@ class GetSelfUserProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 						)
 				)
 		val profile = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(userIdentification.id)
-		val settings = transaction(Databases.loritta) {
+		val settings = loritta.newSuspendedTransaction {
 			profile.settings
 		}
 

@@ -61,7 +61,7 @@ class PostRaffleStatusRoute(loritta: LorittaDiscord) : RequiresAPIAuthentication
 			val lorittaProfile = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(userId)
 
 			if (lorittaProfile.money >= requiredCount) {
-				transaction(Databases.loritta) {
+				loritta.newSuspendedTransaction {
 					lorittaProfile.money -= requiredCount
 
 					SonhosTransaction.insert {

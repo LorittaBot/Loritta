@@ -25,12 +25,12 @@ class DashboardRoute(loritta: LorittaDiscord) : RequiresDiscordLoginLocalizedRou
 		val variables = call.legacyVariables(locale)
 
 		val lorittaProfile = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(userIdentification.id.toLong())
-		val settings = transaction(Databases.loritta) { lorittaProfile.settings }
+		val settings = loritta.newSuspendedTransaction { lorittaProfile.settings }
 		variables["lorittaProfile"] = lorittaProfile
 		variables["settings"] = settings
 
 		val userGuilds = discordAuth.getUserGuilds()
-		val serverConfigs = transaction(Databases.loritta) {
+		val serverConfigs = loritta.newSuspendedTransaction {
 			ServerConfig.find { ServerConfigs.id inList userGuilds.map { it.id.toLong() } }
 					.toList()
 		}

@@ -26,7 +26,7 @@ class UserDashboardRoute(loritta: LorittaDiscord) : RequiresDiscordLoginLocalize
 
 		variables["profileUser"] = user
 		variables["lorittaProfile"] = lorittaProfile
-		variables["profileSettings"] = transaction(Databases.loritta) {
+		variables["profileSettings"] = loritta.newSuspendedTransaction {
 			lorittaProfile.settings
 		}
 		variables["profile_json"] = gson.toJson(

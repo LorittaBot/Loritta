@@ -47,7 +47,7 @@ class PostBundlesRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(l
 		val gateway = payload["gateway"].string
 		val bundleId = payload["id"].long
 
-		val bundle = transaction(Databases.loritta) {
+		val bundle = loritta.newSuspendedTransaction {
 			SonhosBundles.select {
 				SonhosBundles.id eq bundleId and (SonhosBundles.active eq true)
 			}.firstOrNull()
@@ -63,7 +63,7 @@ class PostBundlesRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(l
 			val grana = bundle[SonhosBundles.price]
 			val sonhos = bundle[SonhosBundles.sonhos]
 
-			val internalPayment = transaction(Databases.loritta) {
+			val internalPayment = loritta.newSuspendedTransaction {
 				DonationKey.find {
 					DonationKeys.expiresAt greaterEq System.currentTimeMillis()
 				}

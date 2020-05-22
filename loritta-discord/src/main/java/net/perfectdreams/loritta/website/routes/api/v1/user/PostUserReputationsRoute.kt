@@ -74,7 +74,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 			}
 		}
 
-		fun sendReputationReceivedMessage(guildId: String, channelId: String, giverId: String, giverProfile: Profile, receiverId: String, reputationCount: Int) {
+		suspend fun sendReputationReceivedMessage(guildId: String, channelId: String, giverId: String, giverProfile: Profile, receiverId: String, reputationCount: Int) {
 			logger.info { "Received sendReputation request in $guildId $channelId by $giverId for $receiverId" }
 
 			if (guildId.isValidSnowflake() && channelId.isValidSnowflake()) {
@@ -93,7 +93,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 
 					val serverConfig = loritta.getOrCreateServerConfig(guildId.toLong())
 					val receiverProfile = loritta.getOrCreateLorittaProfile(giverId)
-					val receiverSettings = transaction(Databases.loritta) {
+					val receiverSettings = loritta.newSuspendedTransaction {
 						receiverProfile.settings
 					}
 
@@ -154,7 +154,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 		val ip = call.request.trueIp
 
 		mutex.withLock {
-			val lastReputationGiven = transaction(Databases.loritta) {
+			val lastReputationGiven = loritta.newSuspendedTransaction {
 				Reputation.find {
 					(Reputations.givenById eq userIdentification.id.toLong()) or
 							(Reputations.givenByEmail eq userIdentification.email!!) or
@@ -197,7 +197,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 							"Stay awesome :3"
 					)
 
-					val reputationCount = transaction(Databases.loritta) {
+					val reputationCount = loritta.newSuspendedTransaction {
 						Reputations.select { Reputations.receivedById eq userIdentification.id.toLong() }.count()
 					}
 
@@ -207,7 +207,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 				}
 			}
 
-			val reputations = transaction(Databases.loritta) {
+			val reputations = loritta.newSuspendedTransaction {
 				Reputation.find { Reputations.receivedById eq receiver.toLong() }.sortedByDescending { it.receivedAt }
 			}
 
@@ -271,7 +271,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 
 			// Vamos reenviar vários dados utilizados na hora de gerar a telinha
 			val response = jsonObject(
-					"count" to transaction(Databases.loritta) { Reputations.select { Reputations.receivedById eq receiver.toLong() }.count() },
+					"count" to loritta.newSuspendedTransaction { Reputations.select { Reputations.receivedById eq receiver.toLong() }.count() },
 					"rank" to rank.toString()
 			)
 
@@ -279,9 +279,9 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 		}
 	}
 
-	fun giveReputation(giver: Long, giverIp: String, giverEmail: String, receiver: Long, content: String) {
+	suspend fun giveReputation(giver: Long, giverIp: String, giverEmail: String, receiver: Long, content: String) {
 		logger.info("$giver ($giverIp/$giverEmail) deu uma reputação para $receiver! Motivo: $content")
-		transaction(Databases.loritta) {
+		loritta.newSuspendedTransaction {
 			Reputation.new {
 				this.givenById = giver
 				this.givenByIp = giverIp

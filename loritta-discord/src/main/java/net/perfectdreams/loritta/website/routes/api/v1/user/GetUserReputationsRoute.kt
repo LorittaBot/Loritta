@@ -16,7 +16,7 @@ class GetUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
 		val receiver = call.parameters["userId"] ?: return
 
-		val count = transaction(Databases.loritta) {
+		val count = loritta.newSuspendedTransaction {
 			Reputations.select { Reputations.receivedById eq receiver.toLong() }.count()
 		}
 

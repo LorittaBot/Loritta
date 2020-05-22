@@ -20,7 +20,7 @@ class GetDailyShopRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/e
 	override suspend fun onRequest(call: ApplicationCall) {
 		var generatedAt: Long? = null
 
-		val backgroundsInShop = transaction(Databases.loritta) {
+		val backgroundsInShop = loritta.newSuspendedTransaction {
 			val shop = DailyShops.selectAll().orderBy(DailyShops.generatedAt, SortOrder.DESC).limit(1).first()
 
 			generatedAt = shop[DailyShops.generatedAt]

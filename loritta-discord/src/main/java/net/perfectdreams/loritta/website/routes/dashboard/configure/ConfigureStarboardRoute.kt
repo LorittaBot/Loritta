@@ -20,7 +20,7 @@ class ConfigureStarboardRoute(loritta: LorittaDiscord) : RequiresGuildAuthLocali
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
 		loritta as Loritta
 
-		val starboardConfig = transaction(Databases.loritta) {
+		val starboardConfig = loritta.newSuspendedTransaction {
 			serverConfig.starboardConfig
 		}
 

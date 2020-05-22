@@ -473,18 +473,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		return job
 	}
 
-	fun <T> transaction(statement: org.jetbrains.exposed.sql.Transaction.() -> T) = transaction(Databases.loritta) {
-		statement.invoke(this)
-	}
-
-	suspend fun <T> newSuspendedTransaction(statement: org.jetbrains.exposed.sql.Transaction.() -> T) = newSuspendedTransaction(Dispatchers.IO, Databases.loritta) {
-		statement.invoke(this)
-	}
-
-	suspend fun <T> suspendedTransactionAsync(statement: org.jetbrains.exposed.sql.Transaction.() -> T) = suspendedTransactionAsync(Dispatchers.IO, Databases.loritta) {
-		statement.invoke(this)
-	}
-
 	fun getLorittaProfile(userId: String): Profile? {
 		return getLorittaProfile(userId.toLong())
 	}

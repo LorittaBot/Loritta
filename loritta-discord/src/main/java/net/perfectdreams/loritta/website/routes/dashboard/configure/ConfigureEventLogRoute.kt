@@ -19,7 +19,7 @@ class ConfigureEventLogRoute(loritta: LorittaDiscord) : RequiresGuildAuthLocaliz
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
 		loritta as Loritta
 
-		val eventLogConfig = transaction(Databases.loritta) {
+		val eventLogConfig = loritta.newSuspendedTransaction {
 			serverConfig.eventLogConfig
 		}
 

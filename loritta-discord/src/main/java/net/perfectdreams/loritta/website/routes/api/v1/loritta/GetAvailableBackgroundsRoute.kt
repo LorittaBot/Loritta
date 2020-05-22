@@ -14,7 +14,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class GetAvailableBackgroundsRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/loritta/backgrounds") {
 	override suspend fun onRequest(call: ApplicationCall) {
-		val array = transaction(Databases.loritta) {
+		val array = loritta.newSuspendedTransaction {
 			Background.find {
 				Backgrounds.enabled eq true
 			}.toList()

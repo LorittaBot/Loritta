@@ -13,7 +13,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class GetBundlesRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/economy/bundles/{bundleType}") {
 	override suspend fun onRequest(call: ApplicationCall) {
-		val sonhosBundles = transaction(Databases.loritta) {
+		val sonhosBundles = loritta.newSuspendedTransaction {
 			SonhosBundles.selectAll()
 					.toList()
 		}

@@ -19,7 +19,7 @@ class ConfigureAutoroleRoute(loritta: LorittaDiscord) : RequiresGuildAuthLocaliz
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
 		loritta as Loritta
 
-		val autoroleConfig = transaction(Databases.loritta) {
+		val autoroleConfig = loritta.newSuspendedTransaction {
 			serverConfig.autoroleConfig
 		}
 

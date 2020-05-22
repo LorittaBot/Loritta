@@ -32,7 +32,7 @@ class ProfileListRoute(loritta: LorittaDiscord) : RequiresDiscordLoginLocalizedR
 		variables["lorittaProfile"] = WebsiteUtils.transformProfileToJson(lorittaProfile)
 		variables["saveType"] = "profile_list"
 
-		val profileSettings = transaction(Databases.loritta) {
+		val profileSettings = loritta.newSuspendedTransaction {
 			lorittaProfile.settings
 		}
 

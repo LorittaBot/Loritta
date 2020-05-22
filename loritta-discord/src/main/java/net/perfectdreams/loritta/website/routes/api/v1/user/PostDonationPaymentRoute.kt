@@ -48,13 +48,13 @@ class PostDonationPaymentRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 		val keyId = payload["keyId"].nullLong
 
 		val donationKey = if (keyId != null) {
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				val key = DonationKey.findById(keyId)
 
 				if (key?.userId == userIdentification.id.toLong())
-					return@transaction key
+					return@newSuspendedTransaction key
 				else
-					return@transaction  null
+					return@newSuspendedTransaction  null
 			}
 		} else {
 			null
@@ -65,7 +65,7 @@ class PostDonationPaymentRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 
 		val paymentGateway = PaymentGateway.valueOf(gateway)
 
-		val internalPayment = transaction(Databases.loritta) {
+		val internalPayment = loritta.newSuspendedTransaction {
 			DonationKey.find {
 				DonationKeys.expiresAt greaterEq System.currentTimeMillis()
 			}

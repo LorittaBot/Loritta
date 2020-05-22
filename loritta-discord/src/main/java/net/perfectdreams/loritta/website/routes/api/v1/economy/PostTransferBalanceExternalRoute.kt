@@ -31,7 +31,7 @@ class PostTransferBalanceExternalRoute(loritta: LorittaDiscord) : RequiresAPIAut
 		logger.info { "$receiverId (has ${profile.money} dreams) is transferring $garticos garticos to Loritta with transfer rate is $transferRate" }
 		val finalMoney = (garticos * transferRate)
 
-		transaction(Databases.loritta) {
+		loritta.newSuspendedTransaction {
 			profile.money += finalMoney.toLong()
 
 			SonhosTransaction.insert {

@@ -72,7 +72,7 @@ class PostPicPayCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/ap
 		if (status == "paid" || status == "complete") {
 			val internalTransactionId = referenceId.split("-").last()
 
-			val internalPayment = transaction(Databases.loritta) {
+			val internalPayment = loritta.newSuspendedTransaction {
 				Payment.findById(internalTransactionId.toLong())
 			}
 
@@ -90,7 +90,7 @@ class PostPicPayCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/ap
 
 			logger.info { "Setting Payment $internalTransactionId as paid! (via PicPay payment $referenceId) - Payment made by ${internalPayment.userId}" }
 
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				// Pagamento aprovado!
 				internalPayment.paidAt = System.currentTimeMillis()
 			}
@@ -107,7 +107,7 @@ class PostPicPayCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/ap
 
 				val bundleId = paymentMetadata["bundleId"].long
 
-				val bundle = transaction(Databases.loritta) {
+				val bundle = loritta.newSuspendedTransaction {
 					SonhosBundles.select {
 						SonhosBundles.id eq bundleId and (SonhosBundles.active eq true)
 					}.firstOrNull()
@@ -117,7 +117,7 @@ class PostPicPayCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/ap
 					return
 				}
 
-				transaction(Databases.loritta) {
+				loritta.newSuspendedTransaction {
 					Profiles.update({ Profiles.id eq internalPayment.userId }) {
 						with(SqlExpressionBuilder) {
 							it.update(money, money + bundle[SonhosBundles.sonhos])
@@ -138,7 +138,7 @@ class PostPicPayCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/ap
 				// LORI-DONATE-MP-RENEW-KEY-KeyId-InternalTransactionId
 				val isKeyRenewal = referenceId.startsWith("LORI-DONATE-PP-RENEW-KEY-")
 
-				transaction(Databases.loritta) {
+				loritta.newSuspendedTransaction {
 					internalPayment.expiresAt = System.currentTimeMillis() + Constants.DONATION_ACTIVE_MILLIS
 
 					if (internalPayment.reason == PaymentReason.DONATION) {
@@ -149,7 +149,7 @@ class PostPicPayCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/ap
 
 							if (donationKey == null) {
 								logger.warn { "Key renewal for key $donationKeyId for ${internalPayment.userId} failed! Key doesn't exist! Bug?" }
-								return@transaction
+								return@newSuspendedTransaction
 							}
 
 							donationKey.expiresAt += 2_764_800_000 // 32 dias

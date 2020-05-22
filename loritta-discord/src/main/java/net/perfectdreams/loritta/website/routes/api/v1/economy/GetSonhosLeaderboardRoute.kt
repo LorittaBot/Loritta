@@ -28,7 +28,7 @@ class GetSonhosLeaderboardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLog
 			var rankPosition: Long? = null
 			val usersAround = mutableListOf<SonhosLeaderboardUser>()
 
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				// Não achei muito bom porque poderia ser direto pelo Exposed, but whatever
 				// Como IDs sempre vão ser um long, não tem risco de SQL Injection
 				// Primeiro iremos pegar a posição do user no ranking (se existe)

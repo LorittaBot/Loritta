@@ -34,7 +34,7 @@ class ShipEffectsRoute(loritta: LorittaDiscord) : RequiresDiscordLoginLocalizedR
 		variables["profile_json"] = gson.toJson(
 				WebsiteUtils.getProfileAsJson(lorittaProfile)
 		)
-		val shipEffects = transaction(Databases.loritta) {
+		val shipEffects = loritta.newSuspendedTransaction {
 			ShipEffect.find {
 				(ShipEffects.buyerId eq user.idLong) and
 						(ShipEffects.expiresAt greaterEq System.currentTimeMillis())

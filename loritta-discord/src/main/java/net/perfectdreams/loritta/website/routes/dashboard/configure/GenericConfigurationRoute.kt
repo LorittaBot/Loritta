@@ -22,7 +22,7 @@ open class GenericConfigurationRoute(loritta: LorittaDiscord, path: String, val 
 		variables["saveType"] = type
 
 		if (type == "miscellaneous") {
-			val miscellaneousConfig = transaction(Databases.loritta) {
+			val miscellaneousConfig = loritta.newSuspendedTransaction {
 				serverConfig.miscellaneousConfig
 			}
 

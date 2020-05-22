@@ -51,7 +51,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				.build<Long, Mutex>()
 				.asMap()
 
-		fun checkIfUserCanPayout(userIdentification: TemmieDiscordAuth.UserIdentification, ip: String): Int {
+		suspend fun checkIfUserCanPayout(userIdentification: TemmieDiscordAuth.UserIdentification, ip: String): Int {
 			val todayAtMidnight = Instant.now()
 					.atZone(ZoneId.of("America/Sao_Paulo"))
 					.toOffsetDateTime()
@@ -72,14 +72,14 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 
 			// Para evitar pessoas criando várias contas e votando, nós iremos também verificar o IP dos usuários que votarem
 			// Isto evita pessoas farmando upvotes votando (claro que não é um método infalível, mas é melhor que nada, né?)
-			val lastReceivedDailyAt = transaction(Databases.loritta) {
+			val lastReceivedDailyAt = loritta.newSuspendedTransaction {
 				com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.receivedById eq userIdentification.id.toLong() and (Dailies.receivedAt greaterEq todayAtMidnight) }.orderBy(Dailies.receivedAt, SortOrder.DESC)
 						.map {
 							it[Dailies.receivedAt]
 						}
 			}
 
-			val sameIpDailyAt = transaction(Databases.loritta) {
+			val sameIpDailyAt = loritta.newSuspendedTransaction {
 				com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.ip eq ip and (Dailies.receivedAt greaterEq todayAtMidnight) }
 						.orderBy(Dailies.receivedAt, SortOrder.DESC)
 						.map {
@@ -128,7 +128,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				}
 			}
 
-			val requires2FA = transaction(Databases.loritta) {
+			val requires2FA = loritta.newSuspendedTransaction {
 				Requires2FAChecksUsers.select {
 					Requires2FAChecksUsers.userId eq userIdentification.id.toLong() and (Requires2FAChecksUsers.triggeredAt greaterEq (System.currentTimeMillis() - (Constants.ONE_DAY_IN_MILLISECONDS * 3)))
 				}.count() != 0L
@@ -283,7 +283,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 			val failedDailyServersInfo = jsonArray()
 			val user =  lorittaShards.retrieveUserById(userIdentification.id)
 
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				// Pegar todos os servidores com sonhos patrocinados
 				val results = (ServerConfigs innerJoin DonationConfigs).select {
 					(ServerConfigs.id inList mutualGuilds.map { it["id"].string.toLong() }) and
@@ -402,7 +402,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 			logger.trace { "sponsoredBy = $sponsoredBy" }
 			logger.trace { "multipliedBy = $multipliedBy" }
 
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				Dailies.insert {
 					it[Dailies.receivedById] = id
 					it[Dailies.receivedAt] = receivedDailyAt

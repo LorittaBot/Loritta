@@ -20,7 +20,7 @@ class ConfigureWelcomerRoute(loritta: LorittaDiscord) : RequiresGuildAuthLocaliz
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
 		loritta as Loritta
 
-		val welcomerConfig = transaction(Databases.loritta) {
+		val welcomerConfig = loritta.newSuspendedTransaction {
 			serverConfig.welcomerConfig
 		}
 

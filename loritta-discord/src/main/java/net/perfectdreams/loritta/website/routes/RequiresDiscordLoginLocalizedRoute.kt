@@ -102,7 +102,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 
 				// Verificar se o usuário é (possivelmente) alguém que foi banido de usar a Loritta
 				val trueIp = call.request.trueIp
-				val dailiesWithSameIp = transaction(Databases.loritta) {
+				val dailiesWithSameIp = loritta.newSuspendedTransaction {
 					Dailies.select {
 						(Dailies.ip eq trueIp)
 					}.toMutableList()
@@ -110,7 +110,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 
 				val userIds = dailiesWithSameIp.map { it[Dailies.id] }.distinct()
 
-				val bannedProfiles = transaction(Databases.loritta) {
+				val bannedProfiles = loritta.newSuspendedTransaction {
 					Profiles.select { Profiles.id inList userIds and Profiles.isBanned }
 							.toMutableList()
 				}
@@ -167,7 +167,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 									// E, se o membro não for um bot e possui permissão de gerenciar o servidor ou permissão de administrador...
 									if (!user.isBot && (member.hasPermission(Permission.MANAGE_SERVER) || member.hasPermission(Permission.ADMINISTRATOR))) {
 										// Verificar coisas antes de adicionar a Lori
-										val blacklisted = transaction(Databases.loritta) {
+										val blacklisted = loritta.newSuspendedTransaction {
 											BlacklistedGuilds.select {
 												BlacklistedGuilds.id eq guild.idLong
 											}.firstOrNull()

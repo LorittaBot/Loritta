@@ -64,12 +64,12 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 					.toInstant()
 					.toEpochMilli()
 
-			val lastReceiverDailyAt = transaction(Databases.loritta) {
+			val lastReceiverDailyAt = loritta.newSuspendedTransaction {
 				com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.receivedById eq receiverId and (Dailies.receivedAt greaterEq todayAtMidnight) }.orderBy(Dailies.receivedAt, SortOrder.DESC)
 						.firstOrNull()
 			}
 
-			val lastGiverDailyAt = transaction(Databases.loritta) {
+			val lastGiverDailyAt = loritta.newSuspendedTransaction {
 				com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.receivedById eq giverId and (Dailies.receivedAt greaterEq todayAtMidnight) }.orderBy(Dailies.receivedAt, SortOrder.DESC)
 						.firstOrNull()
 			}
@@ -82,7 +82,7 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 				val giverDailyIp = lastGiverDailyAt[Dailies.ip]
 
 				if (receiverDailyIp == giverDailyIp) {
-					val isWhitelisted = transaction(Databases.loritta) {
+					val isWhitelisted = loritta.newSuspendedTransaction {
 						WhitelistedTransactionIds.select {
 							WhitelistedTransactionIds.userId eq giverId or (WhitelistedTransactionIds.userId eq receiverId)
 						}.firstOrNull()
@@ -94,7 +94,7 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 						logger.warn { "Same IP detected for $receiverId and $giverId ($receiverDailyIp), banning all accounts with the same IP..." }
 
 						// Mesmo IP, vamos dar ban em todas as contas do IP atual
-						val sameIpDaily = transaction(Databases.loritta) {
+						val sameIpDaily = loritta.newSuspendedTransaction {
 							com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.ip eq lastReceiverDailyAt[Dailies.ip] and (Dailies.receivedAt greaterEq todayAtMidnight) }.orderBy(Dailies.receivedAt, SortOrder.DESC)
 									.toList()
 						}
@@ -106,7 +106,7 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 				}
 			}
 
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				giverProfile.money -= howMuch
 				receiverProfile.money += howMuch
 
@@ -129,28 +129,24 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 					var receiverAlreadyRequires2FA = false
 					var giverAlreadyRequires2FA = false
 
-					transaction(Databases.loritta) {
-						receiverAlreadyRequires2FA = Requires2FAChecksUsers.select { Requires2FAChecksUsers.userId eq receiverId }.count() != 0L
-						giverAlreadyRequires2FA = Requires2FAChecksUsers.select { Requires2FAChecksUsers.userId eq giverId }.count() != 0L
-					}
+					receiverAlreadyRequires2FA = Requires2FAChecksUsers.select { Requires2FAChecksUsers.userId eq receiverId }.count() != 0L
+					giverAlreadyRequires2FA = Requires2FAChecksUsers.select { Requires2FAChecksUsers.userId eq giverId }.count() != 0L
 
 					logger.warn { "Suspicious payment $transactionId by $giverId to $receiverId, sending the same quantity received in the daily. Receiver already requires 2FA? $receiverAlreadyRequires2FA; Giver already requires 2FA? $giverAlreadyRequires2FA" }
 
-					transaction(Databases.loritta) {
-						if (!receiverAlreadyRequires2FA) {
-							Requires2FAChecksUsers.insert {
-								it[Requires2FAChecksUsers.userId] = receiverProfile.id
-								it[Requires2FAChecksUsers.triggeredAt] = System.currentTimeMillis()
-								it[Requires2FAChecksUsers.triggeredTransaction] = transactionId
-							}
+					if (!receiverAlreadyRequires2FA) {
+						Requires2FAChecksUsers.insert {
+							it[Requires2FAChecksUsers.userId] = receiverProfile.id
+							it[Requires2FAChecksUsers.triggeredAt] = System.currentTimeMillis()
+							it[Requires2FAChecksUsers.triggeredTransaction] = transactionId
 						}
+					}
 
-						if (!giverAlreadyRequires2FA) {
-							Requires2FAChecksUsers.insert {
-								it[Requires2FAChecksUsers.userId] = giverProfile.id
-								it[Requires2FAChecksUsers.triggeredAt] = System.currentTimeMillis()
-								it[Requires2FAChecksUsers.triggeredTransaction] = transactionId
-							}
+					if (!giverAlreadyRequires2FA) {
+						Requires2FAChecksUsers.insert {
+							it[Requires2FAChecksUsers.userId] = giverProfile.id
+							it[Requires2FAChecksUsers.triggeredAt] = System.currentTimeMillis()
+							it[Requires2FAChecksUsers.triggeredTransaction] = transactionId
 						}
 					}
 				}
