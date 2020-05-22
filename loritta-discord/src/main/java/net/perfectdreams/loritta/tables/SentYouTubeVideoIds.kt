@@ -5,8 +5,8 @@ import org.jetbrains.exposed.dao.id.IdTable
 import org.jetbrains.exposed.sql.Column
 
 object SentYouTubeVideoIds : IdTable<String>() {
-	val channelId = text("channel")
-	val videoId = text("video")
+	val channelId = text("channel").index()
+	val videoId = text("video").index()
 	override val id: Column<EntityID<String>> = videoId.entityId()
 
 	val receivedAt = long("received_at")
