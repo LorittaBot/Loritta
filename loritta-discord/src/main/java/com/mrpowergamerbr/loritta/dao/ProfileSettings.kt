@@ -17,4 +17,5 @@ class ProfileSettings(id: EntityID<Long>) : LongEntity(id) {
 	var doNotSendXpNotificationsInDm by UserSettings.doNotSendXpNotificationsInDm
 	var discordAccountFlags by UserSettings.discordAccountFlags
 	var discordPremiumType by UserSettings.discordPremiumType
+	var language by UserSettings.language
 }

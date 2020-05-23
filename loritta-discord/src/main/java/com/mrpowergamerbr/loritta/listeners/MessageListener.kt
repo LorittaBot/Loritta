@@ -103,12 +103,15 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				logIfEnabled(enableProfiling) { "Loading owner's profile took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
-				val locale = loritta.getLocaleById(serverConfig.localeId)
-				logIfEnabled(enableProfiling) { "Loading ${serverConfig.localeId} locale took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
+				val currentLocale = loritta.newSuspendedTransaction{
+					(lorittaProfile?.settings?.language ?: serverConfig.localeId)
+				}
+				val locale = loritta.getLocaleById(currentLocale)
+				logIfEnabled(enableProfiling) { "Loading ${locale.id} locale took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
-				val legacyLocale = loritta.getLegacyLocaleById(serverConfig.localeId)
-				logIfEnabled(enableProfiling) { "Loading ${serverConfig.localeId} legacy locale took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
+				val legacyLocale = loritta.getLegacyLocaleById(currentLocale)
+				logIfEnabled(enableProfiling) { "Loading ${legacyLocale.toNewLocale().id} legacy locale took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
 				// We use "loadMemberRolesLorittaPermissions(...)" to avoid unnecessary retrievals later on, because we recheck the role permission later
@@ -351,9 +354,11 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			val serverConfig = loritta.getOrCreateServerConfig(-1, true)
 			val profile = loritta.getOrCreateLorittaProfile(event.author.idLong) // Carregar perfil do usuário
 			val lorittaUser = LorittaUser(event.author, EnumSet.noneOf(LorittaPermission::class.java), profile)
-			// TODO: Usuários deverão poder escolher a linguagem que eles preferem via mensagem direta
-			val locale = loritta.getLocaleById(serverConfig.localeId)
-			val legacyLocale = loritta.getLegacyLocaleById("default")
+			val currentLocale = loritta.newSuspendedTransaction {
+				profile.settings.language ?: "default"
+			}
+			val locale = loritta.getLocaleById(currentLocale)
+			val legacyLocale = loritta.getLegacyLocaleById(currentLocale)
 
 			if (isUserStillBanned(profile))
 				return@launch
