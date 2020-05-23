@@ -109,7 +109,9 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 			loritta.newSuspendedTransaction {
 				giverProfile.money -= howMuch
 				receiverProfile.money += howMuch
+			}
 
+			loritta.newSuspendedTransaction {
 				val hasMatchingPayment = SonhosTransaction.select {
 					SonhosTransaction.reason eq SonhosPaymentReason.DAILY and
 							(SonhosTransaction.quantity eq howMuch.toBigDecimal() ) and
