@@ -321,14 +321,12 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			}
 
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
-			val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 			val eventLogConfig = transaction(Databases.loritta) {
 				serverConfig.eventLogConfig
 			} ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.memberBanned) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
-				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 				val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 
 				if (!textChannel.canTalk())
@@ -388,7 +386,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			}
 
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
-			val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 			val eventLogConfig = transaction(Databases.loritta) {
 				serverConfig.eventLogConfig
 			} ?: return@launch
@@ -441,13 +438,11 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
-			val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 			val eventLogConfig = transaction(Databases.loritta) {
 				serverConfig.eventLogConfig
 			} ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.nicknameChanges) {
-				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 				val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
 				val embed = ParallaxEmbed()
 				embed.setColor(Color(35, 209, 96))

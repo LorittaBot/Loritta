@@ -122,7 +122,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				logger.info { "Text channel $textChannel topic is on cooldown for guild $guild, waiting ${diff}ms until next update..."}
 
 				memberCounterLastUpdate[textChannel.idLong] = System.currentTimeMillis()
-				val currentJob = Companion.memberCounterUpdateJobs[textChannel.idLong]
+				val currentJob = memberCounterUpdateJobs[textChannel.idLong]
 				currentJob?.cancel()
 
 				memberCounterUpdateJobs[textChannel.idLong] = GlobalScope.launch(loritta.coroutineDispatcher) {
