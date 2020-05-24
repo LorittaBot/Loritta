@@ -328,7 +328,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					DonationKeys,
 					Payments,
 					ShipEffects,
-					ParallaxMetaStorages,
 					BotVotes,
 					StoredMessages,
 					StarboardMessages,
