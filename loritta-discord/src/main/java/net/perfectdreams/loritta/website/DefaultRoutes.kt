@@ -39,7 +39,6 @@ object DefaultRoutes {
 			SupportRoute(loritta),
 			TermsOfServiceRoute(loritta),
 			DailyRoute(loritta),
-			NashornDocsRoute(loritta),
 			DonateRoute(loritta),
 
 			// Landing Pages
@@ -61,7 +60,6 @@ object DefaultRoutes {
 			ConfigureMemberCounterRoute(loritta),
 			ConfigureMiscellaneousRoute(loritta),
 			ConfigureModerationRoute(loritta),
-			ConfigureNashornCommandsRoute(loritta),
 			ConfigurePermissionsRoute(loritta),
 			ConfigurePremiumKeyRoute(loritta),
 			ConfigureStarboardRoute(loritta),
