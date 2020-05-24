@@ -237,12 +237,10 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 
 		logger.info { "Success! Loading emotes..." }
 
-		Emotes.emoteManager = DiscordEmoteManager()
-		Emotes.emoteManager?.loadEmotes()
+		Emotes.emoteManager = DiscordEmoteManager().also { it.loadEmotes() }
 
 		logger.info { "Success! Connecting to the database..." }
-
-
+		
 		initPostgreSql()
 
 		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
