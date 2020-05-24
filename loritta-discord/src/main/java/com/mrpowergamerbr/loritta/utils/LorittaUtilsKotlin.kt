@@ -89,10 +89,6 @@ fun String.isValidSnowflake(): Boolean {
 	}
 }
 
-enum class NSFWResponse {
-	OK, ERROR, NSFW, EXCEPTION
-}
-
 object LorittaUtilsKotlin {
 	val logger = KotlinLogging.logger {}
 
@@ -147,32 +143,5 @@ object LorittaUtilsKotlin {
 			return true
 		}
 		return false
-	}
-
-	fun getImageStatus(url: String): NSFWResponse {
-		var response = HttpRequest.get("https://mdr8.p.mashape.com/api/?url=" + URLEncoder.encode(url, "UTF-8"))
-				.header("X-Mashape-Key", loritta.config.mashape.apiKey)
-				.header("Accept", "application/json")
-				.acceptJson()
-				.body()
-
-		// Nós iremos ignorar caso a API esteja sobrecarregada
-		try {
-			val reader = StringReader(response)
-			val jsonReader = JsonReader(reader)
-			val apiResponse = jsonParser.parse(jsonReader).asJsonObject // Base
-
-			if (apiResponse.has("error")) {
-				return NSFWResponse.ERROR
-			}
-
-			if (apiResponse.get("rating_label").asString == "adult") {
-				return NSFWResponse.NSFW
-			}
-		} catch (e: Exception) {
-			logger.info("Ignorando verificação de conteúdo NSFW ($url) - Causa: ${e.message} - Resposta: $response")
-			return NSFWResponse.EXCEPTION
-		}
-		return NSFWResponse.OK
 	}
 }
