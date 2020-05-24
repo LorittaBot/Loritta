@@ -22,15 +22,6 @@ object LorittaLauncher {
 
 	@JvmStatic
 	fun main(args: Array<String>) {
-		// Isto apenas acontece se... "uma falha de segurança na API de comandos em JS for detectada"
-		val doNotStart = File("do_not_start").exists()
-		if (doNotStart) {
-			while (true) {
-				System.out.println("Falha de segurança detectada!")
-				Thread.sleep(120000)
-			}
-		}
-
 		// https://www.reddit.com/r/Kotlin/comments/8qdd4x/kotlin_script_engine_and_your_classpaths_what/
 		val path = this::class.java.protectionDomain.codeSource.location.path
 		val jar = JarFile(path)
