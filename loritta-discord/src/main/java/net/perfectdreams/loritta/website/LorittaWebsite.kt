@@ -27,6 +27,8 @@ import io.ktor.server.netty.NettyApplicationEngine
 import io.ktor.sessions.*
 import io.ktor.util.AttributeKey
 import io.ktor.util.hex
+import kotlinx.html.*
+import kotlinx.html.stream.appendHTML
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.website.blog.Blog
@@ -163,7 +165,18 @@ class LorittaWebsite(val loritta: Loritta) {
 					logger.error(cause) { "Something went wrong when processing ${trueIp} (${userAgent}): ${httpMethod} ${call.request.path()}${queryString}" }
 
 					call.respondHtml(
-							"<pre>${ExceptionUtils.getStackTrace(cause)}</pre>",
+							StringBuilder().appendHTML()
+									.html {
+										head {
+											title { + "Uh, oh! Something went wrong!" }
+										}
+										body {
+											pre {
+												+ ExceptionUtils.getStackTrace(cause)
+											}
+										}
+									}
+									.toString(),
 							status = HttpStatusCode.InternalServerError
 					)
 				}
