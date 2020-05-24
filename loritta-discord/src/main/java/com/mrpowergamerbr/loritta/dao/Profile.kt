@@ -25,10 +25,6 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 	var lastCommandSentAt by Profiles.lastCommandSentAt
 	var isAfk by Profiles.isAfk
 	var afkReason by Profiles.afkReason
-	var isDonator by Profiles.isDonator
-	var donatorPaid by Profiles.donatorPaid
-	var donatedAt by Profiles.donatedAt
-	var donationExpiresIn by Profiles.donationExpiresIn
 
 	var settings by ProfileSettings referencedOn Profiles.settings
 	var marriage by Marriage optionalReferencedOn Profiles.marriage
@@ -57,11 +53,6 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 		return Pair(System.currentTimeMillis() > tomorrow, tomorrow)
 	}
 
-	/**
-	 * Returns if the user is an active donator
-	 */
-	fun isActiveDonator() = isDonator && donationExpiresIn > System.currentTimeMillis()
-
 	fun getCurrentLevel(): XpWrapper {
 		return XpWrapper((xp / 1000).toInt(), xp)
 	}
@@ -71,7 +62,6 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 	}
 
 	suspend fun getProfileBackground() = loritta.getUserProfileBackground(userId)
-
 
 	class XpWrapper constructor(val currentLevel: Int, val expLeft: Long)
 }

@@ -525,10 +525,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 				lastMessageSentAt = 0L
 				lastMessageSentHash = 0
 				money = 0
-				isDonator = false
-				donatorPaid = 0.0
-				donatedAt = 0L
-				donationExpiresIn = 0L
 				isAfk = false
 				settings = profileSettings
 			}
