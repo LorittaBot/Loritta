@@ -4,6 +4,7 @@ import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.tables.Dailies
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.*
@@ -40,10 +41,12 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 	abstract suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification)
 
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
+		loritta as Loritta
+
 		if (call.request.path().endsWith("/dashboard")) {
 			val hostHeader = call.request.hostFromHeader()
 			val scheme = LorittaWebsite.WEBSITE_URL.split(":").first()
-			
+
 			val state = call.parameters["state"]
 			val guildId = call.parameters["guild_id"]
 			val code = call.parameters["code"]
@@ -122,8 +125,16 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 					val jsonState = jsonParser.parse(decodedState).obj
 					val redirectUrl = jsonState["redirectUrl"].nullString
 
-					if (redirectUrl != null)
-						redirect(redirectUrl, false)
+					if (redirectUrl != null) {
+						// Check if we are redirecting to Loritta's trusted URLs
+						val lorittaDomain = loritta.connectionManager.getDomainFromUrl(loritta.instanceConfig.loritta.website.url)
+						val redirectDomain = loritta.connectionManager.getDomainFromUrl(redirectUrl)
+
+						if (lorittaDomain == redirectDomain)
+							redirect(redirectUrl, false)
+						else
+							logger.warn { "Someone tried to make me redirect to somewhere that isn't my website domain! Tried to redirect to $redirectDomain" }
+					}
 				}
 
 				if (guildId != null) {

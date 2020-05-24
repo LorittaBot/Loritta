@@ -1508,7 +1508,7 @@ class ConnectionManager {
         }
     }
 
-    private fun getDomainFromUrl(url: String): String? {
+    fun getDomainFromUrl(url: String): String? {
         val pattern = Constants.URL_PATTERN
         val matcher = pattern.matcher(url)
         if (matcher.find()) {
