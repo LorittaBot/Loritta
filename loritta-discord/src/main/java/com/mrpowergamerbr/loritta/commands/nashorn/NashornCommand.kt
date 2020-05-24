@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.nashorn.wrappers.NashornContext
 import com.mrpowergamerbr.loritta.parallax.ParallaxUtils
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -26,7 +27,14 @@ import java.util.concurrent.TimeUnit
  */
 class NashornCommand(label: String, val javaScriptCode: String) : AbstractCommand(label, category = CommandCategory.MISC) {
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
-		nashornRun(context)
+		context.reply(
+				LoriReply(
+						"Comandos personalizados estão desativados devido a problemas de segurança, desculpe pela inconveniência!"
+				),
+				LoriReply(
+						"Custom commands are disabled due to security reasons, sorry for the inconvenience!"
+				)
+		)
 	}
 
 	private suspend fun nashornRun(ogContext: CommandContext) {
