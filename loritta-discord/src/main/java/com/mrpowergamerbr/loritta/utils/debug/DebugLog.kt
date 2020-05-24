@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.utils.debug
 
-import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.modules.InviteLinkModule
 import com.mrpowergamerbr.loritta.threads.NewRssFeedTask
@@ -10,7 +9,6 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.website.LorittaWebsite
 import java.lang.management.ManagementFactory
 import java.util.concurrent.ThreadPoolExecutor
-import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.thread
 
 object DebugLog {
@@ -79,15 +77,6 @@ object DebugLog {
 				cancelAllEvents = toggleState
 
 				println("Cancel all events: $cancelAllEvents")
-			}
-			"reload" -> {
-				val arg0 = args.getOrNull(0)
-
-				if (arg0 == "commands") {
-					LorittaLauncher.loritta.loadCommandManager()
-					println("${com.mrpowergamerbr.loritta.utils.loritta.legacyCommandManager.commandMap.size} comandos carregados")
-					return
-				}
 			}
 			"info" -> {
 				val mb = 1024 * 1024

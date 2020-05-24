@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.RegisterConfig
@@ -114,17 +113,6 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			context.reply(
 					LoriReply(
 							message = "Locales recarregadas!"
-					)
-			)
-			return
-		}
-
-		if (arg0 == "commands") {
-			val oldCommandCount = loritta.legacyCommandManager.commandMap.size
-			LorittaLauncher.loritta.loadCommandManager()
-			context.reply(
-					LoriReply(
-							"Comandos recarregados com sucesso! **(${loritta.legacyCommandManager.commandMap.size} comandos ativados, ${loritta.legacyCommandManager.commandMap.size - oldCommandCount} comandos adicionados)**"
 					)
 			)
 			return

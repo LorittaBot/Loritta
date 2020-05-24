@@ -108,7 +108,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		return Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat(name).build())
 	}
 
-	lateinit var legacyCommandManager: CommandManager // Nosso command manager
+	val legacyCommandManager = CommandManager() // Nosso command manager
 	val commandManager = DiscordCommandManager(this)
 	var messageInteractionCache = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<Long, MessageInteractionFunctions>().asMap()
 
@@ -249,9 +249,8 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		val shardManager = builder.build()
 		lorittaShards.shardManager = shardManager
 
-		logger.info { "Sucesso! Iniciando comandos e plugins da Loritta..." }
+		logger.info { "Sucesso! Iniciando plugins da Loritta..." }
 
-		loadCommandManager() // Inicie todos os comandos da Loritta
 		pluginManager.loadPlugins()
 
 		logger.info("Sucesso! Iniciando Loritta (Website)...")
@@ -544,16 +543,5 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 						(Payments.userId eq userId)
 			}.sumByDouble { it.money.toDouble() }
 		}
-	}
-
-	/**
-	 * Initializes the CommandManager
-	 *
-	 * @see CommandManager
-	 */
-	fun loadCommandManager() {
-		// Isto parece não ter nenhuma utilidade, mas, caso estejamos usando o JRebel, é usado para recarregar o command manager
-		// Ou seja, é possível adicionar comandos sem ter que reiniciar tudo!
-		legacyCommandManager = CommandManager()
 	}
 }
