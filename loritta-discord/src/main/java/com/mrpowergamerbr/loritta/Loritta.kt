@@ -110,7 +110,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		return Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat(name).build())
 	}
 
-	val legacyCommandManager = CommandManager() // Nosso command manager
+	val legacyCommandManager = CommandManager(this) // Nosso command manager
 	val commandManager = DiscordCommandManager(this)
 	var messageInteractionCache = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<Long, MessageInteractionFunctions>().asMap()
 

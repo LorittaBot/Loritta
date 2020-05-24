@@ -23,7 +23,7 @@ repositories {
 }
 
 dependencies {
-    compile(kotlin("stdlib-js"))
+    api(kotlin("stdlib-js"))
 	implementation(project(":loritta-api"))
 }
 

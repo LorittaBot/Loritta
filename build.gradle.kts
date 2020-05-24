@@ -45,7 +45,7 @@ allprojects {
                             addIfAvailable("compiled.at", "Compiled-At")
                             attributes["Main-Class"] = mainClass
                             attributes["Kotlin-Version"] = kotlinVersion
-                            attributes["Class-Path"] = configurations.compile.get()
+                            attributes["Class-Path"] = configurations.runtimeClasspath.get()
                                     .filterNot { addToFinalJarSourceProjects.any { sourceName -> it.name.startsWith(sourceName) } }
                                     .filter { it.extension == "jar" }
                                     .distinctBy { it.name }

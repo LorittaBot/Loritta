@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.commands
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.*
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.*
@@ -42,7 +43,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 import java.util.concurrent.CancellationException
 
-class CommandManager {
+class CommandManager(loritta: Loritta) {
 	companion object {
 		val logger = KotlinLogging.logger {}
 	}
