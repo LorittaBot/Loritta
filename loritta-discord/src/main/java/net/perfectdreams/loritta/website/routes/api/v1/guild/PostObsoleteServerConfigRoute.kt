@@ -5,7 +5,6 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.ServerConfig
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
@@ -25,7 +24,6 @@ import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRoute(loritta, "/old-config") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
@@ -34,16 +32,6 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 		val receivedPayload = payload.obj
 		val type = receivedPayload["type"].string
 		receivedPayload.remove("type")
-
-		val target = when (type) {
-			"event_log" -> "dummy"
-			"invite_blocker" -> "dummy"
-			"permissions" -> "dummy"
-			"starboard" -> "dummy"
-			"nashorn_commands" -> "dummy"
-			"vanilla_commands" -> "dummy"
-			else -> null
-		} ?: return
 
 		var response = ""
 
@@ -150,52 +138,6 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 
 					serverConfig.inviteBlockerConfig = newConfig
 				}
-			}
-		} else {
-			for (element in receivedPayload.entrySet()) {
-				if (element.key == "guildId") {
-					return
-				}
-
-				val field = try {
-					target::class.java.getDeclaredField(element.key)
-				} catch (e: Exception) {
-					continue
-				}
-
-				field.isAccessible = true
-
-				if (element.value.isJsonPrimitive) {
-					if (element.value.asJsonPrimitive.isString) {
-						field.set(target, element.value.string)
-						response += element.key + " -> " + element.value + " ✓\n"
-						continue
-					}
-					if (element.value.asJsonPrimitive.isBoolean) {
-						field.setBoolean(target, element.value.bool)
-						response += element.key + " -> " + element.value + " ✓\n"
-						continue
-					}
-					if (element.value.asJsonPrimitive.isNumber) {
-						if (field.genericType == Integer.TYPE) {
-							field.setInt(target, element.value.int)
-							response += element.key + " -> " + element.value + " ✓\n"
-							continue
-						}
-					}
-				}
-				if (element.value.isJsonArray) {
-					val array = element.value.array
-					val list = arrayListOf<String>()
-					for (element in array) {
-						list.add(element.string)
-					}
-					field.set(target, list)
-					response += element.key + " -> " + element.value + " ✓ (maybe)\n"
-					continue
-				}
-
-				response += element.key + " -> " + element.value + " ✘\n"
 			}
 		}
 
