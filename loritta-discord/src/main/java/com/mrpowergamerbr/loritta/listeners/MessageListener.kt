@@ -508,7 +508,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	/**
 	 * Checks if the message mentions me
 	 *
-	 * @param contentRaw the message
+	 * @param message the message
 	 * @returns if the message is mentioning me
 	 */
 	fun isMentioningMe(message: Message): Boolean = message.isMentioned(message.guild.selfMember)
