@@ -27,29 +27,6 @@ object LorittaUtils {
 		return true
 	}
 
-	fun warnOwnerNoPermission(guild: Guild?, textChannel: TextChannel?, serverConf: ServerConfig) {
-		/* if (textChannel == null || guild == null)
-			return
-
-		if (serverConf.warnOnMissingPermission) {
-			for (member in guild.members) {
-				if (!member.user.isBot && (member.hasPermission(Permission.ADMINISTRATOR) || member.hasPermission(Permission.MANAGE_PERMISSIONS))) {
-					try {
-						val locale = LorittaLauncher.loritta.getLegacyLocaleById(serverConf.localeId)
-						member.user.openPrivateChannel().queue { channel -> channel.sendMessage(locale["LORITTA_HeyIDontHavePermission", textChannel.asMention, guild.name]).queue() }
-					} catch (e: ErrorResponseException) {
-						// Usuário tem as DMs desativadas
-						if (e.errorResponse.code == 50007) {
-							continue
-						}
-						e.printStackTrace()
-					}
-
-				}
-			}
-		} */
-	}
-
 	/**
 	 * Downloads an image and returns it as a BufferedImage, additional checks are made and can be customized to avoid
 	 * downloading unsafe/big images that crash the application.

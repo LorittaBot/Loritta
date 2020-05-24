@@ -120,7 +120,6 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 			val sentMessage = event.channel.sendMessage(message).await()
 			return sentMessage
 		} else {
-			LorittaUtils.warnOwnerNoPermission(guild, event.textChannel, config)
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
 	}
@@ -218,7 +217,6 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 			val sentMessage = event.channel.sendMessage(message).addFile(inputStream, name).await()
 			return sentMessage
 		} else {
-			LorittaUtils.warnOwnerNoPermission(guild, event.textChannel, config)
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
 	}

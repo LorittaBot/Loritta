@@ -143,7 +143,6 @@ class DiscordCommandContext(val config: ServerConfig, val lorittaUser: LorittaUs
 			val sentMessage = event.channel.sendMessage(message).await()
 			return DiscordMessage(sentMessage)
 		} else {
-			LorittaUtils.warnOwnerNoPermission(discordGuild, event.textChannel, config)
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
 	}
@@ -245,7 +244,6 @@ class DiscordCommandContext(val config: ServerConfig, val lorittaUser: LorittaUs
 			val sentMessage = event.channel.sendMessage(message).addFile(inputStream, name).await()
 			return DiscordMessage(sentMessage)
 		} else {
-			LorittaUtils.warnOwnerNoPermission(discordGuild, event.textChannel, config)
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
 	}

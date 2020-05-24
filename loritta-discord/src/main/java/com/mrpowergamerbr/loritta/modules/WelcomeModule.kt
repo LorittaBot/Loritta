@@ -161,7 +161,6 @@ object WelcomeModule {
 					}
 				} else {
 					logger.debug { "Member = ${event.member} (Join), I don't have permission to send messages in $textChannel on guild $guild!" }
-					LorittaUtils.warnOwnerNoPermission(guild, textChannel, serverConfig)
 				}
 			}
 		}
@@ -238,7 +237,6 @@ object WelcomeModule {
 					}
 				} else {
 					logger.debug { "Member = ${event.member} (Quit), I don't have permission to send messages in $textChannel on guild $guild!" }
-					LorittaUtils.warnOwnerNoPermission(guild, textChannel, serverConfig)
 				}
 			}
 		}

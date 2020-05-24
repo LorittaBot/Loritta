@@ -309,12 +309,6 @@ class CommandManager {
 				} else {
 					logger.info("(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
 				}
-
-				if (serverConfig.guildId == -1L && ev.textChannel != null && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
-					LorittaUtils.warnOwnerNoPermission(ev.guild, ev.textChannel, serverConfig)
-					return true
-				}
-
 				val miscellaneousConfig = transaction(Databases.loritta) {
 					serverConfig.miscellaneousConfig
 				}

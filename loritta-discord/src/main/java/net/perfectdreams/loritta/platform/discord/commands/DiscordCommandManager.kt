@@ -248,11 +248,6 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
             }
 
             try {
-                if (serverConfig.guildId == -1L && ev.textChannel != null && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
-                    LorittaUtils.warnOwnerNoPermission(ev.guild, ev.textChannel, serverConfig)
-                    return true
-                }
-
                 if (serverConfig.blacklistedChannels.contains(ev.channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
                     // if (!conf.miscellaneousConfig.enableBomDiaECia || (conf.miscellaneousConfig.enableBomDiaECia && command !is LigarCommand)) {
                     if (serverConfig.warnIfBlacklisted) {
