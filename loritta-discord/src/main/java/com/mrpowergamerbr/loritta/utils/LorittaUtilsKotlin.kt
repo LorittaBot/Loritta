@@ -149,17 +149,6 @@ object LorittaUtilsKotlin {
 		return false
 	}
 
-	fun <T:Comparable<T>>shuffle(items:MutableList<T>):List<T>{
-		val rg : Random = Random()
-		for (i in 0..items.size - 1) {
-			val randomPosition = rg.nextInt(items.size)
-			val tmp : T = items[i]
-			items[i] = items[randomPosition]
-			items[randomPosition] = tmp
-		}
-		return items
-	}
-
 	fun getImageStatus(url: String): NSFWResponse {
 		var response = HttpRequest.get("https://mdr8.p.mashape.com/api/?url=" + URLEncoder.encode(url, "UTF-8"))
 				.header("X-Mashape-Key", loritta.config.mashape.apiKey)
