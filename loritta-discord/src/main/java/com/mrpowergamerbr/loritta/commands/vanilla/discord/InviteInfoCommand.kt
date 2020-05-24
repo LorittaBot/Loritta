@@ -33,7 +33,7 @@ class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCatego
 						.replace("http://", "")
 			}
 
-			val inviteBody = HttpRequest.get("https://canary.discordapp.com/api/v6/invite/$inviteId?with_counts=true")
+			val inviteBody = HttpRequest.get("https://canary.discordapp.com/api/v6/invite/${inviteId.encodeToUrl()}?with_counts=true")
 					.userAgent(Constants.USER_AGENT)
 					.body()
 
