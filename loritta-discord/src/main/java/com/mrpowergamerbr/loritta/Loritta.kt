@@ -335,7 +335,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					Sponsors,
 					EconomyConfigs,
 					ExecutedCommandsLog,
-					BlacklistedUsers,
 					BlacklistedGuilds,
 					RolesByExperience,
 					LevelAnnouncementConfigs,
