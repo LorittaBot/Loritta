@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.website.routes
 import com.github.salomonbrys.kotson.jsonArray
 import com.github.salomonbrys.kotson.jsonObject
 import com.mrpowergamerbr.loritta.dao.DonationKey
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.DonationKeys
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import io.ktor.application.ApplicationCall
@@ -14,7 +13,6 @@ import net.perfectdreams.loritta.website.utils.ScriptingUtils
 import net.perfectdreams.loritta.website.utils.extensions.lorittaSession
 import net.perfectdreams.loritta.website.utils.extensions.respondHtml
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import kotlin.reflect.full.createType
 

@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.website.routes.api.v1.callbacks
 
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.string
-import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.website.LoriWebCode

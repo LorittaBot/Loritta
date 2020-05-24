@@ -1,9 +1,9 @@
 package com.mrpowergamerbr.loritta.dao
 
 import com.mrpowergamerbr.loritta.tables.Reputations
-import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
+import org.jetbrains.exposed.dao.id.EntityID
 
 class Reputation(id: EntityID<Long>) : LongEntity(id) {
 	companion object : LongEntityClass<Reputation>(Reputations)

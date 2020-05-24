@@ -6,12 +6,7 @@ import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import java.awt.image.BufferedImage
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.IOException
-import javax.imageio.ImageIO
 
 /**
  * Contexto do comando Nashorn executado, é simplesmente um wrapper "seguro" para comandos em JavaScript, para que

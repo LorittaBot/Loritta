@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.website.routes.api.v1.loritta
 
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonParser
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
@@ -14,7 +13,6 @@ import net.perfectdreams.loritta.tables.SpicyStacktraces
 import net.perfectdreams.loritta.website.routes.BaseRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class PostErrorRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/loritta/error/{type}") {
 	override suspend fun onRequest(call: ApplicationCall) {

@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.website.routes.user
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Reputation
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -20,7 +19,6 @@ import net.perfectdreams.loritta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.website.utils.extensions.trueIp
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.or
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import kotlin.reflect.KTypeProjection
 import kotlin.reflect.full.createType

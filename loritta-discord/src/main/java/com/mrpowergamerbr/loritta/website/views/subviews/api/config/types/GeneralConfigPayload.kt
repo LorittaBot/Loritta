@@ -4,8 +4,8 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
-import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class GeneralConfigPayload : ConfigPayloadType("default") {

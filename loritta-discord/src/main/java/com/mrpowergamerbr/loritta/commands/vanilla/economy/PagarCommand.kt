@@ -17,7 +17,6 @@ import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.UserPremiumPlans
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.math.BigDecimal
 

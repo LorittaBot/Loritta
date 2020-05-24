@@ -27,6 +27,7 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.readBytes
 import io.ktor.http.userAgent
 import kotlinx.coroutines.Dispatchers
+import mu.KotlinLogging
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.commands.vanilla.magic.LoriToolsCommand
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandMap
@@ -50,7 +51,6 @@ import java.util.concurrent.TimeUnit
 import java.util.zip.ZipInputStream
 import javax.imageio.ImageIO
 import kotlin.random.Random
-import mu.KotlinLogging
 
 /**
  * Loritta Morenitta :3

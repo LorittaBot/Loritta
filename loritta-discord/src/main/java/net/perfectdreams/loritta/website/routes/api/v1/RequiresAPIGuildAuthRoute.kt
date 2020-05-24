@@ -6,7 +6,6 @@ import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.ApplicationCall
 import io.ktor.http.HttpStatusCode
-import io.ktor.request.host
 import io.ktor.request.path
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild

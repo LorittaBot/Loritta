@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.website.routes.api.v1.economy
 
-import com.mrpowergamerbr.loritta.network.Databases
 import io.ktor.application.ApplicationCall
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
@@ -14,7 +13,6 @@ import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class GetDailyShopRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/economy/daily-shop") {
 	override suspend fun onRequest(call: ApplicationCall) {

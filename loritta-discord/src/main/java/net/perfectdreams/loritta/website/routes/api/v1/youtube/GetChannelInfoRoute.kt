@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.website.routes.api.v1.youtube
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
@@ -22,7 +21,6 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.net.URL
 
 class GetChannelInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/youtube/channel") {

@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.website.routes.api.v1.user
 
 import com.github.salomonbrys.kotson.jsonObject
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.*
 import io.ktor.application.ApplicationCall
 import io.ktor.sessions.clear
@@ -15,7 +14,6 @@ import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.or
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class PostDeleteDataRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/@me/delete") {
 	companion object {

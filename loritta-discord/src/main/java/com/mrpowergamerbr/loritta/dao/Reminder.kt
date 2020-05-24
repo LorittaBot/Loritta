@@ -1,9 +1,9 @@
 package com.mrpowergamerbr.loritta.dao
 
 import com.mrpowergamerbr.loritta.tables.Reminders
-import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
+import org.jetbrains.exposed.dao.id.EntityID
 
 class Reminder(id: EntityID<Long>) : LongEntity(id) {
 	companion object : LongEntityClass<Reminder>(Reminders)

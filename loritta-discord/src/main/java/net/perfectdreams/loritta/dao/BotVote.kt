@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.dao
 
 import net.perfectdreams.loritta.tables.BotVotes
-import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
+import org.jetbrains.exposed.dao.id.EntityID
 
 class BotVote(id: EntityID<Long>) : LongEntity(id) {
     companion object : LongEntityClass<BotVote>(BotVotes)
