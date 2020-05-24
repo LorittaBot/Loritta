@@ -151,9 +151,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 	// Mensagens
 	override fun onGuildMessageDelete(event: GuildMessageDeleteEvent) {
-		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
-			return
-
 		if (DebugLog.cancelAllEvents)
 			return
 
@@ -223,9 +220,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onMessageBulkDelete(event: MessageBulkDeleteEvent) {
-		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
-			return
-
 		if (DebugLog.cancelAllEvents)
 			return
 
@@ -297,9 +291,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildBan(event: GuildBanEvent) {
-		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
-			return
-
 		if (DebugLog.cancelAllEvents)
 			return
 
@@ -377,9 +368,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildUnban(event: GuildUnbanEvent) {
-		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
-			return
-
 		if (DebugLog.cancelAllEvents)
 			return
 
@@ -445,9 +433,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildMemberUpdateNickname(event: GuildMemberUpdateNicknameEvent) {
-		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
-			return
-
 		if (DebugLog.cancelAllEvents)
 			return
 

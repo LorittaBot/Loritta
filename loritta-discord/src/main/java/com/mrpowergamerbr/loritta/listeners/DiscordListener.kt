@@ -186,9 +186,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (event.user.isBot)
 			return
 
-		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
-			return
-
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			ReactionModule.onReactionAdd(event)
 		}
@@ -198,9 +195,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		val user = event.user ?: return
 
 		if (user.isBot)
-			return
-
-		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
 			return
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
@@ -218,9 +212,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			return
 
 		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
-			return
-
-		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount())
 			return
 
 		if (loritta.messageInteractionCache.containsKey(e.messageIdLong)) {
@@ -290,9 +281,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildLeave(e: GuildLeaveEvent) {
-		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(e.guild))
-			return
-
 		logger.info { "Someone removed me @ ${e.guild}! :(" }
 
 		loritta.cachedServerConfigs.invalidate(e.guild.idLong)
@@ -372,9 +360,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildJoin(event: GuildJoinEvent) {
-		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
-			return
-
 		logger.info { "Someone added me @ ${event.guild}! :)" }
 
 		// Vamos alterar a minha linguagem quando eu entrar em um servidor, baseando na localização dele
@@ -416,9 +401,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildMemberJoin(event: GuildMemberJoinEvent) {
-		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
-			return
-
 		if (DebugLog.cancelAllEvents)
 			return
 
@@ -481,9 +463,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildMemberLeave(event: GuildMemberLeaveEvent) {
-		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
-			return
-
 		if (DebugLog.cancelAllEvents)
 			return
 
@@ -534,9 +513,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildReady(event: GuildReadyEvent) {
-		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
-			return
-
 		val guild = event.guild
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {

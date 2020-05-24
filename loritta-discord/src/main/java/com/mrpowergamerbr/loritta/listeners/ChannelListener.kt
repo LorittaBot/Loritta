@@ -10,9 +10,6 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class ChannelListener(val loritta: Loritta) : ListenerAdapter() {
 	override fun onTextChannelCreate(event: TextChannelCreateEvent) {
-		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
-			return
-
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 

@@ -201,17 +201,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 				)
 	}
 
-	val isMainAccount: Boolean
-		get() {
-			if (config.loritta.environment != EnvironmentType.PRODUCTION)
-				return true
-			return discordConfig.discord.clientId == "297153970613387264"
-		}
-
-	fun isMainAccountOnlineAndWeAreNotTheMainAccount() = false
-
-	fun isMainAccountOnlineAndWeAreNotTheMainAccount(guild: Guild) = false
-
 	val lorittaCluster: GeneralConfig.LorittaClusterConfig
 		get() {
 			return config.clusters.first { it.id == instanceConfig.loritta.currentClusterId }

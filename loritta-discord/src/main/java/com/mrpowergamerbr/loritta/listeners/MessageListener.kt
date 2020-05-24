@@ -53,9 +53,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
-		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
-			return
-
 		if (loritta.discordConfig.discord.disallowBots && !loritta.discordConfig.discord.botWhitelist.contains(event.author.idLong) && event.author.isBot) // Se uma mensagem de um bot, ignore a mensagem!
 			return
 
@@ -388,9 +385,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildMessageUpdate(event: GuildMessageUpdateEvent) {
-		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
-			return
-
 		if (event.author.isBot)
 			return
 

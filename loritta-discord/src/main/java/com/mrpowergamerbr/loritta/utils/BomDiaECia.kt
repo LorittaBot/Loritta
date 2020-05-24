@@ -151,9 +151,6 @@ class BomDiaECia {
 		if (forced)
 			thread.interrupt()
 
-		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount())
-			return
-
 		triedToCall.clear()
 
 		logger.info("Vamos anunciar o Bom Dia & Cia! (Agora é a hora!)")

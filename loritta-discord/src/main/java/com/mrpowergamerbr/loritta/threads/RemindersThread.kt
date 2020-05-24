@@ -43,9 +43,6 @@ class RemindersThread : Thread("Reminders Thread") {
 				val channel = lorittaShards.getTextChannelById(reminder.channelId.toString())
 
 				if (channel != null && channel.canTalk()) {
-					if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(channel.guild))
-						continue
-
 					channel.sendMessage("<a:lori_notification:394165039227207710> | <@" + reminder.userId + "> Lembrete! `" + reminder.content + "`").queue()
 					notifiedReminders.add(reminder)
 				} else {
