@@ -29,6 +29,7 @@ import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import kotlinx.coroutines.*
 import mu.KotlinLogging
+import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.perfectdreams.loritta.api.platform.PlatformFeature
@@ -173,7 +174,10 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 				.writeTimeout(discordConfig.okHttp.writeTimeout, TimeUnit.SECONDS)
 				.protocols(listOf(Protocol.HTTP_1_1)) // https://i.imgur.com/FcQljAP.png
 
-		builder = DefaultShardManagerBuilder()
+		builder = DefaultShardManagerBuilder.createDefault(discordConfig.discord.clientToken)
+				.disableCache(CacheFlag.values().toList())
+				.enableCache(discordConfig.discord.cacheFlags)
+				.setEnabledIntents(discordConfig.discord.intents)
 				.apply {
 					if (loritta.discordConfig.shardController.enabled) {
 						logger.info { "Using shard controller (for bots with \"sharding for very large bots\" to manage shards!" }
@@ -193,7 +197,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 				.setToken(discordConfig.discord.clientToken)
 				.setBulkDeleteSplittingEnabled(false)
 				.setHttpClientBuilder(okHttpBuilder)
-				.setDisabledCacheFlags(EnumSet.of(CacheFlag.ACTIVITY))
 				.addEventListeners(
 						discordListener,
 						eventLogListener,
