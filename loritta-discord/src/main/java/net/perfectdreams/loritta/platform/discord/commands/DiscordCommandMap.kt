@@ -48,7 +48,11 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 
 	suspend fun dispatch(ev: LorittaMessageEvent, rawArguments: List<String>, serverConfig: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
 		for (command in commands) {
-			if (dispatch(command, rawArguments, ev, serverConfig, locale, legacyLocale, lorittaUser))
+			val shouldBeProcessed = if (command is DiscordCommand)
+				command.commandCheckFilter?.invoke(ev, rawArguments, serverConfig, locale, lorittaUser) ?: true
+			else true
+
+			if (shouldBeProcessed && dispatch(command, rawArguments, ev, serverConfig, locale, legacyLocale, lorittaUser))
 				return true
 		}
 

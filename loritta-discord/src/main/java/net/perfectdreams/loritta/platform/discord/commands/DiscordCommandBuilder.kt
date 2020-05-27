@@ -1,6 +1,10 @@
 package net.perfectdreams.loritta.platform.discord.commands
 
+import com.mrpowergamerbr.loritta.dao.ServerConfig
+import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
+import com.mrpowergamerbr.loritta.utils.LorittaUser
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.CommandBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -24,9 +28,21 @@ class DiscordCommandBuilder(
 	var botRequiredPermissions = listOf<Permission>()
 	var executeDiscordCallback: (suspend DiscordCommandContext.() -> (Unit))? = null
 	var userRequiredLorittaPermissions = listOf<LorittaPermission>()
+	var commandCheckFilter: (suspend (LorittaMessageEvent, List<String>, ServerConfig, BaseLocale, LorittaUser) -> (Boolean))? = null
 
 	fun executesDiscord(callback: suspend DiscordCommandContext.() -> (Unit)) {
 		this.executeDiscordCallback = callback
+	}
+
+	/**
+	 * Sets a command check filter, this is used to enable/disable commands in specific guilds. Useful for guild-specific commands
+	 *
+	 * If not set, the check will always return true.
+	 *
+	 * @return if the command is enabled for processing or not
+	 */
+	fun commandCheckFilter(callback: suspend (LorittaMessageEvent, List<String>, ServerConfig, BaseLocale, LorittaUser) -> (Boolean)) {
+		this.commandCheckFilter = callback
 	}
 
 	fun buildDiscord(): DiscordCommand {
