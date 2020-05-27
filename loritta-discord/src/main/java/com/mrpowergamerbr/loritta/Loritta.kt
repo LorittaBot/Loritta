@@ -174,7 +174,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 				.writeTimeout(discordConfig.okHttp.writeTimeout, TimeUnit.SECONDS)
 				.protocols(listOf(Protocol.HTTP_1_1)) // https://i.imgur.com/FcQljAP.png
 
-		builder = DefaultShardManagerBuilder.create(discordConfig.discord.clientToken, discordConfig.discord.intents)
+		builder = DefaultShardManagerBuilder(discordConfig.discord.clientToken)
 				.disableCache(CacheFlag.values().toList())
 				.enableCache(discordConfig.discord.cacheFlags)
 				.apply {
