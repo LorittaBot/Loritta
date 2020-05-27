@@ -33,7 +33,7 @@ class GetCommandsRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/lo
 					it.getDescription(locale),
 					it.getUsage(locale).build(locale)
 			)
-		} + com.mrpowergamerbr.loritta.utils.loritta.commandMap.commands.map {
+		} + com.mrpowergamerbr.loritta.utils.loritta.commandMap.commands.filter { !it.hideInHelp }.map {
 			CommandInfo(
 					it.commandName,
 					it.labels.first(),

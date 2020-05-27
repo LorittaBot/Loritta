@@ -283,7 +283,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						val allCommandLabels = mutableListOf<String>()
 
 						loritta.commandMap.commands.forEach {
-							if (!it.onlyOwner && !serverConfig.disabledCommands.contains(it.javaClass.simpleName))
+							if (!it.onlyOwner && !serverConfig.disabledCommands.contains(it.javaClass.simpleName) && !it.hideInHelp)
 								allCommandLabels.addAll(it.labels)
 						}
 
