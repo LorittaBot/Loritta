@@ -174,10 +174,9 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 				.writeTimeout(discordConfig.okHttp.writeTimeout, TimeUnit.SECONDS)
 				.protocols(listOf(Protocol.HTTP_1_1)) // https://i.imgur.com/FcQljAP.png
 
-		builder = DefaultShardManagerBuilder.createDefault(discordConfig.discord.clientToken)
+		builder = DefaultShardManagerBuilder.create(discordConfig.discord.clientToken, discordConfig.discord.intents)
 				.disableCache(CacheFlag.values().toList())
 				.enableCache(discordConfig.discord.cacheFlags)
-				.setEnabledIntents(discordConfig.discord.intents)
 				.apply {
 					if (loritta.discordConfig.shardController.enabled) {
 						logger.info { "Using shard controller (for bots with \"sharding for very large bots\" to manage shards!" }
@@ -194,7 +193,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 				.setShardsTotal(discordConfig.discord.maxShards)
 				.setShards(discordInstanceConfig.discord.minShardId, discordInstanceConfig.discord.maxShardId)
 				.setStatus(discordConfig.discord.status)
-				.setToken(discordConfig.discord.clientToken)
 				.setBulkDeleteSplittingEnabled(false)
 				.setHttpClientBuilder(okHttpBuilder)
 				.addEventListeners(
