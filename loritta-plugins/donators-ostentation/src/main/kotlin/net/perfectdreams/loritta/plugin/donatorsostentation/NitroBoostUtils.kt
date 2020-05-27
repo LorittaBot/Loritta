@@ -116,7 +116,7 @@ object NitroBoostUtils {
 							val isFromThisGuild = metadata != null && metadata.obj["guildId"].nullLong == guild.idLong
 
 							if (isFromThisGuild) {
-								val member = guild.getMemberById(nitroBoostPayment.userId)
+								val member = guild.retrieveMemberById(nitroBoostPayment.userId).complete()
 
 								if (member == null || member.timeBoosted == null) {
 									logger.warn { "Deleting Nitro Boost payment by ${nitroBoostPayment.userId} because user is not boosting the guild anymore! (is member null? ${member != null})" }
@@ -133,7 +133,7 @@ object NitroBoostUtils {
 							val isFromThisGuild = metadata != null && metadata.obj["guildId"].nullLong == guild.idLong
 
 							if (isFromThisGuild) {
-								val member = guild.getMemberById(it.userId)
+								val member = guild.retrieveMemberById(it.userId).complete()
 
 								if (member == null || member.timeBoosted == null) {
 									logger.warn { "Deleting donation key via Nitro Boost by ${it.userId} because user is not boosting the guild anymore! (is member null? ${member != null})" }
