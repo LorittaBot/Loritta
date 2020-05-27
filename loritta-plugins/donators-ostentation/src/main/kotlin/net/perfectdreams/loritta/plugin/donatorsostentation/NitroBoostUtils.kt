@@ -30,7 +30,7 @@ import java.math.BigDecimal
 
 object NitroBoostUtils {
 	private val logger = KotlinLogging.logger {}
-	private val REQUIRED_TO_RECEIVE_DREAM_BOOST = 20.00.toBigDecimal()
+	private val REQUIRED_TO_RECEIVE_DREAM_BOOST = 19.00.toBigDecimal()
 
 	internal fun createBoostTask(config: DonatorsOstentationConfig): suspend CoroutineScope.() -> Unit = {
 		while (true) {
@@ -88,7 +88,8 @@ object NitroBoostUtils {
 							val userPayment = mostPayingUsers.firstOrNull { it[Payments.userId] == profile[Profiles.id].value }
 
 							if (userPayment != null) {
-								val howMuchShouldBeGiven = ((userPayment[moneySumId]!!.toDouble() / 20.00) * 2) // Se doou 19.99, será (19.99 / 19.99) * 2 = 2 sonhos por segundo, se foi 39.99, será 4 sonhos, etc
+								val roundedUpPayment = Math.ceil(userPayment[moneySumId]!!.toDouble())
+								val howMuchShouldBeGiven = ((roundedUpPayment / 20.00) * 2) // Se doou 19.99, será (19.99 / 19.99) * 2 = 2 sonhos por segundo, se foi 39.99, será 4 sonhos, etc
 								logger.info { "Giving $howMuchShouldBeGiven sonhos to ${profile[Profiles.id]}" }
 
 								Profiles.update({ Profiles.id eq profile[Profiles.id] }) {
