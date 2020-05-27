@@ -111,7 +111,6 @@ class ServerSupportPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlu
 						import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 						import com.mrpowergamerbr.loritta.utils.loritta
 						import com.mrpowergamerbr.loritta.utils.lorittaShards
-						import com.mrpowergamerbr.loritta.utils.save
 						import com.mrpowergamerbr.loritta.utils.Constants
 						import com.mrpowergamerbr.loritta.utils.LorittaImage
 						import com.mrpowergamerbr.loritta.utils.toBufferedImage
