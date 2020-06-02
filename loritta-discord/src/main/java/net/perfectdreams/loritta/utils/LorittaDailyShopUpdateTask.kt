@@ -15,6 +15,7 @@ class LorittaDailyShopUpdateTask : Runnable {
 		// How many new items should be shown in the shop on every shop rotation?
 		// This exists to avoid Lori always selecting previously sold items instead of selecting never seen before items
 		private const val NEW_ITEMS_TARGET = 2
+		private const val DAILY_BACKGROUNDS_TARGET = 10
 
 		fun generate() {
 			logger.info { "Generating a new daily shop..." }
@@ -44,7 +45,7 @@ class LorittaDailyShopUpdateTask : Runnable {
 					}
 				}
 
-				repeat(10 - selectedBackgrounds.size) {
+				repeat(DAILY_BACKGROUNDS_TARGET - selectedBackgrounds.size) {
 					val randomBackground = allBackgrounds.random()
 					allBackgrounds.remove(randomBackground)
 					selectedBackgrounds.add(randomBackground)
