@@ -22,7 +22,7 @@ class CheckReactionsForLoriBanListener(val config: StaffLorittaBanConfig) : List
 		if (!config.enabled
 				|| event.channel.idLong !in config.channels
 				|| !event.reactionEmote.isEmote
-				|| event.reactionEmote.idLong != 593161404937404416L)
+				|| event.reactionEmote.idLong != 686370257308483612L)
 			return
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
