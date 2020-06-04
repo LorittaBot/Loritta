@@ -42,7 +42,7 @@ class AddReactionForStaffLoriBanModule(val config: StaffLorittaBanConfig) : Mess
 			return false
 		}
 
-		event.message.addReaction("gato_joinha:593161404937404416").queue()
+		event.message.addReaction("sad_cat_thumbs_up:686370257308483612").queue()
 		return false
 	}
 }
