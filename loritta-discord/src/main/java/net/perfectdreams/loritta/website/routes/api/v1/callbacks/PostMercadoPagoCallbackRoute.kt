@@ -3,7 +3,9 @@ package net.perfectdreams.loritta.website.routes.api.v1.callbacks
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.long
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.DonationKey
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
@@ -30,6 +32,7 @@ class PostMercadoPagoCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta,
 	}
 
 	override suspend fun onRequest(call: ApplicationCall) {
+		loritta as Loritta
 		val access = call.parameters["access"]
 		val id = call.parameters["id"]
 		val topic = call.parameters["topic"]
@@ -45,27 +48,39 @@ class PostMercadoPagoCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta,
 			"payment" -> {
 				// Verificar se o pagamento foi aprovado
 				val payment = com.mrpowergamerbr.loritta.utils.loritta.mercadoPago.getPaymentInfoById(id)
-				logger.info { "MercadoPago Payment $id is ${payment.description} - Reference ID: ${payment.externalReference}" }
+				logger.info { "MercadoPago Payment $id is ${payment.description} - Status: ${payment.status} - Reference ID: ${payment.externalReference}" }
 
-				if (payment.status == PaymentStatus.APPROVED || (com.mrpowergamerbr.loritta.utils.loritta.config.loritta.environment == EnvironmentType.CANARY && allowAnyPayment)) {
-					if (payment.externalReference == null) {
-						logger.warn { "MercadoPago Payment $id is ${payment.description} but it is missing the Reference ID!" }
-						call.respondJson(jsonObject())
-						return
+				if (payment.externalReference == null) {
+					logger.warn { "MercadoPago Payment $id is ${payment.description} but it is missing the Reference ID!" }
+					call.respondJson(jsonObject())
+					return
+				}
+
+				val internalTransactionId = payment.externalReference.split("-").last()
+
+				val internalPayment = loritta.newSuspendedTransaction {
+					Payment.findById(internalTransactionId.toLong())
+				}
+
+				if (internalPayment == null) {
+					logger.warn { "MercadoPago Payment $id with Reference ID: ${payment.externalReference} ($internalTransactionId) doesn't have a matching internal ID! Bug?" }
+					call.respondJson(jsonObject())
+					return
+				}
+
+				if (payment.status == PaymentStatus.CHARGED_BACK || payment.status == PaymentStatus.IN_MEDIATION) {
+					// User charged back the payment, let's ban him!
+					logger.warn { "User ${internalPayment.userId} charged back the payment! Let's ban him >:(" }
+
+					val profile = loritta.getLorittaProfileAsync(internalPayment.userId)
+
+					if (profile != null) {
+						loritta.newSuspendedTransaction {
+							profile.isBanned = true
+							profile.bannedReason = "Chargeback/Requesting your money back after a purchase! Why do you pay for something and then chargeback your payment even though you received your product? Payment ID: ${payment.externalReference}"
+						}
 					}
-
-					val internalTransactionId = payment.externalReference.split("-").last()
-
-					val internalPayment = loritta.newSuspendedTransaction {
-						Payment.findById(internalTransactionId.toLong())
-					}
-
-					if (internalPayment == null) {
-						logger.warn { "MercadoPago Payment $id with Reference ID: ${payment.externalReference} ($internalTransactionId) doesn't have a matching internal ID! Bug?" }
-						call.respondJson(jsonObject())
-						return
-					}
-
+				} else if (payment.status == PaymentStatus.APPROVED || (com.mrpowergamerbr.loritta.utils.loritta.config.loritta.environment == EnvironmentType.CANARY && allowAnyPayment)) {
 					if (internalPayment.paidAt != null) {
 						logger.warn { "MercadoPago Payment $id with Reference ID: ${payment.externalReference} ($internalTransactionId) is already paid! Ignoring..." }
 						call.respondJson(jsonObject())
