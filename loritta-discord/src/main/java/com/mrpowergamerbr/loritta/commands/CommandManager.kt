@@ -222,7 +222,7 @@ class CommandManager(loritta: Loritta) {
 		commandMap.add(PagarCommand())
 		commandMap.add(SonhosCommand())
 		commandMap.add(LigarCommand())
-		commandMap.add(SonhosTopCommand())
+
 		if (false && loritta.config.loritta.environment == EnvironmentType.CANARY)
 			commandMap.add(ExchangeCommand())
 	}

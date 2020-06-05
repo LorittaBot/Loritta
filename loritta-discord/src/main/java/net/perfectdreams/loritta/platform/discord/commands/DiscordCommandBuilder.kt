@@ -12,7 +12,20 @@ import net.perfectdreams.loritta.api.commands.CommandContext
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 
-fun discordCommand(loritta: LorittaDiscord, commandName: String, labels: List<String>, category: CommandCategory, builder: DiscordCommandBuilder.() -> (Unit)): DiscordCommand {
+fun Any?.discordCommand(
+		loritta: LorittaDiscord,
+		labels: List<String>,
+		category: CommandCategory,
+		builder: DiscordCommandBuilder.() -> (Unit)
+) = discordCommand(loritta, this?.let { this::class.simpleName } ?: "UnknownCommand", labels, category, builder)
+
+fun discordCommand(
+		loritta: LorittaDiscord,
+		commandName: String,
+		labels: List<String>,
+		category: CommandCategory,
+		builder: DiscordCommandBuilder.() -> (Unit)
+): DiscordCommand {
 	val b = DiscordCommandBuilder(loritta, commandName, labels, category)
 	builder.invoke(b)
 	return b.buildDiscord()
@@ -69,6 +82,7 @@ class DiscordCommandBuilder(
 			it.userRequiredPermissions = userRequiredPermissions
 			it.botRequiredPermissions = botRequiredPermissions
 			it.userRequiredLorittaPermissions = userRequiredLorittaPermissions
+			it.commandCheckFilter = commandCheckFilter
 		}
 	}
 }

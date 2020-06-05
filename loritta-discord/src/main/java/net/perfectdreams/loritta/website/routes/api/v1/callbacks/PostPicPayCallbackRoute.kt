@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.website.routes.api.v1.callbacks
 
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonParser
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -32,6 +33,7 @@ class PostPicPayCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/ap
 	}
 
 	override suspend fun onRequest(call: ApplicationCall) {
+		loritta as Loritta
 		val sellerTokenHeader = call.request.header("x-seller-token")
 
 		if (sellerTokenHeader == null || loritta.config.picPay.sellerToken != sellerTokenHeader) {
@@ -67,19 +69,31 @@ class PostPicPayCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/ap
 
 		logger.info { "PicPay payment $referenceId status is $status" }
 
-		if (status == "paid" || status == "complete") {
-			val internalTransactionId = referenceId.split("-").last()
+		val internalTransactionId = referenceId.split("-").last()
 
-			val internalPayment = loritta.newSuspendedTransaction {
-				Payment.findById(internalTransactionId.toLong())
+		val internalPayment = loritta.newSuspendedTransaction {
+			Payment.findById(internalTransactionId.toLong())
+		}
+
+		if (internalPayment == null) {
+			logger.warn { "PicPay Payment with Reference ID: $referenceId ($internalTransactionId) doesn't have a matching internal ID! Bug?" }
+			call.respondJson(jsonObject())
+			return
+		}
+
+		if (status == "chargeback") {
+			// User charged back the payment, let's ban him!
+			logger.warn { "User ${internalPayment.userId} charged back the payment! Let's ban him >:(" }
+
+			val profile = loritta.getLorittaProfileAsync(internalPayment.userId)
+
+			if (profile != null) {
+				loritta.newSuspendedTransaction {
+					profile.isBanned = true
+					profile.bannedReason = "Chargeback/Requesting your money back after a purchase! Why do you pay for something and then chargeback your payment even though you received your product? Payment ID: $referenceId"
+				}
 			}
-
-			if (internalPayment == null) {
-				logger.warn { "PicPay Payment with Reference ID: $referenceId ($internalTransactionId) doesn't have a matching internal ID! Bug?" }
-				call.respondJson(jsonObject())
-				return
-			}
-
+		} else if (status == "paid" || status == "complete") {
 			if (internalPayment.paidAt != null) {
 				logger.warn { "PicPay Payment with Reference ID: $referenceId ($internalTransactionId) is already paid! Ignoring..." }
 				call.respondJson(jsonObject())

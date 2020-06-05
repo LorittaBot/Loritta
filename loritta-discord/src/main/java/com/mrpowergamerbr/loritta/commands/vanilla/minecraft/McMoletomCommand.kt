@@ -17,7 +17,7 @@ import javax.imageio.ImageIO
 
 class McMoletomCommand : AbstractCommand("mcmoletom", listOf("mcsweater"), CommandCategory.MINECRAFT) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.minecraft.mcmoletom.description"]
+		return locale.toNewLocale()["commands.minecraft.mcsweater.description"]
 	}
 
 	override fun getUsage(): String {

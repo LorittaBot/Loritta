@@ -47,7 +47,9 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 	}
 
 	suspend fun dispatch(ev: LorittaMessageEvent, rawArguments: List<String>, serverConfig: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
-		for (command in commands) {
+		// We order by more spaces in the first label -> less spaces, to avoid other commands taking precedence over other commands
+		// I don't like how this works, we should create a command tree instead of doing this
+		for (command in commands.sortedByDescending { it.labels.first().count { it.isWhitespace() }}) {
 			val shouldBeProcessed = if (command is DiscordCommand)
 				command.commandCheckFilter?.invoke(ev, rawArguments, serverConfig, locale, lorittaUser) ?: true
 			else true

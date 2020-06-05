@@ -30,6 +30,8 @@ import kotlinx.coroutines.Dispatchers
 import mu.KotlinLogging
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.commands.vanilla.magic.LoriToolsCommand
+import net.perfectdreams.loritta.commands.vanilla.economy.SonhosTopCommand
+import net.perfectdreams.loritta.commands.vanilla.economy.SonhosTopLocalCommand
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandMap
 import net.perfectdreams.loritta.platform.discord.plugin.JVMPluginManager
 import net.perfectdreams.loritta.platform.discord.utils.JVMLorittaAssets
@@ -60,6 +62,8 @@ import kotlin.random.Random
 abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig: GeneralDiscordInstanceConfig, var config: GeneralConfig, var instanceConfig: GeneralInstanceConfig) : LorittaBot() {
     override val commandMap = DiscordCommandMap(this).apply {
         register(LoriToolsCommand.create(discordLoritta))
+        register(SonhosTopCommand.create(discordLoritta))
+        register(SonhosTopLocalCommand.create(discordLoritta))
     }
     override val pluginManager = JVMPluginManager(this)
     override val assets = JVMLorittaAssets(this)

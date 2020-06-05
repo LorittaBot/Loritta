@@ -6,11 +6,16 @@ import net.perfectdreams.loritta.tables.Backgrounds
 import net.perfectdreams.loritta.tables.DailyShopItems
 import net.perfectdreams.loritta.tables.DailyShops
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class LorittaDailyShopUpdateTask : Runnable {
 	companion object {
 		private val logger = KotlinLogging.logger {}
+		// How many new items should be shown in the shop on every shop rotation?
+		// This exists to avoid Lori always selecting previously sold items instead of selecting never seen before items
+		private const val NEW_ITEMS_TARGET = 2
+		private const val DAILY_BACKGROUNDS_TARGET = 10
 
 		fun generate() {
 			logger.info { "Generating a new daily shop..." }
@@ -23,10 +28,27 @@ class LorittaDailyShopUpdateTask : Runnable {
 					Backgrounds.enabled eq true and (Backgrounds.availableToBuyViaDreams eq true)
 				}.toMutableList()
 
-
 				val selectedBackgrounds = mutableListOf<ResultRow>()
 
-				repeat(10) {
+				// We will try to at least have two new items every single day, to avoid showing already sold backgrounds every day
+				val neverSoldBeforeBackgrounds = allBackgrounds.filter {
+					DailyShopItems.select {
+						DailyShopItems.item eq it[Backgrounds.id]
+					}.count() == 0L
+				}.toMutableList()
+
+				if (neverSoldBeforeBackgrounds.isNotEmpty()) {
+					repeat(Math.min(NEW_ITEMS_TARGET, neverSoldBeforeBackgrounds.size)) {
+						val randomBackground = neverSoldBeforeBackgrounds.random()
+						// We need to do this because the ResultRow isn't the same instance
+						// TODO: Check if this is really true, I'm 99% sure it is, but...
+						allBackgrounds.removeIf { it[Backgrounds.internalName] == randomBackground[Backgrounds.internalName] }
+						neverSoldBeforeBackgrounds.remove(randomBackground)
+						selectedBackgrounds.add(randomBackground)
+					}
+				}
+
+				repeat(DAILY_BACKGROUNDS_TARGET - selectedBackgrounds.size) {
 					val randomBackground = allBackgrounds.random()
 					allBackgrounds.remove(randomBackground)
 					selectedBackgrounds.add(randomBackground)

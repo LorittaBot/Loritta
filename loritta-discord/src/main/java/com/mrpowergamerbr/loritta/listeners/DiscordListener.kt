@@ -71,12 +71,15 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						.build<Long, Boolean>()
 						.asMap()
 		)
+
+		// You can update a channel 2 times every 10 minutes
+		// https://cdn.discordapp.com/attachments/681830234168754226/716341063912128636/unknown.png
 		val memberCounterLastUpdate = Caffeine.newBuilder()
-				.expireAfterWrite(120, TimeUnit.SECONDS)
+				.expireAfterWrite(5L, TimeUnit.MINUTES)
 				.build<Long, Long>()
 				.asMap()
 		val memberCounterUpdateJobs = Caffeine.newBuilder()
-				.expireAfterWrite(120, TimeUnit.SECONDS)
+				.expireAfterWrite(5L, TimeUnit.MINUTES)
 				.build<Long, Job>()
 				.asMap()
 

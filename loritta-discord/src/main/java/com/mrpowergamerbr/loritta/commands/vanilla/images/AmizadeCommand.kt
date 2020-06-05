@@ -22,7 +22,7 @@ class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), CommandC
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.discord.friendship.description"]
+		return locale.toNewLocale()["commands.images.friendship.description"]
 	}
 
 	override fun getExamples(): List<String> {

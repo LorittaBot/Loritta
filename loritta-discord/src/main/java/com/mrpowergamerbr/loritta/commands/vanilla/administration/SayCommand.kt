@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.commands.vanilla.misc
+package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.entities.TextChannel
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.util.*
 
-class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MISC) {
+class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["SAY_Description"]
 	}

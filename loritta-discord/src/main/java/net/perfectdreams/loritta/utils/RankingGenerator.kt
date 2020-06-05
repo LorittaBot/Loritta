@@ -1,16 +1,8 @@
-package com.mrpowergamerbr.loritta.commands.vanilla.economy
+package net.perfectdreams.loritta.utils
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.perfectdreams.loritta.api.commands.CommandCategory
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
+import net.dv8tion.jda.api.entities.User
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.Rectangle
@@ -19,39 +11,19 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class SonhosTopCommand : AbstractCommand("sonhostop", listOf("topsonhos"), CommandCategory.SOCIAL) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["RANK_DESCRIPTION"]
-	}
-
-	override fun canUseInPrivateChannel(): Boolean {
-		return false
-	}
-
-	override fun needsToUploadFiles(): Boolean {
-		return true
-	}
-
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
-		var page = context.args.getOrNull(0)?.toLongOrNull()
-
-		if (page != null)
-			page -= 1
-
-		if (page == null)
-			page = 0
-
-		val userData = transaction(Databases.loritta) {
-			Profiles.selectAll().orderBy(Profiles.money, SortOrder.DESC).limit(5, page * 5).toMutableList()
-		}
-
-		val list = userData.toMutableList()
-
+object RankingGenerator {
+	/**
+	 * Generates a ranking image
+	 */
+	suspend fun generateRanking(
+			title: String,
+			guildIconUrl: String?,
+			rankedUsers: List<UserRankInformation>,
+			onNullUser: (suspend (Long) -> (CachedUserInfo?))? = null
+	): BufferedImage {
 		val rankHeader = ImageIO.read(File(Loritta.ASSETS, "rank_header.png"))
 		val base = BufferedImage(400, 300, BufferedImage.TYPE_INT_ARGB_PRE)
 		val graphics = base.graphics.enableFontAntiAliasing()
-
-		val guildIconUrl = context.guild.iconUrl
 
 		val serverIconUrl = if (guildIconUrl != null) {
 			guildIconUrl.replace("jpg", "png")
@@ -59,7 +31,8 @@ class SonhosTopCommand : AbstractCommand("sonhostop", listOf("topsonhos"), Comma
 			"${loritta.instanceConfig.loritta.website.url}assets/img/unknown.png"
 		}
 
-		val serverIcon = (LorittaUtils.downloadImage(serverIconUrl) ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR).getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
+		val serverIcon = (LorittaUtils.downloadImage(serverIconUrl) ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR)
+				.getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
 
 		graphics.drawImage(serverIcon, 259, -52, null)
 
@@ -76,18 +49,17 @@ class SonhosTopCommand : AbstractCommand("sonhostop", listOf("topsonhos"), Comma
 
 		graphics.font = oswaldRegular16
 
-		ImageUtils.drawCenteredString(graphics, "Ranking Global", Rectangle(0, 0, 268, 37), oswaldRegular16)
+		ImageUtils.drawCenteredString(graphics, title, Rectangle(0, 0, 268, 37), oswaldRegular16)
 
 		var idx = 0
 		var currentY = 37
 
-		for (profile in list) {
+		for (profile in rankedUsers) {
 			if (idx >= 5) {
 				break
 			}
 
-			val userId = profile[Profiles.id].value.toString()
-			val member = lorittaShards.retrieveUserInfoById(userId.toLong())
+			val member = lorittaShards.retrieveUserInfoById(profile.userId) ?: onNullUser?.invoke(profile.userId)
 
 			if (member != null) {
 				val rankBackground = loritta.getUserProfileBackground(member.id)
@@ -106,11 +78,13 @@ class SonhosTopCommand : AbstractCommand("sonhostop", listOf("topsonhos"), Comma
 
 				graphics.font = oswaldRegular16
 
-				ImageUtils.drawTextWrap("${profile[Profiles.money]} sonhos", 144, currentY + 38, 9999, 9999, graphics.fontMetrics, graphics)
+				if (profile.subtitle != null)
+					ImageUtils.drawTextWrap(profile.subtitle, 144, currentY + 38, 9999, 9999, graphics.fontMetrics, graphics)
 
 				graphics.font = oswaldRegular10
 
-				// ImageUtils.drawTextWrap("Nível " + userData.getCurrentLevel().currentLevel, 145, currentY + 48, 9999, 9999, graphics.fontMetrics, graphics)
+				if (profile.subsubtitle != null)
+					ImageUtils.drawTextWrap(profile.subsubtitle, 145, currentY + 48, 9999, 9999, graphics.fontMetrics, graphics)
 
 				val avatar = (LorittaUtils.downloadImage(member.effectiveAvatarUrl) ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR)
 						.getScaledInstance(143, 143, BufferedImage.SCALE_SMOOTH)
@@ -135,6 +109,12 @@ class SonhosTopCommand : AbstractCommand("sonhostop", listOf("topsonhos"), Comma
 				currentY += 53
 			}
 		}
-		context.sendFile(base.makeRoundedCorners(15), "rank.png", context.getAsMention(true))
+		return base
 	}
+
+	data class UserRankInformation(
+			val userId: Long,
+			val subtitle: String? = null,
+			val subsubtitle: String? = null
+	)
 }
