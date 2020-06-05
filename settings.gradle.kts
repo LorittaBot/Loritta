@@ -44,7 +44,8 @@ include(":loritta-plugins:auto-banner-changer")
 include(":loritta-plugins:loritta-birthday-2020-event")
 include(":loritta-plugins:helping-hands")
 include(":loritta-plugins:server-support")
-include("loritta-plugins:mal-commands")
+include(":loritta-plugins:mal-commands")
+include(":loritta-plugins:lori-guild-stuff")
 
 // Website
 include(":loritta-website")
