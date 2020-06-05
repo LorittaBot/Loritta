@@ -14,7 +14,7 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object SonhosTopLocalCommand {
-	fun create(loritta: LorittaDiscord) = discordCommand(loritta, "SonhosTopLocalCommand", listOf("sonhos top local", "atm top local"), CommandCategory.ECONOMY) {
+	fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("sonhos top local", "atm top local"),  CommandCategory.ECONOMY) {
 		description { it["commands.economy.sonhostoplocal.description"] }
 
 		executesDiscord {

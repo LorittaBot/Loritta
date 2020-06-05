@@ -4,6 +4,13 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.platform.PlatformFeature
 
+fun Any?.command(
+		loritta: LorittaBot,
+		labels: List<String>,
+		category: CommandCategory,
+		builder: CommandBuilder<CommandContext>.() -> (Unit)
+) = command(loritta, this?.let { this::class.simpleName } ?: "UnknownCommand", labels, category, builder)
+
 fun command(loritta: LorittaBot, commandName: String, labels: List<String>, category: CommandCategory, builder: CommandBuilder<CommandContext>.() -> (Unit)): Command<CommandContext> {
 	val b = CommandBuilder<CommandContext>(loritta, commandName, labels, category)
 	builder.invoke(b)
