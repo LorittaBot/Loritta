@@ -54,17 +54,15 @@ class TristeRealidadeCommand : LorittaCommand(arrayOf("sadreality", "tristereali
         if (user6 != null)
             users.add(user6)
 
-        val members = context.channel.participants.toMutableList()
+        val members = context.channel.participants.filter { !it.isBot }.toMutableList()
 
         while (6 > users.size) {
             val member = if (members.isNotEmpty()) {
-                members[Loritta.RANDOM.nextInt(members.size)]
+                members.random()
             } else {
                 throw CommandException("Não existem membros suficientes para fazer uma triste realidade, sorry ;w;", Constants.ERROR)
             }
-
             users.add(member)
-            members.remove(member)
         }
 
         var lovedGender = Gender.UNKNOWN

@@ -41,7 +41,7 @@ class GangueCommand : AbstractCommand("gang", listOf("gangue"), CommandCategory.
 		val contextImage4 = context.getImageAt(3) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		val contextImage5 = context.getImageAt(4) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		val template = ImageIO.read(File(Loritta.ASSETS + "cocielo/cocielo.png"))
-		val overlay = ImageIO.read(File(Loritta.ASSETS + "cocielo/overlay.png")) // Overlay
+		ImageIO.read(File(Loritta.ASSETS + "cocielo/overlay.png")) // Overlay
 
 		val scaled = contextImage.getScaledInstance(59, 59, BufferedImage.SCALE_SMOOTH)
 				.toBufferedImage()
