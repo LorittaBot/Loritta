@@ -101,7 +101,7 @@ class RepTopCommand : LorittaCommand(arrayOf("rep top", "reputation top", "reput
                             } else {
                                 RankingGenerator.UserRankInformation(
                                         it[givenBy],
-                                        locale["commands.social.topreputation.givenReputations", it[givenBy]]
+                                        locale["commands.social.topreputation.givenReputations", it[givenByCount]]
                                 )
                             }
                         }
