@@ -35,12 +35,14 @@ class LorittaDailyShopUpdateTask : Runnable {
 					DailyShopItems.select {
 						DailyShopItems.item eq it[Backgrounds.id]
 					}.count() == 0L
-				}
+				}.toMutableList()
 
 				if (neverSoldBeforeBackgrounds.isNotEmpty()) {
 					repeat(Math.min(NEW_ITEMS_TARGET, neverSoldBeforeBackgrounds.size)) {
 						val randomBackground = neverSoldBeforeBackgrounds.random()
-						allBackgrounds.remove(randomBackground)
+						// We need to do this because the ResultRow isn't the same instance
+						// TODO: Check if this is really true, I'm 99% sure it is, but...
+						allBackgrounds.removeIf { it[Backgrounds.internalName] == randomBackground[Backgrounds.internalName] }
 						neverSoldBeforeBackgrounds.remove(randomBackground)
 						selectedBackgrounds.add(randomBackground)
 					}
