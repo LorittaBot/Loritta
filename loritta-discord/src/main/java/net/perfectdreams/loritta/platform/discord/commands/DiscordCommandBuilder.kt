@@ -82,6 +82,7 @@ class DiscordCommandBuilder(
 			it.userRequiredPermissions = userRequiredPermissions
 			it.botRequiredPermissions = botRequiredPermissions
 			it.userRequiredLorittaPermissions = userRequiredLorittaPermissions
+			it.commandCheckFilter = commandCheckFilter
 		}
 	}
 }
