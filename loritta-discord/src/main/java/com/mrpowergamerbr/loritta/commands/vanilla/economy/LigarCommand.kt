@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.Executors
+import kotlin.math.roundToInt
 
 class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY) {
 	companion object {
@@ -94,6 +95,7 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 						val guild = context.guild
 						val user = context.userHandle
 						val prizeAsBigDecimal = randomPrize.toBigDecimal()
+						val wonMillis = System.currentTimeMillis()
 
 						transaction(Databases.loritta) {
 							profile.money += randomPrize
@@ -101,24 +103,30 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 							BomDiaECiaWinners.insert {
 								it[guildId] = guild.idLong
 								it[userId] = user.idLong
-								it[wonAt] = System.currentTimeMillis()
+								it[wonAt] = wonMillis
 								it[prize] = prizeAsBigDecimal
 							}
 
 							SonhosTransaction.insert {
 								it[givenBy] = null
 								it[receivedBy] = user.idLong
-								it[givenAt] = System.currentTimeMillis()
+								it[givenAt] = wonMillis
 								it[quantity] = prizeAsBigDecimal
 								it[reason] = SonhosPaymentReason.BOM_DIA_E_CIA
 							}
 						}
 
+						val wordsTyped = context.args.size
+						val timeDiff = wonMillis - loritta.bomDiaECia.lastBomDiaECia
+						val wordsPerMinute = ((60 * wordsTyped) / (timeDiff / 1000)).toDouble()
+						val wpmAsInt = wordsPerMinute.roundToInt()
+
 						logger.info("${context.userHandle.id} ganhou ${randomPrize} no Bom Dia & Cia!")
+						logger.info("Demorou ${timeDiff}ms a acertar o Bom Dia & Cia, num total aproximado de ${wpmAsInt} palavras por minuto!")
 
 						context.reply(
 								LoriReply(
-										"Rodamos a roleta e... Parabéns! Você ganhou **${randomPrize} Sonhos**!",
+										"Rodamos a roleta e... Parabéns! Você ganhou **${randomPrize} Sonhos**!\n*(Psiu, você sabia que conseguiu digitar aproximadamente **${wpmAsInt}** palavras por minuto? Impressionante, você tá de parabéns! <a:lori_yay_wobbly:638040459721310238>)*",
 										"<:yudi:446394608256024597>"
 								)
 						)
