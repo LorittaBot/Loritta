@@ -41,6 +41,7 @@ class LorittaDailyShopUpdateTask : Runnable {
 					repeat(Math.min(NEW_ITEMS_TARGET, neverSoldBeforeBackgrounds.size)) {
 						val randomBackground = neverSoldBeforeBackgrounds.random()
 						allBackgrounds.remove(randomBackground)
+						neverSoldBeforeBackgrounds.remove(randomBackground)
 						selectedBackgrounds.add(randomBackground)
 					}
 				}
