@@ -53,7 +53,7 @@ object LGPRSReportCommand : DSLCommandBase {
 					)
 			).toJDA()
 
-			val functions = com.mrpowergamerbr.loritta.utils.loritta.messageInteractionCache.getOrPut(category.idLong) { MessageInteractionFunctions(guild.idLong, category.channel.idLong, context.user.id) }
+			val functions = com.mrpowergamerbr.loritta.utils.loritta.messageInteractionCache.getOrPut(category.idLong) { MessageInteractionFunctions(guild.idLong, category.channel.idLong, context.user.idLong) }
 			functions.onResponseByAuthor = {
 				val categoryEnum = PunishmentCategory.valueOf(it.message.contentRaw)
 				category.removeAllFunctions()
@@ -64,7 +64,7 @@ object LGPRSReportCommand : DSLCommandBase {
 						)
 				).toJDA()
 
-				val functions = com.mrpowergamerbr.loritta.utils.loritta.messageInteractionCache.getOrPut(category.idLong) { MessageInteractionFunctions(guild.idLong, whatMsg.channel.idLong, context.user.id) }
+				val functions = com.mrpowergamerbr.loritta.utils.loritta.messageInteractionCache.getOrPut(category.idLong) { MessageInteractionFunctions(guild.idLong, whatMsg.channel.idLong, context.user.idLong) }
 				functions.onResponseByAuthor = {
 					whatMsg.removeAllFunctions()
 

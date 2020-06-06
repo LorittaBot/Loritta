@@ -231,7 +231,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 				}
 
-				if (user.id == functions.originalAuthor && (functions.onReactionAddByAuthor != null || functions.onReactionByAuthor != null)) {
+				if (user.idLong == functions.originalAuthor && (functions.onReactionAddByAuthor != null || functions.onReactionByAuthor != null)) {
 					GlobalScope.launch(loritta.coroutineDispatcher) {
 						try {
 							functions.onReactionByAuthor?.invoke(e)
@@ -254,7 +254,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 				}
 
-				if (user.id == functions.originalAuthor && (functions.onReactionRemoveByAuthor != null || functions.onReactionByAuthor != null)) {
+				if (user.idLong == functions.originalAuthor && (functions.onReactionRemoveByAuthor != null || functions.onReactionByAuthor != null)) {
 					GlobalScope.launch(loritta.coroutineDispatcher) {
 						try {
 							functions.onReactionByAuthor?.invoke(e)

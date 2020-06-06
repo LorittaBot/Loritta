@@ -37,7 +37,7 @@ class PutReactionActionToMessageRoute(loritta: LorittaDiscord) : RequiresAPIAuth
 			loritta.messageInteractionCache[messageId.toLong()] = MessageInteractionFunctions(
 					channel.guild.idLong,
 					channel.idLong,
-					json["userId"].string
+					json["userId"].idLong
 			).apply {
 				if (actionType == "onReactionAddByAuthor") {
 					onReactionAddByAuthor = {

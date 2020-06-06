@@ -258,7 +258,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 							it.onResponse!!.invoke(lorittaMessageEvent)
 
 						if (it.onResponseByAuthor != null) {
-							if (it.originalAuthor == event.author.id)
+							if (it.originalAuthor == event.author.idLong)
 								it.onResponseByAuthor!!.invoke(lorittaMessageEvent)
 						}
 					}

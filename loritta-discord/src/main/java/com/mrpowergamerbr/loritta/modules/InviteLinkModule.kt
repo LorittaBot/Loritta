@@ -155,7 +155,7 @@ class InviteLinkModule : MessageReceivedModule {
 									).joinToString("\n") { it.build(JDAUser(event.member.user)) }
 							)
 
-							enableBypassMessage.onReactionAddByAuthor(event.author.id) {
+							enableBypassMessage.onReactionAddByAuthor(event.author.idLong) {
 								if (it.reactionEmote.id == (Emotes.LORI_PAT as DiscordEmote).id) {
 									enableBypassMessage.removeAllFunctions()
 

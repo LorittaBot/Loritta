@@ -218,7 +218,7 @@ class BomDiaECia {
 			if (triedToCall.isNotEmpty()) {
 				channel.sendMessage("<:yudi:446394608256024597> **|** Sabia que o ${user.asMention} foi o primeiro de **${triedToCall.size} usuários** a conseguir ligar primeiro no Bom Dia & Cia? ${Emotes.LORI_OWO}").queue { message ->
 					if (message.guild.selfMember.hasPermission(Permission.MESSAGE_ADD_REACTION)) {
-						message.onReactionAddByAuthor(user.id) {
+						message.onReactionAddByAuthor(user.idLong) {
 							if (it.reactionEmote.isEmote("⁉")) {
 								loritta.messageInteractionCache.remove(it.messageIdLong)
 

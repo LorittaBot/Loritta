@@ -144,7 +144,7 @@ object CoinFlipBetCommand : DSLCommandBase {
 					)
 			).toJDA()
 
-			val functions = com.mrpowergamerbr.loritta.utils.loritta.messageInteractionCache.getOrPut(message.idLong) { MessageInteractionFunctions(message.guild.idLong, message.channel.idLong, context.user.id) }
+			val functions = com.mrpowergamerbr.loritta.utils.loritta.messageInteractionCache.getOrPut(message.idLong) { MessageInteractionFunctions(message.guild.idLong, message.channel.idLong, context.user.idLong) }
 			functions.onReactionAdd = {
 				if (it.userIdLong == invitedUser.idLong && it.reactionEmote.name == "✅") {
 					message.removeAllFunctions()
