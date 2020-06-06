@@ -12,6 +12,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.content
 import kotlinx.serialization.json.double
 import kotlinx.serialization.json.int
+import mu.KotlinLogging
 import net.perfectdreams.akinatorreapi.payload.CharacterGuess
 import net.perfectdreams.akinatorreapi.payload.GameIdentification
 
@@ -20,6 +21,7 @@ class AkinatorClient(val region: Region) {
         internal val http = HttpClient {
             expectSuccess = false
         }
+        private val logger = KotlinLogging.logger {}
         private val patternRegex = Regex("var uid_ext_session = '(.*)';\n.*var frontaddr = '(.*)';")
         private val defaultHttpParameters: HttpRequestBuilder.() -> (Unit) = {
             header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")

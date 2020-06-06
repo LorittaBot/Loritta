@@ -87,9 +87,11 @@ suspend fun Message.doReactions(vararg emotes: String): Message {
 
 	// Vamos pegar todas as reações que não deveriam estar aqui
 
+	val emoteOnlyIds = emotes.map { str -> str.split(":").getOrNull(1) }.filterNotNull()
+
 	val invalidReactions = this.reactions.filterNot {
 		if (it.reactionEmote.isEmote)
-			emotes.contains(it.reactionEmote.name + ":" + it.reactionEmote.id)
+			emoteOnlyIds.contains(it.reactionEmote.id)
 		else
 			emotes.contains(it.reactionEmote.name)
 	}

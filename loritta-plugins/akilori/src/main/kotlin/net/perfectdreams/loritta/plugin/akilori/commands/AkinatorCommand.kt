@@ -6,7 +6,7 @@ import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
+import com.mrpowergamerbr.loritta.utils.onReactionByAuthor
 import com.mrpowergamerbr.loritta.utils.removeAllFunctions
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
@@ -52,7 +52,7 @@ object AkinatorCommand {
 	suspend fun handleGuess(context: DiscordCommandContext, locale: BaseLocale, aw: AkinatorClient, currentMessage: Message?, guess: CharacterGuess, declinedGuesses: MutableList<Long>) {
 		val descriptionBuilder = StringBuilder()
 		descriptionBuilder.append("**")
-		descriptionBuilder.append(locale["${AkinatorCommand.LOCALE_PREFIX}.isThisYourCharacter"])
+		descriptionBuilder.append(locale["$LOCALE_PREFIX.isThisYourCharacter"])
 		descriptionBuilder.append("**")
 		descriptionBuilder.append('\n')
 		descriptionBuilder.append('\n')
@@ -78,13 +78,13 @@ object AkinatorCommand {
 				"error:412585701054611458"
 		)
 
-		message.onReactionAddByAuthor(context) {
-			it.reaction.removeReaction(it.user ?: return@onReactionAddByAuthor).await()
+		message.onReactionByAuthor(context) {
+			it.reaction.removeReaction(it.user ?: return@onReactionByAuthor).await()
 
 			when {
 				it.reactionEmote.isEmote("✅") -> {
 					val builder = getAkinatorEmbedBase(context).apply {
-						setDescription(locale["${AkinatorCommand.LOCALE_PREFIX}.akinatorWon", Emotes.LORI_HAPPY])
+						setDescription(locale["$LOCALE_PREFIX.akinatorWon", Emotes.LORI_HAPPY])
 						setColor(Color(20, 158, 255))
 					}
 
@@ -104,7 +104,7 @@ object AkinatorCommand {
 		currentMessage?.removeAllFunctions()
 
 		val guesses = aw.retrieveGuesses()
-		guesses.filter { it.probability >= AkinatorCommand.CHARACTER_PROBABILITY && !declinedGuesses.contains(it.id) }.forEach { // Existe alguma guess válida, vamos usar!
+		guesses.filter { it.probability >= CHARACTER_PROBABILITY && !declinedGuesses.contains(it.id) }.forEach { // Existe alguma guess válida, vamos usar!
 			handleGuess(context, locale, aw, currentMessage!!, it, declinedGuesses)
 			return
 		}
@@ -115,7 +115,7 @@ object AkinatorCommand {
 
 			if (guesses.isEmpty()) {
 				val builder = getAkinatorEmbedBase(context).apply {
-					setDescription(locale["${AkinatorCommand.LOCALE_PREFIX}.akinatorLost"])
+					setDescription(locale["$LOCALE_PREFIX.akinatorLost"])
 					setColor(Color(20, 158, 255))
 				}
 
@@ -143,23 +143,23 @@ object AkinatorCommand {
 		text += "`]"
 
 		val reactionInfo = """
-            👍 ${locale["${AkinatorCommand.LOCALE_PREFIX}.answers.yes"]}
-            👎 ${locale["${AkinatorCommand.LOCALE_PREFIX}.answers.no"]}
-            ${Emotes.LORI_SHRUG} ${locale["${AkinatorCommand.LOCALE_PREFIX}.answers.dontKnow"]}
-            <:lori_sorriso:556525532359950337> ${locale["${AkinatorCommand.LOCALE_PREFIX}.answers.probablyYes"]}
-            <:lori_tristeliz:556524143281963008> ${locale["${AkinatorCommand.LOCALE_PREFIX}.answers.probablyNot"]}
+            👍 ${locale["$LOCALE_PREFIX.answers.yes"]}
+            👎 ${locale["$LOCALE_PREFIX.answers.no"]}
+            ${Emotes.LORI_SHRUG} ${locale["$LOCALE_PREFIX.answers.dontKnow"]}
+            <:lori_sorriso:556525532359950337> ${locale["$LOCALE_PREFIX.answers.probablyYes"]}
+            <:lori_tristeliz:556524143281963008> ${locale["$LOCALE_PREFIX.answers.probablyNot"]}
         """.trimIndent()
 
 		val builder = getAkinatorEmbedBase(context).apply {
 			setThumbnail("${loritta.instanceConfig.loritta.website.url}assets/img/akinator_embed.png")
 			setDescription("**${currentQuestion.question}**" + "\n\n$progression% $text\n\n$reactionInfo")
-			setFooter(context.user.name + " • ${locale["${AkinatorCommand.LOCALE_PREFIX}.question", currentQuestion.step + 1]}", context.user.effectiveAvatarUrl)
+			setFooter(context.user.name + " • ${locale["$LOCALE_PREFIX.question", currentQuestion.step + 1]}", context.user.effectiveAvatarUrl)
 			setColor(Color(20, 158, 255))
 		}
 
 		val message = currentMessage?.edit(context.getUserMention(true), builder.build(), clearReactions = false) ?: context.sendMessage(context.getUserMention(true), builder.build())
 
-		message.onReactionAddByAuthor(context) {
+		message.onReactionByAuthor(context) {
 			val answer = when {
 				it.reactionEmote.isEmote("\uD83D\uDC4D") -> AkinatorAnswer.YES
 				it.reactionEmote.isEmote("\uD83D\uDC4E") -> AkinatorAnswer.NO
