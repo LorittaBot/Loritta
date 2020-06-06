@@ -66,7 +66,7 @@ class AkinatorClient(val region: Region) {
         val stepInformation = json["parameters"]!!.jsonObject["step_information"]!!.jsonObject
 
         gameIdentification = Json.parse(GameIdentification.serializer(), identification.toString())
-        println(gameIdentification)
+        logger.trace { gameIdentification }
 
         currentStep = AkinatorStep(
             stepInformation["question"]!!.content,
@@ -90,7 +90,7 @@ class AkinatorClient(val region: Region) {
         val text = payload.readText()
             .removePrefix("$callbackCode(")
             .removeSuffix(")")
-        println(text)
+        logger.trace { text }
 
         val json = Json.parseJson(text).jsonObject
         val stepInformation = json["parameters"]!!.jsonObject
@@ -129,7 +129,7 @@ class AkinatorClient(val region: Region) {
         val text = payload.readText()
             .removePrefix("$callbackCode(")
             .removeSuffix(")")
-        println(text)
+        logger.trace { text }
 
         val json = Json.parseJson(text).jsonObject
         val stepInformation = json["parameters"]!!.jsonObject
@@ -155,7 +155,7 @@ class AkinatorClient(val region: Region) {
         val text = payload.readText()
             .removePrefix("$callbackCode(")
             .removeSuffix(")")
-        println(text)
+        logger.trace { text }
 
         val json = Json.parseJson(text).jsonObject
         return json["parameters"]!!.jsonObject["elements"]!!.jsonArray.map { it.jsonObject["element"]!!.jsonObject }.map { Json.parse(CharacterGuess.serializer(), it.toString()) }
@@ -167,7 +167,7 @@ class AkinatorClient(val region: Region) {
     private suspend fun retrieveSession(): SessionInformation {
         val result = http.get<String>("https://en.akinator.com/game") { defaultHttpParameters.invoke(this) }
 
-        println(result)
+        logger.trace { result }
 
         val matchResult = patternRegex.find(result) ?: throw RuntimeException("Cannot find the uid and frontaddr. Please report!")
 
