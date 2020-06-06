@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.platform.discord.utils.UserFlagBadgeEmotes
 import net.perfectdreams.loritta.utils.Emotes
 
 class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), CommandCategory.DISCORD) {
@@ -63,11 +64,6 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 				else -> ""
 			}
 
-			val typeEmote = when {
-				user.isBot -> Emotes.BOT_TAG
-				else -> Emotes.WUMPUS_BASIC
-			}
-
 			val statusEmote = when (member?.onlineStatus) {
 				OnlineStatus.ONLINE -> Emotes.ONLINE
 				OnlineStatus.IDLE -> Emotes.IDLE
@@ -75,7 +71,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 				else -> Emotes.OFFLINE
 			}
 
-			setTitle("$ownerEmote$typeEmote$statusEmote $nickname", null)
+			setTitle("$ownerEmote${getBadges(user).joinToString("")}$statusEmote $nickname", null)
 			setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
 
 			if (member != null) {
@@ -163,4 +159,15 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 		_message.addReaction("◀").queue()
 		return _message
 	}
+
+	fun getBadges(user: User): ArrayList<String> {
+		val badges = arrayListOf<String>()
+
+		for (flag in user.flags) {
+			val emote = UserFlagBadgeEmotes.repository[flag] ?: continue
+			badges.add(emote.asMention)
+		}
+		return badges
+	}
+
 }
