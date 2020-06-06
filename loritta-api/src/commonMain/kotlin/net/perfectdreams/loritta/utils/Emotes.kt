@@ -43,6 +43,8 @@ object Emotes {
 	val VERIFIED_DEVELOPER: LorittaEmote by resettableLazy(lazyMgr) { getEmote("verified_developer") }
 	val HYPESQUAD_EVENTS: LorittaEmote by resettableLazy(lazyMgr) { getEmote("hypesquad_events") }
 	val EARLY_SUPPORTER: LorittaEmote by resettableLazy(lazyMgr) { getEmote("early_supporter") }
+	val BUG_HUNTER_1: LorittaEmote by resettableLazy(lazyMgr) { getEmote("bug_hunter_1") }
+	val BUG_HUNTER_2: LorittaEmote by resettableLazy(lazyMgr) { getEmote("bug_hunter_2") }
 
 	// HYPESQUAD BADGES
 	val BRAVERY_HOUSE: LorittaEmote by resettableLazy(lazyMgr) { getEmote("bravery_house") }

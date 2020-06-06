@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.platform.discord.utils.UserFlagBadgeEmotes
+import net.perfectdreams.loritta.platform.discord.utils.UserFlagBadgeEmotes.getBadges
 import net.perfectdreams.loritta.utils.Emotes
 
 class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), CommandCategory.DISCORD) {
@@ -26,7 +27,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 		return false
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
 		var user = context.getUserAt(0)
 
 		if (user == null) {
@@ -127,7 +128,8 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			}
 		}
 
-		val _message = message?.edit(context.getAsMention(true), embed.build()) ?: context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
+		val _message = message?.edit(context.getAsMention(true), embed.build())
+				?: context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
 		if (member != null) {
 			_message.onReactionAddByAuthor(context) {
 				showExtendedInfo(_message, context, user, member)
@@ -157,22 +159,13 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			}
 		}
 
-		val _message = message?.edit(context.getAsMention(true), embed.build()) ?: context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
+		val _message = message?.edit(context.getAsMention(true), embed.build())
+				?: context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
 		_message.onReactionAddByAuthor(context) {
 			showQuickGlanceInfo(_message, context, user, member)
 		}
 		_message.addReaction("◀").queue()
 		return _message
-	}
-
-	fun getBadges(user: User): ArrayList<String> {
-		val badges = arrayListOf<String>()
-
-		for (flag in user.flags) {
-			val emote = UserFlagBadgeEmotes.repository[flag] ?: continue
-			badges.add(emote.asMention)
-		}
-		return badges
 	}
 
 }

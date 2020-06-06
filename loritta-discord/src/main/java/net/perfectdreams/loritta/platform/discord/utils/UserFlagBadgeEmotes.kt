@@ -14,7 +14,13 @@ object UserFlagBadgeEmotes {
             User.UserFlag.EARLY_SUPPORTER to Emotes.EARLY_SUPPORTER,
             User.UserFlag.HYPESQUAD_BRAVERY to Emotes.BRAVERY_HOUSE,
             User.UserFlag.HYPESQUAD_BRILLIANCE to Emotes.BRILLIANCE_HOUSE,
-            User.UserFlag.HYPESQUAD_BALANCE to Emotes.BALANCE_HOUSE
+            User.UserFlag.HYPESQUAD_BALANCE to Emotes.BALANCE_HOUSE,
+            User.UserFlag.BUG_HUNTER_LEVEL_1 to Emotes.BUG_HUNTER_1,
+            User.UserFlag.BUG_HUNTER_LEVEL_2 to Emotes.BUG_HUNTER_2
     ).toMutableMap()
+
+    fun getBadges(user: User): List<String> = user.flags.mapNotNull { flag ->
+        repository[flag]?.asMention
+    }
 
 }
