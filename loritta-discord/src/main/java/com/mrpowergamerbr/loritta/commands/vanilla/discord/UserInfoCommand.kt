@@ -14,6 +14,8 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.platform.discord.utils.UserFlagBadgeEmotes
+import net.perfectdreams.loritta.platform.discord.utils.UserFlagBadgeEmotes.getBadges
 import net.perfectdreams.loritta.utils.Emotes
 
 class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), CommandCategory.DISCORD) {
@@ -25,7 +27,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 		return false
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
 		var user = context.getUserAt(0)
 
 		if (user == null) {
@@ -75,7 +77,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 				else -> Emotes.OFFLINE
 			}
 
-			setTitle("$ownerEmote$typeEmote$statusEmote $nickname", null)
+			setTitle("$ownerEmote$typeEmote${getBadges(user).joinToString("")}$statusEmote $nickname", null)
 			setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
 
 			if (member != null) {
@@ -126,7 +128,8 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			}
 		}
 
-		val _message = message?.edit(context.getAsMention(true), embed.build()) ?: context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
+		val _message = message?.edit(context.getAsMention(true), embed.build())
+				?: context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
 		if (member != null) {
 			_message.onReactionAddByAuthor(context) {
 				showExtendedInfo(_message, context, user, member)
@@ -156,11 +159,13 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			}
 		}
 
-		val _message = message?.edit(context.getAsMention(true), embed.build()) ?: context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
+		val _message = message?.edit(context.getAsMention(true), embed.build())
+				?: context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
 		_message.onReactionAddByAuthor(context) {
 			showQuickGlanceInfo(_message, context, user, member)
 		}
 		_message.addReaction("◀").queue()
 		return _message
 	}
+
 }

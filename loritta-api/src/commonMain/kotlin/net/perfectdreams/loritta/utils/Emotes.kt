@@ -37,6 +37,20 @@ object Emotes {
 	val KOTLIN: LorittaEmote by resettableLazy(lazyMgr) { getEmote("kotlin") }
 	val JDA: LorittaEmote by resettableLazy(lazyMgr) { getEmote("jda") }
 
+	// DISCORD BADGES
+	val DISCORD_STAFF: LorittaEmote by resettableLazy(lazyMgr) { getEmote("discord_staff") }
+	val DISCORD_PARTNER: LorittaEmote by resettableLazy(lazyMgr) { getEmote("discord_partner") }
+	val VERIFIED_DEVELOPER: LorittaEmote by resettableLazy(lazyMgr) { getEmote("verified_developer") }
+	val HYPESQUAD_EVENTS: LorittaEmote by resettableLazy(lazyMgr) { getEmote("hypesquad_events") }
+	val EARLY_SUPPORTER: LorittaEmote by resettableLazy(lazyMgr) { getEmote("early_supporter") }
+	val BUG_HUNTER_1: LorittaEmote by resettableLazy(lazyMgr) { getEmote("bug_hunter_1") }
+	val BUG_HUNTER_2: LorittaEmote by resettableLazy(lazyMgr) { getEmote("bug_hunter_2") }
+
+	// HYPESQUAD BADGES
+	val BRAVERY_HOUSE: LorittaEmote by resettableLazy(lazyMgr) { getEmote("bravery_house") }
+	val BRILLIANCE_HOUSE: LorittaEmote by resettableLazy(lazyMgr) { getEmote("brilliance_house") }
+	val BALANCE_HOUSE: LorittaEmote by resettableLazy(lazyMgr) { getEmote("balance_house") }
+
 	var emoteMap = mapOf<String, String>()
 
 	fun getEmote(name: String): LorittaEmote {
