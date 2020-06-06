@@ -54,7 +54,7 @@ class TristeRealidadeCommand : LorittaCommand(arrayOf("sadreality", "tristereali
         if (user6 != null)
             users.add(user6)
 
-        val members = context.channel.participants.toMutableList()
+        val members = context.channel.participants.filter { !it.isBot }.toMutableList()
 
         while (6 > users.size) {
             val member = if (members.isNotEmpty()) {
