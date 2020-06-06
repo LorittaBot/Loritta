@@ -15,15 +15,15 @@ import javax.imageio.ImageIO
 
 class NyanCatCommand : AbstractCommand("nyan", category = CommandCategory.IMAGES) {
 	companion object {
-		val CAT_LEFT by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "cat_left_v2.png")) }
-		val CAT_RIGHT by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "cat_right_v2.png")) }
-		val CAT_MIDDLE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "cat_middle_v2.png")) }
+		val CAT_LEFT: BufferedImage by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "cat_left_v2.png")) }
+		val CAT_RIGHT: BufferedImage by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "cat_right_v2.png")) }
+		val CAT_MIDDLE: BufferedImage by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "cat_middle_v2.png")) }
 
-		val DOG_LEFT by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "dog_left.png")) }
-		val DOG_RIGHT by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "dog_right.png")) }
-		val DOG_MIDDLE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "dog_middle.png")) }
+		val DOG_LEFT: BufferedImage by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "dog_left.png")) }
+		val DOG_RIGHT: BufferedImage by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "dog_right.png")) }
+		val DOG_MIDDLE: BufferedImage by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "dog_middle.png")) }
 
-		val DOG_EARS by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "dog_ears.png")) }
+		val DOG_EARS: BufferedImage by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "dog_ears.png")) }
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -46,7 +46,7 @@ class NyanCatCommand : AbstractCommand("nyan", category = CommandCategory.IMAGES
 		var times = 0
 		var isDog = false
 		if (context.args.size == 1) {
-			var nonRepeatedCharsMessage = context.args[0].replace(Regex("(.)\\1+"), "$1")
+			val nonRepeatedCharsMessage = context.args[0].replace(Regex("(.)\\1+"), "$1")
 			isDog = nonRepeatedCharsMessage.equals("dog", true)
 			times = StringUtils.countMatches(context.args[0], if (isDog) "o" else "a")
 		}

@@ -43,7 +43,7 @@ class ManiaTitleCardCommand : AbstractCommand("maniatitlecard", category = Comma
 		}
 	}
 
-	fun generateTitleCard(text1: String = "", text2: String = ""): BufferedImage {
+	private fun generateTitleCard(text1: String = "", text2: String = ""): BufferedImage {
 		val image = ImageIO.read(File(Loritta.ASSETS, "sonic_mania_title_card.png"))
 		val left = ImageIO.read(File(Loritta.ASSETS, "mania_font/cut_left.png"))
 		val right = ImageIO.read(File(Loritta.ASSETS, "mania_font/cut_right.png"))
@@ -66,7 +66,7 @@ class ManiaTitleCardCommand : AbstractCommand("maniatitlecard", category = Comma
 		run {
 			var x = 516
 
-			var y = 336 - 60
+			val y = 336 - 60
 
 			graphics.drawImage(right, x, y + right.height, null)
 
@@ -95,7 +95,7 @@ class ManiaTitleCardCommand : AbstractCommand("maniatitlecard", category = Comma
 		if (topText.isNotEmpty()) {
 			var x = 516
 
-			var y = 257 - 60
+			val y = 257 - 60
 
 			graphics.drawImage(right, x, y + right.height, null)
 

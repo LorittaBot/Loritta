@@ -16,9 +16,7 @@ class BomDiaECiaModule : MessageReceivedModule {
 			serverConfig.miscellaneousConfig
 		}
 
-		val enableBomDiaECia = miscellaneousConfig?.enableBomDiaECia ?: false
-
-		return enableBomDiaECia
+		return miscellaneousConfig?.enableBomDiaECia ?: false
 	}
 
 	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {

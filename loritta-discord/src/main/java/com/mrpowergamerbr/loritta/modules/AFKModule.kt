@@ -63,7 +63,7 @@ class AFKModule : MessageReceivedModule {
 					)
 				}
 				event.channel.sendMessage(
-						replies.map { it.build(event.author) }.joinToString("\n")
+						replies.joinToString("\n") { it.build(event.author) }
 				).queue {
 					it.delete().queueAfter(5000, TimeUnit.MILLISECONDS)
 				}

@@ -28,7 +28,7 @@ class QuoteCommand : AbstractCommand("quote", listOf("mencionar", "responder", "
 	}
 
 	override fun getExamples(): List<String> {
-		return Arrays.asList("msgId Olá!")
+		return listOf("msgId Olá!")
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
@@ -71,7 +71,7 @@ class QuoteCommand : AbstractCommand("quote", listOf("mencionar", "responder", "
 						.build()
 
 
-				// dm.embeds = Arrays.asList(embed)
+				// dm.embeds = listOf(embed)
 
 				val temmie = getOrCreateWebhook(context.event.textChannel!!, "Quote Webhook")
 

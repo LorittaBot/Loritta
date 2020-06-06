@@ -15,7 +15,7 @@ class InverterCommand : AbstractCommand("invert", listOf("inverter"), category =
 	}
 
 	override fun getExamples(): List<String> {
-		return Arrays.asList("http://i.imgur.com/KbHXmKO.png", "@Loritta", "\uD83D\uDC4C")
+		return listOf("http://i.imgur.com/KbHXmKO.png", "@Loritta", "\uD83D\uDC4C")
 	}
 
 	override fun getDetailedUsage(): Map<String, String> {

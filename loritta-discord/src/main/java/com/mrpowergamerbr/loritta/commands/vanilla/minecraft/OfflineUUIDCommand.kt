@@ -17,7 +17,7 @@ class OfflineUUIDCommand : AbstractCommand("mcofflineuuid", listOf("offlineuuid"
 	}
 
 	override fun getExamples(): List<String> {
-		return Arrays.asList("Monerk")
+		return listOf("Monerk")
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {

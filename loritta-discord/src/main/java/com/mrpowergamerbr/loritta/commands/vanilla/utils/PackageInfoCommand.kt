@@ -22,7 +22,7 @@ class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ct
 	}
 
 	override fun getExamples(): List<String> {
-		return Arrays.asList("correios")
+		return listOf("correios")
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
@@ -46,16 +46,16 @@ class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ct
 					return
 				}
 
-				var embed = EmbedBuilder()
+				val embed = EmbedBuilder()
 
-				var color = when (packageSource) {
+				val color = when (packageSource) {
 					CORREIOS -> Color(253, 220, 1)
 					CTT -> Color(223, 0, 36)
 				}
 
 				embed.setColor(color)
 
-				var emoji = when (packageSource) {
+				val emoji = when (packageSource) {
 					CORREIOS -> "<:correios:375314171644084234>"
 					CTT -> "<:ctt:385499134263689220>"
 				}

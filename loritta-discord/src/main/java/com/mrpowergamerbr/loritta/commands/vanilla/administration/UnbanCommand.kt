@@ -64,7 +64,7 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 				return
 			}
 
-			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context) ?: return
+			val (reason, skipConfirmation) = AdminUtils.getOptions(context) ?: return
 			val settings = AdminUtils.retrieveModerationInfo(context.config)
 
 			val banCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
@@ -81,8 +81,7 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 			}
 
 			if (skipConfirmation) {
-				banCallback.invoke(null, false)
-				return
+				return banCallback.invoke(null, false)
 			}
 
 			val hasSilent = settings.sendPunishmentViaDm || settings.sendPunishmentToPunishLog

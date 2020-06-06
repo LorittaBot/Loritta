@@ -71,7 +71,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 				return
 
 			val settings = AdminUtils.retrieveModerationInfo(context.config)
-			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context) ?: return
+			val (reason, skipConfirmation, silent) = AdminUtils.getOptions(context) ?: return
 
 			val kickCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
 				kick(context, settings, locale, member, user, reason, isSilent)
@@ -106,7 +106,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 	}
 
 	companion object {
-		private val LOCALE_PREFIX = "commands.moderation"
+		private const val LOCALE_PREFIX = "commands.moderation"
 
 		fun kick(context: CommandContext, settings: AdminUtils.ModerationConfigSettings, locale: LegacyBaseLocale, member: Member, user: User, reason: String, isSilent: Boolean) {
 			if (!isSilent) {

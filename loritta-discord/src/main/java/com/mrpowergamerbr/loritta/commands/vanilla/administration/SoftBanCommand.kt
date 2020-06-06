@@ -133,7 +133,7 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 
 				message.onReactionAddByAuthor(context) {
 					if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
-						var isSilent = it.reactionEmote.isEmote("\uD83D\uDE4A")
+						val isSilent = it.reactionEmote.isEmote("\uD83D\uDE4A")
 
 						SoftBanCommand.softBan(context, settings, locale, member, 7, user, reason, isSilent)
 

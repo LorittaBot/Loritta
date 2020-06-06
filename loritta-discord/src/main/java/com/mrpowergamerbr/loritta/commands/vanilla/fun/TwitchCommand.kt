@@ -17,7 +17,7 @@ class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) 
 	}
 
 	override fun getExamples(): List<String> {
-		return Arrays.asList("mrpowergamerbr", "velberan", "coredasantigas")
+		return listOf("mrpowergamerbr", "velberan", "coredasantigas")
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {
@@ -51,7 +51,7 @@ class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) 
 			}
 
 			val channelName = payload.displayName
-			val isPartner = payload.broadcasterType == "partner"
+			//val isPartner = payload.broadcasterType == "partner"
 			val description = payload.description
 			val avatarUrl = payload.profileImageUrl
 			val offlineImageUrl = payload.offlineImageUrl

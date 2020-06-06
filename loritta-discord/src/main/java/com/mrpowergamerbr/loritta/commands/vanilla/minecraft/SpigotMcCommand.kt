@@ -29,7 +29,7 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 	}
 
 	override fun getExamples(): List<String> {
-		return Arrays.asList("EssentialsX", "FastAsyncWorldEdit", "ProtocolSupport", "ProtocolSupportStuff")
+		return listOf("EssentialsX", "FastAsyncWorldEdit", "ProtocolSupport", "ProtocolSupportStuff")
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
@@ -61,7 +61,7 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 				} else {
 					var format = ""
 					for (i in 0..Math.min(5, array.size()) - 1) {
-						var item = json[i]
+						val item = json[i]
 						format += "${Constants.INDEXES[i]} **[${item["name"].string}](https://www.spigotmc.org/${item["id"].string})**\n"
 
 						context.metadata.put(i.toString(), item["id"].string)

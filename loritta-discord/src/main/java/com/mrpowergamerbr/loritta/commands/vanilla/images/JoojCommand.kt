@@ -16,7 +16,7 @@ class JoojCommand : AbstractCommand("jooj", category = CommandCategory.IMAGES) {
 	}
 
 	override fun getExamples(): List<String> {
-		return Arrays.asList("@Loritta")
+		return listOf("@Loritta")
 	}
 
 	override fun getDetailedUsage(): Map<String, String> {

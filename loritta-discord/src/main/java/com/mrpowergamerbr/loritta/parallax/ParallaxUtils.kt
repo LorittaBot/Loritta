@@ -1,12 +1,9 @@
 package com.mrpowergamerbr.loritta.parallax
 
-import com.github.salomonbrys.kotson.*
-import com.google.gson.JsonArray
-import com.google.gson.JsonElement
+import com.github.salomonbrys.kotson.jsonObject
+import com.github.salomonbrys.kotson.toJsonArray
 import com.google.gson.JsonObject
-import com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxEmbed
 import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
@@ -17,7 +14,6 @@ import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.User
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.awt.Color
-import java.io.File
 import java.util.concurrent.ExecutionException
 
 object ParallaxUtils {
@@ -74,7 +70,7 @@ object ParallaxUtils {
 		)
 	}
 
-	fun transformToJson(user: User): JsonObject {
+	private fun transformToJson(user: User): JsonObject {
 		return jsonObject(
 				"id" to user.idLong,
 				"username" to user.name,
@@ -83,7 +79,8 @@ object ParallaxUtils {
 		)
 	}
 
-	fun transformToJson(member: Member): JsonObject {
+	// TODO: Unused
+	private fun transformToJson(member: Member): JsonObject {
 		return jsonObject(
 				"user" to transformToJson(member.user),
 				"nickname" to member.effectiveName,

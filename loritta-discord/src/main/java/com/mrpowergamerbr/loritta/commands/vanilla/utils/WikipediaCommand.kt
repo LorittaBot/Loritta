@@ -23,7 +23,7 @@ class WikipediaCommand : AbstractCommand("wikipedia", category = CommandCategory
 	}
 
 	override fun getExamples(): List<String> {
-		return Arrays.asList("Minecraft", "[en] Shantae")
+		return listOf("Minecraft", "[en] Shantae")
 	}
 
 	override fun getDetailedUsage(): Map<String, String> {

@@ -21,7 +21,7 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MISC)
 	}
 
 	override fun getExamples(): List<String> {
-		return Arrays.asList("Eu sou fofa! :3")
+		return listOf("Eu sou fofa! :3")
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {

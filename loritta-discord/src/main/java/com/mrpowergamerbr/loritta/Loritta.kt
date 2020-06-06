@@ -29,7 +29,6 @@ import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import kotlinx.coroutines.*
 import mu.KotlinLogging
-import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.perfectdreams.loritta.api.platform.PlatformFeature

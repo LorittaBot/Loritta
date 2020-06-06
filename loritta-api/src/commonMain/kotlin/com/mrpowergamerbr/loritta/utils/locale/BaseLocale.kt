@@ -1,8 +1,8 @@
 package com.mrpowergamerbr.loritta.utils.locale
 
+import kotlinx.serialization.Serializable
 import mu.KotlinLogging
 import net.perfectdreams.loritta.api.utils.format
-import kotlinx.serialization.Serializable
 
 @Serializable
 class BaseLocale(val id: String) {

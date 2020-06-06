@@ -20,7 +20,7 @@ class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCatego
 	}
 
 	override fun getExamples(): List<String> {
-		return Arrays.asList("V7Kbh4z", "https://discord.gg/ZWt5mKB", "https://discord.gg/JYN6g2s", "https://discord.gg/A7mnkJJ")
+		return listOf("V7Kbh4z", "https://discord.gg/ZWt5mKB", "https://discord.gg/JYN6g2s", "https://discord.gg/A7mnkJJ")
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {

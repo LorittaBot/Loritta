@@ -1,7 +1,5 @@
 package com.mrpowergamerbr.loritta.utils
 
-import com.github.kevinsawicki.http.HttpRequest
-import com.google.gson.stream.JsonReader
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -15,9 +13,6 @@ import org.apache.commons.lang3.ArrayUtils
 import java.awt.Graphics
 import java.awt.Image
 import java.awt.image.BufferedImage
-import java.io.StringReader
-import java.net.URLEncoder
-import java.util.*
 
 fun Image.toBufferedImage() : BufferedImage {
 	return ImageUtils.toBufferedImage(this)

@@ -25,7 +25,7 @@ class GameJoltCommand : AbstractCommand("gamejolt", category = CommandCategory.F
 	}
 
 	override fun getExamples(): List<String> {
-		return Arrays.asList("undertale yellow")
+		return listOf("undertale yellow")
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
@@ -90,7 +90,7 @@ class GameJoltCommand : AbstractCommand("gamejolt", category = CommandCategory.F
 		embed.setColor(Color(47, 127, 111))
 
 		val id = game["id"]
-		val developerName = game["developer"]["name"].string
+		//val developerName = game["developer"]["name"].string
 		val developerDisplayName = game["developer"]["display_name"].string
 		val developerAvatar = game["developer"]["img_avatar"].string
 		val developerUsername = game["developer"]["username"].string
@@ -98,9 +98,9 @@ class GameJoltCommand : AbstractCommand("gamejolt", category = CommandCategory.F
 		val path = game["slug"].string
 		val url = "https://gamejolt.com/games/$path/$id"
 		val imgThumbnail = game["img_thumbnail"].string
-		val isWindowsCompat = game["compatibility"].obj.has("os_windows")
+		/*val isWindowsCompat = game["compatibility"].obj.has("os_windows")
 		val isLinuxCompat = game["compatibility"].obj.has("os_linux")
-		val isMacCompat = game["compatibility"].obj.has("os_mac")
+		val isMacCompat = game["compatibility"].obj.has("os_mac")*/
 
 		val descriptionJson = HttpRequest.get("https://gamejolt.com/site-api/web/discover/games/overview/$id")
 				.body()

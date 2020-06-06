@@ -6,7 +6,6 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import java.util.*
 
 class RoleIdCommand : AbstractCommand("roleid", listOf("cargoid", "iddocargo"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -18,7 +17,7 @@ class RoleIdCommand : AbstractCommand("roleid", listOf("cargoid", "iddocargo"), 
 	}
 
 	override fun getExamples(): List<String> {
-		return Arrays.asList("Moderadores")
+		return listOf("Moderadores")
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
@@ -31,7 +30,7 @@ class RoleIdCommand : AbstractCommand("roleid", listOf("cargoid", "iddocargo"), 
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.rawArgs.isNotEmpty()) {
-			var argument = context.rawArgs.joinToString(" ")
+			val argument = context.rawArgs.joinToString(" ")
 
 			val mentionedRoles = context.message.mentionedRoles // Se o usuário mencionar o cargo, vamos mostrar o ID dos cargos mencionados
 

@@ -34,7 +34,7 @@ class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCO
 	}
 
 	override fun getExamples(): List<String> {
-		return Arrays.asList("@Loritta")
+		return listOf("@Loritta")
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {

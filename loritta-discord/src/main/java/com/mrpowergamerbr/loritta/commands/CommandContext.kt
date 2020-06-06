@@ -41,7 +41,8 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 			if (lorittaUser is GuildLorittaUser) {
 				return (lorittaUser as GuildLorittaUser).member
 			}
-			throw RuntimeException("Trying to use getHandle() in LorittaUser!")
+			// Never throw a RuntimeException, it's not good.
+			throw Exception("Trying to use getHandle() in LorittaUser!")
 		}
 
 	val userHandle: User

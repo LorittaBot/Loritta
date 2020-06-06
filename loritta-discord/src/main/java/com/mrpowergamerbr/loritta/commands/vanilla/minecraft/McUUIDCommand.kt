@@ -21,7 +21,7 @@ class McUUIDCommand : AbstractCommand("mcuuid", category = CommandCategory.MINEC
     }
 
     override fun getExamples(): List<String> {
-        return Arrays.asList("Monerk")
+        return listOf("Monerk")
     }
 
     override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {

@@ -1448,7 +1448,7 @@ class LorittaImage {
 	@Throws(IOException::class)
 	private fun getJPEGByteArray(outputQuality: Float): ByteArray? {
 		var outputQuality = outputQuality
-		if (outputQuality >= 0f && outputQuality <= 1.2f) {
+		if (outputQuality in 0f..1.2f) {
 			val bas = ByteArrayOutputStream()
 			var bi = bufferedImage
 			val t = bufferedImage.transparency
@@ -2573,7 +2573,7 @@ class LorittaImage {
 
 			//Sort and return the hashset as an array
 			inputFormats = formats.toTypedArray()
-			java.util.Collections.sort(java.util.Arrays.asList(*inputFormats))
+			java.util.Collections.sort(listOf(*inputFormats))
 			return inputFormats
 		}
 

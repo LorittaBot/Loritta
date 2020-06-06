@@ -8,7 +8,6 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
-import java.util.*
 
 class OjjoCommand : AbstractCommand("ojjo", category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -16,7 +15,7 @@ class OjjoCommand : AbstractCommand("ojjo", category = CommandCategory.IMAGES) {
 	}
 
 	override fun getExamples(): List<String> {
-		return Arrays.asList("@Loritta")
+		return listOf("@Loritta")
 	}
 
 	override fun getDetailedUsage(): Map<String, String> {

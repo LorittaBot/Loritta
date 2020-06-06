@@ -239,15 +239,15 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			val mutedRoleName = context.locale["$LOCALE_PREFIX.mute.roleName"]
 			val mutedRoles = context.guild.getRolesByName(mutedRoleName, false)
 			val mutedRole: Role?
-			if (mutedRoles.isEmpty()) {
+			mutedRole = if (mutedRoles.isEmpty()) {
 				// Se não existe, vamos criar ela!
-				mutedRole = context.guild.createRole()
+				context.guild.createRole()
 						.setName(mutedRoleName)
 						.setColor(Color.BLACK)
 						.await()
 			} else {
 				// Se existe, vamos carregar a atual
-				mutedRole = mutedRoles[0]
+				mutedRoles[0]
 			}
 
 			val couldntEditChannels = mutableListOf<GuildChannel>()
@@ -383,7 +383,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 
 		fun spawnRoleRemovalThread(guild: Guild, locale: LegacyBaseLocale, user: User, expiresAt: Long) = spawnRoleRemovalThread(guild.idLong, locale, user.idLong, expiresAt)
 
-		fun spawnRoleRemovalThread(guildId: Long, locale: LegacyBaseLocale, userId: Long, expiresAt: Long) {
+		private fun spawnRoleRemovalThread(guildId: Long, locale: LegacyBaseLocale, userId: Long, expiresAt: Long) {
 			val jobId = "$guildId#$userId"
 			logger.info("Criando role removal thread para usuário $userId na guild $guildId!")
 
@@ -405,7 +405,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			val mutedRole = getMutedRole(currentGuild, locale.toNewLocale())
 
 			if (System.currentTimeMillis() > expiresAt) {
-				logger.info("Removendo cargo silenciado de $userId na guild ${guildId} - Motivo: Já expirou!")
+				logger.info("Removendo cargo silenciado de $userId na guild $guildId - Motivo: Já expirou!")
 
 				val guild = lorittaShards.getGuildById(guildId.toString())
 

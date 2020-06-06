@@ -21,7 +21,7 @@ import java.awt.Color
 import java.time.Instant
 
 object AdminUtils {
-	private val LOCALE_PREFIX = "commands.moderation"
+	private const val LOCALE_PREFIX = "commands.moderation"
 
 	/**
 	 * Retrieves the moderation settings for the [serverConfig]
@@ -51,14 +51,12 @@ object AdminUtils {
 			serverConfig.moderationConfig
 		} ?: return listOf()
 
-		val warnActions = transaction(Databases.loritta) {
+		return transaction(Databases.loritta) {
 			WarnAction.find {
 				WarnActions.config eq moderationConfig.id
 			}.toList()
 					.sortedBy { it.warnCount }
 		}
-
-		return warnActions
 	}
 
 	suspend fun checkForUser(context: CommandContext): User? {

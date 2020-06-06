@@ -259,7 +259,7 @@ object TretaNewsGenerator {
 		titleBef.add("{@youtuber-1} manda indireta para {@user} AO VIVO")
 		titleBef.add("{@user} e {@youtuber-1} reclamam que não foram convidados para o YouTube FanFest")
 
-		objects = Arrays.asList(
+		objects = listOf(
 				"YouTube Brasil",
 				"YouTube",
 				"PewDiePie",
@@ -296,13 +296,13 @@ object TretaNewsGenerator {
 				"Ração Militar Japonesa",
 				"Torre de Cartas")
 
-		emotions = Arrays.asList(
+		emotions = listOf(
 				"hate",
 				"alegria",
 				"amor",
 				"felicidade")
 
-		social = Arrays.asList(
+		social = listOf(
 				"Snapchat",
 				"Facebook",
 				"Twitter",
@@ -315,7 +315,7 @@ object TretaNewsGenerator {
 				"YouTube",
 				"Tumblr")
 
-		randomYt = Arrays.asList(
+		randomYt = listOf(
 				"Felipe Neto",
 				"Kéfera",
 				"Castanhari",
@@ -366,7 +366,7 @@ object TretaNewsGenerator {
 				"Pedro Strapasson",
 				"Danilo Gentili")
 
-		randomDescriptions = Arrays.asList(
+		randomDescriptions = listOf(
 				"Kéfera usa Snapchat para comentar polêmica, Haru tem conta banida do Facebook",
 				"Kéfera sofreu hate por causa de piada com Deus, RezendeEvil reclamou do youtube Brasil novamente",
 				"Castanhari do Canal Nostalgia diz que youtube está virando piada, Pedro Strapasson gera furdúncio com vídeo polêmico",
@@ -400,13 +400,13 @@ object TretaNewsGenerator {
 				"Kéfera anda de helicóptero e brinca com piloto: 'Fala para ninguém me incomodar', Youtuber foi atropelada ao atravessar a rua",
 				"Rato Borrachudo teve que ir para o hospital após retirar gesso para gravar gameplay, ForeverPlayer criticou youtubers no Twitter")
 
-		randomGame = Arrays.asList("Minecraft",
+		randomGame = listOf("Minecraft",
 				"Overwatch",
 				"DOTA",
 				"League of Legends",
 				"Counter-Strike")
 
-		randomAvatars = Arrays.asList(
+		randomAvatars = listOf(
 				"https://yt3.ggpht.com/-zRMDUjopMak/AAAAAAAAAAI/AAAAAAAAAAA/cXAODFnSfQQ/s176-c-k-no-mo-rj-c0xffffff/photo.jpg",
 				"https://yt3.ggpht.com/-M7_xnCYVo04/AAAAAAAAAAI/AAAAAAAAAAA/B067rIwWq3o/s176-c-k-no-mo-rj-c0xffffff/photo.jpg",
 				"https://yt3.ggpht.com/-YENFbHgKY4g/AAAAAAAAAAI/AAAAAAAAAAA/M35kguQVZfM/s176-c-k-no-mo-rj-c0xffffff/photo.jpg",
@@ -420,7 +420,7 @@ object TretaNewsGenerator {
 	}
 
 	fun generate(guild: Guild, usr1: Member, usr2: Member): GeneratedTretaNews {
-		val randomYt = ArrayList(TretaNewsGenerator.randomYt)
+		val randomYt = ArrayList(randomYt)
 
 		val str1 = usr1.effectiveName.stripCodeMarks()
 		val str2 = usr2.effectiveName.stripCodeMarks()
@@ -436,16 +436,16 @@ object TretaNewsGenerator {
 		val url1 = usr1.user.effectiveAvatarUrl
 		val url2 = usr2.user.effectiveAvatarUrl
 
-		var avatar = LorittaUtils.downloadImage(url1)
-		var avatar2 = LorittaUtils.downloadImage(url2)
+		val avatar = LorittaUtils.downloadImage(url1)
+		val avatar2 = LorittaUtils.downloadImage(url2)
 
-		var tretaCheck = ImageIO.read(File(Loritta.ASSETS + "tretacheck.png"))
+		val tretaCheck = ImageIO.read(File(Loritta.ASSETS + "tretacheck.png"))
 
 		val top = BufferedImage(238, 138, BufferedImage.TYPE_INT_ARGB)
 
-		var treta = ImageIO.read(File(Loritta.ASSETS + "tretasmall.png"))
+		val treta = ImageIO.read(File(Loritta.ASSETS + "tretasmall.png"))
 
-		var novo = ImageIO.read(File(Loritta.ASSETS + "tretanovo.png"))
+		val novo = ImageIO.read(File(Loritta.ASSETS + "tretanovo.png"))
 
 		val tempRI1 = avatar!!.getScaledInstance(128, 128, Image.SCALE_SMOOTH)
 		val tempRI2 = avatar2!!.getScaledInstance(128, 128, Image.SCALE_SMOOTH)
@@ -483,14 +483,14 @@ object TretaNewsGenerator {
 		var t = titleBef[Loritta.RANDOM.nextInt(0, titleBef.size - 1)]
 		val `object` = objects[Loritta.RANDOM.nextInt(0, objects.size - 1)]
 		val emotion = emotions[Loritta.RANDOM.nextInt(0, emotions.size - 1)]
-		val social = TretaNewsGenerator.social[Loritta.RANDOM.nextInt(0, TretaNewsGenerator.social.size - 1)]
+		val social = social[Loritta.RANDOM.nextInt(0, TretaNewsGenerator.social.size - 1)]
 
 		var rndYt1_1 = TretaNewsGenerator.randomYt[Loritta.RANDOM.nextInt(0, TretaNewsGenerator.randomYt.size - 1)]
 		var rndYt2_1 = TretaNewsGenerator.randomYt[Loritta.RANDOM.nextInt(0, TretaNewsGenerator.randomYt.size - 1)]
 		var rndYt3_1 = TretaNewsGenerator.randomYt[Loritta.RANDOM.nextInt(0, TretaNewsGenerator.randomYt.size - 1)]
 		var rndYt4_1 = TretaNewsGenerator.randomYt[Loritta.RANDOM.nextInt(0, TretaNewsGenerator.randomYt.size - 1)]
 		var rndYt5_1 = TretaNewsGenerator.randomYt[Loritta.RANDOM.nextInt(0, TretaNewsGenerator.randomYt.size - 1)]
-		val game = TretaNewsGenerator.randomGame[Loritta.RANDOM.nextInt(0, TretaNewsGenerator.randomGame.size - 1)]
+		val game = randomGame[Loritta.RANDOM.nextInt(0, TretaNewsGenerator.randomGame.size - 1)]
 
 		t = t.replace("{@user}", str1)
 		t = t.replace("{@object}", `object`)
@@ -560,7 +560,7 @@ object TretaNewsGenerator {
 
 		checkY += 18
 
-		var descricao = TretaNewsGenerator.randomDescriptions[Loritta.RANDOM.nextInt(0, TretaNewsGenerator.randomDescriptions.size - 1)]
+		var descricao = randomDescriptions[Loritta.RANDOM.nextInt(0, TretaNewsGenerator.randomDescriptions.size - 1)]
 
 		if (descricao.length > 127) {
 			descricao = descricao.substring(0, 127) + "..."
