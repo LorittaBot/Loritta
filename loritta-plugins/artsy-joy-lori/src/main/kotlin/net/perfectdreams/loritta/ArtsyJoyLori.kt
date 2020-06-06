@@ -36,6 +36,7 @@ class ArtsyJoyLori(name: String, loritta: LorittaBot) : LorittaPlugin(name, lori
 
         // ACTIONS
         registerCommand(AttackCommand())
+        registerCommand(BiteCommand())
         registerCommand(DanceCommand())
         registerCommand(HugCommand())
         registerCommand(KissCommand())
