@@ -46,6 +46,7 @@ include(":loritta-plugins:helping-hands")
 include(":loritta-plugins:server-support")
 include(":loritta-plugins:mal-commands")
 include(":loritta-plugins:lori-guild-stuff")
+include(":loritta-plugins:akilori")
 
 // Website
 include(":loritta-website")

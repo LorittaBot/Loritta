@@ -88,7 +88,6 @@ dependencies {
     api("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0")
     api("com.fasterxml.jackson.module:jackson-module-parameter-names:2.11.0")
     api("org.honton.chas.hocon:jackson-dataformat-hocon:1.1.1")
-    api("com.github.markozajc:akiwrapper:1.4.3.2")
     api("org.json:json:20190722")
     api("com.github.salomonbrys.kotson:kotson:2.5.0")
     api("com.vladsch.flexmark:flexmark-all:0.50.44")

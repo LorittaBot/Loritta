@@ -54,7 +54,6 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
         registerCommand(GiveawaySetupCommand())
         registerCommand(GiveawayCommand())
         registerCommand(RepTopCommand())
-        registerCommand(AkinatorCommand())
         registerCommand(FanArtsCommand())
         registerCommand(RankGlobalCommand())
         registerCommand(XpNotificationsCommand())
