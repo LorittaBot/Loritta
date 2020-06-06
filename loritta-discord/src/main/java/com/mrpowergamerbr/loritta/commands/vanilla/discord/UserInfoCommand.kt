@@ -64,6 +64,11 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 				else -> ""
 			}
 
+			val typeEmote = when {
+				user.isBot -> Emotes.BOT_TAG
+				else -> Emotes.WUMPUS_BASIC
+			}
+
 			val statusEmote = when (member?.onlineStatus) {
 				OnlineStatus.ONLINE -> Emotes.ONLINE
 				OnlineStatus.IDLE -> Emotes.IDLE
@@ -71,7 +76,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 				else -> Emotes.OFFLINE
 			}
 
-			setTitle("$ownerEmote${getBadges(user).joinToString("")}$statusEmote $nickname", null)
+			setTitle("$ownerEmote$typeEmote${getBadges(user).joinToString("")}$statusEmote $nickname", null)
 			setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
 
 			if (member != null) {
