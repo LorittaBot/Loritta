@@ -67,6 +67,12 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 					.withSecond(0)
 					.toInstant()
 					.toEpochMilli()
+			val nowOneHourAgo = Instant.now()
+					.atZone(ZoneId.of("America/Sao_Paulo"))
+					.toOffsetDateTime()
+					.minusHours(1)
+					.toInstant()
+					.toEpochMilli()
 
 			// Para evitar pessoas criando várias contas e votando, nós iremos também verificar o IP dos usuários que votarem
 			// Isto evita pessoas farmando upvotes votando (claro que não é um método infalível, mas é melhor que nada, né?)
@@ -85,7 +91,15 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 						}
 			}
 
-			if (lastReceivedDailyAt.isNotEmpty()) {
+			val sameIpDailyOneHourAgoAt = loritta.newSuspendedTransaction {
+				com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.ip eq ip and (Dailies.receivedAt greaterEq nowOneHourAgo) }
+						.orderBy(Dailies.receivedAt, SortOrder.DESC)
+						.map {
+							it[Dailies.receivedAt]
+						}
+			}
+
+			if (lastReceivedDailyAt.isNotEmpty() || sameIpDailyOneHourAgoAt.isNotEmpty()) {
 				if (!com.mrpowergamerbr.loritta.utils.loritta.config.isOwner(userIdentification.id.toLong())) {
 					throw WebsiteAPIException(
 							HttpStatusCode.Forbidden,
