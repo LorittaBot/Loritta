@@ -140,22 +140,6 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				}
 			}
 
-			val requires2FA = loritta.newSuspendedTransaction {
-				Requires2FAChecksUsers.select {
-					Requires2FAChecksUsers.userId eq userIdentification.id.toLong() and (Requires2FAChecksUsers.triggeredAt greaterEq (System.currentTimeMillis() - (Constants.ONE_DAY_IN_MILLISECONDS * 3)))
-				}.count() != 0L
-			}
-
-			if (requires2FA && userIdentification.mfaEnabled == false) {
-				logger.warn { "User ${userIdentification.id} requires 2FA enabled, but they didn't enable it yet! Asking them to turn it on..." }
-				throw WebsiteAPIException(
-						HttpStatusCode.Forbidden,
-						WebsiteUtils.createErrorPayload(
-								LoriWebCode.MFA_DISABLED
-						)
-				)
-			}
-
 			return sameIpDailyAt.size
 		}
 
