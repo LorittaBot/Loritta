@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.utils.MiscUtil
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
+import net.perfectdreams.loritta.tables.BannedUsers
 import org.apache.commons.lang3.ArrayUtils
 import java.awt.Graphics
 import java.awt.Image
@@ -92,44 +93,49 @@ fun String.isValidSnowflake(): Boolean {
 object LorittaUtilsKotlin {
 	val logger = KotlinLogging.logger {}
 
-	fun handleIfBanned(context: CommandContext, profile: Profile): Boolean {
-		if (profile.isBanned) {
+	suspend fun handleIfBanned(context: CommandContext, profile: Profile): Boolean {
+		val bannedState = profile.getBannedState()
+
+		if (bannedState != null) {
 			LorittaLauncher.loritta.ignoreIds.add(context.userHandle.idLong)
 
 			// Se um usuário está banido...
 			context.userHandle
 					.openPrivateChannel()
 					.queue (
-							{ it.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.legacyLocale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() },
-							{ context.event.textChannel!!.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.legacyLocale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() }
+							{ it.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.legacyLocale["USER_IS_LORITTABANNED", bannedState[BannedUsers.reason]]).queue() },
+							{ context.event.textChannel!!.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.legacyLocale["USER_IS_LORITTABANNED", bannedState[BannedUsers.reason]]).queue() }
 					)
 			return true
 		}
 		return false
 	}
 
-
-	fun handleIfBanned(context: LorittaCommandContext, profile: Profile): Boolean {
+	suspend fun handleIfBanned(context: LorittaCommandContext, profile: Profile): Boolean {
 		if (context !is DiscordCommandContext)
 			throw UnsupportedOperationException("I don't know how to handle a $context yet!")
 
-		if (profile.isBanned) {
+		val bannedState = profile.getBannedState()
+
+		if (bannedState != null) {
 			LorittaLauncher.loritta.ignoreIds.add(context.userHandle.idLong)
 
 			// Se um usuário está banido...
 			context.userHandle
 					.openPrivateChannel()
 					.queue (
-							{ it.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.legacyLocale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() },
-							{ context.event.textChannel!!.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.legacyLocale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() }
+							{ it.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.legacyLocale["USER_IS_LORITTABANNED", bannedState[BannedUsers.reason]]).queue() },
+							{ context.event.textChannel!!.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.legacyLocale["USER_IS_LORITTABANNED", bannedState[BannedUsers.reason]]).queue() }
 					)
 			return true
 		}
 		return false
 	}
 
-	fun handleIfBanned(context: net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext, profile: Profile): Boolean {
-		if (profile.isBanned) {
+	suspend fun handleIfBanned(context: net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext, profile: Profile): Boolean {
+		val bannedState = profile.getBannedState()
+
+		if (bannedState != null) {
 			val legacyLocale = loritta.getLegacyLocaleById(context.locale.id)
 			LorittaLauncher.loritta.ignoreIds.add(context.user.idLong)
 
@@ -137,8 +143,8 @@ object LorittaUtilsKotlin {
 			context.user
 					.openPrivateChannel()
 					.queue (
-							{ it.sendMessage("\uD83D\uDE45 **|** " + context.getUserMention(true) + legacyLocale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() },
-							{ context.discordMessage.channel.sendMessage("\uD83D\uDE45 **|** " + context.getUserMention(true) + legacyLocale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() }
+							{ it.sendMessage("\uD83D\uDE45 **|** " + context.getUserMention(true) + legacyLocale["USER_IS_LORITTABANNED", bannedState[BannedUsers.reason]]).queue() },
+							{ context.discordMessage.channel.sendMessage("\uD83D\uDE45 **|** " + context.getUserMention(true) + legacyLocale["USER_IS_LORITTABANNED", bannedState[BannedUsers.reason]]).queue() }
 					)
 			return true
 		}

@@ -370,7 +370,8 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					MemberCounterChannelConfigs,
 					ModerationConfigs,
 					WarnActions,
-					ModerationPunishmentMessagesConfig
+					ModerationPunishmentMessagesConfig,
+					BannedUsers
 			)
 		}
 	}
@@ -519,8 +520,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		return transaction(Databases.loritta) {
 			Profile.new(userId) {
 				xp = 0
-				isBanned = false
-				bannedReason = null
 				lastMessageSentAt = 0L
 				lastMessageSentHash = 0
 				money = 0

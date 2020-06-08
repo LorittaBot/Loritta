@@ -18,14 +18,12 @@ import io.ktor.request.receiveText
 import mu.KotlinLogging
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.tables.SonhosBundles
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import net.perfectdreams.loritta.website.routes.BaseRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
-import org.jetbrains.exposed.sql.SqlExpressionBuilder
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.update
+import org.jetbrains.exposed.sql.*
 
 class PostPicPayCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/callbacks/picpay") {
 	companion object {
@@ -85,12 +83,14 @@ class PostPicPayCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/ap
 			// User charged back the payment, let's ban him!
 			logger.warn { "User ${internalPayment.userId} charged back the payment! Let's ban him >:(" }
 
-			val profile = loritta.getLorittaProfileAsync(internalPayment.userId)
-
-			if (profile != null) {
-				loritta.newSuspendedTransaction {
-					profile.isBanned = true
-					profile.bannedReason = "Chargeback/Requesting your money back after a purchase! Why do you pay for something and then chargeback your payment even though you received your product? Payment ID: $referenceId"
+			loritta.newSuspendedTransaction {
+				BannedUsers.insert {
+					it[BannedUsers.userId] = internalPayment.userId
+					it[BannedUsers.bannedAt] = System.currentTimeMillis()
+					it[BannedUsers.bannedBy] = null
+					it[BannedUsers.valid] = true
+					it[BannedUsers.expiresAt] = null
+					it[BannedUsers.reason] = "Chargeback/Requesting your money back after a purchase! Why do you pay for something and then chargeback your payment even though you received your product? Payment ID: $referenceId"
 				}
 			}
 		} else if (status == "paid" || status == "complete") {

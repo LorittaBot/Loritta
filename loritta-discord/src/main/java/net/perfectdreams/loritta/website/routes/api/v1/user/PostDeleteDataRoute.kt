@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.website.routes.api.v1.user
 
 import com.github.salomonbrys.kotson.jsonObject
 import com.mrpowergamerbr.loritta.tables.*
+import com.mrpowergamerbr.loritta.utils.Constants
 import io.ktor.application.ApplicationCall
 import io.ktor.sessions.clear
 import io.ktor.sessions.sessions
@@ -13,6 +14,7 @@ import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.or
 
 class PostDeleteDataRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/@me/delete") {
@@ -114,6 +116,16 @@ class PostDeleteDataRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRout
 			logger.info { "Deleting $userId's marriages..." }
 			Marriages.deleteWhere {
 				Marriages.user1 eq userId or (Marriages.user2 eq userId)
+			}
+
+			logger.info { "Banning $userId for three days..." }
+			BannedUsers.insert {
+				it[BannedUsers.userId] = userId
+				it[bannedAt] = System.currentTimeMillis()
+				it[bannedBy] = null
+				it[valid] = true
+				it[expiresAt] = System.currentTimeMillis() + (Constants.ONE_DAY_IN_MILLISECONDS * 3)
+				it[BannedUsers.reason] = loritta.getLocaleById("default")["website.dashboard.profie.deleteAccount."]
 			}
 		}
 

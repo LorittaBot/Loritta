@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.plugin.stafflorittaban.StaffLorittaBanConfig
+import net.perfectdreams.loritta.tables.BannedUsers
 
 class AddReactionForStaffLoriBanModule(val config: StaffLorittaBanConfig) : MessageReceivedModule {
 	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
@@ -23,9 +24,10 @@ class AddReactionForStaffLoriBanModule(val config: StaffLorittaBanConfig) : Mess
 		val reason = args.joinToString(" ")
 
 		val profile = loritta.getLorittaProfile(toBeBannedUserId) ?: return false
+		val bannedState = profile.getBannedState()
 
-		if (profile.isBanned) {
-			event.channel.sendMessage("O usuário $toBeBannedUserId já está banido, bobinho! Ele foi banido pelo motivo `${profile.id.value}`")
+		if (bannedState != null) {
+			event.channel.sendMessage("O usuário $toBeBannedUserId já está banido, bobinho! Ele foi banido pelo motivo `${bannedState[BannedUsers.reason]}`")
 					.queue()
 			return false
 		}

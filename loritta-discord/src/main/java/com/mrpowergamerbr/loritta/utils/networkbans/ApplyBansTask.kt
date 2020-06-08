@@ -16,7 +16,7 @@ class ApplyBansTask : Runnable {
 		try {
 			logger.info { "Applying user ban wave..." }
 
-			banWaveUsers.forEach {
+			/* banWaveUsers.forEach {
 				logger.info { "Banning ${it.key} due to ${it.value} " }
 
 				val profile = loritta.getLorittaProfile(it.key)
@@ -26,7 +26,7 @@ class ApplyBansTask : Runnable {
 						profile.bannedReason = it.value
 					}
 				}
-			}
+			} */
 
 			banWaveUsers.clear()
 		} catch (e: Exception) {

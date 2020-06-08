@@ -26,9 +26,11 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.AutoroleConfig
 import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
+import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.utils.Emotes
 import org.apache.commons.text.similarity.LevenshteinDistance
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
@@ -520,8 +522,10 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	 * @param guild        the guild
 	 * @return if the owner of the guild is banned
 	 */
-	fun isOwnerBanned(ownerProfile: Profile, guild: Guild): Boolean {
-		if (ownerProfile.isBanned) { // Se o dono está banido...
+	suspend fun isOwnerBanned(ownerProfile: Profile, guild: Guild): Boolean {
+		val bannedState = ownerProfile.getBannedState()
+
+		if (bannedState != null && bannedState[BannedUsers.expiresAt] == null) { // Se o dono está banido e não é um ban temporário...
 			if (!loritta.config.isOwner(ownerProfile.userId)) { // E ele não é o dono do bot!
 				logger.info("Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o dono ${ownerProfile.userId} está banido de me usar! ᕙ(⇀‸↼‶)ᕗ")
 				guild.leave().queue() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
@@ -560,9 +564,11 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	 * @param profile the profile of the user
 	 * @return if the user is still banned
 	 */
-	fun isUserStillBanned(profile: Profile): Boolean {
+	suspend fun isUserStillBanned(profile: Profile): Boolean {
+		val bannedState = profile.getBannedState()
+
 		if (loritta.ignoreIds.contains(profile.userId)) { // Se o usuário está sendo ignorado...
-			if (profile.isBanned) { // E ele ainda está banido...
+			if (bannedState != null) { // E ele ainda está banido...
 				logger.info { "${profile.id} tried to use me, but they are banned! >:)" }
 				return true // Então flw galerinha
 			} else {

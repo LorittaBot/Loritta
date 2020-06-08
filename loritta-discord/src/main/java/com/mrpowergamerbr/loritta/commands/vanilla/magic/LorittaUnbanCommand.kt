@@ -8,6 +8,8 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.tables.BannedUsers
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class LorittaUnbanCommand : AbstractCommand("lorittaunban", category = CommandCategory.MAGIC, onlyOwner = true) {
@@ -31,8 +33,9 @@ class LorittaUnbanCommand : AbstractCommand("lorittaunban", category = CommandCa
 			}
 
 			transaction(Databases.loritta) {
-				profile.isBanned = false
-				profile.bannedReason = null
+				BannedUsers.deleteWhere {
+					BannedUsers.userId eq context.userHandle.idLong
+				}
 			}
 
 			context.sendMessage(context.getAsMention(true) + "Usuário desbanido com sucesso!")

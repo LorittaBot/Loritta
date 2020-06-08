@@ -10,7 +10,9 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.plugin.stafflorittaban.StaffLorittaBanConfig
+import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.utils.Emotes
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class CheckReactionsForLoriBanListener(val config: StaffLorittaBanConfig) : ListenerAdapter() {
@@ -37,8 +39,9 @@ class CheckReactionsForLoriBanListener(val config: StaffLorittaBanConfig) : List
 			val args = split.toMutableList().apply { this.removeAt(0) }
 
 			val profile = loritta.getLorittaProfile(toBeBannedUserId) ?: return@launch
+			val bannedState = profile.getBannedState()
 
-			if (profile.isBanned)
+			if (bannedState != null)
 				return@launch
 
 			val users = event.reaction.retrieveUsers().await()
@@ -59,8 +62,14 @@ class CheckReactionsForLoriBanListener(val config: StaffLorittaBanConfig) : List
 				logger.info { "Banning ${profile.id.value} with reason ${reason}, message sent by ${message.idLong}" }
 
 				transaction(Databases.loritta) {
-					profile.isBanned = true
-					profile.bannedReason = reason
+					BannedUsers.insert {
+						it[userId] = profile.userId
+						it[bannedAt] = System.currentTimeMillis()
+						it[bannedBy] = message.author.idLong
+						it[valid] = true
+						it[expiresAt] = null
+						it[BannedUsers.reason] = reason
+					}
 				}
 
 				event.channel.sendMessage("Usuário ${profile.id.value} foi banido com sucesso. Obrigada por ter reportado o usuário! ${Emotes.LORI_HEART}")

@@ -15,15 +15,13 @@ import io.ktor.http.HttpStatusCode
 import mu.KotlinLogging
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.tables.SonhosBundles
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import net.perfectdreams.loritta.website.routes.BaseRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.mercadopago.PaymentStatus
-import org.jetbrains.exposed.sql.SqlExpressionBuilder
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.update
+import org.jetbrains.exposed.sql.*
 
 class PostMercadoPagoCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/callbacks/mercadopago") {
 	companion object {
@@ -72,12 +70,14 @@ class PostMercadoPagoCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta,
 					// User charged back the payment, let's ban him!
 					logger.warn { "User ${internalPayment.userId} charged back the payment! Let's ban him >:(" }
 
-					val profile = loritta.getLorittaProfileAsync(internalPayment.userId)
-
-					if (profile != null) {
-						loritta.newSuspendedTransaction {
-							profile.isBanned = true
-							profile.bannedReason = "Chargeback/Requesting your money back after a purchase! Why do you pay for something and then chargeback your payment even though you received your product? Payment ID: ${payment.externalReference}"
+					loritta.newSuspendedTransaction {
+						BannedUsers.insert {
+							it[BannedUsers.userId] = internalPayment.userId
+							it[BannedUsers.bannedAt] = System.currentTimeMillis()
+							it[BannedUsers.bannedBy] = null
+							it[BannedUsers.valid] = true
+							it[BannedUsers.expiresAt] = null
+							it[BannedUsers.reason] = "Chargeback/Requesting your money back after a purchase! Why do you pay for something and then chargeback your payment even though you received your product? Payment ID: ${payment.externalReference}"
 						}
 					}
 				} else if (payment.status == PaymentStatus.APPROVED || (com.mrpowergamerbr.loritta.utils.loritta.config.loritta.environment == EnvironmentType.CANARY && allowAnyPayment)) {

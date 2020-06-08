@@ -8,6 +8,9 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.tables.BannedUsers
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class LorittaBanCommand : AbstractCommand("lorittaban", category = CommandCategory.MAGIC, onlyOwner = true) {
@@ -42,8 +45,14 @@ class LorittaBanCommand : AbstractCommand("lorittaban", category = CommandCatego
 			val reason = context.rawArgs.toMutableList().apply { this.removeAt(0) }.joinToString(" ")
 
 			transaction(Databases.loritta) {
-				profile.isBanned = true
-				profile.bannedReason = reason
+				BannedUsers.insert {
+					it[userId] = monster.idLong
+					it[bannedAt] = System.currentTimeMillis()
+					it[bannedBy] = context.userHandle.idLong
+					it[valid] = true
+					it[expiresAt] = null
+					it[BannedUsers.reason] = reason
+				}
 			}
 
 			context.sendMessage(context.getAsMention(true) + "Usuário banido com sucesso!")

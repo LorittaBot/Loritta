@@ -20,6 +20,7 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.tables.BotVotes
 import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.utils.Emotes
@@ -173,15 +174,16 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		}
 
 		val settings = transaction(Databases.loritta) { userProfile.settings }
+		val bannedState = userProfile.getBannedState()
 
-		if (contextUser != null && userProfile.isBanned) {
+		if (contextUser != null && bannedState != null) {
 			context.reply(
 					LoriReply(
 							"${contextUser.asMention} está **banido**",
 							"\uD83D\uDE45"
 					),
 					LoriReply(
-							"**Motivo:** `${userProfile.bannedReason}`",
+							"**Motivo:** `${bannedState[BannedUsers.reason]}`",
 							"✍"
 					)
 			)
