@@ -19,7 +19,7 @@ class LorittaUnbanCommand : AbstractCommand("lorittaunban", category = CommandCa
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.size >= 1) {
-			var monster = context.args[0].toLowerCase() // ID
+			val monster = context.args[0].toLowerCase() // ID
 			val profile = LorittaLauncher.loritta.getLorittaProfile(monster)
 
 			if (profile == null) {
@@ -34,7 +34,7 @@ class LorittaUnbanCommand : AbstractCommand("lorittaunban", category = CommandCa
 
 			transaction(Databases.loritta) {
 				BannedUsers.deleteWhere {
-					BannedUsers.userId eq context.userHandle.idLong
+					BannedUsers.userId eq profile.userId
 				}
 			}
 
