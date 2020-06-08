@@ -104,7 +104,9 @@ object ScriptingUtils {
                 import kotlinx.html.*
                 import kotlinx.html.dom.*
 				import net.perfectdreams.loritta.dao.*
+				import net.perfectdreams.loritta.tables.*
 				import com.mrpowergamerbr.loritta.dao.*
+				import com.mrpowergamerbr.loritta.tables.*
                 import com.mrpowergamerbr.loritta.utils.KtsObjectLoader
                 import net.perfectdreams.loritta.utils.*
 				import com.mrpowergamerbr.loritta.utils.*
