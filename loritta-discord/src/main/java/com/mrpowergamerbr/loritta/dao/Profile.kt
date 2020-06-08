@@ -20,8 +20,6 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 	val userId = this.id.value
 	var xp by Profiles.xp
 	var money by Profiles.money
-	var isBanned by Profiles.isBanned
-	var bannedReason by Profiles.bannedReason
 	var lastMessageSentAt by Profiles.lastMessageSentAt
 	var lastMessageSentHash by Profiles.lastMessageSentHash
 	var lastCommandSentAt by Profiles.lastCommandSentAt
