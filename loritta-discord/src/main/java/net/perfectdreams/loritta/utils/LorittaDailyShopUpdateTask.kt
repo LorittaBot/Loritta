@@ -40,9 +40,8 @@ class LorittaDailyShopUpdateTask : Runnable {
 				repeat(Math.min(NEW_ITEMS_TARGET, neverSoldBeforeBackgrounds.size)) {
 					if (neverSoldBeforeBackgrounds.isNotEmpty()) { // Because we repeat multiple times and remove the background from the list, we need to check if the list is empty inside the repeat
 						val randomBackground = neverSoldBeforeBackgrounds.random()
-						// We need to do this because the ResultRow isn't the same instance
-						// TODO: Check if this is really true, I'm 99% sure it is, but...
-						allBackgrounds.removeIf { it[Backgrounds.internalName] == randomBackground[Backgrounds.internalName] }
+
+						allBackgrounds.remove(randomBackground)
 						neverSoldBeforeBackgrounds.remove(randomBackground)
 						selectedBackgrounds.add(randomBackground)
 					}
