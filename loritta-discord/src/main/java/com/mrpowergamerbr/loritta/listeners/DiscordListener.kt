@@ -42,6 +42,7 @@ import net.perfectdreams.loritta.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.tables.servers.Giveaways
 import net.perfectdreams.loritta.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.MemberCounterChannelConfigs
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.ReactionOptions
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.WarnActions
 import net.perfectdreams.loritta.utils.FeatureFlags
@@ -311,43 +312,49 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 
 				// Deletar configurações
-				logger.trace { "Deleting all ${e.guild} configurations..."}
+				logger.trace { "Deleting all ${e.guild} configurations..." }
 				val serverConfig = ServerConfig.findById(e.guild.idLong)
 
-				logger.trace { "Deleting all ${e.guild} role perms..."}
+				logger.trace { "Deleting all ${e.guild} role perms..." }
 				if (serverConfig != null)
 					ServerRolePermissions.deleteWhere {
 						ServerRolePermissions.guild eq serverConfig.id
 					}
 
-				logger.trace { "Deleting all ${e.guild} custom commands..."}
+				logger.trace { "Deleting all ${e.guild} custom commands..." }
 				if (serverConfig != null)
 					CustomGuildCommands.deleteWhere {
 						CustomGuildCommands.guild eq serverConfig.id
 					}
 
 				val moderationConfig = serverConfig?.moderationConfig
-				logger.trace { "Deleting all ${e.guild} warn actions..."}
+				logger.trace { "Deleting all ${e.guild} warn actions..." }
 				if (serverConfig != null && moderationConfig != null)
 					WarnActions.deleteWhere {
 						WarnActions.config eq moderationConfig.id
 					}
 
-				logger.trace { "Deleting all ${e.guild} member counters..."}
+				logger.trace { "Deleting all ${e.guild} member counters..." }
 				if (serverConfig != null)
 					MemberCounterChannelConfigs.deleteWhere {
 						MemberCounterChannelConfigs.guild eq serverConfig.id
 					}
 
-				logger.trace { "Deleting ${e.guild} config..."}
+				logger.trace { "Deleting all ${e.guild} moderation messages counters..." }
+				if (serverConfig != null)
+					ModerationPunishmentMessagesConfig.deleteWhere {
+						ModerationPunishmentMessagesConfig.guild eq serverConfig.id
+					}
+
+				logger.trace { "Deleting ${e.guild} config..." }
 				serverConfig?.delete()
 
-				logger.trace { "Deleting all ${e.guild}'s giveaways..."}
+				logger.trace { "Deleting all ${e.guild}'s giveaways..." }
 				val allGiveaways = Giveaway.find {
 					Giveaways.guildId eq e.guild.idLong
 				}
 
-				logger.trace { "${e.guild} has ${allGiveaways.count()} giveaways that will be cancelled and deleted!"}
+				logger.trace { "${e.guild} has ${allGiveaways.count()} giveaways that will be cancelled and deleted!" }
 
 				allGiveaways.forEach {
 					GiveawayManager.cancelGiveaway(it, true, true)
@@ -357,7 +364,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					Mutes.guildId eq e.guild.idLong
 				}
 
-				logger.trace { "Done! Everything related to ${e.guild} was deleted!"}
+				logger.trace { "Done! Everything related to ${e.guild} was deleted!" }
 			}
 		}
 	}
