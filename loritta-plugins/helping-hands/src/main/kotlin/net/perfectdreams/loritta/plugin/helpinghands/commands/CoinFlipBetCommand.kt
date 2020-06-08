@@ -110,8 +110,9 @@ object CoinFlipBetCommand : DSLCommandBase {
 				fail(locale["commands.economy.flipcoinbet.notEnoughMoneySelf"], Constants.ERROR)
 
 			val invitedUserProfile = loritta.getOrCreateLorittaProfile(invitedUser.id)
+			val bannedState = invitedUserProfile.getBannedState()
 
-			if (number > invitedUserProfile.money || invitedUserProfile.isBanned)
+			if (number > invitedUserProfile.money || bannedState != null)
 				fail(locale["commands.economy.flipcoinbet.notEnoughMoneyInvited", invitedUser.asMention], Constants.ERROR)
 
 			val message = context.reply(
