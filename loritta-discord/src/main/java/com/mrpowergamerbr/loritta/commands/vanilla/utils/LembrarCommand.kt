@@ -58,6 +58,10 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 				logger.trace { "remindAt = $inMillis" }
 				logger.trace { "content = $message" }
 
+				if (inMillis - System.currentTimeMillis() <= 0) {
+					context.sendMessage(context.getAsMention(true) + locale["LEMBRAR_TIME_ALREADY_PASSED"])
+					return@onResponseByAuthor
+				}
 				// Criar o Lembrete
 				transaction(Databases.loritta) {
 					Reminder.new {
