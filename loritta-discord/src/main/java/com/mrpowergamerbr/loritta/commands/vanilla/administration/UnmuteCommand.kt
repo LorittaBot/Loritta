@@ -131,7 +131,9 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 								)
 						)
 
-						textChannel.sendMessage(message!!).queue()
+						message?.let {
+							textChannel.sendMessage(it).queue()
+						}
 					}
 				}
 			}

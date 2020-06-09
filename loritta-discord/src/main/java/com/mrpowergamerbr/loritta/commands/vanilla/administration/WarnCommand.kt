@@ -115,7 +115,9 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 									)
 							)
 
-							textChannel.sendMessage(message!!).queue()
+							message?.let {
+								textChannel.sendMessage(it).queue()
+							}
 						}
 					}
 				}

@@ -148,7 +148,9 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 								)
 						)
 
-						textChannel.sendMessage(message!!).queue()
+						message?.let {
+							textChannel.sendMessage(it).queue()
+						}
 					}
 				}
 			}

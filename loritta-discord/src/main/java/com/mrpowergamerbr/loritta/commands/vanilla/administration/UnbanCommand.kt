@@ -135,7 +135,9 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 								)
 						)
 
-						textChannel.sendMessage(message!!).queue()
+						message?.let {
+							textChannel.sendMessage(it).queue()
+						}
 					}
 				}
 			}

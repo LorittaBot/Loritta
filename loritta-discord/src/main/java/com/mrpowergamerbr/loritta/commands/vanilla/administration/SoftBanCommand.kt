@@ -202,7 +202,9 @@ class SoftBanCommand : AbstractCommand("softban", category = CommandCategory.ADM
 								)
 						)
 
-						textChannel.sendMessage(message!!).queue()
+						message?.let {
+							textChannel.sendMessage(it).queue()
+						}
 					}
 				}
 			}

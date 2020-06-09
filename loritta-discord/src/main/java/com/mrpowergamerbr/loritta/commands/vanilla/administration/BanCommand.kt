@@ -138,7 +138,9 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 								)
 						)
 
-						textChannel.sendMessage(message!!).queue()
+						message?.let {
+							textChannel.sendMessage(it).queue()
+						}
 					}
 				}
 			}
