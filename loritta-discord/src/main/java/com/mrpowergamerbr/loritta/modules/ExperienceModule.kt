@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.filterOnlyGiveableRoles
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.sync.Mutex
@@ -166,9 +167,10 @@ class ExperienceModule : MessageReceivedModule {
 					.sortedByDescending { it[RolesByExperience.requiredExperience] }
 
 			if (matched.isNotEmpty()) {
-				val guildRoles = matched.flatMap { it[RolesByExperience.roles].mapNotNull { guild.getRoleById(it) } }
-						.filter { guild.selfMember.canInteract(it) } // caso seja um cargo que a Lori não consiga dar, apenas ignore!
-						.filterNot { it.isPublicRole }
+				val guildRoles = matched.flatMap { it[RolesByExperience.roles]
+						.mapNotNull { guild.getRoleById(it) } }
+						.filterOnlyGiveableRoles(member)
+						.toList()
 
 				if (guildRoles.isEmpty())
 					return
@@ -204,7 +206,7 @@ class ExperienceModule : MessageReceivedModule {
 		}
 
 		if (previousLevel != newLevel && levelConfig != null) {
-			logger.info { "Notfying about level up from $previousLevel -> $newLevel; level config is $levelConfig"}
+			logger.info { "Notifying about level up from $previousLevel -> $newLevel; level config is $levelConfig"}
 
 			val announcements = transaction(Databases.loritta) {
 				LevelAnnouncementConfigs.select {

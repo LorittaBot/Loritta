@@ -128,6 +128,32 @@ fun MessageReaction.ReactionEmote.isEmote(id: String): Boolean {
 fun Message.refresh(): RestAction<Message> {
 	return this.channel.retrieveMessageById(this.idLong)
 }
+/**
+ * Checks if a role is a valid giveable role (not managed, not a public role, etc) and if it can be given to the [member],
+ *
+ * @param member the member that the role will be given to
+ * @return       if the role can be given to the specified member
+ */
+fun Role.canBeGivenTo(member: Member) = !this.isPublicRole &&
+		!this.isManaged &&
+		guild.selfMember.canInteract(this) &&
+		member.canInteract(guild.selfMember)
+
+/**
+ * Filters a role list with [canBeGivenTo].
+ *
+ * @param member the member that the role will be given to
+ * @return       all roles that can be given to the member
+ */
+fun Collection<Role>.filterOnlyGiveableRoles(member: Member) = this.filter { it.canBeGivenTo(member) }
+
+/**
+ * Filters a role list with [canBeGivenTo].
+ *
+ * @param member the member that the role will be given to
+ * @return       all roles that can be given to the member
+ */
+fun Sequence<Role>.filterOnlyGiveableRoles(member: Member) = this.filter { it.canBeGivenTo(member) }
 
 fun Permission.localized(locale: BaseLocale): String {
 	return when (this) {
