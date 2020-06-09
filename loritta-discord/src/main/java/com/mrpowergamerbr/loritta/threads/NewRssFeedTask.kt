@@ -12,7 +12,7 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.tables.DefaultRssFeeds
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedRssFeeds
 import net.perfectdreams.loritta.utils.FeatureFlags
-import net.perfectdreams.loritta.utils.ShardOfflineException
+import net.perfectdreams.loritta.utils.ClusterOfflineException
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -131,7 +131,7 @@ class NewRssFeedTask : Runnable {
 											)
 										} catch (e: Exception) {
 											LorittaShards.logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
-											throw ShardOfflineException(it.id, it.name)
+											throw ClusterOfflineException(it.id, it.name)
 										}
 									}
 								}

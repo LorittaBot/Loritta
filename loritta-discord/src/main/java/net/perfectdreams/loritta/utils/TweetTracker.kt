@@ -127,7 +127,7 @@ class TweetTracker(val m: Loritta) {
 									)
 								} catch (e: Exception) {
 									LorittaShards.logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
-									throw ShardOfflineException(it.id, it.name)
+									throw ClusterOfflineException(it.id, it.name)
 								}
 							}
 						}

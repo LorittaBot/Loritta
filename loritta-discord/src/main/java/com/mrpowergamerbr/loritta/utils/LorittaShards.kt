@@ -29,7 +29,7 @@ import net.dv8tion.jda.api.sharding.ShardManager
 import net.perfectdreams.loritta.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.utils.CachedUserInfo
 import net.perfectdreams.loritta.utils.DiscordUtils
-import net.perfectdreams.loritta.utils.ShardOfflineException
+import net.perfectdreams.loritta.utils.ClusterOfflineException
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
@@ -272,7 +272,7 @@ class LorittaShards {
 				)
 			} catch (e: Exception) {
 				logger.warn(e) { "Shard ${shard.name} ${shard.id} offline!" }
-				throw ShardOfflineException(shard.id, shard.name)
+				throw ClusterOfflineException(shard.id, shard.name)
 			}
 		}
 	}
@@ -294,7 +294,7 @@ class LorittaShards {
 				)
 			} catch (e: Exception) {
 				logger.warn(e) { "Shard ${cluster.name} ${cluster.id} offline!" }
-				throw ShardOfflineException(cluster.id, cluster.name)
+				throw ClusterOfflineException(cluster.id, cluster.name)
 			}
 		}
 	}
@@ -321,7 +321,7 @@ class LorittaShards {
 					}
 				} catch (e: Exception) {
 					logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
-					throw ShardOfflineException(it.id, it.name)
+					throw ClusterOfflineException(it.id, it.name)
 				}
 			}
 		}
@@ -339,7 +339,7 @@ class LorittaShards {
 				json["guilds"].array.forEach {
 					allGuilds.add(it.obj)
 				}
-			} catch (e: ShardOfflineException) {}
+			} catch (e: ClusterOfflineException) {}
 		}
 
 		return allGuilds
@@ -373,7 +373,7 @@ class LorittaShards {
 					}
 				} catch (e: Exception) {
 					logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
-					throw ShardOfflineException(it.id, it.name)
+					throw ClusterOfflineException(it.id, it.name)
 				}
 			}
 		}
@@ -387,7 +387,7 @@ class LorittaShards {
 				json.array.forEach {
 					matchedUsers.add(it.obj)
 				}
-			} catch (e: ShardOfflineException) {}
+			} catch (e: ClusterOfflineException) {}
 		}
 
 		return matchedUsers.distinctBy { it["id"].long }
@@ -416,7 +416,7 @@ class LorittaShards {
 					}
 				} catch (e: Exception) {
 					logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
-					throw ShardOfflineException(it.id, it.name)
+					throw ClusterOfflineException(it.id, it.name)
 				}
 			}
 		}
@@ -430,7 +430,7 @@ class LorittaShards {
 				json.array.forEach {
 					matchedGuilds.add(it.obj)
 				}
-			} catch (e: ShardOfflineException) {}
+			} catch (e: ClusterOfflineException) {}
 		}
 
 		return matchedGuilds

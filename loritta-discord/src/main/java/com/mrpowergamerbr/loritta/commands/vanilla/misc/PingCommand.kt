@@ -20,7 +20,7 @@ import kotlinx.coroutines.withTimeout
 import net.dv8tion.jda.api.JDA
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.NetAddressUtils
-import net.perfectdreams.loritta.utils.ShardOfflineException
+import net.perfectdreams.loritta.utils.ClusterOfflineException
 import java.util.concurrent.TimeUnit
 
 class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
@@ -50,7 +50,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 						}
 					} catch (e: Exception) {
 						LorittaShards.logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
-						throw ShardOfflineException(it.id, it.name)
+						throw ClusterOfflineException(it.id, it.name)
 					}
 				}
 			}
@@ -133,7 +133,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 							row4.add("${it["userCount"].long} users")
 						}
 					}
-				} catch (e: ShardOfflineException) {
+				} catch (e: ClusterOfflineException) {
 					row0.add("Loritta Cluster ${e.id} (${e.name})")
 					row1.add("---")
 					row2.add("---")

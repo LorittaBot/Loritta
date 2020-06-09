@@ -26,7 +26,7 @@ import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.SentYouTubeVideoIds
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedTwitchAccounts
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedYouTubeAccounts
-import net.perfectdreams.loritta.utils.ShardOfflineException
+import net.perfectdreams.loritta.utils.ClusterOfflineException
 import net.perfectdreams.loritta.website.routes.BaseRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.website.utils.extensions.urlQueryString
@@ -297,7 +297,7 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 					}
 				} catch (e: Exception) {
 					logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
-					throw ShardOfflineException(it.id, it.name)
+					throw ClusterOfflineException(it.id, it.name)
 				}
 			}
 		}
