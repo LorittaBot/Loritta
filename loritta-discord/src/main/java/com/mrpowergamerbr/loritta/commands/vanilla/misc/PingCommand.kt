@@ -2,13 +2,21 @@ package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
+import com.google.gson.JsonElement
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.readText
+import io.ktor.http.userAgent
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.withTimeout
 import net.dv8tion.jda.api.JDA
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.NetAddressUtils
@@ -24,7 +32,28 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 		val arg0 = context.args.getOrNull(0)
 
 		if (arg0 == "shards" || arg0 == "clusters") {
-			val results = lorittaShards.queryAllLorittaClusters("/api/v1/loritta/status")
+			val results = loritta.config.clusters.map {
+				GlobalScope.async(loritta.coroutineDispatcher) {
+					try {
+						withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
+							val start = System.currentTimeMillis()
+							val response = loritta.http.get<HttpResponse>("https://${it.getUrl()}/api/v1/loritta/status") {
+								userAgent(loritta.lorittaCluster.getUserAgent())
+								header("Authorization", loritta.lorittaInternalApiKey.name)
+							}
+
+							val body = response.readText()
+							ClusterQueryResult(
+									System.currentTimeMillis()- start,
+									JsonParser.parseString(body)
+							)
+						}
+					} catch (e: Exception) {
+						LorittaShards.logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
+						throw ShardOfflineException(it.id, it.name)
+					}
+				}
+			}
 			val shardControllerStatus = if (loritta.discordConfig.shardController.enabled) {
 				GlobalScope.async(loritta.coroutineDispatcher) {
 					try {
@@ -34,9 +63,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 								.readTimeout(loritta.config.loritta.clusterReadTimeout)
 								.body()
 
-						jsonParser.parse(
-								body
-						)
+						JsonParser.parseString(body)
 					} catch (e: Exception) {
 						logger.warn(e) { "Shard Controller is offline!" }
 						throw RuntimeException("Shard Controller is offline!")
@@ -44,22 +71,21 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 				}
 			} else null
 
-			val row0 = mutableListOf<String>()
-			val row1 = mutableListOf<String>()
-			val row2 = mutableListOf<String>()
-			val row3 = mutableListOf<String>()
-			val row4 = mutableListOf<String>()
+			val row0 = mutableListOf("Cluster Name")
+			val row1 = mutableListOf("WS")
+			val row2 = mutableListOf("Lori Web")
+			val row3 = mutableListOf("Uptime")
+			val row4 = mutableListOf("Guilds")
 
 			results.forEach {
 				try {
-					val json = it.await()
+					val (time, json) = it.await()
 
 					val shardId = json["id"].long
 					val name = json["name"].string
 					val loriBuild = json["build"]["buildNumber"].string
 
 					val totalGuildCount = json["shards"].array.sumBy { it["guildCount"].int }
-					val totalUserCount = json["shards"].array.sumBy { it["userCount"].int }
 
 					var jvmUpTime = json["uptime"].long
 					val days = TimeUnit.MILLISECONDS.toDays(jvmUpTime)
@@ -84,9 +110,9 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 
 					row0.add("Loritta Cluster $shardId ($name) [b$loriBuild]")
 					row1.add("~${pingAverage}ms")
-					row2.add(sb.toString())
-					row3.add("$totalGuildCount guilds")
-					row4.add("$totalUserCount users")
+					row2.add("~${time}ms")
+					row3.add(sb.toString())
+					row4.add("$totalGuildCount guilds")
 
 					val unstableShards = json["shards"].array.filter {
 						it["status"].string != JDA.Status.CONNECTED.toString() || it["ping"].int == -1 || it["ping"].int >= 250
@@ -248,4 +274,9 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 			}
 		}
 	}
+
+	private data class ClusterQueryResult(
+			val time: Long,
+			val response: JsonElement
+	)
 }
