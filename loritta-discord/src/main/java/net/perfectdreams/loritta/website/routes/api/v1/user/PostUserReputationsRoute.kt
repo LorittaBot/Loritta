@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.ShardOfflineException
 import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
@@ -67,7 +68,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 							.ok()
 				} catch (e: Exception) {
 					logger.warn(e) { "Shard ${cluster.name} ${cluster.id} offline!" }
-					throw PingCommand.ShardOfflineException(cluster.id, cluster.name)
+					throw ShardOfflineException(cluster.id, cluster.name)
 				}
 			}
 		}

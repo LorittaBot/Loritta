@@ -16,6 +16,7 @@ import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
+import net.perfectdreams.loritta.utils.ShardOfflineException
 import java.io.File
 import java.util.*
 
@@ -197,7 +198,7 @@ class PluginsCommand : LorittaCommand(arrayOf("plugins"), category = CommandCate
 					)
 				} catch (e: Exception) {
 					LorittaShards.logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
-					throw PingCommand.ShardOfflineException(it.id, it.name)
+					throw ShardOfflineException(it.id, it.name)
 				}
 			}
 		}
@@ -234,7 +235,7 @@ class PluginsCommand : LorittaCommand(arrayOf("plugins"), category = CommandCate
 					)
 				} catch (e: Exception) {
 					LorittaShards.logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
-					throw PingCommand.ShardOfflineException(it.id, it.name)
+					throw ShardOfflineException(it.id, it.name)
 				}
 			}
 		}

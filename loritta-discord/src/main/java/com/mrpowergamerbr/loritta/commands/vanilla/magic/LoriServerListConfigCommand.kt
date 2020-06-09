@@ -21,6 +21,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.EconomyConfig
 import net.perfectdreams.loritta.tables.BlacklistedGuilds
+import net.perfectdreams.loritta.utils.ShardOfflineException
 import net.perfectdreams.loritta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.dao.id.EntityID
@@ -98,7 +99,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 							)
 						} catch (e: Exception) {
 							logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
-							throw PingCommand.ShardOfflineException(it.id, it.name)
+							throw ShardOfflineException(it.id, it.name)
 						}
 					}
 				}

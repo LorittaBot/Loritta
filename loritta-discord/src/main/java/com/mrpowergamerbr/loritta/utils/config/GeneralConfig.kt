@@ -19,7 +19,6 @@ class GeneralConfig @JsonCreator constructor(
 		val picPay: PicPayConfig,
 		val parallaxCodeServer: ParallaxCodeServerConfig,
 		val youtube: YouTubeConfig,
-		val mashape: MashapeConfig,
 		val openWeatherMap: OpenWeatherMapConfig,
 		val googleVision: GoogleVisionKey,
 		val googleRecaptcha: GoogleRecaptcha,
