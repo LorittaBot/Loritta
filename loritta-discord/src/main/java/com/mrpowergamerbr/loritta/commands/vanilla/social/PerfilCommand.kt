@@ -17,6 +17,8 @@ import com.mrpowergamerbr.loritta.tables.DonationConfigs
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -97,12 +99,18 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 				}.count() != 0L
 			}
 
-			val hasNotifyMeRole = hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "334734175531696128")
-			val isLorittaPartner = hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "434512654292221952")
-			val isTranslator = hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "385579854336360449")
-			val isGitHubContributor = hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "505144985591480333")
+			val hasNotifyMeRoleJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "334734175531696128") }
+			val isLorittaPartnerJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "434512654292221952") }
+			val isTranslatorJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "385579854336360449") }
+			val isGitHubContributorJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "505144985591480333") }
+			val isPocketDreamsStaffJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(Constants.SPARKLYPOWER_GUILD_ID, "332650495522897920") }
 			val hasLoriStickerArt = loritta.fanArtArtists.any { it.id == user.id }
-			val isPocketDreamsStaff = hasRole(Constants.SPARKLYPOWER_GUILD_ID, "332650495522897920")
+
+			val hasNotifyMeRole = hasNotifyMeRoleJob.await()
+			val isLorittaPartner = isLorittaPartnerJob.await()
+			val isTranslator = isTranslatorJob.await()
+			val isGitHubContributor = isGitHubContributorJob.await()
+			val isPocketDreamsStaff = isPocketDreamsStaffJob.await()
 
 			val badges = mutableListOf<BufferedImage>()
 
