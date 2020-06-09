@@ -6,7 +6,9 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import mu.KotlinLogging
+import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.utils.MiscUtil
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
@@ -93,61 +95,54 @@ fun String.isValidSnowflake(): Boolean {
 object LorittaUtilsKotlin {
 	val logger = KotlinLogging.logger {}
 
-	suspend fun handleIfBanned(context: CommandContext, profile: Profile): Boolean {
-		val bannedState = profile.getBannedState()
+	/**
+	 * Checks if a user is banned and, if it is, a message is sent to the user via direct messages or, if their DMs are disabled, in the current channel.
+	 *
+	 * @return if the user is banned
+	 */
+	suspend fun handleIfBanned(context: CommandContext, profile: Profile)
+			= handleIfBanned(context.userHandle, profile, context.event.textChannel!!, context.legacyLocale)
 
-		if (bannedState != null) {
-			LorittaLauncher.loritta.ignoreIds.add(context.userHandle.idLong)
-
-			// Se um usuário está banido...
-			context.userHandle
-					.openPrivateChannel()
-					.queue (
-							{ it.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.legacyLocale["USER_IS_LORITTABANNED", bannedState[BannedUsers.reason]]).queue() },
-							{ context.event.textChannel!!.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.legacyLocale["USER_IS_LORITTABANNED", bannedState[BannedUsers.reason]]).queue() }
-					)
-			return true
-		}
-		return false
-	}
-
+	/**
+	 * Checks if a user is banned and, if it is, a message is sent to the user via direct messages or, if their DMs are disabled, in the current channel.
+	 *
+	 * @return if the user is banned
+	 */
 	suspend fun handleIfBanned(context: LorittaCommandContext, profile: Profile): Boolean {
 		if (context !is DiscordCommandContext)
 			throw UnsupportedOperationException("I don't know how to handle a $context yet!")
 
-		val bannedState = profile.getBannedState()
-
-		if (bannedState != null) {
-			LorittaLauncher.loritta.ignoreIds.add(context.userHandle.idLong)
-
-			// Se um usuário está banido...
-			context.userHandle
-					.openPrivateChannel()
-					.queue (
-							{ it.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.legacyLocale["USER_IS_LORITTABANNED", bannedState[BannedUsers.reason]]).queue() },
-							{ context.event.textChannel!!.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.legacyLocale["USER_IS_LORITTABANNED", bannedState[BannedUsers.reason]]).queue() }
-					)
-			return true
-		}
-		return false
+		return handleIfBanned(context.userHandle, profile, context.discordMessage.channel, context.legacyLocale)
 	}
 
-	suspend fun handleIfBanned(context: net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext, profile: Profile): Boolean {
-		val bannedState = profile.getBannedState()
+	/**
+	 * Checks if a user is banned and, if it is, a message is sent to the user via direct messages or, if their DMs are disabled, in the current channel.
+	 *
+	 * @return if the user is banned
+	 */
+	suspend fun handleIfBanned(context: net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext, profile: Profile)
+			= handleIfBanned(context.user, profile, context.discordMessage.channel, loritta.getLegacyLocaleById(context.locale.id))
 
-		if (bannedState != null) {
-			val legacyLocale = loritta.getLegacyLocaleById(context.locale.id)
-			LorittaLauncher.loritta.ignoreIds.add(context.user.idLong)
+	/**
+	 * Checks if a user is banned and, if it is, a message is sent to the user via direct messages or, if their DMs are disabled, in the current channel.
+	 *
+	 * @param user           the user that will be checked if they are banned or not
+	 * @param profile        the user's profile
+	 * @param commandChannel where the banned message will be sent if the user's direct messages are disabled
+	 * @param legacyLocale   the user's locale
+	 * @return               if the user is banned
+	 */
+	private suspend fun handleIfBanned(user: User, profile: Profile, commandChannel: MessageChannel, legacyLocale: LegacyBaseLocale): Boolean {
+		val bannedState = profile.getBannedState() ?: return false
 
-			// Se um usuário está banido...
-			context.user
-					.openPrivateChannel()
-					.queue (
-							{ it.sendMessage("\uD83D\uDE45 **|** " + context.getUserMention(true) + legacyLocale["USER_IS_LORITTABANNED", bannedState[BannedUsers.reason]]).queue() },
-							{ context.discordMessage.channel.sendMessage("\uD83D\uDE45 **|** " + context.getUserMention(true) + legacyLocale["USER_IS_LORITTABANNED", bannedState[BannedUsers.reason]]).queue() }
-					)
-			return true
-		}
-		return false
+		LorittaLauncher.loritta.ignoreIds.add(user.idLong)
+
+		// Se um usuário está banido...
+		user.openPrivateChannel()
+				.queue (
+						{ it.sendMessage("\uD83D\uDE45 **|** ${user.asMention} ${legacyLocale["USER_IS_LORITTABANNED", bannedState[BannedUsers.reason]]}").queue() },
+						{ commandChannel.sendMessage("\uD83D\uDE45 **|** ${user.asMention} ${legacyLocale["USER_IS_LORITTABANNED", bannedState[BannedUsers.reason]]}").queue() }
+				)
+		return true
 	}
 }
