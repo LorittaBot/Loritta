@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.tables.BotVotes
+import net.perfectdreams.loritta.utils.ClusterOfflineException
 import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.ServerPremiumPlans
@@ -35,12 +36,53 @@ import javax.imageio.stream.FileImageOutputStream
 
 class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCategory.SOCIAL) {
 	companion object {
-		fun getUserBadges(user: User, profile: Profile, mutualGuilds: List<JsonElement> = runBlocking { lorittaShards.queryMutualGuildsInAllLorittaClusters(user.id) }): List<BufferedImage> {
-			// Para pegar o "Jogando" do usuário, nós precisamos pegar uma guild que o usuário está
-			fun hasRole(guildId: String, roleId: String): Boolean {
+		/**
+		 * Gets the user's badges, the user's mutual guilds will be retrieved
+		 *
+		 * @param user                   the user
+		 * @param profile                the user's profile
+		 * @param failIfClusterIsOffline if true, the method will throw a [ClusterOfflineException] if the queried cluster is offline
+		 * @return a list containing all the images of the user's badges
+		 */
+		suspend fun getUserBadges(user: User, profile: Profile, failIfClusterIsOffline: Boolean = false): List<BufferedImage> {
+			val mutualGuilds = try {
+				lorittaShards.queryMutualGuildsInAllLorittaClusters(user.id)
+			} catch (e: ClusterOfflineException) {
+				if (failIfClusterIsOffline)
+					throw e
+				listOf()
+			}
+
+			return getUserBadges(user, profile, mutualGuilds, failIfClusterIsOffline)
+		}
+
+		/**
+		 * Gets the user's badges, the user's mutual guilds will be retrieved
+		 *
+		 * @param user                   the user
+		 * @param profile                the user's profile
+		 * @param mutualGuilds           the user's mutual guilds, retrieved via [LorittaShards.queryMutualGuildsInAllLorittaClusters]
+		 * @param failIfClusterIsOffline if true, the method will throw a [ClusterOfflineException] if the queried cluster is offline
+		 * @return a list containing all the images of the user's badges
+		 */
+		suspend fun getUserBadges(user: User, profile: Profile, mutualGuilds: List<JsonElement>, failIfClusterIsOffline: Boolean = false): List<BufferedImage> {
+			/**
+			 * Checks if the user has the role in the specified guild
+			 *
+			 * @param guildId the guild ID
+			 * @param roleId  the role ID
+			 * @return if the user has the role
+			 */
+			suspend fun hasRole(guildId: String, roleId: String): Boolean {
 				val cluster = DiscordUtils.getLorittaClusterForGuildId(guildId.toLong())
 
-				val usersWithRolesPayload = runBlocking { lorittaShards.queryCluster(cluster, "/api/v1/guilds/$guildId/users-with-any-role/$roleId").await() }
+				val usersWithRolesPayload = try {
+					lorittaShards.queryCluster(cluster, "/api/v1/guilds/$guildId/users-with-any-role/$roleId").await()
+				} catch (e: ClusterOfflineException) {
+					if (failIfClusterIsOffline)
+						throw e
+					return false
+				}
 
 				val membersArray = usersWithRolesPayload["members"].nullArray ?: return false
 
@@ -94,7 +136,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			if (user.idLong == 249508932861558785L || user.idLong == 336892460280315905L)
 				badges += ImageIO.read(File(Loritta.ASSETS + "loritta_sweater.png"))
 
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				var specialCase = false
 
 				val results = if (user.idLong == loritta.discordConfig.discord.clientId.toLong()) { // Como estamos em MUITOS servidores, um in list dá problema! E como a gente é fofis, vamos apenas pegar todos os servidores
