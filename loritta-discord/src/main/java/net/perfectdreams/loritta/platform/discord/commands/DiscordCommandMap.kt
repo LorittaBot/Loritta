@@ -173,12 +173,11 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 				command.executedCount++
 
 				if (command.hasCommandFeedback) {
-					if (FeatureFlags.IMPROVED_TYPING_SEND) {
-						if (command.sendTypingStatus)
-							ev.channel.sendTyping().await()
-					} else {
+					// Sending typing status for every single command is costly (API limits!)
+					// To avoid sending it every time, we check if we should send the typing status
+					// (We only send it if the command takes a looong time to be executed)
+					if (command.sendTypingStatus)
 						ev.channel.sendTyping().await()
-					}
 				}
 
 				if (!isPrivateChannel && ev.guild != null && ev.member != null) {
