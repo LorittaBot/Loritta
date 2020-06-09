@@ -21,7 +21,6 @@ open class LorittaDiscordPlugin(name: String, loritta: LorittaBot) : LorittaPlug
 	val lorittaDiscord = loritta as LorittaDiscord
 	val routes = mutableListOf<BaseRoute>()
 	val configTransformers = mutableListOf<ConfigTransformer>()
-	val serverConfigColumns = mutableListOf<Column<out Any?>>()
 	val dataFolder by lazy { File(Loritta.FOLDER, "plugins/$name") }
 	val eventListeners = mutableListOf<ListenerAdapter>()
 	val loriToolsExecutors = mutableListOf<LoriToolsCommand.LoriToolsExecutor>()
