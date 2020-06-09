@@ -129,20 +129,6 @@ fun Message.refresh(): RestAction<Message> {
 	return this.channel.retrieveMessageById(this.idLong)
 }
 
-fun Guild.getTextChannelByNullableId(id: String?): TextChannel? {
-	if (id == null)
-		return null
-
-	return this.getTextChannelById(id)
-}
-
-fun Guild.getVoiceChannelByNullableId(id: String?): VoiceChannel? {
-	if (id == null)
-		return null
-
-	return this.getVoiceChannelById(id)
-}
-
 fun Permission.localized(locale: BaseLocale): String {
 	return when (this) {
 		CREATE_INSTANT_INVITE -> locale["discord.permissions.createInstantInvite"]
