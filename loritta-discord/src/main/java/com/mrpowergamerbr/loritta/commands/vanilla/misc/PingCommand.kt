@@ -248,5 +248,5 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 		}
 	}
 
-	data class ShardOfflineException(val id: Long, val name: String) : RuntimeException()
+	data class ShardOfflineException(val id: Long, val name: String) : RuntimeException("Shard $id ($name) is offline")
 }
