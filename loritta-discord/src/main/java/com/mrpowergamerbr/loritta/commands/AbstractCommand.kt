@@ -21,7 +21,6 @@ import java.time.Instant
 abstract class AbstractCommand(open val label: String, var aliases: List<String> = listOf(), var category: CommandCategory, var lorittaPermissions: List<LorittaPermission> = listOf(), val onlyOwner: Boolean = false) {
 	@Transient
 	internal val logger = KotlinLogging.logger {}
-	var executedCount = 0
 
 	val cooldown: Int
 		get() {

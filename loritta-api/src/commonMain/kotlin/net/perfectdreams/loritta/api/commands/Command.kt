@@ -24,7 +24,6 @@ open class Command<T : CommandContext>(
 	var similarCommands: List<String> = listOf()
 
 	open val cooldown = 2_500
-	var executedCount = 0
 	// var lorittaPermissions = listOf()
 
 }

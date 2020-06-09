@@ -296,8 +296,6 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
 
                 discordLoritta.userCooldown[ev.author.idLong] = System.currentTimeMillis()
 
-                command.executedCount++
-
                 if (command.hasCommandFeedback) {
                     // Sending typing status for every single command is costly (API limits!)
                     // To avoid sending it every time, we check if we should send the typing status

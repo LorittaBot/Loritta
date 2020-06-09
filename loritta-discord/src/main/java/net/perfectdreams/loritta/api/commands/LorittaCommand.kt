@@ -36,7 +36,6 @@ open class LorittaCommand(override val labels: Array<String>, val category: Comm
 			return cooldown > com.mrpowergamerbr.loritta.utils.loritta.config.loritta.commands.imageCooldown
 		}
 
-	open var executedCount: Int = 0
 	open val hasCommandFeedback: Boolean = true
 	open val lorittaPermissions = listOf<LorittaPermission>()
 	open val canUseInPrivateChannel: Boolean = true
