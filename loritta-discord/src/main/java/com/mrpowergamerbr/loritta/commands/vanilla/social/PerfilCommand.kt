@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.nullArray
+import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
@@ -80,7 +81,9 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 				val cluster = DiscordUtils.getLorittaClusterForGuildId(guildId.toLong())
 
 				val usersWithRolesPayload = try {
-					lorittaShards.queryCluster(cluster, "/api/v1/guilds/$guildId/users-with-any-role/$roleId").await()
+					lorittaShards.queryCluster(cluster, "/api/v1/guilds/$guildId/users-with-any-role/$roleId")
+							.await()
+							.obj
 				} catch (e: ClusterOfflineException) {
 					if (failIfClusterIsOffline)
 						throw e
