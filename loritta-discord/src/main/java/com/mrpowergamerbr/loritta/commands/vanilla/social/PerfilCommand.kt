@@ -4,6 +4,7 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.nullArray
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -52,7 +53,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			} catch (e: ClusterOfflineException) {
 				if (failIfClusterIsOffline)
 					throw e
-				listOf()
+				listOf<JsonObject>()
 			}
 
 			return getUserBadges(user, profile, mutualGuilds, failIfClusterIsOffline)
@@ -67,7 +68,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		 * @param failIfClusterIsOffline if true, the method will throw a [ClusterOfflineException] if the queried cluster is offline
 		 * @return a list containing all the images of the user's badges
 		 */
-		suspend fun getUserBadges(user: User, profile: Profile, mutualGuilds: List<JsonElement>, failIfClusterIsOffline: Boolean = false): List<BufferedImage> {
+		suspend fun getUserBadges(user: User, profile: Profile, mutualGuilds: List<JsonObject>, failIfClusterIsOffline: Boolean = false): List<BufferedImage> {
 			/**
 			 * Checks if the user has the role in the specified guild
 			 *
