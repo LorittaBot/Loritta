@@ -448,10 +448,9 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
 
                 if (!isPrivateChannel && ev.guild != null) {
                     if (ev.guild.selfMember.hasPermission(ev.textChannel!!, Permission.MESSAGE_MANAGE) && (serverConfig.deleteMessageAfterCommand)) {
-                        ev.message.textChannel.retrieveMessageById(ev.messageId).queue {
-                            // Nós iremos pegar a mensagem novamente, já que talvez ela tenha sido deletada
-                            it.delete().queue()
-                        }
+                        ev.message.textChannel.deleteMessageById(ev.messageId).queue({}, {
+                            // We don't care if we weren't able to delete the message because it was already deleted
+                        })
                     }
                 }
 
