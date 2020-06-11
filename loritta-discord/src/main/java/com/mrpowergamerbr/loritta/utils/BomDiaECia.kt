@@ -4,6 +4,8 @@ import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.threads.BomDiaECiaThread
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
+import com.mrpowergamerbr.loritta.utils.extensions.queueAfterWithMessagePerSecondTarget
+import com.mrpowergamerbr.loritta.utils.extensions.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing
 import com.mrpowergamerbr.loritta.utils.extensions.stripLinks
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -208,9 +210,10 @@ class BomDiaECia {
 			messageForLocales[localeId] = message.build()
 		}
 
-		validTextChannels.forEach {
+		validTextChannels.forEachIndexed { index, textChannel ->
 			// TODO: Localization!
-			it.sendMessage(messageForLocales["default"]!!).queue()
+			textChannel.sendMessage(messageForLocales["default"]!!)
+					.queueAfterWithMessagePerSecondTarget(index)
 		}
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {

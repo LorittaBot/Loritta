@@ -166,6 +166,36 @@ fun Sequence<Role>.filterOnlyGiveableRoles(member: Member) = this.filter { it.ca
  * This will try to queue all messages to fit in the [targetMessagesPerSecond] messages per second, avoiding
  * getting globally rate limited by Discord.
  *
+ * @param sentMessages            how many messages were sent
+ * @param targetMessagesPerSecond what is the message per second target
+ */
+fun RestAction<Message>.queueAfterWithMessagePerSecondTarget(
+		sentMessages: Int,
+		targetMessagesPerSecond: Int = 5
+) {
+	// Technically we can send 50 messages every 10s (so 10 messages per second)
+	// To avoid getting global ratelimited to heck (and dying!), we need to have some delays to avoid that.
+	//
+	// Because we have multiple clusters, we need to split up the load depending on how many clusters
+	// Loritta has. The target messages per second will be (target - how many clusters), minimum value is 1
+	//
+	// So, let's reserve (7 - how many clusters we have) of the total 10 messages to sending notification updates.
+	// This should avoid spamming the API with requests.
+	this.queueAfter(
+			(sentMessages / targetMessagesPerSecond).toLong(),
+			java.util.concurrent.TimeUnit.SECONDS
+	)
+}
+
+/**
+ * Tries to send [targetMessagesPerSecond] messages every second.
+ *
+ * Discord has a 50 messages every 10s global rate limit (10 messages per second) and, sometimes,
+ * we need to queue messages to be sent.
+ *
+ * This will try to queue all messages to fit in the [targetMessagesPerSecond] messages per second, avoiding
+ * getting globally rate limited by Discord.
+ *
  * This also tries to load balance between all clusters, useful for multi cluster notifications.
  *
  * @param sentMessages            how many messages were sent
@@ -173,7 +203,7 @@ fun Sequence<Role>.filterOnlyGiveableRoles(member: Member) = this.filter { it.ca
  */
 fun RestAction<Message>.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing(
 		sentMessages: Int,
-		targetMessagesPerSecond: Int = 7
+		targetMessagesPerSecond: Int = 5
 ) {
 	// Technically we can send 50 messages every 10s (so 10 messages per second)
 	// To avoid getting global ratelimited to heck (and dying!), we need to have some delays to avoid that.
