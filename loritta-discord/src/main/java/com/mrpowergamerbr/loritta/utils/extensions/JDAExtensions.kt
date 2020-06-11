@@ -176,10 +176,7 @@ fun RestAction<Message>.queueAfterWithMessagePerSecondTarget(
 	// Technically we can send 50 messages every 10s (so 10 messages per second)
 	// To avoid getting global ratelimited to heck (and dying!), we need to have some delays to avoid that.
 	//
-	// Because we have multiple clusters, we need to split up the load depending on how many clusters
-	// Loritta has. The target messages per second will be (target - how many clusters), minimum value is 1
-	//
-	// So, let's reserve (7 - how many clusters we have) of the total 10 messages to sending notification updates.
+	// So, let's reserve 5 of the total 10 messages to sending notification updates.
 	// This should avoid spamming the API with requests.
 	this.queueAfter(
 			(sentMessages / targetMessagesPerSecond).toLong(),
@@ -211,7 +208,7 @@ fun RestAction<Message>.queueAfterWithMessagePerSecondTargetAndClusterLoadBalanc
 	// Because we have multiple clusters, we need to split up the load depending on how many clusters
 	// Loritta has. The target messages per second will be (target - how many clusters), minimum value is 1
 	//
-	// So, let's reserve (7 - how many clusters we have) of the total 10 messages to sending notification updates.
+	// So, let's reserve (5 - how many clusters we have) of the total 10 messages to sending notification updates.
 	// This should avoid spamming the API with requests.
 	this.queueAfter(
 			sentMessages / Math.max(1, targetMessagesPerSecond - loritta.config.clusters.size.toLong()),
