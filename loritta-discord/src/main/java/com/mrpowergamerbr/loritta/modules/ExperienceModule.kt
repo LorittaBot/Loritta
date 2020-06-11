@@ -169,6 +169,7 @@ class ExperienceModule : MessageReceivedModule {
 			if (matched.isNotEmpty()) {
 				val guildRoles = matched.flatMap { it[RolesByExperience.roles]
 						.mapNotNull { guild.getRoleById(it) } }
+						.distinct()
 						.filterOnlyGiveableRoles(member)
 						.toList()
 

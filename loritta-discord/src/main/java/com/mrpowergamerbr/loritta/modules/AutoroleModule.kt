@@ -13,6 +13,7 @@ object AutoroleModule {
 		val roles = autoroleConfig.roles
 				.asSequence()
 				.mapNotNull { guild.getRoleById(it) }
+				.distinct()
 				.filterOnlyGiveableRoles(member)
 				.toList()
 
