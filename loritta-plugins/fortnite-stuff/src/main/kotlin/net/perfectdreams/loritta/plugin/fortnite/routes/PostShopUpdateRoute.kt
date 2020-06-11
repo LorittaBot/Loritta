@@ -70,7 +70,7 @@ class PostShopUpdateRoute(val m: FortniteStuff, loritta: LorittaDiscord) : Requi
 					logger.info { "Broadcasting Fortnite shop update in $channel @ $guild!" }
 					channel.sendMessage("${Emotes.DEFAULT_DANCE} ${loritta.instanceConfig.loritta.website.url}assets/img/fortnite/shop/$storeFileName")
 							.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing(canTalkGuildIds.size)
-					
+
 					canTalkGuildIds.add(guild.idLong)
 				} catch (e: Exception) {
 					logger.info { "Something went wrong while trying to send the shop update in ${serverConfig[ServerConfigs.id].value}" }
