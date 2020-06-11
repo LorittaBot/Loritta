@@ -101,7 +101,7 @@ object LorittaUtilsKotlin {
 	 * @return if the user is banned
 	 */
 	suspend fun handleIfBanned(context: CommandContext, profile: Profile)
-			= handleIfBanned(context.userHandle, profile, context.event.textChannel!!, context.legacyLocale)
+			= handleIfBanned(context.userHandle, profile, context.event.channel, context.legacyLocale)
 
 	/**
 	 * Checks if a user is banned and, if it is, a message is sent to the user via direct messages or, if their DMs are disabled, in the current channel.
