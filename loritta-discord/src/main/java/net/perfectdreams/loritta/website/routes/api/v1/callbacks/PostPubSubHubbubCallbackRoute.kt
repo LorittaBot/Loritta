@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
 import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.bytesToHex
+import com.mrpowergamerbr.loritta.utils.extensions.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.ApplicationCall
@@ -22,6 +23,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import mu.KotlinLogging
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.requests.RestAction
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.SentYouTubeVideoIds
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedTwitchAccounts
@@ -142,6 +145,7 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 			}
 
 			val guildIds = mutableListOf<Long>()
+			val canTalkGuildIds = mutableListOf<Long>()
 
 			for (trackedAccount in trackedAccounts) {
 				guildIds.add(trackedAccount[TrackedYouTubeAccounts.guildId])
@@ -172,7 +176,10 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 						customTokens
 				) ?: continue
 
-				textChannel.sendMessage(discordMessage).queue()
+				textChannel.sendMessage(discordMessage)
+						.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing(canTalkGuildIds.size)
+
+				canTalkGuildIds.add(trackedAccount[TrackedYouTubeAccounts.guildId])
 			}
 
 			// Nós iremos fazer relay de todos os vídeos para o servidor da Lori
@@ -194,6 +201,7 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 			val data = payload["data"].array
 
 			val guildIds = mutableListOf<Long>()
+			val canTalkGuildIds = mutableListOf<Long>()
 
 			// Se for vazio, quer dizer que é um stream down
 			if (data.size() != 0) {
@@ -258,7 +266,17 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 									"link" to "https://www.twitch.tv/${accountInfo.login}"
 							)
 
-							textChannel.sendMessage(MessageUtils.generateMessage(message, null, guild, customTokens)!!).queue()
+							val discordMessage = MessageUtils.generateMessage(
+									message,
+									listOf(guild),
+									guild,
+									customTokens
+							) ?: continue
+
+							textChannel.sendMessage(discordMessage)
+									.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing(canTalkGuildIds.size)
+
+							canTalkGuildIds.add(trackedAccount[TrackedYouTubeAccounts.guildId])
 						}
 
 						// Nós iremos fazer relay de todos os vídeos para o servidor da Lori
