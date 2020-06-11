@@ -139,7 +139,7 @@ fun Message.refresh(): RestAction<Message> {
 fun Role.canBeGivenTo(member: Member) = !this.isPublicRole &&
 		!this.isManaged &&
 		guild.selfMember.canInteract(this) &&
-		member.canInteract(guild.selfMember)
+		guild.selfMember.canInteract(member)
 
 /**
  * Filters a role list with [canBeGivenTo].
