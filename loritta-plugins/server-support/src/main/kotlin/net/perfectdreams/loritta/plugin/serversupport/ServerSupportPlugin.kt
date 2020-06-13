@@ -19,7 +19,6 @@ import kotlinx.coroutines.sync.withPermit
 import mu.KotlinLogging
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
-import net.perfectdreams.loritta.plugin.serversupport.modules.AddReactionsToChannelsModule
 import net.perfectdreams.loritta.plugin.serversupport.modules.ServerSupportModule
 import net.perfectdreams.loritta.plugin.serversupport.responses.FakeMessage
 import net.perfectdreams.loritta.plugin.serversupport.responses.LorittaResponse
@@ -61,7 +60,6 @@ class ServerSupportPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlu
 			System.setProperty("kotlin.script.classpath", propClassPath)
 
 			addMessageReceivedModule(ServerSupportModule(this))
-			addMessageReceivedModule(AddReactionsToChannelsModule(this))
 			loadResponsesAndUpdateMessages(loritta)
 		}
 	}
