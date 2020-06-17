@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.website
 
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.google.common.collect.Lists
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
@@ -41,6 +42,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils
 import java.io.File
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
 import kotlin.reflect.full.createType
 
 /**
@@ -54,6 +56,14 @@ class LorittaWebsite(val loritta: Loritta) {
 		val versionPrefix = "/v2"
 		private val logger = KotlinLogging.logger {}
 		private val TimeToProcess = AttributeKey<Long>("TimeToProcess")
+		val cachedFanArtThumbnails = Caffeine.newBuilder()
+				.expireAfterAccess(1, TimeUnit.HOURS)
+				.build<String, CachedThumbnail>()
+
+		class CachedThumbnail(
+				val type: ContentType,
+				val thumbnailBytes: ByteArray
+		)
 	}
 
 	val pathCache = ConcurrentHashMap<File, Any>()
