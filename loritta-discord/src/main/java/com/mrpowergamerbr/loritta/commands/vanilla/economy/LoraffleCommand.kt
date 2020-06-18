@@ -152,10 +152,15 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 		}
 
 		val nameAndDiscriminator = if (lastWinner != null) {
-			lastWinner.name + "#" + lastWinner.discriminator
+			(lastWinner.name + "#" + lastWinner.discriminator).let {
+				if (MiscUtils.hasInvite(it))
+					"¯\\_(ツ)_/¯"
+				else
+					it
+			}
 		} else {
 			"\uD83E\uDD37"
-		}
+		}.stripCodeMarks()
 
 		context.reply(
 				LoriReply(
@@ -178,7 +183,7 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 						mentionUser = false
 				),
 				LoriReply(
-						context.legacyLocale["RAFFLE_LastWinner", "${nameAndDiscriminator.stripCodeMarks()} (${lastWinner?.id})", lastWinnerPrize],
+						context.legacyLocale["RAFFLE_LastWinner", "$nameAndDiscriminator (${lastWinner?.id})", lastWinnerPrize],
 						"\uD83D\uDE0E",
 						mentionUser = false
 				),
