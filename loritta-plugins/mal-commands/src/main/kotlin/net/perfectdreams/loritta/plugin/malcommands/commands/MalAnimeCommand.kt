@@ -77,14 +77,14 @@ object MalAnimeCommand : DSLCommandBase {
                         AnimeType.OVA -> locale["$LOCALE_PREFIX.type.ova"]
                         AnimeType.ONA -> locale["$LOCALE_PREFIX.type.ona"]
                         AnimeType.MOVIE -> locale["$LOCALE_PREFIX.type.movie"]
-                        AnimeType.UNKNOWN -> locale["$LOCALE_PREFIX.type.unknown"]
+                        AnimeType.UNKNOWN -> locale["$LOCALE_PREFIX.unknown"]
                     }, true)
                     // Anime airing status
                     addField(locale["$LOCALE_PREFIX.status.name"], when (anime.info.status) {
                         AnimeStatus.CURRENTLY_AIRING -> locale["$LOCALE_PREFIX.status.airing"]
                         AnimeStatus.NOT_YET_AIRED -> locale["$LOCALE_PREFIX.status.not_yet_aired"]
                         AnimeStatus.FINISHED_AIRING -> locale["$LOCALE_PREFIX.status.finished"]
-                        AnimeStatus.UNKNOWN -> locale["$LOCALE_PREFIX.status.unknown"]
+                        AnimeStatus.UNKNOWN -> locale["$LOCALE_PREFIX.unknown"]
                     }, true)
                     // "Aired at" status
                     addField("\uD83D\uDCC6 " + locale["$LOCALE_PREFIX.status.aired"], anime.info.aired, true)
