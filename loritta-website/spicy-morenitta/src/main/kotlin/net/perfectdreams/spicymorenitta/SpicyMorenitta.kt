@@ -59,7 +59,6 @@ class SpicyMorenitta : Logging {
 			FanArtsRoute(this),
 			UpdateNavbarSizePostRender("/support", false, false),
 			UpdateNavbarSizePostRender("/blog", false, false),
-			UpdateNavbarSizePostRender("/extended", false, false),
 			UpdateNavbarSizePostRender("/guidelines", false, false),
 			AuditLogRoute(this),
 			LevelUpRoute(this),
@@ -330,6 +329,9 @@ class SpicyMorenitta : Logging {
 				}
 			}
 		}
+
+		// Update the navbar entries because the name + avatar may cause the navbar to overflow
+		checkAndFixNavbarOverflownEntries()
 	}
 
 	fun getPageRouteForCurrentPath(): BaseRoute {
@@ -552,6 +554,18 @@ class SpicyMorenitta : Logging {
 					document.body!!.style.overflowY = "hidden" // Para remover as scrollbars e apenas deixar as scrollbars da navbar
 				}
 			}
+
+			if (hamburgerButton != null) {
+				debug("Setting up resize handler...")
+
+				window.addEventListener("resize", {
+					checkAndFixNavbarOverflownEntries()
+				}, true)
+
+				checkAndFixNavbarOverflownEntries()
+
+				debug("Resize handler successfully created!")
+			}
 		} else {
 			warn("Navigation Bar does not exist! Ignorning...")
 		}
@@ -560,6 +574,22 @@ class SpicyMorenitta : Logging {
 		setUpLazyLoad()
 
 		debug("Redirect buttons added!")
+	}
+
+	fun checkAndFixNavbarOverflownEntries() {
+		val leftSidebar = document.select<HTMLDivElement>(".left-side-entries")
+		val hamburgerButton = document.select<HTMLDivElement>("#hamburger-menu-button")
+
+		val isOverflowing = leftSidebar.selectAll<HTMLDivElement>(".entry").any { it.offsetTop != 0 }
+		if (isOverflowing) {
+			debug("Navbar entries are overflowing, let's unhide the hamburger button!")
+
+			hamburgerButton.style.display = "block"
+		} else {
+			debug("Navbar entries are not overflowing, let's hide the hamburger button!")
+
+			hamburgerButton.style.display = "none"
+		}
 	}
 
 	fun setUpLinkPreloader() {
