@@ -14,6 +14,11 @@ class MalScrappingUtils(private val document: Document?) {
                 .replace(q, "")
                 .trim()
         logger.debug { content }
-        return content
+        return if (content != "Unknown") {
+            content
+        } else {
+            null
+        }
+
     }
 }

@@ -20,7 +20,7 @@ object MalAnimeCommand : DSLCommandBase {
     private val logger = KotlinLogging.logger { }
 
     override fun command(loritta: LorittaDiscord, m: MalCommandsPlugin) = create(loritta, listOf("malanime", "anime")) {
-        description { it["${LOCALE_PREFIX}.description"] }
+        description { it["$LOCALE_PREFIX.description"] }
 
         examples {
             listOf(
@@ -49,13 +49,17 @@ object MalAnimeCommand : DSLCommandBase {
                     logger.debug { "Failed to query the anime!" }
                     reply(
                             LorittaReply(
-                                    locale["$LOCALE_PREFIX.notfound"]
+                                    locale["$LOCALE_PREFIX.notfound"],
+                                    Constants.ERROR
                             )
                     )
                     return@executesDiscord
+                } else {
+                    // for debugging reasons, there's a "else" block
+                    logger.debug { "The anime is not null, that's good." }
                 }
 
-                logger.debug { anime::class }
+                logger.debug { anime.toString() }
 
                 val emoji = when (anime.info.type) {
                     AnimeType.MOVIE -> "\uD83C\uDFA5 "
@@ -67,41 +71,41 @@ object MalAnimeCommand : DSLCommandBase {
                     setColor(MAL_COLOR)
                     setThumbnail(anime.image)
                     // Anime type (TV, special, OVA, etc)
-                    addField(locale["${LOCALE_PREFIX}.type.name"], when (anime.info.type) {
-                        AnimeType.TV -> locale["${LOCALE_PREFIX}.type.tv"]
-                        AnimeType.SPECIAL -> locale["${LOCALE_PREFIX}.type.special"]
-                        AnimeType.OVA -> locale["${LOCALE_PREFIX}.type.ova"]
-                        AnimeType.ONA -> locale["${LOCALE_PREFIX}.type.ona"]
-                        AnimeType.MOVIE -> locale["${LOCALE_PREFIX}.type.movie"]
-                        AnimeType.UNKNOWN -> locale["${LOCALE_PREFIX}.type.unknown"]
+                    addField(locale["$LOCALE_PREFIX.type.name"], when (anime.info.type) {
+                        AnimeType.TV -> locale["$LOCALE_PREFIX.type.tv"]
+                        AnimeType.SPECIAL -> locale["$LOCALE_PREFIX.type.special"]
+                        AnimeType.OVA -> locale["$LOCALE_PREFIX.type.ova"]
+                        AnimeType.ONA -> locale["$LOCALE_PREFIX.type.ona"]
+                        AnimeType.MOVIE -> locale["$LOCALE_PREFIX.type.movie"]
+                        AnimeType.UNKNOWN -> locale["$LOCALE_PREFIX.type.unknown"]
                     }, true)
                     // Anime airing status
-                    addField(locale["${LOCALE_PREFIX}.status.name"], when (anime.info.status) {
-                        AnimeStatus.CURRENTLY_AIRING -> locale["${LOCALE_PREFIX}.status.airing"]
-                        AnimeStatus.NOT_YET_AIRED -> locale["${LOCALE_PREFIX}.status.not_yet_aired"]
-                        AnimeStatus.FINISHED_AIRING -> locale["${LOCALE_PREFIX}.status.finished"]
-                        AnimeStatus.UNKNOWN -> locale["${LOCALE_PREFIX}.status.unknown"]
+                    addField(locale["$LOCALE_PREFIX.status.name"], when (anime.info.status) {
+                        AnimeStatus.CURRENTLY_AIRING -> locale["$LOCALE_PREFIX.status.airing"]
+                        AnimeStatus.NOT_YET_AIRED -> locale["$LOCALE_PREFIX.status.not_yet_aired"]
+                        AnimeStatus.FINISHED_AIRING -> locale["$LOCALE_PREFIX.status.finished"]
+                        AnimeStatus.UNKNOWN -> locale["$LOCALE_PREFIX.status.unknown"]
                     }, true)
                     // "Aired at" status
-                    addField("\uD83D\uDCC6 " + locale["${LOCALE_PREFIX}.status.aired"], anime.info.aired, true)
+                    addField("\uD83D\uDCC6 " + locale["$LOCALE_PREFIX.status.aired"], anime.info.aired, true)
                     // MAL scoring stuff
-                    addField("⭐ " + locale["${LOCALE_PREFIX}.score"], anime.score, true)
-                    addField("\uD83C\uDF1F " + locale["${LOCALE_PREFIX}.rank"], anime.rank, true)
-                    addField("\uD83E\uDD29 " + locale["${LOCALE_PREFIX}.popularity"], anime.popularity, true)
+                    addField("⭐ " + locale["$LOCALE_PREFIX.score"], anime.score, true)
+                    addField("\uD83C\uDF1F " + locale["$LOCALE_PREFIX.rank"], anime.rank, true)
+                    addField("\uD83E\uDD29 " + locale["$LOCALE_PREFIX.popularity"], anime.popularity, true)
                     // Episodes, genres and source info
-                    addField(locale["${LOCALE_PREFIX}.episodes"], anime.info.episodes?.toString() ?: locale["$LOCALE_PREFIX.unknown"], true)
-                    addField(locale["${LOCALE_PREFIX}.genres"], anime.info.genres!!.joinToString(", "), true)
-                    addField(locale["${LOCALE_PREFIX}.source"], anime.info.source, true)
+                    addField(locale["$LOCALE_PREFIX.episodes"], anime.info.episodes?.toString() ?: locale["$LOCALE_PREFIX.unknown"], true)
+                    addField(locale["$LOCALE_PREFIX.genres"], anime.info.genres!!.joinToString(", "), true)
+                    addField(locale["$LOCALE_PREFIX.source"], anime.info.source, true)
                     // Synopsis!
                     setDescription(anime.synopsis)
                 }
                 sendMessage(embed.build())
-            } catch(e: MalSearchException) {
+            } catch(e: Exception) {
                 logger.debug { "Something gone wrong when querying an anime from MAL!" }
                 logger.debug { e }
                 reply(
                         LorittaReply(
-                                locale["${LOCALE_PREFIX}.notfound"],
+                                locale["$LOCALE_PREFIX.notfound"],
                                 Constants.ERROR
                         )
                 )
