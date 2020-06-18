@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.plugin.loriguildstuff.commands
 
+import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
@@ -14,7 +15,12 @@ object NotifyCommand {
 		}
 
 		executesDiscord {
-			val role = guild.getRoleById(334734175531696128L)!!
+			val roleId = if (loritta.config.loritta.environment == EnvironmentType.CANARY)
+				526720753991811072L
+			else
+				334734175531696128L
+
+			val role = guild.getRoleById(roleId)!!
 			val member = this.member!!
 
 			if (member.roles.contains(role)) {
