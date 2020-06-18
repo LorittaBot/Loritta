@@ -2,6 +2,11 @@ package net.perfectdreams.loritta.plugin.malcommands.util
 
 import com.mrpowergamerbr.loritta.utils.encodeToUrl
 import mu.KotlinLogging
+import net.perfectdreams.loritta.plugin.malcommands.commands.models.AnimeInfo
+import net.perfectdreams.loritta.plugin.malcommands.commands.models.AnimeStatus
+import net.perfectdreams.loritta.plugin.malcommands.commands.models.AnimeType
+import net.perfectdreams.loritta.plugin.malcommands.commands.models.MalAnime
+import net.perfectdreams.loritta.plugin.malcommands.exceptions.MalSearchException
 import net.perfectdreams.loritta.plugin.malcommands.util.MalConstants.MAL_URL
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -17,7 +22,8 @@ object MalUtils {
                 .execute()
         logger.debug { "Made request to $req" }
 
-        if (response.statusCode() == 404)
+        // Cover all the client and server errors
+        if (response.statusCode() in 400..599)
             return null
 
         return response.parse()
@@ -28,60 +34,56 @@ object MalUtils {
         return try {
             // The first article would be the anime queries
             // For now, we only need the first anime found from queries
-            val animeArticle = document!!.selectFirst("article > .list > .information > a")
+            val animeArticle = document!!.select("article > .list > .information > a")[1]
             // Now we just need to get the "a" element and then, get the "href" attribute
             if (animeArticle != null)
                 logger.debug { "Got the element \"a\"!" }
             animeArticle!!.attr("href")
         } catch (e: Exception) {
-            null
+            // Exceptions are cool for knowing what happened
+            throw MalSearchException()
         }
     }
 
     fun parseAnime(url: String): MalAnime? {
         val document = requestDom(url)
         val u = MalScrappingUtils(document)
-        return try {
-            // Workarounds:
-            // This is needed for some animes with english titles
-            document!!.selectFirst("span[itemprop=\"name\"] span")?.remove()
-            val animeInfo = AnimeInfo(
-                    name = document.selectFirst("span[itemprop=\"name\"]").text().trim(),
-                    type = when (u.getContentBySpan("Type:")) {
-                        "TV" -> AnimeType.TV
-                        "ONA" -> AnimeType.ONA
-                        "Movie" -> AnimeType.MOVIE
-                        "OVA" -> AnimeType.OVA
-                        "Special" -> AnimeType.SPECIAL
-                        else -> AnimeType.UNKNOWN
-                    },
-                    status = when (u.getContentBySpan("Status:")) {
-                        "Finished Airing" -> AnimeStatus.FINISHED_AIRING
-                        "Currently Airing" -> AnimeStatus.CURRENTLY_AIRING
-                        "Not yet aired" -> AnimeStatus.NOT_YET_AIRED
-                        else -> AnimeStatus.UNKNOWN
-                    },
-                    aired = u.getContentBySpan("Aired:"),
-                    episodes = u.getContentBySpan("Episodes:")?.toInt(),
-                    source = u.getContentBySpan("Source:"),
-                    genres = document.select("span[itemprop=\"genre\"]").map { it.text() }
-            )
+        // Workarounds:
+        // This is needed for some animes with english titles
+        document!!.selectFirst("span[itemprop=\"name\"] span")?.remove()
+        val animeInfo = AnimeInfo(
+                name = document.selectFirst("span[itemprop=\"name\"]").text().trim(),
+                type = when (u.getContentBySpan("Type:")) {
+                    "TV" -> AnimeType.TV
+                    "ONA" -> AnimeType.ONA
+                    "Movie" -> AnimeType.MOVIE
+                    "OVA" -> AnimeType.OVA
+                    "Special" -> AnimeType.SPECIAL
+                    else -> AnimeType.UNKNOWN
+                },
+                status = when (u.getContentBySpan("Status:")) {
+                    "Finished Airing" -> AnimeStatus.FINISHED_AIRING
+                    "Currently Airing" -> AnimeStatus.CURRENTLY_AIRING
+                    "Not yet aired" -> AnimeStatus.NOT_YET_AIRED
+                    else -> AnimeStatus.UNKNOWN
+                },
+                aired = u.getContentBySpan("Aired:"),
+                episodes = u.getContentBySpan("Episodes:")?.toInt(),
+                source = u.getContentBySpan("Source:"),
+                genres = document.select("span[itemprop=\"genre\"]").map { it.text() }
+        )
 
-            MalAnime(
-                    url = url,
-                    info = animeInfo,
-                    image = document.selectFirst("img[itemprop=\"image\"][alt=\"${animeInfo.name}\"]").attr("data-src"),
-                    score = document.selectFirst(".score-label").text(),
-                    synopsis = document.selectFirst("span[itemprop=\"description\"]").text(),
-                    rank = document.selectFirst("span.ranked").text()
-                            .split(' ').drop(1).first(),
-                    popularity = u.getContentBySpan("Popularity:")
+        return MalAnime(
+                url = url,
+                info = animeInfo,
+                image = document.selectFirst("img[itemprop=\"image\"][alt=\"${animeInfo.name}\"]").attr("data-src"),
+                score = document.selectFirst(".score-label").text(),
+                synopsis = document.selectFirst("span[itemprop=\"description\"]").text(),
+                rank = document.selectFirst("span.ranked").text()
+                        .split(' ').drop(1).first(),
+                popularity = u.getContentBySpan("Popularity:")!!
 
-            )
-        } catch (e: Exception) {
-            logger.debug { e }
-            null
-        }
+        )
     }
 
     fun parseAnimeByQuery(q: String): MalAnime? {
