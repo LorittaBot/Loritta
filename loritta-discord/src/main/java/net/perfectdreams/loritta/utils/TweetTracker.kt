@@ -43,7 +43,7 @@ class TweetTracker(val m: Loritta) {
 
 	fun updateStreams() {
 		logger.info { "Finishing all ${streams.size} twitter tweet streams..." }
-		streams.forEach { it.shutdown() }
+		streams.forEach { it.cleanUp() }
 		logger.info { "Successfully shutted down all ${streams.size} twitter tweet streams!" }
 		streams.clear()
 		startStreams()
@@ -97,7 +97,7 @@ class TweetTracker(val m: Loritta) {
 						if (p0.user.id !in window) // ID do usuário não está na window... Então para que fazer relay?
 							return
 
-						logger.info { "Received status ${p0.id} from ${p0.user.screenName} (${p0.user.id}), relaying to master cluster..." }
+						logger.info { "Received status ${p0.id} from ${p0.user.screenName} (${p0.user.id}), relaying to other clusters..." }
 
 						val payload = jsonObject(
 								"tweetId" to p0.id,
