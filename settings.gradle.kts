@@ -53,7 +53,9 @@ include(":loritta-website")
 // include(":loritta-website:sweet-morenitta")
 include(":loritta-website:spicy-morenitta")
 include(":loritta-website:lotrunfo-server")
-include(":parallax-code-server")
+include(":parallax-kotlin:parallax-code-api")
+include(":parallax-kotlin:parallax-code-server")
+include(":parallax-kotlin:parallax-code-executor")
 include(":shard-controller")
 
 // Watchdoggo

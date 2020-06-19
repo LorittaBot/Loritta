@@ -11,6 +11,7 @@ tasks.withType<KotlinCompile> {
 plugins {
     java
     kotlin("jvm")
+    kotlin("plugin.serialization") version "1.3.70"
     `maven-publish`
 }
 
@@ -22,10 +23,12 @@ dependencies {
     api(project(":loritta-api"))
     api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2")
+    api(project(":parallax-kotlin:parallax-code-api"))
     api(kotlin("stdlib-jdk8"))
     api(kotlin("script-util"))
-    api(kotlin("compiler"))
-    api(kotlin("scripting-compiler"))
+    api(kotlin("compiler-embeddable"))
+    api(kotlin("scripting-compiler-embeddable"))
+    api("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
     api("org.jetbrains.kotlinx:kotlinx-html-jvm:0.6.12")
     api("com.github.ben-manes.caffeine:caffeine:2.7.0")
     api("org.postgresql:postgresql:42.2.5")
