@@ -71,7 +71,7 @@ fun main(context: ParallaxContext) {
                                     outputStream.flush()
                                 }
                                 is ParallaxSendMessagePacket -> {
-                                    println("Sending message: ${packet.message}")
+                                    println("Sending message: ${packet.content}")
                                     outputStream.write(ParallaxSerializer.toJson(ParallaxAckSendMessagePacket("successfully received :3"), packetWrapper.uniqueId) + "\n")
                                     outputStream.flush()
                                 }

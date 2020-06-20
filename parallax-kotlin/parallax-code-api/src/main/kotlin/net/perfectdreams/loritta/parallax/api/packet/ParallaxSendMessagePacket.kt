@@ -4,5 +4,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 class ParallaxSendMessagePacket(
-        val message: String
+        val content: String
 ) : ParallaxPacket
