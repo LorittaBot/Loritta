@@ -4,11 +4,16 @@ class ParallaxSecurityManager : SecurityManager() {
     private val whitelistedPackages = setOf(
             "java.lang",
             "java.io",
+            "java.util",
             "kotlin.jvm.internal", // Used by intristics (null checks)
             "kotlin.jvm.functions", // ^
             "net.perfectdreams.loritta.parallax.api",
             "net.perfectdreams.loritta.parallax.api.packet",
-            "kotlin.text"
+            "kotlin.text",
+            "kotlin",
+            "kotlin.collections",
+            "kotlin.random"
+
     )
 
     override fun checkPackageAccess(pkg: String) {

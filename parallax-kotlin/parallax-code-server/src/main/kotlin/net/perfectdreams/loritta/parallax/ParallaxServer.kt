@@ -83,6 +83,11 @@ class ParallaxServer {
 	val client = Client()
 
 	fun start() {
+		if (true) {
+			KotlinCompilerServer.main(arrayOf())
+			return
+		}
+
 		dataStoreFolder.mkdirs()
 
 		val server = embeddedServer(Netty, port = 3366) {

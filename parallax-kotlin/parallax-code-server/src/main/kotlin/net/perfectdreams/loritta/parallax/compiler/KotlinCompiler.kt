@@ -19,7 +19,7 @@ class KotlinCompiler {
         val kotlinDynamicCompiler = KotlinDynamicCompiler()
 
         try {
-            val outputDir = File("L:\\kotlin-compiler-1.3.72\\temp\\")
+            val outputDir = File("/home/parallax/compiled/")
             val key = "CUSTOM_COMPILED_CODE"
             outputDir.absolutePath
             val ktFile = File(outputDir, "$key.kt")
