@@ -332,7 +332,8 @@ class SpicyMorenitta : Logging {
 		}
 
 		// Update the navbar entries because the name + avatar may cause the navbar to overflow
-		checkAndFixNavbarOverflownEntries()
+		if (navbarIsSetup)
+			checkAndFixNavbarOverflownEntries()
 	}
 
 	fun getPageRouteForCurrentPath(): BaseRoute {

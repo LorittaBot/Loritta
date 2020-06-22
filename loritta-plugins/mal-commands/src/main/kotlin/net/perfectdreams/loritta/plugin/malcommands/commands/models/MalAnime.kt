@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.plugin.malcommands.util
+package net.perfectdreams.loritta.plugin.malcommands.commands.models
 
 class MalAnime(
         val image: String,
@@ -7,8 +7,8 @@ class MalAnime(
         // not sure if this should be String
         val score: String,
         val synopsis: String,
-        val rank: String?,
-        val popularity: String?
+        val rank: String,
+        val popularity: String
 //        val background: String?,
 //        val related: Array<String>?,
 //        val characters: Array<String>?,
