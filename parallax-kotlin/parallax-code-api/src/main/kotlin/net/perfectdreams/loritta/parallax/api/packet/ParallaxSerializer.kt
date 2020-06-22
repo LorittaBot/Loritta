@@ -7,10 +7,17 @@ object ParallaxSerializer {
     val json = Json(
             context = SerializersModule {
                 polymorphic(ParallaxPacket::class) {
-                    ParallaxSendMessagePacket::class with ParallaxSendMessagePacket.serializer()
-                    ParallaxLogPacket::class with ParallaxLogPacket.serializer()
                     ParallaxAckPacket::class with ParallaxAckPacket.serializer()
+
+                    ParallaxSendMessagePacket::class with ParallaxSendMessagePacket.serializer()
                     ParallaxAckSendMessagePacket::class with ParallaxAckSendMessagePacket.serializer()
+
+                    ParallaxPutRolePacket::class with ParallaxPutRolePacket.serializer()
+
+                    ParallaxDeleteRolePacket::class with ParallaxDeleteRolePacket.serializer()
+
+                    ParallaxLogPacket::class with ParallaxLogPacket.serializer()
+                    ParallaxThrowablePacket::class with ParallaxThrowablePacket.serializer()
                 }
             }
     )

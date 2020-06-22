@@ -67,6 +67,7 @@ object DefaultRoutes {
 			ConfigureWelcomerRoute(loritta),
 			ConfigureYouTubeRoute(loritta),
 			ConfigureNashornCommandsRoute(loritta),
+			ConfigureCustomCommandsRoute(loritta),
 
 			// Reps
 			UserReputationRoute(loritta),

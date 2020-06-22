@@ -38,6 +38,7 @@ class NashornCommand(label: String, val javaScriptCode: String) : AbstractComman
 
 		val commandRequest = jsonObject(
 				"code" to javaScriptCode,
+				"label" to label,
 				"lorittaClusterId" to loritta.lorittaCluster.id,
 				"message" to ParallaxUtils.transformToJson(context.message),
 				"guild" to jsonObject(

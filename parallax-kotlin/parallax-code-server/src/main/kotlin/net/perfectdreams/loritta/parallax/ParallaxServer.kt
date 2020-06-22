@@ -1,32 +1,39 @@
 package net.perfectdreams.loritta.parallax
 
-import com.github.salomonbrys.kotson.*
+import com.github.benmanes.caffeine.cache.Caffeine
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.jsonObject
+import com.github.salomonbrys.kotson.long
+import com.github.salomonbrys.kotson.string
 import com.google.gson.Gson
 import com.google.gson.JsonParser
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import io.ktor.application.call
 import io.ktor.client.HttpClient
-import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.userAgent
 import io.ktor.request.receiveText
-import io.ktor.routing.get
+import io.ktor.response.respondText
 import io.ktor.routing.post
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
-import net.perfectdreams.loritta.api.commands.SilentCommandException
-import net.perfectdreams.loritta.parallax.wrapper.Client
-import net.perfectdreams.loritta.parallax.wrapper.Guild
-import net.perfectdreams.loritta.parallax.wrapper.JSCommandContext
-import net.perfectdreams.loritta.parallax.wrapper.Message
-import org.graalvm.polyglot.Context
-import org.graalvm.polyglot.PolyglotException
-import org.graalvm.polyglot.management.ExecutionEvent
-import org.graalvm.polyglot.management.ExecutionListener
+import net.perfectdreams.loritta.parallax.api.packet.*
+import net.perfectdreams.loritta.parallax.compiler.KotlinCompiler
+import net.perfectdreams.loritta.parallax.executors.*
 import java.io.File
 import java.util.*
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import kotlin.concurrent.thread
+import kotlin.reflect.full.callSuspend
+import kotlin.reflect.full.callSuspendBy
 
 class ParallaxServer {
 	companion object {
@@ -78,177 +85,209 @@ class ParallaxServer {
 			""".trimIndent()
 
 		val SHIFT_STACKTRACE_BY = INLINE_METHODS.lines().size + 3 // 3 = header
+		val compilationAndAnalysisMutexes = Caffeine.newBuilder()
+				.expireAfterAccess(1, TimeUnit.HOURS)
+				.build<Long, Mutex>()
+				.asMap()
+		val packetExecutors = listOf(
+				ParallaxLogPacket::class to LogExecutor,
+				ParallaxSendMessagePacket::class to SendMessageExecutor,
+				ParallaxPutRolePacket::class to PutRoleExecutor,
+				ParallaxDeleteRolePacket::class to DeleteRoleExecutor,
+				ParallaxThrowablePacket::class to ThrowableExecutor
+		)
 	}
 
-	val client = Client()
-
 	fun start() {
-		if (true) {
-			KotlinCompilerServer.main(arrayOf())
-			return
-		}
-
 		dataStoreFolder.mkdirs()
+
+		val jsonParser = JsonParser()
 
 		val server = embeddedServer(Netty, port = 3366) {
 			routing {
-				get("/api/v1/parallax/reactions/callback/{trackingId}") {
-					val trackingId = call.parameters["trackingId"]!!
-					logger.info { "Received callback track ID $trackingId!" }
-
-					cachedInteractions[UUID.fromString(trackingId)]?.apply(null)
-				}
-
 				post("/api/v1/parallax/process-command") {
-					logger.info { "Received request to process command!" }
 					val payload = this.call.receiveText()
 
 					val body = jsonParser.parse(payload)
+					logger.info { body.toString() }
 
 					// Construir o request
-					val javaScriptCode = body["code"].string
-					val guild = gson.fromJson<Guild>(body["guild"])
-					logger.info { "injecting members" }
-					guild.members.forEach {
-						it.guild = guild
-					}
+					val kotlinCode = body["code"].string
+					val commandLabel = body["label"].string
+					val guildId = body["guild"]["id"].long
+					val clusterUrl = body["clusterUrl"].string
+					val channelId = body["message"]["textChannelId"].long
+					val labelHash = commandLabel.hashCode()
 
-					logger.info { "injecting channels" }
-					guild.channels.forEach {
-						it.guild = guild
-					}
-					logger.info { "injecting roles, actually... never mind." }
-					/* guild.roles.forEach {
-						it.guild = guild
-					} */
+					val mutex = compilationAndAnalysisMutexes.getOrPut(guildId) { Mutex() }
+					mutex.withLock {
+						val outputDirectory = File("/home/parallax/compiled/$guildId/$labelHash/")
+						outputDirectory.mkdirs()
 
-					logger.info { "msg body: ${body["message"]}" }
-					val message = gson.fromJson<Message>(body["message"])
-					logger.info { "Message ID is ${message.id}" }
-					message.channel = guild.channels.first {
-						it.id == message.textChannelId
-					}
+						val sourceCodeFile = File(outputDirectory, "source_code")
+						var requiresCompilation = true
 
-					logger.info { "Code is $javaScriptCode" }
-
-					val graalContext = Context.newBuilder()
-							.hostClassFilter {
-								it.startsWith("net.perfectdreams.loritta.parallax.wrapper")
-							}
-							.allowHostAccess(true) // Permite usar coisas da JVM dentro do GraalJS
-							.allowCreateThread(true)
-							.allowExperimentalOptions(true)
-							.option("js.ecmascript-version", "11") // EMCAScript 2020
-							.option("js.nashorn-compat", "true")
-							.option("js.experimental-foreign-object-prototype", "true") // Allow array extension methods for arrays
-							.build()
-
-					val executor = Executors.newSingleThreadExecutor()
-
-					val member = guild.members.firstOrNull { it.id == message.author.id }
-
-					if (member == null) {
-						logger.error { "Member not found!" }
-						return@post
-					}
-
-					logger.info { "Loading data store..." }
-					val guildDataStore = File(dataStoreFolder, "${guild.id}.json")
-					val dataStore = if (guildDataStore.exists()) {
-						gson.fromJson(guildDataStore.readText())
-					} else {
-						mutableMapOf<String, Any?>()
-					}
-
-					for (entry in dataStore) {
-						if (entry.value is Map<*, *>) {
-							println("${entry.key} is a Map Object! Wrapping as a proxy object...")
-							entry.setValue(ParallaxUtils.ParallaxDataStoreProxy(entry.value as MutableMap<String, Any?>))
+						if (sourceCodeFile.exists()) {
+							// To avoid recompiling the code for no reason, we are going to check if the code is identical to the last time
+							// we compiled the code
+							requiresCompilation = sourceCodeFile.readText() != kotlinCode
 						}
-					}
 
-					val response = http.get<String>(body["clusterUrl"].string + "/api/v1/loritta/locale/default")
+						val compiler = KotlinCompiler()
 
-					val locale = gson.fromJson<BaseLocale>(response)
+						if (requiresCompilation) {
+							try {
+								compiler.kotlinc(
+										"""
+import net.perfectdreams.loritta.parallax.api.ParallaxContext
 
-					val context = JSCommandContext(
-							graalContext,
-							body["lorittaClusterId"].int,
-							client,
-							member,
-							message,
-							body["args"].array.map { it.string }.toTypedArray(),
-							body["clusterUrl"].string,
-							locale
-					)
+fun ParallaxContext.main() {
+    $kotlinCode
+}
+            """.trimIndent(),
+										outputDirectory
+								)
+							} catch (e: Exception) {
+								e.printStackTrace()
 
-					guild.context = context
+								// If it failed, then let's delete the output directory
+								outputDirectory.delete()
 
-					var executedInstructions = 0
+								val response = http.post<HttpResponse>("$clusterUrl/api/v1/parallax/channels/$channelId/messages") {
+									this.userAgent(USER_AGENT)
+									this.header("Authorization", ParallaxServer.authKey)
 
-					val listener = ExecutionListener.newBuilder()
-							.collectInputValues(true)
-							.collectReturnValue(true)
-							.collectExceptions(true)
-							/* .onEnter { e: ExecutionEvent ->
-								println(e.location.characters)
-							} */
-							.onReturn { e: ExecutionEvent ->
-								if (executedInstructions >= MAX_INSTRUCTIONS) {
-									val tooManyInstructionsException = RuntimeException("Too many instructions!")
-									context.lastThrow = tooManyInstructionsException
-									throw tooManyInstructionsException
+									this.body = jsonObject(
+											"content" to "Compilation failure!"
+									).toString()
 								}
 
-								println(e.location.characters)
-								println("Input: ${e.inputValues}")
-								println("Return Value: ${e.returnValue}")
-								println("Exception: ${e.exception}")
-								if (e.exception != null)
-									context.lastThrow = e.exception
-								executedInstructions++
-							}
-							.statements(true)
-							.attach(graalContext.engine)
-
-					executor.submit {
-						logger.info { "Executing the command!" }
-
-						val source = """(function(context) {
-							|	try {
-							|		$INLINE_METHODS
-							|		
-							|		$javaScriptCode
-							|	} catch (e) {
-							|		context.logLastThrow();
-							|	}
-							|})
-						""".trimMargin()
-
-						logger.info { "After fill $source" }
-						try {
-							val value = graalContext.eval(
-									"js",
-									source
-							)
-
-							val result = value.execute(context)
-
-							logger.info { "Execution finished! $executedInstructions instructions executed" }
-						} catch (e: Throwable) {
-							println("Exception thrown.")
-							if (e is SilentCommandException) {
-								logger.info { "Silent Command Exception thrown, shhh" }
-								return@submit
-							}
-
-							logger.warn(e) { "Error while processing custom command!" }
-
-							if (e is PolyglotException) {
-								context.lastThrow = e
-								context.logLastThrow()
+								call.respondText("")
+								return@post
 							}
 						}
+
+						val requiresCodeCheck = requiresCompilation
+
+						if (requiresCodeCheck) {
+							val codeAnalyzer = CodeAnalyzer()
+
+							outputDirectory.listFiles().forEach {
+								if (it.extension == "class") {
+									logger.info { "Analyzing ${it.name}..." }
+									val result = codeAnalyzer.analyzeFile(it)
+
+									if (!result.success) {
+										// If it was rejected, then let's delete the output directory
+										outputDirectory.delete()
+
+										logger.warn { "Code was rejected" }
+										logger.warn { "Blacklisted class instances: ${result.blacklistedClassInstances}" }
+										logger.warn { "Blacklisted methods: ${result.blacklistedMethods}" }
+
+										val response = http.post<HttpResponse>("$clusterUrl/api/v1/parallax/channels/$channelId/messages") {
+											this.userAgent(USER_AGENT)
+											this.header("Authorization", ParallaxServer.authKey)
+
+											this.body = jsonObject(
+													"content" to "Using blacklisted class/methods!"
+											).toString()
+										}
+
+										call.respondText("")
+										return@post
+									}
+								}
+							}
+						}
+
+						// Write the source code to a file, then the next time we run the command we can check if the contents
+						// have been changed and, if yes, recompile it!
+						sourceCodeFile.writeText(kotlinCode)
+					}
+
+					val processBuilder = ProcessBuilder(
+							"/usr/lib/jvm/jdk-14.0.1+7/bin/java",
+							"-Xmx32M",
+							"-Dparallax.executeClazz=CUSTOM_COMPILED_CODEKt",
+							"-Dfile.encoding=UTF-8",
+							"-cp",
+							"/home/parallax/code-executor/parallax-code-executor-fat-2020-SNAPSHOT.jar:/home/parallax/compiled/$guildId/$labelHash/:/home/parallax/code-executor/libs/*",
+							"net.perfectdreams.loritta.parallax.executor.ParallaxCodeExecutor"
+					)
+
+					val process = processBuilder.start()
+					val outputStream = process.outputStream.bufferedWriter()
+					val output = StringBuilder()
+					val errorOutput = StringBuilder()
+
+					outputStream.write(body.toString() + "\n")
+					outputStream.flush()
+
+					val thread = thread {
+						process.inputStream.bufferedReader().forEachLine {
+							logger.info { it }
+							/* output.append(it)
+                        output.append("\n") */
+							try {
+								val packetWrapper = ParallaxSerializer.json.parse(PacketWrapper.serializer(), it)
+								val packet = packetWrapper.m
+
+								runBlocking {
+									val packetExecutor = packetExecutors.firstOrNull { it.first == packet::class }
+									if (packetExecutor != null) {
+										logger.info { "Executing $packetExecutor packet executor!" }
+										packetExecutor.second::class.members.first { it.name == "executes" }
+												.callSuspend(
+														packetExecutor.second,
+														packetWrapper.uniqueId,
+														packet,
+														guildId,
+														channelId,
+														clusterUrl,
+														outputStream
+												)
+									} else {
+										logger.warn { "Unknown packet: ${packet}" }
+										outputStream.write(ParallaxSerializer.toJson(ParallaxAckPacket(), packetWrapper.uniqueId) + "\n")
+										outputStream.flush()
+									}
+								}
+							} catch (e: Exception) {
+								logger.warn(e) { "Failed to parse packet" }
+							}
+						}
+					}
+
+					thread {
+						process.errorStream.bufferedReader().forEachLine {
+							logger.warn { it }
+							errorOutput.append(it)
+							errorOutput.append("\n")
+							// output.append(it)
+							// output.append("\n")
+						}
+					}
+
+					val processResult = process.waitFor(15, TimeUnit.SECONDS)
+
+					logger.info { "Finished: $processResult" }
+					process.destroy()
+
+					if (!processResult) {
+						call.respondText("Error:\n" + "Timeout")
+					} else if (errorOutput.isEmpty()) {
+						call.respondText("Output:\n" + output)
+					} else {
+						call.respondText("Error:\n" + errorOutput)
+					}
+
+					// result.getMethod("execute").invoke(null)
+					Thread.sleep(2500)
+					logger.info { thread }
+					logger.info { thread.isAlive }
+					if (thread.isAlive) {
+						logger.warn { "Why the thread is still alive? Bug??" }
 					}
 				}
 			}
