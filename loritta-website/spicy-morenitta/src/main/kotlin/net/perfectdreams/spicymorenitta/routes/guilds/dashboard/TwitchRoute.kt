@@ -18,6 +18,7 @@ import kotlinx.serialization.json.JSON
 import kotlinx.serialization.parse
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
+import net.perfectdreams.spicymorenitta.extensions.listIsEmptySection
 import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
@@ -117,15 +118,7 @@ class TwitchRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{g
 
 		trackedDiv.append {
 			if (trackedTwitchAccounts.isEmpty()) {
-				div {
-					style = "text-align: center;font-size: 2em;opacity: 0.7;"
-					div {
-						img(src = "https://loritta.website/assets/img/blog/lori_calca.gif") {
-							style = "width: 20%; filter: grayscale(100%);"
-						}
-					}
-					+ "${locale["website.empty"]}${locale.getList("website.funnyEmpty").random()}"
-				}
+				listIsEmptySection()
 			} else {
 				for (account in trackedTwitchAccounts) {
 					createTrackedTwitchAccountEntry(guild, account)

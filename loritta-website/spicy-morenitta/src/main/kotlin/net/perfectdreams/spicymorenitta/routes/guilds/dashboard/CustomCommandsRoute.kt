@@ -12,6 +12,7 @@ import kotlinx.serialization.modules.SerializersModule
 import net.perfectdreams.loritta.serializable.CustomCommand
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
+import net.perfectdreams.spicymorenitta.extensions.listIsEmptySection
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
 import net.perfectdreams.spicymorenitta.utils.*
@@ -132,15 +133,7 @@ class CustomCommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 
 		trackedDiv.append {
 			if (easyCommands.isEmpty()) {
-				div {
-					style = "text-align: center;font-size: 2em;opacity: 0.7;"
-					div {
-						img(src = "https://loritta.website/assets/img/blog/lori_calca.gif") {
-							style = "width: 20%; filter: grayscale(100%);"
-						}
-					}
-					+ "${locale["website.empty"]}${locale.getList("website.funnyEmpty").random()}"
-				}
+				listIsEmptySection()
 			} else {
 				for (command in easyCommands) {
 					createCustomCommandEntry(command)
