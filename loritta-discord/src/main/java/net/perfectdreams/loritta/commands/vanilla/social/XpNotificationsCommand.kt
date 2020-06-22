@@ -16,7 +16,7 @@ class XpNotificationsCommand : LorittaCommand(arrayOf("xpnotifications"), catego
 
     @Subcommand
     suspend fun run(context: DiscordCommandContext, locale: BaseLocale) {
-        val newValue = transaction(Databases.loritta) {
+        val newValue = loritta.newSuspendedTransaction {
             context.lorittaUser.profile.settings.doNotSendXpNotificationsInDm = !context.lorittaUser.profile.settings.doNotSendXpNotificationsInDm
 
             context.lorittaUser.profile.settings.doNotSendXpNotificationsInDm

@@ -123,7 +123,7 @@ object WebsiteUtils {
 
 		val selfMember = WebsiteUtils.transformToJson(lorittaShards.getUserById(user.id)!!)
 
-		guildJson["donationConfig"] = transaction(Databases.loritta) {
+		guildJson["donationConfig"] = loritta.newSuspendedTransaction {
 			val donationConfig = serverConfig.donationConfig
 			jsonObject(
 					"customBadge" to (donationConfig?.customBadge ?: false),
@@ -131,7 +131,7 @@ object WebsiteUtils {
 			)
 		}
 
-		guildJson["reactionRoleConfigs"] = transaction(Databases.loritta) {
+		guildJson["reactionRoleConfigs"] = loritta.newSuspendedTransaction {
 			val reactionOptions = ReactionOption.find {
 				ReactionOptions.guildId eq guild.idLong
 			}
@@ -147,7 +147,7 @@ object WebsiteUtils {
 			}.toJsonArray()
 		}
 
-		guildJson["trackedRssFeeds"] = transaction(Databases.loritta) {
+		guildJson["trackedRssFeeds"] = loritta.newSuspendedTransaction {
 			val array = JsonArray()
 
 			TrackedRssFeeds.select {

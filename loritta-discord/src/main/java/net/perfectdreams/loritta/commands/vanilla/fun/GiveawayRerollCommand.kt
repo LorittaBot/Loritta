@@ -65,7 +65,7 @@ class GiveawayRerollCommand : LorittaDiscordCommand(arrayOf("giveaway reroll", "
 			return
 		}
 
-		val giveaway = transaction(Databases.loritta) {
+		val giveaway = loritta.newSuspendedTransaction {
 			if (channelId != null) {
 				Giveaway.find {
 					(Giveaways.guildId eq context.guild!!.id) and (Giveaways.messageId eq messageId) and (Giveaways.textChannelId eq channelId)

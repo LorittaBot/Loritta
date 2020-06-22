@@ -16,7 +16,7 @@ class AddReactionsToChannelsModule(val plugin: LoriGuildStuffPlugin) : MessageRe
         private val logger = KotlinLogging.logger {}
     }
 
-    override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
+    override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
         return loritta.config.loritta.environment == EnvironmentType.CANARY
     }
 

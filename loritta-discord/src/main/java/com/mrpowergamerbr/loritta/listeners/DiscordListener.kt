@@ -424,10 +424,10 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong, true)
 
 				if (FeatureFlags.UPDATE_IN_GUILD_STATS_ON_GUILD_JOIN) {
-					val profile = serverConfig.getUserDataIfExists(event.guild.idLong)
+					val profile = serverConfig.getUserDataIfExistsAsync(event.guild.idLong)
 
 					if (profile != null) {
-						transaction(Databases.loritta) {
+						loritta.newSuspendedTransaction {
 							profile.isInGuild = true
 						}
 					}
@@ -495,10 +495,10 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong, true)
 
 				if (FeatureFlags.UPDATE_IN_GUILD_STATS_ON_GUILD_QUIT) {
-					val profile = serverConfig.getUserDataIfExists(event.guild.idLong)
+					val profile = serverConfig.getUserDataIfExistsAsync(event.guild.idLong)
 
 					if (profile != null) {
-						transaction(Databases.loritta) {
+						loritta.newSuspendedTransaction {
 							profile.isInGuild = false
 						}
 					}

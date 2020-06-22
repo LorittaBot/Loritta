@@ -28,7 +28,7 @@ class RankGlobalCommand : LorittaCommand(arrayOf("rank global", "top global", "l
         if (page == null)
             page = 0
 
-        val profiles = transaction(Databases.loritta) {
+        val profiles = loritta.newSuspendedTransaction {
             Profiles.selectAll()
                     .orderBy(Profiles.xp to SortOrder.DESC)
                     .limit(5, page * 5)

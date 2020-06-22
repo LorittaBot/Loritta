@@ -22,7 +22,7 @@ object DonationConfigTransformer : ConfigTransformer {
     override val configKey: String = "donationConfig"
 
     override suspend fun fromJson(guild: Guild, serverConfig: ServerConfig, payload: JsonObject) {
-        transaction(Databases.loritta) {
+        loritta.newSuspendedTransaction {
             val donationConfig = serverConfig.donationConfig ?: DonationConfig.new {
                 this.dailyMultiplier = false
                 this.customBadge = false
@@ -50,7 +50,7 @@ object DonationConfigTransformer : ConfigTransformer {
     }
 
     override suspend fun toJson(guild: Guild, serverConfig: ServerConfig): JsonElement {
-        return transaction(Databases.loritta) {
+        return loritta.newSuspendedTransaction {
             jsonObject(
                     "customBadge" to (serverConfig.donationConfig?.customBadge ?: false),
                     "dailyMultiplier" to (serverConfig.donationConfig?.dailyMultiplier ?: false)

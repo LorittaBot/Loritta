@@ -70,7 +70,7 @@ class RepTopCommand : LorittaCommand(arrayOf("rep top", "reputation top", "reput
         val receivedByCount = Reputations.receivedById.count()
         val givenByCount = Reputations.givenById.count()
 
-        val userData = transaction(Databases.loritta) {
+        val userData = loritta.newSuspendedTransaction {
             if (type == TopOrder.MOST_GIVEN) {
                 Reputations.slice(givenBy, givenByCount)
                         .selectAll()
