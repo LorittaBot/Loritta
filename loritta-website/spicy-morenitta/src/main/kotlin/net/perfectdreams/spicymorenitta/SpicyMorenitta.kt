@@ -91,7 +91,8 @@ class SpicyMorenitta : Logging {
 			AutoroleConfigRoute(this),
 			MemberCounterRoute(this),
 			ModerationConfigRoute(this),
-			WelcomerConfigRoute(this)
+			WelcomerConfigRoute(this),
+			CustomCommandsRoute(this)
 	)
 
 	val validWebsiteLocaleIds = mutableListOf(

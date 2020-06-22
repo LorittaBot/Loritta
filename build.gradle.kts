@@ -28,7 +28,8 @@ allprojects {
                         println("Building fat jar for ${project.name}...")
                         val addToFinalJarSourceProjects = arrayOf(
                                 "loritta-api-",
-                                "loritta-serializable-commons-"
+                                "loritta-serializable-commons-",
+                                "parallax-code-api-"
                         )
 
                         archiveBaseName.set("${project.name}-fat")
