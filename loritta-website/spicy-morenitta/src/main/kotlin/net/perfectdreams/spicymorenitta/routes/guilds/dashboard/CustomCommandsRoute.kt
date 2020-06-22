@@ -17,7 +17,7 @@ import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
 import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.launchWithLoadingScreenAndFixContent
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.switchContentAndFixLeftSidebarScroll
-import net.perfectdreams.spicymorenitta.utils.customcommands.AutoroleCustomCommand
+import net.perfectdreams.spicymorenitta.utils.customcommands.GiveTakeRoleCustomCommand
 import net.perfectdreams.spicymorenitta.utils.customcommands.CustomCommandData
 import net.perfectdreams.spicymorenitta.utils.customcommands.CustomCommandWrapper
 import net.perfectdreams.spicymorenitta.utils.customcommands.TextCustomCommand
@@ -35,7 +35,7 @@ class CustomCommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 			context = SerializersModule {
 				polymorphic(CustomCommandData::class) {
 					TextCustomCommand::class with TextCustomCommand.serializer()
-					AutoroleCustomCommand::class with AutoroleCustomCommand.serializer()
+					GiveTakeRoleCustomCommand::class with GiveTakeRoleCustomCommand.serializer()
 				}
 			}
 	)
