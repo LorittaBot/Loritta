@@ -80,6 +80,8 @@ class TweetTracker(val m: Loritta) {
 					stream
 				}
 
+				twitterStream.clearListeners()
+				
 				twitterStream.addListener(object : StatusListener {
 					override fun onTrackLimitationNotice(p0: Int) {
 						logger.warn(p0.toString())
