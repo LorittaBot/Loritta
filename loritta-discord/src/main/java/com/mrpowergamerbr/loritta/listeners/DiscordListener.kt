@@ -302,7 +302,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		logger.debug { "Deleting all ${e.guild} related stuff..." }
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				logger.trace { "Deleting all ${e.guild} profiles..."}
 
 				// Deletar todos os perfis do servidor
@@ -382,12 +382,12 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			// Portuguese
 			if (regionName.startsWith("Brazil")) {
 				logger.debug { "Setting localeId to default at ${event.guild}, regionName = $regionName" }
-				transaction(Databases.loritta) {
+				loritta.newSuspendedTransaction {
 					serverConfig.localeId = "default"
 				}
 			} else {
 				logger.debug { "Setting localeId to en-us at ${event.guild}, regionName = $regionName" }
-				transaction(Databases.loritta) {
+				loritta.newSuspendedTransaction {
 					serverConfig.localeId = "en-us"
 				}
 			}
@@ -397,7 +397,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			// Adicionar a permissão de DJ para alguns cargos
 			event.guild.roles.forEach { role ->
 				if (role.hasPermission(Permission.ADMINISTRATOR) || role.hasPermission(Permission.MANAGE_SERVER)) {
-					transaction(Databases.loritta) {
+					loritta.newSuspendedTransaction {
 						ServerRolePermissions.insert {
 							it[ServerRolePermissions.guild] = serverConfig.id
 							it[ServerRolePermissions.roleId] = role.idLong
@@ -441,7 +441,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				if (welcomerConfig != null) // Está ativado?
 					WelcomeModule.handleJoin(event, serverConfig, welcomerConfig)
 
-				val mute = transaction(Databases.loritta) {
+				val mute = loritta.newSuspendedTransaction {
 					Mute.find { (Mutes.guildId eq event.guild.idLong) and (Mutes.userId eq event.member.user.idLong) }.firstOrNull()
 				}
 
@@ -521,9 +521,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		val guild = event.guild
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
-			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
+			val serverConfig = loritta.getOrCreateServerConfigAsync(event.guild.idLong)
 
-			val mutes = transaction(Databases.loritta) {
+			val mutes = loritta.newSuspendedTransaction {
 				Mute.find {
 					(Mutes.isTemporary eq true) and (Mutes.guildId eq event.guild.idLong)
 				}.toMutableList()
@@ -537,7 +537,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			}
 
 			// Ao voltar, vamos reprocessar todas as reações necessárias do reaction role (desta guild)
-			val reactionRoles = transaction(Databases.loritta) {
+			val reactionRoles = loritta.newSuspendedTransaction {
 				ReactionOption.find { ReactionOptions.guildId eq event.guild.idLong }.toMutableList()
 			}
 
@@ -567,7 +567,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				for (lock in option.locks) {
 					if (lock.contains("-")) {
 						val split = lock.split("-")
-						val channelOptionLock = transaction(Databases.loritta) {
+						val channelOptionLock = loritta.newSuspendedTransaction {
 							ReactionOption.find {
 								(ReactionOptions.guildId eq event.guild.idLong) and
 										(ReactionOptions.textChannelId eq split[0].toLong()) and
@@ -576,7 +576,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 						}
 						locks.addAll(channelOptionLock)
 					} else { // Lock por option ID, esse daqui é mais complicado!
-						val idOptionLock = transaction(Databases.loritta) {
+						val idOptionLock = loritta.newSuspendedTransaction {
 							ReactionOption.find {
 								(ReactionOptions.id eq lock.toLong())
 							}.toMutableList()
@@ -601,7 +601,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 			}
 
-			val allActiveGiveaways = transaction(Databases.loritta) {
+			val allActiveGiveaways = loritta.newSuspendedTransaction {
 				Giveaway.find { (Giveaways.guildId eq event.guild.idLong) and (Giveaways.finished eq false) }.toMutableList()
 			}
 
