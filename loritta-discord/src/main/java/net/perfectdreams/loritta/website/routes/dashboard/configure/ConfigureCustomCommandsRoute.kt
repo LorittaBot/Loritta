@@ -18,4 +18,4 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.select
 import kotlin.collections.set
 
-class ConfigureCustomCommandsRoute(loritta: LorittaDiscord) : GenericConfigurationRoute(loritta, "/configure/custom-commands", "customCommands", "configure_custom_commands.html")
+class ConfigureCustomCommandsRoute(loritta: LorittaDiscord) : GenericConfigurationRoute(loritta, "/configure/custom-commands", "custom_commands", "configure_custom_commands.html")
