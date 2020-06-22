@@ -158,8 +158,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			logger.trace { "Member Counter Padding = ${memberCounterConfig.padding}"}
 			logger.trace { "Formatted Topic = $formattedTopic" }
 
-			if (FeatureFlags.MEMBER_COUNTER_UPDATE)
-				textChannel.manager.setTopic(formattedTopic).reason(locale["loritta.modules.counter.auditLogReason"]).queue()
+			textChannel.manager.setTopic(formattedTopic).reason(locale["loritta.modules.counter.auditLogReason"]).queue()
 		}
 	}
 
@@ -423,13 +422,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			try {
 				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong, true)
 
-				if (FeatureFlags.UPDATE_IN_GUILD_STATS_ON_GUILD_JOIN) {
-					val profile = serverConfig.getUserDataIfExistsAsync(event.guild.idLong)
+				val profile = serverConfig.getUserDataIfExistsAsync(event.guild.idLong)
 
-					if (profile != null) {
-						loritta.newSuspendedTransaction {
-							profile.isInGuild = true
-						}
+				if (profile != null) {
+					loritta.newSuspendedTransaction {
+						profile.isInGuild = true
 					}
 				}
 
@@ -494,13 +491,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong, true)
 
-				if (FeatureFlags.UPDATE_IN_GUILD_STATS_ON_GUILD_QUIT) {
-					val profile = serverConfig.getUserDataIfExistsAsync(event.guild.idLong)
+				val profile = serverConfig.getUserDataIfExistsAsync(event.guild.idLong)
 
-					if (profile != null) {
-						loritta.newSuspendedTransaction {
-							profile.isInGuild = false
-						}
+				if (profile != null) {
+					loritta.newSuspendedTransaction {
+						profile.isInGuild = false
 					}
 				}
 

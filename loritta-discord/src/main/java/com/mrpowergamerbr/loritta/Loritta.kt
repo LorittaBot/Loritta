@@ -105,7 +105,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	val coroutineDispatcher = coroutineExecutor.asCoroutineDispatcher() // Coroutine Dispatcher
 
 	fun createThreadPool(name: String): ExecutorService {
-		return if (config.loritta.featureFlags.contains("use-fixed-thread-pool"))
+		return if (FeatureFlags.isEnabled(this, FeatureFlags.Names.USE_FIXED_THREAD_POOL))
 			Executors.newFixedThreadPool(16, ThreadFactoryBuilder().setNameFormat(name).build())
 		else
 			Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat(name).build())
