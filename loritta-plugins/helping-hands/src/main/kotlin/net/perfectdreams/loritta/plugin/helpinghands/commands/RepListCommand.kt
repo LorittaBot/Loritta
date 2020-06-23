@@ -20,6 +20,7 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
 import java.time.ZoneId
+import com.mrpowergamerbr.loritta.utils.TextUtils.stripCodeMarks
 
 object RepListCommand : DSLCommandBase {
     override fun command(plugin: HelpingHandsPlugin, loritta: LorittaBot) = create(
@@ -67,10 +68,12 @@ object RepListCommand : DSLCommandBase {
                     this.append("\n")
                     this.append("\n")
 
-                    // Needed for checking if the string don't bypass 2048 chars limit
-                    val str = StringBuilder()
+
 
                     for (reputation in reputations) {
+						// Needed for checking if the string don't bypass 2048 chars limit
+						val str = StringBuilder()
+						
                         val receivedReputation = reputation[Reputations.receivedById] == user.idLong
 
                         val givenAtTime = Instant.ofEpochMilli(reputation[Reputations.receivedAt]).atZone(ZoneId.systemDefault())
@@ -96,7 +99,7 @@ object RepListCommand : DSLCommandBase {
 
                         val name = (receivedByUser?.name + "#" + receivedByUser?.discriminator)
                         val content = if (reputation[Reputations.content] != null)
-                            "`${reputation[Reputations.content]}`"
+                            "`${reputation[Reputations.content].stripCodeMarks()}`"
                         else
                             null
 
