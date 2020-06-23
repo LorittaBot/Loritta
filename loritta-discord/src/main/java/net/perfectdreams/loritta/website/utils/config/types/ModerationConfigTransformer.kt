@@ -5,6 +5,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.ModerationConfig
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.WarnAction
@@ -21,12 +22,12 @@ object ModerationConfigTransformer : ConfigTransformer {
     override val configKey: String = "moderationConfig"
 
     override suspend fun toJson(guild: Guild, serverConfig: ServerConfig): JsonElement {
-        val moderationConfig = transaction(Databases.loritta) {
+        val moderationConfig = loritta.newSuspendedTransaction {
             serverConfig.moderationConfig
         }
 
         val actions = moderationConfig?.let {
-            transaction(Databases.loritta) {
+            loritta.newSuspendedTransaction {
                 WarnAction.find {
                     WarnActions.config eq it.id
                 }.toList()
@@ -50,7 +51,7 @@ object ModerationConfigTransformer : ConfigTransformer {
 
         val punishmentMessages = jsonArray()
 
-        transaction(Databases.loritta) {
+        loritta.newSuspendedTransaction {
             ModerationPunishmentMessagesConfig.select {
                 ModerationPunishmentMessagesConfig.guild eq serverConfig.id
             }.toList()
@@ -81,7 +82,7 @@ object ModerationConfigTransformer : ConfigTransformer {
         val punishmentActions = payload["punishmentActions"].array
         val punishmentMessages = payload["punishmentMessages"].array
 
-        transaction(Databases.loritta) {
+        loritta.newSuspendedTransaction {
             val moderationConfig = serverConfig.moderationConfig ?: ModerationConfig.new {
                 this.sendPunishmentToPunishLog = false
                 this.sendPunishmentViaDm = false

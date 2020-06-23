@@ -5,6 +5,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.entities.Guild
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -25,7 +26,7 @@ object GeneralConfigTransformer : ConfigTransformer {
     }
 
     override suspend fun fromJson(guild: Guild, serverConfig: ServerConfig, payload: JsonObject) {
-        transaction(Databases.loritta) {
+        loritta.newSuspendedTransaction {
             serverConfig.commandPrefix = payload["commandPrefix"].string
             serverConfig.deleteMessageAfterCommand = payload["deleteMessageAfterCommand"].bool
             serverConfig.warnOnUnknownCommand = payload["warnOnUnknownCommand"].bool

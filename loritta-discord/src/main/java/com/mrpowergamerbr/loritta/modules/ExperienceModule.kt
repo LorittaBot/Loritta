@@ -6,7 +6,6 @@ import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.filterOnlyGiveableRoles
@@ -29,7 +28,6 @@ import net.perfectdreams.loritta.utils.levels.RoleGiveType
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.TimeUnit
 
 class ExperienceModule : MessageReceivedModule {
@@ -45,7 +43,7 @@ class ExperienceModule : MessageReceivedModule {
 			.build<Long, Mutex>()
 			.asMap()
 
-	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
+	override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
 		return true
 	}
 
@@ -100,7 +98,7 @@ class ExperienceModule : MessageReceivedModule {
 
 			if (FeatureFlags.isEnabled("experience-gain-globally")) {
 				mutex.withLock {
-					transaction(Databases.loritta) {
+					loritta.newSuspendedTransaction {
 						retrievedProfile.lastMessageSentHash = lastMessageSentHash
 						retrievedProfile.xp = newProfileXp
 						retrievedProfile.lastMessageSentAt = System.currentTimeMillis()
@@ -135,7 +133,7 @@ class ExperienceModule : MessageReceivedModule {
 
 		val (previousLevel, previousXp) = guildProfile.getCurrentLevel()
 
-		val customRoleRates = transaction(Databases.loritta) {
+		val customRoleRates = loritta.newSuspendedTransaction {
 			ExperienceRoleRates.select {
 				ExperienceRoleRates.guildId eq event.guild.idLong and
 						(ExperienceRoleRates.role inList member.roles.map { it.idLong })
@@ -146,7 +144,7 @@ class ExperienceModule : MessageReceivedModule {
 		val rate = customRoleRates?.getOrNull(ExperienceRoleRates.rate) ?: 1.0
 
 		mutex.withLock {
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				guildProfile.xp += (gainedXp * rate).toLong()
 			}
 		}
@@ -157,7 +155,7 @@ class ExperienceModule : MessageReceivedModule {
 		val givenNewRoles = mutableSetOf<Role>()
 
 		if (guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) {
-			val configs = transaction(Databases.loritta) {
+			val configs = loritta.newSuspendedTransaction {
 				RolesByExperience.select {
 					RolesByExperience.guildId eq guild.idLong
 				}.toMutableList()
@@ -209,7 +207,7 @@ class ExperienceModule : MessageReceivedModule {
 		if (previousLevel != newLevel && levelConfig != null) {
 			logger.info { "Notifying about level up from $previousLevel -> $newLevel; level config is $levelConfig"}
 
-			val announcements = transaction(Databases.loritta) {
+			val announcements = loritta.newSuspendedTransaction {
 				LevelAnnouncementConfigs.select {
 					LevelAnnouncementConfigs.levelConfig eq levelConfig.id
 				}.toMutableList()
@@ -253,7 +251,7 @@ class ExperienceModule : MessageReceivedModule {
 							}
 						}
 						LevelUpAnnouncementType.DIRECT_MESSAGE -> {
-							val profileSettings = transaction(Databases.loritta) {
+							val profileSettings = loritta.newSuspendedTransaction {
 								profile.settings
 							}
 

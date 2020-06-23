@@ -71,12 +71,12 @@ object DonateUtils {
 						locale["commands.ifYouLikeMyFeaturesAndWantToHelp", locale["commands.pleaseUseFortniteCreatorCode", "`${com.mrpowergamerbr.loritta.utils.loritta.config.fortniteApi.creatorCode}`"]],
 						Emotes.DEFAULT_DANCE
 				)
-			} else if (randomValue == 3 && FeatureFlags.ADVERTISE_SPARKLYPOWER && (locale.id == "default" || locale.id == "pt-funk" || locale.id == "pt-pt" || locale.id == "pt-furry")) { // SparklyPower
+			} else if (randomValue == 3 && (locale.id == "default" || locale.id == "pt-funk" || locale.id == "pt-pt" || locale.id == "pt-furry")) { // SparklyPower
 				LoriReply(
 						locale["commands.checkOutSparklyPower", "Minecraft: Java Edition", "mc.sparklypower.net"],
 						Emotes.MINECRAFT_GRASS
 				)
-			} else if (randomValue == 4 && FeatureFlags.ADVERTISE_SPONSORS) { // Sponsors
+			} else if (randomValue == 4) { // Sponsors
 				LoriReply(
 						locale["commands.checkOutSponsors", "<${loritta.instanceConfig.loritta.website.url}sponsors>"],
 						Emotes.LORI_RICH

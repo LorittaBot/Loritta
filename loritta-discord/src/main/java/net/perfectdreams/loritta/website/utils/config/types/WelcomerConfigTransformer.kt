@@ -5,6 +5,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.WelcomerConfig
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -14,7 +15,7 @@ object WelcomerConfigTransformer : ConfigTransformer {
     override val configKey: String = "welcomerConfig"
 
     override suspend fun toJson(guild: Guild, serverConfig: ServerConfig): JsonElement {
-        val welcomerConfig = transaction(Databases.loritta) {
+        val welcomerConfig = loritta.newSuspendedTransaction {
             serverConfig.welcomerConfig
         }
 
@@ -52,7 +53,7 @@ object WelcomerConfigTransformer : ConfigTransformer {
         val tellOnPrivate = payload["tellOnPrivateJoin"].bool
         val joinPrivateMessage = payload["joinPrivateMessage"].nullString
 
-        transaction(Databases.loritta) {
+        loritta.newSuspendedTransaction {
             val welcomerConfig = serverConfig.welcomerConfig
 
             if (!isEnabled) {

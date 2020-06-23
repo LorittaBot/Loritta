@@ -61,7 +61,7 @@ object ErrorTracker : Logging {
 			try {
 				URLSearchParams(URL(it.src).search.substring(1)).get("hash")
 			} catch (e: Error) {
-				warn("Something went wrong while trying to get the app hashm upda")
+				warn("Something went wrong while trying to get the app hash")
 			}
 		}
 

@@ -45,10 +45,7 @@ import net.perfectdreams.loritta.tables.servers.Giveaways
 import net.perfectdreams.loritta.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.twitch.TwitchAPI
-import net.perfectdreams.loritta.utils.CachedUserInfo
-import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.Sponsor
-import net.perfectdreams.loritta.utils.TweetTracker
+import net.perfectdreams.loritta.utils.*
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import net.perfectdreams.mercadopago.MercadoPago
 import okhttp3.Dispatcher
@@ -108,7 +105,10 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	val coroutineDispatcher = coroutineExecutor.asCoroutineDispatcher() // Coroutine Dispatcher
 
 	fun createThreadPool(name: String): ExecutorService {
-		return Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat(name).build())
+		return if (FeatureFlags.isEnabled(this, FeatureFlags.Names.USE_FIXED_THREAD_POOL))
+			Executors.newFixedThreadPool(16, ThreadFactoryBuilder().setNameFormat(name).build())
+		else
+			Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat(name).build())
 	}
 
 	val legacyCommandManager = CommandManager(this) // Nosso command manager
@@ -241,7 +241,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		Emotes.emoteManager = DiscordEmoteManager().also { it.loadEmotes() }
 
 		logger.info { "Success! Connecting to the database..." }
-		
+
 		initPostgreSql()
 
 		// Vamos criar todas as instâncias necessárias do JDA para nossas shards

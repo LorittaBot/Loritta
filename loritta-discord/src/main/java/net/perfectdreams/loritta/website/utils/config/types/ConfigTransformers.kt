@@ -22,6 +22,7 @@ object ConfigTransformers {
             AutoroleConfigTransformer,
             WelcomerConfigTransformer,
             MemberCountersTransformer,
-            ModerationConfigTransformer
+            ModerationConfigTransformer,
+            CustomCommandsConfigTransformer
     )
 }

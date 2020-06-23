@@ -2,10 +2,10 @@ package com.mrpowergamerbr.loritta.modules
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.dao.StarboardMessage
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.StarboardMessages
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
+import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
@@ -16,7 +16,6 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.StarboardConfig
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.util.concurrent.TimeUnit
 
@@ -53,7 +52,7 @@ object StarboardModule {
 				if (textChannel == msg.textChannel || !textChannel.canTalk())
 					return@withLock
 
-				val starboardEmbedMessage = transaction(Databases.loritta) {
+				val starboardEmbedMessage = loritta.newSuspendedTransaction {
 					StarboardMessage.find {
 						StarboardMessages.guildId eq e.guild.idLong and (StarboardMessages.messageId eq e.messageIdLong)
 					}.firstOrNull()
@@ -115,7 +114,7 @@ object StarboardModule {
 
 				if (starboardMessage != null) {
 					if (starboardConfig.requiredStars > count) { // Remover embed já que o número de stars é menos que o número necessário de estrelas
-						transaction(Databases.loritta) {
+						loritta.newSuspendedTransaction {
 							starboardEmbedMessage?.delete() // Remover da database
 						}
 						starboardMessage.delete().await() // Deletar a embed do canal de starboard
@@ -126,7 +125,7 @@ object StarboardModule {
 				} else if (count >= starboardConfig.requiredStars) {
 					starboardMessage = textChannel.sendMessage(starCountMessage.build()).await()
 
-					transaction(Databases.loritta) {
+					loritta.newSuspendedTransaction {
 						StarboardMessage.new {
 							this.guildId = e.guild.idLong
 							this.embedId = starboardMessage.idLong

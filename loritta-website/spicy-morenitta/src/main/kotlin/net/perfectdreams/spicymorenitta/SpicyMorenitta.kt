@@ -91,7 +91,8 @@ class SpicyMorenitta : Logging {
 			AutoroleConfigRoute(this),
 			MemberCounterRoute(this),
 			ModerationConfigRoute(this),
-			WelcomerConfigRoute(this)
+			WelcomerConfigRoute(this),
+			CustomCommandsRoute(this)
 	)
 
 	val validWebsiteLocaleIds = mutableListOf(
@@ -331,7 +332,8 @@ class SpicyMorenitta : Logging {
 		}
 
 		// Update the navbar entries because the name + avatar may cause the navbar to overflow
-		checkAndFixNavbarOverflownEntries()
+		if (navbarIsSetup)
+			checkAndFixNavbarOverflownEntries()
 	}
 
 	fun getPageRouteForCurrentPath(): BaseRoute {

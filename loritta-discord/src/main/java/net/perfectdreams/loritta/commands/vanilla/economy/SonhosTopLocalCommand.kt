@@ -26,7 +26,7 @@ object SonhosTopLocalCommand {
 			if (page == null)
 				page = 0
 
-			val userData = transaction(Databases.loritta) {
+			val userData = loritta.newSuspendedTransaction {
 				Profiles.innerJoin(GuildProfiles, { Profiles.id }, { GuildProfiles.userId })
 						.select { GuildProfiles.guildId eq guild.idLong }.orderBy(Profiles.money, SortOrder.DESC).limit(5, page * 5)
 						.toList()

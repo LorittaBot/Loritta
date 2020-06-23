@@ -24,7 +24,7 @@ object SonhosTopCommand {
 			if (page == null)
 				page = 0
 
-			val userData = transaction(Databases.loritta) {
+			val userData = loritta.newSuspendedTransaction {
 				Profiles.selectAll().orderBy(Profiles.money, SortOrder.DESC).limit(5, page * 5)
 						.toList()
 			}

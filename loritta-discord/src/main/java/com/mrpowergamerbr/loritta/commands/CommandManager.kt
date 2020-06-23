@@ -243,7 +243,8 @@ class CommandManager(loritta: Loritta) {
 		}.map {
 			NashornCommand(
 					it[CustomGuildCommands.label],
-					it[CustomGuildCommands.code]
+					it[CustomGuildCommands.code],
+					it[CustomGuildCommands.codeType]
 			)
 		}
 

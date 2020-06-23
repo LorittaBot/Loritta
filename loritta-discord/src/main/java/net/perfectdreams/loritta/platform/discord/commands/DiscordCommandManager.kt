@@ -424,7 +424,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                     }
                 }
 
-                transaction(Databases.loritta) {
+                loritta.newSuspendedTransaction {
                     lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
 
                     ExecutedCommandsLog.insert {

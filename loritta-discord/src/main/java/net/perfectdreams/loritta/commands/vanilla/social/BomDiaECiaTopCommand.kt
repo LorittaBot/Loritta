@@ -42,7 +42,7 @@ class BomDiaECiaTopCommand : LorittaCommand(arrayOf("bomdiaecia top", "bd&c top"
         val userId = BomDiaECiaWinners.userId
         val userIdCount = BomDiaECiaWinners.userId.count()
 
-        val userData = transaction(Databases.loritta) {
+        val userData = loritta.newSuspendedTransaction {
             BomDiaECiaWinners.slice(userId, userIdCount)
                     .selectAll()
                     .groupBy(userId)

@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.plugin.stafflorittaban.StaffLorittaBanConfig
 import net.perfectdreams.loritta.tables.BannedUsers
 
 class AddReactionForStaffLoriBanModule(val config: StaffLorittaBanConfig) : MessageReceivedModule {
-	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
+	override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
 		return config.enabled && event.channel.idLong in config.channels
 	}
 

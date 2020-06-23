@@ -25,14 +25,6 @@ class TranslateCommand : AbstractCommand("traduzir", listOf("translate"), Comman
 	}
 
 	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
-		if (FeatureFlags.DISABLE_TRANSLATE_RATELIMIT) {
-			context.reply(
-					locale.toNewLocale()["commands.googleRateLimited", "${loritta.instanceConfig.loritta.website.url}${locale["website.localePath"]}/blog/youtube-google-block?utm_source=discord&utm_medium=link&utm_campaign=update_cmd"],
-					Constants.ERROR
-			)
-			return
-		}
-
 		if (context.args.size >= 2) {
 			val strLang = context.args[0]
 			context.args[0] = "" // Super workaround

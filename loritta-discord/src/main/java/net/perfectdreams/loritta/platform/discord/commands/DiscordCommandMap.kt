@@ -310,7 +310,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 					}
 				} */
 
-				transaction(Databases.loritta) {
+				loritta.newSuspendedTransaction {
 					lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
 
 					ExecutedCommandsLog.insert {

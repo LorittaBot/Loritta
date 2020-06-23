@@ -28,7 +28,7 @@ class TransactionsCommand : LorittaCommand(arrayOf("transactions", "transações
     suspend fun run(context: DiscordCommandContext, locale: BaseLocale) {
         val user = context.getUserAt(0) ?: context.userHandle
 
-        val transactions = transaction(Databases.loritta) {
+        val transactions = loritta.newSuspendedTransaction {
             SonhosTransaction.select {
                 SonhosTransaction.givenBy eq user.idLong or (SonhosTransaction.receivedBy eq user.idLong)
             }.orderBy(SonhosTransaction.givenAt, SortOrder.DESC)

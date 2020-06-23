@@ -5,6 +5,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.LevelConfig
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.ExperienceRoleRates
@@ -22,7 +23,7 @@ object LevelUpConfigTransformer : ConfigTransformer {
     override val configKey: String = "levelUpConfig"
 
     override suspend fun fromJson(guild: Guild, serverConfig: ServerConfig, payload: JsonObject) {
-        transaction(Databases.loritta) {
+        loritta.newSuspendedTransaction {
             val levelConfig = serverConfig.levelConfig ?: LevelConfig.new {
                 this.roleGiveType = RoleGiveType.STACK
                 this.noXpChannels = arrayOf()
@@ -99,7 +100,7 @@ object LevelUpConfigTransformer : ConfigTransformer {
     }
 
     override suspend fun toJson(guild: Guild, serverConfig: ServerConfig): JsonElement {
-        return transaction(Databases.loritta) {
+        return loritta.newSuspendedTransaction {
             val levelConfig = serverConfig.levelConfig
             val announcements = LevelAnnouncementConfigs.select {
                 LevelAnnouncementConfigs.levelConfig eq (levelConfig?.id?.value ?: -1L)

@@ -404,7 +404,7 @@ object GiveawayManager {
 
         rollWinners(message, giveaway)
 
-        transaction(Databases.loritta) {
+        loritta.suspendedTransactionAsync {
             giveaway.finished = true
         }
 
