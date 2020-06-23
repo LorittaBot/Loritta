@@ -68,8 +68,6 @@ object RepListCommand : DSLCommandBase {
                     this.append("\n")
                     this.append("\n")
 
-
-
                     for (reputation in reputations) {
 						// Needed for checking if the string don't bypass 2048 chars limit
 						val str = StringBuilder()
