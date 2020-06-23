@@ -97,11 +97,7 @@ object RepListCommand : DSLCommandBase {
 
                         val name = (receivedByUser?.name + "#" + receivedByUser?.discriminator)
                         val content = if (reputation[Reputations.content] != null)
-<<<<<<< HEAD
                             "`${reputation[Reputations.content].stripCodeMarks()}`"
-=======
-                            "`${reputation[Reputations.content]}`"
->>>>>>> a0e6ff5f146b7f0499691dd019def0f5e98f0ea1
                         else
                             null
 
