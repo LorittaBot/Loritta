@@ -1,8 +1,6 @@
 package net.perfectdreams.loritta.website.utils.config.types
 
 import com.github.salomonbrys.kotson.array
-import com.github.salomonbrys.kotson.get
-import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
@@ -13,7 +11,6 @@ import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.serializable.CustomCommand
 import net.perfectdreams.loritta.tables.servers.CustomGuildCommands
-import net.perfectdreams.loritta.utils.CustomCommandCodeType
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -29,6 +26,7 @@ object CustomCommandsConfigTransformer : ConfigTransformer {
             }.map {
                 CustomCommand(
                         it[CustomGuildCommands.label],
+                        it[CustomGuildCommands.codeType],
                         it[CustomGuildCommands.code]
                 )
             }
@@ -45,18 +43,15 @@ object CustomCommandsConfigTransformer : ConfigTransformer {
             }
 
             // And now we reinsert the new commands
-            val entries = payload["entries"].array
+            val entries = Json.parse(CustomCommand.serializer().list, payload["entries"].array.toString())
 
             for (entry in entries) {
-                val label = entry["label"].string
-                val code = entry["code"].string
-
                 CustomGuildCommands.insert {
                     it[CustomGuildCommands.guild] = serverConfig.id
                     it[CustomGuildCommands.enabled] = true
-                    it[CustomGuildCommands.label] = label
-                    it[CustomGuildCommands.codeType] = CustomCommandCodeType.KOTLIN
-                    it[CustomGuildCommands.code] = code
+                    it[CustomGuildCommands.label] = entry.label
+                    it[CustomGuildCommands.codeType] = entry.codeType
+                    it[CustomGuildCommands.code] = entry.code
                 }
             }
         }

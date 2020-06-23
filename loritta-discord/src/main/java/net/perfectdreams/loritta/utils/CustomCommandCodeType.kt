@@ -3,5 +3,6 @@ package net.perfectdreams.loritta.utils
 enum class CustomCommandCodeType {
 	UNKNOWN,
 	JAVASCRIPT,
-	KOTLIN
+	KOTLIN,
+	SIMPLE_TEXT
 }

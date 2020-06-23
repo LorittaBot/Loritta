@@ -10,6 +10,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.list
 import kotlinx.serialization.modules.SerializersModule
 import net.perfectdreams.loritta.serializable.CustomCommand
+import net.perfectdreams.loritta.serializable.CustomCommandCodeType
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.extensions.listIsEmptySection
@@ -110,11 +111,6 @@ class CustomCommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 
 			val stuff = document.select<HTMLDivElement>("#level-stuff")
 
-			val easyCommands = customCommands.filter { it.code.startsWith("// Loritta Auto Generated Custom Command - Do not edit!") }
-					.map { it to json.parse(CustomCommandWrapper.serializer(), it.code.lines()[1].removePrefix("// ")) }
-
-			debug("There are ${easyCommands.size} easy commands")
-
 			stuff.append {
 				div(classes = "custom-commands") {}
 			}
@@ -126,7 +122,7 @@ class CustomCommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 	@ImplicitReflectionSerializer
 	private fun updateCustomCommandsList() {
 		// For now only easy commands
-		val easyCommands = customCommands.filter { it.code.startsWith("// Loritta Auto Generated Custom Command - Do not edit!") }
+		val easyCommands = customCommands.filter { it.codeType == CustomCommandCodeType.SIMPLE_TEXT }
 		val trackedDiv = document.select<HTMLDivElement>(".custom-commands")
 
 		trackedDiv.clear()
@@ -163,12 +159,11 @@ class CustomCommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 							+ customCommand.label
 						}
 						div(classes = "amino-title toggleSubText") {
-							+ if (customCommandWrapper != null)
-								when (customCommandWrapper.data) {
-									is TextCustomCommand -> "Comando de Texto"
-									else -> "???"
-								}
-							else "Comando em Kotlin"
+							+ when (customCommand.codeType) {
+								CustomCommandCodeType.SIMPLE_TEXT -> "Comando de Texto"
+								CustomCommandCodeType.KOTLIN -> "Comando em Kotlin"
+								else -> "???"
+							}
 						}
 					}
 				}
@@ -189,12 +184,8 @@ class CustomCommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 						onClickFunction = {
 							customCommands.remove(customCommand)
 
-							if (customCommandWrapper != null) {
-								val customCommandData = customCommandWrapper.data
-
-								when (customCommandData) {
-									is TextCustomCommand -> openTextCommandModal(customCommand.label, customCommandData.text)
-								}
+							when (customCommand.codeType) {
+								CustomCommandCodeType.SIMPLE_TEXT -> openTextCommandModal(customCommand.label, customCommand.code)
 							}
 						}
 					}
@@ -217,18 +208,11 @@ class CustomCommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 			val textAreaText = visibleModal.select<HTMLTextAreaElement>(".command-text")
 					.value
 
-			println(textAreaText)
-
-			val code = """// Loritta Auto Generated Custom Command - Do not edit!
-								|// ${json.toJson(CustomCommandWrapper(TextCustomCommand(textAreaText)))}
-								|sendMessage(${stringLiteralWithQuotes(textAreaText)})
-							""".trimMargin()
-			println(code)
-
 			customCommands.add(
 					CustomCommand(
 							visibleModal.select<HTMLInputElement>(".command-label").value,
-							code
+							CustomCommandCodeType.SIMPLE_TEXT,
+							textAreaText
 					)
 			)
 
@@ -271,8 +255,9 @@ class CustomCommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 				null,
 				false,
 				null,
-				false,
-				showTemplates = false
+				true,
+				Placeholders.DEFAULT_PLACEHOLDERS,
+				false
 		)
 	}
 

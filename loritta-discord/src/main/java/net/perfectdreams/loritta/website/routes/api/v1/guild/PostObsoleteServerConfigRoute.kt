@@ -16,7 +16,7 @@ import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.utils.ActionType
-import net.perfectdreams.loritta.utils.CustomCommandCodeType
+import net.perfectdreams.loritta.serializable.CustomCommandCodeType
 import net.perfectdreams.loritta.utils.auditlog.WebAuditLogUtils
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIGuildAuthRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
