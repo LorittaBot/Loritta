@@ -20,6 +20,7 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
 import java.time.ZoneId
+import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 
 object RepListCommand : DSLCommandBase {
     override fun command(plugin: HelpingHandsPlugin, loritta: LorittaBot) = create(
@@ -61,16 +62,16 @@ object RepListCommand : DSLCommandBase {
                 if (reputations.size == 0) {
                     this.append(context.locale["commands.social.repList.noReps"])
                 } else {
-                    val totalReputationReceived = reputations.filter { it[Reputations.receivedById] == user.idLong }.size;
-                    val totalReputationGiven = reputations.filter { it[Reputations.givenById] == user.idLong }.size;
+                    val totalReputationReceived = reputations.filter { it[Reputations.receivedById] == user.idLong }.size
+                    val totalReputationGiven = reputations.filter { it[Reputations.givenById] == user.idLong }.size
                     this.append(context.locale["commands.social.repList.reputationsTotalDescription", totalReputationReceived, totalReputationGiven])
                     this.append("\n")
                     this.append("\n")
 
-                    // Needed for checking if the string don't bypass 2048 chars limit
-                    val str = StringBuilder()
-
                     for (reputation in reputations) {
+                        // Needed for checking if the string don't bypass 2048 chars limit
+                        val str = StringBuilder()
+
                         val receivedReputation = reputation[Reputations.receivedById] == user.idLong
 
                         val givenAtTime = Instant.ofEpochMilli(reputation[Reputations.receivedAt]).atZone(ZoneId.systemDefault())
@@ -95,26 +96,23 @@ object RepListCommand : DSLCommandBase {
                         }
 
                         val name = (receivedByUser?.name + "#" + receivedByUser?.discriminator)
-                        val content = if (reputation[Reputations.content] != null)
-                            "`${reputation[Reputations.content]}`"
-                        else
-                            null
+                        val content = reputation[Reputations.content]?.stripCodeMarks()
 
                         val receivedByLoritta = reputation[Reputations.givenById] == com.mrpowergamerbr.loritta.utils.loritta.discordConfig.discord.clientId.toLong()
                         if (receivedByLoritta) {
                             str.append(context.locale["commands.social.repList.receivedReputationByLoritta", "`${user.name + "#" + user.discriminator}`"])
                         } else {
                             if (receivedReputation) {
-                                if (content == null) {
+                                if (content.isNullOrBlank()) {
                                     str.append(context.locale["commands.social.repList.receivedReputation", "`${name}`"])
                                 } else {
-                                    str.append(context.locale["commands.social.repList.receivedReputationWithContent", "`${name}`", content])
+                                    str.append(context.locale["commands.social.repList.receivedReputationWithContent", "`${name}`", "`$content`"])
                                 }
                             } else {
-                                if (content == null) {
+                                if (content.isNullOrBlank()) {
                                     str.append(context.locale["commands.social.repList.sentReputation", "`${name}`"])
                                 } else {
-                                    str.append(context.locale["commands.social.repList.sentReputationWithContent", "`${name}`", content])
+                                    str.append(context.locale["commands.social.repList.sentReputationWithContent", "`${name}`", "`$content`"])
                                 }
                             }
                         }
