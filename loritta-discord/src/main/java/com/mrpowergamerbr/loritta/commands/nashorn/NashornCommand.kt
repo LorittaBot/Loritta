@@ -23,55 +23,59 @@ import java.lang.RuntimeException
  */
 class NashornCommand(label: String, val javaScriptCode: String, val codeType: CustomCommandCodeType) : AbstractCommand(label, category = CommandCategory.MISC) {
 	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
-		if (codeType == CustomCommandCodeType.KOTLIN) {
-			val members = JsonArray()
+		when (codeType) {
+			CustomCommandCodeType.KOTLIN -> {
+				val members = JsonArray()
 
-			members.add(ParallaxUtils.transformToJson(context.guild.selfMember))
-			members.add(ParallaxUtils.transformToJson(context.message.member!!))
-			members.addAll(context.message.mentionedMembers.map { ParallaxUtils.transformToJson(it) })
+				members.add(ParallaxUtils.transformToJson(context.guild.selfMember))
+				members.add(ParallaxUtils.transformToJson(context.message.member!!))
+				members.addAll(context.message.mentionedMembers.map { ParallaxUtils.transformToJson(it) })
 
-			val roles = JsonArray()
+				val roles = JsonArray()
 
-			context.guild.roles.forEach {
-				roles.add(
-						jsonObject(
-								"id" to it.idLong,
-								"name" to it.name
-						)
+				context.guild.roles.forEach {
+					roles.add(
+							jsonObject(
+									"id" to it.idLong,
+									"name" to it.name
+							)
+					)
+				}
+
+				val commandRequest = jsonObject(
+						"code" to javaScriptCode,
+						"label" to label,
+						"lorittaClusterId" to loritta.lorittaCluster.id,
+						"message" to ParallaxUtils.transformToJson(context.message),
+						"guild" to jsonObject(
+								"id" to context.guild.idLong,
+								"name" to context.guild.name,
+								"members" to members,
+								"roles" to roles
+						),
+						"args" to context.rawArgs.toList().toJsonArray(),
+						"clusterUrl" to "https://${loritta.lorittaCluster.getUrl()}"
 				)
+
+				val result = loritta.http.post<String>("http://" + NetAddressUtils.fixIp(loritta.config.parallaxCodeServer.url) + "/api/v1/parallax/process-command") {
+					this.body = commandRequest.toString()
+				}
+
+				println(result)
 			}
+			CustomCommandCodeType.SIMPLE_TEXT -> {
+				val message = MessageUtils.generateMessage(
+						javaScriptCode,
+						listOf(
+								context.handle,
+								context.guild
+						),
+						context.guild
+				) ?: return
 
-			val commandRequest = jsonObject(
-					"code" to javaScriptCode,
-					"label" to label,
-					"lorittaClusterId" to loritta.lorittaCluster.id,
-					"message" to ParallaxUtils.transformToJson(context.message),
-					"guild" to jsonObject(
-							"id" to context.guild.idLong,
-							"name" to context.guild.name,
-							"members" to members,
-							"roles" to roles
-					),
-					"args" to context.rawArgs.toList().toJsonArray(),
-					"clusterUrl" to "https://${loritta.lorittaCluster.getUrl()}"
-			)
-
-			val result = loritta.http.post<String>("http://" + NetAddressUtils.fixIp(loritta.config.parallaxCodeServer.url) + "/api/v1/parallax/process-command") {
-				this.body = commandRequest.toString()
+				context.sendMessage(message)
 			}
-
-			println(result)
-		} else if (codeType == CustomCommandCodeType.SIMPLE_TEXT) {
-			val message = MessageUtils.generateMessage(
-					javaScriptCode,
-					listOf(
-							context.handle,
-							context.guild
-					),
-					context.guild
-			) ?: return
-
-			context.sendMessage(message)
-		} else throw RuntimeException("Unsupported code type $codeType")
+			else -> throw RuntimeException("Unsupported code type $codeType")
+		}
 	}
 }

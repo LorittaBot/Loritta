@@ -214,7 +214,7 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 					it[CustomGuildCommands.guild] = config.id
 					it[CustomGuildCommands.enabled] = true
 					it[CustomGuildCommands.label] = label
-					it[CustomGuildCommands.codeType] = CustomCommandCodeType.JAVASCRIPT
+					it[CustomGuildCommands.codeType] = CustomCommandCodeType.KOTLIN
 					it[CustomGuildCommands.code] = code
 				}
 			}
