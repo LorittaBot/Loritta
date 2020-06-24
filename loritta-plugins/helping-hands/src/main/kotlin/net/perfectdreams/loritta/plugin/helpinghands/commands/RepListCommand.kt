@@ -70,8 +70,8 @@ object RepListCommand : DSLCommandBase {
 
                     for (reputation in reputations) {
                         // Needed for checking if the string don't bypass 2048 chars limit
-						val str = StringBuilder()
-						
+                        val str = StringBuilder()
+
                         val receivedReputation = reputation[Reputations.receivedById] == user.idLong
 
                         val givenAtTime = Instant.ofEpochMilli(reputation[Reputations.receivedAt]).atZone(ZoneId.systemDefault())
