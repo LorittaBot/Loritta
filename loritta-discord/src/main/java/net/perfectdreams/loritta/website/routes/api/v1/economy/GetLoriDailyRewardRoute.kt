@@ -70,9 +70,15 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 			val nowOneHourAgo = Instant.now()
 					.atZone(ZoneId.of("America/Sao_Paulo"))
 					.toOffsetDateTime()
-					.apply {
-						if (hour != 0) // If the hour is 0, we would get the hour *one day ago*, which is isn't what we want
-								minusHours(1)
+					.let {
+						if (it.hour != 0) // If the hour is 0, we would get the hour *one day ago*, which is isn't what we want
+							it.minusHours(1)
+						else {
+							it.withHour(0)
+									.withMinute(0)
+									.withSecond(0)
+									.withNano(0)
+						}
 					}
 					.toInstant()
 					.toEpochMilli()
