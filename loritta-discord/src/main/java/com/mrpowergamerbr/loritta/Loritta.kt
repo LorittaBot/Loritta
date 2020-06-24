@@ -191,7 +191,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					}
 				}
 				.setShardsTotal(discordConfig.discord.maxShards)
-				.setShards(discordInstanceConfig.discord.minShardId, discordInstanceConfig.discord.maxShardId)
+				.setShards(lorittaCluster.minShard.toInt(), lorittaCluster.maxShard.toInt())
 				.setStatus(discordConfig.discord.status)
 				.setBulkDeleteSplittingEnabled(false)
 				.setHttpClientBuilder(okHttpBuilder)
