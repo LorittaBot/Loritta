@@ -131,31 +131,29 @@ fun Message.refresh(): RestAction<Message> {
 }
 
 /**
- * Checks if a role is a valid giveable role (not managed, not a public role, etc) and if it can be given to the [member],
+ * Checks if a role is a valid giveable role (not managed, not a public role, etc).
  *
- * @param member the member that the role will be given to
  * @return       if the role can be given to the specified member
  */
-fun Role.canBeGivenTo(member: Member) = !this.isPublicRole &&
+fun Role.canBeGiven() = !this.isPublicRole &&
 		!this.isManaged &&
-		guild.selfMember.canInteract(this) &&
-		guild.selfMember.canInteract(member)
+		guild.selfMember.canInteract(this)
 
 /**
- * Filters a role list with [canBeGivenTo].
+ * Filters a role list with [canBeGiven].
  *
  * @param member the member that the role will be given to
  * @return       all roles that can be given to the member
  */
-fun Collection<Role>.filterOnlyGiveableRoles(member: Member) = this.filter { it.canBeGivenTo(member) }
+fun Collection<Role>.filterOnlyGiveableRoles() = this.filter { it.canBeGiven() }
 
 /**
- * Filters a role list with [canBeGivenTo].
+ * Filters a role list with [canBeGiven].
  *
  * @param member the member that the role will be given to
  * @return       all roles that can be given to the member
  */
-fun Sequence<Role>.filterOnlyGiveableRoles(member: Member) = this.filter { it.canBeGivenTo(member) }
+fun Sequence<Role>.filterOnlyGiveableRoles() = this.filter { it.canBeGiven() }
 
 /**
  * Tries to send [targetMessagesPerSecond] messages every second.

@@ -14,7 +14,7 @@ object AutoroleModule {
 				.asSequence()
 				.mapNotNull { guild.getRoleById(it) }
 				.distinct()
-				.filterOnlyGiveableRoles(member)
+				.filterOnlyGiveableRoles()
 				.toList()
 
 		val filteredRoles = roles.filter { !member.roles.contains(it) }
