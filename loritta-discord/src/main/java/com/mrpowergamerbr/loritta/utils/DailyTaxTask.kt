@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.DonationKeys
 import com.mrpowergamerbr.loritta.tables.Profiles
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.dao.Payment
@@ -78,7 +79,7 @@ class DailyTaxTask : Runnable {
 				}
 
 				for ((donationKey, guildId) in soonToBeExpiredMatchingKeys) {
-					val user = lorittaShards.getUserById(donationKey.userId) ?: continue // Ignorar caso o usuário não exista
+					val user = lorittaShards.shardManager.retrieveUserById(donationKey.userId).complete() ?: continue // Ignorar caso o usuário não exista
 					val guild = lorittaShards.getGuildById(guildId) ?: continue // Apenas avise caso a key esteja sendo usada em algum servidor
 
 					val dayNow = TimeUnit.MILLISECONDS.toDays(donationKey.expiresAt - System.currentTimeMillis())
@@ -150,7 +151,7 @@ class DailyTaxTask : Runnable {
 
 				// Hora de avisar aos usuários que a doação deles irá acabar!
 				for ((index, soonToBeExpiredDonation) in soonToBeExpiredDonations.distinctBy { it.userId }.withIndex()) {
-					val user = lorittaShards.getUserById(soonToBeExpiredDonation.userId) ?: continue // Ignorar caso o usuário não exista
+					val user = lorittaShards.shardManager.retrieveUserById(soonToBeExpiredDonation.userId).complete() ?: continue // Ignorar caso o usuário não exista
 
 					val embed = EmbedBuilder()
 							.setTitle("\uD83D\uDCB8 Faz bastante tempo que você não doa...")
@@ -186,7 +187,7 @@ class DailyTaxTask : Runnable {
 				}
 
 				for ((index, document) in documents.withIndex()) {
-					val user = lorittaShards.getUserById(document.userId.toString()) ?: continue
+					val user = lorittaShards.shardManager.retrieveUserById(document.userId.toString()).await() ?: continue
 
 					try {
 						user.openPrivateChannel().queueAfter(index.toLong(), TimeUnit.SECONDS) {
@@ -239,8 +240,8 @@ class DailyTaxTask : Runnable {
 						marriage.user1
 					}.toString()
 
-					val marriedWith = lorittaShards.getUserById(marriedWithId)
-					val user = lorittaShards.getUserById(document.userId.toString())
+					val marriedWith = lorittaShards.shardManager.retrieveUserById(marriedWithId).complete()
+					val user = lorittaShards.shardManager.retrieveUserById(document.userId.toString()).complete()
 
 					// The "queueAfter" is to avoid too many requests at the same time
 					if (user != null) {

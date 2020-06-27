@@ -530,7 +530,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			}
 
 			for (mute in mutes) {
-				val member = guild.getMemberById(mute.userId) ?: continue
+				val member = guild.retrieveMemberById(mute.userId).await() ?: continue
 
 				logger.info("Adicionado removal thread pelo MutedUsersThread já que a guild iniciou! ~ Guild: ${mute.guildId} - User: ${mute.userId}")
 				MuteCommand.spawnRoleRemovalThread(guild, loritta.getLegacyLocaleById(serverConfig.localeId), member.user, mute.expiresAt!!)

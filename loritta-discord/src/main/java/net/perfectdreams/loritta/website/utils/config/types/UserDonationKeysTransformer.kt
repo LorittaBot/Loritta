@@ -50,7 +50,7 @@ object UserDonationKeysTransformer : ConfigTransformer {
                     "id" to it.id.value,
                     "value" to it.value,
                     "expiresAt" to it.expiresAt,
-                    "user" to WebsiteUtils.transformToJson(lorittaShards.getUserById(it.userId)!!),
+                    "user" to WebsiteUtils.transformToJson(lorittaShards.retrieveUserById(it.userId)!!),
                     "activeIn" to loritta.newSuspendedTransaction { it.activeIn?.guildId?.let { serverInfo[it] } }
             )
         }

@@ -111,7 +111,7 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 				false
 		)
 
-		embed.setFooter("${locale["BOTINFO_CREATEDBY"]} - https://mrpowergamerbr.com/", lorittaShards.getUserById("123170274651668480")!!.effectiveAvatarUrl)
+		embed.setFooter("${locale["BOTINFO_CREATEDBY"]} - https://mrpowergamerbr.com/", lorittaShards.retrieveUserById(123170274651668480L)!!.effectiveAvatarUrl)
 		val message = context.sendMessage(context.getAsMention(true), embed.build())
 
 		message.onReactionAddByAuthor(context) {

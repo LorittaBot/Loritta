@@ -45,7 +45,7 @@ object WebsiteVoteUtils {
 			BotVotes.select { BotVotes.userId eq userId }.count()
 		}
 
-		val user = lorittaShards.getUserById(userId)
+		val user = lorittaShards.retrieveUserById(userId)
 
 		if (voteCount % 60 == 0L) {
 			// Can give reward!

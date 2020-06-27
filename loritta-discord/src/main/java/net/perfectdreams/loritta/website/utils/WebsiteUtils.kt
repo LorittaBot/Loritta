@@ -121,7 +121,7 @@ object WebsiteUtils {
 				"name" to guild.name
 		)
 
-		val selfMember = WebsiteUtils.transformToJson(lorittaShards.getUserById(user.id)!!)
+		val selfMember = WebsiteUtils.transformToJson(lorittaShards.retrieveUserById(user.id)!!)
 
 		guildJson["donationConfig"] = loritta.newSuspendedTransaction {
 			val donationConfig = serverConfig.donationConfig

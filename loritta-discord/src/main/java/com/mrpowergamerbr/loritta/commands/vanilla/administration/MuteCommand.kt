@@ -416,7 +416,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 					return
 				}
 
-				val member = guild.getMemberById(userId)
+				val member = guild.retrieveMemberById(userId).complete()
 
 				transaction(Databases.loritta) {
 					Mutes.deleteWhere {
@@ -431,7 +431,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 				return
 			}
 
-			val currentMember = currentGuild.getMemberById(userId)
+			val currentMember = currentGuild.retrieveMemberById(userId).complete()
 
 			if (currentMember == null) {
 				logger.warn("Ignorando job removal de $userId em $guildId - Motivo: Ela não está mais no servidor!")
@@ -468,7 +468,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 						return@launch
 					}
 
-					val member = guild.getMemberById(userId) ?: return@launch
+					val member = guild.retrieveMemberById(userId).complete() ?: return@launch
 
 					val settings = AdminUtils.retrieveModerationInfo(loritta.getOrCreateServerConfig(guildId))
 
