@@ -97,7 +97,7 @@ class CheckReactionsForPrivateSpamListener(val config: StaffLorittaBanConfig) : 
 			for (str in split) {
 				if (str.isNotBlank()) {
 					if (str.isValidSnowflake()) {
-						val member = event.guild.getMemberById(str.toLong()) ?: continue
+						val member = event.guild.retrieveMemberById(str.toLong()).await() ?: continue
 						foundUsersFromMessageInGuild.add(member)
 					}
 
