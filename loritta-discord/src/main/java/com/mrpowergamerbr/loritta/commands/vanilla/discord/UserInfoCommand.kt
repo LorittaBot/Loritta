@@ -145,12 +145,6 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 
 		embed.apply {
 			if (member != null) {
-				addField(
-						"\uD83D\uDC81 ${locale.toNewLocale()["commands.discord.userinfo.joinPosition"]}",
-						locale.toNewLocale()["commands.discord.userinfo.joinPlace", "${member.guild.members.sortedBy { it.timeJoined }.indexOf(member) + 1}º"],
-						true
-				)
-
 				val roles = member.roles.joinToString(separator = ", ", transform = { "`${it.name}`" })
 				addField("\uD83D\uDCBC " + context.legacyLocale["USERINFO_ROLES"] + " (${member.roles.size})", if (roles.isNotEmpty()) roles.substringIfNeeded(0 until 1024) else context.legacyLocale.get("USERINFO_NO_ROLE") + " \uD83D\uDE2D", true)
 
