@@ -1,13 +1,11 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.images
 
-import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.TretaNewsGenerator
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import net.dv8tion.jda.api.OnlineStatus
-import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.util.*
 
@@ -34,28 +32,8 @@ class TretaNewsCommand : AbstractCommand("tretanews", category = CommandCategory
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
-		var user1: User? = context.getUserAt(0)
-		var user2: User? =  context.getUserAt(1)
-
-		if (user1 == null) {
-			var member1 = context.guild.members[RANDOM.nextInt(context.guild.members.size)]
-
-			while (member1.onlineStatus == OnlineStatus.OFFLINE) {
-				member1 = context.guild.members[RANDOM.nextInt(context.guild.members.size)]
-			}
-
-			user1 = member1.user
-		}
-
-		if (user2 == null) {
-			var member2 = context.guild.members[RANDOM.nextInt(context.guild.members.size)]
-
-			while (member2.onlineStatus == OnlineStatus.OFFLINE) {
-				member2 = context.guild.members[RANDOM.nextInt(context.guild.members.size)]
-			}
-
-			user2 = member2.user
-		}
+		val user1 = context.getUserAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
+		val user2 = context.getUserAt(1) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
 		val base = TretaNewsGenerator.generate(context.guild, context.guild.getMember(user1)!!, context.guild.getMember(user2)!!)
 
