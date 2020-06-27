@@ -187,7 +187,7 @@ class DailyTaxTask : Runnable {
 				}
 
 				for ((index, document) in documents.withIndex()) {
-					val user = lorittaShards.shardManager.retrieveUserById(document.userId.toString()).await() ?: continue
+					val user = lorittaShards.shardManager.retrieveUserById(document.userId.toString()).complete() ?: continue
 
 					try {
 						user.openPrivateChannel().queueAfter(index.toLong(), TimeUnit.SECONDS) {
