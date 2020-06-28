@@ -48,7 +48,7 @@ object MessageUtils {
 					tokens["nickname"] = source.effectiveName
 				}
 				if (source is Guild) {
-					val guildSize = source.members.size.toString()
+					val guildSize = source.memberCount.toString()
 					val mentionOwner = source.owner?.asMention ?: "???"
 					val owner = source.owner?.effectiveName ?: "???"
 					tokens["guild"] = source.name

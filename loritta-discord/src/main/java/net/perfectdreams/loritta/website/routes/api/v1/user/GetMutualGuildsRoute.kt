@@ -35,7 +35,7 @@ class GetMutualGuildsRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationR
 									"id" to it.id,
 									"name" to it.name,
 									"iconUrl" to it.iconUrl,
-									"memberCount" to it.memberCache.size(),
+									"memberCount" to it.memberCount,
 									"timeJoined" to member?.timeJoined?.toInstant()?.toEpochMilli()
 							)
 						}.toJsonArray()

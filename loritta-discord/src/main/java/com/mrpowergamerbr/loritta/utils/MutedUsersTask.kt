@@ -41,7 +41,7 @@ class MutedUsersTask : Runnable {
 					continue
 				}
 
-				val member = guild.getMemberById(mute.userId)
+				val member = guild.retrieveMemberById(mute.userId).complete()
 
 				if (member == null) {
 					logger.debug { "Member ${mute.userId} has a mute status in $guild, but the member isn't there anymore!" }

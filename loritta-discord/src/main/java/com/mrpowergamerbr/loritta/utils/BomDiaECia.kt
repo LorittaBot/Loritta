@@ -225,7 +225,7 @@ class BomDiaECia {
 							if (it.reactionEmote.isEmote("⁉")) {
 								loritta.messageInteractionCache.remove(it.messageIdLong)
 
-								val triedToCall = triedToCall.mapNotNull { lorittaShards.getUserById(it) }
+								val triedToCall = triedToCall.mapNotNull { lorittaShards.retrieveUserInfoById(it) }
 								channel.sendMessage("<:yudi:446394608256024597> **|** Pois é, ${triedToCall.joinToString(", ", transform = { "`" + it.name + "`" })} tentaram ligar... mas falharam!").queue()
 							}
 						}

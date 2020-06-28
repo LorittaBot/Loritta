@@ -56,7 +56,7 @@ class LorittaLandRoleSync : Runnable {
 						?.id
 
 				if (discordId != null) {
-					originalGuild.getMemberById(discordId)
+					originalGuild.retrieveMemberById(discordId).complete()
 				} else {
 					null
 				}
@@ -303,7 +303,7 @@ class LorittaLandRoleSync : Runnable {
 		val translators = loritta.locales.flatMap { it.value.getList("loritta.translationAuthors") }.distinct()
 
 		val validTranslators = translators.mapNotNull {
-			originalGuild.getMemberById(it)
+			originalGuild.retrieveMemberById(it).complete()
 		}
 
 		if (translatorRole != null) {

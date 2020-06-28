@@ -279,9 +279,9 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 			var dailyPayout = RANDOM.nextInt(1800 /* Math.max(555, 555 * (multiplier - 1)) */, ((1800 * multiplier) + 1).toInt()) // 555 (lower bound) -> 555 * sites de votação do PerfectDreams
 			val originalPayout = dailyPayout
 
-			val mutualGuilds = lorittaShards.queryMutualGuildsInAllLorittaClusters(userIdentification.id)
+			val mutualGuilds = discordAuth.getUserGuilds()
 
-			var sponsoredBy: JsonObject? = null
+			var sponsoredBy: TemmieDiscordAuth.Guild? = null
 			var multipliedBy: Double? = null
 			var sponsoredByUserId: Long? = null
 
@@ -291,46 +291,22 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 			loritta.newSuspendedTransaction {
 				// Pegar todos os servidores com sonhos patrocinados
 				val results = (ServerConfigs innerJoin DonationConfigs).select {
-					(ServerConfigs.id inList mutualGuilds.map { it["id"].string.toLong() }) and
+					(ServerConfigs.id inList mutualGuilds.map { it.id.toLong() }) and
 							(DonationConfigs.dailyMultiplier eq true)
 				}
 
 				val serverConfigs = ServerConfig.wrapRows(results)
 
 				var bestServer: ServerConfig? = null
-				var bestServerInfo: JsonObject? = null
+				var bestServerInfo: TemmieDiscordAuth.Guild? = null
 
 				for (pair in serverConfigs.map { Pair(it, it.getActiveDonationKeysValue()) }.filter { ServerPremiumPlans.getPlanFromValue(it.second).dailyMultiplier > 1.0 }.sortedByDescending { it.second  }) {
 					val (config, donationValue) = pair
 					logger.info { "Checking ${config.guildId}" }
 
-					val guild = mutualGuilds.firstOrNull { logger.info { "it[id] = ${it["id"].string.toLong()}" }; it["id"].string.toLong() == config.guildId }?.obj
+					val guild = mutualGuilds.firstOrNull { logger.info { "it[id] = ${it.id.toLong()}" }; it.id.toLong() == config.guildId }
 							?: continue
-					val id = guild["id"].string.toLong()
-
-					val epochMillis = guild["timeJoined"].long
-
-					val requiredTime = if (user?.avatarId == null)
-						1_296_000_000
-					else
-						Constants.ONE_WEEK_IN_MILLISECONDS
-
-					if (epochMillis + requiredTime > System.currentTimeMillis()) { // 15 dias
-						val diff = epochMillis + requiredTime - System.currentTimeMillis()
-						failedDailyServersInfo.add(
-								jsonObject(
-										"guild" to jsonObject(
-												"name" to guild["name"].string,
-												"iconUrl" to guild["iconUrl"].nullString,
-												"id" to guild["id"].string
-										),
-										"type" to DailyGuildMissingRequirement.REQUIRES_MORE_TIME.toString(),
-										"data" to diff,
-										"multiplier" to getDailyMultiplier(donationValue)
-								)
-						)
-						continue
-					}
+					val id = guild.id.toLong()
 
 					val xp = GuildProfile.find { (GuildProfiles.guildId eq id) and (GuildProfiles.userId eq userIdentification.id.toLong()) }.firstOrNull()?.xp
 							?: 0L
@@ -339,9 +315,9 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 						failedDailyServersInfo.add(
 								jsonObject(
 										"guild" to jsonObject(
-												"name" to guild["name"].string,
-												"iconUrl" to guild["iconUrl"].nullString,
-												"id" to guild["id"].string
+												"name" to guild.name,
+												"iconUrl" to guild.icon,
+												"id" to guild.id
 										),
 										"type" to DailyGuildMissingRequirement.REQUIRES_MORE_XP.toString(),
 										"data" to 500 - xp,
@@ -376,9 +352,9 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				val sponsor = jsonObject(
 						"multipliedBy" to multipliedBy,
 						"guild" to jsonObject(
-								"name" to sponsoredBy!!["name"].nullString,
-								"iconUrl" to sponsoredBy!!["iconUrl"].nullString,
-								"id" to sponsoredBy!!["id"].nullString
+								"name" to sponsoredBy!!.name,
+								"iconUrl" to sponsoredBy!!.icon,
+								"id" to sponsoredBy!!.id
 						),
 						"originalPayout" to originalPayout
 				)

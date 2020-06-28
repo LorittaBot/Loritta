@@ -108,7 +108,7 @@ class RaffleThread : Thread("Raffle Thread") {
 			userIds.clear()
 
 			val locale = loritta.getLegacyLocaleById(winner.second)
-			val user = lorittaShards.getUserById(lastWinnerId)
+			val user = lorittaShards.shardManager.retrieveUserById(lastWinnerId!!).complete()
 
 			if (user != null && !user.isBot) {
 				try {
