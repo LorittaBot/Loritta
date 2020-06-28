@@ -80,7 +80,7 @@ object ActiveDonationKeysTransformer : ConfigTransformer {
                     "id" to it.id.value,
                     "value" to it.value,
                     "expiresAt" to it.expiresAt,
-                    "user" to WebsiteUtils.transformToJson(lorittaShards.getUserById(it.userId)!!)
+                    "user" to WebsiteUtils.transformToJson(lorittaShards.retrieveUserById(it.userId)!!)
             )
         }
         return array.toJsonArray()

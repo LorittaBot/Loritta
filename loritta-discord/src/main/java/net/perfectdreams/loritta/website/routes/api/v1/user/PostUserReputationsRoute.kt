@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.Reputation
 import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.PersonalPronoun
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
@@ -83,7 +84,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 				if (channel != null) {
 					if (!channel.canTalk()) // Eu não posso falar!
 						return
-					val member = channel.guild.getMemberById(giverId)
+					val member = channel.guild.retrieveMemberById(giverId).await()
 					if (member == null || !channel.canTalk(member)) // O usuário não está no servidor ou não pode falar no chat
 						return
 
@@ -235,7 +236,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 						}
 						for ((userId, count) in map) {
 							if (idx == 5) break
-							val rankUser = lorittaShards.getUserById(userId)
+							val rankUser = lorittaShards.shardManager.retrieveUserById(userId).complete()
 
 							if (rankUser != null) {
 								tr {

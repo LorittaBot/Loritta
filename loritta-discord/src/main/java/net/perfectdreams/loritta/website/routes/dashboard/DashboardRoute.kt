@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
@@ -36,7 +37,7 @@ class DashboardRoute(loritta: LorittaDiscord) : RequiresDiscordLoginLocalizedRou
 		val guilds = userGuilds.filter {
 			val guild = lorittaShards.getGuildById(it.id)
 			if (guild != null) {
-				val member = guild.getMemberById(lorittaProfile.userId)
+				val member = guild.retrieveMemberById(lorittaProfile.userId).await()
 				val config = serverConfigs.firstOrNull { config -> config.guildId.toString() == it.id }
 				if (member != null && config != null) { // As vezes member == null, então vamos verificar se não é null antes de verificar as permissões
 					val lorittaUser = GuildLorittaUser(member, LorittaUser.loadMemberLorittaPermissions(config, member), lorittaProfile)
