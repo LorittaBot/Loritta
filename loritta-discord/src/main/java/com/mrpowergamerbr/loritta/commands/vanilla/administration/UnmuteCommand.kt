@@ -117,7 +117,7 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
 								punishLogMessage,
-								listOf(user),
+								listOf(user, guild),
 								guild,
 								mutableMapOf(
 										"reason" to reason,

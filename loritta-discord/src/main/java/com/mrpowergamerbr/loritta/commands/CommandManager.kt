@@ -323,7 +323,7 @@ class CommandManager(loritta: Loritta) {
 							if (serverConfig.blacklistedWarning?.isNotEmpty() == true && ev.guild != null && ev.member != null && ev.textChannel != null) {
 								val generatedMessage = MessageUtils.generateMessage(
 										serverConfig.blacklistedWarning ?: "???",
-										listOf(ev.member, ev.textChannel),
+										listOf(ev.member, ev.textChannel, ev.guild),
 										ev.guild
 								)
 								ev.textChannel.sendMessage(generatedMessage!!).queue()

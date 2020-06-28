@@ -180,7 +180,7 @@ class InviteLinkModule : MessageReceivedModule {
 						}
 					}
 
-					val toBeSent = MessageUtils.generateMessage(warnMessage, listOf(message.author, guild), guild)
+					val toBeSent = MessageUtils.generateMessage(warnMessage, listOf(message.author, guild, message.channel), guild)
 							?: return true
 
 					message.textChannel.sendMessage(toBeSent).queue()

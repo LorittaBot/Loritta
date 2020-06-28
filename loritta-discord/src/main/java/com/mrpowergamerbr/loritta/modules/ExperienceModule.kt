@@ -226,7 +226,8 @@ class ExperienceModule : MessageReceivedModule {
 						announcement[LevelAnnouncementConfigs.message],
 						listOf(
 								member,
-								guild
+								guild,
+								event.channel
 						),
 						guild,
 						mapOf(

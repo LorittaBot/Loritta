@@ -101,7 +101,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 						if (textChannel != null && textChannel.canTalk()) {
 							val message = MessageUtils.generateMessage(
 									punishLogMessage,
-									listOf(user),
+									listOf(user, context.guild),
 									context.guild,
 									mutableMapOf(
 											"reason" to reason,

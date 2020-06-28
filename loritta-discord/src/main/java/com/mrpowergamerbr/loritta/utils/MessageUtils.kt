@@ -58,10 +58,12 @@ object MessageUtils {
 					tokens["owner"] = owner
 					tokens["guild-icon-url"] = source.iconUrl?.replace("jpg", "png")
 				}
-				if (source is TextChannel) {
+				if (source is GuildChannel) {
 					tokens["channel"] = source.name
-					tokens["@channel"] = source.asMention
 					tokens["channel-id"] = source.id
+				}
+				if (source is TextChannel) {
+					tokens["@channel"] = source.asMention
 				}
 			}
 		}

@@ -68,7 +68,8 @@ class NashornCommand(label: String, val javaScriptCode: String, val codeType: Cu
 						javaScriptCode,
 						listOf(
 								context.handle,
-								context.guild
+								context.guild,
+								context.message.channel
 						),
 						context.guild
 				) ?: return
