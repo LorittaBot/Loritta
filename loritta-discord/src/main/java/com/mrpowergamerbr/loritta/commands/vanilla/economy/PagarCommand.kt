@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.isRecentlyCreated
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.PersonalPronoun
 import kotlinx.coroutines.sync.Mutex
@@ -129,6 +130,20 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 								Constants.ERROR
 						)
 				)
+				return
+			}
+
+			if (context.userHandle.isRecentlyCreated()) {
+				context.reply(LoriReply(
+						locale["PAY_AccountTooNewSelf", 1],
+						Constants.ERROR
+				))
+				return
+			} else if (user.isRecentlyCreated()) {
+				context.reply(LoriReply(
+						locale["PAY_AccountTooNewTarget", 1],
+						Constants.ERROR
+				))
 				return
 			}
 

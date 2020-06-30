@@ -3,10 +3,8 @@ package net.perfectdreams.loritta.plugin.helpinghands.commands
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.CaraCoroaCommand
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.MessageInteractionFunctions
-import com.mrpowergamerbr.loritta.utils.removeAllFunctions
-import com.mrpowergamerbr.loritta.utils.stripCodeMarks
+import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.isRecentlyCreated
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -121,6 +119,12 @@ object CoinFlipBetCommand : DSLCommandBase {
 			if (number > invitedUserProfile.money || bannedState != null)
 				fail(locale["commands.economy.flipcoinbet.notEnoughMoneyInvited", invitedUser.asMention], Constants.ERROR)
 
+			if (context.user.isRecentlyCreated()) {
+				fail(locale["commands.economy.flipcoinbet.accountTooNewSelf", 1], Constants.ERROR)
+			} else if (invitedUser.isRecentlyCreated()) {
+				fail(locale["commands.economy.flipcoinbet.accountTooNewInvited", 1], Constants.ERROR)
+			}
+
 			val message = context.reply(
 					LorittaReply(
 							(
@@ -180,8 +184,8 @@ object CoinFlipBetCommand : DSLCommandBase {
 								message = context.locale["${CaraCoroaCommand.LOCALE_PREFIX}.heads"]
 							}
 
-							val winner: net.dv8tion.jda.api.entities.User
-							val loser: net.dv8tion.jda.api.entities.User
+							val winner: User
+							val loser: User
 
 							if (isTails) {
 								winner = context.user

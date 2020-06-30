@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.utils.extensions
 
 import com.mrpowergamerbr.loritta.LorittaLauncher.loritta
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
@@ -50,6 +51,10 @@ suspend fun MessageHistory.retrievePastChunked(quantity: Int): List<Message> {
 		messages += newMessages
 	}
 	return messages
+}
+
+fun User.isRecentlyCreated(): Boolean {
+	return timeCreated.toEpochSecond()*1000 + (Constants.ONE_WEEK_IN_MILLISECONDS * 2) > System.currentTimeMillis()
 }
 
 suspend fun MessageHistory.retrieveAllMessages(): List<Message> {
