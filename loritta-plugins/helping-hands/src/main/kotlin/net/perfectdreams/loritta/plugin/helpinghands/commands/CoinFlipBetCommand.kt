@@ -109,6 +109,12 @@ object CoinFlipBetCommand : DSLCommandBase {
 			if (number > selfUserProfile.money)
 				fail(locale["commands.economy.flipcoinbet.notEnoughMoneySelf"], Constants.ERROR)
 
+			if ((System.currentTimeMillis()/1000) - context.user.timeCreated.toEpochSecond() < 604800) {
+				fail(locale["commands.economy.flipcoin.bet.newAccountSelf"])
+			} else if ((System.currentTimeMillis()/1000) - invitedUser.timeCreated.toEpochSecond() < 604800) {
+				fail(locale["commands.economy.flipcoin.bet.newAccountInvited"])
+			}
+
 			val invitedUserProfile = loritta.getOrCreateLorittaProfile(invitedUser.id)
 			val bannedState = invitedUserProfile.getBannedState()
 
