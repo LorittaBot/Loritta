@@ -56,10 +56,7 @@ object WelcomerConfigTransformer : ConfigTransformer {
         loritta.newSuspendedTransaction {
             val welcomerConfig = serverConfig.welcomerConfig
 
-            if (!isEnabled) {
-                serverConfig.welcomerConfig = null
-                welcomerConfig?.delete()
-            } else {
+            if (isEnabled) {
                 val newConfig = welcomerConfig ?: WelcomerConfig.new {
                     this.tellOnJoin = tellOnJoin
                     this.channelJoinId = channelJoinId
