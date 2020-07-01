@@ -55,8 +55,7 @@ suspend fun MessageHistory.retrievePastChunked(quantity: Int): List<Message> {
 
 suspend fun MessageHistory.retrieveAllMessages(): List<Message> {
 	val messages = mutableListOf<Message>()
-	messages.first().timeCreated.atZoneSameInstant(ZoneId.of("owo"))
-			.dayOfMonth
+
 	while (true) {
 		val newMessages = this.retrievePast(100).await()
 		if (newMessages.isEmpty())
