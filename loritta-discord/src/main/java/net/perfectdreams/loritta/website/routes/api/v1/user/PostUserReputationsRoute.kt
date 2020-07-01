@@ -28,10 +28,7 @@ import kotlinx.html.stream.appendHTML
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.utils.DiscordUtils
-import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.ClusterOfflineException
-import net.perfectdreams.loritta.utils.UserPremiumPlans
+import net.perfectdreams.loritta.utils.*
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
@@ -214,11 +211,20 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 			if (guildId != null && channelId != null)
 				sendReputationToCluster(guildId, channelId, userIdentification.id, receiver, reputations.size.toLong())
 
-			val rank = StringBuilder().appendHTML().div(classes = "box-item") {
-				val map = reputations.groupingBy { it.givenById }.eachCount()
-						.entries
-						.sortedByDescending { it.value }
+			var idx = 0
 
+			val map = reputations.groupingBy { it.givenById }.eachCount()
+					.entries
+					.sortedByDescending { it.value }
+
+			val idToUserInfo = mutableMapOf<Long, CachedUserInfo?>()
+
+			for ((userId, count) in map) {
+				if (idx == 5) break
+				idToUserInfo[userId] = lorittaShards.retrieveUserInfoById(userId)
+			}
+
+			val rank = StringBuilder().appendHTML().div(classes = "box-item") {
 				var idx = 0
 				div(classes = "rank-title") {
 					+"Placar de Reputações"
@@ -236,7 +242,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 						}
 						for ((userId, count) in map) {
 							if (idx == 5) break
-							val rankUser = lorittaShards.shardManager.retrieveUserById(userId).complete()
+							val rankUser = idToUserInfo[userId]
 
 							if (rankUser != null) {
 								tr {
