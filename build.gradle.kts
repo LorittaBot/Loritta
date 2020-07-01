@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val loriVersion   = "2020-SNAPSHOT"
 val kotlinVersion = "1.3.70"
 val ktorVersion   = "1.3.1"
-val jdaVersion    = "4.1.1_154"
+val jdaVersion    = "4.2.0_171"
 
 println("Compiling Loritta $loriVersion")
 println("Kotlin Version: $kotlinVersion")
