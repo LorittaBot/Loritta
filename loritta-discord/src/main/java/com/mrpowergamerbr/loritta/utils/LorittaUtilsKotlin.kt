@@ -134,7 +134,7 @@ object LorittaUtilsKotlin {
 
 		LorittaLauncher.loritta.ignoreIds.add(user.idLong)
 
-		val message = locale[
+		val message = locale.getList(
 				"commands.youAreLorittaBanned",
 				bannedState[BannedUsers.reason],
 				bannedState[BannedUsers.expiresAt].let {
@@ -147,7 +147,7 @@ object LorittaUtilsKotlin {
 				loritta.instanceConfig.loritta.website.url + "guidelines",
 				Emotes.DEFAULT_DANCE,
 				Emotes.LORI_DEMON
-		]
+		).joinToString("\n")
 
 		// Se um usuário está banido...
 		user.openPrivateChannel()

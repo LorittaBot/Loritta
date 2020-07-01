@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.Permission.*
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.requests.RestAction
+import java.time.ZoneId
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -54,7 +55,8 @@ suspend fun MessageHistory.retrievePastChunked(quantity: Int): List<Message> {
 
 suspend fun MessageHistory.retrieveAllMessages(): List<Message> {
 	val messages = mutableListOf<Message>()
-
+	messages.first().timeCreated.atZoneSameInstant(ZoneId.of("owo"))
+			.dayOfMonth
 	while (true) {
 		val newMessages = this.retrievePast(100).await()
 		if (newMessages.isEmpty())
