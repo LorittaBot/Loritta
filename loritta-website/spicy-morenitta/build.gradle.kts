@@ -12,6 +12,9 @@ repositories {
 kotlin {
 	target {
 		browser {
+			dceTask {
+				keep("ktor-ktor-io.\$\$importsForInline\$\$.ktor-ktor-io.io.ktor.utils.io")
+			}
 		}
 	}
 
