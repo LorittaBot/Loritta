@@ -217,7 +217,7 @@ class LorittaWebsite(val loritta: Loritta) {
 					if (route is LocalizedRoute) {
 						get(route.originalPath) {
 							val acceptLanguage = call.request.header("Accept-Language") ?: "en-US"
-							val ranges = Lists.reverse<Locale.LanguageRange>(Locale.LanguageRange.parse(acceptLanguage))
+							val ranges = Locale.LanguageRange.parse(acceptLanguage).reversed()
 							var localeId = "en-us"
 							for (range in ranges) {
 								localeId = range.range.toLowerCase()
