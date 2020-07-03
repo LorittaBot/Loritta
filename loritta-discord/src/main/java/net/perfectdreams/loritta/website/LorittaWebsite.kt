@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.website
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.google.common.collect.Lists
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
