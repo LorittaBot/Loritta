@@ -6,8 +6,9 @@ import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.Permission.*
 import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.RestAction
-import java.time.ZoneId
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -65,6 +66,24 @@ suspend fun MessageHistory.retrieveAllMessages(): List<Message> {
 	}
 
 	return messages
+}
+
+suspend fun Guild.retrieveMemberOrNullById(id: String) = retrieveMemberOrNullById(id.toLong())
+
+/**
+ * Retrieves a member, if the member isn't in the guild then null is returned
+ *
+ * @param the member's id
+ * @return the member or null
+ */
+suspend fun Guild.retrieveMemberOrNullById(id: Long): Member? {
+	return try {
+		this.retrieveMemberById(id).await()
+	} catch (e: ErrorResponseException) {
+		if (e.errorResponse == ErrorResponse.UNKNOWN_MEMBER)
+			return null
+		throw e
+	}
 }
 
 /**

@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.utils
 
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.extensions.retrieveAllMessages
+import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNullById
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
@@ -56,7 +57,7 @@ class LorittaLandRoleSync : Runnable {
 						?.id
 
 				if (discordId != null) {
-					originalGuild.retrieveMemberById(discordId).complete()
+					runBlocking { originalGuild.retrieveMemberOrNullById(discordId) }
 				} else {
 					null
 				}
@@ -303,7 +304,7 @@ class LorittaLandRoleSync : Runnable {
 		val translators = loritta.locales.flatMap { it.value.getList("loritta.translationAuthors") }.distinct()
 
 		val validTranslators = translators.mapNotNull {
-			originalGuild.retrieveMemberById(it).complete()
+			runBlocking { originalGuild.retrieveMemberOrNullById(it) }
 		}
 
 		if (translatorRole != null) {
