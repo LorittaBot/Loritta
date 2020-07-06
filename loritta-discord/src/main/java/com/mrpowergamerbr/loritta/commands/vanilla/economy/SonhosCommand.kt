@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.dao.servers.moduleconfigs.EconomyConfig
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.math.BigDecimal
 
-class SonhosCommand : AbstractCommand("sonhos", listOf("atm"), category = CommandCategory.ECONOMY) {
+class SonhosCommand : AbstractCommand("sonhos", listOf("atm", "bal", "balance"), category = CommandCategory.ECONOMY) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["SONHOS_Description"]
 	}
