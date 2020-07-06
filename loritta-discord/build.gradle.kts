@@ -49,6 +49,7 @@ dependencies {
 	api(kotlin("compiler"))
 	api(kotlin("scripting-compiler"))
     api("net.perfectdreams.commands:command-framework-core:0.0.8")
+    api("net.perfectdreams:merkadopago:1.0.0")
     api("org.jetbrains.kotlinx:kotlinx-html-jvm:0.6.12")
     api("org.twitter4j:twitter4j-core:[4.0,)")
     api("org.twitter4j:twitter4j-stream:[4.0,)")

@@ -48,13 +48,13 @@ class PostMercadoPagoCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta,
 				val payment = com.mrpowergamerbr.loritta.utils.loritta.mercadoPago.getPaymentInfoById(id)
 				logger.info { "MercadoPago Payment $id is ${payment.description} - Status: ${payment.status} - Reference ID: ${payment.externalReference}" }
 
-				if (payment.externalReference == null) {
+				val externalReference = payment.externalReference ?: run {
 					logger.warn { "MercadoPago Payment $id is ${payment.description} but it is missing the Reference ID!" }
 					call.respondJson(jsonObject())
 					return
 				}
 
-				val internalTransactionId = payment.externalReference.split("-").last()
+				val internalTransactionId = externalReference.split("-").last()
 
 				val internalPayment = loritta.newSuspendedTransaction {
 					Payment.findById(internalTransactionId.toLong())
@@ -94,7 +94,7 @@ class PostMercadoPagoCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta,
 						internalPayment.paidAt = System.currentTimeMillis()
 					}
 
-					if (payment.externalReference.startsWith("LORI-BUNDLE-")) {
+					if (externalReference.startsWith("LORI-BUNDLE-")) {
 						// LORI-BUNDLE-InternalTransactionId
 						val paymentMetadata = internalPayment.metadata
 
@@ -130,19 +130,19 @@ class PostMercadoPagoCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta,
 						}
 					}
 
-					if (payment.externalReference.startsWith("LORI-DONATE-MP-")) {
+					if (externalReference.startsWith("LORI-DONATE-MP-")) {
 						// Criação de nova key:
 						// LORI-DONATE-MP-InternalTransactionId
 						// Renovação de uma key
 						// LORI-DONATE-MP-RENEW-KEY-KeyId-InternalTransactionId
-						val isKeyRenewal = payment.externalReference.startsWith("LORI-DONATE-MP-RENEW-KEY-")
+						val isKeyRenewal = externalReference.startsWith("LORI-DONATE-MP-RENEW-KEY-")
 
 						loritta.newSuspendedTransaction {
 							internalPayment.expiresAt = System.currentTimeMillis() + Constants.DONATION_ACTIVE_MILLIS
 
 							if (internalPayment.reason == PaymentReason.DONATION) {
 								if (isKeyRenewal) {
-									val donationKeyId = payment.externalReference.split("-").dropLast(1).last()
+									val donationKeyId = externalReference.split("-").dropLast(1).last()
 									logger.info { "Renewing key $donationKeyId with value ${internalPayment.money.toDouble()} for ${internalPayment.userId}" }
 									val donationKey = DonationKey.findById(donationKeyId.toLong())
 
