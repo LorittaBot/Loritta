@@ -79,7 +79,7 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
         )
 
         plansTable.appendBuilder(
-                StringBuilder().appendHTML(true).table {
+                StringBuilder().appendHTML(true).table(classes = "fancy-table centered-text") {
                     style = "margin: 0 auto;"
 
                     val rewardColumn = mutableListOf<Double>()
@@ -215,7 +215,7 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
 
         // Criar coisas
         table.appendBuilder(
-                StringBuilder().appendHTML(true).table {
+                StringBuilder().appendHTML(true).table(classes = "fancy-table centered-text") {
                     style = "margin: 0 auto;"
 
                     val rewardColumn = mutableListOf<Double>(0.0)
@@ -360,7 +360,7 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                             }
                             td {
                                 if (user.id == m.userIdentification?.id) {
-                                    classes += "rainbow-animated-text"
+                                    classes += "has-rainbow-text"
                                 }
                                 +user.name
                                 span {

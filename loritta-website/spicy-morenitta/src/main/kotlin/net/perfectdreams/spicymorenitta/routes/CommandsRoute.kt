@@ -122,7 +122,7 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
                                             }
                                         }
 
-                                        for (command in commands) {
+                                        for (command in commands.sortedBy(CommandInfo::label)) {
                                             tr {
                                                 td {
                                                     + command.label

@@ -513,7 +513,7 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 					h1 {
 						style = "text-align: center; font-weight: 1000; color: white;"
 						+"Prêmios da "
-						span("rainbow-animated-text") {
+						span("has-rainbow-text") {
 							style = "text-shadow: 0px 0px 1px #ffffff7d;"
 							+"#TeamPantufa"
 						}
@@ -596,7 +596,7 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 					h1 {
 						style = "text-align: center; font-weight: 1000; color: white;"
 						+"Prêmios da "
-						span("rainbow-animated-text") {
+						span("has-rainbow-text") {
 							style = "text-shadow: 0px 0px 1px #ffffff7d;"
 							+"#TeamGabriela"
 						}

@@ -217,7 +217,7 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
                                     }
                                     td {
                                         if (user.id == m.userIdentification?.id) {
-                                            classes += "rainbow-animated-text"
+                                            classes += "has-rainbow-text"
                                         }
                                         + user.name
                                         span {
