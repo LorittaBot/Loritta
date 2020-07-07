@@ -1,21 +1,28 @@
 package net.perfectdreams.spicymorenitta.routes
 
+import io.ktor.client.request.get
 import kotlinx.html.*
+import kotlinx.html.dom.append
 import kotlinx.html.dom.create
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.stream.appendHTML
 import kotlinx.serialization.builtins.list
+import kotlinx.serialization.json.Json
+import net.perfectdreams.loritta.serializable.PaymentScoreboardEntry
 import net.perfectdreams.loritta.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
+import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import org.w3c.dom.HTMLDivElement
+import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.get
 import kotlin.browser.document
+import kotlin.browser.window
 import kotlin.collections.set
 
 class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
@@ -311,6 +318,86 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                 modal.open()
             } else {
                 showDonateModal(19.99)
+            }
+        }
+
+        m.launch {
+            val responseMonthly = http.get<String>("${window.location.origin}/api/v1/economy/payments-leaderboard/premium/top/monthly?size=5")
+            val entriesMontly = Json.Default.parse(PaymentScoreboardEntry.serializer().list, responseMonthly)
+
+            val responseLifetime = http.get<String>("${window.location.origin}/api/v1/economy/payments-leaderboard/premium/top/lifetime?size=5")
+            val entriesLifetime = Json.Default.parse(PaymentScoreboardEntry.serializer().list, responseLifetime)
+
+            fun TagConsumer<HTMLElement>.generatePaymentScoreboard(entries: List<PaymentScoreboardEntry>) {
+                table("fancy-table") {
+                    style = "width: 100%;"
+                    tr {
+                        th {
+                            +locale["website.daily.leaderboard.position"]
+                        }
+                        th {
+
+                        }
+                        th {
+                            +locale["website.daily.leaderboard.name"]
+                        }
+                        th {
+                            +"Grana"
+                        }
+                    }
+
+                    for ((idx, entry) in entries.withIndex()) {
+                        val (money, user) = entry
+
+                        tr {
+                            td {
+                                +"#${idx + 1}"
+                            }
+                            td {
+                                img(src = user.avatarUrl) {
+                                    style = "border-radius: 100%; width: 2em;"
+                                }
+                            }
+                            td {
+                                if (user.id == m.userIdentification?.id) {
+                                    classes += "rainbow-animated-text"
+                                }
+                                +user.name
+                                span {
+                                    style = "opacity: 0.5;"
+                                    +"#${user.discriminator}"
+                                }
+                            }
+                            td {
+                                +"R$ $money"
+                            }
+                        }
+                    }
+                }
+            }
+
+            document.select<HTMLElement>("#top-donators-scoreboard-wrapper").append {
+                div {
+                    style = "display: flex; justify-content: space-evenly;"
+
+                    div {
+                        h3 {
+                            + "Ostentadores neste Mês"
+                        }
+                        run {
+                            generatePaymentScoreboard(entriesMontly)
+                        }
+                    }
+
+                    div {
+                        h3 {
+                            + "Ostentadores Vitalícios"
+                        }
+                        run {
+                            generatePaymentScoreboard(entriesLifetime)
+                        }
+                    }
+                }
             }
         }
     }

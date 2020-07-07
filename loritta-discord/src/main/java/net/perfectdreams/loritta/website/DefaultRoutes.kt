@@ -22,7 +22,7 @@ import net.perfectdreams.loritta.website.routes.user.UserReputationRoute
 import net.perfectdreams.loritta.website.routes.user.dashboard.*
 
 object DefaultRoutes {
-	fun defaultRoutes(loritta: LorittaDiscord) = mutableListOf(
+	fun defaultRoutes(loritta: LorittaDiscord) = listOf(
 			// ===[ USER ROUTES ]===
 			HomeRoute(loritta),
 			BlogRoute(loritta),
@@ -99,6 +99,7 @@ object DefaultRoutes {
 			GetSonhosLeaderboardRoute(loritta),
 			GetDailyShopRoute(loritta),
 			PostBuyDailyShopItemRoute(loritta),
+			GetPaymentsLeaderboardRoute(loritta),
 
 			// Guild
 			GetGuildInfoRoute(loritta),
