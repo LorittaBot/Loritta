@@ -27,7 +27,7 @@ object AkinatorCommand {
 
 	fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("akinator"), CommandCategory.FUN) {
 		description { it["commands.fun.akinator.description"] }
-		
+
 		executesDiscord {
 			// TODO: Load correct region
 			val akinator = AkinatorClient(
