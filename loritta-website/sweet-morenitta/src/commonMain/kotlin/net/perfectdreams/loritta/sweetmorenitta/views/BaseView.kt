@@ -3,11 +3,15 @@ package net.perfectdreams.loritta.sweetmorenitta.views
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
+import net.perfectdreams.loritta.api.utils.format
+import net.perfectdreams.loritta.sweetmorenitta.utils.WebRenderSettings
 
-abstract class BaseView(val locale: BaseLocale) {
-    val versionPrefix = "/v2"
-    fun assetHash(str: String): String {
-        return "0"
+abstract class BaseView(
+        val settings: WebRenderSettings,
+        val locale: BaseLocale
+) {
+    companion object {
+        val versionPrefix = "/v2"
     }
 
     fun generateHtml(): String {
@@ -22,7 +26,7 @@ abstract class BaseView(val locale: BaseLocale) {
                 // Já que é meio difícil chamar códigos de Kotlin/JS na parent window, existe esse método auxiliar para facilitar.
                 // authenticate(p) sendo p = "user identification do Discord"
                 // Também tem umas coisinhas do Google reCAPTCHA
-                /* script(type = ScriptType.textJavaScript) {
+                script(type = ScriptType.textJavaScript) {
                     unsafe {
                         raw("""
 function authenticate(p) { output.net.perfectdreams.spicymorenitta.utils.AuthUtils.handlePostAuth(p); };
@@ -36,18 +40,18 @@ window.addEventListener('load', function () {
     // ; MSIE == MS Internet Explorer
     // Trident/7.0 == MSIE11
     if (/(?:\b(MS)?IE\s+|\bTrident\/7\.0;.*\s+rv:|\bEdge\/)(\d+)/.test(navigator.userAgent)) {
-        alert("${locale.getList("website.unsupportedBrowser").joinToString("\\n\\n", transform = { java.text.MessageFormat.format(it, supportUrl, firefoxUrl, chromeUrl, edgeUrl); })}")
+        alert("${locale.getList("website.unsupportedBrowser").joinToString("\\n\\n", transform = { it.format(supportUrl, firefoxUrl, chromeUrl, edgeUrl); })}")
     }
     // Verificar se o SpicyMorenitta foi carregado corretamente
     if (window.spicyMorenittaLoaded === undefined) {
-        alert("${locale.getList("website.failedToLoadScripts").joinToString("\\n\\n", transform = { java.text.MessageFormat.format(it, supportUrl, firefoxUrl, chromeUrl, edgeUrl); })}")
+        alert("${locale.getList("website.failedToLoadScripts").joinToString("\\n\\n", transform = { it.format(supportUrl, firefoxUrl, chromeUrl, edgeUrl); })}")
     }
 });
 """)
                     }
-                } */
+                }
 
-                // title(getFullTitle(@call-args))
+                title(getFullTitle())
 
                 unsafe {
                     raw("""
@@ -65,7 +69,7 @@ window.addEventListener('load', function () {
                 // if (false && com.mrpowergamerbr.loritta.LorittaLauncher.loritta.config.loritta.environment == com.mrpowergamerbr.loritta.utils.config.EnvironmentType.CANARY)
                 //     styleLink("${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/assets/css/style.css?v12345")
                 // else
-                styleLink("$versionPrefix/assets/css/style.css?hash=${assetHash("assets/css/style.css")}")
+                styleLink("$versionPrefix/assets/css/style.css?hash=${settings.hashProvider.assetHash("assets/css/style.css")}")
 
                 styleLink("https://use.fontawesome.com/releases/v5.8.1/css/all.css")
 
@@ -107,7 +111,7 @@ window.addEventListener('load', function () {
                     script(src = "${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/assets/js/spicy-morenitta.js?hash=${assetHash("assets/js/spicy-morenitta.js")}") {}
                 } else { */
                 // App itself
-                script(src = "$versionPrefix/assets/js/app.js?hash=${assetHash("assets/js/app.js")}") {}
+                script(src = "$versionPrefix/assets/js/app.js?hash=${settings.hashProvider.assetHash("assets/js/app.js")}") {}
                 // }
 
                 script(src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js") {}
@@ -117,7 +121,7 @@ window.addEventListener('load', function () {
                     link {
                         attributes["rel"] = "alternate"
                         attributes["hreflang"] = localeName
-                        // attributes["href"] = "$websiteUrl/$websiteLocaleId/$path"
+                        attributes["href"] = "${settings.websiteUrl}/$websiteLocaleId/${settings.path}"
                     }
                 }
 

@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.sweetmorenitta.utils
 
-import kotlinx.html.DIV
-import kotlinx.html.IMG
-import kotlinx.html.img
-import kotlinx.html.style
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import kotlinx.html.*
+
+expect fun currentPlatform(): PlatformType
 
 fun DIV.imgSrcSet(path: String, fileName: String, sizes: String, max: Int, min: Int, stepInt: Int, block : IMG.() -> Unit = {}) {
     val srcsets = mutableListOf<String>()
@@ -32,5 +32,81 @@ fun DIV.imgSrcSet(filePath: String, sizes: String, srcset: String, block : IMG.(
         attributes["srcset"] = srcset
 
         this.apply(block)
+    }
+}
+
+fun DIV.generateAdOrSponsor(sponsors: List<Sponsor>, sponsorId: Int, adSlot: String, adName: String? = null, showIfSponsorIsMissing: Boolean = true, showOnMobile: Boolean = true) {
+    val sponsor = sponsors.getOrNull(sponsorId)
+
+    if (sponsor != null) {
+        generateSponsor(sponsor)
+    } else if (showIfSponsorIsMissing) {
+        generateAd(adSlot, adName, showIfSponsorIsMissing)
+    }
+}
+
+fun DIV.generateSponsor(sponsor: Sponsor) {
+    div(classes = "media") {
+        generateSponsorNoWrap(sponsor)
+    }
+}
+
+fun DIV.generateSponsorNoWrap(sponsor: Sponsor) {
+    a(href = "/sponsor/${sponsor.slug}", classes = "sponsor-wrapper", target = "_blank") {
+        div(classes = "sponsor-pc-image") {
+            img(src = sponsor.getRectangularBannerUrl(), classes = "sponsor-banner")
+        }
+        div(classes = "sponsor-mobile-image") {
+            img(src = sponsor.getSquareBannerUrl(), classes = "sponsor-banner")
+        }
+    }
+}
+
+fun DIV.generateHowToSponsorButton(locale: BaseLocale) {
+    div(classes = "media") {
+        style = "justify-content: end;"
+        div {
+            style = "font-size: 0.8em; margin: 8px;"
+            + (locale["website.sponsors.wantYourServerHere"] + " ")
+            a(href = "/sponsors") {
+                span(classes = "sponsor-button") {
+                    + "Premium Slots"
+                }
+            }
+        }
+    }
+}
+
+fun DIV.generateAd(adSlot: String, adName: String? = null, showOnMobile: Boolean = true) {
+    // O "adName" não é utilizado para nada, só está aí para que fique mais fácil de analisar aonde está cada ad (caso seja necessário)
+    // TODO: Random ID
+    val adGen = "ad-$adSlot-"
+
+    div(classes = "centralized-ad") {
+        ins(classes = "adsbygoogle") {
+            style = "display: block;"
+
+            if (!showOnMobile)
+                attributes["id"] = adGen
+
+            attributes["data-ad-client"] = "ca-pub-9989170954243288"
+            attributes["data-ad-slot"] = adSlot
+            attributes["data-ad-format"] = "auto"
+            attributes["data-full-width-responsive"] = "true"
+        }
+    }
+
+    if (!showOnMobile) {
+        script(type = ScriptType.textJavaScript) {
+            unsafe {
+                raw("if (document.body.clientWidth >= 1366) { (adsbygoogle = window.adsbygoogle || []).push({}); } else { console.log(\"Not displaying ad: Browser width is too smol!\"); document.querySelector(\"#$adGen\").remove(); }")
+            }
+        }
+    } else {
+        script(type = ScriptType.textJavaScript) {
+            unsafe {
+                raw("(adsbygoogle = window.adsbygoogle || []).push({});")
+            }
+        }
     }
 }

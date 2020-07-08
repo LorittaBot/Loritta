@@ -2,8 +2,9 @@ package net.perfectdreams.loritta.sweetmorenitta.views
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import kotlinx.html.*
+import net.perfectdreams.loritta.sweetmorenitta.utils.WebRenderSettings
 
-abstract class NavbarView(locale: BaseLocale) : BaseView(locale) {
+abstract class NavbarView(settings: WebRenderSettings, locale: BaseLocale) : BaseView(settings, locale) {
     var hasNavbar: Boolean = true
     var hasFooter: Boolean = true
 
@@ -323,17 +324,15 @@ abstract class NavbarView(locale: BaseLocale) : BaseView(locale) {
                                     +locale["website.footer.joinUsAndAddLoritta"]
                                 }
                             }
-                            if (false) {
-                                // TODO: Fix
-                                /* div(classes = "add-cta") {
-                                    a(classes = "add-me button pink shadow big", href = com.mrpowergamerbr.loritta.LorittaLauncher.loritta.discordInstanceConfig.discord.addBotUrl) {
-                                        style = "font-size: 1.5em;"
 
-                                        i(classes = "fas fa-plus") {}
+                            div(classes = "add-cta") {
+                                a(classes = "add-me button pink shadow big", href = settings.addBotUrl) {
+                                    style = "font-size: 1.5em;"
 
-                                        +" ${locale["website.jumbotron.addMe"]}"
-                                    }
-                                } */
+                                    i(classes = "fas fa-plus") {}
+
+                                    +" ${locale["website.jumbotron.addMe"]}"
+                                }
                             }
                         }
                     }

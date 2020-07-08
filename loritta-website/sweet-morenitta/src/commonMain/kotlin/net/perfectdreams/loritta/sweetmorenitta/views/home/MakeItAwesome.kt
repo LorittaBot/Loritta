@@ -1,0 +1,34 @@
+package net.perfectdreams.loritta.sweetmorenitta.views.home
+
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import kotlinx.html.*
+import net.perfectdreams.loritta.sweetmorenitta.utils.WebRenderSettings
+
+fun DIV.makeItAwesome(settings: WebRenderSettings, locale: BaseLocale, viewMoreFeatures: Boolean = false) {
+    div(classes = "even-wrapper wobbly-bg") {
+        style = "text-align: center; padding-bottom: 64px;"
+
+        h1 {
+            + locale["website.home.makeItAwesome.title"]
+        }
+
+        a(classes = "add-me button pink shadow big", href = settings.addBotUrl) {
+            style = "font-size: 1.5em;"
+
+            i(classes = "fas fa-plus") {}
+
+            + " ${locale["website.jumbotron.addMe"]}"
+        }
+
+        if (viewMoreFeatures) {
+            a(classes = "add-me button light-green shadow big", href = "/${locale.path}/") {
+                style = "font-size: 1.5em;"
+
+                i(classes = "fas fa-star") {}
+
+                attributes["data-enable-link-preload"] = "true"
+                + " ${locale["website.jumbotron.viewMoreFeatures"]}"
+            }
+        }
+    }
+}

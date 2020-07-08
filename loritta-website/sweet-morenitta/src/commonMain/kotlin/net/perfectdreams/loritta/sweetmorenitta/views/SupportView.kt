@@ -2,9 +2,11 @@ package net.perfectdreams.loritta.sweetmorenitta.views
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import kotlinx.html.*
+import net.perfectdreams.loritta.sweetmorenitta.AssetHashProvider
+import net.perfectdreams.loritta.sweetmorenitta.utils.WebRenderSettings
 import net.perfectdreams.loritta.sweetmorenitta.utils.imgSrcSet
 
-class SupportView(locale: BaseLocale) : NavbarView(locale) {
+class SupportView(settings: WebRenderSettings, locale: BaseLocale) : NavbarView(settings, locale) {
     override fun getTitle() = locale["website.support.title"]
 
     override fun DIV.generateContent() {
@@ -15,8 +17,8 @@ class SupportView(locale: BaseLocale) : NavbarView(locale) {
                             "${versionPrefix}/assets/img/support/",
                             "lori_support.png",
                             "(max-width: 800px) 50vw, 15vw",
-                            1429,
-                            429,
+                            1168,
+                            168,
                             100
                     )
                 }
