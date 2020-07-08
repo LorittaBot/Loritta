@@ -6,6 +6,10 @@ import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.plugin.htmlprovider.JVMHtmlProvider
 
 class HtmlProviderPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(name, loritta) {
+    companion object {
+        val assetHashProvider = JVMAssetHashProvider()
+    }
+
     override fun onEnable() {
         this.htmlProvider = JVMHtmlProvider()
     }
