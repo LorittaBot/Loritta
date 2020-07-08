@@ -31,6 +31,7 @@ kotlin {
 		implementation("org.jetbrains.kotlinx:kotlinx-html-js:0.6.11")
 		implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.0.1")
 		implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.20.0")
+		implementation(project(":loritta-website:sweet-morenitta"))
 		implementation("io.ktor:ktor-client-js:1.3.1")
 	}
 

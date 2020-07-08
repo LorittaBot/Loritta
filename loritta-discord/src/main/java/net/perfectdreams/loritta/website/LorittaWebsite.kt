@@ -68,6 +68,9 @@ class LorittaWebsite(val loritta: Loritta) {
 	val pathCache = ConcurrentHashMap<File, Any>()
 	var config = WebsiteConfig()
 	val blog = Blog()
+	val pageProvider = loritta.pluginManager.plugins.filterIsInstance<LorittaDiscordPlugin>().mapNotNull {
+		it.htmlProvider
+	}.first()
 	lateinit var server: NettyApplicationEngine
 	private val typesToCache = listOf(
 			ContentType.Text.CSS,

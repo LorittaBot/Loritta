@@ -17,6 +17,7 @@ import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.stream.createHTML
 import net.perfectdreams.loritta.serializable.UserIdentification
+import net.perfectdreams.loritta.sweetmorenitta.views.SupportView
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.routes.*
 import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.*
@@ -460,6 +461,12 @@ class SpicyMorenitta : Logging {
 	fun setUpPageSwitcher(element: Element, path: String) {
 		element.setAttribute("data-preload-activated", "true")
 
+		val sweetPageAttribute = element.getAttribute("data-sweet-page")
+		val isSweetPage = sweetPageAttribute != null
+
+		if (isSweetPage)
+			debug("$path seems to be a sweet page! Yummy!")
+
 		element.onClick {
 			if (it.asDynamic().ctrlKey as Boolean || it.asDynamic().metaKey as Boolean || it.asDynamic().shiftKey as Boolean)
 				return@onClick
@@ -468,41 +475,46 @@ class SpicyMorenitta : Logging {
 
 			launch {
 				// Switch page
-				sendSwitchPageRequest(path)
+				if (isSweetPage)
+					sendSwitchPageRequest("sweet-${sweetPageAttribute}")
+				else
+					sendSwitchPageRequest(path)
 			}
 		}
 
-		var startedAt = 0.0
+		if (!isSweetPage) {
+			var startedAt = 0.0
 
-		element.onMouseEnter {
-			if (ignoreCacheRequests)
-				return@onMouseEnter
+			element.onMouseEnter {
+				if (ignoreCacheRequests)
+					return@onMouseEnter
 
-			it.stopPropagation()
+				it.stopPropagation()
 
-			debug("Hovering the button!")
-			startedAt = Date().getTime()
+				debug("Hovering the button!")
+				startedAt = Date().getTime()
 
-			launch {
-				delay(CACHE_ON_HOVER_DELAY)
-				val diff = Date().getTime() - startedAt
+				launch {
+					delay(CACHE_ON_HOVER_DELAY)
+					val diff = Date().getTime() - startedAt
 
-				if (diff >= CACHE_ON_HOVER_DELAY) {
-					debug("Pre caching page (path: ${path})!")
+					if (diff >= CACHE_ON_HOVER_DELAY) {
+						debug("Pre caching page (path: ${path})!")
 
-					cachePageRequest(path)
+						cachePageRequest(path)
+					}
 				}
 			}
-		}
 
-		element.onMouseLeave {
-			it.stopPropagation()
+			element.onMouseLeave {
+				it.stopPropagation()
 
-			val diff = Date().getTime() - startedAt
+				val diff = Date().getTime() - startedAt
 
-			if (pageCache.containsKey(path)) {
-				debug("Not hovering the button anymore! Hovered for $diff & Dropping page cache for $path")
-				pageCache.remove(path)
+				if (pageCache.containsKey(path)) {
+					debug("Not hovering the button anymore! Hovered for $diff & Dropping page cache for $path")
+					pageCache.remove(path)
+				}
 			}
 		}
 	}
@@ -697,7 +709,23 @@ class SpicyMorenitta : Logging {
 		if (pageLoadLock.isLocked) // Se está travado, vamos mostrar a tela de loading (normalmente é quando a página tá fazendo cache)
 			showLoadingScreen()
 
+		debug("Sending page request to $path")
 		pageLoadLock.withLock {
+			if (path.startsWith("sweet-")) {
+				debug("Loading a Sweet Page... $path")
+				val truePath = path.removePrefix("sweet-")
+
+				ignoreCacheRequests = true
+				val result = when (truePath) {
+					"support" -> SupportView(locale).generateHtml()
+					else -> throw RuntimeException("Unsupported Sweet Page $path")
+				}
+
+				switchPage(truePath, result)
+				ignoreCacheRequests = false
+				return
+			}
+
 			if (pageCache[path] != null) {
 				val result = pageCache[path]!!
 				pageCache.remove(path)

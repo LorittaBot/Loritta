@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.website.routes
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import io.ktor.application.ApplicationCall
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
@@ -11,7 +12,7 @@ import kotlin.reflect.full.createType
 
 class SupportRoute(loritta: LorittaDiscord) : LocalizedRoute(loritta, "/support") {
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
-		val html = ScriptingUtils.evaluateWebPageFromTemplate(
+		/* val html = ScriptingUtils.evaluateWebPageFromTemplate(
 				File(
 						"${LorittaWebsite.INSTANCE.config.websiteFolder}/views/support.kts"
 				),
@@ -22,6 +23,10 @@ class SupportRoute(loritta: LorittaDiscord) : LocalizedRoute(loritta, "/support"
 				)
 		)
 
-		call.respondHtml(html)
+		call.respondHtml(html) */
+		call.respondHtml((loritta as Loritta).newWebsite!!.pageProvider!!.render(
+				"support",
+				listOf(locale))
+		)
 	}
 }

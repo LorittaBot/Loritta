@@ -47,10 +47,12 @@ include(":loritta-plugins:server-support")
 include(":loritta-plugins:mal-commands")
 include(":loritta-plugins:lori-guild-stuff")
 include(":loritta-plugins:akilori")
+include(":loritta-plugins:html-provider")
 
 // Website
 include(":loritta-website")
 // include(":loritta-website:sweet-morenitta")
+include(":loritta-website:sweet-morenitta")
 include(":loritta-website:spicy-morenitta")
 include(":loritta-website:lotrunfo-server")
 include(":parallax-kotlin:parallax-code-api")
