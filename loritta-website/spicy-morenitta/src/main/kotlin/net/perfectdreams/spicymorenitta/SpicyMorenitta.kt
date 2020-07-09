@@ -48,7 +48,7 @@ lateinit var locale: BaseLocale
 
 class SpicyMorenitta : Logging {
 	companion object {
-		const val CACHE_ON_HOVER_DELAY = 125L // milliseconds
+		const val CACHE_ON_HOVER_DELAY = 75L // milliseconds
 		lateinit var INSTANCE: SpicyMorenitta
 	}
 
