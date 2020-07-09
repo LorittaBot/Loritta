@@ -22,7 +22,6 @@ import java.math.BigDecimal
 
 class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECONOMY) {
 	companion object {
-		const val TRANSACTION_TAX = 0.05
 		private val mutex = Mutex()
 	}
 
