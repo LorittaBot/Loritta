@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.plugin.akilori.commands
 import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.nullString
-import com.github.salomonbrys.kotson.obj
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.doReactions
@@ -27,7 +26,6 @@ import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
 import net.perfectdreams.loritta.platform.discord.commands.discordCommand
 import net.perfectdreams.loritta.utils.Emotes
 import java.awt.Color
-import java.io.File
 
 object AkinatorCommand {
 	private const val LOCALE_PREFIX = "commands.fun.akinator"
