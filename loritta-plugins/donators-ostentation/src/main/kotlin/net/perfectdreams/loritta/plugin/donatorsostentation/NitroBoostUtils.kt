@@ -10,12 +10,10 @@ import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.editMessageIfContentWasChanged
+import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNullById
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
@@ -104,44 +102,45 @@ object NitroBoostUtils {
 					val guild = lorittaShards.getGuildById(boostAsDonationGuildId) ?: continue
 
 					// Remover key de boosts inválidos
-					transaction(Databases.loritta) {
-						val nitroBoostPayments = Payment.find {
+					val nitroBoostPayments = loritta.newSuspendedTransaction {
+						Payment.find {
 							(Payments.gateway eq PaymentGateway.NITRO_BOOST)
 						}.toMutableList()
+					}
 
-						val invalidNitroPayments = mutableListOf<Long>()
+					val invalidNitroPayments = mutableListOf<Long>()
 
-						for (nitroBoostPayment in nitroBoostPayments) {
-							val metadata = nitroBoostPayment.metadata
-							val isFromThisGuild = metadata != null && metadata.obj["guildId"].nullLong == guild.idLong
+					for (nitroBoostPayment in nitroBoostPayments) {
+						val metadata = nitroBoostPayment.metadata
+						val isFromThisGuild = metadata != null && metadata.obj["guildId"].nullLong == guild.idLong
 
-							if (isFromThisGuild) {
-								val member = guild.retrieveMemberById(nitroBoostPayment.userId).complete()
+						if (isFromThisGuild) {
+							val member = guild.retrieveMemberOrNullById(nitroBoostPayment.userId)
 
-								if (member == null || member.timeBoosted == null) {
-									logger.warn { "Deleting Nitro Boost payment by ${nitroBoostPayment.userId} because user is not boosting the guild anymore! (is member null? ${member != null})" }
-									invalidNitroPayments.add(nitroBoostPayment.userId)
+							if (member == null || member.timeBoosted == null) {
+								logger.warn { "Deleting Nitro Boost payment by ${nitroBoostPayment.userId} because user is not boosting the guild anymore! (is member null? ${member != null})" }
+								invalidNitroPayments.add(nitroBoostPayment.userId)
+
+								loritta.newSuspendedTransaction {
 									nitroBoostPayment.delete()
 								}
 							}
 						}
+					}
 
-						DonationKey.find {
-							(DonationKeys.expiresAt eq Long.MAX_VALUE) and (DonationKeys.value eq 20.00)
-						}.forEach {
-							val metadata = it.metadata
-							val isFromThisGuild = metadata != null && metadata.obj["guildId"].nullLong == guild.idLong
+					DonationKey.find {
+						(DonationKeys.expiresAt eq Long.MAX_VALUE) and (DonationKeys.value eq 20.00)
+					}.forEach {
+						val metadata = it.metadata
+						val isFromThisGuild = metadata != null && metadata.obj["guildId"].nullLong == guild.idLong
 
-							if (isFromThisGuild) {
-								val member = guild.retrieveMemberById(it.userId).complete()
+						if (isFromThisGuild) {
+							val member = guild.retrieveMemberOrNullById(it.userId)
 
-								if (member == null || member.timeBoosted == null) {
-									logger.warn { "Deleting donation key via Nitro Boost by ${it.userId} because user is not boosting the guild anymore! (is member null? ${member != null})" }
+							if (member == null || member.timeBoosted == null) {
+								logger.warn { "Deleting donation key via Nitro Boost by ${it.userId} because user is not boosting the guild anymore! (is member null? ${member != null})" }
 
-									/* ServerConfigs.update({ ServerConfigs.donationKey eq it.id }) {
-										it[donationKey] = null
-									} */
-
+								loritta.newSuspendedTransaction {
 									it.delete()
 								}
 							}
