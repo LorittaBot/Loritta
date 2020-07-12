@@ -50,7 +50,8 @@ object AkinatorCommand {
 							Region(
 									"pt.akinator.com",
 									urlWs.removePrefix("https://").removeSuffix("/ws")
-							)
+							),
+							childMode = true
 					).apply {
 						this.start()
 					}
