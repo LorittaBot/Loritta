@@ -129,7 +129,7 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
                     dailyRewardButton.onClick {
                         val json = json()
                         json["redirectUrl"] = "${loriUrl}daily"
-                        window.location.href = "https://discordapp.com/oauth2/authorize?redirect_uri=${loriUrl}dashboard&scope=identify%20guilds%20email%20guilds.join&response_type=code&client_id=297153970613387264&state=${window.btoa(JSON.stringify(json))}"
+                        window.location.href = "https://discordapp.com/oauth2/authorize?redirect_uri=${loriUrl}dashboard&scope=identify%20guilds%20email&response_type=code&client_id=297153970613387264&state=${window.btoa(JSON.stringify(json))}"
                     }
 
                     locale["website.daily.notLoggedIn"]

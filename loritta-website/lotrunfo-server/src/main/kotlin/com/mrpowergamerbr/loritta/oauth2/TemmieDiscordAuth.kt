@@ -71,7 +71,7 @@ class TemmieDiscordAuth {
 				"client_id" to clientId,
 				"client_secret" to clientSecret,
 				"redirect_uri" to redirectUri,
-				"scope" to "identify guilds email guilds.join"
+				"scope" to "identify guilds email"
 		)
 
 		val response = HttpRequest.post(TOKEN_BASE_URL)

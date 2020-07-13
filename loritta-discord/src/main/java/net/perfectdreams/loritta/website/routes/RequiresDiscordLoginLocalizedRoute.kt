@@ -86,7 +86,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 							com.mrpowergamerbr.loritta.utils.loritta.discordConfig.discord.clientSecret,
 							code,
 							"$scheme://$hostHeader/dashboard",
-							listOf("identify", "guilds", "email", "guilds.join")
+							listOf("identify", "guilds", "email")
 					)
 
 					auth.doTokenExchange()
