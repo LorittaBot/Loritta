@@ -3,10 +3,8 @@ package net.perfectdreams.loritta.platform.discord.commands
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.ChannelInfoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.PluginsCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.MagicPingCommand
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.extensions.await
@@ -34,9 +32,7 @@ import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.utils.CommandUtils
 import net.perfectdreams.loritta.utils.DonateUtils
 import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.FeatureFlags
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 import java.util.concurrent.CancellationException
 import kotlin.reflect.KClass
@@ -44,8 +40,6 @@ import kotlin.reflect.full.isSubclassOf
 
 class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager(discordLoritta) {
     init {
-        if (discordLoritta.config.loritta.environment == EnvironmentType.CANARY)
-            registerCommand(MagicPingCommand())
         registerCommand(PluginsCommand())
 
         registerCommand(ChannelInfoCommand())
