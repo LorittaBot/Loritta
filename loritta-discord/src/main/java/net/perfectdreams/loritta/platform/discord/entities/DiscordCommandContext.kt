@@ -24,6 +24,7 @@ import net.perfectdreams.loritta.api.utils.NoCopyByteArrayOutputStream
 import net.perfectdreams.loritta.platform.discord.commands.LorittaDiscordCommand
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAGuild
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
+import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.utils.Emotes
 import org.jsoup.Jsoup
 import java.awt.Color
@@ -425,64 +426,14 @@ class DiscordCommandContext(val config: ServerConfig, val lorittaUser: LorittaUs
 	 * @return         the user object or null, if nothing was found
 	 * @see            User
 	 */
-	override suspend fun getUserAt(argument: Int): User? {
-		if (this.args.size > argument) { // Primeiro iremos verificar se existe uma imagem no argumento especificado
-			val link = this.args[argument] // Ok, será que isto é uma URL?
-
-			// Vamos verificar por menções, uma menção do Discord é + ou - assim: <@123170274651668480>
-			for (user in this.discordMessage.mentionedUsers) {
-				if (user.asMention == link.replace("!", "")) { // O replace é necessário já que usuários com nick tem ! no mention (?)
-					// Diferente de null? Então vamos usar o avatar do usuário!
-					return user
-				}
+	override suspend fun getUserAt(argument: Int) = this.args.getOrNull(argument)
+			?.let {
+				DiscordUtils.extractUserFromString(
+						it,
+						message.handle.mentionedUsers,
+						if (isPrivateChannel) null else message.handle.guild
+				)
 			}
-
-			// Vamos tentar procurar pelo username + discriminator
-			if (this.guild is DiscordGuild) {
-				val handle = (this.guild as JDAGuild).handle
-				if (!this.isPrivateChannel && !link.isEmpty()) {
-					val split = link.split("#").dropLastWhile { it.isEmpty() }.toTypedArray()
-
-					if (split.size == 2 && split[0].isNotEmpty()) {
-						val matchedMember = handle.getMembersByName(split[0], false).stream().filter { it -> it.user.discriminator == split[1] }.findFirst()
-
-						if (matchedMember.isPresent) {
-							return matchedMember.get().user
-						}
-					}
-				}
-
-				// Ok então... se não é link e nem menção... Que tal então verificar por nome?
-				if (!this.isPrivateChannel && !link.isEmpty()) {
-					val matchedMembers = handle.getMembersByEffectiveName(link, true)
-
-					if (!matchedMembers.isEmpty()) {
-						return matchedMembers[0].user
-					}
-				}
-
-				// Se não, vamos procurar só pelo username mesmo
-				if (!this.isPrivateChannel && !link.isEmpty()) {
-					val matchedMembers = handle.getMembersByName(link, true)
-
-					if (!matchedMembers.isEmpty()) {
-						return matchedMembers[0].user
-					}
-				}
-			}
-
-			// Ok, então só pode ser um ID do Discord!
-			try {
-				val user = LorittaLauncher.loritta.lorittaShards.retrieveUserById(link)
-
-				if (user != null) { // Pelo visto é!
-					return user
-				}
-			} catch (e: Exception) {
-			}
-		}
-		return null
-	}
 
 	/**
 	 * Gets an user from the argument index via mentions, username#oldDiscriminator, effective name, username and user ID
