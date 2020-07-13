@@ -14,6 +14,8 @@ import java.io.File
 import kotlin.reflect.full.createType
 
 class FanArtArtistRoute(loritta: LorittaDiscord) : LocalizedRoute(loritta, "/fanarts/{artist}") {
+	override val isMainClusterOnlyRoute = true
+
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
 		val queryArtistId = call.parameters["artist"]
 

@@ -11,6 +11,8 @@ import net.perfectdreams.loritta.website.utils.ScriptingUtils
 import java.io.File
 
 class HomeRoute(loritta: LorittaDiscord) : LocalizedRoute(loritta, "/") {
+	override val isMainClusterOnlyRoute = true
+
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
 		val html = ScriptingUtils.evaluateWebPageFromTemplate(
 				File(

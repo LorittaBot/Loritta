@@ -11,6 +11,8 @@ import net.perfectdreams.loritta.website.utils.ScriptingUtils
 import java.io.File
 
 class DailyRoute(loritta: LorittaDiscord) : LocalizedRoute(loritta, "/daily") {
+	override val isMainClusterOnlyRoute = true
+
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
 		val html = ScriptingUtils.evaluateWebPageFromTemplate(
 				File(

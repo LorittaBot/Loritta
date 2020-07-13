@@ -11,6 +11,8 @@ import java.io.File
 import kotlin.reflect.full.createType
 
 class BlogPostRoute(loritta: LorittaDiscord) : LocalizedRoute(loritta, "/blog/{slug}") {
+	override val isMainClusterOnlyRoute = true
+
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
 		val slug = call.parameters["slug"]
 		val post = LorittaWebsite.INSTANCE.blog.posts.firstOrNull { it.slug == slug }
