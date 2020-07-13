@@ -59,7 +59,6 @@ class DiscordCommandContext(
 			val sentMessage = discordMessage.channel.sendMessage(message).await()
 			return sentMessage
 		} else {
-			// LorittaUtils.warnOwnerNoPermission(discordGuild, event.textChannel, config)
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
 	}
