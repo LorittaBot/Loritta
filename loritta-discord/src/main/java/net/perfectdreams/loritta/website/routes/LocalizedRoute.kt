@@ -12,7 +12,7 @@ abstract class LocalizedRoute(loritta: LorittaDiscord, val originalPath: String)
 	override suspend fun onRequest(call: ApplicationCall) {
 		if (isMainClusterOnlyRoute && !loritta.isMaster)
 			// If this is a main cluster only route, we are going to redirect to Loritta's main website
-			redirect(loritta.instanceConfig.loritta.website.url.removeSuffix("/") + call.request.path())
+			redirect(loritta.instanceConfig.loritta.website.url.removeSuffix("/") + call.request.path(), true)
 
 		val localeIdFromPath = call.parameters["localeId"]
 
