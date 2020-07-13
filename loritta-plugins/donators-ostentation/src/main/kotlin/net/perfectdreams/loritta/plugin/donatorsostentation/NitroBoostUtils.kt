@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.plugin.donatorsostentation
 import com.github.salomonbrys.kotson.*
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.dao.DonationKey
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.DonationKeys
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
@@ -13,7 +12,10 @@ import com.mrpowergamerbr.loritta.utils.extensions.editMessageIfContentWasChange
 import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNullById
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
@@ -23,7 +25,6 @@ import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.math.BigDecimal
 
 object NitroBoostUtils {
@@ -38,7 +39,7 @@ object NitroBoostUtils {
 			val boostAsDonationGuilds = config.boostEnabledGuilds.map { it.id }
 			try {
 				// get premium keys
-				val guildsWithBoostFeature = transaction(Databases.loritta) {
+				val guildsWithBoostFeature = loritta.newSuspendedTransaction {
 					(ServerConfigs innerJoin DonationKeys).slice(ServerConfigs.id, DonationKeys.expiresAt, DonationKeys.value)
 							.select {
 								DonationKeys.value greaterEq 99.99 and (DonationKeys.expiresAt greaterEq System.currentTimeMillis())
@@ -55,7 +56,7 @@ object NitroBoostUtils {
 
 					logger.info { "Guild $guild has donation features enabled! Giving sonhos to $boosters" }
 
-					transaction(Databases.loritta) {
+					loritta.newSuspendedTransaction {
 						Profiles.update({ Profiles.id inList boosters.map { it.user.idLong } }) {
 							with(SqlExpressionBuilder) {
 								it.update(money, money + 2)
@@ -66,7 +67,7 @@ object NitroBoostUtils {
 
 				if (LorittaLauncher.loritta.isMaster) {
 					val moneySumId = Payments.money.sum()
-					val mostPayingUsers = transaction(Databases.loritta) {
+					val mostPayingUsers = loritta.newSuspendedTransaction {
 						Payments.slice(Payments.userId, moneySumId)
 								.select {
 									Payments.paidAt.isNotNull() and (Payments.expiresAt greaterEq System.currentTimeMillis()) and
@@ -81,7 +82,7 @@ object NitroBoostUtils {
 
 					val deserveTheRewardUsers = mostPayingUsers.map { it[Payments.userId] }
 
-					transaction(Databases.loritta) {
+					loritta.newSuspendedTransaction {
 						for (profile in Profiles.select { Profiles.id inList deserveTheRewardUsers }) {
 							val userPayment = mostPayingUsers.firstOrNull { it[Payments.userId] == profile[Profiles.id].value }
 
@@ -128,8 +129,10 @@ object NitroBoostUtils {
 						}
 					}
 
-					DonationKey.find {
-						(DonationKeys.expiresAt eq Long.MAX_VALUE) and (DonationKeys.value eq 20.00)
+					loritta.newSuspendedTransaction {
+						DonationKey.find {
+							(DonationKeys.expiresAt eq Long.MAX_VALUE) and (DonationKeys.value eq 20.00)
+						}.toList()
 					}.forEach {
 						val metadata = it.metadata
 						val isFromThisGuild = metadata != null && metadata.obj["guildId"].nullLong == guild.idLong
@@ -219,7 +222,7 @@ object NitroBoostUtils {
 
 		val now = System.currentTimeMillis()
 
-		transaction(Databases.loritta) {
+		loritta.newSuspendedTransaction {
 			// Gerar pagamento
 			Payment.new {
 				this.userId = member.idLong
@@ -265,7 +268,7 @@ object NitroBoostUtils {
 
 		logger.info { "Disabling donation features via boost for $member in $guild!"}
 
-		transaction(Databases.loritta) {
+		loritta.newSuspendedTransaction {
 			Payment.find {
 				(Payments.userId eq member.idLong) and (Payments.gateway eq PaymentGateway.NITRO_BOOST)
 			}.firstOrNull {
