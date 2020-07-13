@@ -15,10 +15,10 @@ import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.exceptions.PermissionException
+import net.perfectdreams.loritta.api.utils.NoCopyByteArrayOutputStream
 import org.jsoup.Jsoup
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.InputStream
 import java.util.*
@@ -177,13 +177,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 	}
 
 	suspend fun sendFile(image: BufferedImage, name: String, message: Message): Message {
-		// https://stackoverflow.com/a/12253091/7271796
-		val output = object : ByteArrayOutputStream() {
-			@Synchronized
-			override fun toByteArray(): ByteArray {
-				return this.buf
-			}
-		}
+		val output = NoCopyByteArrayOutputStream()
 
 		ImageIO.write(image, "png", output)
 

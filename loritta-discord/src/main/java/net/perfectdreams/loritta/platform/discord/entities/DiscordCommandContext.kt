@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.exceptions.PermissionException
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
 import net.perfectdreams.loritta.api.entities.MessageChannel
+import net.perfectdreams.loritta.api.utils.NoCopyByteArrayOutputStream
 import net.perfectdreams.loritta.platform.discord.commands.LorittaDiscordCommand
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAGuild
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
@@ -28,7 +29,6 @@ import org.jsoup.Jsoup
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.InputStream
 import java.time.Instant
@@ -204,13 +204,7 @@ class DiscordCommandContext(val config: ServerConfig, val lorittaUser: LorittaUs
 	}
 
 	suspend fun sendFile(image: BufferedImage, name: String, message: Message): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
-		// https://stackoverflow.com/a/12253091/7271796
-		val output = object : ByteArrayOutputStream() {
-			@Synchronized
-			override fun toByteArray(): ByteArray {
-				return this.buf
-			}
-		}
+		val output = NoCopyByteArrayOutputStream()
 
 		ImageIO.write(image, "png", output)
 
