@@ -6,7 +6,6 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.Gson
 import com.google.gson.JsonParser
-import com.mrpowergamerbr.loritta.audio.AudioManager
 import com.mrpowergamerbr.loritta.audio.AudioRecorder
 import com.mrpowergamerbr.loritta.commands.CommandManager
 import com.mrpowergamerbr.loritta.dao.Profile
@@ -29,7 +28,6 @@ import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import kotlinx.coroutines.*
 import mu.KotlinLogging
-import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.utils.ChunkingFilter
 import net.dv8tion.jda.api.utils.MemberCachePolicy
@@ -157,12 +155,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	var bucketedController: BucketedController? = null
 	val rateLimitChecker = RateLimitChecker(this)
 	val audioRecorder = AudioRecorder(this)
-	val audioManager: AudioManager? by lazy {
-		if (loritta.discordConfig.lavalink.enabled)
-			AudioManager(this)
-		else
-			null
-	}
 
 	init {
 		LorittaLauncher.loritta = this
@@ -192,12 +184,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 						logger.info { "Using shard controller (for bots with \"sharding for very large bots\" to manage shards!" }
 						bucketedController = BucketedController(discordConfig.shardController.buckets)
 						this.setSessionController(bucketedController)
-					}
-
-					// Lavalink Support
-					if (loritta.discordConfig.lavalink.enabled) {
-						addEventListeners(audioManager!!.lavalink)
-						setVoiceDispatchInterceptor(audioManager!!.lavalink.voiceInterceptor)
 					}
 				}
 				.setShardsTotal(discordConfig.discord.maxShards)

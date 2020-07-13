@@ -68,7 +68,6 @@ dependencies {
     api("commons-io:commons-io:2.7")
     api("org.apache.commons:commons-text:1.8")
     api("org.apache.commons:commons-collections4:4.4")
-    api("com.github.FredBoat:Lavalink-Client:4.0")
     api("io.ktor:ktor-server-core:$ktorVersion")
     api("io.ktor:ktor-server-netty:$ktorVersion")
     api("io.ktor:ktor-client-core:$ktorVersion")
