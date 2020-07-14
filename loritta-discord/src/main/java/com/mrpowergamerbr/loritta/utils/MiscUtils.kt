@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.http.HttpStatusCode
+import mu.KotlinLogging
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.json.XML
 import org.slf4j.LoggerFactory
@@ -15,7 +16,7 @@ import java.net.InetAddress
 import java.util.concurrent.TimeUnit
 
 object MiscUtils {
-	val logger = LoggerFactory.getLogger(MiscUtils::class.java)
+	private val logger = KotlinLogging.logger {}
 
 	fun getResponseError(json: JsonObject): String? {
 		if (!json.has("error"))
@@ -109,10 +110,14 @@ object MiscUtils {
 
 		val response = jsonParser.parse(xmlJSONObj.toString(4)).obj["response"]
 
-		val isSpam = response["appears"].bool
+		val isSpam = response["appears"].nullBool
 
-		if (isSpam)
-			return AccountCheckResult.STOP_FORUM_SPAM
+		if (isSpam == null) {
+			logger.warn { "Appears response is missing from StopForumSpam response! Bug? We are going to ignore the spam check! Checked IP $ip and the response is $response" }
+		} else {
+			if (isSpam)
+				return AccountCheckResult.STOP_FORUM_SPAM
+		}
 
 		// HOSTNAME BLOCC:tm:
 		val addr = InetAddress.getByName(ip)
