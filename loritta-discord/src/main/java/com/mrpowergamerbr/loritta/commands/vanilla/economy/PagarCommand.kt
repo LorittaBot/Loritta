@@ -98,9 +98,9 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			}
 
 			when {
-				context.rawArgs[1].endsWith("m") -> howMuch = context.rawArgs[1].removeSuffix("m").toDoubleOrNull()?.times(1_000_000)
-				context.rawArgs[1].endsWith("kk") -> howMuch = context.rawArgs[1].removeSuffix("kk").toDoubleOrNull()?.times(1_000_000)
-				context.rawArgs[1].endsWith("k") -> howMuch = context.rawArgs[1].removeSuffix("k").toDoubleOrNull()?.times(1_000)
+				context.rawArgs[1].endsWith("m", true) -> howMuch = context.rawArgs[1].removeSuffix("m").toDoubleOrNull()?.times(1_000_000)
+				context.rawArgs[1].endsWith("kk", true) -> howMuch = context.rawArgs[1].removeSuffix("kk").toDoubleOrNull()?.times(1_000_000)
+				context.rawArgs[1].endsWith("k", true) -> howMuch = context.rawArgs[1].removeSuffix("k").toDoubleOrNull()?.times(1_000)
 			}
 
 			if (howMuch == null) {
