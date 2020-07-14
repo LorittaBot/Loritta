@@ -7,16 +7,21 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.PersonalPronoun
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.NumberUtils
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.kotlin.util.removeSuffixIfPresent
 import java.math.BigDecimal
+import kotlin.math.pow
 
 class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECONOMY) {
 	companion object {
@@ -80,19 +85,9 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			}
 
 			val user = context.getUserAt(currentIdx++)
-			val arg1 = context.rawArgs.getOrNull(currentIdx++)?.toLowerCase() ?: run {
+			val arg1 = context.rawArgs.getOrNull(currentIdx++) ?: run {
 				explain(context)
 				return
-			}
-
-			var howMuch = arg1.toLongOrNull()
-
-			if (howMuch == null) {
-				when {
-					arg1.endsWith("m") -> howMuch = arg1.removeSuffix("m").toDoubleOrNull()?.times(1_000_000)?.toLong()
-					arg1.endsWith("kk") -> howMuch = arg1.removeSuffix("kk").toDoubleOrNull()?.times(1_000_000)?.toLong()
-					arg1.endsWith("k") -> howMuch = arg1.removeSuffix("k").toDoubleOrNull()?.times(1_000)?.toLong()
-				}
 			}
 
 			if (user == null || context.userHandle == user) {
@@ -104,6 +99,8 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 				)
 				return
 			}
+
+			val howMuch = NumberUtils.convertShortenedNumberToLong(arg1)
 
 			if (howMuch == null) {
 				context.reply(

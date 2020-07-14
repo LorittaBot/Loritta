@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.plugin.helpinghands.HelpingHandsPlugin
 import net.perfectdreams.loritta.plugin.helpinghands.commands.base.DSLCommandBase
 import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.NumberUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.loritta.utils.extensions.refreshInDeferredTransaction
@@ -93,7 +94,7 @@ object CoinFlipBetCommand : DSLCommandBase {
 				plan = UserPremiumPlans.Essential
 			}
 
-			val number = context.args[1].toLongOrNull()
+			val number = NumberUtils.convertShortenedNumberToLong(context.args[1])
 					?: fail(locale["commands.invalidNumber", context.args[1].stripCodeMarks()], Emotes.LORI_CRYING.toString())
 			val tax = (number * (1.0 - plan.totalCoinFlipReward)).toLong()
 			val money = number - tax
