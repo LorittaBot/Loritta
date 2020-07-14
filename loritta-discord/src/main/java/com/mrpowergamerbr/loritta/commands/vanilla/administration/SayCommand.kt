@@ -4,8 +4,6 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import com.mrpowergamerbr.temmiewebhook.DiscordMessage
-import com.mrpowergamerbr.temmiewebhook.TemmieWebhook
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.TextChannel
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -89,52 +87,20 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN
 			if (!context.isPrivateChannel && !context.handle.hasPermission(channel as TextChannel, Permission.MESSAGE_MENTION_EVERYONE))
 				message = message.escapeMentions()
 
-			var useWebhook = false
-			var webhook: TemmieWebhook? = null
-
-			if (!context.isPrivateChannel && !context.handle.hasPermission(channel as TextChannel, Permission.MANAGE_SERVER)) {
-				// Para evitar pessoas xingando outros membros usando a Loritta, vamos usar uma webhook com o mesmo nome do usuário para todas as ocasiões necessárias.
-				// Mas *apenas* se o usuário está usando emojis que o webhook possa usar
-				val usingExternalEmotes = context.message.emotes.any { it.guild != context.guild }
-				if (!usingExternalEmotes) { // Se não está usando, vamos usar webhooks!
-
-					useWebhook = true
-					try {
-						webhook = WebhookUtils.getOrCreateWebhook(channel, "User sent +say")
-
-						if (webhook == null) {
-							message = "**${context.handle.asMention} me forçou a falar...** $message"
-						}
-					} catch (e: Exception) {}
-				} else {
-					message = "**${context.handle.asMention} me forçou a falar...** $message"
-				}
-			}
-
-			if (useWebhook && webhook != null) {
-				webhook.sendMessage(
-						DiscordMessage(
-								context.userHandle.name,
-								message,
-								context.userHandle.effectiveAvatarUrl
-						)
+			val discordMessage = try {
+				MessageUtils.generateMessage(
+						message,
+						listOf(context.guild, context.userHandle),
+						context.guild
 				)
-			} else {
-				val discordMessage = try {
-					MessageUtils.generateMessage(
-							message,
-							listOf(context.guild, context.userHandle),
-							context.guild
-					)
-				} catch (e: Exception) {
-					null
-				}
-
-				if (discordMessage != null)
-					channel.sendMessage(discordMessage).queue()
-				else
-					channel.sendMessage(message).queue()
+			} catch (e: Exception) {
+				null
 			}
+
+			if (discordMessage != null)
+				channel.sendMessage(discordMessage).queue()
+			else
+				channel.sendMessage(message).queue()
 
 			if (context.event.channel != channel && channel is TextChannel)
 				context.reply(
