@@ -84,7 +84,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			}
 
 			val user = context.getUserAt(currentIdx++)
-			var howMuch = context.rawArgs.getOrNull(currentIdx++)?.toLongOrNull()
+			var howMuch = context.rawArgs.getOrNull(currentIdx++)?.toDoubleOrNull()
 
 
 			if (user == null || context.userHandle == user) {
@@ -98,9 +98,9 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			}
 
 			when {
-				context.rawArgs[1].endsWith("m") -> howMuch = context.rawArgs[1].removeSuffixIfPresent("m").toLongOrNull()?.times(1_000_000)
-				context.rawArgs[1].endsWith("kk") -> howMuch = context.rawArgs[1].removeSuffixIfPresent("kk").toLongOrNull()?.times(1_000_000)
-				context.rawArgs[1].endsWith("k") -> howMuch = context.rawArgs[1].removeSuffixIfPresent("k").toLongOrNull()?.times(1_000)
+				context.rawArgs[1].endsWith("m") -> howMuch = context.rawArgs[1].removeSuffix("m").toDoubleOrNull()?.times(1_000_000)
+				context.rawArgs[1].endsWith("kk") -> howMuch = context.rawArgs[1].removeSuffix("kk").toDoubleOrNull()?.times(1_000_000)
+				context.rawArgs[1].endsWith("k") -> howMuch = context.rawArgs[1].removeSuffix("k").toDoubleOrNull()?.times(1_000)
 			}
 
 			if (howMuch == null) {
@@ -228,7 +228,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 
 				context.reply(
 						LoriReply(
-								locale["PAY_TransactionComplete", user.asMention, howMuch, if (howMuch == 1L) { economyConfig?.economyName } else { economyConfig?.economyNamePlural }],
+								locale["PAY_TransactionComplete", user.asMention, howMuch, if (howMuch.toLong() == 1L) { economyConfig?.economyName } else { economyConfig?.economyNamePlural }],
 								"\uD83D\uDCB8"
 						)
 				)
