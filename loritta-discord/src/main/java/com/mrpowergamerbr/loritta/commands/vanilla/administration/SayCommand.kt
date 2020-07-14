@@ -3,8 +3,10 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.TextChannel
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.util.*
@@ -29,13 +31,39 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN
 	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
 		if (context.rawArgs.isNotEmpty()) {
 			var args = context.rawArgs
-			val channelId = context.rawArgs[0]
+			var currentIdx = 0
+
+			val arg0 = context.rawArgs[0]
+			var isEditMode = false
+			var editMessage: Message? = null
+
+			if (arg0 == "edit" || arg0 == "editar") {
+				isEditMode = true
+				currentIdx++
+			}
+
+			val channelIdOrMessageLink = context.rawArgs[currentIdx]
+
+			if (isEditMode) {
+				val split = channelIdOrMessageLink.split("/")
+
+				if (split.size >= 2) {
+					val messageId = split.last()
+					val channelId = split.dropLast(1).last()
+
+					editMessage = context.guild.getTextChannelById(channelId)!!
+							.retrieveMessageById(messageId)
+							.await()
+					args = args.remove(0) // Removes the "edit"
+					args = args.remove(0) // Removes the message URL
+				} else { return } // TODO: Good message
+			}
 
 			// Pegando canal de texto, via menções, ID ou nada
-			val channel = if (args.size >= 2) {
-				if (channelId.startsWith("<#") && channelId.endsWith(">")) {
+			val channel = if (isEditMode) editMessage!!.channel else if (args.size >= 2) {
+				if (channelIdOrMessageLink.startsWith("<#") && channelIdOrMessageLink.endsWith(">")) {
 					try {
-						val ch = context.guild.getTextChannelById(channelId.substring(2, channelId.length - 1))
+						val ch = context.guild.getTextChannelById(channelIdOrMessageLink.substring(2, channelIdOrMessageLink.length - 1))
 						args = args.remove(0)
 						ch
 					} catch (e: Exception) {
@@ -43,7 +71,7 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN
 					}
 				} else {
 					try {
-						val ch = context.guild.getTextChannelById(channelId)
+						val ch = context.guild.getTextChannelById(channelIdOrMessageLink)
 						args = args.remove(0)
 						ch
 					} catch (e: Exception) {
@@ -98,9 +126,19 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN
 			}
 
 			if (discordMessage != null)
-				channel.sendMessage(discordMessage).queue()
+				(
+						if (isEditMode)
+							editMessage!!.editMessage(discordMessage)
+						else
+							channel.sendMessage(discordMessage)
+						).queue()
 			else
-				channel.sendMessage(message).queue()
+				(
+						if (isEditMode)
+							editMessage!!.editMessage(message)
+						else
+							channel.sendMessage(message)
+						).queue()
 
 			if (context.event.channel != channel && channel is TextChannel)
 				context.reply(
