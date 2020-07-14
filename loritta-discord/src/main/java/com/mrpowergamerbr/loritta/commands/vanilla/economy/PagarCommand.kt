@@ -18,7 +18,9 @@ import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.kotlin.util.removeSuffixIfPresent
 import java.math.BigDecimal
+import kotlin.math.pow
 
 class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECONOMY) {
 	companion object {
@@ -82,7 +84,8 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			}
 
 			val user = context.getUserAt(currentIdx++)
-			val howMuch = context.rawArgs.getOrNull(currentIdx++)?.toLongOrNull()
+			var howMuch = context.rawArgs.getOrNull(currentIdx++)?.toDoubleOrNull()
+
 
 			if (user == null || context.userHandle == user) {
 				context.reply(
@@ -92,6 +95,12 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 						)
 				)
 				return
+			}
+
+			when {
+				context.rawArgs[1].endsWith("m", true) -> howMuch = context.rawArgs[1].removeSuffix("m").toDoubleOrNull()?.times(1_000_000)
+				context.rawArgs[1].endsWith("kk", true) -> howMuch = context.rawArgs[1].removeSuffix("kk").toDoubleOrNull()?.times(1_000_000)
+				context.rawArgs[1].endsWith("k", true) -> howMuch = context.rawArgs[1].removeSuffix("k").toDoubleOrNull()?.times(1_000)
 			}
 
 			if (howMuch == null) {
@@ -134,7 +143,6 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			// Hora de transferir!
 			if (economySource == "global") {
 				// User checks
-				val activeMoneyFromDonations = loritta.getActiveMoneyFromDonations(context.userHandle.idLong)
 
 				if (!checkIfSelfAccountIsOldEnough(context))
 					return
@@ -220,7 +228,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 
 				context.reply(
 						LoriReply(
-								locale["PAY_TransactionComplete", user.asMention, howMuch, if (howMuch == 1L) { economyConfig?.economyName } else { economyConfig?.economyNamePlural }],
+								locale["PAY_TransactionComplete", user.asMention, howMuch, if (howMuch.toLong() == 1L) { economyConfig?.economyName } else { economyConfig?.economyNamePlural }],
 								"\uD83D\uDCB8"
 						)
 				)
@@ -252,40 +260,6 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			context.reply(
 					LoriReply(
 							context.locale["commands.economy.pay.otherAccountIsTooNew", target.asMention, 7] + " ${Emotes.LORI_CRYING}",
-							Constants.ERROR
-					)
-			)
-			return false
-		}
-		return true
-	}
-
-	private suspend fun checkIfSelfAccountGotDailyToday(context: CommandContext): Boolean {
-		val (canGetDaily, tomorrow) = context.lorittaUser.profile.canGetDaily()
-
-		if (canGetDaily) { // Nós apenas queremos permitir que a pessoa possa enviar sonhos caso já tenha pegado sonhos alguma vez hoje
-			context.reply(
-					LoriReply(
-							context.locale["commands.economy.pay.selfAccountNeedsToGetDaily", "${loritta.instanceConfig.loritta.website.url}daily"],
-							Constants.ERROR
-					)
-			)
-			return false
-		}
-		return true
-	}
-
-	private suspend fun checkIfOtherAccountGotDailyToday(context: CommandContext, target: User, profile: Profile): Boolean {
-		val (canGetDaily, tomorrow) = profile.canGetDaily()
-
-		if (canGetDaily) { // Nós apenas queremos permitir que a pessoa possa receber sonhos caso já tenha pegado sonhos alguma vez hoje
-			val pronoun = transaction(Databases.loritta) {
-				profile.settings.gender
-			}.getPersonalPronoun(context.locale, PersonalPronoun.THIRD_PERSON, target.asMention)
-
-			context.reply(
-					LoriReply(
-							context.locale["commands.economy.pay.otherAccountNeedsToGetDaily", target.asMention, pronoun, "${loritta.instanceConfig.loritta.website.url}daily"],
 							Constants.ERROR
 					)
 			)
