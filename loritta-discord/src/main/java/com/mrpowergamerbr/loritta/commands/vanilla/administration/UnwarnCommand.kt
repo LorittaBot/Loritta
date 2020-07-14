@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.tables.Warns
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
@@ -64,7 +65,7 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 					return
 			}
 
-			val warns = transaction(Databases.loritta) {
+			val warns = loritta.newSuspendedTransaction {
 				Warn.find { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) }.toList()
 			}
 
@@ -107,7 +108,7 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 
 			val warn = warns[warnIndex - 1]
 
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				warn.delete()
 			}
 

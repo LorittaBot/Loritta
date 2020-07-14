@@ -50,21 +50,24 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val user = AdminUtils.checkForUser(context) ?: return
+			val (users, rawReason) = AdminUtils.checkAndRetrieveAllValidUsersFromMessages(context) ?: return
 
-			val member = context.guild.getMember(user)
+			for (user in users) {
+				val member = context.guild.getMember(user)
 
-			if (member != null) {
-				if (!AdminUtils.checkForPermissions(context, member))
-					return
+				if (member != null) {
+					if (!AdminUtils.checkForPermissions(context, member))
+						return
+				}
 			}
 
-			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context) ?: return
+			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context, rawReason) ?: return
 
 			val settings = AdminUtils.retrieveModerationInfo(context.config)
 
 			val banCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
-				ban(settings, context.guild, context.userHandle, locale, user, reason, isSilent, delDays)
+				for (user in users)
+					ban(settings, context.guild, context.userHandle, locale, user, reason, isSilent, delDays)
 
 				message?.delete()?.queue()
 
@@ -77,7 +80,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 			}
 
 			val hasSilent = settings.sendPunishmentViaDm || settings.sendPunishmentToPunishLog
-			val message = AdminUtils.sendConfirmationMessage(context, user, hasSilent, "ban")
+			val message = AdminUtils.sendConfirmationMessage(context, users, hasSilent, "ban")
 
 			message.onReactionAddByAuthor(context) {
 				if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {

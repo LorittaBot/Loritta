@@ -62,22 +62,27 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val user = AdminUtils.checkForUser(context) ?: return
+			val (users, rawReason) = AdminUtils.checkAndRetrieveAllValidUsersFromMessages(context) ?: return
 
-			val member = context.guild.getMember(user)
+			val members = mutableListOf<Member>()
+			for (user in users) {
+				val member = context.guild.getMember(user)
 
-			if (member == null) {
-				context.reply(
-						LoriReply(
-								context.locale["commands.userNotOnTheGuild", "${user.asMention} (`${user.name.stripCodeMarks()}#${user.discriminator} (${user.idLong})`)"],
-								Emotes.LORI_HM
-						)
-				)
-				return
+				if (member == null) {
+					context.reply(
+							LoriReply(
+									context.locale["commands.userNotOnTheGuild", "${user.asMention} (`${user.name.stripCodeMarks()}#${user.discriminator} (${user.idLong})`)"],
+									Emotes.LORI_HM
+							)
+					)
+					return
+				}
+
+				if (!AdminUtils.checkForPermissions(context, member))
+					return
+
+				members.add(member)
 			}
-
-			if (!AdminUtils.checkForPermissions(context, member))
-				return
 
 			val setHour = context.reply(
 					LoriReply(
@@ -89,13 +94,14 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			val settings = AdminUtils.retrieveModerationInfo(context.config)
 
 			suspend fun punishUser(time: Long?) {
-				val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context) ?: return
+				val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context, rawReason) ?: return
 
 				if (skipConfirmation) {
-					val result = muteUser(context, settings, member, time, locale, user, reason, silent)
+					for (member in members) {
+						val result = muteUser(context, settings, member, time, locale, member.user, reason, silent)
 
-					if (!result) {
-						return
+						if (!result)
+							continue
 					}
 
 					AdminUtils.sendSuccessfullyPunishedMessage(context, reason, true)
@@ -103,7 +109,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 				}
 
 				val hasSilent = settings.sendPunishmentViaDm || settings.sendPunishmentToPunishLog
-				val message = AdminUtils.sendConfirmationMessage(context, user, hasSilent, "mute")
+				val message = AdminUtils.sendConfirmationMessage(context, users, hasSilent, "mute")
 
 				message.onReactionAddByAuthor(context) {
 					if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
@@ -111,10 +117,11 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 
 						message.delete().queue()
 
-						val result = muteUser(context, settings, member, time, locale, user, reason, isSilent)
+						for (member in members) {
+							val result = muteUser(context, settings, member, time, locale, member.user, reason, isSilent)
 
-						if (!result) {
-							return@onReactionAddByAuthor
+							if (!result)
+								continue
 						}
 
 						context.reply(

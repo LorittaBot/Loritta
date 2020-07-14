@@ -62,6 +62,7 @@ object DiscordUtils {
 			input: String,
 			usersInContext: List<User>? = null,
 			guild: Guild? = null,
+			extractUserViaMention: Boolean = true,
 			extractUserViaNameAndDiscriminator: Boolean = true,
 			extractUserViaEffectiveName: Boolean = true,
 			extractUserViaUsername: Boolean = true,
@@ -72,7 +73,7 @@ object DiscordUtils {
 			return null
 
 		// Vamos verificar por menções, uma menção do Discord é + ou - assim: <@123170274651668480>
-		if (usersInContext != null) {
+		if (usersInContext != null && extractUserViaMention) {
 			for (user in usersInContext) {
 				if (user.asMention == link.replace("!", "")) { // O replace é necessário já que usuários com nick tem ! no mention (?)
 					// Diferente de null? Então vamos usar o avatar do usuário!
@@ -84,7 +85,8 @@ object DiscordUtils {
 		// Vamos tentar procurar pelo username + discriminator
 		if (guild != null) {
 			if (extractUserViaNameAndDiscriminator) {
-				val split = link.split("#").dropLastWhile { it.isEmpty() }.toTypedArray()
+				// TODO: Support names with space (maybe impossible)
+				val split = link.split("#")
 				if (split.size == 2) {
 					val discriminator = split.last()
 					val name = split.dropLast(1).joinToString(" ")

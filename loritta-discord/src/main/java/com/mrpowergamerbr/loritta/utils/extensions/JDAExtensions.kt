@@ -80,7 +80,23 @@ suspend fun Guild.retrieveMemberOrNullById(id: Long): Member? {
 	return try {
 		this.retrieveMemberById(id).await()
 	} catch (e: ErrorResponseException) {
-		if (e.errorResponse == ErrorResponse.UNKNOWN_MEMBER)
+		if (e.errorResponse == ErrorResponse.UNKNOWN_MEMBER || e.errorResponse == ErrorResponse.UNKNOWN_USER)
+			return null
+		throw e
+	}
+}
+
+/**
+ * Retrieves a member, if the member isn't in the guild then null is returned
+ *
+ * @param the member's id
+ * @return the member or null
+ */
+suspend fun Guild.retrieveMemberOrNull(user: User): Member? {
+	return try {
+		this.retrieveMember(user).await()
+	} catch (e: ErrorResponseException) {
+		if (e.errorResponse == ErrorResponse.UNKNOWN_MEMBER || e.errorResponse == ErrorResponse.UNKNOWN_USER)
 			return null
 		throw e
 	}

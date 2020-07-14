@@ -189,7 +189,6 @@ class CommandManager(loritta: Loritta) {
 		// =======[ ADMIN ]========
 		commandMap.add(LimparCommand())
 		commandMap.add(RoleIdCommand())
-		commandMap.add(SoftBanCommand())
 		commandMap.add(MuteCommand())
 		commandMap.add(UnmuteCommand())
 		commandMap.add(SlowModeCommand())
