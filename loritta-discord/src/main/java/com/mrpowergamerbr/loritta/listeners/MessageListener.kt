@@ -86,6 +86,12 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				val serverConfig = serverConfigJob.await()
 
+				val miscellaneousConfig = transaction(Databases.loritta) {
+					serverConfig.miscellaneousConfig
+				}
+
+				val enableQuirky = miscellaneousConfig?.enableQuirky ?: false
+
 				val autoroleConfigJob = serverConfig.getCachedOrRetreiveFromDatabaseDeferred<AutoroleConfig?>(loritta, ServerConfig::autoroleConfig)
 						.logOnCompletion(enableProfiling) { "Loading Server Config's autorole took {time}ns for ${event.author.idLong}" }
 
@@ -150,7 +156,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				start = System.nanoTime()
 
-				if (chance(25.0) && event.guild.selfMember.hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI) && isMentioningMe(event.message))
+				if (chance(25.0) && event.guild.selfMember.hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI) && isMentioningMe(event.message) && enableQuirky)
 					event.message.addReaction("smol_lori_putassa_ping:397748526362132483").queue()
 
 				logIfEnabled(enableProfiling) { "Checking user mention took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
