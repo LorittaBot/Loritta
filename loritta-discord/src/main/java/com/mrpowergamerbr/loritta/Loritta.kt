@@ -403,14 +403,9 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		if (loadFromCache)
 			cachedServerConfigs.getIfPresent(guildId)?.let { return it }
 
-		val serverConfig = transaction(Databases.loritta) {
-			ServerConfig.findById(guildId) ?: ServerConfig.new(guildId) {}
+		return transaction(Databases.loritta) {
+			_getOrCreateServerConfig(guildId)
 		}
-
-		if (loritta.config.caches.serverConfigs.maximumSize != 0L)
-			cachedServerConfigs.put(guildId, serverConfig)
-
-		return serverConfig
 	}
 
 	/**
@@ -423,14 +418,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		if (loadFromCache)
 			cachedServerConfigs.getIfPresent(guildId)?.let { return it }
 
-		val serverConfig = newSuspendedTransaction(Dispatchers.IO, Databases.loritta) {
-			ServerConfig.findById(guildId) ?: ServerConfig.new(guildId) {}
-		}
-
-		if (loritta.config.caches.serverConfigs.maximumSize != 0L)
-			cachedServerConfigs.put(guildId, serverConfig)
-
-		return serverConfig
+		return newSuspendedTransaction(Dispatchers.IO, Databases.loritta) { _getOrCreateServerConfig(guildId) }
 	}
 
 	/**
@@ -443,16 +431,18 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		if (loadFromCache)
 			cachedServerConfigs.getIfPresent(guildId)?.let { return GlobalScope.async(coroutineDispatcher) { it } }
 
-		val job = suspendedTransactionAsync(Dispatchers.IO, Databases.loritta) {
-			val result = ServerConfig.findById(guildId) ?: ServerConfig.new(guildId) {}
-
-			if (loritta.config.caches.serverConfigs.maximumSize != 0L)
-				cachedServerConfigs.put(guildId, result)
-
-			return@suspendedTransactionAsync result
-		}
+		val job = suspendedTransactionAsync(Dispatchers.IO, Databases.loritta) { _getOrCreateServerConfig(guildId) }
 
 		return job
+	}
+
+	private fun _getOrCreateServerConfig(guildId: Long): ServerConfig {
+		val result = ServerConfig.findById(guildId) ?: ServerConfig.new(guildId) {}
+
+		if (loritta.config.caches.serverConfigs.maximumSize != 0L)
+			cachedServerConfigs.put(guildId, result)
+
+		return result
 	}
 
 	fun getLorittaProfile(userId: String): Profile? {
@@ -465,11 +455,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	 * @param userId the user's ID
 	 * @return       the user profile
 	 */
-	fun getLorittaProfile(userId: Long): Profile? {
-		return transaction(Databases.loritta) {
-			Profile.findById(userId)
-		}
-	}
+	fun getLorittaProfile(userId: Long) = transaction(Databases.loritta) { _getLorittaProfile(userId) }
 
 	/**
 	 * Loads the profile of an user in a coroutine
@@ -477,11 +463,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	 * @param userId the user's ID
 	 * @return       the user profile
 	 */
-	suspend fun getLorittaProfileAsync(userId: Long): Profile? {
-		return newSuspendedTransaction {
-			Profile.findById(userId)
-		}
-	}
+	suspend fun getLorittaProfileAsync(userId: Long) = newSuspendedTransaction { _getLorittaProfile(userId) }
 
 	/**
 	 * Loads the profile of an user deferred
@@ -489,11 +471,9 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	 * @param userId the user's ID
 	 * @return       the user profile
 	 */
-	suspend fun getLorittaProfileDeferred(userId: Long): Deferred<Profile?> {
-		return suspendedTransactionAsync {
-			Profile.findById(userId)
-		}
-	}
+	suspend fun getLorittaProfileDeferred(userId: Long) = suspendedTransactionAsync { _getLorittaProfile(userId) }
+
+	fun _getLorittaProfile(userId: Long) = Profile.findById(userId)
 
 	fun getOrCreateLorittaProfile(userId: String): Profile {
 		return getOrCreateLorittaProfile(userId.toLong())
@@ -524,12 +504,18 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	}
 
 	fun getActiveMoneyFromDonations(userId: Long): Double {
-		return transaction(Databases.loritta) {
-			Payment.find {
-				(Payments.expiresAt greaterEq System.currentTimeMillis()) and
-						(Payments.reason eq PaymentReason.DONATION) and
-						(Payments.userId eq userId)
-			}.sumByDouble { it.money.toDouble() }
-		}
+		return transaction(Databases.loritta) { _getActiveMoneyFromDonations(userId) }
+	}
+
+	suspend fun getActiveMoneyFromDonationsAsync(userId: Long): Double {
+		return loritta.newSuspendedTransaction { _getActiveMoneyFromDonations(userId) }
+	}
+
+	private fun _getActiveMoneyFromDonations(userId: Long): Double {
+		return Payment.find {
+			(Payments.expiresAt greaterEq System.currentTimeMillis()) and
+					(Payments.reason eq PaymentReason.DONATION) and
+					(Payments.userId eq userId)
+		}.sumByDouble { it.money.toDouble() }
 	}
 }

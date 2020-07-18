@@ -3,10 +3,14 @@ package com.mrpowergamerbr.loritta.utils
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
+import io.ktor.client.request.get
 import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.json.XML
@@ -69,7 +73,7 @@ object MiscUtils {
 		process.waitFor(10, TimeUnit.SECONDS)
 	}
 
-	fun verifyAccount(userIdentification: TemmieDiscordAuth.UserIdentification, ip: String): AccountCheckResult {
+	suspend fun verifyAccount(userIdentification: TemmieDiscordAuth.UserIdentification, ip: String): AccountCheckResult {
 		if (!userIdentification.verified)
 			return AccountCheckResult.NOT_VERIFIED
 
@@ -90,7 +94,7 @@ object MiscUtils {
 		return verifyIP(ip)
 	}
 
-	fun verifyIP(ip: String): AccountCheckResult {
+	suspend fun verifyIP(ip: String): AccountCheckResult {
 		// Para identificar meliantes, cada request terá uma razão determinando porque o IP foi bloqueado
 		// 0 = Stop Forum Spam
 		// 1 = Bad hostname
@@ -98,8 +102,7 @@ object MiscUtils {
 
 		logger.info("Verifying IP: $ip")
 		// Antes de nós realmente decidir "ele deu upvote então vamos dar o upvote", nós iremos verificar o IP no StopForumSpam
-		val stopForumSpam = HttpRequest.get("http://api.stopforumspam.org/api?ip=$ip")
-				.body()
+		val stopForumSpam = loritta.http.get<String>("http://api.stopforumspam.org/api?ip=$ip")
 
 		logger.info("Stop Forum Spam: $stopForumSpam")
 
@@ -108,7 +111,7 @@ object MiscUtils {
 
 		logger.info("as JSON: $xmlJSONObj")
 
-		val response = jsonParser.parse(xmlJSONObj.toString(4)).obj["response"]
+		val response = JsonParser.parseString(xmlJSONObj.toString(4)).obj["response"]
 
 		val isSpam = response["appears"].nullBool
 
@@ -120,7 +123,7 @@ object MiscUtils {
 		}
 
 		// HOSTNAME BLOCC:tm:
-		val addr = InetAddress.getByName(ip)
+		val addr = withContext(Dispatchers.IO) { InetAddress.getByName(ip) }
 		val host = addr.hostName.toLowerCase()
 
 		val hostnames = listOf(

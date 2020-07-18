@@ -271,7 +271,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				else -> 1.1
 			}
 
-			val donatorPaid = loritta.getActiveMoneyFromDonations(userIdentification.id.toLong())
+			val donatorPaid = loritta.getActiveMoneyFromDonationsAsync(userIdentification.id.toLong())
 			val plan = UserPremiumPlans.getPlanFromValue(donatorPaid)
 
 			multiplier += plan.dailyMultiplier
@@ -286,7 +286,6 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 			var sponsoredByUserId: Long? = null
 
 			val failedDailyServersInfo = jsonArray()
-			val user =  lorittaShards.retrieveUserById(userIdentification.id)
 
 			loritta.newSuspendedTransaction {
 				// Pegar todos os servidores com sonhos patrocinados

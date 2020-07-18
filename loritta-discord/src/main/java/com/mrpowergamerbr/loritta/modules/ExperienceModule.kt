@@ -75,7 +75,7 @@ class ExperienceModule : MessageReceivedModule {
 
 					var globalGainedXp = gainedXp
 
-					val donatorPaid = loritta.getActiveMoneyFromDonations(event.author.idLong)
+					val donatorPaid = loritta.getActiveMoneyFromDonationsAsync(event.author.idLong)
 					if (donatorPaid != 0.0) {
 						val plan = ServerPremiumPlans.getPlanFromValue(donatorPaid)
 						globalGainedXp = (globalGainedXp * plan.globalXpMultiplier).toInt()

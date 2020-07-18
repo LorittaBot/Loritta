@@ -180,7 +180,7 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 			}
 
 			if (internalName == Background.CUSTOM_BACKGROUND_ID) {
-				val donationValue = loritta.getActiveMoneyFromDonations(profile.userId)
+				val donationValue = loritta.getActiveMoneyFromDonationsAsync(profile.userId)
 				val plan = UserPremiumPlans.getPlanFromValue(donationValue)
 
 				if (!plan.customBackground)

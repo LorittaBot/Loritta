@@ -112,7 +112,7 @@ class GetSelfInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/us
 
 			if ("donations" in sections) {
 				payload["donations"] = jsonObject(
-						"value" to loritta.getActiveMoneyFromDonations(userIdentification.id.toLong())
+						"value" to loritta.getActiveMoneyFromDonationsAsync(userIdentification.id.toLong())
 				)
 			}
 

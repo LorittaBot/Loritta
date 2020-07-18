@@ -131,7 +131,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			if (user.support) badges += ImageIO.read(File(Loritta.ASSETS + "support.png"))
 			if (hasLoriStickerArt) badges += ImageIO.read(File(Loritta.ASSETS + "sticker_badge.png"))
 
-			val money = loritta.getActiveMoneyFromDonations(user.idLong)
+			val money = loritta.getActiveMoneyFromDonationsAsync(user.idLong)
 
 			if (money != 0.0) {
 				badges += ImageIO.read(File(Loritta.ASSETS + "donator.png"))

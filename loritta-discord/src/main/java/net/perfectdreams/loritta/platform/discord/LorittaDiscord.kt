@@ -130,7 +130,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
         if (background?.id?.value == Background.CUSTOM_BACKGROUND_ID) {
             // Background personalizado
-            val donationValue = loritta.getActiveMoneyFromDonations(profile.userId)
+            val donationValue = loritta.getActiveMoneyFromDonationsAsync(profile.userId)
             val plan = UserPremiumPlans.getPlanFromValue(donationValue)
 
             if (plan.customBackground) {
@@ -167,7 +167,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
         if (background?.id?.value == Background.CUSTOM_BACKGROUND_ID) {
             // Background personalizado
-            val donationValue = loritta.getActiveMoneyFromDonations(profile.userId)
+            val donationValue = loritta.getActiveMoneyFromDonationsAsync(profile.userId)
             val plan = UserPremiumPlans.getPlanFromValue(donationValue)
 
             if (plan.customBackground)

@@ -206,7 +206,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 			if (arg0 == "inspect_donations" && arg1 != null) {
 				val id = arg1.toLong()
 
-				val moneyFromDonations = loritta.getActiveMoneyFromDonations(id)
+				val moneyFromDonations = loritta.getActiveMoneyFromDonationsAsync(id)
 
 				context.reply(
 						LoriReply(

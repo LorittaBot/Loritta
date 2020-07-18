@@ -149,7 +149,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 				}
 
 				var cooldown = command.cooldown
-				val donatorPaid = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonations(ev.author.idLong)
+				val donatorPaid = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonationsAsync(ev.author.idLong)
 				val guildId = ev.guild?.idLong
 				val guildPaid = guildId?.let { serverConfig.getActiveDonationKeysValue() } ?: 0.0
 
