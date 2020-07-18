@@ -21,6 +21,7 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
+import org.jsoup.Jsoup
 import java.net.URL
 
 class GetChannelInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/youtube/channel") {
@@ -63,6 +64,17 @@ class GetChannelInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1
 			// https://www.youtube.com/channel/UCZ-uXTZGSN8lmp-nrXwz7-A
 			val channelId = if (urlPath.startsWith("/channel/")) {
 				urlPath.removePrefix("/channel/")
+			} else if (urlPath.startsWith("/c/")) {
+				// Channels starting with "/c/" is harder because the API doesn't show them (for some reason...)
+				// To retrieve those, we need to query the channel URL and get the ID from there
+				val youTubePage = Jsoup.connect("https://www.youtube.com/c/FabioSantosVariedades/")
+						.userAgent(Constants.USER_AGENT)
+						.get()
+
+				youTubePage.select("[type='application/rss+xml']")
+						.first()
+						.attr("href")
+						.substringAfter("?channel_id=")
 			} else {
 				// Se for um username, temos que converter de username -> ID
 				val username = urlPath.split("/").last()
