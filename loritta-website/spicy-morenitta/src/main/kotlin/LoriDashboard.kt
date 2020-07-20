@@ -1,11 +1,17 @@
 
 import kotlinx.html.*
+import kotlinx.html.dom.append
+import kotlinx.html.dom.create
+import kotlinx.html.js.onClickFunction
 import kotlinx.html.stream.appendHTML
+import net.perfectdreams.loritta.embededitor.EmbedEditorCrossWindow
+import net.perfectdreams.loritta.embededitor.data.crosswindow.*
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.utils.TingleModal
 import net.perfectdreams.spicymorenitta.utils.TingleOptions
 import net.perfectdreams.spicymorenitta.utils.select
 import org.w3c.dom.HTMLDivElement
+import org.w3c.dom.MessageEvent
 import utils.*
 import kotlin.browser.document
 import kotlin.browser.window
@@ -276,7 +282,54 @@ object LoriDashboard {
 			}
 		}
 
+		val newElement = document.create.button(classes = "button-discord button-discord-info pure-button") {
+			i(classes = "fas fa-edit") {}
+			+ " Usar editor de mensagens avançado"
+
+			onClickFunction = {
+				println("Opening extended editor...")
+				val extendedWindow = window.open("https://embeds.loritta.website/")!!
+
+				window.addEventListener("message", { event ->
+					event as MessageEvent
+					println("Received message ${event.data}")
+
+					if (event.source == extendedWindow) {
+						println("Received message from our target source, yay!")
+
+						val packet = EmbedEditorCrossWindow.communicationJson.parse(PacketWrapper.serializer(), event.data as String)
+
+						if (packet.m is ReadyPacket) {
+							println("Is ready packet, current text area is ${jquery.`val`()}")
+							extendedWindow.postMessage(
+									EmbedEditorCrossWindow.communicationJson.stringify(
+											PacketWrapper.serializer(),
+											PacketWrapper(
+													MessageSetupPacket(
+															jquery.`val`() as String,
+															placeholders.entries.map {
+																Placeholder(
+																		it.key,
+																		it.value,
+																		RenderType.TEXT,
+																		false
+																)
+															}
+													)
+											)
+									),
+									"*"
+							)
+						} else if (packet.m is UpdatedMessagePacket) {
+							jquery.`val`((packet.m as UpdatedMessagePacket).content)
+						}
+					}
+				})
+			}
+		}
+
 		div.insertBefore(jquery)
+
 		jquery.appendTo(div)
 
 		val extendedMode = 	jq("<div>")
@@ -295,6 +348,8 @@ object LoriDashboard {
 		div.append(
 				extendedMode
 		)
+
+		jquery.get().first().parentElement!!.parentElement!!.insertBefore(newElement, jquery.get().first().parentElement!!)
 
 		autosize(jquery)
 
@@ -607,6 +662,7 @@ object LoriDashboard {
 			guildName = serverConfig.guildName
 			guildSize = serverConfig.memberCount.toString()
 		}
+
 		for ((token, value) in customTokens) {
 			message = message.replace("{$token}", value ?: "\uD83E\uDD37")
 		}
