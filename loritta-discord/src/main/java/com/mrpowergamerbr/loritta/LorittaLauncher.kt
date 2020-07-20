@@ -47,7 +47,7 @@ object LorittaLauncher {
 		if (!configurationFile.exists() || !discordConfigurationFile.exists()) {
 			println("Welcome to Loritta Morenitta! :3")
 			println("")
-			println("I want to make a world a better place... helping people, making them laugh... I hope I succeed!")
+			println("I want to make the world a better place... helping people, making them laugh... I hope I succeed!")
 			println("")
 			println("Before we start, you will need to configure me.")
 			println("I will create a file named \"loritta.conf\" (general configuration) and \"discord.conf\" (platform specific configuration), open it on your favorite text editor and change it!")
