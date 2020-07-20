@@ -86,6 +86,7 @@ allprojects {
 
         maven("https://dl.bintray.com/kotlin/kotlin-dev/")
         maven("https://dl.bintray.com/kotlin/kotlin-eap/")
+        maven("https://dl.bintray.com/kotlin/kotlinx.html")
         maven("https://jcenter.bintray.com")
         maven("https://oss.sonatype.org/content/repositories/snapshots/")
         maven("https://repo.perfectdreams.net/")
