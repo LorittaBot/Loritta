@@ -70,31 +70,12 @@ class NashornCommand(label: String, val javaScriptCode: String, val codeType: Cu
 				val customTokens = mutableMapOf<String, String>()
 
 				if (javaScriptCode.contains("{experience") || javaScriptCode.contains("{level") || javaScriptCode.contains("{xp")) {
-					// Load tokens for experience/level/xp
-					val profile = context.config.getUserData(context.userHandle.idLong)
-					val level = profile.getCurrentLevel().currentLevel
-					val xp = profile.xp
-
-					val currentLevelTotalXp = ExperienceUtils.getLevelExperience(level)
-
-					val nextLevel = level + 1
-					val nextLevelTotalXp = ExperienceUtils.getLevelExperience(nextLevel)
-					val nextLevelRequiredXp = ExperienceUtils.getHowMuchExperienceIsLeftToLevelUp(profile.xp, nextLevel)
-
-					val ranking = newSuspendedTransaction {
-						GuildProfiles.select {
-							GuildProfiles.guildId eq context.guild.idLong and
-									(GuildProfiles.xp greaterEq profile.xp)
-						}.count()
-					}
-
-					customTokens[Placeholders.EXPERIENCE_LEVEL.name] = level.toString()
-					customTokens[Placeholders.EXPERIENCE_XP.name] = xp.toString()
-
-					customTokens[Placeholders.EXPERIENCE_NEXT_LEVEL.name] = nextLevel.toString()
-					customTokens[Placeholders.EXPERIENCE_NEXT_LEVEL_TOTAL_XP.name] = nextLevelTotalXp.toString()
-					customTokens[Placeholders.EXPERIENCE_NEXT_LEVEL_REQUIRED_XP.name] = nextLevelRequiredXp.toString()
-					customTokens[Placeholders.EXPERIENCE_RANKING.name] = ranking.toString()
+					customTokens.putAll(
+							ExperienceUtils.getExperienceCustomToken(
+									context.config,
+									context.handle
+							)
+					)
 				}
 
 				val message = MessageUtils.generateMessage(

@@ -20,10 +20,7 @@ import net.perfectdreams.loritta.dao.servers.moduleconfigs.LevelConfig
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.ExperienceRoleRates
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.LevelAnnouncementConfigs
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.RolesByExperience
-import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.FeatureFlags
-import net.perfectdreams.loritta.utils.Placeholders
-import net.perfectdreams.loritta.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.utils.*
 import net.perfectdreams.loritta.utils.levels.LevelUpAnnouncementType
 import net.perfectdreams.loritta.utils.levels.RoleGiveType
 import org.jetbrains.exposed.sql.SortOrder
@@ -231,13 +228,18 @@ class ExperienceModule : MessageReceivedModule {
 								event.channel
 						),
 						guild,
-						mapOf(
+						mutableMapOf(
 								"previous-level" to previousLevel.toString(),
 								"previous-xp" to previousXp.toString(),
-								Placeholders.EXPERIENCE_LEVEL.name to newLevel.toString(),
-								Placeholders.EXPERIENCE_XP.name to newXp.toString(),
 								"new-roles" to givenNewRoles.joinToString(transform = { it.asMention })
-						)
+						).apply {
+							putAll(
+									ExperienceUtils.getExperienceCustomToken(
+											serverConfig,
+											event.member
+									)
+							)
+						}
 				)
 
 				logger.info { "Message for notif is $message" }

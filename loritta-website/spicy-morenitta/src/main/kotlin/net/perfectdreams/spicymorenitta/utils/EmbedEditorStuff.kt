@@ -3,6 +3,7 @@ package net.perfectdreams.spicymorenitta.utils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.embededitor.data.crosswindow.Placeholder
 import net.perfectdreams.loritta.embededitor.data.crosswindow.RenderType
+import net.perfectdreams.loritta.utils.LorittaPlaceholder
 import net.perfectdreams.loritta.utils.Placeholders
 
 object EmbedEditorStuff {
@@ -14,6 +15,11 @@ object EmbedEditorStuff {
     const val LORITTA_AVATAR = "https://cdn.discordapp.com/avatars/297153970613387264/fd27e53031e4e600d06207f6853af908.png?size=2048"
     const val EXPERIENCE_LEVEL = "100"
     const val EXPERIENCE_XP = "100002"
+    const val EXPERIENCE_RANKING = "5"
+    const val EXPERIENCE_NEXT_LEVEL = "101"
+    const val EXPERIENCE_NEXT_LEVEL_REQUIRED_XP = "998"
+    const val EXPERIENCE_NEXT_LEVEL_TOTAL_XP = "101000"
+
     const val placeholdersPrefix = "website.dashboard.placeholders"
     const val placeholdersUserPrefix = "$placeholdersPrefix.user"
     const val placeholdersExperiencePrefix = "$placeholdersPrefix.experience"
@@ -119,6 +125,34 @@ object EmbedEditorStuff {
                     Placeholders.EXPERIENCE_XP.asKey,
                     EXPERIENCE_XP,
                     locale["$placeholdersExperiencePrefix.xp"],
+                    RenderType.TEXT,
+                    false
+            ),
+            Placeholder(
+                    Placeholders.EXPERIENCE_RANKING.asKey,
+                    EXPERIENCE_RANKING,
+                    locale["$placeholdersExperiencePrefix.ranking"],
+                    RenderType.TEXT,
+                    false
+            ),
+            Placeholder(
+                    Placeholders.EXPERIENCE_NEXT_LEVEL.asKey,
+                    EXPERIENCE_NEXT_LEVEL,
+                    locale["$placeholdersExperiencePrefix.nextLevel"],
+                    RenderType.TEXT,
+                    false
+            ),
+            Placeholder(
+                    Placeholders.EXPERIENCE_NEXT_LEVEL_TOTAL_XP.asKey,
+                    EXPERIENCE_NEXT_LEVEL_TOTAL_XP,
+                    locale["$placeholdersExperiencePrefix.nextLevelTotalXp"],
+                    RenderType.TEXT,
+                    false
+            ),
+            Placeholder(
+                    Placeholders.EXPERIENCE_NEXT_LEVEL_REQUIRED_XP.asKey,
+                    EXPERIENCE_NEXT_LEVEL_REQUIRED_XP,
+                    locale["$placeholdersExperiencePrefix.nextLevelRequiredXp"],
                     RenderType.TEXT,
                     false
             )
