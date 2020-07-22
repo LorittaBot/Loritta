@@ -256,7 +256,7 @@ class CustomCommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 				false,
 				null,
 				true,
-				listOf() /* Placeholders.DEFAULT_PLACEHOLDERS */,
+				EmbedEditorStuff.userInContextPlaceholders(locale),
 				false
 		)
 	}

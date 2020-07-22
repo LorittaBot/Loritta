@@ -15,6 +15,9 @@ import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.parse
+import net.perfectdreams.loritta.embededitor.data.crosswindow.Placeholder
+import net.perfectdreams.loritta.embededitor.data.crosswindow.RenderType
+import net.perfectdreams.loritta.utils.Placeholders
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.extensions.listIsEmptySection
@@ -380,12 +383,15 @@ class YouTubeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 				false,
 				null,
 				true,
-				/* mapOf(
-						"link" to locale["${LOCALE_PREFIX}.videoLink"]
+				listOf(
+						Placeholder(
+								Placeholders.LINK.asKey,
+								"https://youtu.be/p3G5IXn0K7A",
+								locale["${LOCALE_PREFIX}.videoLink"],
+								RenderType.TEXT,
+								false
+						)
 				),
-				customTokens = mapOf(
-						"link" to "https://youtu.be/p3G5IXn0K7A"
-				), */
 				showTemplates = false
 		)
 	}

@@ -9,6 +9,7 @@ object Placeholders {
     val USER_ID = LorittaPlaceholder("user.id")
     val USER_AVATAR_URL = LorittaPlaceholder("user.avatar")
     val USER_NICKNAME = LorittaPlaceholder("user.nickname")
+    val LINK = LorittaPlaceholder("link")
 
     object Deprecated {
         val USER_ID = LorittaPlaceholder("user-id")

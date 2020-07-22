@@ -374,7 +374,7 @@ class TwitchRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{g
 				true,
 				listOf(
 						Placeholder(
-								"link",
+								net.perfectdreams.loritta.utils.Placeholders.LINK.asKey,
 								"https://twitch.tv/alanzoka",
 								locale["${LOCALE_PREFIX}.channelLink"],
 								RenderType.TEXT,

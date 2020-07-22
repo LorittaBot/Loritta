@@ -4,8 +4,7 @@ import kotlinx.html.classes
 import kotlinx.html.js.onClickFunction
 import net.perfectdreams.loritta.embededitor.EmbedEditor
 import net.perfectdreams.loritta.embededitor.data.DiscordEmbed
-import net.perfectdreams.loritta.embededitor.generator.EmbedImageGenerator
-import net.perfectdreams.loritta.embededitor.utils.*
+import net.perfectdreams.loritta.embededitor.utils.lovelyButton
 
 object EmbedThumbnailEditor : EditorBase {
     val isNotNull: ELEMENT_CONFIGURATION = { m, discordMessage, currentElement, renderInfo ->
@@ -46,7 +45,7 @@ object EmbedThumbnailEditor : EditorBase {
                         embed = m.activeMessage!!.embed!!.copy(thumbnail = null)
                 )
             },
-            embed.image?.url ?: "",
+            embed.thumbnail?.url ?: "",
             6000
     )
 }

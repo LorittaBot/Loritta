@@ -14,7 +14,10 @@ import kotlinx.html.stream.createHTML
 import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
+import net.perfectdreams.loritta.embededitor.data.crosswindow.Placeholder
+import net.perfectdreams.loritta.embededitor.data.crosswindow.RenderType
 import net.perfectdreams.loritta.serializable.TrackedTwitterAccount
+import net.perfectdreams.loritta.utils.Placeholders
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.extensions.listIsEmptySection
@@ -374,12 +377,15 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 				false,
 				null,
 				true,
-				/* mapOf(
-					"link" to locale["$LOCALE_PREFIX.tweetLink"]
+				listOf(
+						Placeholder(
+								Placeholders.LINK.asKey,
+								"https://twitter.com/LorittaBot/status/1112093554174763008",
+								locale["${LOCALE_PREFIX}.tweetLink"],
+								RenderType.TEXT,
+								false
+						)
 				),
-				customTokens = mapOf(
-						"link" to "https://twitter.com/LorittaBot/status/1112093554174763008"
-				), */
 				showTemplates = false
 		)
 	}

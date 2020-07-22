@@ -308,9 +308,10 @@ object LoriDashboard {
 
 				window.addEventListener("message", { event ->
 					event as MessageEvent
-					println("Received message ${event.data}")
+					println("Received message ${event.data} from ${event.origin}")
 
-					if (event.source == extendedWindow) {
+					// We check for embeds.loritta.website because AdSense can also send messages via postMessage
+					if (event.origin.contains("embeds.loritta.website") && event.source == extendedWindow) {
 						println("Received message from our target source, yay!")
 
 						val packet = EmbedEditorCrossWindow.communicationJson.parse(PacketWrapper.serializer(), event.data as String)
