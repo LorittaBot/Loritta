@@ -21,10 +21,6 @@ import net.perfectdreams.loritta.utils.Placeholders
 object MessageUtils {
 	private val logger = KotlinLogging.logger {}
 
-	private fun String.stripPlaceholderPrefixAndSuffix() = this
-			.removePrefix("{")
-			.removeSuffix("}")
-
 	fun generateMessage(message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf(), safe: Boolean = true): Message? {
 		val jsonObject = try {
 			JsonParser.parseString(message).obj
