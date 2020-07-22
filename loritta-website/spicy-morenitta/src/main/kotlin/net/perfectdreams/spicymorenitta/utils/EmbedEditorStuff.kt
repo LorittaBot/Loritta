@@ -12,8 +12,11 @@ object EmbedEditorStuff {
     const val LORITTA_TAG = "$LORITTA_NAME#$LORITTA_DISCRIMINATOR"
     const val LORITTA_ID = "297153970613387264"
     const val LORITTA_AVATAR = "https://cdn.discordapp.com/avatars/297153970613387264/fd27e53031e4e600d06207f6853af908.png?size=2048"
+    const val EXPERIENCE_LEVEL = "100"
+    const val EXPERIENCE_XP = "100002"
     const val placeholdersPrefix = "website.dashboard.placeholders"
     const val placeholdersUserPrefix = "$placeholdersPrefix.user"
+    const val placeholdersExperiencePrefix = "$placeholdersPrefix.experience"
 
     fun userInContextPlaceholders(locale: BaseLocale) = listOf(
             Placeholder(
@@ -101,6 +104,23 @@ object EmbedEditorStuff {
                     null,
                     RenderType.TEXT,
                     true
+            )
+    )
+
+    fun userCurrentExperienceInContextPlaceholders(locale: BaseLocale) = listOf(
+            Placeholder(
+                    Placeholders.EXPERIENCE_LEVEL.asKey,
+                    EXPERIENCE_LEVEL,
+                    locale["$placeholdersExperiencePrefix.level"],
+                    RenderType.TEXT,
+                    false
+            ),
+            Placeholder(
+                    Placeholders.EXPERIENCE_XP.asKey,
+                    EXPERIENCE_XP,
+                    locale["$placeholdersExperiencePrefix.xp"],
+                    RenderType.TEXT,
+                    false
             )
     )
 }

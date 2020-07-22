@@ -10,6 +10,8 @@ object Placeholders {
     val USER_AVATAR_URL = LorittaPlaceholder("user.avatar")
     val USER_NICKNAME = LorittaPlaceholder("user.nickname")
     val LINK = LorittaPlaceholder("link")
+    val EXPERIENCE_LEVEL = LorittaPlaceholder("level")
+    val EXPERIENCE_XP = LorittaPlaceholder("xp")
 
     object Deprecated {
         val USER_ID = LorittaPlaceholder("user-id")

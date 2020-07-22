@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.LevelAnnouncementConfigs
 import net.perfectdreams.loritta.serializable.CustomCommandCodeType
 import net.perfectdreams.loritta.utils.NetAddressUtils
+import net.perfectdreams.loritta.utils.Placeholders
 import java.lang.RuntimeException
 
 /**
@@ -64,6 +65,9 @@ class NashornCommand(label: String, val javaScriptCode: String, val codeType: Cu
 				println(result)
 			}
 			CustomCommandCodeType.SIMPLE_TEXT -> {
+				val level = context.lorittaUser.profile.getCurrentLevel().currentLevel
+				val xp = context.lorittaUser.profile.xp
+
 				val message = MessageUtils.generateMessage(
 						javaScriptCode,
 						listOf(
@@ -71,7 +75,11 @@ class NashornCommand(label: String, val javaScriptCode: String, val codeType: Cu
 								context.guild,
 								context.message.channel
 						),
-						context.guild
+						context.guild,
+						customTokens = mapOf(
+								Placeholders.EXPERIENCE_LEVEL.name to level.toString(),
+								Placeholders.EXPERIENCE_XP.name to xp.toString()
+						)
 				) ?: return
 
 				context.sendMessage(message)
