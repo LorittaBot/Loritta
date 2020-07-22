@@ -22,8 +22,8 @@ object EmbedDescriptionEditor : EditorBase {
 
     val isNull: ELEMENT_CONFIGURATION = { m, discordMessage, currentElement, renderInfo ->
         lovelyButton(
-                "fas fa-at",
-                "Adicionar Autor"
+                "fas fa-align-justify",
+                "Adicionar Descrição"
         ) {
             descriptionPopup(discordMessage.embed!!, m)
         }

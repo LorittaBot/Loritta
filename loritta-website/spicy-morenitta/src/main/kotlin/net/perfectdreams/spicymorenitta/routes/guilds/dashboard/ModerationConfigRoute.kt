@@ -70,7 +70,7 @@ class ModerationConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender(
 					true,
 					jq("#punishmentLogChannelId"),
 					true,
-					Placeholders.DEFAULT_PLACEHOLDERS.toMutableMap().apply {
+					listOf() /* Placeholders.DEFAULT_PLACEHOLDERS .toMutableMap().apply {
 						put("reason", "Motivo da punição, caso nenhum motivo tenha sido especificado, isto estará vazio")
 						put("punishment", "Punição aplicada (ban, mute, kick, etc)")
 						put("staff", "Mostra o nome do usuário que fez a punição")
@@ -78,7 +78,7 @@ class ModerationConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender(
 						put("staff-discriminator", "Mostra o discriminator do usuário que fez a punição")
 						put("staff-id", "Mostra o ID do usuário que fez a punição")
 						put("staff-avatar-url", "Mostra a URL do avatar do usuário que fez a punição")
-					}
+					} */
 			)
 
 			document.select<HTMLButtonElement>("#save-button").onClick {
@@ -189,7 +189,7 @@ class ModerationConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender(
 				false,
 				null,
 				true,
-				Placeholders.DEFAULT_PLACEHOLDERS.toMutableMap().apply {
+				listOf() /* Placeholders.DEFAULT_PLACEHOLDERS .toMutableMap().apply {
 					put("reason", "Motivo da punição, caso nenhum motivo tenha sido especificado, isto estará vazio")
 					put("punishment", "Punição aplicada (ban, mute, kick, etc)")
 					put("staff", "Mostra o nome do usuário que fez a punição")
@@ -197,7 +197,7 @@ class ModerationConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender(
 					put("staff-discriminator", "Mostra o discriminator do usuário que fez a punição")
 					put("staff-id", "Mostra o ID do usuário que fez a punição")
 					put("staff-avatar-url", "Mostra a URL do avatar do usuário que fez a punição")
-				}
+				} */
 		)
 
 		customPunishmentMessages.add(customPunishmentMessagesConfig)

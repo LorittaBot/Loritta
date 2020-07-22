@@ -11,7 +11,7 @@ object EmbedImageGenerator : GeneratorBase {
         if (imageUrl != null) {
             content.div {
                 modifyTagCallback?.invoke(this, this, MessageTagSection.EMBED_IMAGE_NOT_NULL, null)
-                img(src = imageUrl) {
+                img(src = m.parsePlaceholders(imageUrl)) {
                     style = "width: 100%;"
                 }
             }

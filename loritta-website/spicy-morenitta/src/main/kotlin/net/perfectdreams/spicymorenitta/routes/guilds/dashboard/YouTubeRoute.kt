@@ -380,12 +380,12 @@ class YouTubeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 				false,
 				null,
 				true,
-				mapOf(
+				/* mapOf(
 						"link" to locale["${LOCALE_PREFIX}.videoLink"]
 				),
 				customTokens = mapOf(
 						"link" to "https://youtu.be/p3G5IXn0K7A"
-				),
+				), */
 				showTemplates = false
 		)
 	}

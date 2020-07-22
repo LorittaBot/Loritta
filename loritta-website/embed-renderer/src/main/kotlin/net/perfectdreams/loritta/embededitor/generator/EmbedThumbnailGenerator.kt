@@ -13,7 +13,7 @@ object EmbedThumbnailGenerator {
                 modifyTagCallback?.invoke(this, this, MessageTagSection.EMBED_THUMBNAIL_NOT_NULL, null)
 
                 style = "width: 80px;"
-                img(src = thumbnailUrl) {
+                img(src = m.parsePlaceholders(thumbnailUrl)) {
                     style = "width: 100%;"
                 }
             }

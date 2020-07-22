@@ -341,12 +341,12 @@ class RssFeedsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/
 				false,
 				null,
 				true,
-				Placeholders.DEFAULT_PLACEHOLDERS.toMutableMap().apply {
+				listOf(), /* Placeholders.DEFAULT_PLACEHOLDERS .toMutableMap().apply {
 					put("link", "Link do Tweet")
-				},
+				} ,
 				customTokens = mapOf(
 						"link" to "https://twitter.com/LorittaBot/status/1112093554174763008"
-				),
+				), */
 				showTemplates = false
 		)
 	}

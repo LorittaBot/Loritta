@@ -115,7 +115,7 @@ class EmbedEditor {
                     if (packet is MessageSetupPacket) {
                         placeholders = packet.placeholders
 
-                        parseAndLoadFromJson(packet.content) // Load our cool message
+                        generateMessageAndUpdateJson(packet.message) // Load our cool message
                     }
                 }
             })
@@ -224,7 +224,7 @@ class EmbedEditor {
         if (parsePlaceholders) {
             for (placeholder in placeholders) {
                 when (placeholder.renderType) {
-                    RenderType.TEXT -> output = output.replace(placeholder.placeholder, placeholder.replaceWith)
+                    RenderType.TEXT -> output = output.replace(placeholder.name, placeholder.replaceWith)
                     RenderType.MENTION -> output = createHTML().span(classes = "mention wrapper-3WhCwL mention interactive") {
                         + placeholder.replaceWith
                     }

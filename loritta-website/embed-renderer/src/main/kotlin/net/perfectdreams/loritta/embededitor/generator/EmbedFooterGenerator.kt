@@ -12,7 +12,7 @@ object EmbedFooterGenerator : GeneratorBase {
             content.div(classes = "embedFooter-3yVop- embedMargin-UO5XwE") {
                 modifyTagCallback?.invoke(this, this, MessageTagSection.EMBED_FOOTER_NOT_NULL, null)
                 if (footer.iconUrl != null) {
-                    img(src = footer.iconUrl, classes = "embedFooterIcon-239O1f")
+                    img(src = m.parsePlaceholders(footer.iconUrl), classes = "embedFooterIcon-239O1f")
                 }
 
                 span(classes = "embedFooterText-28V_Wb") {

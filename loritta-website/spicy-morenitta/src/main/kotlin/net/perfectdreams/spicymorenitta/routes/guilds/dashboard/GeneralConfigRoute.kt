@@ -259,8 +259,8 @@ class GeneralConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/g
 					false,
 					null,
 					true,
-					Placeholders.DEFAULT_PLACEHOLDERS,
-					customTokens = mapOf(),
+					listOf() /* Placeholders.DEFAULT_PLACEHOLDERS */,
+					// customTokens = mapOf(),
 					showTemplates = false
 			)
 

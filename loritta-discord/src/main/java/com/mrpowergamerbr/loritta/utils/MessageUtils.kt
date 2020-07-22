@@ -16,9 +16,14 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
+import net.perfectdreams.loritta.utils.Placeholders
 
 object MessageUtils {
 	private val logger = KotlinLogging.logger {}
+
+	private fun String.stripPlaceholderPrefixAndSuffix() = this
+			.removePrefix("{")
+			.removeSuffix("}")
 
 	fun generateMessage(message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf(), safe: Boolean = true): Message? {
 		val jsonObject = try {
@@ -33,19 +38,30 @@ object MessageUtils {
 		if (sources != null) {
 			for (source in sources) {
 				if (source is User) {
-					tokens["@user"] = source.asMention
-					tokens["user"] = source.name
-					tokens["user-discriminator"] = source.discriminator
-					tokens["user-id"] = source.id
-					tokens["user-avatar-url"] = source.effectiveAvatarUrl
+					tokens[Placeholders.USER_MENTION.name] = source.asMention
+					tokens[Placeholders.USER_NAME_SHORT.name] = source.name
+					tokens[Placeholders.USER_DISCRIMINATOR.name] = source.discriminator
+					tokens[Placeholders.USER_ID.name] = source.id
+					tokens[Placeholders.USER_AVATAR_URL.name] = source.effectiveAvatarUrl
+					tokens[Placeholders.USER_TAG.name] = source.asTag
+
+					tokens[Placeholders.Deprecated.USER_DISCRIMINATOR.name] = source.discriminator
+					tokens[Placeholders.Deprecated.USER_ID.name] = source.id
+					tokens[Placeholders.Deprecated.USER_AVATAR_URL.name] = source.effectiveAvatarUrl
 				}
 				if (source is Member) {
-					tokens["@user"] = source.asMention
-					tokens["user"] = source.user.name
-					tokens["user-discriminator"] = source.user.discriminator
-					tokens["user-id"] = source.id
-					tokens["user-avatar-url"] = source.user.effectiveAvatarUrl
-					tokens["nickname"] = source.effectiveName
+					tokens[Placeholders.USER_MENTION.name] = source.asMention
+					tokens[Placeholders.USER_NAME_SHORT.name] = source.user.name
+					tokens[Placeholders.USER_DISCRIMINATOR.name] = source.user.discriminator
+					tokens[Placeholders.USER_ID.name] = source.id
+					tokens[Placeholders.USER_TAG.name] = source.user.asTag
+					tokens[Placeholders.USER_AVATAR_URL.name] = source.user.effectiveAvatarUrl
+					tokens[Placeholders.USER_NICKNAME.name] = source.effectiveName
+
+					tokens[Placeholders.Deprecated.USER_DISCRIMINATOR.name] = source.user.discriminator
+					tokens[Placeholders.Deprecated.USER_ID.name] = source.id
+					tokens[Placeholders.Deprecated.USER_AVATAR_URL.name] = source.user.effectiveAvatarUrl
+					tokens[Placeholders.Deprecated.USER_NICKNAME.name] = source.effectiveName
 				}
 				if (source is Guild) {
 					val guildSize = source.memberCount.toString()

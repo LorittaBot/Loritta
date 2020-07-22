@@ -4,8 +4,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Placeholder(
-        val placeholder: String,
+        val name: String,
         val replaceWith: String,
+        val description: String? = null,
         val renderType: RenderType,
         val hidden: Boolean
 )

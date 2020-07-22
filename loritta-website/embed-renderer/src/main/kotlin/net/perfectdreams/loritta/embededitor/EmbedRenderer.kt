@@ -2,17 +2,28 @@ package net.perfectdreams.loritta.embededitor
 
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import net.perfectdreams.loritta.embededitor.data.DiscordMessage
 import net.perfectdreams.loritta.embededitor.data.crosswindow.Placeholder
 import net.perfectdreams.loritta.embededitor.data.crosswindow.RenderType
 import net.perfectdreams.loritta.embededitor.generator.*
-import net.perfectdreams.loritta.embededitor.utils.MessageTagSection
 import net.perfectdreams.loritta.embededitor.utils.ShowdownConverter
 
 class EmbedRenderer(val message: DiscordMessage, val placeholders: List<Placeholder>) {
-    private val markdownConverter = ShowdownConverter().apply {
-        setOption("simpleLineBreaks", true)
-        setOption("strikethrough", true)
+    companion object {
+        val json = Json(
+                JsonConfiguration(
+                        prettyPrint = true,
+                        encodeDefaults = false,
+                        indent = "  ",
+                        ignoreUnknownKeys = true
+                )
+        )
+        val markdownConverter = ShowdownConverter().apply {
+            setOption("simpleLineBreaks", true)
+            setOption("strikethrough", true)
+        }
     }
 
     fun generateMessagePreview(content: FlowContent, modifyTagCallback: MODIFY_TAG_CALLBACK? = null) {
@@ -67,23 +78,14 @@ class EmbedRenderer(val message: DiscordMessage, val placeholders: List<Placehol
         }
     }
 
-    private fun parseDiscordText(text: String, parseMarkdown: Boolean = true, convertDiscordEmotes: Boolean = true, parsePlaceholders: Boolean = true): String {
+    fun parseDiscordText(text: String, parseMarkdown: Boolean = true, convertDiscordEmotes: Boolean = true, parsePlaceholders: Boolean = true): String {
         var output = text
 
-        if (parseMarkdown) {
+        if (parseMarkdown)
             output = markdownConverter.makeHtml(output)
-        }
 
-        if (parsePlaceholders) {
-            for (placeholder in placeholders) {
-                when (placeholder.renderType) {
-                    RenderType.TEXT -> output = output.replace(placeholder.placeholder, placeholder.replaceWith)
-                    RenderType.MENTION -> output = createHTML().span(classes = "mention wrapper-3WhCwL mention interactive") {
-                        + placeholder.replaceWith
-                    }
-                }
-            }
-        }
+        if (parsePlaceholders)
+            output = parsePlaceholders(output)
 
         if (convertDiscordEmotes) {
             // EMOTES
@@ -99,6 +101,22 @@ class EmbedRenderer(val message: DiscordMessage, val placeholders: List<Placehol
             }
         }
 
+        return output
+    }
+
+    fun parsePlaceholders(text: String): String {
+        var output = text
+        for (placeholder in placeholders) {
+            output = when (placeholder.renderType) {
+                RenderType.TEXT -> output.replace(placeholder.name, placeholder.replaceWith)
+                RenderType.MENTION -> output.replace(
+                        placeholder.name,
+                        createHTML().span(classes = "mention wrapper-3WhCwL mention interactive") {
+                            + placeholder.replaceWith
+                        }
+                )
+            }
+        }
         return output
     }
 
