@@ -73,10 +73,6 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 		return XpWrapper((xp / 1000).toInt(), xp)
 	}
 
-	fun getExpToAdvanceFrom(lvl: Int): Int {
-		return lvl * 1000
-	}
-
 	suspend fun getProfileBackground() = loritta.getUserProfileBackground(userId)
 
 	class XpWrapper constructor(val currentLevel: Int, val expLeft: Long)

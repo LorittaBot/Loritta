@@ -19,9 +19,5 @@ class GuildProfile(id: EntityID<Long>) : LongEntity(id) {
 		return XpWrapper((xp / 1000).toInt(), xp)
 	}
 
-	fun getExpToAdvanceFrom(lvl: Int): Int {
-		return lvl * 1000
-	}
-
 	data class XpWrapper constructor(val currentLevel: Int, val expLeft: Long)
 }
