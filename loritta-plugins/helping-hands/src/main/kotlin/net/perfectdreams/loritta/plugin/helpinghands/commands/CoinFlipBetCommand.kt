@@ -70,8 +70,8 @@ object CoinFlipBetCommand : DSLCommandBase {
 			if (invitedUser == context.user)
 				fail(locale["commands.economy.flipcoinbet.cantBetSelf"], Constants.ERROR)
 
-			val selfActiveDonations = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonations(context.discordMessage.author.idLong)
-			val otherActiveDonations = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonations(invitedUser.idLong)
+			val selfActiveDonations = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonationsAsync(context.discordMessage.author.idLong)
+			val otherActiveDonations = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonationsAsync(invitedUser.idLong)
 
 			val selfPlan = UserPremiumPlans.getPlanFromValue(selfActiveDonations)
 			val otherPlan = UserPremiumPlans.getPlanFromValue(otherActiveDonations)
