@@ -335,6 +335,10 @@ object LoriDashboard {
 							)
 						} else if (packet.m is UpdatedMessagePacket) {
 							jquery.`val`((packet.m as UpdatedMessagePacket).content)
+
+							// Trigger a update
+							jquery.trigger("input", null) // Para recalcular a preview
+							AutoSize.update(jquery) // E para o AutoSize recalcular o tamanho
 						}
 					}
 				})

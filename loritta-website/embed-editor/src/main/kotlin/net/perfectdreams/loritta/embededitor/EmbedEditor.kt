@@ -40,9 +40,10 @@ class EmbedEditor {
     }
     var placeholders: List<Placeholder> = listOf()
     var isInEditMode = true
+    var connectedViaExternalSources = false
 
     fun start() {
-        window.addEventListener("keydown", { event ->
+        /* window.addEventListener("keydown", { event ->
             event as KeyboardEvent
 
             println(event.key)
@@ -51,7 +52,7 @@ class EmbedEditor {
                 isInEditMode = !isInEditMode
                 generateMessageAndUpdateJson(activeMessage!!, isInEditMode)
             }
-        })
+        }) */
 
         activeMessage = DiscordMessage("OwO whats this?")
 
@@ -116,6 +117,8 @@ class EmbedEditor {
                         placeholders = packet.placeholders
 
                         generateMessageAndUpdateJson(packet.message) // Load our cool message
+
+                        connectedViaExternalSources = true
                     }
                 }
             })
@@ -197,21 +200,23 @@ class EmbedEditor {
 
         document.select<HTMLTextAreaElement>("#json-code").value = json.stringify(DiscordMessage.serializer(), discordMessage)
 
-        /* val opener = window.opener as Window?
-        opener?.postMessage(
-                communicationJson.stringify(
-                        PacketWrapper.serializer(),
-                        PacketWrapper(
-                                UpdatedMessagePacket(
-                                        json.stringify(
-                                                DiscordMessage.serializer(),
-                                                discordMessage
-                                        )
-                                )
-                        )
-                ),
-                "*"
-        ) */
+        if (connectedViaExternalSources) {
+            val opener = window.opener as Window?
+            opener?.postMessage(
+                    EmbedEditorCrossWindow.communicationJson.stringify(
+                            PacketWrapper.serializer(),
+                            PacketWrapper(
+                                    UpdatedMessagePacket(
+                                            json.stringify(
+                                                    DiscordMessage.serializer(),
+                                                    discordMessage
+                                            )
+                                    )
+                            )
+                    ),
+                    "*"
+            )
+        }
     }
 
     fun parseDiscordText(text: String, parseMarkdown: Boolean = true, convertDiscordEmotes: Boolean = true, parsePlaceholders: Boolean = true): String {
