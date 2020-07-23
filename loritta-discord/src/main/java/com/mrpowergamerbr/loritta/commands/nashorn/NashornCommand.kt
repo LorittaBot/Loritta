@@ -7,7 +7,6 @@ import com.google.gson.JsonArray
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.parallax.ParallaxUtils
-import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -16,10 +15,6 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.serializable.CustomCommandCodeType
 import net.perfectdreams.loritta.utils.ExperienceUtils
 import net.perfectdreams.loritta.utils.NetAddressUtils
-import net.perfectdreams.loritta.utils.Placeholders
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 
 /**
  * Comandos usando a Nashorn Engine
@@ -71,7 +66,7 @@ class NashornCommand(label: String, val javaScriptCode: String, val codeType: Cu
 
 				if (javaScriptCode.contains("{experience") || javaScriptCode.contains("{level") || javaScriptCode.contains("{xp")) {
 					customTokens.putAll(
-							ExperienceUtils.getExperienceCustomToken(
+							ExperienceUtils.getExperienceCustomTokens(
 									context.config,
 									context.handle
 							)

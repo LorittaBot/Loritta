@@ -123,15 +123,9 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 								listOf(user, guild),
 								guild,
 								mutableMapOf(
-										"reason" to reason,
-										"punishment" to locale.toNewLocale()["commands.moderation.unmute.punishAction"],
-										"staff" to punisher.name,
-										"@staff" to punisher.asMention,
-										"staff-discriminator" to punisher.discriminator,
-										"staff-avatar-url" to punisher.effectiveAvatarUrl,
-										"staff-id" to punisher.id,
 										"duration" to locale.toNewLocale()["commands.moderation.mute.forever"]
-								)
+								) + AdminUtils.getStaffCustomTokens(punisher)
+										+ AdminUtils.getPunishmentCustomTokens(locale.toNewLocale(), reason, "commands.moderation.unmute")
 						)
 
 						message?.let {

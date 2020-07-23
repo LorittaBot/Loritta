@@ -234,7 +234,7 @@ class ExperienceModule : MessageReceivedModule {
 								"new-roles" to givenNewRoles.joinToString(transform = { it.asMention })
 						).apply {
 							putAll(
-									ExperienceUtils.getExperienceCustomToken(
+									ExperienceUtils.getExperienceCustomTokens(
 											serverConfig,
 											event.member
 									)

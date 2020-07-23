@@ -3,7 +3,6 @@ package net.perfectdreams.spicymorenitta.utils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.embededitor.data.crosswindow.Placeholder
 import net.perfectdreams.loritta.embededitor.data.crosswindow.RenderType
-import net.perfectdreams.loritta.utils.LorittaPlaceholder
 import net.perfectdreams.loritta.utils.Placeholders
 
 object EmbedEditorStuff {
@@ -19,10 +18,14 @@ object EmbedEditorStuff {
     const val EXPERIENCE_NEXT_LEVEL = "101"
     const val EXPERIENCE_NEXT_LEVEL_REQUIRED_XP = "998"
     const val EXPERIENCE_NEXT_LEVEL_TOTAL_XP = "101000"
+    const val PUNISHMENT_REASON = "You are going to have a bad time"
+    const val PUNISHMENT_TYPE = "Ban"
 
     const val placeholdersPrefix = "website.dashboard.placeholders"
     const val placeholdersUserPrefix = "$placeholdersPrefix.user"
     const val placeholdersExperiencePrefix = "$placeholdersPrefix.experience"
+    const val placeholdersStaffPrefix = "$placeholdersPrefix.staff"
+    const val placeholdersPunishmentPrefix = "$placeholdersPrefix.punishment"
 
     fun userInContextPlaceholders(locale: BaseLocale) = listOf(
             Placeholder(
@@ -115,14 +118,14 @@ object EmbedEditorStuff {
 
     fun userCurrentExperienceInContextPlaceholders(locale: BaseLocale) = listOf(
             Placeholder(
-                    Placeholders.EXPERIENCE_LEVEL.asKey,
+                    Placeholders.EXPERIENCE_LEVEL_SHORT.asKey,
                     EXPERIENCE_LEVEL,
                     locale["$placeholdersExperiencePrefix.level"],
                     RenderType.TEXT,
                     false
             ),
             Placeholder(
-                    Placeholders.EXPERIENCE_XP.asKey,
+                    Placeholders.EXPERIENCE_XP_SHORT.asKey,
                     EXPERIENCE_XP,
                     locale["$placeholdersExperiencePrefix.xp"],
                     RenderType.TEXT,
@@ -153,6 +156,119 @@ object EmbedEditorStuff {
                     Placeholders.EXPERIENCE_NEXT_LEVEL_REQUIRED_XP.asKey,
                     EXPERIENCE_NEXT_LEVEL_REQUIRED_XP,
                     locale["$placeholdersExperiencePrefix.nextLevelRequiredXp"],
+                    RenderType.TEXT,
+                    false
+            )
+    )
+
+    fun staffInContextPlaceholders(locale: BaseLocale) = listOf(
+            Placeholder(
+                    Placeholders.STAFF_MENTION.asKey,
+                    LORITTA_AS_MENTION,
+                    locale["$placeholdersStaffPrefix.mention"],
+                    RenderType.MENTION,
+                    false
+            ),
+            Placeholder(
+                    Placeholders.STAFF_NAME_SHORT.asKey,
+                    LORITTA_NAME,
+                    locale["$placeholdersStaffPrefix.name"],
+                    RenderType.TEXT,
+                    false
+            ),
+            Placeholder(
+                    Placeholders.STAFF_NAME.asKey,
+                    LORITTA_NAME,
+                    locale["$placeholdersStaffPrefix.name"],
+                    RenderType.TEXT,
+                    false
+            ),
+            Placeholder(
+                    Placeholders.STAFF_DISCRIMINATOR.asKey,
+                    LORITTA_DISCRIMINATOR,
+                    locale["$placeholdersStaffPrefix.discriminator"],
+                    RenderType.TEXT,
+                    false
+            ),
+            Placeholder(
+                    Placeholders.STAFF_TAG.asKey,
+                    LORITTA_TAG,
+                    locale["$placeholdersStaffPrefix.tag"],
+                    RenderType.TEXT,
+                    false
+            ),
+            Placeholder(
+                    Placeholders.STAFF_ID.asKey,
+                    LORITTA_ID,
+                    locale["$placeholdersStaffPrefix.id"],
+                    RenderType.TEXT,
+                    false
+            ),
+            Placeholder(
+                    Placeholders.STAFF_AVATAR_URL.asKey,
+                    LORITTA_AVATAR,
+                    locale["$placeholdersStaffPrefix.avatarUrl"],
+                    RenderType.TEXT,
+                    false
+            ),
+            /* Placeholder(
+                    Placeholders.STAFF_NICKNAME.asKey,
+                    LORITTA_NAME,
+                    locale["$placeholdersStaffPrefix.nickname"],
+                    RenderType.TEXT,
+                    false
+            ), */
+
+            // === [ DEPRECATED ] ===
+            Placeholder(
+                    Placeholders.Deprecated.STAFF_ID.asKey, // Deprecated
+                    LORITTA_ID,
+                    null,
+                    RenderType.TEXT,
+                    true
+            ),
+            Placeholder(
+                    Placeholders.Deprecated.STAFF_DISCRIMINATOR.asKey, // Deprecated
+                    LORITTA_DISCRIMINATOR,
+                    null,
+                    RenderType.TEXT,
+                    true
+            ),
+            Placeholder(
+                    Placeholders.Deprecated.STAFF_AVATAR_URL.asKey,
+                    LORITTA_AVATAR,
+                    null,
+                    RenderType.TEXT,
+                    true
+            )
+    )
+
+    fun punishmentInContextPlaceholders(locale: BaseLocale) = listOf(
+            Placeholder(
+                    Placeholders.PUNISHMENT_REASON.asKey,
+                    PUNISHMENT_REASON,
+                    locale["$placeholdersPunishmentPrefix.reason"],
+                    RenderType.MENTION,
+                    false
+            ),
+            Placeholder(
+                    Placeholders.PUNISHMENT_REASON_SHORT.asKey,
+                    PUNISHMENT_REASON,
+                    locale["$placeholdersPunishmentPrefix.reason"],
+                    RenderType.TEXT,
+                    false
+            ),
+            Placeholder(
+                    Placeholders.PUNISHMENT_TYPE.asKey,
+                    PUNISHMENT_TYPE,
+                    locale["$placeholdersPunishmentPrefix.type"],
+                    RenderType.TEXT,
+                    false
+            ),
+            Placeholder(
+                    Placeholders.PUNISHMENT_TYPE_SHORT.asKey,
+                    PUNISHMENT_TYPE,
+                    locale["$placeholdersPunishmentPrefix.type"],
                     RenderType.TEXT,
                     false
             )

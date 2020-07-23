@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.tables.servers.moduleconfigs.ModerationPunishme
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.WarnActions
 import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.Placeholders
 import net.perfectdreams.loritta.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
@@ -331,6 +332,28 @@ object AdminUtils {
 
 		return AdministrationOptions(reason, skipConfirmation, silent, delDays)
 	}
+
+	fun getStaffCustomTokens(punisher: User) = mapOf(
+			Placeholders.STAFF_NAME_SHORT.name to punisher.name,
+			Placeholders.STAFF_NAME.name to punisher.name,
+			Placeholders.STAFF_MENTION.name to punisher.asMention,
+			Placeholders.STAFF_DISCRIMINATOR.name to punisher.discriminator,
+			Placeholders.STAFF_AVATAR_URL.name to punisher.effectiveAvatarUrl,
+			Placeholders.STAFF_ID.name to punisher.id,
+			Placeholders.STAFF_TAG.name to punisher.asTag,
+
+			Placeholders.Deprecated.STAFF_DISCRIMINATOR.name to punisher.discriminator,
+			Placeholders.Deprecated.STAFF_AVATAR_URL.name to punisher.effectiveAvatarUrl,
+			Placeholders.Deprecated.STAFF_ID.name to punisher.id
+	)
+
+	fun getPunishmentCustomTokens(locale: BaseLocale, reason: String, typePrefix: String) = mapOf(
+			Placeholders.PUNISHMENT_REASON.name to reason,
+			Placeholders.PUNISHMENT_REASON_SHORT.name to reason,
+
+			Placeholders.PUNISHMENT_TYPE.name to locale["$typePrefix.punishAction"],
+			Placeholders.PUNISHMENT_TYPE_SHORT.name to locale["$typePrefix.punishAction"]
+	)
 
 	data class AdministrationOptions(val reason: String, val skipConfirmation: Boolean, val silent: Boolean, val delDays: Int)
 	data class ModerationConfigSettings(

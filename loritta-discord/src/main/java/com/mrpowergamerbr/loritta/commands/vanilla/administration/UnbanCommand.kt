@@ -127,15 +127,9 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 								listOf(user, guild),
 								guild,
 								mutableMapOf(
-										"reason" to reason,
-										"punishment" to locale.toNewLocale()["$LOCALE_PREFIX.unban.punishAction"],
-										"staff" to punisher.name,
-										"@staff" to punisher.asMention,
-										"staff-discriminator" to punisher.discriminator,
-										"staff-avatar-url" to punisher.effectiveAvatarUrl,
-										"staff-id" to punisher.id,
 										"duration" to locale.toNewLocale()["$LOCALE_PREFIX.mute.forever"]
-								)
+								) + AdminUtils.getStaffCustomTokens(punisher)
+										+ AdminUtils.getPunishmentCustomTokens(locale.toNewLocale(), reason, "${LOCALE_PREFIX}.unban")
 						)
 
 						message?.let {

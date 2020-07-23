@@ -222,19 +222,13 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 								listOf(user, context.guild),
 								context.guild,
 								mutableMapOf(
-										"reason" to reason,
-										"punishment" to locale.toNewLocale()["commands.moderation.mute.punishAction"],
-										"staff" to context.userHandle.name,
-										"@staff" to context.userHandle.asMention,
-										"staff-discriminator" to context.userHandle.discriminator,
-										"staff-avatar-url" to context.userHandle.effectiveAvatarUrl,
-										"staff-id" to context.userHandle.id,
 										"duration" to if (delay != null) {
 											DateUtils.formatMillis(delay, locale)
 										} else {
 											locale.toNewLocale()["commands.moderation.mute.forever"]
 										}
-								)
+								) + AdminUtils.getStaffCustomTokens(context.userHandle)
+										+ AdminUtils.getPunishmentCustomTokens(locale.toNewLocale(), reason, "${LOCALE_PREFIX}.mute")
 						)
 
 						message?.let {
