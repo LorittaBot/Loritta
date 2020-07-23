@@ -18,8 +18,8 @@ object EmbedEditorStuff {
     const val EXPERIENCE_NEXT_LEVEL = "101"
     const val EXPERIENCE_NEXT_LEVEL_REQUIRED_XP = "998"
     const val EXPERIENCE_NEXT_LEVEL_TOTAL_XP = "101000"
-    const val PUNISHMENT_REASON = "You are going to have a bad time"
-    const val PUNISHMENT_TYPE = "Ban"
+    const val PUNISHMENT_REASON = "You're gonna have a bad time"
+    const val PUNISHMENT_TYPE = "Banned"
 
     const val placeholdersPrefix = "website.dashboard.placeholders"
     const val placeholdersUserPrefix = "$placeholdersPrefix.user"
