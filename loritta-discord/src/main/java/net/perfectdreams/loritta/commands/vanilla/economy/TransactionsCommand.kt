@@ -3,7 +3,9 @@ package net.perfectdreams.loritta.commands.vanilla.economy
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.discordCommand
 import net.perfectdreams.loritta.tables.SonhosTransaction
@@ -18,6 +20,12 @@ import java.time.ZoneId
 object TransactionsCommand {
 	fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("transactions", "transações"),  CommandCategory.ECONOMY) {
 		description { it["commands.economy.transactions.description"] }
+
+		arguments {
+			argument(ArgumentType.USER) {
+				optional = true
+			}
+		}
 
 		executesDiscord {
 			val user = user(0)?.handle ?: user
