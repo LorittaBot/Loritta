@@ -19,7 +19,6 @@ import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.commands.LorittaCommandManager
 import net.perfectdreams.loritta.api.entities.User
 import net.perfectdreams.loritta.commands.vanilla.`fun`.*
-import net.perfectdreams.loritta.commands.vanilla.economy.TransactionsCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
@@ -42,7 +41,6 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
         registerCommand(GiveawaySetupCommand())
         registerCommand(GiveawayCommand())
         registerCommand(FanArtsCommand())
-        registerCommand(TransactionsCommand())
 
         contextManager.registerContext<User>(
                 { clazz: KClass<*> -> clazz.isSubclassOf(User::class) || clazz == User::class },

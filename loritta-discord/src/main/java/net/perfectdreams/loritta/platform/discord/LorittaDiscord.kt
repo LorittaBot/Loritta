@@ -31,6 +31,7 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.commands.vanilla.economy.SonhosTopCommand
 import net.perfectdreams.loritta.commands.vanilla.economy.SonhosTopLocalCommand
+import net.perfectdreams.loritta.commands.vanilla.economy.TransactionsCommand
 import net.perfectdreams.loritta.commands.vanilla.magic.LoriToolsCommand
 import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaTopCommand
 import net.perfectdreams.loritta.commands.vanilla.social.RankGlobalCommand
@@ -73,6 +74,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         register(RankGlobalCommand.create(discordLoritta))
         register(RepTopCommand.create(discordLoritta))
         register(XpNotificationsCommand.create(discordLoritta))
+        register(TransactionsCommand.create(discordLoritta))
     }
     override val pluginManager = JVMPluginManager(this)
     override val assets = JVMLorittaAssets(this)
