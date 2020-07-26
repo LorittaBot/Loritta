@@ -12,7 +12,6 @@ import net.perfectdreams.loritta.utils.extensions.objectNode
 import net.perfectdreams.loritta.utils.extensions.set
 import net.perfectdreams.loritta.website.routes.BaseRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
-import org.jetbrains.kotlin.js.parser.sourcemaps.JsonString
 
 class GetFanArtsController(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/loritta/fan-arts") {
 	override suspend fun onRequest(call: ApplicationCall) {

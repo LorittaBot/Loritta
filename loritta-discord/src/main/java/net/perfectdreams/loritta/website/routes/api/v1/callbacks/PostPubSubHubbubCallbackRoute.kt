@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.website.routes.api.v1.callbacks
 import com.github.salomonbrys.kotson.*
 import com.google.common.cache.CacheBuilder
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
 import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.bytesToHex
@@ -23,8 +22,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import mu.KotlinLogging
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.requests.RestAction
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.SentYouTubeVideoIds
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedTwitchAccounts

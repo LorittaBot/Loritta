@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.threads
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.jsonObject
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.rometools.rome.io.ParsingFeedException
@@ -11,8 +10,8 @@ import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.tables.DefaultRssFeeds
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedRssFeeds
-import net.perfectdreams.loritta.utils.FeatureFlags
 import net.perfectdreams.loritta.utils.ClusterOfflineException
+import net.perfectdreams.loritta.utils.FeatureFlags
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction

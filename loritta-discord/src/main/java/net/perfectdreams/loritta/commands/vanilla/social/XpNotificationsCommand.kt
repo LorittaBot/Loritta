@@ -1,13 +1,11 @@
 package net.perfectdreams.loritta.commands.vanilla.social
 
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class XpNotificationsCommand : LorittaCommand(arrayOf("xpnotifications"), category = CommandCategory.SOCIAL) {
     override fun getDescription(locale: BaseLocale): String? {

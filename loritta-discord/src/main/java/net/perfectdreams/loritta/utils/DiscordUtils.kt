@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
-import java.lang.IllegalArgumentException
 
 object DiscordUtils {
 	/**

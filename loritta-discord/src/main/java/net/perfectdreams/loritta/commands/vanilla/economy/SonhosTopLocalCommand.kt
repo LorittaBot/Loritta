@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.commands.vanilla.economy
 
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Profiles
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -11,7 +10,6 @@ import net.perfectdreams.loritta.utils.RankingGenerator
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.innerJoin
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 
 object SonhosTopLocalCommand {
 	fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("sonhos top local", "atm top local"),  CommandCategory.ECONOMY) {

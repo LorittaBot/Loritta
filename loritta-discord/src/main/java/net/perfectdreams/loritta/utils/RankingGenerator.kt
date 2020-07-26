@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.utils
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.*
-import net.dv8tion.jda.api.entities.User
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.Rectangle

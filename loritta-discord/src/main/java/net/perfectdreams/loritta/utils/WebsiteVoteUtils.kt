@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.utils
 
 import com.mrpowergamerbr.loritta.dao.DonationKey
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.await
@@ -12,7 +11,6 @@ import net.perfectdreams.loritta.dao.BotVote
 import net.perfectdreams.loritta.tables.BotVotes
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 
 object WebsiteVoteUtils {

@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.threads.BomDiaECiaThread
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.extensions.queueAfterWithMessagePerSecondTarget
-import com.mrpowergamerbr.loritta.utils.extensions.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing
 import com.mrpowergamerbr.loritta.utils.extensions.stripLinks
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay

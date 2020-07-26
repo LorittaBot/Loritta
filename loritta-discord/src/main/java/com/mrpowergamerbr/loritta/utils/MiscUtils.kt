@@ -14,7 +14,6 @@ import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.json.XML
-import org.slf4j.LoggerFactory
 import java.io.File
 import java.net.InetAddress
 import java.util.concurrent.TimeUnit

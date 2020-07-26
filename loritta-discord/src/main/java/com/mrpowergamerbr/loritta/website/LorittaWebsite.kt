@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.website
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.mitchellbosecke.pebble.PebbleEngine
-import com.mitchellbosecke.pebble.attributes.methodaccess.MethodAccessValidator
 import com.mitchellbosecke.pebble.attributes.methodaccess.NoOpMethodAccessValidator
 import com.mitchellbosecke.pebble.cache.tag.CaffeineTagCache
 import com.mitchellbosecke.pebble.cache.template.CaffeineTemplateCache

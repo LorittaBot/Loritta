@@ -1,21 +1,13 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.github.salomonbrys.kotson.*
-import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.Profile
-import com.mrpowergamerbr.loritta.dao.ServerConfig
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
-import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.utils.CachedUserInfo
-import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
-import org.jetbrains.exposed.sql.transactions.transaction
 import kotlin.collections.set
 
 object WebsiteUtils {

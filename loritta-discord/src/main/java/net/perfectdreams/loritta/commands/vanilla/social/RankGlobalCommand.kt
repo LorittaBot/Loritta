@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.commands.vanilla.social
 
 import com.mrpowergamerbr.loritta.dao.Profile
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.perfectdreams.commands.annotation.Subcommand
@@ -11,7 +10,6 @@ import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.utils.RankingGenerator
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class RankGlobalCommand : LorittaCommand(arrayOf("rank global", "top global", "leaderboard global", "ranking global"), category = CommandCategory.SOCIAL) {
     override fun getDescription(locale: BaseLocale): String? {

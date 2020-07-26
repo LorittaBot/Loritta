@@ -17,7 +17,6 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.sum
-import java.lang.RuntimeException
 import java.time.Instant
 import java.time.ZoneOffset
 

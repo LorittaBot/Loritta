@@ -7,7 +7,6 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.DonationConfig
 import com.mrpowergamerbr.loritta.dao.ServerConfig
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.loritta
 import io.ktor.client.request.header
@@ -15,7 +14,6 @@ import io.ktor.client.request.patch
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.userAgent
 import net.dv8tion.jda.api.entities.Guild
-import org.jetbrains.exposed.sql.transactions.transaction
 
 object DonationConfigTransformer : ConfigTransformer {
     override val payloadType: String = "donation"

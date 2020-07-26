@@ -14,7 +14,6 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import net.perfectdreams.loritta.platform.discord.utils.UserFlagBadgeEmotes
 import net.perfectdreams.loritta.platform.discord.utils.UserFlagBadgeEmotes.getBadges
 import net.perfectdreams.loritta.utils.Emotes
 

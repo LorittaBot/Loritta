@@ -45,7 +45,6 @@ import net.perfectdreams.loritta.tables.servers.moduleconfigs.MemberCounterChann
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.ReactionOptions
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.WarnActions
-import net.perfectdreams.loritta.utils.FeatureFlags
 import net.perfectdreams.loritta.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
 import okio.Buffer

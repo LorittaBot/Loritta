@@ -6,9 +6,12 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.LorittaShards
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.HttpResponse
@@ -19,8 +22,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.withTimeout
 import net.dv8tion.jda.api.JDA
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import net.perfectdreams.loritta.utils.NetAddressUtils
 import net.perfectdreams.loritta.utils.ClusterOfflineException
+import net.perfectdreams.loritta.utils.NetAddressUtils
 import java.util.concurrent.TimeUnit
 
 class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {

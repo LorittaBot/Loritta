@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.commands.vanilla.social
 
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -11,7 +10,6 @@ import net.perfectdreams.loritta.utils.RankingGenerator
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class RepTopCommand : LorittaCommand(arrayOf("rep top", "reputation top", "reputacao top", "reputação top"), category = CommandCategory.SOCIAL) {
     override fun getDescription(locale: BaseLocale): String? {

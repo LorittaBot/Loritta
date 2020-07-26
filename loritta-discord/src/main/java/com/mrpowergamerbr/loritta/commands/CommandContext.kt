@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.commands
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.utils.*
