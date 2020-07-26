@@ -20,9 +20,6 @@ import net.perfectdreams.loritta.api.commands.LorittaCommandManager
 import net.perfectdreams.loritta.api.entities.User
 import net.perfectdreams.loritta.commands.vanilla.`fun`.*
 import net.perfectdreams.loritta.commands.vanilla.economy.TransactionsCommand
-import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaTopCommand
-import net.perfectdreams.loritta.commands.vanilla.social.RankGlobalCommand
-import net.perfectdreams.loritta.commands.vanilla.social.RepTopCommand
 import net.perfectdreams.loritta.commands.vanilla.social.XpNotificationsCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
@@ -45,11 +42,8 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
         registerCommand(GiveawayRerollCommand())
         registerCommand(GiveawaySetupCommand())
         registerCommand(GiveawayCommand())
-        registerCommand(RepTopCommand())
         registerCommand(FanArtsCommand())
-        registerCommand(RankGlobalCommand())
         registerCommand(XpNotificationsCommand())
-        registerCommand(BomDiaECiaTopCommand())
         registerCommand(TransactionsCommand())
 
         contextManager.registerContext<User>(
