@@ -35,6 +35,7 @@ import net.perfectdreams.loritta.commands.vanilla.magic.LoriToolsCommand
 import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaTopCommand
 import net.perfectdreams.loritta.commands.vanilla.social.RankGlobalCommand
 import net.perfectdreams.loritta.commands.vanilla.social.RepTopCommand
+import net.perfectdreams.loritta.commands.vanilla.social.XpNotificationsCommand
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandMap
 import net.perfectdreams.loritta.platform.discord.plugin.JVMPluginManager
 import net.perfectdreams.loritta.platform.discord.utils.JVMLorittaAssets
@@ -71,6 +72,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         register(BomDiaECiaTopCommand.create(discordLoritta))
         register(RankGlobalCommand.create(discordLoritta))
         register(RepTopCommand.create(discordLoritta))
+        register(XpNotificationsCommand.create(discordLoritta))
     }
     override val pluginManager = JVMPluginManager(this)
     override val assets = JVMLorittaAssets(this)
