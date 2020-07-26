@@ -33,7 +33,7 @@ object BrokerSellStockCommand : DSLCommandBase {
 				optional = true
 			}
 		}
-		
+
 		executesDiscord {
 			val tickerId = this.args.getOrNull(0)
 					?.toUpperCase()

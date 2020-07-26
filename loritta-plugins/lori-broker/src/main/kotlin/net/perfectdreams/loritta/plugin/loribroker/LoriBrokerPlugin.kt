@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.plugin.loribroker.tables.BoughtStocks
 import net.perfectdreams.tradingviewscraper.TradingViewAPI
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.awt.Color
 import kotlin.math.floor
 
 class LoriBrokerPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(name, loritta) {
@@ -102,9 +103,11 @@ class LoriBrokerPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlugin
 	}
 
 	fun getBaseEmbed() = EmbedBuilder()
-				.setAuthor("Loritta's Home Broker")
+			.setAuthor("Loritta's Home Broker")
+			.setColor(BROKER_COLOR)
 
 	companion object {
 		private val logger = KotlinLogging.logger {}
+		private val BROKER_COLOR = Color(90, 252, 3)
 	}
 }
