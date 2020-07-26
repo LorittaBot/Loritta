@@ -12,8 +12,6 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.kotlin.utils.addToStdlib.sumByLong
 
 object BrokerPortfolioCommand : DSLCommandBase {
-	private val logger = KotlinLogging.logger {}
-
 	override fun command(plugin: LoriBrokerPlugin, loritta: Loritta) = create(
 			loritta,
 			plugin.aliases.flatMap { listOf("$it portfolio", "$it portfólio") }
