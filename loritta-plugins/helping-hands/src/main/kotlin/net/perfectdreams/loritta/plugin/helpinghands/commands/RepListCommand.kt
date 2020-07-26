@@ -5,13 +5,15 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.stripCodeMarks
+import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.commands.ArgumentType
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
-import net.perfectdreams.loritta.plugin.helpinghands.HelpingHandsPlugin
-import net.perfectdreams.loritta.plugin.helpinghands.commands.base.DSLCommandBase
+import net.perfectdreams.loritta.platform.discord.commands.discordCommand
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.extensions.toJDA
 import org.jetbrains.exposed.sql.SortOrder
@@ -20,13 +22,9 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
 import java.time.ZoneId
-import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 
-object RepListCommand : DSLCommandBase {
-    override fun command(plugin: HelpingHandsPlugin, loritta: LorittaBot) = create(
-            loritta,
-            listOf("reps", "replist")
-    ) {
+object RepListCommand {
+    fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("rep list", "reps", "reputations", "reputações", "reputacoes", "reputation list", "reputação list", "reputacao list"), CommandCategory.SOCIAL) {
         description { it["commands.social.repList.description"] }
 
         examples {
@@ -97,6 +95,7 @@ object RepListCommand : DSLCommandBase {
 
                         val name = (receivedByUser?.name + "#" + receivedByUser?.discriminator)
                         val content = reputation[Reputations.content]?.stripCodeMarks()
+                                ?.substringIfNeeded(0..500)
 
                         val receivedByLoritta = reputation[Reputations.givenById] == com.mrpowergamerbr.loritta.utils.loritta.discordConfig.discord.clientId.toLong()
                         if (receivedByLoritta) {
