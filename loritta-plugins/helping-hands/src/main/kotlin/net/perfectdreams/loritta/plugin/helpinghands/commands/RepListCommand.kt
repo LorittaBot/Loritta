@@ -42,7 +42,7 @@ object RepListCommand {
             }
         }
 
-        executes {
+        executesDiscord {
             loritta as Loritta
 
             val context = checkType<DiscordCommandContext>(this)
