@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
+import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNull
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
@@ -57,7 +58,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 
 			val members = mutableListOf<Member>()
 			for (user in users) {
-				val member = context.guild.getMember(user)
+				val member = context.guild.retrieveMemberOrNull(user)
 
 				if (member == null) {
 					context.reply(
