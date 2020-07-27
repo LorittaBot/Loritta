@@ -2,6 +2,8 @@ package net.perfectdreams.loritta.plugin.loribroker
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.network.Databases
+import io.ktor.client.request.get
+import io.ktor.client.request.header
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import mu.KotlinLogging
@@ -17,10 +19,11 @@ import net.perfectdreams.tradingviewscraper.TradingViewAPI
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
+import java.io.File
 import kotlin.math.floor
 
 class LoriBrokerPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(name, loritta) {
-	val tradingApi = TradingViewAPI()
+	val tradingApi by lazy { TradingViewAPI(File(dataFolder, "session-id.txt").readText()) }
 	val validStocksCodes = listOf(
 			"OIBR3", // Oi
 			"USDBRL", // Dólar

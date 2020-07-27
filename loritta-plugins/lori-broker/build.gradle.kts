@@ -1,6 +1,6 @@
 dependencies {
     api(project(":loritta-discord"))
-    api("net.perfectdreams.tradingviewscraper:TradingViewScraper:0.0.1-SNAPSHOT")
+    api("net.perfectdreams.tradingviewscraper:TradingViewScraper:0.0.2-SNAPSHOT")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
 }
 
