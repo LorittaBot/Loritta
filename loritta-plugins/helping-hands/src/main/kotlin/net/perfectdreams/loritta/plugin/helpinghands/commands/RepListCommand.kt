@@ -48,20 +48,30 @@ object RepListCommand {
             val context = checkType<DiscordCommandContext>(this)
             val user = context.user(0)?.toJDA() ?: context.user
 
-            val reputations = transaction(Databases.loritta) {
+            val reputations = loritta.newSuspendedTransaction {
                 Reputations.select {
                     Reputations.givenById eq user.idLong or (Reputations.receivedById eq user.idLong)
                 }.orderBy(Reputations.receivedAt, SortOrder.DESC)
-                        .limit(20)
+                        .limit(50) // We limit according to the message max size later on
                         .toMutableList()
+            }
+
+            val totalReputationReceived = loritta.newSuspendedTransaction {
+                Reputations.select {
+                    Reputations.receivedById eq user.idLong
+                }.count()
+            }
+
+            val totalReputationGiven = loritta.newSuspendedTransaction {
+                Reputations.select {
+                    Reputations.givenById eq user.idLong
+                }.count()
             }
 
             val description = buildString {
                 if (reputations.size == 0) {
                     this.append(context.locale["commands.social.repList.noReps"])
                 } else {
-                    val totalReputationReceived = reputations.filter { it[Reputations.receivedById] == user.idLong }.size
-                    val totalReputationGiven = reputations.filter { it[Reputations.givenById] == user.idLong }.size
                     this.append(context.locale["commands.social.repList.reputationsTotalDescription", totalReputationReceived, totalReputationGiven])
                     this.append("\n")
                     this.append("\n")
