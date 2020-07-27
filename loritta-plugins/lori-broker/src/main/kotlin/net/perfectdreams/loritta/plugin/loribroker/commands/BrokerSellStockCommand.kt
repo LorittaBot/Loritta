@@ -14,6 +14,8 @@ import net.perfectdreams.loritta.plugin.loribroker.commands.base.DSLCommandBase
 import net.perfectdreams.loritta.plugin.loribroker.tables.BoughtStocks
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.NumberUtils
+import net.perfectdreams.loritta.utils.PaymentUtils
+import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.select
@@ -74,6 +76,11 @@ object BrokerSellStockCommand : DSLCommandBase {
 					}
 
 					lorittaUser.profile.addSonhosNested(howMuchWillBePaidToTheUser)
+					PaymentUtils.addToTransactionLogNested(
+							howMuchWillBePaidToTheUser,
+							SonhosPaymentReason.STOCKS,
+							receivedBy = user.idLong
+					)
 				}
 
 				reply(
