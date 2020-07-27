@@ -71,7 +71,7 @@ object BrokerBuyStockCommand : DSLCommandBase {
 						}
 					}
 
-					lorittaUser.profile.money -= howMuchValue
+					lorittaUser.profile.takeSonhosNested(howMuchValue)
 				}
 			}
 

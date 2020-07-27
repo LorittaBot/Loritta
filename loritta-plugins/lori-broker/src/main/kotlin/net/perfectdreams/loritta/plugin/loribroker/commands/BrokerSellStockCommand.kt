@@ -73,7 +73,7 @@ object BrokerSellStockCommand : DSLCommandBase {
 						BoughtStocks.id inList stocksThatWillBeSold.map { it[BoughtStocks.id] }
 					}
 
-					lorittaUser.profile.money += howMuchWillBePaidToTheUser
+					lorittaUser.profile.addSonhosNested(howMuchWillBePaidToTheUser)
 				}
 
 				reply(

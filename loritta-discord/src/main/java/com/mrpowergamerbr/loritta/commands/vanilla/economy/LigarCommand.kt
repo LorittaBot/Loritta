@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.tables.BomDiaECiaWinners
 import net.perfectdreams.loritta.tables.SonhosTransaction
+import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -48,16 +49,13 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 					return
 				}
 
-				transaction(Databases.loritta) {
-					profile.money -= 75
-
-					SonhosTransaction.insert {
-						it[givenBy] = context.userHandle.idLong
-						it[receivedBy] = null
-						it[givenAt] = System.currentTimeMillis()
-						it[quantity] = 75.toBigDecimal()
-						it[reason] = SonhosPaymentReason.BOM_DIA_E_CIA
-					}
+				loritta.newSuspendedTransaction {
+					profile.takeSonhosNested(75)
+					PaymentUtils.addToTransactionLogNested(
+							75,
+							SonhosPaymentReason.BOM_DIA_E_CIA,
+							givenBy = context.userHandle.idLong
+					)
 				}
 
 				GlobalScope.launch(coroutineExecutor) {
@@ -92,13 +90,14 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 						loritta.bomDiaECia.available = false
 
 						val randomPrize = RANDOM.nextInt(450, 701)
+								.toLong()
 						val guild = context.guild
 						val user = context.userHandle
 						val prizeAsBigDecimal = randomPrize.toBigDecimal()
 						val wonMillis = System.currentTimeMillis()
 
-						transaction(Databases.loritta) {
-							profile.money += randomPrize
+						loritta.newSuspendedTransaction {
+							profile.addSonhosNested(randomPrize)
 
 							BomDiaECiaWinners.insert {
 								it[guildId] = guild.idLong
@@ -107,13 +106,12 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 								it[prize] = prizeAsBigDecimal
 							}
 
-							SonhosTransaction.insert {
-								it[givenBy] = null
-								it[receivedBy] = user.idLong
-								it[givenAt] = wonMillis
-								it[quantity] = prizeAsBigDecimal
-								it[reason] = SonhosPaymentReason.BOM_DIA_E_CIA
-							}
+							PaymentUtils.addToTransactionLogNested(
+									randomPrize,
+									SonhosPaymentReason.BOM_DIA_E_CIA,
+									receivedBy = context.userHandle.idLong,
+									givenAtMillis = wonMillis
+							)
 						}
 
 						val wordsTyped = context.args.size

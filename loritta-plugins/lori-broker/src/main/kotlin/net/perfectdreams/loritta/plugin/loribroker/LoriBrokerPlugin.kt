@@ -23,7 +23,11 @@ import java.io.File
 import kotlin.math.floor
 
 class LoriBrokerPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(name, loritta) {
-	val tradingApi by lazy { TradingViewAPI(File(dataFolder, "session-id.txt").readText()) }
+	private var _tradingApi: TradingViewAPI? = null
+	val tradingApi: TradingViewAPI
+		get() = _tradingApi ?: throw RuntimeException("TradingView API not started!")
+
+
 	val validStocksCodes = listOf(
 			"OIBR3", // Oi
 			"USDBRL", // Dólar
@@ -70,6 +74,16 @@ class LoriBrokerPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlugin
 		loritta as Loritta
 
 		launch {
+			val sessionId = File(dataFolder, "session-id.txt")
+					.readText()
+
+			val result = loritta.http.get<String>("https://br.tradingview.com/quote_token/") {
+				header("Cookie", "sessionid=$sessionId;")
+			}.removePrefix("\"")
+					.removeSuffix("\"")
+
+			_tradingApi = TradingViewAPI(result)
+
 			tradingApi.connect()
 		}
 

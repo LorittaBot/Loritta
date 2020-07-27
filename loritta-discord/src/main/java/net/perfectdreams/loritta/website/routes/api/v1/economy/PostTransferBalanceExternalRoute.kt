@@ -7,6 +7,7 @@ import io.ktor.request.receiveText
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.SonhosTransaction
+import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
@@ -30,15 +31,12 @@ class PostTransferBalanceExternalRoute(loritta: LorittaDiscord) : RequiresAPIAut
 		val finalMoney = (garticos * transferRate)
 
 		loritta.newSuspendedTransaction {
-			profile.money += finalMoney.toLong()
-
-			SonhosTransaction.insert {
-				it[givenBy] = null
-				it[receivedBy] = receiverId.toLong()
-				it[givenAt] = System.currentTimeMillis()
-				it[quantity] = finalMoney.toBigDecimal()
-				it[reason] = SonhosPaymentReason.GARTICOS_TRANSFER
-			}
+			profile.addSonhosNested(finalMoney.toLong())
+			PaymentUtils.addToTransactionLogNested(
+					finalMoney.toLong(),
+					SonhosPaymentReason.GARTICOS_TRANSFER,
+					receivedBy = profile.id.value
+			)
 		}
 
 		logger.info { "$receiverId (now has ${profile.money} dreams) transferred $garticos garticos to Loritta with transfer rate is $transferRate" }
