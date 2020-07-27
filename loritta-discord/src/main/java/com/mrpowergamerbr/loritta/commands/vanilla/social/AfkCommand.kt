@@ -3,11 +3,8 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import com.mrpowergamerbr.loritta.utils.stripCodeMarks
-import com.mrpowergamerbr.loritta.utils.stripNewLines
-import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -20,7 +17,7 @@ class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), Command
 		var profile = context.lorittaUser.profile
 
 		if (profile.isAfk) {
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				profile.isAfk = false
 				profile.afkReason = null
 			}
@@ -34,7 +31,7 @@ class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), Command
 		} else {
 			val reason = context.args.joinToString(" ").stripNewLines().stripCodeMarks().substringIfNeeded(range = 0..299)
 
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				if (reason.isNotEmpty()) {
 					profile.afkReason = reason
 				} else {

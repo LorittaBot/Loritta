@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.Gender
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -34,7 +35,7 @@ class GenderCommand : AbstractCommand("gender", listOf("gênero", "genero"), Com
 			message.delete().queue()
 
 			if (it.reactionEmote.id == "384048518853296128") {
-				transaction(Databases.loritta) {
+				loritta.newSuspendedTransaction {
 					context.lorittaUser.profile.settings.gender = Gender.MALE
 				}
 
@@ -48,7 +49,7 @@ class GenderCommand : AbstractCommand("gender", listOf("gênero", "genero"), Com
 
 
             if (it.reactionEmote.id == "384048518337265665") {
-                transaction(Databases.loritta) {
+				loritta.newSuspendedTransaction {
                     context.lorittaUser.profile.settings.gender = Gender.FEMALE
                 }
 

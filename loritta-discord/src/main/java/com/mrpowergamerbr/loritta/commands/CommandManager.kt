@@ -490,7 +490,7 @@ class CommandManager(loritta: Loritta) {
 					}
 				}
 
-				transaction(Databases.loritta) {
+				loritta.newSuspendedTransaction {
 					lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
 
 					ExecutedCommandsLog.insert {

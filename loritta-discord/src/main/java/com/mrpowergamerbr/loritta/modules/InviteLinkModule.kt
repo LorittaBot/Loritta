@@ -159,7 +159,7 @@ class InviteLinkModule : MessageReceivedModule {
 								if (it.reactionEmote.id == (Emotes.LORI_PAT as DiscordEmote).id) {
 									enableBypassMessage.removeAllFunctions()
 
-									transaction(Databases.loritta) {
+									loritta.newSuspendedTransaction {
 										ServerRolePermissions.insert {
 											it[ServerRolePermissions.guild] = serverConfig.id
 											it[ServerRolePermissions.roleId] = topRole.idLong
