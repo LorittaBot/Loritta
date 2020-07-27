@@ -14,7 +14,7 @@ import org.jetbrains.kotlin.utils.addToStdlib.sumByLong
 object BrokerPortfolioCommand : DSLCommandBase {
 	override fun command(plugin: LoriBrokerPlugin, loritta: Loritta) = create(
 			loritta,
-			plugin.aliases.flatMap { listOf("$it portfolio", "$it portfólio") }
+			plugin.aliases.flatMap { listOf("$it portfolio", "$it portfólio", "$it p") }
 	) {
 		description { it["commands.economy.brokerPortfolio.description"] }
 
@@ -28,7 +28,6 @@ object BrokerPortfolioCommand : DSLCommandBase {
 			val stockByTickerId = stocks.groupBy { it[BoughtStocks.ticker] }
 
 			val embed = plugin.getBaseEmbed()
-					.setThumbnail("https://s2.glbimg.com/2ZioxWDcGUQfPSKbPBBbkRgUyG4=/0x0:825x619/600x0/smart/filters:gifv():strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2020/u/n/83nNsCQ8SWRrziGD1mAw/stonks-meme.png")
 					.setTitle(locale["commands.economy.brokerPortfolio.title"])
 
 			for ((tickerId, stocks) in stockByTickerId) {

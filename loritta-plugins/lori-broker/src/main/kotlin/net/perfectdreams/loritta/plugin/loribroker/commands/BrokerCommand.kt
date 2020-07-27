@@ -24,7 +24,6 @@ object BrokerCommand : DSLCommandBase {
 
 			val embed = plugin.getBaseEmbed()
 					.setTitle(locale["commands.economy.broker.title"])
-					.setThumbnail("https://s2.glbimg.com/2ZioxWDcGUQfPSKbPBBbkRgUyG4=/0x0:825x619/600x0/smart/filters:gifv():strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2020/u/n/83nNsCQ8SWRrziGD1mAw/stonks-meme.png")
 					.setDescription(
 							locale.getList(
 									"commands.economy.broker.explanation",

@@ -9,6 +9,7 @@ import kotlinx.coroutines.sync.Mutex
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.LorittaBot
+import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.plugin.loribroker.commands.BrokerBuyStockCommand
 import net.perfectdreams.loritta.plugin.loribroker.commands.BrokerCommand
@@ -122,9 +123,10 @@ class LoriBrokerPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlugin
 	fun getBaseEmbed() = EmbedBuilder()
 			.setAuthor("Loritta's Home Broker")
 			.setColor(BROKER_COLOR)
+			.setThumbnail("${(loritta as LorittaDiscord).instanceConfig.loritta.website.url}assets/img/loritta_stonks.png")
 
 	companion object {
 		private val logger = KotlinLogging.logger {}
-		private val BROKER_COLOR = Color(90, 252, 3)
+		private val BROKER_COLOR = Color(23, 62, 163)
 	}
 }
