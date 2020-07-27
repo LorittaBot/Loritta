@@ -73,7 +73,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm", "bal", "balance"),
 			if (localEconomyEnabled && economyConfig != null) { // Sistema de ecnomia local está ativado!
 				val localProfile = context.config.getUserData(retrieveDreamsFromUser.idLong)
 				context.reply(
-						true,
+						false,
 						youHaveReply,
 						LoriReply(
 								locale["SONHOS_YouHave", localProfile.money, if (localProfile.money == BigDecimal.ONE) { economyConfig.economyName } else { economyConfig.economyNamePlural }],
@@ -89,8 +89,6 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm", "bal", "balance"),
 			}
 		} else {
 			val userSonhos = lorittaProfile?.money ?: 0L
-
-
 
 			val someoneHasReply = LoriReply(
 					context.locale[
@@ -123,12 +121,11 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm", "bal", "balance"),
 			if (localEconomyEnabled && economyConfig != null) {
 				val localProfile = context.config.getUserData(retrieveDreamsFromUser.idLong)
 				context.reply(
-						true,
+						false,
 						someoneHasReply,
 						LoriReply(
 								locale["SONHOS_UserHas", retrieveDreamsFromUser.asMention, localProfile.money, if (localProfile.money == BigDecimal.ONE) { economyConfig.economyName } else { economyConfig.economyNamePlural }],
-								"\uD83D\uDCB5",
-								mentionUser = false
+								"\uD83D\uDCB5"
 						)
 				)
 			} else {
