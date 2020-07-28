@@ -64,13 +64,15 @@ object TransactionsCommand {
 					this.append(" ")
 
 					if (transaction[SonhosTransaction.reason] == SonhosPaymentReason.PAYMENT) {
-						val receivedByUser = if (receivedSonhos) {
-							lorittaShards.retrieveUserInfoById(transaction[SonhosTransaction.givenBy])
+						val receivedByUserId = if (receivedSonhos) {
+							transaction[SonhosTransaction.givenBy]
 						} else {
-							lorittaShards.retrieveUserInfoById(transaction[SonhosTransaction.receivedBy])
+							transaction[SonhosTransaction.receivedBy]
 						}
 
-						val name = (receivedByUser?.name + "#" + receivedByUser?.discriminator)
+						val receivedByUser = lorittaShards.retrieveUserInfoById(receivedByUserId)
+
+						val name = ("${receivedByUser?.name}#${receivedByUser?.discriminator} ($receivedByUserId)")
 
 						if (receivedSonhos) {
 							this.append(locale["commands.economy.transactions.receivedMoneySonhos", transaction[SonhosTransaction.quantity], "`$name`"])

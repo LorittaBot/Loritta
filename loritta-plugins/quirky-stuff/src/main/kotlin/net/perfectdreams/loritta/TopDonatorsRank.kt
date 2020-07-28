@@ -152,7 +152,7 @@ class TopDonatorsRank(val m: QuirkyStuff, val config: QuirkyConfig) {
 							if (user != null) {
 								message.append(user.asMention)
 							} else {
-								val globalUser = lorittaShards.retrieveUserById(userId)
+								val globalUser = lorittaShards.retrieveUserInfoById(userId)
 								if (globalUser != null) {
 									message.append("${globalUser.name.stripCodeMarks()}#${globalUser.discriminator}")
 								} else {

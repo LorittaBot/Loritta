@@ -97,13 +97,15 @@ object RepListCommand {
                         str.append(emoji)
                         str.append(" ")
 
-                        val receivedByUser = if (receivedReputation) {
-                            lorittaShards.retrieveUserInfoById(reputation[Reputations.givenById])
+                        val receivedByUserId = if (receivedReputation) {
+                            reputation[Reputations.givenById]
                         } else {
-                            lorittaShards.retrieveUserInfoById(reputation[Reputations.receivedById])
+                            reputation[Reputations.receivedById]
                         }
 
-                        val name = (receivedByUser?.name + "#" + receivedByUser?.discriminator)
+                        val receivedByUser = lorittaShards.retrieveUserInfoById(receivedByUserId)
+
+                        val name = ("${receivedByUser?.name}#${receivedByUser?.discriminator} ($receivedByUserId)")
                         val content = reputation[Reputations.content]?.stripCodeMarks()
                                 ?.substringIfNeeded(0..500)
 
