@@ -359,7 +359,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				)
 
 				if (sponsoredByUserId != null) {
-					val sponsoredByUser = lorittaShards.retrieveUserById(sponsoredByUserId)
+					val sponsoredByUser = lorittaShards.retrieveUserInfoById(sponsoredByUserId)
 
 					if (sponsoredByUser != null)
 						sponsor["user"] = WebsiteUtils.transformToJson(sponsoredByUser)

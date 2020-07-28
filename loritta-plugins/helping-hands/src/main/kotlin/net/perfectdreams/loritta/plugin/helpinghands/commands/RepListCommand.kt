@@ -98,9 +98,9 @@ object RepListCommand {
                         str.append(" ")
 
                         val receivedByUser = if (receivedReputation) {
-                            lorittaShards.retrieveUserById(reputation[Reputations.givenById])
+                            lorittaShards.retrieveUserInfoById(reputation[Reputations.givenById])
                         } else {
-                            lorittaShards.retrieveUserById(reputation[Reputations.receivedById])
+                            lorittaShards.retrieveUserInfoById(reputation[Reputations.receivedById])
                         }
 
                         val name = (receivedByUser?.name + "#" + receivedByUser?.discriminator)

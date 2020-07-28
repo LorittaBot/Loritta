@@ -137,6 +137,7 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 		val json = jsonParser.parse(body)
 
 		val lastWinnerId = json["lastWinnerId"].nullString
+				?.toLongOrNull()
 		val currentTickets = json["currentTickets"].int
 		val usersParticipating = json["usersParticipating"].int
 		val started = json["started"].long
@@ -146,7 +147,7 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 		cal.timeInMillis = started + 3600000
 
 		val lastWinner = if (lastWinnerId != null) {
-			lorittaShards.retrieveUserById(lastWinnerId)
+			lorittaShards.retrieveUserInfoById(lastWinnerId.toLong())
 		} else {
 			null
 		}

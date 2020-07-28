@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent
 import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.EventLogConfigs
+import net.perfectdreams.loritta.utils.CachedUserInfo
 import net.perfectdreams.loritta.utils.DateUtils
 import org.apache.commons.io.IOUtils
 import org.jetbrains.exposed.sql.and
@@ -179,7 +180,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 
 					if (storedMessage != null) {
-						val user = lorittaShards.retrieveUserById(storedMessage.authorId.toString()) ?: return@launch
+						val user = lorittaShards.retrieveUserInfoById(storedMessage.authorId) ?: return@launch
 
 						val webhook = EventLog.getOrCreateEventLogWebhook(event.guild, eventLogConfig) ?: return@launch
 
@@ -246,10 +247,11 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					val storedMessages = transaction(Databases.loritta) {
 						StoredMessage.find { StoredMessages.id inList event.messageIds.map { it.toLong() } }.toMutableList()
 					}
-					if (storedMessages.isNotEmpty()) {
-						val retrievedUsers = mutableMapOf<Long, User?>()
 
-						val user = lorittaShards.retrieveUserById(storedMessages.first().authorId)
+					if (storedMessages.isNotEmpty()) {
+						val retrievedUsers = mutableMapOf<Long, CachedUserInfo?>()
+
+						val user = lorittaShards.retrieveUserInfoById(storedMessages.first().authorId)
 								?: return@launch
 
 						retrievedUsers[storedMessages.first().authorId] = user
@@ -262,7 +264,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						val lines = mutableListOf<String>()
 
 						for (message in storedMessages) {
-							val messageSentByUser = retrievedUsers.getOrPut(message.authorId, { lorittaShards.retrieveUserById(message.authorId) })
+							val messageSentByUser = retrievedUsers.getOrPut(message.authorId, { lorittaShards.retrieveUserInfoById(message.authorId) })
 
 							val creationTime = OffsetDateTime.ofInstant(Instant.ofEpochMilli(message.createdAt), TimeZone.getTimeZone("GMT").toZoneId())
 

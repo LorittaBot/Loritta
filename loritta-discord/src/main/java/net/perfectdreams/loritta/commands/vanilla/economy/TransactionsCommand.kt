@@ -65,9 +65,9 @@ object TransactionsCommand {
 
 					if (transaction[SonhosTransaction.reason] == SonhosPaymentReason.PAYMENT) {
 						val receivedByUser = if (receivedSonhos) {
-							lorittaShards.retrieveUserById(transaction[SonhosTransaction.givenBy])
+							lorittaShards.retrieveUserInfoById(transaction[SonhosTransaction.givenBy])
 						} else {
-							lorittaShards.retrieveUserById(transaction[SonhosTransaction.receivedBy])
+							lorittaShards.retrieveUserInfoById(transaction[SonhosTransaction.receivedBy])
 						}
 
 						val name = (receivedByUser?.name + "#" + receivedByUser?.discriminator)
