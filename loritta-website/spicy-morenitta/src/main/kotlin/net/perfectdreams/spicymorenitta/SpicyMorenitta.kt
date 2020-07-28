@@ -16,6 +16,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.stream.createHTML
+import loadEmbeddedLocale
 import net.perfectdreams.loritta.serializable.UserIdentification
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.routes.*
@@ -23,7 +24,6 @@ import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.*
 import net.perfectdreams.spicymorenitta.routes.user.dashboard.*
 import net.perfectdreams.spicymorenitta.trunfo.TrunfoGame
 import net.perfectdreams.spicymorenitta.utils.*
-import oldMain
 import org.w3c.dom.*
 import kotlin.browser.document
 import kotlin.browser.window
@@ -181,8 +181,6 @@ class SpicyMorenitta : Logging {
 			return
 		}
 
-		oldMain(arrayOf())
-
 		// From old website
 		val darkThemeCookie = CookiesUtils.readCookie("darkTheme")
 		if (darkThemeCookie?.toBoolean() == true)
@@ -206,6 +204,8 @@ class SpicyMorenitta : Logging {
 
 		document.onDOMReady {
 			debug("DOM is ready!")
+			debug("Loading deprecated locale from the body...")
+			loadEmbeddedLocale()
 
 			debug(window.location.pathname + " - " + WebsiteUtils.getPathWithoutLocale())
 
