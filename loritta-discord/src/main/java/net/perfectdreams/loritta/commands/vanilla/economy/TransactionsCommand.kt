@@ -107,7 +107,7 @@ object TransactionsCommand {
 			val embed = EmbedBuilder()
 					.setTitle(
 							"${Emotes.LORI_RICH} " +
-									if (user != user)
+									if (user != this.user)
 										locale["commands.economy.transactions.otherUserTransactions", user.asTag]
 									else
 										locale["commands.economy.transactions.title"]
