@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
@@ -42,7 +43,7 @@ class RaffleThread : Thread("Raffle Thread") {
 			try {
 				val diff = System.currentTimeMillis() - started
 
-				if (diff > 3600000 && loritta.isMaster) { // Resultados apenas saem no master server
+				if (diff > 3600000) { // Resultados apenas saem no master server
 					handleWin()
 				}
 			} catch (e: Exception) {
@@ -106,7 +107,7 @@ class RaffleThread : Thread("Raffle Thread") {
 			userIds.clear()
 
 			val locale = loritta.getLegacyLocaleById(winner.second)
-			val user = lorittaShards.shardManager.retrieveUserById(lastWinnerId!!).complete()
+			val user = runBlocking { lorittaShards.retrieveUserById(lastWinnerId!!) }
 
 			if (user != null && !user.isBot) {
 				try {

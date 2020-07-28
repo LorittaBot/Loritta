@@ -272,23 +272,25 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 			tweetTracker.updateStreams()
 		}
 
-		logger.info { "Carregando raffle..." }
-		val raffleFile = File(FOLDER, "raffle.json")
+		if (loritta.isMaster) {
+			logger.info { "Carregando raffle..." }
+			val raffleFile = File(FOLDER, "raffle.json")
 
-		if (raffleFile.exists()) {
-			val json = JSON_PARSER.parse(raffleFile.readText()).obj
+			if (raffleFile.exists()) {
+				val json = JSON_PARSER.parse(raffleFile.readText()).obj
 
-			RaffleThread.started = json["started"].long
-			RaffleThread.lastWinnerId = json["lastWinnerId"].nullString
-			RaffleThread.lastWinnerPrize = json["lastWinnerPrize"].nullInt ?: 0
-			val userIdArray = json["userIds"].nullArray
+				RaffleThread.started = json["started"].long
+				RaffleThread.lastWinnerId = json["lastWinnerId"].nullString
+				RaffleThread.lastWinnerPrize = json["lastWinnerPrize"].nullInt ?: 0
+				val userIdArray = json["userIds"].nullArray
 
-			if (userIdArray != null)
-				RaffleThread.userIds = GSON.fromJson(userIdArray)
+				if (userIdArray != null)
+					RaffleThread.userIds = GSON.fromJson(userIdArray)
+			}
+
+			raffleThread = RaffleThread()
+			raffleThread.start()
 		}
-
-		raffleThread = RaffleThread()
-		raffleThread.start()
 
 		DebugLog.startCommandListenerThread()
 
