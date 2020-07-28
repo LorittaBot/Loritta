@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.dao.Warn
 import com.mrpowergamerbr.loritta.tables.Warns
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
+import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNull
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.Permission
@@ -56,7 +57,7 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 		if (context.args.isNotEmpty()) {
 			val user = AdminUtils.checkForUser(context) ?: return
 
-			val member = context.guild.getMember(user)
+			val member = context.guild.retrieveMemberOrNull(user)
 
 			if (member != null) {
 				if (!AdminUtils.checkForPermissions(context, member))

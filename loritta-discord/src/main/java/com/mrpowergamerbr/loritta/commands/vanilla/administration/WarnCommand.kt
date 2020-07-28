@@ -65,7 +65,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 			val (users, rawReason) = AdminUtils.checkAndRetrieveAllValidUsersFromMessages(context) ?: return
 
 			for (user in users) {
-				val member = context.guild.getMember(user)
+				val member = context.guild.retrieveMemberOrNull(user)
 
 				if (member != null) {
 					if (!AdminUtils.checkForPermissions(context, member))
