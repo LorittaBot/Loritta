@@ -42,9 +42,8 @@ class BlockBadWordsModule(val plugin: LoriGuildStuffPlugin) : MessageReceivedMod
         val content = event.message.contentRaw
                 .replace("\u200B", "")
                 .replace("\\", "")
-                .toLowerCase()
 
-        if (plugin.badWords.any { content.contains(it) }) {
+        if (plugin.badWords.any { content.contains(it, true) }) {
             val moderationInfo = AdminUtils.retrieveModerationInfo(serverConfig)
 
             // Delete right now because fuck off
