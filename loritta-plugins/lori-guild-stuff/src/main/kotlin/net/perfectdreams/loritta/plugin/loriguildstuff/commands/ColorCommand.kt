@@ -5,7 +5,6 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.discordCommand
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import org.jetbrains.kotlin.utils.addIfNotNull
 
 object ColorCommand {
 
@@ -38,15 +37,14 @@ object ColorCommand {
                 reply(
                         LorittaReply(
                                 "Este comando é apenas para doadores, se você quer me ajudar a comprar um :custard:, então vire um doador! https://loritta.website/donate",
-                                "<:error:738489644039012506>"
+                                "<:error:412585701054611458>"
                         )
                 )
             } else {
                 val selection = args.joinToString(" ")
 
-                if (colors[selection] !== null) {
+                if (colors[selection] != null) {
                     val c = colors[selection]!!
-                    println(c)
                     val role = guild.getRoleById(c)!!
 
                     if (member.roles.contains(role)) {
