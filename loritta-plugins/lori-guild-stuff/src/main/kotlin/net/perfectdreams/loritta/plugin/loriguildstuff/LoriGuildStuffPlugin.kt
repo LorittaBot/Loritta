@@ -16,7 +16,12 @@ class LoriGuildStuffPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPl
 
     override fun onEnable() {
         loritta as LorittaDiscord
-        registerCommands(NotifyBackgroundsCommand.create(loritta), NotifyCommand.create(loritta), AddBackgroundCommand.create(loritta), ColorCommand.create(loritta))
+        registerCommands(
+                NotifyBackgroundsCommand.create(loritta),
+                NotifyCommand.create(loritta),
+                AddBackgroundCommand.create(loritta),
+                ColorCommand.create(loritta)
+        )
 
         addMessageReceivedModules(AddReactionsToChannelsModule(this))
         addMessageReceivedModules(BlockBadWordsModule(this))

@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.plugin.loriguildstuff.commands
 
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
@@ -29,7 +30,6 @@ object ColorCommand {
         }
 
         executesDiscord {
-
             val donatorRole = guild.getRoleById(364201981016801281L)!! //364201981016801281L - role original
             val member = this.member!!
 
@@ -37,7 +37,7 @@ object ColorCommand {
                 reply(
                         LorittaReply(
                                 "Este comando é apenas para doadores, se você quer me ajudar a comprar um :custard:, então vire um doador! https://loritta.website/donate",
-                                "<:error:412585701054611458>"
+                                Constants.ERROR
                         )
                 )
             } else {
@@ -50,7 +50,7 @@ object ColorCommand {
 
                     if (member.roles.contains(role)) {
                         guild.removeRoleFromMember(member, role).await()
-                        reply (
+                        reply(
                                 LorittaReply(
                                         "Cor removida!",
                                         "\uD83C\uDFA8"
@@ -58,7 +58,7 @@ object ColorCommand {
                         )
                     } else {
                         guild.addRoleToMember(member, role).await()
-                        reply (
+                        reply(
                                 LorittaReply(
                                         "Cor adicionada!",
                                         "\uD83C\uDFA8"
@@ -70,7 +70,7 @@ object ColorCommand {
                 val list = colors.keys.joinToString(", ")
 
                 if (args.isEmpty()) {
-                    reply (
+                    reply(
                             LorittaReply(
                                     "Cores disponíveis: `$list`",
                                     "\uD83C\uDFA8"
