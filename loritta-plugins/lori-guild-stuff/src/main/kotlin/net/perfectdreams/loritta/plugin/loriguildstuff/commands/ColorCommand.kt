@@ -20,8 +20,7 @@ object ColorCommand {
             "vermelho" to 373540030053875713L,
             "amarelo" to 373539918863007745L,
             "dourado" to 373539973984550912L,
-            "verde" to 374613592185634816L,
-            "violeta" to 738880144403464322L
+            "verde" to 374613592185634816L
     )
 
     fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("cor", "color"), CommandCategory.MISC) {
@@ -31,7 +30,7 @@ object ColorCommand {
         }
 
         executesDiscord {
-            val donatorRole = guild.getRoleById(364201981016801281L)!!
+            val donatorRole = guild.getRoleById(364201981016801281L)!! //364201981016801281L - role original
             val member = this.member!!
 
             if (!member.roles.contains(donatorRole)) {
@@ -42,12 +41,12 @@ object ColorCommand {
                         )
                 )
             } else {
-                val selection = args.joinToString(" ").toLowerCase()
+                val selection = args.joinToString(" ")
 
-                val color = colors[selection]
+                val c = colors[selection]
 
-                if (color != null) {
-                    val role = guild.getRoleById(color)!!
+                if (c != null) {
+                    val role = guild.getRoleById(c)!!
 
                     if (member.roles.contains(role)) {
                         guild.removeRoleFromMember(member, role).await()
