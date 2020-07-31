@@ -45,32 +45,29 @@ object ColorCommand {
 
                 val c = colors[selection]
 
-                if (colors[selection] != null) {
+                if (c != null) {
+                    val role = guild.getRoleById(c)!!
 
-                    if (c != null) {
-                        val role = guild.getRoleById(c)!!
-
-                        if (member.roles.contains(role)) {
-                            guild.removeRoleFromMember(member, role).await()
-                            reply (
-                                    LorittaReply(
-                                            "Cor removida!",
-                                            "\uD83C\uDFA8"
-                                    )
-                            )
-                        } else {
-                            guild.addRoleToMember(member, role).await()
-                            reply (
-                                    LorittaReply(
-                                            "Cor adicionada!",
-                                            "\uD83C\uDFA8"
-                                    )
-                            )
-                        }
+                    if (member.roles.contains(role)) {
+                        guild.removeRoleFromMember(member, role).await()
+                        reply (
+                                LorittaReply(
+                                        "Cor removida!",
+                                        "\uD83C\uDFA8"
+                                )
+                        )
+                    } else {
+                        guild.addRoleToMember(member, role).await()
+                        reply (
+                                LorittaReply(
+                                        "Cor adicionada!",
+                                        "\uD83C\uDFA8"
+                                )
+                        )
                     }
                 }
 
-                var list = colors.keys.joinToString(", ")
+                val list = colors.keys.joinToString(", ")
 
                 if (args.isEmpty()) {
                     reply (
