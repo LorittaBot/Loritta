@@ -43,8 +43,9 @@ object ColorCommand {
             } else {
                 val selection = args.joinToString(" ")
 
+                val c = colors[selection]
+
                 if (colors[selection] != null) {
-                    val c = colors[selection]
 
                     if (c != null) {
                         val role = guild.getRoleById(c)!!
