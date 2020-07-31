@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.commands.vanilla.`fun`
 
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.extensions.await
@@ -17,7 +16,6 @@ import net.perfectdreams.loritta.tables.servers.Giveaways
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class GiveawayRerollCommand : LorittaDiscordCommand(arrayOf("giveaway reroll", "sorteio reroll"), CommandCategory.FUN) {
 	companion object {
@@ -65,7 +63,7 @@ class GiveawayRerollCommand : LorittaDiscordCommand(arrayOf("giveaway reroll", "
 			return
 		}
 
-		val giveaway = transaction(Databases.loritta) {
+		val giveaway = loritta.newSuspendedTransaction {
 			if (channelId != null) {
 				Giveaway.find {
 					(Giveaways.guildId eq context.guild!!.id) and (Giveaways.messageId eq messageId) and (Giveaways.textChannelId eq channelId)

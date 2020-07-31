@@ -5,6 +5,7 @@ import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.utils.MessageUtils
+import com.mrpowergamerbr.loritta.utils.extensions.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import io.ktor.application.ApplicationCall
@@ -35,6 +36,8 @@ class PostReceivedTweetRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticatio
 		}
 		logger.info { "There are ${configsTrackingAccount.size} tracked configs tracking ${screenName} (${userId})" }
 
+		val canTalkGuildIds = mutableListOf<Long>()
+
 		for (tracked in configsTrackingAccount) {
 			val guild = lorittaShards.getGuildById(tracked[TrackedTwitterAccounts.guildId]) ?: continue
 			val textChannel = guild.getTextChannelById(tracked[TrackedTwitterAccounts.channelId]) ?: continue
@@ -48,7 +51,10 @@ class PostReceivedTweetRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticatio
 					)
 			) ?: continue
 
-			textChannel.sendMessage(message).queue()
+			textChannel.sendMessage(message)
+					.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing(canTalkGuildIds.size)
+
+			canTalkGuildIds.add(guild.idLong)
 		}
 
 		call.respondJson(jsonObject())

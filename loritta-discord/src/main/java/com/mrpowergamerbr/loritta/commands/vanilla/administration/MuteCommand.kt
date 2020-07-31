@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.tables.Mutes
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
+import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNull
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.*
@@ -62,22 +63,27 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val user = AdminUtils.checkForUser(context) ?: return
+			val (users, rawReason) = AdminUtils.checkAndRetrieveAllValidUsersFromMessages(context) ?: return
 
-			val member = context.guild.getMember(user)
+			val members = mutableListOf<Member>()
+			for (user in users) {
+				val member = context.guild.retrieveMemberOrNull(user)
 
-			if (member == null) {
-				context.reply(
-						LoriReply(
-								context.locale["commands.userNotOnTheGuild", "${user.asMention} (`${user.name.stripCodeMarks()}#${user.discriminator} (${user.idLong})`)"],
-								Emotes.LORI_HM
-						)
-				)
-				return
+				if (member == null) {
+					context.reply(
+							LoriReply(
+									context.locale["commands.userNotOnTheGuild", "${user.asMention} (`${user.name.stripCodeMarks()}#${user.discriminator} (${user.idLong})`)"],
+									Emotes.LORI_HM
+							)
+					)
+					return
+				}
+
+				if (!AdminUtils.checkForPermissions(context, member))
+					return
+
+				members.add(member)
 			}
-
-			if (!AdminUtils.checkForPermissions(context, member))
-				return
 
 			val setHour = context.reply(
 					LoriReply(
@@ -89,13 +95,14 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			val settings = AdminUtils.retrieveModerationInfo(context.config)
 
 			suspend fun punishUser(time: Long?) {
-				val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context) ?: return
+				val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context, rawReason) ?: return
 
 				if (skipConfirmation) {
-					val result = muteUser(context, settings, member, time, locale, user, reason, silent)
+					for (member in members) {
+						val result = muteUser(context, settings, member, time, locale, member.user, reason, silent)
 
-					if (!result) {
-						return
+						if (!result)
+							continue
 					}
 
 					AdminUtils.sendSuccessfullyPunishedMessage(context, reason, true)
@@ -103,7 +110,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 				}
 
 				val hasSilent = settings.sendPunishmentViaDm || settings.sendPunishmentToPunishLog
-				val message = AdminUtils.sendConfirmationMessage(context, user, hasSilent, "mute")
+				val message = AdminUtils.sendConfirmationMessage(context, users, hasSilent, "mute")
 
 				message.onReactionAddByAuthor(context) {
 					if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
@@ -111,10 +118,11 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 
 						message.delete().queue()
 
-						val result = muteUser(context, settings, member, time, locale, user, reason, isSilent)
+						for (member in members) {
+							val result = muteUser(context, settings, member, time, locale, member.user, reason, isSilent)
 
-						if (!result) {
-							return@onReactionAddByAuthor
+							if (!result)
+								continue
 						}
 
 						context.reply(
@@ -212,22 +220,16 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
 								punishLogMessage,
-								listOf(user),
+								listOf(user, context.guild),
 								context.guild,
 								mutableMapOf(
-										"reason" to reason,
-										"punishment" to locale.toNewLocale()["commands.moderation.mute.punishAction"],
-										"staff" to context.userHandle.name,
-										"@staff" to context.userHandle.asMention,
-										"staff-discriminator" to context.userHandle.discriminator,
-										"staff-avatar-url" to context.userHandle.effectiveAvatarUrl,
-										"staff-id" to context.userHandle.id,
 										"duration" to if (delay != null) {
 											DateUtils.formatMillis(delay, locale)
 										} else {
 											locale.toNewLocale()["commands.moderation.mute.forever"]
 										}
-								)
+								) + AdminUtils.getStaffCustomTokens(context.userHandle)
+										+ AdminUtils.getPunishmentCustomTokens(locale.toNewLocale(), reason, "${LOCALE_PREFIX}.mute")
 						)
 
 						message?.let {
@@ -416,7 +418,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 					return
 				}
 
-				val member = guild.getMemberById(userId)
+				val member = guild.retrieveMemberById(userId).complete()
 
 				transaction(Databases.loritta) {
 					Mutes.deleteWhere {
@@ -431,7 +433,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 				return
 			}
 
-			val currentMember = currentGuild.getMemberById(userId)
+			val currentMember = currentGuild.retrieveMemberById(userId).complete()
 
 			if (currentMember == null) {
 				logger.warn("Ignorando job removal de $userId em $guildId - Motivo: Ela não está mais no servidor!")
@@ -468,7 +470,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 						return@launch
 					}
 
-					val member = guild.getMemberById(userId) ?: return@launch
+					val member = guild.retrieveMemberById(userId).complete() ?: return@launch
 
 					val settings = AdminUtils.retrieveModerationInfo(loritta.getOrCreateServerConfig(guildId))
 

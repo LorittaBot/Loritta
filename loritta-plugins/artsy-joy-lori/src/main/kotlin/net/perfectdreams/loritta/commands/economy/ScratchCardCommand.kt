@@ -21,6 +21,8 @@ import net.perfectdreams.loritta.api.commands.*
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.tables.Raspadinhas
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.PaymentUtils
+import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.sum
@@ -144,8 +146,8 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 				return@withLock
 			}
 
-			transaction(Databases.loritta) {
-				profile.money -= 125
+			loritta.newSuspendedTransaction {
+				profile.takeSonhosNested(125)
 			}
 
 			logger.info { "User ${context.userHandle.idLong} bought one raspadinha ticket!" }
@@ -341,11 +343,11 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 			}
 
 			if (prize == 0) {
-				transaction(Databases.loritta) {
+				loritta.newSuspendedTransaction {
 					if (1000 > profile.money) {
 						profile.money = 0
 					} else {
-						profile.money -= 1000
+						profile.takeSonhosNested(1000)
 					}
 				}
 
@@ -356,8 +358,8 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 				)
 			} else {
 				logger.info { "User ${context.userHandle.idLong} won $prize sonhos in the raspadinha! Combos: Lori: $loriCombos; Pantufa: $pantufaCombos; Gabi: $gabiCombos; Dokyo: $dokyoCombos; Gessy: $gessyCombos; Tobias: $tobiasCombos" }
-				transaction(Databases.loritta) {
-					profile.money += prize
+				loritta.newSuspendedTransaction {
+					profile.addSonhosNested(prize.toLong())
 				}
 				context.reply(
 						LoriReply(

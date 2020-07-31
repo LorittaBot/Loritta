@@ -14,7 +14,7 @@ class HelpingHandsPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlug
 		loritta as LorittaDiscord
 
 		registerCommand(CoinFlipBetCommand.command(this, loritta))
-		registerCommand(RepListCommand.command(this, loritta));
+		registerCommand(RepListCommand.create(loritta))
 
 		if (loritta.isMaster)
 			launch(DailyInactivityTaxUtils.createAutoInactivityTask())

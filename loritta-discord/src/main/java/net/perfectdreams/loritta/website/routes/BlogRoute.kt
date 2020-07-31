@@ -13,6 +13,8 @@ import kotlin.reflect.KTypeProjection
 import kotlin.reflect.full.createType
 
 class BlogRoute(loritta: LorittaDiscord) : LocalizedRoute(loritta, "/blog") {
+	override val isMainClusterOnlyRoute = true
+
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
 		val html = ScriptingUtils.evaluateWebPageFromTemplate(
 				File(

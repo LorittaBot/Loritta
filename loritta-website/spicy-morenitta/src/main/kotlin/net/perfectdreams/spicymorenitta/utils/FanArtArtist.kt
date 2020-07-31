@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class FanArtArtist constructor(
         val id: String,
+        val aboutMe: String? = null,
         val info: Info,
         val user: User? = null,
         val fanArts: List<FanArt>

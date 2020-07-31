@@ -1,11 +1,8 @@
 package net.perfectdreams.loritta.website.routes.api.v1.user
 
-import com.mrpowergamerbr.loritta.profile.NostalgiaProfileCreator
+import com.mrpowergamerbr.loritta.dao.Background
 import com.mrpowergamerbr.loritta.profile.ProfileCreator
 import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
-import com.mrpowergamerbr.loritta.utils.WebsiteUtils
-import com.mrpowergamerbr.loritta.website.LoriWebCode
-import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.ApplicationCall
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
@@ -13,7 +10,6 @@ import io.ktor.response.respondBytes
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
-import net.perfectdreams.loritta.website.utils.extensions.lorittaSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
@@ -21,20 +17,27 @@ import javax.imageio.ImageIO
 
 class GetSelfUserProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/@me/profile") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
-		val session = call.lorittaSession
-		val userIdentification = session.getUserIdentification(call, false)
-				?: throw WebsiteAPIException(HttpStatusCode.Unauthorized,
-						WebsiteUtils.createErrorPayload(
-								LoriWebCode.UNAUTHORIZED
-						)
-				)
 		val profile = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(userIdentification.id)
 		val settings = loritta.newSuspendedTransaction {
 			profile.settings
 		}
 
+		val withBackground = call.parameters["withBackground"]
+
+		val background = if (withBackground == "userSettings") {
+			com.mrpowergamerbr.loritta.utils.loritta.getUserProfileBackground(profile)
+		} else if (withBackground != null) {
+			loritta.getUserProfileBackground(loritta.newSuspendedTransaction { Background.findById(withBackground) })
+		} else null
+
+		val internalTypeName = call.parameters["type"] ?: "default"
+
+		val profileDesign = loritta.profileDesignManager.designs.first {
+			it.internalType == internalTypeName
+		}
+
 		val locale = loritta.getLegacyLocaleById("default")
-		val creator = NostalgiaProfileCreator::class.java
+		val creator = profileDesign.clazz
 		val profileCreator = creator.constructors.first().newInstance() as ProfileCreator
 
 		val userId = userIdentification.id.toLong()
@@ -64,7 +67,7 @@ class GetSelfUserProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				null,
 				listOf(),
 				locale,
-				BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB),
+				background ?: BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB),
 				settings.aboutMe ?: "???",
 				null
 		)

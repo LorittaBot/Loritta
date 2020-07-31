@@ -36,7 +36,6 @@ include(":loritta-plugins:profile-designs")
 include(":loritta-plugins:api-only-test")
 include(":loritta-plugins:rosbife")
 include(":loritta-plugins:funfunfun")
-include(":loritta-plugins:funky")
 include(":loritta-plugins:parallax-routes")
 include(":loritta-plugins:donators-ostentation")
 include(":loritta-plugins:staff-lorittaban")
@@ -47,14 +46,21 @@ include(":loritta-plugins:server-support")
 include(":loritta-plugins:mal-commands")
 include(":loritta-plugins:lori-guild-stuff")
 include(":loritta-plugins:akilori")
+include(":loritta-plugins:lori-broker")
 
 // Website
 include(":loritta-website")
 // include(":loritta-website:sweet-morenitta")
 include(":loritta-website:spicy-morenitta")
 include(":loritta-website:lotrunfo-server")
-include(":parallax-code-server")
-include(":shard-controller")
+include(":loritta-website:embed-renderer")
+include(":loritta-website:embed-editor-crosswindow")
+include(":loritta-website:embed-editor")
+
+// Parallax Code Server
+include(":parallax-kotlin:parallax-code-api")
+include(":parallax-kotlin:parallax-code-server")
+include(":parallax-kotlin:parallax-code-executor")
 
 // Watchdoggo
 include(":loritta-watchdog-bot")
@@ -62,3 +68,4 @@ include(":loritta-watchdog-bot")
 // Misc
 include(":temmie-discord-auth")
 include(":loritta-premium")
+include(":shard-controller")

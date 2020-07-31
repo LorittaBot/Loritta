@@ -6,7 +6,6 @@ import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
 import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.network.Databases
@@ -206,7 +205,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 			if (arg0 == "inspect_donations" && arg1 != null) {
 				val id = arg1.toLong()
 
-				val moneyFromDonations = loritta.getActiveMoneyFromDonations(id)
+				val moneyFromDonations = loritta.getActiveMoneyFromDonationsAsync(id)
 
 				context.reply(
 						LoriReply(

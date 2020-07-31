@@ -3,23 +3,19 @@ package net.perfectdreams.loritta.plugin.serversupport
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-import com.mrpowergamerbr.loritta.utils.KtsObjectLoader
-import com.mrpowergamerbr.loritta.utils.LorittaPermission
-import com.mrpowergamerbr.loritta.utils.LorittaUser
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.editMessageIfContentWasChanged
-import com.mrpowergamerbr.loritta.utils.lorittaShards
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import mu.KotlinLogging
+import net.dv8tion.jda.api.MessageBuilder
+import net.dv8tion.jda.api.entities.Message
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
-import net.perfectdreams.loritta.plugin.serversupport.modules.AddReactionsToChannelsModule
+import net.perfectdreams.loritta.plugin.serversupport.modules.PleaseDontMentionStaffModule
 import net.perfectdreams.loritta.plugin.serversupport.modules.ServerSupportModule
 import net.perfectdreams.loritta.plugin.serversupport.responses.FakeMessage
 import net.perfectdreams.loritta.plugin.serversupport.responses.LorittaResponse
@@ -61,8 +57,72 @@ class ServerSupportPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlu
 			System.setProperty("kotlin.script.classpath", propClassPath)
 
 			addMessageReceivedModule(ServerSupportModule(this))
-			addMessageReceivedModule(AddReactionsToChannelsModule(this))
+			addMessageReceivedModule(PleaseDontMentionStaffModule(this))
 			loadResponsesAndUpdateMessages(loritta)
+
+			launch {
+				while (true) {
+					val channel = lorittaShards.getGuildById(297732013006389252L)
+							?.getTextChannelById(398987569485971466L)
+
+					if (channel != null) {
+						val lastSentMessage = channel.history.retrievePast(1)
+								.await()
+								.firstOrNull()
+
+						var resend = true
+						if (lastSentMessage != null) {
+							if (lastSentMessage.author.idLong == 395935916952256523L && lastSentMessage.contentRaw.contains("LEIA ANTES DE PERGUNTAR ALGO!")) {
+								resend = false
+							} else {
+								// last message check
+								val diff = System.currentTimeMillis() - (lastSentMessage.timeCreated.toEpochSecond() * 1000)
+
+								resend = diff >= 300000L // Only resend after five minutes since the last message
+							}
+						}
+
+						if (resend) {
+							val replies = listOf(
+									LoriReply(
+											"<a:rat_jam:720643637033304442> **LEIA ANTES DE PERGUNTAR ALGO!** <a:rat_jam:720643637033304442>",
+											prefix = "<:lori_nice:726845783344939028>",
+											mentionUser = false
+									),
+									LoriReply(
+											"**Se for uma dúvida sobre a Loritta:** Veja se a resposta da sua pergunta está no <#574308431029207060>! Caso não esteja lá, envie a sua pergunta aqui e, na mensagem, mencione o <@&399301696892829706>, nós iremos tentar te ajudar o mais breve possível!",
+											"<:lori_ok:731873534036541500>",
+											mentionUser = false
+									),
+									LoriReply(
+											"**Lembre-se que aqui é o *suporte da Loritta*:** Nós não iremos te ajudar com problemas diversos (por exemplo: problemas em outros bots, problemas no Discord, etc)",
+											"<a:lori_fight:731871119400894525>",
+											mentionUser = false
+									),
+									LoriReply(
+											"**Se você irá perguntar \"aaaah lori caiu <:smol_lori_putassa:395010059157110785>\":** Veja o <#610094449737072660> e as <#302976807135739916> para mais informações!",
+											"<:smol_lori_putassa:395010059157110785>",
+											mentionUser = false
+									),
+									LoriReply(
+											"**Se você irá perguntar se algo foi mudado/adicionado/removido:** Veja as <#302976807135739916> para saber!",
+											"<a:lori_dabbing:727888868711334287>",
+											mentionUser = false
+									)
+							)
+
+							channel.sendMessage(
+									MessageBuilder()
+											.setAllowedMentions(listOf(Message.MentionType.USER, Message.MentionType.CHANNEL, Message.MentionType.EMOTE))
+											.setContent(replies.joinToString("\n", transform = { it.build() } ))
+											.build()
+							).await()
+						}
+					}
+
+					delay(60_000)
+				}
+			}
 		}
 	}
 

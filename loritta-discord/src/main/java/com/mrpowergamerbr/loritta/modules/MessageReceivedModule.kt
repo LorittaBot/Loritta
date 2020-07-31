@@ -15,7 +15,7 @@ interface MessageReceivedModule {
 	 * @param legacyServerConfig the server configuration
 	 * @return             if the event should be handled
 	 */
-	fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean
+    suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean
 
 	/**
 	 * What the module should do when it is executed

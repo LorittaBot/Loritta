@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.website
 
-import com.google.common.collect.Lists
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -41,6 +41,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils
 import java.io.File
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
 import kotlin.reflect.full.createType
 
 /**
@@ -54,6 +55,14 @@ class LorittaWebsite(val loritta: Loritta) {
 		val versionPrefix = "/v2"
 		private val logger = KotlinLogging.logger {}
 		private val TimeToProcess = AttributeKey<Long>("TimeToProcess")
+		val cachedFanArtThumbnails = Caffeine.newBuilder()
+				.expireAfterAccess(1, TimeUnit.HOURS)
+				.build<String, CachedThumbnail>()
+
+		class CachedThumbnail(
+				val type: ContentType,
+				val thumbnailBytes: ByteArray
+		)
 	}
 
 	val pathCache = ConcurrentHashMap<File, Any>()
@@ -207,7 +216,7 @@ class LorittaWebsite(val loritta: Loritta) {
 					if (route is LocalizedRoute) {
 						get(route.originalPath) {
 							val acceptLanguage = call.request.header("Accept-Language") ?: "en-US"
-							val ranges = Lists.reverse<Locale.LanguageRange>(Locale.LanguageRange.parse(acceptLanguage))
+							val ranges = Locale.LanguageRange.parse(acceptLanguage).reversed()
 							var localeId = "en-us"
 							for (range in ranges) {
 								localeId = range.range.toLowerCase()

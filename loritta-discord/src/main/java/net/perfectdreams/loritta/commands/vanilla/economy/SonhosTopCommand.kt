@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.commands.vanilla.economy
 
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Profiles
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.utils.image.JVMImage
@@ -9,7 +8,6 @@ import net.perfectdreams.loritta.platform.discord.commands.discordCommand
 import net.perfectdreams.loritta.utils.RankingGenerator
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
 
 object SonhosTopCommand {
 	fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("sonhos top", "atm top"), CommandCategory.ECONOMY) {
@@ -24,7 +22,7 @@ object SonhosTopCommand {
 			if (page == null)
 				page = 0
 
-			val userData = transaction(Databases.loritta) {
+			val userData = loritta.newSuspendedTransaction {
 				Profiles.selectAll().orderBy(Profiles.money, SortOrder.DESC).limit(5, page * 5)
 						.toList()
 			}

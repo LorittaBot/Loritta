@@ -35,7 +35,9 @@ class ConfigureWelcomerRoute(loritta: LorittaDiscord) : RequiresGuildAuthLocaliz
 						welcomerConfig?.joinMessage ?: "\uD83D\uDC49 {@user} entrou no servidor!",
 						welcomerConfig?.removeMessage ?: "\uD83D\uDC48 {nickname} saiu do servidor!",
 						welcomerConfig?.joinPrivateMessage ?: "Obrigado por entrar na {guild} {@user}! Espero que você curta o nosso servidor!",
-						welcomerConfig?.bannedMessage ?: "{user} foi banido do servidor!"
+						welcomerConfig?.bannedMessage ?: "{user} foi banido do servidor!",
+						welcomerConfig?.deleteJoinMessagesAfter ?: 0L,
+						welcomerConfig?.deleteRemoveMessagesAfter ?: 0L
 				)
 		)
 
@@ -55,7 +57,9 @@ class ConfigureWelcomerRoute(loritta: LorittaDiscord) : RequiresGuildAuthLocaliz
 				val joinMessage: String,
 				val removeMessage: String,
 				val joinPrivateMessage: String,
-				val bannedMessage: String
+				val bannedMessage: String,
+				val deleteJoinMessagesAfter: Long,
+				val deleteRemoveMessagesAfter: Long
 		)
 	}
 }

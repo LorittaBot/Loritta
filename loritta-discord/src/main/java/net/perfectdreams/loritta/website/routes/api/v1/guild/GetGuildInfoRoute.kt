@@ -32,7 +32,7 @@ class GetGuildInfoRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationRout
 						"count" to jsonObject(
 								"textChannels" to guild.textChannelCache.size(),
 								"voiceChannels" to guild.voiceChannelCache.size(),
-								"members" to guild.memberCache.size(),
+								"members" to guild.memberCount,
 								"onlineMembers" to guild.memberCache.filter { it.onlineStatus == OnlineStatus.ONLINE }.size,
 								"idleMembers" to guild.memberCache.filter { it.onlineStatus == OnlineStatus.IDLE }.size,
 								"doNotDisturbMembers" to guild.memberCache.filter { it.onlineStatus == OnlineStatus.DO_NOT_DISTURB }.size,

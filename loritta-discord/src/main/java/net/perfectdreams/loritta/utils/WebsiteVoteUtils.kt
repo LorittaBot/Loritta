@@ -1,17 +1,16 @@
 package net.perfectdreams.loritta.utils
 
 import com.mrpowergamerbr.loritta.dao.DonationKey
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.dao.BotVote
 import net.perfectdreams.loritta.tables.BotVotes
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 
 object WebsiteVoteUtils {
@@ -24,7 +23,7 @@ object WebsiteVoteUtils {
 	 * @param websiteSource where the vote originated from
 	 */
 	suspend fun addVote(userId: Long, websiteSource: WebsiteVoteSource) {
-		transaction(Databases.loritta) {
+		loritta.newSuspendedTransaction {
 			BotVote.new {
 				this.userId = userId
 				this.websiteSource = websiteSource
@@ -32,7 +31,7 @@ object WebsiteVoteUtils {
 			}
 		}
 
-		transaction(Databases.loritta) {
+		loritta.newSuspendedTransaction {
 			Profiles.update({ Profiles.id eq userId }) {
 				with(SqlExpressionBuilder) {
 					it.update(money, money + 1200L)
@@ -40,15 +39,15 @@ object WebsiteVoteUtils {
 			}
 		}
 
-		val voteCount = transaction(Databases.loritta) {
+		val voteCount = loritta.newSuspendedTransaction {
 			BotVotes.select { BotVotes.userId eq userId }.count()
 		}
 
-		val user = lorittaShards.getUserById(userId)
+		val user = lorittaShards.retrieveUserById(userId)
 
 		if (voteCount % 60 == 0L) {
 			// Can give reward!
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				DonationKey.new {
 					this.userId = userId
 					this.expiresAt = System.currentTimeMillis() + Constants.ONE_MONTH_IN_MILLISECONDS

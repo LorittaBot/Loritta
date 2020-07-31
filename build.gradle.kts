@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val loriVersion   = "2020-SNAPSHOT"
 val kotlinVersion = "1.3.70"
 val ktorVersion   = "1.3.1"
-val jdaVersion    = "4.1.1_154"
+val jdaVersion    = "4.2.0_171"
 
 println("Compiling Loritta $loriVersion")
 println("Kotlin Version: $kotlinVersion")
@@ -28,7 +28,8 @@ allprojects {
                         println("Building fat jar for ${project.name}...")
                         val addToFinalJarSourceProjects = arrayOf(
                                 "loritta-api-",
-                                "loritta-serializable-commons-"
+                                "loritta-serializable-commons-",
+                                "parallax-code-api-"
                         )
 
                         archiveBaseName.set("${project.name}-fat")
@@ -85,6 +86,7 @@ allprojects {
 
         maven("https://dl.bintray.com/kotlin/kotlin-dev/")
         maven("https://dl.bintray.com/kotlin/kotlin-eap/")
+        maven("https://dl.bintray.com/kotlin/kotlinx.html")
         maven("https://jcenter.bintray.com")
         maven("https://oss.sonatype.org/content/repositories/snapshots/")
         maven("https://repo.perfectdreams.net/")

@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.website.routes.api.v1.guild
 import com.github.salomonbrys.kotson.*
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.utils.MessageUtils
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriWebCode
@@ -97,7 +98,7 @@ class PostSendMessageGuildRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthR
 						)
 				)
 
-			val message = channel.sendMessage(message).complete()
+			val message = channel.sendMessage(message).await()
 
 			call.respondJson(jsonObject("messageId" to message.id), HttpStatusCode.Created)
 			return
@@ -111,7 +112,7 @@ class PostSendMessageGuildRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthR
 			)
 
 			try {
-				val message = user.openPrivateChannel().complete().sendMessage(message).complete()
+				val message = user.openPrivateChannel().await().sendMessage(message).await()
 
 				call.respondJson(jsonObject("messageId" to message.id), HttpStatusCode.Created)
 				return

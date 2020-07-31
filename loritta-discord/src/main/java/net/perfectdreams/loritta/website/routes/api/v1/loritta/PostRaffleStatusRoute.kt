@@ -14,6 +14,7 @@ import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.SonhosTransaction
+import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
@@ -60,15 +61,12 @@ class PostRaffleStatusRoute(loritta: LorittaDiscord) : RequiresAPIAuthentication
 
 			if (lorittaProfile.money >= requiredCount) {
 				loritta.newSuspendedTransaction {
-					lorittaProfile.money -= requiredCount
-
-					SonhosTransaction.insert {
-						it[givenBy] = lorittaProfile.id.value
-						it[receivedBy] = null
-						it[givenAt] = System.currentTimeMillis()
-						it[SonhosTransaction.quantity] = requiredCount.toBigDecimal()
-						it[reason] = SonhosPaymentReason.RAFFLE
-					}
+					lorittaProfile.takeSonhosNested(requiredCount)
+					PaymentUtils.addToTransactionLogNested(
+							requiredCount,
+							SonhosPaymentReason.RAFFLE,
+							givenBy = lorittaProfile.id.value
+					)
 				}
 
 				for (i in 0 until quantity) {

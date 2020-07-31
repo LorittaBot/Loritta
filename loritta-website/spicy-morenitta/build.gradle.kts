@@ -12,12 +12,17 @@ repositories {
 kotlin {
 	target {
 		browser {
+			dceTask {
+				keep("ktor-ktor-io.\$\$importsForInline\$\$.ktor-ktor-io.io.ktor.utils.io")
+			}
 		}
 	}
 
 	sourceSets["main"].dependencies {
 		implementation(project(":loritta-api"))
 		implementation(project(":loritta-serializable-commons"))
+		implementation(project(":loritta-website:embed-renderer"))
+		implementation(project(":loritta-website:embed-editor-crosswindow"))
 		// Hacky workaround due to "Can't resolve xyz" dependency
 		// https://github.com/Kotlin/kotlinx-io/issues/57
 		api(npm("text-encoding"))

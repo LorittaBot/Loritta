@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.platform.discord.commands
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.localized
@@ -20,9 +19,7 @@ import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.utils.CommandUtils
 import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.FeatureFlags
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
 
@@ -149,7 +146,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 				}
 
 				var cooldown = command.cooldown
-				val donatorPaid = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonations(ev.author.idLong)
+				val donatorPaid = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonationsAsync(ev.author.idLong)
 				val guildId = ev.guild?.idLong
 				val guildPaid = guildId?.let { serverConfig.getActiveDonationKeysValue() } ?: 0.0
 
@@ -310,7 +307,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 					}
 				} */
 
-				transaction(Databases.loritta) {
+				loritta.newSuspendedTransaction {
 					lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
 
 					ExecutedCommandsLog.insert {
@@ -334,10 +331,9 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 
 				if (!isPrivateChannel && ev.guild != null) {
 					if (ev.guild.selfMember.hasPermission(ev.textChannel!!, Permission.MESSAGE_MANAGE) && (serverConfig.deleteMessageAfterCommand)) {
-						ev.message.textChannel.retrieveMessageById(ev.messageId).queue {
-							// Nós iremos pegar a mensagem novamente, já que talvez ela tenha sido deletada
-							it.delete().queue()
-						}
+						ev.message.textChannel.deleteMessageById(ev.messageId).queue({}, {
+							// We don't care if we weren't able to delete the message because it was already deleted
+						})
 					}
 				}
 

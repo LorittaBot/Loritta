@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.website.routes.api.v1
 
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.ApplicationCall
@@ -45,7 +46,7 @@ abstract class RequiresAPIGuildAuthRoute(loritta: LorittaDiscord, originalDashbo
 		val serverConfig = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateServerConfig(guildId.toLong()) // get server config for guild
 
 		val id = userIdentification.id
-		val member = jdaGuild.getMemberById(id)
+		val member = jdaGuild.retrieveMemberById(id).await()
 		var canAccessDashboardViaPermission = false
 
 		if (member != null) {

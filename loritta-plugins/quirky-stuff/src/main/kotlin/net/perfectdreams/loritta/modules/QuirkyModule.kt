@@ -16,7 +16,7 @@ import net.perfectdreams.loritta.QuirkyConfig
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class QuirkyModule(val config: QuirkyConfig) : MessageReceivedModule {
-    override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
+    override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
         val miscellaneousConfig = transaction(Databases.loritta) {
             serverConfig.miscellaneousConfig
         }

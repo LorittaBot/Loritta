@@ -50,25 +50,28 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val user = AdminUtils.checkForUser(context) ?: return
+			val (users, rawReason) = AdminUtils.checkAndRetrieveAllValidUsersFromMessages(context) ?: return
 
-			val member = context.guild.getMember(user)
+			for (user in users) {
+				val member = context.guild.getMember(user)
 
-			if (member != null) {
-				context.reply(
-						LoriReply(
-								locale.toNewLocale()["$LOCALE_PREFIX.unban.userIsInTheGuild"],
-								Constants.ERROR
-						)
-				)
-				return
+				if (member != null) {
+					context.reply(
+							LoriReply(
+									locale.toNewLocale()["$LOCALE_PREFIX.unban.userIsInTheGuild"],
+									Constants.ERROR
+							)
+					)
+					return
+				}
 			}
 
-			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context) ?: return
+			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context, rawReason) ?: return
 			val settings = AdminUtils.retrieveModerationInfo(context.config)
 
 			val banCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
-				unban(settings, context.guild, context.userHandle, locale, user, reason, isSilent)
+				for (user in users)
+					unban(settings, context.guild, context.userHandle, locale, user, reason, isSilent)
 
 				message?.delete()?.queue()
 
@@ -86,7 +89,7 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 			}
 
 			val hasSilent = settings.sendPunishmentViaDm || settings.sendPunishmentToPunishLog
-			val message = AdminUtils.sendConfirmationMessage(context, user, hasSilent, "unban")
+			val message = AdminUtils.sendConfirmationMessage(context, users, hasSilent, "unban")
 
 			message.onReactionAddByAuthor(context) {
 				if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
@@ -121,18 +124,12 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
 								punishLogMessage,
-								listOf(user),
+								listOf(user, guild),
 								guild,
 								mutableMapOf(
-										"reason" to reason,
-										"punishment" to locale.toNewLocale()["$LOCALE_PREFIX.unban.punishAction"],
-										"staff" to punisher.name,
-										"@staff" to punisher.asMention,
-										"staff-discriminator" to punisher.discriminator,
-										"staff-avatar-url" to punisher.effectiveAvatarUrl,
-										"staff-id" to punisher.id,
 										"duration" to locale.toNewLocale()["$LOCALE_PREFIX.mute.forever"]
-								)
+								) + AdminUtils.getStaffCustomTokens(punisher)
+										+ AdminUtils.getPunishmentCustomTokens(locale.toNewLocale(), reason, "${LOCALE_PREFIX}.unban")
 						)
 
 						message?.let {

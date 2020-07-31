@@ -3,16 +3,21 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.stripCodeMarks
+import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.WarnAction
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.WarnActions
+import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.Placeholders
 import net.perfectdreams.loritta.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
@@ -60,6 +65,48 @@ object AdminUtils {
 
 		return warnActions
 	}
+
+	suspend fun checkAndRetrieveAllValidUsersFromMessages(context: CommandContext): UserMatchesResult? {
+		val split = context.rawArgs
+		var matchedCount = 0
+
+		val validUsers = mutableListOf<User>()
+		for (input in split) {
+			// We don't want to query via other means, this would cause issues with Loritta detecting users as messages
+			val shouldUseExtensiveMatching = validUsers.isEmpty()
+
+			val matchedUser = DiscordUtils.extractUserFromString(
+					input,
+					context.message.mentionedUsers,
+					context.guild,
+					extractUserViaEffectiveName = shouldUseExtensiveMatching,
+					extractUserViaUsername = shouldUseExtensiveMatching
+			)
+
+			if (matchedUser != null) {
+				matchedCount++
+				validUsers.add(matchedUser)
+			}
+			else break
+		}
+
+		if (validUsers.isEmpty()) {
+			context.reply(
+					LoriReply(
+							context.locale["commands.userDoesNotExist", "`${context.rawArgs[0].stripCodeMarks()}`"],
+							Emotes.LORI_HM
+					)
+			)
+			return null
+		}
+
+		return UserMatchesResult(validUsers, split.drop(matchedCount).joinToString(" "))
+	}
+
+	data class UserMatchesResult(
+			val users: List<User>,
+			val reason: String
+	)
 
 	suspend fun checkForUser(context: CommandContext): User? {
 		val user = context.getUserAt(0)
@@ -115,6 +162,34 @@ object AdminUtils {
 			return false
 		}
 		return true
+	}
+
+	suspend fun sendConfirmationMessage(context: CommandContext, users: List<User>, hasSilent: Boolean, type: String): Message {
+		val str = context.locale["${LOCALE_PREFIX}.readyToPunish", context.locale["${LOCALE_PREFIX}.$type.punishName"], users.joinToString { it.asMention }, users.joinToString { it.asTag }, users.joinToString { it.id }]
+
+		val replies = mutableListOf(
+				LoriReply(
+						str,
+						"⚠"
+				)
+		)
+
+		if (hasSilent) {
+			replies += LoriReply(
+					context.locale["${LOCALE_PREFIX}.silentTip"],
+					"\uD83D\uDC40",
+					mentionUser = false
+			)
+		}
+
+		if (!context.config.getUserData(context.userHandle.idLong).quickPunishment) {
+			replies += LoriReply(
+					context.locale["${LOCALE_PREFIX}.skipConfirmationTip", "`${context.config.commandPrefix}quickpunishment`"],
+					mentionUser = false
+			)
+		}
+
+		return context.reply(*replies.toTypedArray())
 	}
 
 	suspend fun sendConfirmationMessage(context: CommandContext, user: User, hasSilent: Boolean, type: String): Message {
@@ -206,11 +281,8 @@ object AdminUtils {
 		return messageConfig?.get(ModerationPunishmentMessagesConfig.punishLogMessage) ?: settings.punishLogMessage
 	}
 
-	suspend fun getOptions(context: CommandContext): AdministrationOptions? {
-		var rawArgs = context.rawArgs
-		rawArgs = rawArgs.remove(0) // remove o usuário
-
-		var reason = rawArgs.joinToString(" ")
+	suspend fun getOptions(context: CommandContext, rawReason: String): AdministrationOptions? {
+		var reason = rawReason
 
 		val pipedReason = reason.split("|")
 
@@ -263,6 +335,28 @@ object AdminUtils {
 
 		return AdministrationOptions(reason, skipConfirmation, silent, delDays)
 	}
+
+	fun getStaffCustomTokens(punisher: User) = mapOf(
+			Placeholders.STAFF_NAME_SHORT.name to punisher.name,
+			Placeholders.STAFF_NAME.name to punisher.name,
+			Placeholders.STAFF_MENTION.name to punisher.asMention,
+			Placeholders.STAFF_DISCRIMINATOR.name to punisher.discriminator,
+			Placeholders.STAFF_AVATAR_URL.name to punisher.effectiveAvatarUrl,
+			Placeholders.STAFF_ID.name to punisher.id,
+			Placeholders.STAFF_TAG.name to punisher.asTag,
+
+			Placeholders.Deprecated.STAFF_DISCRIMINATOR.name to punisher.discriminator,
+			Placeholders.Deprecated.STAFF_AVATAR_URL.name to punisher.effectiveAvatarUrl,
+			Placeholders.Deprecated.STAFF_ID.name to punisher.id
+	)
+
+	fun getPunishmentCustomTokens(locale: BaseLocale, reason: String, typePrefix: String) = mapOf(
+			Placeholders.PUNISHMENT_REASON.name to reason,
+			Placeholders.PUNISHMENT_REASON_SHORT.name to reason,
+
+			Placeholders.PUNISHMENT_TYPE.name to locale["$typePrefix.punishAction"],
+			Placeholders.PUNISHMENT_TYPE_SHORT.name to locale["$typePrefix.punishAction"]
+	)
 
 	data class AdministrationOptions(val reason: String, val skipConfirmation: Boolean, val silent: Boolean, val delDays: Int)
 	data class ModerationConfigSettings(

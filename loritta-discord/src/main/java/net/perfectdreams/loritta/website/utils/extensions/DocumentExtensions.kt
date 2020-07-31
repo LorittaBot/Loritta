@@ -64,7 +64,7 @@ suspend fun ApplicationCall.respondHtml(html: String, status: HttpStatusCode? = 
  */
 val ApplicationRequest.trueIp: String get() {
 	val forwardedForHeader = this.header("X-Forwarded-For")
-	return forwardedForHeader?.split(", ")?.first() ?: this.local.remoteHost
+	return forwardedForHeader?.split(",")?.map { it.trim() }?.first() ?: this.local.remoteHost
 }
 
 fun ApplicationCall.legacyVariables(locale: BaseLocale): MutableMap<String, Any?> {

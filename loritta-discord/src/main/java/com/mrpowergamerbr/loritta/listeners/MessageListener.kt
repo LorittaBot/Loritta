@@ -17,7 +17,10 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.ChannelType
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.MessageType
+import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent
@@ -30,7 +33,6 @@ import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.utils.Emotes
 import org.apache.commons.text.similarity.LevenshteinDistance
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
@@ -150,13 +152,13 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				start = System.nanoTime()
 
-				if (chance(25.0) && event.guild.selfMember.hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI) && isMentioningMe(event.message))
-					event.message.addReaction("smol_lori_putassa_ping:397748526362132483").queue()
-
 				logIfEnabled(enableProfiling) { "Checking user mention took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
 				if (isMentioningOnlyMe(event.message.contentRaw)) {
+					if (chance(25.0))
+						event.message.addReaction("smol_lori_putassa_ping:397748526362132483").queue()
+
 					var response = legacyLocale["MENTION_RESPONSE", member.asMention, serverConfig.commandPrefix]
 
 					if (lorittaUser.hasPermission(LorittaPermission.IGNORE_COMMANDS)) {
@@ -506,14 +508,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	 * @returns if the message is mentioning only me
 	 */
 	fun isMentioningOnlyMe(contentRaw: String): Boolean = contentRaw.replace("!", "").trim() == "<@${loritta.discordConfig.discord.clientId}>"
-
-	/**
-	 * Checks if the message mentions me
-	 *
-	 * @param message the message
-	 * @returns if the message is mentioning me
-	 */
-	fun isMentioningMe(message: Message): Boolean = message.isMentioned(message.guild.selfMember)
 
 	/**
 	 * Checks if the owner of the guild is banned and, if true, makes me quit the server

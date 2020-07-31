@@ -8,7 +8,6 @@ import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Background
 import com.mrpowergamerbr.loritta.dao.ServerConfig
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
@@ -27,7 +26,6 @@ import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.config.types.ConfigTransformers
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.text.MessageFormat
 import kotlin.collections.component1
 import kotlin.collections.component2
@@ -121,9 +119,9 @@ object WebsiteUtils {
 				"name" to guild.name
 		)
 
-		val selfMember = WebsiteUtils.transformToJson(lorittaShards.getUserById(user.id)!!)
+		val selfMember = WebsiteUtils.transformToJson(lorittaShards.retrieveUserById(user.id)!!)
 
-		guildJson["donationConfig"] = transaction(Databases.loritta) {
+		guildJson["donationConfig"] = loritta.newSuspendedTransaction {
 			val donationConfig = serverConfig.donationConfig
 			jsonObject(
 					"customBadge" to (donationConfig?.customBadge ?: false),
@@ -131,7 +129,7 @@ object WebsiteUtils {
 			)
 		}
 
-		guildJson["reactionRoleConfigs"] = transaction(Databases.loritta) {
+		guildJson["reactionRoleConfigs"] = loritta.newSuspendedTransaction {
 			val reactionOptions = ReactionOption.find {
 				ReactionOptions.guildId eq guild.idLong
 			}
@@ -147,7 +145,7 @@ object WebsiteUtils {
 			}.toJsonArray()
 		}
 
-		guildJson["trackedRssFeeds"] = transaction(Databases.loritta) {
+		guildJson["trackedRssFeeds"] = loritta.newSuspendedTransaction {
 			val array = JsonArray()
 
 			TrackedRssFeeds.select {

@@ -1,9 +1,6 @@
 package com.mrpowergamerbr.loritta.utils.networkbans
 
-import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.utils.loritta
 import mu.KotlinLogging
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.ConcurrentHashMap
 
 class ApplyBansTask : Runnable {

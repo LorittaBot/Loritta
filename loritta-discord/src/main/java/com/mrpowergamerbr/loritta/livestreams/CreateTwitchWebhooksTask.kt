@@ -12,6 +12,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedTwitchAccounts
+import net.perfectdreams.loritta.twitch.TwitchAPI
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
@@ -22,6 +23,20 @@ class CreateTwitchWebhooksTask : Runnable {
 	companion object {
 		val lastNotified = Caffeine.newBuilder().expireAfterAccess(12L, TimeUnit.HOURS).build<Long, Long>().asMap()
 		private val logger = KotlinLogging.logger {}
+
+		fun getWebhookRegisteringTwitchApiForUser(userId: Long): TwitchAPI {
+			// Fuck Twitch
+			return when (userId.rem(8)) {
+				7L -> loritta.twitch8
+				6L -> loritta.twitch7
+				5L -> loritta.twitch6
+				4L -> loritta.twitch5
+				3L -> loritta.twitch4
+				2L -> loritta.twitch3
+				1L -> loritta.twitch2
+				else -> loritta.twitch
+			}
+		}
 	}
 
 	var twitchWebhooks = mutableMapOf<Long, TwitchWebhook>()
@@ -78,10 +93,7 @@ class CreateTwitchWebhooksTask : Runnable {
 			val tasks = notCreatedYetChannels.map { userId ->
 				GlobalScope.async(loritta.coroutineDispatcher, start = CoroutineStart.LAZY) {
 					try {
-						val whatApiShouldBeUsed = if (userId.rem(2) == 1L)
-							loritta.twitch2
-						else
-							loritta.twitch
+						val whatApiShouldBeUsed = getWebhookRegisteringTwitchApiForUser(userId)
 
 						// Vamos criar!
 						val code = whatApiShouldBeUsed.makeTwitchApiRequest("https://api.twitch.tv/helix/webhooks/hub", "POST",
@@ -99,7 +111,7 @@ class CreateTwitchWebhooksTask : Runnable {
 							return@async null
 						}
 
-						logger.debug { "$userId's webhook was sucessfully created! ${userId.rem(2)} Currently there is ${webhookCount.incrementAndGet()}/${webhooksToBeCreatedCount} created webhooks!" }
+						logger.debug { "$userId's webhook was sucessfully created! ${userId.rem(8)} Currently there is ${webhookCount.incrementAndGet()}/${webhooksToBeCreatedCount} created webhooks!" }
 
 						return@async Pair(
 								userId,

@@ -1,5 +1,9 @@
 package net.perfectdreams.loritta.plugin.akilori.commands
 
+import com.github.salomonbrys.kotson.array
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.nullString
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.doReactions
 import com.mrpowergamerbr.loritta.utils.extensions.edit
@@ -8,6 +12,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionByAuthor
 import com.mrpowergamerbr.loritta.utils.removeAllFunctions
+import io.ktor.client.request.get
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.perfectdreams.akinatorreapi.AkinatorAnswer
@@ -15,6 +20,7 @@ import net.perfectdreams.akinatorreapi.AkinatorClient
 import net.perfectdreams.akinatorreapi.Region
 import net.perfectdreams.akinatorreapi.payload.CharacterGuess
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
 import net.perfectdreams.loritta.platform.discord.commands.discordCommand
@@ -26,18 +32,40 @@ object AkinatorCommand {
 	private const val CHARACTER_PROBABILITY = 0.85
 
 	fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("akinator"), CommandCategory.FUN) {
+		description { it["commands.fun.akinator.description"] }
+
 		executesDiscord {
 			// TODO: Load correct region
-			val akinator = AkinatorClient(
-					Region(
-							"pt.akinator.com",
-							"srv11.akinator.com:9350"
-					)
-			).apply {
-				this.start()
+			val gameHtmlPage = loritta.http.get<String>("https://pt.akinator.com/")
+
+			val regex = Regex("arrUrlThemesToPlay', (.*)\\);")
+			val result = regex.find(gameHtmlPage)
+
+			if (result != null) {
+				val urlWs = JsonParser.parseString(result.groupValues[1])
+						.array[0]["urlWs"].nullString
+
+				if (urlWs != null) {
+					val akinator = AkinatorClient(
+							Region(
+									"pt.akinator.com",
+									urlWs.removePrefix("https://").removeSuffix("/ws")
+							),
+							childMode = true
+					).apply {
+						this.start()
+					}
+
+					handleAkinator(this, locale, akinator, null, mutableListOf())
+					return@executesDiscord
+				}
 			}
 
-			handleAkinator(this, locale, akinator, null, mutableListOf())
+			reply(
+					LorittaReply(
+							"Deu ruim!"
+					)
+			)
 		}
 	}
 

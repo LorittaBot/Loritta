@@ -22,8 +22,8 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.tables.Requires2FAChecksUsers
 import net.perfectdreams.loritta.tables.SonhosTransaction
+import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.utils.UserPremiumPlans
@@ -70,9 +70,15 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 			val nowOneHourAgo = Instant.now()
 					.atZone(ZoneId.of("America/Sao_Paulo"))
 					.toOffsetDateTime()
-					.apply {
-						if (hour != 0) // If the hour is 0, we would get the hour *one day ago*, which is isn't what we want
-								minusHours(1)
+					.let {
+						if (it.hour != 0) // If the hour is 0, we would get the hour *one day ago*, which is isn't what we want
+							it.minusHours(1)
+						else {
+							it.withHour(0)
+									.withMinute(0)
+									.withSecond(0)
+									.withNano(0)
+						}
 					}
 					.toInstant()
 					.toEpochMilli()
@@ -265,7 +271,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				else -> 1.1
 			}
 
-			val donatorPaid = loritta.getActiveMoneyFromDonations(userIdentification.id.toLong())
+			val donatorPaid = loritta.getActiveMoneyFromDonationsAsync(userIdentification.id.toLong())
 			val plan = UserPremiumPlans.getPlanFromValue(donatorPaid)
 
 			multiplier += plan.dailyMultiplier
@@ -273,58 +279,33 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 			var dailyPayout = RANDOM.nextInt(1800 /* Math.max(555, 555 * (multiplier - 1)) */, ((1800 * multiplier) + 1).toInt()) // 555 (lower bound) -> 555 * sites de votação do PerfectDreams
 			val originalPayout = dailyPayout
 
-			val mutualGuilds = lorittaShards.queryMutualGuildsInAllLorittaClusters(userIdentification.id)
+			val mutualGuilds = discordAuth.getUserGuilds()
 
-			var sponsoredBy: JsonObject? = null
+			var sponsoredBy: TemmieDiscordAuth.Guild? = null
 			var multipliedBy: Double? = null
 			var sponsoredByUserId: Long? = null
 
 			val failedDailyServersInfo = jsonArray()
-			val user =  lorittaShards.retrieveUserById(userIdentification.id)
 
 			loritta.newSuspendedTransaction {
 				// Pegar todos os servidores com sonhos patrocinados
 				val results = (ServerConfigs innerJoin DonationConfigs).select {
-					(ServerConfigs.id inList mutualGuilds.map { it["id"].string.toLong() }) and
+					(ServerConfigs.id inList mutualGuilds.map { it.id.toLong() }) and
 							(DonationConfigs.dailyMultiplier eq true)
 				}
 
 				val serverConfigs = ServerConfig.wrapRows(results)
 
 				var bestServer: ServerConfig? = null
-				var bestServerInfo: JsonObject? = null
+				var bestServerInfo: TemmieDiscordAuth.Guild? = null
 
 				for (pair in serverConfigs.map { Pair(it, it.getActiveDonationKeysValue()) }.filter { ServerPremiumPlans.getPlanFromValue(it.second).dailyMultiplier > 1.0 }.sortedByDescending { it.second  }) {
 					val (config, donationValue) = pair
 					logger.info { "Checking ${config.guildId}" }
 
-					val guild = mutualGuilds.firstOrNull { logger.info { "it[id] = ${it["id"].string.toLong()}" }; it["id"].string.toLong() == config.guildId }?.obj
+					val guild = mutualGuilds.firstOrNull { logger.info { "it[id] = ${it.id.toLong()}" }; it.id.toLong() == config.guildId }
 							?: continue
-					val id = guild["id"].string.toLong()
-
-					val epochMillis = guild["timeJoined"].long
-
-					val requiredTime = if (user?.avatarId == null)
-						1_296_000_000
-					else
-						Constants.ONE_WEEK_IN_MILLISECONDS
-
-					if (epochMillis + requiredTime > System.currentTimeMillis()) { // 15 dias
-						val diff = epochMillis + requiredTime - System.currentTimeMillis()
-						failedDailyServersInfo.add(
-								jsonObject(
-										"guild" to jsonObject(
-												"name" to guild["name"].string,
-												"iconUrl" to guild["iconUrl"].nullString,
-												"id" to guild["id"].string
-										),
-										"type" to DailyGuildMissingRequirement.REQUIRES_MORE_TIME.toString(),
-										"data" to diff,
-										"multiplier" to getDailyMultiplier(donationValue)
-								)
-						)
-						continue
-					}
+					val id = guild.id.toLong()
 
 					val xp = GuildProfile.find { (GuildProfiles.guildId eq id) and (GuildProfiles.userId eq userIdentification.id.toLong()) }.firstOrNull()?.xp
 							?: 0L
@@ -333,9 +314,9 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 						failedDailyServersInfo.add(
 								jsonObject(
 										"guild" to jsonObject(
-												"name" to guild["name"].string,
-												"iconUrl" to guild["iconUrl"].nullString,
-												"id" to guild["id"].string
+												"name" to guild.name,
+												"iconUrl" to guild.icon,
+												"id" to guild.id
 										),
 										"type" to DailyGuildMissingRequirement.REQUIRES_MORE_XP.toString(),
 										"data" to 500 - xp,
@@ -370,15 +351,15 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				val sponsor = jsonObject(
 						"multipliedBy" to multipliedBy,
 						"guild" to jsonObject(
-								"name" to sponsoredBy!!["name"].nullString,
-								"iconUrl" to sponsoredBy!!["iconUrl"].nullString,
-								"id" to sponsoredBy!!["id"].nullString
+								"name" to sponsoredBy!!.name,
+								"iconUrl" to sponsoredBy!!.icon,
+								"id" to sponsoredBy!!.id
 						),
 						"originalPayout" to originalPayout
 				)
 
 				if (sponsoredByUserId != null) {
-					val sponsoredByUser = lorittaShards.retrieveUserById(sponsoredByUserId)
+					val sponsoredByUser = lorittaShards.retrieveUserInfoById(sponsoredByUserId)
 
 					if (sponsoredByUser != null)
 						sponsor["user"] = WebsiteUtils.transformToJson(sponsoredByUser)
@@ -409,15 +390,12 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 					it[Dailies.email] = email
 				}
 
-				lorittaProfile.money += dailyPayout
-
-				SonhosTransaction.insert {
-					it[givenBy] = null
-					it[receivedBy] = lorittaProfile.id.value
-					it[givenAt] = System.currentTimeMillis()
-					it[quantity] = dailyPayout.toBigDecimal()
-					it[reason] = SonhosPaymentReason.DAILY
-				}
+				lorittaProfile.addSonhosNested(dailyPayout.toLong())
+				PaymentUtils.addToTransactionLogNested(
+						dailyPayout.toLong(),
+						SonhosPaymentReason.DAILY,
+						receivedBy = lorittaProfile.id.value
+				)
 			}
 
 			payload["api:code"] = LoriWebCodes.SUCCESS

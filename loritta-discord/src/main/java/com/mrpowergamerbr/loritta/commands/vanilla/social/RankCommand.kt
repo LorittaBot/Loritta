@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.RankingGenerator
 import org.jetbrains.exposed.sql.SortOrder
@@ -37,7 +38,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 		if (page == null)
 			page = 0
 
-		val profiles = transaction(Databases.loritta) {
+		val profiles = loritta.newSuspendedTransaction {
 			GuildProfiles.select {
 				(GuildProfiles.guildId eq context.guild.idLong) and
 						(GuildProfiles.isInGuild eq true)

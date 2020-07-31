@@ -103,7 +103,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 		embed.setColor(Color(255, 179, 43))
 
 		for ((idx, reminder) in visReminders.withIndex()) {
-			embed.appendDescription(Constants.INDEXES[idx] + " ${reminder.content}\n")
+			embed.appendDescription(Constants.INDEXES[idx] + " ${reminder.content.substringIfNeeded(0..100)}\n")
 		}
 
 		val message = context.sendMessage(context.getAsMention(true), embed.build())
@@ -136,7 +136,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 				embed.setThumbnail(guild.iconUrl)
 			}
 
-			embed.setTitle("<a:lori_notification:394165039227207710> ${reminder.content}")
+			embed.setTitle("<a:lori_notification:394165039227207710> ${reminder.content.substringIfNeeded(0..1000)}")
 			embed.appendDescription("**${locale["LEMBRAR_RemindAt"]} ** ${reminder.remindAt.humanize(locale)}\n")
 			embed.appendDescription("**${locale["LEMBRAR_CreatedInGuild"]}** `${guild?.name ?: "Servidor não existe mais..."}`\n")
 			embed.appendDescription("**${locale["LEMBRAR_RemindInTextChannel"]}** ${textChannel?.asMention ?: "Canal de texto não existe mais..."}")

@@ -5,6 +5,7 @@ import kotlinx.coroutines.launch
 import kotlinx.html.*
 import kotlinx.html.dom.create
 import kotlinx.html.js.onClickFunction
+import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import org.w3c.dom.HTMLInputElement
 import net.perfectdreams.spicymorenitta.utils.TingleModal
 import net.perfectdreams.spicymorenitta.utils.TingleOptions
@@ -80,6 +81,7 @@ object PaymentUtils : Logging {
 		}
 
 		modal.open()
+		modal.trackOverflowChanges(SpicyMorenitta.INSTANCE)
 	}
 
 	/**

@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.threads.BomDiaECiaThread
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
+import com.mrpowergamerbr.loritta.utils.extensions.queueAfterWithMessagePerSecondTarget
 import com.mrpowergamerbr.loritta.utils.extensions.stripLinks
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -208,9 +209,10 @@ class BomDiaECia {
 			messageForLocales[localeId] = message.build()
 		}
 
-		validTextChannels.forEach {
+		validTextChannels.forEachIndexed { index, textChannel ->
 			// TODO: Localization!
-			it.sendMessage(messageForLocales["default"]!!).queue()
+			textChannel.sendMessage(messageForLocales["default"]!!)
+					.queueAfterWithMessagePerSecondTarget(index)
 		}
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
@@ -222,7 +224,7 @@ class BomDiaECia {
 							if (it.reactionEmote.isEmote("⁉")) {
 								loritta.messageInteractionCache.remove(it.messageIdLong)
 
-								val triedToCall = triedToCall.mapNotNull { lorittaShards.getUserById(it) }
+								val triedToCall = triedToCall.mapNotNull { lorittaShards.retrieveUserInfoById(it) }
 								channel.sendMessage("<:yudi:446394608256024597> **|** Pois é, ${triedToCall.joinToString(", ", transform = { "`" + it.name + "`" })} tentaram ligar... mas falharam!").queue()
 							}
 						}

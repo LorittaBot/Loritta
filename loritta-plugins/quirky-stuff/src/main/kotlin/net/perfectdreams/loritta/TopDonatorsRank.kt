@@ -81,7 +81,7 @@ class TopDonatorsRank(val m: QuirkyStuff, val config: QuirkyConfig) {
 
 						mostPayingUsers.forEachIndexed { index, entry ->
 							val userId = entry[Payments.userId]
-							val user = guild.getMemberById(entry[Payments.userId])
+							val user = guild.retrieveMemberById(entry[Payments.userId]).await()
 
 							if (user != null) {
 								val newRoles = user.roles.toMutableList()
@@ -152,7 +152,7 @@ class TopDonatorsRank(val m: QuirkyStuff, val config: QuirkyConfig) {
 							if (user != null) {
 								message.append(user.asMention)
 							} else {
-								val globalUser = lorittaShards.getUserById(userId)
+								val globalUser = lorittaShards.retrieveUserInfoById(userId)
 								if (globalUser != null) {
 									message.append("${globalUser.name.stripCodeMarks()}#${globalUser.discriminator}")
 								} else {

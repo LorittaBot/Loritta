@@ -74,7 +74,7 @@ class TopVotersRank(val m: QuirkyStuff, val config: QuirkyConfig) {
 
 						topVoterUsers.forEachIndexed { index, entry ->
 							val userId = entry[BotVotes.userId]
-							val user = guild.getMemberById(entry[BotVotes.userId])
+							val user = guild.retrieveMemberById(entry[BotVotes.userId]).await()
 
 							if (user != null) {
 								val newRoles = user.roles.toMutableList()
@@ -133,7 +133,7 @@ class TopVotersRank(val m: QuirkyStuff, val config: QuirkyConfig) {
 							if (user != null) {
 								message.append(user.asMention)
 							} else {
-								val globalUser = lorittaShards.getUserById(userId)
+								val globalUser = lorittaShards.retrieveUserInfoById(userId)
 								if (globalUser != null) {
 									message.append("${globalUser.name.stripCodeMarks()}#${globalUser.discriminator}")
 								} else {

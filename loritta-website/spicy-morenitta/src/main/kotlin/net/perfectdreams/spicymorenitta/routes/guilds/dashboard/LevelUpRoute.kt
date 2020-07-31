@@ -442,7 +442,9 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 					false,
 					null,
 					true,
-					Placeholders.DEFAULT_PLACEHOLDERS.toMutableMap().apply {
+					EmbedEditorStuff.userInContextPlaceholders(locale) +
+							EmbedEditorStuff.userCurrentExperienceInContextPlaceholders(locale),
+					/* Placeholders.DEFAULT_PLACEHOLDERS *//* .toMutableMap().apply {
 						put("previous-level", "Qual era o nível do usuário antes dele ter passado de nível")
 						put("previous-xp", "Quanta experiência o usuário tinha antes dele ter passado de nível")
 						put("level", "O novo nível que o usuário está")
@@ -453,7 +455,7 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 							"previous-xp" to "99987",
 							"level" to "100",
 							"xp" to "100002"
-					),
+					), */
 					showTemplates = true,
 					templates = mapOf(
 							locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.default.title"] to locale["$LOCALE_PREFIX.levelUpAnnouncement.templates.default.content", "<a:lori_yay_wobbly:638040459721310238>"],

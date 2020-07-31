@@ -22,7 +22,7 @@ import net.perfectdreams.loritta.website.routes.user.UserReputationRoute
 import net.perfectdreams.loritta.website.routes.user.dashboard.*
 
 object DefaultRoutes {
-	fun defaultRoutes(loritta: LorittaDiscord) = mutableListOf(
+	fun defaultRoutes(loritta: LorittaDiscord) = listOf(
 			// ===[ USER ROUTES ]===
 			HomeRoute(loritta),
 			BlogRoute(loritta),
@@ -66,6 +66,8 @@ object DefaultRoutes {
 			ConfigureTrackedTwitterAccountsRoute(loritta),
 			ConfigureWelcomerRoute(loritta),
 			ConfigureYouTubeRoute(loritta),
+			ConfigureNashornCommandsRoute(loritta),
+			ConfigureCustomCommandsRoute(loritta),
 
 			// Reps
 			UserReputationRoute(loritta),
@@ -97,6 +99,7 @@ object DefaultRoutes {
 			GetSonhosLeaderboardRoute(loritta),
 			GetDailyShopRoute(loritta),
 			PostBuyDailyShopItemRoute(loritta),
+			GetPaymentsLeaderboardRoute(loritta),
 
 			// Guild
 			GetGuildInfoRoute(loritta),
@@ -115,6 +118,7 @@ object DefaultRoutes {
 			GetCommandsRoute(loritta),
 			GetCurrentFanMadeAvatarRoute(loritta),
 			GetFanArtsController(loritta),
+			GetFanArtImageController(loritta),
 			GetLocaleRoute(loritta),
 			GetLorittaActionRoute(loritta),
 			GetRaffleStatusRoute(loritta),

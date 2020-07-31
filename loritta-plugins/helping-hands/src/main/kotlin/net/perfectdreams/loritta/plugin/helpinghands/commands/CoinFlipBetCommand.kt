@@ -19,9 +19,7 @@ import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
 import net.perfectdreams.loritta.plugin.helpinghands.HelpingHandsPlugin
 import net.perfectdreams.loritta.plugin.helpinghands.commands.base.DSLCommandBase
 import net.perfectdreams.loritta.tables.SonhosTransaction
-import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.SonhosPaymentReason
-import net.perfectdreams.loritta.utils.UserPremiumPlans
+import net.perfectdreams.loritta.utils.*
 import net.perfectdreams.loritta.utils.extensions.refreshInDeferredTransaction
 import net.perfectdreams.loritta.utils.extensions.toJDA
 import org.jetbrains.exposed.sql.insert
@@ -69,8 +67,8 @@ object CoinFlipBetCommand : DSLCommandBase {
 			if (invitedUser == context.user)
 				fail(locale["commands.economy.flipcoinbet.cantBetSelf"], Constants.ERROR)
 
-			val selfActiveDonations = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonations(context.discordMessage.author.idLong)
-			val otherActiveDonations = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonations(invitedUser.idLong)
+			val selfActiveDonations = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonationsAsync(context.discordMessage.author.idLong)
+			val otherActiveDonations = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonationsAsync(invitedUser.idLong)
 
 			val selfPlan = UserPremiumPlans.getPlanFromValue(selfActiveDonations)
 			val otherPlan = UserPremiumPlans.getPlanFromValue(otherActiveDonations)
@@ -93,7 +91,7 @@ object CoinFlipBetCommand : DSLCommandBase {
 				plan = UserPremiumPlans.Essential
 			}
 
-			val number = context.args[1].toLongOrNull()
+			val number = NumberUtils.convertShortenedNumberToLong(context.args[1])
 					?: fail(locale["commands.invalidNumber", context.args[1].stripCodeMarks()], Emotes.LORI_CRYING.toString())
 			val tax = (number * (1.0 - plan.totalCoinFlipReward)).toLong()
 			val money = number - tax
@@ -180,32 +178,30 @@ object CoinFlipBetCommand : DSLCommandBase {
 							if (isTails) {
 								winner = context.user
 								loser = invitedUser
-								transaction(Databases.loritta) {
-									selfUserProfile.money += money
-									invitedUserProfile.money -= number
+								loritta.newSuspendedTransaction {
+									selfUserProfile.addSonhosNested(money)
+									invitedUserProfile.takeSonhosNested(number)
 
-									SonhosTransaction.insert {
-										it[givenBy] = invitedUserProfile.id.value
-										it[receivedBy] = selfUserProfile.id.value
-										it[givenAt] = System.currentTimeMillis()
-										it[quantity] = number.toBigDecimal()
-										it[reason] = SonhosPaymentReason.COIN_FLIP_BET
-									}
+									PaymentUtils.addToTransactionLogNested(
+											number,
+											SonhosPaymentReason.COIN_FLIP_BET,
+											givenBy = invitedUserProfile.id.value,
+											receivedBy = selfUserProfile.id.value
+									)
 								}
 							} else {
 								winner = invitedUser
 								loser = context.user
-								transaction(Databases.loritta) {
-									invitedUserProfile.money += money
-									selfUserProfile.money -= number
+								loritta.newSuspendedTransaction {
+									invitedUserProfile.addSonhosNested(money)
+									selfUserProfile.takeSonhosNested(number)
 
-									SonhosTransaction.insert {
-										it[givenBy] = selfUserProfile.id.value
-										it[receivedBy] = invitedUserProfile.id.value
-										it[givenAt] = System.currentTimeMillis()
-										it[quantity] = number.toBigDecimal()
-										it[reason] = SonhosPaymentReason.COIN_FLIP_BET
-									}
+									PaymentUtils.addToTransactionLogNested(
+											number,
+											SonhosPaymentReason.COIN_FLIP_BET,
+											givenBy = selfUserProfile.id.value,
+											receivedBy = invitedUserProfile.id.value
+									)
 								}
 							}
 

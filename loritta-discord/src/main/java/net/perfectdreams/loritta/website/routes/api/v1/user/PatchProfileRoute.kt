@@ -14,6 +14,7 @@ import io.ktor.request.receiveText
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.BackgroundPayments
 import net.perfectdreams.loritta.tables.SonhosTransaction
+import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
@@ -84,15 +85,12 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 					this.expiresAt = System.currentTimeMillis() + Constants.ONE_WEEK_IN_MILLISECONDS
 				}
 
-				profile.money -= 3000
-
-				SonhosTransaction.insert {
-					it[givenBy] = userIdentification.id.toLong()
-					it[receivedBy] = null
-					it[givenAt] = System.currentTimeMillis()
-					it[quantity] = 3000.toBigDecimal()
-					it[reason] = SonhosPaymentReason.SHIP_EFFECT
-				}
+				profile.takeSonhosNested(3000)
+				PaymentUtils.addToTransactionLogNested(
+						3000,
+						SonhosPaymentReason.PROFILE,
+						givenBy = profile.id.value
+				)
 			}
 
 			call.respondJson(jsonObject())
@@ -132,29 +130,25 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 
 			loritta.newSuspendedTransaction {
 				profileSettings.boughtProfiles = profileSettings.boughtProfiles.toMutableList().apply { this.add(profileDesign.clazz.simpleName) }.toTypedArray()
-				profile.money -= price
 
-				SonhosTransaction.insert {
-					it[givenBy] = profile.id.value
-					it[receivedBy] = null
-					it[givenAt] = System.currentTimeMillis()
-					it[quantity] = price.toBigDecimal()
-					it[reason] = SonhosPaymentReason.PROFILE
-				}
+				profile.takeSonhosNested(price.toLong())
+				PaymentUtils.addToTransactionLogNested(
+						price.toLong(),
+						SonhosPaymentReason.PROFILE,
+						givenBy = profile.id.value
+				)
 			}
 
 			for (creatorId in profileDesign.createdBy) {
 				val creator = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(creatorId)
 				loritta.newSuspendedTransaction {
-					creator.money += (price.toDouble() * 0.2).toLong()
-
-					SonhosTransaction.insert {
-						it[givenBy] = null
-						it[receivedBy] = creator.id.value
-						it[givenAt] = System.currentTimeMillis()
-						it[quantity] = (price * 0.2).toBigDecimal()
-						it[reason] = SonhosPaymentReason.PROFILE
-					}
+					val value = (price.toDouble() * 0.2).toLong()
+					profile.takeSonhosNested(value)
+					PaymentUtils.addToTransactionLogNested(
+							value,
+							SonhosPaymentReason.PROFILE,
+							receivedBy = creator.id.value
+					)
 				}
 			}
 
@@ -180,7 +174,7 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 			}
 
 			if (internalName == Background.CUSTOM_BACKGROUND_ID) {
-				val donationValue = loritta.getActiveMoneyFromDonations(profile.userId)
+				val donationValue = loritta.getActiveMoneyFromDonationsAsync(profile.userId)
 				val plan = UserPremiumPlans.getPlanFromValue(donationValue)
 
 				if (!plan.customBackground)

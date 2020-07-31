@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.modules
 
 import com.mrpowergamerbr.loritta.utils.extensions.filterOnlyGiveableRoles
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.Role
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.AutoroleConfig
 import java.util.concurrent.TimeUnit
 
@@ -13,7 +12,8 @@ object AutoroleModule {
 		val roles = autoroleConfig.roles
 				.asSequence()
 				.mapNotNull { guild.getRoleById(it) }
-				.filterOnlyGiveableRoles(member)
+				.distinct()
+				.filterOnlyGiveableRoles()
 				.toList()
 
 		val filteredRoles = roles.filter { !member.roles.contains(it) }

@@ -3,12 +3,9 @@ package net.perfectdreams.loritta.platform.discord.commands
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.ChannelInfoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.PluginsCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.MagicPingCommand
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -22,21 +19,13 @@ import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.commands.LorittaCommandManager
 import net.perfectdreams.loritta.api.entities.User
 import net.perfectdreams.loritta.commands.vanilla.`fun`.*
-import net.perfectdreams.loritta.commands.vanilla.audio.RecordAudioCommand
-import net.perfectdreams.loritta.commands.vanilla.economy.TransactionsCommand
-import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaTopCommand
-import net.perfectdreams.loritta.commands.vanilla.social.RankGlobalCommand
-import net.perfectdreams.loritta.commands.vanilla.social.RepTopCommand
-import net.perfectdreams.loritta.commands.vanilla.social.XpNotificationsCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.utils.CommandUtils
 import net.perfectdreams.loritta.utils.DonateUtils
 import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.FeatureFlags
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 import java.util.concurrent.CancellationException
 import kotlin.reflect.KClass
@@ -44,8 +33,6 @@ import kotlin.reflect.full.isSubclassOf
 
 class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager(discordLoritta) {
     init {
-        if (discordLoritta.config.loritta.environment == EnvironmentType.CANARY)
-            registerCommand(MagicPingCommand())
         registerCommand(PluginsCommand())
 
         registerCommand(ChannelInfoCommand())
@@ -53,15 +40,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
         registerCommand(GiveawayRerollCommand())
         registerCommand(GiveawaySetupCommand())
         registerCommand(GiveawayCommand())
-        registerCommand(RepTopCommand())
         registerCommand(FanArtsCommand())
-        registerCommand(RankGlobalCommand())
-        registerCommand(XpNotificationsCommand())
-        registerCommand(BomDiaECiaTopCommand())
-        registerCommand(TransactionsCommand())
-        if (loritta.config.loritta.environment == EnvironmentType.CANARY) {
-            registerCommand(RecordAudioCommand())
-        }
 
         contextManager.registerContext<User>(
                 { clazz: KClass<*> -> clazz.isSubclassOf(User::class) || clazz == User::class },
@@ -275,7 +254,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                 }
 
                 var cooldown = command.cooldown
-                val donatorPaid = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonations(ev.author.idLong)
+                val donatorPaid = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonationsAsync(ev.author.idLong)
                 val guildId = ev.guild?.idLong
                 val guildPaid = guildId?.let { serverConfig.getActiveDonationKeysValue() } ?: 0.0
 
@@ -424,7 +403,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                     }
                 }
 
-                transaction(Databases.loritta) {
+                loritta.newSuspendedTransaction {
                     lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
 
                     ExecutedCommandsLog.insert {
@@ -448,10 +427,9 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
 
                 if (!isPrivateChannel && ev.guild != null) {
                     if (ev.guild.selfMember.hasPermission(ev.textChannel!!, Permission.MESSAGE_MANAGE) && (serverConfig.deleteMessageAfterCommand)) {
-                        ev.message.textChannel.retrieveMessageById(ev.messageId).queue {
-                            // Nós iremos pegar a mensagem novamente, já que talvez ela tenha sido deletada
-                            it.delete().queue()
-                        }
+                        ev.message.textChannel.deleteMessageById(ev.messageId).queue({}, {
+                            // We don't care if we weren't able to delete the message because it was already deleted
+                        })
                     }
                 }
 

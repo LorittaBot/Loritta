@@ -14,9 +14,13 @@ import kotlinx.html.stream.createHTML
 import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
+import net.perfectdreams.loritta.embededitor.data.crosswindow.Placeholder
+import net.perfectdreams.loritta.embededitor.data.crosswindow.RenderType
 import net.perfectdreams.loritta.serializable.TrackedTwitterAccount
+import net.perfectdreams.loritta.utils.Placeholders
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
+import net.perfectdreams.spicymorenitta.extensions.listIsEmptySection
 import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
@@ -116,15 +120,7 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 
 		trackedDiv.append {
 			if (trackedTwitterAccounts.isEmpty()) {
-				div {
-					style = "text-align: center;font-size: 2em;opacity: 0.7;"
-					div {
-						img(src = "https://loritta.website/assets/img/blog/lori_calca.gif") {
-							style = "width: 20%; filter: grayscale(100%);"
-						}
-					}
-					+ "${locale["website.empty"]}${locale.getList("website.funnyEmpty").random()}"
-				}
+				listIsEmptySection()
 			} else {
 				for (account in trackedTwitterAccounts) {
 					createTrackedTwitterAccountEntry(guild, account)
@@ -381,11 +377,14 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 				false,
 				null,
 				true,
-				mapOf(
-					"link" to locale["$LOCALE_PREFIX.tweetLink"]
-				),
-				customTokens = mapOf(
-						"link" to "https://twitter.com/LorittaBot/status/1112093554174763008"
+				listOf(
+						Placeholder(
+								Placeholders.LINK.asKey,
+								"https://twitter.com/LorittaBot/status/1112093554174763008",
+								locale["${LOCALE_PREFIX}.tweetLink"],
+								RenderType.TEXT,
+								false
+						)
 				),
 				showTemplates = false
 		)

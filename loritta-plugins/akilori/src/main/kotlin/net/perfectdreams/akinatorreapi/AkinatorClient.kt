@@ -16,7 +16,7 @@ import mu.KotlinLogging
 import net.perfectdreams.akinatorreapi.payload.CharacterGuess
 import net.perfectdreams.akinatorreapi.payload.GameIdentification
 
-class AkinatorClient(val region: Region) {
+class AkinatorClient(val region: Region, val childMode: Boolean = false) {
     companion object {
         internal val http = HttpClient {
             expectSuccess = false
@@ -54,6 +54,8 @@ class AkinatorClient(val region: Region) {
             parameter("player", "website-desktop")
             parameter("uid_ext_session", session.uid)
             parameter("frontaddr", session.frontaddr)
+            if (childMode)
+                parameter("childMod", "true")
             parameter("constraint", "ETAT<>'AV'")
         }
 

@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.platform.discord.commands
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
@@ -17,12 +16,12 @@ import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.exceptions.PermissionException
 import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandContext
-import net.perfectdreams.loritta.api.entities.User
 import net.perfectdreams.loritta.api.utils.image.Image
 import net.perfectdreams.loritta.api.utils.image.JVMImage
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.entities.DiscordMessage
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
+import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.utils.Emotes
 import org.jsoup.Jsoup
 import java.io.File
@@ -58,7 +57,6 @@ class DiscordCommandContext(
 			val sentMessage = discordMessage.channel.sendMessage(message).await()
 			return sentMessage
 		} else {
-			// LorittaUtils.warnOwnerNoPermission(discordGuild, event.textChannel, config)
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
 	}
@@ -87,29 +85,14 @@ class DiscordCommandContext(
 		)
 	}
 
-	override suspend fun user(argument: Int): User? {
-		if (this.args.size > argument) { // Primeiro iremos verificar se existe uma imagem no argumento especificado
-			val link = this.args[argument] // Ok, será que isto é uma URL?
-
-			// Vamos verificar por menções, uma menção do Discord é + ou - assim: <@123170274651668480>
-			for (user in this.message.mentionedUsers) {
-				if (user.asMention == link.replace("!", "")) { // O replace é necessário já que usuários com nick tem ! no mention (?)
-					// Diferente de null? Então vamos usar o avatar do usuário!
-					return user
-				}
+	override suspend fun user(argument: Int) = this.args.getOrNull(argument)
+			?.let {
+				DiscordUtils.extractUserFromString(
+						it,
+						discordMessage.mentionedUsers,
+						if (isPrivateChannel) null else discordMessage.guild
+				)?.let { JDAUser(it) }
 			}
-
-			// Ok, então só pode ser um ID do Discord!
-			try {
-				val user = LorittaLauncher.loritta.lorittaShards.retrieveUserById(link)
-
-				if (user != null) // Pelo visto é!
-					return JDAUser(user)
-			} catch (e: Exception) {
-			}
-		}
-		return null
-	}
 
 	override suspend fun imageUrl(argument: Int, searchPreviousMessages: Int): String? {
 		if (this.args.size > argument) { // Primeiro iremos verificar se existe uma imagem no argumento especificado

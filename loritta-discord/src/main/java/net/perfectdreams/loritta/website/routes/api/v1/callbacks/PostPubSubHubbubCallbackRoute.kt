@@ -3,10 +3,10 @@ package net.perfectdreams.loritta.website.routes.api.v1.callbacks
 import com.github.salomonbrys.kotson.*
 import com.google.common.cache.CacheBuilder
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
 import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.bytesToHex
+import com.mrpowergamerbr.loritta.utils.extensions.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.ApplicationCall
@@ -142,6 +142,7 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 			}
 
 			val guildIds = mutableListOf<Long>()
+			val canTalkGuildIds = mutableListOf<Long>()
 
 			for (trackedAccount in trackedAccounts) {
 				guildIds.add(trackedAccount[TrackedYouTubeAccounts.guildId])
@@ -172,7 +173,10 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 						customTokens
 				) ?: continue
 
-				textChannel.sendMessage(discordMessage).queue()
+				textChannel.sendMessage(discordMessage)
+						.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing(canTalkGuildIds.size)
+
+				canTalkGuildIds.add(trackedAccount[TrackedYouTubeAccounts.guildId])
 			}
 
 			// Nós iremos fazer relay de todos os vídeos para o servidor da Lori
@@ -194,6 +198,7 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 			val data = payload["data"].array
 
 			val guildIds = mutableListOf<Long>()
+			val canTalkGuildIds = mutableListOf<Long>()
 
 			// Se for vazio, quer dizer que é um stream down
 			if (data.size() != 0) {
@@ -258,7 +263,17 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 									"link" to "https://www.twitch.tv/${accountInfo.login}"
 							)
 
-							textChannel.sendMessage(MessageUtils.generateMessage(message, null, guild, customTokens)!!).queue()
+							val discordMessage = MessageUtils.generateMessage(
+									message,
+									listOf(guild),
+									guild,
+									customTokens
+							) ?: continue
+
+							textChannel.sendMessage(discordMessage)
+									.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing(canTalkGuildIds.size)
+
+							canTalkGuildIds.add(trackedAccount[TrackedYouTubeAccounts.guildId])
 						}
 
 						// Nós iremos fazer relay de todos os vídeos para o servidor da Lori

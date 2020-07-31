@@ -17,7 +17,7 @@ import java.time.ZoneOffset
 
 object DailyInactivityTaxUtils {
 	private val logger = KotlinLogging.logger {}
-	const val DAY_THRESHOLD = 7L
+	const val DAY_THRESHOLD = 30L
 
 	internal fun createAutoInactivityTask(): suspend CoroutineScope.() -> Unit = {
 		while (true) {

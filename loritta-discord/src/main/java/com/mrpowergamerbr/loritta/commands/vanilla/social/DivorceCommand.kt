@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.Emotes
@@ -25,7 +26,7 @@ class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCa
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
-		val marriage = transaction(Databases.loritta) { context.lorittaUser.profile.marriage }
+		val marriage = loritta.newSuspendedTransaction { context.lorittaUser.profile.marriage }
 
 		if (marriage != null) {
 			val message = context.reply(
@@ -42,7 +43,7 @@ class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCa
 			message.onReactionAddByAuthor(context) {
 				if (it.reactionEmote.isEmote(DIVORCE_REACTION_EMOJI)) {
 					// depois
-					transaction(Databases.loritta) {
+					loritta.newSuspendedTransaction {
 						Profiles.update({ Profiles.marriage eq marriage.id }) {
 							it[Profiles.marriage] = null
 						}

@@ -1,8 +1,8 @@
 package com.mrpowergamerbr.loritta.modules
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
@@ -14,7 +14,6 @@ import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemove
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.ReactionOption
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.ReactionOptions
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -39,7 +38,7 @@ object ReactionModule {
             event.reactionEmote.name
         }
 
-        val option = transaction(Databases.loritta) {
+        val option = loritta.newSuspendedTransaction {
             ReactionOption.find {
                 (ReactionOptions.guildId eq event.guild.idLong) and
                         (ReactionOptions.textChannelId eq event.channel.idLong) and
@@ -58,7 +57,7 @@ object ReactionModule {
         for (lock in option.locks) {
             if (lock.contains("-")) {
                 val split = lock.split("-")
-                val channelOptionLock = transaction(Databases.loritta) {
+                val channelOptionLock = loritta.newSuspendedTransaction {
                     ReactionOption.find {
                         (ReactionOptions.guildId eq event.guild.idLong) and
                                 (ReactionOptions.textChannelId eq split[0].toLong()) and
@@ -67,7 +66,7 @@ object ReactionModule {
                 }
                 locks.addAll(channelOptionLock)
             } else { // Lock por option ID, esse daqui é mais complicado!
-                val idOptionLock = transaction(Databases.loritta) {
+                val idOptionLock = loritta.newSuspendedTransaction {
                     ReactionOption.find {
                         (ReactionOptions.id eq lock.toLong())
                     }.toMutableList()
@@ -97,7 +96,7 @@ object ReactionModule {
             event.reactionEmote.name
         }
 
-        val option = transaction(Databases.loritta) {
+        val option = loritta.newSuspendedTransaction {
             ReactionOption.find {
                 (ReactionOptions.guildId eq event.guild.idLong) and
                         (ReactionOptions.textChannelId eq event.channel.idLong) and

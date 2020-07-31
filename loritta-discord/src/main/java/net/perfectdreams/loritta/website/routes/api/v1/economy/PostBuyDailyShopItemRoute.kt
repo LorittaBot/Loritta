@@ -14,6 +14,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.*
+import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.utils.config.FanArtArtist
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
@@ -81,20 +82,18 @@ class PostBuyDailyShopItemRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLog
 							)
 					)
 
-				profile.money -= cost
+				profile.takeSonhosNested(cost.toLong())
+				PaymentUtils.addToTransactionLogNested(
+						cost.toLong(),
+						SonhosPaymentReason.BACKGROUND,
+						givenBy = profile.id.value
+				)
+
 				BackgroundPayments.insert {
 					it[BackgroundPayments.userId] = profile.userId
 					it[BackgroundPayments.background] = background[Backgrounds.id]
 					it[BackgroundPayments.boughtAt] = System.currentTimeMillis()
 					it[BackgroundPayments.cost] = cost.toLong()
-				}
-
-				SonhosTransaction.insert {
-					it[givenBy] = profile.id.value
-					it[receivedBy] = null
-					it[givenAt] = System.currentTimeMillis()
-					it[quantity] = cost.toBigDecimal()
-					it[reason] = SonhosPaymentReason.BACKGROUND
 				}
 
 				val createdBy = background[Backgrounds.createdBy]
@@ -106,15 +105,13 @@ class PostBuyDailyShopItemRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLog
 							?: continue
 
 					val creator = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(discordId)
-					creator.money += creatorReceived
 
-					SonhosTransaction.insert {
-						it[givenBy] = null
-						it[receivedBy] = creator.id.value
-						it[givenAt] = System.currentTimeMillis()
-						it[quantity] = creatorReceived.toBigDecimal()
-						it[reason] = SonhosPaymentReason.BACKGROUND
-					}
+					creator.addSonhosNested(creatorReceived)
+					PaymentUtils.addToTransactionLogNested(
+							creatorReceived,
+							SonhosPaymentReason.BACKGROUND,
+							receivedBy = profile.id.value
+					)
 				}
 			}
 

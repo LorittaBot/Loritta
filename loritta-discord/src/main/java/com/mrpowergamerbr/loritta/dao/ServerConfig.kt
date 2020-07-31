@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.tables.DonationKeys
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
+import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -70,6 +71,26 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 
 	fun getUserDataIfExists(id: Long): GuildProfile? {
 		return transaction(Databases.loritta) {
+			GuildProfile.find { (GuildProfiles.guildId eq guildId) and (GuildProfiles.userId eq id) }.firstOrNull()
+		}
+	}
+
+	suspend fun getUserDataAsync(id: Long): GuildProfile {
+		val t = this
+		return getUserDataIfExistsAsync(id) ?: loritta.newSuspendedTransaction {
+			GuildProfile.new {
+				this.guildId = t.guildId
+				this.userId = id
+				this.money = BigDecimal(0)
+				this.quickPunishment = false
+				this.xp = 0
+				this.isInGuild = true
+			}
+		}
+	}
+
+	suspend fun getUserDataIfExistsAsync(id: Long): GuildProfile? {
+		return loritta.newSuspendedTransaction {
 			GuildProfile.find { (GuildProfiles.guildId eq guildId) and (GuildProfiles.userId eq id) }.firstOrNull()
 		}
 	}

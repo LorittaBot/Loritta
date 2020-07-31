@@ -5,13 +5,16 @@ import com.mrpowergamerbr.loritta.tables.Dailies
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.tables.BannedUsers
+import net.perfectdreams.loritta.utils.TakingMoreSonhosThanAllowedException
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.minus
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.lang.RuntimeException
 import java.util.*
 
 class Profile(id: EntityID<Long>) : Entity<Long>(id) {
@@ -73,8 +76,64 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 		return XpWrapper((xp / 1000).toInt(), xp)
 	}
 
-	fun getExpToAdvanceFrom(lvl: Int): Int {
-		return lvl * 1000
+	/**
+	 * Adds sonhos to the profile
+	 */
+	fun addSonhosNested(
+			quantity: Long,
+			refreshBeforeAction: Boolean = true,
+			checksBeforeAction: ((Profile) -> (Boolean))? = null,
+			refreshOnSuccess: Boolean = true
+	) {
+		val id = id
+
+		if (refreshBeforeAction)
+			this@Profile.refresh()
+
+		if (checksBeforeAction?.invoke(this@Profile) == false)
+			return
+
+		Profiles.update({ Profiles.id eq id }) {
+			with(SqlExpressionBuilder) {
+				it[Profiles.money] = Profiles.money + quantity
+			}
+		}
+
+		// If everything went well, refresh the current DAO
+		if (refreshOnSuccess)
+			this@Profile.refresh()
+	}
+
+	/**
+	 * Takes sonhos from the profile
+	 */
+	fun takeSonhosNested(
+			quantity: Long,
+			refreshBeforeAction: Boolean = true,
+			failIfQuantityIsSmallerThanWhatUserHas: Boolean = true,
+			checksBeforeAction: ((Profile) -> (Boolean))? = null,
+			refreshOnSuccess: Boolean = true
+	) {
+		val id = id
+
+		if (refreshBeforeAction)
+			this@Profile.refresh()
+
+		if (failIfQuantityIsSmallerThanWhatUserHas && quantity > this@Profile.money)
+			throw TakingMoreSonhosThanAllowedException()
+
+		if (checksBeforeAction?.invoke(this@Profile) == false)
+			return
+
+		Profiles.update({ Profiles.id eq id }) {
+			with(SqlExpressionBuilder) {
+				it[Profiles.money] = Profiles.money - quantity
+			}
+		}
+
+		// If everything went well, refresh the current DAO
+		if (refreshOnSuccess)
+			this@Profile.refresh()
 	}
 
 	suspend fun getProfileBackground() = loritta.getUserProfileBackground(userId)

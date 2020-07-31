@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.Requires2FAChecksUsers
 import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.tables.WhitelistedTransactionIds
+import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
@@ -105,51 +106,15 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 			}
 
 			loritta.newSuspendedTransaction {
-				giverProfile.money -= howMuch
-				receiverProfile.money += howMuch
-			}
+				giverProfile.takeSonhosNested(howMuch)
+				receiverProfile.addSonhosNested(howMuch)
 
-			loritta.newSuspendedTransaction {
-				val hasMatchingPayment = SonhosTransaction.select {
-					SonhosTransaction.reason eq SonhosPaymentReason.DAILY and
-							(SonhosTransaction.quantity eq howMuch.toBigDecimal() ) and
-							(SonhosTransaction.receivedBy eq giverId) and
-							(SonhosTransaction.givenAt greaterEq System.currentTimeMillis() - Constants.ONE_DAY_IN_MILLISECONDS)
-				}.firstOrNull()
-
-				val transactionId = SonhosTransaction.insertAndGetId {
-					it[givenBy] = giverProfile.id.value
-					it[receivedBy] = receiverProfile.id.value
-					it[givenAt] = System.currentTimeMillis()
-					it[quantity] = howMuch.toBigDecimal()
-					it[reason] = SonhosPaymentReason.PAYMENT
-				}
-
-				if (hasMatchingPayment != null) {
-					var receiverAlreadyRequires2FA = false
-					var giverAlreadyRequires2FA = false
-
-					receiverAlreadyRequires2FA = Requires2FAChecksUsers.select { Requires2FAChecksUsers.userId eq receiverId }.count() != 0L
-					giverAlreadyRequires2FA = Requires2FAChecksUsers.select { Requires2FAChecksUsers.userId eq giverId }.count() != 0L
-
-					logger.warn { "Suspicious payment $transactionId by $giverId to $receiverId, sending the same quantity received in the daily. Receiver already requires 2FA? $receiverAlreadyRequires2FA; Giver already requires 2FA? $giverAlreadyRequires2FA" }
-
-					if (!receiverAlreadyRequires2FA) {
-						Requires2FAChecksUsers.insert {
-							it[Requires2FAChecksUsers.userId] = receiverProfile.id
-							it[Requires2FAChecksUsers.triggeredAt] = System.currentTimeMillis()
-							it[Requires2FAChecksUsers.triggeredTransaction] = transactionId
-						}
-					}
-
-					if (!giverAlreadyRequires2FA) {
-						Requires2FAChecksUsers.insert {
-							it[Requires2FAChecksUsers.userId] = giverProfile.id
-							it[Requires2FAChecksUsers.triggeredAt] = System.currentTimeMillis()
-							it[Requires2FAChecksUsers.triggeredTransaction] = transactionId
-						}
-					}
-				}
+				PaymentUtils.addToTransactionLogNested(
+						howMuch,
+						SonhosPaymentReason.PAYMENT,
+						givenBy = giverProfile.id.value,
+						receivedBy = receiverProfile.id.value
+				)
 			}
 
 			logger.info { "$giverId (antes possuia ${beforeGiver} sonhos) transferiu ${howMuch} sonhos para ${receiverProfile.userId} (antes possuia ${beforeReceiver} sonhos, recebeu apenas $howMuch (taxado!))" }

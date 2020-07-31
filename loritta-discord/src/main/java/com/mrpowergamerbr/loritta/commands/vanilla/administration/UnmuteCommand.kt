@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.tables.Mutes
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
+import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNull
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.Permission
@@ -53,20 +54,23 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val user = AdminUtils.checkForUser(context) ?: return
+			val (users, rawReason) = AdminUtils.checkAndRetrieveAllValidUsersFromMessages(context) ?: return
 
-			val member = context.guild.getMember(user)
+			for (user in users) {
+				val member = context.guild.retrieveMemberOrNull(user)
 
-			if (member != null) {
-				if (!AdminUtils.checkForPermissions(context, member))
-					return
+				if (member != null) {
+					if (!AdminUtils.checkForPermissions(context, member))
+						return
+				}
 			}
 
-			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context) ?: return
+			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context, rawReason) ?: return
 			val settings = AdminUtils.retrieveModerationInfo(context.config)
 
 			val banCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
-				UnmuteCommand.unmute(settings, context.guild, context.userHandle, locale, user, reason, isSilent)
+				for (user in users)
+					unmute(settings, context.guild, context.userHandle, locale, user, reason, isSilent)
 
 				message?.delete()?.queue()
 
@@ -84,7 +88,7 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 			}
 
 			val hasSilent = settings.sendPunishmentViaDm || settings.sendPunishmentToPunishLog
-			val message = AdminUtils.sendConfirmationMessage(context, user, hasSilent, "unmute")
+			val message = AdminUtils.sendConfirmationMessage(context, users, hasSilent, "unmute")
 
 			message.onReactionAddByAuthor(context) {
 				if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
@@ -117,18 +121,12 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
 								punishLogMessage,
-								listOf(user),
+								listOf(user, guild),
 								guild,
 								mutableMapOf(
-										"reason" to reason,
-										"punishment" to locale.toNewLocale()["commands.moderation.unmute.punishAction"],
-										"staff" to punisher.name,
-										"@staff" to punisher.asMention,
-										"staff-discriminator" to punisher.discriminator,
-										"staff-avatar-url" to punisher.effectiveAvatarUrl,
-										"staff-id" to punisher.id,
 										"duration" to locale.toNewLocale()["commands.moderation.mute.forever"]
-								)
+								) + AdminUtils.getStaffCustomTokens(punisher)
+										+ AdminUtils.getPunishmentCustomTokens(locale.toNewLocale(), reason, "commands.moderation.unmute")
 						)
 
 						message?.let {

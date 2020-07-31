@@ -12,6 +12,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAdd
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.tables.SonhosTransaction
+import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -192,7 +193,7 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 					}
 
 					// Okay, tudo certo, vamos lá!
-					transaction(Databases.loritta) {
+					loritta.newSuspendedTransaction {
 						val newMarriage = Marriage.new {
 							user1 = context.userHandle.idLong
 							user2 = proposeTo.idLong
@@ -200,24 +201,21 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 						}
 						profile.marriage = newMarriage
 						proposeToProfile.marriage = newMarriage
-						profile.money -= splitCost
-						proposeToProfile.money -= splitCost
 
-						SonhosTransaction.insert {
-							it[givenBy] = profile.id.value
-							it[receivedBy] = null
-							it[givenAt] = System.currentTimeMillis()
-							it[quantity] = splitCost.toBigDecimal()
-							it[reason] = SonhosPaymentReason.MARRIAGE
-						}
+						profile.takeSonhosNested(splitCost.toLong())
+						proposeToProfile.takeSonhosNested(splitCost.toLong())
 
-						SonhosTransaction.insert {
-							it[givenBy] = proposeToProfile.id.value
-							it[receivedBy] = null
-							it[givenAt] = System.currentTimeMillis()
-							it[quantity] = splitCost.toBigDecimal()
-							it[reason] = SonhosPaymentReason.MARRIAGE
-						}
+						PaymentUtils.addToTransactionLogNested(
+								splitCost.toLong(),
+								SonhosPaymentReason.MARRIAGE,
+								givenBy = profile.id.value
+						)
+
+						PaymentUtils.addToTransactionLogNested(
+								splitCost.toLong(),
+								SonhosPaymentReason.MARRIAGE,
+								givenBy = proposeToProfile.id.value
+						)
 					}
 
 					context.reply(

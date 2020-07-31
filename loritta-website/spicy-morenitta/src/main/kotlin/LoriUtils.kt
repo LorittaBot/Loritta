@@ -53,16 +53,6 @@ fun loadEmbeddedLocale() {
 	}
 }
 
-fun oldMain(args: Array<String>) {
-	println("LoriUtils! ^-^")
-
-	document.addEventListener("DOMContentLoaded", {
-		loadEmbeddedLocale()
-
-		true
-	})
-}
-
 fun testError() {
 	val test: String? = null
 

@@ -76,7 +76,6 @@ class WarnListCommand : AbstractCommand("punishmentlist", listOf("listadeavisos"
 				if (nextPunishment != null) {
 					val type = when (nextPunishment.punishmentAction) {
 						PunishmentAction.BAN -> context.locale["$LOCALE_PREFIX.ban.punishAction"]
-						PunishmentAction.SOFT_BAN -> context.locale["$LOCALE_PREFIX.softban.punishAction"]
 						PunishmentAction.KICK -> context.locale["$LOCALE_PREFIX.kick.punishAction"]
 						PunishmentAction.MUTE -> context.locale["$LOCALE_PREFIX.mute.punishAction"]
 						else -> throw RuntimeException("Punishment $nextPunishment is not supported")

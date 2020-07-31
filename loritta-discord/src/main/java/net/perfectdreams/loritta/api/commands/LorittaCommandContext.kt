@@ -5,9 +5,9 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.entities.Message
+import net.perfectdreams.loritta.api.utils.NoCopyByteArrayOutputStream
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.InputStream
 import javax.imageio.ImageIO
@@ -36,13 +36,7 @@ abstract class LorittaCommandContext(val locale: BaseLocale, val legacyLocale: L
 	abstract suspend fun sendFile(file: File, name: String, message: String): Message
 
 	suspend fun sendFile(image: BufferedImage, name: String, message: String): Message {
-		// https://stackoverflow.com/a/12253091/7271796
-		val output = object : ByteArrayOutputStream() {
-			@Synchronized
-			override fun toByteArray(): ByteArray {
-				return this.buf
-			}
-		}
+		val output = NoCopyByteArrayOutputStream()
 
 		ImageIO.write(image, "png", output)
 

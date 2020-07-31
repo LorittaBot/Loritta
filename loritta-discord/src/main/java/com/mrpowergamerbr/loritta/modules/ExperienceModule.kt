@@ -6,7 +6,6 @@ import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.filterOnlyGiveableRoles
@@ -22,6 +21,7 @@ import net.perfectdreams.loritta.tables.servers.moduleconfigs.ExperienceRoleRate
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.LevelAnnouncementConfigs
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.RolesByExperience
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.ExperienceUtils
 import net.perfectdreams.loritta.utils.FeatureFlags
 import net.perfectdreams.loritta.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.utils.levels.LevelUpAnnouncementType
@@ -29,7 +29,6 @@ import net.perfectdreams.loritta.utils.levels.RoleGiveType
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.TimeUnit
 
 class ExperienceModule : MessageReceivedModule {
@@ -45,7 +44,7 @@ class ExperienceModule : MessageReceivedModule {
 			.build<Long, Mutex>()
 			.asMap()
 
-	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
+	override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
 		return true
 	}
 
@@ -77,7 +76,7 @@ class ExperienceModule : MessageReceivedModule {
 
 					var globalGainedXp = gainedXp
 
-					val donatorPaid = loritta.getActiveMoneyFromDonations(event.author.idLong)
+					val donatorPaid = loritta.getActiveMoneyFromDonationsAsync(event.author.idLong)
 					if (donatorPaid != 0.0) {
 						val plan = ServerPremiumPlans.getPlanFromValue(donatorPaid)
 						globalGainedXp = (globalGainedXp * plan.globalXpMultiplier).toInt()
@@ -100,7 +99,7 @@ class ExperienceModule : MessageReceivedModule {
 
 			if (FeatureFlags.isEnabled("experience-gain-globally")) {
 				mutex.withLock {
-					transaction(Databases.loritta) {
+					loritta.newSuspendedTransaction {
 						retrievedProfile.lastMessageSentHash = lastMessageSentHash
 						retrievedProfile.xp = newProfileXp
 						retrievedProfile.lastMessageSentAt = System.currentTimeMillis()
@@ -135,7 +134,7 @@ class ExperienceModule : MessageReceivedModule {
 
 		val (previousLevel, previousXp) = guildProfile.getCurrentLevel()
 
-		val customRoleRates = transaction(Databases.loritta) {
+		val customRoleRates = loritta.newSuspendedTransaction {
 			ExperienceRoleRates.select {
 				ExperienceRoleRates.guildId eq event.guild.idLong and
 						(ExperienceRoleRates.role inList member.roles.map { it.idLong })
@@ -146,7 +145,7 @@ class ExperienceModule : MessageReceivedModule {
 		val rate = customRoleRates?.getOrNull(ExperienceRoleRates.rate) ?: 1.0
 
 		mutex.withLock {
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				guildProfile.xp += (gainedXp * rate).toLong()
 			}
 		}
@@ -157,7 +156,7 @@ class ExperienceModule : MessageReceivedModule {
 		val givenNewRoles = mutableSetOf<Role>()
 
 		if (guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) {
-			val configs = transaction(Databases.loritta) {
+			val configs = loritta.newSuspendedTransaction {
 				RolesByExperience.select {
 					RolesByExperience.guildId eq guild.idLong
 				}.toMutableList()
@@ -169,7 +168,8 @@ class ExperienceModule : MessageReceivedModule {
 			if (matched.isNotEmpty()) {
 				val guildRoles = matched.flatMap { it[RolesByExperience.roles]
 						.mapNotNull { guild.getRoleById(it) } }
-						.filterOnlyGiveableRoles(member)
+						.distinct()
+						.filterOnlyGiveableRoles()
 						.toList()
 
 				if (guildRoles.isEmpty())
@@ -208,7 +208,7 @@ class ExperienceModule : MessageReceivedModule {
 		if (previousLevel != newLevel && levelConfig != null) {
 			logger.info { "Notifying about level up from $previousLevel -> $newLevel; level config is $levelConfig"}
 
-			val announcements = transaction(Databases.loritta) {
+			val announcements = loritta.newSuspendedTransaction {
 				LevelAnnouncementConfigs.select {
 					LevelAnnouncementConfigs.levelConfig eq levelConfig.id
 				}.toMutableList()
@@ -227,16 +227,22 @@ class ExperienceModule : MessageReceivedModule {
 						announcement[LevelAnnouncementConfigs.message],
 						listOf(
 								member,
-								guild
+								guild,
+								event.channel
 						),
 						guild,
-						mapOf(
+						mutableMapOf(
 								"previous-level" to previousLevel.toString(),
 								"previous-xp" to previousXp.toString(),
-								"level" to newLevel.toString(),
-								"xp" to newXp.toString(),
 								"new-roles" to givenNewRoles.joinToString(transform = { it.asMention })
-						)
+						).apply {
+							putAll(
+									ExperienceUtils.getExperienceCustomTokens(
+											serverConfig,
+											event.member
+									)
+							)
+						}
 				)
 
 				logger.info { "Message for notif is $message" }
@@ -252,7 +258,7 @@ class ExperienceModule : MessageReceivedModule {
 							}
 						}
 						LevelUpAnnouncementType.DIRECT_MESSAGE -> {
-							val profileSettings = transaction(Databases.loritta) {
+							val profileSettings = loritta.newSuspendedTransaction {
 								profile.settings
 							}
 

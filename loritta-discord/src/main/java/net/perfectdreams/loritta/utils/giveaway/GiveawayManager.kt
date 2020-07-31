@@ -342,15 +342,21 @@ object GiveawayManager {
                 val reactedUsers = messageReaction.retrieveUsers().await()
                         .asSequence()
                         .filter { it.id != loritta.discordConfig.discord.clientId }
-                        .filter { message.guild.getMemberById(it.idLong) != null }
                         .toMutableList()
 
-                repeat(giveaway.numberOfWinners) {
+                while (true) {
+                    if (giveaway.numberOfWinners == winners.size)
+                        break
                     if (reactedUsers.isEmpty())
-                        return@repeat
+                        break
 
                     val user = reactedUsers.random()
-                    winners.add(user)
+
+                    val member = message.guild.retrieveMember(user).await()
+
+                    if (member != null)
+                        winners.add(user)
+
                     reactedUsers.remove(user)
                 }
 
@@ -404,7 +410,7 @@ object GiveawayManager {
 
         rollWinners(message, giveaway)
 
-        transaction(Databases.loritta) {
+        loritta.suspendedTransactionAsync {
             giveaway.finished = true
         }
 

@@ -6,7 +6,6 @@ import net.perfectdreams.loritta.tables.Backgrounds
 import net.perfectdreams.loritta.tables.DailyShopItems
 import net.perfectdreams.loritta.tables.DailyShops
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class LorittaDailyShopUpdateTask : Runnable {

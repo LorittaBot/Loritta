@@ -26,7 +26,7 @@ class InviteLinkModule : MessageReceivedModule {
 		val cachedInviteLinks = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.MINUTES).build<Long, List<String>>().asMap()
 	}
 
-	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
+	override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
 		val inviteBlockerConfig = serverConfig.getCachedOrRetreiveFromDatabase<InviteBlockerConfig?>(ServerConfig::inviteBlockerConfig)
 				?: return false
 
@@ -159,7 +159,7 @@ class InviteLinkModule : MessageReceivedModule {
 								if (it.reactionEmote.id == (Emotes.LORI_PAT as DiscordEmote).id) {
 									enableBypassMessage.removeAllFunctions()
 
-									transaction(Databases.loritta) {
+									loritta.newSuspendedTransaction {
 										ServerRolePermissions.insert {
 											it[ServerRolePermissions.guild] = serverConfig.id
 											it[ServerRolePermissions.roleId] = topRole.idLong
@@ -180,7 +180,7 @@ class InviteLinkModule : MessageReceivedModule {
 						}
 					}
 
-					val toBeSent = MessageUtils.generateMessage(warnMessage, listOf(message.author, guild), guild)
+					val toBeSent = MessageUtils.generateMessage(warnMessage, listOf(message.author, guild, message.channel), guild)
 							?: return true
 
 					message.textChannel.sendMessage(toBeSent).queue()

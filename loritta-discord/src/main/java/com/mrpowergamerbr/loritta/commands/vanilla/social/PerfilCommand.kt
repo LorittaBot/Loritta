@@ -4,7 +4,6 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.nullArray
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
-import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
@@ -21,7 +20,6 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.tables.BannedUsers
@@ -131,7 +129,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			if (user.support) badges += ImageIO.read(File(Loritta.ASSETS + "support.png"))
 			if (hasLoriStickerArt) badges += ImageIO.read(File(Loritta.ASSETS + "sticker_badge.png"))
 
-			val money = loritta.getActiveMoneyFromDonations(user.idLong)
+			val money = loritta.getActiveMoneyFromDonationsAsync(user.idLong)
 
 			if (money != 0.0) {
 				badges += ImageIO.read(File(Loritta.ASSETS + "donator.png"))

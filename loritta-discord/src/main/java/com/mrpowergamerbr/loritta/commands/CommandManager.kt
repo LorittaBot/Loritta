@@ -22,7 +22,6 @@ import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.localized
@@ -35,7 +34,10 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.utils.MarkdownSanitizer
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.tables.servers.CustomGuildCommands
-import net.perfectdreams.loritta.utils.*
+import net.perfectdreams.loritta.utils.CommandUtils
+import net.perfectdreams.loritta.utils.DonateUtils
+import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.UserPremiumPlans
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -158,7 +160,6 @@ class CommandManager(loritta: Loritta) {
 		commandMap.add(AddEmojiCommand())
 		commandMap.add(RemoveEmojiCommand())
 		commandMap.add(EmojiInfoCommand())
-		commandMap.add(OldMembersCommand())
 
 		// =======[ MINECRAFT ]========
 		commandMap.add(OfflineUUIDCommand())
@@ -190,7 +191,6 @@ class CommandManager(loritta: Loritta) {
 		// =======[ ADMIN ]========
 		commandMap.add(LimparCommand())
 		commandMap.add(RoleIdCommand())
-		commandMap.add(SoftBanCommand())
 		commandMap.add(MuteCommand())
 		commandMap.add(UnmuteCommand())
 		commandMap.add(SlowModeCommand())
@@ -243,7 +243,8 @@ class CommandManager(loritta: Loritta) {
 		}.map {
 			NashornCommand(
 					it[CustomGuildCommands.label],
-					it[CustomGuildCommands.code]
+					it[CustomGuildCommands.code],
+					it[CustomGuildCommands.codeType]
 			)
 		}
 
@@ -322,7 +323,7 @@ class CommandManager(loritta: Loritta) {
 							if (serverConfig.blacklistedWarning?.isNotEmpty() == true && ev.guild != null && ev.member != null && ev.textChannel != null) {
 								val generatedMessage = MessageUtils.generateMessage(
 										serverConfig.blacklistedWarning ?: "???",
-										listOf(ev.member, ev.textChannel),
+										listOf(ev.member, ev.textChannel, ev.guild),
 										ev.guild
 								)
 								ev.textChannel.sendMessage(generatedMessage!!).queue()
@@ -341,7 +342,7 @@ class CommandManager(loritta: Loritta) {
 				}
 
 				var cooldown = command.cooldown
-				val donatorPaid = loritta.getActiveMoneyFromDonations(ev.author.idLong)
+				val donatorPaid = loritta.getActiveMoneyFromDonationsAsync(ev.author.idLong)
 				val guildId = ev.guild?.idLong
 				val guildPaid = guildId?.let { serverConfig.getActiveDonationKeysValue() } ?: 0.0
 
@@ -489,7 +490,7 @@ class CommandManager(loritta: Loritta) {
 					}
 				}
 
-				transaction(Databases.loritta) {
+				loritta.newSuspendedTransaction {
 					lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
 
 					ExecutedCommandsLog.insert {
@@ -513,10 +514,9 @@ class CommandManager(loritta: Loritta) {
 
 				if (!isPrivateChannel && ev.guild != null) {
 					if (ev.guild.selfMember.hasPermission(ev.textChannel!!, Permission.MESSAGE_MANAGE) && (serverConfig.deleteMessageAfterCommand)) {
-						ev.message.textChannel.retrieveMessageById(ev.messageId).queue {
-							// Nós iremos pegar a mensagem novamente, já que talvez ela tenha sido deletada
-							it.delete().queue()
-						}
+						ev.message.textChannel.deleteMessageById(ev.messageId).queue({}, {
+							// We don't care if we weren't able to delete the message because it was already deleted
+						})
 					}
 				}
 

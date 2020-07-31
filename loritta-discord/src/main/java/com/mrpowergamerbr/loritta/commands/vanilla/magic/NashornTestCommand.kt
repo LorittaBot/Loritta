@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.serializable.CustomCommandCodeType
 
 class NashornTestCommand : AbstractCommand("nashorn", category = CommandCategory.MAGIC) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -19,7 +20,7 @@ class NashornTestCommand : AbstractCommand("nashorn", category = CommandCategory
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val javaScript = context.args.joinToString(" ")
 
-		val nashornCmd = NashornCommand("teste", javaScript)
+		val nashornCmd = NashornCommand("teste", javaScript, CustomCommandCodeType.KOTLIN)
 
 		nashornCmd.run(context, locale)
 	}

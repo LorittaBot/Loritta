@@ -16,6 +16,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.stream.createHTML
+import loadEmbeddedLocale
 import net.perfectdreams.loritta.serializable.UserIdentification
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.routes.*
@@ -23,7 +24,6 @@ import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.*
 import net.perfectdreams.spicymorenitta.routes.user.dashboard.*
 import net.perfectdreams.spicymorenitta.trunfo.TrunfoGame
 import net.perfectdreams.spicymorenitta.utils.*
-import oldMain
 import org.w3c.dom.*
 import kotlin.browser.document
 import kotlin.browser.window
@@ -48,7 +48,7 @@ lateinit var locale: BaseLocale
 
 class SpicyMorenitta : Logging {
 	companion object {
-		const val CACHE_ON_HOVER_DELAY = 125L // milliseconds
+		const val CACHE_ON_HOVER_DELAY = 75L // milliseconds
 		lateinit var INSTANCE: SpicyMorenitta
 	}
 
@@ -59,7 +59,6 @@ class SpicyMorenitta : Logging {
 			FanArtsRoute(this),
 			UpdateNavbarSizePostRender("/support", false, false),
 			UpdateNavbarSizePostRender("/blog", false, false),
-			UpdateNavbarSizePostRender("/extended", false, false),
 			UpdateNavbarSizePostRender("/guidelines", false, false),
 			AuditLogRoute(this),
 			LevelUpRoute(this),
@@ -92,7 +91,8 @@ class SpicyMorenitta : Logging {
 			AutoroleConfigRoute(this),
 			MemberCounterRoute(this),
 			ModerationConfigRoute(this),
-			WelcomerConfigRoute(this)
+			WelcomerConfigRoute(this),
+			CustomCommandsRoute(this)
 	)
 
 	val validWebsiteLocaleIds = mutableListOf(
@@ -181,8 +181,6 @@ class SpicyMorenitta : Logging {
 			return
 		}
 
-		oldMain(arrayOf())
-
 		// From old website
 		val darkThemeCookie = CookiesUtils.readCookie("darkTheme")
 		if (darkThemeCookie?.toBoolean() == true)
@@ -206,6 +204,8 @@ class SpicyMorenitta : Logging {
 
 		document.onDOMReady {
 			debug("DOM is ready!")
+			debug("Loading deprecated locale from the body...")
+			loadEmbeddedLocale()
 
 			debug(window.location.pathname + " - " + WebsiteUtils.getPathWithoutLocale())
 
@@ -330,6 +330,10 @@ class SpicyMorenitta : Logging {
 				}
 			}
 		}
+
+		// Update the navbar entries because the name + avatar may cause the navbar to overflow
+		if (navbarIsSetup)
+			checkAndFixNavbarOverflownEntries()
 	}
 
 	fun getPageRouteForCurrentPath(): BaseRoute {
@@ -552,6 +556,18 @@ class SpicyMorenitta : Logging {
 					document.body!!.style.overflowY = "hidden" // Para remover as scrollbars e apenas deixar as scrollbars da navbar
 				}
 			}
+
+			if (hamburgerButton != null) {
+				debug("Setting up resize handler...")
+
+				window.addEventListener("resize", {
+					checkAndFixNavbarOverflownEntries()
+				}, true)
+
+				checkAndFixNavbarOverflownEntries()
+
+				debug("Resize handler successfully created!")
+			}
 		} else {
 			warn("Navigation Bar does not exist! Ignorning...")
 		}
@@ -560,6 +576,22 @@ class SpicyMorenitta : Logging {
 		setUpLazyLoad()
 
 		debug("Redirect buttons added!")
+	}
+
+	fun checkAndFixNavbarOverflownEntries() {
+		val leftSidebar = document.select<HTMLDivElement>(".left-side-entries")
+		val hamburgerButton = document.select<HTMLDivElement>("#hamburger-menu-button")
+
+		val isOverflowing = leftSidebar.selectAll<HTMLDivElement>(".entry").any { it.offsetTop != 0 }
+		if (isOverflowing) {
+			debug("Navbar entries are overflowing, let's unhide the hamburger button!")
+
+			hamburgerButton.style.display = "block"
+		} else {
+			debug("Navbar entries are not overflowing, let's hide the hamburger button!")
+
+			hamburgerButton.style.display = "none"
+		}
 	}
 
 	fun setUpLinkPreloader() {

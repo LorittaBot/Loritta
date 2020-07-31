@@ -29,9 +29,14 @@ import io.ktor.http.userAgent
 import kotlinx.coroutines.Dispatchers
 import mu.KotlinLogging
 import net.perfectdreams.loritta.api.LorittaBot
-import net.perfectdreams.loritta.commands.vanilla.magic.LoriToolsCommand
 import net.perfectdreams.loritta.commands.vanilla.economy.SonhosTopCommand
 import net.perfectdreams.loritta.commands.vanilla.economy.SonhosTopLocalCommand
+import net.perfectdreams.loritta.commands.vanilla.economy.TransactionsCommand
+import net.perfectdreams.loritta.commands.vanilla.magic.LoriToolsCommand
+import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaTopCommand
+import net.perfectdreams.loritta.commands.vanilla.social.RankGlobalCommand
+import net.perfectdreams.loritta.commands.vanilla.social.RepTopCommand
+import net.perfectdreams.loritta.commands.vanilla.social.XpNotificationsCommand
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandMap
 import net.perfectdreams.loritta.platform.discord.plugin.JVMPluginManager
 import net.perfectdreams.loritta.platform.discord.utils.JVMLorittaAssets
@@ -64,6 +69,12 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         register(LoriToolsCommand.create(discordLoritta))
         register(SonhosTopCommand.create(discordLoritta))
         register(SonhosTopLocalCommand.create(discordLoritta))
+
+        register(BomDiaECiaTopCommand.create(discordLoritta))
+        register(RankGlobalCommand.create(discordLoritta))
+        register(RepTopCommand.create(discordLoritta))
+        register(XpNotificationsCommand.create(discordLoritta))
+        register(TransactionsCommand.create(discordLoritta))
     }
     override val pluginManager = JVMPluginManager(this)
     override val assets = JVMLorittaAssets(this)
@@ -111,15 +122,15 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
      * @return the background image
      */
     suspend fun getUserProfileBackground(profile: Profile): BufferedImage {
-        val background = transaction(Databases.loritta) { profile.settings.activeBackground }
+        val background = loritta.newSuspendedTransaction { profile.settings.activeBackground }
 
         if (background?.id?.value == Background.RANDOM_BACKGROUND_ID) {
             // Caso o usuário tenha pegado um background random, vamos pegar todos os backgrounds que o usuário comprou e pegar um aleatório de lá
-            val defaultBlueBackground = if (background.id.value != Background.DEFAULT_BACKGROUND_ID) transaction(Databases.loritta) { Background.findById(Background.DEFAULT_BACKGROUND_ID)!! } else background
+            val defaultBlueBackground = if (background.id.value != Background.DEFAULT_BACKGROUND_ID) loritta.newSuspendedTransaction { Background.findById(Background.DEFAULT_BACKGROUND_ID)!! } else background
             val allBackgrounds = mutableListOf(defaultBlueBackground)
 
             allBackgrounds.addAll(
-                    transaction(Databases.loritta) {
+                    loritta.newSuspendedTransaction {
                         (BackgroundPayments innerJoin Backgrounds).select {
                             BackgroundPayments.userId eq profile.id.value
                         }.map { Background.wrapRow(it) }
@@ -130,7 +141,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
         if (background?.id?.value == Background.CUSTOM_BACKGROUND_ID) {
             // Background personalizado
-            val donationValue = loritta.getActiveMoneyFromDonations(profile.userId)
+            val donationValue = loritta.getActiveMoneyFromDonationsAsync(profile.userId)
             val plan = UserPremiumPlans.getPlanFromValue(donationValue)
 
             if (plan.customBackground) {
@@ -148,15 +159,15 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
     }
 
     suspend fun getUserProfileBackgroundUrl(profile: Profile): String {
-        var background = transaction(Databases.loritta) { profile.settings.activeBackground }
+        var background = loritta.newSuspendedTransaction { profile.settings.activeBackground }
 
         if (background?.id?.value == Background.RANDOM_BACKGROUND_ID) {
             // Caso o usuário tenha pegado um background random, vamos pegar todos os backgrounds que o usuário comprou e pegar um aleatório de lá
-            val defaultBlueBackground = if (background.id.value != Background.DEFAULT_BACKGROUND_ID) transaction(Databases.loritta) { Background.findById(Background.DEFAULT_BACKGROUND_ID)!! } else background
+            val defaultBlueBackground = if (background.id.value != Background.DEFAULT_BACKGROUND_ID) loritta.newSuspendedTransaction { Background.findById(Background.DEFAULT_BACKGROUND_ID)!! } else background
             val allBackgrounds = mutableListOf(defaultBlueBackground)
 
             allBackgrounds.addAll(
-                    transaction(Databases.loritta) {
+                    loritta.newSuspendedTransaction {
                         (BackgroundPayments innerJoin Backgrounds).select {
                             BackgroundPayments.userId eq profile.id.value
                         }.map { Background.wrapRow(it) }
@@ -167,14 +178,14 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
         if (background?.id?.value == Background.CUSTOM_BACKGROUND_ID) {
             // Background personalizado
-            val donationValue = loritta.getActiveMoneyFromDonations(profile.userId)
+            val donationValue = loritta.getActiveMoneyFromDonationsAsync(profile.userId)
             val plan = UserPremiumPlans.getPlanFromValue(donationValue)
 
             if (plan.customBackground)
                 return "${loritta.instanceConfig.loritta.website.url}assets/img/profiles/backgrounds/custom/${profile.userId}.png?t=${System.currentTimeMillis()}"
         }
 
-        val backgroundOrDefault = background ?: transaction(Databases.loritta) {
+        val backgroundOrDefault = background ?: loritta.newSuspendedTransaction {
             Background.findById(Background.DEFAULT_BACKGROUND_ID)!!
         }
 
@@ -188,7 +199,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
      * @return the background image
      */
     suspend fun getUserProfileBackground(background: Background?): BufferedImage {
-        val backgroundOrDefault = background ?: transaction(Databases.loritta) {
+        val backgroundOrDefault = background ?: loritta.newSuspendedTransaction {
             Background.findById(Background.DEFAULT_BACKGROUND_ID)!!
         }
 

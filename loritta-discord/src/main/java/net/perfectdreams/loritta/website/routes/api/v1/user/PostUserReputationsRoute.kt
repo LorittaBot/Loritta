@@ -6,11 +6,11 @@ import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.Reputation
 import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.PersonalPronoun
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
@@ -27,10 +27,7 @@ import kotlinx.html.stream.appendHTML
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.utils.DiscordUtils
-import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.ClusterOfflineException
-import net.perfectdreams.loritta.utils.UserPremiumPlans
+import net.perfectdreams.loritta.utils.*
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
@@ -83,7 +80,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 				if (channel != null) {
 					if (!channel.canTalk()) // Eu não posso falar!
 						return
-					val member = channel.guild.getMemberById(giverId)
+					val member = channel.guild.retrieveMemberById(giverId).await()
 					if (member == null || !channel.canTalk(member)) // O usuário não está no servidor ou não pode falar no chat
 						return
 
@@ -181,7 +178,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 
 			giveReputation(userIdentification.id.toLong(), ip, userIdentification.email!!, receiver.toLong(), content)
 
-			val donatorPaid = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonations(userIdentification.id.toLong())
+			val donatorPaid = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonationsAsync(userIdentification.id.toLong())
 			var randomChance = UserPremiumPlans.getPlanFromValue(donatorPaid).loriReputationRetribution
 
 			if (chance(randomChance)) { // Lori é fofis e retribuiu reputações :eu_te_moido:
@@ -213,11 +210,20 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 			if (guildId != null && channelId != null)
 				sendReputationToCluster(guildId, channelId, userIdentification.id, receiver, reputations.size.toLong())
 
-			val rank = StringBuilder().appendHTML().div(classes = "box-item") {
-				val map = reputations.groupingBy { it.givenById }.eachCount()
-						.entries
-						.sortedByDescending { it.value }
+			var idx = 0
 
+			val map = reputations.groupingBy { it.givenById }.eachCount()
+					.entries
+					.sortedByDescending { it.value }
+
+			val idToUserInfo = mutableMapOf<Long, CachedUserInfo?>()
+
+			for ((userId, count) in map) {
+				if (idx == 5) break
+				idToUserInfo[userId] = lorittaShards.retrieveUserInfoById(userId)
+			}
+
+			val rank = StringBuilder().appendHTML().div(classes = "box-item") {
 				var idx = 0
 				div(classes = "rank-title") {
 					+"Placar de Reputações"
@@ -235,7 +241,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 						}
 						for ((userId, count) in map) {
 							if (idx == 5) break
-							val rankUser = lorittaShards.getUserById(userId)
+							val rankUser = idToUserInfo[userId]
 
 							if (rankUser != null) {
 								tr {

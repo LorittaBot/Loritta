@@ -6,8 +6,6 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.Gson
 import com.google.gson.JsonParser
-import com.mrpowergamerbr.loritta.audio.AudioManager
-import com.mrpowergamerbr.loritta.audio.AudioRecorder
 import com.mrpowergamerbr.loritta.commands.CommandManager
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ProfileSettings
@@ -29,8 +27,9 @@ import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import kotlinx.coroutines.*
 import mu.KotlinLogging
-import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
+import net.dv8tion.jda.api.utils.ChunkingFilter
+import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.perfectdreams.loritta.api.platform.PlatformFeature
 import net.perfectdreams.loritta.dao.Payment
@@ -45,10 +44,7 @@ import net.perfectdreams.loritta.tables.servers.Giveaways
 import net.perfectdreams.loritta.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.twitch.TwitchAPI
-import net.perfectdreams.loritta.utils.CachedUserInfo
-import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.Sponsor
-import net.perfectdreams.loritta.utils.TweetTracker
+import net.perfectdreams.loritta.utils.*
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import net.perfectdreams.mercadopago.MercadoPago
 import okhttp3.Dispatcher
@@ -108,7 +104,10 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	val coroutineDispatcher = coroutineExecutor.asCoroutineDispatcher() // Coroutine Dispatcher
 
 	fun createThreadPool(name: String): ExecutorService {
-		return Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat(name).build())
+		return if (FeatureFlags.isEnabled(this, FeatureFlags.Names.USE_FIXED_THREAD_POOL))
+			Executors.newFixedThreadPool(16, ThreadFactoryBuilder().setNameFormat(name).build())
+		else
+			Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat(name).build())
 	}
 
 	val legacyCommandManager = CommandManager(this) // Nosso command manager
@@ -136,6 +135,12 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 
 	var twitch = TwitchAPI(config.twitch.clientId, config.twitch.clientSecret)
 	var twitch2 = TwitchAPI(config.twitch2.clientId, config.twitch2.clientSecret)
+	var twitch3 = TwitchAPI(config.twitch3.clientId, config.twitch3.clientSecret)
+	var twitch4 = TwitchAPI(config.twitch4.clientId, config.twitch4.clientSecret)
+	var twitch5 = TwitchAPI(config.twitch5.clientId, config.twitch5.clientSecret)
+	var twitch6 = TwitchAPI(config.twitch6.clientId, config.twitch6.clientSecret)
+	var twitch7 = TwitchAPI(config.twitch7.clientId, config.twitch7.clientSecret)
+	var twitch8 = TwitchAPI(config.twitch8.clientId, config.twitch8.clientSecret)
 	val connectionManager = ConnectionManager()
 	val mercadoPago = MercadoPago(
 			clientId = config.mercadoPago.clientId,
@@ -148,13 +153,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	val tweetTracker = TweetTracker(this)
 	var bucketedController: BucketedController? = null
 	val rateLimitChecker = RateLimitChecker(this)
-	val audioRecorder = AudioRecorder(this)
-	val audioManager: AudioManager? by lazy {
-		if (loritta.discordConfig.lavalink.enabled)
-			AudioManager(this)
-		else
-			null
-	}
 
 	init {
 		LorittaLauncher.loritta = this
@@ -174,24 +172,20 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 				.writeTimeout(discordConfig.okHttp.writeTimeout, TimeUnit.SECONDS)
 				.protocols(listOf(Protocol.HTTP_1_1)) // https://i.imgur.com/FcQljAP.png
 
-		builder = DefaultShardManagerBuilder(discordConfig.discord.clientToken)
+		builder = DefaultShardManagerBuilder.create(discordConfig.discord.clientToken, discordConfig.discord.intents)
 				.disableCache(CacheFlag.values().toList())
 				.enableCache(discordConfig.discord.cacheFlags)
+				.setChunkingFilter(ChunkingFilter.NONE) // No chunking policy because trying to load all members is hard
+				.setMemberCachePolicy(MemberCachePolicy.ALL) // Cache all members!!
 				.apply {
 					if (loritta.discordConfig.shardController.enabled) {
 						logger.info { "Using shard controller (for bots with \"sharding for very large bots\" to manage shards!" }
 						bucketedController = BucketedController(discordConfig.shardController.buckets)
 						this.setSessionController(bucketedController)
 					}
-
-					// Lavalink Support
-					if (loritta.discordConfig.lavalink.enabled) {
-						addEventListeners(audioManager!!.lavalink)
-						setVoiceDispatchInterceptor(audioManager!!.lavalink.voiceInterceptor)
-					}
 				}
 				.setShardsTotal(discordConfig.discord.maxShards)
-				.setShards(discordInstanceConfig.discord.minShardId, discordInstanceConfig.discord.maxShardId)
+				.setShards(lorittaCluster.minShard.toInt(), lorittaCluster.maxShard.toInt())
 				.setStatus(discordConfig.discord.status)
 				.setBulkDeleteSplittingEnabled(false)
 				.setHttpClientBuilder(okHttpBuilder)
@@ -241,7 +235,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		Emotes.emoteManager = DiscordEmoteManager().also { it.loadEmotes() }
 
 		logger.info { "Success! Connecting to the database..." }
-		
+
 		initPostgreSql()
 
 		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
@@ -278,23 +272,25 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 			tweetTracker.updateStreams()
 		}
 
-		logger.info { "Carregando raffle..." }
-		val raffleFile = File(FOLDER, "raffle.json")
+		if (loritta.isMaster) {
+			logger.info { "Carregando raffle..." }
+			val raffleFile = File(FOLDER, "raffle.json")
 
-		if (raffleFile.exists()) {
-			val json = JSON_PARSER.parse(raffleFile.readText()).obj
+			if (raffleFile.exists()) {
+				val json = JSON_PARSER.parse(raffleFile.readText()).obj
 
-			RaffleThread.started = json["started"].long
-			RaffleThread.lastWinnerId = json["lastWinnerId"].nullString
-			RaffleThread.lastWinnerPrize = json["lastWinnerPrize"].nullInt ?: 0
-			val userIdArray = json["userIds"].nullArray
+				RaffleThread.started = json["started"].long
+				RaffleThread.lastWinnerId = json["lastWinnerId"].nullString
+				RaffleThread.lastWinnerPrize = json["lastWinnerPrize"].nullInt ?: 0
+				val userIdArray = json["userIds"].nullArray
 
-			if (userIdArray != null)
-				RaffleThread.userIds = GSON.fromJson(userIdArray)
+				if (userIdArray != null)
+					RaffleThread.userIds = GSON.fromJson(userIdArray)
+			}
+
+			raffleThread = RaffleThread()
+			raffleThread.start()
 		}
-
-		raffleThread = RaffleThread()
-		raffleThread.start()
 
 		DebugLog.startCommandListenerThread()
 
@@ -409,14 +405,9 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		if (loadFromCache)
 			cachedServerConfigs.getIfPresent(guildId)?.let { return it }
 
-		val serverConfig = transaction(Databases.loritta) {
-			ServerConfig.findById(guildId) ?: ServerConfig.new(guildId) {}
+		return transaction(Databases.loritta) {
+			_getOrCreateServerConfig(guildId)
 		}
-
-		if (loritta.config.caches.serverConfigs.maximumSize != 0L)
-			cachedServerConfigs.put(guildId, serverConfig)
-
-		return serverConfig
 	}
 
 	/**
@@ -429,14 +420,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		if (loadFromCache)
 			cachedServerConfigs.getIfPresent(guildId)?.let { return it }
 
-		val serverConfig = newSuspendedTransaction(Dispatchers.IO, Databases.loritta) {
-			ServerConfig.findById(guildId) ?: ServerConfig.new(guildId) {}
-		}
-
-		if (loritta.config.caches.serverConfigs.maximumSize != 0L)
-			cachedServerConfigs.put(guildId, serverConfig)
-
-		return serverConfig
+		return newSuspendedTransaction(Dispatchers.IO, Databases.loritta) { _getOrCreateServerConfig(guildId) }
 	}
 
 	/**
@@ -449,16 +433,18 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		if (loadFromCache)
 			cachedServerConfigs.getIfPresent(guildId)?.let { return GlobalScope.async(coroutineDispatcher) { it } }
 
-		val job = suspendedTransactionAsync(Dispatchers.IO, Databases.loritta) {
-			val result = ServerConfig.findById(guildId) ?: ServerConfig.new(guildId) {}
-
-			if (loritta.config.caches.serverConfigs.maximumSize != 0L)
-				cachedServerConfigs.put(guildId, result)
-
-			return@suspendedTransactionAsync result
-		}
+		val job = suspendedTransactionAsync(Dispatchers.IO, Databases.loritta) { _getOrCreateServerConfig(guildId) }
 
 		return job
+	}
+
+	private fun _getOrCreateServerConfig(guildId: Long): ServerConfig {
+		val result = ServerConfig.findById(guildId) ?: ServerConfig.new(guildId) {}
+
+		if (loritta.config.caches.serverConfigs.maximumSize != 0L)
+			cachedServerConfigs.put(guildId, result)
+
+		return result
 	}
 
 	fun getLorittaProfile(userId: String): Profile? {
@@ -471,11 +457,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	 * @param userId the user's ID
 	 * @return       the user profile
 	 */
-	fun getLorittaProfile(userId: Long): Profile? {
-		return transaction(Databases.loritta) {
-			Profile.findById(userId)
-		}
-	}
+	fun getLorittaProfile(userId: Long) = transaction(Databases.loritta) { _getLorittaProfile(userId) }
 
 	/**
 	 * Loads the profile of an user in a coroutine
@@ -483,11 +465,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	 * @param userId the user's ID
 	 * @return       the user profile
 	 */
-	suspend fun getLorittaProfileAsync(userId: Long): Profile? {
-		return newSuspendedTransaction {
-			Profile.findById(userId)
-		}
-	}
+	suspend fun getLorittaProfileAsync(userId: Long) = newSuspendedTransaction { _getLorittaProfile(userId) }
 
 	/**
 	 * Loads the profile of an user deferred
@@ -495,11 +473,9 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	 * @param userId the user's ID
 	 * @return       the user profile
 	 */
-	suspend fun getLorittaProfileDeferred(userId: Long): Deferred<Profile?> {
-		return suspendedTransactionAsync {
-			Profile.findById(userId)
-		}
-	}
+	suspend fun getLorittaProfileDeferred(userId: Long) = suspendedTransactionAsync { _getLorittaProfile(userId) }
+
+	fun _getLorittaProfile(userId: Long) = Profile.findById(userId)
 
 	fun getOrCreateLorittaProfile(userId: String): Profile {
 		return getOrCreateLorittaProfile(userId.toLong())
@@ -530,12 +506,18 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	}
 
 	fun getActiveMoneyFromDonations(userId: Long): Double {
-		return transaction(Databases.loritta) {
-			Payment.find {
-				(Payments.expiresAt greaterEq System.currentTimeMillis()) and
-						(Payments.reason eq PaymentReason.DONATION) and
-						(Payments.userId eq userId)
-			}.sumByDouble { it.money.toDouble() }
-		}
+		return transaction(Databases.loritta) { _getActiveMoneyFromDonations(userId) }
+	}
+
+	suspend fun getActiveMoneyFromDonationsAsync(userId: Long): Double {
+		return loritta.newSuspendedTransaction { _getActiveMoneyFromDonations(userId) }
+	}
+
+	private fun _getActiveMoneyFromDonations(userId: Long): Double {
+		return Payment.find {
+			(Payments.expiresAt greaterEq System.currentTimeMillis()) and
+					(Payments.reason eq PaymentReason.DONATION) and
+					(Payments.userId eq userId)
+		}.sumByDouble { it.money.toDouble() }
 	}
 }
