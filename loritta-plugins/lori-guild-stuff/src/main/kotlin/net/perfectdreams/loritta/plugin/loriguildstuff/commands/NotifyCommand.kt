@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.platform.discord.commands.discordCommand
 object NotifyCommand {
 	fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("notify", "notificar"), CommandCategory.MISC) {
 		this.hideInHelp = true
-		this.commandCheckFilter { lorittaMessageEvent, list, serverConfig, baseLocale, lorittaUser ->
+		this.commandCheckFilter { lorittaMessageEvent, _, _, _, _ ->
 			lorittaMessageEvent.guild?.idLong == 297732013006389252L
 		}
 
