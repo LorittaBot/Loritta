@@ -44,45 +44,38 @@ object ColorCommand {
                 val selection = args.joinToString(" ")
 
                 if (colors[selection] != null) {
-                    val c = colors[selection]!!
-                    val role = guild.getRoleById(c)!!
+                    val c = colors[selection]
 
-                    if (member.roles.contains(role)) {
-                        guild.removeRoleFromMember(member, role).await()
-                        reply (
-                                LorittaReply(
-                                        "Cor removida!",
-                                        ":art:"
-                                )
-                        )
-                    } else {
-                        guild.addRoleToMember(member, role).await()
-                        reply (
-                                LorittaReply(
-                                        "Cor adicionada!",
-                                        ":art:"
-                                )
-                        )
-                    }
-                }
+                    if (c != null) {
+                        val role = guild.getRoleById(c)!!
 
-                var list = ""
-
-                for (color in colors) {
-                    if (colors.containsKey(color.key)) {
-                        if (list == "") {
-                            list = color.key
+                        if (member.roles.contains(role)) {
+                            guild.removeRoleFromMember(member, role).await()
+                            reply (
+                                    LorittaReply(
+                                            "Cor removida!",
+                                            "\uD83C\uDFA8"
+                                    )
+                            )
                         } else {
-                            list += ", ${color.key}"
+                            guild.addRoleToMember(member, role).await()
+                            reply (
+                                    LorittaReply(
+                                            "Cor adicionada!",
+                                            "\uD83C\uDFA8"
+                                    )
+                            )
                         }
                     }
                 }
 
+                var list = colors.keys.joinToString(", ")
+
                 if (args.isEmpty()) {
                     reply (
                             LorittaReply(
-                                    "Cores disponíveis: $list",
-                                    ":art:"
+                                    "Cores disponíveis: `$list`",
+                                    "\uD83C\uDFA8"
                             )
                     )
                 }
