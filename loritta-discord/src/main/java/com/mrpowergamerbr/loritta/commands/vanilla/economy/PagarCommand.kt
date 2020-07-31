@@ -163,6 +163,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 				message.onReactionAddByAuthor(context) {
 					if (it.reactionEmote.name == "✅") {
 						message.removeAllFunctions()
+
 						logger.info { "Sending request to transfer sonhos between ${context.userHandle.id} and ${user.id}, $howMuch sonhos will be transferred. Is mutex locked? ${mutex.isLocked}" }
 						mutex.withLock {
 							val shard = loritta.config.clusters.first { it.id == 1L }
