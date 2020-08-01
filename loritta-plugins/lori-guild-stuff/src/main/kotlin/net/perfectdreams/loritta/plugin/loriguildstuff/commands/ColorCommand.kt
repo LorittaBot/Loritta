@@ -43,7 +43,7 @@ object ColorCommand {
                         )
                 )
             } else {
-                val selection = args.joinToString(" ")
+                val selection = args.joinToString(" ").toLowerCase()
 
                 val color = colors[selection]
 
