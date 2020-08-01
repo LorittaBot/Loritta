@@ -18,6 +18,7 @@ object SendFanartCommand {
             val member = this.member!!
 
             if (member.roles.contains(role)) {
+                guild.removeRoleFromMember(member, role).await()
                 reply(
                         LorittaReply(
                                 "Que pena, pensei que você queria enviar a sua fan art para mim!",
