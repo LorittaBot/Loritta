@@ -5,6 +5,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.discordCommand
+import org.jetbrains.kotlin.utils.doNothing
 
 object SendFanartCommand {
     fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("enviarfanart", "sendfanart"), CommandCategory.MISC) {
@@ -15,16 +16,27 @@ object SendFanartCommand {
 
         executesDiscord {
             val role = guild.getRoleById(589159900379086868L)!!
+            val firstFanartChannel = guild.getGuildChannelById(589159642160955402L)!!
             val member = this.member!!
 
             if (member.roles.contains(role)) {
-                guild.removeRoleFromMember(member, role).await()
-                reply(
-                        LorittaReply(
-                                "Que pena, pensei que você queria enviar a sua fan art para mim!",
-                                "<a:bongo_lori_triste:524894216510373888>"
-                        )
-                )
+                if (message.channel == firstFanartChannel && discordMessage.attachments.isEmpty()) {
+                    reply(
+                            LorittaReply(
+                                    "Apenas envie sua fanart, não precisa usar o comando novamente!",
+                                    "<a:lori_pat:706263175892566097>"
+                            )
+                    )
+                } else if (message.channel !== firstFanartChannel && discordMessage.attachments.isNotEmpty()) {
+                    reply(
+                            LorittaReply(
+                                    "Você deve enviar sua fanart em <#589159642160955402>!",
+                                    "<:lori_ameno:673868465433477126>"
+                            )
+                    )
+                } else if (message.channel == firstFanartChannel && discordMessage.attachments.isNotEmpty()) {
+                    doNothing()
+                }
             } else {
                 guild.addRoleToMember(member, role).await()
                 reply(
