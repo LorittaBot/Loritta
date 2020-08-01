@@ -16,7 +16,8 @@ class LoriGuildStuffPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPl
                 NotifyBackgroundsCommand.create(loritta),
                 NotifyCommand.create(loritta),
                 AddBackgroundCommand.create(loritta),
-                ColorCommand.create(loritta)
+                ColorCommand.create(loritta),
+                SendFanartCommand.create(loritta)
         )
 
         addMessageReceivedModules(AddReactionsToChannelsModule(this))
