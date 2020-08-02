@@ -1,5 +1,8 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
+import club.minnced.discord.webhook.send.WebhookEmbed
+import club.minnced.discord.webhook.send.WebhookEmbedBuilder
+import club.minnced.discord.webhook.send.WebhookMessageBuilder
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -8,10 +11,6 @@ import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import com.mrpowergamerbr.temmiewebhook.DiscordEmbed
-import com.mrpowergamerbr.temmiewebhook.DiscordMessage
-import com.mrpowergamerbr.temmiewebhook.embed.AuthorEmbed
-import com.mrpowergamerbr.temmiewebhook.embed.FooterEmbed
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
@@ -54,28 +53,23 @@ class QuoteCommand : AbstractCommand("quote", listOf("mencionar", "responder", "
 
 				val content = msg.author.asMention + " " + args.joinToString(" ").escapeMentions()
 
-				val embed = DiscordEmbed
-						.builder()
-						.description(msg.contentRaw)
-						.author(AuthorEmbed(msg.author.name + " ${context.legacyLocale["MENCIONAR_SAID"]}...", null, msg.author.effectiveAvatarUrl, null))
-						// .color(msg.member.color.rgb)
-						.footer(FooterEmbed("em #" + context.message.textChannel.name + if (context.guild.selfMember.hasPermission(Permission.MESSAGE_MANAGE)) "" else " | Não tenho permissão para deletar mensagens!", null, null))
+				val embed = WebhookEmbedBuilder()
+						.setDescription(msg.contentRaw)
+						.setAuthor(WebhookEmbed.EmbedAuthor(msg.author.name + " ${context.legacyLocale["MENCIONAR_SAID"]}...", null, msg.author.effectiveAvatarUrl))
+						// .setColor(msg.member?.color?.rgb)
+						.setFooter(WebhookEmbed.EmbedFooter("em #" + context.message.textChannel.name + if (context.guild.selfMember.hasPermission(Permission.MESSAGE_MANAGE)) "" else " | Não tenho permissão para deletar mensagens!", null))
 						.build()
 
-				val dm = DiscordMessage
-						.builder()
-						.avatarUrl(context.message.author.effectiveAvatarUrl)
-						.username(context.message.author.name)
-						.content(content)
-						.embed(embed)
+				val dm = WebhookMessageBuilder()
+						.setAvatarUrl(context.message.author.effectiveAvatarUrl)
+						.setUsername(context.message.author.name)
+						.setContent(content)
+						.addEmbeds(embed)
 						.build()
-
-
-				// dm.embeds = Arrays.asList(embed)
 
 				val temmie = getOrCreateWebhook(context.event.textChannel!!, "Quote Webhook")
 
-				temmie!!.sendMessage(dm)
+				temmie!!.send(dm)
 			} else {
 				context.sendMessage(Constants.ERROR + " **|** ${context.getAsMention(true)}" + context.legacyLocale.get("MENCIONAR_UNKNOWN_MESSAGE"))
 			}

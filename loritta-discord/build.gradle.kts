@@ -62,7 +62,7 @@ dependencies {
     api("org.jetbrains.exposed:exposed-core:0.26.1")
     api("org.jetbrains.exposed:exposed-dao:0.26.1")
     api("org.jetbrains.exposed:exposed-jdbc:0.26.1")
-    api("com.github.MrPowerGamerBR:TemmieWebhook:59de40c3b6")
+    api("club.minnced:discord-webhooks:0.3.2")
     api("org.apache.commons:commons-lang3:3.10")
     api("commons-codec:commons-codec:1.14")
     api("commons-io:commons-io:2.7")

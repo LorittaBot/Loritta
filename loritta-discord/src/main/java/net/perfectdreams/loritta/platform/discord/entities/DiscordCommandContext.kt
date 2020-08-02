@@ -1,5 +1,7 @@
 package net.perfectdreams.loritta.platform.discord.entities
 
+import club.minnced.discord.webhook.WebhookClient
+import club.minnced.discord.webhook.send.WebhookMessage
 import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.dao.ServerConfig
@@ -10,8 +12,6 @@ import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import com.mrpowergamerbr.temmiewebhook.DiscordMessage
-import com.mrpowergamerbr.temmiewebhook.TemmieWebhook
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
@@ -148,27 +148,15 @@ class DiscordCommandContext(val config: ServerConfig, val lorittaUser: LorittaUs
 		}
 	}
 
-	suspend fun sendMessage(webhook: TemmieWebhook?, message: DiscordMessage) {
+	suspend fun sendMessage(webhook: WebhookClient?, message: WebhookMessage) {
 		if (!isPrivateChannel && webhook != null) { // Se a webhook é diferente de null, então use a nossa webhook disponível!
-			webhook.sendMessage(message)
+			webhook.send(message)
 		} else { // Se não, iremos usar embeds mesmo...
 			val builder = EmbedBuilder()
 			builder.setAuthor(message.username, null, message.avatarUrl)
 			builder.setDescription(message.content)
 			builder.setFooter("Não consigo usar as permissões de webhook aqui... então estou usando o modo de pobre!", null)
 
-			for (embed in message.embeds) {
-				builder.setImage(if (embed.image != null) embed.image.url else null)
-				if (embed.title != null) {
-					builder.setTitle(builder.descriptionBuilder.toString() + "\n\n**" + embed.title + "**")
-				}
-				if (embed.description != null) {
-					builder.setDescription(builder.descriptionBuilder.toString() + "\n\n" + embed.description)
-				}
-				if (embed.thumbnail != null) {
-					builder.setThumbnail(embed.thumbnail.url)
-				}
-			}
 			sendMessage(builder.build())
 		}
 	}

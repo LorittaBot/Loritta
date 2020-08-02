@@ -1,10 +1,10 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
+import club.minnced.discord.webhook.send.WebhookMessageBuilder
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.WebhookUtils.getOrCreateWebhook
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), CommandCategory.FUN) {
@@ -317,10 +317,10 @@ class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), CommandCa
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val temmie = getOrCreateWebhook(context.event.textChannel!!, "Tio do Pavê")
 
-		context.sendMessage(temmie, DiscordMessage.builder()
-				.username("Tio do Pavê")
-				.content(context.getAsMention(true) + PIADAS.random())
-				.avatarUrl("https://loritta.website/assets/img/tio_do_pave.jpg")
+		context.sendMessage(temmie, WebhookMessageBuilder()
+				.setUsername("Tio do Pavê")
+				.setContent(context.getAsMention(true) + PIADAS.random())
+				.setAvatarUrl("https://loritta.website/assets/img/tio_do_pave.jpg")
 				.build())
 	}
 }
