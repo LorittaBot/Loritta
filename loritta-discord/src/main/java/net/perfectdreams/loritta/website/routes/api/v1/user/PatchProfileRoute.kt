@@ -13,7 +13,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.request.receiveText
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.BackgroundPayments
-import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.utils.UserPremiumPlans
@@ -23,7 +22,6 @@ import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream

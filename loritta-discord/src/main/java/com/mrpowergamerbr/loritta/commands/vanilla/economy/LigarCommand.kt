@@ -3,7 +3,6 @@ package com.mrpowergamerbr.loritta.commands.vanilla.economy
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
@@ -13,11 +12,9 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.tables.BomDiaECiaWinners
-import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.Executors
 import kotlin.math.roundToInt
 

@@ -1,21 +1,24 @@
 package com.mrpowergamerbr.loritta.utils.eventlog
 
+import club.minnced.discord.webhook.WebhookClient
+import club.minnced.discord.webhook.WebhookClientBuilder
+import club.minnced.discord.webhook.send.WebhookEmbed
+import club.minnced.discord.webhook.send.WebhookEmbedBuilder
+import club.minnced.discord.webhook.send.WebhookMessageBuilder
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.dao.StoredMessage
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxEmbed
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.webhook.DiscordMessage
-import com.mrpowergamerbr.loritta.utils.webhook.DiscordWebhook
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.EventLogConfig
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
+import java.time.Instant
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.crypto.Cipher
@@ -27,10 +30,10 @@ object EventLog {
 	val cachedEventLogWebhooks = Caffeine.newBuilder()
 			.expireAfterAccess(1L, TimeUnit.DAYS)
 			.maximumSize(10_000)
-			.build<Long, DiscordWebhook>()
+			.build<Long, WebhookClient>()
 			.asMap()
 
-	suspend fun getOrCreateEventLogWebhook(guild: Guild, eventLogConfig: EventLogConfig): DiscordWebhook? {
+	suspend fun getOrCreateEventLogWebhook(guild: Guild, eventLogConfig: EventLogConfig): WebhookClient? {
 		val channel = guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return null
 
 		val webhook = cachedEventLogWebhooks[channel.idLong]
@@ -50,11 +53,9 @@ object EventLog {
 		// Reutilizar webhook já criada
 		if (webhooks.isNotEmpty()) {
 			val firstWebhook = webhooks.first()
-			val loriWebhook = DiscordWebhook(
-					firstWebhook.url,
-					loritta.http,
-					loritta.coroutineDispatcher
-			)
+			val loriWebhook = WebhookClientBuilder(firstWebhook.url)
+					.setExecutorService(loritta.webhookExecutor)
+					.build()
 
 			cachedEventLogWebhooks[channel.idLong] = loriWebhook
 			return loriWebhook
@@ -64,11 +65,9 @@ object EventLog {
 		val newWebhook = channel.createWebhook("Loritta (Event Log)")
 				.await()
 
-		val loriWebhook = DiscordWebhook(
-				newWebhook.url,
-				loritta.http,
-				loritta.coroutineDispatcher
-		)
+		val loriWebhook = WebhookClientBuilder(newWebhook.url)
+				.setExecutorService(loritta.webhookExecutor)
+				.build()
 
 		cachedEventLogWebhooks[channel.idLong] = loriWebhook
 		return loriWebhook
@@ -127,24 +126,20 @@ object EventLog {
 					if (storedMessage != null && storedMessage.content != message.contentRaw && eventLogConfig.messageEdited) {
 						val webhook = getOrCreateEventLogWebhook(message.guild, eventLogConfig)
 						if (webhook != null) {
-							val embed = ParallaxEmbed()
-							// embed.setTimestamp(Instant.now())
-
-							embed.setColor(Color(238, 241, 0))
-
-							embed.setAuthor("${message.member?.user?.name}#${message.member?.user?.discriminator}", null, message.member?.user?.effectiveAvatarUrl)
-							embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_MESSAGE_EDITED", message.member?.asMention, storedMessage.content, message.contentRaw, message.textChannel.asMention]}")
-							embed.setFooter(locale["EVENTLOG_USER_ID", message.member?.user?.id], null)
+							val embed = WebhookEmbedBuilder()
+									.setColor(Color(238, 241, 0).rgb)
+									.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_MESSAGE_EDITED", message.member?.asMention, storedMessage.content, message.contentRaw, message.textChannel.asMention]}")
+									.setAuthor(WebhookEmbed.EmbedAuthor("${message.member?.user?.name}#${message.member?.user?.discriminator}", null, message.member?.user?.effectiveAvatarUrl))
+									.setFooter(WebhookEmbed.EmbedFooter(locale["EVENTLOG_USER_ID", message.member?.user?.id], null))
+									.setTimestamp(Instant.now())
 
 							webhook.send(
-									DiscordMessage(
-											message.guild.selfMember.user.name,
-											" ",
-											message.guild.selfMember.user.effectiveAvatarUrl,
-											listOf(
-													embed
-											)
-									)
+									WebhookMessageBuilder()
+											.setUsername(message.guild.selfMember.user.name)
+											.setAvatarUrl(message.guild.selfMember.user.effectiveAvatarUrl)
+											.setContent(" ")
+											.addEmbeds(embed.build())
+											.build()
 							)
 						}
 					}
@@ -182,24 +177,29 @@ object EventLog {
 
 				val webhook = getOrCreateEventLogWebhook(channelJoined.guild, eventLogConfig) ?: return
 
-				val embed = ParallaxEmbed()
-				// embed.setTimestamp(Instant.now())
-
-				embed.setColor(Color(35, 209, 96))
-
-				embed.setAuthor("${member.user.name}#${member.user.discriminator}", null, member.user.effectiveAvatarUrl)
-				embed.setDescription("\uD83D\uDC49\uD83C\uDFA4 **${locale["EVENTLOG_JoinedVoiceChannel", member.asMention, channelJoined.name]}**")
-				embed.setFooter(locale["EVENTLOG_USER_ID", member.user.id], null)
+				val embed = WebhookEmbedBuilder()
+						.setColor(Color(35, 209, 96).rgb)
+						.setDescription("\uD83D\uDC49\uD83C\uDFA4 **${locale["EVENTLOG_JoinedVoiceChannel", member.asMention, channelJoined.name]}**")
+						.setAuthor(WebhookEmbed.EmbedAuthor("${member.user.name}#${member.user.discriminator}", null, member.user.effectiveAvatarUrl))
+						.setFooter(WebhookEmbed.EmbedFooter(locale["EVENTLOG_USER_ID", member.user.id], null))
+						.setTimestamp(Instant.now())
 
 				webhook.send(
-						DiscordMessage(
-								channelJoined.guild.selfMember.user.name,
-								" ",
-								channelJoined.guild.selfMember.user.effectiveAvatarUrl,
-								listOf(
-										embed
-								)
-						)
+						WebhookMessageBuilder()
+								.setUsername(member.guild.selfMember.user.name)
+								.setAvatarUrl(member.guild.selfMember.user.effectiveAvatarUrl)
+								.setContent(" ")
+								.addEmbeds(embed.build())
+								.build()
+				)
+
+				webhook.send(
+						WebhookMessageBuilder()
+								.setUsername(member.guild.selfMember.user.name)
+								.setAvatarUrl(member.guild.selfMember.user.effectiveAvatarUrl)
+								.setContent(" ")
+								.addEmbeds(embed.build())
+								.build()
 				)
 				return
 			}
@@ -228,23 +228,20 @@ object EventLog {
 
 				val webhook = getOrCreateEventLogWebhook(channelLeft.guild, eventLogConfig) ?: return
 
-				val embed = ParallaxEmbed()
-				// embed.setTimestamp(Instant.now())
-				embed.setColor(Color(35, 209, 96))
-
-				embed.setAuthor("${member.user.name}#${member.user.discriminator}", null, member.user.effectiveAvatarUrl)
-				embed.setDescription("\uD83D\uDC48\uD83C\uDFA4 **${locale["EVENTLOG_LeftVoiceChannel", member.asMention, channelLeft.name]}**")
-				embed.setFooter(locale["EVENTLOG_USER_ID", member.user.id], null)
+				val embed = WebhookEmbedBuilder()
+						.setColor(Color(35, 209, 96).rgb)
+						.setDescription("\uD83D\uDC48\uD83C\uDFA4 **${locale["EVENTLOG_LeftVoiceChannel", member.asMention, channelLeft.name]}**")
+						.setAuthor(WebhookEmbed.EmbedAuthor("${member.user.name}#${member.user.discriminator}", null, member.user.effectiveAvatarUrl))
+						.setFooter(WebhookEmbed.EmbedFooter(locale["EVENTLOG_USER_ID", member.user.id], null))
+						.setTimestamp(Instant.now())
 
 				webhook.send(
-						DiscordMessage(
-								channelLeft.guild.selfMember.user.name,
-								" ",
-								channelLeft.guild.selfMember.user.effectiveAvatarUrl,
-								listOf(
-										embed
-								)
-						)
+						WebhookMessageBuilder()
+								.setUsername(member.guild.selfMember.user.name)
+								.setAvatarUrl(member.guild.selfMember.user.effectiveAvatarUrl)
+								.setContent(" ")
+								.addEmbeds(embed.build())
+								.build()
 				)
 			}
 		} catch (e: Exception) {

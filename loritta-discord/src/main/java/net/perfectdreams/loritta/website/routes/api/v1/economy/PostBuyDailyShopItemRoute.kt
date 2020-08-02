@@ -13,7 +13,10 @@ import io.ktor.request.receiveText
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.tables.*
+import net.perfectdreams.loritta.tables.BackgroundPayments
+import net.perfectdreams.loritta.tables.Backgrounds
+import net.perfectdreams.loritta.tables.DailyShopItems
+import net.perfectdreams.loritta.tables.DailyShops
 import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.utils.config.FanArtArtist

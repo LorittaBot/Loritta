@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.utils
 
 import net.perfectdreams.loritta.tables.SonhosTransaction
 import org.jetbrains.exposed.sql.insert
-import java.lang.IllegalArgumentException
 
 object PaymentUtils {
     fun addToTransactionLogNested(

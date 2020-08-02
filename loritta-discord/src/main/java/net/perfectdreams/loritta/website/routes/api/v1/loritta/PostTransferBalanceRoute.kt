@@ -6,7 +6,6 @@ import com.github.salomonbrys.kotson.long
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.economy.PagarCommand
 import com.mrpowergamerbr.loritta.tables.Dailies
-import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.jsonParser
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
@@ -14,14 +13,15 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.tables.Requires2FAChecksUsers
-import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.tables.WhitelistedTransactionIds
 import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.or
+import org.jetbrains.exposed.sql.select
 import java.time.Instant
 import java.time.ZoneId
 

@@ -1,7 +1,5 @@
 package net.perfectdreams.loritta.commands.vanilla.social
 
-import com.mrpowergamerbr.loritta.dao.Profile
-import com.mrpowergamerbr.loritta.tables.Profiles
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
