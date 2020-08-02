@@ -278,7 +278,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 			val raffleFile = File(FOLDER, "raffle.json")
 
 			if (raffleFile.exists()) {
-				val json = JSON_PARSER.parse(raffleFile.readText()).obj
+				val json = JsonParser.parseString(raffleFile.readText()).obj
 
 				RaffleThread.started = json["started"].long
 				RaffleThread.lastWinnerId = json["lastWinnerId"].nullString

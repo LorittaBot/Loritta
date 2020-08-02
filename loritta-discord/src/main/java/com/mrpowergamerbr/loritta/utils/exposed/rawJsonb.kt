@@ -9,10 +9,10 @@ import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.statements.api.PreparedStatementApi
 import org.postgresql.util.PGobject
 
-fun Table.rawJsonb(name: String, gson: Gson, jsonParser: JsonParser): Column<JsonElement>
-		= registerColumn(name, RawJson(gson, jsonParser))
+fun Table.rawJsonb(name: String, gson: Gson): Column<JsonElement>
+		= registerColumn(name, RawJson(gson))
 
-class RawJson(private val gson: Gson, private val jsonParser: JsonParser) : ColumnType() {
+class RawJson(private val gson: Gson) : ColumnType() {
 	override fun sqlType() = "jsonb"
 
 	override fun setParameter(stmt: PreparedStatementApi, index: Int, value: Any?) {
@@ -27,7 +27,7 @@ class RawJson(private val gson: Gson, private val jsonParser: JsonParser) : Colu
 			return value
 
 		return try {
-			jsonParser.parse(value.value)
+			JsonParser.parseString(value.value)
 		} catch (e: Exception) {
 			e.printStackTrace()
 			throw RuntimeException("Can't parse JSON: $value")
