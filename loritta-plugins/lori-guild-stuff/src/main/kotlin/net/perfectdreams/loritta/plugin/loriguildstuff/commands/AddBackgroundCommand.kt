@@ -30,7 +30,7 @@ import javax.imageio.ImageIO
 object AddBackgroundCommand {
 	fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("addbackground"), CommandCategory.MAGIC) {
 		this.hideInHelp = true
-		this.commandCheckFilter { lorittaMessageEvent, list, serverConfig, baseLocale, lorittaUser ->
+		this.commandCheckFilter { lorittaMessageEvent, _, _, _, _ ->
 			lorittaMessageEvent.guild?.idLong == 297732013006389252L && lorittaMessageEvent.member!!.roles.any { it.idLong == 351473717194522647L }
 		}
 
