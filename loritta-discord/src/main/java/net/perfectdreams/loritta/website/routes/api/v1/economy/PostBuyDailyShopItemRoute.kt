@@ -3,8 +3,8 @@ package net.perfectdreams.loritta.website.routes.api.v1.economy
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.obj
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.ApplicationCall
@@ -38,7 +38,7 @@ class PostBuyDailyShopItemRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLog
 
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
 		val profile = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(userIdentification.id)
-		val payload = jsonParser.parse(call.receiveText()).obj
+		val payload = JsonParser.parseString(call.receiveText()).obj
 
 		val internalName = call.parameters["internalName"]!!
 

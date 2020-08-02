@@ -4,9 +4,9 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.string
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.extensions.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
@@ -23,7 +23,7 @@ class PostReceivedTweetRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticatio
 	}
 
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
-		val json = jsonParser.parse(call.receiveText())
+		val json = JsonParser.parseString(call.receiveText())
 		val tweetId = json["tweetId"].long
 		val userId = json["userId"].long
 		val screenName = json["screenName"].string

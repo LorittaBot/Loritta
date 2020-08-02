@@ -2,11 +2,11 @@ package com.mrpowergamerbr.loritta.commands.vanilla.roblox
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.GlobalScope
@@ -88,7 +88,7 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 				val robloxCollectionsResponse = HttpRequest.get("https://www.roblox.com/users/profile/robloxcollections-json?userId=$userId")
 						.body()
 
-				val robloxCollections = jsonParser.parse(robloxCollectionsResponse).obj
+				val robloxCollections = JsonParser.parseString(robloxCollectionsResponse).obj
 
 
 				val entries = robloxCollections["CollectionsItems"].array.map {
@@ -123,7 +123,7 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 				val robloxCollectionsResponse = HttpRequest.get("https://www.roblox.com/users/profile/playerassets-json?assetTypeId=21&userId=$userId")
 						.body()
 
-				val robloxCollections = jsonParser.parse(robloxCollectionsResponse).obj
+				val robloxCollections = JsonParser.parseString(robloxCollectionsResponse).obj
 
 				val entries = robloxCollections["Assets"].array.map {
 					if (x > 275) {
@@ -192,7 +192,7 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 
 			bufferedImage = bufferedImage.getSubimage(0, 0, 333, y + 55)
 
-			val avatarResponse = jsonParser.parse(avatarBodyTask.await()).obj
+			val avatarResponse = JsonParser.parseString(avatarBodyTask.await()).obj
 
 			// {"PlayerAvatars":[{"Thumbnail":{"Final":true,"Url":"https://t0.rbxcdn.com/fff65b7dc56eefa902fe543b2665da42","RetryUrl":null,"UserId":37271405,"EndpointType":"Avatar"},"UserId":37271405},{"Thumbnail":{"Final":true,"Url":"https://t1.rbxcdn.com/2083a073d0cc644478d06d266c2cc4d6","RetryUrl":null,"UserId":315274565,"EndpointType":"Avatar"},"UserId":315274565}]}
 			val avatar = avatarResponse["PlayerAvatars"].array[0]["Thumbnail"]["Url"].string
@@ -203,17 +203,17 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 			val placeVisits = stats[1].getElementsByClass("text-lead")[0].text()
 
 			// SEGUINDO
-			val followingResponse = jsonParser.parse(followingBodyTask.await())
+			val followingResponse = JsonParser.parseString(followingBodyTask.await())
 
 			val totalFollowing = followingResponse["TotalFriends"].int
 
 			// SEGUIDORES
-			val followersResponse = jsonParser.parse(followersBodyTask.await())
+			val followersResponse = JsonParser.parseString(followersBodyTask.await())
 
 			val totalFollowers = followersResponse["TotalFriends"].int
 
 			// AMIGOS
-			val friendsResponse = jsonParser.parse(friendsBodyTask.await())
+			val friendsResponse = JsonParser.parseString(friendsBodyTask.await())
 
 			val totalFriends = friendsResponse["TotalFriends"].int
 

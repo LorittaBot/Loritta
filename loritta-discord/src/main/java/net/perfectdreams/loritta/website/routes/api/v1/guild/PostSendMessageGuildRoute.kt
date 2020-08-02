@@ -1,10 +1,10 @@
 package net.perfectdreams.loritta.website.routes.api.v1.guild
 
 import com.github.salomonbrys.kotson.*
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
@@ -36,7 +36,7 @@ class PostSendMessageGuildRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthR
 
 		com.mrpowergamerbr.loritta.utils.loritta.apiCooldown[call.request.trueIp] = System.currentTimeMillis()
 
-		val json = jsonParser.parse(call.receiveText()).obj
+		val json = JsonParser.parseString(call.receiveText()).obj
 		val channelId = json["channelId"].nullString
 		val messageString = json["message"].string
 		val customTokens = json["customTokens"].nullObj

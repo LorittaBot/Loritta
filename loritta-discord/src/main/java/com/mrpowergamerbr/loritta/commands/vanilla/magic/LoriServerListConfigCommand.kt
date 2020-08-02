@@ -4,6 +4,7 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.string
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.DonationKey
@@ -93,7 +94,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 									)
 									.body()
 
-							jsonParser.parse(
+							JsonParser.parseString(
 									body
 							)
 						} catch (e: Exception) {

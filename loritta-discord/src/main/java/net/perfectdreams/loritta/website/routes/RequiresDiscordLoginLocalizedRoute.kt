@@ -4,6 +4,7 @@ import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -120,7 +121,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 				if (state != null) {
 					// state = base 64 encoded JSON
 					val decodedState = Base64.getDecoder().decode(state).toString(Charsets.UTF_8)
-					val jsonState = jsonParser.parse(decodedState).obj
+					val jsonState = JsonParser.parseString(decodedState).obj
 					val redirectUrl = jsonState["redirectUrl"].nullString
 
 					if (redirectUrl != null) {

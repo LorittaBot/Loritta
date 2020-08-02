@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.website.routes.api.v1.user
 
 import com.github.salomonbrys.kotson.*
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Background
 import com.mrpowergamerbr.loritta.dao.ShipEffect
@@ -33,7 +34,7 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
 		loritta as Loritta
 		val profile = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(userIdentification.id)
-		val payload = jsonParser.parse(call.receiveText()).obj
+		val payload = JsonParser.parseString(call.receiveText()).obj
 
 		val config = payload["config"].obj
 

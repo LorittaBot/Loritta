@@ -4,8 +4,8 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.string
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.utils.PatchData
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
 import mu.KotlinLogging
@@ -21,7 +21,7 @@ class PostUpdateReadyRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationR
 	}
 
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
-		val json = jsonParser.parse(call.receiveText())
+		val json = JsonParser.parseString(call.receiveText())
 
 		val type = json["type"].string
 

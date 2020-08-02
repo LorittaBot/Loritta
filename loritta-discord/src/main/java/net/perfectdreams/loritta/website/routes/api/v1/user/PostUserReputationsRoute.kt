@@ -5,6 +5,7 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.string
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.Reputation
@@ -133,7 +134,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 			)
 		}
 
-		val json = jsonParser.parse(call.receiveText())
+		val json = JsonParser.parseString(call.receiveText())
 		val content = json["content"].string
 		val token = json["token"].string
 		val guildId = json["guildId"].nullString

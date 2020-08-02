@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.website.routes.api.v1.economy
 
 import com.github.salomonbrys.kotson.*
-import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.google.gson.JsonParser
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
 import mu.KotlinLogging
@@ -18,7 +18,7 @@ class PostTransferBalanceExternalRoute(loritta: LorittaDiscord) : RequiresAPIAut
 
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
 		val body = call.receiveText()
-		val json = jsonParser.parse(body)
+		val json = JsonParser.parseString(body)
 		val receiverId = json["receiverId"].string
 		val garticos = json["garticos"].long
 		val transferRate = json["transferRate"].double

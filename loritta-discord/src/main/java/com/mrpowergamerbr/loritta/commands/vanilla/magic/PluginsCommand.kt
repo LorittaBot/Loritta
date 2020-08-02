@@ -2,11 +2,11 @@ package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.jsonObject
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.plugin.LorittaPlugin
 import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.LorittaShards
 import com.mrpowergamerbr.loritta.utils.gson
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import kotlinx.coroutines.GlobalScope
@@ -192,7 +192,7 @@ class PluginsCommand : LorittaCommand(arrayOf("plugins"), category = CommandCate
 						body = payload
 					}
 
-					jsonParser.parse(
+					JsonParser.parseString(
 							body
 					)
 				} catch (e: Exception) {
@@ -229,7 +229,7 @@ class PluginsCommand : LorittaCommand(arrayOf("plugins"), category = CommandCate
 							)
 							.body()
 
-					jsonParser.parse(
+					JsonParser.parseString(
 							body
 					)
 				} catch (e: Exception) {

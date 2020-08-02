@@ -4,8 +4,8 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.string
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
@@ -21,7 +21,7 @@ class PostLorittaActionRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticatio
 		val body = call.receiveText()
 		val actionType = call.parameters["actionType"]
 
-		val json = jsonParser.parse(body)
+		val json = JsonParser.parseString(body)
 
 		when (actionType) {
 			"plugin_reload" -> {

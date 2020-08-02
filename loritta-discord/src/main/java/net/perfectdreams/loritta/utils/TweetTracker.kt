@@ -2,11 +2,11 @@ package net.perfectdreams.loritta.utils
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.jsonObject
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.LorittaShards
 import com.mrpowergamerbr.loritta.utils.gson
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -132,7 +132,7 @@ class TweetTracker(val m: Loritta) {
 											)
 											.body()
 
-									jsonParser.parse(
+									JsonParser.parseString(
 											body
 									)
 								} catch (e: Exception) {

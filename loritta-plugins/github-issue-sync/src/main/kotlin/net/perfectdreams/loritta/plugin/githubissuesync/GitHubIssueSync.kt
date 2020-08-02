@@ -221,7 +221,7 @@ class GitHubIssueSync : DiscordPlugin() {
 							)
 					)
 
-			val json = jsonParser.parse(request.body())
+			val json = JsonParser.parseString(request.body())
 
 			val issueId = json["number"].long
 			transaction(Databases.loritta) {

@@ -4,9 +4,9 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonArray
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
 import com.mrpowergamerbr.loritta.utils.extensions.success
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -37,7 +37,7 @@ object MCUtils {
 			return null
 
 		val profile = connection.body()
-		val array = jsonParser.parse(profile).array
+		val array = JsonParser.parseString(profile).array
 
 		array.forEach {
 			username2uuid[it["name"].string.toLowerCase()] = it["id"].string
@@ -62,7 +62,7 @@ object MCUtils {
 			return null
 
 		val rawJson = connection.body()
-		val profile = jsonParser.parse(rawJson).obj
+		val profile = JsonParser.parseString(rawJson).obj
 
 		val textureValue = profile["properties"].array.firstOrNull { it["name"].nullString == "textures" }
 

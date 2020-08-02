@@ -82,7 +82,7 @@ class TemmieDiscordAuth {
 		val body = response.body()
 		_println(body)
 
-		val json = TemmieDiscordAuth.jsonParser.parse(body).obj
+		val json = JsonParser.parseString(body).obj
 
 		if (json.has("error")) {
 			logger.error("Erro ao tentar fazer refresh no token para ${clientId}: $body")
@@ -102,7 +102,7 @@ class TemmieDiscordAuth {
 		val body = response.body()
 		_println(body)
 
-		val json = TemmieDiscordAuth.jsonParser.parse(body).obj
+		val json = JsonParser.parseString(body).obj
 
 		if (json.has("error")) {
 			logger.error("Erro ao tentar fazer token exchange para ${clientId}: $body")
@@ -142,7 +142,7 @@ class TemmieDiscordAuth {
 		checkStatusCode(response)
 		val body = response.body()
 
-		if (checkForRateLimit(jsonParser.parse(body)))
+		if (checkForRateLimit(JsonParser.parseString(body)))
 			return getUserIdentification()
 
 		return gson.fromJson(body)
@@ -160,7 +160,7 @@ class TemmieDiscordAuth {
 
 		val body = response.body()
 
-		if (checkForRateLimit(jsonParser.parse(body)))
+		if (checkForRateLimit(JsonParser.parseString(body)))
 			return getUserGuilds()
 
 		_println(body)

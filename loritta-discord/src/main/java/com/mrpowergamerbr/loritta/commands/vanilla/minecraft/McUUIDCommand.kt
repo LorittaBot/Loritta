@@ -2,11 +2,11 @@ package com.mrpowergamerbr.loritta.commands.vanilla.minecraft
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.string
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.util.*
@@ -31,7 +31,7 @@ class McUUIDCommand : AbstractCommand("mcuuid", category = CommandCategory.MINEC
 	        val data = HttpRequest.get("https://api.mojang.com/users/profiles/minecraft/$player").body()
 
 	        try {
-                val json = jsonParser.parse(data).asJsonObject
+                val json = JsonParser.parseString(data).asJsonObject
 
 	            context.sendMessage(context.getAsMention(true) + context.legacyLocale["MCUUID_RESULT", player, LorittaUtils.getUUID(json["id"].string)])
             } catch (e: IllegalStateException) {

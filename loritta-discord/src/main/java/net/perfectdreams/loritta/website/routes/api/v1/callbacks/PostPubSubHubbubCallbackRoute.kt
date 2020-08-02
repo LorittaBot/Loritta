@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.website.routes.api.v1.callbacks
 
 import com.github.salomonbrys.kotson.*
 import com.google.common.cache.CacheBuilder
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
 import com.mrpowergamerbr.loritta.utils.*
@@ -194,7 +195,7 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 
 			val userId = call.parameters["userid"]!!.toLong()
 
-			val payload = jsonParser.parse(response)
+			val payload = JsonParser.parseString(response)
 			val data = payload["data"].array
 
 			val guildIds = mutableListOf<Long>()

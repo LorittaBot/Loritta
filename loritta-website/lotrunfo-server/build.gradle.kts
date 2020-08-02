@@ -25,6 +25,7 @@ dependencies {
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0-M1")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-debug:1.3.0-M1")
     api("com.google.guava:guava:28.0-jre")
+    api("com.google.code.gson:gson:2.8.6")
     api(kotlin("stdlib-jdk8"))
     api(kotlin("script-util"))
     api(kotlin("compiler"))

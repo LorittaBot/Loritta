@@ -9,7 +9,6 @@ import com.google.gson.JsonParser
 import com.google.gson.annotations.SerializedName
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import io.ktor.client.HttpClient
 import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.header
@@ -194,7 +193,7 @@ class TwitchAPI(val clientId: String,
 			val payload = makeTwitchApiRequest(url).readText()
 			logger.trace { payload }
 
-			val response = jsonParser.parse(payload).obj
+			val response = JsonParser.parseString(payload).obj
 
 			try {
 				val data = response["data"].array
@@ -250,7 +249,7 @@ class TwitchAPI(val clientId: String,
 			val payload = makeTwitchApiRequest(url).readText()
 			logger.trace { payload }
 
-			val response = jsonParser.parse(payload).obj
+			val response = JsonParser.parseString(payload).obj
 
 			try {
 				val data = response["data"].array
@@ -277,7 +276,7 @@ class TwitchAPI(val clientId: String,
 		val payload = makeTwitchApiRequest("https://api.twitch.tv/helix/games?id=$gameId")
 				.readText()
 
-		val response = jsonParser.parse(payload).obj
+		val response = JsonParser.parseString(payload).obj
 
 		val data = response["data"].array
 

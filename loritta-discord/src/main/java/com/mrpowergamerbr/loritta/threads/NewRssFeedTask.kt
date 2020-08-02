@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.threads
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.jsonObject
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.rometools.rome.io.ParsingFeedException
@@ -125,7 +126,7 @@ class NewRssFeedTask : Runnable {
 													.send(feedPayload)
 													.body()
 
-											jsonParser.parse(
+											JsonParser.parseString(
 													body
 											)
 										} catch (e: Exception) {

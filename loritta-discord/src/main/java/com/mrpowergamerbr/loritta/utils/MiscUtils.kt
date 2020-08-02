@@ -197,7 +197,7 @@ object MiscUtils {
 		val body = HttpRequest.get("https://www.google.com/recaptcha/api/siteverify?secret=${serverToken}&response=$clientToken")
 				.body()
 
-		val jsonParser = jsonParser.parse(body).obj
+		val jsonParser = JsonParser.parseString(body).obj
 		return jsonParser["success"].bool
 	}
 

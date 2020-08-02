@@ -4,6 +4,7 @@ import com.github.salomonbrys.kotson.*
 import com.google.common.cache.CacheBuilder
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.extensions.await
@@ -266,7 +267,7 @@ class LorittaShards {
 					response.readText()
 				}
 
-				jsonParser.parse(
+				JsonParser.parseString(
 						body
 				)
 			} catch (e: Exception) {
@@ -288,7 +289,7 @@ class LorittaShards {
 					response.readText()
 				}
 
-				jsonParser.parse(
+				JsonParser.parseString(
 						body
 				)
 			} catch (e: Exception) {
@@ -314,7 +315,7 @@ class LorittaShards {
 						logger.info { "Successfully got a response from ${it.getUserAgent()} for $path" }
 
 						val body = response.readText()
-						jsonParser.parse(
+						JsonParser.parseString(
 								body
 						)
 					}
@@ -366,7 +367,7 @@ class LorittaShards {
 						}
 
 						val body = response.readText()
-						jsonParser.parse(
+						JsonParser.parseString(
 								body
 						)
 					}
@@ -409,7 +410,7 @@ class LorittaShards {
 						}
 
 						val body = response.readText()
-						jsonParser.parse(
+						JsonParser.parseString(
 								body
 						)
 					}
@@ -465,7 +466,7 @@ class LorittaShards {
 			response.readText()
 		}
 
-		val json = jsonParser.parse(body).obj
+		val json = JsonParser.parseString(body).obj
 		if (!json.has("id"))
 			return null
 

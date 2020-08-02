@@ -3,11 +3,11 @@ package net.perfectdreams.loritta.website.routes.api.v1.youtube
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.extensions.isValidUrl
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.ApplicationCall
@@ -82,7 +82,7 @@ class GetChannelInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1
 				val httpRequest = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?key=$key&forUsername=$username&part=id")
 
 				val body = httpRequest.body()
-				val jsonObject = jsonParser.parse(body).obj
+				val jsonObject = JsonParser.parseString(body).obj
 
 				val items = jsonObject["items"].array
 				if (items.size() == 0) {
@@ -123,7 +123,7 @@ class GetChannelInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1
 			val response = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=$channelId&key=$key")
 					.body()
 
-			val youTubeJsonResponse = jsonParser.parse(response).obj
+			val youTubeJsonResponse = JsonParser.parseString(response).obj
 			val responseError = MiscUtils.getResponseError(youTubeJsonResponse)
 			val error = responseError == "dailyLimitExceeded" || responseError == "quotaExceeded"
 

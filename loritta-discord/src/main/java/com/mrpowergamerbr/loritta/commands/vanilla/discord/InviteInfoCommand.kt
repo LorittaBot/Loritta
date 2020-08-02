@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
@@ -37,7 +38,7 @@ class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCatego
 					.userAgent(Constants.USER_AGENT)
 					.body()
 
-			val payload = jsonParser.parse(inviteBody).obj
+			val payload = JsonParser.parseString(inviteBody).obj
 
 			val code = payload["code"]
 

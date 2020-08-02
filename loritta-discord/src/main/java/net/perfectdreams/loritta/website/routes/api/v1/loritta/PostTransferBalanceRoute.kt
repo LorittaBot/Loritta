@@ -3,10 +3,10 @@ package net.perfectdreams.loritta.website.routes.api.v1.loritta
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.long
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.economy.PagarCommand
 import com.mrpowergamerbr.loritta.tables.Dailies
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
 import kotlinx.coroutines.sync.Mutex
@@ -33,7 +33,7 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
 		loritta as Loritta
-		val json = jsonParser.parse(call.receiveText())
+		val json = JsonParser.parseString(call.receiveText())
 		val giverId = json["giverId"].long
 		val receiverId = json["receiverId"].long
 		val howMuch = json["howMuch"].long

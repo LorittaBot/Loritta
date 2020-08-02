@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.economy
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.threads.RaffleThread
@@ -80,7 +81,7 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 					)
 					.body()
 
-			val json = jsonParser.parse(body)
+			val json = JsonParser.parseString(body)
 
 			val status = BuyRaffleTicketStatus.valueOf(json["status"].string)
 
@@ -134,7 +135,7 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 				.readTimeout(loritta.config.loritta.clusterReadTimeout)
 				.body()
 
-		val json = jsonParser.parse(body)
+		val json = JsonParser.parseString(body)
 
 		val lastWinnerId = json["lastWinnerId"].nullString
 				?.toLongOrNull()

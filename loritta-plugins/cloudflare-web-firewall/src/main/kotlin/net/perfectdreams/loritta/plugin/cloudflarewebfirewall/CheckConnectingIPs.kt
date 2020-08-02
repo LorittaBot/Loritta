@@ -116,7 +116,7 @@ class CheckConnectingIPs(val m: CloudflareWebFirewall, val config: CloudflareCon
 					val currentCfExpression = File(m.dataFolder, "cloudflare-blocked.json")
 							.readText()
 
-					val elements = jsonParser.parse(currentCfExpression).array
+					val elements = JsonParser.parseString(currentCfExpression).array
 
 					for ((ip, connections) in banConnectedIp) {
 						if (elements.any { it["type"].string == "ipBlock" && it["ip"].string == ip })

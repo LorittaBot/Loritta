@@ -3,9 +3,9 @@ package com.mrpowergamerbr.loritta.utils.temmieyoutube
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.obj
 import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.MiscUtils
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import org.apache.commons.lang3.StringUtils
 import java.io.UnsupportedEncodingException
@@ -28,7 +28,7 @@ class TemmieYouTube {
 
 		val body = req.body()
 
-		val searchJson = jsonParser.parse(body).obj
+		val searchJson = JsonParser.parseString(body).obj
 		val responseError = MiscUtils.getResponseError(searchJson)
 		val error = responseError == "dailyLimitExceeded" || responseError == "quotaExceeded"
 

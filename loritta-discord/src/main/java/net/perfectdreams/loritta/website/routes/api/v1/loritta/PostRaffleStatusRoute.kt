@@ -4,9 +4,9 @@ import com.github.salomonbrys.kotson.int
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.vanilla.economy.LoraffleCommand
 import com.mrpowergamerbr.loritta.threads.RaffleThread
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
 import kotlinx.coroutines.sync.Mutex
@@ -25,7 +25,7 @@ class PostRaffleStatusRoute(loritta: LorittaDiscord) : RequiresAPIAuthentication
 	}
 
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
-		val json = jsonParser.parse(call.receiveText()).obj
+		val json = JsonParser.parseString(call.receiveText()).obj
 
 		val userId = json["userId"].string
 		val quantity = json["quantity"].int

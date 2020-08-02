@@ -5,6 +5,7 @@ import com.github.salomonbrys.kotson.double
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.network.Databases
@@ -184,7 +185,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 									)
 									.body()
 
-							val result = jsonParser.parse(
+							val result = JsonParser.parseString(
 									body
 							).obj
 

@@ -4,6 +4,7 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import org.jooby.WebSocket
 import kotlin.concurrent.thread
@@ -346,7 +347,7 @@ class Game {
 	fun join(userIdentification: TemmieDiscordAuth.UserIdentification, ws: WebSocket) {
 		ws.onMessage {
 			println("Received message within Game.kt! (status = $status) ${it.value()}")
-			val parsed = jsonParser.parse(it.value())
+			val parsed = JsonParser.parseString(it.value())
 
 			var statusFromClient = parsed["status"].string
 

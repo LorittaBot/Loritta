@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.music
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -394,7 +395,7 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 		val request = HttpRequest.get("https://api.vagalume.com.br/search.artmus?apikey=lolidkthekey&q=${artist.encodeToUrl()} ${musicName.encodeToUrl()}&limit=1")
 				.body()
 
-		val payload = jsonParser.parse(request)
+		val payload = JsonParser.parseString(request)
 		val response = payload["response"].obj
 
 		val numFound = response["numFound"].int
@@ -412,14 +413,14 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 		val musicRequest = HttpRequest.get("https://api.vagalume.com.br/search.php?musid=$id&apikey=lolidkthekey")
 				.body()
 
-		val musicPayload = jsonParser.parse(musicRequest)
+		val musicPayload = JsonParser.parseString(musicRequest)
 		val music = musicPayload["mus"].array[0]
 		val artistId = musicPayload["art"]["id"].string
 
 		val artistRequest = HttpRequest.get("https://api.vagalume.com.br/image.php?bandID=$artistId&limit=1")
 				.body()
 
-		val artistPayload = jsonParser.parse(artistRequest).obj
+		val artistPayload = JsonParser.parseString(artistRequest).obj
 
 		val images = artistPayload["images"].nullArray
 

@@ -78,7 +78,6 @@ val loritta get() = LorittaLauncher.loritta
 val lorittaShards get() = LorittaLauncher.loritta.lorittaShards
 
 val gson get() = Loritta.GSON
-val jsonParser get() = Loritta.JSON_PARSER
 
 fun String.isValidSnowflake(): Boolean {
 	try {

@@ -252,7 +252,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 				.header("Authorization", loritta.config.fortniteApi.token)
 				.body()
 
-		return jsonParser.parse(shop).obj
+		return JsonParser.parseString(shop).obj
 	}
 
 	fun getNewsData(gameMode: String, localeId: String): JsonObject {
@@ -264,7 +264,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 				.header("Authorization", loritta.config.fortniteApi.token)
 				.body()
 
-		return jsonParser.parse(news).obj
+		return JsonParser.parseString(news).obj
 	}
 
 	private fun generateAndSaveStoreImage(parse: JsonObject, locale: BaseLocale, fileName: String) {
