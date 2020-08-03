@@ -17,6 +17,8 @@ class LoriGuildStuffPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPl
                 NotifyCommand.create(loritta),
                 AddBackgroundCommand.create(loritta),
                 ColorCommand.create(loritta),
+                SendFanartCommand.create(loritta),
+                FastBanCommand.create(loritta),
                 SendFanartCommand.create(loritta)
         )
 
