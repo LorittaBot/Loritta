@@ -31,14 +31,14 @@ object MalUtils {
     }
 
     private fun queryAnime(q: String): String? {
-        val document = requestDom("search/all?q=${q.encodeToUrl()}")
+        val document = requestDom("anime.php?q=${q.encodeToUrl()}")
         try {
             // The first article would be the anime queries
             // For now, we only need the first anime found from queries
-            val animeArticle = document!!.select("article > .list > .information > a").first()
+            val animeArticle = document!!.select("table[cellpadding=\"0\"][cellspacing=\"0\"] > tbody > tr > td > a[href][class*=\"hoverinfo_trigger\"]").first()
             // Now we just need to get the "a" element and then, get the "href" attribute
             if (animeArticle != null) logger.debug { "Got the element \"a\"!" }
-            val result = animeArticle!!.attr("href")
+            val result = animeArticle!!.attributes()["href"]
 
             return if (MalConstants.MAL_ANIMEURL_REGEX.matches(result)) {
                 result
