@@ -1,5 +1,8 @@
 package net.perfectdreams.loritta.plugin.loriguildstuff.commands
 
+import com.mrpowergamerbr.loritta.commands.vanilla.administration.AdminUtils.ModerationConfigSettings
+import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
@@ -34,42 +37,48 @@ object FastBanCommand {
                                 "Você não pode usar o meu super comandinho de banir as pessoas com motivos bonitinhos ;w;"
                         )
                 )
-            }
-
-            if (userToBePunished == null) {
-                reply(
-                        LorittaReply(
-                                "Cadê a menção fera? ;)"
-                        )
-                )
             } else {
-                if (reason == null) {
+                if (userToBePunished == null) {
                     reply(
                             LorittaReply(
-                                    "Cadê o motivo fera? ;)"
+                                    "Cadê a menção fera? ;)"
                             )
                     )
                 } else {
-                    var fancyReason = punishmentReasons[reason]
-
-                    if (fancyReason != null) {
+                    if (reason == null) {
                         reply(
                                 LorittaReply(
-                                        "Punindo ${userToBePunished.asMention} por `$fancyReason`..."
+                                        "Cadê o motivo fera? ;)"
                                 )
                         )
+                    } else {
+                        var fancyReason = punishmentReasons[reason]
 
-                        val proof = args.getOrNull(2)
+                        if (fancyReason != null) {
+                            reply(
+                                    LorittaReply(
+                                            "Punindo ${userToBePunished.asMention} por `$fancyReason`..."
+                                    )
+                            )
 
-                        if (proof != null) {
-                            fancyReason = "[$fancyReason]($proof)"
+                            val proof = args.getOrNull(2)
+
+                            if (proof != null) {
+                                fancyReason = "[$fancyReason]($proof)"
+                            }
+
+                            BanCommand.ban(
+                                    ModerationConfigSettings(sendPunishmentViaDm = true, sendPunishmentToPunishLog = true),
+                                    guild,
+                                    author.user,
+                                    LegacyBaseLocale(),
+                                    userToBePunished.handle,
+                                    fancyReason,
+                                    false,
+                                    0
+
+                            )
                         }
-
-                        guild.ban(
-                                userToBePunished.handle,
-                                0,
-                                fancyReason
-                        ).queue()
                     }
                 }
             }
