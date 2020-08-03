@@ -5,7 +5,6 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.discordCommand
-import org.jetbrains.kotlin.utils.doNothing
 
 object SendFanartCommand {
     fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("enviarfanart", "sendfanart"), CommandCategory.MISC) {
@@ -52,7 +51,7 @@ object SendFanartCommand {
                 guild.addRoleToMember(member, role).await()
                 reply(
                         LorittaReply(
-                                "Agora você pode enviar a sua fanart para mim no <#738918304063815751>! Não se esqueça de ler as <#738918304063815751> antes!",
+                                "Agora você pode enviar a sua fanart para mim no <#589159642160955402>! Não se esqueça de ler as <#557629480391409666> antes!",
                                 "<a:super_lori_happy:524893994874961940>"
                         )
                 )
