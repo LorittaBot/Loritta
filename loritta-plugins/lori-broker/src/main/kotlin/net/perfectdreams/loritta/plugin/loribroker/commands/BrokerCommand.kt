@@ -39,7 +39,7 @@ object BrokerCommand : DSLCommandBase {
 				val tickerId = stock["short_name"]!!.content
 				val tickerName = plugin.fancyTickerNames[tickerId]
 
-				if (stock["current_session"]!!.content == "out_of_session")
+				if (stock["current_session"]!!.content != LoriBrokerPlugin.MARKET)
 					embed.addField(
 							"${Emotes.DO_NOT_DISTURB} `${stock["short_name"]?.content}` ($tickerName)",
 							"${plugin.convertReaisToSonhos(stock["lp"]?.double!!)} sonhos",

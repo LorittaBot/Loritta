@@ -28,7 +28,6 @@ class LoriBrokerPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlugin
 	val tradingApi: TradingViewAPI
 		get() = _tradingApi ?: throw RuntimeException("TradingView API not started!")
 
-
 	val validStocksCodes = listOf(
 			"OIBR3", // Oi
 			"USDBRL", // Dólar
@@ -128,5 +127,7 @@ class LoriBrokerPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlugin
 	companion object {
 		private val logger = KotlinLogging.logger {}
 		private val BROKER_COLOR = Color(23, 62, 163)
+		const val OUT_OF_SESSION = "out_of_session" // Inactive stock
+		const val MARKET = "market" // Active stock, can be bought/sold
 	}
 }

@@ -39,11 +39,11 @@ object BrokerPortfolioCommand : DSLCommandBase {
 				val totalSpent = stocks.sumByLong { it[BoughtStocks.price] }
 				val totalGainsIfSoldNow = plugin.convertReaisToSonhos(ticker["lp"]!!.double) * stocks.size
 				val diff = totalGainsIfSoldNow - totalSpent
-				val emoji = if (diff > 0)
-					"\uD83D\uDD3C"
-				else if (0 > diff)
-					"\uD83D\uDD3D"
-				else "⏹️"
+				val emoji = when {
+					diff > 0 -> "\uD83D\uDD3C"
+					0 > diff -> "\uD83D\uDD3D"
+					else -> "⏹️"
+				}
 
 				embed.addField(
 						"$emoji `${ticker["short_name"]?.content}` ($tickerName)",

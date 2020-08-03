@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.plugin.loribroker.commands
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
 import kotlinx.coroutines.sync.withLock
+import kotlinx.serialization.json.content
 import kotlinx.serialization.json.double
 import mu.KotlinLogging
 import net.perfectdreams.loritta.api.commands.ArgumentType
@@ -46,6 +47,9 @@ object BrokerSellStockCommand : DSLCommandBase {
 
 			val ticker = plugin.tradingApi
 					.getOrRetrieveTicker(tickerId, listOf("lp", "description"))
+
+			if (ticker["current_session"]!!.content != LoriBrokerPlugin.MARKET)
+				fail(locale["commands.economy.broker.outOfSession"])
 
 			val quantity = this.args.getOrNull(1) ?: "1"
 
