@@ -25,7 +25,7 @@ import kotlin.coroutines.suspendCoroutine
  */
 class TradingViewRelayConnector(
         val urlString: String,
-        val outdatedPingTime: Long = 15_000,
+        val outdatedPingTime: Long = 7_500,
         val outdatedStocksTime: Long = 60_000
 ) {
     companion object {
