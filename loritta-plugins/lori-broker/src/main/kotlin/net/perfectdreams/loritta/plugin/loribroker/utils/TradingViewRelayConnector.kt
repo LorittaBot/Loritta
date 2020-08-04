@@ -77,7 +77,7 @@ class TradingViewRelayConnector(
                             val sentAt = packet.substringBefore('-')
                             val content = packet.substringAfter("-")
 
-                            logger.info { packet }
+                            logger.debug { packet }
 
                             if (content == "pong") {
                                 lastPingPacketReceivedAt = sentAt.toLong()
