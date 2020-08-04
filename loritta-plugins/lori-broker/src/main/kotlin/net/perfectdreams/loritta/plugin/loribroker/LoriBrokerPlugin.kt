@@ -2,8 +2,6 @@ package net.perfectdreams.loritta.plugin.loribroker
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.network.Databases
-import io.ktor.client.request.get
-import io.ktor.client.request.header
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import mu.KotlinLogging
@@ -16,16 +14,15 @@ import net.perfectdreams.loritta.plugin.loribroker.commands.BrokerCommand
 import net.perfectdreams.loritta.plugin.loribroker.commands.BrokerPortfolioCommand
 import net.perfectdreams.loritta.plugin.loribroker.commands.BrokerSellStockCommand
 import net.perfectdreams.loritta.plugin.loribroker.tables.BoughtStocks
-import net.perfectdreams.tradingviewscraper.TradingViewAPI
+import net.perfectdreams.loritta.plugin.loribroker.utils.TradingViewRelayConnector
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
-import java.io.File
 import kotlin.math.floor
 
 class LoriBrokerPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(name, loritta) {
-	private var _tradingApi: TradingViewAPI? = null
-	val tradingApi: TradingViewAPI
+	private var _tradingApi: TradingViewRelayConnector? = null
+	val tradingApi: TradingViewRelayConnector
 		get() = _tradingApi ?: throw RuntimeException("TradingView API not started!")
 
 	val validStocksCodes = listOf(
@@ -74,17 +71,9 @@ class LoriBrokerPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlugin
 		loritta as Loritta
 
 		launch {
-			val sessionId = File(dataFolder, "session-id.txt")
-					.readText()
+			_tradingApi = TradingViewRelayConnector("wss://tvrs.perfectdreams.net/")
 
-			val result = loritta.http.get<String>("https://br.tradingview.com/quote_token/") {
-				header("Cookie", "sessionid=$sessionId;")
-			}.removePrefix("\"")
-					.removeSuffix("\"")
-
-			_tradingApi = TradingViewAPI(result)
-
-			tradingApi.connect()
+			tradingApi.start()
 		}
 
 		transaction(Databases.loritta) {

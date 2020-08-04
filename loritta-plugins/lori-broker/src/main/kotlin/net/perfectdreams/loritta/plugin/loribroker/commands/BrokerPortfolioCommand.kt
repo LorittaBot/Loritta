@@ -3,8 +3,6 @@ package net.perfectdreams.loritta.plugin.loribroker.commands
 import com.mrpowergamerbr.loritta.Loritta
 import kotlinx.serialization.json.content
 import kotlinx.serialization.json.double
-import mu.KotlinLogging
-import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.plugin.loribroker.LoriBrokerPlugin
 import net.perfectdreams.loritta.plugin.loribroker.commands.base.DSLCommandBase
 import net.perfectdreams.loritta.plugin.loribroker.tables.BoughtStocks
