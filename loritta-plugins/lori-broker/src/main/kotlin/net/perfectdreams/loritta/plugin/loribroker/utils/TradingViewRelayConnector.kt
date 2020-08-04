@@ -10,6 +10,7 @@ import io.ktor.http.cio.websocket.close
 import io.ktor.http.cio.websocket.readText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -21,7 +22,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 /**
- * Connects to a TradingView relay server
+ * TradingView Relay server connector
  */
 class TradingViewRelayConnector(
         val urlString: String,
@@ -34,17 +35,23 @@ class TradingViewRelayConnector(
         }
         private val logger = KotlinLogging.logger {}
     }
+
     private val tickerCallbacks = ConcurrentHashMap<String, MutableList<StockCallback>>()
-    var lastStocksPacketReceivedAt = 0L
-    var lastPingPacketReceivedAt = 0L
-    var tickers = ConcurrentHashMap<String, JsonObject?>()
+    private var lastStocksPacketReceivedAt = 0L
+    private var lastPingPacketReceivedAt = 0L
+    private var tickers = ConcurrentHashMap<String, JsonObject?>()
+    private var session: ClientWebSocketSession? = null
+    private var isActive = false
+    private var isClosed = false
 
     /**
-     * Starts the TradingView Relay client, it will automatically reconnect if it loses connection
+     * Starts the TradingView Relay client, this will connect to the TradingView Relay Server.
+     * If connection is lost, the client will try reconnecting every 1s until it succeeds.
      */
     fun start() {
         GlobalScope.launch(Dispatchers.IO) {
-            while (true) {
+            this@TradingViewRelayConnector.isActive = true
+            while (this@TradingViewRelayConnector.isActive) {
                 try {
                     connect()
                 } catch (e: Exception) { logger.warn(e) { "Disconnected due to exception! Trying again in 1s..." } }
@@ -54,10 +61,12 @@ class TradingViewRelayConnector(
         }
     }
 
-    var session: ClientWebSocketSession? = null
-
-    suspend fun connect() {
+    /**
+     * Connects to the TradingView Relay Server
+     */
+    private suspend fun connect() {
         client.webSocket(urlString) {
+            isClosed = false
             session = this
             try {
                 for (frame in incoming) {
@@ -105,14 +114,34 @@ class TradingViewRelayConnector(
                 logger.warn(e) { "Exception while reading frames" }
             }
         }
+        isClosed = true
     }
 
+    /**
+     * Shuts down the currently active TradingView Relay client
+     */
     suspend fun shutdown() {
+        isActive = false
         session?.close()
     }
 
+    /**
+     * Gets ticker data for the [tickerId]
+     *
+     * @param tickerId the ticker ID
+     *
+     * @throws DisconnectedRelayException if the client is not connected to the relay
+     * @throws PingStocksTimeoutException if the last received packet was sent more than [lastPingPacketReceivedAt]ms ago
+     * @throws OutdatedStocksDataException if the last received stocks data was sent more than [lastStocksPacketReceivedAt]ms ago
+     *
+     * @return the ticker data or null if it wasn't received yet.
+     */
     fun getTicker(tickerId: String): JsonObject? {
         return if (tickers.containsKey(tickerId)) {
+            val session = session
+            if (session == null || isClosed)
+                throw DisconnectedRelayException("Can't get $tickerId ticker data because I'm disconnected from the relay server!")
+
             // We don't need to check for stale data if the ticker doesn't exist
             val diffLastPing = (System.currentTimeMillis() - lastPingPacketReceivedAt)
             if (diffLastPing >= outdatedPingTime)
@@ -127,6 +156,13 @@ class TradingViewRelayConnector(
             null
     }
 
+    /**
+     * Gets or retrieves ticker data for the [tickerId]
+     *
+     * @param tickerId the ticker ID
+     * @see getTicker
+     * @return the ticker data
+     */
     suspend fun getOrRetrieveTicker(tickerId: String, requiredFields: List<String> = listOf("lp", "description", "current_session")): JsonObject {
         val ticker = getTicker(tickerId)
         if (ticker != null && !(requiredFields.any { field -> !ticker.containsKey(field) }))
@@ -137,6 +173,13 @@ class TradingViewRelayConnector(
         }
     }
 
+    /**
+     * Calls back when a ticker is updated
+     *
+     * @param tickerId the ticker ID
+     * @param requiredFields what fields are required in the ticker data object for this callback be activated
+     * @param continuation the coroutine continuation
+     */
     fun onTickerUpdate(tickerId: String, requiredFields: List<String>, continuation: Continuation<JsonObject>) {
         tickerCallbacks.getOrPut(tickerId) { mutableListOf() }.apply {
             this.add(StockCallback(requiredFields, continuation))
