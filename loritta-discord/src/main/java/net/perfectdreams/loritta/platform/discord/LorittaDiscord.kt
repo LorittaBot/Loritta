@@ -29,14 +29,10 @@ import io.ktor.http.userAgent
 import kotlinx.coroutines.Dispatchers
 import mu.KotlinLogging
 import net.perfectdreams.loritta.api.LorittaBot
-import net.perfectdreams.loritta.commands.vanilla.economy.SonhosTopCommand
-import net.perfectdreams.loritta.commands.vanilla.economy.SonhosTopLocalCommand
-import net.perfectdreams.loritta.commands.vanilla.economy.TransactionsCommand
+import net.perfectdreams.loritta.commands.vanilla.economy.*
 import net.perfectdreams.loritta.commands.vanilla.magic.LoriToolsCommand
-import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaTopCommand
-import net.perfectdreams.loritta.commands.vanilla.social.RankGlobalCommand
-import net.perfectdreams.loritta.commands.vanilla.social.RepTopCommand
-import net.perfectdreams.loritta.commands.vanilla.social.XpNotificationsCommand
+import net.perfectdreams.loritta.commands.vanilla.social.*
+import net.perfectdreams.loritta.commands.vanilla.administration.*
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandMap
 import net.perfectdreams.loritta.platform.discord.plugin.JVMPluginManager
 import net.perfectdreams.loritta.platform.discord.utils.JVMLorittaAssets
@@ -69,6 +65,8 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         register(LoriToolsCommand.create(discordLoritta))
         register(SonhosTopCommand.create(discordLoritta))
         register(SonhosTopLocalCommand.create(discordLoritta))
+
+        register(BanInfoCommand.create(discordLoritta))
 
         register(BomDiaECiaTopCommand.create(discordLoritta))
         register(RankGlobalCommand.create(discordLoritta))
