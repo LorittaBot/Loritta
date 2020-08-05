@@ -52,6 +52,7 @@ object Databases {
 
 		config.maximumPoolSize = LorittaLauncher.loritta.config.database.maximumPoolSize
 		config.minimumIdle = LorittaLauncher.loritta.config.database.minimumIdle
+		// https://github.com/JetBrains/Exposed/wiki/DSL#batch-insert
 		config.addDataSourceProperty("reWriteBatchedInserts", "true")
 
 		// config.addDataSourceProperty("prepStmtCacheSize", "500")
