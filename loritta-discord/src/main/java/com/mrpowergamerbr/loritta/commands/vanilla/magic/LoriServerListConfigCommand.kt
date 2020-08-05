@@ -339,6 +339,46 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				context.sendMessage(strBuilder.toString())
 				return
 			}
+
+			if (arg0 == "economy") {
+				val value = arg1!!.toBoolean()
+
+				val shards = loritta.config.clusters
+
+				shards.map {
+					GlobalScope.async(loritta.coroutineDispatcher) {
+						try {
+							val body = HttpRequest.post("https://${it.getUrl()}/api/v1/loritta/action/economy")
+									.userAgent(loritta.lorittaCluster.getUserAgent())
+									.header("Authorization", loritta.lorittaInternalApiKey.name)
+									.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
+									.readTimeout(loritta.config.loritta.clusterReadTimeout)
+									.send(
+											gson.toJson(
+													jsonObject(
+															"enabled" to value
+													)
+											)
+									)
+									.body()
+
+							JsonParser.parseString(
+									body
+							)
+						} catch (e: Exception) {
+							LorittaShards.logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
+							throw ClusterOfflineException(it.id, it.name)
+						}
+					}
+				}
+
+				context.reply(
+						LoriReply(
+								"Alterando status de economia em todos os clusters..."
+						)
+				)
+				return
+			}
 		}
 	}
 }

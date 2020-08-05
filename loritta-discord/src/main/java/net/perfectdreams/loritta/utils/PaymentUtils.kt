@@ -2,8 +2,11 @@ package net.perfectdreams.loritta.utils
 
 import net.perfectdreams.loritta.tables.SonhosTransaction
 import org.jetbrains.exposed.sql.insert
+import java.lang.RuntimeException
 
 object PaymentUtils {
+    var economyEnabled = true
+
     fun addToTransactionLogNested(
             quantity: Long,
             reason: SonhosPaymentReason,
@@ -22,4 +25,6 @@ object PaymentUtils {
             it[SonhosTransaction.reason] = reason
         }
     }
+
+    class EconomyDisabledException : RuntimeException()
 }

@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.tables.Dailies
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.tables.BannedUsers
+import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.TakingMoreSonhosThanAllowedException
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
@@ -81,6 +82,9 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 			checksBeforeAction: ((Profile) -> (Boolean))? = null,
 			refreshOnSuccess: Boolean = true
 	) {
+		if (PaymentUtils.economyEnabled)
+			throw PaymentUtils.EconomyDisabledException()
+
 		val id = id
 
 		if (refreshBeforeAction)
@@ -110,6 +114,9 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 			checksBeforeAction: ((Profile) -> (Boolean))? = null,
 			refreshOnSuccess: Boolean = true
 	) {
+		if (PaymentUtils.economyEnabled)
+			throw PaymentUtils.EconomyDisabledException()
+
 		val id = id
 
 		if (refreshBeforeAction)
