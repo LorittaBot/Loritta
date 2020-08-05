@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.plugin.loribroker
 
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.network.Databases
 import kotlinx.coroutines.runBlocking
@@ -18,6 +19,7 @@ import net.perfectdreams.loritta.plugin.loribroker.utils.TradingViewRelayConnect
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
+import java.util.concurrent.TimeUnit
 import kotlin.math.floor
 
 class LoriBrokerPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(name, loritta) {
@@ -60,8 +62,11 @@ class LoriBrokerPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlugin
 			"ETHBRL" to "Etherum / Reais",
 			"BTCBRL" to "Bitcoin / Reais"
 	)
-	// Only allow one user to buy/sell stocks at the same time, to avoid synchronization issues
-	val mutex = Mutex()
+	// Only allow one transaction per user to buy/sell stocks at the same time, to avoid synchronization issues
+	val mutexes = Caffeine.newBuilder()
+			.expireAfterAccess(5, TimeUnit.MINUTES)
+			.build<Long, Mutex>()
+			.asMap()
 	val aliases = listOf(
 			"broker",
 			"corretora"

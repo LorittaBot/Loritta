@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.plugin.loribroker.commands
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
+import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.content
 import kotlinx.serialization.json.double
@@ -51,6 +52,10 @@ object BrokerSellStockCommand : DSLCommandBase {
 			if (ticker["current_session"]!!.content != LoriBrokerPlugin.MARKET)
 				fail(locale["commands.economy.broker.outOfSession"])
 
+			val mutex = plugin.mutexes.getOrPut(user.idLong, { Mutex() })
+			if (mutex.isLocked)
+				fail(locale["commands.economy.broker.alreadyExecutingAction"])
+
 			val quantity = this.args.getOrNull(1) ?: "1"
 
 			val number = NumberUtils.convertShortenedNumberToLong(quantity)
@@ -59,7 +64,7 @@ object BrokerSellStockCommand : DSLCommandBase {
 			if (0 >= number)
 				fail(locale["commands.economy.brokerSell.zeroValue"], Constants.ERROR)
 
-			plugin.mutex.withLock {
+			mutex.withLock {
 				val selfStocks = loritta.newSuspendedTransaction {
 					BoughtStocks.select {
 						BoughtStocks.user eq user.idLong and (BoughtStocks.ticker eq tickerId)
