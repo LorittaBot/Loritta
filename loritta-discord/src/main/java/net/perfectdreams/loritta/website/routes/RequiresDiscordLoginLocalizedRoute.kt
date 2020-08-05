@@ -6,8 +6,11 @@ import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.WebsiteUtils
+import com.mrpowergamerbr.loritta.utils.encodeToUrl
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import io.ktor.application.ApplicationCall
 import io.ktor.http.ContentType

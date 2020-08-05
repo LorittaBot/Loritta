@@ -7,7 +7,6 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
