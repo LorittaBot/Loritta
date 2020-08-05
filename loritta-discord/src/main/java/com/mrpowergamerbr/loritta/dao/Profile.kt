@@ -82,7 +82,7 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 			checksBeforeAction: ((Profile) -> (Boolean))? = null,
 			refreshOnSuccess: Boolean = true
 	) {
-		if (PaymentUtils.economyEnabled)
+		if (!PaymentUtils.economyEnabled)
 			throw PaymentUtils.EconomyDisabledException()
 
 		val id = id
@@ -114,7 +114,7 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 			checksBeforeAction: ((Profile) -> (Boolean))? = null,
 			refreshOnSuccess: Boolean = true
 	) {
-		if (PaymentUtils.economyEnabled)
+		if (!PaymentUtils.economyEnabled)
 			throw PaymentUtils.EconomyDisabledException()
 
 		val id = id
