@@ -52,6 +52,7 @@ object Databases {
 
 		config.maximumPoolSize = LorittaLauncher.loritta.config.database.maximumPoolSize
 		config.minimumIdle = LorittaLauncher.loritta.config.database.minimumIdle
+		config.addDataSourceProperty("reWriteBatchedInserts", "true")
 
 		// config.addDataSourceProperty("prepStmtCacheSize", "500")
 		// config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")
