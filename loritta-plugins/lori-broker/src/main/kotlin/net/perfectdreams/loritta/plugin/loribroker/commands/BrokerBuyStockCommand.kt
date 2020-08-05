@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.NumberUtils
 import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
+import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.insert
 
 object BrokerBuyStockCommand : DSLCommandBase {
@@ -73,13 +74,11 @@ object BrokerBuyStockCommand : DSLCommandBase {
 
 			mutex.withLock {
 				loritta.newSuspendedTransaction {
-					repeat(number.toInt()) {
-						BoughtStocks.insert {
-							it[BoughtStocks.user] = user.idLong
-							it[BoughtStocks.ticker] = tickerId
-							it[BoughtStocks.price] = valueOfStock
-							it[BoughtStocks.boughtAt] = now
-						}
+					BoughtStocks.batchInsert(0 until number) {
+						this[BoughtStocks.user] = user.idLong
+						this[BoughtStocks.ticker] = tickerId
+						this[BoughtStocks.price] = valueOfStock
+						this[BoughtStocks.boughtAt] = now
 					}
 
 					lorittaUser.profile.takeSonhosNested(howMuchValue)
