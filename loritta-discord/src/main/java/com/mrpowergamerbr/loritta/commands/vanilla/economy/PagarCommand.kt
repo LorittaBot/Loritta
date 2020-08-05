@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -155,54 +156,64 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 								Emotes.LORI_RICH
 						),
 						LoriReply(
-								context.locale["commands.economy.pay.clickToAcceptTheTransaction", "✅"],
+								context.locale["commands.economy.pay.clickToAcceptTheTransaction", user.asMention, "✅"],
 								"🤝",
 								mentionUser = false
 						)
 				)
 
-				message.onReactionAddByAuthor(context) {
+				message.onReactionAdd(context) {
 					if (it.reactionEmote.name == "✅") {
-						message.removeAllFunctions()
-
-						logger.info { "Sending request to transfer sonhos between ${context.userHandle.id} and ${user.id}, $howMuch sonhos will be transferred. Is mutex locked? ${mutex.isLocked}" }
 						mutex.withLock {
-							val shard = loritta.config.clusters.first { it.id == 1L }
+							// Multiple users can click on the message at the same time, so inside the mutex we need to check if the
+							// message is still in the interaction cache.
+							//
+							// If it isn't, then it means that the message was already processed!
+							if (loritta.messageInteractionCache.containsKey(it.messageIdLong)) {
+								val usersThatReactedToTheMessage = it.reaction.retrieveUsers().await()
 
-							val body = HttpRequest.post("https://${shard.getUrl()}/api/v1/loritta/transfer-balance")
-									.userAgent(loritta.lorittaCluster.getUserAgent())
-									.header("Authorization", loritta.lorittaInternalApiKey.name)
-									.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
-									.readTimeout(loritta.config.loritta.clusterReadTimeout)
-									.send(
-											gson.toJson(
-													jsonObject(
-															"giverId" to context.userHandle.idLong,
-															"receiverId" to user.idLong,
-															"howMuch" to howMuch
+								if (context.userHandle in usersThatReactedToTheMessage && user in usersThatReactedToTheMessage) {
+									message.removeAllFunctions()
+
+									logger.info { "Sending request to transfer sonhos between ${context.userHandle.id} and ${user.id}, $howMuch sonhos will be transferred. Is mutex locked? ${mutex.isLocked}" }
+									val shard = loritta.config.clusters.first { it.id == 1L }
+
+									val body = HttpRequest.post("https://${shard.getUrl()}/api/v1/loritta/transfer-balance")
+											.userAgent(loritta.lorittaCluster.getUserAgent())
+											.header("Authorization", loritta.lorittaInternalApiKey.name)
+											.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
+											.readTimeout(loritta.config.loritta.clusterReadTimeout)
+											.send(
+													gson.toJson(
+															jsonObject(
+																	"giverId" to context.userHandle.idLong,
+																	"receiverId" to user.idLong,
+																	"howMuch" to howMuch
+															)
 													)
 											)
-									)
-									.body()
+											.body()
 
-							val result = JsonParser.parseString(
-									body
-							).obj
+									val result = JsonParser.parseString(
+											body
+									).obj
 
-							val status = PayStatus.valueOf(result["status"].string)
+									val status = PayStatus.valueOf(result["status"].string)
 
-							if (status == PayStatus.SUCCESS) {
-								val finalMoney = result["finalMoney"].double
-								context.reply(
-										LoriReply(
-												locale["PAY_TransactionComplete", user.asMention, finalMoney, if (finalMoney == 1.0) {
-													locale["ECONOMY_Name"]
-												} else {
-													locale["ECONOMY_NamePlural"]
-												}],
-												"\uD83D\uDCB8"
+									if (status == PayStatus.SUCCESS) {
+										val finalMoney = result["finalMoney"].double
+										context.reply(
+												LoriReply(
+														locale["PAY_TransactionComplete", user.asMention, finalMoney, if (finalMoney == 1.0) {
+															locale["ECONOMY_Name"]
+														} else {
+															locale["ECONOMY_NamePlural"]
+														}],
+														"\uD83D\uDCB8"
+												)
 										)
-								)
+									}
+								}
 							}
 						}
 					}
