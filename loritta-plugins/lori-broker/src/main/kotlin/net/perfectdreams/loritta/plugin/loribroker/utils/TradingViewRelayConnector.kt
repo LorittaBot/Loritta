@@ -10,7 +10,6 @@ import io.ktor.http.cio.websocket.close
 import io.ktor.http.cio.websocket.readText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
