@@ -6,9 +6,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.content
 import kotlinx.serialization.json.double
-import mu.KotlinLogging
 import net.perfectdreams.loritta.api.commands.ArgumentType
-import net.perfectdreams.loritta.api.commands.SilentCommandException
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.plugin.loribroker.LoriBrokerPlugin
@@ -19,7 +17,6 @@ import net.perfectdreams.loritta.utils.NumberUtils
 import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import org.jetbrains.exposed.sql.batchInsert
-import org.jetbrains.exposed.sql.insert
 
 object BrokerBuyStockCommand : DSLCommandBase {
 	override fun command(plugin: LoriBrokerPlugin, loritta: Loritta) = create(
@@ -38,7 +35,7 @@ object BrokerBuyStockCommand : DSLCommandBase {
 		executesDiscord {
 			val tickerId = this.args.getOrNull(0)
 					?.toUpperCase()
-					?: run { explain(); throw SilentCommandException() }
+					?: explainAndExit()
 
 			if (!plugin.validStocksCodes.any { it == this.args[0] })
 				fail(locale["commands.economy.broker.invalidTickerId", locale["commands.economy.brokerBuy.baseExample", serverConfig.commandPrefix]])

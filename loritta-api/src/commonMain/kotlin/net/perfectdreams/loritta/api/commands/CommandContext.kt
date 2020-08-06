@@ -53,12 +53,10 @@ abstract class CommandContext(
 
 	suspend fun validate(image: Image?): Image {
 		if (image == null) {
-			if (args.isEmpty()) {
-				explain()
-				throw SilentCommandException()
-			} else {
+			if (args.isEmpty())
+				explainAndExit()
+			else
 				throw CommandException(locale["commands.noValidImageFound", Emotes.LORI_CRYING], Emotes.LORI_CRYING.toString())
-			}
 		}
 
 		return image
@@ -77,5 +75,18 @@ abstract class CommandContext(
 		return user
 	}
 
+	/**
+	 * Sends the command help to the current channel
+	 */
 	abstract suspend fun explain()
+
+	/**
+	 * Sends the command help to the current channel and halts the command flow
+	 *
+	 * @see explain
+	 */
+	suspend fun explainAndExit(): Nothing {
+		explain()
+		throw SilentCommandException()
+	}
 }
