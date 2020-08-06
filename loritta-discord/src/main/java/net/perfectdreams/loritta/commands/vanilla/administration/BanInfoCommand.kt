@@ -25,11 +25,11 @@ object BanInfoCommand {
         botRequiredPermissions = listOf(Permission.BAN_MEMBERS)
 
         executesDiscord {
-            val userid = args.getOrNull(0) ?: explainAndExit()
+            val userId = args.getOrNull(0) ?: explainAndExit()
             val authorAsMention = this.member!!.asMention
-            val banInformations = userid.toLong().let { guild.retrieveBanById(it).await() }
+            val banInformation = userId.toLong().let { guild.retrieveBanById(it).await() }
 
-            if (banInformations == null) {
+            if (banInformation == null) {
                 reply(
                         LorittaReply(
                                 locale["commands.userDoesNotExist", args[0]]
@@ -38,9 +38,9 @@ object BanInfoCommand {
             } else {
                 val embed = EmbedBuilder()
                         .setTitle(locale["commands.moderation.baninfo.title"])
-                        .setThumbnail(banInformations.user.avatarUrl)
-                        .addField(locale["commands.moderation.baninfo.user"], banInformations.user.asTag, false)
-                        .addField(locale["commands.moderation.baninfo.reason"], "${banInformations.reason}", false)
+                        .setThumbnail(banInformation.user.avatarUrl)
+                        .addField(locale["commands.moderation.baninfo.user"], banInformation.user.asTag, false)
+                        .addField(locale["commands.moderation.baninfo.reason"], "${banInformation.reason}", false)
                         .setColor(Constants.DISCORD_BLURPLE)
                 sendMessage(authorAsMention, embed.build())
             }
