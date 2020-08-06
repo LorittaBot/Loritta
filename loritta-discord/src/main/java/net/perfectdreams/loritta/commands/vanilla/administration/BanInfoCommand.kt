@@ -25,32 +25,24 @@ object BanInfoCommand {
         botRequiredPermissions = listOf(Permission.BAN_MEMBERS)
 
         executesDiscord {
-            val userID = args.getOrNull(0)
-            val getAuthorAsMention = this.member!!.asMention
+            val userid = args.getOrNull(0) ?: explainAndExit()
+            val authorAsMention = this.member!!.asMention
+            val banInformations = userid.toLong().let { guild.retrieveBanById(it).await() }
 
-            if (userID == null || userID.isEmpty()) {
+            if (banInformations == null) {
                 reply(
                         LorittaReply(
-                                locale["commands.userDoesNotExist", "`${userID}`"]
+                                locale["commands.userDoesNotExist", args[0]]
                         )
                 )
             } else {
-                val getBanInformations = userID.toLong().let { guild.retrieveBanById(it).await() }
-                if (getBanInformations == null) {
-                    reply(
-                            LorittaReply(
-                                    locale["commands.userDoesNotExist", args[0]]
-                            )
-                    )
-                } else {
-                    val embed = EmbedBuilder()
-                            .setTitle(locale["commands.moderation.baninfo.title"])
-                            .setThumbnail(getBanInformations.user.avatarUrl)
-                            .addField(locale["commands.moderation.baninfo.user"], getBanInformations.user.asTag, false)
-                            .addField(locale["commands.moderation.baninfo.reason"], "${getBanInformations.reason}", false)
-                            .setColor(Constants.DISCORD_BLURPLE)
-                    sendMessage(getAuthorAsMention, embed.build())
-                }
+                val embed = EmbedBuilder()
+                        .setTitle(locale["commands.moderation.baninfo.title"])
+                        .setThumbnail(banInformations.user.avatarUrl)
+                        .addField(locale["commands.moderation.baninfo.user"], banInformations.user.asTag, false)
+                        .addField(locale["commands.moderation.baninfo.reason"], "${banInformations.reason}", false)
+                        .setColor(Constants.DISCORD_BLURPLE)
+                sendMessage(authorAsMention, embed.build())
             }
         }
     }
