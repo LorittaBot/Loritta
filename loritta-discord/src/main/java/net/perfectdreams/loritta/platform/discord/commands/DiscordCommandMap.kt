@@ -367,12 +367,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 					return true
 
 				if (e is CommandException) {
-					context.reply(
-							LorittaReply(
-									e.reason,
-									e.prefix
-							)
-					)
+					context.reply(e.reply)
 					return true
 				}
 

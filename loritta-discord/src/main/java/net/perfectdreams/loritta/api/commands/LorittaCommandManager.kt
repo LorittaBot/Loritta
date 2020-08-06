@@ -23,8 +23,8 @@ abstract class LorittaCommandManager(val loritta: LorittaDiscord) : CommandManag
 			if (throwable is CommandException) {
 				context.reply(
 						LoriReply(
-								throwable.reason,
-								throwable.prefix
+								throwable.reply.message,
+								throwable.reply.prefix
 						)
 				)
 				return@addThrowableListener CommandContinuationType.CANCEL
