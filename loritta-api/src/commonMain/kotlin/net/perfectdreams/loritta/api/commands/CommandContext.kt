@@ -38,7 +38,8 @@ abstract class CommandContext(
 		return sendMessage(message.toString())
 	}
 
-	suspend fun fail(message: String, prefix: String? = null): Nothing = throw CommandException(message, prefix ?: Emotes.LORI_CRYING.toString())
+	fun fail(message: String, prefix: String? = null): Nothing = throw CommandException(message, prefix ?: Emotes.LORI_CRYING.toString())
+	fun fail(reply: LorittaReply): Nothing = throw CommandException(reply)
 
 	fun getUserMention(addSpace: Boolean): String {
 		return message.author.asMention + (if (addSpace) " " else "")
@@ -46,7 +47,7 @@ abstract class CommandContext(
 
 	inline fun <reified T> checkType(source: CommandContext): T {
 		if (source !is T)
-			throw CommandException(locale["commands.commandNotSupportedInThisPlatform"], Emotes.LORI_CRYING.toString())
+			fail(locale["commands.commandNotSupportedInThisPlatform"], Emotes.LORI_CRYING.toString())
 
 		return source
 	}
@@ -56,7 +57,7 @@ abstract class CommandContext(
 			if (args.isEmpty())
 				explainAndExit()
 			else
-				throw CommandException(locale["commands.noValidImageFound", Emotes.LORI_CRYING], Emotes.LORI_CRYING.toString())
+				fail(locale["commands.noValidImageFound", Emotes.LORI_CRYING], Emotes.LORI_CRYING.toString())
 		}
 
 		return image
@@ -64,12 +65,10 @@ abstract class CommandContext(
 
 	suspend fun validate(user: User?, argumentIndex: Int = 0): User {
 		if (user == null) {
-			if (args.isEmpty()) {
-				explain()
-				throw SilentCommandException()
-			} else {
-				throw CommandException(locale["commands.userDoesNotExist", "`${args.getOrNull(argumentIndex)?.replace("`", "")}`"], Emotes.LORI_CRYING.toString())
-			}
+			if (args.isEmpty())
+				explainAndExit()
+			else
+				fail(locale["commands.userDoesNotExist", "`${args.getOrNull(argumentIndex)?.replace("`", "")}`"], Emotes.LORI_CRYING.toString())
 		}
 
 		return user
