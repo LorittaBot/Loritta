@@ -78,6 +78,15 @@ object BrokerSellStockCommand : DSLCommandBase {
 				val totalEarnings = howMuchWillBePaidToTheUser - stocksThatWillBeSold.sumByLong { it[BoughtStocks.price] }
 
 				loritta.newSuspendedTransaction {
+					// To avoid selling "phantom" stocks, we need to check if the user has enough stocks inside the transaction
+					// If the stock value changed, then it means that the user bought (or sold!) stocks while this transaction was being executed
+					val canBeExecuted = BoughtStocks.select {
+						BoughtStocks.user eq user.idLong and (BoughtStocks.ticker eq tickerId)
+					}.count() == selfStocks.size.toLong()
+
+					if (!canBeExecuted)
+						fail(locale["commands.economy.brokerSell.boughtStocksWhileSelling"])
+
 					BoughtStocks.deleteWhere {
 						BoughtStocks.id inList stocksThatWillBeSold.map { it[BoughtStocks.id] }
 					}

@@ -142,7 +142,7 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 				val creator = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(creatorId)
 				loritta.newSuspendedTransaction {
 					val value = (price.toDouble() * 0.2).toLong()
-					profile.takeSonhosNested(value)
+					creator.addSonhosNested(value)
 					PaymentUtils.addToTransactionLogNested(
 							value,
 							SonhosPaymentReason.PROFILE,
