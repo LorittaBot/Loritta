@@ -2,8 +2,10 @@ package net.perfectdreams.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
@@ -27,22 +29,25 @@ object BanInfoCommand {
         executesDiscord {
             val userId = args.getOrNull(0) ?: explainAndExit()
             val authorAsMention = this.member!!.asMention
-            val banInformation = userId.toLong().let { guild.retrieveBanById(it).await() }
 
-            if (banInformation == null) {
-                reply(
-                        LorittaReply(
-                                locale["commands.userDoesNotExist", args[0]]
-                        )
-                )
+
+            if (userId.isValidSnowflake()) {
+                try {
+                    val banInformation = userId.let { guild.retrieveBanById(it.toLong()).await() }
+                    val embed = EmbedBuilder()
+                            .setTitle(locale["commands.moderation.baninfo.title"])
+                            .setThumbnail(banInformation.user.avatarUrl)
+                            .addField(locale["commands.moderation.baninfo.user"], banInformation.user.asTag, false)
+                            .addField(locale["commands.moderation.baninfo.reason"], "${banInformation.reason}", false)
+                            .setColor(Constants.DISCORD_BLURPLE)
+                    sendMessage(authorAsMention, embed.build())
+                } catch(e: ErrorResponseException) {
+                    if (e.errorCode == 10026) {
+                        fail(locale["commands.moderation.baninfo.banDoesNotExist"])
+                    }
+                }
             } else {
-                val embed = EmbedBuilder()
-                        .setTitle(locale["commands.moderation.baninfo.title"])
-                        .setThumbnail(banInformation.user.avatarUrl)
-                        .addField(locale["commands.moderation.baninfo.user"], banInformation.user.asTag, false)
-                        .addField(locale["commands.moderation.baninfo.reason"], "${banInformation.reason}", false)
-                        .setColor(Constants.DISCORD_BLURPLE)
-                sendMessage(authorAsMention, embed.build())
+                fail(locale["commands.userDoesNotExist", userId])
             }
         }
     }
