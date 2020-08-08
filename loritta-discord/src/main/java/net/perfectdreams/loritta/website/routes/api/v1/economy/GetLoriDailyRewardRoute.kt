@@ -18,7 +18,6 @@ import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriWebCode
-import com.mrpowergamerbr.loritta.website.LoriWebCodes
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.ApplicationCall
 import io.ktor.http.HttpStatusCode
@@ -401,7 +400,6 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				)
 			}
 
-			payload["api:code"] = LoriWebCodes.SUCCESS
 			payload["receivedDailyAt"] = receivedDailyAt
 			payload["dailyPayout"] = dailyPayout
 			payload["currentBalance"] = lorittaProfile.money
