@@ -41,13 +41,21 @@ class GetSelfUserProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 		val profileCreator = creator.constructors.first().newInstance() as ProfileCreator
 
 		val userId = userIdentification.id.toLong()
-		val avatarUrl = if (userIdentification.avatar != null) {
+		// Disabled because Loritta loads the avatar URL from the user identification cache
+		// This causes issues when loading the "profile" page when the user changed the avatar recently
+		// So for now we are going to always load Discord's default avatar
+		/* val avatarUrl = if (userIdentification.avatar != null) {
 			val extension = if (userIdentification.avatar.startsWith("a_")) { // Avatares animados no Discord começam com "_a"
 				"gif"
 			} else { "png" }
 
 			"https://cdn.discordapp.com/avatars/${userId}/${userIdentification.avatar}.${extension}?size=256"
 		} else {
+			val avatarId = userId % 5
+
+			"https://cdn.discordapp.com/embed/avatars/$avatarId.png?size=256"
+		} */
+		val avatarUrl = run {
 			val avatarId = userId % 5
 
 			"https://cdn.discordapp.com/embed/avatars/$avatarId.png?size=256"
