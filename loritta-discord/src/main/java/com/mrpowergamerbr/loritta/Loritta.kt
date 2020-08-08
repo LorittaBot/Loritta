@@ -23,7 +23,6 @@ import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordInstanceConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralInstanceConfig
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.locale.Gender
-import com.mrpowergamerbr.loritta.utils.temmieyoutube.TemmieYouTube
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import kotlinx.coroutines.*
 import mu.KotlinLogging
@@ -89,8 +88,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		var GSON = Gson() // Gson
 		@JvmStatic
 		val JSON_PARSER = JsonParser() // Json Parser
-		@JvmStatic
-		lateinit var youtube: TemmieYouTube // API key do YouTube, usado em alguns comandos
 
 		private val logger = KotlinLogging.logger {}
 	}
@@ -224,8 +221,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 
 		loadLocales()
 		loadLegacyLocales()
-
-		youtube = TemmieYouTube()
 
 		logger.info { "Success! Loading fan arts..." }
 		if (loritta.isMaster) // Apenas o master cluster deve carregar as fan arts, os outros clusters irão carregar pela API
