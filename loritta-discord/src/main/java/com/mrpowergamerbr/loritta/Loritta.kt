@@ -332,7 +332,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					BomDiaECiaWinners,
 					TrackedTwitterAccounts,
 					TrackedRssFeeds,
-					DefaultRssFeeds,
 					SonhosTransaction,
 					TrackedYouTubeAccounts,
 					TrackedTwitchAccounts,
