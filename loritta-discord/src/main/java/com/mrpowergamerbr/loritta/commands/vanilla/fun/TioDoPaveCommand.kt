@@ -310,7 +310,8 @@ class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), CommandCa
 				"Qual é a profissão mais frustrante do mundo?\n\nProfessor de Natação. Sabe porquê? Ele ensina, ensina e ensina e o aluno NADA.",
 				"Não vou contar a piada da nuvem...\n\nPorque é o cumulus ! PS: essa piada é passageira",
 				"Duas baleias entraram num bar\n\nComeçaram a discutir e se mataram com pistolas. No outro dia o jornal noticia a calamidade: Baleia baleia baleia",
-				"Qual a diferença entre ignorância e apatia?\n\nEu não sei e eu não me importo."
+				"Qual a diferença entre ignorância e apatia?\n\nEu não sei e eu não me importo.",
+				"Se cuidar de um cachorro já é difícil...\n\nImagine Dragons"
 		)
 	}
 
