@@ -14,6 +14,7 @@ import net.perfectdreams.spicymorenitta.utils.TingleOptions
 import net.perfectdreams.spicymorenitta.utils.select
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.MessageEvent
+import org.w3c.dom.Audio
 import utils.*
 import kotlin.browser.document
 import kotlin.browser.window

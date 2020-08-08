@@ -3,7 +3,7 @@ package net.perfectdreams.spicymorenitta.trunfo
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.js.onClickFunction
-import net.perfectdreams.spicymorenitta.utils.Audio
+import org.w3c.dom.Audio
 import net.perfectdreams.spicymorenitta.utils.Logging
 import net.perfectdreams.spicymorenitta.utils.select
 import org.w3c.dom.Element

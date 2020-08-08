@@ -8,7 +8,7 @@ import kotlinx.html.div
 import kotlinx.html.dom.create
 import kotlinx.html.h1
 import kotlinx.html.js.onClickFunction
-import net.perfectdreams.spicymorenitta.utils.Audio
+import org.w3c.dom.Audio
 import net.perfectdreams.spicymorenitta.utils.onDOMReady
 import org.w3c.dom.HTMLElement
 import kotlin.browser.document

@@ -26,6 +26,7 @@ import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
+import org.w3c.dom.Audio
 import utils.*
 import kotlin.browser.document
 import kotlin.browser.window

@@ -20,7 +20,7 @@ import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
 import net.perfectdreams.spicymorenitta.utils.*
 import org.w3c.dom.*
-import utils.Audio
+import org.w3c.dom.Audio
 import kotlin.browser.document
 import kotlin.browser.window
 import kotlin.dom.clear
