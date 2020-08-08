@@ -30,7 +30,7 @@ object BanInfoCommand {
         executesDiscord {
             val userId = args.getOrNull(0) ?: explainAndExit()
 
-            if (userId.isValidSnowflake())
+            if (!userId.isValidSnowflake())
                 fail(locale["commands.userDoesNotExist", userId])
             
             try {
