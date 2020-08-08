@@ -216,10 +216,6 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 			)
 		}
 
-		val messageBuilder = MessageBuilder()
-				.append(context.getAsMention(true))
-				.setEmbed(embed.build())
-
 		val message = context.sendMessage(context.getAsMention(true), embed.build())
 		message.addReaction("❓").queue()
 		message.onReactionAddByAuthor(context) {
