@@ -123,6 +123,75 @@ class ServerSupportPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlu
 					delay(60_000)
 				}
 			}
+
+			launch {
+				while (true) {
+					val channel = lorittaShards.getGuildById(420626099257475072L)
+							?.getTextChannelById(420628148044955648L)
+
+					if (channel != null) {
+						val lastSentMessage = channel.history.retrievePast(1)
+								.await()
+								.firstOrNull()
+
+						var resend = true
+						if (lastSentMessage != null) {
+							if (lastSentMessage.author.idLong == 395935916952256523L && lastSentMessage.contentRaw.contains("READ THIS BEFORE ASKING SOMETHING!")) {
+								resend = false
+							} else {
+								// last message check
+								val diff = System.currentTimeMillis() - (lastSentMessage.timeCreated.toEpochSecond() * 1000)
+
+								resend = diff >= 300000L // Only resend after five minutes since the last message
+							}
+						}
+
+						if (resend) {
+							val replies = listOf(
+									LoriReply(
+											"<a:rat_jam:720643637033304442> **READ THIS BEFORE ASKING SOMETHING!** <a:rat_jam:720643637033304442>",
+											prefix = "<:lori_nice:726845783344939028>",
+											mentionUser = false
+									),
+									LoriReply(
+											"**Remember that's *Loritta's support***: We will not help you with different problems (for example: problems with other bots, problems with Discord, etc.)",
+											"<a:lori_fight:731871119400894525>",
+											mentionUser = false
+									),
+									LoriReply(
+											"Loritta was made for portuguese speakers, but we trying to bring all of her cuteness and fun to other languages! We know that some parts are not translated yet but we're trying to improve it, be patient and sorry for the inconvenience ;w;",
+											"<:sad_cat_thumbs_up:686370257308483612>",
+											mentionUser = false
+									),
+									LoriReply(
+											"Se você for brasileiro e quiser suporte em português, vá em <#512377546990551040> e entre no meu servidor de suporte!",
+											"\uD83C\uDDE7\uD83C\uDDF7",
+											mentionUser = false
+									),
+									LoriReply(
+											"** If you are going to question \"aaaaw, lori's down <:smol_lori_putassa:395010059157110785>\"**: See <#420627916028641280> for more informations!",
+											"<:smol_lori_putassa:395010059157110785>",
+											mentionUser = false
+									),
+									LoriReply(
+											"** If you will question if something changed/added/removed**:  See the <#420627916028641280> to know!",
+											"<a:lori_dabbing:727888868711334287>",
+											mentionUser = false
+									)
+							)
+
+							channel.sendMessage(
+									MessageBuilder()
+											.setAllowedMentions(listOf(Message.MentionType.USER, Message.MentionType.CHANNEL, Message.MentionType.EMOTE))
+											.setContent(replies.joinToString("\n", transform = { it.build() } ))
+											.build()
+							).await()
+						}
+					}
+
+					delay(60_000)
+				}
+			}
 		}
 	}
 
