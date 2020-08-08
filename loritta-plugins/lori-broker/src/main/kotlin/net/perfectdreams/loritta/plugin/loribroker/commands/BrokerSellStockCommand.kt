@@ -12,10 +12,7 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.plugin.loribroker.LoriBrokerPlugin
 import net.perfectdreams.loritta.plugin.loribroker.commands.base.DSLCommandBase
 import net.perfectdreams.loritta.plugin.loribroker.tables.BoughtStocks
-import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.NumberUtils
-import net.perfectdreams.loritta.utils.PaymentUtils
-import net.perfectdreams.loritta.utils.SonhosPaymentReason
+import net.perfectdreams.loritta.utils.*
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.select
@@ -57,7 +54,7 @@ object BrokerSellStockCommand : DSLCommandBase {
 			val quantity = this.args.getOrNull(1) ?: "1"
 
 			val number = NumberUtils.convertShortenedNumberToLong(quantity)
-					?: fail(locale["commands.invalidNumber", quantity], Emotes.LORI_CRYING.toString())
+					?: GenericReplies.invalidNumber(this, quantity)
 
 			if (0 >= number)
 				fail(locale["commands.economy.brokerSell.zeroValue"], Constants.ERROR)

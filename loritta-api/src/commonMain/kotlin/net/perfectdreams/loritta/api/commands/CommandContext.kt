@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.api.commands
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.api.LorittaBot
+import net.perfectdreams.loritta.api.entities.LorittaEmote
 import net.perfectdreams.loritta.api.entities.Message
 import net.perfectdreams.loritta.api.entities.User
 import net.perfectdreams.loritta.api.messages.LorittaMessage
@@ -37,6 +38,16 @@ abstract class CommandContext(
 		}
 		return sendMessage(message.toString())
 	}
+
+	/**
+	 * Throws a [CommandException], halting command execution
+	 *
+	 * @param message the message that will be sent
+	 * @oaram prefix  the message's prefix as a emote (see [LorittaReply.prefix])
+	 * @see fail
+	 * @see CommandException
+	 */
+	fun fail(message: String, prefix: LorittaEmote): Nothing = throw CommandException(message, prefix.toString())
 
 	/**
 	 * Throws a [CommandException], halting command execution
