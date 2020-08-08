@@ -346,8 +346,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					SentYouTubeVideoIds,
 					SpicyStacktraces,
 					BannedIps,
-					WhitelistedTransactionIds,
-					Requires2FAChecksUsers,
 					StarboardConfigs,
 					MiscellaneousConfigs,
 					EventLogConfigs,

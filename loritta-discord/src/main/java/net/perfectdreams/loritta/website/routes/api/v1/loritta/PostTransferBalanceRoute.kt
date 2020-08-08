@@ -13,14 +13,12 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.tables.WhitelistedTransactionIds
 import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
 import java.time.Instant
 import java.time.ZoneId
@@ -81,27 +79,17 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 				val giverDailyIp = lastGiverDailyAt[Dailies.ip]
 
 				if (receiverDailyIp == giverDailyIp) {
-					val isWhitelisted = loritta.newSuspendedTransaction {
-						WhitelistedTransactionIds.select {
-							WhitelistedTransactionIds.userId eq giverId or (WhitelistedTransactionIds.userId eq receiverId)
-						}.firstOrNull()
+					logger.warn { "Same IP detected for $receiverId and $giverId ($receiverDailyIp), you should take a look into it..." }
+
+					// Mesmo IP, vamos dar ban em todas as contas do IP atual
+					val sameIpDaily = loritta.newSuspendedTransaction {
+						com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.ip eq lastReceiverDailyAt[Dailies.ip] and (Dailies.receivedAt greaterEq todayAtMidnight) }.orderBy(Dailies.receivedAt, SortOrder.DESC)
+								.toList()
 					}
 
-					if (isWhitelisted != null) {
-						logger.warn { "Same IP detected for $receiverId and $giverId ($receiverDailyIp), but the IP is whitelisted! Ignoring..." }
-					} else {
-						logger.warn { "Same IP detected for $receiverId and $giverId ($receiverDailyIp), banning all accounts with the same IP..." }
+					val receivedByIds = sameIpDaily.map { it[Dailies.receivedById] }
 
-						// Mesmo IP, vamos dar ban em todas as contas do IP atual
-						val sameIpDaily = loritta.newSuspendedTransaction {
-							com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.ip eq lastReceiverDailyAt[Dailies.ip] and (Dailies.receivedAt greaterEq todayAtMidnight) }.orderBy(Dailies.receivedAt, SortOrder.DESC)
-									.toList()
-						}
-
-						val receivedByIds = sameIpDaily.map { it[Dailies.receivedById] }
-
-						logger.warn { "Detected IDs: ${receivedByIds.joinToString(", ")}" }
-					}
+					logger.warn { "Detected IDs: ${receivedByIds.joinToString(", ")}" }
 				}
 			}
 
