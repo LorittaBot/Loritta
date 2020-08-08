@@ -38,7 +38,23 @@ abstract class CommandContext(
 		return sendMessage(message.toString())
 	}
 
+	/**
+	 * Throws a [CommandException], halting command execution
+	 *
+	 * @param message the message that will be sent
+	 * @oaram prefix  the message's prefix (see [LorittaReply.prefix])
+	 * @see fail
+	 * @see CommandException
+	 */
 	fun fail(message: String, prefix: String? = null): Nothing = throw CommandException(message, prefix ?: Emotes.LORI_CRYING.toString())
+
+	/**
+	 * Throws a [CommandException], halting command execution
+	 *
+	 * @param reply the message that will be sent
+	 * @see fail
+	 * @see CommandException
+	 */
 	fun fail(reply: LorittaReply): Nothing = throw CommandException(reply)
 
 	fun getUserMention(addSpace: Boolean): String {
