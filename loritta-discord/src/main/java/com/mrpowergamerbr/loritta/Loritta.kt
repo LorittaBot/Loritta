@@ -86,8 +86,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		val RANDOM = SplittableRandom() // Um splittable RANDOM global, para não precisar ficar criando vários (menos GC)
 		@JvmStatic
 		var GSON = Gson() // Gson
-		@JvmStatic
-		val JSON_PARSER = JsonParser() // Json Parser
 
 		private val logger = KotlinLogging.logger {}
 	}

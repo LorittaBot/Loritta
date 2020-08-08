@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.salomonbrys.kotson.*
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand
 import com.mrpowergamerbr.loritta.dao.Background
@@ -389,7 +390,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         val defaultLocaleFile = File(instanceConfig.loritta.folders.locales, "default.json")
         val localeAsText = defaultLocaleFile.readText(Charsets.UTF_8)
         val defaultLocale = Loritta.GSON.fromJson(localeAsText, LegacyBaseLocale::class.java) // Carregar locale do jeito velho
-        val defaultJsonLocale = Loritta.JSON_PARSER.parse(localeAsText).obj // Mas também parsear como JSON
+        val defaultJsonLocale = JsonParser.parseString(localeAsText).obj // Mas também parsear como JSON
 
         defaultJsonLocale.entrySet().forEach { (key, value) ->
             if (!value.isJsonArray) { // TODO: Listas!
@@ -417,10 +418,10 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         // E agora preencher valores nulos e salvar as traduções
         for ((id, locale) in locales) {
             if (id != "default") {
-                val jsonObject = Loritta.JSON_PARSER.parse(Loritta.GSON.toJson(locale))
+                val jsonObject = JsonParser.parseString(Loritta.GSON.toJson(locale))
 
                 val localeFile = File(instanceConfig.loritta.folders.locales, "$id.json")
-                val asJson = Loritta.JSON_PARSER.parse(localeFile.readText()).obj
+                val asJson = JsonParser.parseString(localeFile.readText()).obj
 
                 for ((id, obj) in asJson.entrySet()) {
                     if (obj.isJsonPrimitive && obj.asJsonPrimitive.isString) {
