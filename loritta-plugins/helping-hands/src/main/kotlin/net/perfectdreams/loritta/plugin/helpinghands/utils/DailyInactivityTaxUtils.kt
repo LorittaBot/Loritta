@@ -93,14 +93,4 @@ object DailyInactivityTaxUtils {
 			}
 		}
 	}
-
-	infix fun <T> Expression<T>.notInSubQuery(query: Query): NotInSubQueryOp<T> = NotInSubQueryOp(this, query)
-
-	class NotInSubQueryOp<T>(val expr: Expression<T>, val query: Query): Op<Boolean>() {
-		override fun toQueryBuilder(queryBuilder: QueryBuilder) = queryBuilder {
-			append(expr, " NOT IN (")
-			query.prepareSQL(this)
-			+")"
-		}
-	}
 }
