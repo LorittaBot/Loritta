@@ -43,9 +43,8 @@ object BanInfoCommand {
                         .setColor(Constants.DISCORD_BLURPLE)
                 sendMessage(embed.build())
             } catch (e: ErrorResponseException) {
-                if (e.errorCode == ErrorResponse.UNKNOWN_BAN) {
+                if (e.errorCode == ErrorResponse.UNKNOWN_BAN)
                     fail(locale["commands.moderation.baninfo.banDoesNotExist"])
-                }
                 throw e
             }
         }
