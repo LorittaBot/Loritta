@@ -192,33 +192,7 @@ object AdminUtils {
 		return context.reply(*replies.toTypedArray())
 	}
 
-	suspend fun sendConfirmationMessage(context: CommandContext, user: User, hasSilent: Boolean, type: String): Message {
-		val str = context.locale["${LOCALE_PREFIX}.readyToPunish", context.locale["${LOCALE_PREFIX}.$type.punishName"], user.asMention, user.name + "#" + user.discriminator, user.id]
-
-		val replies = mutableListOf(
-				LoriReply(
-						str,
-						"⚠"
-				)
-		)
-
-		if (hasSilent) {
-			replies += LoriReply(
-					context.locale["${LOCALE_PREFIX}.silentTip"],
-					"\uD83D\uDC40",
-					mentionUser = false
-			)
-		}
-
-		if (!context.config.getUserData(context.userHandle.idLong).quickPunishment) {
-			replies += LoriReply(
-					context.locale["${LOCALE_PREFIX}.skipConfirmationTip", "`${context.config.commandPrefix}quickpunishment`"],
-					mentionUser = false
-			)
-		}
-
-		return context.reply(*replies.toTypedArray())
-	}
+	suspend fun sendConfirmationMessage(context: CommandContext, user: User, hasSilent: Boolean, type: String) = sendConfirmationMessage(context, listOf(user), hasSilent, type)
 
 	suspend fun sendSuccessfullyPunishedMessage(context: CommandContext, reason: String, sendDiscordReportAdvise: Boolean) {
 		val replies = mutableListOf(
