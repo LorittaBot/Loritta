@@ -40,7 +40,7 @@ object WebsiteUtils {
 		val req = call.request
 		val attributes = call.attributes
 
-		val variables = mutableMapOf(
+		val variables = mutableMapOf<String, Any?>(
 				"discordAuth" to null,
 				"userIdentification" to null,
 				"epochMillis" to System.currentTimeMillis(),
