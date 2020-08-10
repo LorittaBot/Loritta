@@ -20,12 +20,14 @@ import net.dv8tion.jda.api.exceptions.PermissionException
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
 import net.perfectdreams.loritta.api.entities.MessageChannel
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.api.utils.NoCopyByteArrayOutputStream
 import net.perfectdreams.loritta.platform.discord.commands.LorittaDiscordCommand
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAGuild
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.extensions.build
 import org.jsoup.Jsoup
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -102,14 +104,14 @@ class DiscordCommandContext(val config: ServerConfig, val lorittaUser: LorittaUs
 		return sendMessage(send)
 	}
 
-	override suspend fun reply(vararg loriReplies: LoriReply): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
+	override suspend fun reply(vararg loriReplies: LorittaReply): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
 		return reply(false, *loriReplies)
 	}
 
-	override suspend fun reply(mentionUserBeforeReplies: Boolean, vararg loriReplies: LoriReply): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
+	override suspend fun reply(mentionUserBeforeReplies: Boolean, vararg loriReplies: LorittaReply): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
 		val message = StringBuilder()
 		if (mentionUserBeforeReplies) {
-			message.append(LoriReply().build(this))
+			message.append(LorittaReply().build(this))
 			message.append("\n")
 		}
 		for (loriReply in loriReplies) {
@@ -119,7 +121,7 @@ class DiscordCommandContext(val config: ServerConfig, val lorittaUser: LorittaUs
 		return sendMessage(message.toString())
 	}
 
-	override suspend fun reply(image: BufferedImage, fileName: String, vararg loriReplies: LoriReply): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
+	override suspend fun reply(image: BufferedImage, fileName: String, vararg loriReplies: LorittaReply): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
 		val message = StringBuilder()
 		for (loriReply in loriReplies) {
 			message.append(loriReply.build(this) + "\n")

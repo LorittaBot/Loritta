@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.discord
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
@@ -65,10 +65,10 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 				os.use { inputStream ->
 					val emote = context.guild.createEmote(emoteName, Icon.from(inputStream)).await()
 					context.reply(
-							LoriReply(
-									context.legacyLocale.toNewLocale()["commands.discord.addemoji.success"],
-									emote.asMention
-							)
+                            LorittaReply(
+                                    context.legacyLocale.toNewLocale()["commands.discord.addemoji.success"],
+                                    emote.asMention
+                            )
 					)
 				}
 			} else {
@@ -78,29 +78,29 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 			if (e is ErrorResponseException) {
 				if (e.errorCode == 30008) {
 					context.reply(
-							LoriReply(
-									context.legacyLocale.toNewLocale()["commands.discord.addemoji.limitReached"],
-									Constants.ERROR
-							)
+                            LorittaReply(
+                                    context.legacyLocale.toNewLocale()["commands.discord.addemoji.limitReached"],
+                                    Constants.ERROR
+                            )
 					)
 					return
 				}
 				if (e.errorCode == 400) {
 					context.reply(
-							LoriReply(
-									context.legacyLocale.toNewLocale()["commands.discord.addemoji.emoteTooBig", "`256kb`"],
-									Constants.ERROR
-							)
+                            LorittaReply(
+                                    context.legacyLocale.toNewLocale()["commands.discord.addemoji.emoteTooBig", "`256kb`"],
+                                    Constants.ERROR
+                            )
 					)
 					return
 				}
 			}
 
 			context.reply(
-					LoriReply(
-							context.legacyLocale.toNewLocale()["commands.discord.addemoji.error"],
-							Constants.ERROR
-					)
+                    LorittaReply(
+                            context.legacyLocale.toNewLocale()["commands.discord.addemoji.error"],
+                            Constants.ERROR
+                    )
 			)
 		}
 	}

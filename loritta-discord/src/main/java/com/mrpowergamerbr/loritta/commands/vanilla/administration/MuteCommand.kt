@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
@@ -71,10 +72,10 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 
 				if (member == null) {
 					context.reply(
-							LoriReply(
-									context.locale["commands.userNotOnTheGuild", "${user.asMention} (`${user.name.stripCodeMarks()}#${user.discriminator} (${user.idLong})`)"],
-									Emotes.LORI_HM
-							)
+                            LorittaReply(
+                                    context.locale["commands.userNotOnTheGuild", "${user.asMention} (`${user.name.stripCodeMarks()}#${user.discriminator} (${user.idLong})`)"],
+                                    Emotes.LORI_HM
+                            )
 					)
 					return
 				}
@@ -86,10 +87,10 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			}
 
 			val setHour = context.reply(
-					LoriReply(
-							context.locale["$LOCALE_PREFIX.setPunishmentTime"],
-							"⏰"
-					)
+                    LorittaReply(
+                            context.locale["$LOCALE_PREFIX.setPunishmentTime"],
+                            "⏰"
+                    )
 			)
 
 			val settings = AdminUtils.retrieveModerationInfo(context.config)
@@ -126,10 +127,10 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 						}
 
 						context.reply(
-								LoriReply(
-										locale.toNewLocale()["${LOCALE_PREFIX}.successfullyPunished"] + " ${Emotes.LORI_RAGE}",
-										"\uD83C\uDF89"
-								)
+                                LorittaReply(
+                                        locale.toNewLocale()["${LOCALE_PREFIX}.successfullyPunished"] + " ${Emotes.LORI_RAGE}",
+                                        "\uD83C\uDF89"
+                                )
 						)
 					}
 				}
@@ -179,10 +180,10 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			if (delay != null && 0 > delay) {
 				// :whatdog:
 				context.reply(
-						LoriReply(
-								context.locale["$LOCALE_PREFIX.mute.negativeTime"],
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                context.locale["$LOCALE_PREFIX.mute.negativeTime"],
+                                Constants.ERROR
+                        )
 				)
 				return false
 			}
@@ -309,20 +310,20 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			// E... finalmente... iremos dar (ou remover) a role para o carinha
 			if (!context.guild.isMember(member.user)) {
 				context.reply(
-						LoriReply(
-								context.locale["commands.userNotOnTheGuild", "${user.asMention} (`${user.name.stripCodeMarks()}#${user.discriminator} (${user.idLong})`)"],
-								Emotes.LORI_HM
-						)
+                        LorittaReply(
+                                context.locale["commands.userNotOnTheGuild", "${user.asMention} (`${user.name.stripCodeMarks()}#${user.discriminator} (${user.idLong})`)"],
+                                Emotes.LORI_HM
+                        )
 				)
 				return false
 			}
 
 			if (couldntEditChannels.isNotEmpty()) {
 				context.reply(
-						LoriReply(
-								context.legacyLocale["MUTE_CouldntEditChannels", couldntEditChannels.joinToString(", ", transform = { "`" + it.name.stripCodeMarks() + "`" })],
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                context.legacyLocale["MUTE_CouldntEditChannels", couldntEditChannels.joinToString(", ", transform = { "`" + it.name.stripCodeMarks() + "`" })],
+                                Constants.ERROR
+                        )
 				)
 			}
 
@@ -372,10 +373,10 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 				}
 
 				context.reply(
-						LoriReply(
-								reply,
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                reply,
+                                Constants.ERROR
+                        )
 				)
 				return false
 			}

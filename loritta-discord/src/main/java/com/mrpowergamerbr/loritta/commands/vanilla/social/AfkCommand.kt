@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), CommandCategory.SOCIAL) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -21,10 +22,10 @@ class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), Command
 			}
 
 			context.reply(
-					LoriReply(
-							message = context.legacyLocale["AFK_AfkOff"],
-							prefix = "\uD83D\uDC24"
-					)
+                    LorittaReply(
+                            message = context.legacyLocale["AFK_AfkOff"],
+                            prefix = "\uD83D\uDC24"
+                    )
 			)
 		} else {
 			val reason = context.args.joinToString(" ").stripNewLines().stripCodeMarks().substringIfNeeded(range = 0..299)
@@ -40,10 +41,10 @@ class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), Command
 			}
 
 			context.reply(
-					LoriReply(
-							message = context.legacyLocale["AFK_AfkOn"],
-							prefix = "\uD83D\uDE34"
-					)
+                    LorittaReply(
+                            message = context.legacyLocale["AFK_AfkOn"],
+                            prefix = "\uD83D\uDE34"
+                    )
 			)
 		}
 	}

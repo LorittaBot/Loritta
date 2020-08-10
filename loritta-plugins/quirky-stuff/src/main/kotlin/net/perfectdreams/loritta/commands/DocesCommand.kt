@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.commands
 
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -50,9 +50,9 @@ class DocesCommand : LorittaDiscordCommand(arrayOf("doces"), CommandCategory.MAG
 
 						if (arg1 == null) {
 							context.reply(
-									LoriReply(
-											"Mencione o canal que você deseja dar boost! `${context.config.commandPrefix}doces boost #CanalAqui`"
-									)
+                                    LorittaReply(
+                                            "Mencione o canal que você deseja dar boost! `${context.config.commandPrefix}doces boost #CanalAqui`"
+                                    )
 							)
 							return
 						}
@@ -76,30 +76,30 @@ class DocesCommand : LorittaDiscordCommand(arrayOf("doces"), CommandCategory.MAG
 
 						if (channel == null) {
 							context.reply(
-									LoriReply(
-											"Canal inválido!",
-											Constants.ERROR
-									)
+                                    LorittaReply(
+                                            "Canal inválido!",
+                                            Constants.ERROR
+                                    )
 							)
 							return
 						}
 
 						if (!channel.canTalk()) {
 							context.reply(
-									LoriReply(
-											"Eu não posso falar no canal de texto!",
-											Constants.ERROR
-									)
+                                    LorittaReply(
+                                            "Eu não posso falar no canal de texto!",
+                                            Constants.ERROR
+                                    )
 							)
 							return
 						}
 
 						if (!channel.canTalk(context.handle)) {
 							context.reply(
-									LoriReply(
-											"Você não pode falar no canal de texto!",
-											Constants.ERROR
-									)
+                                    LorittaReply(
+                                            "Você não pode falar no canal de texto!",
+                                            Constants.ERROR
+                                    )
 							)
 							return
 						}
@@ -112,10 +112,10 @@ class DocesCommand : LorittaDiscordCommand(arrayOf("doces"), CommandCategory.MAG
 
 						if (boostChannel != null) {
 							context.reply(
-									LoriReply(
-											"Já estão dando boost no canal que você escolheu!",
-											Constants.ERROR
-									)
+                                    LorittaReply(
+                                            "Já estão dando boost no canal que você escolheu!",
+                                            Constants.ERROR
+                                    )
 							)
 							return
 						}
@@ -128,9 +128,9 @@ class DocesCommand : LorittaDiscordCommand(arrayOf("doces"), CommandCategory.MAG
 
 						if (userBoost != null) {
 							context.reply(
-									LoriReply(
-											"Você precisa esperar uma hora desde o seu último boost para poder dar um boost novamente!"
-									)
+                                    LorittaReply(
+                                            "Você precisa esperar uma hora desde o seu último boost para poder dar um boost novamente!"
+                                    )
 							)
 							return
 						}
@@ -146,9 +146,9 @@ class DocesCommand : LorittaDiscordCommand(arrayOf("doces"), CommandCategory.MAG
 						}
 
 						context.reply(
-								LoriReply(
-										"O boost foi dado! ${Emotes.LORI_HAPPY}"
-								)
+                                LorittaReply(
+                                        "O boost foi dado! ${Emotes.LORI_HAPPY}"
+                                )
 						)
 
 						channel.sendMessageAsync(
@@ -156,25 +156,25 @@ class DocesCommand : LorittaDiscordCommand(arrayOf("doces"), CommandCategory.MAG
 						)
 					} else {
 						context.reply(
-								LoriReply(
-										"Cadê a sua máquina de doces? É necessário ter uma para conseguir dar boost em canais! Me disseram que você consegue uma ao conseguir **1500 doces**..."
-								)
+                                LorittaReply(
+                                        "Cadê a sua máquina de doces? É necessário ter uma para conseguir dar boost em canais! Me disseram que você consegue uma ao conseguir **1500 doces**..."
+                                )
 						)
 					}
 				} else {
 					context.reply(
-							LoriReply(
-									"As máquinas ainda não estão prontas! A sociedade atual não irá conseguir aguentar este poder divino..."
-							)
+                            LorittaReply(
+                                    "As máquinas ainda não estão prontas! A sociedade atual não irá conseguir aguentar este poder divino..."
+                            )
 					)
 				}
 				return
 			}
 
 			context.reply(
-					LoriReply(
-							"Tais segredos só podem ser revelados via mensagem direta. \uD83D\uDC40"
-					)
+                    LorittaReply(
+                            "Tais segredos só podem ser revelados via mensagem direta. \uD83D\uDC40"
+                    )
 			)
 			return
 		}
@@ -211,10 +211,10 @@ class DocesCommand : LorittaDiscordCommand(arrayOf("doces"), CommandCategory.MAG
 			}
 
 			context.reply(
-					LoriReply(
-							"Você possui **$candies Doces**!",
-							"\uD83C\uDF6C"
-					)
+                    LorittaReply(
+                            "Você possui **$candies Doces**!",
+                            "\uD83C\uDF6C"
+                    )
 			)
 		} else {
 			context.sendMessage("""Olá ${context.asMention}! ${Emotes.LORI_OWO}

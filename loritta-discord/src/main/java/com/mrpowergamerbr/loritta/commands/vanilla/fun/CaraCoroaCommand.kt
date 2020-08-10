@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
@@ -30,10 +30,10 @@ class CaraCoroaCommand : AbstractCommand("coinflip", listOf("girarmoeda", "flipc
 		}
 
 		context.reply(
-				LoriReply(
-						"**$message!**",
-						prefix
-				)
+                LorittaReply(
+                        "**$message!**",
+                        prefix
+                )
 		)
 	}
 }

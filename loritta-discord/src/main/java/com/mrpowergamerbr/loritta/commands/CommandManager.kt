@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.utils.MarkdownSanitizer
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.utils.CommandUtils
@@ -354,10 +355,10 @@ class CommandManager(loritta: Loritta) {
 				if (cooldown > diff && !loritta.config.isOwner(ev.author.id)) {
 					val fancy = DateUtils.formatDateDiff((cooldown - diff) + System.currentTimeMillis(), reparsedLegacyLocale)
 					context.reply(
-							LoriReply(
-									locale["commands.pleaseWaitCooldown", fancy, "\uD83D\uDE45"],
-									"\uD83D\uDD25"
-							)
+                            LorittaReply(
+                                    locale["commands.pleaseWaitCooldown", fancy, "\uD83D\uDE45"],
+                                    "\uD83D\uDD25"
+                            )
 					)
 					return true
 				}
@@ -392,10 +393,10 @@ class CommandManager(loritta: Loritta) {
 						// oh no
 						val required = missingPermissions.joinToString(", ", transform = { "`" + it.localized(locale) + "`" })
 						context.reply(
-								LoriReply(
-										locale["commands.loriDoesntHavePermissionDiscord", required, "\uD83D\uDE22", "\uD83D\uDE42"],
-										Constants.ERROR
-								)
+                                LorittaReply(
+                                        locale["commands.loriDoesntHavePermissionDiscord", required, "\uD83D\uDE22", "\uD83D\uDE42"],
+                                        Constants.ERROR
+                                )
 						)
 						return true
 					}
@@ -428,10 +429,10 @@ class CommandManager(loritta: Loritta) {
 
 				if (context.cmd.onlyOwner && !loritta.config.isOwner(ev.author.id)) {
 					context.reply(
-							LoriReply(
-									locale["commands.commandOnlyForOwner"],
-									Constants.ERROR
-							)
+                            LorittaReply(
+                                    locale["commands.commandOnlyForOwner"],
+                                    Constants.ERROR
+                            )
 					)
 					return true
 				}
@@ -440,10 +441,10 @@ class CommandManager(loritta: Loritta) {
 					val requiredPermissions = command.getDiscordPermissions().filter { !ev.message.member!!.hasPermission(ev.message.textChannel, it) }
 					val required = requiredPermissions.joinToString(", ", transform = { "`" + it.localized(locale) + "`" })
 					context.reply(
-							LoriReply(
-									locale["commands.userDoesntHavePermissionDiscord", required],
-									Constants.ERROR
-							)
+                            LorittaReply(
+                                    locale["commands.userDoesntHavePermissionDiscord", required],
+                                    Constants.ERROR
+                            )
 					)
 					return true
 				}
@@ -476,10 +477,10 @@ class CommandManager(loritta: Loritta) {
 
 						if (hasBadNickname) {
 							context.reply(
-									LoriReply(
-											reparsedLegacyLocale["LORITTA_BadNickname"],
-											"<:lori_triste:370344565967814659>"
-									)
+                                    LorittaReply(
+                                            reparsedLegacyLocale["LORITTA_BadNickname"],
+                                            "<:lori_triste:370344565967814659>"
+                                    )
 							)
 							if (context.guild.selfMember.hasPermission(Permission.NICKNAME_CHANGE)) {
 								context.guild.modifyNickname(context.guild.selfMember, null).queue()
@@ -537,10 +538,10 @@ class CommandManager(loritta: Loritta) {
 					if (e.errorCode == 40005) { // Request entity too large
 						if (ev.isFromType(ChannelType.PRIVATE) || (ev.isFromType(ChannelType.TEXT) && ev.textChannel != null && ev.textChannel.canTalk()))
 							context.reply(
-									LoriReply(
-											locale["commands.imageTooLarge", "8MB", Emotes.LORI_TEMMIE],
-											"\uD83E\uDD37"
-									)
+                                    LorittaReply(
+                                            locale["commands.imageTooLarge", "8MB", Emotes.LORI_TEMMIE],
+                                            "\uD83E\uDD37"
+                                    )
 							)
 						return true
 					}

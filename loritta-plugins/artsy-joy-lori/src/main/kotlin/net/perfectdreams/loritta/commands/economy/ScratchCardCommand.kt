@@ -6,7 +6,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -21,8 +21,6 @@ import net.perfectdreams.loritta.api.commands.*
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.tables.Raspadinhas
 import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.PaymentUtils
-import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.sum
@@ -76,58 +74,58 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 			}
 
 			context.reply(
-					LoriReply(
-							"**Raspadinha da Loritta**",
-							"<:loritta:331179879582269451>"
-					),
-					LoriReply(
-							"Ganhe prêmios comprando um ticket para raspar!",
-							"<:starstruck:540988091117076481>",
-							mentionUser = false
-					),
-					LoriReply(
-							"Ao comprar, raspe clicando nos spoilers e veja os emojis que aparecem!",
-							"\uD83C\uDFAB",
-							mentionUser = false
-					),
-					LoriReply(
-							"Se tiver alguma combinação na horizontal, vertical ou na diagional, você pode ganhar prêmios!",
-							"\uD83D\uDC65",
-							mentionUser = false
-					),
-					LoriReply(
-							"**Combinação de <:loritta:664849802961485894>:** ${LORITTA_COMBO} sonhos",
-							mentionUser = false
-					),
-					LoriReply(
-							"**Combinação de <:pantufa:664849802793713686>:** ${PANTUFA_COMBO} sonhos",
-							mentionUser = false
-					),
-					LoriReply(
-							"**Combinação de <:gabriela:664849802927800351>:** ${GABI_COMBO} sonhos",
-							mentionUser = false
-					),
-					LoriReply(
-							"**Combinação de <:dokyo:664849803397562369>:** ${DOKYO_COMBO} sonhos",
-							mentionUser = false
-					),
-					LoriReply(
-							"**Combinação de <:gessy:664847035245002764>:** ${GESSY_COMBO} sonhos",
-							mentionUser = false
-					),
-					LoriReply(
-							"**Combinação de <:tobias_nosa:450476856303419432>:** ${TOBIAS_COMBO} sonhos",
-							mentionUser = false
-					),
-					LoriReply(
-							"Você já comprou **${raspadinhaCount} raspadinhas** e, com elas, você ganhou **${raspadinhaEarnings?.get(earnings) ?: 0} sonhos**",
-							mentionUser = false
-					),
-					LoriReply(
-							"Compre uma raspadinha da Loritta por **125 sonhos** usando `${context.config.commandPrefix}raspadinha comprar`!",
-							prefix = "\uD83D\uDCB5",
-							mentionUser = false
-					)
+                    LorittaReply(
+                            "**Raspadinha da Loritta**",
+                            "<:loritta:331179879582269451>"
+                    ),
+                    LorittaReply(
+                            "Ganhe prêmios comprando um ticket para raspar!",
+                            "<:starstruck:540988091117076481>",
+                            mentionUser = false
+                    ),
+                    LorittaReply(
+                            "Ao comprar, raspe clicando nos spoilers e veja os emojis que aparecem!",
+                            "\uD83C\uDFAB",
+                            mentionUser = false
+                    ),
+                    LorittaReply(
+                            "Se tiver alguma combinação na horizontal, vertical ou na diagional, você pode ganhar prêmios!",
+                            "\uD83D\uDC65",
+                            mentionUser = false
+                    ),
+                    LorittaReply(
+                            "**Combinação de <:loritta:664849802961485894>:** ${LORITTA_COMBO} sonhos",
+                            mentionUser = false
+                    ),
+                    LorittaReply(
+                            "**Combinação de <:pantufa:664849802793713686>:** ${PANTUFA_COMBO} sonhos",
+                            mentionUser = false
+                    ),
+                    LorittaReply(
+                            "**Combinação de <:gabriela:664849802927800351>:** ${GABI_COMBO} sonhos",
+                            mentionUser = false
+                    ),
+                    LorittaReply(
+                            "**Combinação de <:dokyo:664849803397562369>:** ${DOKYO_COMBO} sonhos",
+                            mentionUser = false
+                    ),
+                    LorittaReply(
+                            "**Combinação de <:gessy:664847035245002764>:** ${GESSY_COMBO} sonhos",
+                            mentionUser = false
+                    ),
+                    LorittaReply(
+                            "**Combinação de <:tobias_nosa:450476856303419432>:** ${TOBIAS_COMBO} sonhos",
+                            mentionUser = false
+                    ),
+                    LorittaReply(
+                            "Você já comprou **${raspadinhaCount} raspadinhas** e, com elas, você ganhou **${raspadinhaEarnings?.get(earnings) ?: 0} sonhos**",
+                            mentionUser = false
+                    ),
+                    LorittaReply(
+                            "Compre uma raspadinha da Loritta por **125 sonhos** usando `${context.config.commandPrefix}raspadinha comprar`!",
+                            prefix = "\uD83D\uDCB5",
+                            mentionUser = false
+                    )
 			)
 		}
 	}
@@ -138,10 +136,10 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 		mutex.withLock {
 			if (125 > profile.money) {
 				context.reply(
-						LoriReply(
-								"Você precisa de 125 sonhos para poder comprar uma raspadinha!",
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                "Você precisa de 125 sonhos para poder comprar uma raspadinha!",
+                                Constants.ERROR
+                        )
 				)
 				return@withLock
 			}
@@ -258,30 +256,30 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 
 			if (raspadinha == null) {
 				context.reply(
-						LoriReply(
-								"Essa raspadinha não existe!",
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                "Essa raspadinha não existe!",
+                                Constants.ERROR
+                        )
 				)
 				return@withLock
 			}
 
 			if (raspadinha[Raspadinhas.receivedById] != context.userHandle.idLong) {
 				context.reply(
-						LoriReply(
-								"Nossa, não sabia que você era assim... tentando roubar os prêmios de outras raspadinhas que não foi você que comprou...",
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                "Nossa, não sabia que você era assim... tentando roubar os prêmios de outras raspadinhas que não foi você que comprou...",
+                                Constants.ERROR
+                        )
 				)
 				return@withLock
 			}
 
 			if (raspadinha[Raspadinhas.scratched]) {
 				context.reply(
-						LoriReply(
-								"Você já recebeu o prêmio desta raspadinha!",
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                "Você já recebeu o prêmio desta raspadinha!",
+                                Constants.ERROR
+                        )
 				)
 				return@withLock
 			}
@@ -352,9 +350,9 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 				}
 
 				context.reply(
-						LoriReply(
-								"Qual parte de *não resgate um prêmio se você não ganhou* você não entendeu? Só por fazer perder o meu tempo, você perdeu 1000 sonhos. ${Emotes.LORI_SHRUG}"
-						)
+                        LorittaReply(
+                                "Qual parte de *não resgate um prêmio se você não ganhou* você não entendeu? Só por fazer perder o meu tempo, você perdeu 1000 sonhos. ${Emotes.LORI_SHRUG}"
+                        )
 				)
 			} else {
 				logger.info { "User ${context.userHandle.idLong} won $prize sonhos in the raspadinha! Combos: Lori: $loriCombos; Pantufa: $pantufaCombos; Gabi: $gabiCombos; Dokyo: $dokyoCombos; Gessy: $gessyCombos; Tobias: $tobiasCombos" }
@@ -362,10 +360,10 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 					profile.addSonhosNested(prize.toLong())
 				}
 				context.reply(
-						LoriReply(
-								"Parabéns, você ganhou **$prize sonhos** na sua raspadinha!",
-								Emotes.LORI_PAT
-						)
+                        LorittaReply(
+                                "Parabéns, você ganhou **$prize sonhos** na sua raspadinha!",
+                                Emotes.LORI_PAT
+                        )
 				)
 			}
 		}

@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.translate.GoogleTranslateUtils
@@ -31,10 +31,10 @@ class TranslateCommand : AbstractCommand("traduzir", listOf("translate"), Comman
 				val translatedText = GoogleTranslateUtils.translate(text, "auto", strLang)
 
 				context.reply(
-						LoriReply(
-								translatedText!!.escapeMentions(),
-								"\uD83D\uDDFA"
-						)
+                        LorittaReply(
+                                translatedText!!.escapeMentions(),
+                                "\uD83D\uDDFA"
+                        )
 				)
 			} catch (e: Exception) {
 				logger.warn(e) { "Error while translating $text to $strLang!" }

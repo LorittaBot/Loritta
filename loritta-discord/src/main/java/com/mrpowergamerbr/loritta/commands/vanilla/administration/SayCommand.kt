@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.TextChannel
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import java.util.*
 
 class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN) {
@@ -83,28 +84,28 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN
 			if (channel is TextChannel) { // Caso seja text channel...
 				if (!channel.canTalk()) {
 					context.reply(
-							LoriReply(
-									locale["SAY_IDontHavePermissionToTalkIn", channel.asMention],
-									Constants.ERROR
-							)
+                            LorittaReply(
+                                    locale["SAY_IDontHavePermissionToTalkIn", channel.asMention],
+                                    Constants.ERROR
+                            )
 					)
 					return
 				}
 				if (!channel.canTalk(context.handle)) {
 					context.reply(
-							LoriReply(
-									locale["SAY_YouDontHavePermissionToTalkIn", channel.asMention],
-									Constants.ERROR
-							)
+                            LorittaReply(
+                                    locale["SAY_YouDontHavePermissionToTalkIn", channel.asMention],
+                                    Constants.ERROR
+                            )
 					)
 					return
 				}
 				if (context.config.blacklistedChannels.contains(channel.idLong) && !context.lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
 					context.reply(
-							LoriReply(
-									locale["SAY_CommandsCannotBeUsedIn", channel.asMention],
-									Constants.ERROR
-							)
+                            LorittaReply(
+                                    locale["SAY_CommandsCannotBeUsedIn", channel.asMention],
+                                    Constants.ERROR
+                            )
 					)
 					return
 				}
@@ -142,10 +143,10 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN
 
 			if (context.event.channel != channel && channel is TextChannel)
 				context.reply(
-						LoriReply(
-								locale["SAY_MessageSuccessfullySent", channel.asMention],
-								"\uD83C\uDF89"
-						)
+                        LorittaReply(
+                                locale["SAY_MessageSuccessfullySent", channel.asMention],
+                                "\uD83C\uDF89"
+                        )
 				)
 
 		} else {

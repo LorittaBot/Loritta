@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -28,14 +28,14 @@ class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCa
 
 		if (marriage != null) {
 			val message = context.reply(
-					LoriReply(
-							locale.toNewLocale()["$LOCALE_PREFIX.prepareToDivorce", Emotes.LORI_CRYING],
-							"\uD83D\uDDA4"
-					),
-					LoriReply(
-							locale.toNewLocale()["$LOCALE_PREFIX.pleaseConfirm", DIVORCE_REACTION_EMOJI],
-							mentionUser = false
-					)
+                    LorittaReply(
+                            locale.toNewLocale()["$LOCALE_PREFIX.prepareToDivorce", Emotes.LORI_CRYING],
+                            "\uD83D\uDDA4"
+                    ),
+                    LorittaReply(
+                            locale.toNewLocale()["$LOCALE_PREFIX.pleaseConfirm", DIVORCE_REACTION_EMOJI],
+                            mentionUser = false
+                    )
 			)
 
 			message.onReactionAddByAuthor(context) {
@@ -51,9 +51,9 @@ class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCa
 					message.delete().queue()
 
 					context.reply(
-							LoriReply(
-									locale.toNewLocale()["$LOCALE_PREFIX.divorced", Emotes.LORI_HUG]
-							)
+                            LorittaReply(
+                                    locale.toNewLocale()["$LOCALE_PREFIX.divorced", Emotes.LORI_HUG]
+                            )
 					)
 				}
 			}
@@ -61,10 +61,10 @@ class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCa
 			message.addReaction(DIVORCE_REACTION_EMOJI).queue()
 		} else {
 			context.reply(
-					LoriReply(
-							locale.toNewLocale()["commands.social.youAreNotMarried", "`${context.config.commandPrefix}casar`", Emotes.LORI_HUG],
-							Constants.ERROR
-					)
+                    LorittaReply(
+                            locale.toNewLocale()["commands.social.youAreNotMarried", "`${context.config.commandPrefix}casar`", Emotes.LORI_HUG],
+                            Constants.ERROR
+                    )
 			)
 		}
 	}

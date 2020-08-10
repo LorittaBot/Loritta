@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.safety.Whitelist
@@ -60,10 +61,10 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 
 			if (songInfo == null) {
 				context.reply(
-						LoriReply(
-								"${locale["LYRICS_CouldntFind"]} ${locale["ERROR_SorryForTheInconvenience"]} \uD83D\uDE2D",
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                "${locale["LYRICS_CouldntFind"]} ${locale["ERROR_SorryForTheInconvenience"]} \uD83D\uDE2D",
+                                Constants.ERROR
+                        )
 				)
 				return
 			}

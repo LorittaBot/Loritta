@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.msgFormat
@@ -82,10 +82,10 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 				// Por exemplo, se a gente colocar BRL, o "valueInEuros" será 5.5956
 				val euroValueInCurrency = exchangeRates[from] ?: run {
 					context.reply(
-							LoriReply(
-									message = locale["MONEY_INVALID_CURRENCY"].msgFormat(from, exchangeRates.keys.joinToString(transform = { "`$it`" })),
-									prefix = Constants.ERROR
-							)
+                            LorittaReply(
+                                    message = locale["MONEY_INVALID_CURRENCY"].msgFormat(from, exchangeRates.keys.joinToString(transform = { "`$it`" })),
+                                    prefix = Constants.ERROR
+                            )
 					)
 					return
 				}
@@ -94,10 +94,10 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 
 				val endValueInEuros = exchangeRates[to] ?: run {
 					context.reply(
-							LoriReply(
-									message = locale["MONEY_INVALID_CURRENCY"].msgFormat(to, exchangeRates.keys.joinToString(transform = { "`$it`" })),
-									prefix = Constants.ERROR
-							)
+                            LorittaReply(
+                                    message = locale["MONEY_INVALID_CURRENCY"].msgFormat(to, exchangeRates.keys.joinToString(transform = { "`$it`" })),
+                                    prefix = Constants.ERROR
+                            )
 					)
 					return
 				}
@@ -109,10 +109,10 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 			df.maximumFractionDigits = 340 // 340 = DecimalFormat.DOUBLE_FRACTION_DIGITS
 
 			context.reply(
-					LoriReply(
-							message = locale["MONEY_CONVERTED", multiply, from, to, df.format(value * multiply)],
-							prefix = "\uD83D\uDCB5"
-					)
+                    LorittaReply(
+                            message = locale["MONEY_CONVERTED", multiply, from, to, df.format(value * multiply)],
+                            prefix = "\uD83D\uDCB5"
+                    )
 			)
 		} else {
 			this.explain(context)

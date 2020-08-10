@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.tables.BannedUsers
@@ -21,10 +21,10 @@ class LorittaBanCommand : AbstractCommand("lorittaban", category = CommandCatego
 		if (context.args.size >= 2) {
 			val monster = context.getUserAt(0) ?: run {
 				context.reply(
-						LoriReply(
-								"Usuário inváldio!",
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                "Usuário inváldio!",
+                                Constants.ERROR
+                        )
 				)
 				return
 			}
@@ -33,10 +33,10 @@ class LorittaBanCommand : AbstractCommand("lorittaban", category = CommandCatego
 
 			if (profile == null) {
 				context.reply(
-						LoriReply(
-								"Usuário não possui perfil na Loritta!",
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                "Usuário não possui perfil na Loritta!",
+                                Constants.ERROR
+                        )
 				)
 				return
 			}

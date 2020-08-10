@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
@@ -39,10 +40,10 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 			}
 
 			val reply = context.reply(
-					LoriReply(
-							message = locale["LEMBRAR_SetHour"],
-							prefix = "⏰"
-					)
+                    LorittaReply(
+                            message = locale["LEMBRAR_SetHour"],
+                            prefix = "⏰"
+                    )
 			)
 
 			reply.onResponseByAuthor(context) {
@@ -79,10 +80,10 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 				loritta.messageInteractionCache.remove(reply.idLong)
 				reply.delete().queue()
 				context.reply(
-						LoriReply(
-								message = locale["LEMBRAR_Cancelado"],
-								prefix = "\uD83D\uDDD1"
-						)
+                        LorittaReply(
+                                message = locale["LEMBRAR_Cancelado"],
+                                prefix = "\uD83D\uDDD1"
+                        )
 				)
 			}
 
@@ -153,10 +154,10 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 				}
 
 				context.reply(
-						LoriReply(
-								locale["LEMBRAR_ReminderRemoved"],
-								"\uD83D\uDDD1"
-						)
+                        LorittaReply(
+                                locale["LEMBRAR_ReminderRemoved"],
+                                "\uD83D\uDDD1"
+                        )
 				)
 				return@onReactionAddByAuthor
 			}

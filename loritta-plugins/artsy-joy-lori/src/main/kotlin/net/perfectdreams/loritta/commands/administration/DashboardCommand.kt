@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.commands.administration
 
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.Permission
@@ -39,7 +39,7 @@ class DashboardCommand : LorittaCommand(arrayOf("dashboard", "painel", "configur
 
         if (context.args.getOrNull(0) != "\uD83D\uDE45" && !context.isPrivateChannel && (context.lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD) || context.handle.hasPermission(Permission.MANAGE_SERVER))) {
             context.reply(
-                    LoriReply(
+                    LorittaReply(
                             "Dashboard: $url",
                             "<:wumplus:388417805126467594>"
                     )
@@ -47,7 +47,7 @@ class DashboardCommand : LorittaCommand(arrayOf("dashboard", "painel", "configur
         } else {
             // Se o comando for executando em mensagem privada dê o negócio pra selecionar o servidor
             context.reply(
-                    LoriReply(
+                    LorittaReply(
                             "Dashboard: $dashboardUrl",
                             "<:wumplus:388417805126467594>"
                     )

@@ -10,6 +10,7 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import com.jasonclawson.jackson.dataformat.hocon.HoconFactory
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.jackson.FixedMapDeserializer
 import org.yaml.snakeyaml.Yaml
@@ -189,10 +190,10 @@ object Constants {
 			context.explain()
 		} else {
 			context.reply(
-					LoriReply(
-							message = context.locale["commands.noValidImageFound", Emotes.LORI_CRYING.toString()],
-							prefix = Constants.ERROR
-					)
+                    LorittaReply(
+                            message = context.locale["commands.noValidImageFound", Emotes.LORI_CRYING.toString()],
+                            prefix = ERROR
+                    )
 			)
 		}
 	}

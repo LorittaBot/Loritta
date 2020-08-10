@@ -26,7 +26,9 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.AutoroleConfig
+import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.tables.BannedUsers
@@ -278,10 +280,10 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 								.substring(serverConfig.commandPrefix.length)
 
 						val list = mutableListOf(
-								LoriReply(
-										"${legacyLocale["LORITTA_UnknownCommand", command, "${serverConfig.commandPrefix}${legacyLocale["AJUDA_CommandName"]}"]} ${Emotes.LORI_OWO}",
-										"\uD83E\uDD37"
-								)
+                                LorittaReply(
+                                        "${legacyLocale["LORITTA_UnknownCommand", command, "${serverConfig.commandPrefix}${legacyLocale["AJUDA_CommandName"]}"]} ${Emotes.LORI_OWO}",
+                                        "\uD83E\uDD37"
+                                )
 						)
 
 						val allCommandLabels = mutableListOf<String>()
@@ -317,15 +319,15 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 						if (nearestCommand != null && 6 > diff) {
 							list.add(
-									LoriReply(
-											prefix = Emotes.LORI_HM,
-											message = locale["commands.didYouMeanCommand", serverConfig.commandPrefix + nearestCommand],
-											mentionUser = false
-									)
+                                    LorittaReply(
+                                            prefix = Emotes.LORI_HM,
+                                            message = locale["commands.didYouMeanCommand", serverConfig.commandPrefix + nearestCommand],
+                                            mentionUser = false
+                                    )
 							)
 						}
 
-						event.channel.sendMessage(list.joinToString("\n") { it.build(event.author) }).queue {
+						event.channel.sendMessage(list.joinToString("\n") { it.build(JDAUser(event.author)) }).queue {
 							it.delete().queueAfter(5000, TimeUnit.MILLISECONDS)
 						}
 					}

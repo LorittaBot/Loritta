@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.DateUtils
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -23,27 +23,27 @@ class DailyCommand : AbstractCommand("daily", listOf("diário", "bolsafamilia", 
 
 		if (!canGetDaily) {
 			context.reply(
-					LoriReply(
-							locale.toNewLocale()["commands.economy.daily.pleaseWait", DateUtils.formatDateDiff(tomorrow, locale)],
-							Constants.ERROR
-					),
-					LoriReply(
-							locale.toNewLocale()["commands.economy.daily.pleaseWaitBuySonhos", "<${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/bundles>"],
-							"\uD83D\uDCB3"
-					)
+                    LorittaReply(
+                            locale.toNewLocale()["commands.economy.daily.pleaseWait", DateUtils.formatDateDiff(tomorrow, locale)],
+                            Constants.ERROR
+                    ),
+                    LorittaReply(
+                            locale.toNewLocale()["commands.economy.daily.pleaseWaitBuySonhos", "<${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/bundles>"],
+                            "\uD83D\uDCB3"
+                    )
 			)
 			return
 		}
 
 		context.reply(
-				LoriReply(
-						locale.toNewLocale()["commands.economy.daily.dailyLink", "${loritta.instanceConfig.loritta.website.url}daily"],
-						Emotes.LORI_RICH
-				),
-				LoriReply(
-						locale.toNewLocale()["commands.economy.daily.dailyLinkBuySonhos", "<${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/bundles>"],
-						"\uD83D\uDCB3"
-				)
+                LorittaReply(
+                        locale.toNewLocale()["commands.economy.daily.dailyLink", "${loritta.instanceConfig.loritta.website.url}daily"],
+                        Emotes.LORI_RICH
+                ),
+                LorittaReply(
+                        locale.toNewLocale()["commands.economy.daily.dailyLinkBuySonhos", "<${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/bundles>"],
+                        "\uD83D\uDCB3"
+                )
 		)
 	}
 }

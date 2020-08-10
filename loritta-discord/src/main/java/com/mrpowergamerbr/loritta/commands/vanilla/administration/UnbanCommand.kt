@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
@@ -57,10 +57,10 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 
 				if (member != null) {
 					context.reply(
-							LoriReply(
-									locale.toNewLocale()["$LOCALE_PREFIX.unban.userIsInTheGuild"],
-									Constants.ERROR
-							)
+                            LorittaReply(
+                                    locale.toNewLocale()["$LOCALE_PREFIX.unban.userIsInTheGuild"],
+                                    Constants.ERROR
+                            )
 					)
 					return
 				}
@@ -76,10 +76,10 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 				message?.delete()?.queue()
 
 				context.reply(
-						LoriReply(
-								locale.toNewLocale()["$LOCALE_PREFIX.unban.successfullyUnbanned"] + " ${Emotes.LORI_HMPF}",
-								"\uD83C\uDF89"
-						)
+                        LorittaReply(
+                                locale.toNewLocale()["$LOCALE_PREFIX.unban.successfullyUnbanned"] + " ${Emotes.LORI_HMPF}",
+                                "\uD83C\uDF89"
+                        )
 				)
 			}
 

@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import kotlin.streams.toList
 
 class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory.DISCORD) {
@@ -42,10 +43,10 @@ class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory
 					return
 				} else {
 					context.reply(
-							LoriReply(
-									locale.toNewLocale()["commands.discord.emoji.notFoundId", "`$arg0`"],
-									Constants.ERROR
-							)
+                            LorittaReply(
+                                    locale.toNewLocale()["commands.discord.emoji.notFoundId", "`$arg0`"],
+                                    Constants.ERROR
+                            )
 					)
 					return
 				}

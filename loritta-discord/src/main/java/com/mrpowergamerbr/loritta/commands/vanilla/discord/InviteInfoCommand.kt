@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import java.util.*
 
 class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCategory.DISCORD) {
@@ -45,10 +46,10 @@ class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCatego
 			if (code.asJsonPrimitive.isNumber && code.int == 10006) {
 				// Invite não existe!
 				context.reply(
-						LoriReply(
-								locale["INVITEINFO_InviteDoesNotExist", inviteId.stripCodeMarks()],
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                locale["INVITEINFO_InviteDoesNotExist", inviteId.stripCodeMarks()],
+                                Constants.ERROR
+                        )
 				)
 			} else {
 				val guild = payload["guild"].obj

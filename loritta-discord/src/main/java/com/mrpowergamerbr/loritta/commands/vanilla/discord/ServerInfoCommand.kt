@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Region
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), category = CommandCategory.DISCORD) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -36,10 +37,10 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 
 		if (guild == null) {
 			context.reply(
-					LoriReply(
-							message = context.legacyLocale["SERVERINFO_UnknownGuild", context.args[0]],
-							prefix = Constants.ERROR
-					)
+                    LorittaReply(
+                            message = context.legacyLocale["SERVERINFO_UnknownGuild", context.args[0]],
+                            prefix = Constants.ERROR
+                    )
 			)
 			return
 		}

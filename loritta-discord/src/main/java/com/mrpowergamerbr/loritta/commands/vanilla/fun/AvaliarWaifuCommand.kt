@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -112,10 +112,10 @@ class AvaliarWaifuCommand : AbstractCommand("ratewaifu", listOf("avaliarwaifu", 
 			}
 
 			context.reply(
-					LoriReply(
-							message = context.locale["$LOCALE_PREFIX.result", strNota, waifu.stripCodeMarks(), reason],
-							prefix = "\uD83E\uDD14"
-					)
+                    LorittaReply(
+                            message = context.locale["$LOCALE_PREFIX.result", strNota, waifu.stripCodeMarks(), reason],
+                            prefix = "\uD83E\uDD14"
+                    )
 			)
 		} else {
 			this.explain(context)

@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.CalculadoraCommand
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.remove
@@ -77,10 +77,10 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 						LorittaUtils.evalMath(Loritta.RANDOM.nextLong(lowerBound, upperBound + 1).toString() + expression).toInt().toString()
 					} catch (ex: RuntimeException) {
 						context.reply(
-								LoriReply(
-										context.locale["${CalculadoraCommand.LOCALE_PREFIX}.invalid", expression] + " ${Emotes.LORI_CRYING}",
-										Emotes.LORI_HM
-								)
+                                LorittaReply(
+                                        context.locale["${CalculadoraCommand.LOCALE_PREFIX}.invalid", expression] + " ${Emotes.LORI_CRYING}",
+                                        Emotes.LORI_HM
+                                )
 						)
 						return
 					}
@@ -97,20 +97,20 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 
 		if (quantity > 100) {
 			context.reply(
-					LoriReply(
-							context.locale["$LOCALE_PREFIX.tooMuchDices"] + " ${Emotes.LORI_CRYING}",
-							Constants.ERROR
-					)
+                    LorittaReply(
+                            context.locale["$LOCALE_PREFIX.tooMuchDices"] + " ${Emotes.LORI_CRYING}",
+                            Constants.ERROR
+                    )
 			)
 			return
 		}
 
 		if (0 >= upperBound || lowerBound > upperBound) {
 			context.reply(
-					LoriReply(
-							context.locale["$LOCALE_PREFIX.invalidBound"] + " ${Emotes.LORI_SHRUG}",
-							Constants.ERROR
-					)
+                    LorittaReply(
+                            context.locale["$LOCALE_PREFIX.invalidBound"] + " ${Emotes.LORI_SHRUG}",
+                            Constants.ERROR
+                    )
 			)
 			return
 		}
@@ -147,11 +147,11 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 
 		val message = context.locale["$LOCALE_PREFIX.result", context.getAsMention(false), upperBound.toString(), finalResult.toInt()]
 
-		val list = mutableListOf<LoriReply>()
-		list.add(LoriReply(message = message, prefix = "\uD83C\uDFB2", forceMention = true))
+		val list = mutableListOf<LorittaReply>()
+		list.add(LorittaReply(message = message, prefix = "\uD83C\uDFB2", forceMention = true))
 
 		if (response.isNotEmpty()) {
-			list.add(LoriReply(message = response, prefix = "\uD83E\uDD13", mentionUser = false))
+			list.add(LorittaReply(message = response, prefix = "\uD83E\uDD13", mentionUser = false))
 		}
 
 		context.reply(*list.toTypedArray())

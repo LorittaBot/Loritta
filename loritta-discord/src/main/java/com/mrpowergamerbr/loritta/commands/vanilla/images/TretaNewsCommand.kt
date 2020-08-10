@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.images
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.TretaNewsGenerator
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -38,19 +38,19 @@ class TretaNewsCommand : AbstractCommand("tretanews", category = CommandCategory
 		val base = TretaNewsGenerator.generate(context.guild, context.guild.getMember(user1)!!, context.guild.getMember(user2)!!)
 
 		context.reply(base.image, "tretanews.png",
-				LoriReply(
-						message = "VOOOOOOCÊ ESTÁ ASSISTINDO TRETA NEWS E VAMOS DIRETO PARA AS NOTÍCIAAAAAAAAS!",
-						prefix = "<:fluffy:372454445721845761>"
-				),
-				LoriReply(
-						message = "`${base.title}`",
-						mentionUser = false
-				),
-				LoriReply(
-						message = "\uD83D\uDCFA `${base.views}` **${context.legacyLocale["MUSICINFO_VIEWS"]}**, \uD83D\uDE0D `${base.likes}` **${context.legacyLocale["MUSICINFO_LIKES"]}**, \uD83D\uDE20 `${base.dislikes}` **${context.legacyLocale["MUSICINFO_DISLIKES"]}**",
-						prefix = "\uD83D\uDCC8",
-						mentionUser = false
-				)
+                LorittaReply(
+                        message = "VOOOOOOCÊ ESTÁ ASSISTINDO TRETA NEWS E VAMOS DIRETO PARA AS NOTÍCIAAAAAAAAS!",
+                        prefix = "<:fluffy:372454445721845761>"
+                ),
+                LorittaReply(
+                        message = "`${base.title}`",
+                        mentionUser = false
+                ),
+                LorittaReply(
+                        message = "\uD83D\uDCFA `${base.views}` **${context.legacyLocale["MUSICINFO_VIEWS"]}**, \uD83D\uDE0D `${base.likes}` **${context.legacyLocale["MUSICINFO_LIKES"]}**, \uD83D\uDE20 `${base.dislikes}` **${context.legacyLocale["MUSICINFO_DISLIKES"]}**",
+                        prefix = "\uD83D\uDCC8",
+                        mentionUser = false
+                )
 		)
 	}
 }

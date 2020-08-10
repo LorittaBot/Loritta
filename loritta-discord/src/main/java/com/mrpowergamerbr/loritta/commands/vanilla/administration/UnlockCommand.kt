@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.Permission
@@ -46,10 +46,10 @@ class UnlockCommand : AbstractCommand("unlock", listOf("destrancar"), CommandCat
 		}
 		
 		context.reply(
-				LoriReply(
-						locale.toNewLocale()["commands.moderation.unlock.allowed", context.config.commandPrefix],
-						"\uD83C\uDF89"
-				)
+                LorittaReply(
+                        locale.toNewLocale()["commands.moderation.unlock.allowed", context.config.commandPrefix],
+                        "\uD83C\uDF89"
+                )
 		)
 	}
 	

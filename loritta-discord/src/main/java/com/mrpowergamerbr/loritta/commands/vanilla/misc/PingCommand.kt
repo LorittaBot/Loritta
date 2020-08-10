@@ -6,7 +6,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.LorittaShards
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.JDA
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.ClusterOfflineException
 import net.perfectdreams.loritta.utils.NetAddressUtils
+import net.perfectdreams.loritta.utils.extensions.build
 import java.util.concurrent.TimeUnit
 
 class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
@@ -243,34 +244,34 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 			val time = System.currentTimeMillis()
 
 			val replies = mutableListOf(
-					LoriReply(
-							message = "**Pong!** (\uD83D\uDCE1 Shard ${context.event.jda.shardInfo.shardId}/${loritta.discordConfig.discord.maxShards - 1}) (<:loritta:331179879582269451> Loritta Cluster ${loritta.lorittaCluster.id} (`${loritta.lorittaCluster.name}`))",
-							prefix = ":ping_pong:"
-					),
-					LoriReply(
-							message = "**Gateway Ping:** `${context.event.jda.gatewayPing}ms`",
-							prefix = ":stopwatch:",
-							mentionUser = false
-					),
-					LoriReply(
-							message = "**API Ping:** `...ms`",
-							prefix = ":stopwatch:",
-							mentionUser = false
-					)
+                    LorittaReply(
+                            message = "**Pong!** (\uD83D\uDCE1 Shard ${context.event.jda.shardInfo.shardId}/${loritta.discordConfig.discord.maxShards - 1}) (<:loritta:331179879582269451> Loritta Cluster ${loritta.lorittaCluster.id} (`${loritta.lorittaCluster.name}`))",
+                            prefix = ":ping_pong:"
+                    ),
+                    LorittaReply(
+                            message = "**Gateway Ping:** `${context.event.jda.gatewayPing}ms`",
+                            prefix = ":stopwatch:",
+                            mentionUser = false
+                    ),
+                    LorittaReply(
+                            message = "**API Ping:** `...ms`",
+                            prefix = ":stopwatch:",
+                            mentionUser = false
+                    )
 			)
 
 			val message = context.reply(*replies.toTypedArray())
 
 			replies.removeAt(2) // remova o último
 			replies.add(
-					LoriReply(
-							message = "**API Ping:** `${System.currentTimeMillis() - time}ms`",
-							prefix = ":zap:",
-							mentionUser = false
-					)
+                    LorittaReply(
+                            message = "**API Ping:** `${System.currentTimeMillis() - time}ms`",
+                            prefix = ":zap:",
+                            mentionUser = false
+                    )
 			)
 
-			message.editMessage(replies.joinToString(separator = "\n", transform = {it.build(context)})).await()
+			message.editMessage(replies.joinToString(separator = "\n", transform = { it.build(context) })).await()
 
 			message.onReactionAddByAuthor(context) {
 				message.editMessage("${context.userHandle.asMention} i luv u <:lori_blobnom:412582340272062464>").queue()

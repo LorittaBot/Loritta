@@ -22,6 +22,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.tables.BotVotes
 import net.perfectdreams.loritta.utils.ClusterOfflineException
@@ -230,19 +231,19 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 
 		if (contextUser != null && bannedState != null) {
 			context.reply(
-					LoriReply(
-							"${contextUser.asMention} está **banido**",
-							"\uD83D\uDE45"
-					),
-					LoriReply(
-							"**Motivo:** `${bannedState[BannedUsers.reason]}`",
-							"✍"
-					)
+                    LorittaReply(
+                            "${contextUser.asMention} está **banido**",
+                            "\uD83D\uDE45"
+                    ),
+                    LorittaReply(
+                            "**Motivo:** `${bannedState[BannedUsers.reason]}`",
+                            "✍"
+                    )
 			)
 			return
 		}
 		if (contextUser == null && context.args.isNotEmpty() && (context.args.first() == "shop" || context.args.first() == "loja")) {
-			context.reply(LoriReply(context.locale["commands.social.profile.profileshop","${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/profiles"], Emotes.LORI_OWO))
+			context.reply(LorittaReply(context.locale["commands.social.profile.profileshop", "${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/profiles"], Emotes.LORI_OWO))
 			return
 		}
 

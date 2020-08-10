@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Marriage
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -36,20 +36,20 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 
 			if (proposeTo.id == context.userHandle.id) {
 				context.reply(
-						LoriReply(
-								locale["MARRY_CantMarryYourself"],
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                locale["MARRY_CantMarryYourself"],
+                                Constants.ERROR
+                        )
 				)
 				return
 			}
 
 			if (proposeTo.id == loritta.discordConfig.discord.clientId) {
 				context.reply(
-						LoriReply(
-								locale["MARRY_Loritta"],
-								"<:smol_lori_putassa:395010059157110785>"
-						)
+                        LorittaReply(
+                                locale["MARRY_Loritta"],
+                                "<:smol_lori_putassa:395010059157110785>"
+                        )
 				)
 				return
 			}
@@ -57,10 +57,10 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 			if (marriage != null) {
 				// Já está casado!
 				context.reply(
-						LoriReply(
-								locale["MARRY_AlreadyMarried", context.config.commandPrefix],
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                locale["MARRY_AlreadyMarried", context.config.commandPrefix],
+                                Constants.ERROR
+                        )
 				)
 				return
 			}
@@ -68,10 +68,10 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 			if (proposeMarriage != null) {
 				// Já está casado!
 				context.reply(
-						LoriReply(
-								locale["MARRY_AlreadyMarriedOther", proposeTo.asMention],
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                locale["MARRY_AlreadyMarriedOther", proposeTo.asMention],
+                                Constants.ERROR
+                        )
 				)
 				return
 			}
@@ -80,10 +80,10 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 				// Não tem dinheiro suficiente!
 				val diff = splitCost - context.lorittaUser.profile.money
 				context.reply(
-						LoriReply(
-								locale["MARRY_InsufficientFunds", diff],
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                locale["MARRY_InsufficientFunds", diff],
+                                Constants.ERROR
+                        )
 				)
 				return
 			}
@@ -92,24 +92,24 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 				// Não tem dinheiro suficiente!
 				val diff = splitCost - proposeToProfile.money
 				context.reply(
-						LoriReply(
-								locale["MARRY_InsufficientFundsOther", proposeTo.asMention, diff],
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                locale["MARRY_InsufficientFundsOther", proposeTo.asMention, diff],
+                                Constants.ERROR
+                        )
 				)
 				return
 			}
 
 			// Pedido enviado!
 			val replies = listOf(
-					LoriReply(
-							proposeTo.asMention + " Você recebeu uma proposta de casamento de " + context.userHandle.asMention + "!",
-							"\uD83D\uDC8D"
-					),
-					LoriReply(
-							"Para aceitar, clique no \uD83D\uDC8D! Mas lembrando, o custo de um casamento é **10000 Sonhos**, e **200 Sonhos** todos os dias!",
-							"\uD83D\uDCB5"
-					)
+                    LorittaReply(
+                            proposeTo.asMention + " Você recebeu uma proposta de casamento de " + context.userHandle.asMention + "!",
+                            "\uD83D\uDC8D"
+                    ),
+                    LorittaReply(
+                            "Para aceitar, clique no \uD83D\uDC8D! Mas lembrando, o custo de um casamento é **10000 Sonhos**, e **200 Sonhos** todos os dias!",
+                            "\uD83D\uDCB5"
+                    )
 			)
 
 			val response = replies.joinToString("\n", transform = { it.build() })
@@ -126,20 +126,20 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 
 					if (proposeTo.id == context.userHandle.id) {
 						context.reply(
-								LoriReply(
-										locale["MARRY_CantMarryYourself"],
-										Constants.ERROR
-								)
+                                LorittaReply(
+                                        locale["MARRY_CantMarryYourself"],
+                                        Constants.ERROR
+                                )
 						)
 						return@onReactionAdd
 					}
 
 					if (proposeTo.id == loritta.discordConfig.discord.clientId) {
 						context.reply(
-								LoriReply(
-										locale["MARRY_Loritta"],
-										"<:smol_lori_putassa:395010059157110785>"
-								)
+                                LorittaReply(
+                                        locale["MARRY_Loritta"],
+                                        "<:smol_lori_putassa:395010059157110785>"
+                                )
 						)
 						return@onReactionAdd
 					}
@@ -147,10 +147,10 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 					if (marriage != null) {
 						// Não tem dinheiro suficiente!
 						context.reply(
-								LoriReply(
-										locale["MARRY_AlreadyMarried"],
-										Constants.ERROR
-								)
+                                LorittaReply(
+                                        locale["MARRY_AlreadyMarried"],
+                                        Constants.ERROR
+                                )
 						)
 						return@onReactionAdd
 					}
@@ -158,10 +158,10 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 					if (proposeMarriage != null) {
 						// Já está casado!
 						context.reply(
-								LoriReply(
-										locale["MARRY_AlreadyMarriedOther"],
-										Constants.ERROR
-								)
+                                LorittaReply(
+                                        locale["MARRY_AlreadyMarriedOther"],
+                                        Constants.ERROR
+                                )
 						)
 						return@onReactionAdd
 					}
@@ -170,10 +170,10 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 						// Não tem dinheiro suficiente!
 						val diff = splitCost - profile.money
 						context.reply(
-								LoriReply(
-										locale["MARRY_InsufficientFunds", diff],
-										Constants.ERROR
-								)
+                                LorittaReply(
+                                        locale["MARRY_InsufficientFunds", diff],
+                                        Constants.ERROR
+                                )
 						)
 						return@onReactionAdd
 					}
@@ -182,10 +182,10 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 						// Não tem dinheiro suficiente!
 						val diff = splitCost - proposeToProfile.money
 						context.reply(
-								LoriReply(
-										locale["MARRY_InsufficientFundsOther", proposeTo.asMention, diff],
-										Constants.ERROR
-								)
+                                LorittaReply(
+                                        locale["MARRY_InsufficientFundsOther", proposeTo.asMention, diff],
+                                        Constants.ERROR
+                                )
 						)
 						return@onReactionAdd
 					}
@@ -217,10 +217,10 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 					}
 
 					context.reply(
-							LoriReply(
-									"Vocês se casaram! Felicidades para vocês dois!",
-									"❤"
-							)
+                            LorittaReply(
+                                    "Vocês se casaram! Felicidades para vocês dois!",
+                                    "❤"
+                            )
 					)
 				}
 			}

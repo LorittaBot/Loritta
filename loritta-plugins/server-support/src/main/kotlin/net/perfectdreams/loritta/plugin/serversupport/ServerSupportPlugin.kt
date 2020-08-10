@@ -14,6 +14,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.perfectdreams.loritta.api.LorittaBot
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.plugin.serversupport.modules.PleaseDontMentionStaffModule
 import net.perfectdreams.loritta.plugin.serversupport.modules.ServerSupportModule
@@ -84,31 +85,31 @@ class ServerSupportPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlu
 
 						if (resend) {
 							val replies = listOf(
-									LoriReply(
-											"<a:rat_jam:720643637033304442> **LEIA ANTES DE PERGUNTAR ALGO!** <a:rat_jam:720643637033304442>",
-											prefix = "<:lori_nice:726845783344939028>",
-											mentionUser = false
-									),
-									LoriReply(
-											"**Se for uma dúvida sobre a Loritta:** Veja se a resposta da sua pergunta está no <#574308431029207060>! Caso não esteja lá, envie a sua pergunta aqui e, na mensagem, mencione o <@&399301696892829706>, nós iremos tentar te ajudar o mais breve possível!",
-											"<:lori_ok:731873534036541500>",
-											mentionUser = false
-									),
-									LoriReply(
-											"**Lembre-se que aqui é o *suporte da Loritta*:** Nós não iremos te ajudar com problemas diversos (por exemplo: problemas em outros bots, problemas no Discord, etc)",
-											"<a:lori_fight:731871119400894525>",
-											mentionUser = false
-									),
-									LoriReply(
-											"**Se você irá perguntar \"aaaah lori caiu <:smol_lori_putassa:395010059157110785>\":** Veja o <#610094449737072660> e as <#302976807135739916> para mais informações!",
-											"<:smol_lori_putassa:395010059157110785>",
-											mentionUser = false
-									),
-									LoriReply(
-											"**Se você irá perguntar se algo foi mudado/adicionado/removido:** Veja as <#302976807135739916> para saber!",
-											"<a:lori_dabbing:727888868711334287>",
-											mentionUser = false
-									)
+                                    LorittaReply(
+                                            "<a:rat_jam:720643637033304442> **LEIA ANTES DE PERGUNTAR ALGO!** <a:rat_jam:720643637033304442>",
+                                            prefix = "<:lori_nice:726845783344939028>",
+                                            mentionUser = false
+                                    ),
+                                    LorittaReply(
+                                            "**Se for uma dúvida sobre a Loritta:** Veja se a resposta da sua pergunta está no <#574308431029207060>! Caso não esteja lá, envie a sua pergunta aqui e, na mensagem, mencione o <@&399301696892829706>, nós iremos tentar te ajudar o mais breve possível!",
+                                            "<:lori_ok:731873534036541500>",
+                                            mentionUser = false
+                                    ),
+                                    LorittaReply(
+                                            "**Lembre-se que aqui é o *suporte da Loritta*:** Nós não iremos te ajudar com problemas diversos (por exemplo: problemas em outros bots, problemas no Discord, etc)",
+                                            "<a:lori_fight:731871119400894525>",
+                                            mentionUser = false
+                                    ),
+                                    LorittaReply(
+                                            "**Se você irá perguntar \"aaaah lori caiu <:smol_lori_putassa:395010059157110785>\":** Veja o <#610094449737072660> e as <#302976807135739916> para mais informações!",
+                                            "<:smol_lori_putassa:395010059157110785>",
+                                            mentionUser = false
+                                    ),
+                                    LorittaReply(
+                                            "**Se você irá perguntar se algo foi mudado/adicionado/removido:** Veja as <#302976807135739916> para saber!",
+                                            "<a:lori_dabbing:727888868711334287>",
+                                            mentionUser = false
+                                    )
 							)
 
 							channel.sendMessage(
@@ -148,36 +149,36 @@ class ServerSupportPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlu
 
 						if (resend) {
 							val replies = listOf(
-									LoriReply(
-											"<a:rat_jam:720643637033304442> **READ THIS BEFORE ASKING SOMETHING!** <a:rat_jam:720643637033304442>",
-											prefix = "<:lori_nice:726845783344939028>",
-											mentionUser = false
-									),
-									LoriReply(
-											"**Remember that's *Loritta's support***: We will not help you with different problems (for example: problems with other bots, problems with Discord, etc.)",
-											"<a:lori_fight:731871119400894525>",
-											mentionUser = false
-									),
-									LoriReply(
-											"Loritta was made for portuguese speakers, but we trying to bring all of her cuteness and fun to other languages! We know that some parts are not translated yet but we're trying to improve it, be patient and sorry for the inconvenience ;w;",
-											"<:sad_cat_thumbs_up:686370257308483612>",
-											mentionUser = false
-									),
-									LoriReply(
-											"Se você for brasileiro e quiser suporte em português, vá em <#512377546990551040> e entre no meu servidor de suporte!",
-											"\uD83C\uDDE7\uD83C\uDDF7",
-											mentionUser = false
-									),
-									LoriReply(
-											"** If you are going to question \"aaaaw, lori's down <:smol_lori_putassa:395010059157110785>\"**: See <#420627916028641280> for more informations!",
-											"<:smol_lori_putassa:395010059157110785>",
-											mentionUser = false
-									),
-									LoriReply(
-											"** If you will question if something changed/added/removed**:  See the <#420627916028641280> to know!",
-											"<a:lori_dabbing:727888868711334287>",
-											mentionUser = false
-									)
+                                    LorittaReply(
+                                            "<a:rat_jam:720643637033304442> **READ THIS BEFORE ASKING SOMETHING!** <a:rat_jam:720643637033304442>",
+                                            prefix = "<:lori_nice:726845783344939028>",
+                                            mentionUser = false
+                                    ),
+                                    LorittaReply(
+                                            "**Remember that's *Loritta's support***: We will not help you with different problems (for example: problems with other bots, problems with Discord, etc.)",
+                                            "<a:lori_fight:731871119400894525>",
+                                            mentionUser = false
+                                    ),
+                                    LorittaReply(
+                                            "Loritta was made for portuguese speakers, but we trying to bring all of her cuteness and fun to other languages! We know that some parts are not translated yet but we're trying to improve it, be patient and sorry for the inconvenience ;w;",
+                                            "<:sad_cat_thumbs_up:686370257308483612>",
+                                            mentionUser = false
+                                    ),
+                                    LorittaReply(
+                                            "Se você for brasileiro e quiser suporte em português, vá em <#512377546990551040> e entre no meu servidor de suporte!",
+                                            "\uD83C\uDDE7\uD83C\uDDF7",
+                                            mentionUser = false
+                                    ),
+                                    LorittaReply(
+                                            "** If you are going to question \"aaaaw, lori's down <:smol_lori_putassa:395010059157110785>\"**: See <#420627916028641280> for more informations!",
+                                            "<:smol_lori_putassa:395010059157110785>",
+                                            mentionUser = false
+                                    ),
+                                    LorittaReply(
+                                            "** If you will question if something changed/added/removed**:  See the <#420627916028641280> to know!",
+                                            "<a:lori_dabbing:727888868711334287>",
+                                            mentionUser = false
+                                    )
 							)
 
 							channel.sendMessage(
@@ -248,7 +249,7 @@ class ServerSupportPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlu
 						import com.mrpowergamerbr.loritta.dao.*
 						import com.mrpowergamerbr.loritta.tables.*
 						import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-						import com.mrpowergamerbr.loritta.utils.LoriReply
+						import net.perfectdreams.loritta.api.messages.LoriReply
 						import java.awt.image.BufferedImage
 						import java.io.File
 						import javax.imageio.ImageIO

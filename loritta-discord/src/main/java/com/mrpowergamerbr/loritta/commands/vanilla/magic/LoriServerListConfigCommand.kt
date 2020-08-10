@@ -18,6 +18,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.EconomyConfig
 import net.perfectdreams.loritta.tables.BlacklistedGuilds
@@ -121,9 +122,9 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				}
 
 				context.reply(
-						LoriReply(
-								"Sonhos de ${user.asMention} foram editados com sucesso!"
-						)
+                        LorittaReply(
+                                "Sonhos de ${user.asMention} foram editados com sucesso!"
+                        )
 				)
 				return
 			}
@@ -139,9 +140,9 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				}
 
 				context.reply(
-						LoriReply(
-								"Sonhos de ${user.asMention} foram editados com sucesso!"
-						)
+                        LorittaReply(
+                                "Sonhos de ${user.asMention} foram editados com sucesso!"
+                        )
 				)
 				return
 			}
@@ -157,9 +158,9 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				}
 
 				context.reply(
-						LoriReply(
-								"Sonhos de ${user.asMention} foram editados com sucesso!"
-						)
+                        LorittaReply(
+                                "Sonhos de ${user.asMention} foram editados com sucesso!"
+                        )
 				)
 				return
 			}
@@ -179,9 +180,9 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				}
 
 				context.reply(
-						LoriReply(
-								"Pagamento criado com sucesso!"
-						)
+                        LorittaReply(
+                                "Pagamento criado com sucesso!"
+                        )
 				)
 				return
 			}
@@ -196,9 +197,9 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				}
 
 				context.reply(
-						LoriReply(
-								"Key criada com sucesso!"
-						)
+                        LorittaReply(
+                                "Key criada com sucesso!"
+                        )
 				)
 				return
 			}
@@ -209,9 +210,9 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				val moneyFromDonations = loritta.getActiveMoneyFromDonationsAsync(id)
 
 				context.reply(
-						LoriReply(
-								"<@${id}> possui **R$ ${moneyFromDonations}** ativos"
-						)
+                        LorittaReply(
+                                "<@${id}> possui **R$ ${moneyFromDonations}** ativos"
+                        )
 				)
 				return
 			}
@@ -235,9 +236,9 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				}
 
 				context.reply(
-						LoriReply(
-								"Guild banida!"
-						)
+                        LorittaReply(
+                                "Guild banida!"
+                        )
 				)
 			}
 
@@ -255,9 +256,9 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				}
 
 				context.reply(
-						LoriReply(
-								"Guild desbanida!"
-						)
+                        LorittaReply(
+                                "Guild desbanida!"
+                        )
 				)
 			}
 
@@ -280,20 +281,20 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 
 				if (strBuilder.length > 2000) {
 					context.reply(
-							LoriReply(
-									"Tem tanto usuário na lista que eu não vou conseguir mostrar, a mensagem está grande demais! Sorry ;w;",
-									Constants.ERROR
-							)
+                            LorittaReply(
+                                    "Tem tanto usuário na lista que eu não vou conseguir mostrar, a mensagem está grande demais! Sorry ;w;",
+                                    Constants.ERROR
+                            )
 					)
 					return
 				}
 
 				if (strBuilder.isEmpty()) {
 					context.reply(
-							LoriReply(
-									"Nenhum usuário se encaixa na pesquisa que você realizou, sorry ;w;",
-									Constants.ERROR
-							)
+                            LorittaReply(
+                                    "Nenhum usuário se encaixa na pesquisa que você realizou, sorry ;w;",
+                                    Constants.ERROR
+                            )
 					)
 					return
 				}
@@ -318,20 +319,20 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 
 				if (strBuilder.length > 2000) {
 					context.reply(
-							LoriReply(
-									"Tem tanta guild na lista que eu não vou conseguir mostrar, a mensagem está grande demais! Sorry ;w;",
-									Constants.ERROR
-							)
+                            LorittaReply(
+                                    "Tem tanta guild na lista que eu não vou conseguir mostrar, a mensagem está grande demais! Sorry ;w;",
+                                    Constants.ERROR
+                            )
 					)
 					return
 				}
 
 				if (strBuilder.isEmpty()) {
 					context.reply(
-							LoriReply(
-									"Nenhuma guild se encaixa na pesquisa que você realizou, sorry ;w;",
-									Constants.ERROR
-							)
+                            LorittaReply(
+                                    "Nenhuma guild se encaixa na pesquisa que você realizou, sorry ;w;",
+                                    Constants.ERROR
+                            )
 					)
 					return
 				}
@@ -373,9 +374,9 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				}
 
 				context.reply(
-						LoriReply(
-								"Alterando status de economia em todos os clusters..."
-						)
+                        LorittaReply(
+                                "Alterando status de economia em todos os clusters..."
+                        )
 				)
 				return
 			}

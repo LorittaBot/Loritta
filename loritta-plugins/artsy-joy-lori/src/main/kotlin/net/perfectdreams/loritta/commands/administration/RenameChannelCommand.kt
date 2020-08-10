@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.commands.administration
 
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.Permission
@@ -88,7 +88,7 @@ class RenameChannelCommand : LorittaDiscordCommand(arrayOf("renamechannel", "ren
                         .queue()
 
                 val replies = mutableListOf(
-                        LoriReply(
+                        LorittaReply(
                                 locale["commands.moderation.renamechannel.successfullyRenamed"],
                                 "\uD83C\uDF89"
                         )

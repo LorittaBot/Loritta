@@ -16,6 +16,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.NumberUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -63,20 +64,20 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 
 					// Fonte não encontrada!
 					context.reply(
-							LoriReply(
-									"Você precisa especificar qual será a forma de pagamento!",
-									Constants.ERROR
-							),
-							LoriReply(
-									"`${context.config.commandPrefix}pay global $display` — Forma de pagamento: Sonhos (Você possui **${context.lorittaUser.profile.money} Sonhos**!)",
-									prefix = "<:loritta:331179879582269451>",
-									mentionUser = false
-							),
-							LoriReply(
-									"`${context.config.commandPrefix}pay local $display` — Forma de pagamento: ${economyConfig.economyNamePlural} (Você possui **${payerProfile.money} ${economyConfig.economyNamePlural}**!)",
-									prefix = "\uD83D\uDCB5",
-									mentionUser = false
-							)
+                            LorittaReply(
+                                    "Você precisa especificar qual será a forma de pagamento!",
+                                    Constants.ERROR
+                            ),
+                            LorittaReply(
+                                    "`${context.config.commandPrefix}pay global $display` — Forma de pagamento: Sonhos (Você possui **${context.lorittaUser.profile.money} Sonhos**!)",
+                                    prefix = "<:loritta:331179879582269451>",
+                                    mentionUser = false
+                            ),
+                            LorittaReply(
+                                    "`${context.config.commandPrefix}pay local $display` — Forma de pagamento: ${economyConfig.economyNamePlural} (Você possui **${payerProfile.money} ${economyConfig.economyNamePlural}**!)",
+                                    prefix = "\uD83D\uDCB5",
+                                    mentionUser = false
+                            )
 					)
 					return
 				}
@@ -90,10 +91,10 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 
 			if (user == null || context.userHandle == user) {
 				context.reply(
-						LoriReply(
-								locale["REP_InvalidUser"],
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                locale["REP_InvalidUser"],
+                                Constants.ERROR
+                        )
 				)
 				return
 			}
@@ -102,20 +103,20 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 
 			if (howMuch == null) {
 				context.reply(
-						LoriReply(
-								locale["INVALID_NUMBER", arg1],
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                locale["INVALID_NUMBER", arg1],
+                                Constants.ERROR
+                        )
 				)
 				return
 			}
 
 			if (1 > howMuch) {
 				context.reply(
-						LoriReply(
-								locale["INVALID_NUMBER", context.rawArgs[1]],
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                locale["INVALID_NUMBER", context.rawArgs[1]],
+                                Constants.ERROR
+                        )
 				)
 				return
 			}
@@ -129,10 +130,10 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 
 			if (howMuch.toBigDecimal() > balanceQuantity) {
 				context.reply(
-						LoriReply(
-								locale["PAY_InsufficientFunds", if (economySource == "global") locale["ECONOMY_NamePlural"] else economyConfig?.economyNamePlural],
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                locale["PAY_InsufficientFunds", if (economySource == "global") locale["ECONOMY_NamePlural"] else economyConfig?.economyNamePlural],
+                                Constants.ERROR
+                        )
 				)
 				return
 			}
@@ -151,15 +152,15 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 				} else { "" }
 
 				val message = context.reply(
-						LoriReply(
-								context.locale["commands.economy.pay.youAreGoingToTransfer", howMuch, user.asMention, quirkyMessage],
-								Emotes.LORI_RICH
-						),
-						LoriReply(
-								context.locale["commands.economy.pay.clickToAcceptTheTransaction", user.asMention, "✅"],
-								"🤝",
-								mentionUser = false
-						)
+                        LorittaReply(
+                                context.locale["commands.economy.pay.youAreGoingToTransfer", howMuch, user.asMention, quirkyMessage],
+                                Emotes.LORI_RICH
+                        ),
+                        LorittaReply(
+                                context.locale["commands.economy.pay.clickToAcceptTheTransaction", user.asMention, "✅"],
+                                "🤝",
+                                mentionUser = false
+                        )
 				)
 
 				message.onReactionAdd(context) {
@@ -203,14 +204,14 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 									if (status == PayStatus.SUCCESS) {
 										val finalMoney = result["finalMoney"].double
 										context.reply(
-												LoriReply(
-														locale["PAY_TransactionComplete", user.asMention, finalMoney, if (finalMoney == 1.0) {
-															locale["ECONOMY_Name"]
-														} else {
-															locale["ECONOMY_NamePlural"]
-														}],
-														"\uD83D\uDCB8"
-												)
+                                                LorittaReply(
+                                                        locale["PAY_TransactionComplete", user.asMention, finalMoney, if (finalMoney == 1.0) {
+                                                            locale["ECONOMY_Name"]
+                                                        } else {
+                                                            locale["ECONOMY_NamePlural"]
+                                                        }],
+                                                        "\uD83D\uDCB8"
+                                                )
 										)
 									}
 								}
@@ -234,10 +235,14 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 				logger.info("${context.userHandle.id} (antes possuia ${beforeGiver} economia local) transferiu ${howMuch} economia local para ${receiverProfile.userId} (antes possuia ${beforeReceiver} economia local)")
 
 				context.reply(
-						LoriReply(
-								locale["PAY_TransactionComplete", user.asMention, howMuch, if (howMuch.toLong() == 1L) { economyConfig?.economyName } else { economyConfig?.economyNamePlural }],
-								"\uD83D\uDCB8"
-						)
+                        LorittaReply(
+                                locale["PAY_TransactionComplete", user.asMention, howMuch, if (howMuch.toLong() == 1L) {
+                                    economyConfig?.economyName
+                                } else {
+                                    economyConfig?.economyNamePlural
+                                }],
+                                "\uD83D\uDCB8"
+                        )
 				)
 			}
 		} else {
@@ -250,10 +255,10 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 
 		if (epochMillis + (Constants.ONE_WEEK_IN_MILLISECONDS * 2) > System.currentTimeMillis()) { // 14 dias
 			context.reply(
-					LoriReply(
-							context.locale["commands.economy.pay.selfAccountIsTooNew", 14] + " ${Emotes.LORI_CRYING}",
-							Constants.ERROR
-					)
+                    LorittaReply(
+                            context.locale["commands.economy.pay.selfAccountIsTooNew", 14] + " ${Emotes.LORI_CRYING}",
+                            Constants.ERROR
+                    )
 			)
 			return false
 		}
@@ -265,10 +270,10 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 
 		if (epochMillis + Constants.ONE_WEEK_IN_MILLISECONDS > System.currentTimeMillis()) { // 7 dias
 			context.reply(
-					LoriReply(
-							context.locale["commands.economy.pay.otherAccountIsTooNew", target.asMention, 7] + " ${Emotes.LORI_CRYING}",
-							Constants.ERROR
-					)
+                    LorittaReply(
+                            context.locale["commands.economy.pay.otherAccountIsTooNew", target.asMention, 7] + " ${Emotes.LORI_CRYING}",
+                            Constants.ERROR
+                    )
 			)
 			return false
 		}

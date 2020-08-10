@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
@@ -92,10 +92,10 @@ object AdminUtils {
 
 		if (validUsers.isEmpty()) {
 			context.reply(
-					LoriReply(
-							context.locale["commands.userDoesNotExist", "`${context.rawArgs[0].stripCodeMarks()}`"],
-							Emotes.LORI_HM
-					)
+                    LorittaReply(
+                            context.locale["commands.userDoesNotExist", "`${context.rawArgs[0].stripCodeMarks()}`"],
+                            Emotes.LORI_HM
+                    )
 			)
 			return null
 		}
@@ -113,10 +113,10 @@ object AdminUtils {
 
 		if (user == null) {
 			context.reply(
-					LoriReply(
-							context.locale["commands.userDoesNotExist", "`${context.rawArgs[0].stripCodeMarks()}`"],
-							Emotes.LORI_HM
-					)
+                    LorittaReply(
+                            context.locale["commands.userDoesNotExist", "`${context.rawArgs[0].stripCodeMarks()}`"],
+                            Emotes.LORI_HM
+                    )
 			)
 		}
 
@@ -135,10 +135,10 @@ object AdminUtils {
 			}
 
 			context.reply(
-					LoriReply(
-							reply,
-							Constants.ERROR
-					)
+                    LorittaReply(
+                            reply,
+                            Constants.ERROR
+                    )
 			)
 			return false
 		}
@@ -154,10 +154,10 @@ object AdminUtils {
 			}
 
 			context.reply(
-					LoriReply(
-							reply,
-							Constants.ERROR
-					)
+                    LorittaReply(
+                            reply,
+                            Constants.ERROR
+                    )
 			)
 			return false
 		}
@@ -168,25 +168,25 @@ object AdminUtils {
 		val str = context.locale["${LOCALE_PREFIX}.readyToPunish", context.locale["${LOCALE_PREFIX}.$type.punishName"], users.joinToString { it.asMention }, users.joinToString { it.asTag }, users.joinToString { it.id }]
 
 		val replies = mutableListOf(
-				LoriReply(
-						str,
-						"⚠"
-				)
+                LorittaReply(
+                        str,
+                        "⚠"
+                )
 		)
 
 		if (hasSilent) {
-			replies += LoriReply(
-					context.locale["${LOCALE_PREFIX}.silentTip"],
-					"\uD83D\uDC40",
-					mentionUser = false
-			)
+			replies += LorittaReply(
+                    context.locale["${LOCALE_PREFIX}.silentTip"],
+                    "\uD83D\uDC40",
+                    mentionUser = false
+            )
 		}
 
 		if (!context.config.getUserData(context.userHandle.idLong).quickPunishment) {
-			replies += LoriReply(
-					context.locale["${LOCALE_PREFIX}.skipConfirmationTip", "`${context.config.commandPrefix}quickpunishment`"],
-					mentionUser = false
-			)
+			replies += LorittaReply(
+                    context.locale["${LOCALE_PREFIX}.skipConfirmationTip", "`${context.config.commandPrefix}quickpunishment`"],
+                    mentionUser = false
+            )
 		}
 
 		return context.reply(*replies.toTypedArray())
@@ -196,10 +196,10 @@ object AdminUtils {
 
 	suspend fun sendSuccessfullyPunishedMessage(context: CommandContext, reason: String, sendDiscordReportAdvise: Boolean) {
 		val replies = mutableListOf(
-				LoriReply(
-						context.locale["${LOCALE_PREFIX}.successfullyPunished"] + " ${Emotes.LORI_RAGE}",
-						"\uD83C\uDF89"
-				)
+                LorittaReply(
+                        context.locale["${LOCALE_PREFIX}.successfullyPunished"] + " ${Emotes.LORI_RAGE}",
+                        "\uD83C\uDF89"
+                )
 		)
 
 		val reportExplanation = when {
@@ -210,11 +210,11 @@ object AdminUtils {
 
 		if (reportExplanation != null) {
 			replies.add(
-					LoriReply(
-							context.locale["${LOCALE_PREFIX}.reports.pleaseReportToDiscord", reportExplanation, Emotes.LORI_PAT, "<${context.locale["${LOCALE_PREFIX}.reports.pleaseReportUrl"]}>"],
-							Emotes.LORI_HM,
-							mentionUser = false
-					)
+                    LorittaReply(
+                            context.locale["${LOCALE_PREFIX}.reports.pleaseReportToDiscord", reportExplanation, Emotes.LORI_PAT, "<${context.locale["${LOCALE_PREFIX}.reports.pleaseReportUrl"]}>"],
+                            Emotes.LORI_HM,
+                            mentionUser = false
+                    )
 			)
 		}
 

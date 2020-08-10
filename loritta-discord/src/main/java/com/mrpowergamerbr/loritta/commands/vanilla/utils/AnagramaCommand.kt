@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 import com.google.common.math.BigIntegerMath
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.Emotes
@@ -46,14 +46,14 @@ class AnagramaCommand : AbstractCommand("anagram", listOf("anagrama"), CommandCa
 			val max = BigIntegerMath.factorial(currentWord.length).divide(exp)
 
 			context.reply(
-					LoriReply(
-							message = context.locale["$LOCALE_PREFIX.result", shuffledWord] + " ${Emotes.LORI_WOW}",
-							prefix = "✍"
-					),
-					LoriReply(
-							message = context.locale["$LOCALE_PREFIX.stats", currentWord, max],
-							prefix = "\uD83E\uDD13"
-					)
+                    LorittaReply(
+                            message = context.locale["$LOCALE_PREFIX.result", shuffledWord] + " ${Emotes.LORI_WOW}",
+                            prefix = "✍"
+                    ),
+                    LorittaReply(
+                            message = context.locale["$LOCALE_PREFIX.stats", currentWord, max],
+                            prefix = "\uD83E\uDD13"
+                    )
 			)
 		} else {
 			this.explain(context)

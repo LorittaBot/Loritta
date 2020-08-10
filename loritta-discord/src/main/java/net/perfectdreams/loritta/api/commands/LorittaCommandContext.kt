@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.api.commands
 
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.entities.User
@@ -25,11 +25,11 @@ abstract class LorittaCommandContext(val locale: BaseLocale, val legacyLocale: L
 
 	abstract suspend fun reply(message: String, prefix: String? = null, forceMention: Boolean = false): Message
 
-	abstract suspend fun reply(vararg loriReplies: LoriReply): Message
+	abstract suspend fun reply(vararg loriReplies: LorittaReply): Message
 
-	abstract suspend fun reply(mentionUserBeforeReplies: Boolean, vararg loriReplies: LoriReply): Message
+	abstract suspend fun reply(mentionUserBeforeReplies: Boolean, vararg loriReplies: LorittaReply): Message
 
-	abstract suspend fun reply(image: BufferedImage, fileName: String, vararg loriReplies: LoriReply): Message
+	abstract suspend fun reply(image: BufferedImage, fileName: String, vararg loriReplies: LorittaReply): Message
 
 	abstract suspend fun sendMessage(message: String): Message
 

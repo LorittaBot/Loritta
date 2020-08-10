@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -19,15 +19,15 @@ class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"),
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		context.reply(
-				LoriReply(
-						"Altere o background e embeleze o seu perfil aqui! <${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/backgrounds>",
-						Emotes.LORI_WOW
-				),
-				LoriReply(
-						"Você pode comprar mais backgrounds para o seu perfil na nossa loja diária! <${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/daily-shop>",
-						Emotes.LORI_WOW,
-						mentionUser = false
-				)
+                LorittaReply(
+                        "Altere o background e embeleze o seu perfil aqui! <${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/backgrounds>",
+                        Emotes.LORI_WOW
+                ),
+                LorittaReply(
+                        "Você pode comprar mais backgrounds para o seu perfil na nossa loja diária! <${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/daily-shop>",
+                        Emotes.LORI_WOW,
+                        mentionUser = false
+                )
 		)
 	}
 }

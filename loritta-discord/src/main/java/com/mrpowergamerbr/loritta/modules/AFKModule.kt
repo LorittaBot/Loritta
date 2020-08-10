@@ -7,6 +7,8 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.TextChannel
+import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import java.util.concurrent.TimeUnit
 
 class AFKModule : MessageReceivedModule {
@@ -35,35 +37,35 @@ class AFKModule : MessageReceivedModule {
 		if (afkMembers.isNotEmpty()) {
 			if (afkMembers.size == 1) {
 				event.channel.sendMessage(
-						LoriReply(
-								message = locale.toNewLocale()["loritta.modules.afk.userIsAfk", "**" + afkMembers[0].first.effectiveName.escapeMentions().stripCodeMarks() + "**"] + if (afkMembers[0].second != null) {
-									" **" + locale.toNewLocale()["commands.moderation.punishmentReason"] + "** » `${afkMembers[0].second}`"
-								} else {
-									""
-								},
-								prefix = "\uD83D\uDE34"
-						).build(event.author)
+						LorittaReply(
+                                message = locale.toNewLocale()["loritta.modules.afk.userIsAfk", "**" + afkMembers[0].first.effectiveName.escapeMentions().stripCodeMarks() + "**"] + if (afkMembers[0].second != null) {
+                                    " **" + locale.toNewLocale()["commands.moderation.punishmentReason"] + "** » `${afkMembers[0].second}`"
+                                } else {
+                                    ""
+                                },
+                                prefix = "\uD83D\uDE34"
+                        ).build(JDAUser(event.author))
 				).queue {
 					it.delete().queueAfter(5000, TimeUnit.MILLISECONDS)
 				}
 			} else {
-				val replies = mutableListOf<LoriReply>()
+				val replies = mutableListOf<LorittaReply>()
 				replies.add(
-						LoriReply(
-								message = locale.toNewLocale()["loritta.modules.afk.usersAreAfk", afkMembers.joinToString(separator = ", ", transform = { "**" + it.first.effectiveName.escapeMentions().stripCodeMarks() + "**" })],
-								prefix = "\uD83D\uDE34"
-						)
+                        LorittaReply(
+                                message = locale.toNewLocale()["loritta.modules.afk.usersAreAfk", afkMembers.joinToString(separator = ", ", transform = { "**" + it.first.effectiveName.escapeMentions().stripCodeMarks() + "**" })],
+                                prefix = "\uD83D\uDE34"
+                        )
 				)
 				for ((member, reason) in afkMembers.filter { it.second != null }) {
 					replies.add(
-							LoriReply(
-									message = "**" + member.effectiveName.escapeMentions().stripCodeMarks() + "** » `${reason!!.stripCodeMarks().replace("discord.gg", "")}`",
-									mentionUser = false
-							)
+                            LorittaReply(
+                                    message = "**" + member.effectiveName.escapeMentions().stripCodeMarks() + "** » `${reason!!.stripCodeMarks().replace("discord.gg", "")}`",
+                                    mentionUser = false
+                            )
 					)
 				}
 				event.channel.sendMessage(
-						replies.map { it.build(event.author) }.joinToString("\n")
+						replies.joinToString("\n") { it.build(JDAUser(event.author)) }
 				).queue {
 					it.delete().queueAfter(5000, TimeUnit.MILLISECONDS)
 				}

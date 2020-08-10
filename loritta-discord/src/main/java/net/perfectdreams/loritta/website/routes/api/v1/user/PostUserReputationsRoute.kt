@@ -27,6 +27,7 @@ import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.*
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
@@ -102,18 +103,18 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 					val locale = loritta.getLocaleById(serverConfig.localeId)
 
 					// Tudo certo? Então vamos enviar!
-					val reply = LoriReply(
-							locale[
-									"commands.social.reputation.success",
-									"<@${giverId}>",
-									"<@$receiverId>",
-									reputationCount,
-									Emotes.LORI_OWO,
-									"<${loritta.instanceConfig.loritta.website.url}user/${receiverId}/rep?guild=${guildId}&channel=${channelId}>",
-									receiverSettings.gender.getPersonalPronoun(locale, PersonalPronoun.THIRD_PERSON, "<@$receiverId>")
-							],
-							Emotes.LORI_HUG
-					)
+					val reply = LorittaReply(
+                            locale[
+                                    "commands.social.reputation.success",
+                                    "<@${giverId}>",
+                                    "<@$receiverId>",
+                                    reputationCount,
+                                    Emotes.LORI_OWO,
+                                    "<${loritta.instanceConfig.loritta.website.url}user/${receiverId}/rep?guild=${guildId}&channel=${channelId}>",
+                                    receiverSettings.gender.getPersonalPronoun(locale, PersonalPronoun.THIRD_PERSON, "<@$receiverId>")
+                            ],
+                            Emotes.LORI_HUG
+                    )
 
 					channel.sendMessage(reply.build()).queue()
 				}

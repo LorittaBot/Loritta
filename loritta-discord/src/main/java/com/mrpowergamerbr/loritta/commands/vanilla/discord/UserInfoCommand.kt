@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.utils.UserFlagBadgeEmotes.getBadges
 import net.perfectdreams.loritta.utils.Emotes
 
@@ -32,10 +33,10 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 		if (user == null) {
 			if (context.args.getOrNull(0) != null) {
 				context.reply(
-						LoriReply(
-								locale["USERINFO_UnknownUser", context.args[0].stripCodeMarks()],
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                locale["USERINFO_UnknownUser", context.args[0].stripCodeMarks()],
+                                Constants.ERROR
+                        )
 				)
 				return
 			}

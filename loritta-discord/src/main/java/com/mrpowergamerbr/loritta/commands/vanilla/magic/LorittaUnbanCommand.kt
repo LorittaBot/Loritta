@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.tables.BannedUsers
@@ -24,10 +24,10 @@ class LorittaUnbanCommand : AbstractCommand("lorittaunban", category = CommandCa
 
 			if (profile == null) {
 				context.reply(
-						LoriReply(
-								"Usuário não possui perfil na Loritta!",
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                "Usuário não possui perfil na Loritta!",
+                                Constants.ERROR
+                        )
 				)
 				return
 			}

@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Warn
 import com.mrpowergamerbr.loritta.tables.Warns
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNull
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -70,10 +70,10 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 
 			if (warns.isEmpty()) {
 				context.reply(
-						LoriReply(
-								context.locale["$LOCALE_PREFIX.unwarn.noWarnsFound", "`${context.config.commandPrefix}warnlist`"],
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                context.locale["$LOCALE_PREFIX.unwarn.noWarnsFound", "`${context.config.commandPrefix}warnlist`"],
+                                Constants.ERROR
+                        )
 				)
 				return
 			}
@@ -84,10 +84,10 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 			if (context.args.size >= 2) {
 				if (context.args[1].toIntOrNull() == null) {
 					context.reply(
-							LoriReply(
-									"${context.legacyLocale["INVALID_NUMBER", context.args[1]]}",
-									Constants.ERROR
-							)
+                            LorittaReply(
+                                    "${context.legacyLocale["INVALID_NUMBER", context.args[1]]}",
+                                    Constants.ERROR
+                            )
 					)
 					return	
 				}
@@ -97,10 +97,10 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 
 			if (warnIndex > warns.size) {
 				context.reply(
-						LoriReply(
-								context.locale["$LOCALE_PREFIX.unwarn.notEnoughWarns", warnIndex, "`${context.config.commandPrefix}warnlist`"],
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                context.locale["$LOCALE_PREFIX.unwarn.notEnoughWarns", warnIndex, "`${context.config.commandPrefix}warnlist`"],
+                                Constants.ERROR
+                        )
 				)
 				return
 			}
@@ -112,10 +112,10 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 			}
 
 			context.reply(
-					LoriReply(
-							context.locale["$LOCALE_PREFIX.unwarn.warnRemoved"] + " ${Emotes.LORI_HMPF}",
-							"\uD83C\uDF89"
-					)
+                    LorittaReply(
+                            context.locale["$LOCALE_PREFIX.unwarn.warnRemoved"] + " ${Emotes.LORI_HMPF}",
+                            "\uD83C\uDF89"
+                    )
 			)
 		} else {
 			this.explain(context)

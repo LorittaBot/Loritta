@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.PackageInfoCommand.PackageSource.CORREIOS
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.PackageInfoCommand.PackageSource.CTT
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.correios.CorreiosResponse
 import com.mrpowergamerbr.loritta.utils.correios.EncomendaResponse
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
@@ -38,10 +38,10 @@ class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ct
 
 				if (pair == null) {
 					context.reply(
-							LoriReply(
-									message = context.getAsMention(true) + locale["PACKAGEINFO_COULDNT_FIND", packageId],
-									prefix = Constants.ERROR
-							)
+                            LorittaReply(
+                                    message = context.getAsMention(true) + locale["PACKAGEINFO_COULDNT_FIND", packageId],
+                                    prefix = Constants.ERROR
+                            )
 					)
 					return
 				}

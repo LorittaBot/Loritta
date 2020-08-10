@@ -4,7 +4,7 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.encodeToUrl
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
@@ -31,10 +31,10 @@ class RbGameCommand : AbstractCommand("rbgame", listOf("rbjogo", "rbgameinfo"), 
 
 			if (gameCardLink == null) {
 				context.reply(
-						LoriReply(
-								message = locale["RBGAME_CouldntFind"],
-								prefix = Constants.ERROR
-						)
+                        LorittaReply(
+                                message = locale["RBGAME_CouldntFind"],
+                                prefix = Constants.ERROR
+                        )
 				)
 				return
 			}

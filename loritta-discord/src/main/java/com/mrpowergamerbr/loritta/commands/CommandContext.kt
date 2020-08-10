@@ -5,7 +5,10 @@ import club.minnced.discord.webhook.send.WebhookMessage
 import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
+import com.mrpowergamerbr.loritta.utils.ImageUtils
+import com.mrpowergamerbr.loritta.utils.LorittaUser
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
@@ -14,8 +17,10 @@ import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.exceptions.PermissionException
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.api.utils.NoCopyByteArrayOutputStream
 import net.perfectdreams.loritta.utils.DiscordUtils
+import net.perfectdreams.loritta.utils.extensions.build
 import org.jsoup.Jsoup
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
@@ -78,14 +83,14 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 		return sendMessage(send)
 	}
 
-	suspend fun reply(vararg loriReplies: LoriReply): Message {
+	suspend fun reply(vararg loriReplies: LorittaReply): Message {
 		return reply(false, *loriReplies)
 	}
 
-	suspend fun reply(mentionUserBeforeReplies: Boolean, vararg loriReplies: LoriReply): Message {
+	suspend fun reply(mentionUserBeforeReplies: Boolean, vararg loriReplies: LorittaReply): Message {
 		val message = StringBuilder()
 		if (mentionUserBeforeReplies) {
-			message.append(LoriReply().build(this))
+			message.append(LorittaReply().build(this))
 			message.append("\n")
 		}
 		for (loriReply in loriReplies) {
@@ -95,7 +100,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 		return sendMessage(message.toString())
 	}
 
-	suspend fun reply(image: BufferedImage, fileName: String, vararg loriReplies: LoriReply): Message {
+	suspend fun reply(image: BufferedImage, fileName: String, vararg loriReplies: LorittaReply): Message {
 		val message = StringBuilder()
 		for (loriReply in loriReplies) {
 			message.append(loriReply.build(this) + "\n")

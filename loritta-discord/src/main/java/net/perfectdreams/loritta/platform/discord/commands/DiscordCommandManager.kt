@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.utils.MarkdownSanitizer
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.commands.LorittaCommandManager
 import net.perfectdreams.loritta.api.entities.User
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.commands.vanilla.`fun`.*
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
@@ -265,7 +266,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                 if (cooldown > diff && !loritta.config.isOwner(ev.author.id)) {
                     val fancy = DateUtils.formatDateDiff((cooldown - diff) + System.currentTimeMillis(), legacyLocale)
                     context.reply(
-                            LoriReply(
+                            LorittaReply(
                                     locale["commands.pleaseWaitCooldown", fancy, "\uD83D\uDE45"],
                                     "\uD83D\uDD25"
                             )
@@ -303,7 +304,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                         // oh no
                         val required = missingPermissions.joinToString(", ", transform = { "`" + it.localized(locale) + "`" })
                         context.reply(
-                                LoriReply(
+                                LorittaReply(
                                         locale["commands.loriDoesntHavePermissionDiscord", required, "\uD83D\uDE22", "\uD83D\uDE42"],
                                         Constants.ERROR
                                 )
@@ -339,7 +340,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
 
                 if (context.command.onlyOwner && !loritta.config.isOwner(context.userHandle.id)) {
                     context.reply(
-                            LoriReply(
+                            LorittaReply(
                                     locale["commands.commandOnlyForOwner"],
                                     Constants.ERROR
                             )
@@ -352,7 +353,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                         val requiredPermissions = command.discordPermissions.filter { !ev.message.member!!.hasPermission(ev.message.textChannel, it) }
                         val required = requiredPermissions.joinToString(", ", transform = { "`" + it.localized(locale) + "`" })
                         context.reply(
-                                LoriReply(
+                                LorittaReply(
                                         locale["commands.userDoesntHavePermissionDiscord", required],
                                         Constants.ERROR
                                 )
@@ -389,7 +390,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
 
                         if (hasBadNickname) {
                             context.reply(
-                                    LoriReply(
+                                    LorittaReply(
                                             legacyLocale["LORITTA_BadNickname"],
                                             "<:lori_triste:370344565967814659>"
                                     )
@@ -450,7 +451,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                     if (e.errorCode == 40005) { // Request entity too large
                         if (ev.isFromType(ChannelType.PRIVATE) || (ev.isFromType(ChannelType.TEXT) && ev.textChannel != null && ev.textChannel.canTalk()))
                             context.reply(
-                                    LoriReply(
+                                    LorittaReply(
                                             locale["commands.imageTooLarge", "8MB", Emotes.LORI_TEMMIE],
                                             "\uD83E\uDD37"
                                     )
