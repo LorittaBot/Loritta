@@ -386,15 +386,17 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
     fun loadLegacyLocales() {
         val locales = mutableMapOf<String, LegacyBaseLocale>()
 
+        val legacyLocalesFolder = File(instanceConfig.loritta.folders.locales, "legacy")
+
         // Carregar primeiro o locale padrão
-        val defaultLocaleFile = File(instanceConfig.loritta.folders.locales, "default.json")
+        val defaultLocaleFile = File(legacyLocalesFolder, "default.json")
         val localeAsText = defaultLocaleFile.readText(Charsets.UTF_8)
         val defaultLocale = Loritta.GSON.fromJson(localeAsText, LegacyBaseLocale::class.java) // Carregar locale do jeito velho
         val defaultJsonLocale = JsonParser.parseString(localeAsText).obj // Mas também parsear como JSON
 
         defaultJsonLocale.entrySet().forEach { (key, value) ->
             if (!value.isJsonArray) { // TODO: Listas!
-                defaultLocale.strings.put(key, value.string)
+                defaultLocale.strings[key] = value.string
             }
         }
 
@@ -402,7 +404,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         locales.put("default", defaultLocale)
 
         // Carregar todos os locales
-        val localesFolder = File(instanceConfig.loritta.folders.locales)
+        val localesFolder = legacyLocalesFolder
         val prettyGson = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
         for (file in localesFolder.listFiles()) {
             if (file.extension == "json" && file.nameWithoutExtension != "default") {
@@ -420,7 +422,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
             if (id != "default") {
                 val jsonObject = JsonParser.parseString(Loritta.GSON.toJson(locale))
 
-                val localeFile = File(instanceConfig.loritta.folders.locales, "$id.json")
+                val localeFile = File(legacyLocalesFolder, "$id.json")
                 val asJson = JsonParser.parseString(localeFile.readText()).obj
 
                 for ((id, obj) in asJson.entrySet()) {
@@ -467,7 +469,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
                     }
                 }
 
-                File(instanceConfig.loritta.folders.locales, "$id.json").writeText(prettyGson.toJson(jsonObject))
+                File(legacyLocalesFolder, "$id.json").writeText(prettyGson.toJson(jsonObject))
             }
         }
 
