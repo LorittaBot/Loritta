@@ -67,6 +67,9 @@ object CoinFlipBetCommand : DSLCommandBase {
 			if (invitedUser == context.user)
 				fail(locale["commands.economy.flipcoinbet.cantBetSelf"], Constants.ERROR)
 
+			if (!context.lorittaUser.profile.availableForBets)
+				fail(locale["commands.economy.flipcoinbet.selfNotAvailableForBets"])
+
 			val selfActiveDonations = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonationsAsync(context.discordMessage.author.idLong)
 			val otherActiveDonations = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonationsAsync(invitedUser.idLong)
 
