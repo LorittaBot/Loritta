@@ -30,6 +30,7 @@ import io.ktor.http.userAgent
 import kotlinx.coroutines.Dispatchers
 import mu.KotlinLogging
 import net.perfectdreams.loritta.api.LorittaBot
+import net.perfectdreams.loritta.api.utils.format
 import net.perfectdreams.loritta.commands.vanilla.economy.*
 import net.perfectdreams.loritta.commands.vanilla.magic.LoriToolsCommand
 import net.perfectdreams.loritta.commands.vanilla.social.*
@@ -265,6 +266,13 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
         val localeFolder = File(instanceConfig.loritta.folders.locales, id)
 
+        // Does exactly what the variable says: Only matches single quotes (') that do not have a slash (\) preceding it
+        // Example: It's me, Mario!
+        // But if there is a slash preceding it...
+        // Example: \'{@user}\'
+        // It won't match!
+        val singleQuotesWithoutSlashPrecedingItRegex = Regex("(?<!(?:\\\\))'")
+
         if (localeFolder.exists()) {
             localeFolder.listFiles().filter { it.extension == "yml" || it.extension == "json" }.forEach {
                 val entries = Constants.YAML.load<MutableMap<String, Any?>>(it.readText())
@@ -276,20 +284,35 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
                         } else {
                             if (value is List<*>) {
                                 locale.localeListEntries[prefix + key] = try {
-                                    (value as List<String>).map { it.replace("'", "''") } // Escape single quotes
+                                    (value as List<String>).map {
+                                        it.replace(singleQuotesWithoutSlashPrecedingItRegex, "''") // Escape single quotes
+                                                .replace("\'", "'") // Replace \' with '
+                                    } // Escape single quotes
                                 } catch (e: ClassCastException) {
                                     // A LinkedHashMap does match the "is List<*>" check, but it fails when we cast the subtype to String
                                     // If that happens, we will just ignore the exception and use the raw "value" list.
                                     (value as List<String>)
                                 }
                             } else if (value is String) {
-                                locale.localeStringEntries[prefix + key] = value.replace("'", "''") // Escape single quotes
+                                locale.localeStringEntries[prefix + key] = value.replace(singleQuotesWithoutSlashPrecedingItRegex, "''") // Escape single quotes
+                                        .replace("\'", "'") // Replace \' with '
                             } else throw IllegalArgumentException("Invalid object type detected in YAML! $value")
                         }
                     }
                 }
 
                 transformIntoFlatMap(entries, "")
+            }
+        }
+
+        // Before we say "okay everything is OK! Let's go!!" we are going to format every single string on the locale
+        // to check if everything is really OK
+        for ((key, string) in locale.localeStringEntries) {
+            try {
+                string?.format()
+            } catch (e: IllegalArgumentException) {
+                logger.error("String \"$string\" stored in \"$key\" from $id can't be formatted! If you are using {...} formatted placeholders, do not forget to add \\' before and after the placeholder!")
+                throw e
             }
         }
 
@@ -328,8 +351,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
                 fileMap[next.name] = fileAsByteArray
             }
 
-            fileMap.forEach { file -> 
-
+            fileMap.forEach { file ->
                 var fileName = file.key
 
                 fileName = fileName.substring(fileName.indexOf("/") + 1)
@@ -348,7 +370,6 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
                 fout.close()
                 success++
-            
             }
 
             if (failed > 0)
