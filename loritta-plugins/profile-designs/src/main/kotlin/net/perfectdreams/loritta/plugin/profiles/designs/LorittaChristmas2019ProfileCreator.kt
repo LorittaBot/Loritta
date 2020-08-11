@@ -60,35 +60,21 @@ class LorittaChristmas2019ProfileCreator : ProfileCreator {
 
 		val marriedWith = if (marriedWithId != null) { runBlocking { lorittaShards.retrieveUserInfoById(marriedWithId.toLong()) } } else { null }
 
-		val reputations = transaction(Databases.loritta) {
-			Reputations.select { Reputations.receivedById eq user.id }.count()
-		}
+		val reputations = ProfileUtils.getReputationCount(user)
 
-		val globalPosition = transaction(Databases.loritta) {
-			Profiles.select { Profiles.xp greaterEq userProfile.xp }.count()
-		}
+		val globalPosition = ProfileUtils.getGlobalExperiencePosition(userProfile)
 
 		var xpLocal: Long? = null
 		var localPosition: Long? = null
 
 		if (guild != null) {
-			val localProfile = transaction(Databases.loritta) {
-				GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.id) }.firstOrNull()
-			}
+			val localProfile = ProfileUtils.getLocalProfile(guild, user)
 
-			localPosition = if (localProfile != null) {
-				transaction(Databases.loritta) {
-					GuildProfiles.select { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.xp greaterEq localProfile.xp) }.count()
-				}
-			} else {
-				null
-			}
+			localPosition = ProfileUtils.getLocalExperiencePosition(localProfile)
 			xpLocal = localProfile?.xp
 		}
 
-		val globalEconomyPosition = transaction(Databases.loritta) {
-			Profiles.select { Profiles.money greaterEq userProfile.money }.count()
-		}
+		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(userProfile)
 
 		val resizedBadges = badges.map { it.getScaledInstance(30, 30, BufferedImage.SCALE_SMOOTH).toBufferedImage() }
 

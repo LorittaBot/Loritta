@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
+import net.perfectdreams.loritta.plugin.profiles.designs.ProfileUtils
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
@@ -66,9 +67,7 @@ class OrkutProfileCreator : ProfileCreator {
 		graphics.font = whitneyMedium18
 		graphics.drawString("A Loritta e a Pantufa são suas amigas", 267, 276)
 
-		val reputations = transaction(Databases.loritta) {
-			Reputations.select { Reputations.receivedById eq user.id }.count()
-		}
+		val reputations = ProfileUtils.getReputationCount(user)
 		val reversedRep = reputations.toString().reversed()
 
 		var startX = 202

@@ -130,9 +130,7 @@ class NextGenProfileCreator : ProfileCreator {
 
 	fun drawReputations(user: ProfileUserInfoData, graphics: Graphics) {
 		val font = graphics.font
-		val reputations = transaction(Databases.loritta) {
-			Reputations.select { Reputations.receivedById eq user.id }.count()
-		}
+		val reputations = ProfileUtils.getReputationCount(user)
 
 		ImageUtils.drawCenteredString(graphics, "$reputations reps", Rectangle(620, 168, 180, 55), font)
 	}
@@ -141,23 +139,13 @@ class NextGenProfileCreator : ProfileCreator {
 		val userInfo = mutableListOf<String>()
 		graphics.drawText("Global", 232, 157)
 		userInfo.add("Global")
-		val globalPosition = transaction(Databases.loritta) {
-			Profiles.select { Profiles.xp greaterEq userProfile.xp }.count()
-		}
+		val globalPosition = ProfileUtils.getGlobalExperiencePosition(userProfile)
 		graphics.drawText("#$globalPosition / ${userProfile.xp} XP", 232, 173)
 
 		if (guild != null) {
-			val localProfile = transaction(Databases.loritta) {
-				GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.id) }.firstOrNull()
-			}
+			val localProfile = ProfileUtils.getLocalProfile(guild, user)
 
-			val localPosition = if (localProfile != null) {
-				transaction(Databases.loritta) {
-					GuildProfiles.select { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.xp greaterEq localProfile.xp) }.count()
-				}
-			} else {
-				null
-			}
+			val localPosition = ProfileUtils.getLocalExperiencePosition(localProfile)
 
 			val xpLocal = localProfile?.xp
 
@@ -171,9 +159,7 @@ class NextGenProfileCreator : ProfileCreator {
 		}
 
 		graphics.color = Color.BLACK
-		val globalEconomyPosition = transaction(Databases.loritta) {
-			Profiles.select { Profiles.money greaterEq userProfile.money }.count()
-		}
+		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(userProfile)
 
 		graphics.drawText("Sonhos", 631, 34)
 		graphics.drawText("#$globalEconomyPosition / ${userProfile.money}", 631, 54)

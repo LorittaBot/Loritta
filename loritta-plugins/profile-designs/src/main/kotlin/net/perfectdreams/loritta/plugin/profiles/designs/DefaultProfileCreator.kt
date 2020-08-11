@@ -80,25 +80,15 @@ class DefaultProfileCreator : ProfileCreator {
 			}
 		}
 
-		val globalPosition = transaction(Databases.loritta) {
-			Profiles.select { Profiles.xp greaterEq userProfile.xp }.count()
-		}
+		val globalPosition = ProfileUtils.getGlobalExperiencePosition(userProfile)
 		drawSection("Global", "#$globalPosition / ${userProfile.xp} XP", 562, 21)
 
 		if (guild != null) {
 			val guildIcon = LorittaUtils.downloadImage(guild.iconUrl?.replace("jpg", "png") ?: "https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/56/shrug_1f937.png")!!.getScaledInstance(38, 38, BufferedImage.SCALE_SMOOTH)
 
-			val localProfile = transaction(Databases.loritta) {
-				GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.id) }.firstOrNull()
-			}
+			val localProfile = ProfileUtils.getLocalProfile(guild, user)
 
-			val localPosition = if (localProfile != null) {
-				transaction(Databases.loritta) {
-					GuildProfiles.select { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.xp greaterEq localProfile.xp) }.count()
-				}
-			} else {
-				null
-			}
+			val localPosition = ProfileUtils.getLocalExperiencePosition(localProfile)
 
 			val xpLocal = localProfile?.xp
 
@@ -114,15 +104,11 @@ class DefaultProfileCreator : ProfileCreator {
 			graphics.drawImage(guildIcon.toBufferedImage().makeRoundedCorners(38), 520, 44, null)
 		}
 
-		val reputations = transaction(Databases.loritta) {
-			com.mrpowergamerbr.loritta.tables.Reputations.select { Reputations.receivedById eq user.id }.count()
-		}
+		val reputations = ProfileUtils.getReputationCount(user)
 
 		drawSection("Reputação", "$reputations reps", 562, 102)
 
-		val globalEconomyPosition = transaction(Databases.loritta) {
-			Profiles.select { Profiles.money greaterEq userProfile.money }.count()
-		}
+		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(userProfile)
 
 		drawSection(locale["ECONOMY_NamePlural"], "#$globalEconomyPosition / ${userProfile.money}", 562, 492)
 
