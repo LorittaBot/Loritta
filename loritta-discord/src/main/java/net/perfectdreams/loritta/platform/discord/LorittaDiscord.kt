@@ -381,7 +381,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         val defaultLocale = loadLocale(Constants.DEFAULT_LOCALE_ID, null)
         locales[Constants.DEFAULT_LOCALE_ID] = defaultLocale
 
-        localeFolder.listFiles().filter { it.isDirectory && it.name != Constants.DEFAULT_LOCALE_ID && !it.name.startsWith(".") /* ignorar .git */ }.forEach {
+        localeFolder.listFiles().filter { it.isDirectory && it.name != Constants.DEFAULT_LOCALE_ID && !it.name.startsWith(".") /* ignorar .git */ && it.name != "legacy" /* Do not try to load legacy locales */ }.forEach {
             locales[it.name] = loadLocale(it.name, defaultLocale)
         }
 
