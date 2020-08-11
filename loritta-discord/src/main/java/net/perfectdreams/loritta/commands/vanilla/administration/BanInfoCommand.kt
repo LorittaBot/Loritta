@@ -2,7 +2,10 @@ package net.perfectdreams.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
+import com.mrpowergamerbr.loritta.utils.onReactionByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
@@ -24,6 +27,10 @@ object BanInfoCommand {
             }
         }
 
+        examples {
+            listOf("159985870458322944")
+        }
+
         userRequiredPermissions = listOf(Permission.BAN_MEMBERS)
         botRequiredPermissions = listOf(Permission.BAN_MEMBERS)
 
@@ -36,12 +43,26 @@ object BanInfoCommand {
             try {
                 val banInformation = userId.let { guild.retrieveBanById(it.toLong()).await() }
                 val embed = EmbedBuilder()
-                        .setTitle(locale["commands.moderation.baninfo.title"])
+                        .setTitle("<:lori_coffee:727631176432484473> ${locale["commands.moderation.baninfo.title"]}")
                         .setThumbnail(banInformation.user.avatarUrl)
-                        .addField(locale["commands.moderation.baninfo.user"], banInformation.user.asTag, false)
-                        .addField(locale["commands.moderation.baninfo.reason"], "${banInformation.reason}", false)
+                        .addField("<:smol_lori_putassa:395010059157110785> ${locale["commands.moderation.baninfo.user"]}", "`${banInformation.user.asTag}`", false)
+                        .addField("<:lori_kamehameha_1:727280767893504022> ${locale["commands.moderation.baninfo.reason"]}", "`${banInformation.reason}`", false)
                         .setColor(Constants.DISCORD_BLURPLE)
-                sendMessage(embed.build())
+                        .setFooter("Se você deseja desbanir este usuário, aperte no ⚒️!")
+                discordMessage.channel.sendMessage(embed.build()).await().also {
+                    it.addReaction("⚒").queue()
+                }.onReactionByAuthor(this) {
+                    if (it.reactionEmote.name == "⚒") {
+                        guild.unban(userId).queue()
+                        reply(
+                                LorittaReply(
+                                        locale["commands.moderation.unban.successfullyUnbanned"],
+                                        "<a:lori_pat:706263175892566097>"
+                                )
+                        )
+                    }
+                }
+
             } catch (e: ErrorResponseException) {
                 if (e.errorResponse == ErrorResponse.UNKNOWN_BAN)
                     fail(locale["commands.moderation.baninfo.banDoesNotExist"])
