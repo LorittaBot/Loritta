@@ -8,8 +8,11 @@ object Profiles : SnowflakeTable() {
 	val lastMessageSentHash = integer("last_message_sent_hash")
 	val lastCommandSentAt = long("last_command_sent_at").nullable()
 	val money = long("money").index()
+
 	var isAfk = bool("isAfk")
 	var afkReason = text("afkReason").nullable()
 	var settings = reference("settings", UserSettings, onDelete = ReferenceOption.CASCADE).index()
 	var marriage = reference("marriage", Marriages).nullable().index()
+
+	val availableForBets = bool("available_for_bets")
 }

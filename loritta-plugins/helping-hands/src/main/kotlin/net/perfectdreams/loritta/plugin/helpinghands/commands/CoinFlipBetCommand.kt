@@ -113,6 +113,9 @@ object CoinFlipBetCommand : DSLCommandBase {
 			if (number > invitedUserProfile.money || bannedState != null)
 				fail(locale["commands.economy.flipcoinbet.notEnoughMoneyInvited", invitedUser.asMention], Constants.ERROR)
 
+			if (!invitedUserProfile.availableForBets)
+				fail(locale["commands.economy.flipcoinbet.invitedUserNotAvailableForBets", invitedUser.name], Constants.ERROR)
+
 			val message = context.reply(
 					LorittaReply(
 							(

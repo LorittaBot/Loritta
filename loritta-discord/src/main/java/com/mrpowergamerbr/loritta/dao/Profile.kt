@@ -29,6 +29,8 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 	var isAfk by Profiles.isAfk
 	var afkReason by Profiles.afkReason
 
+	var availableForBets by Profiles.availableForBets
+
 	var settings by ProfileSettings referencedOn Profiles.settings
 	var marriage by Marriage optionalReferencedOn Profiles.marriage
 
