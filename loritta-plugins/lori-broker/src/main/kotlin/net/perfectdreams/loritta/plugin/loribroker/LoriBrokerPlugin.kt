@@ -28,8 +28,6 @@ class LoriBrokerPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlugin
 		get() = _tradingApi ?: throw RuntimeException("TradingView API not started!")
 
 	val validStocksCodes = listOf(
-			"OIBR3", // Oi
-			"USDBRL", // Dólar
 			"GOLL4", // Gol
 			"AZUL4", // Azul
 			"PETR4", // Petrobras
@@ -40,14 +38,10 @@ class LoriBrokerPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlugin
 			"PCAR3", // Pão de Açúcar
 			"ITUB4", // Itaú
 			"VALE3", // Vale
-			"BIDU34", // Baidu
-			"ETHBRL", // Etherum
-			"BTCBRL" // Bitcoin
+			"BIDU34" // Baidu
 	)
 
 	val fancyTickerNames = mapOf(
-			"OIBR3" to "Oi",
-			"USDBRL" to "Dólar / Reais",
 			"GOLL4" to "Gol",
 			"AZUL4" to "Azul",
 			"PETR4" to "Petrobrás",
@@ -58,9 +52,7 @@ class LoriBrokerPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlugin
 			"PCAR3" to "Pão de Açúcar",
 			"ITUB4" to "Itaú Unibanco",
 			"VALE3" to "Vale S.A.",
-			"BIDU34" to "Baidu",
-			"ETHBRL" to "Etherum / Reais",
-			"BTCBRL" to "Bitcoin / Reais"
+			"BIDU34" to "Baidu"
 	)
 	// Only allow one transaction per user to buy/sell stocks at the same time, to avoid synchronization issues
 	val mutexes = Caffeine.newBuilder()
