@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
 
 class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCategory.ADMIN) {
 	companion object {
@@ -80,6 +81,21 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 
 
 			var warnIndex: Int = 0
+
+			if (context.args[1] == "all") {
+				loritta.transaction {
+					Warns.deleteWhere {
+						(Warns.userId eq user.idLong) and (Warns.guildId eq context.guild.idLong)
+					}
+				}
+				context.reply(
+						LorittaReply(
+								context.locale["$LOCALE_PREFIX.unwarn.warnRemoved"] + " ${Emotes.LORI_HMPF}",
+								"\uD83C\uDF89"
+						)
+				)
+				return
+			}
 
 			if (context.args.size >= 2) {
 				if (context.args[1].toIntOrNull() == null) {
