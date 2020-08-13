@@ -42,10 +42,10 @@ object BanInfoCommand {
             try {
                 val banInformation = userId.let { guild.retrieveBanById(it.toLong()).await() }
                 val embed = EmbedBuilder()
-                        .setTitle("<:lori_coffee:727631176432484473> ${locale["commands.moderation.baninfo.title"]}")
+                        .setTitle("${Emotes.LORI_COFFEE} ${locale["commands.moderation.baninfo.title"]}")
                         .setThumbnail(banInformation.user.avatarUrl)
-                        .addField("<:smol_lori_putassa:395010059157110785> ${locale["commands.moderation.baninfo.user"]}", "`${banInformation.user.asTag}`", false)
-                        .addField("<:lori_kamehameha_1:727280767893504022> ${locale["commands.moderation.baninfo.reason"]}", "`${banInformation.reason}`", false)
+                        .addField("${Emotes.LORI_TEMMIE} ${locale["commands.moderation.baninfo.user"]}", "`${banInformation.user.asTag}`", false)
+                        .addField("${Emotes.LORI_BAN_HAMMER} ${locale["commands.moderation.baninfo.reason"]}", "`${banInformation.reason}`", false)
                         .setColor(Constants.DISCORD_BLURPLE)
                         .setFooter("Se você deseja desbanir este usuário, aperte no ⚒️!")
                 discordMessage.channel.sendMessage(embed.build()).await().also {
