@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
+import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
@@ -55,7 +56,7 @@ object BanInfoCommand {
                         reply(
                                 LorittaReply(
                                         locale["commands.moderation.unban.successfullyUnbanned"],
-                                        "<a:lori_pat:706263175892566097>"
+                                        Emotes.LORI_BAN_HAMMER
                                 )
                         )
                     }
