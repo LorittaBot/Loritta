@@ -298,7 +298,7 @@ class SpicyMorenitta : Logging {
 
 			loginButton.replaceWith(cloned)
 			cloned.clear()
-			cloned.setAttribute("href", "/br/dashboard")
+			cloned.setAttribute("href", "/$websiteLocaleId/dashboard")
 
 			cloned.append {
 				val avatarUrl = newUser.effectiveAvatarUrl
