@@ -36,7 +36,7 @@ object EmbedFooterEditor : EditorBase {
                 )
         )
 
-        val footer = embed.author
+        val footer = embed.footer
 
         modal.setContent(
                 document.create.div {
@@ -44,7 +44,7 @@ object EmbedFooterEditor : EditorBase {
 
                     discordH5Heading("Texto do Rodapé")
                     div {
-                        discordTextArea(m, footer?.name ?: "yay", "footer-text", DiscordEmbed.MAX_AUTHOR_NAME_LENGTH)
+                        discordTextArea(m, footer?.text ?: "yay", "footer-text", DiscordEmbed.MAX_AUTHOR_NAME_LENGTH)
                     }
                     discordH5Heading("Imagem do Rodapé (Pode ser vazio)")
                     div {
