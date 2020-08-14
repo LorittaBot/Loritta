@@ -56,6 +56,21 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
+			if (context.args[0] == "allusers") {
+				loritta.transaction {
+					Warns.deleteWhere {
+						Warns.guildId eq context.guild.idLong
+					}
+				}
+				context.reply(
+						LorittaReply(
+								context.locale["$LOCALE_PREFIX.unwarn.allUsersWarnsRemoved"] + " ${Emotes.LORI_HMPF}",
+								"\uD83C\uDF89"
+						)
+				)
+				return
+			}
+
 			val user = AdminUtils.checkForUser(context) ?: return
 
 			val member = context.guild.retrieveMemberOrNull(user)
@@ -90,7 +105,7 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 				}
 				context.reply(
 						LorittaReply(
-								context.locale["$LOCALE_PREFIX.unwarn.warnRemoved"] + " ${Emotes.LORI_HMPF}",
+								context.locale["$LOCALE_PREFIX.unwarn.allWarnsRemoved"] + " ${Emotes.LORI_HMPF}",
 								"\uD83C\uDF89"
 						)
 				)
@@ -105,9 +120,9 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
                                     Constants.ERROR
                             )
 					)
-					return	
+					return
 				}
-				
+
 				warnIndex = context.args[1].toInt()
 			} else warnIndex = warns.size
 
