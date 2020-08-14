@@ -249,7 +249,8 @@ class ServerSupportPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlu
 						import com.mrpowergamerbr.loritta.dao.*
 						import com.mrpowergamerbr.loritta.tables.*
 						import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-						import net.perfectdreams.loritta.api.messages.LoriReply
+						import net.perfectdreams.loritta.api.messages.LorittaReply
+						import net.perfectdreams.loritta.utils.extensions.build
 						import java.awt.image.BufferedImage
 						import java.io.File
 						import javax.imageio.ImageIO

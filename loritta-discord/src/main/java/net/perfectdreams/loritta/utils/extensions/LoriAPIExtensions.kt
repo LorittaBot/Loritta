@@ -41,3 +41,11 @@ fun LorittaReply.build(context: CommandContext) = this.build(JDAUser(context.use
  * @return        the reply as a string
  */
 fun LorittaReply.build(context: DiscordCommandContext) = this.build(JDAUser(context.userHandle))
+
+/**
+ * Builds a reply based on the user [user]
+ *
+ * @param user the user that will be replied to
+ * @return     the reply as a string
+ */
+fun LorittaReply.build(user: net.dv8tion.jda.api.entities.User) = this.build(JDAUser(user))
