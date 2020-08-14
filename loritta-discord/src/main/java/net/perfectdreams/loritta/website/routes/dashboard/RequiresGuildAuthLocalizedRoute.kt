@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNullById
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
@@ -63,7 +64,7 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaDiscord, original
 		start = System.currentTimeMillis()
 
 		val id = userIdentification.id
-		val member = jdaGuild.retrieveMemberById(id).await()
+		val member = jdaGuild.retrieveMemberOrNullById(id)
 		var canAccessDashboardViaPermission = false
 
 		logger.info { "OG Perm Check: ${System.currentTimeMillis() - start}" }
