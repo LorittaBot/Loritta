@@ -129,6 +129,12 @@ class SpicyMorenitta : Logging {
 				"us"
 		}
 
+	val hasLocaleIdInPath: Boolean
+		get() {
+			val localeIdFromPath = WebsiteUtils.getWebsiteLocaleIdViaPath()
+			return localeIdFromPath in validWebsiteLocaleIds
+		}
+
 	var currentRoute: BaseRoute? = null
 
 	var userIdentification: UserIdentification? = null
@@ -438,23 +444,27 @@ class SpicyMorenitta : Logging {
 			}
 		}
 
-		val route = getPageRouteForCurrentPath()
+		if (hasLocaleIdInPath) {
+			val route = getPageRouteForCurrentPath()
 
-		debug("Route for current path is ${route::class.simpleName}")
+			debug("Route for current path is ${route::class.simpleName}")
 
-		val params = route.getPathParameters(pathWithoutLocale)
-		debug("Parameters: ${params.entries}")
-		val call = ApplicationCall(params, content)
+			val params = route.getPathParameters(pathWithoutLocale)
+			debug("Parameters: ${params.entries}")
+			val call = ApplicationCall(params, content)
 
-		if (!route.keepLoadingScreen) // Utilizado para coisas que querem mais http requests após carregar (página de fan arts!)
-			hideLoadingScreen()
+			if (!route.keepLoadingScreen) // Utilizado para coisas que querem mais http requests após carregar (página de fan arts!)
+				hideLoadingScreen()
 
-		debug("Unloading current route...")
-		this.currentRoute?.onUnload()
-		this.currentRoute = route
+			debug("Unloading current route...")
+			this.currentRoute?.onUnload()
+			this.currentRoute = route
 
-		debug("Rendering ${route::class.simpleName}")
-		route.onRender(call)
+			debug("Rendering ${route::class.simpleName}")
+			route.onRender(call)
+		} else {
+			warn("Path doesn't have locale! We are not going to switch to JS routes...")
+		}
 	}
 
 	fun setUpPageSwitcher(element: Element, path: String) {
