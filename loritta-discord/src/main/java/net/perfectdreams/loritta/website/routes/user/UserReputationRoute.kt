@@ -8,20 +8,15 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import io.ktor.application.ApplicationCall
 import io.ktor.request.header
-import io.ktor.request.path
-import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.LorittaWebsite
 import net.perfectdreams.loritta.website.routes.RequiresDiscordLoginLocalizedRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
-import net.perfectdreams.loritta.website.utils.ScriptingUtils
+import net.perfectdreams.loritta.website.utils.RouteKey
 import net.perfectdreams.loritta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.website.utils.extensions.trueIp
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.or
-import java.io.File
-import kotlin.reflect.KTypeProjection
-import kotlin.reflect.full.createType
 
 class UserReputationRoute(loritta: LorittaDiscord) : RequiresDiscordLoginLocalizedRoute(loritta, "/user/{userId}/rep") {
 	override suspend fun onUnauthenticatedRequest(call: ApplicationCall, locale: BaseLocale) {
@@ -60,27 +55,21 @@ class UserReputationRoute(loritta: LorittaDiscord) : RequiresDiscordLoginLocaliz
 
 		val backgroundUrl = loritta.getUserProfileBackgroundUrl(loritta.getOrCreateLorittaProfile(userId))
 
-		val html = ScriptingUtils.evaluateWebPageFromTemplate(
-				File(
-						"${LorittaWebsite.INSTANCE.config.websiteFolder}/views/user/user_reputation.kts"
-				),
-				mapOf(
-						"path" to call.request.path().split("/").drop(2).joinToString("/"),
-						"websiteUrl" to LorittaWebsite.INSTANCE.config.websiteUrl,
-						"locale" to ScriptingUtils.WebsiteArgumentType(BaseLocale::class.createType(nullable = false), locale),
-						"userIdentification" to ScriptingUtils.WebsiteArgumentType(TemmieDiscordAuth.UserIdentification::class.createType(nullable = true), userIdentification, "LorittaJsonWebSession.UserIdentification"),
-						"user" to ScriptingUtils.WebsiteArgumentType(User::class.createType(nullable = true), user),
-						"lastReputationGiven" to ScriptingUtils.WebsiteArgumentType(Reputation::class.createType(nullable = true), lastReputationGiven),
-						"reputations" to ScriptingUtils.WebsiteArgumentType(
-								List::class.createType(listOf(KTypeProjection.invariant(Reputation::class.createType()))),
-								reputations
-						),
-						"guildId" to ScriptingUtils.WebsiteArgumentType(String::class.createType(nullable = true), call.parameters["guild"]),
-						"channelId" to ScriptingUtils.WebsiteArgumentType(String::class.createType(nullable = true), call.parameters["channel"]),
-						"backgroundUrl" to backgroundUrl
+		call.respondHtml(
+				LorittaWebsite.INSTANCE.pageProvider.render(
+						RouteKey.USER_REPUTATION,
+						listOf(
+								getPathWithoutLocale(call),
+								locale,
+								userIdentification,
+								user,
+								lastReputationGiven,
+								reputations,
+								call.parameters["guild"]?.toLongOrNull(),
+								call.parameters["channel"]?.toLongOrNull(),
+								backgroundUrl
+						)
 				)
 		)
-
-		call.respondHtml(html)
 	}
 }

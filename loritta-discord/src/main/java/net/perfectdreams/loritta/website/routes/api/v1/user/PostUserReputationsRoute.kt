@@ -212,77 +212,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 			if (guildId != null && channelId != null)
 				sendReputationToCluster(guildId, channelId, userIdentification.id, receiver, reputations.size.toLong())
 
-			var idx = 0
-
-			val map = reputations.groupingBy { it.givenById }.eachCount()
-					.entries
-					.sortedByDescending { it.value }
-
-			val idToUserInfo = mutableMapOf<Long, CachedUserInfo?>()
-
-			for ((userId, count) in map) {
-				if (idx == 5) break
-				idToUserInfo[userId] = lorittaShards.retrieveUserInfoById(userId)
-			}
-
-			val rank = StringBuilder().appendHTML().div(classes = "box-item") {
-				var idx = 0
-				div(classes = "rank-title") {
-					+"Placar de Reputações"
-				}
-				table {
-					tbody {
-						tr {
-							th {
-								// + "Posição"
-							}
-							th {}
-							th {
-								// + "Nome"
-							}
-						}
-						for ((userId, count) in map) {
-							if (idx == 5) break
-							val rankUser = idToUserInfo[userId]
-
-							if (rankUser != null) {
-								tr {
-									td {
-										img(classes = "rank-avatar", src = rankUser.effectiveAvatarUrl) { width = "64" }
-									}
-									td(classes = "rank-position") {
-										+"#${idx + 1}"
-									}
-									td {
-										if (idx == 0) {
-											div(classes = "rank-name rainbow") {
-												+rankUser.name
-											}
-
-										} else {
-											div(classes = "rank-name") {
-												+rankUser.name
-											}
-										}
-										div(classes = "reputations-received") {
-											+"${count} reputações"
-										}
-									}
-								}
-								idx++
-							}
-						}
-					}
-				}
-			}
-
-			// Vamos reenviar vários dados utilizados na hora de gerar a telinha
-			val response = jsonObject(
-					"count" to loritta.newSuspendedTransaction { Reputations.select { Reputations.receivedById eq receiver.toLong() }.count() },
-					"rank" to rank.toString()
-			)
-
-			call.respondJson(response)
+			call.respondJson(jsonObject())
 		}
 	}
 
