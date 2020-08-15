@@ -286,8 +286,8 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
                                 locale.localeListEntries[prefix + key] = try {
                                     (value as List<String>).map {
                                         it.replace(singleQuotesWithoutSlashPrecedingItRegex, "''") // Escape single quotes
-                                                .replace("\'", "'") // Replace \' with '
-                                    } // Escape single quotes
+                                                .replace("\\'", "'") // Replace \' with '
+                                    }
                                 } catch (e: ClassCastException) {
                                     // A LinkedHashMap does match the "is List<*>" check, but it fails when we cast the subtype to String
                                     // If that happens, we will just ignore the exception and use the raw "value" list.
@@ -295,7 +295,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
                                 }
                             } else if (value is String) {
                                 locale.localeStringEntries[prefix + key] = value.replace(singleQuotesWithoutSlashPrecedingItRegex, "''") // Escape single quotes
-                                        .replace("\'", "'") // Replace \' with '
+                                        .replace("\\'", "'") // Replace \' with '
                             } else throw IllegalArgumentException("Invalid object type detected in YAML! $value")
                         }
                     }

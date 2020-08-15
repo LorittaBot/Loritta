@@ -67,19 +67,18 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		embed.setThumbnail("${loritta.instanceConfig.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
 		embed.setColor(Color(0, 193, 223))
 		embed.setDescription(
-				locale.toNewLocale().getList("commands.discord.botinfo.embedDescription")
-						.joinToString("\n\n")
-						.msgFormat(
-								guildCount,
-								sb.toString(),
-								LorittaLauncher.loritta.legacyCommandManager.commandMap.size + loritta.commandManager.commands.size + loritta.commandMap.commands.size,
-								commandsExecutedInTheLast24Hours,
-								Emotes.KOTLIN,
-								Emotes.JDA,
-								Emotes.LORI_SMILE,
-								Emotes.LORI_HAPPY,
-								Emotes.LORI_OWO
-						)
+				locale.toNewLocale().getList(
+						"commands.discord.botinfo.embedDescription",
+						guildCount,
+						sb.toString(),
+						LorittaLauncher.loritta.legacyCommandManager.commandMap.size + loritta.commandManager.commands.size + loritta.commandMap.commands.size,
+						commandsExecutedInTheLast24Hours,
+						Emotes.KOTLIN,
+						Emotes.JDA,
+						Emotes.LORI_SMILE,
+						Emotes.LORI_HAPPY,
+						Emotes.LORI_OWO
+				).joinToString("\n\n")
 		)
 
 		embed.addField("\uD83C\uDF80 ${context.legacyLocale["WEBSITE_DONATE"]}", "${loritta.instanceConfig.loritta.website.url}donate", true)
@@ -98,17 +97,17 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 
 		embed.addField(
 				"\uD83C\uDFC5 ${locale["BOTINFO_HONORABLE_MENTIONS"]}",
-				locale.toNewLocale().getList("commands.discord.botinfo.honorableMentions").joinToString("\n") { "• $it" }
-						.msgFormat(
-								numberOfUniqueDonators,
-								loritta.fanArtArtists.size,
-								context.userHandle.asMention,
-								Emotes.LORI_TEMMIE,
-								Emotes.LORI_OWO,
-								Emotes.LORI_WOW,
-								Emotes.LORI_HUG,
-								Emotes.LORI_SMILE
-						),
+				locale.toNewLocale().getList(
+						"commands.discord.botinfo.honorableMentions",
+						numberOfUniqueDonators,
+						loritta.fanArtArtists.size,
+						context.userHandle.asMention,
+						Emotes.LORI_TEMMIE,
+						Emotes.LORI_OWO,
+						Emotes.LORI_WOW,
+						Emotes.LORI_HUG,
+						Emotes.LORI_SMILE
+				).joinToString("\n") { "• $it" },
 				false
 		)
 
