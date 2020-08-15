@@ -34,11 +34,13 @@ import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.website.blog.Blog
 import net.perfectdreams.loritta.website.routes.LocalizedRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.website.utils.LorittaHtmlProvider
 import net.perfectdreams.loritta.website.utils.ScriptingUtils
 import net.perfectdreams.loritta.website.utils.extensions.*
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.io.File
+import java.lang.RuntimeException
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
@@ -68,6 +70,10 @@ class LorittaWebsite(val loritta: Loritta) {
 	val pathCache = ConcurrentHashMap<File, Any>()
 	var config = WebsiteConfig()
 	val blog = Blog()
+	val pageProvider: LorittaHtmlProvider
+		get() = loritta.pluginManager.plugins.filterIsInstance<LorittaDiscordPlugin>().mapNotNull {
+			it.htmlProvider
+		}.firstOrNull() ?: throw RuntimeException("Can't find any plugins providing a valid Html Provider!")
 	lateinit var server: NettyApplicationEngine
 	private val typesToCache = listOf(
 			ContentType.Text.CSS,
