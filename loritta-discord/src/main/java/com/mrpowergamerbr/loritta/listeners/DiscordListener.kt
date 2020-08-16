@@ -185,7 +185,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildMessageReactionAdd(event: GuildMessageReactionAddEvent) {
-		if (event.user.isBot)
+		val user = event.user
+
+		if (loritta.discordConfig.discord.disallowBots && !loritta.discordConfig.discord.botWhitelist.contains(user.idLong) && user.isBot) // Se uma mensagem de um bot, ignore a mensagem!
 			return
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
@@ -196,7 +198,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	override fun onGuildMessageReactionRemove(event: GuildMessageReactionRemoveEvent) {
 		val user = event.user ?: return
 
-		if (user.isBot)
+		if (loritta.discordConfig.discord.disallowBots && !loritta.discordConfig.discord.botWhitelist.contains(user.idLong) && user.isBot) // Se uma mensagem de um bot, ignore a mensagem!
 			return
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
@@ -207,7 +209,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	override fun onGenericMessageReaction(e: GenericMessageReactionEvent) {
 		val user = e.user ?: return
 
-		if (user.isBot) // Ignorar reactions de bots
+		if (loritta.discordConfig.discord.disallowBots && !loritta.discordConfig.discord.botWhitelist.contains(user.idLong) && user.isBot) // Se uma mensagem de um bot, ignore a mensagem!
 			return
 
 		if (DebugLog.cancelAllEvents)
