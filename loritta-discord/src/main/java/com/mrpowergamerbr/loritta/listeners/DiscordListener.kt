@@ -12,6 +12,7 @@ import com.mrpowergamerbr.loritta.tables.Mutes
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNullById
 import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.*
 import mu.KotlinLogging
@@ -531,7 +532,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			}
 
 			for (mute in mutes) {
-				val member = guild.retrieveMemberById(mute.userId).await() ?: continue
+				val member = guild.retrieveMemberOrNullById(mute.userId) ?: continue
 
 				logger.info("Adicionado removal thread pelo MutedUsersThread já que a guild iniciou! ~ Guild: ${mute.guildId} - User: ${mute.userId}")
 				MuteCommand.spawnRoleRemovalThread(guild, loritta.getLegacyLocaleById(serverConfig.localeId), member.user, mute.expiresAt!!)
