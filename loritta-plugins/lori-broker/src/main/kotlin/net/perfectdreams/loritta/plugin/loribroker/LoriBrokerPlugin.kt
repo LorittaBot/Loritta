@@ -115,5 +115,6 @@ class LoriBrokerPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlugin
 		private val BROKER_COLOR = Color(23, 62, 163)
 		const val OUT_OF_SESSION = "out_of_session" // Inactive stock
 		const val MARKET = "market" // Active stock, can be bought/sold
+		const val MAX_STOCKS = 100_000L
 	}
 }

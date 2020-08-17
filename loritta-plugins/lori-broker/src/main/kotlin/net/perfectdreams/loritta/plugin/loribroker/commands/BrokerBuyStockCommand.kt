@@ -13,7 +13,10 @@ import net.perfectdreams.loritta.plugin.loribroker.LoriBrokerPlugin
 import net.perfectdreams.loritta.plugin.loribroker.commands.base.DSLCommandBase
 import net.perfectdreams.loritta.plugin.loribroker.tables.BoughtStocks
 import net.perfectdreams.loritta.utils.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.batchInsert
+import org.jetbrains.exposed.sql.select
 
 object BrokerBuyStockCommand : DSLCommandBase {
 	override fun command(plugin: LoriBrokerPlugin, loritta: Loritta) = create(
@@ -68,6 +71,13 @@ object BrokerBuyStockCommand : DSLCommandBase {
 
 			mutex.withLock {
 				loritta.newSuspendedTransaction {
+					val currentStockCount = BoughtStocks.select {
+						BoughtStocks.user eq user.idLong
+					}.count()
+
+					if (number + currentStockCount > LoriBrokerPlugin.MAX_STOCKS)
+						fail(locale["commands.economy.brokerBuy.tooManyStocks", LoriBrokerPlugin.MAX_STOCKS])
+
 					BoughtStocks.batchInsert(0 until number) {
 						this[BoughtStocks.user] = user.idLong
 						this[BoughtStocks.ticker] = tickerId
