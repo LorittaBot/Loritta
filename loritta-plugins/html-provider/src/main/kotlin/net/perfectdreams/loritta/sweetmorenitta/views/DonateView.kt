@@ -22,7 +22,6 @@ class DonateView(
 
     override fun DIV.generateContent() {
         div(classes = "odd-wrapper") {
-
             div {
                 style = "text-align: center;"
                 h1(classes = "sectionHeader") {
@@ -65,31 +64,22 @@ class DonateView(
                     div {
                         style = "text-align: center;"
 
-                        if (userIdentification == null) {
-                            val redirectUrl = loritta.instanceConfig.loritta.website.url + "donate"
-
-                            val state = jsonObject(
-                                    "redirectUrl" to redirectUrl
-                            )
-
-                            a(href = (loritta.discordInstanceConfig.discord.authorizationUrl + "&state=${java.util.Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")) {
-                                id = "login-for-donate-url"
-
-                                div(classes = "button-discord button-discord-info pure-button") {
-                                    style = "font-size: 1.5em;"
-
-
-                                    i(classes = "fas fa-gift") {}
-                                    + " ${locale["website.donate.donateNow"]}"
-                                }
-                            }
-                        } else {
+                        a(href = "#plans-features") {
                             div(classes = "button-discord button-discord-info pure-button") {
-                                id = "donate-button"
                                 style = "font-size: 1.5em;"
 
-                                i(classes = "fas fa-gift") {}
-                                + " ${locale["website.donate.donateNow"]}"
+                                i(classes = "fas fa-list") {}
+                                +" ${locale["website.donate.viewPlans"]}"
+                            }
+                        }
+
+                        if (keys.size() != 0) {
+                            div(classes = "button-discord button-discord-info pure-button") {
+                                id = "renew-button"
+                                style = "font-size: 1.5em;"
+
+                                i(classes = "fas fa-sync-alt") {}
+                                + " ${locale["website.donate.renewPlan"]}"
                             }
                         }
                     }
@@ -146,6 +136,26 @@ class DonateView(
                             id = "plans-features"
                             style = "margin: 0 auto"
                         }
+
+                        hr {}
+
+                        div {
+                            style = "text-align: center;"
+
+                            p {
+                                + locale["website.donate.donateWithoutAnyRewards"]
+                            }
+
+                            div(classes = "button-discord button-discord-info pure-button") {
+                                id = "donate-button"
+                                style = "font-size: 1.5em;"
+
+                                i(classes = "fas fa-gift") {}
+                                + " ${locale["website.donate.donateNow"]}"
+                            }
+                        }
+
+                        hr {}
 
                         div(classes = "sectionText") {
                             div {

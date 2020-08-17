@@ -139,9 +139,8 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                             + ""
                         }
 
-                        val loginButton = document.getElementById("login-for-donate-url")
-                        val needsToLogin = loginButton != null
-                        val url = loginButton?.getAttribute("href")
+                        val needsToLogin = m.userIdentification == null
+                        val url = "https://discordapp.com/oauth2/authorize?redirect_uri=https://loritta.website%2Fdashboard&scope=identify%20guilds%20email&response_type=code&client_id=297153970613387264"
 
                         td {
                         }
@@ -245,16 +244,21 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
         )
 
         (document.getElementById("donate-button-plan1") as HTMLDivElement?)?.onclick = {
-            showDonateModal(19.99)
+            showPaymentSelectionModal(19.99)
         }
         (document.getElementById("donate-button-plan2") as HTMLDivElement?)?.onclick = {
-            showDonateModal(39.99)
+            showPaymentSelectionModal(39.99)
         }
         (document.getElementById("donate-button-plan3") as HTMLDivElement?)?.onclick = {
-            showDonateModal(119.99)
+            showPaymentSelectionModal(119.99)
         }
 
         (document.getElementById("donate-button") as HTMLDivElement?)?.onclick = {
+            println("CLICKED!!!")
+            showDonateModal(19.99)
+        }
+
+        (document.getElementById("renew-button") as HTMLDivElement?)?.onclick = {
             val donationKeysJson = document.getElementById("donation-keys-json")?.innerHTML!!
 
             val donationKeys = kotlinx.serialization.json.JSON.nonstrict.parse(ServerConfig.DonationKey.serializer().list, donationKeysJson)
@@ -306,10 +310,10 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                         }
                 )
 
-                modal.addFooterBtn("<i class=\"fas fa-gift\"></i> Eu quero comprar uma nova key", "button-discord button-discord-info pure-button button-discord-modal") {
+                /* modal.addFooterBtn("<i class=\"fas fa-gift\"></i> Eu quero comprar uma nova key", "button-discord button-discord-info pure-button button-discord-modal") {
                     modal.close()
                     showDonateModal(19.99)
-                }
+                } */
 
                 modal.addFooterBtn("<i class=\"fas fa-times\"></i> Fechar", "button-discord pure-button button-discord-modal button-discord-modal-secondary-action") {
                     modal.close()
@@ -453,13 +457,9 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
         )
 
         modal.addFooterBtn("<i class=\"fas fa-cash-register\"></i> Escolher Forma de Pagamento", "button-discord button-discord-info pure-button button-discord-modal") {
-            val o = object {
-                val money = (visibleModal.getElementsByClassName("how-much-money")[0] as HTMLInputElement).value
-            }
-
             modal.close()
 
-            PaymentUtils.openPaymentSelectionModal(o)
+            showPaymentSelectionModal((visibleModal.getElementsByClassName("how-much-money")[0] as HTMLInputElement).value.toDouble())
         }
 
         modal.addFooterBtn("<i class=\"fas fa-times\"></i> Fechar", "button-discord pure-button button-discord-modal button-discord-modal-secondary-action") {
@@ -468,6 +468,14 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
 
         modal.open()
         modal.trackOverflowChanges(m)
+    }
+
+    fun showPaymentSelectionModal(price: Double) {
+        val o = object {
+            val money = price
+        }
+
+        PaymentUtils.openPaymentSelectionModal(o)
     }
 
     data class DonationReward(val name: String, val minimumDonation: Double, val doNotDisplayInPlans: Boolean, val callback: TD.(Double) -> Unit = { column ->

@@ -46,7 +46,7 @@ class DonateRoute(loritta: LorittaDiscord) : LocalizedRoute(loritta, "/donate") 
 
 		call.respondHtml(
 				LorittaWebsite.INSTANCE.pageProvider.render(
-						RouteKey.USER_REPUTATION,
+						RouteKey.DONATE,
 						listOf(
 								getPathWithoutLocale(call),
 								locale,
