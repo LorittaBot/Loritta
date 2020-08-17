@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Region
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.utils.DiscordUtils
 
 class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), category = CommandCategory.DISCORD) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -50,6 +51,7 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 		val name = guild["name"].string
 		val id = guild["id"].string
 		val shardId = guild["shardId"].int
+		val cluster = DiscordUtils.getLorittaClusterForGuildId(context.guild.idLong)
 		val ownerId = guild["ownerId"].string
 		val region = Region.valueOf(guild["region"].string)
 		val owner = lorittaShards.retrieveUserInfoById(ownerId.toLong())
@@ -58,12 +60,6 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 		val timeCreated = guild["timeCreated"].long
 		val timeJoined = guild["timeJoined"].long
 		val memberCount = guild["count"]["members"].int
-		val onlineMembers = guild["count"]["onlineMembers"].int
-		val idleMembers = guild["count"]["idleMembers"].int
-		val doNotDisturbMembers = guild["count"]["doNotDisturbMembers"].int
-		val offlineMembers = guild["count"]["offlineMembers"].int
-		val bots = guild["count"]["bots"].int
-		val users = memberCount - bots
 
 		// Baseado no comando ?serverinfo do Dyno
 		embed.setThumbnail(iconUrl) // Ícone da Guild
@@ -71,7 +67,7 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 		embed.setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
 		embed.setTitle("<:discord:314003252830011395> $name", null) // Nome da Guild
 		embed.addField("💻 ID", id, true) // ID da Guild
-		embed.addField("\uD83D\uDCBB Shard ID", "$shardId", true)
+		embed.addField("\uD83D\uDCBB Shard ID", "$shardId — Loritta Cluster ${cluster.id} (`${cluster.name}`)", true)
 		embed.addField("👑 ${context.legacyLocale["SERVERINFO_OWNER"]}", "`${owner?.name}#${owner?.discriminator}` (${ownerId})", true) // Dono da Guild
 		embed.addField("🌎 ${context.legacyLocale["SERVERINFO_REGION"]}", region.getName(), true) // Região da Guild
 		embed.addField("\uD83D\uDCAC ${context.legacyLocale["SERVERINFO_CHANNELS"]} (${textChannelCount + voiceChannelCount})", "\uD83D\uDCDD **${locale["SERVERINFO_CHANNELS_TEXT"]}:** ${textChannelCount}\n\uD83D\uDDE3 **${locale["SERVERINFO_CHANNELS_VOICE"]}:** $voiceChannelCount", true) // Canais da Guild
