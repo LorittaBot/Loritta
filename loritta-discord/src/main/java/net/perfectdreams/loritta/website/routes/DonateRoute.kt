@@ -9,6 +9,7 @@ import io.ktor.application.ApplicationCall
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.LorittaWebsite
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.website.utils.RouteKey
 import net.perfectdreams.loritta.website.utils.ScriptingUtils
 import net.perfectdreams.loritta.website.utils.extensions.lorittaSession
 import net.perfectdreams.loritta.website.utils.extensions.respondHtml
@@ -43,19 +44,16 @@ class DonateRoute(loritta: LorittaDiscord) : LocalizedRoute(loritta, "/donate") 
 			}
 		}
 
-		val html = ScriptingUtils.evaluateWebPageFromTemplate(
-				File(
-						"${LorittaWebsite.INSTANCE.config.websiteFolder}/views/donate.kts"
-				),
-				mapOf(
-						"path" to getPathWithoutLocale(call),
-						"websiteUrl" to LorittaWebsite.INSTANCE.config.websiteUrl,
-						"locale" to ScriptingUtils.WebsiteArgumentType(BaseLocale::class.createType(nullable = false), locale),
-						"userIdentification" to ScriptingUtils.WebsiteArgumentType(LorittaJsonWebSession.UserIdentification::class.createType(nullable = true), call.lorittaSession.getUserIdentification(call)),
-						"keys" to keys
+		call.respondHtml(
+				LorittaWebsite.INSTANCE.pageProvider.render(
+						RouteKey.USER_REPUTATION,
+						listOf(
+								getPathWithoutLocale(call),
+								locale,
+								userIdentification,
+								keys
+						)
 				)
 		)
-
-		call.respondHtml(html)
 	}
 }
