@@ -22,7 +22,7 @@ class LorittaBanCommand : AbstractCommand("lorittaban", category = CommandCatego
 			val monster = context.getUserAt(0) ?: run {
 				context.reply(
                         LorittaReply(
-                                "Usuário inváldio!",
+                                "Usuário inválido!",
                                 Constants.ERROR
                         )
 				)

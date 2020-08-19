@@ -79,7 +79,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		@JvmField
 		var LOCALES = "/home/servers/loritta/locales/" // Pasta usada para as locales
 		@JvmField
-		var FRONTEND = "/home/servers/loritta/frontend/" // Pasta usada para as locales
+		var FRONTEND = "/home/servers/loritta/frontend/" // Pasta usada para o frontend
 
 		// ===[ UTILS ]===
 		@JvmStatic
