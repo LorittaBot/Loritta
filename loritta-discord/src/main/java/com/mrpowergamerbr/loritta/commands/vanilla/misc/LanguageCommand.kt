@@ -19,7 +19,7 @@ import java.awt.Color
 
 class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak"), category = CommandCategory.MISC) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.miscellaneous.language.description", "\uD83D\uDE0A"]
+		return locale.toNewLocale()["commands.misc.language.description", "\uD83D\uDE0A"]
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
@@ -166,19 +166,19 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 		}
 
 		if(isPrivateChannel)
-			context.reply(newLocale["commands.miscellaneous.language.languageChanged", "`${localeId}`"], "\uD83C\uDFA4")
+			context.reply(newLocale["commands.misc.language.languageChanged", "`${localeId}`"], "\uD83C\uDFA4")
 		else
-			context.reply(newLocale["commands.miscellaneous.language.serverLanguageChanged", "`${localeId}`"], "\uD83C\uDFA4")
+			context.reply(newLocale["commands.misc.language.serverLanguageChanged", "`${localeId}`"], "\uD83C\uDFA4")
 	}
 
 	private suspend fun buildLanguageEmbed(locale: BaseLocale, languages: List<LocaleWrapper>, isPrivateChannel: Boolean): MessageEmbed {
 		val embed = EmbedBuilder()
 		embed.setColor(Color(0, 193, 223))
-		embed.setTitle("\uD83C\uDF0E " + locale["commands.miscellaneous.language.pleaseSelectYourLanguage"])
+		embed.setTitle("\uD83C\uDF0E " + locale["commands.misc.language.pleaseSelectYourLanguage"])
 		if (isPrivateChannel) {
-			embed.setDescription(locale["commands.miscellaneous.language.changeLanguageDescription"])
+			embed.setDescription(locale["commands.misc.language.changeLanguageDescription"])
 		} else {
-			embed.setDescription(locale["commands.miscellaneous.language.changeServerLanguageDescription"])
+			embed.setDescription(locale["commands.misc.language.changeServerLanguageDescription"])
 		}
 
 		for (wrapper in languages) {
@@ -186,7 +186,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 			
       embed.addField(
 					wrapper.emoteName + " " + wrapper.name,
-					"**${locale["commands.miscellaneous.language.translatedBy"]}:** ${translators.joinToString(transform = { "`${it.name}`" })}",
+					"**${locale["commands.misc.language.translatedBy"]}:** ${translators.joinToString(transform = { "`${it.name}`" })}",
 					true
 			)
 		}
