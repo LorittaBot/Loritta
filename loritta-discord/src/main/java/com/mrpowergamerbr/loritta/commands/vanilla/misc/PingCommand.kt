@@ -100,22 +100,12 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 					jvmUpTime -= TimeUnit.MINUTES.toMillis(minutes)
 					val seconds = TimeUnit.MILLISECONDS.toSeconds(jvmUpTime)
 
-					val sb = StringBuilder(64)
-					sb.append(days)
-					sb.append("d ")
-					sb.append(hours)
-					sb.append("h ")
-					sb.append(minutes)
-					sb.append("m ")
-					sb.append(seconds)
-					sb.append("s")
-
 					val pingAverage = json["shards"].array.map { it["ping"].int }.average().toInt() // arredondar
 
 					row0.add("Loritta Cluster $shardId ($name) [b$loriBuild]")
 					row1.add("~${pingAverage}ms")
 					row2.add("~${time}ms")
-					row3.add(sb.toString())
+					row3.add("${days}d ${hours}h ${minutes}m ${seconds}s")
 					row4.add("$totalGuildCount guilds")
 
 					val unstableShards = json["shards"].array.filter {
@@ -161,17 +151,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 					jvmUpTime -= TimeUnit.MINUTES.toMillis(minutes)
 					val seconds = TimeUnit.MILLISECONDS.toSeconds(jvmUpTime)
 
-					val sb = StringBuilder(64)
-					sb.append(days)
-					sb.append("d ")
-					sb.append(hours)
-					sb.append("h ")
-					sb.append(minutes)
-					sb.append("m ")
-					sb.append(seconds)
-					sb.append("s")
-
-					row2.add(sb.toString())
+					row2.add("${days}d ${hours}h ${minutes}m ${seconds}s")
 					row3.add("---")
 
 					val wasMutexLocked = payload["isMutexLocked"].bool
