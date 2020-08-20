@@ -47,6 +47,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	companion object {
 
 		private val logger = KotlinLogging.logger {}
+		// Our blacklist of messages (messages that we'll ignore on command execution)
 		private val unavailableMessages = Collections.newSetFromMap(Caffeine.newBuilder().expireAfterWrite(15L, TimeUnit.MINUTES).build<Long, Boolean>().asMap())
 
 		val MESSAGE_RECEIVED_MODULES = mutableListOf(
