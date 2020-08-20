@@ -44,7 +44,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 						"\uD83C\uDDF5\uD83C\uDDF9"
 				), */
 				LocaleWrapper(
-						"English-US",
+						"English (United States)",
 						loritta.getLocaleById("en-us"),
 						loritta.getLegacyLocaleById("en-us"),
 						"\uD83C\uDDFA\uD83C\uDDF8"
