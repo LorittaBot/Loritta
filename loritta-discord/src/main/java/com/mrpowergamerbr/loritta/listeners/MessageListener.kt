@@ -37,13 +37,17 @@ import net.perfectdreams.loritta.utils.Emotes
 import org.apache.commons.text.similarity.LevenshteinDistance
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.Instant
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
 class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	companion object {
+
 		private val logger = KotlinLogging.logger {}
+		private val unavailableMessages: MutableSet<Long> = mutableSetOf()
+
 		val MESSAGE_RECEIVED_MODULES = mutableListOf(
 				Modules.AUTOMOD,
 				Modules.INVITE_LINK,
@@ -391,6 +395,11 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildMessageUpdate(event: GuildMessageUpdateEvent) {
+		if (event.message.isPinned) unavailableMessages.add(event.messageIdLong)
+		if (unavailableMessages.contains(event.messageIdLong)) return
+
+		if (System.currentTimeMillis() - 900000 >= event.message.timeCreated.toEpochSecond() * 1000) return
+
 		if (loritta.discordConfig.discord.disallowBots && !loritta.discordConfig.discord.botWhitelist.contains(event.author.idLong) && event.author.isBot) // Se uma mensagem de um bot, ignore a mensagem!
 			return
 
