@@ -2,8 +2,6 @@ package net.perfectdreams.loritta.plugin.loriguildstuff.commands
 
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.AdminUtils.ModerationConfigSettings
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
@@ -27,63 +25,48 @@ object FastBanCommand {
         }
 
         executesDiscord {
-            val role = guild.getRoleById(351473717194522647L)!!
+            val bodyguardRole = guild.getRoleById(351473717194522647L)!!
             val author = this.member!!
-            val userToBePunished = this.user(0)
-            val reason = args.getOrNull(1)?.toLowerCase()
+            val userToBePunished = this.user(0)?.handle
+            val reason = this.args.getOrNull(1)?.toLowerCase()
+            val proof = this.args.getOrNull(2)
+            val settings = ModerationConfigSettings(
+                    sendPunishmentViaDm = true,
+                    sendPunishmentToPunishLog = true
+            )
 
-            if (!author.roles.contains(role)) {
-                reply(
-                        LorittaReply(
-                                "Você não tem permissão para usa este comando!",
-                                Constants.ERROR
-                        )
-                )
-                return@executesDiscord
+            if (!author.roles.contains(bodyguardRole)) {
+                fail("Você não pode usar o meu super comandinho de banir as pessoas com motivos bonitinhos ;w;")
             }
+
             if (userToBePunished == null) {
-                reply(
-                        LorittaReply(
-                                "Usuário inválido!",
-                                Constants.ERROR
-                        )
-                )
-                return@executesDiscord
+                fail("Usuário inválido!")
             }
+
             if (reason == null) {
-                reply(
-                        LorittaReply(
-                                "Você precisa inserir um motivo!",
-                                "<a:lori_pat:706263175892566097>"
-                        )
-                )
-                return@executesDiscord
+                fail("Motivos disponíveis: `spam, div, divdm, nsfw, toxic`!")
             }
 
-            var fancyReason = punishmentReasons[reason]
+            var fancyReason = punishmentReasons[reason]!!
 
-            if (fancyReason != null) {
-                reply(
-                        LorittaReply(
-                                "O usuário `${userToBePunished.asMention}` está sendo punido por `$fancyReason`!",
-                                "<a:lori_happy:521721811298156558>"
-                        )
-                )
-            }
-
-            val proof = args.getOrNull(2)
+            reply(
+                    LorittaReply(
+                            "Punindo `${userToBePunished.asTag}` por `$fancyReason`!",
+                            "<a:lori_happy:521721811298156558>"
+                    )
+            )
 
             if (proof != null) {
                 fancyReason = "[$fancyReason]($proof)"
             }
 
             BanCommand.ban(
-                    ModerationConfigSettings(sendPunishmentViaDm = true, sendPunishmentToPunishLog = true),
-                    guild,
+                    settings,
+                    this.guild,
                     author.user,
-                    LegacyBaseLocale(),
-                    userToBePunished.handle,
-                    fancyReason!!,
+                    loritta.getLegacyLocaleById("default"),
+                    userToBePunished,
+                    fancyReason,
                     false,
                     0
             )
