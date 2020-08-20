@@ -154,23 +154,6 @@ class DonateView(
                                 + " ${locale["website.donate.donateNow"]}"
                             }
                         }
-
-                        hr {}
-
-                        div(classes = "sectionText") {
-                            div {
-                                style = "text-align: center;"
-                                h2(classes = "sectionHeader") {
-                                    + "Todos os Benefícios"
-                                }
-                            }
-                        }
-
-                        hr {}
-
-                        div {
-                            id = "donate-features"
-                        }
                     }
                 }
             }

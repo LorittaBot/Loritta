@@ -26,8 +26,11 @@ import kotlin.browser.window
 import kotlin.collections.set
 
 class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
+    companion object {
+        const val LOCALE_PREFIX = "website.donate"
+    }
+
     override fun onRender(call: ApplicationCall) {
-        val table = page.getElementById("donate-features") as HTMLDivElement
         val plansTable = page.getElementById("plans-features") as HTMLDivElement
 
         val rewards = listOf(
@@ -35,19 +38,19 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                 DonationReward("ignore_me", 99.99, false),
 
                 // ===[  ESSENTIAL  ]===
-                DonationReward("Lori irá parar de perturbar você e os membros do seu servidor com pedidos de doação", 19.99, false) ,
+                DonationReward(locale["${LOCALE_PREFIX}.rewards.disableAds"], 19.99, false),
 
                 // ===[ RECOMMENDED ]===
-                DonationReward("Badge EXCLUSIVA no \"+perfil\" para os membros do seu servidor", 39.99, false),
-                DonationReward("Faça seu PRÓPRIO background para o \"+perfil\"", 39.99, false),
+                DonationReward(locale["${LOCALE_PREFIX}.rewards.exclusiveProfileBadge"], 39.99, false),
+                DonationReward(locale["${LOCALE_PREFIX}.rewards.customProfileBackground"], 39.99, false),
 
                 // DonationReward("Personalizar nome/avatar da Loritta nas notificações do YouTube/Twitch/Twitter", 39.99, false),
-                DonationReward("Tempo reduzido entre comandos", 39.99, false),
+                DonationReward(locale["${LOCALE_PREFIX}.rewards.reducedCooldown"], 39.99, false),
 
                 // ===[  COMPLETE  ]===
 
                 // ===[   NUMBERS  ]===
-                DonationReward("Sonhos ganhos a cada minuto", 39.99, false, callback = { column ->
+                DonationReward(locale["${LOCALE_PREFIX}.rewards.everyMinuteSonhos"], 39.99, false, callback = { column ->
                     when {
                         column >= 99.99 -> +"10"
                         column >= 39.99 -> +"4"
@@ -55,25 +58,25 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                         else -> +"0"
                     }
                 }),
-                DonationReward("Multiplicador de dailies de sonhos para membros do seu servidor", 19.99, false, callback = { column ->
+                DonationReward(locale["${LOCALE_PREFIX}.rewards.dailyMultiplier"], 19.99, false, callback = { column ->
                     + (ServerPremiumPlans.getPlanFromValue(column).dailyMultiplier.toString() + "x")
                 }),
-                DonationReward("Máximo de cargos de Level Up", 19.99, false, callback = { column ->
+                DonationReward(locale["${LOCALE_PREFIX}.rewards.maxLevelUpRoles"], 19.99, false, callback = { column ->
                     + ServerPremiumPlans.getPlanFromValue(column).maxLevelUpRoles.toString()
                 }),
-                DonationReward("Número de Contadores de Membros", 19.99, false, callback = { column ->
+                DonationReward(locale["${LOCALE_PREFIX}.rewards.maxMemberCounters"], 19.99, false, callback = { column ->
                     + ServerPremiumPlans.getPlanFromValue(column).memberCounterCount.toString()
                 }),
-                DonationReward("Máximo de contas de notificações do YouTube/Twitch/Twitter", 19.99, false, callback = { column ->
+                DonationReward(locale["${LOCALE_PREFIX}.rewards.maxSocialAccountsRelay"], 19.99, false, callback = { column ->
                     + ServerPremiumPlans.getPlanFromValue(column).maxYouTubeChannels.toString()
                 }),
-                DonationReward("Limite máximo de sonhos no +daily", 39.99, false, callback = { column ->
+                DonationReward(locale["${LOCALE_PREFIX}.rewards.maxDailyLimit"], 39.99, false, callback = { column ->
                     + UserPremiumPlans.getPlanFromValue(column).maxDreamsInDaily.toString()
                 }),
-                DonationReward("Chance da Lori te dar uma reputação", 39.99, false, callback = { column ->
+                DonationReward(locale["${LOCALE_PREFIX}.rewards.giveBackRepChange"], 39.99, false, callback = { column ->
                     + (UserPremiumPlans.getPlanFromValue(column).loriReputationRetribution.toString() + "%")
                 }),
-                DonationReward("Multiplicador de XP Global", 119.99, false, callback = { column ->
+                DonationReward(locale["${LOCALE_PREFIX}.rewards.globalExperienceMultiplier"], 99.99, false, callback = { column ->
                     + (ServerPremiumPlans.getPlanFromValue(column).globalXpMultiplier.toString() + "x")
                 })
         )
@@ -92,10 +95,10 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                                 .sortedBy { it }.toList().forEach {
                                     th {
                                         val titlePrefix = when (it) {
-                                            0.0 -> "Grátis"
-                                            19.99 -> "Essencial"
-                                            39.99 -> "Recomendado"
-                                            99.99 -> "Completo"
+                                            0.0 -> locale["${LOCALE_PREFIX}.plans.free"]
+                                            19.99 -> locale["${LOCALE_PREFIX}.plans.essential"]
+                                            39.99 -> locale["${LOCALE_PREFIX}.plans.recommended"]
+                                            99.99 -> locale["${LOCALE_PREFIX}.plans.complete"]
                                             else -> "???"
                                         }
 
@@ -135,6 +138,7 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                     }
 
                     tr {
+                        // =====[ PREMIUM PLANS ]=====
                         td {
                             + ""
                         }
@@ -145,99 +149,42 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                         td {
                         }
 
-                        td {
+                        fun TD.createBuyPlanButton(buttonPlanId: String, isBigger: Boolean) {
+                            if (isBigger)
+                                style = "background-color: #83ff836b;"
+
                             if (needsToLogin) {
                                 a(href = url) {
                                     div(classes = "button-discord button-discord-info pure-button") {
-                                        // id = "donate-button-plan1"
+                                        if (isBigger)
+                                            style = "font-size: 1.2em;"
 
                                         i(classes = "fas fa-gift") {}
-                                        +" Comprar Plano"
+                                        +" ${locale["${LOCALE_PREFIX}.buyPlan"]}"
                                     }
                                 }
                             } else {
                                 div(classes = "button-discord button-discord-info pure-button") {
-                                    id = "donate-button-plan1"
-
-                                    i(classes = "fas fa-gift") {}
-                                    +" Comprar Plano"
-                                }
-                            }
-                        }
-
-                        td {
-                            if (needsToLogin) {
-                                style = "background-color: #83ff836b;"
-                                a(href = url) {
-                                    div(classes = "button-discord button-discord-info pure-button") {
-                                        // id = "donate-button-plan2"
+                                    id = buttonPlanId
+                                    if (isBigger)
                                         style = "font-size: 1.2em;"
 
-                                        i(classes = "fas fa-gift") {}
-                                        +" Comprar Plano"
-                                    }
-                                }
-                            } else {
-                                style = "background-color: #83ff836b;"
-                                div(classes = "button-discord button-discord-info pure-button") {
-                                    id = "donate-button-plan2"
-                                    style = "font-size: 1.2em;"
-
                                     i(classes = "fas fa-gift") {}
-                                    +" Comprar Plano"
+                                    +" ${locale["${LOCALE_PREFIX}.buyPlan"]}"
                                 }
                             }
                         }
 
                         td {
-                            if (needsToLogin) {
-                                a(href = url) {
-                                    div(classes = "button-discord button-discord-info pure-button") {
-                                        // id = "donate-button-plan3"
-
-                                        i(classes = "fas fa-gift") {}
-                                        +" Comprar Plano"
-                                    }
-                                }
-                            } else {
-                                div(classes = "button-discord button-discord-info pure-button") {
-                                    id = "donate-button-plan3"
-
-                                    i(classes = "fas fa-gift") {}
-                                    +" Comprar Plano"
-                                }
-                            }
+                            createBuyPlanButton("donate-button-plan1", false)
                         }
-                    }
-                }
-        )
 
-        // Criar coisas
-        table.appendBuilder(
-                StringBuilder().appendHTML(true).table(classes = "fancy-table centered-text") {
-                    style = "margin: 0 auto;"
-
-                    val rewardColumn = mutableListOf<Double>(0.0)
-                    tr {
-                        th { +"" }
-                        th { +"Nenhuma Doação" }
-                        rewards.map { it.minimumDonation }.distinct().sortedBy { it }.forEach {
-                            th { +("R$" + it.toString().replace(".", ",") + "+") }
-                            rewardColumn.add(it)
+                        td {
+                            createBuyPlanButton("donate-button-plan2", true)
                         }
-                    }
 
-                    for (reward in rewards.filter { it.name != "ignore_me" }) {
-                        tr {
-                            td {
-                                attributes["style"] = "font-weight: 800;"
-                                +reward.name
-                            }
-                            for (column in rewardColumn) {
-                                td {
-                                    reward.callback.invoke(this, column)
-                                }
-                            }
+                        td {
+                            createBuyPlanButton("donate-button-plan3", false)
                         }
                     }
                 }
@@ -254,7 +201,6 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
         }
 
         (document.getElementById("donate-button") as HTMLDivElement?)?.onclick = {
-            println("CLICKED!!!")
             showDonateModal(19.99)
         }
 
@@ -386,7 +332,7 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
 
                     div {
                         h3 {
-                            + "Ostentadores neste Mês"
+                            + locale["${LOCALE_PREFIX}.topDonatorsOnThisMonth"]
                         }
                         run {
                             generatePaymentScoreboard(entriesMontly)
@@ -395,7 +341,7 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
 
                     div {
                         h3 {
-                            + "Ostentadores Vitalícios"
+                            + locale["${LOCALE_PREFIX}.topDonatorsLifetime"]
                         }
                         run {
                             generatePaymentScoreboard(entriesLifetime)
