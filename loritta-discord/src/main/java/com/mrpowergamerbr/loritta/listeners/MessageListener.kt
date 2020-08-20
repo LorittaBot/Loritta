@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.listeners
 
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
@@ -46,7 +47,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	companion object {
 
 		private val logger = KotlinLogging.logger {}
-		private val unavailableMessages: MutableSet<Long> = mutableSetOf()
+		private val unavailableMessages = Collections.newSetFromMap(Caffeine.newBuilder().expireAfterWrite(15L, TimeUnit.MINUTES).build<Long, Boolean>().asMap())
 
 		val MESSAGE_RECEIVED_MODULES = mutableListOf(
 				Modules.AUTOMOD,
@@ -395,10 +396,13 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildMessageUpdate(event: GuildMessageUpdateEvent) {
+		// If message was pinned, let's add it to our "blacklist"
 		if (event.message.isPinned) unavailableMessages.add(event.messageIdLong)
+		// If message is in our blacklist, lets ignore the event
 		if (unavailableMessages.contains(event.messageIdLong)) return
 
-		if (System.currentTimeMillis() - 900000 >= event.message.timeCreated.toEpochSecond() * 1000) return
+		// Checking if message was sent before 15 minutes ago (900 000ms)
+		if (System.currentTimeMillis() - 900_000 >= event.message.timeCreated.toEpochSecond() * 1000) return
 
 		if (loritta.discordConfig.discord.disallowBots && !loritta.discordConfig.discord.botWhitelist.contains(event.author.idLong) && event.author.isBot) // Se uma mensagem de um bot, ignore a mensagem!
 			return
