@@ -419,10 +419,25 @@ class SpicyMorenitta : Logging {
 											+ it
 										}
 									}
+
+									p {
+										style = "font-size: 2.0em; color: red;"
+
+										+ locale["website.dashboard.profile.deleteAccount.yourAccountWillBeSuspendedWarning"]
+									}
+
+									locale.getList("website.dashboard.profile.deleteAccount.warningDescription").forEach {
+										p {
+											style = "font-size: 1.25em; color: red;"
+											+ it
+										}
+									}
 								}
 							}
 					)
 					modal.open()
+
+					modal.trackOverflowChanges(this)
 				}
 			}
 		}
