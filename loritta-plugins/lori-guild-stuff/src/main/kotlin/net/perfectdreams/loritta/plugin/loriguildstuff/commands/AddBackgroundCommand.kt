@@ -168,7 +168,7 @@ object AddBackgroundCommand {
 									it[Backgrounds.imageFile] = imageFile
 									it[Backgrounds.rarity] = rarity
 									it[Backgrounds.crop] = crop
-								}.prepareSQL(this)
+								}
 							}
 
 							val original = File("/home/loritta/locales/default/items.yml")
