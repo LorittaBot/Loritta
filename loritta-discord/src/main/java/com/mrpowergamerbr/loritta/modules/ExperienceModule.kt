@@ -60,6 +60,12 @@ class ExperienceModule : MessageReceivedModule {
 		var lastMessageSentHash: Int? = null
 		val retrievedProfile by lazy { lorittaProfile ?: loritta.getOrCreateLorittaProfile(event.author.idLong) }
 
+		// Do not give XP if the message contains a code block
+		// Users would be able to gain a lot of experience by hidding text in the ```languageCodeHere section
+		// So we need to ignore if the message contains code blocks
+		if (event.message.contentRaw.contains("```"))
+			return false
+
 		// Primeiro iremos ver se a mensagem contém algo "interessante"
 		if (event.message.contentStripped.length >= 5 && currentLastMessageSentHash != event.message.contentStripped.hashCode()) {
 			// Primeiro iremos verificar se a mensagem é "válida"
