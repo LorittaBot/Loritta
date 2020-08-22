@@ -6,6 +6,7 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -190,6 +191,8 @@ object AddBackgroundCommand {
 											mentionUser = false
 									)
 							)
+
+							lorittaShards.queryAllLorittaClusters("/api/v1/loritta/action/locales")
 
 							val channel = guild.getTextChannelById(736275294486528101L)!!
 
