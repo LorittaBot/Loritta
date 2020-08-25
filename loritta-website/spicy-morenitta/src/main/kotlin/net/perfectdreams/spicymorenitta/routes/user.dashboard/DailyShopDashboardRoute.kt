@@ -22,6 +22,7 @@ import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
 import net.perfectdreams.spicymorenitta.utils.*
+import net.perfectdreams.spicymorenitta.utils.locale.buildAsHtml
 import org.w3c.dom.*
 import org.w3c.dom.Audio
 import kotlin.browser.document
@@ -191,7 +192,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
                     }
 
                     h1 {
-                        + "Loja Diária"
+                        + locale["website.dailyShop.title"]
                     }
 
                     p {
@@ -216,7 +217,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
                             id = "when-will-be-the-next-update"
                         }
                         div(classes = "shop-timer-subtitle") {
-                            +"até a loja atualizar"
+                            + locale["website.dailyShop.untilTheNextShopUpdate"]
                         }
                     }
                 }
@@ -271,7 +272,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
                                     i(classes = "fas fa-check") {
                                         style = "color: #80ff00;"
                                     }
-                                    +" Comprado!"
+                                    +" ${locale["website.dailyShop.itemAlreadyBought"]}"
                                 } else {
                                     +"${shopItem.price} Sonhos"
                                 }
@@ -297,7 +298,6 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
         }
 
         for (background in dailyShop.backgrounds) {
-            debug("Background Internal Name: ${background.internalName}")
             val bought = background.internalName in userInfoResult.backgrounds.map { it.internalName }
             val canvasPreview = document.select<HTMLCanvasElement>("#canvas-preview-${background.internalName}")
 
@@ -363,11 +363,13 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
                         if (background.set != null) {
                             div {
                                 i {
-                                    + "Parte do conjunto "
-
-                                    b {
-                                        +(locale["sets.${background.set}"])
-                                    }
+                                    locale.buildAsHtml(locale["website.dailyShop.partOfTheSet"], { num ->
+                                        if (num == 0) {
+                                            b {
+                                                + (locale["sets.${background.set}"])
+                                            }
+                                        }
+                                    }) { + it }
                                 }
                             }
                         }
@@ -484,11 +486,13 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
                         if (background.set != null) {
                             div {
                                 i {
-                                    + "Parte do conjunto "
-
-                                    b {
-                                        +(locale["sets.${background.set}"])
-                                    }
+                                    locale.buildAsHtml(locale["website.dailyShop.partOfTheSet"], { num ->
+                                        if (num == 0) {
+                                            b {
+                                                + (locale["sets.${background.set}"])
+                                            }
+                                        }
+                                    }) { + it }
                                 }
                             }
                         }
