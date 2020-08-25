@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit
 class DailyTaxTask : Runnable {
 	companion object {
 		private val logger = KotlinLogging.logger {}
-		const val MARRIAGE_DAILY_TAX = 100L
+		const val MARRIAGE_DAILY_TAX = 250L
 		var alreadySentDMs = false
 	}
 

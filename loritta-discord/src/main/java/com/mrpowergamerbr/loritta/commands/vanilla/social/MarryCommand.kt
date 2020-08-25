@@ -107,7 +107,7 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
                             "\uD83D\uDC8D"
                     ),
                     LorittaReply(
-                            "Para aceitar, clique no \uD83D\uDC8D! Mas lembrando, o custo de um casamento é **10000 Sonhos**, e **200 Sonhos** todos os dias!",
+                            "Para aceitar, clique no \uD83D\uDC8D! Mas lembrando, o custo de um casamento é **15000 Sonhos** (7500 para cada usuário), e **250 Sonhos** todos os dias!",
                             "\uD83D\uDCB5"
                     )
 			)
