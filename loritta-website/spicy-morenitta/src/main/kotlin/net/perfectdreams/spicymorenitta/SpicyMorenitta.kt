@@ -77,12 +77,13 @@ class SpicyMorenitta : Logging {
 			MusicConfigRoute(this),
 			DonateRoute(this),
 			FortniteConfigRoute(this),
-			ProfileListDashboardRoute(this),
+			// ProfileListDashboardRoute(this),
 			ShipEffectsDashboardRoute(this),
 			AvailableBundlesDashboardRoute(this),
 			DailyRoute(this),
 			BackgroundsListDashboardRoute(this),
 			AllBackgroundsListDashboardRoute(this),
+			ProfileDesignsListDashboardRoute(this),
 			DailyShopDashboardRoute(this),
 			Birthday2020Route(this),
 			Birthday2020StatsRoute(this),
@@ -142,6 +143,8 @@ class SpicyMorenitta : Logging {
 	var currentPath: String? = null
 
 	val DEFAULT_COROUTINE_EXCEPTION_HANDLER = CoroutineExceptionHandler { _, exception ->
+		throw exception
+
 		error("Coroutine error! $exception")
 		val dynamicException = exception.asDynamic()
 

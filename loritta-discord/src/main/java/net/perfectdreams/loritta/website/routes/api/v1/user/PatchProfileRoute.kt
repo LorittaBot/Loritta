@@ -4,8 +4,8 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Background
+import com.mrpowergamerbr.loritta.dao.ProfileDesign
 import com.mrpowergamerbr.loritta.dao.ShipEffect
-import com.mrpowergamerbr.loritta.profile.NostalgiaProfileCreator
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
@@ -14,6 +14,8 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.request.receiveText
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.BackgroundPayments
+import net.perfectdreams.loritta.tables.ProfileDesigns
+import net.perfectdreams.loritta.tables.ProfileDesignsPayments
 import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.utils.UserPremiumPlans
@@ -100,67 +102,6 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 			profile.settings
 		}
 
-		if (config["buyItem"].nullString == "profile") {
-			val profileType = config["profileType"].string
-
-			val profileDesign = com.mrpowergamerbr.loritta.utils.loritta.profileDesignManager.publicDesigns.firstOrNull { it.clazz.simpleName == profileType } ?: throw WebsiteAPIException(HttpStatusCode.NotFound,
-					WebsiteUtils.createErrorPayload(
-							LoriWebCode.ITEM_NOT_FOUND
-					)
-			)
-
-			if (profileSettings.boughtProfiles.contains(profileDesign.clazz.simpleName) || !profileDesign.availableToBuyViaDreams) {
-				throw WebsiteAPIException(HttpStatusCode.Forbidden,
-						WebsiteUtils.createErrorPayload(
-								LoriWebCode.FORBIDDEN
-						)
-				)
-			}
-
-			val price = profileDesign.rarity.getProfilePrice()
-
-			if (price > profile.money) {
-				throw WebsiteAPIException(HttpStatusCode.PaymentRequired,
-						WebsiteUtils.createErrorPayload(
-								LoriWebCode.INSUFFICIENT_FUNDS
-						)
-				)
-			}
-
-			loritta.newSuspendedTransaction {
-				profileSettings.boughtProfiles = profileSettings.boughtProfiles.toMutableList().apply { this.add(profileDesign.clazz.simpleName) }.toTypedArray()
-
-				profile.takeSonhosNested(price.toLong())
-				PaymentUtils.addToTransactionLogNested(
-						price.toLong(),
-						SonhosPaymentReason.PROFILE,
-						givenBy = profile.id.value
-				)
-			}
-
-			for (creatorId in profileDesign.createdBy) {
-				val creator = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(creatorId)
-				loritta.newSuspendedTransaction {
-					val value = (price.toDouble() * 0.2).toLong()
-					creator.addSonhosNested(value)
-					PaymentUtils.addToTransactionLogNested(
-							value,
-							SonhosPaymentReason.PROFILE,
-							receivedBy = creator.id.value
-					)
-				}
-			}
-
-			call.respondJson(
-					gson.toJsonTree(
-							com.mrpowergamerbr.loritta.utils.loritta.profileDesignManager.publicDesigns.map {
-								ProfileListRoute.getProfileAsJson(userIdentification, it.clazz, profileSettings, it)
-							}
-					)
-			)
-			return
-		}
-
 		if (config["setActiveBackground"].nullString != null) {
 			val internalName = config["setActiveBackground"].string
 
@@ -207,20 +148,14 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 				profileSettings.activeBackground = Background.findById(internalName)
 			}
 
-			call.respondJson(
-					gson.toJsonTree(
-							com.mrpowergamerbr.loritta.utils.loritta.profileDesignManager.publicDesigns.map {
-								ProfileListRoute.getProfileAsJson(userIdentification, it.clazz, profileSettings, it)
-							}
-					)
-			)
+			call.respondJson(jsonObject())
 			return
 		}
 
 		if (config["setActiveProfileDesign"].nullString != null) {
-			val profileType = config["setActiveProfileDesign"].string
+			val internalName = config["setActiveProfileDesign"].string
 
-			if (profileType != NostalgiaProfileCreator::class.java.simpleName && !profileSettings.boughtProfiles.contains(profileType)) {
+			if (internalName != ProfileDesign.DEFAULT_PROFILE_DESIGN_ID && internalName != ProfileDesign.RANDOM_PROFILE_DESIGN_ID && loritta.newSuspendedTransaction { ProfileDesignsPayments.select { ProfileDesignsPayments.profile eq internalName and (ProfileDesignsPayments.userId eq userIdentification.id.toLong()) }.count() } == 0L) {
 				throw WebsiteAPIException(HttpStatusCode.Forbidden,
 						WebsiteUtils.createErrorPayload(
 								LoriWebCode.FORBIDDEN
@@ -229,16 +164,10 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 			}
 
 			loritta.newSuspendedTransaction {
-				profileSettings.activeProfile = profileType
+				profileSettings.activeProfileDesignInternalName = ProfileDesigns.select { ProfileDesigns.id eq internalName }.first()[ProfileDesigns.id] // Background.findById(internalName)
 			}
 
-			call.respondJson(
-					gson.toJsonTree(
-							com.mrpowergamerbr.loritta.utils.loritta.profileDesignManager.publicDesigns.map {
-								ProfileListRoute.getProfileAsJson(userIdentification, it.clazz, profileSettings, it)
-							}
-					)
-			)
+			call.respondJson(jsonObject())
 			return
 		}
 

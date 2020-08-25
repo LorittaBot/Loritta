@@ -23,7 +23,7 @@ import java.io.File
 import java.io.FileInputStream
 import javax.imageio.ImageIO
 
-class LorittaChristmas2019ProfileCreator : ProfileCreator {
+class LorittaChristmas2019ProfileCreator : ProfileCreator("lorittaChristmas2019") {
 	override fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
 		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 	}

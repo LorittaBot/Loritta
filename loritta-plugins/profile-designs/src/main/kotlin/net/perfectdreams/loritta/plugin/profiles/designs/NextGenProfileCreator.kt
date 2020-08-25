@@ -23,7 +23,7 @@ import java.io.File
 import java.io.FileInputStream
 import javax.imageio.ImageIO
 
-class NextGenProfileCreator : ProfileCreator {
+class NextGenProfileCreator : ProfileCreator("nextGenDark") {
 	override fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
 		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/next_gen/profile_wrapper.png"))
 

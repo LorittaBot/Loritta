@@ -13,6 +13,7 @@ import kotlinx.serialization.builtins.list
 import kotlinx.serialization.json.JSON
 import net.perfectdreams.loritta.serializable.Background
 import net.perfectdreams.loritta.serializable.DailyShopResult
+import net.perfectdreams.loritta.serializable.ProfileDesign
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
@@ -24,7 +25,6 @@ import org.w3c.dom.Audio
 import kotlin.browser.document
 import kotlin.browser.window
 import kotlin.dom.clear
-import kotlin.dom.hasClass
 import kotlin.js.Date
 
 class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/user/@me/dashboard/daily-shop") {
@@ -117,7 +117,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
         val userBackgroundsJob = m.async {
             debug("Retrieving profiles & background info...")
             val payload = http.get<String> {
-                url("${window.location.origin}/api/v1/users/@me/profiles,backgrounds")
+                url("${window.location.origin}/api/v1/users/@me/profiles,backgrounds,profileDesigns")
             }
 
             debug("Retrieved profiles & background info!")
@@ -142,9 +142,11 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
         val profileWrapper = profileWrapperJob.await()
         debug("await #4")
 
-        val fanArtArtistsJob = m.async {
-            val allArtists = dailyShop.backgrounds.mapNotNull { it.createdBy }.flatten().distinct()
+        val allArtists = (dailyShop.backgrounds.mapNotNull { it.createdBy } + dailyShop.profileDesigns.mapNotNull { it.createdBy })
+                .flatten()
+                .distinct()
 
+        val fanArtArtistsJob = m.async {
             if (allArtists.isEmpty())
                 return@async listOf<FanArtArtist>()
 
@@ -170,7 +172,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
         return diff
     }
 
-    fun generateShop(dailyShop: DailyShopResult, userBackgrounds: UserInfoResult, profileWrapper: Image, fanArtArtists: List<FanArtArtist>) {
+    fun generateShop(dailyShop: DailyShopResult, userInfoResult: UserInfoResult, profileWrapper: Image, fanArtArtists: List<FanArtArtist>) {
         info("Generating Shop...")
         val entriesDiv = document.select<HTMLDivElement>("#bundles-content")
         entriesDiv.clear()
@@ -218,8 +220,55 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
                 }
 
                 div(classes = "loritta-items-wrapper") {
+                    for (profileDesign in dailyShop.profileDesigns.sortedByDescending { it.rarity.getProfilePrice() }) {
+                        val bought = profileDesign.internalName in userInfoResult.profileDesigns.map { it.internalName }
+
+                        div(classes = "shop-item-entry rarity-${profileDesign.rarity.name.toLowerCase()}") {
+                            div {
+                                style = "position: relative;"
+
+                                div {
+                                    style = "overflow: hidden; line-height: 0;"
+
+                                    canvas("canvas-background-preview") {
+                                        id = "canvas-preview-${profileDesign.internalName}"
+                                        width = "800"
+                                        height = "600"
+                                        style = "width: 400px; height: auto;"
+                                    }
+                                }
+
+                                div(classes = "item-entry-information rarity-${profileDesign.rarity.name.toLowerCase()}") {
+                                    div(classes = "item-entry-title rarity-${profileDesign.rarity.name.toLowerCase()}") {
+                                        +(locale["profileDesigns.${profileDesign.internalName}.title"])
+                                    }
+                                    div(classes = "item-entry-type") {
+                                        +"Design para Perfil"
+                                    }
+                                }
+
+                                if (profileDesign.tag != null) {
+                                    div(classes = "item-new-tag") {
+                                        +locale[profileDesign.tag!!]
+                                    }
+                                }
+                            }
+
+                            div(classes = "item-user-information") {
+                                if (bought) {
+                                    i(classes = "fas fa-check") {
+                                        style = "color: #80ff00;"
+                                    }
+                                    +" Comprado!"
+                                } else {
+                                    +"${profileDesign.rarity.getProfilePrice()} Sonhos"
+                                }
+                            }
+                        }
+                    }
+
                     for (background in dailyShop.backgrounds.sortedByDescending { it.rarity.getBackgroundPrice() }) {
-                        val bought = background.internalName in userBackgrounds.backgrounds.map { it.internalName }
+                        val bought = background.internalName in userInfoResult.backgrounds.map { it.internalName }
 
                         div(classes = "shop-item-entry rarity-${background.rarity.name.toLowerCase()}") {
                             div {
@@ -268,15 +317,28 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
             }
         }
 
+        for (profileDesign in dailyShop.profileDesigns) {
+            val bought = profileDesign.internalName in userInfoResult.profileDesigns.map { it.internalName }
+            val canvasPreview = document.select<HTMLCanvasElement>("#canvas-preview-${profileDesign.internalName}")
+
+            m.launch {
+                val (image) = LockerUtils.prepareProfileDesignsCanvasPreview(m, profileDesign, canvasPreview)
+
+                canvasPreview.parentElement!!.parentElement!!.onClick {
+                    openProfileDesignInformation(userInfoResult, profileDesign, bought, image, fanArtArtists)
+                }
+            }
+        }
+
         for (background in dailyShop.backgrounds) {
-            val bought = background.internalName in userBackgrounds.backgrounds.map { it.internalName }
+            val bought = background.internalName in userInfoResult.backgrounds.map { it.internalName }
             val canvasPreview = document.select<HTMLCanvasElement>("#canvas-preview-${background.internalName}")
 
             m.launch {
                 val (image) = LockerUtils.prepareBackgroundCanvasPreview(m, background, canvasPreview)
 
                 canvasPreview.parentElement!!.parentElement!!.onClick {
-                    openBackgroundInformation(userBackgrounds, background, bought, StaticBackgroundImage(image), profileWrapper, fanArtArtists)
+                    openBackgroundInformation(userInfoResult, background, bought, StaticBackgroundImage(image), profileWrapper, fanArtArtists)
                 }
             }
         }
@@ -285,13 +347,137 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
     @Serializable
     class UserInfoResult(
             val profile: Profile,
-            var backgrounds: MutableList<Background>
+            var backgrounds: MutableList<Background>,
+            var profileDesigns: MutableList<ProfileDesign>
     )
 
     @Serializable
     class Profile(
             val money: Long
     )
+
+    fun openProfileDesignInformation(result: UserInfoResult, background: ProfileDesign, alreadyBought: Boolean, image: Image, fanArtArtists: List<FanArtArtist>) {
+        val modal = TingleModal(
+                TingleOptions(
+                        footer = true,
+                        cssClass = arrayOf("tingle-modal--overflow")
+                )
+        )
+
+        modal.setContent(
+                document.create.div(classes = "item-shop-preview") {
+                    div {
+                        style = "flex-grow: 1;"
+                        h1 {
+                            style = "word-break: break-word; text-align: center;"
+
+                            +(locale["profileDesigns.${background.internalName}.title"])
+                        }
+                        div {
+                            style = "margin-bottom: 10px;"
+                            +(locale["profileDesigns.${background.internalName}.description"])
+
+                            if (background.createdBy != null) {
+                                val artists = fanArtArtists.filter { it.id in background.createdBy!! }
+                                if (artists.isNotEmpty()) {
+                                    artists.forEach {
+                                        div {
+                                            val name = (it.info.override?.name ?: it.user?.name ?: it.info.name ?: it.id)
+
+                                            +"Criado por "
+                                            a(href = "/fanarts/${it.id}") {
+                                                +name
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (background.set != null) {
+                            div {
+                                i {
+                                    + "Parte do conjunto "
+
+                                    b {
+                                        +(locale["sets.${background.set}"])
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    div(classes = "canvas-preview-wrapper") {
+                        canvas("canvas-preview-only-bg") {
+                            style = """width: 400px;"""
+                            width = "800"
+                            height = "600"
+                        }
+
+                        canvas("canvas-preview") {
+                            style = """width: 400px;"""
+                            width = "800"
+                            height = "600"
+                        }
+                    }
+                }
+        )
+
+        val cash = Audio("${loriUrl}assets/snd/css1_cash.wav")
+        if (!alreadyBought) {
+            val canBuy = result.profile.money >= background.rarity.getProfilePrice()
+            val classes = if (canBuy) "button-discord-info" else "button-discord-disabled"
+            modal.addFooterBtn("<i class=\"fas fa-gift\"></i> Comprar", "buy-button-modal button-discord $classes pure-button button-discord-modal") {
+                if (canBuy) {
+                    m.launch {
+                        m.showLoadingScreen()
+                        val response = http.post<io.ktor.client.statement.HttpResponse>("${loriUrl}api/v1/economy/daily-shop/buy/profile-design/${background.internalName}") {
+                            body = "{}"
+                        }
+
+                        if (response.status != HttpStatusCode.OK) {
+
+                        }
+
+                        visibleModal.select<HTMLElement>(".buy-button-modal")
+                                .remove()
+
+                        m.launch {
+                            regen(false)
+                            m.hideLoadingScreen()
+                            cash.play()
+                        }
+                    }
+                }
+            }
+        }
+
+        modal.addFooterBtn("<i class=\"fas fa-times\"></i> Fechar", "button-discord pure-button button-discord-modal button-discord-modal-secondary-action") {
+            modal.close()
+        }
+
+        modal.open()
+
+        val openModal = visibleModal
+
+        val canvasCheckout = visibleModal.select<HTMLCanvasElement>(".canvas-preview")
+        val canvasCheckoutOnlyBg = visibleModal.select<HTMLCanvasElement>(".canvas-preview-only-bg")
+
+        val canvasPreviewContext = (canvasCheckout.getContext("2d")!! as CanvasRenderingContext2D)
+        val canvasPreviewOnlyBgContext = (canvasCheckoutOnlyBg.getContext("2d")!! as CanvasRenderingContext2D)
+
+        canvasPreviewOnlyBgContext
+                .drawImage(
+                        image,
+                        0.0,
+                        0.0,
+                        image.width.toDouble(),
+                        image.height.toDouble(),
+                        0.0,
+                        0.0,
+                        800.0,
+                        600.0
+                )
+    }
 
     fun openBackgroundInformation(result: UserInfoResult, background: Background, alreadyBought: Boolean, backgroundImg: BackgroundImage, profileWrapper: Image, fanArtArtists: List<FanArtArtist>) {
         val modal = TingleModal(
@@ -401,6 +587,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
 
         val canvasPreviewContext = (canvasCheckout.getContext("2d")!! as CanvasRenderingContext2D)
         val canvasPreviewOnlyBgContext = (canvasCheckoutOnlyBg.getContext("2d")!! as CanvasRenderingContext2D)
+
         if (backgroundImg is StaticBackgroundImage) {
             canvasPreviewContext
                     .drawImage(
@@ -428,50 +615,10 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
                     )
 
             canvasPreviewContext.drawImage(profileWrapper, 0.0, 0.0)
-        } else if (backgroundImg is AnimatedBackgroundImage) {
-            // keep updating canvas
-            m.launch {
-                while (true) {
-                    for (frame in backgroundImg.images) {
-                        if (!openModal.hasClass("tingle-modal--visible"))
-                            return@launch // modal foi fechado
-
-                        canvasPreviewContext.clearRect(0.0, 0.0, 800.0, 600.0)
-                        canvasPreviewContext
-                                .drawImage(
-                                        frame,
-                                        0.0,
-                                        0.0,
-                                        800.0,
-                                        600.0
-                                )
-                        canvasPreviewContext.drawImage(profileWrapper, 0.0, 0.0)
-                        canvasPreviewOnlyBgContext.clearRect(0.0, 0.0, 800.0, 600.0)
-                        canvasPreviewOnlyBgContext
-                                .drawImage(
-                                        frame,
-                                        0.0,
-                                        0.0,
-                                        800.0,
-                                        600.0
-                                )
-
-                        delay(backgroundImg.speed)
-                    }
-                }
-            }
         }
     }
-
-    @Serializable
-    data class AnimatedBackground(
-            val speed: Long,
-            val frames: Array<String>
-    )
 
     open class BackgroundImage()
 
     class StaticBackgroundImage(val image: Image) : BackgroundImage()
-
-    class AnimatedBackgroundImage(val speed: Long, val images: List<Image>) : BackgroundImage()
 }

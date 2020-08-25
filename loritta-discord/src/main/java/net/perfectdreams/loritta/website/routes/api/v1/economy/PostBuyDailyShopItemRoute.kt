@@ -13,10 +13,7 @@ import io.ktor.request.receiveText
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.tables.BackgroundPayments
-import net.perfectdreams.loritta.tables.Backgrounds
-import net.perfectdreams.loritta.tables.DailyShopItems
-import net.perfectdreams.loritta.tables.DailyShops
+import net.perfectdreams.loritta.tables.*
 import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.utils.config.FanArtArtist
@@ -40,6 +37,7 @@ class PostBuyDailyShopItemRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLog
 		val profile = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(userIdentification.id)
 		val payload = JsonParser.parseString(call.receiveText()).obj
 
+		val type = call.parameters["type"]!!
 		val internalName = call.parameters["internalName"]!!
 
 		// Para evitar que alguém compre o mesmo perfil várias vezes, vamos colocar em um mutex, para evitar que um spam
@@ -47,74 +45,146 @@ class PostBuyDailyShopItemRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLog
 		val mutex = mutexes.getOrPut(profile.userId) { Mutex() }
 		mutex.withLock {
 			loritta.newSuspendedTransaction {
-				val backgrounds = run {
-					val shop = DailyShops.selectAll().orderBy(DailyShops.generatedAt, SortOrder.DESC).limit(1).first()
+				if (type == "backgrounds") {
+					val backgrounds = run {
+						val shop = DailyShops.selectAll().orderBy(DailyShops.generatedAt, SortOrder.DESC).limit(1).first()
 
-					(DailyShopItems innerJoin Backgrounds)
-							.select {
-								DailyShopItems.shop eq shop[DailyShops.id]
-							}
-				}
+						(DailyShopItems innerJoin Backgrounds)
+								.select {
+									DailyShopItems.shop eq shop[DailyShops.id]
+								}
+					}
 
-				val background = backgrounds.firstOrNull { it[Backgrounds.id].value == internalName }
-						?: throw WebsiteAPIException(
-								HttpStatusCode.BadRequest,
+					val background = backgrounds.firstOrNull { it[Backgrounds.id].value == internalName }
+							?: throw WebsiteAPIException(
+									HttpStatusCode.BadRequest,
+									WebsiteUtils.createErrorPayload(
+											LoriWebCode.ITEM_NOT_FOUND,
+											"Item is not on the current daily shop"
+									)
+							)
+
+					val cost = background[Backgrounds.rarity].getBackgroundPrice()
+					if (cost > profile.money)
+						throw WebsiteAPIException(HttpStatusCode.PaymentRequired,
 								WebsiteUtils.createErrorPayload(
-										LoriWebCode.ITEM_NOT_FOUND,
-										"Item is not on the current daily shop"
+										LoriWebCode.INSUFFICIENT_FUNDS
 								)
 						)
 
-				val cost = background[Backgrounds.rarity].getBackgroundPrice()
-				if (cost > profile.money)
-					throw WebsiteAPIException(HttpStatusCode.PaymentRequired,
-							WebsiteUtils.createErrorPayload(
-									LoriWebCode.INSUFFICIENT_FUNDS
-							)
-					)
+					val alreadyBoughtTheBackground = BackgroundPayments.select {
+						BackgroundPayments.userId eq profile.userId and (BackgroundPayments.background eq background[Backgrounds.id])
+					}.count() != 0L
 
-				val alreadyBoughtTheBackground = BackgroundPayments.select {
-					BackgroundPayments.userId eq profile.userId and (BackgroundPayments.background eq background[Backgrounds.id])
-				}.count() != 0L
+					if (alreadyBoughtTheBackground)
+						throw WebsiteAPIException(
+								HttpStatusCode.Conflict,
+								WebsiteUtils.createErrorPayload(
+										LoriWebCode.ALREADY_BOUGHT_THE_ITEM
+								)
+						)
 
-				if (alreadyBoughtTheBackground)
-					throw WebsiteAPIException(
-							HttpStatusCode.Conflict,
-							WebsiteUtils.createErrorPayload(
-									LoriWebCode.ALREADY_BOUGHT_THE_ITEM
-							)
-					)
-
-				profile.takeSonhosNested(cost.toLong())
-				PaymentUtils.addToTransactionLogNested(
-						cost.toLong(),
-						SonhosPaymentReason.BACKGROUND,
-						givenBy = profile.id.value
-				)
-
-				BackgroundPayments.insert {
-					it[BackgroundPayments.userId] = profile.userId
-					it[BackgroundPayments.background] = background[Backgrounds.id]
-					it[BackgroundPayments.boughtAt] = System.currentTimeMillis()
-					it[BackgroundPayments.cost] = cost.toLong()
-				}
-
-				val createdBy = background[Backgrounds.createdBy]
-				val creatorReceived = (cost.toDouble() * 0.1).toLong()
-				for (creatorId in createdBy) {
-					val author = loritta.fanArtArtists.firstOrNull { it.id == creatorId } ?: continue
-
-					val discordId = author.socialNetworks?.firstIsInstanceOrNull<FanArtArtist.SocialNetwork.DiscordSocialNetwork>()?.id
-							?: continue
-
-					val creator = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(discordId)
-
-					creator.addSonhosNested(creatorReceived)
+					profile.takeSonhosNested(cost.toLong())
 					PaymentUtils.addToTransactionLogNested(
-							creatorReceived,
+							cost.toLong(),
 							SonhosPaymentReason.BACKGROUND,
-							receivedBy = profile.id.value
+							givenBy = profile.id.value
 					)
+
+					BackgroundPayments.insert {
+						it[BackgroundPayments.userId] = profile.userId
+						it[BackgroundPayments.background] = background[Backgrounds.id]
+						it[BackgroundPayments.boughtAt] = System.currentTimeMillis()
+						it[BackgroundPayments.cost] = cost.toLong()
+					}
+
+					val createdBy = background[Backgrounds.createdBy]
+					val creatorReceived = (cost.toDouble() * 0.1).toLong()
+					for (creatorId in createdBy) {
+						val author = loritta.fanArtArtists.firstOrNull { it.id == creatorId } ?: continue
+
+						val discordId = author.socialNetworks?.firstIsInstanceOrNull<FanArtArtist.SocialNetwork.DiscordSocialNetwork>()?.id
+								?: continue
+
+						val creator = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(discordId)
+
+						creator.addSonhosNested(creatorReceived)
+						PaymentUtils.addToTransactionLogNested(
+								creatorReceived,
+								SonhosPaymentReason.BACKGROUND,
+								receivedBy = profile.id.value
+						)
+					}
+				} else if (type == "profile-design") {
+					val backgrounds = run {
+						val shop = DailyShops.selectAll().orderBy(DailyShops.generatedAt, SortOrder.DESC).limit(1).first()
+
+						(DailyProfileShopItems innerJoin ProfileDesigns)
+								.select {
+									DailyProfileShopItems.shop eq shop[DailyShops.id]
+								}
+					}
+
+					val background = backgrounds.firstOrNull { it[ProfileDesigns.id].value == internalName }
+							?: throw WebsiteAPIException(
+									HttpStatusCode.BadRequest,
+									WebsiteUtils.createErrorPayload(
+											LoriWebCode.ITEM_NOT_FOUND,
+											"Item is not on the current daily shop"
+									)
+							)
+
+					val cost = background[ProfileDesigns.rarity].getProfilePrice()
+					if (cost > profile.money)
+						throw WebsiteAPIException(HttpStatusCode.PaymentRequired,
+								WebsiteUtils.createErrorPayload(
+										LoriWebCode.INSUFFICIENT_FUNDS
+								)
+						)
+
+					val alreadyBoughtTheBackground = ProfileDesignsPayments.select {
+						ProfileDesignsPayments.userId eq profile.userId and (ProfileDesignsPayments.profile eq background[ProfileDesigns.id])
+					}.count() != 0L
+
+					if (alreadyBoughtTheBackground)
+						throw WebsiteAPIException(
+								HttpStatusCode.Conflict,
+								WebsiteUtils.createErrorPayload(
+										LoriWebCode.ALREADY_BOUGHT_THE_ITEM
+								)
+						)
+
+					profile.takeSonhosNested(cost.toLong())
+					PaymentUtils.addToTransactionLogNested(
+							cost.toLong(),
+							SonhosPaymentReason.BACKGROUND,
+							givenBy = profile.id.value
+					)
+
+					ProfileDesignsPayments.insert {
+						it[ProfileDesignsPayments.userId] = profile.userId
+						it[ProfileDesignsPayments.profile] = background[ProfileDesigns.id]
+						it[ProfileDesignsPayments.boughtAt] = System.currentTimeMillis()
+						it[ProfileDesignsPayments.cost] = cost.toLong()
+					}
+
+					val createdBy = background[ProfileDesigns.createdBy]
+					val creatorReceived = (cost.toDouble() * 0.1).toLong()
+					for (creatorId in createdBy) {
+						val author = loritta.fanArtArtists.firstOrNull { it.id == creatorId } ?: continue
+
+						val discordId = author.socialNetworks?.firstIsInstanceOrNull<FanArtArtist.SocialNetwork.DiscordSocialNetwork>()?.id
+								?: continue
+
+						val creator = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(discordId)
+
+						creator.addSonhosNested(creatorReceived)
+						PaymentUtils.addToTransactionLogNested(
+								creatorReceived,
+								SonhosPaymentReason.PROFILE,
+								receivedBy = profile.id.value
+						)
+					}
 				}
 			}
 

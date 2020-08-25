@@ -12,7 +12,7 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.gifs.GifSequenceWriter
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.profile.ProfileCreator
+import com.mrpowergamerbr.loritta.profile.NostalgiaProfileCreator
 import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
 import com.mrpowergamerbr.loritta.tables.DonationConfigs
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
@@ -271,7 +271,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			aboutMe = "A Loritta é a minha amiga! Sabia que você pode alterar este texto usando \"${context.config.commandPrefix}sobremim\"? :3"
 		}
 
-		val availableDesigns = if (loritta.config.isOwner(context.userHandle.idLong)) {
+		/* val availableDesigns = if (loritta.config.isOwner(context.userHandle.idLong)) {
 			loritta.profileDesignManager.designs
 		} else {
 			loritta.profileDesignManager.publicDesigns
@@ -294,68 +294,12 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			type = availableDesigns.firstOrNull { settings.activeProfile == it.clazz.simpleName }?.internalType
 
 		if (type == null || !availableDesigns.any { it.internalType == type } || (!shouldForceDesignEvenIfItIsNotBought && !settings.boughtProfiles.contains(availableDesigns.first { it.internalType == type }.clazz.simpleName)))
-			type = "default"
+			type = "default" */
 
-		val creator = availableDesigns.first { it.internalType == type }.clazz
-		val profileCreator = creator.constructors.first().newInstance() as ProfileCreator
-		val background = try {
-			loritta.getUserProfileBackground(userProfile)
-		} catch (e: IsAnimatedBackgroundHack) {
-			// looks like it is animated, wow
-			/* val zip = ZipInputStream(e.bytes.inputStream())
-			val fileMap = mutableMapOf<String, ByteArray>()
+		val activeProfile = settings.activeProfileDesignInternalName?.value ?: "defaultDark"
+		val profileCreator = loritta.profileDesignManager.designs.first { it.internalName == activeProfile }
 
-			while (true) {
-				val next = zip.nextEntry ?: break
-				if (next.isDirectory)
-					continue
-
-				val fileAsByteArray = zip.readAllBytes()
-
-				fileMap[next.name] = fileAsByteArray
-			}
-
-			val json = JsonParser.parseString(fileMap["background.json"]!!.toString(Charsets.UTF_8))
-
-			val image = profileCreator.create(
-					context.userHandle,
-					user,
-					userProfile,
-					context.guild,
-					context.legacyConfig,
-					badges,
-					locale,
-					BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB),
-					aboutMe,
-					member
-			)
-
-			val frames = json["frames"].array
-
-			val fileName = Loritta.TEMP + "profile-" + System.currentTimeMillis() + ".gif"
-
-			val output = FileImageOutputStream(File(fileName))
-			val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 10, true)
-
-			for (frameName in frames.map { it.string }) {
-				val frame = ImageIO.read(fileMap["frames/$frameName"]!!.inputStream())
-				val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB)
-				val graphics = base.graphics
-				graphics.drawImage(frame.getScaledInstance(800, 600, BufferedImage.SCALE_FAST), 0, 0, null)
-				graphics.drawImage(image, 0, 0, null)
-				writer.writeToSequence(base)
-			}
-
-			writer.close()
-			output.close()
-
-			val outputFile = File(fileName)
-			MiscUtils.optimizeGIF(outputFile)
-
-			context.sendFile(outputFile, "lori_profile.gif", "📝 **|** " + context.getAsMention(true) + context.legacyLocale["PEFIL_PROFILE"]) // E agora envie o arquivo
-			 */
-			return
-		}
+		val background = loritta.getUserProfileBackground(userProfile)
 
 		val senderUserInfo = ProfileUserInfoData(
 				context.userHandle.idLong,
@@ -404,6 +348,4 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			context.sendFile(outputFile, "lori_profile.gif", "📝 **|** " + context.getAsMention(true) + context.legacyLocale["PEFIL_PROFILE"]) // E agora envie o arquivo
 		}
 	}
-
-	class IsAnimatedBackgroundHack(val bytes: ByteArray) : RuntimeException()
 }

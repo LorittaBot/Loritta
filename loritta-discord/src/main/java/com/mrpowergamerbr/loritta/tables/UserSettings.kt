@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.tables
 import com.mrpowergamerbr.loritta.utils.exposed.array
 import com.mrpowergamerbr.loritta.utils.locale.Gender
 import net.perfectdreams.loritta.tables.Backgrounds
+import net.perfectdreams.loritta.tables.ProfileDesigns
 import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.TextColumnType
 
@@ -10,6 +11,7 @@ object UserSettings : LongIdTable() {
 	val aboutMe = text("about_me").nullable()
 	val gender = enumeration("gender", Gender::class)
 	val activeProfile = text("active_profile").nullable()
+	val activeProfileDesign = optReference("active_profile_design", ProfileDesigns)
 	val activeBackground = optReference("active_background", Backgrounds)
 	val boughtProfiles = array<String>("bought_profiles", TextColumnType())
 	val doNotSendXpNotificationsInDm = bool("do_not_send_xp_notifications_in_dm").default(false)

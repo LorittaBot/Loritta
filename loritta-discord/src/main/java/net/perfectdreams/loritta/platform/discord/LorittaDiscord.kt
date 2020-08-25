@@ -209,9 +209,6 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
         val bytes = response.readBytes()
 
-        if (backgroundOrDefault.imageFile.endsWith(".loribg"))
-            throw PerfilCommand.IsAnimatedBackgroundHack(bytes)
-
         val image = ImageIO.read(bytes.inputStream())
         val crop = backgroundOrDefault.crop
         if (crop != null) {

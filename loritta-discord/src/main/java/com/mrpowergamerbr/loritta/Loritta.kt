@@ -358,7 +358,10 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					ModerationConfigs,
 					WarnActions,
 					ModerationPunishmentMessagesConfig,
-					BannedUsers
+					BannedUsers,
+					ProfileDesigns,
+					ProfileDesignsPayments,
+					DailyProfileShopItems
 			)
 		}
 	}

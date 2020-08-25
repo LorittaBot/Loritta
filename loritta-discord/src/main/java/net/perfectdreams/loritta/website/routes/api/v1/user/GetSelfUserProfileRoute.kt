@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.website.routes.api.v1.user
 
 import com.mrpowergamerbr.loritta.dao.Background
-import com.mrpowergamerbr.loritta.profile.ProfileCreator
 import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
 import io.ktor.application.ApplicationCall
 import io.ktor.http.ContentType
@@ -30,15 +29,13 @@ class GetSelfUserProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 			loritta.getUserProfileBackground(loritta.newSuspendedTransaction { Background.findById(withBackground) })
 		} else null
 
-		val internalTypeName = call.parameters["type"] ?: "default"
+		val internalTypeName = call.parameters["type"] ?: "defaultDark"
 
-		val profileDesign = loritta.profileDesignManager.designs.first {
-			it.internalType == internalTypeName
+		val profileCreator = loritta.profileDesignManager.designs.first {
+			it.internalName == internalTypeName
 		}
 
 		val locale = loritta.getLegacyLocaleById("default")
-		val creator = profileDesign.clazz
-		val profileCreator = creator.constructors.first().newInstance() as ProfileCreator
 
 		val userId = userIdentification.id.toLong()
 		// Disabled because Loritta loads the avatar URL from the user identification cache
