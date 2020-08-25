@@ -11,6 +11,7 @@ import kotlinx.html.dom.create
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.list
 import kotlinx.serialization.json.JSON
+import net.perfectdreams.loritta.api.utils.Rarity
 import net.perfectdreams.loritta.serializable.Background
 import net.perfectdreams.loritta.serializable.DailyShopResult
 import net.perfectdreams.loritta.serializable.ProfileDesign
@@ -220,10 +221,16 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
                 }
 
                 div(classes = "loritta-items-wrapper") {
-                    for (profileDesign in dailyShop.profileDesigns.sortedByDescending { it.rarity.getProfilePrice() }) {
-                        val bought = profileDesign.internalName in userInfoResult.profileDesigns.map { it.internalName }
+                    // A list containing all of the items in the shop
+                    // We are now going to sort it by rarity
+                    val allItemsInTheShop = (dailyShop.profileDesigns.map { ProfileDesignItemWrapper(it) } + dailyShop.backgrounds.map { BackgroundItemWrapper(it) })
 
-                        div(classes = "shop-item-entry rarity-${profileDesign.rarity.name.toLowerCase()}") {
+                    val sortedByRarityAllItemsInTheShop = allItemsInTheShop.sortedByDescending { it.rarity }
+
+                    for (shopItem in sortedByRarityAllItemsInTheShop) {
+                        val bought = shopItem.hasBought(userInfoResult)
+
+                        div(classes = "shop-item-entry rarity-${shopItem.rarity.name.toLowerCase()}") {
                             div {
                                 style = "position: relative;"
 
@@ -231,25 +238,25 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
                                     style = "overflow: hidden; line-height: 0;"
 
                                     canvas("canvas-background-preview") {
-                                        id = "canvas-preview-${profileDesign.internalName}"
+                                        id = "canvas-preview-${shopItem.internalName}"
                                         width = "800"
                                         height = "600"
                                         style = "width: 400px; height: auto;"
                                     }
                                 }
 
-                                div(classes = "item-entry-information rarity-${profileDesign.rarity.name.toLowerCase()}") {
-                                    div(classes = "item-entry-title rarity-${profileDesign.rarity.name.toLowerCase()}") {
-                                        +(locale["profileDesigns.${profileDesign.internalName}.title"])
+                                div(classes = "item-entry-information rarity-${shopItem.rarity.name.toLowerCase()}") {
+                                    div(classes = "item-entry-title rarity-${shopItem.rarity.name.toLowerCase()}") {
+                                        +(locale["${shopItem.localePrefix}.${shopItem.internalName}.title"])
                                     }
                                     div(classes = "item-entry-type") {
-                                        +"Design para Perfil"
+                                        + locale["${shopItem.localePrefix}.name"]
                                     }
                                 }
 
-                                if (profileDesign.tag != null) {
+                                if (shopItem.tag != null) {
                                     div(classes = "item-new-tag") {
-                                        +locale[profileDesign.tag!!]
+                                        + locale[shopItem.tag!!]
                                     }
                                 }
                             }
@@ -261,54 +268,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
                                     }
                                     +" Comprado!"
                                 } else {
-                                    +"${profileDesign.rarity.getProfilePrice()} Sonhos"
-                                }
-                            }
-                        }
-                    }
-
-                    for (background in dailyShop.backgrounds.sortedByDescending { it.rarity.getBackgroundPrice() }) {
-                        val bought = background.internalName in userInfoResult.backgrounds.map { it.internalName }
-
-                        div(classes = "shop-item-entry rarity-${background.rarity.name.toLowerCase()}") {
-                            div {
-                                style = "position: relative;"
-
-                                div {
-                                    style = "overflow: hidden; line-height: 0;"
-
-                                    canvas("canvas-background-preview") {
-                                        id = "canvas-preview-${background.internalName}"
-                                        width = "800"
-                                        height = "600"
-                                        style = "width: 400px; height: auto;"
-                                    }
-                                }
-
-                                div(classes = "item-entry-information rarity-${background.rarity.name.toLowerCase()}") {
-                                    div(classes = "item-entry-title rarity-${background.rarity.name.toLowerCase()}") {
-                                        +(locale["backgrounds.${background.internalName}.title"])
-                                    }
-                                    div(classes = "item-entry-type") {
-                                        +"Background"
-                                    }
-                                }
-
-                                if (background.tag != null) {
-                                    div(classes = "item-new-tag") {
-                                        +locale[background.tag!!]
-                                    }
-                                }
-                            }
-
-                            div(classes = "item-user-information") {
-                                if (bought) {
-                                    i(classes = "fas fa-check") {
-                                        style = "color: #80ff00;"
-                                    }
-                                    +" Comprado!"
-                                } else {
-                                    +"${background.rarity.getBackgroundPrice().toString()} Sonhos"
+                                    +"${shopItem.price} Sonhos"
                                 }
                             }
                         }
@@ -317,6 +277,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
             }
         }
 
+        // Setup the images for the item entires in the daily shop
         for (profileDesign in dailyShop.profileDesigns) {
             val bought = profileDesign.internalName in userInfoResult.profileDesigns.map { it.internalName }
             val canvasPreview = document.select<HTMLCanvasElement>("#canvas-preview-${profileDesign.internalName}")
@@ -331,6 +292,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
         }
 
         for (background in dailyShop.backgrounds) {
+            debug("Background Internal Name: ${background.internalName}")
             val bought = background.internalName in userInfoResult.backgrounds.map { it.internalName }
             val canvasPreview = document.select<HTMLCanvasElement>("#canvas-preview-${background.internalName}")
 
@@ -618,7 +580,42 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
         }
     }
 
-    open class BackgroundImage()
+    open class BackgroundImage
 
     class StaticBackgroundImage(val image: Image) : BackgroundImage()
+
+    abstract class ShopItemWrapper {
+        abstract val internalName: String
+        abstract val rarity: Rarity
+        abstract val tag: String?
+        abstract val localePrefix: String?
+        abstract val price: Int?
+
+        /**
+         * Checks if the user has already bought the item or not
+         *
+         * @return if the user already has the item
+         */
+        abstract fun hasBought(userInfoResult: UserInfoResult): Boolean
+    }
+
+    class BackgroundItemWrapper(background: Background) : ShopItemWrapper() {
+        override val internalName = background.internalName
+        override val rarity = background.rarity
+        override val tag = background.tag
+        override val localePrefix = "backgrounds"
+        override val price = rarity.getBackgroundPrice()
+
+        override fun hasBought(userInfoResult: UserInfoResult) = internalName in userInfoResult.backgrounds.map { it.internalName }
+    }
+
+    class ProfileDesignItemWrapper(profileDesign: ProfileDesign) : ShopItemWrapper() {
+        override val internalName = profileDesign.internalName
+        override val rarity = profileDesign.rarity
+        override val tag = profileDesign.tag
+        override val localePrefix = "profileDesigns"
+        override val price = rarity.getProfilePrice()
+
+        override fun hasBought(userInfoResult: UserInfoResult) = internalName in userInfoResult.profileDesigns.map { it.internalName }
+    }
 }
