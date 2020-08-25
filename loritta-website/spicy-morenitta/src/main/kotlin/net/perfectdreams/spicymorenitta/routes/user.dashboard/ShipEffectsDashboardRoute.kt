@@ -26,7 +26,7 @@ class ShipEffectsDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRen
         val shipEffects = JSON.nonstrict.parse(ShipEffect.serializer().list, premiumAsJson)
         val profileAsJson = document.getElementById("profile-json")?.innerHTML!!
 
-        val profile = JSON.nonstrict.parse(ProfileListDashboardRoute.Profile.serializer(), profileAsJson)
+        val profile = JSON.nonstrict.parse(Profile.serializer(), profileAsJson)
 
         val buyButton = page.getElementById("buy-button") as HTMLButtonElement
         if (3000 > profile.money) {
@@ -72,6 +72,12 @@ class ShipEffectsDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRen
             }
         })
     }
+
+    @Serializable
+    class Profile(
+            val id: Long,
+            val money: Double
+    )
 
     @Serializable
     class ShipEffect(
