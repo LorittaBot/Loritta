@@ -242,7 +242,11 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
                                         id = "canvas-preview-${shopItem.internalName}"
                                         width = "800"
                                         height = "600"
-                                        style = "width: 400px; height: auto;"
+                                        // we try to keep the item shop with at least two columns if you are using 720p
+                                        // 1080p can have at least three columns
+                                        // we do that by setting a min-width (to avoid the items being waaaay too small) and a max-width (to avoid waaaay big items)
+                                        // and a width: 24vw; just to reuse the window width
+                                        style = "width: 24vw; min-width: 250px; max-width: 320px; height: auto;"
                                     }
                                 }
 
