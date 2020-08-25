@@ -4,6 +4,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.url
 import io.ktor.http.HttpStatusCode
+import io.ktor.client.statement.HttpResponse
 import kotlinx.coroutines.delay
 import kotlinx.html.*
 import kotlinx.html.dom.append
@@ -392,9 +393,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
                 if (canBuy) {
                     m.launch {
                         m.showLoadingScreen()
-                        val response = http.post<io.ktor.client.statement.HttpResponse>("${loriUrl}api/v1/economy/daily-shop/buy/profile-design/${background.internalName}") {
-                            body = "{}"
-                        }
+                        val response = sendItemPurchaseRequest("profile-design", background.internalName)
 
                         if (response.status != HttpStatusCode.OK) {
 
@@ -515,9 +514,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
                 if (canBuy) {
                     m.launch {
                         m.showLoadingScreen()
-                        val response = http.post<io.ktor.client.statement.HttpResponse>("${loriUrl}api/v1/economy/daily-shop/buy/background/${background.internalName}") {
-                            body = "{}"
-                        }
+                        val response = sendItemPurchaseRequest("background", background.internalName)
 
                         if (response.status != HttpStatusCode.OK) {
 
@@ -578,6 +575,17 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
 
             canvasPreviewContext.drawImage(profileWrapper, 0.0, 0.0)
         }
+    }
+
+    /**
+     * Sends a daily shop item purchase request, asking to buy a [itemType] [internalName]
+     *
+     * @param itemType     what kind of item it is
+     * @param internalName what is the internal name (ID) of the item
+     * @return the http response
+     */
+    private suspend fun sendItemPurchaseRequest(itemType: String, internalName: String) = http.post<HttpResponse>("${loriUrl}api/v1/economy/daily-shop/buy/$itemType/$internalName") {
+        body = "{}"
     }
 
     open class BackgroundImage
