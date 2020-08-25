@@ -271,31 +271,6 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			aboutMe = "A Loritta é a minha amiga! Sabia que você pode alterar este texto usando \"${context.config.commandPrefix}sobremim\"? :3"
 		}
 
-		/* val availableDesigns = if (loritta.config.isOwner(context.userHandle.idLong)) {
-			loritta.profileDesignManager.designs
-		} else {
-			loritta.profileDesignManager.publicDesigns
-		}
-
-		var type = if (user.idLong == context.userHandle.idLong && contextUser == null) {
-			context.rawArgs.getOrNull(0)
-		} else {
-			context.rawArgs.getOrNull(1)
-		}
-
-		// Caso coloque "force_" no nome do type (Por exemplo: "force_nostalgia"), a Lori não irá verificar se o usuário realmente tem o design comprado
-		// Utilizado para debugging, apenas para pessoas especiais :3
-		val shouldForceDesignEvenIfItIsNotBought = if (loritta.config.isOwner(context.userHandle.idLong) && type?.startsWith("force_") == true) {
-			type = type.removePrefix("force_")
-			true
-		} else { false }
-
-		if (type == null)
-			type = availableDesigns.firstOrNull { settings.activeProfile == it.clazz.simpleName }?.internalType
-
-		if (type == null || !availableDesigns.any { it.internalType == type } || (!shouldForceDesignEvenIfItIsNotBought && !settings.boughtProfiles.contains(availableDesigns.first { it.internalType == type }.clazz.simpleName)))
-			type = "default" */
-
 		val activeProfile = settings.activeProfileDesignInternalName?.value ?: "defaultDark"
 		val profileCreator = loritta.profileDesignManager.designs.first { it.internalName == activeProfile }
 
