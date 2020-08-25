@@ -483,7 +483,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		val profileSettings = transaction(Databases.loritta) {
 			ProfileSettings.new {
 				gender = Gender.UNKNOWN
-				boughtProfiles = arrayOf()
 			}
 		}
 

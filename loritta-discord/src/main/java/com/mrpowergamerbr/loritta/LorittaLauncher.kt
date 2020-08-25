@@ -78,7 +78,6 @@ object LorittaLauncher {
 			val tool = MigrationTool(discordConfig, discordInstanceConfig, config, instanceConfig)
 
 			when (arg1) {
-				"profiles" -> tool.migrateProfiles()
 			}
 			return
 		}
