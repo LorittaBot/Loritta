@@ -13,8 +13,6 @@ import net.perfectdreams.loritta.plugin.loribroker.LoriBrokerPlugin
 import net.perfectdreams.loritta.plugin.loribroker.commands.base.DSLCommandBase
 import net.perfectdreams.loritta.plugin.loribroker.tables.BoughtStocks
 import net.perfectdreams.loritta.utils.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.select
 
@@ -78,7 +76,10 @@ object BrokerBuyStockCommand : DSLCommandBase {
 					if (number + currentStockCount > LoriBrokerPlugin.MAX_STOCKS)
 						fail(locale["commands.economy.brokerBuy.tooManyStocks", LoriBrokerPlugin.MAX_STOCKS])
 
-					BoughtStocks.batchInsert(0 until number) {
+					// By using shouldReturnGeneratedValues, the database won't need to synchronize on each insert
+					// this increases insert performance A LOT and, because we don't need the IDs, it is very useful to make
+					// stocks purchases be VERY fast
+					BoughtStocks.batchInsert(0 until number, shouldReturnGeneratedValues = false) {
 						this[BoughtStocks.user] = user.idLong
 						this[BoughtStocks.ticker] = tickerId
 						this[BoughtStocks.price] = valueOfStock
