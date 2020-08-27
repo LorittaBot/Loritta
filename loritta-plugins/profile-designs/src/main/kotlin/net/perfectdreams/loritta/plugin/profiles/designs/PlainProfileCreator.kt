@@ -1,37 +1,29 @@
 package net.perfectdreams.loritta.plugin.profiles.designs
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.dao.Profile
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.profile.ProfileCreator
 import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
-import com.mrpowergamerbr.loritta.tables.GuildProfiles
-import com.mrpowergamerbr.loritta.tables.Profiles
-import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
 import javax.imageio.ImageIO
 
-open class PlainProfileCreator(val color: String) : ProfileCreator {
-	class PlainWhiteProfileCreator : PlainProfileCreator("white")
-	class PlainOrangeProfileCreator : PlainProfileCreator("orange")
-	class PlainPurpleProfileCreator : PlainProfileCreator("purple")
-	class PlainAquaProfileCreator : PlainProfileCreator("aqua")
-	class PlainGreenProfileCreator : PlainProfileCreator("green")
-	class PlainGreenHeartsProfileCreator : PlainProfileCreator("green_hearts")
+open class PlainProfileCreator(internalName: String) : ProfileCreator(internalName) {
+	class PlainWhiteProfileCreator : PlainProfileCreator("plainWhite")
+	class PlainOrangeProfileCreator : PlainProfileCreator("plainOrange")
+	class PlainPurpleProfileCreator : PlainProfileCreator("plainPurple")
+	class PlainAquaProfileCreator : PlainProfileCreator("plainAqua")
+	class PlainGreenProfileCreator : PlainProfileCreator("plainGreen")
+	class PlainGreenHeartsProfileCreator : PlainProfileCreator("plainGreenHearts")
 
 	override fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
-		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/plain/profile_wrapper_$color.png"))
+		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/plain/profile_wrapper_$internalName.png"))
 
 		val whitneySemiBold = FileInputStream(File(Loritta.ASSETS + "whitney-semibold.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)

@@ -124,6 +124,7 @@ object DefaultRoutes {
 			GetRaffleStatusRoute(loritta),
 			GetStatusRoute(loritta),
 			GetAvailableBackgroundsRoute(loritta),
+			GetAvailableProfileDesignsRoute(loritta),
 			GetSelfUserProfileRoute(loritta),
 			PostLorittaActionRoute(loritta),
 			PostRaffleStatusRoute(loritta),

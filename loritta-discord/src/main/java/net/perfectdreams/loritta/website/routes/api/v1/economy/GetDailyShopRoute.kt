@@ -4,9 +4,7 @@ import io.ktor.application.ApplicationCall
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.serializable.DailyShopResult
-import net.perfectdreams.loritta.tables.Backgrounds
-import net.perfectdreams.loritta.tables.DailyShopItems
-import net.perfectdreams.loritta.tables.DailyShops
+import net.perfectdreams.loritta.tables.*
 import net.perfectdreams.loritta.website.routes.BaseRoute
 import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
@@ -16,13 +14,15 @@ import org.jetbrains.exposed.sql.selectAll
 
 class GetDailyShopRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/economy/daily-shop") {
 	override suspend fun onRequest(call: ApplicationCall) {
-		var generatedAt: Long? = null
+		val generatedAt: Long?
+
+		val shop = loritta.newSuspendedTransaction {
+			DailyShops.selectAll().orderBy(DailyShops.generatedAt, SortOrder.DESC).limit(1).first()
+		}
+
+		generatedAt = shop[DailyShops.generatedAt]
 
 		val backgroundsInShop = loritta.newSuspendedTransaction {
-			val shop = DailyShops.selectAll().orderBy(DailyShops.generatedAt, SortOrder.DESC).limit(1).first()
-
-			generatedAt = shop[DailyShops.generatedAt]
-
 			(DailyShopItems innerJoin Backgrounds)
 					.select {
 						DailyShopItems.shop eq shop[DailyShops.id]
@@ -35,8 +35,22 @@ class GetDailyShopRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/e
 					.toList()
 		}
 
+		val profileDesignsInShop = loritta.newSuspendedTransaction {
+			(DailyProfileShopItems innerJoin ProfileDesigns)
+					.select {
+						DailyProfileShopItems.shop eq shop[DailyShops.id]
+					}
+					.map {
+						WebsiteUtils.fromProfileDesignToSerializable(it).also { profile ->
+							profile.tag = it[DailyProfileShopItems.tag]
+						}
+					}
+					.toList()
+		}
+
 		val shopPayload = DailyShopResult(
 				backgroundsInShop,
+				profileDesignsInShop,
 				generatedAt ?: -1L
 		)
 

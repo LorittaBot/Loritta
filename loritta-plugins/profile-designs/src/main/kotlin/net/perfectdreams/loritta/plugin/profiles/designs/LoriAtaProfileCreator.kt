@@ -24,7 +24,7 @@ import java.io.File
 import java.io.FileInputStream
 import javax.imageio.ImageIO
 
-class LoriAtaProfileCreator : ProfileCreator {
+class LoriAtaProfileCreator : ProfileCreator("loriAta") {
 	val KOMIKA by lazy {
 		FileInputStream(File(Loritta.ASSETS + "komika.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)

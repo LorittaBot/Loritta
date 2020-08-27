@@ -6,6 +6,7 @@ import com.github.salomonbrys.kotson.toJsonArray
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Background
+import com.mrpowergamerbr.loritta.dao.ProfileDesign
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.networkbans.ApplyBansTask
@@ -19,9 +20,7 @@ import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.serializable.UserIdentification
-import net.perfectdreams.loritta.tables.BackgroundPayments
-import net.perfectdreams.loritta.tables.Backgrounds
-import net.perfectdreams.loritta.tables.BannedIps
+import net.perfectdreams.loritta.tables.*
 import net.perfectdreams.loritta.website.routes.BaseRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
@@ -123,7 +122,7 @@ class GetSelfInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/us
 
 				payload["settings"] = jsonObject(
 						"activeBackground" to settings.activeBackgroundInternalName?.value,
-						"activeProfileDesign" to settings.activeProfile
+						"activeProfileDesign" to settings.activeProfileDesignInternalName?.value
 				)
 			}
 
@@ -150,6 +149,36 @@ class GetSelfInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/us
 										Json.stringify(
 												net.perfectdreams.loritta.serializable.Background.serializer(),
 												net.perfectdreams.loritta.website.utils.WebsiteUtils.toSerializable(Background.findById(Background.DEFAULT_BACKGROUND_ID)!!)
+										)
+								)
+						)
+					}
+				}
+			}
+
+			if ("profileDesigns" in sections) {
+				payload["profileDesigns"] = loritta.newSuspendedTransaction {
+					val backgrounds = ProfileDesigns.select {
+						ProfileDesigns.internalName inList ProfileDesignsPayments.select {
+							ProfileDesignsPayments.userId eq userIdentification.id.toLong()
+						}.map { it[ProfileDesignsPayments.profile].value }
+					}
+
+					backgrounds.map {
+						JsonParser.parseString(
+								Json.stringify(
+										net.perfectdreams.loritta.serializable.ProfileDesign.serializer(),
+										net.perfectdreams.loritta.website.utils.WebsiteUtils.toSerializable(
+												ProfileDesign.wrapRow(it)
+										)
+								)
+						)
+					}.toJsonArray().apply {
+						this.add(
+								JsonParser.parseString(
+										Json.stringify(
+												net.perfectdreams.loritta.serializable.ProfileDesign.serializer(),
+												net.perfectdreams.loritta.website.utils.WebsiteUtils.toSerializable(ProfileDesign.findById(ProfileDesign.DEFAULT_PROFILE_DESIGN_ID)!!)
 										)
 								)
 						)

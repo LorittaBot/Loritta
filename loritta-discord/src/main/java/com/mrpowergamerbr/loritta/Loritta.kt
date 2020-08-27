@@ -358,7 +358,10 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					ModerationConfigs,
 					WarnActions,
 					ModerationPunishmentMessagesConfig,
-					BannedUsers
+					BannedUsers,
+					ProfileDesigns,
+					ProfileDesignsPayments,
+					DailyProfileShopItems
 			)
 		}
 	}
@@ -480,7 +483,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		val profileSettings = transaction(Databases.loritta) {
 			ProfileSettings.new {
 				gender = Gender.UNKNOWN
-				boughtProfiles = arrayOf()
 			}
 		}
 

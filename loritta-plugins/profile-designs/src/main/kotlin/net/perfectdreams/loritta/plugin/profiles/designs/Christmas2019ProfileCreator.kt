@@ -23,7 +23,7 @@ import java.io.File
 import java.io.FileInputStream
 import javax.imageio.ImageIO
 
-class Christmas2019ProfileCreator : ProfileCreator {
+class Christmas2019ProfileCreator : ProfileCreator("christmas2019") {
 	override fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
 		val list = mutableListOf<BufferedImage>()
 

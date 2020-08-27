@@ -10,10 +10,9 @@ class ProfileSettings(id: EntityID<Long>) : LongEntity(id) {
 
 	var aboutMe by UserSettings.aboutMe
 	var gender by UserSettings.gender
-	var activeProfile by UserSettings.activeProfile
+	var activeProfileDesignInternalName by UserSettings.activeProfileDesign
 	var activeBackground by Background optionalReferencedOn UserSettings.activeBackground
 	var activeBackgroundInternalName by UserSettings.activeBackground
-	var boughtProfiles by UserSettings.boughtProfiles
 	var doNotSendXpNotificationsInDm by UserSettings.doNotSendXpNotificationsInDm
 	var discordAccountFlags by UserSettings.discordAccountFlags
 	var discordPremiumType by UserSettings.discordPremiumType
