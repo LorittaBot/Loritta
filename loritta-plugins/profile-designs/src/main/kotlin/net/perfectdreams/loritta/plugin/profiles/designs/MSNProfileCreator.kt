@@ -26,7 +26,7 @@ class MSNProfileCreator : ProfileCreator("msn") {
 		val graphics = base.graphics.enableFontAntiAliasing()
 
 		val avatar = LorittaUtils.downloadImage(user.avatarUrl)!!.getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
-		val imageToBeDownload = if (sender == user) { guild?.selfMember?.user?.avatarUrl } else { sender.avatarUrl }
+		val imageToBeDownload = if (sender == user) { guild?.selfMember?.user?.avatarUrl } else { sender.avatarUrl } ?: "https://cdn.discordapp.com/embed/avatars/0.png?size=256"
 		val senderAvatar = LorittaUtils.downloadImage(imageToBeDownload!!)!!.getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
 
 		val msnFont = FileInputStream(File(Loritta.ASSETS + "micross.ttf")).use {
