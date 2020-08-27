@@ -22,7 +22,7 @@ object HungerGamesCommand {
     private const val LOCALE_PREFIX = "commands.fun.hungergames"
     private const val WEBSITE_URL = "https://brantsteele.net"
 
-    fun command(loritta: LorittaDiscord) = discordCommand(loritta, listOf("hungergames", "jogosvorazes"), CommandCategory.FUN) {
+    fun command(loritta: LorittaDiscord) = discordCommand(loritta, listOf("hungergames", "jogosvorazes", "hg"), CommandCategory.FUN) {
         loritta as Loritta
 
         description { it["$LOCALE_PREFIX.description"] }
