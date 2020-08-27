@@ -45,7 +45,7 @@ class PostBuyDailyShopItemRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLog
 		val mutex = mutexes.getOrPut(profile.userId) { Mutex() }
 		mutex.withLock {
 			loritta.newSuspendedTransaction {
-				if (type == "backgrounds") {
+				if (type == "background") {
 					val backgrounds = run {
 						val shop = DailyShops.selectAll().orderBy(DailyShops.generatedAt, SortOrder.DESC).limit(1).first()
 
