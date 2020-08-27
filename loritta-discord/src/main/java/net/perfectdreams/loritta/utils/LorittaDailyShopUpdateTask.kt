@@ -23,7 +23,7 @@ class LorittaDailyShopUpdateTask : Runnable {
 				val newShop = DailyShops.insertAndGetId {
 					it[generatedAt] = System.currentTimeMillis()
 				}
-				
+
 				getAndAddRandomBackgroundsToShop(newShop)
 				getAndAddRandomProfileDesignsToShop(newShop)
 			}
