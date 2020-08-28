@@ -190,7 +190,7 @@ class DailyTaxTask : Runnable {
 
 					try {
 						user.openPrivateChannel().queueAfter(index.toLong(), TimeUnit.SECONDS) {
-							it.sendMessage("Atenção! Você precisa ter no mínimo 100 Sonhos até as 19:00 de hoje para você continuar o seu casamento! Casamentos custam caro, e você precisa ter no mínimo 100 Sonhos todos os dias para conseguir manter ele!")
+							it.sendMessage("Atenção! Você precisa ter no mínimo $MARRIAGE_DAILY_TAX Sonhos até as 19:00 de hoje para você continuar o seu casamento! Casamentos custam caro, e você precisa ter no mínimo $MARRIAGE_DAILY_TAX Sonhos todos os dias para conseguir manter ele!")
 									.queue()
 						}
 					} catch (e: Exception) {}
