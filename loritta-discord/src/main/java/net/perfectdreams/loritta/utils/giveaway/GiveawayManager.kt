@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNull
 import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -352,7 +353,7 @@ object GiveawayManager {
 
                     val user = reactedUsers.random()
 
-                    val member = message.guild.retrieveMember(user).await()
+                    val member = message.guild.retrieveMemberOrNull(user)
 
                     if (member != null)
                         winners.add(user)
