@@ -1,10 +1,7 @@
 package net.perfectdreams.loritta.sweetmorenitta.views
 
-import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.JsonArray
-import com.mrpowergamerbr.loritta.utils.encodeToUrl
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.html.*
 import net.perfectdreams.loritta.sweetmorenitta.utils.imgSrcSet
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
@@ -135,24 +132,6 @@ class DonateView(
                         div {
                             id = "plans-features"
                             style = "margin: 0 auto"
-                        }
-
-                        hr {}
-
-                        div {
-                            style = "text-align: center;"
-
-                            p {
-                                + locale["website.donate.donateWithoutAnyRewards"]
-                            }
-
-                            div(classes = "button-discord button-discord-info pure-button") {
-                                id = "donate-button"
-                                style = "font-size: 1.5em;"
-
-                                i(classes = "fas fa-gift") {}
-                                + " ${locale["website.donate.donateNow"]}"
-                            }
                         }
                     }
                 }

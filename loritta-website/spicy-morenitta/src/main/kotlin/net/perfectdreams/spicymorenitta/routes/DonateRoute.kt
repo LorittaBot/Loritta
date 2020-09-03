@@ -200,10 +200,6 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
             showPaymentSelectionModal(119.99)
         }
 
-        (document.getElementById("donate-button") as HTMLDivElement?)?.onclick = {
-            showDonateModal(19.99)
-        }
-
         (document.getElementById("renew-button") as HTMLDivElement?)?.onclick = {
             val donationKeysJson = document.getElementById("donation-keys-json")?.innerHTML!!
 
