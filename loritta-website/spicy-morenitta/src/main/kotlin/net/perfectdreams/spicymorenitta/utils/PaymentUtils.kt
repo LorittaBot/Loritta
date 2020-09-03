@@ -7,8 +7,6 @@ import kotlinx.html.dom.create
 import kotlinx.html.js.onClickFunction
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import org.w3c.dom.HTMLInputElement
-import net.perfectdreams.spicymorenitta.utils.TingleModal
-import net.perfectdreams.spicymorenitta.utils.TingleOptions
 import kotlin.browser.document
 import kotlin.browser.window
 import kotlin.js.Json
@@ -41,7 +39,7 @@ object PaymentUtils : Logging {
 							width = "250"
 						}
 
-						div(classes = "button-discord button-discord-info pure-button") {
+						/* div(classes = "button-discord button-discord-info pure-button") {
 							style = "font-size: 1.25em; margin: 5px;"
 							+ "MercadoPago (Boleto, Cartão de Crédito e Saldo do MercadoPago)"
 
@@ -50,6 +48,14 @@ object PaymentUtils : Logging {
 
 								sendPaymentRequest(meta, url)
 							}
+						} */
+
+						p {
+							+ "MercadoPago está temporariamente indisponível devido a "
+							a(href = "https://twitter.com/MrPowerGamerBR/status/1297912277832802304") {
+								+ "incompetência do MercadoPago"
+							}
+							+ " já que eles suspendem contas sem dar nenhum motivo da suspensão. Recomendamos que você compre via PicPay enquanto eles não solucionarem o problema. Obrigado!!"
 						}
 
 						div(classes = "button-discord button-discord-info pure-button") {
