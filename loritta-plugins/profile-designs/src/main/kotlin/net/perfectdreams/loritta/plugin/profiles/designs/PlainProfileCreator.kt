@@ -14,16 +14,16 @@ import java.io.File
 import java.io.FileInputStream
 import javax.imageio.ImageIO
 
-open class PlainProfileCreator(internalName: String) : ProfileCreator(internalName) {
-	class PlainWhiteProfileCreator : PlainProfileCreator("plainWhite")
-	class PlainOrangeProfileCreator : PlainProfileCreator("plainOrange")
-	class PlainPurpleProfileCreator : PlainProfileCreator("plainPurple")
-	class PlainAquaProfileCreator : PlainProfileCreator("plainAqua")
-	class PlainGreenProfileCreator : PlainProfileCreator("plainGreen")
-	class PlainGreenHeartsProfileCreator : PlainProfileCreator("plainGreenHearts")
+open class PlainProfileCreator(internalName: String, val folderName: String) : ProfileCreator(internalName) {
+	class PlainWhiteProfileCreator : PlainProfileCreator("plainWhite", "white")
+	class PlainOrangeProfileCreator : PlainProfileCreator("plainOrange", "orange")
+	class PlainPurpleProfileCreator : PlainProfileCreator("plainPurple", "purple")
+	class PlainAquaProfileCreator : PlainProfileCreator("plainAqua", "aqua")
+	class PlainGreenProfileCreator : PlainProfileCreator("plainGreen", "green")
+	class PlainGreenHeartsProfileCreator : PlainProfileCreator("plainGreenHearts", "green_hearts")
 
 	override fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
-		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/plain/profile_wrapper_$internalName.png"))
+		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/plain/profile_wrapper_$folderName.png"))
 
 		val whitneySemiBold = FileInputStream(File(Loritta.ASSETS + "whitney-semibold.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
