@@ -15,7 +15,8 @@ object FastBanCommand {
             "divdm" to "Enviar conteúdo (não solicitado!) via mensagem direta, fazer spam (ou seja, mandar conteúdo indesejado para outras pessoas) é contra as regras do servidor da Loritta e dos termos de uso do Discord e, caso continuar, você poderá ser suspenso do Discord e irá perder a sua conta!",
             "nsfw" to "É proibido compartilhar conteúdo NSFW (coisas obscenas como pornografia, gore e coisas relacionadas), conteúdo sugestivo, jumpscares, conteúdo de ódio, racismo, assédio, links com conteúdo ilegal e links falsos. Será punido até se passar via mensagem direta, até mesmo se a outra pessoa pedir.",
             "toxic" to "Ser tóxico (irritar e desrespeitar) com outros membros do servidor. Aprenda a respeitar e conviver com outras pessoas!",
-            "under13" to "É proibido ter uma conta de Discord caso você tenha menos de 13 anos!"
+            "under13" to "É proibido ter uma conta de Discord caso você tenha menos de 13 anos!",
+            "owo" to "Apenas um teste uwu owo"
     )
 
     fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("b", "fastban"), CommandCategory.ADMIN) {
@@ -25,8 +26,9 @@ object FastBanCommand {
         }
 
         executesDiscord {
+            val author = this.member!!
             val staffRole = guild.getRoleById(351473717194522647L)!!
-            if (!this.member!!.roles.contains(staffRole)) {
+            if (!author.roles.contains(staffRole)) {
                 fail("Você não pode usar o meu super comandinho de banir as pessoas com motivos bonitinhos ;w;")
             }
 
@@ -53,7 +55,7 @@ object FastBanCommand {
             BanCommand.ban(
                     settings,
                     this.guild,
-                    this.member!!.user,
+                    author.user,
                     loritta.getLegacyLocaleById("default"),
                     userToBePunished,
                     fancyReason,
