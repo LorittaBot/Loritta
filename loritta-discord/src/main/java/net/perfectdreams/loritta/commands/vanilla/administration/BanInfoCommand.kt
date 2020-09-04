@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.commands.vanilla.administration
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
-import com.mrpowergamerbr.loritta.utils.onReactionByAuthor
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
@@ -50,7 +50,7 @@ object BanInfoCommand {
                         .setFooter("Se você deseja desbanir este usuário, aperte no ⚒️!")
                 discordMessage.channel.sendMessage(embed.build()).await().also {
                     it.addReaction("⚒").queue()
-                }.onReactionByAuthor(this) {
+                }.onReactionAddByAuthor(this) {
                     if (it.reactionEmote.name == "⚒") {
                         guild.unban(userId).queue()
                         reply(
@@ -60,6 +60,7 @@ object BanInfoCommand {
                                 )
                         )
                     }
+                    return@onReactionAddByAuthor
                 }
 
             } catch (e: ErrorResponseException) {
