@@ -13,7 +13,7 @@ import java.awt.Color
 import java.net.URLEncoder
 import java.util.*
 
-class WikipediaCommand : AbstractCommand("wikipedia", category = CommandCategory.UTILS) {
+class WikipediaCommand : AbstractCommand("wikipedia", listOf("wiki"), CommandCategory.UTILS) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["WIKIPEDIA_DESCRIPTION"]
 	}
