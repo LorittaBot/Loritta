@@ -4,9 +4,12 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
+import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Region
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -51,7 +54,7 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 		val name = guild["name"].string
 		val id = guild["id"].string
 		val shardId = guild["shardId"].int
-		val cluster = DiscordUtils.getLorittaClusterForGuildId(context.guild.idLong)
+		val cluster = DiscordUtils.getLorittaClusterForGuildId(id.toLong())
 		val ownerId = guild["ownerId"].string
 		val region = Region.valueOf(guild["region"].string)
 		val owner = lorittaShards.retrieveUserInfoById(ownerId.toLong())
