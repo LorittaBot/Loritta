@@ -198,9 +198,9 @@ object NitroBoostUtils {
 
 				val newContent = buildString {
 					if (bestGuildToBoost.isEmpty())
-						this.append("**Atualmente não tenho nenhum servidor disponível para você impulsar... volte mais tarde!** <:lori_ameno:673868465433477126>")
+						this.append("**Atualmente não tenho nenhum servidor disponível para você impulsar... volte mais tarde!** Cansado de esperar? Então compre premium no website da Loritta! https://loritta.website/donate <:lori_ameno:673868465433477126>")
 					else {
-						this.append("**Impulsione os seguintes servidores para ganhar as vantagens de doador, cada servidor que você impulsionar conta como R$ 20 doados!** <:lori_feliz:519546310978830355>")
+						this.append("**Impulsione os seguintes servidores para ganhar as vantagens de doador, cada servidor que você impulsionar contam como R$ 20 doados! Lembre-se que você apenas deve dar um boost por servidor!** <:lori_feliz:519546310978830355>\n\nBoost é muito chato para você? Então compre premium no website da Loritta! <https://loritta.website/donate>")
 						for (guild in bestGuildToBoost) {
 							this.append('\n')
 							this.append("https://discord.gg/${guild.inviteId}")
