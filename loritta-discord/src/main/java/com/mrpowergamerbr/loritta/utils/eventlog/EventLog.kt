@@ -186,15 +186,6 @@ object EventLog {
 								.addEmbeds(embed.build())
 								.build()
 				)
-
-				webhook.send(
-						WebhookMessageBuilder()
-								.setUsername(member.guild.selfMember.user.name)
-								.setAvatarUrl(member.guild.selfMember.user.effectiveAvatarUrl)
-								.setContent(" ")
-								.addEmbeds(embed.build())
-								.build()
-				)
 				return
 			}
 		} catch (e: Exception) {
