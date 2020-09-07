@@ -7,7 +7,6 @@ import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.modules.AutoroleModule
 import com.mrpowergamerbr.loritta.modules.Modules
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.EventLog
@@ -37,8 +36,6 @@ import net.perfectdreams.loritta.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.utils.Emotes
 import org.apache.commons.text.similarity.LevenshteinDistance
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
-import java.time.Instant
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
@@ -108,11 +105,11 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				start = System.nanoTime()
 				// Se o dono do servidor for o usuário que está executando o comando, não é necessário pegar o perfil novamente
-				val ownerProfile = if (event.guild.ownerIdLong == member.idLong) lorittaProfile else loritta.getLorittaProfile(event.guild.ownerIdLong)
+				val ownerProfile = if (event.guild.ownerIdLong == member.idLong) lorittaProfile else loritta.getLorittaProfileAsync(event.guild.ownerIdLong)
 				logIfEnabled(enableProfiling) { "Loading owner's profile took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
-				val currentLocale = loritta.newSuspendedTransaction{
+				val currentLocale = loritta.newSuspendedTransaction {
 					(lorittaProfile?.settings?.language ?: serverConfig.localeId)
 				}
 				val locale = loritta.getLocaleById(currentLocale)
@@ -551,8 +548,8 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	 * @param guild        the guild
 	 * @return if the owner of the guild is banned
 	 */
-	fun isGuildBanned(guild: Guild): Boolean {
-		val blacklisted = transaction(Databases.loritta) {
+	private suspend fun isGuildBanned(guild: Guild): Boolean {
+		val blacklisted = loritta.newSuspendedTransaction {
 			BlacklistedGuilds.select {
 				BlacklistedGuilds.id eq guild.idLong
 			}.firstOrNull()
