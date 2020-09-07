@@ -73,11 +73,9 @@ object EventLog {
 		return loriWebhook
 	}
 
-	fun onMessageReceived(serverConfig: ServerConfig, message: Message) {
+	suspend fun onMessageReceived(serverConfig: ServerConfig, message: Message) {
 		try {
-			val eventLogConfig = transaction(Databases.loritta) {
-				serverConfig.eventLogConfig
-			} ?: return
+			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return
 
 			if (eventLogConfig.enabled && (eventLogConfig.messageDeleted || eventLogConfig.messageEdited)) {
 				val attachments = mutableListOf<String>()
@@ -104,9 +102,7 @@ object EventLog {
 
 	suspend fun onMessageUpdate(serverConfig: ServerConfig, locale: LegacyBaseLocale, message: Message) {
 		try {
-			val eventLogConfig = transaction(Databases.loritta) {
-				serverConfig.eventLogConfig
-			} ?: return
+			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return
 
 			if (eventLogConfig.enabled && (eventLogConfig.messageEdited || eventLogConfig.messageDeleted)) {
 				val textChannel = message.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return
@@ -158,9 +154,7 @@ object EventLog {
 
 	suspend fun onVoiceJoin(serverConfig: ServerConfig, member: Member, channelJoined: VoiceChannel) {
 		try {
-			val eventLogConfig = transaction(Databases.loritta) {
-				serverConfig.eventLogConfig
-			} ?: return
+			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return
 
 			if (eventLogConfig.enabled && eventLogConfig.voiceChannelJoins) {
 				val textChannel = member.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return
@@ -210,9 +204,7 @@ object EventLog {
 
 	suspend fun onVoiceLeave(serverConfig: ServerConfig, member: Member, channelLeft: VoiceChannel) {
 		try {
-			val eventLogConfig = transaction(Databases.loritta) {
-				serverConfig.eventLogConfig
-			} ?: return
+			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return
 
 			if (eventLogConfig.enabled && eventLogConfig.voiceChannelLeaves) {
 				val textChannel = member.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return
