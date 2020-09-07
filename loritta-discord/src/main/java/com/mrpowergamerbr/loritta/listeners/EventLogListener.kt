@@ -5,6 +5,7 @@ import club.minnced.discord.webhook.send.WebhookEmbedBuilder
 import club.minnced.discord.webhook.send.WebhookMessageBuilder
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.dao.StoredMessage
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
@@ -29,6 +30,7 @@ import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent
 import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.EventLogConfig
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.EventLogConfigs
 import net.perfectdreams.loritta.utils.CachedUserInfo
 import net.perfectdreams.loritta.utils.DateUtils
@@ -161,9 +163,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 			val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
-			val eventLogConfig = transaction(Databases.loritta) {
-				serverConfig.eventLogConfig
-			} ?: return@launch
+			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(com.mrpowergamerbr.loritta.utils.loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.messageDeleted) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
@@ -228,9 +228,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 			val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
-			val eventLogConfig = transaction(Databases.loritta) {
-				serverConfig.eventLogConfig
-			} ?: return@launch
+			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(com.mrpowergamerbr.loritta.utils.loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.messageDeleted) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
@@ -321,9 +319,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			}
 
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
-			val eventLogConfig = transaction(Databases.loritta) {
-				serverConfig.eventLogConfig
-			} ?: return@launch
+			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(com.mrpowergamerbr.loritta.utils.loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.memberBanned) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
@@ -384,9 +380,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			}
 
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
-			val eventLogConfig = transaction(Databases.loritta) {
-				serverConfig.eventLogConfig
-			} ?: return@launch
+			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(com.mrpowergamerbr.loritta.utils.loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.memberUnbanned) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
@@ -434,9 +428,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
-			val eventLogConfig = transaction(Databases.loritta) {
-				serverConfig.eventLogConfig
-			} ?: return@launch
+			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(com.mrpowergamerbr.loritta.utils.loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.nicknameChanges) {
 				val locale = loritta.getLegacyLocaleById(serverConfig.localeId)

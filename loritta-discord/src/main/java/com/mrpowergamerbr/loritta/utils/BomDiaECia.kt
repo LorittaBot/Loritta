@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
-import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.threads.BomDiaECiaThread
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.extensions.queueAfterWithMessagePerSecondTarget
@@ -17,8 +17,8 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.MiscellaneousConfig
 import net.perfectdreams.loritta.utils.Emotes
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 
@@ -244,10 +244,7 @@ class BomDiaECia {
 			if (textChannel != null && textChannel.canTalk() && textChannel.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
 				if (it.value.users.size >= 5 && it.value.lastMessageSent > (System.currentTimeMillis() - 180000)) {
 					val serverConfig = loritta.getOrCreateServerConfig(textChannel.guild.idLong)
-
-					val miscellaneousConfig = transaction(Databases.loritta) {
-						serverConfig.miscellaneousConfig
-					}
+					val miscellaneousConfig = serverConfig.getCachedOrRetreiveFromDatabase<MiscellaneousConfig?>(ServerConfig::miscellaneousConfig)
 
 					val enableBomDiaECia = miscellaneousConfig?.enableBomDiaECia ?: false
 

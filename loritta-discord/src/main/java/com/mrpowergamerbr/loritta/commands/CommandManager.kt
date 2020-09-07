@@ -33,6 +33,7 @@ import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.utils.MarkdownSanitizer
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.MiscellaneousConfig
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.utils.CommandUtils
@@ -312,9 +313,7 @@ class CommandManager(loritta: Loritta) {
 				} else {
 					logger.info("(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
 				}
-				val miscellaneousConfig = transaction(Databases.loritta) {
-					serverConfig.miscellaneousConfig
-				}
+				val miscellaneousConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<MiscellaneousConfig?>(loritta, ServerConfig::miscellaneousConfig)
 
 				val enableBomDiaECia = miscellaneousConfig?.enableBomDiaECia ?: false
 
