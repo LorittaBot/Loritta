@@ -46,6 +46,7 @@ object WebhookUtils {
 
 		val temmie = WebhookClientBuilder(webhook.url)
 				.setExecutorService(loritta.webhookExecutor)
+				.setHttpClient(loritta.webhookOkHttpClient)
 				.build()
 
 		return temmie

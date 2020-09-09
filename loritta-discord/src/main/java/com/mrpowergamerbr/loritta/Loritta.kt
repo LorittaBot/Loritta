@@ -98,6 +98,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	val coroutineExecutor = createThreadPool("Coroutine Executor Thread %d")
 	val coroutineDispatcher = coroutineExecutor.asCoroutineDispatcher() // Coroutine Dispatcher
 	val webhookExecutor = Executors.newScheduledThreadPool(16, ThreadFactoryBuilder().setNameFormat("Webhook Sender %d").build())
+	val webhookOkHttpClient = OkHttpClient()
 
 	fun createThreadPool(name: String): ExecutorService {
 		return if (FeatureFlags.isEnabled(this, FeatureFlags.Names.USE_FIXED_THREAD_POOL))

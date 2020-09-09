@@ -55,6 +55,7 @@ object EventLog {
 			val firstWebhook = webhooks.first()
 			val loriWebhook = WebhookClientBuilder(firstWebhook.url)
 					.setExecutorService(loritta.webhookExecutor)
+					.setHttpClient(loritta.webhookOkHttpClient)
 					.build()
 
 			cachedEventLogWebhooks[channel.idLong] = loriWebhook
@@ -67,6 +68,7 @@ object EventLog {
 
 		val loriWebhook = WebhookClientBuilder(newWebhook.url)
 				.setExecutorService(loritta.webhookExecutor)
+				.setHttpClient(loritta.webhookOkHttpClient)
 				.build()
 
 		cachedEventLogWebhooks[channel.idLong] = loriWebhook
