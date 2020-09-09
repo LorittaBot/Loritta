@@ -38,6 +38,10 @@ class FakeMessage : Message {
 		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 	}
 
+	override fun crosspost(): RestAction<Message> {
+		TODO("Not yet implemented")
+	}
+
 	override fun retrieveReactionUsers(emote: Emote): ReactionPaginationAction {
 		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 	}
