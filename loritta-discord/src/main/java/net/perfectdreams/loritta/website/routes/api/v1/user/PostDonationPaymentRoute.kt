@@ -12,6 +12,7 @@ import io.ktor.request.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.PerfectPaymentsClient
+import net.perfectdreams.loritta.utils.payments.PaymentReason
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
@@ -67,6 +68,7 @@ class PostDonationPaymentRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 				"Doação para a Loritta - $whoDonated",
 				(realValue * 100).toLong(),
 				"LORITTA-PREMIUM-%d",
+				PaymentReason.DONATION,
 				discount,
 				metadata
 		)

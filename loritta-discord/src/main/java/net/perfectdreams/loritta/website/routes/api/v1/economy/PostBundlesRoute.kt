@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.website.routes.api.v1.economy
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.obj
-import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.website.LoriWebCode
@@ -15,6 +14,7 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.SonhosBundles
 import net.perfectdreams.loritta.utils.PerfectPaymentsClient
+import net.perfectdreams.loritta.utils.payments.PaymentReason
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
@@ -49,6 +49,7 @@ class PostBundlesRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(l
 					userIdentification.id.toLong(),
 					"$sonhos sonhos - $whoDonated",
 					(grana * 100).toLong(),
+					PaymentReason.SONHOS_BUNDLE,
 					"LORITTA-BUNDLE-%d",
 					null,
 					jsonObject(

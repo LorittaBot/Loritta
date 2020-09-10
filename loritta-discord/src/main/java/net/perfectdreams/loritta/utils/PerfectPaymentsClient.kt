@@ -28,6 +28,7 @@ object PerfectPaymentsClient {
             userId: Long,
             paymentTitle: String,
             amount: Long,
+            paymentReason: PaymentReason,
             externalReference: String,
             discount: Double? = null,
             metadata: JsonObject? = null
@@ -60,7 +61,7 @@ object PerfectPaymentsClient {
             Payment.new {
                 this.userId = userId
                 this.gateway = PaymentGateway.PERFECTPAYMENTS
-                this.reason = PaymentReason.DONATION
+                this.reason = paymentReason
 
                 if (discount != null)
                     this.discount = discount
