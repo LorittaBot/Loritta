@@ -258,7 +258,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		logger.info { "Iniciando bom dia & cia..." }
 		bomDiaECia = BomDiaECia()
 
-		if (loritta.isMaster) { // Apenas o cluster principal deve criar a stream, para evitar que tenha várias streams logando ao mesmo tempo (e tomando rate limit)
+		if (loritta.isMaster && config.twitter.enableTweetStream) { // Apenas o cluster principal deve criar a stream, para evitar que tenha várias streams logando ao mesmo tempo (e tomando rate limit)
 			logger.info { "Iniciando streams de tweets..." }
 			tweetTracker.updateStreams()
 		}
