@@ -30,7 +30,6 @@ class PostBundlesRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(l
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
 		val payload = JsonParser.parseString(call.receiveText()).obj
 
-		val gateway = payload["gateway"].string
 		val bundleId = payload["id"].long
 
 		val bundle = loritta.newSuspendedTransaction {
