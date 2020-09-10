@@ -13,7 +13,7 @@ object PaymentUtils : Logging {
 	fun requestAndRedirectToPaymentUrl(meta: dynamic, url: String = "${loriUrl}api/v1/users/donate") {
 		debug("Requesting a PerfectPayments payment URL...")
 		println(JSON.stringify(meta))
-		
+
 		SpicyMorenitta.INSTANCE.showLoadingScreen()
 
 		GlobalScope.launch {
