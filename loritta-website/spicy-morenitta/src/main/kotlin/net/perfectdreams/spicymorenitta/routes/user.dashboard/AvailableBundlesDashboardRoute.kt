@@ -63,7 +63,7 @@ class AvailableBundlesDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePo
 
                                     println(JSON.stringify(o))
 
-                                    PaymentUtils.openPaymentSelectionModal(o, "${loriUrl}api/v1/economy/bundles/sonhos/${entry.id}")
+                                    PaymentUtils.requestAndRedirectToPaymentUrl(o, "${loriUrl}api/v1/economy/bundles/sonhos/${entry.id}")
                                 }
                             }
                         }

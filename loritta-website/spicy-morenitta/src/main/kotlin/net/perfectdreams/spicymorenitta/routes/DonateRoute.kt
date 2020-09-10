@@ -245,7 +245,7 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
 
                                         modal.close()
 
-                                        PaymentUtils.openPaymentSelectionModal(o)
+                                        PaymentUtils.requestAndRedirectToPaymentUrl(o)
                                     }
                                 }
                             }
@@ -417,7 +417,7 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
             val money = price
         }
 
-        PaymentUtils.openPaymentSelectionModal(o)
+        PaymentUtils.requestAndRedirectToPaymentUrl(o)
     }
 
     data class DonationReward(val name: String, val minimumDonation: Double, val doNotDisplayInPlans: Boolean, val callback: TD.(Double) -> Unit = { column ->
