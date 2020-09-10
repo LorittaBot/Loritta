@@ -104,7 +104,7 @@ class PostPerfectPaymentsCallbackRoute(loritta: LorittaDiscord) : BaseRoute(lori
 							SonhosBundles.id eq bundleId and (SonhosBundles.active eq true)
 						}.firstOrNull()
 					} ?: run {
-						logger.warn { "PicPay Payment with Reference ID: $referenceId ($internalTransactionId) is already paid! Ignoring..." }
+						logger.warn { "PerfectPayments Payment with Reference ID: $referenceId ($internalTransactionId) does not have a valid bundle!" }
 						call.respondJson(jsonObject())
 						return
 					}

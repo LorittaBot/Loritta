@@ -139,10 +139,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	var twitch7 = TwitchAPI(config.twitch7.clientId, config.twitch7.clientSecret)
 	var twitch8 = TwitchAPI(config.twitch8.clientId, config.twitch8.clientSecret)
 	val connectionManager = ConnectionManager()
-	val mercadoPago = MercadoPago(
-			clientId = config.mercadoPago.clientId,
-			clientSecret = config.mercadoPago.clientSecret
-	)
 	var patchData = PatchData()
 	var sponsors: List<Sponsor> = listOf()
 	val cachedRetrievedArtists = CacheBuilder.newBuilder().expireAfterWrite(7, TimeUnit.DAYS)
