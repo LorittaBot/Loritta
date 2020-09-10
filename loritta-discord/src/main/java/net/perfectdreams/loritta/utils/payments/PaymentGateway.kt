@@ -4,5 +4,6 @@ enum class PaymentGateway {
     OTHER,
     MERCADOPAGO,
     NITRO_BOOST,
-    PICPAY
+    PICPAY,
+    PERFECTPAYMENTS
 }

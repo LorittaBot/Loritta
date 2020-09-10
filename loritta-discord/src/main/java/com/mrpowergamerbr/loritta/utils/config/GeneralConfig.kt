@@ -17,6 +17,7 @@ class GeneralConfig @JsonCreator constructor(
 		val mercadoPago: MercadoPagoConfig,
 		@JsonProperty("picpay")
 		val picPay: PicPayConfig,
+		val perfectPayments: PerfectPaymentsConfig,
 		val parallaxCodeServer: ParallaxCodeServerConfig,
 		val youtube: YouTubeConfig,
 		val openWeatherMap: OpenWeatherMapConfig,

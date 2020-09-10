@@ -15,5 +15,6 @@ object Payments : LongIdTable() {
     val paidAt = long("paid_at").nullable()
     val expiresAt = long("expires_at").nullable()
     val discount = double("discount").nullable()
+    val referenceId = uuid("reference_id").nullable()
     val metadata = rawJsonb("metadata", gson).nullable()
 }

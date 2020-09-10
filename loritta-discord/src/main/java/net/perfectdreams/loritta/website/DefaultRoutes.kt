@@ -88,6 +88,7 @@ object DefaultRoutes {
 			PostMercadoPagoCallbackRoute(loritta),
 			PostPubSubHubbubCallbackRoute(loritta),
 			PostPicPayCallbackRoute(loritta),
+			PostPerfectPaymentsCallbackRoute(loritta),
 			CreateWebhookRoute(loritta),
 
 			// Economy
