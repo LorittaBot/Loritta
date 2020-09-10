@@ -67,8 +67,8 @@ class PostDonationPaymentRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 				userIdentification.id.toLong(),
 				"Doação para a Loritta - $whoDonated",
 				(realValue * 100).toLong(),
-				"LORITTA-PREMIUM-%d",
 				PaymentReason.DONATION,
+				"LORITTA-PREMIUM-%d",
 				discount,
 				metadata
 		)
