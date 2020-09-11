@@ -15,17 +15,21 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.OptimizeAssets
-import io.ktor.application.ApplicationCall
-import io.ktor.request.path
-import io.ktor.util.AttributeKey
+import com.mrpowergamerbr.loritta.website.WebsiteAPIException
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.request.*
+import io.ktor.util.*
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.ReactionOption
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.ReactionOptions
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedRssFeeds
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.config.types.ConfigTransformers
+import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -38,6 +42,28 @@ object WebsiteUtils {
 	val variablesKey = AttributeKey<MutableMap<String, Any?>>("variables")
 	val localeKey = AttributeKey<BaseLocale>("locale")
 	val handledStatusBefore = AttributeKey<Boolean>("handledStatusBefore")
+
+	fun checkIfAccountHasMFAEnabled(userIdentification: TemmieDiscordAuth.UserIdentification): Boolean {
+		// This is a security measure, to avoid "high risk" purchases.
+		// We will require that users need to verify their account + have MFA enabled.
+		if (!userIdentification.verified)
+			throw WebsiteAPIException(
+					HttpStatusCode.Forbidden,
+					WebsiteUtils.createErrorPayload(
+							LoriWebCode.UNVERIFIED_ACCOUNT
+					)
+			)
+
+		if (userIdentification.mfaEnabled == false)
+			throw WebsiteAPIException(
+					HttpStatusCode.Forbidden,
+					WebsiteUtils.createErrorPayload(
+							LoriWebCode.MFA_DISABLED
+					)
+			)
+
+		return true
+	}
 
 	fun initializeVariables(call: ApplicationCall, locale: BaseLocale, legacyLocale: LegacyBaseLocale, languageCode: String?) {
 		val req = call.request

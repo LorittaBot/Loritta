@@ -24,6 +24,12 @@ class PostDonationPaymentRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 	}
 
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
+		// This is a security measure, to avoid "high risk" purchases.
+		// We will require that users need to verify their account + have MFA enabled.
+		val refreshedUserIdentification = discordAuth.getUserIdentification()
+		if (!net.perfectdreams.loritta.website.utils.WebsiteUtils.checkIfAccountHasMFAEnabled(refreshedUserIdentification))
+			return
+
 		val payload = JsonParser.parseString(call.receiveText()).obj
 
 		val whoDonated = "${userIdentification.username}#${userIdentification.discriminator}"

@@ -1,6 +1,7 @@
 package net.perfectdreams.spicymorenitta.routes
 
-import io.ktor.client.request.get
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import jq
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -12,11 +13,11 @@ import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
+import org.w3c.dom.Audio
 import org.w3c.dom.HTMLButtonElement
+import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLTextAreaElement
 import org.w3c.dom.url.URLSearchParams
-import org.w3c.dom.Audio
-import org.w3c.dom.HTMLDivElement
 import utils.GoogleRecaptcha
 import utils.RecaptchaOptions
 import kotlin.browser.document
@@ -24,7 +25,6 @@ import kotlin.browser.window
 import kotlin.dom.addClass
 import kotlin.dom.clear
 import kotlin.dom.removeClass
-import kotlin.js.Json
 import kotlin.js.json
 
 class ReputationRoute : BaseRoute("/user/{userId}/rep") {
@@ -58,15 +58,15 @@ class ReputationRoute : BaseRoute("/user/{userId}/rep") {
         println(JSON.stringify(json))
 
         GlobalScope.launch {
-            val response = HttpRequest.post(
-                    url = "${loriUrl}api/v1/users/$userId/reputation",
-                    data = JSON.stringify(json)
-            )
+            val response = http.post<io.ktor.client.statement.HttpResponse>("${loriUrl}api/v1/users/$userId/reputation") {
+                body = JSON.stringify(json)
+            }
 
-            println("Received: " + response.body)
-            val payload = JSON.parse<Json>(response.body)
+            val text = response.readText()
 
-            if (response.statusCode == 200) {
+            println("Received: $text")
+
+            if (response.status.value == 200) {
                 println("Deu certo!")
                 val ts1SkillUp = Audio("${loriUrl}assets/snd/ts1_skill.mp3")
                 ts1SkillUp.play()
