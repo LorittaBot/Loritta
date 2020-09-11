@@ -124,12 +124,15 @@ class ExperienceModule : MessageReceivedModule {
 
 		val levelConfig = serverConfig.getCachedOrRetreiveFromDatabase<LevelConfig?>(ServerConfig::levelConfig)
 
+		// We need to include the publicRole because member.roles does NOT contain the "@everyone" role
+		val memberRolesIds = member.roles.map { it.idLong } + event.guild.publicRole.idLong
+
 		if (levelConfig != null) {
 			logger.info { "Level Config isn't null in $guild" }
 
 			val noXpRoles = levelConfig.noXpRoles
 
-			if (member.roles.any { it.idLong in noXpRoles })
+			if (memberRolesIds.any { it in noXpRoles })
 				return
 
 			val noXpChannels = levelConfig.noXpChannels
@@ -143,7 +146,7 @@ class ExperienceModule : MessageReceivedModule {
 		val customRoleRates = loritta.newSuspendedTransaction {
 			ExperienceRoleRates.select {
 				ExperienceRoleRates.guildId eq event.guild.idLong and
-						(ExperienceRoleRates.role inList member.roles.map { it.idLong })
+						(ExperienceRoleRates.role inList memberRolesIds)
 			}.orderBy(ExperienceRoleRates.rate, SortOrder.DESC)
 					.firstOrNull()
 		}
