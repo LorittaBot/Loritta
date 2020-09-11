@@ -69,7 +69,7 @@ object PerfectPaymentsClient {
                 if (metadata != null)
                     this.metadata = metadata
 
-                this.money = (amount / 100).toBigDecimal()
+                this.money = (amount.toDouble() / 100).toBigDecimal()
                 this.createdAt = System.currentTimeMillis()
                 this.referenceId = partialPaymentId
             }
