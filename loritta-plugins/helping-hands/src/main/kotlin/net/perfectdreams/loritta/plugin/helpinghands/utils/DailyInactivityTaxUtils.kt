@@ -97,8 +97,6 @@ object DailyInactivityTaxUtils {
 						.toList()
 			}
 
-			processedUsers += inactiveUsers.map { it[receivedBy] }
-
 			inactiveUsers.filter { it[receivedBy] !in processedUsers }.forEach {
 				val userId = it[receivedBy]
 
@@ -121,10 +119,12 @@ object DailyInactivityTaxUtils {
 					}
 				}
 			}
+
+			processedUsers += inactiveUsers.map { it[receivedBy] }
 		}
 	}
 
-	class DailyTaxThreshold(
+	data class DailyTaxThreshold(
 			val maxDayThreshold: Long,
 			val minimumSonhosForTrigger: Long,
 			val tax: Double
