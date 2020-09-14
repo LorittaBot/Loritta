@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.platform.twitter
 
+import net.perfectdreams.loritta.platform.twitter.utils.config.TempConfig
 import java.io.File
 
 object LorittaTwitterLauncher {
@@ -14,7 +15,16 @@ object LorittaTwitterLauncher {
         val pluginsFolder = dummyConfigText[4]
         val assetsFolder = dummyConfigText[5]
 
-        val twitter = LorittaTwitter()
+        val twitter = LorittaTwitter(
+                TempConfig(
+                        consumerKey,
+                        consumerSecret,
+                        accessToken,
+                        accessTokenSecret,
+                        pluginsFolder,
+                        assetsFolder
+                )
+        )
         twitter.start()
     }
 }
