@@ -21,6 +21,7 @@ include(":loritta-api")
 include(":loritta-serializable-commons")
 include(":loritta-discord")
 include(":loritta-eris")
+include(":loritta-twitter")
 
 // Plugins
 include(":loritta-plugins")

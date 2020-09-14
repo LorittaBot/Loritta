@@ -6,7 +6,6 @@ import io.ktor.client.statement.*
 import kotlinx.serialization.json.json
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.commands.ArgumentType
-import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
 import net.perfectdreams.loritta.plugin.rosbife.commands.base.DSLCommandBase
 import java.util.*
 
@@ -25,8 +24,6 @@ object PetPetCommand : DSLCommandBase {
 
 		executes {
 			// TODO: Multiplatform
-			val context = checkType<DiscordCommandContext>(this)
-
 			val mppImage = validate(image(0))
 
 			val response = loritta.http.post<HttpResponse>("https://gabriela.loritta.website/api/images/pet-pet") {
@@ -35,7 +32,7 @@ object PetPetCommand : DSLCommandBase {
 				}.toString()
 			}
 
-			context.sendFile(response.receive<ByteArray>().inputStream(), "petpet.gif")
+			sendFile(response.receive(), "petpet.gif")
 		}
 	}
 }

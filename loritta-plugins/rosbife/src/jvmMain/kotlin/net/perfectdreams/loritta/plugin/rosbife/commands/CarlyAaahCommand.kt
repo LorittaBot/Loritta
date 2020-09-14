@@ -1,12 +1,11 @@
 package net.perfectdreams.loritta.plugin.rosbife.commands
 
-import io.ktor.client.call.receive
-import io.ktor.client.request.post
-import io.ktor.client.statement.HttpResponse
+import io.ktor.client.call.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import kotlinx.serialization.json.json
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.commands.ArgumentType
-import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
 import net.perfectdreams.loritta.plugin.rosbife.commands.base.DSLCommandBase
 import java.util.*
 
@@ -24,9 +23,6 @@ object CarlyAaahCommand : DSLCommandBase {
 		needsToUploadFiles = true
 
 		executes {
-			// TODO: Multiplatform
-			val context = checkType<DiscordCommandContext>(this)
-
 			val mppImage = validate(image(0))
 
 			val response = loritta.http.post<HttpResponse>("https://gabriela.loritta.website/api/videos/carly-aaah") {
@@ -35,7 +31,7 @@ object CarlyAaahCommand : DSLCommandBase {
 				}.toString()
 			}
 
-			context.sendFile(response.receive<ByteArray>().inputStream(), "carly_aaah.mp4")
+			sendFile(response.receive(), "carly_aaah.mp4")
 		}
 	}
 }
