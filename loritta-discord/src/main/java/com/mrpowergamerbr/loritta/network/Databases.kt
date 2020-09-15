@@ -54,6 +54,9 @@ object Databases {
 		config.minimumIdle = LorittaLauncher.loritta.config.database.minimumIdle
 		// https://github.com/JetBrains/Exposed/wiki/DSL#batch-insert
 		config.addDataSourceProperty("reWriteBatchedInserts", "true")
+		// Fixes connections not reconnecting automatically ~ https://github.com/brettwooldridge/HikariCP/issues/1056
+		// 15 minutes
+		config.addDataSourceProperty("socketTimeout", "900")
 
 		// config.addDataSourceProperty("prepStmtCacheSize", "500")
 		// config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")
