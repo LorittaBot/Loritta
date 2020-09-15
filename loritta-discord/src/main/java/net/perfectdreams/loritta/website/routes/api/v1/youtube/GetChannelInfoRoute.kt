@@ -71,10 +71,10 @@ class GetChannelInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1
 						.userAgent(Constants.USER_AGENT)
 						.get()
 
-				youTubePage.select("[type='application/rss+xml']")
+				youTubePage.select("[property='og:url']")
 						.first()
-						.attr("href")
-						.substringAfter("?channel_id=")
+						.attr("content")
+						.substringAfter("/channel/")
 			} else {
 				// Se for um username, temos que converter de username -> ID
 				val username = urlPath.split("/").last()
