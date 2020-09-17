@@ -60,12 +60,12 @@ object ColorCommand {
                     }
                 }
 
-                fail("Você definiu sua cor para `$selection` com sucesso!", "<:lori_wow:626942886432473098>\n")
+                fail("Você definiu sua cor para `$selection` com sucesso!", "<:lori_wow:626942886432473098>")
             } else {
                 // Removing selected role from member
                 guild.removeRoleFromMember(member, role).queue()
 
-                fail("Você removeu sua cor `$selection` com sucesso!", "<:lori_wow:626942886432473098>\n")
+                fail("Você removeu sua cor `$selection` com sucesso!", "<:lori_wow:626942886432473098>")
             }
         }
     }
