@@ -1,11 +1,9 @@
 package net.perfectdreams.loritta.plugin.loriguildstuff.commands
 
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.extensions.await
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.discordCommand
-import net.perfectdreams.loritta.api.messages.LorittaReply
 
 object ColorCommand {
 
@@ -22,14 +20,13 @@ object ColorCommand {
             "dourado" to 373539973984550912L,
             "verde" to 374613592185634816L,
             "violeta" to 738880144403464322L,
-            "laranja" to 738914237598007376L,
-            "violeta claro" to 750738232735432817L,
-            "preto" to 751256879534964796L
+            "laranja" to 738914237598007376L
     )
 
     fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("cor", "color"), CommandCategory.MISC) {
-        this.hideInHelp = true
-        this.commandCheckFilter { lorittaMessageEvent, _, _, _, _ ->
+        hideInHelp = true
+
+        commandCheckFilter { lorittaMessageEvent, _, _, _, _ ->
             lorittaMessageEvent.guild?.idLong == 297732013006389252L
         }
 
@@ -37,50 +34,28 @@ object ColorCommand {
             val donatorRole = guild.getRoleById(364201981016801281L)!!
             val member = this.member!!
 
-            if (!member.roles.contains(donatorRole)) {
-                reply(
-                        LorittaReply(
-                                "Este comando é apenas para doadores, se você quer me ajudar a comprar um :custard:, então vire um doador! https://loritta.website/donate",
-                                Constants.ERROR
-                        )
-                )
-            } else {
-                val selection = args.joinToString(" ").toLowerCase()
+            if (!member.roles.contains(donatorRole))
+                fail("Este comando é apenas para doadores, se você quer me ajudar a comprar um :custard:, então vire um doador! https://loritta.website/donate", Constants.ERROR)
 
-                val color = colors[selection]
+            val selection = args.joinToString(" ").toLowerCase()
+            val colorId = colors[selection] ?: fail("Hmm, estranho! Não encontrei a cor `$selection`, essas são todas as cores disponíveis: `${colors.keys.joinToString(", ")}`", "<:lori_what:626942886361038868>")
 
-                if (color != null) {
-                    val role = guild.getRoleById(color)!!
+            val role = guild.getRoleById(colorId) ?: error("Role with id $colorId couldn't be found on guild ${guild.idLong}")
 
-                    if (member.roles.contains(role)) {
-                        guild.removeRoleFromMember(member, role).await()
-                        reply(
-                                LorittaReply(
-                                        "Cor removida!",
-                                        "\uD83C\uDFA8"
-                                )
-                        )
-                    } else {
-                        guild.addRoleToMember(member, role).await()
-                        reply(
-                                LorittaReply(
-                                        "Cor adicionada!",
-                                        "\uD83C\uDFA8"
-                                )
-                        )
+            if (!member.roles.contains(role)) {
+                guild.addRoleToMember(member, role).queue()
+
+                for (colorRole in member.roles) {
+                    if (colors.containsValue(colorRole.idLong)) {
+                        guild.removeRoleFromMember(member, colorRole).queue()
                     }
                 }
 
-                val list = colors.keys.joinToString(", ")
+                fail("Você definiu sua cor para `$selection` com sucesso!", "<:lori_wow:626942886432473098>\n")
+            } else {
+                guild.removeRoleFromMember(member, role).queue()
 
-                if (args.isEmpty()) {
-                    reply(
-                            LorittaReply(
-                                    "Cores disponíveis: `$list`",
-                                    "\uD83C\uDFA8"
-                            )
-                    )
-                }
+                fail("Você removeu sua cor `$selection` com sucesso!", "<:lori_wow:626942886432473098>\n")
             }
         }
     }
