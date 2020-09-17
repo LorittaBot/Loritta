@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.platform.discord.commands.discordCommand
 
 object ColorCommand {
 
+    // All available roles and its id's.
     private val colors = hashMapOf(
             "azul claro" to 373539846620315648L,
             "vermelho escuro" to 373540076095012874L,
@@ -31,20 +32,28 @@ object ColorCommand {
         }
 
         executesDiscord {
+
+            // Role for Loritta's donators
             val donatorRole = guild.getRoleById(364201981016801281L)!!
             val member = this.member!!
 
+            // Checking if user is a donator
             if (!member.roles.contains(donatorRole))
                 fail("Este comando é apenas para doadores, se você quer me ajudar a comprar um :custard:, então vire um doador! https://loritta.website/donate", Constants.ERROR)
 
+            // Input role
             val selection = args.joinToString(" ").toLowerCase()
+            // Selected color's role id
             val colorId = colors[selection] ?: fail("Hmm, estranho! Não encontrei a cor `$selection`, essas são todas as cores disponíveis: `${colors.keys.joinToString(", ")}`", "<:lori_what:626942886361038868>")
 
             val role = guild.getRoleById(colorId) ?: error("Role with id $colorId couldn't be found on guild ${guild.idLong}")
 
+            // Checking if user already has the selected role
             if (!member.roles.contains(role)) {
+                // Adding selected role to member
                 guild.addRoleToMember(member, role).queue()
 
+                // Removing legacy roles
                 for (colorRole in member.roles) {
                     if (colors.containsValue(colorRole.idLong)) {
                         guild.removeRoleFromMember(member, colorRole).queue()
@@ -53,6 +62,7 @@ object ColorCommand {
 
                 fail("Você definiu sua cor para `$selection` com sucesso!", "<:lori_wow:626942886432473098>\n")
             } else {
+                // Removing selected role from member
                 guild.removeRoleFromMember(member, role).queue()
 
                 fail("Você removeu sua cor `$selection` com sucesso!", "<:lori_wow:626942886432473098>\n")
