@@ -1,14 +1,13 @@
 package net.perfectdreams.loritta.plugin.loriguildstuff.commands
 
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.extensions.await
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.discordCommand
-import net.perfectdreams.loritta.api.messages.LorittaReply
 
 object ColorCommand {
 
+    // All available roles and its id's.
     private val colors = hashMapOf(
             "azul claro" to 373539846620315648L,
             "vermelho escuro" to 373540076095012874L,
@@ -28,59 +27,47 @@ object ColorCommand {
     )
 
     fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("cor", "color"), CommandCategory.MISC) {
-        this.hideInHelp = true
-        this.commandCheckFilter { lorittaMessageEvent, _, _, _, _ ->
+        hideInHelp = true
+
+        commandCheckFilter { lorittaMessageEvent, _, _, _, _ ->
             lorittaMessageEvent.guild?.idLong == 297732013006389252L
         }
 
         executesDiscord {
+
+            // Role for Loritta's donators
             val donatorRole = guild.getRoleById(364201981016801281L)!!
             val member = this.member!!
 
-            if (!member.roles.contains(donatorRole)) {
-                reply(
-                        LorittaReply(
-                                "Este comando é apenas para doadores, se você quer me ajudar a comprar um :custard:, então vire um doador! https://loritta.website/donate",
-                                Constants.ERROR
-                        )
-                )
-            } else {
-                val selection = args.joinToString(" ").toLowerCase()
+            // Checking if user is a donator
+            if (!member.roles.contains(donatorRole))
+                fail("Este comando é apenas para doadores, se você quer me ajudar a comprar um :custard:, então vire um doador! https://loritta.website/donate", Constants.ERROR)
 
-                val color = colors[selection]
+            // Input role
+            val selection = args.joinToString(" ").toLowerCase()
+            // Selected color's role id
+            val colorId = colors[selection] ?: fail("Hmm, estranho! Não encontrei a cor `$selection`, essas são todas as cores disponíveis: `${colors.keys.joinToString(", ")}`", "<:lori_what:626942886361038868>")
 
-                if (color != null) {
-                    val role = guild.getRoleById(color)!!
+            val role = guild.getRoleById(colorId) ?: error("Role with id $colorId couldn't be found on guild ${guild.idLong}")
 
-                    if (member.roles.contains(role)) {
-                        guild.removeRoleFromMember(member, role).await()
-                        reply(
-                                LorittaReply(
-                                        "Cor removida!",
-                                        "\uD83C\uDFA8"
-                                )
-                        )
-                    } else {
-                        guild.addRoleToMember(member, role).await()
-                        reply(
-                                LorittaReply(
-                                        "Cor adicionada!",
-                                        "\uD83C\uDFA8"
-                                )
-                        )
+            // Checking if user already has the selected role
+            if (!member.roles.contains(role)) {
+                // Adding selected role to member
+                guild.addRoleToMember(member, role).queue()
+
+                // Removing legacy roles
+                for (colorRole in member.roles) {
+                    if (colors.containsValue(colorRole.idLong)) {
+                        guild.removeRoleFromMember(member, colorRole).queue()
                     }
                 }
 
-                val list = colors.keys.joinToString(", ")
+                fail("Você definiu sua cor para `$selection` com sucesso!", "<:lori_wow:626942886432473098>")
+            } else {
+                // Removing selected role from member
+                guild.removeRoleFromMember(member, role).queue()
 
-                if (args.isEmpty()) {
-                    reply(
-                            LorittaReply(
-                                    "Cores disponíveis: `$list`",
-                                    "\uD83C\uDFA8"
-                            )
-                    )
-                }
+                fail("Você removeu sua cor `$selection` com sucesso!", "<:lori_wow:626942886432473098>")
             }
         }
     }
