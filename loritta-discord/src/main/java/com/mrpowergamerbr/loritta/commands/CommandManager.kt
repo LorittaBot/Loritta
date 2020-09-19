@@ -219,7 +219,7 @@ class CommandManager(loritta: Loritta) {
 			commandMap.add(AntiRaidCommand())
 
 		// =======[ ECONOMIA ]========
-		// commandMap.add(LoraffleCommand())
+		commandMap.add(LoraffleCommand())
 		commandMap.add(DailyCommand())
 		commandMap.add(PagarCommand())
 		commandMap.add(SonhosCommand())
