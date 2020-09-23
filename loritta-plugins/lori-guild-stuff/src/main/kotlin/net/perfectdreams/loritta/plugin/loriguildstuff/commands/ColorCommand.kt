@@ -46,7 +46,7 @@ object ColorCommand {
             // Input role
             val selection = args.joinToString(" ").toLowerCase()
             // Selected color's role id
-            val colorId = colors[selection] ?: fail("Hmm, estranho! Não encontrei a cor `$selection`, essas são todas as cores disponíveis: `${colors.keys.joinToString(", ")}`", "<:lori_what:626942886361038868>")
+            val colorId = colors[selection] ?: fail("Hmm, estranho! Não encontrei a cor que você selecionou! Essas são todas as cores disponíveis: `${colors.keys.joinToString(", ")}`", "<:lori_what:626942886361038868>")
 
             val role = guild.getRoleById(colorId) ?: error("Role with id $colorId couldn't be found on guild ${guild.idLong}")
 
