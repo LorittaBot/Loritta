@@ -191,6 +191,38 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
                 return@onResponseByAuthor
             }
 
+            val lorittaAsMember = lorittaShards.getGuildById(context.guild!!.id)?.getMemberById(710695573220491324L)!!
+
+            if (!lorittaAsMember.hasPermission(channel, Permission.MESSAGE_ADD_REACTION)) {
+                context.reply(
+                        LorittaReply(
+                                "Não tenho permissão para reagir nesse canal!",
+                                Constants.ERROR
+                        )
+                )
+                return@onResponseByAuthor
+            }
+
+            if (!lorittaAsMember.hasPermission(channel, Permission.MESSAGE_EMBED_LINKS)) {
+                context.reply(
+                        LorittaReply(
+                                "Não tenho permissão para enviar embeds nesse canal!",
+                                Constants.ERROR
+                        )
+                )
+                return@onResponseByAuthor
+            }
+
+            if (!lorittaAsMember.hasPermission(channel, Permission.MESSAGE_HISTORY)) {
+                context.reply(
+                        LorittaReply(
+                                "Não tenho permissão para ver o histórico desse canal!",
+                                Constants.ERROR
+                        )
+                )
+                return@onResponseByAuthor
+            }
+
             builder.channel = channel
 
             message.delete()

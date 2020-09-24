@@ -93,8 +93,10 @@ object DailyInactivityTaxUtils {
 									)
 						}
 						.groupBy(receivedBy, money)
-						.also { logger.info { "There are ${it.count()} inactive daily users!" } }
 						.toList()
+						// We display the inactive daily users after the ".toList()" because, if it is placed before, two queries will
+						// be made: One for the query itself and then another for the Exposed ".count()" call.
+						.also { logger.info { "There are ${it.size} inactive daily users!" } }
 			}
 
 			inactiveUsers.filter { it[receivedBy] !in processedUsers }.forEach {

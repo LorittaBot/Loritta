@@ -10,8 +10,8 @@ import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.extensions.isValidUrl
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
-import io.ktor.application.ApplicationCall
-import io.ktor.http.HttpStatusCode
+import io.ktor.application.*
+import io.ktor.http.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.CachedYouTubeChannelIds
@@ -67,14 +67,14 @@ class GetChannelInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1
 			} else if (urlPath.startsWith("/c/")) {
 				// Channels starting with "/c/" is harder because the API doesn't show them (for some reason...)
 				// To retrieve those, we need to query the channel URL and get the ID from there
-				val youTubePage = Jsoup.connect("https://www.youtube.com/c/FabioSantosVariedades/")
+				val youTubePage = Jsoup.connect(channelLink)
 						.userAgent(Constants.USER_AGENT)
 						.get()
 
-				youTubePage.select("[type='application/rss+xml']")
+				youTubePage.select("[property='og:url']")
 						.first()
-						.attr("href")
-						.substringAfter("?channel_id=")
+						.attr("content")
+						.substringAfter("/channel/")
 			} else {
 				// Se for um username, temos que converter de username -> ID
 				val username = urlPath.split("/").last()
