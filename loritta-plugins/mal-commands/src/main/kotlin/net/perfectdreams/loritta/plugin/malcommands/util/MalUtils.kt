@@ -7,10 +7,10 @@ import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.utils.encodeToUrl
 import mu.KotlinLogging
-import net.perfectdreams.loritta.plugin.malcommands.commands.models.AnimeInfo
-import net.perfectdreams.loritta.plugin.malcommands.commands.models.AnimeStatus
-import net.perfectdreams.loritta.plugin.malcommands.commands.models.AnimeType
-import net.perfectdreams.loritta.plugin.malcommands.commands.models.MalAnime
+import net.perfectdreams.loritta.plugin.malcommands.models.AnimeInfo
+import net.perfectdreams.loritta.plugin.malcommands.models.AnimeStatus
+import net.perfectdreams.loritta.plugin.malcommands.models.AnimeType
+import net.perfectdreams.loritta.plugin.malcommands.models.MalAnime
 import net.perfectdreams.loritta.plugin.malcommands.util.MalConstants.MAL_URL
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

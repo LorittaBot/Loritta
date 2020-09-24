@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.plugin.malcommands.commands.models
+package net.perfectdreams.loritta.plugin.malcommands.models
 
 class MalAnime(
         val image: String,

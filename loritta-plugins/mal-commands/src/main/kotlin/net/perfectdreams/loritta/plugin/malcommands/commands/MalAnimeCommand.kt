@@ -8,8 +8,8 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.plugin.malcommands.MalCommandsPlugin
 import net.perfectdreams.loritta.plugin.malcommands.commands.base.DSLCommandBase
-import net.perfectdreams.loritta.plugin.malcommands.commands.models.AnimeStatus
-import net.perfectdreams.loritta.plugin.malcommands.commands.models.AnimeType
+import net.perfectdreams.loritta.plugin.malcommands.models.AnimeStatus
+import net.perfectdreams.loritta.plugin.malcommands.models.AnimeType
 import net.perfectdreams.loritta.plugin.malcommands.util.MalConstants.MAL_COLOR
 import net.perfectdreams.loritta.plugin.malcommands.util.MalUtils
 
