@@ -43,7 +43,9 @@ object MalAnimeCommand : DSLCommandBase {
             logger.debug { "The anime query is \"$query\"" }
 
             try {
-                val anime = MalUtils.parseAnimeByQuery(query)
+                val anime = MalUtils.parseAnime(
+                        MalUtils.queryAnime(query).first()
+                )
 
                 if (anime == null) {
                     logger.debug { "Failed to query the anime!" }

@@ -1,16 +1,19 @@
 package net.perfectdreams.loritta.plugin.malcommands.util
 
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.utils.encodeToUrl
+import com.mrpowergamerbr.loritta.utils.loritta
+import io.ktor.client.request.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.plugin.malcommands.commands.models.AnimeInfo
 import net.perfectdreams.loritta.plugin.malcommands.commands.models.AnimeStatus
 import net.perfectdreams.loritta.plugin.malcommands.commands.models.AnimeType
 import net.perfectdreams.loritta.plugin.malcommands.commands.models.MalAnime
 import net.perfectdreams.loritta.plugin.malcommands.exceptions.MalException
-import net.perfectdreams.loritta.plugin.malcommands.exceptions.MalSearchException
 import net.perfectdreams.loritta.plugin.malcommands.util.MalConstants.MAL_URL
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import com.github.salomonbrys.kotson.*
 
 object MalUtils {
 
@@ -30,38 +33,22 @@ object MalUtils {
         return response.parse()
     }
 
-    private fun queryAnime(q: String): String? {
-        val document = requestDom("anime.php?q=${q.encodeToUrl()}")
-        try {
-            // This will get the first element on search query
-            val firstAnimeElement = document!!.selectFirst("table[cellpadding=\"0\"][cellspacing=\"0\"] > tbody > tr > td > a[href][class*=\"hoverinfo_trigger\"]")
-            // Now we just need to get the "a" element and then, get the "href" attribute
-            if (firstAnimeElement != null) logger.debug { "Got the element \"a\"!" }
-            val result = firstAnimeElement!!.attr("href")
+    suspend fun queryAnime(query: String): List<String> {
+        val response = loritta.http.get<HttpResponseData>(
+                "${MAL_URL}search/prefix.json?type=anime&keyword=${query.encodeToUrl()}&v=1"
+        )
+        val parsed = JsonParser.parseString(response.body as String)
 
-            return if (MalConstants.MAL_ANIMEURL_REGEX.matches(result)) {
-                result
-            } else {
-                null
-            }
-        } catch (e: Exception) {
-            // Exceptions are cool for knowing what happened
-            throw MalSearchException(cause = e)
-        }
+        return parsed["categories"]["items"].array.map { it["url"].string }
     }
 
-    fun parseAnime(url: String): MalAnime? {
-        val document = requestDom(url)
-        val u = MalScrappingUtils(document)
-
-        return try {
-            // Workarounds:
-            // This is needed for some animes with english titles
-            document!!.selectFirst("span[itemprop=\"name\"] span")?.remove()
+    fun parseAnime(url: String): MalAnime? = try {
+            val document = requestDom(url)
+            val utils = MalScrappingUtils(document)
 
             val animeInfo = AnimeInfo(
-                    name = document.selectFirst("span[itemprop=\"name\"]").text().trim(),
-                    type = when (u.getContentBySpan("Type:")) {
+                    name = document!!.getElementsByClass("title-name").text().trim(),
+                    type = when (utils.getContentBySpan("Type:")) {
                         "TV" -> AnimeType.TV
                         "ONA" -> AnimeType.ONA
                         "Movie" -> AnimeType.MOVIE
@@ -69,15 +56,15 @@ object MalUtils {
                         "Special" -> AnimeType.SPECIAL
                         else -> AnimeType.UNKNOWN
                     },
-                    status = when (u.getContentBySpan("Status:")) {
+                    status = when (utils.getContentBySpan("Status:")) {
                         "Finished Airing" -> AnimeStatus.FINISHED_AIRING
                         "Currently Airing" -> AnimeStatus.CURRENTLY_AIRING
                         "Not yet aired" -> AnimeStatus.NOT_YET_AIRED
                         else -> AnimeStatus.UNKNOWN
                     },
-                    aired = u.getContentBySpan("Aired:"),
-                    episodes = u.getContentBySpan("Episodes:")?.toInt(),
-                    source = u.getContentBySpan("Source:"),
+                    aired = utils.getContentBySpan("Aired:"),
+                    episodes = utils.getContentBySpan("Episodes:")?.toInt(),
+                    source = utils.getContentBySpan("Source:"),
                     genres = document.select("span[itemprop=\"genre\"]").map { it.text() }
             )
 
@@ -90,15 +77,11 @@ object MalUtils {
                     synopsis = document.selectFirst("span[itemprop=\"description\"]").text(),
                     rank = document.selectFirst("span.ranked").text()
                             .split(' ').drop(1).first(),
-                    popularity = u.getContentBySpan("Popularity:")!!
+                    popularity = utils.getContentBySpan("Popularity:")!!
 
             )
         } catch(e: Exception) {
             throw MalException("Failed at parsing/scrapping anime page", e)
         }
-    }
 
-    fun parseAnimeByQuery(q: String): MalAnime? {
-        return parseAnime(this.queryAnime(q)!!)
-    }
 }
