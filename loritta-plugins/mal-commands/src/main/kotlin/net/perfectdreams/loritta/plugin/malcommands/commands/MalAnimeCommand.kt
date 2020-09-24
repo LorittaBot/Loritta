@@ -10,8 +10,6 @@ import net.perfectdreams.loritta.plugin.malcommands.MalCommandsPlugin
 import net.perfectdreams.loritta.plugin.malcommands.commands.base.DSLCommandBase
 import net.perfectdreams.loritta.plugin.malcommands.commands.models.AnimeStatus
 import net.perfectdreams.loritta.plugin.malcommands.commands.models.AnimeType
-import net.perfectdreams.loritta.plugin.malcommands.exceptions.MalException
-import net.perfectdreams.loritta.plugin.malcommands.exceptions.MalSearchException
 import net.perfectdreams.loritta.plugin.malcommands.util.MalConstants.MAL_COLOR
 import net.perfectdreams.loritta.plugin.malcommands.util.MalUtils
 
@@ -40,26 +38,13 @@ object MalAnimeCommand : DSLCommandBase {
 
             val embed = EmbedBuilder()
             val query = args.joinToString(" ")
+
             logger.debug { "The anime query is \"$query\"" }
 
-            try {
-                val anime = MalUtils.parseAnime(
-                        MalUtils.queryAnime(query).first()
-                )
+            val animeQuery = MalUtils.queryAnime(query).first()
 
-                if (anime == null) {
-                    logger.debug { "Failed to query the anime!" }
-                    reply(
-                            LorittaReply(
-                                    locale["$LOCALE_PREFIX.notfound"],
-                                    Constants.ERROR
-                            )
-                    )
-                    return@executesDiscord
-                } else {
-                    // for debugging reasons, there's a "else" block
-                    logger.debug { "The anime is not null, that's good." }
-                }
+            if (animeQuery != null) {
+                val anime = MalUtils.parseAnime(animeQuery)!!
 
                 logger.debug { anime.toString() }
 
@@ -95,17 +80,16 @@ object MalAnimeCommand : DSLCommandBase {
                     addField("\uD83C\uDF1F " + locale["$LOCALE_PREFIX.rank"], anime.rank, true)
                     addField("\uD83E\uDD29 " + locale["$LOCALE_PREFIX.popularity"], anime.popularity, true)
                     // Episodes, genres and source info
-                    addField(locale["$LOCALE_PREFIX.episodes"], anime.info.episodes?.toString() ?: locale["$LOCALE_PREFIX.unknown"], true)
+                    addField(locale["$LOCALE_PREFIX.episodes"], anime.info.episodes?.toString()
+                            ?: locale["$LOCALE_PREFIX.unknown"], true)
                     addField(locale["$LOCALE_PREFIX.genres"], anime.info.genres!!.joinToString(", "), true)
                     addField(locale["$LOCALE_PREFIX.source"], anime.info.source, true)
                     // Synopsis!
                     setDescription(anime.synopsis)
                 }
                 sendMessage(embed.build())
-            } catch(e: Exception) {
-                logger.debug { "Something gone wrong when querying an anime from MAL!" }
-                logger.debug { e }
-                reply(
+            } else {
+                fail(
                         LorittaReply(
                                 locale["$LOCALE_PREFIX.notfound"],
                                 Constants.ERROR
