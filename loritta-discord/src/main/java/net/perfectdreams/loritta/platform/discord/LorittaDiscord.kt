@@ -3,10 +3,10 @@ package net.perfectdreams.loritta.platform.discord
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.salomonbrys.kotson.*
+import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand
 import com.mrpowergamerbr.loritta.dao.Background
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
@@ -21,20 +21,24 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.apache.Apache
-import io.ktor.client.request.get
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.readBytes
-import io.ktor.http.userAgent
-import kotlinx.coroutines.Dispatchers
+import io.ktor.client.*
+import io.ktor.client.engine.apache.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.utils.format
-import net.perfectdreams.loritta.commands.vanilla.economy.*
+import net.perfectdreams.loritta.commands.vanilla.administration.BanInfoCommand
+import net.perfectdreams.loritta.commands.vanilla.economy.SonhosTopCommand
+import net.perfectdreams.loritta.commands.vanilla.economy.SonhosTopLocalCommand
+import net.perfectdreams.loritta.commands.vanilla.economy.TransactionsCommand
 import net.perfectdreams.loritta.commands.vanilla.magic.LoriToolsCommand
-import net.perfectdreams.loritta.commands.vanilla.social.*
-import net.perfectdreams.loritta.commands.vanilla.administration.*
+import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaTopCommand
+import net.perfectdreams.loritta.commands.vanilla.social.RankGlobalCommand
+import net.perfectdreams.loritta.commands.vanilla.social.RepTopCommand
+import net.perfectdreams.loritta.commands.vanilla.social.XpNotificationsCommand
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandMap
 import net.perfectdreams.loritta.platform.discord.plugin.JVMPluginManager
 import net.perfectdreams.loritta.platform.discord.utils.JVMLorittaAssets
@@ -52,9 +56,14 @@ import java.io.FileOutputStream
 import java.lang.reflect.Modifier
 import java.net.URL
 import java.util.*
+import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.zip.ZipInputStream
 import javax.imageio.ImageIO
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
 import kotlin.random.Random
 
 /**
@@ -114,6 +123,11 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
             .maximumSize(config.caches.serverConfigs.maximumSize)
             .expireAfterWrite(config.caches.serverConfigs.expireAfterWrite, TimeUnit.SECONDS)
             .build<Long, ServerConfig>()
+
+    // Used for message execution
+    val coroutineMessageExecutor = Executors.newFixedThreadPool(16, ThreadFactoryBuilder().setNameFormat("Message Executor Thread %d").build())
+    val coroutineMessageDispatcher = coroutineMessageExecutor.asCoroutineDispatcher() // Coroutine Dispatcher
+    val pendingMessages = ConcurrentLinkedQueue<Job>()
 
     /**
      * Gets an user's profile background
@@ -526,5 +540,13 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
     suspend fun <T> suspendedTransactionAsync(statement: org.jetbrains.exposed.sql.Transaction.() -> T) = org.jetbrains.exposed.sql.transactions.experimental.suspendedTransactionAsync(Dispatchers.IO, Databases.loritta) {
         statement.invoke(this)
+    }
+
+    fun launchMessageJob(block: suspend CoroutineScope.() -> Unit) {
+        val job = GlobalScope.launch(coroutineMessageDispatcher, block = block)
+        job.invokeOnCompletion {
+            pendingMessages.remove(job)
+        }
+        pendingMessages.add(job)
     }
 }

@@ -62,6 +62,8 @@ object DebugLog {
 		logger.info("fanArts.size: ${loritta.fanArts.size}")
 		logger.info("eventLogListener.downloadedAvatarJobs: ${EventLogListener.downloadedAvatarJobs}")
 		logger.info("Cached Retrieved Users: ${lorittaShards.cachedRetrievedUsers.size()}")
+		logger.info("> Executors")
+		logger.info("Pending Messages (${loritta.pendingMessages.size}): ${loritta.pendingMessages}")
 	}
 
 	fun handleLine(line: String) {
