@@ -33,7 +33,7 @@ object LorittaTasks {
 		scheduleWithFixedDelay(MutedUsersTask(), 0L, 3L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(TimersTask(), 0L, 1L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(AnalyticSender(), 0L, 1L, TimeUnit.MINUTES)
-		scheduleWithFixedDelay(InternalAnalyticSender(), 0L, 1L, TimeUnit.MINUTES)
+		scheduleWithFixedDelay(InternalAnalyticSender(), 0L, 15L, TimeUnit.SECONDS)
 		scheduleWithFixedDelay(DAILY_TAX_TASK, 0L, 15L, TimeUnit.SECONDS)
 		scheduleWithFixedDelay(ApplyBansTask(), 0L, 60L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(SpawnGiveawayTask(), 0L, 1L, TimeUnit.HOURS)
