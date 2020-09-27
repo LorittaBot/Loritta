@@ -75,6 +75,6 @@ object MemberCountersTransformer : ConfigTransformer {
         // Queue update is the list is not empty
         if (entries.size() != 0)
             if (FeatureFlags.isEnabled("member-counter-update"))
-                DiscordListener.queueTextChannelTopicUpdates(guild, serverConfig, true)
+                DiscordListener.queueTextChannelTopicUpdates(guild, serverConfig)
     }
 }
