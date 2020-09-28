@@ -18,7 +18,6 @@ import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLTextAreaElement
 import org.w3c.dom.MessageEvent
 import org.w3c.dom.Window
-import org.w3c.dom.events.KeyboardEvent
 import kotlin.browser.document
 import kotlin.browser.window
 import kotlin.dom.addClass
@@ -228,11 +227,14 @@ class EmbedEditor {
 
         if (parsePlaceholders) {
             for (placeholder in placeholders) {
-                when (placeholder.renderType) {
-                    RenderType.TEXT -> output = output.replace(placeholder.name, placeholder.replaceWith)
-                    RenderType.MENTION -> output = createHTML().span(classes = "mention wrapper-3WhCwL mention interactive") {
-                        + placeholder.replaceWith
-                    }
+                output = when (placeholder.renderType) {
+                    RenderType.TEXT -> output.replace(placeholder.name, placeholder.replaceWith)
+                    RenderType.MENTION -> output.replace(
+                            placeholder.name,
+                            createHTML().span(classes = "mention wrapper-3WhCwL mention interactive") {
+                                + placeholder.replaceWith
+                            }
+                    )
                 }
             }
         }
