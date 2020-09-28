@@ -544,9 +544,12 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
     fun launchMessageJob(block: suspend CoroutineScope.() -> Unit) {
         val job = GlobalScope.launch(coroutineMessageDispatcher, block = block)
+        // Yes, the order matters, since sometimes the invokeOnCompletion would be invoked before the job was
+        // added to the list, causing leaks.
+        // invokeOnCompletion is also invoked even if the job was already completed at that point, so no worries!
+        pendingMessages.add(job)
         job.invokeOnCompletion {
             pendingMessages.remove(job)
         }
-        pendingMessages.add(job)
     }
 }
