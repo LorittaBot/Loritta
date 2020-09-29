@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.api.EmbedBuilder
@@ -33,8 +34,8 @@ object AdminUtils {
 	 *
 	 * @return the settings of the server or, if the server didn't configure the moderation module, default values
 	 */
-	fun retrieveModerationInfo(serverConfig: ServerConfig): ModerationConfigSettings {
-		val moderationConfig = transaction(Databases.loritta) {
+	suspend fun retrieveModerationInfo(serverConfig: ServerConfig): ModerationConfigSettings {
+		val moderationConfig = loritta.newSuspendedTransaction {
 			serverConfig.moderationConfig
 		}
 

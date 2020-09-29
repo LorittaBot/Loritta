@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.plugin.loriguildstuff.commands
 
-import com.mrpowergamerbr.loritta.commands.vanilla.administration.AdminUtils.ModerationConfigSettings
+import com.mrpowergamerbr.loritta.commands.vanilla.administration.AdminUtils
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
@@ -37,11 +37,7 @@ object FastBanCommand {
             val proof = this.args.getOrNull(2)
             var fancyReason = punishmentReasons.getOrDefault(reason, null) ?: fail("Motivo inválido. Motivos disponíveis: `${punishmentReasons.keys.joinToString(", ")}`!")
 
-            val settings = ModerationConfigSettings(
-                    sendPunishmentViaDm = true,
-                    sendPunishmentToPunishLog = true
-            )
-
+            val settings = AdminUtils.retrieveModerationInfo(serverConfig)
 
             reply(
                     LorittaReply(
