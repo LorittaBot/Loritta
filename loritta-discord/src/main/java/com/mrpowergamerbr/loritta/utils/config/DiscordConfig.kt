@@ -17,6 +17,7 @@ class DiscordConfig @JsonCreator constructor(
 		val intents: List<GatewayIntent>,
 		val cacheFlags: List<CacheFlag>,
 		val fanArtExtravaganza: FanArtExtravaganzaConfig,
+		val delayBetweenActivies: Long,
 		val activities: List<LorittaGameStatus>,
 		val requestLimiter: RequestLimiterConfig
 ) {

@@ -117,7 +117,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 		} else {
 			val diff = System.currentTimeMillis() - lastUpdate
 
-			if (diff >= 25000) {
+			if (diff >= loritta.discordConfig.discord.delayBetweenActivies) {
 				if (currentIndex > loritta.discordConfig.discord.activities.size - 1) {
 					currentIndex = 0
 				}
