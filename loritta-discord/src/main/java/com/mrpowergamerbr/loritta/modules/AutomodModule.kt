@@ -212,7 +212,7 @@ class AutomodModule : MessageReceivedModule {
 				logger.info("Aplicando punimentos em ${event.guild.name} -> ${event.channel.name}, causado por ${event.author.id}!")
 
 				val settings = AdminUtils.retrieveModerationInfo(serverConfig)
-				
+
 				synchronized(event.guild) {
 					val alreadyBanned = mutableListOf<User>()
 
