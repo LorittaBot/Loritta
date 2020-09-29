@@ -153,14 +153,6 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 					str = "\uD83D\uDEAB Inatividade Agendada: ${instant.hour.toString().padStart(2, '0')}:${instant.minute.toString().padStart(2, '0')}"
 				}
 
-				repeat(10) {
-					val sponsor = loritta.sponsors.getOrNull(it)
-					str = str.replace(
-							"{sponsor-$it}",
-							"\uD83D\uDCAB ${sponsor?.name}: ${sponsor?.link} | #ad https://loritta.website/sponsors"
-					)
-				}
-
 				loritta.lorittaShards.shardManager.setActivity(Activity.of(Activity.ActivityType.valueOf(game.type), str, "https://www.twitch.tv/mrpowergamerbr"))
 				currentIndex++
 				lastUpdate = System.currentTimeMillis()

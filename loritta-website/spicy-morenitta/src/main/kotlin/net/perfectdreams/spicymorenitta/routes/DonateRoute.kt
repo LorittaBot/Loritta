@@ -37,9 +37,6 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                 DonationReward("ignore_me", 0.0, false),
                 DonationReward("ignore_me", 99.99, false),
 
-                // ===[  ESSENTIAL  ]===
-                DonationReward(locale["${LOCALE_PREFIX}.rewards.disableAds"], 19.99, false),
-
                 // ===[ RECOMMENDED ]===
                 DonationReward(locale["${LOCALE_PREFIX}.rewards.exclusiveProfileBadge"], 39.99, false),
                 DonationReward(locale["${LOCALE_PREFIX}.rewards.customProfileBackground"], 39.99, false),
