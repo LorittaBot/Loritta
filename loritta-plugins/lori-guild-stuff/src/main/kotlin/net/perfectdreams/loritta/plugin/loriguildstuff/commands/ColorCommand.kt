@@ -23,7 +23,8 @@ object ColorCommand {
             "violeta" to 738880144403464322L,
             "laranja" to 738914237598007376L,
             "violeta claro" to 750738232735432817L,
-            "preto" to 751256879534964796L
+            "preto" to 751256879534964796L,
+            "verde neon" to 760681173608431647L
     )
 
     fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("cor", "color"), CommandCategory.MISC) {
