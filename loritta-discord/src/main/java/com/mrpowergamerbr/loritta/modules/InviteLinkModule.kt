@@ -47,6 +47,9 @@ class InviteLinkModule : MessageReceivedModule {
 				?: return false
 
 		val content = message.contentRaw
+				// We need to strip the code marks to avoid this:
+				// https://cdn.discordapp.com/attachments/513405772911345664/760887806191992893/invite-bug.png
+				.stripCodeMarks()
 				.replace("\u200B", "")
 				.replace("\\", "")
 
