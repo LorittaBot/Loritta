@@ -1,6 +1,6 @@
 package net.perfectdreams.spicymorenitta.routes
 
-import io.ktor.client.request.get
+import io.ktor.client.request.*
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.dom.create
