@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.MessageEmbed
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import org.jetbrains.exposed.sql.deleteWhere
@@ -137,7 +138,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 				embed.setThumbnail(guild.iconUrl)
 			}
 
-			embed.setTitle("<a:lori_notification:394165039227207710> ${reminder.content.substringIfNeeded(0..1000)}")
+			embed.setTitle("<a:lori_notification:394165039227207710> ${reminder.content}".substringIfNeeded(0 until MessageEmbed.TITLE_MAX_LENGTH))
 			embed.appendDescription("**${locale["LEMBRAR_RemindAt"]} ** ${reminder.remindAt.humanize(locale)}\n")
 			embed.appendDescription("**${locale["LEMBRAR_CreatedInGuild"]}** `${guild?.name ?: "Servidor não existe mais..."}`\n")
 			embed.appendDescription("**${locale["LEMBRAR_RemindInTextChannel"]}** ${textChannel?.asMention ?: "Canal de texto não existe mais..."}")

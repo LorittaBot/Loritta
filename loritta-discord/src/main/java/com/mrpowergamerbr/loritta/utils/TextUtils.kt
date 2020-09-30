@@ -114,7 +114,8 @@ fun String.substringIfNeeded(range: IntRange = 0 until 2000, suffix: String = ".
 	if (this.length - 1 in range)
 		return this
 
-	return this.substring(range.start .. range.last - suffix.length) + suffix
+	// We have a Math.max to avoid issues when the string is waaaay too small, causing the range.last - suffix.length be negative
+	return this.substring(range.start .. Math.max(0, range.last - suffix.length)) + suffix
 }
 
 val TIME_PATTERN = "(([01]\\d|2[0-3]):([0-5]\\d)(:([0-5]\\d))?) ?(am|pm)?".toPattern()
