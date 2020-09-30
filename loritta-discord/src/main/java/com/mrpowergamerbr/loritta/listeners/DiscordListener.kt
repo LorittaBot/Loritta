@@ -9,7 +9,6 @@ import com.mrpowergamerbr.loritta.modules.*
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Mutes
-import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNullById
@@ -56,7 +55,6 @@ import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
 import okio.Buffer
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.kotlin.utils.getOrPutNullable
 import org.slf4j.LoggerFactory
@@ -418,21 +416,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				logger.debug { "Setting localeId to en-us at ${event.guild}, regionName = $regionName" }
 				loritta.newSuspendedTransaction {
 					serverConfig.localeId = "en-us"
-				}
-			}
-
-			logger.debug { "Adding DJ permission to all roles with ADMINISTRATOR or MANAGE_SERVER permission at ${event.guild}"}
-
-			// Adicionar a permissão de DJ para alguns cargos
-			event.guild.roles.forEach { role ->
-				if (role.hasPermission(Permission.ADMINISTRATOR) || role.hasPermission(Permission.MANAGE_SERVER)) {
-					loritta.newSuspendedTransaction {
-						ServerRolePermissions.insert {
-							it[ServerRolePermissions.guild] = serverConfig.id
-							it[ServerRolePermissions.roleId] = role.idLong
-							it[ServerRolePermissions.permission] = LorittaPermission.DJ
-						}
-					}
 				}
 			}
 		}
