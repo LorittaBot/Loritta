@@ -33,7 +33,7 @@ class SupportView(
 
                         div {
                             style = "text-align: center;"
-                            h2 {
+                            h1 {
                                 + locale["website.support.title"]
                             }
                         }
@@ -53,19 +53,23 @@ class SupportView(
                     div {
                         style = "text-align: center;"
 
-                        h1 {
-                            + locale["website.support.supportServers"]
-                        }
-
                         div {
                             style = "display: flex; justify-content: space-evenly; flex-wrap: wrap;"
 
                             div {
+                                style = "min-width: 300px; width: 50%;"
+
                                 h2 {
-                                    + "English / International"
+                                    + locale["website.support.supportServer.title"]
                                 }
 
-                                a(href = "https://discord.gg/ZWt5mKB") {
+                                locale.getList("website.support.supportServer.description").forEach {
+                                    p {
+                                        + it
+                                    }
+                                }
+
+                                a(href = "https://discord.gg/loritta") {
                                     img(src = "https://discordapp.com/api/guilds/420626099257475072/widget.png?style=banner3") {
                                         style = "border-radius: 7px;"
                                     }
@@ -73,11 +77,19 @@ class SupportView(
                             }
 
                             div {
+                                style = "min-width: 300px; width: 50%;"
+
                                 h2 {
-                                    + "Português"
+                                    + locale["website.support.communityServer.title"]
                                 }
 
-                                a(href = "https://discord.gg/loritta") {
+                                locale.getList("website.support.communityServer.description").forEach {
+                                    p {
+                                        + it
+                                    }
+                                }
+
+                                a(href = "https://discord.gg/lori") {
                                     img(src = "https://discordapp.com/api/guilds/297732013006389252/widget.png?style=banner3") {
                                         style = "border-radius: 7px;"
                                     }
