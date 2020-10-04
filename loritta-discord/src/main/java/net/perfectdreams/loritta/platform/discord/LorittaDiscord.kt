@@ -47,6 +47,7 @@ import net.perfectdreams.loritta.tables.Backgrounds
 import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.loritta.utils.config.FanArt
 import net.perfectdreams.loritta.utils.config.FanArtArtist
+import net.perfectdreams.loritta.utils.locale.DebugLocales
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.image.BufferedImage
@@ -406,6 +407,9 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
                 locales[localeId] = loadLocale(localeId, locales[languageInheritsFromLanguageId])
             }
         }
+
+        val brDebug = DebugLocales.createPseudoLocaleOf(defaultLocale, "br-debug", "br-debug")
+        locales["br-debug"] = brDebug
 
         this.locales = locales
     }

@@ -80,7 +80,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 					context,
 					LocaleWrapper(
 							"Auto-PT-BR-Debug",
-							loritta.getLocaleById("pt-debug"),
+							loritta.getLocaleById("br-debug"),
 							loritta.getLegacyLocaleById("default"),
 							"\uD83D\uDC31"
 					)
