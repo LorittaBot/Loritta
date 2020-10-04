@@ -8,16 +8,21 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.onReactionByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import net.perfectdreams.loritta.api.commands.LorittaCommand
+import net.perfectdreams.loritta.platform.discord.commands.LorittaDiscordCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.utils.config.FanArt
 import net.perfectdreams.loritta.utils.config.FanArtArtist
 import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
 
-class FanArtsCommand : LorittaCommand(arrayOf("fanarts", "fanart"), category = CommandCategory.MISC) {
+class FanArtsCommand : LorittaDiscordCommand(arrayOf("fanarts", "fanart"), category = CommandCategory.MISC) {
+    override val discordPermissions = listOf(
+            Permission.MESSAGE_MANAGE
+    )
+
     override fun getDescription(locale: BaseLocale): String? {
         return locale["commands.miscellaneous.fanArts.description", "<a:lori_blobheartseyes:393914347706908683>", "<a:lori_blobheartseyes:393914347706908683>"]
     }
@@ -29,7 +34,7 @@ class FanArtsCommand : LorittaCommand(arrayOf("fanarts", "fanart"), category = C
         }
 
         var fanArtIndex = (index?.toIntOrNull() ?: Loritta.RANDOM.nextInt(fanArtsByDate.size) + 1) - 1
-        if (fanArtIndex !in 0 until fanArtsByDate.size) {
+        if (fanArtIndex !in fanArtsByDate.indices) {
             fanArtIndex = 0
         }
 

@@ -12,8 +12,9 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionByAuthor
 import com.mrpowergamerbr.loritta.utils.removeAllFunctions
-import io.ktor.client.request.get
+import io.ktor.client.request.*
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.perfectdreams.akinatorreapi.AkinatorAnswer
 import net.perfectdreams.akinatorreapi.AkinatorClient
@@ -33,6 +34,8 @@ object AkinatorCommand {
 
 	fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("akinator"), CommandCategory.FUN) {
 		description { it["commands.fun.akinator.description"] }
+
+		botRequiredPermissions = listOf(Permission.MESSAGE_MANAGE)
 
 		executesDiscord {
 			// TODO: Load correct region

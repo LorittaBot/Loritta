@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.Color
 import java.net.URLEncoder
@@ -20,6 +21,8 @@ import java.time.ZonedDateTime
 import java.util.*
 
 class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.MINECRAFT) {
+	override fun getBotPermissions() = listOf(Permission.MESSAGE_MANAGE)
+
 	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.toNewLocale()["commands.minecraft.spigotmc.description"]
 	}

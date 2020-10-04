@@ -15,11 +15,14 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.Color
 import java.util.*
 
 class GameJoltCommand : AbstractCommand("gamejolt", category = CommandCategory.FUN) {
+	override fun getBotPermissions() = listOf(Permission.MESSAGE_MANAGE)
+
 	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["GAMEJOLT_DESCRIPTION"]
 	}
