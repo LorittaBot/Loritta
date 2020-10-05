@@ -15,7 +15,6 @@ class LorittaWebsite(val loritta: Loritta, val websiteUrl: String, var frontendF
 		lateinit var ENGINE: PebbleEngine
 		lateinit var FOLDER: String
 		lateinit var WEBSITE_URL: String
-		val kotlinTemplateCache = Caffeine.newBuilder().build<String, Any>().asMap()
 
 		fun canManageGuild(g: TemmieDiscordAuth.Guild): Boolean {
 			val isAdministrator = g.permissions shr 3 and 1 == 1
