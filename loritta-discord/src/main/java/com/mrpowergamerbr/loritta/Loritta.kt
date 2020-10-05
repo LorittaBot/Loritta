@@ -100,12 +100,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	val webhookExecutor = Executors.newScheduledThreadPool(16, ThreadFactoryBuilder().setNameFormat("Webhook Sender %d").build())
 	val webhookOkHttpClient = OkHttpClient()
 
-	fun createThreadPool(name: String): ExecutorService {
-		return if (FeatureFlags.isEnabled(this, FeatureFlags.Names.USE_FIXED_THREAD_POOL))
-			Executors.newFixedThreadPool(16, ThreadFactoryBuilder().setNameFormat(name).build())
-		else
-			Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat(name).build())
-	}
+	fun createThreadPool(name: String) = Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat(name).build())
 
 	val legacyCommandManager = CommandManager(this) // Nosso command manager
 	val commandManager = DiscordCommandManager(this)

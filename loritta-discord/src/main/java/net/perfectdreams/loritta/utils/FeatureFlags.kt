@@ -13,6 +13,5 @@ object FeatureFlags {
 	}
 
 	object Names {
-		const val USE_FIXED_THREAD_POOL = "use-fixed-thread-pool"
 	}
 }
