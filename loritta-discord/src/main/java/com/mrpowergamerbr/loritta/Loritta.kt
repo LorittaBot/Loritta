@@ -280,10 +280,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		}
 
 		DebugLog.startCommandListenerThread()
-
-		GlobalScope.launch(coroutineDispatcher) {
-			connectionManager.updateProxies()
-		}
 		// Ou seja, agora a Loritta está funcionando, Yay!
 	}
 
