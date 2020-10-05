@@ -126,7 +126,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
             .build<Long, ServerConfig>()
 
     // Used for message execution
-    val coroutineMessageExecutor = Executors.newFixedThreadPool(16, ThreadFactoryBuilder().setNameFormat("Message Executor Thread %d").build())
+    val coroutineMessageExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), ThreadFactoryBuilder().setNameFormat("Message Executor Thread %d").build())
     val coroutineMessageDispatcher = coroutineMessageExecutor.asCoroutineDispatcher() // Coroutine Dispatcher
     val pendingMessages = ConcurrentLinkedQueue<Job>()
 
