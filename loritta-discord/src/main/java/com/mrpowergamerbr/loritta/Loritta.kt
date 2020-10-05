@@ -161,8 +161,9 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 				.protocols(listOf(Protocol.HTTP_1_1)) // https://i.imgur.com/FcQljAP.png
 
 		builder = DefaultShardManagerBuilder.create(discordConfig.discord.clientToken, discordConfig.discord.intents)
+				// By default all flags are enabled, so we disable all flags and then...
 				.disableCache(CacheFlag.values().toList())
-				.enableCache(discordConfig.discord.cacheFlags)
+				.enableCache(discordConfig.discord.cacheFlags) // ...we enable all the flags again
 				.setChunkingFilter(ChunkingFilter.NONE) // No chunking policy because trying to load all members is hard
 				.setMemberCachePolicy(MemberCachePolicy.ALL) // Cache all members!!
 				.apply {
