@@ -4,7 +4,6 @@ import com.google.common.collect.Sets
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
-import com.mrpowergamerbr.loritta.network.Databases
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
@@ -14,7 +13,6 @@ import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.tables.servers.ServerRolePermissions
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 /**
@@ -30,7 +28,7 @@ open class LorittaUser(val user: User, val permissions: EnumSet<LorittaPermissio
 		 * @see convertRolePermissionsMapToMemberPermissionList
 		 * @see loadMemberLorittaPermissions
 		 */
-		fun loadGuildRolesLorittaPermissions(serverConfig: ServerConfig, guild: Guild) = transaction(Databases.loritta) {
+		suspend fun loadGuildRolesLorittaPermissions(serverConfig: ServerConfig, guild: Guild) = loritta.newSuspendedTransaction {
 			val permissions = ServerRolePermissions.select {
 				ServerRolePermissions.guild eq serverConfig.id
 			}
@@ -52,12 +50,16 @@ open class LorittaUser(val user: User, val permissions: EnumSet<LorittaPermissio
 		 * @see convertRolePermissionsMapToMemberPermissionList
 		 * @see loadMemberLorittaPermissions
 		 */
-		fun loadMemberRolesLorittaPermissions(serverConfig: ServerConfig, member: Member) = transaction(Databases.loritta) {
+		suspend fun loadMemberRolesLorittaPermissions(serverConfig: ServerConfig, member: Member) = loritta.newSuspendedTransaction {
+			_loadMemberRolesLorittaPermissions(serverConfig, member)
+		}
+
+		private fun _loadMemberRolesLorittaPermissions(serverConfig: ServerConfig, member: Member): Map<Long, EnumSet<LorittaPermission>> {
 			val permissions = ServerRolePermissions.select {
 				ServerRolePermissions.guild eq serverConfig.id and (ServerRolePermissions.roleId inList member.roles.map { it.idLong })
 			}
 
-			permissions
+			return permissions
 					.asSequence()
 					.map { it[ServerRolePermissions.roleId] to it[ServerRolePermissions.permission] }
 					.groupBy { it.first }
@@ -115,7 +117,7 @@ open class LorittaUser(val user: User, val permissions: EnumSet<LorittaPermissio
 		 * @see convertRolePermissionsMapToMemberPermissionList
 		 * @see loadMemberRolesLorittaPermissions
 		 */
-		fun loadMemberLorittaPermissions(serverConfig: ServerConfig, member: Member) = convertRolePermissionsMapToMemberPermissionList(
+		suspend fun loadMemberLorittaPermissions(serverConfig: ServerConfig, member: Member) = convertRolePermissionsMapToMemberPermissionList(
 				member,
 				loadMemberRolesLorittaPermissions(serverConfig, member)
 		)
