@@ -38,10 +38,10 @@ class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ct
 
 				if (pair == null) {
 					context.reply(
-                            LorittaReply(
-                                    message = context.getAsMention(true) + locale["PACKAGEINFO_COULDNT_FIND", packageId],
-                                    prefix = Constants.ERROR
-                            )
+							LorittaReply(
+									message = locale["PACKAGEINFO_COULDNT_FIND", packageId],
+									prefix = Constants.ERROR
+							)
 					)
 					return
 				}
@@ -66,7 +66,12 @@ class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ct
 
 				context.sendMessage(context.getAsMention(true), embed.build())
 			} catch (e: Exception) {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["PACKAGEINFO_INVALID", packageId])
+				context.reply(
+						LorittaReply(
+								message = locale["PACKAGEINFO_INVALID", packageId],
+								prefix = Constants.ERROR
+						)
+				)
 			}
 		} else {
 			context.explain()
