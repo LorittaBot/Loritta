@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.website.routes.api.v1.twitch
 
 import com.github.salomonbrys.kotson.jsonObject
-import com.mrpowergamerbr.loritta.utils.WebsiteUtils
+import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException

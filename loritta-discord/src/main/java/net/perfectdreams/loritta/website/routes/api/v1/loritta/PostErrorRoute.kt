@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.website.routes.api.v1.loritta
 
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonParser
-import com.mrpowergamerbr.loritta.utils.WebsiteUtils
+import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.ApplicationCall
