@@ -194,7 +194,7 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
             showPaymentSelectionModal(39.99)
         }
         (document.getElementById("donate-button-plan3") as HTMLDivElement?)?.onclick = {
-            showPaymentSelectionModal(119.99)
+            showPaymentSelectionModal(99.99)
         }
 
         (document.getElementById("renew-button") as HTMLDivElement?)?.onclick = {

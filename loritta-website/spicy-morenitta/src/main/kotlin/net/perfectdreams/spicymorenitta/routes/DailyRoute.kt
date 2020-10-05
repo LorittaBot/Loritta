@@ -1,11 +1,9 @@
 package net.perfectdreams.spicymorenitta.routes
 
-import io.ktor.client.call.receive
-import io.ktor.client.request.get
-import io.ktor.client.request.parameter
-import io.ktor.client.request.url
-import io.ktor.client.statement.HttpResponse
-import io.ktor.http.HttpStatusCode
+import io.ktor.client.call.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import jq
 import kotlinx.html.*
 import kotlinx.html.dom.append
@@ -23,11 +21,14 @@ import net.perfectdreams.spicymorenitta.utils.locale.buildAsHtml
 import net.perfectdreams.spicymorenitta.utils.onClick
 import net.perfectdreams.spicymorenitta.utils.select
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
+import org.w3c.dom.Audio
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
-import org.w3c.dom.Audio
-import utils.*
+import utils.CountUp
+import utils.CountUpOptions
+import utils.Moment
+import utils.RecaptchaOptions
 import kotlin.browser.document
 import kotlin.browser.window
 import kotlin.collections.set
@@ -155,6 +156,9 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
     }
 
     fun updateLeaderboard() {
+        if (true) // laaaaag
+            return
+
         // Iremos pegar o leaderboard em uma task separada, já que o endpoint é diferente :)
         m.launch {
             val leaderboardElement = document.select<HTMLElement>("#leaderboard")
