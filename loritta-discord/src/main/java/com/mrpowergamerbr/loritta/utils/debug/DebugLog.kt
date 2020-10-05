@@ -63,7 +63,7 @@ object DebugLog {
 		logger.info("eventLogListener.downloadedAvatarJobs: ${EventLogListener.downloadedAvatarJobs}")
 		logger.info("Cached Retrieved Users: ${lorittaShards.cachedRetrievedUsers.size()}")
 		logger.info("> Executors")
-		logger.info("Pending Messages (${loritta.pendingMessages.size}): ${loritta.pendingMessages}")
+		logger.info("Pending Messages (${loritta.pendingMessages.size}): Active: ${loritta.pendingMessages.filter { it.isActive }.count()}; Cancelled: ${loritta.pendingMessages.filter { it.isCancelled }.count()}; Complete: ${loritta.pendingMessages.filter { it.isCompleted }.count()};")
 	}
 
 	fun handleLine(line: String) {
