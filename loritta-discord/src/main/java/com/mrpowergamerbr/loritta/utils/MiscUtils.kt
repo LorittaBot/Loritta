@@ -7,11 +7,12 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
-import io.ktor.client.request.get
-import io.ktor.http.HttpStatusCode
+import io.ktor.client.request.*
+import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
+import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.json.XML
 import java.io.File

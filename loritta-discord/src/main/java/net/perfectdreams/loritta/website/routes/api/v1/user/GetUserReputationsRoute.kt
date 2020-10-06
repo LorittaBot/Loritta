@@ -4,7 +4,7 @@ import com.github.salomonbrys.kotson.jsonArray
 import com.github.salomonbrys.kotson.jsonObject
 import com.mrpowergamerbr.loritta.dao.Reputation
 import com.mrpowergamerbr.loritta.tables.Reputations
-import com.mrpowergamerbr.loritta.utils.WebsiteUtils
+import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import io.ktor.application.ApplicationCall
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord

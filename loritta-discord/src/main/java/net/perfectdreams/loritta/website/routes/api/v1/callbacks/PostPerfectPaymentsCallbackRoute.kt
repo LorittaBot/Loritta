@@ -4,7 +4,6 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.DonationKey
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -21,7 +20,6 @@ import net.perfectdreams.loritta.utils.payments.PaymentReason
 import net.perfectdreams.loritta.website.routes.BaseRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 class PostPerfectPaymentsCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/callbacks/perfect-payments") {
@@ -48,7 +46,7 @@ class PostPerfectPaymentsCallbackRoute(loritta: LorittaDiscord) : BaseRoute(lori
 
 		logger.info { "Received PerfectPayments callback: Reference ID: $referenceId; Gateway: $gateway; Status: $status" }
 
-		val internalPayment = transaction(Databases.loritta) {
+		val internalPayment = loritta.newSuspendedTransaction {
 			Payment.find { Payments.referenceId eq referenceId }
 					.firstOrNull()
 		}

@@ -6,7 +6,6 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -18,6 +17,7 @@ import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.*
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.tables.Raspadinhas
 import net.perfectdreams.loritta.utils.Emotes
@@ -122,7 +122,7 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
                             mentionUser = false
                     ),
                     LorittaReply(
-                            "Compre uma raspadinha da Loritta por **125 sonhos** usando `${context.config.commandPrefix}raspadinha comprar`!",
+                            "Compre uma raspadinha da Loritta por **150 sonhos** usando `${context.config.commandPrefix}raspadinha comprar`!",
                             prefix = "\uD83D\uDCB5",
                             mentionUser = false
                     )
@@ -134,10 +134,10 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 		var boughtScratchCardsInThisMessage = _boughtScratchCardsInThisMessage
 		val mutex = mutexes.getOrPut(context.userHandle.idLong, { Mutex() })
 		mutex.withLock {
-			if (125 > profile.money) {
+			if (150 > profile.money) {
 				context.reply(
                         LorittaReply(
-                                "Você precisa de 125 sonhos para poder comprar uma raspadinha!",
+                                "Você precisa de 150 sonhos para poder comprar uma raspadinha!",
                                 Constants.ERROR
                         )
 				)
@@ -145,7 +145,7 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 			}
 
 			loritta.newSuspendedTransaction {
-				profile.takeSonhosNested(125)
+				profile.takeSonhosNested(150)
 			}
 
 			logger.info { "User ${context.userHandle.idLong} bought one raspadinha ticket!" }
@@ -217,7 +217,7 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 				invisibleSpoilers += "||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||"
 			}
 
-			val content = "${Emotes.LORI_RICH} **|** ${context.getAsMention(false)} aqui está a sua raspadinha com número $id! Raspe clicando na parte cinza e, se o seu cartão for premiado com combinações de emojis na horizontal/vertical/diagonal, clique em ${Emotes.LORI_RICH} para receber a sua recompensa! Mas cuidado, não tente resgatar prêmios de uma raspadinha que não tem prêmios!! Se você quiser comprar um novo ticket pagando 125 sonhos, aperte em \uD83D\uDD04!!\n$scratchCardTemplate"
+			val content = "${Emotes.LORI_RICH} **|** ${context.getAsMention(false)} aqui está a sua raspadinha com número $id! Raspe clicando na parte cinza e, se o seu cartão for premiado com combinações de emojis na horizontal/vertical/diagonal, clique em ${Emotes.LORI_RICH} para receber a sua recompensa! Mas cuidado, não tente resgatar prêmios de uma raspadinha que não tem prêmios!! Se você quiser comprar um novo ticket pagando 150 sonhos, aperte em \uD83D\uDD04!!\n$scratchCardTemplate"
 			var contentWithInvisibleSpoilers = "$invisibleSpoilers$content"
 			if (contentWithInvisibleSpoilers.length >= 2000 && message != null) {
 				// Se a mensagem está ficando grande demais por causa dos spoilers, vamos editar para que seja vazia para "liberar" os spoilers usados

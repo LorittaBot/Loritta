@@ -3,7 +3,6 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Reminder
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Reminders
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
@@ -15,7 +14,6 @@ import net.dv8tion.jda.api.entities.MessageEmbed
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.util.*
 
@@ -64,7 +62,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 				logger.trace { "content = $message" }
 
 				// Criar o Lembrete
-				transaction(Databases.loritta) {
+				loritta.newSuspendedTransaction {
 					Reminder.new {
 						userId = context.userHandle.idLong
 						channelId = context.message.textChannel.idLong
@@ -98,7 +96,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 	}
 
 	suspend fun handleReminderList(context: CommandContext, page: Int, locale: LegacyBaseLocale) {
-		val reminders = transaction(Databases.loritta) {
+		val reminders = loritta.newSuspendedTransaction {
 			Reminder.find { Reminders.userId eq context.userHandle.idLong }.toMutableList()
 		}
 
@@ -153,7 +151,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 			message.onReactionAddByAuthor(context) {
 				message.delete().queue()
 				reminders.remove(reminder)
-				transaction(Databases.loritta) {
+				loritta.newSuspendedTransaction {
 					Reminders.deleteWhere { Reminders.id eq reminder.id }
 				}
 

@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.dao
 
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Dailies
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -11,7 +10,6 @@ import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 class Profile(id: EntityID<Long>) : Entity<Long>(id) {
@@ -34,8 +32,8 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 	 *
 	 * @return the result and when the user can get the daily again
 	 */
-	fun canGetDaily(): Pair<Boolean, Long> {
-		val receivedDailyAt = transaction(Databases.loritta) {
+	suspend fun canGetDaily(): Pair<Boolean, Long> {
+		val receivedDailyAt = loritta.newSuspendedTransaction {
 			com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.receivedById eq userId }
 					.orderBy(Dailies.receivedAt, SortOrder.DESC)
 					.limit(1)

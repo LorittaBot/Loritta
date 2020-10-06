@@ -48,7 +48,7 @@ class GetGuildWebAuditLogRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRo
 			val user = lorittaShards.retrieveUserInfoById(userId) ?: continue
 
 			users.add(
-					com.mrpowergamerbr.loritta.utils.WebsiteUtils.transformToJson(user)
+					net.perfectdreams.loritta.website.utils.WebsiteUtils.transformToJson(user)
 			)
 		}
 

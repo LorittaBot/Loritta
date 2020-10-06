@@ -127,7 +127,7 @@ object GiveawayManager {
 
         logger.trace { "Storing giveaway info..." }
 
-        val giveaway = transaction(Databases.loritta) {
+        val giveaway = loritta.newSuspendedTransaction {
             Giveaway.new {
                 this.guildId = channel.guild.idLong
                 this.textChannelId = channel.idLong

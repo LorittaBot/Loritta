@@ -86,7 +86,7 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 
 			// Loritta presa amanhã por manipulação de resultados
 			if (user1 != null && user2 != null) {
-				val marriage = transaction(Databases.loritta) {
+				val marriage = loritta.newSuspendedTransaction {
 					Marriage.find {
 						(Marriages.user1 eq user1.idLong and (Marriages.user2 eq user2.idLong)) or
 								(Marriages.user2 eq user1.idLong and (Marriages.user1 eq user2.idLong))
@@ -98,7 +98,7 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 					percentage = 100
 
 				// But effects can override the percentage!
-				val effect = transaction(Databases.loritta) {
+				val effect = loritta.newSuspendedTransaction {
 					ShipEffect.find {
 						(((ShipEffects.user1Id eq user1.idLong) and (ShipEffects.user2Id eq user2.idLong)) or
 								(ShipEffects.user2Id eq user1.idLong and (ShipEffects.user1Id eq user2.idLong))) and

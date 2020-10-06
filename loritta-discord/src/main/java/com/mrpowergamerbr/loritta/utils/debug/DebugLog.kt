@@ -63,7 +63,13 @@ object DebugLog {
 		logger.info("eventLogListener.downloadedAvatarJobs: ${EventLogListener.downloadedAvatarJobs}")
 		logger.info("Cached Retrieved Users: ${lorittaShards.cachedRetrievedUsers.size()}")
 		logger.info("> Executors")
-		logger.info("Pending Messages (${loritta.pendingMessages.size}): Active: ${loritta.pendingMessages.filter { it.isActive }.count()}; Cancelled: ${loritta.pendingMessages.filter { it.isCancelled }.count()}; Complete: ${loritta.pendingMessages.filter { it.isCompleted }.count()};")
+
+		val pendingMessagesSize = loritta.pendingMessages.size
+		val availableProcessors = Runtime.getRuntime().availableProcessors()
+		val isMessagesOverloaded = pendingMessagesSize > availableProcessors
+		logger.info("Pending Messages ($pendingMessagesSize): Active: ${loritta.pendingMessages.filter { it.isActive }.count()}; Cancelled: ${loritta.pendingMessages.filter { it.isCancelled }.count()}; Complete: ${loritta.pendingMessages.filter { it.isCompleted }.count()};")
+		if (isMessagesOverloaded)
+			logger.warn { "Loritta is overloaded! There are $pendingMessagesSize messages pending to be executed, ${pendingMessagesSize - availableProcessors} more than it should be!" }
 	}
 
 	fun handleLine(line: String) {

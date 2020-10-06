@@ -12,7 +12,6 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.gifs.GifSequenceWriter
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.profile.NostalgiaProfileCreator
 import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
 import com.mrpowergamerbr.loritta.tables.DonationConfigs
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
@@ -96,7 +95,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 				return usersWithRoles.contains(user.id)
 			}
 
-			val hasUpvoted = transaction(Databases.loritta) {
+			val hasUpvoted = loritta.newSuspendedTransaction {
 				BotVotes.select {
 					BotVotes.userId eq user.idLong and (BotVotes.votedAt greaterEq System.currentTimeMillis() - (Constants.ONE_HOUR_IN_MILLISECONDS * 12))
 				}.count() != 0L
@@ -191,7 +190,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			if (hasNotifyMeRole) badges += ImageIO.read(File(Loritta.ASSETS + "notify_me.png"))
 			if (user.id == loritta.discordConfig.discord.clientId) badges += ImageIO.read(File(Loritta.ASSETS + "loritta_badge.png"))
 			if (user.isBot) badges += ImageIO.read(File(Loritta.ASSETS + "robot_badge.png"))
-			val marriage = transaction(Databases.loritta) { profile.marriage }
+			val marriage = profile.marriage
 			if (marriage != null) {
 				if (System.currentTimeMillis() - marriage.marriedSince > 2_592_000_000) {
 					badges += ImageIO.read(File(Loritta.ASSETS + "blob_snuggle.png"))
@@ -226,7 +225,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			userProfile = loritta.getOrCreateLorittaProfile(contextUser.id)
 		}
 
-		val settings = transaction(Databases.loritta) { userProfile.settings }
+		val settings = loritta.newSuspendedTransaction { userProfile.settings }
 		val bannedState = userProfile.getBannedState()
 
 		if (contextUser != null && bannedState != null) {

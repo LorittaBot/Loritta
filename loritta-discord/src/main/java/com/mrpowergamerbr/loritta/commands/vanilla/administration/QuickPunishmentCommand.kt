@@ -2,11 +2,10 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.network.Databases
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import org.jetbrains.exposed.sql.transactions.transaction
+import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class QuickPunishmentCommand : AbstractCommand("quickpunishment", category = CommandCategory.ADMIN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -38,7 +37,7 @@ class QuickPunishmentCommand : AbstractCommand("quickpunishment", category = Com
 			)
 		}
 
-		transaction(Databases.loritta) {
+		loritta.newSuspendedTransaction {
 			userData.quickPunishment = !userData.quickPunishment
 		}
 	}

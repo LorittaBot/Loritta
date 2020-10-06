@@ -6,7 +6,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MiscUtils
-import com.mrpowergamerbr.loritta.utils.WebsiteUtils
+import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.extensions.isValidUrl
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException

@@ -22,7 +22,7 @@ open class PlainProfileCreator(internalName: String, val folderName: String) : P
 	class PlainGreenProfileCreator : PlainProfileCreator("plainGreen", "green")
 	class PlainGreenHeartsProfileCreator : PlainProfileCreator("plainGreenHearts", "green_hearts")
 
-	override fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
+	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
 		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/plain/profile_wrapper_$folderName.png"))
 
 		val whitneySemiBold = FileInputStream(File(Loritta.ASSETS + "whitney-semibold.ttf")).use {

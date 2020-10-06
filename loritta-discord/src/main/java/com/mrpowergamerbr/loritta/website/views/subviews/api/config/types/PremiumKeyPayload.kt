@@ -5,7 +5,7 @@ import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.utils.WebsiteUtils
+import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.http.HttpStatusCode

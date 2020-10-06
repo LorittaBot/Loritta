@@ -5,16 +5,12 @@ import com.google.common.cache.CacheBuilder
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
-import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.client.request.post
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.readText
-import io.ktor.http.userAgent
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -34,7 +30,6 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -112,7 +107,7 @@ class LorittaShards {
 			return transformUserToCachedUserInfo(cachedRetrievedUser.get())
 
 		// Se não tiver, iremos verificar na database externa
-		val cachedUser = transaction(Databases.loritta) {
+		val cachedUser = loritta.newSuspendedTransaction {
 			CachedDiscordUsers.select { CachedDiscordUsers.id eq id }
 					.firstOrNull()
 		}
@@ -151,7 +146,7 @@ class LorittaShards {
 			return transformUserToCachedUserInfo(cachedRetrievedUser)
 
 		// If it doesn't exist, check on the external database
-		val cachedUser = transaction(Databases.loritta) {
+		val cachedUser = loritta.newSuspendedTransaction {
 			CachedDiscordUsers.select { CachedDiscordUsers.name eq username and (CachedDiscordUsers.discriminator eq discriminator) }
 					.firstOrNull()
 		}
@@ -203,7 +198,7 @@ class LorittaShards {
 	@Suppress("IMPLICIT_CAST_TO_ANY")
 	suspend fun updateCachedUserData(id: Long, name: String, discriminator: String, avatarId: String?) {
 		val now = System.currentTimeMillis()
-		transaction(Databases.loritta) {
+		loritta.newSuspendedTransaction {
 			val cachedData = CachedDiscordUsers.select { CachedDiscordUsers.id eq id }.firstOrNull()
 
 			if (cachedData != null) {

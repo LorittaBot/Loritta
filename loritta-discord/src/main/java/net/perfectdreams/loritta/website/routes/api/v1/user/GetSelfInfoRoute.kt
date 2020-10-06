@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Background
 import com.mrpowergamerbr.loritta.dao.ProfileDesign
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.WebsiteUtils
+import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.networkbans.ApplyBansTask
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
