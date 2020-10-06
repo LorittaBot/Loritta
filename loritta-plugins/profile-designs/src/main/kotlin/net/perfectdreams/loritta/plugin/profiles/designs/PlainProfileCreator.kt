@@ -101,14 +101,14 @@ open class PlainProfileCreator(internalName: String, val folderName: String) : P
 		}
 	}
 
-	fun drawReputations(user: ProfileUserInfoData, graphics: Graphics) {
+	suspend fun drawReputations(user: ProfileUserInfoData, graphics: Graphics) {
 		val font = graphics.font
 		val reputations = ProfileUtils.getReputationCount(user)
 
 		ImageUtils.drawCenteredString(graphics, "$reputations reps", Rectangle(634, 404, 166, 52), font)
 	}
 
-	fun drawUserInfo(user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, graphics: Graphics): Int {
+	suspend fun drawUserInfo(user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, graphics: Graphics): Int {
 		val userInfo = mutableListOf<String>()
 		userInfo.add("Global")
 		val globalPosition = ProfileUtils.getGlobalExperiencePosition(userProfile)

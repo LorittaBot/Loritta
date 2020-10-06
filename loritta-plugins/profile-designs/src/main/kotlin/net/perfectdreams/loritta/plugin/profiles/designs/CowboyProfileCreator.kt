@@ -1,20 +1,13 @@
 package net.perfectdreams.loritta.plugin.profiles.designs
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.dao.Profile
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.profile.ProfileCreator
 import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
-import com.mrpowergamerbr.loritta.tables.GuildProfiles
-import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.io.File
@@ -102,13 +95,13 @@ class CowboyProfileCreator : ProfileCreator("cowboy") {
 		}
 	}
 
-	fun drawReputations(user: ProfileUserInfoData, graphics: Graphics) {
+	suspend fun drawReputations(user: ProfileUserInfoData, graphics: Graphics) {
 		val font = graphics.font
 		val reputations = ProfileUtils.getReputationCount(user)
 		ImageUtils.drawCenteredString(graphics, "$reputations reps", Rectangle(582, 0, 218, 66), font)
 	}
 
-	fun drawUserInfo(user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, graphics: Graphics): Int {
+	suspend fun drawUserInfo(user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, graphics: Graphics): Int {
 		val userInfo = mutableListOf<String>()
 		userInfo.add("Global")
 
