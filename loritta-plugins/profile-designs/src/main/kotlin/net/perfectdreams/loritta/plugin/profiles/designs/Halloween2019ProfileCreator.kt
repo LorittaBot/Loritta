@@ -24,7 +24,7 @@ import java.io.FileInputStream
 import javax.imageio.ImageIO
 
 class Halloween2019ProfileCreator : ProfileCreator("halloween2019") {
-	override fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
+	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
 		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 	}
 
@@ -50,7 +50,7 @@ class Halloween2019ProfileCreator : ProfileCreator("halloween2019") {
 		val avatar = LorittaUtils.downloadImage(user.avatarUrl)!!.getScaledInstance(152, 152, BufferedImage.SCALE_SMOOTH)
 		val marrySection = ImageIO.read(File(Loritta.ASSETS, "profile/halloween_2019/marry.png"))
 
-		val marriage = transaction(Databases.loritta) { userProfile.marriage }
+		val marriage = loritta.newSuspendedTransaction { userProfile.marriage }
 
 		val marriedWithId = if (marriage?.user1 == user.id) {
 			marriage.user2

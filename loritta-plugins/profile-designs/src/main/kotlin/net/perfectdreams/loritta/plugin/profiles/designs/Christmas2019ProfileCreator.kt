@@ -1,22 +1,14 @@
 package net.perfectdreams.loritta.plugin.profiles.designs
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.dao.Profile
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.profile.ProfileCreator
 import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
-import com.mrpowergamerbr.loritta.tables.GuildProfiles
-import com.mrpowergamerbr.loritta.tables.Profiles
-import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.io.File
@@ -24,7 +16,7 @@ import java.io.FileInputStream
 import javax.imageio.ImageIO
 
 class Christmas2019ProfileCreator : ProfileCreator("christmas2019") {
-	override fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
+	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
 		val list = mutableListOf<BufferedImage>()
 
 		val whitneySemiBold = FileInputStream(File(Loritta.ASSETS + "whitney-semibold.ttf")).use {
@@ -46,7 +38,7 @@ class Christmas2019ProfileCreator : ProfileCreator("christmas2019") {
 		val avatar = LorittaUtils.downloadImage(user.avatarUrl)!!.getScaledInstance(150, 150, BufferedImage.SCALE_SMOOTH)
 		val marrySection = ImageIO.read(File(Loritta.ASSETS, "profile/christmas_2019/marry.png"))
 
-		val marriage = transaction(Databases.loritta) { userProfile.marriage }
+		val marriage = loritta.newSuspendedTransaction { userProfile.marriage }
 
 		val marriedWithId = if (marriage?.user1 == user.id) {
 			marriage.user2
