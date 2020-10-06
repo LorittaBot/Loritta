@@ -48,12 +48,17 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 	var moderationConfig by ModerationConfig optionalReferencedOn ServerConfigs.moderationConfig
 	var migrationVersion by ServerConfigs.migrationVersion
 
-	fun getActiveDonationKeys() = transaction(Databases.loritta) {
+	suspend fun getActiveDonationKeys() = loritta.newSuspendedTransaction {
 		DonationKey.find { DonationKeys.activeIn eq this@ServerConfig.id and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
 				.toList()
 	}
 
-	fun getActiveDonationKeysValue() = getActiveDonationKeys().sumByDouble { it.value }
+	suspend fun getActiveDonationKeysValue() = getActiveDonationKeys().sumByDouble { it.value }
+
+	fun getActiveDonationKeysNested() = DonationKey.find { DonationKeys.activeIn eq this@ServerConfig.id and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
+				.toList()
+
+	fun getActiveDonationKeysValueNested() = getActiveDonationKeysNested().sumByDouble { it.value }
 
 	suspend fun getUserData(id: Long): GuildProfile {
 		val t = this

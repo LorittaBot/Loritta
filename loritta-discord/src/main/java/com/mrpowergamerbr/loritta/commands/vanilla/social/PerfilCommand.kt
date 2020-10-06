@@ -174,7 +174,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 					if (specialCase && mutualGuilds.any { it["id"].string.toLong() == config.id.value })
 						continue
 
-					val donationKeysValue = config.getActiveDonationKeysValue()
+					val donationKeysValue = config.getActiveDonationKeysValueNested()
 					if (ServerPremiumPlans.getPlanFromValue(donationKeysValue).hasCustomBadge) {
 						val badge = LorittaUtils.downloadImage("${loritta.instanceConfig.loritta.website.url}/assets/img/badges/custom/${config.guildId}.png?t=${System.currentTimeMillis()}", bypassSafety = true)
 

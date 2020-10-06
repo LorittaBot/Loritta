@@ -14,13 +14,12 @@ import com.mrpowergamerbr.loritta.tables.DonationConfigs
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.MiscUtils
-import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
-import io.ktor.application.ApplicationCall
-import io.ktor.http.HttpStatusCode
+import io.ktor.application.*
+import io.ktor.http.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
@@ -32,6 +31,7 @@ import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.loritta.utils.daily.DailyGuildMissingRequirement
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.website.utils.extensions.trueIp
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
@@ -301,7 +301,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				var bestServer: ServerConfig? = null
 				var bestServerInfo: TemmieDiscordAuth.Guild? = null
 
-				for (pair in serverConfigs.map { Pair(it, it.getActiveDonationKeysValue()) }.filter { ServerPremiumPlans.getPlanFromValue(it.second).dailyMultiplier > 1.0 }.sortedByDescending { it.second  }) {
+				for (pair in serverConfigs.map { Pair(it, it.getActiveDonationKeysValueNested()) }.filter { ServerPremiumPlans.getPlanFromValue(it.second).dailyMultiplier > 1.0 }.sortedByDescending { it.second  }) {
 					val (config, donationValue) = pair
 					logger.info { "Checking ${config.guildId}" }
 
@@ -335,8 +335,8 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 
 				if (bestServer != null) {
 					val donationConfig = bestServer.donationConfig
-					val donationKey = bestServer.getActiveDonationKeys().firstOrNull()
-					val totalDonationValue = bestServer.getActiveDonationKeysValue()
+					val donationKey = bestServer.getActiveDonationKeysNested().firstOrNull()
+					val totalDonationValue = bestServer.getActiveDonationKeysValueNested()
 
 					if (donationConfig != null && donationKey != null) {
 						multipliedBy = getDailyMultiplier(totalDonationValue)
