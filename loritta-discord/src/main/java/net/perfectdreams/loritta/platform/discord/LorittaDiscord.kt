@@ -48,6 +48,7 @@ import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.loritta.utils.config.FanArt
 import net.perfectdreams.loritta.utils.config.FanArtArtist
 import net.perfectdreams.loritta.utils.locale.DebugLocales
+import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.image.BufferedImage
@@ -538,8 +539,20 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         statement.invoke(this)
     }
 
-    suspend fun <T> newSuspendedTransaction(statement: org.jetbrains.exposed.sql.Transaction.() -> T) = org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction(Dispatchers.IO, Databases.loritta) {
-        statement.invoke(this)
+    suspend fun <T> newSuspendedTransaction(repetitions: Int = 5, statement: org.jetbrains.exposed.sql.Transaction.() -> T): T {
+        var lastException: Exception? = null
+        for (i in 1..repetitions) {
+            try {
+                val result = org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction(Dispatchers.IO, Databases.loritta) {
+                    statement.invoke(this)
+                }
+                return result
+            } catch (e: ExposedSQLException) {
+                logger.warn(e) { "Exception while trying to execute query. Tries: $i" }
+                lastException = e
+            }
+        }
+        throw lastException ?: RuntimeException("This should never happen")
     }
 
     suspend fun <T> suspendedTransactionAsync(statement: org.jetbrains.exposed.sql.Transaction.() -> T) = org.jetbrains.exposed.sql.transactions.experimental.suspendedTransactionAsync(Dispatchers.IO, Databases.loritta) {
