@@ -543,10 +543,9 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         var lastException: Exception? = null
         for (i in 1..repetitions) {
             try {
-                val result = org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction(Dispatchers.IO, Databases.loritta) {
+                return org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction(Dispatchers.IO, Databases.loritta) {
                     statement.invoke(this)
                 }
-                return result
             } catch (e: ExposedSQLException) {
                 logger.warn(e) { "Exception while trying to execute query. Tries: $i" }
                 lastException = e
