@@ -8,7 +8,6 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.dao.StoredMessage
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -16,7 +15,6 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.EventLogConfig
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.time.Instant
 import java.util.*
@@ -87,7 +85,7 @@ object EventLog {
 					attachments.add(it.url.replace("cdn.discordapp.com", "media.discordapp.net"))
 				}
 
-				transaction(Databases.loritta) {
+				loritta.newSuspendedTransaction {
 					StoredMessage.new(message.idLong) {
 						authorId = message.author.idLong
 						channelId = message.channel.idLong
@@ -117,7 +115,7 @@ object EventLog {
 					if (!message.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
 						return
 
-					val storedMessage = transaction(Databases.loritta) {
+					val storedMessage = loritta.newSuspendedTransaction {
 						StoredMessage.findById(message.idLong)
 					}
 
@@ -143,7 +141,7 @@ object EventLog {
 					}
 
 					if (storedMessage != null) {
-						transaction(Databases.loritta) {
+						loritta.newSuspendedTransaction {
 							storedMessage.content = message.contentRaw
 						}
 					}

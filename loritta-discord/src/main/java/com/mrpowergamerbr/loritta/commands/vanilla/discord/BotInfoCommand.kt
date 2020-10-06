@@ -60,7 +60,7 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		sb.append(seconds)
 		sb.append("s")
 
-		val commandsExecutedInTheLast24Hours = transaction(Databases.loritta) {
+		val commandsExecutedInTheLast24Hours = loritta.newSuspendedTransaction {
 			ExecutedCommandsLog.select {
 				ExecutedCommandsLog.sentAt greaterEq (System.currentTimeMillis() - Constants.ONE_DAY_IN_MILLISECONDS)
 			}.count()
@@ -91,7 +91,7 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		embed.addField("<:twitter:552840901886738433> Twitter", "[@LorittaBot](https://twitter.com/LorittaBot)", true)
 		embed.addField("<:instagram:552841049660325908> Instagram", "[@lorittabot](https://instagram.com/lorittabot/)", true)
 
-		val numberOfUniqueDonators = transaction(Databases.loritta) {
+		val numberOfUniqueDonators = loritta.newSuspendedTransaction {
 			Payments.slice(Payments.userId)
 					.select { Payments.paidAt.isNotNull() }
 					.groupBy(Payments.userId)

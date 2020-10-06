@@ -52,12 +52,12 @@ object AdminUtils {
 	 *
 	 * @return the list of warn punishments, can be empty
 	 */
-	fun retrieveWarnPunishmentActions(serverConfig: ServerConfig): List<WarnAction> {
-		val moderationConfig = transaction(Databases.loritta) {
+	suspend fun retrieveWarnPunishmentActions(serverConfig: ServerConfig): List<WarnAction> {
+		val moderationConfig = loritta.newSuspendedTransaction {
 			serverConfig.moderationConfig
 		} ?: return listOf()
 
-		val warnActions = transaction(Databases.loritta) {
+		val warnActions = loritta.newSuspendedTransaction {
 			WarnAction.find {
 				WarnActions.config eq moderationConfig.id
 			}.toList()

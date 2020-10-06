@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -14,7 +13,6 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 
 class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak"), category = CommandCategory.MISC) {
@@ -153,7 +151,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 		var localeId = newLanguage.locale.id
 
 		val profile = loritta.getOrCreateLorittaProfile(context.userHandle.idLong)
-		transaction(Databases.loritta) {
+		loritta.newSuspendedTransaction {
 			if (isPrivateChannel) // If command was executed in DM channel, will be set only to user
 				profile.settings.language = localeId
 			else

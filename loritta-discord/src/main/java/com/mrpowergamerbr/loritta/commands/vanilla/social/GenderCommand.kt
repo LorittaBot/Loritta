@@ -62,7 +62,7 @@ class GenderCommand : AbstractCommand("gender", listOf("gênero", "genero"), Com
             }
 
             if (it.reactionEmote.isEmote("❓")) {
-                transaction(Databases.loritta) {
+				loritta.newSuspendedTransaction {
                     context.lorittaUser.profile.settings.gender = Gender.UNKNOWN
                 }
 

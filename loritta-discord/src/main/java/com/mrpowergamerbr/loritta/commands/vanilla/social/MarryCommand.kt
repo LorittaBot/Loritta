@@ -3,17 +3,15 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Marriage
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAdd
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.SOCIAL) {
 	companion object {
@@ -29,8 +27,8 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 
 		if (proposeTo != null) {
 			val proposeToProfile = loritta.getOrCreateLorittaProfile(proposeTo.id)
-			val marriage = transaction(Databases.loritta) { context.lorittaUser.profile.marriage }
-			val proposeMarriage = transaction(Databases.loritta) { proposeToProfile.marriage }
+			val marriage = loritta.newSuspendedTransaction { context.lorittaUser.profile.marriage }
+			val proposeMarriage = loritta.newSuspendedTransaction { proposeToProfile.marriage }
 
 			val splitCost = MARRIAGE_COST / 2
 
@@ -121,8 +119,8 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 
 					val profile = loritta.getOrCreateLorittaProfile(context.userHandle.id)
 					val proposeToProfile = loritta.getOrCreateLorittaProfile(proposeTo.id)
-					val marriage = transaction(Databases.loritta) { context.lorittaUser.profile.marriage }
-					val proposeMarriage = transaction(Databases.loritta) { context.lorittaUser.profile.marriage }
+					val marriage = loritta.newSuspendedTransaction { context.lorittaUser.profile.marriage }
+					val proposeMarriage = loritta.newSuspendedTransaction { context.lorittaUser.profile.marriage }
 
 					if (proposeTo.id == context.userHandle.id) {
 						context.reply(

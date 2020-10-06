@@ -238,7 +238,7 @@ class CommandManager(loritta: Loritta) {
 
 		// Checking custom commands
 		// To avoid unnecessary databases retrievals, we are going to check if the message starts with the server prefix or with Loritta's mention
-		val nashornCommands = transaction(Databases.loritta) {
+		val nashornCommands = loritta.newSuspendedTransaction {
 			CustomGuildCommands.select {
 				CustomGuildCommands.guild eq serverConfig.id and (CustomGuildCommands.enabled eq true)
 			}.toList()
