@@ -55,27 +55,7 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 
 	fun getActiveDonationKeysValue() = getActiveDonationKeys().sumByDouble { it.value }
 
-	fun getUserData(id: Long): GuildProfile {
-		val t = this
-		return transaction(Databases.loritta) {
-			getUserDataIfExists(id) ?: GuildProfile.new {
-				this.guildId = t.guildId
-				this.userId = id
-				this.money = BigDecimal(0)
-				this.quickPunishment = false
-				this.xp = 0
-				this.isInGuild = true
-			}
-		}
-	}
-
-	fun getUserDataIfExists(id: Long): GuildProfile? {
-		return transaction(Databases.loritta) {
-			GuildProfile.find { (GuildProfiles.guildId eq guildId) and (GuildProfiles.userId eq id) }.firstOrNull()
-		}
-	}
-
-	suspend fun getUserDataAsync(id: Long): GuildProfile {
+	suspend fun getUserData(id: Long): GuildProfile {
 		val t = this
 		return getUserDataIfExistsAsync(id) ?: loritta.newSuspendedTransaction {
 			GuildProfile.new {
@@ -94,6 +74,8 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 			GuildProfile.find { (GuildProfiles.guildId eq guildId) and (GuildProfiles.userId eq id) }.firstOrNull()
 		}
 	}
+
+	fun getUserDataIfExistsNested(id: Long) = GuildProfile.find { (GuildProfiles.guildId eq guildId) and (GuildProfiles.userId eq id) }.firstOrNull()
 
 	private val cachedData = ConcurrentHashMap<KMutableProperty1<ServerConfig, *>, Optional<Any>>()
 

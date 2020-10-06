@@ -502,7 +502,7 @@ class CommandManager(loritta: Loritta) {
 						it[ExecutedCommandsLog.message] = ev.message.contentRaw
 					}
 
-					val profile = serverConfig.getUserDataIfExists(lorittaUser.profile.userId)
+					val profile = serverConfig.getUserDataIfExistsNested(lorittaUser.profile.userId)
 
 					if (profile != null && !profile.isInGuild)
 						profile.isInGuild = true
