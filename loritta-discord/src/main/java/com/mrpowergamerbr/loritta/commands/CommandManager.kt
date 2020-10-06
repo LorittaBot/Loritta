@@ -12,11 +12,9 @@ import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.*
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.*
 import com.mrpowergamerbr.loritta.commands.vanilla.music.LyricsCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.pokemon.PokedexCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbGameCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbUserCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.roblox.*
 import com.mrpowergamerbr.loritta.commands.vanilla.social.*
-import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBattleCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBoxCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.undertale.*
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.*
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
@@ -130,6 +128,7 @@ class CommandManager(loritta: Loritta) {
 		commandMap.add(MarryCommand())
 		commandMap.add(DivorceCommand())
 		commandMap.add(GenderCommand())
+		commandMap.add(LevelCommand())
 		if (loritta.config.loritta.environment == EnvironmentType.CANARY)
 			commandMap.add(RegisterCommand())
 
