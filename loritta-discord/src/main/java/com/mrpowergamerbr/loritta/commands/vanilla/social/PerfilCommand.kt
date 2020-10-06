@@ -190,7 +190,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			if (hasNotifyMeRole) badges += ImageIO.read(File(Loritta.ASSETS + "notify_me.png"))
 			if (user.id == loritta.discordConfig.discord.clientId) badges += ImageIO.read(File(Loritta.ASSETS + "loritta_badge.png"))
 			if (user.isBot) badges += ImageIO.read(File(Loritta.ASSETS + "robot_badge.png"))
-			val marriage = profile.marriage
+			val marriage = loritta.newSuspendedTransaction { profile.marriage }
 			if (marriage != null) {
 				if (System.currentTimeMillis() - marriage.marriedSince > 2_592_000_000) {
 					badges += ImageIO.read(File(Loritta.ASSETS + "blob_snuggle.png"))
