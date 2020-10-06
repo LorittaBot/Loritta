@@ -94,12 +94,12 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		private val logger = KotlinLogging.logger {}
 		private val requestLogger = LoggerFactory.getLogger("requests")
 
-		fun queueTextChannelTopicUpdates(guild: Guild, serverConfig: ServerConfig) {
+		suspend fun queueTextChannelTopicUpdates(guild: Guild, serverConfig: ServerConfig) {
 			val activeDonationValues = loritta.getOrCreateServerConfig(guild.idLong).getActiveDonationKeysValue()
 
 			logger.debug { "Creating text channel topic updates in $guild for ${guild.textChannels.size} channels! Donation key value is $activeDonationValues" }
 
-			val memberCountConfigs = transaction(Databases.loritta) {
+			val memberCountConfigs = loritta.newSuspendedTransaction {
 				MemberCounterChannelConfig.find {
 					MemberCounterChannelConfigs.channelId inList guild.channels.map { it.idLong }
 				}.toList()

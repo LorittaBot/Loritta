@@ -7,7 +7,6 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.dao.StoredMessage
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.tables.StoredMessages
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -38,7 +37,6 @@ import org.apache.commons.io.IOUtils
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
@@ -106,7 +104,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						// E agora nós iremos anunciar a troca para todos os servidores
 						val guilds = event.jda.guilds.filter { it.isMember(event.user) }
 
-						transaction(Databases.loritta) {
+						loritta.newSuspendedTransaction {
 							(ServerConfigs innerJoin EventLogConfigs)
 									.select {
 										EventLogConfigs.enabled eq true and
@@ -175,7 +173,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					return@launch
 
 				if (textChannel != null && textChannel.canTalk()) {
-					val storedMessage = transaction(Databases.loritta) {
+					val storedMessage = loritta.newSuspendedTransaction {
 						StoredMessage.findById(event.messageIdLong)
 					}
 
@@ -208,7 +206,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 										.build()
 						)
 
-						transaction(Databases.loritta) {
+						loritta.newSuspendedTransaction {
 							StoredMessages.deleteWhere { StoredMessages.id eq event.messageIdLong }
 						}
 						return@launch
@@ -240,7 +238,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					return@launch
 
 				if (textChannel != null && textChannel.canTalk()) {
-					val storedMessages = transaction(Databases.loritta) {
+					val storedMessages = loritta.newSuspendedTransaction {
 						StoredMessage.find { StoredMessages.id inList event.messageIds.map { it.toLong() } }.toMutableList()
 					}
 
@@ -278,7 +276,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						textChannel.sendMessage(MessageBuilder().append(" ").setEmbed(embed.build()).build()).addFile(targetStream, "deleted-${event.guild.name}-$channelName-${DateUtils.PRETTY_FILE_SAFE_UNDERSCORE_DATE_FORMAT.format(Instant.now())}.log").queue()
 
-						transaction(Databases.loritta) {
+						loritta.newSuspendedTransaction {
 							StoredMessages.deleteWhere { StoredMessages.id inList event.messageIds.map { it.toLong() } }
 						}
 						return@launch
