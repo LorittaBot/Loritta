@@ -6,7 +6,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.utils.loritta
-import kotlinx.serialization.builtins.list
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.serializable.CustomCommand
@@ -32,7 +32,7 @@ object CustomCommandsConfigTransformer : ConfigTransformer {
             }
         }
 
-        return JsonParser.parseString(Json.stringify(CustomCommand.serializer().list, customCommands))
+        return JsonParser.parseString(Json.encodeToString(ListSerializer(CustomCommand.serializer()), customCommands))
     }
 
     override suspend fun fromJson(guild: Guild, serverConfig: ServerConfig, payload: JsonObject) {
@@ -43,7 +43,7 @@ object CustomCommandsConfigTransformer : ConfigTransformer {
             }
 
             // And now we reinsert the new commands
-            val entries = Json.parse(CustomCommand.serializer().list, payload["entries"].array.toString())
+            val entries = Json.decodeFromString(ListSerializer(CustomCommand.serializer()), payload["entries"].array.toString())
 
             for (entry in entries) {
                 CustomGuildCommands.insert {

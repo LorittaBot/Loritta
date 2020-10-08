@@ -225,7 +225,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
         val bytes = response.readBytes()
 
-        val image = withContext(Dispatchers.IO) { ImageIO.read(bytes.inputStream()) }
+        val image = ImageIO.read(bytes.inputStream())
         val crop = backgroundOrDefault.crop
         if (crop != null) {
             // Perfil possível um crop diferenciado

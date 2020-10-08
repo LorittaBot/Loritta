@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.website.routes.api.v1.loritta
 
-import io.ktor.application.ApplicationCall
-import kotlinx.serialization.builtins.list
+import io.ktor.application.*
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.serializable.CommandInfo
@@ -44,6 +44,6 @@ class GetCommandsRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/lo
 			)
 		}
 
-		call.respondJson(Json.stringify(CommandInfo.serializer().list, commands))
+		call.respondJson(Json.encodeToString(ListSerializer(CommandInfo.serializer()), commands))
 	}
 }
