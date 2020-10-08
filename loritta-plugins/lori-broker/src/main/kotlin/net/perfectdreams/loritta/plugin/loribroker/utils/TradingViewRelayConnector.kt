@@ -1,19 +1,16 @@
 package net.perfectdreams.loritta.plugin.loribroker.utils
 
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.features.websocket.ClientWebSocketSession
-import io.ktor.client.features.websocket.WebSockets
-import io.ktor.client.features.websocket.webSocket
-import io.ktor.http.cio.websocket.Frame
-import io.ktor.http.cio.websocket.close
-import io.ktor.http.cio.websocket.readText
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.features.websocket.*
+import io.ktor.http.cio.websocket.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.content
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import mu.KotlinLogging
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.Continuation
@@ -81,8 +78,8 @@ class TradingViewRelayConnector(
                             if (content == "pong") {
                                 lastPingPacketReceivedAt = sentAt.toLong()
                             } else {
-                                val asJson = Json.parseJson(content).jsonObject
-                                val tickerId = asJson["short_name"]!!.content
+                                val asJson = Json.parseToJsonElement(content).jsonObject
+                                val tickerId = asJson["short_name"]!!.jsonPrimitive.content
 
                                 tickers[tickerId] = asJson
 

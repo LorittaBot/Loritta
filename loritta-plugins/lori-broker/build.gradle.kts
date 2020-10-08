@@ -1,6 +1,6 @@
 dependencies {
     api(project(":loritta-discord"))
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
+    api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0")
     implementation("io.ktor:ktor-client-websockets:1.4.1")
 }
 
