@@ -1,17 +1,20 @@
 package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
 
 import LoriDashboard
-import io.ktor.client.request.get
-import io.ktor.client.request.parameter
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.readText
-import io.ktor.http.HttpStatusCode
+import io.ktor.http.*
 import jq
+import kotlinx.browser.document
+import kotlinx.browser.window
+import kotlinx.dom.addClass
+import kotlinx.dom.clear
+import kotlinx.dom.removeClass
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.stream.createHTML
-import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
 import net.perfectdreams.loritta.embededitor.data.crosswindow.Placeholder
@@ -31,11 +34,7 @@ import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import net.perfectdreams.spicymorenitta.views.dashboard.Stuff
 import net.perfectdreams.spicymorenitta.views.dashboard.getPlan
 import org.w3c.dom.*
-import kotlin.browser.document
-import kotlin.browser.window
-import kotlin.dom.addClass
-import kotlin.dom.clear
-import kotlin.dom.removeClass
+import kotlin.collections.set
 import kotlin.js.Json
 import kotlin.js.json
 
@@ -61,7 +60,6 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 		cachedUsersByScreenName.clear()
 	}
 
-	@ImplicitReflectionSerializer
 	override fun onRender(call: ApplicationCall) {
 		launchWithLoadingScreenAndFixContent(call) {
 			val guild = DashboardUtils.retrievePartialGuildConfiguration<PartialGuildConfiguration>(call.parameters["guildid"]!!, "activekeys", "twitter", "textchannels")
@@ -112,7 +110,6 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 		}
 	}
 
-	@ImplicitReflectionSerializer
 	private fun updateTrackedTwitterAccountsList(guild: PartialGuildConfiguration) {
 		val trackedDiv = document.select<HTMLDivElement>(".tracked-twitter-accounts")
 
@@ -129,7 +126,6 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 		}
 	}
 
-	@ImplicitReflectionSerializer
 	fun TagConsumer<HTMLElement>.createTrackedTwitterAccountEntry(guild: PartialGuildConfiguration, trackedTwitterAccount: TrackedTwitterAccount) {
 		this.div(classes = "discord-generic-entry timer-entry") {
 			attributes["data-twitter-account"] = trackedTwitterAccount.twitterAccountId.toString()
@@ -203,7 +199,6 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 		}
 	}
 
-	@ImplicitReflectionSerializer
 	private fun editTrackedTwitterAccount(guild: PartialGuildConfiguration, accountInfo: TwitterAccountInfo?, trackedTwitterAccount: TrackedTwitterAccount) {
 		val modal = TingleModal(
 				TingleOptions(
@@ -390,7 +385,6 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 		)
 	}
 
-	@ImplicitReflectionSerializer
 	private suspend fun loadAccountInfoFromUserId(userId: Long): TwitterAccountInfo? {
 		info("Loading info for account ${userId}...")
 
@@ -415,7 +409,6 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 		}
 	}
 
-	@ImplicitReflectionSerializer
 	private suspend fun loadAccountInfoFromScreenName(screenName: String): TwitterAccountInfo? {
 		info("Loading info for account @${screenName}...")
 
@@ -440,8 +433,7 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 		}
 	}
 
-	@ImplicitReflectionSerializer
-	private fun parseAccountInfo(payload: String) = JSON.nonstrict.parse(TwitterAccountInfo.serializer(), payload)
+	private fun parseAccountInfo(payload: String) = JSON.nonstrict.decodeFromString(TwitterAccountInfo.serializer(), payload)
 
 	@Serializable
 	class TwitterAccountInfo(

@@ -2,7 +2,7 @@ package net.perfectdreams.spicymorenitta.utils
 
 import kotlinx.coroutines.delay
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
-import kotlin.dom.hasClass
+import kotlinx.dom.hasClass
 
 fun TingleModal.trackOverflowChanges(m: SpicyMorenitta) {
 	AdvertisementUtils.debug("Tracking $this overflow changes...")

@@ -4,24 +4,26 @@ import LoriDashboard
 import SaveStuff
 import jQuery
 import jq
+import kotlinx.browser.document
 import kotlinx.html.dom.append
 import kotlinx.html.id
 import kotlinx.html.js.*
 import kotlinx.html.p
-import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.Serializable
 import legacyLocale
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
-import net.perfectdreams.spicymorenitta.utils.*
+import net.perfectdreams.spicymorenitta.utils.DashboardUtils
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.launchWithLoadingScreenAndFixContent
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.switchContentAndFixLeftSidebarScroll
+import net.perfectdreams.spicymorenitta.utils.EmbedEditorStuff
 import net.perfectdreams.spicymorenitta.utils.locale.buildAsHtml
+import net.perfectdreams.spicymorenitta.utils.onClick
+import net.perfectdreams.spicymorenitta.utils.select
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import org.w3c.dom.*
-import kotlin.browser.document
 import kotlin.js.Json
 import kotlin.js.json
 
@@ -36,7 +38,6 @@ class ModerationConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender(
 			val moderationConfig: ServerConfig.ModerationConfig
 	)
 
-	@ImplicitReflectionSerializer
 	override fun onRender(call: ApplicationCall) {
 		launchWithLoadingScreenAndFixContent(call) {
 			val guild = DashboardUtils.retrievePartialGuildConfiguration<PartialGuildConfiguration>(call.parameters["guildid"]!!, "textchannels", "moderation")

@@ -1,7 +1,6 @@
 package net.perfectdreams.spicymorenitta.routes
 
 import kotlinx.coroutines.delay
-import kotlinx.serialization.ImplicitReflectionSerializer
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.utils.offset
@@ -9,9 +8,9 @@ import net.perfectdreams.spicymorenitta.utils.onClick
 import net.perfectdreams.spicymorenitta.utils.select
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
-import kotlin.browser.document
-import kotlin.dom.addClass
-import kotlin.dom.removeClass
+import kotlinx.browser.document
+import kotlinx.dom.addClass
+import kotlinx.dom.removeClass
 
 class DiscordBotBrasileiroRoute : BaseRoute("/discord-bot-brasileiro") {
     override val requiresLocales = false

@@ -13,10 +13,10 @@ import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.events.Event
-import kotlin.browser.document
-import kotlin.dom.addClass
-import kotlin.dom.hasClass
-import kotlin.dom.removeClass
+import kotlinx.browser.document
+import kotlinx.dom.addClass
+import kotlinx.dom.hasClass
+import kotlinx.dom.removeClass
 
 object GuildDashboard {
     var isModified = false

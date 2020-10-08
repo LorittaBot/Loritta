@@ -1,14 +1,16 @@
 package net.perfectdreams.spicymorenitta.routes
 
-import io.ktor.client.request.get
-import io.ktor.client.request.url
+import io.ktor.client.request.*
+import kotlinx.browser.document
+import kotlinx.browser.window
 import kotlinx.coroutines.delay
+import kotlinx.dom.clear
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.js.onInputFunction
-import kotlinx.serialization.builtins.list
+import kotlinx.serialization.builtins.ListSerializer
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
@@ -19,9 +21,6 @@ import net.perfectdreams.spicymorenitta.utils.select
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLSelectElement
 import org.w3c.dom.events.InputEvent
-import kotlin.browser.document
-import kotlin.browser.window
-import kotlin.dom.clear
 
 class FanArtsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/fanarts/{artist?}") {
     override val keepLoadingScreen: Boolean
@@ -46,7 +45,7 @@ class FanArtsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/fanarts
                 url("${window.location.origin}/api/v1/loritta/fan-arts?query=all")
             }
 
-            val list = kotlinx.serialization.json.JSON.nonstrict.parse(FanArtArtist.serializer().list, result)
+            val list = kotlinx.serialization.json.JSON.nonstrict.decodeFromString(ListSerializer(FanArtArtist.serializer()), result)
 
             fanArtArtists = list
 

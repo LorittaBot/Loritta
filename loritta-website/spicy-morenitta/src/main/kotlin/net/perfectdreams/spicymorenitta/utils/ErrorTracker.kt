@@ -12,8 +12,8 @@ import org.w3c.dom.HTMLScriptElement
 import org.w3c.dom.HTMLSpanElement
 import org.w3c.dom.url.URL
 import org.w3c.dom.url.URLSearchParams
-import kotlin.browser.document
-import kotlin.browser.window
+import kotlinx.browser.document
+import kotlinx.browser.window
 import kotlin.js.Json
 
 object ErrorTracker : Logging {

@@ -1,14 +1,18 @@
 package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
 
+import LoriDashboard
 import jq
+import kotlinx.browser.document
+import kotlinx.dom.clear
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.dom.create
 import kotlinx.html.js.onClickFunction
-import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.builtins.list
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
 import net.perfectdreams.loritta.serializable.CustomCommand
 import net.perfectdreams.loritta.serializable.CustomCommandCodeType
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
@@ -19,28 +23,25 @@ import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
 import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.launchWithLoadingScreenAndFixContent
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.switchContentAndFixLeftSidebarScroll
-import net.perfectdreams.spicymorenitta.utils.customcommands.GiveTakeRoleCustomCommand
 import net.perfectdreams.spicymorenitta.utils.customcommands.CustomCommandData
 import net.perfectdreams.spicymorenitta.utils.customcommands.CustomCommandWrapper
+import net.perfectdreams.spicymorenitta.utils.customcommands.GiveTakeRoleCustomCommand
 import net.perfectdreams.spicymorenitta.utils.customcommands.TextCustomCommand
 import org.w3c.dom.*
-import kotlin.browser.document
-import kotlin.dom.clear
-import kotlin.js.Json
 
 class CustomCommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{guildid}/configure/custom-commands") {
 	companion object {
 		private const val LOCALE_PREFIX = "modules.customCommands"
 	}
 
-	val json = kotlinx.serialization.json.Json(
-			context = SerializersModule {
-				polymorphic(CustomCommandData::class) {
-					TextCustomCommand::class with TextCustomCommand.serializer()
-					GiveTakeRoleCustomCommand::class with GiveTakeRoleCustomCommand.serializer()
-				}
+	val json = Json {
+		serializersModule = SerializersModule {
+			polymorphic(CustomCommandData::class) {
+				subclass(TextCustomCommand::class, TextCustomCommand.serializer())
+				subclass(GiveTakeRoleCustomCommand::class, GiveTakeRoleCustomCommand.serializer())
 			}
-	)
+		}
+	}
 
 	@Serializable
 	class PartialGuildConfiguration(
@@ -53,7 +54,6 @@ class CustomCommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 		customCommands.clear()
 	}
 
-	@ImplicitReflectionSerializer
 	override fun onRender(call: ApplicationCall) {
 		launchWithLoadingScreenAndFixContent(call) {
 			val guild = DashboardUtils.retrievePartialGuildConfiguration<PartialGuildConfiguration>(call.parameters["guildid"]!!, "custom_commands")
@@ -119,7 +119,6 @@ class CustomCommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 		}
 	}
 
-	@ImplicitReflectionSerializer
 	private fun updateCustomCommandsList() {
 		// For now only easy commands
 		val easyCommands = customCommands.filter { it.codeType == CustomCommandCodeType.SIMPLE_TEXT }
@@ -138,10 +137,9 @@ class CustomCommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 		}
 	}
 
-	@ImplicitReflectionSerializer
 	fun TagConsumer<HTMLElement>.createCustomCommandEntry(customCommand: CustomCommand) {
 		val customCommandWrapper = if (customCommand.code.startsWith("// Loritta Auto Generated Custom Command - Do not edit!")) {
-			json.parse(CustomCommandWrapper.serializer(), customCommand.code.lines()[1].removePrefix("// "))
+			json.decodeFromString(CustomCommandWrapper.serializer(), customCommand.code.lines()[1].removePrefix("// "))
 		} else null
 
 		this.div(classes = "discord-generic-entry timer-entry") {
@@ -195,7 +193,6 @@ class CustomCommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 		}
 	}
 
-	@ImplicitReflectionSerializer
 	fun openTextCommandModal(label: String, text: String) {
 		val modal = TingleModal(
 				TingleOptions(
@@ -266,7 +263,7 @@ class CustomCommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 	@JsName("prepareSave")
 	fun prepareSave() {
 		SaveUtils.prepareSave("custom_commands", extras = {
-			it["entries"] = kotlin.js.JSON.parse<Array<Json>>(kotlinx.serialization.json.Json.stringify(CustomCommand.serializer().list, customCommands))
+			it["entries"] = kotlin.js.JSON.parse<Array<Json>>(kotlinx.serialization.json.Json.encodeToString(ListSerializer(CustomCommand.serializer()), customCommands))
 		})
 	}
 

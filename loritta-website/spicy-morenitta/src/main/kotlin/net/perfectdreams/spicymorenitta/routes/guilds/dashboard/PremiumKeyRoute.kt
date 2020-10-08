@@ -1,21 +1,19 @@
 package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
 
+import kotlinx.browser.document
+import kotlinx.dom.clear
 import kotlinx.html.*
 import kotlinx.html.dom.create
 import kotlinx.html.js.onClickFunction
-import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.Serializable
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.extensions.listIsEmptySection
-import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
 import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.launchWithLoadingScreenAndFixContent
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.switchContentAndFixLeftSidebarScroll
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
-import kotlin.browser.document
-import kotlin.dom.clear
 import kotlin.js.Date
 
 class PremiumKeyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{guildid}/configure/premium") {
@@ -33,7 +31,6 @@ class PremiumKeyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guil
 	var guildInfo: ServerConfig.MiniGuild? = null
 	var currentActiveKeys = mutableListOf<Long>()
 
-	@ImplicitReflectionSerializer
 	override fun onRender(call: ApplicationCall) {
 		launchWithLoadingScreenAndFixContent(call) {
 			guildId = call.parameters["guildid"]!!.toLong()
@@ -43,7 +40,6 @@ class PremiumKeyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guil
 		}
 	}
 
-	@ImplicitReflectionSerializer
 	fun generateStuff(guild: PartialGuildConfiguration) {
 		currentActiveKeys = guild.activeDonationKeys.map { it.id }.toMutableList()
 		guildInfo = guild.guildInfo
@@ -101,7 +97,6 @@ class PremiumKeyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guil
 				})
 	}
 
-	@ImplicitReflectionSerializer
 	fun DIV.createKeyEntry(donationKey: ServerConfig.DonationKey, isActivatedHere: Boolean) {
 		this.div(classes = "discord-generic-entry timer-entry") {
 			img(classes = "amino-small-image") {

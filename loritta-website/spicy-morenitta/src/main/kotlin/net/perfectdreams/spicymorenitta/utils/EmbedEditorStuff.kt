@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.embededitor.data.crosswindow.Placeholder
 import net.perfectdreams.loritta.embededitor.data.crosswindow.RenderType
 import net.perfectdreams.loritta.utils.Placeholders
-import kotlin.browser.window
+import kotlinx.browser.window
 
 object EmbedEditorStuff {
     const val LORITTA_NAME = "Loritta"

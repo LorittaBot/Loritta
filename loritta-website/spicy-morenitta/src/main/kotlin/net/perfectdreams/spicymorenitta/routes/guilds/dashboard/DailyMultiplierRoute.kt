@@ -1,7 +1,7 @@
 package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
 
 import LoriDashboard
-import kotlinx.serialization.ImplicitReflectionSerializer
+import kotlinx.browser.document
 import kotlinx.serialization.Serializable
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
@@ -14,7 +14,6 @@ import net.perfectdreams.spicymorenitta.views.dashboard.Stuff
 import net.perfectdreams.spicymorenitta.views.dashboard.getPlan
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLInputElement
-import kotlin.browser.document
 
 class DailyMultiplierRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{guildid}/configure/daily-multiplier") {
 	override val keepLoadingScreen: Boolean
@@ -26,7 +25,6 @@ class DailyMultiplierRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("
 			val donationConfig: ServerConfig.DonationConfig
 	)
 
-	@ImplicitReflectionSerializer
 	override fun onRender(call: ApplicationCall) {
 		launchWithLoadingScreenAndFixContent(call) {
 			val guild = DashboardUtils.retrievePartialGuildConfiguration<PartialGuildConfiguration>(call.parameters["guildid"]!!, "donation", "activekeys")

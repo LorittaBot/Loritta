@@ -12,9 +12,9 @@ import net.perfectdreams.spicymorenitta.CookiesUtils.createCookie
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.locale
 import org.w3c.dom.HTMLElement
-import kotlin.browser.document
-import kotlin.browser.window
-import kotlin.dom.clear
+import kotlinx.browser.document
+import kotlinx.browser.window
+import kotlinx.dom.clear
 import kotlin.random.Random
 
 object AdvertisementUtils : Logging {

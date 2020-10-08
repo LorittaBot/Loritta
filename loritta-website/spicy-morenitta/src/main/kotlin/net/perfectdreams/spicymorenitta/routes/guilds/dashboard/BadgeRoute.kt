@@ -1,7 +1,7 @@
 package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
 
 import LoriDashboard
-import kotlinx.serialization.ImplicitReflectionSerializer
+import kotlinx.browser.document
 import kotlinx.serialization.Serializable
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
@@ -15,7 +15,6 @@ import net.perfectdreams.spicymorenitta.views.dashboard.getPlan
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.files.FileReader
-import kotlin.browser.document
 
 class BadgeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{guildid}/configure/badge") {
 	override val keepLoadingScreen: Boolean
@@ -27,7 +26,6 @@ class BadgeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{gu
 			val donationConfig: ServerConfig.DonationConfig
 	)
 
-	@ImplicitReflectionSerializer
 	override fun onRender(call: ApplicationCall) {
 		launchWithLoadingScreenAndFixContent(call) {
 			val guild = DashboardUtils.retrievePartialGuildConfiguration<DailyMultiplierRoute.PartialGuildConfiguration>(call.parameters["guildid"]!!, "donation", "activekeys")

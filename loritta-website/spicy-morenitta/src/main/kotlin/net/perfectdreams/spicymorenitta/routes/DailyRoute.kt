@@ -5,6 +5,11 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import jq
+import kotlinx.browser.document
+import kotlinx.browser.window
+import kotlinx.dom.addClass
+import kotlinx.dom.clear
+import kotlinx.dom.removeClass
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.dom.prepend
@@ -29,12 +34,7 @@ import utils.CountUp
 import utils.CountUpOptions
 import utils.Moment
 import utils.RecaptchaOptions
-import kotlin.browser.document
-import kotlin.browser.window
 import kotlin.collections.set
-import kotlin.dom.addClass
-import kotlin.dom.clear
-import kotlin.dom.removeClass
 import kotlin.js.Date
 import kotlin.js.Json
 import kotlin.js.json
@@ -167,7 +167,7 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
                 parameter("padding", "2")
             }
 
-            val payload = kotlinx.serialization.json.JSON.nonstrict.parse(LeaderboardResponse.serializer(), response.receive())
+            val payload = kotlinx.serialization.json.JSON.nonstrict.decodeFromString(LeaderboardResponse.serializer(), response.receive())
 
             val rankPosition = payload.rankPosition
             val usersAround = payload.usersAround
@@ -271,7 +271,7 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
                 if (checkIfThereAreErrors(response, data))
                     return@launch
 
-                val payload = kotlinx.serialization.json.JSON.nonstrict.parse(DailyResponse.serializer(), JSON.stringify(data))
+                val payload = kotlinx.serialization.json.JSON.nonstrict.decodeFromString(DailyResponse.serializer(), JSON.stringify(data))
 
                 jq("#daily-wrapper").fadeTo(500, 0, {
                     dailyWrapper.asDynamic().style.position = "absolute"

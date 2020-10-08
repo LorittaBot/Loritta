@@ -1,18 +1,21 @@
 package net.perfectdreams.spicymorenitta
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.js.Js
-import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.client.request.post
-import io.ktor.client.request.url
+import io.ktor.client.*
+import io.ktor.client.engine.js.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.readText
-import io.ktor.http.HttpStatusCode
+import io.ktor.http.*
+import kotlinx.browser.document
+import kotlinx.browser.window
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.dom.addClass
+import kotlinx.dom.clear
+import kotlinx.dom.hasClass
+import kotlinx.dom.removeClass
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.stream.createHTML
@@ -25,13 +28,7 @@ import net.perfectdreams.spicymorenitta.routes.user.dashboard.*
 import net.perfectdreams.spicymorenitta.trunfo.TrunfoGame
 import net.perfectdreams.spicymorenitta.utils.*
 import org.w3c.dom.*
-import kotlin.browser.document
-import kotlin.browser.window
 import kotlin.collections.set
-import kotlin.dom.addClass
-import kotlin.dom.clear
-import kotlin.dom.hasClass
-import kotlin.dom.removeClass
 import kotlin.js.Date
 import kotlin.js.Json
 
@@ -63,18 +60,15 @@ class SpicyMorenitta : Logging {
 			AuditLogRoute(this),
 			LevelUpRoute(this),
 			TwitterRoute(this),
-			RssFeedsRoute(this),
 			CommandsRoute(this),
 			GeneralConfigRoute(this),
 			BadgeRoute(this),
 			DailyMultiplierRoute(this),
 			LevelUpRoute(this),
 			PremiumKeyRoute(this),
-			RssFeedsRoute(this),
 			TwitterRoute(this),
 			YouTubeRoute(this),
 			TwitchRoute(this),
-			MusicConfigRoute(this),
 			DonateRoute(this),
 			FortniteConfigRoute(this),
 			ShipEffectsDashboardRoute(this),
@@ -170,6 +164,7 @@ class SpicyMorenitta : Logging {
 		// Workaround for KotlinJS's DCE
 		DoNotRemoveDeadCodeWorkaround.methodRefs
 
+		info("HELLO FROM KOTLIN 1.4.10!")
 		info("SpicyMorenitta :3")
 		info("Howdy, my name is Loritta!")
 		info("I want to make the world a better place... making people happier and helping other people... changing their lives...")
@@ -270,7 +265,7 @@ class SpicyMorenitta : Logging {
 
 	suspend fun loadLocale() {
 		val payload = http.get<String>("${window.location.origin}/api/v1/loritta/locale/$localeId")
-		locale = kotlinx.serialization.json.JSON.nonstrict.parse(BaseLocale.serializer(), payload)
+		locale = kotlinx.serialization.json.JSON.nonstrict.decodeFromString(BaseLocale.serializer(), payload)
 
 		// Atualizar o locale que o moment utiliza, já que ele usa uma instância global para tuuuuudo
 		val momentLocaleId = when (locale.id) {
@@ -288,7 +283,7 @@ class SpicyMorenitta : Logging {
 		if (httpResponse.status != HttpStatusCode.OK/* jsonPayload["code"] != null */) {
 			debug("Get User Request failed - ${jsonPayload["code"]}")
 		} else {
-			val userIdentification = kotlinx.serialization.json.JSON.nonstrict.parse(UserIdentification.serializer(), payload)
+			val userIdentification = kotlinx.serialization.json.JSON.nonstrict.decodeFromString(UserIdentification.serializer(), payload)
 			debug("Get User Request success! - ${userIdentification.username} (${userIdentification.id})")
 			SpicyMorenitta.INSTANCE.updateLoggedInUser(userIdentification)
 		}
