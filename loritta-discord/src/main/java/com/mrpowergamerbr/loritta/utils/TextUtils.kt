@@ -114,15 +114,25 @@ fun String.substringIfNeeded(range: IntRange = 0 until 2000, suffix: String = ".
 	if (this.length - 1 in range)
 		return this
 
-	return this.substring(range.start .. range.last - suffix.length) + suffix
+	// We have a Math.max to avoid issues when the string is waaaay too small, causing the range.last - suffix.length be negative
+	return this.substring(range.start .. Math.max(0, range.last - suffix.length)) + suffix
 }
 
 val TIME_PATTERN = "(([01]\\d|2[0-3]):([0-5]\\d)(:([0-5]\\d))?) ?(am|pm)?".toPattern()
 val DATE_PATTERN = "(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.]([0-9]+)".toPattern()
+val YEAR_PATTERN = "([0-9]+) ?(y|a)".toPattern()
+val MONTH_PATTERN = "([0-9]+) ?(month(s)?|m(e|ê)s(es)?)".toPattern()
+val WEEK_PATTERN = "([0-9]+) ?(w)".toPattern()
+val DAY_PATTERN = "([0-9]+) ?(d)".toPattern()
+val HOUR_PATTERN = "([0-9]+) ?(h)".toPattern()
+val SHORT_MINUTE_PATTERN = "([0-9]+) ?(m)".toPattern()
+val MINUTE_PATTERN = "([0-9]+) ?(min)".toPattern()
+val SECONDS_PATTERN = "([0-9]+) ?(s)".toPattern()
 
 fun String.convertToEpochMillisRelativeToNow(): Long {
 	val content = this.toLowerCase()
 	val calendar = Calendar.getInstance()
+	var foundViaTime = false
 
 	if (content.contains(":")) { // horário
 		val matcher = TIME_PATTERN.matcher(content)
@@ -155,6 +165,7 @@ fun String.convertToEpochMillisRelativeToNow(): Long {
 			}
 			calendar[Calendar.MINUTE] = minute
 			calendar[Calendar.SECOND] = seconds
+			foundViaTime = true
 		}
 	}
 
@@ -170,39 +181,61 @@ fun String.convertToEpochMillisRelativeToNow(): Long {
 			calendar[Calendar.MONTH] = month - 1
 			calendar[Calendar.YEAR] = year
 		}
+	} else if (foundViaTime && Calendar.getInstance().timeInMillis >= calendar.timeInMillis) {
+		// If it was found via time but there isn't any day set, we are going to check if it is in the past and, if true, we are going to add one day
+		calendar.add(Calendar.DAY_OF_MONTH, 1)
 	}
 
-	val yearsMatcher = "([0-9]+) ?(y|a)".toPattern().matcher(content)
+	val yearsMatcher = YEAR_PATTERN.matcher(content)
 	if (yearsMatcher.find()) {
 		val addYears = yearsMatcher.group(1).toIntOrNull() ?: 0
 		calendar[Calendar.YEAR] += addYears
 	}
-	val monthMatcher = "([0-9]+) ?(month(s)?|m(e|ê)s(es)?)".toPattern().matcher(content)
+	val monthMatcher = MONTH_PATTERN.matcher(content)
+	var foundMonths = false
 	if (monthMatcher.find()) {
+		foundMonths = true
 		val addMonths = monthMatcher.group(1).toIntOrNull() ?: 0
 		calendar[Calendar.MONTH] += addMonths
 	}
-	val weekMatcher = "([0-9]+) ?(w)".toPattern().matcher(content)
+	val weekMatcher = WEEK_PATTERN.matcher(content)
 	if (weekMatcher.find()) {
 		val addWeeks = weekMatcher.group(1).toIntOrNull() ?: 0
 		calendar[Calendar.WEEK_OF_YEAR] += addWeeks
 	}
-	val dayMatcher = "([0-9]+) ?(d)".toPattern().matcher(content)
+	val dayMatcher = DAY_PATTERN.matcher(content)
 	if (dayMatcher.find()) {
 		val addDays = dayMatcher.group(1).toIntOrNull() ?: 0
 		calendar[Calendar.DAY_OF_YEAR] += addDays
 	}
-	val hourMatcher = "([0-9]+) ?(h)".toPattern().matcher(content)
+	val hourMatcher = HOUR_PATTERN.matcher(content)
 	if (hourMatcher.find()) {
 		val addHours = hourMatcher.group(1).toIntOrNull() ?: 0
 		calendar[Calendar.HOUR_OF_DAY] += addHours
 	}
-	val minuteMatcher = "([0-9]+) ?(m)".toPattern().matcher(content)
-	if (minuteMatcher.find()) {
-		val addMinutes = minuteMatcher.group(1).toIntOrNull() ?: 0
-		calendar[Calendar.MINUTE] += addMinutes
+
+	// This check is needed due to the month pattern also checking for "m"
+	// So, if the month was not found, we will check with the short minute pattern
+	// If it was found, we will ignore the short minute pattern and only use the long pattern
+	var foundMinutes = false
+	if (!foundMonths) {
+		val minuteMatcher = SHORT_MINUTE_PATTERN.matcher(content)
+		if (minuteMatcher.find()) {
+			foundMinutes = true
+			val addMinutes = minuteMatcher.group(1).toIntOrNull() ?: 0
+			calendar[Calendar.MINUTE] += addMinutes
+		}
 	}
-	val secondsMatcher = "([0-9]+) ?(s)".toPattern().matcher(content)
+
+	if (!foundMinutes) {
+		val minuteMatcher = MINUTE_PATTERN.matcher(content)
+		if (minuteMatcher.find()) {
+			val addMinutes = minuteMatcher.group(1).toIntOrNull() ?: 0
+			calendar[Calendar.MINUTE] += addMinutes
+		}
+	}
+
+	val secondsMatcher = SECONDS_PATTERN.matcher(content)
 	if (secondsMatcher.find()) {
 		val addSeconds = secondsMatcher.group(1).toIntOrNull() ?: 0
 		calendar[Calendar.SECOND] += addSeconds

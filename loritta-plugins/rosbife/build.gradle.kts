@@ -25,6 +25,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib-jdk8"))
                 implementation(project(":loritta-discord"))
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
             }
         }
 

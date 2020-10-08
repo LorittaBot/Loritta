@@ -34,7 +34,7 @@ class TodoGrupoTemCommand : AbstractCommand("everygrouphas", listOf("todogrupote
 		val baseGraph = base.graphics.enableFontAntiAliasing()
 
 		val users = ArrayList<User>()
-		val members = context.guild.members.filter { it.onlineStatus != OnlineStatus.OFFLINE && it.user.avatarUrl != null }.toMutableList()
+		val members = context.guild.members.filter { it.onlineStatus != OnlineStatus.OFFLINE && it.user.avatarUrl != null && !it.user.isBot }.toMutableList()
 
 		users.addAll(context.message.mentionedUsers)
 

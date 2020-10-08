@@ -1,54 +1,53 @@
 package net.perfectdreams.spicymorenitta.routes
 
+import io.ktor.client.request.*
 import kotlinx.html.*
+import kotlinx.html.dom.append
 import kotlinx.html.dom.create
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.stream.appendHTML
-import kotlinx.serialization.ImplicitReflectionSerializer
-import kotlinx.serialization.parseList
+import kotlinx.serialization.builtins.list
+import kotlinx.serialization.json.Json
+import net.perfectdreams.loritta.serializable.PaymentScoreboardEntry
 import net.perfectdreams.loritta.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
+import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
-import net.perfectdreams.spicymorenitta.utils.PaymentUtils
-import net.perfectdreams.spicymorenitta.utils.appendBuilder
-import net.perfectdreams.spicymorenitta.utils.page
-import net.perfectdreams.spicymorenitta.utils.visibleModal
+import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import org.w3c.dom.HTMLDivElement
+import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.get
-import utils.TingleModal
-import utils.TingleOptions
 import kotlin.browser.document
+import kotlin.browser.window
 import kotlin.collections.set
 
 class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
-    @UseExperimental(ImplicitReflectionSerializer::class)
+    companion object {
+        const val LOCALE_PREFIX = "website.donate"
+    }
+
     override fun onRender(call: ApplicationCall) {
-        val table = page.getElementById("donate-features") as HTMLDivElement
         val plansTable = page.getElementById("plans-features") as HTMLDivElement
 
         val rewards = listOf(
                 DonationReward("ignore_me", 0.0, false),
                 DonationReward("ignore_me", 99.99, false),
 
-                // ===[  ESSENTIAL  ]===
-                DonationReward("Lori irá parar de perturbar você e os membros do seu servidor com pedidos de doação", 19.99, false) ,
-
                 // ===[ RECOMMENDED ]===
-                DonationReward("Badge EXCLUSIVA no \"+perfil\" para os membros do seu servidor", 39.99, false),
-                DonationReward("Faça seu PRÓPRIO background para o \"+perfil\"", 39.99, false),
+                DonationReward(locale["${LOCALE_PREFIX}.rewards.exclusiveProfileBadge"], 39.99, false),
+                DonationReward(locale["${LOCALE_PREFIX}.rewards.customProfileBackground"], 39.99, false),
 
                 // DonationReward("Personalizar nome/avatar da Loritta nas notificações do YouTube/Twitch/Twitter", 39.99, false),
-                DonationReward("Tempo reduzido entre comandos", 39.99, false),
-                DonationReward("Não pagar taxas no +pay", 39.99, false),
+                DonationReward(locale["${LOCALE_PREFIX}.rewards.reducedCooldown"], 39.99, false),
 
                 // ===[  COMPLETE  ]===
 
                 // ===[   NUMBERS  ]===
-                DonationReward("Sonhos ganhos a cada minuto", 39.99, false, callback = { column ->
+                DonationReward(locale["${LOCALE_PREFIX}.rewards.everyMinuteSonhos"], 39.99, false, callback = { column ->
                     when {
                         column >= 99.99 -> +"10"
                         column >= 39.99 -> +"4"
@@ -56,130 +55,31 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                         else -> +"0"
                     }
                 }),
-                DonationReward("Multiplicador de dailies de sonhos para membros do seu servidor", 19.99, false, callback = { column ->
+                DonationReward(locale["${LOCALE_PREFIX}.rewards.dailyMultiplier"], 19.99, false, callback = { column ->
                     + (ServerPremiumPlans.getPlanFromValue(column).dailyMultiplier.toString() + "x")
                 }),
-                DonationReward("Máximo de cargos de Level Up", 19.99, false, callback = { column ->
+                DonationReward(locale["${LOCALE_PREFIX}.rewards.maxLevelUpRoles"], 19.99, false, callback = { column ->
                     + ServerPremiumPlans.getPlanFromValue(column).maxLevelUpRoles.toString()
                 }),
-                DonationReward("Número de Contadores de Membros", 19.99, false, callback = { column ->
+                DonationReward(locale["${LOCALE_PREFIX}.rewards.maxMemberCounters"], 19.99, false, callback = { column ->
                     + ServerPremiumPlans.getPlanFromValue(column).memberCounterCount.toString()
                 }),
-                DonationReward("Máximo de contas de notificações do YouTube/Twitch/Twitter", 19.99, false, callback = { column ->
+                DonationReward(locale["${LOCALE_PREFIX}.rewards.maxSocialAccountsRelay"], 19.99, false, callback = { column ->
                     + ServerPremiumPlans.getPlanFromValue(column).maxYouTubeChannels.toString()
                 }),
-                DonationReward("Limite máximo de sonhos no +daily", 39.99, false, callback = { column ->
+                DonationReward(locale["${LOCALE_PREFIX}.rewards.maxDailyLimit"], 39.99, false, callback = { column ->
                     + UserPremiumPlans.getPlanFromValue(column).maxDreamsInDaily.toString()
                 }),
-                DonationReward("Chance da Lori te dar uma reputação", 39.99, false, callback = { column ->
+                DonationReward(locale["${LOCALE_PREFIX}.rewards.giveBackRepChange"], 39.99, false, callback = { column ->
                     + (UserPremiumPlans.getPlanFromValue(column).loriReputationRetribution.toString() + "%")
                 }),
-                DonationReward("Multiplicador de XP Global", 119.99, false, callback = { column ->
+                DonationReward(locale["${LOCALE_PREFIX}.rewards.globalExperienceMultiplier"], 99.99, false, callback = { column ->
                     + (ServerPremiumPlans.getPlanFromValue(column).globalXpMultiplier.toString() + "x")
                 })
-                /* DonationReward("Ajuda a Lori a Pagar o Aluguel", 0.99, true, callback = { column ->
-                    if (column >= 0.99) {
-                        i("fas fa-check") {}
-                    } else {
-                        +"Só se você incentiva as outras pessoas a usarem a Lori"
-                    }
-                }),
-                DonationReward("A Sensação de ser Incrível", 0.99, true),
-                DonationReward("Cargo exclusivo no Servidor de Suporte", 4.99, true),
-                DonationReward("Emblema exclusivo no +perfil", 4.99, true),
-
-
-                DonationReward("Cargos coloridos no Servidor de Suporte", 9.99, true),
-                // DonationReward("Colocar o seu servidor como patrocinado na Lori's Server List", 9.99),
-                DonationReward("Acesso exclusivo ao canal de doadores", 19.99, true, callback = { column ->
-                    if (column >= 9.99) {
-                        i("fas fa-check") {}
-                    } else {
-                        +"Apenas leitura"
-                    }
-                }),
-                DonationReward("Número de Contadores de Membros", 19.99, false, callback = { column ->
-                    if (column >= 19.99) {
-                        +"3"
-                    } else {
-                        +"1"
-                    }
-                }),
-                DonationReward("Badge EXCLUSIVA para os membros do seu servidor", 19.99, false),
-
-                DonationReward("Lori irá parar de te perturbar para doar ao usar um comando", 19.99, false),
-                DonationReward("Tempo reduzido entre comandos", 39.99, false),
-                DonationReward("Não pagar taxas no +pay", 39.99, false),
-                DonationReward("Pode enviar convites no canal de divulgação no servidor de suporte da Lori", 39.99, true),
-                DonationReward("Limite máximo de sonhos no +daily", 39.99, false, callback = { column ->
-                    when {
-                        column >= 149.99 -> +"17130"
-                        column >= 139.99 -> +"13710"
-                        column >= 119.99 -> +"10975"
-                        column >= 99.99 -> +"8780"
-                        column >= 79.99 -> +"7030"
-                        column >= 59.99 -> +"5625"
-                        column >= 39.99 -> +"4500"
-                        else -> +"3600"
-                    }
-                }),
-                DonationReward("Chance da Lori te dar uma reputação", 39.99, false, callback = { column ->
-                    when {
-                        column >= 149.99 -> +"20.0%"
-                        column >= 139.99 -> +"17.5%"
-                        column >= 119.99 -> +"15.0%"
-                        column >= 99.99 -> +"12.5%"
-                        column >= 79.99 -> +"10.0%"
-                        column >= 59.99 -> +"7.5%"
-                        column >= 39.99 -> +"5.0%"
-                        else -> +"2.5%"
-                    }
-                }),
-                DonationReward("Multiplicador de XP Global", 119.99, false, callback = { column ->
-                    when {
-                        column >= 159.99 -> +"2.50x"
-                        column >= 139.99 -> +"2.25x"
-                        column >= 119.99 -> +"2.0x"
-                        column >= 99.99 -> +"1.75x"
-                        column >= 79.99 -> +"1.5x"
-                        column >= 59.99 -> +"1.25x"
-                        column >= 39.99 -> +"1.1x"
-                        else -> +"1.0x"
-                    }
-                }),
-                DonationReward("Divulgar o seu Servidor na Sexta-Feira da Lori (desde que não seja sobre conteúdo NSFW)", 139.99, false, callback = { column ->
-					when {
-						column >= 139.99 -> +"Em apenas três sexta-feiras"
-						column >= 99.99 -> +"Em apenas duas sexta-feiras"
-						column >= 59.99 -> +"Em apenas uma sexta-feira"
-						else -> i("fas fa-times") {}
-					}
-				}),
-
-                DonationReward("Uma versão premium minha! ...ela não faz NADA, só serve para você ostentar!", 59.99, true),
-                DonationReward("Mais outro cargo exclusivo no servidor de suporte", 59.99, true),
-                DonationReward("Lori irá parar de perturbar os membros do seu servidor com pedidos de doação", 59.99, false),
-
-                DonationReward("Multiplicador de dailies de sonhos para membros do seu servidor", 79.99, false, callback = { column ->
-                    when {
-                        column >= 179.99 -> +"x2.0"
-                        column >= 139.99 -> +"x1.75"
-                        column >= 99.99 -> +"x1.5"
-                        column >= 59.99 -> +"x1.25"
-                        else -> i("fas fa-times") {}
-                    }
-                }),
-
-                DonationReward("Mais outro emblema exclusivo no +perfil", 99.99, true),
-                DonationReward("Mais OUTRO cargo exclusivo no servidor de suporte", 99.99, true),
-                DonationReward("ignore_me", 139.99, false),
-                DonationReward("ignore_me", 159.99, false),
-                DonationReward("ignore_me", 179.99, false)
-                // DonationReward("Uma Lori EXCLUSIVA para você! (Pode alterar nome/avatar)", 159.99) */
         )
 
         plansTable.appendBuilder(
-                StringBuilder().appendHTML(true).table {
+                StringBuilder().appendHTML(true).table(classes = "fancy-table centered-text") {
                     style = "margin: 0 auto;"
 
                     val rewardColumn = mutableListOf<Double>()
@@ -192,10 +92,10 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                                 .sortedBy { it }.toList().forEach {
                                     th {
                                         val titlePrefix = when (it) {
-                                            0.0 -> "Grátis"
-                                            19.99 -> "Essencial"
-                                            39.99 -> "Recomendado"
-                                            99.99 -> "Completo"
+                                            0.0 -> locale["${LOCALE_PREFIX}.plans.free"]
+                                            19.99 -> locale["${LOCALE_PREFIX}.plans.essential"]
+                                            39.99 -> locale["${LOCALE_PREFIX}.plans.recommended"]
+                                            99.99 -> locale["${LOCALE_PREFIX}.plans.complete"]
                                             else -> "???"
                                         }
 
@@ -235,129 +135,72 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                     }
 
                     tr {
+                        // =====[ PREMIUM PLANS ]=====
                         td {
                             + ""
                         }
 
-                        val loginButton = document.getElementById("login-for-donate-url")
-                        val needsToLogin = loginButton != null
-                        val url = loginButton?.getAttribute("href")
+                        val needsToLogin = m.userIdentification == null
+                        val url = "https://discordapp.com/oauth2/authorize?redirect_uri=https://loritta.website%2Fdashboard&scope=identify%20guilds%20email&response_type=code&client_id=297153970613387264"
 
                         td {
                         }
 
-                        td {
+                        fun TD.createBuyPlanButton(buttonPlanId: String, isBigger: Boolean) {
+                            if (isBigger)
+                                style = "background-color: #83ff836b;"
+
                             if (needsToLogin) {
                                 a(href = url) {
                                     div(classes = "button-discord button-discord-info pure-button") {
-                                        // id = "donate-button-plan1"
+                                        if (isBigger)
+                                            style = "font-size: 1.2em;"
 
                                         i(classes = "fas fa-gift") {}
-                                        +" Comprar Plano"
+                                        +" ${locale["${LOCALE_PREFIX}.buyPlan"]}"
                                     }
                                 }
                             } else {
                                 div(classes = "button-discord button-discord-info pure-button") {
-                                    id = "donate-button-plan1"
-
-                                    i(classes = "fas fa-gift") {}
-                                    +" Comprar Plano"
-                                }
-                            }
-                        }
-
-                        td {
-                            if (needsToLogin) {
-                                style = "background-color: #83ff836b;"
-                                a(href = url) {
-                                    div(classes = "button-discord button-discord-info pure-button") {
-                                        // id = "donate-button-plan2"
+                                    id = buttonPlanId
+                                    if (isBigger)
                                         style = "font-size: 1.2em;"
 
-                                        i(classes = "fas fa-gift") {}
-                                        +" Comprar Plano"
-                                    }
-                                }
-                            } else {
-                                style = "background-color: #83ff836b;"
-                                div(classes = "button-discord button-discord-info pure-button") {
-                                    id = "donate-button-plan2"
-                                    style = "font-size: 1.2em;"
-
                                     i(classes = "fas fa-gift") {}
-                                    +" Comprar Plano"
+                                    +" ${locale["${LOCALE_PREFIX}.buyPlan"]}"
                                 }
                             }
                         }
 
                         td {
-                            if (needsToLogin) {
-                                a(href = url) {
-                                    div(classes = "button-discord button-discord-info pure-button") {
-                                        // id = "donate-button-plan3"
-
-                                        i(classes = "fas fa-gift") {}
-                                        +" Comprar Plano"
-                                    }
-                                }
-                            } else {
-                                div(classes = "button-discord button-discord-info pure-button") {
-                                    id = "donate-button-plan3"
-
-                                    i(classes = "fas fa-gift") {}
-                                    +" Comprar Plano"
-                                }
-                            }
+                            createBuyPlanButton("donate-button-plan1", false)
                         }
-                    }
-                }
-        )
 
-        // Criar coisas
-        table.appendBuilder(
-                StringBuilder().appendHTML(true).table {
-                    style = "margin: 0 auto;"
-
-                    val rewardColumn = mutableListOf<Double>(0.0)
-                    tr {
-                        th { +"" }
-                        th { +"Nenhuma Doação" }
-                        rewards.map { it.minimumDonation }.distinct().sortedBy { it }.forEach {
-                            th { +("R$" + it.toString().replace(".", ",") + "+") }
-                            rewardColumn.add(it)
+                        td {
+                            createBuyPlanButton("donate-button-plan2", true)
                         }
-                    }
 
-                    for (reward in rewards.filter { it.name != "ignore_me" }) {
-                        tr {
-                            td {
-                                attributes["style"] = "font-weight: 800;"
-                                +reward.name
-                            }
-                            for (column in rewardColumn) {
-                                td {
-                                    reward.callback.invoke(this, column)
-                                }
-                            }
+                        td {
+                            createBuyPlanButton("donate-button-plan3", false)
                         }
                     }
                 }
         )
 
         (document.getElementById("donate-button-plan1") as HTMLDivElement?)?.onclick = {
-            showDonateModal(19.99)
+            showPaymentSelectionModal(19.99)
         }
         (document.getElementById("donate-button-plan2") as HTMLDivElement?)?.onclick = {
-            showDonateModal(39.99)
+            showPaymentSelectionModal(39.99)
         }
         (document.getElementById("donate-button-plan3") as HTMLDivElement?)?.onclick = {
-            showDonateModal(119.99)
+            showPaymentSelectionModal(99.99)
         }
 
-        (document.getElementById("donate-button") as HTMLDivElement?)?.onclick = {
+        (document.getElementById("renew-button") as HTMLDivElement?)?.onclick = {
             val donationKeysJson = document.getElementById("donation-keys-json")?.innerHTML!!
 
-            val donationKeys = kotlinx.serialization.json.JSON.nonstrict.parseList<ServerConfig.DonationKey>(donationKeysJson)
+            val donationKeys = kotlinx.serialization.json.JSON.nonstrict.parse(ServerConfig.DonationKey.serializer().list, donationKeysJson)
 
             if (donationKeys.isNotEmpty()) {
                 val modal = TingleModal(
@@ -399,17 +242,17 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
 
                                         modal.close()
 
-                                        PaymentUtils.openPaymentSelectionModal(o)
+                                        PaymentUtils.requestAndRedirectToPaymentUrl(o)
                                     }
                                 }
                             }
                         }
                 )
 
-                modal.addFooterBtn("<i class=\"fas fa-gift\"></i> Eu quero comprar uma nova key", "button-discord button-discord-info pure-button button-discord-modal") {
+                /* modal.addFooterBtn("<i class=\"fas fa-gift\"></i> Eu quero comprar uma nova key", "button-discord button-discord-info pure-button button-discord-modal") {
                     modal.close()
                     showDonateModal(19.99)
-                }
+                } */
 
                 modal.addFooterBtn("<i class=\"fas fa-times\"></i> Fechar", "button-discord pure-button button-discord-modal button-discord-modal-secondary-action") {
                     modal.close()
@@ -418,6 +261,86 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                 modal.open()
             } else {
                 showDonateModal(19.99)
+            }
+        }
+
+        m.launch {
+            val responseMonthly = http.get<String>("${window.location.origin}/api/v1/economy/payments-leaderboard/premium/top/monthly?size=5")
+            val entriesMontly = Json.Default.parse(PaymentScoreboardEntry.serializer().list, responseMonthly)
+
+            val responseLifetime = http.get<String>("${window.location.origin}/api/v1/economy/payments-leaderboard/premium/top/lifetime?size=5")
+            val entriesLifetime = Json.Default.parse(PaymentScoreboardEntry.serializer().list, responseLifetime)
+
+            fun TagConsumer<HTMLElement>.generatePaymentScoreboard(entries: List<PaymentScoreboardEntry>) {
+                table("fancy-table") {
+                    style = "width: 100%;"
+                    tr {
+                        th {
+                            +locale["website.daily.leaderboard.position"]
+                        }
+                        th {
+
+                        }
+                        th {
+                            +locale["website.daily.leaderboard.name"]
+                        }
+                        th {
+                            +"Grana"
+                        }
+                    }
+
+                    for ((idx, entry) in entries.withIndex()) {
+                        val (money, user) = entry
+
+                        tr {
+                            td {
+                                +"#${idx + 1}"
+                            }
+                            td {
+                                img(src = user.avatarUrl) {
+                                    style = "border-radius: 100%; width: 2em;"
+                                }
+                            }
+                            td {
+                                if (user.id == m.userIdentification?.id) {
+                                    classes += "has-rainbow-text"
+                                }
+                                +user.name
+                                span {
+                                    style = "opacity: 0.5;"
+                                    +"#${user.discriminator}"
+                                }
+                            }
+                            td {
+                                +"R$ $money"
+                            }
+                        }
+                    }
+                }
+            }
+
+            document.select<HTMLElement>("#top-donators-scoreboard-wrapper").append {
+                div {
+                    style = "display: flex; justify-content: space-evenly;"
+
+                    div {
+                        h3 {
+                            + locale["${LOCALE_PREFIX}.topDonatorsOnThisMonth"]
+                        }
+                        run {
+                            generatePaymentScoreboard(entriesMontly)
+                        }
+                    }
+
+                    div {
+                        h3 {
+                            + locale["${LOCALE_PREFIX}.topDonatorsLifetime"]
+                        }
+                        run {
+                            generatePaymentScoreboard(entriesLifetime)
+                        }
+                    }
+                }
             }
         }
     }
@@ -473,13 +396,9 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
         )
 
         modal.addFooterBtn("<i class=\"fas fa-cash-register\"></i> Escolher Forma de Pagamento", "button-discord button-discord-info pure-button button-discord-modal") {
-            val o = object {
-                val money = (visibleModal.getElementsByClassName("how-much-money")[0] as HTMLInputElement).value
-            }
-
             modal.close()
 
-            PaymentUtils.openPaymentSelectionModal(o)
+            showPaymentSelectionModal((visibleModal.getElementsByClassName("how-much-money")[0] as HTMLInputElement).value.toDouble())
         }
 
         modal.addFooterBtn("<i class=\"fas fa-times\"></i> Fechar", "button-discord pure-button button-discord-modal button-discord-modal-secondary-action") {
@@ -487,6 +406,15 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
         }
 
         modal.open()
+        modal.trackOverflowChanges(m)
+    }
+
+    fun showPaymentSelectionModal(price: Double) {
+        val o = object {
+            val money = price
+        }
+
+        PaymentUtils.requestAndRedirectToPaymentUrl(o)
     }
 
     data class DonationReward(val name: String, val minimumDonation: Double, val doNotDisplayInPlans: Boolean, val callback: TD.(Double) -> Unit = { column ->

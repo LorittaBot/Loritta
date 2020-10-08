@@ -1,7 +1,8 @@
 package com.mrpowergamerbr.loritta.utils
 
+import club.minnced.discord.webhook.WebhookClient
+import club.minnced.discord.webhook.WebhookClientBuilder
 import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.temmiewebhook.TemmieWebhook
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.entities.MessageChannel
@@ -17,7 +18,7 @@ object WebhookUtils {
 	 * @param name        Nome do Webhook
 	 * @return TemmieWebhook pronto para ser usado
 	 */
-	suspend fun getOrCreateWebhook(channel: MessageChannel, name: String): TemmieWebhook? {
+	suspend fun getOrCreateWebhook(channel: MessageChannel, name: String): WebhookClient? {
 		if (channel.type == ChannelType.PRIVATE) // Se a Loritta não pode acessar as webhooks do servidor, retorne null
 			return null
 
@@ -43,7 +44,10 @@ object WebhookUtils {
 			webhooks[0]
 		}
 
-		val temmie = TemmieWebhook(webhook.url, true)
+		val temmie = WebhookClientBuilder(webhook.url)
+				.setExecutorService(loritta.webhookExecutor)
+				.setHttpClient(loritta.webhookOkHttpClient)
+				.build()
 
 		return temmie
 	}

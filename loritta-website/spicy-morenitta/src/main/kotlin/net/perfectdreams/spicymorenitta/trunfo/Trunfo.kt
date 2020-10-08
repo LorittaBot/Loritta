@@ -3,7 +3,7 @@ package net.perfectdreams.spicymorenitta.trunfo
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.js.onClickFunction
-import net.perfectdreams.spicymorenitta.utils.Audio
+import org.w3c.dom.Audio
 import net.perfectdreams.spicymorenitta.utils.Logging
 import net.perfectdreams.spicymorenitta.utils.select
 import org.w3c.dom.Element
@@ -91,7 +91,7 @@ object Trunfo : Logging {
 					}
 				}
 
-				window.location.replace("https://discordapp.com/oauth2/authorize?client_id=297153970613387264&scope=identify+guilds+email+guilds.join&permissions=2080374975&response_type=code&redirect_uri=https://loritta.website/dashboard&state=eyJyZWRpcmVjdFVybCI6Imh0dHBzOi8vdHJ1bmZvLmxvcml0dGEud2Vic2l0ZS9pbmRleF9rb3RsaW4uaHRtbCJ9");
+				window.location.replace("https://discordapp.com/oauth2/authorize?client_id=297153970613387264&scope=identify+guilds+email&permissions=2080374975&response_type=code&redirect_uri=https://loritta.website/dashboard&state=eyJyZWRpcmVjdFVybCI6Imh0dHBzOi8vdHJ1bmZvLmxvcml0dGEud2Vic2l0ZS9pbmRleF9rb3RsaW4uaHRtbCJ9");
 			} else if (currentStatus == "CLOSED") {
 				currentPopup?.remove()
 				currentPopup = TrunfoGame.openPopup {

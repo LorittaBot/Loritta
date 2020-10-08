@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.website.routes.api.v1.loritta
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.string
-import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.google.gson.JsonParser
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
 import mu.KotlinLogging
@@ -20,7 +20,7 @@ class PostUpdateUserBackgroundRoute(loritta: LorittaDiscord) : RequiresAPIAuthen
 
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
 		val userId = call.parameters["userId"]
-		val json = jsonParser.parse(call.receiveText())
+		val json = JsonParser.parseString(call.receiveText())
 
 		val type = json["type"].string
 

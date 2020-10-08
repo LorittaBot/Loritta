@@ -8,9 +8,8 @@ import kotlinx.html.dom.append
 import kotlinx.html.h2
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.style
-import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.parseList
+import kotlinx.serialization.builtins.list
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
@@ -26,17 +25,15 @@ class AvailableBundlesDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePo
     override val keepLoadingScreen: Boolean
         get() = true
 
-    @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         super.onRender(call)
-
 
         SpicyMorenitta.INSTANCE.launch {
             val result = http.get<String> {
                 url("${window.location.origin}/api/v1/economy/bundles/sonhos")
             }
 
-            val list = kotlinx.serialization.json.JSON.nonstrict.parseList<Bundle>(result)
+            val list = kotlinx.serialization.json.JSON.nonstrict.parse(Bundle.serializer().list, result)
 
             fixDummyNavbarHeight(call)
             m.fixLeftSidebarScroll {
@@ -66,7 +63,7 @@ class AvailableBundlesDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePo
 
                                     println(JSON.stringify(o))
 
-                                    PaymentUtils.openPaymentSelectionModal(o, "${loriUrl}api/v1/economy/bundles/sonhos/${entry.id}")
+                                    PaymentUtils.requestAndRedirectToPaymentUrl(o, "${loriUrl}api/v1/economy/bundles/sonhos/${entry.id}")
                                 }
                             }
                         }

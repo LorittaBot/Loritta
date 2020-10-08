@@ -1,12 +1,12 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
+import club.minnced.discord.webhook.send.WebhookMessageBuilder
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.WebhookUtils
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import com.mrpowergamerbr.temmiewebhook.DiscordMessage
+import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class FaustaoCommand : AbstractCommand("faustão", listOf("faustao"), CommandCategory.FUN) {
 	private val frases = listOf(
@@ -58,10 +58,10 @@ class FaustaoCommand : AbstractCommand("faustão", listOf("faustao"), CommandCat
 
 		val mensagem = frases[Loritta.RANDOM.nextInt(frases.size)].replace("{user}", context.userHandle.asMention)
 
-		context.sendMessage(temmie, DiscordMessage.builder()
-				.username("Faustão")
-				.content(mensagem)
-				.avatarUrl(avatars[Loritta.RANDOM.nextInt(avatars.size)])
+		context.sendMessage(temmie, WebhookMessageBuilder()
+				.setUsername("Faustão")
+				.setContent(mensagem)
+				.setAvatarUrl(avatars[Loritta.RANDOM.nextInt(avatars.size)])
 				.build())
 	}
 }

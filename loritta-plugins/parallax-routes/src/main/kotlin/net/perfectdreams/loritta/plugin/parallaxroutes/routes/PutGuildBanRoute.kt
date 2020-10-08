@@ -21,8 +21,8 @@ class PutGuildBanRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationRoute
 		val guild = lorittaShards.getGuildById(guildId)!!
 
 		val options = JsonParser.parseString(call.receiveText()).obj
-		val punisher = lorittaShards.getUserById(options["punisher"].long)!!
-		val user = lorittaShards.getUserById(userId)!!
+		val punisher = lorittaShards.retrieveUserById(options["punisher"].long)!!
+		val user = lorittaShards.retrieveUserById(userId)!!
 
 		val serverConfig = loritta.getOrCreateServerConfig(guildId.toLong(), true)
 		val moderationInfo = AdminUtils.retrieveModerationInfo(serverConfig)

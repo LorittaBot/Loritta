@@ -4,11 +4,13 @@ import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
-import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.tables.Dailies
-import com.mrpowergamerbr.loritta.tables.Profiles
-import com.mrpowergamerbr.loritta.utils.*
+import com.google.gson.JsonParser
+import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.utils.Constants
+import net.perfectdreams.loritta.website.utils.WebsiteUtils
+import com.mrpowergamerbr.loritta.utils.encodeToUrl
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import io.ktor.application.ApplicationCall
 import io.ktor.http.ContentType
@@ -22,15 +24,14 @@ import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.ScriptingUtils
 import net.perfectdreams.loritta.website.utils.extensions.*
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
-import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.util.*
 
@@ -42,10 +43,12 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 	abstract suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification)
 
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
+		loritta as Loritta
+
 		if (call.request.path().endsWith("/dashboard")) {
 			val hostHeader = call.request.hostFromHeader()
 			val scheme = LorittaWebsite.WEBSITE_URL.split(":").first()
-			
+
 			val state = call.parameters["state"]
 			val guildId = call.parameters["guild_id"]
 			val code = call.parameters["code"]
@@ -84,7 +87,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 							com.mrpowergamerbr.loritta.utils.loritta.discordConfig.discord.clientSecret,
 							code,
 							"$scheme://$hostHeader/dashboard",
-							listOf("identify", "guilds", "email", "guilds.join")
+							listOf("identify", "guilds", "email")
 					)
 
 					auth.doTokenExchange()
@@ -101,8 +104,8 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 				}
 
 				// Verificar se o usuário é (possivelmente) alguém que foi banido de usar a Loritta
-				val trueIp = call.request.trueIp
-				val dailiesWithSameIp = transaction(Databases.loritta) {
+				/* val trueIp = call.request.trueIp
+				val dailiesWithSameIp = loritta.newSuspendedTransaction {
 					Dailies.select {
 						(Dailies.ip eq trueIp)
 					}.toMutableList()
@@ -110,22 +113,30 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 
 				val userIds = dailiesWithSameIp.map { it[Dailies.id] }.distinct()
 
-				val bannedProfiles = transaction(Databases.loritta) {
+				val bannedProfiles = loritta.newSuspendedTransaction {
 					Profiles.select { Profiles.id inList userIds and Profiles.isBanned }
 							.toMutableList()
 				}
 
 				if (bannedProfiles.isNotEmpty())
-					logger.warn { "User ${userIdentification.id} has banned accounts in ${trueIp}! IDs: ${bannedProfiles.joinToString(transform = { it[Profiles.id].toString() })}" }
+					logger.warn { "User ${userIdentification.id} has banned accounts in ${trueIp}! IDs: ${bannedProfiles.joinToString(transform = { it[Profiles.id].toString() })}" } */
 
 				if (state != null) {
 					// state = base 64 encoded JSON
 					val decodedState = Base64.getDecoder().decode(state).toString(Charsets.UTF_8)
-					val jsonState = jsonParser.parse(decodedState).obj
+					val jsonState = JsonParser.parseString(decodedState).obj
 					val redirectUrl = jsonState["redirectUrl"].nullString
 
-					if (redirectUrl != null)
-						redirect(redirectUrl, false)
+					if (redirectUrl != null) {
+						// Check if we are redirecting to Loritta's trusted URLs
+						val lorittaDomain = loritta.connectionManager.getDomainFromUrl(loritta.instanceConfig.loritta.website.url)
+						val redirectDomain = loritta.connectionManager.getDomainFromUrl(redirectUrl)
+
+						if (lorittaDomain == redirectDomain)
+							redirect(redirectUrl, false)
+						else
+							logger.warn { "Someone tried to make me redirect to somewhere that isn't my website domain! Tried to redirect to $redirectDomain" }
+					}
 				}
 
 				if (guildId != null) {
@@ -167,7 +178,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 									// E, se o membro não for um bot e possui permissão de gerenciar o servidor ou permissão de administrador...
 									if (!user.isBot && (member.hasPermission(Permission.MANAGE_SERVER) || member.hasPermission(Permission.ADMINISTRATOR))) {
 										// Verificar coisas antes de adicionar a Lori
-										val blacklisted = transaction(Databases.loritta) {
+										val blacklisted = loritta.newSuspendedTransaction {
 											BlacklistedGuilds.select {
 												BlacklistedGuilds.id eq guild.idLong
 											}.firstOrNull()
@@ -190,9 +201,10 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 										}
 
 										val profile = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(guild.owner!!.user.id)
-										if (profile.isBanned) { // Dono blacklisted
+										val bannedState = profile.getBannedState()
+										if (bannedState != null) { // Dono blacklisted
 											// Envie via DM uma mensagem falando sobre a Loritta!
-											val message = locale["LORITTA_OwnerLorittaBanned", guild.owner?.user?.asMention, profile.bannedReason
+											val message = locale["LORITTA_OwnerLorittaBanned", guild.owner?.user?.asMention, bannedState[BannedUsers.reason]
 													?: "???"]
 
 											user.openPrivateChannel().queue {
@@ -270,8 +282,8 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 		}
 
 		val profile = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(userIdentification.id)
-
-		if (profile.isBanned) {
+		val bannedState = profile.getBannedState()
+		if (bannedState != null) {
 			val html = ScriptingUtils.evaluateWebPageFromTemplate(
 					File(
 							"${net.perfectdreams.loritta.website.LorittaWebsite.INSTANCE.config.websiteFolder}/views/user_banned.kts"
@@ -280,7 +292,8 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 							"path" to call.request.path().split("/").drop(2).joinToString("/"),
 							"websiteUrl" to net.perfectdreams.loritta.website.LorittaWebsite.INSTANCE.config.websiteUrl,
 							"locale" to locale,
-							"profile" to profile
+							"profile" to profile,
+							"bannedState" to bannedState
 					)
 			)
 

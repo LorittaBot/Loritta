@@ -112,7 +112,7 @@ class PatchServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRout
 			} else {
 				throw WebsiteAPIException(
 						HttpStatusCode.NotImplemented,
-						com.mrpowergamerbr.loritta.utils.WebsiteUtils.createErrorPayload(
+						net.perfectdreams.loritta.website.utils.WebsiteUtils.createErrorPayload(
 								LoriWebCode.MISSING_PAYLOAD_HANDLER,
 								"I don't know how to handle a \"${type}\" payload yet!"
 						)

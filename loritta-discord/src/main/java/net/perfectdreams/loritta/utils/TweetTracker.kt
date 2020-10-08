@@ -2,12 +2,11 @@ package net.perfectdreams.loritta.utils
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.jsonObject
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.LorittaShards
 import com.mrpowergamerbr.loritta.utils.gson
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -42,10 +41,6 @@ class TweetTracker(val m: Loritta) {
 	}
 
 	fun updateStreams() {
-		logger.info { "Finishing all ${streams.size} twitter tweet streams..." }
-		streams.forEach { it.shutdown() }
-		logger.info { "Successfully shutted down all ${streams.size} twitter tweet streams!" }
-		streams.clear()
 		startStreams()
 	}
 
@@ -55,8 +50,8 @@ class TweetTracker(val m: Loritta) {
 			TrackedTwitterAccounts.selectAll().map { it[TrackedTwitterAccounts.twitterAccountId] }.distinct()
 		}
 
-		val windows = followAccounts.chunked(5_000) // 400 keywords, 5,000 userids and 25 location boxes
-		logger.info { "There will be ${windows.size} twitter streams..." }
+		val chunks = followAccounts.chunked(5_000) // 400 keywords, 5,000 userids and 25 location boxes
+		logger.info { "There will be ${chunks.size} twitter streams..." }
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			while (true) {
@@ -70,11 +65,23 @@ class TweetTracker(val m: Loritta) {
 			}
 		}
 
-		for (window in windows) {
-			thread {
-				val twitterStream = TwitterStreamFactory(buildTwitterConfig()).instance
-				streams.add(twitterStream)
+		if (streams.size > chunks.size) {
+			// There are more streams than it should have! Let's shut down all exceeding streams
+			val toBeRemovedStreams = streams.drop(chunks.size)
+			toBeRemovedStreams.forEach { it.clearListeners(); it.cleanUp() }
+			streams.removeAll(toBeRemovedStreams)
+		}
 
+		for ((index, window) in chunks.withIndex()) {
+			thread {
+				val twitterStream = streams.getOrNull(index) ?: run {
+					val stream = TwitterStreamFactory(buildTwitterConfig()).instance
+					streams.add(stream)
+					stream
+				}
+
+				twitterStream.clearListeners()
+				
 				twitterStream.addListener(object : StatusListener {
 					override fun onTrackLimitationNotice(p0: Int) {
 						logger.warn(p0.toString())
@@ -97,7 +104,10 @@ class TweetTracker(val m: Loritta) {
 						if (p0.user.id !in window) // ID do usuário não está na window... Então para que fazer relay?
 							return
 
-						logger.info { "Received status ${p0.id} from ${p0.user.screenName} (${p0.user.id}), relaying to master cluster..." }
+						if (twitterStream !in streams) // Stream *seems* to be removed, since it isn't on the stream list anymore
+							return
+
+						logger.info { "Received status ${p0.id} from ${p0.user.screenName} (${p0.user.id}), relaying to other clusters..." }
 
 						val payload = jsonObject(
 								"tweetId" to p0.id,
@@ -122,12 +132,12 @@ class TweetTracker(val m: Loritta) {
 											)
 											.body()
 
-									jsonParser.parse(
+									JsonParser.parseString(
 											body
 									)
 								} catch (e: Exception) {
 									LorittaShards.logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
-									throw PingCommand.ShardOfflineException(it.id, it.name)
+									throw ClusterOfflineException(it.id, it.name)
 								}
 							}
 						}

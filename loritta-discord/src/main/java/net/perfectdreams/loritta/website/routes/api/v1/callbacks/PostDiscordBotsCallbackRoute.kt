@@ -2,9 +2,8 @@ package net.perfectdreams.loritta.website.routes.api.v1.callbacks
 
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.string
-import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand
-import com.mrpowergamerbr.loritta.utils.WebsiteUtils
-import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.google.gson.JsonParser
+import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.ApplicationCall
@@ -48,7 +47,7 @@ class PostDiscordBotsCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta,
 			)
 		}
 
-		val payload = jsonParser.parse(response)
+		val payload = JsonParser.parseString(response)
 		val botId = payload["bot"].string
 		val userId = payload["user"].string.toLong()
 		val type = payload["type"].string

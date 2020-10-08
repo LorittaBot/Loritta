@@ -2,10 +2,6 @@ package com.mrpowergamerbr.loritta.utils.config
 
 import com.fasterxml.jackson.annotation.JsonCreator
 
-class MashapeConfig @JsonCreator constructor(
-        val apiKey: String
-)
-
 class OpenWeatherMapConfig @JsonCreator constructor(
         val apiKey: String
 )

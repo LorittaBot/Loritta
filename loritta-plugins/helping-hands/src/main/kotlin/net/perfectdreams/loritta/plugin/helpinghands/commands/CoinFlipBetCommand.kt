@@ -6,8 +6,11 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MessageInteractionFunctions
 import com.mrpowergamerbr.loritta.utils.removeAllFunctions
+import com.mrpowergamerbr.loritta.utils.stripCodeMarks
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.arguments
@@ -15,11 +18,10 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
 import net.perfectdreams.loritta.plugin.helpinghands.HelpingHandsPlugin
 import net.perfectdreams.loritta.plugin.helpinghands.commands.base.DSLCommandBase
-import net.perfectdreams.loritta.plugin.helpinghands.commands.base.dbRefresh
-import net.perfectdreams.loritta.plugin.helpinghands.commands.base.toJDA
 import net.perfectdreams.loritta.tables.SonhosTransaction
-import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.SonhosPaymentReason
+import net.perfectdreams.loritta.utils.*
+import net.perfectdreams.loritta.utils.extensions.refreshInDeferredTransaction
+import net.perfectdreams.loritta.utils.extensions.toJDA
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -52,80 +54,105 @@ object CoinFlipBetCommand : DSLCommandBase {
 		executes {
 			loritta as Loritta
 
+			if (2 > args.size) {
+				this.explain()
+				return@executes
+			}
+
 			val context = checkType<DiscordCommandContext>(this)
 
 			val _user = validate(context.user(0))
 			val invitedUser = _user.toJDA()
 
-			if (invitedUser == context.user) {
-				context.reply(
-						LorittaReply(
-								locale["commands.economy.flipcoinbet.cantBetSelf"],
-								Constants.ERROR
-						)
-				)
-				return@executes
+			if (invitedUser == context.user)
+				fail(locale["commands.economy.flipcoinbet.cantBetSelf"], Constants.ERROR)
+
+			val selfActiveDonations = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonationsAsync(context.discordMessage.author.idLong)
+			val otherActiveDonations = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonationsAsync(invitedUser.idLong)
+
+			val selfPlan = UserPremiumPlans.getPlanFromValue(selfActiveDonations)
+			val otherPlan = UserPremiumPlans.getPlanFromValue(otherActiveDonations)
+
+			val hasNoTax: Boolean
+			val whoHasTheNoTaxReward: User?
+			val plan: UserPremiumPlans?
+
+			if (selfPlan.totalCoinFlipReward == 1.0) {
+				whoHasTheNoTaxReward = context.discordMessage.author
+				hasNoTax = true
+				plan = selfPlan
+			} else if (otherPlan.totalCoinFlipReward == 1.0) {
+				whoHasTheNoTaxReward = invitedUser
+				hasNoTax = true
+				plan = otherPlan
+			} else {
+				whoHasTheNoTaxReward = null
+				hasNoTax = false
+				plan = UserPremiumPlans.Essential
 			}
 
-			val number = context.args[1].toLong()
+			val number = NumberUtils.convertShortenedNumberToLong(context.args[1])
+					?: fail(locale["commands.invalidNumber", context.args[1].stripCodeMarks()], Emotes.LORI_CRYING.toString())
+			val tax = (number * (1.0 - plan.totalCoinFlipReward)).toLong()
+			val money = number - tax
 
-			if (0 >= number) {
-				context.reply(
-						LorittaReply(
-								locale["commands.economy.flipcoinbet.zeroMoney"],
-								Constants.ERROR
-						)
-				)
-				return@executes
-			}
+			if (!hasNoTax && tax == 0L)
+				fail(locale["commands.economy.flipcoinbet.youNeedToBetMore"], Constants.ERROR)
+
+			if (0 >= number)
+				fail(locale["commands.economy.flipcoinbet.zeroMoney"], Constants.ERROR)
 
 			val selfUserProfile = context.lorittaUser.profile
 
-			if (number > selfUserProfile.money) {
-				context.reply(
-						LorittaReply(
-								locale["commands.economy.flipcoinbet.notEnoughMoneySelf"],
-								Constants.ERROR
-						)
-				)
-				return@executes
-			}
+			if (number > selfUserProfile.money)
+				fail(locale["commands.economy.flipcoinbet.notEnoughMoneySelf"], Constants.ERROR)
 
 			val invitedUserProfile = loritta.getOrCreateLorittaProfile(invitedUser.id)
+			val bannedState = invitedUserProfile.getBannedState()
 
-			if (number > invitedUserProfile.money || invitedUserProfile.isBanned) {
-				context.reply(
-						LorittaReply(
-								locale["commands.economy.flipcoinbet.notEnoughMoneyInvited", invitedUser.asMention],
-								Constants.ERROR
-						)
-				)
-				return@executes
-			}
+			if (number > invitedUserProfile.money || bannedState != null)
+				fail(locale["commands.economy.flipcoinbet.notEnoughMoneyInvited", invitedUser.asMention], Constants.ERROR)
 
 			val message = context.reply(
 					LorittaReply(
-							locale[
-									"commands.economy.flipcoinbet.startBet",
-									invitedUser.asMention,
-									context.user.asMention,
-									locale["commands.fun.flipcoin.heads"],
-									number,
-									locale["commands.fun.flipcoin.tails"]
-							],
+							(
+									if (hasNoTax)
+										locale[
+												"commands.economy.flipcoinbet.startBetNoTax",
+												invitedUser.asMention,
+												context.user.asMention,
+												locale["commands.fun.flipcoin.heads"],
+												money,
+												locale["commands.fun.flipcoin.tails"],
+												whoHasTheNoTaxReward?.asMention ?: "???"
+										]
+									else
+										locale[
+												"commands.economy.flipcoinbet.startBet",
+												invitedUser.asMention,
+												context.user.asMention,
+												locale["commands.fun.flipcoin.heads"],
+												money,
+												locale["commands.fun.flipcoin.tails"],
+												number,
+												tax
+										]
+									),
 							Emotes.LORI_RICH,
 							mentionUser = false
 					)
 			).toJDA()
 
-			val functions = com.mrpowergamerbr.loritta.utils.loritta.messageInteractionCache.getOrPut(message.idLong) { MessageInteractionFunctions(message.guild.idLong, message.channel.idLong, context.user.id) }
+			val functions = com.mrpowergamerbr.loritta.utils.loritta.messageInteractionCache.getOrPut(message.idLong) { MessageInteractionFunctions(message.guild.idLong, message.channel.idLong, context.user.idLong) }
 			functions.onReactionAdd = {
 				if (it.userIdLong == invitedUser.idLong && it.reactionEmote.name == "✅") {
 					message.removeAllFunctions()
 					plugin.launch {
 						mutex.withLock {
-							selfUserProfile.dbRefresh()
-							invitedUserProfile.dbRefresh()
+							listOf(
+									selfUserProfile.refreshInDeferredTransaction(),
+									invitedUserProfile.refreshInDeferredTransaction()
+							).awaitAll()
 
 							if (number > selfUserProfile.money)
 								return@withLock
@@ -151,32 +178,30 @@ object CoinFlipBetCommand : DSLCommandBase {
 							if (isTails) {
 								winner = context.user
 								loser = invitedUser
-								transaction(Databases.loritta) {
-									selfUserProfile.money += number
-									invitedUserProfile.money -= number
+								loritta.newSuspendedTransaction {
+									selfUserProfile.addSonhosNested(money)
+									invitedUserProfile.takeSonhosNested(number)
 
-									SonhosTransaction.insert {
-										it[givenBy] = invitedUserProfile.id.value
-										it[receivedBy] = selfUserProfile.id.value
-										it[givenAt] = System.currentTimeMillis()
-										it[quantity] = number.toBigDecimal()
-										it[reason] = SonhosPaymentReason.COIN_FLIP_BET
-									}
+									PaymentUtils.addToTransactionLogNested(
+											number,
+											SonhosPaymentReason.COIN_FLIP_BET,
+											givenBy = invitedUserProfile.id.value,
+											receivedBy = selfUserProfile.id.value
+									)
 								}
 							} else {
 								winner = invitedUser
 								loser = context.user
-								transaction(Databases.loritta) {
-									invitedUserProfile.money += number
-									selfUserProfile.money -= number
+								loritta.newSuspendedTransaction {
+									invitedUserProfile.addSonhosNested(money)
+									selfUserProfile.takeSonhosNested(number)
 
-									SonhosTransaction.insert {
-										it[givenBy] = selfUserProfile.id.value
-										it[receivedBy] = invitedUserProfile.id.value
-										it[givenAt] = System.currentTimeMillis()
-										it[quantity] = number.toBigDecimal()
-										it[reason] = SonhosPaymentReason.COIN_FLIP_BET
-									}
+									PaymentUtils.addToTransactionLogNested(
+											number,
+											SonhosPaymentReason.COIN_FLIP_BET,
+											givenBy = selfUserProfile.id.value,
+											receivedBy = invitedUserProfile.id.value
+									)
 								}
 							}
 
@@ -187,7 +212,7 @@ object CoinFlipBetCommand : DSLCommandBase {
 											mentionUser = false
 									),
 									LorittaReply(
-											locale["commands.economy.flipcoinbet.congratulations", winner.asMention, number, loser.asMention],
+											locale["commands.economy.flipcoinbet.congratulations", winner.asMention, money, loser.asMention],
 											Emotes.LORI_RICH,
 											mentionUser = false
 									)

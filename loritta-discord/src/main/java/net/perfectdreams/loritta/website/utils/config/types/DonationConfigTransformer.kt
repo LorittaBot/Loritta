@@ -7,7 +7,6 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.DonationConfig
 import com.mrpowergamerbr.loritta.dao.ServerConfig
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.loritta
 import io.ktor.client.request.header
@@ -15,14 +14,13 @@ import io.ktor.client.request.patch
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.userAgent
 import net.dv8tion.jda.api.entities.Guild
-import org.jetbrains.exposed.sql.transactions.transaction
 
 object DonationConfigTransformer : ConfigTransformer {
     override val payloadType: String = "donation"
     override val configKey: String = "donationConfig"
 
     override suspend fun fromJson(guild: Guild, serverConfig: ServerConfig, payload: JsonObject) {
-        transaction(Databases.loritta) {
+        loritta.newSuspendedTransaction {
             val donationConfig = serverConfig.donationConfig ?: DonationConfig.new {
                 this.dailyMultiplier = false
                 this.customBadge = false
@@ -50,7 +48,7 @@ object DonationConfigTransformer : ConfigTransformer {
     }
 
     override suspend fun toJson(guild: Guild, serverConfig: ServerConfig): JsonElement {
-        return transaction(Databases.loritta) {
+        return loritta.newSuspendedTransaction {
             jsonObject(
                     "customBadge" to (serverConfig.donationConfig?.customBadge ?: false),
                     "dailyMultiplier" to (serverConfig.donationConfig?.dailyMultiplier ?: false)

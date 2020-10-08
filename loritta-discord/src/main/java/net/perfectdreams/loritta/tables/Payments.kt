@@ -2,8 +2,6 @@ package net.perfectdreams.loritta.tables
 
 import com.mrpowergamerbr.loritta.utils.exposed.rawJsonb
 import com.mrpowergamerbr.loritta.utils.gson
-import com.mrpowergamerbr.loritta.utils.jsonParser
-import net.perfectdreams.loritta.tables.SonhosTransaction.nullable
 import net.perfectdreams.loritta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.dao.id.LongIdTable
@@ -17,5 +15,6 @@ object Payments : LongIdTable() {
     val paidAt = long("paid_at").nullable()
     val expiresAt = long("expires_at").nullable()
     val discount = double("discount").nullable()
-    val metadata = rawJsonb("metadata", gson, jsonParser).nullable()
+    val referenceId = uuid("reference_id").nullable()
+    val metadata = rawJsonb("metadata", gson).nullable()
 }

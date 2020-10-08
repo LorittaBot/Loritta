@@ -7,12 +7,11 @@ import kotlinx.coroutines.delay
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.dom.prepend
-import kotlinx.serialization.ImplicitReflectionSerializer
-import kotlinx.serialization.parseList
+import kotlinx.serialization.builtins.list
+import net.perfectdreams.loritta.serializable.Background
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
-import net.perfectdreams.spicymorenitta.routes.user.dashboard.AllBackgroundsListDashboardRoute
 import net.perfectdreams.spicymorenitta.utils.*
 import org.w3c.dom.*
 import org.w3c.dom.Audio
@@ -32,7 +31,6 @@ class Birthday2020StatsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender
 	val stuffLog: HTMLDivElement
 		get() = document.select("#stuff-log")
 
-	@UseExperimental(ImplicitReflectionSerializer::class)
 	override fun onRender(call: ApplicationCall) {
 		super.onRender(call)
 
@@ -57,7 +55,7 @@ class Birthday2020StatsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender
 				val result = http.get<String> {
 					url("${window.location.origin}/api/v1/loritta/backgrounds")
 				}
-				kotlinx.serialization.json.JSON.nonstrict.parseList<AllBackgroundsListDashboardRoute.Background>(result)
+				kotlinx.serialization.json.JSON.nonstrict.parse(Background.serializer().list, result)
 			}
 
 			val profileWrapperJob = m.async {
@@ -91,7 +89,7 @@ class Birthday2020StatsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender
 							+" presentes!"
 						}
 
-						h2(classes = "rainbow-animated-text") {
+						h2(classes = "has-rainbow-text") {
 							+"Team ${currentTeam.toLowerCase().capitalize()}"
 						}
 

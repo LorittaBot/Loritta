@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.minecraft
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.minecraft.MCUtils
@@ -34,10 +34,10 @@ class McAvatarCommand : AbstractCommand("mcavatar", category = CommandCategory.M
 
 			if (uuid == null) {
 				context.reply(
-						LoriReply(
-								locale["MCSKIN_UnknownPlayer", context.args.getOrNull(0)],
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                locale["MCSKIN_UnknownPlayer", context.args.getOrNull(0)],
+                                Constants.ERROR
+                        )
 				)
 				return
 			}

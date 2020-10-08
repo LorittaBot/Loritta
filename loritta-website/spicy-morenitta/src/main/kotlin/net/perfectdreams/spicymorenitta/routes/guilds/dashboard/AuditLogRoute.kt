@@ -12,6 +12,7 @@ import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
 import net.perfectdreams.spicymorenitta.utils.ActionType
+import net.perfectdreams.spicymorenitta.utils.locale.buildAsHtml
 import net.perfectdreams.spicymorenitta.utils.select
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import org.w3c.dom.HTMLDivElement
@@ -23,7 +24,6 @@ class AuditLogRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/
     override val keepLoadingScreen: Boolean
         get() = true
 
-    @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         Moment.locale("pt-br")
 
@@ -34,7 +34,7 @@ class AuditLogRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/
                 url("${window.location.origin}/api/v1/guilds/${call.parameters["guildid"]}/audit-log")
             }
 
-            val list = kotlinx.serialization.json.JSON.nonstrict.parse<ServerConfig.WebAuditLogWrapper>(result)
+            val list = kotlinx.serialization.json.JSON.nonstrict.parse(ServerConfig.WebAuditLogWrapper.serializer(), result)
 
             fixDummyNavbarHeight(call)
             m.fixLeftSidebarScroll {
@@ -118,7 +118,7 @@ class AuditLogRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/
                             SaveUtils.prepareSave("premium", {
                                 it["keyId"] = donationKey.id
                             }, onFinish = {
-                                val guild = JSON.nonstrict.parse<ServerConfig.Guild>(it.body)
+                                val guild = JSON.nonstrict.parse(ServerConfig.Guild.serializer(), it.body)
 
                                 PremiumKeyView.generateStuff(guild)
                             })

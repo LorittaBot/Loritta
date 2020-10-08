@@ -19,8 +19,8 @@ class MemberCounterChannelConfig(id: EntityID<Long>) : Entity<Long>(id) {
 	fun getFormattedTopic(guild: Guild): String {
 		val emojis = CounterUtils.getEmojis(theme)
 
-		return topic.replace("{guildsize}", guild.members.size.toString())
-				.replace("{guild-size}", guild.members.size.toString())
-				.replace("{counter}", CounterUtils.generatePrettyCounter(guild.members.size, emojis, padding))
+		return topic.replace("{guildsize}", guild.memberCount.toString())
+				.replace("{guild-size}", guild.memberCount.toString())
+				.replace("{counter}", CounterUtils.generatePrettyCounter(guild.memberCount, emojis, padding))
 	}
 }

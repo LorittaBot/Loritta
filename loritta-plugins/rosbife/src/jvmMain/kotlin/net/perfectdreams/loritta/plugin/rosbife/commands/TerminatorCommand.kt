@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.plugin.rosbife.commands
 
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.utils.extensions.drawStringWithOutline
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.utils.extensions.enableFontAntiAliasing
@@ -20,7 +21,7 @@ object TerminatorCommand : DSLCommandBase {
 		description { it["commands.images.terminator.description"] }
 
 		examples {
-			it.getWithType<List<String>>("commands.images.terminator.examples")
+			it.getList("commands.images.terminator.examples")
 		}
 		usage {
 			argument(ArgumentType.TEXT) {}
@@ -73,7 +74,7 @@ object TerminatorCommand : DSLCommandBase {
 						println((graphics.getFontMetrics(font).stringWidth(old)))
 
 						val drawAtX = startAtX - (graphics.getFontMetrics(font).stringWidth(old) / 2)
-						graphics.drawStringWithOutline(old, drawAtX.toInt(), startAtY.toInt(), 2)
+						graphics.drawStringWithOutline(old, drawAtX, startAtY, Color.BLACK, 2)
 						startAtY += 26
 						input1FitInLine = ""
 						input1FitInLine += split
@@ -81,7 +82,7 @@ object TerminatorCommand : DSLCommandBase {
 				}
 
 				val drawAtX = startAtX - (graphics.getFontMetrics(font).stringWidth(input1FitInLine) / 2)
-				graphics.drawStringWithOutline(input1FitInLine, drawAtX, startAtY, 2)
+				graphics.drawStringWithOutline(input1FitInLine, drawAtX, startAtY, Color.BLACK, 2)
 			}
 
 			val centerInput1X = 98
@@ -94,17 +95,5 @@ object TerminatorCommand : DSLCommandBase {
 
 			sendImage(JVMImage(terminatorAnime), "terminator_anime.png")
 		}
-	}
-
-	fun Graphics.drawStringWithOutline(text: String, x: Int, y: Int, power: Int) {
-		this.color = Color.BLACK
-		for (powerX in -power..power) {
-			for (powerY in -power..power) {
-				this.drawString(text, x + powerX, y + powerY)
-			}
-		}
-
-		this.color = Color(255, 251, 0)
-		this.drawString(text, x, y)
 	}
 }

@@ -2,16 +2,17 @@ package com.mrpowergamerbr.loritta.commands.vanilla.minecraft
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.Color
 import java.net.URLEncoder
 import java.time.Instant
@@ -20,6 +21,8 @@ import java.time.ZonedDateTime
 import java.util.*
 
 class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.MINECRAFT) {
+	override fun getBotPermissions() = listOf(Permission.MESSAGE_MANAGE)
+
 	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.toNewLocale()["commands.minecraft.spigotmc.description"]
 	}
@@ -44,7 +47,7 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 					.userAgent("LorittaBot")
 					.body()
 
-			val json = jsonParser.parse(response)
+			val json = JsonParser.parseString(response)
 
 			if (json.isJsonObject) {
 				// Erro!
@@ -104,7 +107,7 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 		embed.setColor(Color(227, 156, 17))
 
 		val resource = getResourceInfo(resourceId)
-		val author = jsonParser.parse(HttpRequest.get("https://api.spiget.org/v2/resources/$resourceId/author").body())
+		val author = JsonParser.parseString(HttpRequest.get("https://api.spiget.org/v2/resources/$resourceId/author").body())
 
 		embed.setAuthor(author["name"].string, null, "https://www.spigotmc.org/${author["icon"]["url"].string}")
 		embed.setTitle("<:spigotmc:375314413357629440> ${resource.name}", "https://www.spigotmc.org/resources/$resourceId/")
@@ -135,7 +138,7 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 				.userAgent("LorittaBot")
 				.body()
 
-		val json = jsonParser.parse(response).obj
+		val json = JsonParser.parseString(response).obj
 
 		return SpigotResource(
 				json["name"].string,

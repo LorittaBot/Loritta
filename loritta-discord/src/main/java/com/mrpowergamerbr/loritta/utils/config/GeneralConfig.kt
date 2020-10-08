@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.utils.config
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.utils.DiscordUtils
@@ -13,13 +12,9 @@ class GeneralConfig @JsonCreator constructor(
 		val clusters: List<LorittaClusterConfig>,
 		val database: DatabaseConfig,
 		val connectionManager: ConnectionManagerConfig,
-		@JsonProperty("mercadopago")
-		val mercadoPago: MercadoPagoConfig,
-		@JsonProperty("picpay")
-		val picPay: PicPayConfig,
+		val perfectPayments: PerfectPaymentsConfig,
 		val parallaxCodeServer: ParallaxCodeServerConfig,
 		val youtube: YouTubeConfig,
-		val mashape: MashapeConfig,
 		val openWeatherMap: OpenWeatherMapConfig,
 		val googleVision: GoogleVisionKey,
 		val googleRecaptcha: GoogleRecaptcha,
@@ -27,6 +22,12 @@ class GeneralConfig @JsonCreator constructor(
 		val twitter: TwitterConfig,
 		val twitch: TwitchConfig,
 		val twitch2: TwitchConfig,
+		val twitch3: TwitchConfig,
+		val twitch4: TwitchConfig,
+		val twitch5: TwitchConfig,
+		val twitch6: TwitchConfig,
+		val twitch7: TwitchConfig,
+		val twitch8: TwitchConfig,
 		val mixer: MixerConfig,
 		val fortniteApi: FortniteApiConfig,
 		val caches: CacheConfig

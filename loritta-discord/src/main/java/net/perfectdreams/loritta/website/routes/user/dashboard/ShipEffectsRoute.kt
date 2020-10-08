@@ -2,9 +2,8 @@ package net.perfectdreams.loritta.website.routes.user.dashboard
 
 import com.github.salomonbrys.kotson.jsonObject
 import com.mrpowergamerbr.loritta.dao.ShipEffect
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.ShipEffects
-import com.mrpowergamerbr.loritta.utils.WebsiteUtils
+import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -17,7 +16,6 @@ import net.perfectdreams.loritta.website.utils.extensions.legacyVariables
 import net.perfectdreams.loritta.website.utils.extensions.respondHtml
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class ShipEffectsRoute(loritta: LorittaDiscord) : RequiresDiscordLoginLocalizedRoute(loritta, "/user/@me/dashboard/ship-effects") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
@@ -34,7 +32,7 @@ class ShipEffectsRoute(loritta: LorittaDiscord) : RequiresDiscordLoginLocalizedR
 		variables["profile_json"] = gson.toJson(
 				WebsiteUtils.getProfileAsJson(lorittaProfile)
 		)
-		val shipEffects = transaction(Databases.loritta) {
+		val shipEffects = loritta.newSuspendedTransaction {
 			ShipEffect.find {
 				(ShipEffects.buyerId eq user.idLong) and
 						(ShipEffects.expiresAt greaterEq System.currentTimeMillis())

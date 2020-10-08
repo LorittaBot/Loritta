@@ -15,12 +15,10 @@ import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
-import net.perfectdreams.spicymorenitta.utils.DashboardUtils
+import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.launchWithLoadingScreenAndFixContent
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.switchContentAndFixLeftSidebarScroll
-import net.perfectdreams.spicymorenitta.utils.Placeholders
-import net.perfectdreams.spicymorenitta.utils.onClick
-import net.perfectdreams.spicymorenitta.utils.select
+import net.perfectdreams.spicymorenitta.utils.locale.buildAsHtml
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import org.w3c.dom.*
 import kotlin.browser.document
@@ -69,15 +67,9 @@ class ModerationConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender(
 					true,
 					jq("#punishmentLogChannelId"),
 					true,
-					Placeholders.DEFAULT_PLACEHOLDERS.toMutableMap().apply {
-						put("reason", "Motivo da punição, caso nenhum motivo tenha sido especificado, isto estará vazio")
-						put("punishment", "Punição aplicada (ban, mute, kick, etc)")
-						put("staff", "Mostra o nome do usuário que fez a punição")
-						put("@staff", "Menciona o usuário que fez a punição")
-						put("staff-discriminator", "Mostra o discriminator do usuário que fez a punição")
-						put("staff-id", "Mostra o ID do usuário que fez a punição")
-						put("staff-avatar-url", "Mostra a URL do avatar do usuário que fez a punição")
-					}
+					EmbedEditorStuff.userInContextPlaceholders(locale)
+							+ EmbedEditorStuff.punishmentInContextPlaceholders(locale)
+							+ EmbedEditorStuff.staffInContextPlaceholders(locale)
 			)
 
 			document.select<HTMLButtonElement>("#save-button").onClick {
@@ -188,15 +180,9 @@ class ModerationConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender(
 				false,
 				null,
 				true,
-				Placeholders.DEFAULT_PLACEHOLDERS.toMutableMap().apply {
-					put("reason", "Motivo da punição, caso nenhum motivo tenha sido especificado, isto estará vazio")
-					put("punishment", "Punição aplicada (ban, mute, kick, etc)")
-					put("staff", "Mostra o nome do usuário que fez a punição")
-					put("@staff", "Menciona o usuário que fez a punição")
-					put("staff-discriminator", "Mostra o discriminator do usuário que fez a punição")
-					put("staff-id", "Mostra o ID do usuário que fez a punição")
-					put("staff-avatar-url", "Mostra a URL do avatar do usuário que fez a punição")
-				}
+				EmbedEditorStuff.userInContextPlaceholders(locale)
+						+ EmbedEditorStuff.punishmentInContextPlaceholders(locale)
+						+ EmbedEditorStuff.staffInContextPlaceholders(locale)
 		)
 
 		customPunishmentMessages.add(customPunishmentMessagesConfig)

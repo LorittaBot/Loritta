@@ -5,13 +5,13 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.int
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
-import com.mrpowergamerbr.loritta.Loritta.Companion.JSON_PARSER
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.Color
 import java.net.URLEncoder
 
@@ -32,7 +32,7 @@ class KnowYourMemeCommand : AbstractCommand("knowyourmeme", listOf("kym"), Comma
 					.body() // Vamos pegar a response...
 
 			// E vamos parsear!
-			val json = JSON_PARSER.parse(response).obj
+			val json = JsonParser.parseString(response).obj
 
 			if (json["matches"].int == 0) {
 				// Nada foi encontrado...

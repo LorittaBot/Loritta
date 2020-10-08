@@ -10,12 +10,11 @@ import kotlinx.coroutines.delay
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.js.onClickFunction
-import kotlinx.serialization.ImplicitReflectionSerializer
-import kotlinx.serialization.parseList
+import kotlinx.serialization.builtins.list
+import net.perfectdreams.loritta.serializable.Background
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
-import net.perfectdreams.spicymorenitta.routes.user.dashboard.AllBackgroundsListDashboardRoute
 import net.perfectdreams.spicymorenitta.utils.*
 import org.w3c.dom.*
 import org.w3c.dom.Audio
@@ -114,7 +113,6 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 	val preAnimationOverlay: HTMLDivElement
 		get() = document.select("#pre-animation-overlay")
 
-	@UseExperimental(ImplicitReflectionSerializer::class)
 	override fun onRender(call: ApplicationCall) {
 		super.onRender(call)
 
@@ -127,7 +125,7 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 				val result = http.get<String> {
 					url("${window.location.origin}/api/v1/loritta/backgrounds")
 				}
-				kotlinx.serialization.json.JSON.nonstrict.parseList<AllBackgroundsListDashboardRoute.Background>(result)
+				kotlinx.serialization.json.JSON.nonstrict.parse(Background.serializer().list, result)
 			}
 
 			val profileWrapperJob = m.async {
@@ -215,7 +213,7 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 		}
 	}
 
-	suspend fun fillBodyStuff(backgrounds: List<AllBackgroundsListDashboardRoute.Background>, profileWrapper: Image) {
+	suspend fun fillBodyStuff(backgrounds: List<Background>, profileWrapper: Image) {
 		val backgroundsToBeFilled = document.selectAll<HTMLDivElement>(".loritta-background-fill")
 
 		backgroundsToBeFilled.forEach {
@@ -452,7 +450,7 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 		}
 	}
 
-	suspend fun createBody(backgrounds: List<AllBackgroundsListDashboardRoute.Background>, profileWrapper: Image, isAlreadyOnATeam: Boolean) {
+	suspend fun createBody(backgrounds: List<Background>, profileWrapper: Image, isAlreadyOnATeam: Boolean) {
 		document.select<HTMLDivElement>("#birthday-2020").append {
 			div {
 				style = "height: calc(100vh - 46px); display: flex; position: relative;"
@@ -515,7 +513,7 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 					h1 {
 						style = "text-align: center; font-weight: 1000; color: white;"
 						+"Prêmios da "
-						span("rainbow-animated-text") {
+						span("has-rainbow-text") {
 							style = "text-shadow: 0px 0px 1px #ffffff7d;"
 							+"#TeamPantufa"
 						}
@@ -598,7 +596,7 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 					h1 {
 						style = "text-align: center; font-weight: 1000; color: white;"
 						+"Prêmios da "
-						span("rainbow-animated-text") {
+						span("has-rainbow-text") {
 							style = "text-shadow: 0px 0px 1px #ffffff7d;"
 							+"#TeamGabriela"
 						}

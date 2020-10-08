@@ -4,17 +4,13 @@ import com.github.salomonbrys.kotson.*
 import com.google.common.cache.CacheBuilder
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
-import com.mrpowergamerbr.loritta.network.Databases
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
-import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.client.request.post
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.readText
-import io.ktor.http.userAgent
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -28,12 +24,12 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.sharding.ShardManager
 import net.perfectdreams.loritta.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.utils.CachedUserInfo
+import net.perfectdreams.loritta.utils.ClusterOfflineException
 import net.perfectdreams.loritta.utils.DiscordUtils
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -111,7 +107,7 @@ class LorittaShards {
 			return transformUserToCachedUserInfo(cachedRetrievedUser.get())
 
 		// Se não tiver, iremos verificar na database externa
-		val cachedUser = transaction(Databases.loritta) {
+		val cachedUser = loritta.newSuspendedTransaction {
 			CachedDiscordUsers.select { CachedDiscordUsers.id eq id }
 					.firstOrNull()
 		}
@@ -150,7 +146,7 @@ class LorittaShards {
 			return transformUserToCachedUserInfo(cachedRetrievedUser)
 
 		// If it doesn't exist, check on the external database
-		val cachedUser = transaction(Databases.loritta) {
+		val cachedUser = loritta.newSuspendedTransaction {
 			CachedDiscordUsers.select { CachedDiscordUsers.name eq username and (CachedDiscordUsers.discriminator eq discriminator) }
 					.firstOrNull()
 		}
@@ -202,7 +198,7 @@ class LorittaShards {
 	@Suppress("IMPLICIT_CAST_TO_ANY")
 	suspend fun updateCachedUserData(id: Long, name: String, discriminator: String, avatarId: String?) {
 		val now = System.currentTimeMillis()
-		transaction(Databases.loritta) {
+		loritta.newSuspendedTransaction {
 			val cachedData = CachedDiscordUsers.select { CachedDiscordUsers.id eq id }.firstOrNull()
 
 			if (cachedData != null) {
@@ -266,12 +262,12 @@ class LorittaShards {
 					response.readText()
 				}
 
-				jsonParser.parse(
+				JsonParser.parseString(
 						body
 				)
 			} catch (e: Exception) {
 				logger.warn(e) { "Shard ${shard.name} ${shard.id} offline!" }
-				throw PingCommand.ShardOfflineException(shard.id, shard.name)
+				throw ClusterOfflineException(shard.id, shard.name)
 			}
 		}
 	}
@@ -288,12 +284,12 @@ class LorittaShards {
 					response.readText()
 				}
 
-				jsonParser.parse(
+				JsonParser.parseString(
 						body
 				)
 			} catch (e: Exception) {
 				logger.warn(e) { "Shard ${cluster.name} ${cluster.id} offline!" }
-				throw PingCommand.ShardOfflineException(cluster.id, cluster.name)
+				throw ClusterOfflineException(cluster.id, cluster.name)
 			}
 		}
 	}
@@ -314,13 +310,13 @@ class LorittaShards {
 						logger.info { "Successfully got a response from ${it.getUserAgent()} for $path" }
 
 						val body = response.readText()
-						jsonParser.parse(
+						JsonParser.parseString(
 								body
 						)
 					}
 				} catch (e: Exception) {
 					logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
-					throw PingCommand.ShardOfflineException(it.id, it.name)
+					throw ClusterOfflineException(it.id, it.name)
 				}
 			}
 		}
@@ -338,7 +334,7 @@ class LorittaShards {
 				json["guilds"].array.forEach {
 					allGuilds.add(it.obj)
 				}
-			} catch (e: PingCommand.ShardOfflineException) {}
+			} catch (e: ClusterOfflineException) {}
 		}
 
 		return allGuilds
@@ -366,13 +362,13 @@ class LorittaShards {
 						}
 
 						val body = response.readText()
-						jsonParser.parse(
+						JsonParser.parseString(
 								body
 						)
 					}
 				} catch (e: Exception) {
 					logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
-					throw PingCommand.ShardOfflineException(it.id, it.name)
+					throw ClusterOfflineException(it.id, it.name)
 				}
 			}
 		}
@@ -386,7 +382,7 @@ class LorittaShards {
 				json.array.forEach {
 					matchedUsers.add(it.obj)
 				}
-			} catch (e: PingCommand.ShardOfflineException) {}
+			} catch (e: ClusterOfflineException) {}
 		}
 
 		return matchedUsers.distinctBy { it["id"].long }
@@ -409,13 +405,13 @@ class LorittaShards {
 						}
 
 						val body = response.readText()
-						jsonParser.parse(
+						JsonParser.parseString(
 								body
 						)
 					}
 				} catch (e: Exception) {
 					logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
-					throw PingCommand.ShardOfflineException(it.id, it.name)
+					throw ClusterOfflineException(it.id, it.name)
 				}
 			}
 		}
@@ -429,7 +425,7 @@ class LorittaShards {
 				json.array.forEach {
 					matchedGuilds.add(it.obj)
 				}
-			} catch (e: PingCommand.ShardOfflineException) {}
+			} catch (e: ClusterOfflineException) {}
 		}
 
 		return matchedGuilds
@@ -465,7 +461,7 @@ class LorittaShards {
 			response.readText()
 		}
 
-		val json = jsonParser.parse(body).obj
+		val json = JsonParser.parseString(body).obj
 		if (!json.has("id"))
 			return null
 

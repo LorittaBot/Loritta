@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.commands.discord
 
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.DateUtils
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
@@ -70,7 +70,7 @@ class RoleInfoCommand : LorittaCommand(arrayOf("roleinfo", "taginfo"), CommandCa
             context.sendMessage(context.getAsMention(true), embed.build())
         } else {
             context.reply(
-                    LoriReply(
+                    LorittaReply(
                             locale["commands.discord.roleinfo.roleNotFound"],
                             Constants.ERROR
                     )

@@ -14,6 +14,7 @@ import kotlinx.serialization.json.JSON
 import kotlinx.serialization.parseList
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
+import net.perfectdreams.spicymorenitta.extensions.listIsEmptySection
 import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
@@ -96,15 +97,7 @@ class RssFeedsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/
 
 		trackedDiv.append {
 			if (trackedRssFeeds.isEmpty()) {
-				div {
-					style = "text-align: center;font-size: 2em;opacity: 0.7;"
-					div {
-						img(src = "https://loritta.website/assets/img/blog/lori_calca.gif") {
-							style = "width: 20%; filter: grayscale(100%);"
-						}
-					}
-					+ "${locale["website.empty"]}${locale.getList("website.funnyEmpty").random()}"
-				}
+				listIsEmptySection()
 			} else {
 				for (account in trackedRssFeeds) {
 					createTrackedRssFeedsEntry(guild, account)
@@ -348,12 +341,12 @@ class RssFeedsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/
 				false,
 				null,
 				true,
-				Placeholders.DEFAULT_PLACEHOLDERS.toMutableMap().apply {
+				listOf(), /* Placeholders.DEFAULT_PLACEHOLDERS .toMutableMap().apply {
 					put("link", "Link do Tweet")
-				},
+				} ,
 				customTokens = mapOf(
 						"link" to "https://twitter.com/LorittaBot/status/1112093554174763008"
-				),
+				), */
 				showTemplates = false
 		)
 	}

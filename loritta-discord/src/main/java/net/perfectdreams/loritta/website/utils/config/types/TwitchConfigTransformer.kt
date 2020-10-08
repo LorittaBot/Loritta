@@ -5,20 +5,19 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.ServerConfig
-import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.*
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedTwitchAccounts
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 
 object TwitchConfigTransformer : ConfigTransformer {
     override val payloadType: String = "twitch"
     override val configKey: String = "trackedTwitchChannels"
 
     override suspend fun fromJson(guild: Guild, serverConfig: ServerConfig, payload: JsonObject) {
-        transaction(Databases.loritta) {
+        loritta.newSuspendedTransaction {
             TrackedTwitchAccounts.deleteWhere {
                 TrackedTwitchAccounts.guildId eq guild.idLong
             }
@@ -37,7 +36,7 @@ object TwitchConfigTransformer : ConfigTransformer {
     }
 
     override suspend fun toJson(guild: Guild, serverConfig: ServerConfig): JsonElement {
-        return transaction(Databases.loritta) {
+        return loritta.newSuspendedTransaction {
             val array = JsonArray()
 
             TrackedTwitchAccounts.select {

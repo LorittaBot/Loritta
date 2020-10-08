@@ -4,9 +4,16 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import io.ktor.application.ApplicationCall
 import io.ktor.request.path
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.website.utils.extensions.redirect
 
 abstract class LocalizedRoute(loritta: LorittaDiscord, val originalPath: String) : BaseRoute(loritta, "/{localeId}$originalPath") {
+	open val isMainClusterOnlyRoute = false
+
 	override suspend fun onRequest(call: ApplicationCall) {
+		if (isMainClusterOnlyRoute && !loritta.isMaster)
+			// If this is a main cluster only route, we are going to redirect to Loritta's main website
+			redirect(loritta.instanceConfig.loritta.website.url.removeSuffix("/") + call.request.path(), true)
+
 		val localeIdFromPath = call.parameters["localeId"]
 
 		// Pegar a locale da URL e, caso não existir, faça fallback para o padrão BR

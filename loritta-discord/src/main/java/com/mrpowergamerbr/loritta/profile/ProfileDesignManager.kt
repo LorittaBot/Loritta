@@ -1,12 +1,13 @@
 package com.mrpowergamerbr.loritta.profile
 
 import net.perfectdreams.loritta.api.utils.Rarity
-import net.perfectdreams.loritta.profile.*
+import net.perfectdreams.loritta.profile.ArtistBadge
+import net.perfectdreams.loritta.profile.Badge
+import net.perfectdreams.loritta.profile.DiscordNitroBadge
+import net.perfectdreams.loritta.profile.DiscordUserFlagBadge
 
 class ProfileDesignManager {
-	val designs = mutableListOf<ProfileDesign>()
-	val publicDesigns: List<ProfileDesign>
-		get() = designs.filter { it.public }
+	val designs = mutableListOf<ProfileCreator>()
 	val badges = mutableListOf<Badge>()
 
 	fun registerBadge(badge: Badge) {
@@ -17,49 +18,30 @@ class ProfileDesignManager {
 		badges.remove(badge)
 	}
 
-	fun registerDesign(design: ProfileDesign) {
-		designs.removeIf { it.internalType == design.internalType }
+	fun registerDesign(design: ProfileCreator) {
+		designs.removeIf { it.internalName == design.internalName }
 		designs.add(design)
 	}
 
-	fun unregisterDesign(design: ProfileDesign) {
-		designs.removeIf { it.internalType == design.internalType }
+	fun unregisterDesign(design: ProfileCreator) {
+		designs.removeIf { it.internalName == design.internalName }
 	}
 
 	init {
-		registerDesign(
-				ProfileDesign(true,
-						NostalgiaProfileCreator::class.java,
-						"default",
-						Rarity.COMMON,
-						listOf(),
-						false,
-						false
-				)
-		)
+		registerDesign(NostalgiaProfileCreator())
 
-		registerBadge(
-				DiscordHouseBadge.DiscordBraveryHouseBadge()
-		)
+		// ===[ DISCORD USER FLAGS BADGES ]===
+		registerBadge(DiscordUserFlagBadge.DiscordStaffBadge())
+		registerBadge(DiscordUserFlagBadge.DiscordPartnerBadge())
+		registerBadge(DiscordUserFlagBadge.DiscordVerifiedDeveloperBadge())
+		registerBadge(DiscordUserFlagBadge.DiscordHypesquadEventsBadge())
+		registerBadge(DiscordUserFlagBadge.DiscordEarlySupporterBadge())
+		registerBadge(DiscordUserFlagBadge.DiscordBraveryHouseBadge())
+		registerBadge(DiscordUserFlagBadge.DiscordBrillanceHouseBadge())
+		registerBadge(DiscordUserFlagBadge.DiscordBalanceHouseBadge())
 
-		registerBadge(
-				DiscordHouseBadge.DiscordBrillanceHouseBadge()
-		)
+		registerBadge(DiscordNitroBadge())
 
-		registerBadge(
-				DiscordHouseBadge.DiscordBalanceHouseBadge()
-		)
-
-		registerBadge(
-				DiscordEarlySupporterBadge()
-		)
-
-		registerBadge(
-				DiscordNitroBadge()
-		)
-
-		registerBadge(
-				ArtistBadge()
-		)
+		registerBadge(ArtistBadge())
 	}
 }

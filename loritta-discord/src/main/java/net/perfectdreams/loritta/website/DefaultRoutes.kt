@@ -22,7 +22,7 @@ import net.perfectdreams.loritta.website.routes.user.UserReputationRoute
 import net.perfectdreams.loritta.website.routes.user.dashboard.*
 
 object DefaultRoutes {
-	fun defaultRoutes(loritta: LorittaDiscord) = mutableListOf(
+	fun defaultRoutes(loritta: LorittaDiscord) = listOf(
 			// ===[ USER ROUTES ]===
 			HomeRoute(loritta),
 			BlogRoute(loritta),
@@ -39,7 +39,6 @@ object DefaultRoutes {
 			SupportRoute(loritta),
 			TermsOfServiceRoute(loritta),
 			DailyRoute(loritta),
-			NashornDocsRoute(loritta),
 			DonateRoute(loritta),
 
 			// Landing Pages
@@ -61,13 +60,14 @@ object DefaultRoutes {
 			ConfigureMemberCounterRoute(loritta),
 			ConfigureMiscellaneousRoute(loritta),
 			ConfigureModerationRoute(loritta),
-			ConfigureNashornCommandsRoute(loritta),
 			ConfigurePermissionsRoute(loritta),
 			ConfigurePremiumKeyRoute(loritta),
 			ConfigureStarboardRoute(loritta),
 			ConfigureTrackedTwitterAccountsRoute(loritta),
 			ConfigureWelcomerRoute(loritta),
 			ConfigureYouTubeRoute(loritta),
+			ConfigureNashornCommandsRoute(loritta),
+			ConfigureCustomCommandsRoute(loritta),
 
 			// Reps
 			UserReputationRoute(loritta),
@@ -85,9 +85,8 @@ object DefaultRoutes {
 			// Callbacks
 			GetPubSubHubbubCallbackRoute(loritta),
 			PostDiscordBotsCallbackRoute(loritta),
-			PostMercadoPagoCallbackRoute(loritta),
 			PostPubSubHubbubCallbackRoute(loritta),
-			PostPicPayCallbackRoute(loritta),
+			PostPerfectPaymentsCallbackRoute(loritta),
 			CreateWebhookRoute(loritta),
 
 			// Economy
@@ -99,6 +98,7 @@ object DefaultRoutes {
 			GetSonhosLeaderboardRoute(loritta),
 			GetDailyShopRoute(loritta),
 			PostBuyDailyShopItemRoute(loritta),
+			GetPaymentsLeaderboardRoute(loritta),
 
 			// Guild
 			GetGuildInfoRoute(loritta),
@@ -117,11 +117,13 @@ object DefaultRoutes {
 			GetCommandsRoute(loritta),
 			GetCurrentFanMadeAvatarRoute(loritta),
 			GetFanArtsController(loritta),
+			GetFanArtImageController(loritta),
 			GetLocaleRoute(loritta),
 			GetLorittaActionRoute(loritta),
 			GetRaffleStatusRoute(loritta),
 			GetStatusRoute(loritta),
 			GetAvailableBackgroundsRoute(loritta),
+			GetAvailableProfileDesignsRoute(loritta),
 			GetSelfUserProfileRoute(loritta),
 			PostLorittaActionRoute(loritta),
 			PostRaffleStatusRoute(loritta),

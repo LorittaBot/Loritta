@@ -1,5 +1,6 @@
 package net.perfectdreams.spicymorenitta
 
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.js.Js
 import io.ktor.client.request.get
@@ -15,16 +16,14 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.stream.createHTML
-import kotlinx.serialization.ImplicitReflectionSerializer
-import kotlinx.serialization.parse
+import loadEmbeddedLocale
+import net.perfectdreams.loritta.serializable.UserIdentification
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.routes.*
 import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.*
 import net.perfectdreams.spicymorenitta.routes.user.dashboard.*
 import net.perfectdreams.spicymorenitta.trunfo.TrunfoGame
 import net.perfectdreams.spicymorenitta.utils.*
-import net.perfectdreams.spicymorenitta.utils.locale.BaseLocale
-import oldMain
 import org.w3c.dom.*
 import kotlin.browser.document
 import kotlin.browser.window
@@ -49,7 +48,7 @@ lateinit var locale: BaseLocale
 
 class SpicyMorenitta : Logging {
 	companion object {
-		const val CACHE_ON_HOVER_DELAY = 125L // milliseconds
+		const val CACHE_ON_HOVER_DELAY = 75L // milliseconds
 		lateinit var INSTANCE: SpicyMorenitta
 	}
 
@@ -60,14 +59,12 @@ class SpicyMorenitta : Logging {
 			FanArtsRoute(this),
 			UpdateNavbarSizePostRender("/support", false, false),
 			UpdateNavbarSizePostRender("/blog", false, false),
-			UpdateNavbarSizePostRender("/extended", false, false),
 			UpdateNavbarSizePostRender("/guidelines", false, false),
 			AuditLogRoute(this),
 			LevelUpRoute(this),
 			TwitterRoute(this),
 			RssFeedsRoute(this),
 			CommandsRoute(this),
-			TranslateRoute(this),
 			GeneralConfigRoute(this),
 			BadgeRoute(this),
 			DailyMultiplierRoute(this),
@@ -80,12 +77,12 @@ class SpicyMorenitta : Logging {
 			MusicConfigRoute(this),
 			DonateRoute(this),
 			FortniteConfigRoute(this),
-			ProfileListDashboardRoute(this),
 			ShipEffectsDashboardRoute(this),
 			AvailableBundlesDashboardRoute(this),
 			DailyRoute(this),
 			BackgroundsListDashboardRoute(this),
 			AllBackgroundsListDashboardRoute(this),
+			ProfileDesignsListDashboardRoute(this),
 			DailyShopDashboardRoute(this),
 			Birthday2020Route(this),
 			Birthday2020StatsRoute(this),
@@ -94,7 +91,8 @@ class SpicyMorenitta : Logging {
 			AutoroleConfigRoute(this),
 			MemberCounterRoute(this),
 			ModerationConfigRoute(this),
-			WelcomerConfigRoute(this)
+			WelcomerConfigRoute(this),
+			CustomCommandsRoute(this)
 	)
 
 	val validWebsiteLocaleIds = mutableListOf(
@@ -131,6 +129,12 @@ class SpicyMorenitta : Logging {
 				"us"
 		}
 
+	val hasLocaleIdInPath: Boolean
+		get() {
+			val localeIdFromPath = WebsiteUtils.getWebsiteLocaleIdViaPath()
+			return localeIdFromPath in validWebsiteLocaleIds
+		}
+
 	var currentRoute: BaseRoute? = null
 
 	var userIdentification: UserIdentification? = null
@@ -158,7 +162,6 @@ class SpicyMorenitta : Logging {
 		throw exception
 	}
 
-	@UseExperimental(ImplicitReflectionSerializer::class)
 	fun start() {
 		INSTANCE = this
 
@@ -184,8 +187,6 @@ class SpicyMorenitta : Logging {
 			return
 		}
 
-		oldMain(arrayOf())
-
 		// From old website
 		val darkThemeCookie = CookiesUtils.readCookie("darkTheme")
 		if (darkThemeCookie?.toBoolean() == true)
@@ -209,6 +210,8 @@ class SpicyMorenitta : Logging {
 
 		document.onDOMReady {
 			debug("DOM is ready!")
+			debug("Loading deprecated locale from the body...")
+			loadEmbeddedLocale()
 
 			debug(window.location.pathname + " - " + WebsiteUtils.getPathWithoutLocale())
 
@@ -232,13 +235,13 @@ class SpicyMorenitta : Logging {
 				)
 
 				if (currentRoute.requiresLocales) {
-					deferred[0].join()
+					deferred[0].await()
 
 					debug("Locale test: ${locale["commands.images.drawnword.description"]}")
 					debug("Locale test: ${locale["commands.fun.ship.bribeLove", ":3"]}")
 				}
 				if (currentRoute.requiresUserIdentification)
-					deferred[1].join()
+					deferred[1].await()
 
 				onPageChange(window.location.pathname, null)
 
@@ -265,10 +268,9 @@ class SpicyMorenitta : Logging {
 		}
 	}
 
-	@UseExperimental(ImplicitReflectionSerializer::class)
 	suspend fun loadLocale() {
 		val payload = http.get<String>("${window.location.origin}/api/v1/loritta/locale/$localeId")
-		locale = kotlinx.serialization.json.JSON.nonstrict.parse(payload)
+		locale = kotlinx.serialization.json.JSON.nonstrict.parse(BaseLocale.serializer(), payload)
 
 		// Atualizar o locale que o moment utiliza, já que ele usa uma instância global para tuuuuudo
 		val momentLocaleId = when (locale.id) {
@@ -279,7 +281,6 @@ class SpicyMorenitta : Logging {
 		Moment.locale(momentLocaleId)
 	}
 
-	@UseExperimental(ImplicitReflectionSerializer::class)
 	suspend fun loadLoggedInUser() {
 		val httpResponse = http.get<HttpResponse>("${window.location.origin}/api/v1/users/@me")
 		val payload = httpResponse.readText()
@@ -287,7 +288,7 @@ class SpicyMorenitta : Logging {
 		if (httpResponse.status != HttpStatusCode.OK/* jsonPayload["code"] != null */) {
 			debug("Get User Request failed - ${jsonPayload["code"]}")
 		} else {
-			val userIdentification = kotlinx.serialization.json.JSON.nonstrict.parse<UserIdentification>(payload)
+			val userIdentification = kotlinx.serialization.json.JSON.nonstrict.parse(UserIdentification.serializer(), payload)
 			debug("Get User Request success! - ${userIdentification.username} (${userIdentification.id})")
 			SpicyMorenitta.INSTANCE.updateLoggedInUser(userIdentification)
 		}
@@ -303,24 +304,10 @@ class SpicyMorenitta : Logging {
 
 			loginButton.replaceWith(cloned)
 			cloned.clear()
-			cloned.setAttribute("href", "/br/dashboard")
+			cloned.setAttribute("href", "/$websiteLocaleId/dashboard")
 
 			cloned.append {
-				val userId = newUser.id.toLong()
-
-				val avatarUrl = if (newUser.avatar != null) {
-					val extension = if (newUser.avatar.startsWith("a_")) { // Avatares animados no Discord começam com "_a"
-						"gif"
-					} else {
-						"png"
-					}
-
-					"https://cdn.discordapp.com/avatars/${userId}/${newUser.avatar}.${extension}?size=256"
-				} else {
-					val avatarId = userId % 5
-
-					"https://cdn.discordapp.com/embed/avatars/$avatarId.png?size=256"
-				}
+				val avatarUrl = newUser.effectiveAvatarUrl
 
 				img(src = avatarUrl) {
 					style = """    font-size: 0px;
@@ -349,6 +336,10 @@ class SpicyMorenitta : Logging {
 				}
 			}
 		}
+
+		// Update the navbar entries because the name + avatar may cause the navbar to overflow
+		if (navbarIsSetup)
+			checkAndFixNavbarOverflownEntries()
 	}
 
 	fun getPageRouteForCurrentPath(): BaseRoute {
@@ -360,7 +351,6 @@ class SpicyMorenitta : Logging {
 		return route
 	}
 
-	@UseExperimental(ImplicitReflectionSerializer::class)
 	fun onPageChange(path: String, content: Element?) {
 		if (!navbarIsSetup) {
 			addNavbarOptions()
@@ -429,10 +419,25 @@ class SpicyMorenitta : Logging {
 											+ it
 										}
 									}
+
+									p {
+										style = "font-size: 2.0em; color: red;"
+
+										+ locale["website.dashboard.profile.deleteAccount.yourAccountWillBeSuspendedWarning"]
+									}
+
+									locale.getList("website.dashboard.profile.deleteAccount.warningDescription").forEach {
+										p {
+											style = "font-size: 1.25em; color: red;"
+											+ it
+										}
+									}
 								}
 							}
 					)
 					modal.open()
+
+					modal.trackOverflowChanges(this)
 				}
 			}
 		}
@@ -454,23 +459,27 @@ class SpicyMorenitta : Logging {
 			}
 		}
 
-		val route = getPageRouteForCurrentPath()
+		if (hasLocaleIdInPath) {
+			val route = getPageRouteForCurrentPath()
 
-		debug("Route for current path is ${route::class.simpleName}")
+			debug("Route for current path is ${route::class.simpleName}")
 
-		val params = route.getPathParameters(pathWithoutLocale)
-		debug("Parameters: ${params.entries}")
-		val call = ApplicationCall(params, content)
+			val params = route.getPathParameters(pathWithoutLocale)
+			debug("Parameters: ${params.entries}")
+			val call = ApplicationCall(params, content)
 
-		if (!route.keepLoadingScreen) // Utilizado para coisas que querem mais http requests após carregar (página de fan arts!)
-			hideLoadingScreen()
+			if (!route.keepLoadingScreen) // Utilizado para coisas que querem mais http requests após carregar (página de fan arts!)
+				hideLoadingScreen()
 
-		debug("Unloading current route...")
-		this.currentRoute?.onUnload()
-		this.currentRoute = route
+			debug("Unloading current route...")
+			this.currentRoute?.onUnload()
+			this.currentRoute = route
 
-		debug("Rendering ${route::class.simpleName}")
-		route.onRender(call)
+			debug("Rendering ${route::class.simpleName}")
+			route.onRender(call)
+		} else {
+			warn("Path doesn't have locale! We are not going to switch to JS routes...")
+		}
 	}
 
 	fun setUpPageSwitcher(element: Element, path: String) {
@@ -572,6 +581,18 @@ class SpicyMorenitta : Logging {
 					document.body!!.style.overflowY = "hidden" // Para remover as scrollbars e apenas deixar as scrollbars da navbar
 				}
 			}
+
+			if (hamburgerButton != null) {
+				debug("Setting up resize handler...")
+
+				window.addEventListener("resize", {
+					checkAndFixNavbarOverflownEntries()
+				}, true)
+
+				checkAndFixNavbarOverflownEntries()
+
+				debug("Resize handler successfully created!")
+			}
 		} else {
 			warn("Navigation Bar does not exist! Ignorning...")
 		}
@@ -580,6 +601,22 @@ class SpicyMorenitta : Logging {
 		setUpLazyLoad()
 
 		debug("Redirect buttons added!")
+	}
+
+	fun checkAndFixNavbarOverflownEntries() {
+		val leftSidebar = document.select<HTMLDivElement>(".left-side-entries")
+		val hamburgerButton = document.select<HTMLDivElement>("#hamburger-menu-button")
+
+		val isOverflowing = leftSidebar.selectAll<HTMLDivElement>(".entry").any { it.offsetTop != 0 }
+		if (isOverflowing) {
+			debug("Navbar entries are overflowing, let's unhide the hamburger button!")
+
+			hamburgerButton.style.display = "block"
+		} else {
+			debug("Navbar entries are not overflowing, let's hide the hamburger button!")
+
+			hamburgerButton.style.display = "none"
+		}
 	}
 
 	fun setUpLinkPreloader() {

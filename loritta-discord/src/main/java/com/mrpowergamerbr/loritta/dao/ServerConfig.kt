@@ -1,10 +1,15 @@
 package com.mrpowergamerbr.loritta.dao
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.DonationKeys
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
+import com.mrpowergamerbr.loritta.utils.loritta
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.*
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
@@ -43,17 +48,22 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 	var moderationConfig by ModerationConfig optionalReferencedOn ServerConfigs.moderationConfig
 	var migrationVersion by ServerConfigs.migrationVersion
 
-	fun getActiveDonationKeys() = transaction(Databases.loritta) {
+	suspend fun getActiveDonationKeys() = loritta.newSuspendedTransaction {
 		DonationKey.find { DonationKeys.activeIn eq this@ServerConfig.id and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
 				.toList()
 	}
 
-	fun getActiveDonationKeysValue() = getActiveDonationKeys().sumByDouble { it.value }
+	suspend fun getActiveDonationKeysValue() = getActiveDonationKeys().sumByDouble { it.value }
 
-	fun getUserData(id: Long): GuildProfile {
+	fun getActiveDonationKeysNested() = DonationKey.find { DonationKeys.activeIn eq this@ServerConfig.id and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
+				.toList()
+
+	fun getActiveDonationKeysValueNested() = getActiveDonationKeysNested().sumByDouble { it.value }
+
+	suspend fun getUserData(id: Long): GuildProfile {
 		val t = this
-		return transaction(Databases.loritta) {
-			getUserDataIfExists(id) ?: GuildProfile.new {
+		return getUserDataIfExistsAsync(id) ?: loritta.newSuspendedTransaction {
+			GuildProfile.new {
 				this.guildId = t.guildId
 				this.userId = id
 				this.money = BigDecimal(0)
@@ -64,11 +74,13 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 		}
 	}
 
-	fun getUserDataIfExists(id: Long): GuildProfile? {
-		return transaction(Databases.loritta) {
+	suspend fun getUserDataIfExistsAsync(id: Long): GuildProfile? {
+		return loritta.newSuspendedTransaction {
 			GuildProfile.find { (GuildProfiles.guildId eq guildId) and (GuildProfiles.userId eq id) }.firstOrNull()
 		}
 	}
+
+	fun getUserDataIfExistsNested(id: Long) = GuildProfile.find { (GuildProfiles.guildId eq guildId) and (GuildProfiles.userId eq id) }.firstOrNull()
 
 	private val cachedData = ConcurrentHashMap<KMutableProperty1<ServerConfig, *>, Optional<Any>>()
 
@@ -84,5 +96,36 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 			return databaseObject as T
 		}
 		return cachedData[property]?.getOrNull() as T
+	}
+
+	/**
+	 * Gets or retrieves from the database the object you've requested
+	 */
+	suspend fun <T> getCachedOrRetreiveFromDatabaseAsync(loritta: Loritta, property: KMutableProperty1<ServerConfig, *>): T {
+		if (!cachedData.containsKey(property)) {
+			val databaseObject = loritta.newSuspendedTransaction {
+				property.call(this@ServerConfig)
+			}
+			cachedData[property] = Optional.ofNullable(databaseObject)
+			return databaseObject as T
+		}
+		return cachedData[property]?.getOrNull() as T
+	}
+
+	/**
+	 * Gets or retrieves from the database the object you've requested
+	 */
+	suspend fun <T> getCachedOrRetreiveFromDatabaseDeferred(loritta: Loritta, property: KMutableProperty1<ServerConfig, *>): Deferred<T> {
+		if (!cachedData.containsKey(property)) {
+			val job = loritta.suspendedTransactionAsync {
+				val result = property.call(this@ServerConfig)
+
+				cachedData[property] = Optional.ofNullable(result)
+
+				return@suspendedTransactionAsync result
+			}
+			return job as Deferred<T>
+		}
+		return GlobalScope.async(loritta.coroutineDispatcher) { cachedData[property]?.getOrNull() as T }
 	}
 }

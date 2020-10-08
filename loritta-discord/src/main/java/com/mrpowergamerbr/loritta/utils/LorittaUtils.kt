@@ -1,11 +1,8 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.dao.ServerConfig
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.TextChannel
 import net.perfectdreams.loritta.utils.SimpleImageInfo
 import net.perfectdreams.loritta.utils.readAllBytes
 import java.awt.image.BufferedImage
@@ -25,29 +22,6 @@ object LorittaUtils {
 			return false
 		}
 		return true
-	}
-
-	fun warnOwnerNoPermission(guild: Guild?, textChannel: TextChannel?, serverConf: ServerConfig) {
-		/* if (textChannel == null || guild == null)
-			return
-
-		if (serverConf.warnOnMissingPermission) {
-			for (member in guild.members) {
-				if (!member.user.isBot && (member.hasPermission(Permission.ADMINISTRATOR) || member.hasPermission(Permission.MANAGE_PERMISSIONS))) {
-					try {
-						val locale = LorittaLauncher.loritta.getLegacyLocaleById(serverConf.localeId)
-						member.user.openPrivateChannel().queue { channel -> channel.sendMessage(locale["LORITTA_HeyIDontHavePermission", textChannel.asMention, guild.name]).queue() }
-					} catch (e: ErrorResponseException) {
-						// Usuário tem as DMs desativadas
-						if (e.errorResponse.code == 50007) {
-							continue
-						}
-						e.printStackTrace()
-					}
-
-				}
-			}
-		} */
 	}
 
 	/**

@@ -1,39 +1,45 @@
 package net.perfectdreams.loritta.commands.vanilla.social
 
-import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.utils.LoriReply
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import net.perfectdreams.commands.annotation.Subcommand
+import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import net.perfectdreams.loritta.api.commands.LorittaCommand
-import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
-import org.jetbrains.exposed.sql.transactions.transaction
+import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.platform.discord.commands.discordCommand
+import net.perfectdreams.loritta.utils.Emotes
 
-class XpNotificationsCommand : LorittaCommand(arrayOf("xpnotifications"), category = CommandCategory.SOCIAL) {
-    override fun getDescription(locale: BaseLocale): String? {
-        return locale["commands.social.xpnotifications.description"]
-    }
+object XpNotificationsCommand {
+	fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("xpnotifications"), CommandCategory.SOCIAL) {
+		description { it["commands.social.xpnotifications.description"] }
 
-    @Subcommand
-    suspend fun run(context: DiscordCommandContext, locale: BaseLocale) {
-        val newValue = transaction(Databases.loritta) {
-            context.lorittaUser.profile.settings.doNotSendXpNotificationsInDm = !context.lorittaUser.profile.settings.doNotSendXpNotificationsInDm
+		arguments {
+			argument(ArgumentType.NUMBER) {
+				optional = true
+			}
+		}
 
-            context.lorittaUser.profile.settings.doNotSendXpNotificationsInDm
-        }
+		executesDiscord {
+			val newValue = loritta.newSuspendedTransaction {
+				lorittaUser.profile.settings.doNotSendXpNotificationsInDm = !lorittaUser.profile.settings.doNotSendXpNotificationsInDm
 
-        if (newValue) {
-            context.reply(
-                    LoriReply(
-                            locale["commands.social.xpnotifications.disabledNotifications"]
-                    )
-            )
-        } else {
-            context.reply(
-                    LoriReply(
-                            locale["commands.social.xpnotifications.enabledNotifications"]
-                    )
-            )
-        }
-    }
+				lorittaUser.profile.settings.doNotSendXpNotificationsInDm
+			}
+
+			if (newValue) {
+				reply(
+						LorittaReply(
+								locale["commands.social.xpnotifications.disabledNotifications"],
+								Emotes.LORI_SMILE
+						)
+				)
+			} else {
+				reply(
+						LorittaReply(
+								locale["commands.social.xpnotifications.enabledNotifications"],
+								Emotes.LORI_SMILE
+						)
+				)
+			}
+		}
+	}
 }

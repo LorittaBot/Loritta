@@ -4,7 +4,9 @@ import com.mrpowergamerbr.loritta.Loritta
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
-import java.awt.*
+import java.awt.Color
+import java.awt.Font
+import java.awt.Image
 import java.awt.image.BufferedImage
 import java.io.File
 import java.text.DecimalFormat
@@ -481,14 +483,14 @@ object TretaNewsGenerator {
 		var t = titleBef[Loritta.RANDOM.nextInt(0, titleBef.size - 1)]
 		val `object` = objects[Loritta.RANDOM.nextInt(0, objects.size - 1)]
 		val emotion = emotions[Loritta.RANDOM.nextInt(0, emotions.size - 1)]
-		val social = TretaNewsGenerator.social[Loritta.RANDOM.nextInt(0, TretaNewsGenerator.social.size - 1)]
+		val social = social.random()
 
-		var rndYt1_1 = TretaNewsGenerator.randomYt[Loritta.RANDOM.nextInt(0, TretaNewsGenerator.randomYt.size - 1)]
-		var rndYt2_1 = TretaNewsGenerator.randomYt[Loritta.RANDOM.nextInt(0, TretaNewsGenerator.randomYt.size - 1)]
-		var rndYt3_1 = TretaNewsGenerator.randomYt[Loritta.RANDOM.nextInt(0, TretaNewsGenerator.randomYt.size - 1)]
-		var rndYt4_1 = TretaNewsGenerator.randomYt[Loritta.RANDOM.nextInt(0, TretaNewsGenerator.randomYt.size - 1)]
-		var rndYt5_1 = TretaNewsGenerator.randomYt[Loritta.RANDOM.nextInt(0, TretaNewsGenerator.randomYt.size - 1)]
-		val game = TretaNewsGenerator.randomGame[Loritta.RANDOM.nextInt(0, TretaNewsGenerator.randomGame.size - 1)]
+		var rndYt1_1 = TretaNewsGenerator.randomYt.random()
+		var rndYt2_1 = TretaNewsGenerator.randomYt.random()
+		var rndYt3_1 = TretaNewsGenerator.randomYt.random()
+		var rndYt4_1 = TretaNewsGenerator.randomYt.random()
+		var rndYt5_1 = TretaNewsGenerator.randomYt.random()
+		val game = randomGame.random()
 
 		t = t.replace("{@user}", str1)
 		t = t.replace("{@object}", `object`)
@@ -505,13 +507,13 @@ object TretaNewsGenerator {
 			var t2 = titleBef[Loritta.RANDOM.nextInt(0, titleBef.size - 1)]
 			val object2 = objects[Loritta.RANDOM.nextInt(0, objects.size - 1)]
 			val emotion2 = emotions[Loritta.RANDOM.nextInt(0, emotions.size - 1)]
-			val social2 = TretaNewsGenerator.social[Loritta.RANDOM.nextInt(0, TretaNewsGenerator.social.size - 1)]
+			val social2 = TretaNewsGenerator.social.random()
 
-			rndYt1_1 = randomYt[Loritta.RANDOM.nextInt(0, TretaNewsGenerator.randomYt.size - 1)]
-			rndYt2_1 = randomYt[Loritta.RANDOM.nextInt(0, TretaNewsGenerator.randomYt.size - 1)]
-			rndYt3_1 = randomYt[Loritta.RANDOM.nextInt(0, TretaNewsGenerator.randomYt.size - 1)]
-			rndYt4_1 = randomYt[Loritta.RANDOM.nextInt(0, TretaNewsGenerator.randomYt.size - 1)]
-			rndYt5_1 = randomYt[Loritta.RANDOM.nextInt(0, TretaNewsGenerator.randomYt.size - 1)]
+			rndYt1_1 = randomYt.random()
+			rndYt2_1 = randomYt.random()
+			rndYt3_1 = randomYt.random()
+			rndYt4_1 = randomYt.random()
+			rndYt5_1 = randomYt.random()
 
 			t2 = t2.replace("{@user}", str2)
 			t2 = t2.replace("{@object}", object2)

@@ -2,12 +2,11 @@ package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.jsonObject
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.plugin.LorittaPlugin
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.LorittaShards
 import com.mrpowergamerbr.loritta.utils.gson
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import kotlinx.coroutines.GlobalScope
@@ -16,6 +15,7 @@ import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
+import net.perfectdreams.loritta.utils.ClusterOfflineException
 import java.io.File
 import java.util.*
 
@@ -25,32 +25,32 @@ class PluginsCommand : LorittaCommand(arrayOf("plugins"), category = CommandCate
 	@Subcommand
 	suspend fun pluginList(context: LorittaCommandContext) {
 		context.reply(
-				LoriReply(
-						"**Plugins (${loritta.pluginManager.plugins.size}):** ${loritta.pluginManager.plugins.joinToString(", ", transform = {
-							buildString { 
-								this.append(it.name)
-								
-								if (it is LorittaPlugin)
-									this.append(" (Legacy)")
-							}
-						})}"
-				)
+                LorittaReply(
+                        "**Plugins (${loritta.pluginManager.plugins.size}):** ${loritta.pluginManager.plugins.joinToString(", ", transform = {
+                            buildString {
+                                this.append(it.name)
+
+                                if (it is LorittaPlugin)
+                                    this.append(" (Legacy)")
+                            }
+                        })}"
+                )
 		)
 	}
 
 	@Subcommand(["load"])
 	suspend fun load(context: LorittaCommandContext, pluginName: String) {
 		context.reply(
-				LoriReply(
-						"Carregando plugin `$pluginName.jar`..."
-				)
+                LorittaReply(
+                        "Carregando plugin `$pluginName.jar`..."
+                )
 		)
 
 		loritta.pluginManager.loadPlugin(File(loritta.instanceConfig.loritta.folders.plugins, "$pluginName.jar"))
 		context.reply(
-				LoriReply(
-						"Finalizado, yay!"
-				)
+                LorittaReply(
+                        "Finalizado, yay!"
+                )
 		)
 	}
 
@@ -60,25 +60,25 @@ class PluginsCommand : LorittaCommand(arrayOf("plugins"), category = CommandCate
 
 		if (plugin == null) {
 			context.reply(
-					LoriReply(
-							"Plugin não existe! Como você vai descarregar algo que não existe?"
-					)
+                    LorittaReply(
+                            "Plugin não existe! Como você vai descarregar algo que não existe?"
+                    )
 			)
 			return
 		}
 
 		context.reply(
-				LoriReply(
-						"Descarregando plugin `$pluginName.jar`..."
-				)
+                LorittaReply(
+                        "Descarregando plugin `$pluginName.jar`..."
+                )
 		)
 
 		loritta.pluginManager.unloadPlugin(plugin)
 
 		context.reply(
-				LoriReply(
-						"Finalizado, yay!"
-				)
+                LorittaReply(
+                        "Finalizado, yay!"
+                )
 		)
 	}
 
@@ -88,25 +88,25 @@ class PluginsCommand : LorittaCommand(arrayOf("plugins"), category = CommandCate
 
 		if (plugin == null) {
 			context.reply(
-					LoriReply(
-							"Plugin não existe! Como você vai recarregar algo que não existe?"
-					)
+                    LorittaReply(
+                            "Plugin não existe! Como você vai recarregar algo que não existe?"
+                    )
 			)
 			return
 		}
 
 		context.reply(
-				LoriReply(
-						"Recarregando plugin `$pluginName.jar`..."
-				)
+                LorittaReply(
+                        "Recarregando plugin `$pluginName.jar`..."
+                )
 		)
 
 		loritta.pluginManager.reloadPlugin(plugin)
 
 		context.reply(
-				LoriReply(
-						"Finalizado, yay!"
-				)
+                LorittaReply(
+                        "Finalizado, yay!"
+                )
 		)
 	}
 
@@ -116,9 +116,9 @@ class PluginsCommand : LorittaCommand(arrayOf("plugins"), category = CommandCate
 
 		if (plugin == null && !pluginName.startsWith("!")) {
 			context.reply(
-					LoriReply(
-							"Plugin não existe! Como você vai recarregar algo que não existe? Se você sabe o que você está fazendo, use `!` antes do nome do plugin!"
-					)
+                    LorittaReply(
+                            "Plugin não existe! Como você vai recarregar algo que não existe? Se você sabe o que você está fazendo, use `!` antes do nome do plugin!"
+                    )
 			)
 			return
 		}
@@ -126,9 +126,9 @@ class PluginsCommand : LorittaCommand(arrayOf("plugins"), category = CommandCate
 		doPluginAction("plugin_reload", pluginName.removePrefix("!"))
 
 		context.reply(
-				LoriReply(
-						"Recarregando plugin `$pluginName.jar` em todos os clusters!"
-				)
+                LorittaReply(
+                        "Recarregando plugin `$pluginName.jar` em todos os clusters!"
+                )
 		)
 	}
 
@@ -138,9 +138,9 @@ class PluginsCommand : LorittaCommand(arrayOf("plugins"), category = CommandCate
 
 		if (plugin == null && !pluginName.startsWith("!")) {
 			context.reply(
-					LoriReply(
-							"Plugin não existe! Como você vai descarregar algo que não existe? Se você sabe o que você está fazendo, use `!` antes do nome do plugin!"
-					)
+                    LorittaReply(
+                            "Plugin não existe! Como você vai descarregar algo que não existe? Se você sabe o que você está fazendo, use `!` antes do nome do plugin!"
+                    )
 			)
 			return
 		}
@@ -148,9 +148,9 @@ class PluginsCommand : LorittaCommand(arrayOf("plugins"), category = CommandCate
 		doPluginAction("plugin_unload", pluginName.removePrefix("!"))
 
 		context.reply(
-				LoriReply(
-						"Descarregando plugin `$pluginName.jar` em todos os clusters!"
-				)
+                LorittaReply(
+                        "Descarregando plugin `$pluginName.jar` em todos os clusters!"
+                )
 		)
 	}
 
@@ -159,9 +159,9 @@ class PluginsCommand : LorittaCommand(arrayOf("plugins"), category = CommandCate
 		doPluginAction("plugin_load", pluginName.removePrefix("!"))
 
 		context.reply(
-				LoriReply(
-						"Carregando plugin `$pluginName.jar` em todos os clusters!"
-				)
+                LorittaReply(
+                        "Carregando plugin `$pluginName.jar` em todos os clusters!"
+                )
 		)
 	}
 
@@ -192,20 +192,20 @@ class PluginsCommand : LorittaCommand(arrayOf("plugins"), category = CommandCate
 						body = payload
 					}
 
-					jsonParser.parse(
+					JsonParser.parseString(
 							body
 					)
 				} catch (e: Exception) {
 					LorittaShards.logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
-					throw PingCommand.ShardOfflineException(it.id, it.name)
+					throw ClusterOfflineException(it.id, it.name)
 				}
 			}
 		}
 
 		context.reply(
-				LoriReply(
-						"Atualizando plugin `$pluginName.jar` em todos os clusters!"
-				)
+                LorittaReply(
+                        "Atualizando plugin `$pluginName.jar` em todos os clusters!"
+                )
 		)
 	}
 
@@ -229,12 +229,12 @@ class PluginsCommand : LorittaCommand(arrayOf("plugins"), category = CommandCate
 							)
 							.body()
 
-					jsonParser.parse(
+					JsonParser.parseString(
 							body
 					)
 				} catch (e: Exception) {
 					LorittaShards.logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
-					throw PingCommand.ShardOfflineException(it.id, it.name)
+					throw ClusterOfflineException(it.id, it.name)
 				}
 			}
 		}

@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.plugin.parallaxroutes.routes
 
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
+import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
@@ -37,7 +38,7 @@ class PutReactionActionToMessageRoute(loritta: LorittaDiscord) : RequiresAPIAuth
 			loritta.messageInteractionCache[messageId.toLong()] = MessageInteractionFunctions(
 					channel.guild.idLong,
 					channel.idLong,
-					json["userId"].string
+					json["userId"].long
 			).apply {
 				if (actionType == "onReactionAddByAuthor") {
 					onReactionAddByAuthor = {

@@ -1,25 +1,54 @@
 package net.perfectdreams.loritta.website.routes.api.v1.user
 
+import com.github.salomonbrys.kotson.jsonArray
 import com.github.salomonbrys.kotson.jsonObject
-import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.dao.Reputation
 import com.mrpowergamerbr.loritta.tables.Reputations
+import net.perfectdreams.loritta.website.utils.WebsiteUtils
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import io.ktor.application.ApplicationCall
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.utils.CachedUserInfo
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class GetUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/{userId}/reputation") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
 		val receiver = call.parameters["userId"] ?: return
 
-		val count = transaction(Databases.loritta) {
-			Reputations.select { Reputations.receivedById eq receiver.toLong() }.count()
+		val reputations = loritta.newSuspendedTransaction {
+			Reputation.find { Reputations.receivedById eq receiver.toLong() }.sortedByDescending { it.receivedAt }
 		}
 
-		call.respondJson(jsonObject("count" to count))
+		val map = reputations.groupingBy { it.givenById }.eachCount()
+				.entries
+				.sortedByDescending { it.value }
+
+		var idx = 0
+
+		val rankedUsers = jsonArray()
+
+		for ((userId, count) in map) {
+			if (idx == 5) break
+			val userInfo = lorittaShards.retrieveUserInfoById(userId) ?: continue
+			rankedUsers.add(
+					jsonObject(
+							"count" to count,
+							"user" to WebsiteUtils.transformToJson(userInfo)
+					)
+			)
+			idx++
+		}
+
+		val response = jsonObject(
+				"count" to reputations.size,
+				"rank" to rankedUsers
+		)
+
+		call.respondJson(response)
 	}
 }

@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.commands.images
 
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
@@ -97,17 +97,17 @@ open class EmojiMashupCommand : LorittaCommand(arrayOf("emojimashup", "emojismas
 	suspend fun invalidEmote(context: LorittaCommandContext, locale: BaseLocale, arg: String) {
 		if (arg.startsWith("<")) {
 			context.reply(
-					LoriReply(
-							locale["commands.images.emojimashup.invalidEmojiDiscord", arg.stripCodeMarks()],
-							Constants.ERROR
-					)
+                    LorittaReply(
+                            locale["commands.images.emojimashup.invalidEmojiDiscord", arg.stripCodeMarks()],
+                            Constants.ERROR
+                    )
 			)
 		} else {
 			context.reply(
-					LoriReply(
-							locale["commands.images.emojimashup.invalidEmoji", arg.stripCodeMarks()],
-							Constants.ERROR
-					)
+                    LorittaReply(
+                            locale["commands.images.emojimashup.invalidEmoji", arg.stripCodeMarks()],
+                            Constants.ERROR
+                    )
 			)
 		}
 	}

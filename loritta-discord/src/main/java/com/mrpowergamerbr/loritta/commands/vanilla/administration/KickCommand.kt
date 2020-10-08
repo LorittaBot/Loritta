@@ -2,9 +2,10 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
+import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNull
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
@@ -53,28 +54,34 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val user = AdminUtils.checkForUser(context) ?: return
+			val (users, rawReason) = AdminUtils.checkAndRetrieveAllValidUsersFromMessages(context) ?: return
 
-			val member = context.guild.getMember(user)
+			val members = mutableListOf<Member>()
+			for (user in users) {
+				val member = context.guild.retrieveMemberOrNull(user)
 
-			if (member == null) {
-				context.reply(
-						LoriReply(
-								context.locale["commands.userNotOnTheGuild", "${user.asMention} (`${user.name.stripCodeMarks()}#${user.discriminator} (${user.idLong})`)"],
-								Emotes.LORI_HM
-						)
-				)
-				return
+				if (member == null) {
+					context.reply(
+                            LorittaReply(
+                                    context.locale["commands.userNotOnTheGuild", "${user.asMention} (`${user.name.stripCodeMarks()}#${user.discriminator} (${user.idLong})`)"],
+                                    Emotes.LORI_HM
+                            )
+					)
+					return
+				}
+
+				if (!AdminUtils.checkForPermissions(context, member))
+					return
+
+				members.add(member)
 			}
 
-			if (!AdminUtils.checkForPermissions(context, member))
-				return
-
 			val settings = AdminUtils.retrieveModerationInfo(context.config)
-			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context) ?: return
+			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context, rawReason) ?: return
 
 			val kickCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
-				kick(context, settings, locale, member, user, reason, isSilent)
+				for (member in members)
+					kick(context, settings, locale, member, member.user, reason, isSilent)
 
 				message?.delete()?.queue()
 
@@ -87,7 +94,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 			}
 
 			val hasSilent = settings.sendPunishmentViaDm || settings.sendPunishmentToPunishLog
-			val message = AdminUtils.sendConfirmationMessage(context, user, hasSilent, "kick")
+			val message = AdminUtils.sendConfirmationMessage(context, users, hasSilent, "kick")
 
 			message.onReactionAddByAuthor(context) {
 				if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
@@ -134,21 +141,17 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
 								punishLogMessage,
-								listOf(user),
+								listOf(user, context.guild),
 								context.guild,
 								mutableMapOf(
-										"reason" to reason,
-										"punishment" to locale.toNewLocale()["$LOCALE_PREFIX.kick.punishAction"],
-										"staff" to context.userHandle.name,
-										"@staff" to context.userHandle.asMention,
-										"staff-discriminator" to context.userHandle.discriminator,
-										"staff-avatar-url" to context.userHandle.effectiveAvatarUrl,
-										"staff-id" to context.userHandle.id,
 										"duration" to locale.toNewLocale()["commands.moderation.mute.forever"]
-								)
+								) + AdminUtils.getStaffCustomTokens(context.userHandle)
+										+ AdminUtils.getPunishmentCustomTokens(locale.toNewLocale(), reason, "${LOCALE_PREFIX}.kick")
 						)
 
-						textChannel.sendMessage(message!!).queue()
+						message?.let {
+							textChannel.sendMessage(it).queue()
+						}
 					}
 				}
 			}

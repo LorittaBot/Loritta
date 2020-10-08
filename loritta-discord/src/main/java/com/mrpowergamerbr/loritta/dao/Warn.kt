@@ -1,9 +1,9 @@
 package com.mrpowergamerbr.loritta.dao
 
 import com.mrpowergamerbr.loritta.tables.Warns
-import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
+import org.jetbrains.exposed.dao.id.EntityID
 
 class Warn(id: EntityID<Long>) : LongEntity(id) {
 	companion object : LongEntityClass<Warn>(Warns)

@@ -1,9 +1,9 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.economy
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class ExchangeCommand : AbstractCommand("exchange", listOf("câmbio", "câmbiar", "lsx", "lsxs"), CommandCategory.ECONOMY) {
 	override fun getDescription(locale: LegacyBaseLocale): String {

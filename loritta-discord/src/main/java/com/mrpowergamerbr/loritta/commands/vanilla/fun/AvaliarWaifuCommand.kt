@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -39,7 +39,7 @@ class AvaliarWaifuCommand : AbstractCommand("ratewaifu", listOf("avaliarwaifu", 
 			val random = SplittableRandom(Calendar.getInstance().get(Calendar.DAY_OF_YEAR) + waifuLowerCase.hashCode().toLong()) // Usar um RANDOM sempre com a mesma seed
 			val nota = random.nextInt(0, 11)
 
-			var reason = context.locale.getWithType<List<String>>("$LOCALE_PREFIX.note${nota}").random()
+			var reason = context.locale.getList("$LOCALE_PREFIX.note${nota}").random()
 
 			if (nota == 10)
 				reason = "$reason ${Emotes.LORI_WOW}"
@@ -60,62 +60,62 @@ class AvaliarWaifuCommand : AbstractCommand("ratewaifu", listOf("avaliarwaifu", 
 			var strNota = nota.toString()
 			if (waifuLowerCase == "loritta") {
 				strNota = "∞"
-				reason = "${context.locale.getWithType<List<String>>("$LOCALE_PREFIX.noteLoritta").random()} ${Emotes.LORI_YAY}"
+				reason = "${context.locale.getList("$LOCALE_PREFIX.noteLoritta").random()} ${Emotes.LORI_YAY}"
 			}
 			if (waifuLowerCase == "pollux") {
 				strNota = "10"
-				reason = context.locale.getWithType<List<String>>("$LOCALE_PREFIX.notePollux").random()
+				reason = context.locale.getList("$LOCALE_PREFIX.notePollux").random()
 			}
 			if (waifuLowerCase == "pantufa") {
 				strNota = "10"
-				reason = context.locale.getWithType<List<String>>("$LOCALE_PREFIX.notePantufa").random() + " ${Emotes.LORI_HEART}"
+				reason = context.locale.getList("$LOCALE_PREFIX.notePantufa").random() + " ${Emotes.LORI_HEART}"
 			}
 			if (waifuLowerCase == "tatsumaki") {
 				strNota = "10"
-				reason = context.locale.getWithType<List<String>>("$LOCALE_PREFIX.noteTatsumaki").random()
+				reason = context.locale.getList("$LOCALE_PREFIX.noteTatsumaki").random()
 			}
 			if (waifuLowerCase == "mee6") {
 				strNota = "10"
-				reason = context.locale.getWithType<List<String>>("$LOCALE_PREFIX.noteMee6").random()
+				reason = context.locale.getList("$LOCALE_PREFIX.noteMee6").random()
 			}
 			if (waifuLowerCase == "mantaro") {
 				strNota = "10"
-				reason = context.locale.getWithType<List<String>>("$LOCALE_PREFIX.noteMantaro").random()
+				reason = context.locale.getList("$LOCALE_PREFIX.noteMantaro").random()
 			}
 			if (waifuLowerCase == "dyno") {
 				strNota = "10"
-				reason = context.locale.getWithType<List<String>>("$LOCALE_PREFIX.noteDyno").random()
+				reason = context.locale.getList("$LOCALE_PREFIX.noteDyno").random()
 			}
 			if (waifuLowerCase == "mudae") {
 				strNota = "10"
-				reason = context.locale.getWithType<List<String>>("$LOCALE_PREFIX.noteMudae").random()
+				reason = context.locale.getList("$LOCALE_PREFIX.noteMudae").random()
 			}
 			if (waifuLowerCase == "nadeko") {
 				strNota = "10"
-				reason = context.locale.getWithType<List<String>>("$LOCALE_PREFIX.noteNadeko").random()
+				reason = context.locale.getList("$LOCALE_PREFIX.noteNadeko").random()
 			}
 			if (waifuLowerCase == "unbelievaboat") {
 				strNota = "10"
-				reason = context.locale.getWithType<List<String>>("$LOCALE_PREFIX.noteUnbelievaBoat").random()
+				reason = context.locale.getList("$LOCALE_PREFIX.noteUnbelievaBoat").random()
 			}
 			if (waifuLowerCase == "chino kafuu") {
 				strNota = "10"
-				reason = context.locale.getWithType<List<String>>("$LOCALE_PREFIX.noteChinoKafuu").random()
+				reason = context.locale.getList("$LOCALE_PREFIX.noteChinoKafuu").random()
 			}
 			if (waifuLowerCase == "groovy") {
 				strNota = "10"
-				reason = context.locale.getWithType<List<String>>("$LOCALE_PREFIX.noteGroovy").random()
+				reason = context.locale.getList("$LOCALE_PREFIX.noteGroovy").random()
 			}
 			if (waifuLowerCase == "lorita" || waifuLowerCase == "lorrita") {
 				strNota = "-∞"
-				reason = "${context.locale.getWithType<List<String>>("$LOCALE_PREFIX.noteLorrita").random()} ${Emotes.LORI_HMPF}"
+				reason = "${context.locale.getList("$LOCALE_PREFIX.noteLorrita").random()} ${Emotes.LORI_HMPF}"
 			}
 
 			context.reply(
-					LoriReply(
-							message = context.locale["$LOCALE_PREFIX.result", strNota, waifu.stripCodeMarks(), reason],
-							prefix = "\uD83E\uDD14"
-					)
+                    LorittaReply(
+                            message = context.locale["$LOCALE_PREFIX.result", strNota, waifu.stripCodeMarks(), reason],
+                            prefix = "\uD83E\uDD14"
+                    )
 			)
 		} else {
 			this.explain(context)

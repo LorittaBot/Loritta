@@ -3,11 +3,11 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Warn
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Warns
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.ArgumentType
@@ -16,7 +16,6 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class WarnListCommand : AbstractCommand("punishmentlist", listOf("listadeavisos", "modlog", "modlogs", "infractions", "warnlist", "warns"), CommandCategory.ADMIN) {
 	companion object {
@@ -51,7 +50,7 @@ class WarnListCommand : AbstractCommand("punishmentlist", listOf("listadeavisos"
 		val user = context.getUserAt(0)
 
 		if (user != null) {
-			val warns = transaction(Databases.loritta) {
+			val warns = loritta.newSuspendedTransaction {
 				Warn.find { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) }.sortedBy { it.receivedAt } .toMutableList()
 			}
 
@@ -76,7 +75,6 @@ class WarnListCommand : AbstractCommand("punishmentlist", listOf("listadeavisos"
 				if (nextPunishment != null) {
 					val type = when (nextPunishment.punishmentAction) {
 						PunishmentAction.BAN -> context.locale["$LOCALE_PREFIX.ban.punishAction"]
-						PunishmentAction.SOFT_BAN -> context.locale["$LOCALE_PREFIX.softban.punishAction"]
 						PunishmentAction.KICK -> context.locale["$LOCALE_PREFIX.kick.punishAction"]
 						PunishmentAction.MUTE -> context.locale["$LOCALE_PREFIX.mute.punishAction"]
 						else -> throw RuntimeException("Punishment $nextPunishment is not supported")

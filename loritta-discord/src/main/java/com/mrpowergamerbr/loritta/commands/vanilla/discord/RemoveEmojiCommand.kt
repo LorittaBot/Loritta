@@ -1,12 +1,12 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class RemoveEmojiCommand : AbstractCommand("removeemoji", listOf("deleteemoji", "deletaremoji", "removeremoji"), CommandCategory.DISCORD) {
 	override fun getUsage(): String {
@@ -37,17 +37,17 @@ class RemoveEmojiCommand : AbstractCommand("removeemoji", listOf("deleteemoji", 
 
 		if (deletedEmotes != 0) {
 			context.reply(
-							LoriReply(
-									locale["REMOVEEMOJI_Success", deletedEmotes, if (deletedEmotes == 1) "emoji" else "emojis"],
-									"\uD83D\uDDD1"
-							)
+                    LorittaReply(
+                            locale["REMOVEEMOJI_Success", deletedEmotes, if (deletedEmotes == 1) "emoji" else "emojis"],
+                            "\uD83D\uDDD1"
+                    )
 			)
 		} else {
 			context.reply(
-					LoriReply(
-							locale["REMOVEEMOJI_Error"],
-							Constants.ERROR
-					)
+                    LorittaReply(
+                            locale["REMOVEEMOJI_Error"],
+                            Constants.ERROR
+                    )
 			)
 		}
 	}

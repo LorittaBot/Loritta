@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.platform.discord.commands
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.localized
@@ -20,9 +19,7 @@ import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.utils.CommandUtils
 import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.FeatureFlags
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
 
@@ -47,8 +44,14 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 	}
 
 	suspend fun dispatch(ev: LorittaMessageEvent, rawArguments: List<String>, serverConfig: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
-		for (command in commands) {
-			if (dispatch(command, rawArguments, ev, serverConfig, locale, legacyLocale, lorittaUser))
+		// We order by more spaces in the first label -> less spaces, to avoid other commands taking precedence over other commands
+		// I don't like how this works, we should create a command tree instead of doing this
+		for (command in commands.sortedByDescending { it.labels.first().count { it.isWhitespace() }}) {
+			val shouldBeProcessed = if (command is DiscordCommand)
+				command.commandCheckFilter?.invoke(ev, rawArguments, serverConfig, locale, lorittaUser) ?: true
+			else true
+
+			if (shouldBeProcessed && dispatch(command, rawArguments, ev, serverConfig, locale, legacyLocale, lorittaUser))
 				return true
 		}
 
@@ -143,7 +146,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 				}
 
 				var cooldown = command.cooldown
-				val donatorPaid = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonations(ev.author.idLong)
+				val donatorPaid = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonationsAsync(ev.author.idLong)
 				val guildId = ev.guild?.idLong
 				val guildPaid = guildId?.let { serverConfig.getActiveDonationKeysValue() } ?: 0.0
 
@@ -164,15 +167,12 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 
 				userCooldown[ev.author.idLong] = System.currentTimeMillis()
 
-				command.executedCount++
-
 				if (command.hasCommandFeedback) {
-					if (FeatureFlags.IMPROVED_TYPING_SEND) {
-						if (command.sendTypingStatus)
-							ev.channel.sendTyping().await()
-					} else {
+					// Sending typing status for every single command is costly (API limits!)
+					// To avoid sending it every time, we check if we should send the typing status
+					// (We only send it if the command takes a looong time to be executed)
+					if (command.sendTypingStatus)
 						ev.channel.sendTyping().await()
-					}
 				}
 
 				if (!isPrivateChannel && ev.guild != null && ev.member != null) {
@@ -307,7 +307,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 					}
 				} */
 
-				transaction(Databases.loritta) {
+				loritta.newSuspendedTransaction {
 					lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
 
 					ExecutedCommandsLog.insert {
@@ -319,7 +319,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 						it[ExecutedCommandsLog.message] = ev.message.contentRaw
 					}
 
-					val profile = serverConfig.getUserDataIfExists(lorittaUser.profile.userId)
+					val profile = serverConfig.getUserDataIfExistsNested(lorittaUser.profile.userId)
 
 					if (profile != null && !profile.isInGuild)
 						profile.isInGuild = true
@@ -331,10 +331,9 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 
 				if (!isPrivateChannel && ev.guild != null) {
 					if (ev.guild.selfMember.hasPermission(ev.textChannel!!, Permission.MESSAGE_MANAGE) && (serverConfig.deleteMessageAfterCommand)) {
-						ev.message.textChannel.retrieveMessageById(ev.messageId).queue {
-							// Nós iremos pegar a mensagem novamente, já que talvez ela tenha sido deletada
-							it.delete().queue()
-						}
+						ev.message.textChannel.deleteMessageById(ev.messageId).queue({}, {
+							// We don't care if we weren't able to delete the message because it was already deleted
+						})
 					}
 				}
 
@@ -368,12 +367,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 					return true
 
 				if (e is CommandException) {
-					context.reply(
-							LorittaReply(
-									e.reason,
-									e.prefix
-							)
-					)
+					context.reply(e.reply)
 					return true
 				}
 

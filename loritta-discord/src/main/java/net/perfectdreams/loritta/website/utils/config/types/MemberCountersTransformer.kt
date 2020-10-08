@@ -5,22 +5,21 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.counter.CounterThemes
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.MemberCounterChannelConfig
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.MemberCounterChannelConfigs
 import net.perfectdreams.loritta.utils.FeatureFlags
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.transactions.transaction
 
 object MemberCountersTransformer : ConfigTransformer {
     override val payloadType: String = "member_counter"
     override val configKey: String = "memberCounters"
 
     override suspend fun toJson(guild: Guild, serverConfig: ServerConfig): JsonElement {
-        val memberCounters = transaction(Databases.loritta) {
+        val memberCounters = loritta.newSuspendedTransaction {
             MemberCounterChannelConfig.find {
                 MemberCounterChannelConfigs.guild eq serverConfig.id
             }.toList()
@@ -43,7 +42,7 @@ object MemberCountersTransformer : ConfigTransformer {
     }
 
     override suspend fun fromJson(guild: Guild, serverConfig: ServerConfig, payload: JsonObject) {
-        transaction(Databases.loritta) {
+        loritta.newSuspendedTransaction {
             MemberCounterChannelConfigs.deleteWhere {
                 MemberCounterChannelConfigs.guild eq serverConfig.id
             }
@@ -61,7 +60,7 @@ object MemberCountersTransformer : ConfigTransformer {
                 val theme = memberCounterConfig["theme"].string
                 val padding = memberCounterConfig["padding"].int
 
-                transaction(Databases.loritta) {
+                loritta.newSuspendedTransaction {
                     MemberCounterChannelConfigs.insert {
                         it[MemberCounterChannelConfigs.guild] = serverConfig.id
                         it[MemberCounterChannelConfigs.channelId] = id
@@ -76,6 +75,6 @@ object MemberCountersTransformer : ConfigTransformer {
         // Queue update is the list is not empty
         if (entries.size() != 0)
             if (FeatureFlags.isEnabled("member-counter-update"))
-                DiscordListener.queueTextChannelTopicUpdates(guild, serverConfig, true)
+                DiscordListener.queueTextChannelTopicUpdates(guild, serverConfig)
     }
 }

@@ -8,11 +8,11 @@ import kotlinx.html.dom.append
 import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.js.onInputFunction
-import kotlinx.serialization.ImplicitReflectionSerializer
-import kotlinx.serialization.parseList
+import kotlinx.serialization.builtins.list
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
+import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.utils.FanArt
 import net.perfectdreams.spicymorenitta.utils.FanArtArtist
 import net.perfectdreams.spicymorenitta.utils.select
@@ -27,17 +27,16 @@ class FanArtsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/fanarts
     override val keepLoadingScreen: Boolean
         get() = true
 
-    var currentArtistSortingMethod = ArtistSortingMethod.ALPHABETIC
+    var currentArtistSortingMethod = ArtistSortingMethod.FAN_ART_COUNT
     var currentFanArtSortingMethod = FanArtSortingMethod.OLD_TO_NEW
     var filterTag: String? = null
     var watchingUser: FanArtArtist? = null
     var fanArtArtists = listOf<FanArtArtist>()
     override val requiresUserIdentification = false
 
-    @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         m.showLoadingScreen()
-        currentArtistSortingMethod = ArtistSortingMethod.ALPHABETIC
+        currentArtistSortingMethod = ArtistSortingMethod.FAN_ART_COUNT
         currentFanArtSortingMethod = FanArtSortingMethod.OLD_TO_NEW
         filterTag = null
         watchingUser = null
@@ -47,7 +46,7 @@ class FanArtsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/fanarts
                 url("${window.location.origin}/api/v1/loritta/fan-arts?query=all")
             }
 
-            val list = kotlinx.serialization.json.JSON.nonstrict.parseList<FanArtArtist>(result)
+            val list = kotlinx.serialization.json.JSON.nonstrict.parse(FanArtArtist.serializer().list, result)
 
             fanArtArtists = list
 
@@ -72,7 +71,8 @@ class FanArtsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/fanarts
             if (artistLookup != null) {
                 renderArtistFanArts(artistLookup)
             } else {
-                renderFanArts(sortFanArts(list))
+                // renderFanArts(sortFanArts(list))
+                renderFrontPage()
             }
 
             renderArtists(sortArtists(list))
@@ -80,30 +80,67 @@ class FanArtsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/fanarts
 
             SpicyMorenitta.INSTANCE.launch {
                 while (true) {
-                    val holdingImage1 = document.select<HTMLDivElement>("#right-sidebar .holding-image-1")
-                    val holdingImage2 = document.select<HTMLDivElement>("#right-sidebar .holding-image-2")
+                    val holdingImage1 = document.select<HTMLDivElement?>("#right-sidebar .holding-image-1")
+                    val holdingImage2 = document.select<HTMLDivElement?>("#right-sidebar .holding-image-2")
                     delay(5_000)
-                    repeat(100) {
-                        holdingImage1.style.opacity = ((holdingImage1.style.opacity.toDouble()) - 0.01).toString()
-                        holdingImage2.style.opacity = ((holdingImage2.style.opacity.toDouble()) + 0.01).toString()
-                        delay(25)
+
+                    if (holdingImage1 != null && holdingImage2 != null) {
+                        repeat(100) {
+                            holdingImage1.style.opacity = ((holdingImage1.style.opacity.toDouble()) - 0.01).toString()
+                            holdingImage2.style.opacity = ((holdingImage2.style.opacity.toDouble()) + 0.01).toString()
+                            delay(25)
+                        }
+
+                        // Alterar fan art do holdingImage1, já que agora ele está escondido
+                        holdingImage1.setAttribute("src", "https://loritta.website/assets/img/fanarts/" + list.flatMap { it.fanArts }.random().fileName)
+
+                        delay(5_000)
+                        repeat(100) {
+                            holdingImage2.style.opacity = ((holdingImage2.style.opacity.toDouble()) - 0.01).toString()
+                            holdingImage1.style.opacity = ((holdingImage1.style.opacity.toDouble()) + 0.01).toString()
+                            delay(25)
+                        }
+
+                        // Alterar fan art do holdingImage2, já que agora ele está escondido
+                        holdingImage2.setAttribute("src", "https://loritta.website/assets/img/fanarts/" + list.flatMap { it.fanArts }.random().fileName)
                     }
-
-                    // Alterar fan art do holdingImage1, já que agora ele está escondido
-                    holdingImage1.setAttribute("src", "https://loritta.website/assets/img/fanarts/" + list.flatMap { it.fanArts }.random().fileName)
-
-                    delay(5_000)
-                    repeat(100) {
-                        holdingImage2.style.opacity = ((holdingImage2.style.opacity.toDouble()) - 0.01).toString()
-                        holdingImage1.style.opacity = ((holdingImage1.style.opacity.toDouble()) + 0.01).toString()
-                        delay(25)
-                    }
-
-                    // Alterar fan art do holdingImage2, já que agora ele está escondido
-                    holdingImage2.setAttribute("src", "https://loritta.website/assets/img/fanarts/" + list.flatMap { it.fanArts }.random().fileName)
                 }
             }
         }
+    }
+
+    fun renderFrontPage() {
+        val contentsDiv = document.select<HTMLDivElement>("#right-sidebar .contents")
+        contentsDiv.clear()
+
+        contentsDiv.append {
+            div(classes = "lori-holding") {
+                img(classes = "lori-behind", src = "https://cdn.discordapp.com/attachments/544229872189309117/568465135170093086/Loritta_Fan_Arts_-_Miela.png")
+                img(classes = "holding-image-1 icon-middle fan-art-in-hand", src = "https://loritta.website/assets/img/fanarts/Loritta_Anniversary_2019_-_Miela.png") {
+                    style = """opacity: 1;"""
+                }
+                img(classes = "holding-image-2 icon-middle fan-art-in-hand", src = "https://loritta.website/assets/img/fanarts/Loritta_3_-_Aniih.png") {
+                    style = """opacity: 0;"""
+                }
+                img(classes = "lori-arms", src = "https://cdn.discordapp.com/attachments/544229872189309117/568465133286719488/loritta_arms.png")
+            }
+
+            div {
+                style = "text-align: center;"
+
+                h1 {
+                    + "Fan Arts"
+                }
+            }
+
+            locale.getList("website.fanArts.description").forEach {
+                p {
+                    + it
+                }
+            }
+        }
+
+        window.history.pushState(null, "", "/${m.websiteLocaleId}/fanarts")
     }
 
     fun DIV.leftSidebar(list: List<FanArtArtist>) {
@@ -111,10 +148,29 @@ class FanArtsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/fanarts
             style = "max-width: 250px;"
 
             div {
+                div(classes = "entry") {
+                    style = "display: flex; align-items: center;"
+
+                    + "Página Inicial"
+
+                    onClickFunction = {
+                        renderFrontPage()
+                    }
+                }
+            }
+
+            hr {}
+
+            div {
                 + "Organizar Artistas... "
 
                 select {
                     id = "select-artist-order"
+
+                    option {
+                        value = "descend-art"
+                        +"por mais fan arts"
+                    }
                     option {
                         value = "ascend-name"
                         +"por nome (A-Z)"
@@ -122,10 +178,6 @@ class FanArtsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/fanarts
                     option {
                         value = "descend-name"
                         +"por nome (Z-A)"
-                    }
-                    option {
-                        value = "descend-art"
-                        +"por mais fan arts"
                     }
 
                     onChangeFunction = {
@@ -166,16 +218,6 @@ class FanArtsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/fanarts
     }
 
     fun DIV.rightSidebar(list: List<FanArtArtist>) {
-        div(classes = "lori-holding") {
-            img(classes = "lori-behind", src = "https://cdn.discordapp.com/attachments/544229872189309117/568465135170093086/Loritta_Fan_Arts_-_Miela.png")
-            img(classes = "holding-image-1 icon-middle fan-art-in-hand", src = "https://loritta.website/assets/img/fanarts/Loritta_Anniversary_2019_-_Miela.png") {
-                style = """opacity: 1;"""
-            }
-            img(classes = "holding-image-2 icon-middle fan-art-in-hand", src = "https://loritta.website/assets/img/fanarts/Loritta_3_-_Aniih.png") {
-                style = """opacity: 0;"""
-            }
-            img(classes = "lori-arms", src = "https://cdn.discordapp.com/attachments/544229872189309117/568465133286719488/loritta_arms.png")
-        }
         div {
             div {
                 id = "artist-info"
@@ -295,8 +337,10 @@ class FanArtsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/fanarts
                 + "Ver todas as ${fanArtArtists.sumBy { it.fanArts.size }} fan arts"
 
                 onClickFunction = {
-                    val artistInfo = document.select<HTMLDivElement>("#artist-info")
-                    artistInfo.clear()
+                    window.scrollTo(0.0, 0.0)
+
+                    val artistInfo = document.select<HTMLDivElement?>("#artist-info")
+                    artistInfo?.clear()
 
                     watchingUser = null
                     renderFanArts(sortFanArts(fanArtArtists))
@@ -336,24 +380,32 @@ class FanArtsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/fanarts
     fun renderArtistFanArts(artist: FanArtArtist) {
         watchingUser = artist
 
-        val artistInfo = document.select<HTMLDivElement>("#artist-info")
-        artistInfo.clear()
+        val fanArtGallery = document.select<HTMLDivElement?>("#fan-art-gallery")
+        if (fanArtGallery != null) {
+            fanArtGallery.clear()
+        } else {
+            val contentsDiv = document.select<HTMLDivElement>("#right-sidebar .contents")
+            contentsDiv.clear()
+            contentsDiv.append { div { rightSidebar(fanArtArtists) } }
+        }
 
-        val fanArtGallery = document.select<HTMLDivElement>("#fan-art-gallery")
-        fanArtGallery.clear()
+        val artistInfo = document.select<HTMLDivElement?>("#artist-info")
+        artistInfo?.clear()
 
         window.history.pushState(null, "", "/${m.websiteLocaleId}/fanarts/${artist.id}")
 
-        artistInfo.append {
+        artistInfo?.append {
             div(classes = "user-info") {
-                img(src = artist.user?.effectiveAvatarUrl ?: "https://cdn.discordapp.com/emojis/523176710439567392.png?v=1")
+                img(src = artist.effectiveAvatarUrl)
 
                 div(classes = "text") {
                     div(classes = "name") {
-                        + (artist.info.override?.name ?: artist.user?.name ?: artist.info.name ?: artist.id)
+                        + artist.name
                     }
-                    div {
-                        + "*Sobre Mim do usuário aqui*"
+                    artist.aboutMe?.let {
+                        div {
+                            + it
+                        }
                     }
                 }
             }
@@ -362,16 +414,24 @@ class FanArtsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/fanarts
         renderFanArts(artist.fanArts.sortedBy { it.createdAt.getTime() })
     }
 
-    fun renderFanArts(sorted: List<FanArt>) {
+    private fun renderFanArts(sorted: List<FanArt>) {
         val grouped = sorted.groupBy({ it.createdAt.getMonth().toString() + "-" + it.createdAt.getFullYear() }, { it })
 
         val dyn = {}.asDynamic()
         dyn["month"] = "long"
 
-        val fanArtGallery = document.select<HTMLDivElement>("#fan-art-gallery")
-        fanArtGallery.clear()
+        var fanArtGallery = document.select<HTMLDivElement?>("#fan-art-gallery")
 
-        fanArtGallery.append {
+        if (fanArtGallery == null) {
+            val contentsDiv = document.select<HTMLDivElement>("#right-sidebar .contents")
+            contentsDiv.clear()
+            contentsDiv.append { div { rightSidebar(fanArtArtists) } }
+            fanArtGallery = document.select<HTMLDivElement?>("#fan-art-gallery")
+        } else {
+            fanArtGallery.clear()
+        }
+
+        fanArtGallery?.append {
             grouped.forEach {
                 h2(classes = "left-horizontal-line uppercase") {
                     val date = it.value[0].createdAt
@@ -380,12 +440,44 @@ class FanArtsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/fanarts
                 }
                 div(classes = "fan-arts-wrapper") {
                     for (fanArt in it.value) {
-                        img(
-                                classes = "fan-art"
-                        ) {
-                            attributes["lazy-load-url"] = "https://loritta.website/assets/img/fanarts/${fanArt.fileName}"
-                            height = "100"
-                            title = fanArt.createdAt.toDateString()
+                        val artist = fanArtArtists.first { fanArt in it.fanArts }
+
+                        div(classes = "fan-art-wrapper") {
+                            style = "position: relative; line-height: 0; margin: 16px;"
+
+                            a(href = "https://loritta.website/assets/img/fanarts/${fanArt.fileName}") {
+                                img(
+                                        classes = "fan-art"
+                                ) {
+                                    attributes["lazy-load-url"] = "${window.location.origin}/api/v1/loritta/fan-art/${artist.id}/${fanArt.fileName}/image?size=small"
+                                    height = "100"
+                                    title = fanArt.createdAt.toDateString()
+                                }
+
+                                div(classes = "artist-info-hover") {
+                                    div {
+                                        style = "display: flex;align-content: center;align-items: center;"
+
+                                        img(src = artist.effectiveAvatarUrl) {
+                                            style = "width: 2em;\n" +
+                                                    "margin: 0.5em;\n" +
+                                                    "border-radius: 100%;"
+                                        }
+
+                                        div {
+                                            style = "display: flex; flex-direction: column;"
+
+                                            div {
+                                                style = "font-weight: 600;"
+                                                +artist.name
+                                            }
+                                            div {
+                                                +fanArt.createdAt.toDateString()
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -405,4 +497,10 @@ class FanArtsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/fanarts
         OLD_TO_NEW,
         NEW_TO_OLD
     }
+
+    val FanArtArtist.name: String
+        get() = (this.info.override?.name ?: this.user?.name ?: this.info.name ?: this.id)
+
+    val FanArtArtist.effectiveAvatarUrl: String
+        get() = this.user?.effectiveAvatarUrl ?: "https://cdn.discordapp.com/emojis/523176710439567392.png?v=1"
 }

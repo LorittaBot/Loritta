@@ -1,10 +1,13 @@
 package com.mrpowergamerbr.loritta.utils.extensions
 
+import com.mrpowergamerbr.loritta.LorittaLauncher.loritta
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.Permission.*
 import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.RestAction
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -65,6 +68,40 @@ suspend fun MessageHistory.retrieveAllMessages(): List<Message> {
 	return messages
 }
 
+suspend fun Guild.retrieveMemberOrNullById(id: String) = retrieveMemberOrNullById(id.toLong())
+
+/**
+ * Retrieves a member, if the member isn't in the guild then null is returned
+ *
+ * @param the member's id
+ * @return the member or null
+ */
+suspend fun Guild.retrieveMemberOrNullById(id: Long): Member? {
+	return try {
+		this.retrieveMemberById(id).await()
+	} catch (e: ErrorResponseException) {
+		if (e.errorResponse == ErrorResponse.UNKNOWN_MEMBER || e.errorResponse == ErrorResponse.UNKNOWN_USER)
+			return null
+		throw e
+	}
+}
+
+/**
+ * Retrieves a member, if the member isn't in the guild then null is returned
+ *
+ * @param the member's id
+ * @return the member or null
+ */
+suspend fun Guild.retrieveMemberOrNull(user: User): Member? {
+	return try {
+		this.retrieveMember(user).await()
+	} catch (e: ErrorResponseException) {
+		if (e.errorResponse == ErrorResponse.UNKNOWN_MEMBER || e.errorResponse == ErrorResponse.UNKNOWN_USER)
+			return null
+		throw e
+	}
+}
+
 /**
  * Edits the message, but only if the content was changed
  *
@@ -87,9 +124,11 @@ suspend fun Message.doReactions(vararg emotes: String): Message {
 
 	// Vamos pegar todas as reações que não deveriam estar aqui
 
+	val emoteOnlyIds = emotes.map { str -> str.split(":").getOrNull(1) }.filterNotNull()
+
 	val invalidReactions = this.reactions.filterNot {
 		if (it.reactionEmote.isEmote)
-			emotes.contains(it.reactionEmote.name + ":" + it.reactionEmote.id)
+			emoteOnlyIds.contains(it.reactionEmote.id)
 		else
 			emotes.contains(it.reactionEmote.name)
 	}
@@ -127,18 +166,88 @@ fun Message.refresh(): RestAction<Message> {
 	return this.channel.retrieveMessageById(this.idLong)
 }
 
-fun Guild.getTextChannelByNullableId(id: String?): TextChannel? {
-	if (id == null)
-		return null
+/**
+ * Checks if a role is a valid giveable role (not managed, not a public role, etc).
+ *
+ * @return       if the role can be given to the specified member
+ */
+fun Role.canBeGiven() = !this.isPublicRole &&
+		!this.isManaged &&
+		guild.selfMember.canInteract(this)
 
-	return this.getTextChannelById(id)
+/**
+ * Filters a role list with [canBeGiven].
+ *
+ * @param member the member that the role will be given to
+ * @return       all roles that can be given to the member
+ */
+fun Collection<Role>.filterOnlyGiveableRoles() = this.filter { it.canBeGiven() }
+
+/**
+ * Filters a role list with [canBeGiven].
+ *
+ * @param member the member that the role will be given to
+ * @return       all roles that can be given to the member
+ */
+fun Sequence<Role>.filterOnlyGiveableRoles() = this.filter { it.canBeGiven() }
+
+/**
+ * Tries to send [targetMessagesPerSecond] messages every second.
+ *
+ * Discord has a 50 messages every 10s global rate limit (10 messages per second) and, sometimes,
+ * we need to queue messages to be sent.
+ *
+ * This will try to queue all messages to fit in the [targetMessagesPerSecond] messages per second, avoiding
+ * getting globally rate limited by Discord.
+ *
+ * @param sentMessages            how many messages were sent
+ * @param targetMessagesPerSecond what is the message per second target
+ */
+fun RestAction<Message>.queueAfterWithMessagePerSecondTarget(
+		sentMessages: Int,
+		targetMessagesPerSecond: Int = 5
+) {
+	// Technically we can send 50 messages every 10s (so 10 messages per second)
+	// To avoid getting global ratelimited to heck (and dying!), we need to have some delays to avoid that.
+	//
+	// So, let's reserve 5 of the total 10 messages to sending notification updates.
+	// This should avoid spamming the API with requests.
+	this.queueAfter(
+			(sentMessages / targetMessagesPerSecond).toLong(),
+			java.util.concurrent.TimeUnit.SECONDS
+	)
 }
 
-fun Guild.getVoiceChannelByNullableId(id: String?): VoiceChannel? {
-	if (id == null)
-		return null
-
-	return this.getVoiceChannelById(id)
+/**
+ * Tries to send [targetMessagesPerSecond] messages every second.
+ *
+ * Discord has a 50 messages every 10s global rate limit (10 messages per second) and, sometimes,
+ * we need to queue messages to be sent.
+ *
+ * This will try to queue all messages to fit in the [targetMessagesPerSecond] messages per second, avoiding
+ * getting globally rate limited by Discord.
+ *
+ * This also tries to load balance between all clusters, useful for multi cluster notifications.
+ *
+ * @param sentMessages            how many messages were sent
+ * @param targetMessagesPerSecond what is the message per second target
+ */
+fun RestAction<Message>.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing(
+		sentMessages: Int,
+		targetMessagesPerSecond: Int = 5
+) {
+	// Technically we can send 50 messages every 10s (so 10 messages per second)
+	// To avoid getting global ratelimited to heck (and dying!), we need to have some delays to avoid that.
+	//
+	// Because we have multiple clusters, we need to split up the load depending on how many clusters
+	// Loritta has. The target messages per second will be (target - how many clusters), minimum value is 1
+	//
+	// So, let's reserve (5 - how many clusters we have) of the total 10 messages to sending notification updates.
+	// This should avoid spamming the API with requests.
+	this.queueAfter(
+			sentMessages / Math.max(1, targetMessagesPerSecond - loritta.config.clusters.size.toLong()),
+			java.util.concurrent.TimeUnit.SECONDS
+	)
 }
 
 fun Permission.localized(locale: BaseLocale): String {

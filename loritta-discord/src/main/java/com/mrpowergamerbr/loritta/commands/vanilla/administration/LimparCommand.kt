@@ -3,11 +3,10 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.utils.MiscUtil
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -30,7 +29,7 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 	}
 
 	override fun getExamples(locale: LegacyBaseLocale): List<String> {
-		return locale.toNewLocale().getWithType("commands.moderation.clear.examples")
+		return locale.toNewLocale().getList("commands.moderation.clear.examples")
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
@@ -51,20 +50,20 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 
 			if (toClear == null) {
 				context.reply(
-						LoriReply(
-								"${context.legacyLocale["INVALID_NUMBER", context.args[0]]}",
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                "${context.legacyLocale["INVALID_NUMBER", context.args[0]]}",
+                                Constants.ERROR
+                        )
 				)
 				return
 			}
 
 			if (toClear !in 2..100) {
 				context.reply(
-						LoriReply(
-								"${context.locale["commands.moderation.clear.invalidClearRange"]}",
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                "${context.locale["commands.moderation.clear.invalidClearRange"]}",
+                                Constants.ERROR
+                        )
 				)
 				return
 			}
@@ -79,20 +78,20 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 
 			if (allowedMessages.isEmpty()) {
 				context.reply(
-						LoriReply(
-								"${context.locale["commands.moderation.clear.couldNotFindMessages"]}",
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                "${context.locale["commands.moderation.clear.couldNotFindMessages"]}",
+                                Constants.ERROR
+                        )
 				)
 				return
 			}
 
 			if (allowedMessages.size !in 2..100) {
 				context.reply(
-						LoriReply(
-								"${context.locale["commands.moderation.clear.couldNotFindMessages"]}",
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                "${context.locale["commands.moderation.clear.couldNotFindMessages"]}",
+                                Constants.ERROR
+                        )
 				)
 				return
 			}

@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.Gender
 import com.mrpowergamerbr.loritta.utils.onReactionAdd
@@ -65,7 +65,7 @@ abstract class ActionCommand(labels: Array<String>) : LorittaCommand(labels, Com
     }
 
     override fun getExamples(locale: BaseLocale): List<String> {
-        return locale.getWithType("commands.actions.examples")
+        return locale.getList("commands.actions.examples")
     }
 
     private fun getGifsFor(userGender: Gender, receiverGender: Gender): List<CachedGif> {
@@ -85,7 +85,7 @@ abstract class ActionCommand(labels: Array<String>) : LorittaCommand(labels, Com
         // Anti-gente idiota
         if (this is KissCommand && receiver.id == LorittaLauncher.loritta.discordConfig.discord.clientId) {
             context.reply(
-                    LoriReply(
+                    LorittaReply(
                             locale["commands.actions.kiss.responseAntiIdiot"],
                             "\uD83D\uDE45"
                     )
@@ -149,7 +149,7 @@ abstract class ActionCommand(labels: Array<String>) : LorittaCommand(labels, Com
 
             if (user == null) {
                 context.reply(
-                        LoriReply(
+                        LorittaReply(
                                 locale["commands.userDoesNotExist", "`${context.args[0]}`"],
                                 Constants.ERROR
                         )

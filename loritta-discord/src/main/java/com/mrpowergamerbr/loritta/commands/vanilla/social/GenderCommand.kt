@@ -3,10 +3,11 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.Gender
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -34,26 +35,26 @@ class GenderCommand : AbstractCommand("gender", listOf("gênero", "genero"), Com
 			message.delete().queue()
 
 			if (it.reactionEmote.id == "384048518853296128") {
-				transaction(Databases.loritta) {
+				loritta.newSuspendedTransaction {
 					context.lorittaUser.profile.settings.gender = Gender.MALE
 				}
 
 				context.reply(
-						LoriReply(
-								locale["GENDER_SuccessfullyChanged"],
-								"\uD83C\uDF89"
-						)
+                        LorittaReply(
+                                locale["GENDER_SuccessfullyChanged"],
+                                "\uD83C\uDF89"
+                        )
 				)
 			}
 
 
             if (it.reactionEmote.id == "384048518337265665") {
-                transaction(Databases.loritta) {
+				loritta.newSuspendedTransaction {
                     context.lorittaUser.profile.settings.gender = Gender.FEMALE
                 }
 
                 context.reply(
-                        LoriReply(
+                        LorittaReply(
                                 locale["GENDER_SuccessfullyChanged"],
                                 "\uD83C\uDF89"
                         )
@@ -61,12 +62,12 @@ class GenderCommand : AbstractCommand("gender", listOf("gênero", "genero"), Com
             }
 
             if (it.reactionEmote.isEmote("❓")) {
-                transaction(Databases.loritta) {
+				loritta.newSuspendedTransaction {
                     context.lorittaUser.profile.settings.gender = Gender.UNKNOWN
                 }
 
                 context.reply(
-                        LoriReply(
+                        LorittaReply(
                                 locale["GENDER_SuccessfullyChanged"],
                                 "\uD83C\uDF89"
                         )

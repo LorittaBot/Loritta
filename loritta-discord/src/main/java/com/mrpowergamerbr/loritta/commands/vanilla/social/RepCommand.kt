@@ -3,16 +3,14 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Reputation
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.DateUtils
-import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "reputacao"), CommandCategory.SOCIAL) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -31,7 +29,7 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 		val arg0 = context.rawArgs.getOrNull(0)
 
 		val user = context.getUserAt(0)
-		val lastReputationGiven = transaction(Databases.loritta) {
+		val lastReputationGiven = loritta.newSuspendedTransaction {
 			Reputation.find {
 				(Reputations.givenById eq context.userHandle.idLong)
 			}.sortedByDescending { it.receivedAt }.firstOrNull()
@@ -50,10 +48,10 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 		if (user != null) {
 			if (user == context.userHandle) {
 				context.reply(
-						LoriReply(
-								message = locale["REP_SELF"],
-								prefix = Constants.ERROR
-						)
+                        LorittaReply(
+                                message = locale["REP_SELF"],
+                                prefix = Constants.ERROR
+                        )
 				)
 				return
 			}
@@ -63,20 +61,20 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 				url += "?guild=${context.guild.id}&channel=${context.message.channel.id}"
 
 			context.reply(
-					LoriReply(
-							locale.toNewLocale()["commands.social.reputation.reputationLink", url],
-							Emotes.LORI_HAPPY
-					)
+                    LorittaReply(
+                            locale.toNewLocale()["commands.social.reputation.reputationLink", url],
+                            Emotes.LORI_HAPPY
+                    )
 			)
 		} else {
 			if (context.args.isEmpty()) {
 				this.explain(context)
 			} else {
 				context.reply(
-						LoriReply(
-								message = locale["REP_InvalidUser"],
-								prefix = Constants.ERROR
-						)
+                        LorittaReply(
+                                message = locale["REP_InvalidUser"],
+                                prefix = Constants.ERROR
+                        )
 				)
 			}
 		}

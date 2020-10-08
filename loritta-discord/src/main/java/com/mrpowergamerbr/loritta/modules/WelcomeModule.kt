@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.LorittaLauncher.loritta
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -58,7 +57,7 @@ object WelcomeModule {
 
 											val locale = loritta.getLocaleById(serverConfig.localeId)
 
-											textChannel.sendMessage(MessageBuilder().setContent(locale["module.welcomer.tooManyUsersJoining", Emotes.LORI_OWO]).build()).addFile(targetStream, "join-users.log").queue()
+											textChannel.sendMessage(MessageBuilder().setContent(locale["modules.welcomer.tooManyUsersJoining", Emotes.LORI_OWO]).build()).addFile(targetStream, "join-users.log").queue()
 											logger.info("Enviado arquivo de texto em $k1 com todas as pessoas que entraram, yay!")
 										}
 									}
@@ -101,7 +100,7 @@ object WelcomeModule {
 
 											val locale = loritta.getLocaleById(serverConfig.localeId)
 
-											textChannel.sendMessage(MessageBuilder().setContent(locale["module.welcomer.tooManyUsersLeaving", Emotes.LORI_OWO]).build()).addFile(targetStream, "left-users.log").queue()
+											textChannel.sendMessage(MessageBuilder().setContent(locale["modules.welcomer.tooManyUsersLeaving", Emotes.LORI_OWO]).build()).addFile(targetStream, "left-users.log").queue()
 											logger.info("Enviado arquivo de texto em $k1 com todas as pessoas que sairam, yay!")
 										}
 									}
@@ -161,7 +160,6 @@ object WelcomeModule {
 					}
 				} else {
 					logger.debug { "Member = ${event.member} (Join), I don't have permission to send messages in $textChannel on guild $guild!" }
-					LorittaUtils.warnOwnerNoPermission(guild, textChannel, serverConfig)
 				}
 			}
 		}
@@ -238,7 +236,6 @@ object WelcomeModule {
 					}
 				} else {
 					logger.debug { "Member = ${event.member} (Quit), I don't have permission to send messages in $textChannel on guild $guild!" }
-					LorittaUtils.warnOwnerNoPermission(guild, textChannel, serverConfig)
 				}
 			}
 		}

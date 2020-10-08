@@ -4,6 +4,7 @@ import com.github.salomonbrys.kotson.fromJson
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.string
+import com.google.gson.JsonParser
 import com.google.inject.Injector
 import com.mrpowergamerbr.loritta.oauth2.TemmieDiscordAuth
 import org.jooby.Jooby
@@ -78,7 +79,7 @@ class Trunfo : Kooby({
 		ws.onMessage {
 			println("omg i received something too ewe: ${it.value()}")
 
-			val json = jsonParser.parse(it.value())
+			val json = JsonParser.parseString(it.value())
 			if (json["status"].string == "JOIN_MATCHMAKING") {
 				// try discord auth
 				if (session != null) {

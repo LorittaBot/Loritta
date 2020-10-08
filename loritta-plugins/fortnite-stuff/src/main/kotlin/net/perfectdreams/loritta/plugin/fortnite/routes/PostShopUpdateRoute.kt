@@ -8,6 +8,7 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.extensions.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
@@ -46,7 +47,7 @@ class PostShopUpdateRoute(val m: FortniteStuff, loritta: LorittaDiscord) : Requi
 				}.toList()
 			}
 
-			var sendAfter = 0L
+			val canTalkGuildIds = mutableListOf<Long>()
 
 			loop@ for (serverConfig in broadcastServers) {
 				try {
@@ -68,8 +69,9 @@ class PostShopUpdateRoute(val m: FortniteStuff, loritta: LorittaDiscord) : Requi
 
 					logger.info { "Broadcasting Fortnite shop update in $channel @ $guild!" }
 					channel.sendMessage("${Emotes.DEFAULT_DANCE} ${loritta.instanceConfig.loritta.website.url}assets/img/fortnite/shop/$storeFileName")
-							.queueAfter(sendAfter, TimeUnit.SECONDS)
-					sendAfter++
+							.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing(canTalkGuildIds.size)
+
+					canTalkGuildIds.add(guild.idLong)
 				} catch (e: Exception) {
 					logger.info { "Something went wrong while trying to send the shop update in ${serverConfig[ServerConfigs.id].value}" }
 				}

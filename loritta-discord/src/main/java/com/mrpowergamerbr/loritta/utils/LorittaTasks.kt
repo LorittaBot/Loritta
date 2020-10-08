@@ -4,7 +4,6 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.mrpowergamerbr.loritta.analytics.AnalyticSender
 import com.mrpowergamerbr.loritta.analytics.InternalAnalyticSender
 import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
-import com.mrpowergamerbr.loritta.threads.NewRssFeedTask
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.eventlog.DeleteOldStoredMessagesTask
 import com.mrpowergamerbr.loritta.utils.networkbans.ApplyBansTask
@@ -34,14 +33,12 @@ object LorittaTasks {
 		scheduleWithFixedDelay(MutedUsersTask(), 0L, 3L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(TimersTask(), 0L, 1L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(AnalyticSender(), 0L, 1L, TimeUnit.MINUTES)
-		scheduleWithFixedDelay(InternalAnalyticSender(), 0L, 1L, TimeUnit.MINUTES)
+		scheduleWithFixedDelay(InternalAnalyticSender(), 0L, 15L, TimeUnit.SECONDS)
 		scheduleWithFixedDelay(DAILY_TAX_TASK, 0L, 15L, TimeUnit.SECONDS)
 		scheduleWithFixedDelay(ApplyBansTask(), 0L, 60L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(SpawnGiveawayTask(), 0L, 1L, TimeUnit.HOURS)
 		scheduleWithFixedDelay(DeleteOldStoredMessagesTask(), 0L, 1L, TimeUnit.HOURS)
 		scheduleWithFixedDelay(UpdateFanArtsTask(), 0L, 5L, TimeUnit.MINUTES)
-		if (loritta.isMaster)
-			scheduleWithFixedDelay(NewRssFeedTask(), 0L, 15L, TimeUnit.SECONDS)
 
 		if (loritta.isMaster) {
 			val midnight = LocalTime.MIDNIGHT

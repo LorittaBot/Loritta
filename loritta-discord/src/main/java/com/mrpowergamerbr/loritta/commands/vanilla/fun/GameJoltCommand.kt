@@ -6,9 +6,8 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
-import com.mrpowergamerbr.loritta.Loritta
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.encodeToUrl
@@ -16,10 +15,14 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.Color
 import java.util.*
 
 class GameJoltCommand : AbstractCommand("gamejolt", category = CommandCategory.FUN) {
+	override fun getBotPermissions() = listOf(Permission.MESSAGE_MANAGE)
+
 	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["GAMEJOLT_DESCRIPTION"]
 	}
@@ -35,7 +38,7 @@ class GameJoltCommand : AbstractCommand("gamejolt", category = CommandCategory.F
 			val response = HttpRequest.get("https://gamejolt.com/site-api/web/search?q=${query.encodeToUrl()}")
 					.body()
 
-			val json = Loritta.JSON_PARSER.parse(response).obj
+			val json = JsonParser.parseString(response).obj
 			val games = json["payload"]["games"].array
 
 			var format = ""
@@ -105,7 +108,7 @@ class GameJoltCommand : AbstractCommand("gamejolt", category = CommandCategory.F
 		val descriptionJson = HttpRequest.get("https://gamejolt.com/site-api/web/discover/games/overview/$id")
 				.body()
 
-		val gameDescription = Loritta.JSON_PARSER.parse(descriptionJson)["payload"]["metaDescription"].string
+		val gameDescription = JsonParser.parseString(descriptionJson)["payload"]["metaDescription"].string
 		embed.setAuthor(developerDisplayName, "https://gamejolt.com/@$developerUsername", developerAvatar)
 		embed.setTitle("<:gamejolt:362325764181590017> $title", url)
 		embed.setDescription(gameDescription.substringIfNeeded())

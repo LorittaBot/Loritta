@@ -4,11 +4,10 @@ import io.ktor.client.request.get
 import io.ktor.client.request.url
 import kotlinx.html.*
 import kotlinx.html.dom.append
-import kotlinx.serialization.ImplicitReflectionSerializer
-import kotlinx.serialization.Optional
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.parseList
+import kotlinx.serialization.builtins.list
+import kotlinx.serialization.json.JSON
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.serializable.CommandInfo
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
@@ -23,7 +22,6 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
         get() = true
     override val requiresUserIdentification = false
 
-    @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         super.onRender(call)
 
@@ -32,17 +30,13 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
                 url("${window.location.origin}/api/v1/loritta/commands/${locale.id}")
             }
 
-            val list = kotlinx.serialization.json.JSON.nonstrict.parseList<Command>(result)
+            val list = JSON.nonstrict.parse(CommandInfo.serializer().list, result)
 
             fixDummyNavbarHeight(call)
 
             val entriesDiv = document.select<HTMLDivElement>("#commands")
 
             var index = 0
-
-            entriesDiv.append {
-
-            }
 
             for (category in CommandCategory.values().filter { it != CommandCategory.MAGIC }) {
                 val commands = list.filter { it.category == category }
@@ -96,11 +90,11 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
                                     div {
                                         style = "text-align: center;"
                                         h1 {
-                                            // + category.getLocalizedName(locale)
+                                            + category.getLocalizedName(locale)
                                         }
                                     }
                                     p {
-                                        // + category.getLocalizedDescription(locale)
+                                        + category.getLocalizedDescription(locale)
                                     }
                                 }
                             }
@@ -128,14 +122,16 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
                                             }
                                         }
 
-                                        for (command in commands) {
+                                        for (command in commands.sortedBy(CommandInfo::label)) {
                                             tr {
                                                 td {
                                                     + command.label
-                                                    if (command.usage != null) {
+
+                                                    val usage = command.usage
+                                                    if (usage != null) {
                                                         + " "
                                                         code {
-                                                            + command.usage
+                                                            + usage
                                                         }
                                                     }
                                                 }
@@ -158,23 +154,5 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
 
             m.hideLoadingScreen()
         }
-    }
-
-    fun DIV.createCommandEntry(entry: Command) {
-    }
-
-    companion object {
-        @Serializable
-        class Command(
-                // É deserializado para String pois JavaScript é burro e não funciona direito com Longs
-                val name: String,
-                val label: String,
-                val aliases: Array<String>,
-                val category: CommandCategory,
-                @Optional
-                val description: String? = null,
-                @Optional
-                val usage: String? = null
-        )
     }
 }

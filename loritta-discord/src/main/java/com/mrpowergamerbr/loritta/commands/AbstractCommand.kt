@@ -21,7 +21,6 @@ import java.time.Instant
 abstract class AbstractCommand(open val label: String, var aliases: List<String> = listOf(), var category: CommandCategory, var lorittaPermissions: List<LorittaPermission> = listOf(), val onlyOwner: Boolean = false) {
 	@Transient
 	internal val logger = KotlinLogging.logger {}
-	var executedCount = 0
 
 	val cooldown: Int
 		get() {
@@ -216,10 +215,6 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 					false
 			)
 		}
-
-		val messageBuilder = MessageBuilder()
-				.append(context.getAsMention(true))
-				.setEmbed(embed.build())
 
 		val message = context.sendMessage(context.getAsMention(true), embed.build())
 		message.addReaction("❓").queue()

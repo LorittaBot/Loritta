@@ -10,7 +10,6 @@ import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.Color
-import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.File
 import java.util.*
@@ -78,7 +77,7 @@ class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebatt
                 // TODO: Fonte do Undertale
 
                 graphics.font = Constants.DOTUMCHE.deriveFont(12F)
-                ImageUtils.drawTextWrapUndertale(text, startX + 18, startY + 15, startX + 90, 9999, graphics.fontMetrics, graphics)
+                ImageUtils.drawTextWrap(text, startX + 18, startY + 15, startX + 90, 9999, graphics.fontMetrics, graphics)
 
                 context.sendFile(blackWhite, "undertale_battle.png", context.getAsMention(true)) // E agora envie o arquivo
             } else {

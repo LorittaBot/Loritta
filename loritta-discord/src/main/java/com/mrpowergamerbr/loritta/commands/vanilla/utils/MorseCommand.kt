@@ -1,13 +1,13 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.fromMorse
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.toMorse
 import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.Color
 
 class MorseCommand : AbstractCommand("morse", category = CommandCategory.UTILS) {

@@ -1,5 +1,8 @@
 package userdata
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 enum class CounterThemes(val localizedName: String, val emotes: List<String>?) {
 	DEFAULT(
 			"loritta.modules.counter.theme.default",

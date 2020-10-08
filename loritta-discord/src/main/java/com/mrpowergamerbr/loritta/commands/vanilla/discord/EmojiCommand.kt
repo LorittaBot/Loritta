@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Emote
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 
 class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD) {
@@ -45,10 +46,10 @@ class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD
 					return
 				} else {
 					context.reply(
-							LoriReply(
-									locale.toNewLocale()["commands.discord.emoji.notFoundId", "`$arg0`"],
-									Constants.ERROR
-							)
+                            LorittaReply(
+                                    locale.toNewLocale()["commands.discord.emoji.notFoundId", "`$arg0`"],
+                                    Constants.ERROR
+                            )
 					)
 					return
 				}
@@ -69,10 +70,10 @@ class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD
 				try {
 					if (HttpRequest.get("https://twemoji.maxcdn.com/2/72x72/$value.png").code() != 200) {
 						context.reply(
-								LoriReply(
-										context.locale["commands.discord.emoji.errorWhileDownloadingEmoji", Emotes.LORI_SHRUG],
-										Constants.ERROR
-								)
+                                LorittaReply(
+                                        context.locale["commands.discord.emoji.errorWhileDownloadingEmoji", Emotes.LORI_SHRUG],
+                                        Constants.ERROR
+                                )
 						)
 						return
 					}

@@ -8,7 +8,6 @@ import net.perfectdreams.loritta.commands.LoriToolsQuirkyStuffCommand
 import net.perfectdreams.loritta.commands.SouTopDoadorCommand
 import net.perfectdreams.loritta.listeners.AddReactionFurryAminoPtListener
 import net.perfectdreams.loritta.listeners.AddReactionListener
-import net.perfectdreams.loritta.listeners.GetCandyListener
 import net.perfectdreams.loritta.modules.AddReactionForHeathecliffModule
 import net.perfectdreams.loritta.modules.QuirkyModule
 import net.perfectdreams.loritta.modules.ThankYouLoriModule
@@ -48,7 +47,6 @@ class QuirkyStuff(name: String, loritta: LorittaBot) : DiscordPlugin(name, lorit
 
         registerEventListeners(
                 AddReactionListener(config),
-                GetCandyListener(config),
                 AddReactionFurryAminoPtListener(config)
         )
 

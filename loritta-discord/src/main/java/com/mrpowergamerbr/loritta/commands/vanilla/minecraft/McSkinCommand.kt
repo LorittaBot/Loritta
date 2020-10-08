@@ -1,13 +1,13 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.minecraft
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.minecraft.MCUtils
+import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class McSkinCommand : AbstractCommand("mcskin", listOf("skinsteal", "skinstealer"), CommandCategory.MINECRAFT) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -34,20 +34,20 @@ class McSkinCommand : AbstractCommand("mcskin", listOf("skinsteal", "skinstealer
 
 			if (profile == null) {
 				context.reply(
-						LoriReply(
-								locale["MCSKIN_UnknownPlayer", context.args.getOrNull(0)],
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                locale["MCSKIN_UnknownPlayer", context.args.getOrNull(0)],
+                                Constants.ERROR
+                        )
 				)
 				return
 			}
 
 			if (!profile.textures.containsKey("SKIN")) {
 				context.reply(
-						LoriReply(
-								"Player não possui skin!",
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                "Player não possui skin!",
+                                Constants.ERROR
+                        )
 				)
 				return
 			}

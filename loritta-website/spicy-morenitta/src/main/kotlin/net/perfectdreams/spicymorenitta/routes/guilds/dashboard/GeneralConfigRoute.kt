@@ -12,12 +12,9 @@ import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
-import net.perfectdreams.spicymorenitta.utils.DashboardUtils
+import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.launchWithLoadingScreenAndFixContent
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.switchContentAndFixLeftSidebarScroll
-import net.perfectdreams.spicymorenitta.utils.Placeholders
-import net.perfectdreams.spicymorenitta.utils.SaveUtils
-import net.perfectdreams.spicymorenitta.utils.select
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import org.w3c.dom.*
 import kotlin.browser.document
@@ -259,8 +256,8 @@ class GeneralConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/g
 					false,
 					null,
 					true,
-					Placeholders.DEFAULT_PLACEHOLDERS,
-					customTokens = mapOf(),
+					EmbedEditorStuff.userInContextPlaceholders(locale),
+					// customTokens = mapOf(),
 					showTemplates = false
 			)
 

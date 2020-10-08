@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.commands
 
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.QuirkyConfig
@@ -43,10 +43,10 @@ class SouTopDoadorCommand(val config: QuirkyConfig) : LorittaDiscordCommand(arra
 
 		if (index !in 0..2) {
 			context.reply(
-					LoriReply(
-							"Para você personalizar o seu lindo cargo, você precisa ser um dos top doadores no <#592352881072668693>! Será que você irá conseguir chegar no topo? ${Emotes.LORI_TEMMIE}",
-							Constants.ERROR
-					)
+                    LorittaReply(
+                            "Para você personalizar o seu lindo cargo, você precisa ser um dos top doadores no <#592352881072668693>! Será que você irá conseguir chegar no topo? ${Emotes.LORI_TEMMIE}",
+                            Constants.ERROR
+                    )
 			)
 			return
 		}
@@ -62,14 +62,14 @@ class SouTopDoadorCommand(val config: QuirkyConfig) : LorittaDiscordCommand(arra
 
 		if (args.isEmpty()) {
 			context.reply(
-					LoriReply(
-							"`+soutopdoador nome Nome do Cargo`",
-							Constants.ERROR
-					),
-					LoriReply(
-							"`+soutopdoador cor CorEmHexadecimalOuEmRGB`",
-							Constants.ERROR
-					)
+                    LorittaReply(
+                            "`+soutopdoador nome Nome do Cargo`",
+                            Constants.ERROR
+                    ),
+                    LorittaReply(
+                            "`+soutopdoador cor CorEmHexadecimalOuEmRGB`",
+                            Constants.ERROR
+                    )
 			)
 			return
 		} else {
@@ -79,10 +79,10 @@ class SouTopDoadorCommand(val config: QuirkyConfig) : LorittaDiscordCommand(arra
 				editRole.manager.setName("\uD83C\uDF1F $name | Top Doador ${index + 1}").await()
 
 				context.reply(
-						LoriReply(
-								"Nome do cargo alterado com sucesso!",
-								Emotes.LORI_HAPPY
-						)
+                        LorittaReply(
+                                "Nome do cargo alterado com sucesso!",
+                                Emotes.LORI_HAPPY
+                        )
 				)
 			}
 			if (args[0] == "cor") {
@@ -90,20 +90,20 @@ class SouTopDoadorCommand(val config: QuirkyConfig) : LorittaDiscordCommand(arra
 
 				if (color == null) {
 					context.reply(
-							LoriReply(
-									"Cor inválida! Você deve colocar uma cor em formato RGB (`255, 255, 255`) ou em formato hexadecimal `#fffff`!",
-									Constants.ERROR
-							)
+                            LorittaReply(
+                                    "Cor inválida! Você deve colocar uma cor em formato RGB (`255, 255, 255`) ou em formato hexadecimal `#fffff`!",
+                                    Constants.ERROR
+                            )
 					)
 				}
 
 				editRole.manager.setColor(color).await()
 
 				context.reply(
-						LoriReply(
-								"Cor alterada com sucesso!",
-								Emotes.LORI_HAPPY
-						)
+                        LorittaReply(
+                                "Cor alterada com sucesso!",
+                                Emotes.LORI_HAPPY
+                        )
 				)
 			}
 		}

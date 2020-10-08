@@ -1,6 +1,9 @@
 package net.perfectdreams.loritta.platform.discord.commands
 
+import com.mrpowergamerbr.loritta.dao.ServerConfig
+import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
+import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.Command
@@ -22,6 +25,7 @@ class DiscordCommand(
 	var userRequiredPermissions = listOf<Permission>()
 	var botRequiredPermissions = listOf<Permission>()
 	var userRequiredLorittaPermissions = listOf<LorittaPermission>()
+	var commandCheckFilter: (suspend (LorittaMessageEvent, List<String>, ServerConfig, BaseLocale, LorittaUser) -> (Boolean))? = null
 
 	override val cooldown: Int
 		get() {

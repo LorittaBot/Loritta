@@ -22,15 +22,6 @@ object LorittaLauncher {
 
 	@JvmStatic
 	fun main(args: Array<String>) {
-		// Isto apenas acontece se... "uma falha de segurança na API de comandos em JS for detectada"
-		val doNotStart = File("do_not_start").exists()
-		if (doNotStart) {
-			while (true) {
-				System.out.println("Falha de segurança detectada!")
-				Thread.sleep(120000)
-			}
-		}
-
 		// https://www.reddit.com/r/Kotlin/comments/8qdd4x/kotlin_script_engine_and_your_classpaths_what/
 		val path = this::class.java.protectionDomain.codeSource.location.path
 		val jar = JarFile(path)
@@ -56,7 +47,7 @@ object LorittaLauncher {
 		if (!configurationFile.exists() || !discordConfigurationFile.exists()) {
 			println("Welcome to Loritta Morenitta! :3")
 			println("")
-			println("I want to make a world a better place... helping people, making them laugh... I hope I succeed!")
+			println("I want to make the world a better place... helping people, making them laugh... I hope I succeed!")
 			println("")
 			println("Before we start, you will need to configure me.")
 			println("I will create a file named \"loritta.conf\" (general configuration) and \"discord.conf\" (platform specific configuration), open it on your favorite text editor and change it!")

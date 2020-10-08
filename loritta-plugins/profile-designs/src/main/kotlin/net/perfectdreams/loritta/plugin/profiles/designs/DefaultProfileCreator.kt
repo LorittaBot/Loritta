@@ -1,28 +1,21 @@
-package com.mrpowergamerbr.loritta.profile
+package net.perfectdreams.loritta.plugin.profiles.designs
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.dao.Profile
-import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.tables.GuildProfiles
-import com.mrpowergamerbr.loritta.tables.Profiles
-import com.mrpowergamerbr.loritta.tables.Reputations
+import com.mrpowergamerbr.loritta.profile.ProfileCreator
+import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
-import net.perfectdreams.loritta.plugin.profiles.designs.ProfileUtils
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Font
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
 import javax.imageio.ImageIO
 
-class DefaultProfileCreator : ProfileCreator {
-	override fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
+class DefaultProfileCreator : ProfileCreator("modernBlurple") {
+	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
 		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile_wrapper_v4.png"))
 		val profileWrapperOverlay = ImageIO.read(File(Loritta.ASSETS, "profile_wrapper_v4_overlay.png"))
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
@@ -80,25 +73,15 @@ class DefaultProfileCreator : ProfileCreator {
 			}
 		}
 
-		val globalPosition = transaction(Databases.loritta) {
-			Profiles.select { Profiles.xp greaterEq userProfile.xp }.count()
-		}
+		val globalPosition = ProfileUtils.getGlobalExperiencePosition(userProfile)
 		drawSection("Global", "#$globalPosition / ${userProfile.xp} XP", 562, 21)
 
 		if (guild != null) {
 			val guildIcon = LorittaUtils.downloadImage(guild.iconUrl?.replace("jpg", "png") ?: "https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/56/shrug_1f937.png")!!.getScaledInstance(38, 38, BufferedImage.SCALE_SMOOTH)
 
-			val localProfile = transaction(Databases.loritta) {
-				GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.id) }.firstOrNull()
-			}
+			val localProfile = ProfileUtils.getLocalProfile(guild, user)
 
-			val localPosition = if (localProfile != null) {
-				transaction(Databases.loritta) {
-					GuildProfiles.select { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.xp greaterEq localProfile.xp) }.count()
-				}
-			} else {
-				null
-			}
+			val localPosition = ProfileUtils.getLocalExperiencePosition(localProfile)
 
 			val xpLocal = localProfile?.xp
 
@@ -114,15 +97,11 @@ class DefaultProfileCreator : ProfileCreator {
 			graphics.drawImage(guildIcon.toBufferedImage().makeRoundedCorners(38), 520, 44, null)
 		}
 
-		val reputations = transaction(Databases.loritta) {
-			com.mrpowergamerbr.loritta.tables.Reputations.select { Reputations.receivedById eq user.id }.count()
-		}
+		val reputations = ProfileUtils.getReputationCount(user)
 
 		drawSection("Reputação", "$reputations reps", 562, 102)
 
-		val globalEconomyPosition = transaction(Databases.loritta) {
-			Profiles.select { Profiles.money greaterEq userProfile.money }.count()
-		}
+		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(userProfile)
 
 		drawSection(locale["ECONOMY_NamePlural"], "#$globalEconomyPosition / ${userProfile.money}", 562, 492)
 

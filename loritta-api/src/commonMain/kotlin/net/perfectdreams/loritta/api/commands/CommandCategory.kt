@@ -1,7 +1,9 @@
 package net.perfectdreams.loritta.api.commands
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import kotlinx.serialization.Serializable
 
+@Serializable
 enum class CommandCategory {
 	FUN,
 	IMAGES,

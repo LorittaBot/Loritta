@@ -1,11 +1,10 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.social
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import org.jetbrains.exposed.sql.transactions.transaction
+import com.mrpowergamerbr.loritta.utils.loritta
+import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class SobreMimCommand : AbstractCommand("aboutme", listOf("sobremim"), CommandCategory.SOCIAL) {
     override fun getUsage(): String {
@@ -17,9 +16,9 @@ class SobreMimCommand : AbstractCommand("aboutme", listOf("sobremim"), CommandCa
     }
 
     override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
-        val settings = transaction(Databases.loritta) { context.lorittaUser.profile.settings }
+        val settings = loritta.newSuspendedTransaction { context.lorittaUser.profile.settings }
         if (context.args.isNotEmpty()) {
-            transaction(Databases.loritta) {
+            loritta.newSuspendedTransaction {
 	            settings.aboutMe = context.args.joinToString(" ")
             }
 

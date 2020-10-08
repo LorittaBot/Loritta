@@ -1,8 +1,7 @@
 package net.perfectdreams.loritta.commands.vanilla.`fun`
 
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -17,7 +16,6 @@ import net.perfectdreams.loritta.tables.servers.Giveaways
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class GiveawayRerollCommand : LorittaDiscordCommand(arrayOf("giveaway reroll", "sorteio reroll"), CommandCategory.FUN) {
 	companion object {
@@ -57,15 +55,15 @@ class GiveawayRerollCommand : LorittaDiscordCommand(arrayOf("giveaway reroll", "
 
 		if (messageId == null) {
 			context.reply(
-					LoriReply(
-							locale["${GiveawayEndCommand.LOCALE_PREFIX}.giveawayInvalidArguments", "`https://canary.discordapp.com/channels/297732013006389252/297732013006389252/594270558238146603`"],
-							Constants.ERROR
-					)
+                    LorittaReply(
+                            locale["${GiveawayEndCommand.LOCALE_PREFIX}.giveawayInvalidArguments", "`https://canary.discordapp.com/channels/297732013006389252/297732013006389252/594270558238146603`"],
+                            Constants.ERROR
+                    )
 			)
 			return
 		}
 
-		val giveaway = transaction(Databases.loritta) {
+		val giveaway = loritta.newSuspendedTransaction {
 			if (channelId != null) {
 				Giveaway.find {
 					(Giveaways.guildId eq context.guild!!.id) and (Giveaways.messageId eq messageId) and (Giveaways.textChannelId eq channelId)
@@ -79,23 +77,23 @@ class GiveawayRerollCommand : LorittaDiscordCommand(arrayOf("giveaway reroll", "
 
 		if (giveaway == null) {
 			context.reply(
-					LoriReply(
-							locale["${GiveawayEndCommand.LOCALE_PREFIX}.giveawayDoesNotExist"],
-							Emotes.LORI_HM
-					)
+                    LorittaReply(
+                            locale["${GiveawayEndCommand.LOCALE_PREFIX}.giveawayDoesNotExist"],
+                            Emotes.LORI_HM
+                    )
 			)
 			return
 		}
 
 		if (!giveaway.finished) {
 			context.reply(
-					LoriReply(
-							locale[
-									"${LOCALE_PREFIX}.giveawayStillRunning",
-									"`${locale["${LOCALE_PREFIX}.giveawayHowToEnd", context.config.commandPrefix, link.stripCodeMarks()]}`"
-							],
-							Constants.ERROR
-					)
+                    LorittaReply(
+                            locale[
+                                    "${LOCALE_PREFIX}.giveawayStillRunning",
+                                    "`${locale["${LOCALE_PREFIX}.giveawayHowToEnd", context.config.commandPrefix, link.stripCodeMarks()]}`"
+                            ],
+                            Constants.ERROR
+                    )
 			)
 			return
 		}
@@ -104,10 +102,10 @@ class GiveawayRerollCommand : LorittaDiscordCommand(arrayOf("giveaway reroll", "
 
 		if (textChannel == null) {
 			context.reply(
-					LoriReply(
-							locale["${GiveawayEndCommand.LOCALE_PREFIX}.channelDoesNotExist"],
-							Constants.ERROR
-					)
+                    LorittaReply(
+                            locale["${GiveawayEndCommand.LOCALE_PREFIX}.channelDoesNotExist"],
+                            Constants.ERROR
+                    )
 			)
 			return
 		}
@@ -115,10 +113,10 @@ class GiveawayRerollCommand : LorittaDiscordCommand(arrayOf("giveaway reroll", "
 
 		if (message == null) {
 			context.reply(
-					LoriReply(
-							locale["${GiveawayEndCommand.LOCALE_PREFIX}.messageDoesNotExist"],
-							Constants.ERROR
-					)
+                    LorittaReply(
+                            locale["${GiveawayEndCommand.LOCALE_PREFIX}.messageDoesNotExist"],
+                            Constants.ERROR
+                    )
 			)
 			return
 		}
@@ -126,10 +124,10 @@ class GiveawayRerollCommand : LorittaDiscordCommand(arrayOf("giveaway reroll", "
 		GiveawayManager.rollWinners(message, giveaway)
 
 		context.reply(
-				LoriReply(
-						locale["${LOCALE_PREFIX}.rerolledGiveaway"],
-						Emotes.LORI_HAPPY
-				)
+                LorittaReply(
+                        locale["${LOCALE_PREFIX}.rerolledGiveaway"],
+                        Emotes.LORI_HAPPY
+                )
 		)
     }
 }

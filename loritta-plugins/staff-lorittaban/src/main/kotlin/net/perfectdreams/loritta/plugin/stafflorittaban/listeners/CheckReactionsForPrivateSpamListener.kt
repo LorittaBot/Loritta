@@ -97,7 +97,7 @@ class CheckReactionsForPrivateSpamListener(val config: StaffLorittaBanConfig) : 
 			for (str in split) {
 				if (str.isNotBlank()) {
 					if (str.isValidSnowflake()) {
-						val member = event.guild.getMemberById(str.toLong()) ?: continue
+						val member = event.guild.retrieveMemberById(str.toLong()).await() ?: continue
 						foundUsersFromMessageInGuild.add(member)
 					}
 
@@ -174,7 +174,7 @@ class CheckReactionsForPrivateSpamListener(val config: StaffLorittaBanConfig) : 
 			)
 
 			if (canBan && whoWillBeBanned != null) {
-				msg.onReactionAddByAuthor(event.userId) {
+				msg.onReactionAddByAuthor(event.userIdLong) {
 					val settings = AdminUtils.retrieveModerationInfo(loritta.getOrCreateServerConfig(event.guild.idLong))
 					BanCommand.ban(settings, event.guild, event.user, loritta.getLegacyLocaleById("default"), whoWillBeBanned.user, "Não é permitido divulgar conteúdos sem que a equipe permita, isto inclui divulgar via mensagem direta para outras pessoas e no seu nome/nickname. Enviar convites na DM é considerado spam e é contra os termos de uso do Discord! ${firstImage.url}", false, 0)
 					event.channel.sendMessage("Usuário banido com sucesso! :3").queue()

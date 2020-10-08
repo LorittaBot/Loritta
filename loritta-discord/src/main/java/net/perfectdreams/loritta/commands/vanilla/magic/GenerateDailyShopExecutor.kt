@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.commands.vanilla.magic
 
-import net.perfectdreams.loritta.utils.LorittaDailyShopUpdateTask
 import net.perfectdreams.loritta.api.commands.CommandContext
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.utils.LorittaDailyShopUpdateTask
 
 object GenerateDailyShopExecutor : LoriToolsCommand.LoriToolsExecutor {
 	override val args = "generate daily_shop"

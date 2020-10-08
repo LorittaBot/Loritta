@@ -1,9 +1,10 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
-import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.threads.BomDiaECiaThread
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
+import com.mrpowergamerbr.loritta.utils.extensions.queueAfterWithMessagePerSecondTarget
 import com.mrpowergamerbr.loritta.utils.extensions.stripLinks
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -16,8 +17,8 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.MiscellaneousConfig
 import net.perfectdreams.loritta.utils.Emotes
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 
@@ -151,9 +152,6 @@ class BomDiaECia {
 		if (forced)
 			thread.interrupt()
 
-		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount())
-			return
-
 		triedToCall.clear()
 
 		logger.info("Vamos anunciar o Bom Dia & Cia! (Agora é a hora!)")
@@ -211,9 +209,10 @@ class BomDiaECia {
 			messageForLocales[localeId] = message.build()
 		}
 
-		validTextChannels.forEach {
+		validTextChannels.forEachIndexed { index, textChannel ->
 			// TODO: Localization!
-			it.sendMessage(messageForLocales["default"]!!).queue()
+			textChannel.sendMessage(messageForLocales["default"]!!)
+					.queueAfterWithMessagePerSecondTarget(index)
 		}
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
@@ -221,11 +220,11 @@ class BomDiaECia {
 			if (triedToCall.isNotEmpty()) {
 				channel.sendMessage("<:yudi:446394608256024597> **|** Sabia que o ${user.asMention} foi o primeiro de **${triedToCall.size} usuários** a conseguir ligar primeiro no Bom Dia & Cia? ${Emotes.LORI_OWO}").queue { message ->
 					if (message.guild.selfMember.hasPermission(Permission.MESSAGE_ADD_REACTION)) {
-						message.onReactionAddByAuthor(user.id) {
+						message.onReactionAddByAuthor(user.idLong) {
 							if (it.reactionEmote.isEmote("⁉")) {
 								loritta.messageInteractionCache.remove(it.messageIdLong)
 
-								val triedToCall = triedToCall.mapNotNull { lorittaShards.getUserById(it) }
+								val triedToCall = triedToCall.mapNotNull { lorittaShards.retrieveUserInfoById(it) }
 								channel.sendMessage("<:yudi:446394608256024597> **|** Pois é, ${triedToCall.joinToString(", ", transform = { "`" + it.name + "`" })} tentaram ligar... mas falharam!").queue()
 							}
 						}
@@ -245,10 +244,7 @@ class BomDiaECia {
 			if (textChannel != null && textChannel.canTalk() && textChannel.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
 				if (it.value.users.size >= 5 && it.value.lastMessageSent > (System.currentTimeMillis() - 180000)) {
 					val serverConfig = loritta.getOrCreateServerConfig(textChannel.guild.idLong)
-
-					val miscellaneousConfig = transaction(Databases.loritta) {
-						serverConfig.miscellaneousConfig
-					}
+					val miscellaneousConfig = serverConfig.getCachedOrRetreiveFromDatabase<MiscellaneousConfig?>(ServerConfig::miscellaneousConfig)
 
 					val enableBomDiaECia = miscellaneousConfig?.enableBomDiaECia ?: false
 

@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.website.routes.api.v1.callbacks
 
 import io.ktor.application.ApplicationCall
-import io.ktor.request.host
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.routes.BaseRoute

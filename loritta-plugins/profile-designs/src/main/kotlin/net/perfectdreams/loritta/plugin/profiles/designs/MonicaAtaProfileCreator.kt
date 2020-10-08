@@ -26,14 +26,14 @@ import java.io.File
 import java.io.FileInputStream
 import javax.imageio.ImageIO
 
-class MonicaAtaProfileCreator : ProfileCreator {
+class MonicaAtaProfileCreator : ProfileCreator("monicaAta") {
 	val KOMIKA by lazy {
 		FileInputStream(File(Loritta.ASSETS + "komika.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
 	}
 
-	override fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
+	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
 		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/monica_ata/profile_wrapper.png"))
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
@@ -41,23 +41,13 @@ class MonicaAtaProfileCreator : ProfileCreator {
 
 		val userInfo = mutableListOf<String>()
 		userInfo.add("Global")
-		val globalPosition = transaction(Databases.loritta) {
-			Profiles.select { Profiles.xp greaterEq userProfile.xp }.count()
-		}
+		val globalPosition = ProfileUtils.getGlobalExperiencePosition(userProfile)
 		userInfo.add("#$globalPosition / ${userProfile.xp} XP")
 
 		if (guild != null) {
-			val localProfile = transaction(Databases.loritta) {
-				GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.id) }.firstOrNull()
-			}
+			val localProfile = ProfileUtils.getLocalProfile(guild, user)
 
-			val localPosition = if (localProfile != null) {
-				transaction(Databases.loritta) {
-					GuildProfiles.select { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.xp greaterEq localProfile.xp) }.count()
-				}
-			} else {
-				null
-			}
+			val localPosition = ProfileUtils.getLocalExperiencePosition(localProfile)
 
 			val xpLocal = localProfile?.xp
 
@@ -70,9 +60,7 @@ class MonicaAtaProfileCreator : ProfileCreator {
 			}
 		}
 
-		val globalEconomyPosition = transaction(Databases.loritta) {
-			Profiles.select { Profiles.money greaterEq userProfile.money }.count()
-		}
+		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(userProfile)
 
 		userInfo.add("Sonhos")
 		userInfo.add("#$globalEconomyPosition / ${userProfile.money}")
@@ -101,9 +89,7 @@ class MonicaAtaProfileCreator : ProfileCreator {
 		graphics.font = KOMIKA.deriveFont(16f)
 		graphics.drawStringWrap(aboutMe, 161, 532, 773 - biggestStrWidth - 4)
 
-		val reputations = transaction(Databases.loritta) {
-			Reputations.select { Reputations.receivedById eq user.id }.count()
-		}
+		val reputations = ProfileUtils.getReputationCount(user)
 
 		graphics.font = KOMIKA.deriveFont(32f)
 
