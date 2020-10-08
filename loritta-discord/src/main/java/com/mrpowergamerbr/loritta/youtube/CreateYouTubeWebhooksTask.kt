@@ -26,9 +26,6 @@ class CreateYouTubeWebhooksTask : Runnable {
 	var fileLoaded = false
 
 	override fun run() {
-		if (!loritta.isMaster) // Não verifique caso não seja o servidor mestre
-			return
-
 		try {
 			// Servidores que usam o módulo do YouTube
 			val allChannelIds = transaction(Databases.loritta) {
@@ -117,13 +114,21 @@ class CreateYouTubeWebhooksTask : Runnable {
 					if (pair != null)
 						youtubeWebhooks[pair.first] = pair.second
 
-					if (index % 50 == 0) {
+					if (index % 50 == 0 && index != 0) { // Do not write the file if index == 0, because it would be a *very* unnecessary write
 						logger.info { "Saving YouTube Webhook File... $index channels were processed" }
 						youtubeWebhookFile.writeText(gson.toJson(youtubeWebhooks))
 					}
 				}
 
-				youtubeWebhookFile.writeText(gson.toJson(youtubeWebhooks))
+				val createdWebhooksCount = webhookCount.get()
+
+				if (createdWebhooksCount != 0) {
+					youtubeWebhookFile.writeText(gson.toJson(youtubeWebhooks))
+
+					logger.info { "Successfully wrote YouTube Webhook File! ${webhookCount.get()} channels were processed" }
+				} else {
+					logger.info { "Successfully finished YouTube Webhook Task! No new webhooks were created..." }
+				}
 			}
 		} catch (e: Exception) {
 			logger.error(e) { "Error while processing YouTube channels" }
