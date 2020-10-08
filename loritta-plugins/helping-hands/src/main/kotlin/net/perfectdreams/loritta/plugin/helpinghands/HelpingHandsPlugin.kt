@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.plugin.helpinghands.commands.CoinFlipBetCommand
 import net.perfectdreams.loritta.plugin.helpinghands.commands.DailyInactivityTaxExecutor
+import net.perfectdreams.loritta.plugin.helpinghands.commands.LevelCommand
 import net.perfectdreams.loritta.plugin.helpinghands.commands.RepListCommand
 import net.perfectdreams.loritta.plugin.helpinghands.utils.DailyInactivityTaxUtils
 
@@ -13,7 +14,11 @@ class HelpingHandsPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlug
 	override fun onEnable() {
 		loritta as LorittaDiscord
 
-		registerCommand(CoinFlipBetCommand.command(this, loritta))
+
+		registerCommands(
+				CoinFlipBetCommand.command(this, loritta),
+				LevelCommand.command(this, loritta)
+		)
 		registerCommand(RepListCommand.create(loritta))
 
 		if (loritta.isMaster)

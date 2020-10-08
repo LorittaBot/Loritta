@@ -128,7 +128,6 @@ class CommandManager(loritta: Loritta) {
 		commandMap.add(MarryCommand())
 		commandMap.add(DivorceCommand())
 		commandMap.add(GenderCommand())
-		commandMap.add(LevelCommand())
 		if (loritta.config.loritta.environment == EnvironmentType.CANARY)
 			commandMap.add(RegisterCommand())
 
