@@ -16,7 +16,7 @@ import java.io.FileInputStream
 import javax.imageio.ImageIO
 
 class NextGenProfileCreator : ProfileCreator("nextGenDark") {
-	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String, member: Member?): BufferedImage {
+	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
 		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/next_gen/profile_wrapper.png"))
 
 		val whitneySemiBold = FileInputStream(File(Loritta.ASSETS + "whitney-semibold.ttf")).use {

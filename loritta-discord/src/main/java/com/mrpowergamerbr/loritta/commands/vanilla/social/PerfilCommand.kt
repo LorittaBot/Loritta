@@ -247,7 +247,6 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		// Para pegar o "Jogando" do usuário, nós precisamos pegar uma guild que o usuário está
 		val mutualGuilds = lorittaShards.getMutualGuilds(user)
 		val mutualGuildsInAllClusters = lorittaShards.queryMutualGuildsInAllLorittaClusters(user.id)
-		val member = mutualGuilds.firstOrNull()?.getMember(user)
 		val badges = getUserBadges(user, userProfile, mutualGuildsInAllClusters)
 
 		var aboutMe: String? = null
@@ -295,8 +294,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 				badges,
 				locale,
 				background,
-				aboutMe,
-				member
+				aboutMe
 		)
 
 		if (images.size == 1) {

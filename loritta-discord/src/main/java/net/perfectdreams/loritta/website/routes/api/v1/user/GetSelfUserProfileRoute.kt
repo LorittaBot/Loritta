@@ -73,9 +73,8 @@ class GetSelfUserProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				listOf(),
 				locale,
 				background ?: BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB),
-				settings.aboutMe ?: "???",
-				null
-		)
+				settings.aboutMe ?: "???"
+        )
 
 		val baos = ByteArrayOutputStream()
 		ImageIO.write(images.first(), "png", baos)
