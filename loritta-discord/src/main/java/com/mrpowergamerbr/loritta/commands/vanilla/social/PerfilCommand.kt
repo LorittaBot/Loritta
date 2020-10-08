@@ -11,7 +11,6 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.gifs.GifSequenceWriter
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
 import com.mrpowergamerbr.loritta.tables.DonationConfigs
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
@@ -30,7 +29,6 @@ import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.ServerPremiumPlans
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
@@ -147,36 +145,15 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 				badges += ImageIO.read(File(Loritta.ASSETS + "loritta_sweater.png"))
 
 			loritta.newSuspendedTransaction {
-				var specialCase = false
-
-				val results = if (user.idLong == loritta.discordConfig.discord.clientId.toLong()) { // Como estamos em MUITOS servidores, um in list dá problema! E como a gente é fofis, vamos apenas pegar todos os servidores
-					(ServerConfigs innerJoin DonationConfigs)
-							.select {
-								// Então iremos pegar apenas
-								DonationConfigs.customBadge eq true
-							}
-				} else if (30_000 > mutualGuilds.size) { // Se está em menos de 30k servidores, o PostgreSQL ainda suporta pegar via inList
-					(ServerConfigs innerJoin DonationConfigs)
-							.select {
-								DonationConfigs.customBadge eq true and (ServerConfigs.id inList mutualGuilds.map { it["id"].string.toLong() })
-							}
-				} else {
-					specialCase = true
-					// Aqui temos bots grandes demais para suportar, nós *iremos* pegar todos, mas iremos filtrar client side (oof)
-					(ServerConfigs innerJoin DonationConfigs)
-							.select {
-								// Então iremos pegar apenas
-								DonationConfigs.customBadge eq true
-							}
-				}
+				val results = (ServerConfigs innerJoin DonationConfigs)
+						.select {
+							DonationConfigs.customBadge eq true and (ServerConfigs.id inList mutualGuilds.map { it["id"].string.toLong() })
+						}
 
 				val configs = ServerConfig.wrapRows(results)
 
 				for (config in configs) {
-					if (specialCase && mutualGuilds.any { it["id"].string.toLong() == config.id.value })
-						continue
-
-					val donationKeysValue = config.getActiveDonationKeysValue()
+					val donationKeysValue = config.getActiveDonationKeysValueNested()
 					if (ServerPremiumPlans.getPlanFromValue(donationKeysValue).hasCustomBadge) {
 						val badge = LorittaUtils.downloadImage("${loritta.instanceConfig.loritta.website.url}/assets/img/badges/custom/${config.guildId}.png?t=${System.currentTimeMillis()}", bypassSafety = true)
 
@@ -190,7 +167,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			if (hasNotifyMeRole) badges += ImageIO.read(File(Loritta.ASSETS + "notify_me.png"))
 			if (user.id == loritta.discordConfig.discord.clientId) badges += ImageIO.read(File(Loritta.ASSETS + "loritta_badge.png"))
 			if (user.isBot) badges += ImageIO.read(File(Loritta.ASSETS + "robot_badge.png"))
-			val marriage = profile.marriage
+			val marriage = loritta.newSuspendedTransaction { profile.marriage }
 			if (marriage != null) {
 				if (System.currentTimeMillis() - marriage.marriedSince > 2_592_000_000) {
 					badges += ImageIO.read(File(Loritta.ASSETS + "blob_snuggle.png"))
@@ -230,14 +207,14 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 
 		if (contextUser != null && bannedState != null) {
 			context.reply(
-                    LorittaReply(
-                            "${contextUser.asMention} está **banido**",
-                            "\uD83D\uDE45"
-                    ),
-                    LorittaReply(
-                            "**Motivo:** `${bannedState[BannedUsers.reason]}`",
-                            "✍"
-                    )
+					LorittaReply(
+							"${contextUser.asMention} está **banido**",
+							"\uD83D\uDE45"
+					),
+					LorittaReply(
+							"**Motivo:** `${bannedState[BannedUsers.reason]}`",
+							"✍"
+					)
 			)
 			return
 		}
@@ -246,10 +223,15 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			return
 		}
 
-		// Para pegar o "Jogando" do usuário, nós precisamos pegar uma guild que o usuário está
-		val mutualGuilds = lorittaShards.getMutualGuilds(user)
-		val mutualGuildsInAllClusters = lorittaShards.queryMutualGuildsInAllLorittaClusters(user.id)
-		val member = mutualGuilds.firstOrNull()?.getMember(user)
+		// We need the mutual guilds to retrieve the user's guild badges.
+		// However because bots can be in a LOT of guilds (causing GC pressure), we will just return a empty array.
+		//
+		// After all, does it *really* matter that bots won't have any badges? ¯\_(ツ)_/¯
+		val mutualGuildsInAllClusters = if (user.isBot)
+			listOf()
+		else
+			lorittaShards.queryMutualGuildsInAllLorittaClusters(user.id)
+
 		val badges = getUserBadges(user, userProfile, mutualGuildsInAllClusters)
 
 		var aboutMe: String? = null
@@ -297,8 +279,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 				badges,
 				locale,
 				background,
-				aboutMe,
-				member
+				aboutMe
 		)
 
 		if (images.size == 1) {

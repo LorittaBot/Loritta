@@ -17,7 +17,6 @@ import net.perfectdreams.loritta.embededitor.utils.lovelyButton
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLTextAreaElement
 import org.w3c.dom.MessageEvent
-import org.w3c.dom.Window
 import kotlin.browser.document
 import kotlin.browser.window
 import kotlin.dom.addClass
@@ -86,13 +85,17 @@ class EmbedEditor {
 
         generateMessageAndUpdateJson(activeMessage!!)
 
-        val opener = window.opener as Window?
+        val opener = window.opener
+        println("Casted opener")
         println("Opener is... something")
         println("Is it null? ${opener == null}")
 
         if (opener != null) {
             println("Sending ready packet to opener")
-            opener.postMessage(
+            // I know that there is a "Window" object in Kotlin/JS, but casting it causes issues in Chromium browsers
+            // "IllegalCastException"
+            // So we use the good old asDynamic call
+            opener.asDynamic().postMessage(
                     EmbedEditorCrossWindow.communicationJson.stringify(PacketWrapper.serializer(),
                             PacketWrapper(
                                     ReadyPacket()
@@ -200,8 +203,9 @@ class EmbedEditor {
         document.select<HTMLTextAreaElement>("#json-code").value = json.stringify(DiscordMessage.serializer(), discordMessage)
 
         if (connectedViaExternalSources) {
-            val opener = window.opener as Window?
-            opener?.postMessage(
+            val opener = window.opener
+            // Same thing here, can't cast opener because "IllegalCastException" :sad_cat:
+            opener?.asDynamic().postMessage(
                     EmbedEditorCrossWindow.communicationJson.stringify(
                             PacketWrapper.serializer(),
                             PacketWrapper(

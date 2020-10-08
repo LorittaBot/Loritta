@@ -43,9 +43,6 @@ class CreateTwitchWebhooksTask : Runnable {
 	var fileLoaded = false
 
 	override fun run() {
-		if (!loritta.isMaster) // Não verifique caso não seja o servidor mestre
-			return
-
 		try {
 			val allChannelIds = transaction(Databases.loritta) {
 				TrackedTwitchAccounts.slice(TrackedTwitchAccounts.twitchUserId)
@@ -111,7 +108,9 @@ class CreateTwitchWebhooksTask : Runnable {
 							return@async null
 						}
 
-						logger.debug { "$userId's webhook was sucessfully created! ${userId.rem(8)} Currently there is ${webhookCount.incrementAndGet()}/${webhooksToBeCreatedCount} created webhooks!" }
+						// We need to put them outside of the .debug {} block since we *need* them to be incremented
+						val incrementAndGet = webhookCount.incrementAndGet()
+						logger.debug { "$userId's webhook was sucessfully created! ${userId.rem(8)} Currently there is $incrementAndGet/${webhooksToBeCreatedCount} created webhooks!" }
 
 						return@async Pair(
 								userId,
@@ -135,13 +134,21 @@ class CreateTwitchWebhooksTask : Runnable {
 					if (webhook != null)
 						twitchWebhooks[webhook.first] = webhook.second
 
-					if (index % 50 == 0) {
+					if (index % 50 == 0 && index != 0) { // Do not write the file if index == 0, because it would be a *very* unnecessary write
 						logger.info { "Saving Twitch Webhook File... $index channels were processed" }
 						twitchWebhookFile.writeText(gson.toJson(twitchWebhooks))
 					}
 				}
 
-				twitchWebhookFile.writeText(gson.toJson(twitchWebhooks))
+				val createdWebhooksCount = webhookCount.get()
+
+				if (createdWebhooksCount != 0) {
+					twitchWebhookFile.writeText(gson.toJson(twitchWebhooks))
+
+					logger.info { "Successfully wrote Twitch Webhook File! ${webhookCount.get()} channels were processed" }
+				} else {
+					logger.info { "Successfully finished Twitch Webhook Task! No new webhooks were created..." }
+				}
 			}
 		} catch (e: Exception) {
 			logger.error(e) { "Error while processing Twitch channels" }

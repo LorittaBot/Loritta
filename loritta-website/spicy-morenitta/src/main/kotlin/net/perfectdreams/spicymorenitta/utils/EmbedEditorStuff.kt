@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.embededitor.data.crosswindow.Placeholder
 import net.perfectdreams.loritta.embededitor.data.crosswindow.RenderType
 import net.perfectdreams.loritta.utils.Placeholders
+import kotlin.browser.window
 
 object EmbedEditorStuff {
     const val LORITTA_NAME = "Loritta"
@@ -11,7 +12,7 @@ object EmbedEditorStuff {
     const val LORITTA_DISCRIMINATOR = "0219"
     const val LORITTA_TAG = "$LORITTA_NAME#$LORITTA_DISCRIMINATOR"
     const val LORITTA_ID = "297153970613387264"
-    const val LORITTA_AVATAR = "https://cdn.discordapp.com/avatars/297153970613387264/fd27e53031e4e600d06207f6853af908.png?size=2048"
+    val LORITTA_AVATAR = "${window.location.origin}/assets/img/lori_avatar_v4.png"
     const val EXPERIENCE_LEVEL = "100"
     const val EXPERIENCE_XP = "100002"
     const val EXPERIENCE_RANKING = "5"
