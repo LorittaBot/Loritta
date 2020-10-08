@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.threads
 import com.mrpowergamerbr.loritta.dao.Reminder
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Reminders
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import mu.KotlinLogging
@@ -49,7 +50,15 @@ class RemindersThread : Thread("Reminders Thread") {
 					channel.sendMessage("<a:lori_notification:394165039227207710> | <@" + reminder.userId + "> Lembrete! `" + reminder.content + "`").queue()
 					notifiedReminders.add(reminder)
 				} else {
-					// TODO: Enviar na DM do usuário
+					val user = lorittaShards.getUserById(reminder.userId) ?: return
+
+					try {
+						user.openPrivateChannel().queue {
+							it.sendMessage("<a:lori_notification:394165039227207710> | <@" + reminder.userId + "> Lembrete! `" + reminder.content + "`").queue()
+						}
+					} catch (ignored: Throwable) {} finally {
+						notifiedReminders.add(reminder)
+					}
 				}
 			} catch (e: Exception) {
 				logger.warn(e) { "Something went wrong while trying to notify ${reminder.userId} about ${reminder.content} at channel ${reminder.channelId}" }
