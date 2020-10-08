@@ -3,9 +3,8 @@ package com.mrpowergamerbr.loritta.threads
 import com.mrpowergamerbr.loritta.dao.Reminder
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Reminders
-import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import mu.KotlinLogging
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -44,10 +43,7 @@ class RemindersThread : Thread("Reminders Thread") {
 				val channel = lorittaShards.getTextChannelById(reminder.channelId.toString())
 
 				if (channel != null && channel.canTalk()) {
-					if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(channel.guild))
-						continue
-
-					channel.sendMessage("<a:lori_notification:394165039227207710> | <@" + reminder.userId + "> Lembrete! `" + reminder.content + "`").queue()
+					channel.sendMessage("<a:lori_notification:394165039227207710> | <@" + reminder.userId + "> Lembrete! `" + reminder.content.substringIfNeeded(0..1000) + "`").queue()
 					notifiedReminders.add(reminder)
 				} else {
 					val user = lorittaShards.getUserById(reminder.userId) ?: return
