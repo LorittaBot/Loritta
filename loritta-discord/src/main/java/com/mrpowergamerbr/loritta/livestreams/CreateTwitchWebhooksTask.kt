@@ -108,7 +108,9 @@ class CreateTwitchWebhooksTask : Runnable {
 							return@async null
 						}
 
-						logger.debug { "$userId's webhook was sucessfully created! ${userId.rem(8)} Currently there is ${webhookCount.incrementAndGet()}/${webhooksToBeCreatedCount} created webhooks!" }
+						// We need to put them outside of the .debug {} block since we *need* them to be incremented
+						val incrementAndGet = webhookCount.incrementAndGet()
+						logger.debug { "$userId's webhook was sucessfully created! ${userId.rem(8)} Currently there is $incrementAndGet/${webhooksToBeCreatedCount} created webhooks!" }
 
 						return@async Pair(
 								userId,
