@@ -48,15 +48,12 @@ class RemindersThread : Thread("Reminders Thread") {
 				} else {
 					val user = lorittaShards.getUserById(reminder.userId) ?: return
 
-					try {
-						user.openPrivateChannel().queue {
-							it.sendMessage("<a:lori_notification:394165039227207710> | <@" + reminder.userId + "> Lembrete! `" + reminder.content + "`").queue()
-						}
-					} catch (ignored: Throwable) {} finally {
-						notifiedReminders.add(reminder)
+					user.openPrivateChannel().queue {
+						it.sendMessage("<a:lori_notification:394165039227207710> | <@" + reminder.userId + "> Lembrete! `" + reminder.content + "`").queue()
 					}
+					notifiedReminders.add(reminder)
 				}
-			} catch (e: Exception) {
+			} catch (e: Throwable) {
 				logger.warn(e) { "Something went wrong while trying to notify ${reminder.userId} about ${reminder.content} at channel ${reminder.channelId}" }
 			}
 		}
