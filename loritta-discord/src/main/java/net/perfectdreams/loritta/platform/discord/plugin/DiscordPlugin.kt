@@ -3,8 +3,6 @@ package net.perfectdreams.loritta.platform.discord.plugin
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.plugin.LorittaPlugin
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.hooks.ListenerAdapter

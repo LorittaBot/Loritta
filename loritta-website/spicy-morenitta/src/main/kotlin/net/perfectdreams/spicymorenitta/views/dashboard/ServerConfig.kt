@@ -1,6 +1,5 @@
 package net.perfectdreams.spicymorenitta.views.dashboard
 
-import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import net.perfectdreams.loritta.utils.ServerPremiumPlans
 import utils.LoriColor
@@ -10,7 +9,7 @@ object ServerConfig {
 	class MiniGuild(
 			val id: Long,
 			val name: String,
-			@Optional val iconUrl: String? = null
+			val iconUrl: String? = null
 	)
 
 	@Serializable
@@ -22,7 +21,7 @@ object ServerConfig {
 			val warnOnUnknownCommand: Boolean,
 			val blacklistedChannels: Array<Long>,
 			val warnIfBlacklisted: Boolean,
-			@Optional
+
 			val blacklistedWarning: String? = null
 	)
 
@@ -32,11 +31,10 @@ object ServerConfig {
 			val name: String,
 			val general: GeneralConfig,
 			val selfMember: SelfMember,
-			@Optional val donationKey: DonationKey? = null,
+			val donationKey: DonationKey? = null,
 			val donationConfig: DonationConfig,
 			val reactionRoleConfigs: List<ReactionOption>,
 			val levelUpConfig: LevelUpConfig,
-			val trackedTwitterAccounts: Array<TrackedTwitterAccount>,
 			val trackedYouTubeChannels: Array<TrackedYouTubeAccount>,
 			val trackedTwitchChannels: Array<TrackedTwitchAccount>,
 			val trackedRssFeeds: Array<TrackedRssFeed>,
@@ -50,7 +48,7 @@ object ServerConfig {
 			val name: String,
 			val discriminator: String,
 			val effectiveAvatarUrl: String,
-			@Optional
+
 			val donationKeys: List<DonationKey>? = null
 	)
 
@@ -58,9 +56,9 @@ object ServerConfig {
 	class DonationKey(
 			val id: Long,
 			val value: Double,
-			@Optional val user: SelfMember? = null,
+			val user: SelfMember? = null,
 			val expiresAt: Long,
-			@Optional val activeIn: MiniGuild? = null
+			val activeIn: MiniGuild? = null
 	)
 
 	@Serializable
@@ -87,8 +85,8 @@ object ServerConfig {
 	class ModerationConfig(
 		var sendPunishmentViaDm: Boolean = false,
 		var sendPunishmentToPunishLog: Boolean = false,
-		@Optional var punishLogChannelId: Long? = null,
-		@Optional var punishLogMessage: String? = null,
+		var punishLogChannelId: Long? = null,
+		var punishLogMessage: String? = null,
 		var punishmentActions: Array<WarnAction>,
 		var punishmentMessages: Array<ModerationPunishmentMessageConfig>
 	)
@@ -97,7 +95,7 @@ object ServerConfig {
 	class WarnAction(
 			var warnCount: Int,
 			var punishmentAction: PunishmentAction,
-			@Optional var customMetadata0: String? = null
+			var customMetadata0: String? = null
 	)
 
 	@Serializable
@@ -106,9 +104,9 @@ object ServerConfig {
 			var message: String
 	)
 
+	@Serializable
 	enum class PunishmentAction(val canChainWithWarn: Boolean) {
 		BAN(true),
-		SOFT_BAN(true),
 		KICK(true),
 		MUTE(true),
 		WARN(false),
@@ -118,19 +116,19 @@ object ServerConfig {
 
 	@Serializable
 	class WelcomerConfig(
-			@Optional val enabled: Boolean = true,
+			val enabled: Boolean = true,
 			val tellOnJoin: Boolean,
 			var tellOnRemove: Boolean,
-			@Optional var joinMessage: String? = null,
-			@Optional var removeMessage: String? = null,
-			@Optional var channelJoinId: Long? = null,
-			@Optional var channelRemoveId: Long? = null,
+			var joinMessage: String? = null,
+			var removeMessage: String? = null,
+			var channelJoinId: Long? = null,
+			var channelRemoveId: Long? = null,
 			var tellOnPrivateJoin: Boolean = false,
-			@Optional var joinPrivateMessage: String? = null,
+			var joinPrivateMessage: String? = null,
 			var tellOnBan: Boolean,
-			@Optional var bannedMessage: String? = null,
-			@Optional val deleteJoinMessagesAfter: Long? = null,
-			@Optional val deleteRemoveMessagesAfter: Long? = null
+			var bannedMessage: String? = null,
+			val deleteJoinMessagesAfter: Long? = null,
+			val deleteRemoveMessagesAfter: Long? = null
 	)
 
 	@Serializable
@@ -152,13 +150,13 @@ object ServerConfig {
 	@Serializable
 	class FortniteConfig(
 			val advertiseNewItems: Boolean,
-			@Optional val channelToAdvertiseNewItems: Long? = null
+			val channelToAdvertiseNewItems: Long? = null
 	)
 
 	@Serializable
 	class Announcement(
 			val type: String,
-			@Optional val channelId: Long? = null,
+			val channelId: Long? = null,
 			val onlyIfUserReceivedRoles: Boolean,
 			val message: String
 	)
@@ -176,18 +174,11 @@ object ServerConfig {
 	)
 
 	@Serializable
-	class TrackedTwitterAccount(
-			val channelId: Long,
-			val twitterAccountId: Long,
-			val message: String
-	)
-
-	@Serializable
 	class TrackedYouTubeAccount(
 			val channelId: Long,
 			val youTubeChannelId: String,
 			val message: String,
-			@Optional val webhookUrl: String? = null
+			val webhookUrl: String? = null
 	)
 
 	@Serializable
@@ -195,7 +186,7 @@ object ServerConfig {
 			val channelId: Long,
 			val twitchUserId: Long,
 			val message: String,
-			@Optional val webhookUrl: String? = null
+			val webhookUrl: String? = null
 	)
 
 	@Serializable
@@ -209,7 +200,7 @@ object ServerConfig {
 	class AutoroleConfig(
 			var enabled: Boolean = false,
 			var roles: Array<Long>,
-			@Optional var giveRolesAfter: Long? = null,
+			var giveRolesAfter: Long? = null,
 			var giveOnlyAfterMessageWasSent: Boolean
 	)
 
@@ -234,7 +225,7 @@ object ServerConfig {
 	class DiscordReaction(
 			val isDiscordEmote: Boolean,
 			val name: String,
-			@Optional val id: String? = null
+			val id: String? = null
 	)
 
 	@Serializable
@@ -264,7 +255,7 @@ object ServerConfig {
 			val id: Long,
 			val name: String,
 			val canTalk: Boolean,
-			@Optional val topic: String? = null
+			val topic: String? = null
 	)
 
 	@Serializable

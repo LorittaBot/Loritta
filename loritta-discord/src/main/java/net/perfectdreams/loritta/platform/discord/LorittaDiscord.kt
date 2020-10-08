@@ -3,9 +3,10 @@ package net.perfectdreams.loritta.platform.discord
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.salomonbrys.kotson.*
+import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.vanilla.social.PerfilCommand
 import com.mrpowergamerbr.loritta.dao.Background
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
@@ -20,14 +21,24 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.apache.Apache
-import io.ktor.client.request.get
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.readBytes
-import io.ktor.http.userAgent
+import io.ktor.client.*
+import io.ktor.client.engine.apache.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import kotlinx.coroutines.*
+import mu.KotlinLogging
 import net.perfectdreams.loritta.api.LorittaBot
+import net.perfectdreams.loritta.api.utils.format
+import net.perfectdreams.loritta.commands.vanilla.administration.BanInfoCommand
+import net.perfectdreams.loritta.commands.vanilla.economy.SonhosTopCommand
+import net.perfectdreams.loritta.commands.vanilla.economy.SonhosTopLocalCommand
+import net.perfectdreams.loritta.commands.vanilla.economy.TransactionsCommand
 import net.perfectdreams.loritta.commands.vanilla.magic.LoriToolsCommand
+import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaTopCommand
+import net.perfectdreams.loritta.commands.vanilla.social.RankGlobalCommand
+import net.perfectdreams.loritta.commands.vanilla.social.RepTopCommand
+import net.perfectdreams.loritta.commands.vanilla.social.XpNotificationsCommand
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandMap
 import net.perfectdreams.loritta.platform.discord.plugin.JVMPluginManager
 import net.perfectdreams.loritta.platform.discord.utils.JVMLorittaAssets
@@ -36,6 +47,8 @@ import net.perfectdreams.loritta.tables.Backgrounds
 import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.loritta.utils.config.FanArt
 import net.perfectdreams.loritta.utils.config.FanArtArtist
+import net.perfectdreams.loritta.utils.locale.DebugLocales
+import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.image.BufferedImage
@@ -45,11 +58,15 @@ import java.io.FileOutputStream
 import java.lang.reflect.Modifier
 import java.net.URL
 import java.util.*
+import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.zip.ZipInputStream
 import javax.imageio.ImageIO
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
 import kotlin.random.Random
-import mu.KotlinLogging
 
 /**
  * Loritta Morenitta :3
@@ -59,6 +76,16 @@ import mu.KotlinLogging
 abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig: GeneralDiscordInstanceConfig, var config: GeneralConfig, var instanceConfig: GeneralInstanceConfig) : LorittaBot() {
     override val commandMap = DiscordCommandMap(this).apply {
         register(LoriToolsCommand.create(discordLoritta))
+        register(SonhosTopCommand.create(discordLoritta))
+        register(SonhosTopLocalCommand.create(discordLoritta))
+
+        register(BanInfoCommand.create(discordLoritta))
+
+        register(BomDiaECiaTopCommand.create(discordLoritta))
+        register(RankGlobalCommand.create(discordLoritta))
+        register(RepTopCommand.create(discordLoritta))
+        register(XpNotificationsCommand.create(discordLoritta))
+        register(TransactionsCommand.create(discordLoritta))
     }
     override val pluginManager = JVMPluginManager(this)
     override val assets = JVMLorittaAssets(this)
@@ -99,6 +126,11 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
             .expireAfterWrite(config.caches.serverConfigs.expireAfterWrite, TimeUnit.SECONDS)
             .build<Long, ServerConfig>()
 
+    // Used for message execution
+    val coroutineMessageExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), ThreadFactoryBuilder().setNameFormat("Message Executor Thread %d").build())
+    val coroutineMessageDispatcher = coroutineMessageExecutor.asCoroutineDispatcher() // Coroutine Dispatcher
+    val pendingMessages = ConcurrentLinkedQueue<Job>()
+
     /**
      * Gets an user's profile background
      *
@@ -106,15 +138,15 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
      * @return the background image
      */
     suspend fun getUserProfileBackground(profile: Profile): BufferedImage {
-        val background = transaction(Databases.loritta) { profile.settings.activeBackground }
+        val background = loritta.newSuspendedTransaction { profile.settings.activeBackground }
 
         if (background?.id?.value == Background.RANDOM_BACKGROUND_ID) {
             // Caso o usuário tenha pegado um background random, vamos pegar todos os backgrounds que o usuário comprou e pegar um aleatório de lá
-            val defaultBlueBackground = if (background.id.value != Background.DEFAULT_BACKGROUND_ID) transaction(Databases.loritta) { Background.findById(Background.DEFAULT_BACKGROUND_ID)!! } else background
+            val defaultBlueBackground = if (background.id.value != Background.DEFAULT_BACKGROUND_ID) loritta.newSuspendedTransaction { Background.findById(Background.DEFAULT_BACKGROUND_ID)!! } else background
             val allBackgrounds = mutableListOf(defaultBlueBackground)
 
             allBackgrounds.addAll(
-                    transaction(Databases.loritta) {
+                    loritta.newSuspendedTransaction {
                         (BackgroundPayments innerJoin Backgrounds).select {
                             BackgroundPayments.userId eq profile.id.value
                         }.map { Background.wrapRow(it) }
@@ -125,7 +157,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
         if (background?.id?.value == Background.CUSTOM_BACKGROUND_ID) {
             // Background personalizado
-            val donationValue = loritta.getActiveMoneyFromDonations(profile.userId)
+            val donationValue = loritta.getActiveMoneyFromDonationsAsync(profile.userId)
             val plan = UserPremiumPlans.getPlanFromValue(donationValue)
 
             if (plan.customBackground) {
@@ -143,15 +175,15 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
     }
 
     suspend fun getUserProfileBackgroundUrl(profile: Profile): String {
-        var background = transaction(Databases.loritta) { profile.settings.activeBackground }
+        var background = loritta.newSuspendedTransaction { profile.settings.activeBackground }
 
         if (background?.id?.value == Background.RANDOM_BACKGROUND_ID) {
             // Caso o usuário tenha pegado um background random, vamos pegar todos os backgrounds que o usuário comprou e pegar um aleatório de lá
-            val defaultBlueBackground = if (background.id.value != Background.DEFAULT_BACKGROUND_ID) transaction(Databases.loritta) { Background.findById(Background.DEFAULT_BACKGROUND_ID)!! } else background
+            val defaultBlueBackground = if (background.id.value != Background.DEFAULT_BACKGROUND_ID) loritta.newSuspendedTransaction { Background.findById(Background.DEFAULT_BACKGROUND_ID)!! } else background
             val allBackgrounds = mutableListOf(defaultBlueBackground)
 
             allBackgrounds.addAll(
-                    transaction(Databases.loritta) {
+                    loritta.newSuspendedTransaction {
                         (BackgroundPayments innerJoin Backgrounds).select {
                             BackgroundPayments.userId eq profile.id.value
                         }.map { Background.wrapRow(it) }
@@ -162,14 +194,14 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
         if (background?.id?.value == Background.CUSTOM_BACKGROUND_ID) {
             // Background personalizado
-            val donationValue = loritta.getActiveMoneyFromDonations(profile.userId)
+            val donationValue = loritta.getActiveMoneyFromDonationsAsync(profile.userId)
             val plan = UserPremiumPlans.getPlanFromValue(donationValue)
 
             if (plan.customBackground)
                 return "${loritta.instanceConfig.loritta.website.url}assets/img/profiles/backgrounds/custom/${profile.userId}.png?t=${System.currentTimeMillis()}"
         }
 
-        val backgroundOrDefault = background ?: transaction(Databases.loritta) {
+        val backgroundOrDefault = background ?: loritta.newSuspendedTransaction {
             Background.findById(Background.DEFAULT_BACKGROUND_ID)!!
         }
 
@@ -183,7 +215,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
      * @return the background image
      */
     suspend fun getUserProfileBackground(background: Background?): BufferedImage {
-        val backgroundOrDefault = background ?: transaction(Databases.loritta) {
+        val backgroundOrDefault = background ?: loritta.newSuspendedTransaction {
             Background.findById(Background.DEFAULT_BACKGROUND_ID)!!
         }
 
@@ -192,9 +224,6 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         }
 
         val bytes = response.readBytes()
-
-        if (backgroundOrDefault.imageFile.endsWith(".loribg"))
-            throw PerfilCommand.IsAnimatedBackgroundHack(bytes)
 
         val image = ImageIO.read(bytes.inputStream())
         val crop = backgroundOrDefault.crop
@@ -244,10 +273,18 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         val locale = BaseLocale(id)
         if (defaultLocale != null) {
             // Colocar todos os valores padrões
-            locale.localeEntries.putAll(defaultLocale.localeEntries)
+            locale.localeStringEntries.putAll(defaultLocale.localeStringEntries)
+            locale.localeListEntries.putAll(defaultLocale.localeListEntries)
         }
 
         val localeFolder = File(instanceConfig.loritta.folders.locales, id)
+
+        // Does exactly what the variable says: Only matches single quotes (') that do not have a slash (\) preceding it
+        // Example: It's me, Mario!
+        // But if there is a slash preceding it...
+        // Example: \'{@user}\'
+        // It won't match!
+        val singleQuotesWithoutSlashPrecedingItRegex = Regex("(?<!(?:\\\\))'")
 
         if (localeFolder.exists()) {
             localeFolder.listFiles().filter { it.extension == "yml" || it.extension == "json" }.forEach {
@@ -258,12 +295,37 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
                         if (value is Map<*, *>) {
                             transformIntoFlatMap(value as MutableMap<String, Any?>, "$prefix$key.")
                         } else {
-                            locale.localeEntries[prefix + key] = value
+                            if (value is List<*>) {
+                                locale.localeListEntries[prefix + key] = try {
+                                    (value as List<String>).map {
+                                        it.replace(singleQuotesWithoutSlashPrecedingItRegex, "''") // Escape single quotes
+                                                .replace("\\'", "'") // Replace \' with '
+                                    }
+                                } catch (e: ClassCastException) {
+                                    // A LinkedHashMap does match the "is List<*>" check, but it fails when we cast the subtype to String
+                                    // If that happens, we will just ignore the exception and use the raw "value" list.
+                                    (value as List<String>)
+                                }
+                            } else if (value is String) {
+                                locale.localeStringEntries[prefix + key] = value.replace(singleQuotesWithoutSlashPrecedingItRegex, "''") // Escape single quotes
+                                        .replace("\\'", "'") // Replace \' with '
+                            } else throw IllegalArgumentException("Invalid object type detected in YAML! $value")
                         }
                     }
                 }
 
                 transformIntoFlatMap(entries, "")
+            }
+        }
+
+        // Before we say "okay everything is OK! Let's go!!" we are going to format every single string on the locale
+        // to check if everything is really OK
+        for ((key, string) in locale.localeStringEntries) {
+            try {
+                string?.format()
+            } catch (e: IllegalArgumentException) {
+                logger.error("String \"$string\" stored in \"$key\" from $id can't be formatted! If you are using {...} formatted placeholders, do not forget to add \\' before and after the placeholder!")
+                throw e
             }
         }
 
@@ -302,8 +364,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
                 fileMap[next.name] = fileAsByteArray
             }
 
-            fileMap.forEach { file -> 
-
+            fileMap.forEach { file ->
                 var fileName = file.key
 
                 fileName = fileName.substring(fileName.indexOf("/") + 1)
@@ -322,7 +383,6 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
                 fout.close()
                 success++
-            
             }
 
             if (failed > 0)
@@ -334,7 +394,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         val defaultLocale = loadLocale(Constants.DEFAULT_LOCALE_ID, null)
         locales[Constants.DEFAULT_LOCALE_ID] = defaultLocale
 
-        localeFolder.listFiles().filter { it.isDirectory && it.name != Constants.DEFAULT_LOCALE_ID && !it.name.startsWith(".") /* ignorar .git */ }.forEach {
+        localeFolder.listFiles().filter { it.isDirectory && it.name != Constants.DEFAULT_LOCALE_ID && !it.name.startsWith(".") /* ignorar .git */ && it.name != "legacy" /* Do not try to load legacy locales */ }.forEach {
             locales[it.name] = loadLocale(it.name, defaultLocale)
         }
 
@@ -349,6 +409,9 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
             }
         }
 
+        val brDebug = DebugLocales.createPseudoLocaleOf(defaultLocale, "br-debug", "br-debug")
+        locales["br-debug"] = brDebug
+
         this.locales = locales
     }
 
@@ -360,15 +423,17 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
     fun loadLegacyLocales() {
         val locales = mutableMapOf<String, LegacyBaseLocale>()
 
+        val legacyLocalesFolder = File(instanceConfig.loritta.folders.locales, "legacy")
+
         // Carregar primeiro o locale padrão
-        val defaultLocaleFile = File(instanceConfig.loritta.folders.locales, "default.json")
+        val defaultLocaleFile = File(legacyLocalesFolder, "default.json")
         val localeAsText = defaultLocaleFile.readText(Charsets.UTF_8)
         val defaultLocale = Loritta.GSON.fromJson(localeAsText, LegacyBaseLocale::class.java) // Carregar locale do jeito velho
-        val defaultJsonLocale = Loritta.JSON_PARSER.parse(localeAsText).obj // Mas também parsear como JSON
+        val defaultJsonLocale = JsonParser.parseString(localeAsText).obj // Mas também parsear como JSON
 
         defaultJsonLocale.entrySet().forEach { (key, value) ->
             if (!value.isJsonArray) { // TODO: Listas!
-                defaultLocale.strings.put(key, value.string)
+                defaultLocale.strings[key] = value.string
             }
         }
 
@@ -376,7 +441,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         locales.put("default", defaultLocale)
 
         // Carregar todos os locales
-        val localesFolder = File(instanceConfig.loritta.folders.locales)
+        val localesFolder = legacyLocalesFolder
         val prettyGson = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
         for (file in localesFolder.listFiles()) {
             if (file.extension == "json" && file.nameWithoutExtension != "default") {
@@ -392,10 +457,10 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         // E agora preencher valores nulos e salvar as traduções
         for ((id, locale) in locales) {
             if (id != "default") {
-                val jsonObject = Loritta.JSON_PARSER.parse(Loritta.GSON.toJson(locale))
+                val jsonObject = JsonParser.parseString(Loritta.GSON.toJson(locale))
 
-                val localeFile = File(instanceConfig.loritta.folders.locales, "$id.json")
-                val asJson = Loritta.JSON_PARSER.parse(localeFile.readText()).obj
+                val localeFile = File(legacyLocalesFolder, "$id.json")
+                val asJson = JsonParser.parseString(localeFile.readText()).obj
 
                 for ((id, obj) in asJson.entrySet()) {
                     if (obj.isJsonPrimitive && obj.asJsonPrimitive.isString) {
@@ -441,7 +506,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
                     }
                 }
 
-                File(instanceConfig.loritta.folders.locales, "$id.json").writeText(prettyGson.toJson(jsonObject))
+                File(legacyLocalesFolder, "$id.json").writeText(prettyGson.toJson(jsonObject))
             }
         }
 
@@ -468,5 +533,39 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
      */
     fun getLegacyLocaleById(localeId: String): LegacyBaseLocale {
         return legacyLocales.getOrDefault(localeId, legacyLocales["default"]!!)
+    }
+
+    fun <T> transaction(statement: org.jetbrains.exposed.sql.Transaction.() -> T) = transaction(Databases.loritta) {
+        statement.invoke(this)
+    }
+
+    suspend fun <T> newSuspendedTransaction(repetitions: Int = 5, statement: org.jetbrains.exposed.sql.Transaction.() -> T): T {
+        var lastException: Exception? = null
+        for (i in 1..repetitions) {
+            try {
+                return org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction(Dispatchers.IO, Databases.loritta) {
+                    statement.invoke(this)
+                }
+            } catch (e: ExposedSQLException) {
+                logger.warn(e) { "Exception while trying to execute query. Tries: $i" }
+                lastException = e
+            }
+        }
+        throw lastException ?: RuntimeException("This should never happen")
+    }
+
+    suspend fun <T> suspendedTransactionAsync(statement: org.jetbrains.exposed.sql.Transaction.() -> T) = org.jetbrains.exposed.sql.transactions.experimental.suspendedTransactionAsync(Dispatchers.IO, Databases.loritta) {
+        statement.invoke(this)
+    }
+
+    fun launchMessageJob(block: suspend CoroutineScope.() -> Unit) {
+        val job = GlobalScope.launch(coroutineMessageDispatcher, block = block)
+        // Yes, the order matters, since sometimes the invokeOnCompletion would be invoked before the job was
+        // added to the list, causing leaks.
+        // invokeOnCompletion is also invoked even if the job was already completed at that point, so no worries!
+        pendingMessages.add(job)
+        job.invokeOnCompletion {
+            pendingMessages.remove(job)
+        }
     }
 }

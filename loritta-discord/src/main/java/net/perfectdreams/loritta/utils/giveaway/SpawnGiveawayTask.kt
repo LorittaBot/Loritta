@@ -13,7 +13,6 @@ class SpawnGiveawayTask : Runnable {
     }
 
     override fun run() {
-
         transaction(Databases.loritta) {
             val allActiveGiveaways = Giveaway.find { Giveaways.finished eq false }
 

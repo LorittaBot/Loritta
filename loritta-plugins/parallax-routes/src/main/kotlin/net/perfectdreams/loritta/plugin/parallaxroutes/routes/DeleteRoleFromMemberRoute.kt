@@ -16,7 +16,7 @@ class DeleteRoleFromMemberRoute(loritta: LorittaDiscord) : RequiresAPIAuthentica
 			val roleId = call.parameters["roleId"]!!
 
 			val guild = lorittaShards.getGuildById(guildId)!!
-			val member = guild.getMemberById(memberId)!!
+			val member = guild.retrieveMemberById(memberId).await()
 			val role = guild.getRoleById(roleId)!!
 
 			if (guild.selfMember.canInteract(role)) {

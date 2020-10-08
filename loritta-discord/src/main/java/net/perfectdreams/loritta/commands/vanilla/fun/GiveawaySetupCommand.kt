@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.TextChannel
 import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.commands.LorittaDiscordCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.DiscordMessage
@@ -38,7 +39,7 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
 
             if (message != null) {
                 context.reply(
-                        LoriReply(
+                        LorittaReply(
                                 message = locale["commands.fun.giveaway.giveawayValidCustomMessage"],
                                 prefix = Emotes.LORI_TEMMIE
                         )
@@ -65,7 +66,7 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
 
     suspend fun getGiveawayName(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
         val message = context.reply(
-                LoriReply(
+                LorittaReply(
                         message = locale["commands.fun.giveaway.giveawayName"],
                         prefix = "\uD83E\uDD14"
                 )
@@ -82,7 +83,7 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
 
     suspend fun getGiveawayDescription(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
         val message = context.reply(
-                LoriReply(
+                LorittaReply(
                         message = locale["commands.fun.giveaway.giveawayDescription"],
                         prefix = "\uD83E\uDD14"
                 )
@@ -99,7 +100,7 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
 
     suspend fun getGiveawayDuration(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
         val message = context.reply(
-                LoriReply(
+                LorittaReply(
                         message = locale["commands.fun.giveaway.giveawayDuration"],
                         prefix = "\uD83E\uDD14"
                 )
@@ -116,7 +117,7 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
 
     suspend fun getGiveawayReaction(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
         val message = context.reply(
-                LoriReply(
+                LorittaReply(
                         message = locale["commands.fun.giveaway.giveawayReaction"],
                         prefix = "\uD83E\uDD14"
                 )
@@ -133,7 +134,7 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
 
     suspend fun getGiveawayChannel(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
         val message = context.reply(
-                LoriReply(
+                LorittaReply(
                         message = locale["commands.fun.giveaway.giveawayChannel"],
                         prefix = "\uD83E\uDD14"
                 )
@@ -162,7 +163,7 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
 
             if (channel == null) {
                 context.reply(
-                        LoriReply(
+                        LorittaReply(
                                 "Canal inválido!",
                                 Constants.ERROR
                         )
@@ -172,7 +173,7 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
 
             if (!channel.canTalk()) {
                 context.reply(
-                        LoriReply(
+                        LorittaReply(
                                 "Eu não posso falar no canal de texto!",
                                 Constants.ERROR
                         )
@@ -182,8 +183,40 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
 
             if (!channel.canTalk(context.handle)) {
                 context.reply(
-                        LoriReply(
+                        LorittaReply(
                                 "Você não pode falar no canal de texto!",
+                                Constants.ERROR
+                        )
+                )
+                return@onResponseByAuthor
+            }
+
+            val lorittaAsMember = context.discordGuild.selfMember
+
+            if (!lorittaAsMember.hasPermission(channel, Permission.MESSAGE_ADD_REACTION)) {
+                context.reply(
+                        LorittaReply(
+                                "Não tenho permissão para reagir nesse canal!",
+                                Constants.ERROR
+                        )
+                )
+                return@onResponseByAuthor
+            }
+
+            if (!lorittaAsMember.hasPermission(channel, Permission.MESSAGE_EMBED_LINKS)) {
+                context.reply(
+                        LorittaReply(
+                                "Não tenho permissão para enviar embeds nesse canal!",
+                                Constants.ERROR
+                        )
+                )
+                return@onResponseByAuthor
+            }
+
+            if (!lorittaAsMember.hasPermission(channel, Permission.MESSAGE_HISTORY)) {
+                context.reply(
+                        LorittaReply(
+                                "Não tenho permissão para ver o histórico desse canal!",
                                 Constants.ERROR
                         )
                 )
@@ -199,7 +232,7 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
 
     suspend fun getGiveawayWinningRoles(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
         val message = context.reply(
-                LoriReply(
+                LorittaReply(
                         message = locale["commands.fun.giveaway.giveawayDoYouWantAutomaticRole"],
                         prefix = "\uD83E\uDD14"
                 )
@@ -213,7 +246,7 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
 
             if (it.reactionEmote.isEmote("✅")) {
                 val message = context.reply(
-                        LoriReply(
+                        LorittaReply(
                                 message = locale["commands.fun.giveaway.giveawayMentionRoles"],
                                 prefix = "\uD83E\uDD14"
                         )
@@ -241,7 +274,7 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
 
                     if (roles.isEmpty()) {
                         context.reply(
-                                LoriReply(
+                                LorittaReply(
                                         locale["commands.fun.giveaway.giveawayNoValidRoles"],
                                         Constants.ERROR
                                 )
@@ -252,7 +285,7 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
                     for (role in roles) {
                         if (!context.discordGuild.selfMember.canInteract(role) || role.isManaged) {
                             context.reply(
-                                    LoriReply(
+                                    LorittaReply(
                                             locale["commands.fun.giveaway.giveawayCantInteractWithRole", "`${role.name}`"],
                                             Constants.ERROR
                                     )
@@ -262,7 +295,7 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
 
                         if (context.discordMessage.member?.canInteract(role) == false) {
                             context.reply(
-                                    LoriReply(
+                                    LorittaReply(
                                             locale["commands.fun.giveaway.giveawayCantYouInteractWithRole", "`${role.name}`"],
                                             Constants.ERROR
                                     )
@@ -285,7 +318,7 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
 
     suspend fun getGiveawayWinnerCount(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
         val message = context.reply(
-                LoriReply(
+                LorittaReply(
                         message = locale["commands.fun.giveaway.giveawayWinnerCount"],
                         prefix = "\uD83E\uDD14"
                 )
@@ -298,7 +331,7 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
 
             if (numberOfWinners == null) {
                 context.reply(
-                        LoriReply(
+                        LorittaReply(
                                 "Eu não sei o que você colocou aí, mas tenho certeza que não é um número.",
                                 Constants.ERROR
                         )
@@ -308,7 +341,7 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
 
             if (numberOfWinners !in 1..20) {
                 context.reply(
-                        LoriReply(
+                        LorittaReply(
                                 "Precisa ter, no mínimo, um ganhador e, no máximo, vinte ganhadores!",
                                 Constants.ERROR
                         )
@@ -387,7 +420,7 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
             if (it.reactionEmote.idLong == 412585701054611458L) {
                 message.delete()
                 context.reply(
-                        LoriReply(
+                        LorittaReply(
                                 context.locale["commands.fun.giveaway.giveawaySetupCancelled"]
                         )
                 )

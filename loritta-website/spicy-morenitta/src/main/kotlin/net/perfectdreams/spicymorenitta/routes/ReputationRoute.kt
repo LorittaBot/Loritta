@@ -1,13 +1,21 @@
 package net.perfectdreams.spicymorenitta.routes
 
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import jq
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.serialization.ImplicitReflectionSerializer
+import kotlinx.html.*
+import kotlinx.html.dom.append
+import kotlinx.serialization.Serializable
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
+import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.utils.*
+import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
+import org.w3c.dom.Audio
 import org.w3c.dom.HTMLButtonElement
+import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLTextAreaElement
 import org.w3c.dom.url.URLSearchParams
 import utils.GoogleRecaptcha
@@ -15,8 +23,8 @@ import utils.RecaptchaOptions
 import kotlin.browser.document
 import kotlin.browser.window
 import kotlin.dom.addClass
+import kotlin.dom.clear
 import kotlin.dom.removeClass
-import kotlin.js.Json
 import kotlin.js.json
 
 class ReputationRoute : BaseRoute("/user/{userId}/rep") {
@@ -50,29 +58,29 @@ class ReputationRoute : BaseRoute("/user/{userId}/rep") {
         println(JSON.stringify(json))
 
         GlobalScope.launch {
-            val response = HttpRequest.post(
-                    url = "${loriUrl}api/v1/users/$userId/reputation",
-                    data = JSON.stringify(json)
-            )
+            val response = http.post<io.ktor.client.statement.HttpResponse>("${loriUrl}api/v1/users/$userId/reputation") {
+                body = JSON.stringify(json)
+            }
 
-            println("Received: " + response.body)
-            val payload = JSON.parse<Json>(response.body)
+            val text = response.readText()
 
-            if (response.statusCode == 200) {
+            println("Received: $text")
+
+            if (response.status.value == 200) {
                 println("Deu certo!")
                 val ts1SkillUp = Audio("${loriUrl}assets/snd/ts1_skill.mp3")
                 ts1SkillUp.play()
+
+                updateReputationLeaderboard()
+
                 page.getElementByClass("reputation-button").addClass("button-discord-disabled")
                 page.getElementByClass("reputation-button").removeClass("button-discord-info")
-                page.getElementByClass("reputation-count").innerHTML = (payload["count"] as Int).toString()
-                page.getElementByClass("leaderboard").outerHTML = payload["rank"] as String
             } else {
                 println("Deu ruim!!!")
             }
         }
     }
 
-    @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         super.onRender(call)
 
@@ -94,5 +102,82 @@ class ReputationRoute : BaseRoute("/user/{userId}/rep") {
                 GoogleRecaptcha.execute()
             }
         }
+
+        updateReputationLeaderboard()
     }
+
+    fun updateReputationLeaderboard() {
+        SpicyMorenitta.INSTANCE.launch {
+            val leaderboardResultAsString = http.get<String>("${loriUrl}api/v1/users/$userId/reputation")
+            val leaderboardResult = kotlinx.serialization.json.Json.parse(ReputationLeaderboardResponse.serializer(), leaderboardResultAsString)
+
+            page.getElementByClass("reputation-count").textContent = leaderboardResult.count.toString()
+
+            val element = document.select<HTMLDivElement>(".leaderboard")
+
+            element.clear()
+
+            element.append {
+                div(classes = "box-item") {
+                    var idx = 0
+                    div(classes = "rank-title") {
+                        +"Placar de Reputações"
+                    }
+                    table {
+                        tbody {
+                            tr {
+                                th {
+                                    + "Posição"
+                                }
+                                th {}
+                                th {
+                                    + "Nome"
+                                }
+                            }
+                            for ((count, rankUser) in leaderboardResult.rank) {
+                                if (idx == 5) break
+
+                                tr {
+                                    td {
+                                        img(classes = "rank-avatar", src = rankUser.effectiveAvatarUrl) { width = "64" }
+                                    }
+                                    td(classes = "rank-position") {
+                                        +"#${idx + 1}"
+                                    }
+                                    td {
+                                        if (idx == 0) {
+                                            div(classes = "rank-name rainbow") {
+                                                +rankUser.name
+                                            }
+
+                                        } else {
+                                            div(classes = "rank-name") {
+                                                +rankUser.name
+                                            }
+                                        }
+                                        div(classes = "reputations-received") {
+                                            +"$count reputações"
+                                        }
+                                    }
+                                }
+                                idx++
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Serializable
+    data class ReputationLeaderboardResponse(
+            val count: Int,
+            val rank: List<ReputationLeaderboardEntry>
+    )
+
+    @Serializable
+    data class ReputationLeaderboardEntry(
+            val count: Int,
+            val user: ServerConfig.SelfMember
+    )
 }

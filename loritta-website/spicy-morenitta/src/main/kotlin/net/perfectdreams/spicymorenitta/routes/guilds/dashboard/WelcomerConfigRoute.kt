@@ -7,13 +7,11 @@ import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.Serializable
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
+import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
-import net.perfectdreams.spicymorenitta.utils.DashboardUtils
+import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.launchWithLoadingScreenAndFixContent
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.switchContentAndFixLeftSidebarScroll
-import net.perfectdreams.spicymorenitta.utils.Placeholders
-import net.perfectdreams.spicymorenitta.utils.onClick
-import net.perfectdreams.spicymorenitta.utils.select
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import org.w3c.dom.HTMLButtonElement
 import kotlin.browser.document
@@ -52,7 +50,7 @@ class WelcomerConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 					true,
 					jq("#canalJoinId"),
 					true,
-					Placeholders.DEFAULT_PLACEHOLDERS,
+					EmbedEditorStuff.userInContextPlaceholders(locale),
 					true,
 					mapOf(
 							"Padrão" to "\uD83D\uDC49 {@user} entrou no servidor!",
@@ -193,7 +191,7 @@ Aliás, continue sendo incrível! (E eu sou muito fofa! :3)""",
 					true,
 					jq("#canalLeaveId"),
 					true,
-					Placeholders.DEFAULT_PLACEHOLDERS,
+					EmbedEditorStuff.userInContextPlaceholders(locale),
 					true,
 					mapOf(
 							"Padrão" to "\uD83D\uDC48 {user} saiu do servidor...",
@@ -255,7 +253,7 @@ Aliás, continue sendo incrível! (E eu sou muito fofa! :3)""",
 					true,
 					null,
 					true,
-					Placeholders.DEFAULT_PLACEHOLDERS
+					EmbedEditorStuff.userInContextPlaceholders(locale)
 			)
 
 			LoriDashboard.configureTextArea(
@@ -265,7 +263,7 @@ Aliás, continue sendo incrível! (E eu sou muito fofa! :3)""",
 					true,
 					jq("#canalLeaveId"),
 					true,
-					Placeholders.DEFAULT_PLACEHOLDERS
+					EmbedEditorStuff.userInContextPlaceholders(locale)
 			)
 
 			document.select<HTMLButtonElement>("#save-button").onClick {

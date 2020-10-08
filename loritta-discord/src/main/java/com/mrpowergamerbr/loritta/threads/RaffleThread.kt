@@ -8,12 +8,13 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
-import net.perfectdreams.loritta.tables.SonhosTransaction
+import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
-import org.jetbrains.exposed.sql.insert
+import net.perfectdreams.loritta.utils.UserPremiumPlans
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.time.Instant
@@ -40,7 +41,7 @@ class RaffleThread : Thread("Raffle Thread") {
 			try {
 				val diff = System.currentTimeMillis() - started
 
-				if (diff > 3600000 && loritta.isMaster) { // Resultados apenas saem no master server
+				if (diff > 3600000) { // Resultados apenas saem no master server
 					handleWin()
 				}
 			} catch (e: Exception) {
@@ -82,28 +83,29 @@ class RaffleThread : Thread("Raffle Thread") {
 			val winnerId = winner.first
 			lastWinnerId = winnerId
 
-			val money = userIds.size * 250
+			val currentActiveDonations = loritta.getActiveMoneyFromDonations(winnerId.toLong())
+			val plan = UserPremiumPlans.getPlanFromValue(currentActiveDonations)
+
+			val moneyWithoutTaxes = userIds.size * 250
+			val money = (moneyWithoutTaxes * plan.totalLoraffleReward).toInt()
 			lastWinnerPrize = money
 
 			val lorittaProfile = loritta.getOrCreateLorittaProfile(winnerId)
-			logger.info("$lastWinnerId ganhou $lastWinnerPrize sonhos (antes ele possuia ${lorittaProfile.money} sonhos) na Rifa!")
+			logger.info("$lastWinnerId ganhou $lastWinnerPrize sonhos ($moneyWithoutTaxes without taxes; antes ele possuia ${lorittaProfile.money} sonhos) na Rifa!")
 
 			transaction(Databases.loritta){
-				lorittaProfile.money += money
-
-				SonhosTransaction.insert {
-					it[givenBy] = null
-					it[receivedBy] = winnerId.toLong()
-					it[givenAt] = System.currentTimeMillis()
-					it[quantity] = money.toBigDecimal()
-					it[reason] = SonhosPaymentReason.RAFFLE
-				}
+				lorittaProfile.addSonhosNested(money.toLong())
+				PaymentUtils.addToTransactionLogNested(
+						money.toLong(),
+						SonhosPaymentReason.RAFFLE,
+						receivedBy = winnerId.toLongOrNull()
+				)
 			}
 
 			userIds.clear()
 
 			val locale = loritta.getLegacyLocaleById(winner.second)
-			val user = lorittaShards.getUserById(lastWinnerId)
+			val user = runBlocking { lorittaShards.retrieveUserById(lastWinnerId!!) }
 
 			if (user != null && !user.isBot) {
 				try {

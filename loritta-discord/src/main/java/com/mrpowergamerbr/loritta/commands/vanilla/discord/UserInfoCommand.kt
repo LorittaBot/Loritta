@@ -14,6 +14,8 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.platform.discord.utils.UserFlagBadgeEmotes.getBadges
 import net.perfectdreams.loritta.utils.Emotes
 
 class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), CommandCategory.DISCORD) {
@@ -25,16 +27,16 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 		return false
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
 		var user = context.getUserAt(0)
 
 		if (user == null) {
 			if (context.args.getOrNull(0) != null) {
 				context.reply(
-						LoriReply(
-								locale["USERINFO_UnknownUser", context.args[0].stripCodeMarks()],
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                locale["USERINFO_UnknownUser", context.args[0].stripCodeMarks()],
+                                Constants.ERROR
+                        )
 				)
 				return
 			}
@@ -75,7 +77,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 				else -> Emotes.OFFLINE
 			}
 
-			setTitle("$ownerEmote$typeEmote$statusEmote $nickname", null)
+			setTitle("$ownerEmote$typeEmote${getBadges(user).joinToString("")}$statusEmote $nickname", null)
 			setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
 
 			if (member != null) {
@@ -126,7 +128,8 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			}
 		}
 
-		val _message = message?.edit(context.getAsMention(true), embed.build()) ?: context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
+		val _message = message?.edit(context.getAsMention(true), embed.build())
+				?: context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
 		if (member != null) {
 			_message.onReactionAddByAuthor(context) {
 				showExtendedInfo(_message, context, user, member)
@@ -142,12 +145,6 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 
 		embed.apply {
 			if (member != null) {
-				addField(
-						"\uD83D\uDC81 ${locale.toNewLocale()["commands.discord.userinfo.joinPosition"]}",
-						locale.toNewLocale()["commands.discord.userinfo.joinPlace", "${member.guild.members.sortedBy { it.timeJoined }.indexOf(member) + 1}º"],
-						true
-				)
-
 				val roles = member.roles.joinToString(separator = ", ", transform = { "`${it.name}`" })
 				addField("\uD83D\uDCBC " + context.legacyLocale["USERINFO_ROLES"] + " (${member.roles.size})", if (roles.isNotEmpty()) roles.substringIfNeeded(0 until 1024) else context.legacyLocale.get("USERINFO_NO_ROLE") + " \uD83D\uDE2D", true)
 
@@ -156,11 +153,13 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			}
 		}
 
-		val _message = message?.edit(context.getAsMention(true), embed.build()) ?: context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
+		val _message = message?.edit(context.getAsMention(true), embed.build())
+				?: context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
 		_message.onReactionAddByAuthor(context) {
 			showQuickGlanceInfo(_message, context, user, member)
 		}
 		_message.addReaction("◀").queue()
 		return _message
 	}
+
 }

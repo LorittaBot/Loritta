@@ -4,6 +4,7 @@ import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.int
 import com.github.salomonbrys.kotson.string
+import com.google.gson.JsonParser
 import com.rometools.rome.feed.synd.SyndEntry
 import com.rometools.rome.io.SyndFeedInput
 import io.ktor.client.request.get
@@ -99,7 +100,7 @@ class DiscordPingStatusTracker(val bot: WatchdogBot) {
 		val pingPayload = bot.http.get<HttpResponse>("https://discord.statuspage.io/metrics-display/ztt4777v23lf/day.json")
 				.readText()
 
-		val payload = jsonParser.parse(pingPayload)
+		val payload = JsonParser.parseString(pingPayload)
 
 		val metrics = payload["metrics"].array
 

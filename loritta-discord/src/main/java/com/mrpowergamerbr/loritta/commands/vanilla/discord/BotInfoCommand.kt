@@ -4,11 +4,15 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.utils.Emotes
@@ -56,7 +60,7 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		sb.append(seconds)
 		sb.append("s")
 
-		val commandsExecutedInTheLast24Hours = transaction(Databases.loritta) {
+		val commandsExecutedInTheLast24Hours = loritta.newSuspendedTransaction {
 			ExecutedCommandsLog.select {
 				ExecutedCommandsLog.sentAt greaterEq (System.currentTimeMillis() - Constants.ONE_DAY_IN_MILLISECONDS)
 			}.count()
@@ -66,19 +70,18 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		embed.setThumbnail("${loritta.instanceConfig.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
 		embed.setColor(Color(0, 193, 223))
 		embed.setDescription(
-				locale.toNewLocale().getWithType<List<String>>("commands.discord.botinfo.embedDescription")
-						.joinToString("\n\n")
-						.msgFormat(
-								guildCount,
-								sb.toString(),
-								LorittaLauncher.loritta.legacyCommandManager.commandMap.size + loritta.commandManager.commands.size + loritta.commandMap.commands.size,
-								commandsExecutedInTheLast24Hours,
-								Emotes.KOTLIN,
-								Emotes.JDA,
-								Emotes.LORI_SMILE,
-								Emotes.LORI_HAPPY,
-								Emotes.LORI_OWO
-						)
+				context.locale.getList(
+						"commands.discord.botinfo.embedDescription",
+						guildCount,
+						sb.toString(),
+						LorittaLauncher.loritta.legacyCommandManager.commandMap.size + loritta.commandManager.commands.size + loritta.commandMap.commands.size,
+						commandsExecutedInTheLast24Hours,
+						Emotes.KOTLIN,
+						Emotes.JDA,
+						Emotes.LORI_SMILE,
+						Emotes.LORI_HAPPY,
+						Emotes.LORI_OWO
+				).joinToString("\n\n")
 		)
 
 		embed.addField("\uD83C\uDF80 ${context.legacyLocale["WEBSITE_DONATE"]}", "${loritta.instanceConfig.loritta.website.url}donate", true)
@@ -88,7 +91,7 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		embed.addField("<:twitter:552840901886738433> Twitter", "[@LorittaBot](https://twitter.com/LorittaBot)", true)
 		embed.addField("<:instagram:552841049660325908> Instagram", "[@lorittabot](https://instagram.com/lorittabot/)", true)
 
-		val numberOfUniqueDonators = transaction(Databases.loritta) {
+		val numberOfUniqueDonators = loritta.newSuspendedTransaction {
 			Payments.slice(Payments.userId)
 					.select { Payments.paidAt.isNotNull() }
 					.groupBy(Payments.userId)
@@ -97,21 +100,21 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 
 		embed.addField(
 				"\uD83C\uDFC5 ${locale["BOTINFO_HONORABLE_MENTIONS"]}",
-				locale.toNewLocale().getWithType<List<String>>("commands.discord.botinfo.honorableMentions").joinToString("\n") { "• $it" }
-						.msgFormat(
-								numberOfUniqueDonators,
-								loritta.fanArtArtists.size,
-								context.userHandle.asMention,
-								Emotes.LORI_TEMMIE,
-								Emotes.LORI_OWO,
-								Emotes.LORI_WOW,
-								Emotes.LORI_HUG,
-								Emotes.LORI_SMILE
-						),
+				locale.toNewLocale().getList(
+						"commands.discord.botinfo.honorableMentions",
+						numberOfUniqueDonators,
+						loritta.fanArtArtists.size,
+						context.userHandle.asMention,
+						Emotes.LORI_TEMMIE,
+						Emotes.LORI_OWO,
+						Emotes.LORI_WOW,
+						Emotes.LORI_HUG,
+						Emotes.LORI_SMILE
+				).joinToString("\n") { "• $it" },
 				false
 		)
 
-		embed.setFooter("${locale["BOTINFO_CREATEDBY"]} - https://mrpowergamerbr.com/", lorittaShards.getUserById("123170274651668480")!!.effectiveAvatarUrl)
+		embed.setFooter("${locale["BOTINFO_CREATEDBY"]} - https://mrpowergamerbr.com/", lorittaShards.retrieveUserById(123170274651668480L)!!.effectiveAvatarUrl)
 		val message = context.sendMessage(context.getAsMention(true), embed.build())
 
 		message.onReactionAddByAuthor(context) {
@@ -147,85 +150,85 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		val totalMemory = runtime.totalMemory() / mb
 
 		context.reply(
-				LoriReply(
-						forceMention = true,
-						prefix = "<:loritta:331179879582269451>"
-				),
-				LoriReply(
-						"**${locale["BOTINFO_LorittaVersion"]}:** $lorittaVersion",
-						"\uD83D\uDD16",
-						mentionUser = false
-				),
-				LoriReply(
-						"**${locale["BOTINFO_BuildNumber"]}:** #$buildNumber <https://jenkins.perfectdreams.net/job/Loritta/$buildNumber/>",
-						"\uD83C\uDFD7",
-						mentionUser = false
-				),
-				LoriReply(
-						"**Commit:** $commitHash",
-						"<:github:467329174387032086>",
-						mentionUser = false
-				),
-				LoriReply(
-						"**Git Branch:** $gitBranch",
-						"<:github:467329174387032086>",
-						mentionUser = false
-				),
-				LoriReply(
-						"**${locale["BOTINFO_CompiledAt"]}:** $compiledAt",
-						"⏰",
-						mentionUser = false
-				),
-				LoriReply(
-						"**${locale["BOTINFO_JavaVersion"]}:** ${System.getProperty("java.version")}",
-						"<:java:467443707160035329>",
-						mentionUser = false
-				),
-				LoriReply(
-						"**${locale["BOTINFO_KotlinVersion"]}:** $kotlinVersion",
-						"<:kotlin:453714186925637642>",
-						mentionUser = false
-				),
-				LoriReply(
-						"**${locale["BOTINFO_JDAVersion"]}:** $jdaVersion",
-						"<:jda:411518264267767818>",
-						mentionUser = false
-				),
-				LoriReply(
-						"**${locale["BOTINFO_MemoryUsed"]}:** $usedMemory MB",
-						"\uD83D\uDCBB",
-						mentionUser = false
-				),
-				LoriReply(
-						"**${locale["BOTINFO_MemoryAvailable"]}:** $freeMemory MB",
-						"\uD83D\uDCBB",
-						mentionUser = false
-				),
-				LoriReply(
-						"**${locale["BOTINFO_MemoryAllocated"]}:** $totalMemory MB",
-						"\uD83D\uDCBB",
-						mentionUser = false
-				),
-				LoriReply(
-						"**${locale["BOTINFO_MemoryTotal"]}:** $maxMemory MB",
-						"\uD83D\uDCBB",
-						mentionUser = false
-				),
-				LoriReply(
-						"**${locale["BOTINFO_ThreadCount"]}:** ${ManagementFactory.getThreadMXBean().threadCount}",
-						"\uD83D\uDC4B",
-						mentionUser = false
-				),
-				LoriReply(
-						"**${locale["BOTINFO_Environment"]}:** ${loritta.config.loritta.environment.name}",
-						"\uD83C\uDF43",
-						mentionUser = false
-				),
-				LoriReply(
-						"**${locale["DASHBOARD_Love"]}:** ∞",
-						"<:blobheart:467447056374693889>",
-						mentionUser = false
-				)
+                LorittaReply(
+                        forceMention = true,
+                        prefix = "<:loritta:331179879582269451>"
+                ),
+                LorittaReply(
+                        "**${locale["BOTINFO_LorittaVersion"]}:** $lorittaVersion",
+                        "\uD83D\uDD16",
+                        mentionUser = false
+                ),
+                LorittaReply(
+                        "**${locale["BOTINFO_BuildNumber"]}:** #$buildNumber <https://jenkins.perfectdreams.net/job/Loritta/$buildNumber/>",
+                        "\uD83C\uDFD7",
+                        mentionUser = false
+                ),
+                LorittaReply(
+                        "**Commit:** $commitHash",
+                        "<:github:467329174387032086>",
+                        mentionUser = false
+                ),
+                LorittaReply(
+                        "**Git Branch:** $gitBranch",
+                        "<:github:467329174387032086>",
+                        mentionUser = false
+                ),
+                LorittaReply(
+                        "**${locale["BOTINFO_CompiledAt"]}:** $compiledAt",
+                        "⏰",
+                        mentionUser = false
+                ),
+                LorittaReply(
+                        "**${locale["BOTINFO_JavaVersion"]}:** ${System.getProperty("java.version")}",
+                        "<:java:467443707160035329>",
+                        mentionUser = false
+                ),
+                LorittaReply(
+                        "**${locale["BOTINFO_KotlinVersion"]}:** $kotlinVersion",
+                        "<:kotlin:453714186925637642>",
+                        mentionUser = false
+                ),
+                LorittaReply(
+                        "**${locale["BOTINFO_JDAVersion"]}:** $jdaVersion",
+                        "<:jda:411518264267767818>",
+                        mentionUser = false
+                ),
+                LorittaReply(
+                        "**${locale["BOTINFO_MemoryUsed"]}:** $usedMemory MB",
+                        "\uD83D\uDCBB",
+                        mentionUser = false
+                ),
+                LorittaReply(
+                        "**${locale["BOTINFO_MemoryAvailable"]}:** $freeMemory MB",
+                        "\uD83D\uDCBB",
+                        mentionUser = false
+                ),
+                LorittaReply(
+                        "**${locale["BOTINFO_MemoryAllocated"]}:** $totalMemory MB",
+                        "\uD83D\uDCBB",
+                        mentionUser = false
+                ),
+                LorittaReply(
+                        "**${locale["BOTINFO_MemoryTotal"]}:** $maxMemory MB",
+                        "\uD83D\uDCBB",
+                        mentionUser = false
+                ),
+                LorittaReply(
+                        "**${locale["BOTINFO_ThreadCount"]}:** ${ManagementFactory.getThreadMXBean().threadCount}",
+                        "\uD83D\uDC4B",
+                        mentionUser = false
+                ),
+                LorittaReply(
+                        "**${locale["BOTINFO_Environment"]}:** ${loritta.config.loritta.environment.name}",
+                        "\uD83C\uDF43",
+                        mentionUser = false
+                ),
+                LorittaReply(
+                        "**${locale["DASHBOARD_Love"]}:** ∞",
+                        "<:blobheart:467447056374693889>",
+                        mentionUser = false
+                )
 		)
 	}
 }

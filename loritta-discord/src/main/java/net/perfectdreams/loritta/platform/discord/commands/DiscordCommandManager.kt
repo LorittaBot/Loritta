@@ -3,12 +3,9 @@ package net.perfectdreams.loritta.platform.discord.commands
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.ChannelInfoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.PluginsCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.MagicPingCommand
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -21,22 +18,15 @@ import net.dv8tion.jda.api.utils.MarkdownSanitizer
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.commands.LorittaCommandManager
 import net.perfectdreams.loritta.api.entities.User
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.commands.vanilla.`fun`.*
-import net.perfectdreams.loritta.commands.vanilla.audio.RecordAudioCommand
-import net.perfectdreams.loritta.commands.vanilla.economy.TransactionsCommand
-import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaTopCommand
-import net.perfectdreams.loritta.commands.vanilla.social.RankGlobalCommand
-import net.perfectdreams.loritta.commands.vanilla.social.RepTopCommand
-import net.perfectdreams.loritta.commands.vanilla.social.XpNotificationsCommand
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.utils.CommandUtils
 import net.perfectdreams.loritta.utils.DonateUtils
 import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.FeatureFlags
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 import java.util.concurrent.CancellationException
 import kotlin.reflect.KClass
@@ -44,8 +34,6 @@ import kotlin.reflect.full.isSubclassOf
 
 class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager(discordLoritta) {
     init {
-        if (discordLoritta.config.loritta.environment == EnvironmentType.CANARY)
-            registerCommand(MagicPingCommand())
         registerCommand(PluginsCommand())
 
         registerCommand(ChannelInfoCommand())
@@ -53,16 +41,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
         registerCommand(GiveawayRerollCommand())
         registerCommand(GiveawaySetupCommand())
         registerCommand(GiveawayCommand())
-        registerCommand(RepTopCommand())
-        registerCommand(AkinatorCommand())
         registerCommand(FanArtsCommand())
-        registerCommand(RankGlobalCommand())
-        registerCommand(XpNotificationsCommand())
-        registerCommand(BomDiaECiaTopCommand())
-        registerCommand(TransactionsCommand())
-        if (loritta.config.loritta.environment == EnvironmentType.CANARY) {
-            registerCommand(RecordAudioCommand())
-        }
 
         contextManager.registerContext<User>(
                 { clazz: KClass<*> -> clazz.isSubclassOf(User::class) || clazz == User::class },
@@ -248,11 +227,6 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
             }
 
             try {
-                if (serverConfig.guildId == -1L && ev.textChannel != null && !ev.textChannel.canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela
-                    LorittaUtils.warnOwnerNoPermission(ev.guild, ev.textChannel, serverConfig)
-                    return true
-                }
-
                 if (serverConfig.blacklistedChannels.contains(ev.channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
                     // if (!conf.miscellaneousConfig.enableBomDiaECia || (conf.miscellaneousConfig.enableBomDiaECia && command !is LigarCommand)) {
                     if (serverConfig.warnIfBlacklisted) {
@@ -281,7 +255,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                 }
 
                 var cooldown = command.cooldown
-                val donatorPaid = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonations(ev.author.idLong)
+                val donatorPaid = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonationsAsync(ev.author.idLong)
                 val guildId = ev.guild?.idLong
                 val guildPaid = guildId?.let { serverConfig.getActiveDonationKeysValue() } ?: 0.0
 
@@ -292,7 +266,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                 if (cooldown > diff && !loritta.config.isOwner(ev.author.id)) {
                     val fancy = DateUtils.formatDateDiff((cooldown - diff) + System.currentTimeMillis(), legacyLocale)
                     context.reply(
-                            LoriReply(
+                            LorittaReply(
                                     locale["commands.pleaseWaitCooldown", fancy, "\uD83D\uDE45"],
                                     "\uD83D\uDD25"
                             )
@@ -302,15 +276,12 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
 
                 discordLoritta.userCooldown[ev.author.idLong] = System.currentTimeMillis()
 
-                command.executedCount++
-
                 if (command.hasCommandFeedback) {
-                    if (FeatureFlags.IMPROVED_TYPING_SEND) {
-                        if (command.sendTypingStatus)
-                            ev.channel.sendTyping().await()
-                    } else {
+                    // Sending typing status for every single command is costly (API limits!)
+                    // To avoid sending it every time, we check if we should send the typing status
+                    // (We only send it if the command takes a looong time to be executed)
+                    if (command.sendTypingStatus)
                         ev.channel.sendTyping().await()
-                    }
                 }
 
                 if (!isPrivateChannel && ev.guild != null && ev.member != null) {
@@ -333,7 +304,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                         // oh no
                         val required = missingPermissions.joinToString(", ", transform = { "`" + it.localized(locale) + "`" })
                         context.reply(
-                                LoriReply(
+                                LorittaReply(
                                         locale["commands.loriDoesntHavePermissionDiscord", required, "\uD83D\uDE22", "\uD83D\uDE42"],
                                         Constants.ERROR
                                 )
@@ -369,7 +340,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
 
                 if (context.command.onlyOwner && !loritta.config.isOwner(context.userHandle.id)) {
                     context.reply(
-                            LoriReply(
+                            LorittaReply(
                                     locale["commands.commandOnlyForOwner"],
                                     Constants.ERROR
                             )
@@ -382,7 +353,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                         val requiredPermissions = command.discordPermissions.filter { !ev.message.member!!.hasPermission(ev.message.textChannel, it) }
                         val required = requiredPermissions.joinToString(", ", transform = { "`" + it.localized(locale) + "`" })
                         context.reply(
-                                LoriReply(
+                                LorittaReply(
                                         locale["commands.userDoesntHavePermissionDiscord", required],
                                         Constants.ERROR
                                 )
@@ -419,7 +390,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
 
                         if (hasBadNickname) {
                             context.reply(
-                                    LoriReply(
+                                    LorittaReply(
                                             legacyLocale["LORITTA_BadNickname"],
                                             "<:lori_triste:370344565967814659>"
                                     )
@@ -433,7 +404,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                     }
                 }
 
-                transaction(Databases.loritta) {
+                loritta.newSuspendedTransaction {
                     lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
 
                     ExecutedCommandsLog.insert {
@@ -445,7 +416,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                         it[ExecutedCommandsLog.message] = ev.message.contentRaw
                     }
 
-                    val profile = serverConfig.getUserDataIfExists(lorittaUser.profile.userId)
+                    val profile = serverConfig.getUserDataIfExistsNested(lorittaUser.profile.userId)
 
                     if (profile != null && !profile.isInGuild)
                         profile.isInGuild = true
@@ -457,10 +428,9 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
 
                 if (!isPrivateChannel && ev.guild != null) {
                     if (ev.guild.selfMember.hasPermission(ev.textChannel!!, Permission.MESSAGE_MANAGE) && (serverConfig.deleteMessageAfterCommand)) {
-                        ev.message.textChannel.retrieveMessageById(ev.messageId).queue {
-                            // Nós iremos pegar a mensagem novamente, já que talvez ela tenha sido deletada
-                            it.delete().queue()
-                        }
+                        ev.message.textChannel.deleteMessageById(ev.messageId).queue({}, {
+                            // We don't care if we weren't able to delete the message because it was already deleted
+                        })
                     }
                 }
 
@@ -481,7 +451,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                     if (e.errorCode == 40005) { // Request entity too large
                         if (ev.isFromType(ChannelType.PRIVATE) || (ev.isFromType(ChannelType.TEXT) && ev.textChannel != null && ev.textChannel.canTalk()))
                             context.reply(
-                                    LoriReply(
+                                    LorittaReply(
                                             locale["commands.imageTooLarge", "8MB", Emotes.LORI_TEMMIE],
                                             "\uD83E\uDD37"
                                     )

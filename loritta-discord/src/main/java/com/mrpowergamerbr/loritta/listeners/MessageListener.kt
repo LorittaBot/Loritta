@@ -1,35 +1,41 @@
 package com.mrpowergamerbr.loritta.listeners
 
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.modules.AutoroleModule
 import com.mrpowergamerbr.loritta.modules.Modules
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.EventLog
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.ChannelType
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.MessageType
+import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.AutoroleConfig
+import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
+import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.utils.Emotes
 import org.apache.commons.text.similarity.LevenshteinDistance
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
@@ -37,6 +43,9 @@ import java.util.regex.Pattern
 class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	companion object {
 		private val logger = KotlinLogging.logger {}
+		// Our blacklist of messages (messages that we'll ignore on command execution)
+		private val unavailableMessages = Collections.newSetFromMap(Caffeine.newBuilder().expireAfterWrite(15L, TimeUnit.MINUTES).build<Long, Boolean>().asMap())
+
 		val MESSAGE_RECEIVED_MODULES = mutableListOf(
 				Modules.AUTOMOD,
 				Modules.INVITE_LINK,
@@ -52,9 +61,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
-		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
-			return
-
 		if (loritta.discordConfig.discord.disallowBots && !loritta.discordConfig.discord.botWhitelist.contains(event.author.idLong) && event.author.isBot) // Se uma mensagem de um bot, ignore a mensagem!
 			return
 
@@ -67,45 +73,50 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
 			return
 
-		GlobalScope.launch(loritta.coroutineDispatcher) {
+		loritta.launchMessageJob {
 			try {
 				val member = event.member
 				if (member == null) { // This may seem dumb, but it works!
 					logger.warn { "${event.author} saiu do servidor ${event.guild.id} antes de eu poder processar a mensagem"}
-					return@launch
+					return@launchMessageJob
 				}
 
 				val enableProfiling = loritta.config.isOwner(member.idLong)
 
 				var start = System.nanoTime()
 
-				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong, true)
-				val autoroleConfig = serverConfig.getCachedOrRetreiveFromDatabase<AutoroleConfig?>(ServerConfig::autoroleConfig)
+				val serverConfigJob = loritta.getOrCreateServerConfigDeferred(event.guild.idLong, true)
+						.logOnCompletion(enableProfiling) { "Loading Server Config took {time}ns for ${event.author.idLong}" }
+				val lorittaProfileJob = loritta.getLorittaProfileDeferred(event.author.idLong)
+						.logOnCompletion(enableProfiling) { "Loading user's profile took {time}ns for ${event.author.idLong}" }
 
-				logIfEnabled(enableProfiling) { "Loading Server Config took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
+				val serverConfig = serverConfigJob.await()
+
+				val autoroleConfigJob = serverConfig.getCachedOrRetreiveFromDatabaseDeferred<AutoroleConfig?>(loritta, ServerConfig::autoroleConfig)
+						.logOnCompletion(enableProfiling) { "Loading Server Config's autorole took {time}ns for ${event.author.idLong}" }
+
+				val lorittaProfile = lorittaProfileJob.await()
+				val autoroleConfig = autoroleConfigJob.await()
 
 				start = System.nanoTime()
 
 				logIfEnabled(enableProfiling) { "Migration Checks took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
-
-				val lorittaProfile = loritta.getLorittaProfile(event.author.idLong)
-
-				logIfEnabled(enableProfiling) { "Loading user's profile took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
-
-				start = System.nanoTime()
 				// Se o dono do servidor for o usuário que está executando o comando, não é necessário pegar o perfil novamente
-				val ownerProfile = if (event.guild.ownerIdLong == member.idLong) lorittaProfile else loritta.getLorittaProfile(event.guild.ownerIdLong)
+				val ownerProfile = if (event.guild.ownerIdLong == member.idLong) lorittaProfile else loritta.getLorittaProfileAsync(event.guild.ownerIdLong)
 				logIfEnabled(enableProfiling) { "Loading owner's profile took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
-				val locale = loritta.getLocaleById(serverConfig.localeId)
-				logIfEnabled(enableProfiling) { "Loading ${serverConfig.localeId} locale took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
+				val currentLocale = loritta.newSuspendedTransaction {
+					(lorittaProfile?.settings?.language ?: serverConfig.localeId)
+				}
+				val locale = loritta.getLocaleById(currentLocale)
+				logIfEnabled(enableProfiling) { "Loading ${locale.id} locale took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
-				val legacyLocale = loritta.getLegacyLocaleById(serverConfig.localeId)
-				logIfEnabled(enableProfiling) { "Loading ${serverConfig.localeId} legacy locale took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
+				val legacyLocale = loritta.getLegacyLocaleById(currentLocale)
+				logIfEnabled(enableProfiling) { "Loading ${legacyLocale.toNewLocale().id} legacy locale took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
 				// We use "loadMemberRolesLorittaPermissions(...)" to avoid unnecessary retrievals later on, because we recheck the role permission later
@@ -122,7 +133,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				start = System.nanoTime()
 				if (lorittaProfile != null && lorittaProfile.isAfk) {
-					transaction(Databases.loritta) {
+					loritta.newSuspendedTransaction {
 						lorittaProfile.isAfk = false
 						lorittaProfile.afkReason = null
 					}
@@ -131,12 +142,12 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				start = System.nanoTime()
 				if (ownerProfile != null && isOwnerBanned(ownerProfile, event.guild))
-					return@launch
+					return@launchMessageJob
 				logIfEnabled(enableProfiling) { "Checking for owner profile ban took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
 				if (isGuildBanned(event.guild))
-					return@launch
+					return@launchMessageJob
 				logIfEnabled(enableProfiling) { "Checking for guild ban took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
@@ -145,13 +156,13 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				start = System.nanoTime()
 
-				if (chance(25.0) && event.guild.selfMember.hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI) && isMentioningMe(event.message))
-					event.message.addReaction("smol_lori_putassa_ping:397748526362132483").queue()
-
 				logIfEnabled(enableProfiling) { "Checking user mention took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
 				if (isMentioningOnlyMe(event.message.contentRaw)) {
+					if (chance(25.0))
+						event.message.addReaction("smol_lori_putassa_ping:397748526362132483").queue()
+
 					var response = legacyLocale["MENTION_RESPONSE", member.asMention, serverConfig.commandPrefix]
 
 					if (lorittaUser.hasPermission(LorittaPermission.IGNORE_COMMANDS)) {
@@ -225,24 +236,24 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				for (module in (MESSAGE_RECEIVED_MODULES + loritta.pluginManager.plugins.filterIsInstance<DiscordPlugin>().flatMap { it.messageReceivedModules } + loritta.pluginManager.plugins.filterIsInstance<LorittaDiscordPlugin>().flatMap { it.messageReceivedModules })) {
 					start = System.nanoTime()
 					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyLocale) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, legacyLocale))
-						return@launch
+						return@launchMessageJob
 					logIfEnabled(enableProfiling) { "Executing ${module::class.simpleName} took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 				}
 
 				start = System.nanoTime()
 				if (lorittaUser.hasPermission(LorittaPermission.IGNORE_COMMANDS))
-					return@launch
+					return@launchMessageJob
 				logIfEnabled(enableProfiling) { "Checking for ignore permission took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
 				if (lorittaProfile != null && isUserStillBanned(lorittaProfile))
-					return@launch
+					return@launchMessageJob
 				logIfEnabled(enableProfiling) { "Checking for user ban took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				// Executar comandos
 				start = System.nanoTime()
 				if (checkCommandsAndDispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
-					return@launch
+					return@launchMessageJob
 				logIfEnabled(enableProfiling) { "All commands check took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
@@ -255,7 +266,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 							it.onResponse!!.invoke(lorittaMessageEvent)
 
 						if (it.onResponseByAuthor != null) {
-							if (it.originalAuthor == event.author.id)
+							if (it.originalAuthor == event.author.idLong)
 								it.onResponseByAuthor!!.invoke(lorittaMessageEvent)
 						}
 					}
@@ -271,16 +282,16 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 								.substring(serverConfig.commandPrefix.length)
 
 						val list = mutableListOf(
-								LoriReply(
-										"${legacyLocale["LORITTA_UnknownCommand", command, "${serverConfig.commandPrefix}${legacyLocale["AJUDA_CommandName"]}"]} ${Emotes.LORI_OWO}",
-										"\uD83E\uDD37"
-								)
+                                LorittaReply(
+                                        "${legacyLocale["LORITTA_UnknownCommand", command, "${serverConfig.commandPrefix}${legacyLocale["AJUDA_CommandName"]}"]} ${Emotes.LORI_OWO}",
+                                        "\uD83E\uDD37"
+                                )
 						)
 
 						val allCommandLabels = mutableListOf<String>()
 
 						loritta.commandMap.commands.forEach {
-							if (!it.onlyOwner && !serverConfig.disabledCommands.contains(it.javaClass.simpleName))
+							if (!it.onlyOwner && !serverConfig.disabledCommands.contains(it.javaClass.simpleName) && !it.hideInHelp)
 								allCommandLabels.addAll(it.labels)
 						}
 
@@ -310,15 +321,15 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 						if (nearestCommand != null && 6 > diff) {
 							list.add(
-									LoriReply(
-											prefix = Emotes.LORI_HM,
-											message = locale["commands.didYouMeanCommand", serverConfig.commandPrefix + nearestCommand],
-											mentionUser = false
-									)
+                                    LorittaReply(
+                                            prefix = Emotes.LORI_HM,
+                                            message = locale["commands.didYouMeanCommand", serverConfig.commandPrefix + nearestCommand],
+                                            mentionUser = false
+                                    )
 							)
 						}
 
-						event.channel.sendMessage(list.joinToString("\n") { it.build(event.author) }).queue {
+						event.channel.sendMessage(list.joinToString("\n") { it.build(JDAUser(event.author)) }).queue {
 							it.delete().queueAfter(5000, TimeUnit.MILLISECONDS)
 						}
 					}
@@ -344,20 +355,22 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
 			return
 
-		GlobalScope.launch(loritta.coroutineDispatcher) {
-			val serverConfig = loritta.getOrCreateServerConfig(-1, true)
+		loritta.launchMessageJob {
+			val serverConfig = loritta.getOrCreateServerConfigAsync(-1, true)
 			val profile = loritta.getOrCreateLorittaProfile(event.author.idLong) // Carregar perfil do usuário
 			val lorittaUser = LorittaUser(event.author, EnumSet.noneOf(LorittaPermission::class.java), profile)
-			// TODO: Usuários deverão poder escolher a linguagem que eles preferem via mensagem direta
-			val locale = loritta.getLocaleById(serverConfig.localeId)
-			val legacyLocale = loritta.getLegacyLocaleById("default")
+			val currentLocale = loritta.newSuspendedTransaction {
+				profile.settings.language ?: "default"
+			}
+			val locale = loritta.getLocaleById(currentLocale)
+			val legacyLocale = loritta.getLegacyLocaleById(currentLocale)
 
 			if (isUserStillBanned(profile))
-				return@launch
+				return@launchMessageJob
 
 			if (isMentioningOnlyMe(event.message.contentRaw)) {
 				event.channel.sendMessage(legacyLocale["LORITTA_CommandsInDirectMessage", event.message.author.asMention, legacyLocale["AJUDA_CommandName"]]).queue()
-				return@launch
+				return@launchMessageJob
 			}
 
 			val lorittaMessageEvent = LorittaMessageEvent(
@@ -375,15 +388,20 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 			// Executar comandos
 			if (checkCommandsAndDispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
-				return@launch
+				return@launchMessageJob
 		}
 	}
 
 	override fun onGuildMessageUpdate(event: GuildMessageUpdateEvent) {
-		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
-			return
+		// If message was pinned, let's add it to our "blacklist"
+		if (event.message.isPinned) unavailableMessages.add(event.messageIdLong)
+		// If message is in our blacklist, lets ignore the event
+		if (unavailableMessages.contains(event.messageIdLong)) return
 
-		if (event.author.isBot)
+		// Checking if message was sent before 15 minutes ago (900 000ms)
+		if (System.currentTimeMillis() - 900_000 >= event.message.timeCreated.toEpochSecond() * 1000) return
+
+		if (loritta.discordConfig.discord.disallowBots && !loritta.discordConfig.discord.botWhitelist.contains(event.author.idLong) && event.author.isBot) // Se uma mensagem de um bot, ignore a mensagem!
 			return
 
 		if (DebugLog.cancelAllEvents)
@@ -504,22 +522,16 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	fun isMentioningOnlyMe(contentRaw: String): Boolean = contentRaw.replace("!", "").trim() == "<@${loritta.discordConfig.discord.clientId}>"
 
 	/**
-	 * Checks if the message mentions me
-	 *
-	 * @param contentRaw the message
-	 * @returns if the message is mentioning me
-	 */
-	fun isMentioningMe(message: Message): Boolean = message.isMentioned(message.guild.selfMember)
-
-	/**
 	 * Checks if the owner of the guild is banned and, if true, makes me quit the server
 	 *
 	 * @param ownerProfile the profile of the guild's owner
 	 * @param guild        the guild
 	 * @return if the owner of the guild is banned
 	 */
-	fun isOwnerBanned(ownerProfile: Profile, guild: Guild): Boolean {
-		if (ownerProfile.isBanned) { // Se o dono está banido...
+	suspend fun isOwnerBanned(ownerProfile: Profile, guild: Guild): Boolean {
+		val bannedState = ownerProfile.getBannedState()
+
+		if (bannedState != null && bannedState[BannedUsers.expiresAt] == null) { // Se o dono está banido e não é um ban temporário...
 			if (!loritta.config.isOwner(ownerProfile.userId)) { // E ele não é o dono do bot!
 				logger.info("Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o dono ${ownerProfile.userId} está banido de me usar! ᕙ(⇀‸↼‶)ᕗ")
 				guild.leave().queue() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
@@ -535,8 +547,8 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	 * @param guild        the guild
 	 * @return if the owner of the guild is banned
 	 */
-	fun isGuildBanned(guild: Guild): Boolean {
-		val blacklisted = transaction(Databases.loritta) {
+	private suspend fun isGuildBanned(guild: Guild): Boolean {
+		val blacklisted = loritta.newSuspendedTransaction {
 			BlacklistedGuilds.select {
 				BlacklistedGuilds.id eq guild.idLong
 			}.firstOrNull()
@@ -558,9 +570,11 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	 * @param profile the profile of the user
 	 * @return if the user is still banned
 	 */
-	fun isUserStillBanned(profile: Profile): Boolean {
+	suspend fun isUserStillBanned(profile: Profile): Boolean {
+		val bannedState = profile.getBannedState()
+
 		if (loritta.ignoreIds.contains(profile.userId)) { // Se o usuário está sendo ignorado...
-			if (profile.isBanned) { // E ele ainda está banido...
+			if (bannedState != null) { // E ele ainda está banido...
 				logger.info { "${profile.id} tried to use me, but they are banned! >:)" }
 				return true // Então flw galerinha
 			} else {
@@ -575,5 +589,16 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	fun logIfEnabled(doLog: Boolean, msg: () -> Any?) {
 		if (doLog)
 			logger.info(msg)
+	}
+
+	fun <T> Deferred<T>.logOnCompletion(doLog: Boolean, msg: () -> Any?): Deferred<T> {
+		val start = System.nanoTime()
+
+		if (doLog)
+			this.invokeOnCompletion {
+				logger.info(msg.invoke().toString().replace("{time}", (System.nanoTime() - start).toString()))
+			}
+
+		return this
 	}
 }

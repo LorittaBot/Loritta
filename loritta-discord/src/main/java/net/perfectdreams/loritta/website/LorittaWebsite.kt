@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.website
 
-import com.google.common.collect.Lists
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.utils.WebsiteUtils
+import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.LoriWebCode
@@ -27,18 +27,23 @@ import io.ktor.server.netty.NettyApplicationEngine
 import io.ktor.sessions.*
 import io.ktor.util.AttributeKey
 import io.ktor.util.hex
+import kotlinx.html.*
+import kotlinx.html.stream.appendHTML
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.website.blog.Blog
 import net.perfectdreams.loritta.website.routes.LocalizedRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.website.utils.LorittaHtmlProvider
 import net.perfectdreams.loritta.website.utils.ScriptingUtils
 import net.perfectdreams.loritta.website.utils.extensions.*
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.io.File
+import java.lang.RuntimeException
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
 import kotlin.reflect.full.createType
 
 /**
@@ -52,11 +57,23 @@ class LorittaWebsite(val loritta: Loritta) {
 		val versionPrefix = "/v2"
 		private val logger = KotlinLogging.logger {}
 		private val TimeToProcess = AttributeKey<Long>("TimeToProcess")
+		val cachedFanArtThumbnails = Caffeine.newBuilder()
+				.expireAfterAccess(1, TimeUnit.HOURS)
+				.build<String, CachedThumbnail>()
+
+		class CachedThumbnail(
+				val type: ContentType,
+				val thumbnailBytes: ByteArray
+		)
 	}
 
 	val pathCache = ConcurrentHashMap<File, Any>()
 	var config = WebsiteConfig()
 	val blog = Blog()
+	val pageProvider: LorittaHtmlProvider
+		get() = loritta.pluginManager.plugins.filterIsInstance<LorittaDiscordPlugin>().mapNotNull {
+			it.htmlProvider
+		}.firstOrNull() ?: throw RuntimeException("Can't find any plugins providing a valid Html Provider!")
 	lateinit var server: NettyApplicationEngine
 	private val typesToCache = listOf(
 			ContentType.Text.CSS,
@@ -163,7 +180,18 @@ class LorittaWebsite(val loritta: Loritta) {
 					logger.error(cause) { "Something went wrong when processing ${trueIp} (${userAgent}): ${httpMethod} ${call.request.path()}${queryString}" }
 
 					call.respondHtml(
-							"<pre>${ExceptionUtils.getStackTrace(cause)}</pre>",
+							StringBuilder().appendHTML()
+									.html {
+										head {
+											title { + "Uh, oh! Something went wrong!" }
+										}
+										body {
+											pre {
+												+ ExceptionUtils.getStackTrace(cause)
+											}
+										}
+									}
+									.toString(),
 							status = HttpStatusCode.InternalServerError
 					)
 				}
@@ -194,7 +222,7 @@ class LorittaWebsite(val loritta: Loritta) {
 					if (route is LocalizedRoute) {
 						get(route.originalPath) {
 							val acceptLanguage = call.request.header("Accept-Language") ?: "en-US"
-							val ranges = Lists.reverse<Locale.LanguageRange>(Locale.LanguageRange.parse(acceptLanguage))
+							val ranges = Locale.LanguageRange.parse(acceptLanguage).reversed()
 							var localeId = "en-us"
 							for (range in ranges) {
 								localeId = range.range.toLowerCase()
@@ -250,7 +278,7 @@ class LorittaWebsite(val loritta: Loritta) {
 	}
 
 	fun stop() {
-		server.stop(0L, 0L)
+		server.stop(1000L, 5000L)
 	}
 
 	fun restart() {

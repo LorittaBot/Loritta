@@ -10,6 +10,7 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import com.jasonclawson.jackson.dataformat.hocon.HoconFactory
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.jackson.FixedMapDeserializer
 import org.yaml.snakeyaml.Yaml
@@ -27,8 +28,6 @@ import javax.imageio.ImageIO
 object Constants {
 	const val ERROR = "<:error:412585701054611458>"
 	const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0"
-	const val DISCORD_EPOCH = 1420070400000L
-	const val TIMESTAMP_OFFSET: Long = 22
 	const val ONE_HOUR_IN_MILLISECONDS = 3_600_000L
 	const val ONE_DAY_IN_MILLISECONDS = 86_400_000L
 	const val SEVEN_DAYS_IN_MILLISECONDS = ONE_DAY_IN_MILLISECONDS * 7
@@ -111,7 +110,6 @@ object Constants {
 	const val THANK_YOU_DONATORS_CHANNEL_ID = "536171041546960916"
 
 	const val DEFAULT_LOCALE_ID = "default"
-	const val MAX_TRACKS_ON_PLAYLIST = 25
 
 	const val DONATION_ACTIVE_MILLIS = 2_764_800_000 // 32 dias
 
@@ -192,10 +190,10 @@ object Constants {
 			context.explain()
 		} else {
 			context.reply(
-					LoriReply(
-							message = context.locale["commands.noValidImageFound", Emotes.LORI_CRYING.toString()],
-							prefix = Constants.ERROR
-					)
+                    LorittaReply(
+                            message = context.locale["commands.noValidImageFound", Emotes.LORI_CRYING.toString()],
+                            prefix = ERROR
+                    )
 			)
 		}
 	}

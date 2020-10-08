@@ -4,9 +4,9 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.string
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
 import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.network.Databases
@@ -18,9 +18,11 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.EconomyConfig
 import net.perfectdreams.loritta.tables.BlacklistedGuilds
+import net.perfectdreams.loritta.utils.ClusterOfflineException
 import net.perfectdreams.loritta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.dao.id.EntityID
@@ -93,12 +95,12 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 									)
 									.body()
 
-							jsonParser.parse(
+							JsonParser.parseString(
 									body
 							)
 						} catch (e: Exception) {
 							logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
-							throw PingCommand.ShardOfflineException(it.id, it.name)
+							throw ClusterOfflineException(it.id, it.name)
 						}
 					}
 				}
@@ -120,9 +122,9 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				}
 
 				context.reply(
-						LoriReply(
-								"Sonhos de ${user.asMention} foram editados com sucesso!"
-						)
+                        LorittaReply(
+                                "Sonhos de ${user.asMention} foram editados com sucesso!"
+                        )
 				)
 				return
 			}
@@ -138,9 +140,9 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				}
 
 				context.reply(
-						LoriReply(
-								"Sonhos de ${user.asMention} foram editados com sucesso!"
-						)
+                        LorittaReply(
+                                "Sonhos de ${user.asMention} foram editados com sucesso!"
+                        )
 				)
 				return
 			}
@@ -156,9 +158,9 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				}
 
 				context.reply(
-						LoriReply(
-								"Sonhos de ${user.asMention} foram editados com sucesso!"
-						)
+                        LorittaReply(
+                                "Sonhos de ${user.asMention} foram editados com sucesso!"
+                        )
 				)
 				return
 			}
@@ -178,9 +180,9 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				}
 
 				context.reply(
-						LoriReply(
-								"Pagamento criado com sucesso!"
-						)
+                        LorittaReply(
+                                "Pagamento criado com sucesso!"
+                        )
 				)
 				return
 			}
@@ -195,9 +197,9 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				}
 
 				context.reply(
-						LoriReply(
-								"Key criada com sucesso!"
-						)
+                        LorittaReply(
+                                "Key criada com sucesso!"
+                        )
 				)
 				return
 			}
@@ -205,12 +207,12 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 			if (arg0 == "inspect_donations" && arg1 != null) {
 				val id = arg1.toLong()
 
-				val moneyFromDonations = loritta.getActiveMoneyFromDonations(id)
+				val moneyFromDonations = loritta.getActiveMoneyFromDonationsAsync(id)
 
 				context.reply(
-						LoriReply(
-								"<@${id}> possui **R$ ${moneyFromDonations}** ativos"
-						)
+                        LorittaReply(
+                                "<@${id}> possui **R$ ${moneyFromDonations}** ativos"
+                        )
 				)
 				return
 			}
@@ -234,9 +236,9 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				}
 
 				context.reply(
-						LoriReply(
-								"Guild banida!"
-						)
+                        LorittaReply(
+                                "Guild banida!"
+                        )
 				)
 			}
 
@@ -254,9 +256,9 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				}
 
 				context.reply(
-						LoriReply(
-								"Guild desbanida!"
-						)
+                        LorittaReply(
+                                "Guild desbanida!"
+                        )
 				)
 			}
 
@@ -279,20 +281,20 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 
 				if (strBuilder.length > 2000) {
 					context.reply(
-							LoriReply(
-									"Tem tanto usuário na lista que eu não vou conseguir mostrar, a mensagem está grande demais! Sorry ;w;",
-									Constants.ERROR
-							)
+                            LorittaReply(
+                                    "Tem tanto usuário na lista que eu não vou conseguir mostrar, a mensagem está grande demais! Sorry ;w;",
+                                    Constants.ERROR
+                            )
 					)
 					return
 				}
 
 				if (strBuilder.isEmpty()) {
 					context.reply(
-							LoriReply(
-									"Nenhum usuário se encaixa na pesquisa que você realizou, sorry ;w;",
-									Constants.ERROR
-							)
+                            LorittaReply(
+                                    "Nenhum usuário se encaixa na pesquisa que você realizou, sorry ;w;",
+                                    Constants.ERROR
+                            )
 					)
 					return
 				}
@@ -317,25 +319,65 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 
 				if (strBuilder.length > 2000) {
 					context.reply(
-							LoriReply(
-									"Tem tanta guild na lista que eu não vou conseguir mostrar, a mensagem está grande demais! Sorry ;w;",
-									Constants.ERROR
-							)
+                            LorittaReply(
+                                    "Tem tanta guild na lista que eu não vou conseguir mostrar, a mensagem está grande demais! Sorry ;w;",
+                                    Constants.ERROR
+                            )
 					)
 					return
 				}
 
 				if (strBuilder.isEmpty()) {
 					context.reply(
-							LoriReply(
-									"Nenhuma guild se encaixa na pesquisa que você realizou, sorry ;w;",
-									Constants.ERROR
-							)
+                            LorittaReply(
+                                    "Nenhuma guild se encaixa na pesquisa que você realizou, sorry ;w;",
+                                    Constants.ERROR
+                            )
 					)
 					return
 				}
 
 				context.sendMessage(strBuilder.toString())
+				return
+			}
+
+			if (arg0 == "economy") {
+				val value = arg1!!.toBoolean()
+
+				val shards = loritta.config.clusters
+
+				shards.map {
+					GlobalScope.async(loritta.coroutineDispatcher) {
+						try {
+							val body = HttpRequest.post("https://${it.getUrl()}/api/v1/loritta/action/economy")
+									.userAgent(loritta.lorittaCluster.getUserAgent())
+									.header("Authorization", loritta.lorittaInternalApiKey.name)
+									.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
+									.readTimeout(loritta.config.loritta.clusterReadTimeout)
+									.send(
+											gson.toJson(
+													jsonObject(
+															"enabled" to value
+													)
+											)
+									)
+									.body()
+
+							JsonParser.parseString(
+									body
+							)
+						} catch (e: Exception) {
+							LorittaShards.logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
+							throw ClusterOfflineException(it.id, it.name)
+						}
+					}
+				}
+
+				context.reply(
+                        LorittaReply(
+                                "Alterando status de economia em todos os clusters..."
+                        )
+				)
 				return
 			}
 		}

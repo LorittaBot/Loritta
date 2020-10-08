@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import net.perfectdreams.loritta.utils.config.FanArt
 
 data class FanArtArtist @JsonCreator constructor(
     @param:JsonProperty("id")

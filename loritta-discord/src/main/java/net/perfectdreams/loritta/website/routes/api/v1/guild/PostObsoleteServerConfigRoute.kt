@@ -5,7 +5,6 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.ServerConfig
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
@@ -14,10 +13,10 @@ import net.perfectdreams.loritta.dao.servers.moduleconfigs.EventLogConfig
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.InviteBlockerConfig
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.StarboardConfig
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.serializable.CustomCommandCodeType
 import net.perfectdreams.loritta.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.utils.ActionType
-import net.perfectdreams.loritta.utils.CustomCommandCodeType
 import net.perfectdreams.loritta.utils.auditlog.WebAuditLogUtils
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIGuildAuthRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
@@ -25,7 +24,6 @@ import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRoute(loritta, "/old-config") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
@@ -34,16 +32,6 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 		val receivedPayload = payload.obj
 		val type = receivedPayload["type"].string
 		receivedPayload.remove("type")
-
-		val target = when (type) {
-			"event_log" -> "dummy"
-			"invite_blocker" -> "dummy"
-			"permissions" -> "dummy"
-			"starboard" -> "dummy"
-			"nashorn_commands" -> "dummy"
-			"vanilla_commands" -> "dummy"
-			else -> null
-		} ?: return
 
 		var response = ""
 
@@ -58,7 +46,7 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 			val starboardChannelId = receivedPayload["starboardId"].long
 			val requiredStars = receivedPayload["requiredStars"].int
 
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				val starboardConfig = serverConfig.starboardConfig
 
 				if (!isEnabled) {
@@ -90,7 +78,7 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 			val voiceChannelJoins = receivedPayload["voiceChannelJoins"].bool
 			val voiceChannelLeaves = receivedPayload["voiceChannelLeaves"].bool
 
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				val eventLogConfig = serverConfig.eventLogConfig
 
 				if (!isEnabled) {
@@ -125,7 +113,7 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 					.map { it.long }
 					.toTypedArray()
 
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				val inviteBlockerConfig = serverConfig.inviteBlockerConfig
 
 				if (!isEnabled) {
@@ -151,52 +139,6 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 					serverConfig.inviteBlockerConfig = newConfig
 				}
 			}
-		} else {
-			for (element in receivedPayload.entrySet()) {
-				if (element.key == "guildId") {
-					return
-				}
-
-				val field = try {
-					target::class.java.getDeclaredField(element.key)
-				} catch (e: Exception) {
-					continue
-				}
-
-				field.isAccessible = true
-
-				if (element.value.isJsonPrimitive) {
-					if (element.value.asJsonPrimitive.isString) {
-						field.set(target, element.value.string)
-						response += element.key + " -> " + element.value + " ✓\n"
-						continue
-					}
-					if (element.value.asJsonPrimitive.isBoolean) {
-						field.setBoolean(target, element.value.bool)
-						response += element.key + " -> " + element.value + " ✓\n"
-						continue
-					}
-					if (element.value.asJsonPrimitive.isNumber) {
-						if (field.genericType == Integer.TYPE) {
-							field.setInt(target, element.value.int)
-							response += element.key + " -> " + element.value + " ✓\n"
-							continue
-						}
-					}
-				}
-				if (element.value.isJsonArray) {
-					val array = element.value.array
-					val list = arrayListOf<String>()
-					for (element in array) {
-						list.add(element.string)
-					}
-					field.set(target, list)
-					response += element.key + " -> " + element.value + " ✓ (maybe)\n"
-					continue
-				}
-
-				response += element.key + " -> " + element.value + " ✘\n"
-			}
 		}
 
 		val actionType = WebAuditLogUtils.fromTargetType(type)
@@ -219,8 +161,8 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 		call.respondJson(jsonObject())
 	}
 
-	fun handleVanillaCommands(serverConfig: ServerConfig, receivedPayload: JsonObject): String {
-		transaction(Databases.loritta) {
+	suspend fun handleVanillaCommands(serverConfig: ServerConfig, receivedPayload: JsonObject): String {
+		loritta.newSuspendedTransaction {
 			serverConfig.disabledCommands = receivedPayload["disabledCommands"].array
 					.map { it.string }
 					.toTypedArray()
@@ -229,8 +171,8 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 		return "${serverConfig.disabledCommands.size} comandos bloqueados!"
 	}
 
-	private fun handlePermissions(serverConfig: ServerConfig, guild: Guild, receivedPayload: JsonObject): String {
-		transaction(Databases.loritta) {
+	private suspend fun handlePermissions(serverConfig: ServerConfig, guild: Guild, receivedPayload: JsonObject): String {
+		loritta.newSuspendedTransaction {
 			// First we delete all of them...
 			ServerRolePermissions.deleteWhere {
 				ServerRolePermissions.guild eq serverConfig.id
@@ -254,8 +196,8 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 		return ""
 	}
 
-	private fun handleNashornCommands(config: ServerConfig, receivedPayload: JsonObject): String {
-		transaction(Databases.loritta) {
+	private suspend fun handleNashornCommands(config: ServerConfig, receivedPayload: JsonObject): String {
+		loritta.newSuspendedTransaction {
 			// First we delete all of them...
 			CustomGuildCommands.deleteWhere {
 				CustomGuildCommands.guild eq config.id
@@ -272,7 +214,7 @@ class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildA
 					it[CustomGuildCommands.guild] = config.id
 					it[CustomGuildCommands.enabled] = true
 					it[CustomGuildCommands.label] = label
-					it[CustomGuildCommands.codeType] = CustomCommandCodeType.JAVASCRIPT
+					it[CustomGuildCommands.codeType] = CustomCommandCodeType.KOTLIN
 					it[CustomGuildCommands.code] = code
 				}
 			}

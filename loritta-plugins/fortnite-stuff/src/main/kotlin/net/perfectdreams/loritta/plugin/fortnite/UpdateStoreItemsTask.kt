@@ -20,6 +20,7 @@ import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.plugin.fortnite.tables.TrackedFortniteItems
+import net.perfectdreams.loritta.utils.ClusterOfflineException
 import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -187,7 +188,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 						}
 					} catch (e: Exception) {
 						logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
-						throw PingCommand.ShardOfflineException(it.id, it.name)
+						throw ClusterOfflineException(it.id, it.name)
 					}
 				}
 			}
@@ -251,7 +252,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 				.header("Authorization", loritta.config.fortniteApi.token)
 				.body()
 
-		return jsonParser.parse(shop).obj
+		return JsonParser.parseString(shop).obj
 	}
 
 	fun getNewsData(gameMode: String, localeId: String): JsonObject {
@@ -263,7 +264,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 				.header("Authorization", loritta.config.fortniteApi.token)
 				.body()
 
-		return jsonParser.parse(news).obj
+		return JsonParser.parseString(news).obj
 	}
 
 	private fun generateAndSaveStoreImage(parse: JsonObject, locale: BaseLocale, fileName: String) {

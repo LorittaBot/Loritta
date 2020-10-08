@@ -1,9 +1,9 @@
 package com.mrpowergamerbr.loritta.dao
 
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
-import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
+import org.jetbrains.exposed.dao.id.EntityID
 
 class GuildProfile(id: EntityID<Long>) : LongEntity(id) {
 	companion object : LongEntityClass<GuildProfile>(GuildProfiles)
@@ -17,10 +17,6 @@ class GuildProfile(id: EntityID<Long>) : LongEntity(id) {
 
 	fun getCurrentLevel(): XpWrapper {
 		return XpWrapper((xp / 1000).toInt(), xp)
-	}
-
-	fun getExpToAdvanceFrom(lvl: Int): Int {
-		return lvl * 1000
 	}
 
 	data class XpWrapper constructor(val currentLevel: Int, val expLeft: Long)

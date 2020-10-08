@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
@@ -30,10 +30,10 @@ class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) 
 
 			if (!Constants.TWITCH_USERNAME_PATTERN.matcher(query).matches()) {
 				context.reply(
-						LoriReply(
-								context.legacyLocale["YOUTUBE_COULDNT_FIND", query],
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                context.legacyLocale["YOUTUBE_COULDNT_FIND", query],
+                                Constants.ERROR
+                        )
 				)
 				return
 			}
@@ -42,10 +42,10 @@ class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) 
 
 			if (payload == null) {
 				context.reply(
-						LoriReply(
-								context.legacyLocale["YOUTUBE_COULDNT_FIND", query],
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                context.legacyLocale["YOUTUBE_COULDNT_FIND", query],
+                                Constants.ERROR
+                        )
 				)
 				return
 			}

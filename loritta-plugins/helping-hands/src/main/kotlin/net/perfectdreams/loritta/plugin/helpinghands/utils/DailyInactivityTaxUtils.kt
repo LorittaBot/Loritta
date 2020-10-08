@@ -17,7 +17,28 @@ import java.time.ZoneOffset
 
 object DailyInactivityTaxUtils {
 	private val logger = KotlinLogging.logger {}
-	const val DAY_THRESHOLD = 7L
+	val THRESHOLDS = listOf(
+			DailyTaxThreshold(
+					3L,
+					100_000_000L,
+					0.5
+			),
+			DailyTaxThreshold(
+					7L,
+					10_000_000L,
+					0.25
+			),
+			DailyTaxThreshold(
+					14L,
+					1_000_000L,
+					0.1
+			),
+			DailyTaxThreshold(
+					30L,
+					100_000L,
+					0.05
+			)
+	)
 
 	internal fun createAutoInactivityTask(): suspend CoroutineScope.() -> Unit = {
 		while (true) {
@@ -40,67 +61,74 @@ object DailyInactivityTaxUtils {
 
 	fun runDailyInactivityTax() {
 		logger.info { "Running the daily inactivity tax!" }
-		val nowSevenDaysAgo = LocalDateTime.now()
-				.atOffset(ZoneOffset.UTC)
-				.minusDays(DAY_THRESHOLD)
-				.toInstant()
-				.toEpochMilli()
 
-		val receivedBy = Dailies.receivedById
-		val money = Profiles.money
+		val processedUsers = mutableSetOf<Long>()
 
-		// Feito de forma "separada" para evitar erros de concurrent updates, se um falhar, não vai fazer rollback na transação inteira
-		val inactiveUsers = transaction(Databases.loritta) {
-			// select dailies.received_by, profiles.money from dailies inner join profiles on profiles.id = dailies.received_by where received_at < 1587178800000 and received_by not in (select received_by from dailies where received_at > 1587178800000 group by received_by) group by received_by, money order by money desc;
+		for (threshold in THRESHOLDS) {
+			logger.info { "Checking daily inactivity tax threshold $threshold" }
 
-			// (select received_by from dailies where received_at > 1587178800000 group by received_by)
-			Dailies.join(Profiles, JoinType.INNER, Dailies.receivedById, Profiles.id)
-					.slice(receivedBy, money)
-					.select {
-						Dailies.receivedAt lessEq nowSevenDaysAgo and (Profiles.money greaterEq 100_000L) and (
-								receivedBy.notInSubQuery(
-										Dailies.slice(receivedBy).select {
-											Dailies.receivedAt greaterEq nowSevenDaysAgo
-										}.groupBy(receivedBy)
-								)
-								)
+			val nowXDaysAgo = LocalDateTime.now()
+					.atOffset(ZoneOffset.UTC)
+					.minusDays(threshold.maxDayThreshold)
+					.toInstant()
+					.toEpochMilli()
+
+			val receivedBy = Dailies.receivedById
+			val money = Profiles.money
+
+			// Feito de forma "separada" para evitar erros de concurrent updates, se um falhar, não vai fazer rollback na transação inteira
+			val inactiveUsers = transaction(Databases.loritta) {
+				// select dailies.received_by, profiles.money from dailies inner join profiles on profiles.id = dailies.received_by where received_at < 1587178800000 and received_by not in (select received_by from dailies where received_at > 1587178800000 group by received_by) group by received_by, money order by money desc;
+
+				// (select received_by from dailies where received_at > 1587178800000 group by received_by)
+				Dailies.join(Profiles, JoinType.INNER, Dailies.receivedById, Profiles.id)
+						.slice(receivedBy, money)
+						.select {
+							Dailies.receivedAt lessEq nowXDaysAgo and (Profiles.money greaterEq threshold.minimumSonhosForTrigger) and (
+									receivedBy.notInSubQuery(
+											Dailies.slice(receivedBy).select {
+												Dailies.receivedAt greaterEq nowXDaysAgo
+											}.groupBy(receivedBy)
+									)
+									)
+						}
+						.groupBy(receivedBy, money)
+						.toList()
+						// We display the inactive daily users after the ".toList()" because, if it is placed before, two queries will
+						// be made: One for the query itself and then another for the Exposed ".count()" call.
+						.also { logger.info { "There are ${it.size} inactive daily users!" } }
+			}
+
+			inactiveUsers.filter { it[receivedBy] !in processedUsers }.forEach {
+				val userId = it[receivedBy]
+
+				val removeMoney = (it[money] * threshold.tax).toLong()
+
+				logger.info { "Removing $removeMoney from $userId, using threshold tax $threshold, current total is ${it[Profiles.money]}" }
+
+				transaction(Databases.loritta) {
+					Profiles.update({ Profiles.id eq userId }) {
+						with(SqlExpressionBuilder) {
+							it.update(Profiles.money, money - removeMoney)
+						}
 					}
-					.groupBy(receivedBy, money)
-					.also { logger.info { "There are ${it.count()} inactive daily users!" } }
-					.toList()
-		}
 
-		inactiveUsers.forEach {
-			val userId = it[receivedBy]
-
-			val removeMoney = (it[money] * 0.05).toLong()
-
-			logger.info { "Removing $removeMoney from $userId, current total is ${it[Profiles.money]}" }
-
-			transaction(Databases.loritta) {
-				Profiles.update({ Profiles.id eq userId }) {
-					with(SqlExpressionBuilder) {
-						it.update(Profiles.money, money - removeMoney)
+					SonhosTransaction.insert {
+						it[givenAt] = System.currentTimeMillis()
+						it[quantity] = removeMoney.toBigDecimal()
+						it[reason] = SonhosPaymentReason.INACTIVE_DAILY_TAX
+						it[givenBy] = userId
 					}
-				}
-
-				SonhosTransaction.insert {
-					it[givenAt] = System.currentTimeMillis()
-					it[quantity] = removeMoney.toBigDecimal()
-					it[reason] = SonhosPaymentReason.INACTIVE_DAILY_TAX
-					it[givenBy] = userId
 				}
 			}
+
+			processedUsers += inactiveUsers.map { it[receivedBy] }
 		}
 	}
 
-	infix fun <T> Expression<T>.notInSubQuery(query: Query): NotInSubQueryOp<T> = NotInSubQueryOp(this, query)
-
-	class NotInSubQueryOp<T>(val expr: Expression<T>, val query: Query): Op<Boolean>() {
-		override fun toQueryBuilder(queryBuilder: QueryBuilder) = queryBuilder {
-			append(expr, " NOT IN (")
-			query.prepareSQL(this)
-			+")"
-		}
-	}
+	data class DailyTaxThreshold(
+			val maxDayThreshold: Long,
+			val minimumSonhosForTrigger: Long,
+			val tax: Double
+	)
 }

@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.dao
 
 import net.perfectdreams.loritta.tables.Payments
-import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
+import org.jetbrains.exposed.dao.id.EntityID
 
 class Payment(id: EntityID<Long>) : LongEntity(id) {
     companion object : LongEntityClass<Payment>(Payments)
@@ -17,4 +17,5 @@ class Payment(id: EntityID<Long>) : LongEntity(id) {
     var expiresAt by Payments.expiresAt
     var discount by Payments.discount
     var metadata by Payments.metadata
+    var referenceId by Payments.referenceId
 }

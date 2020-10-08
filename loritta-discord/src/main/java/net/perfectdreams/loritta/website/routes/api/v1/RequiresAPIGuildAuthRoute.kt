@@ -1,18 +1,22 @@
 package net.perfectdreams.loritta.website.routes.api.v1
 
 import com.mrpowergamerbr.loritta.dao.ServerConfig
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
+import com.mrpowergamerbr.loritta.utils.LorittaPermission
+import com.mrpowergamerbr.loritta.utils.LorittaUser
+import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
-import io.ktor.application.ApplicationCall
-import io.ktor.http.HttpStatusCode
-import io.ktor.request.host
-import io.ktor.request.path
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.request.*
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.website.utils.extensions.hostFromHeader
 import net.perfectdreams.loritta.website.utils.extensions.redirect
 import net.perfectdreams.loritta.website.utils.extensions.urlQueryString
@@ -46,7 +50,7 @@ abstract class RequiresAPIGuildAuthRoute(loritta: LorittaDiscord, originalDashbo
 		val serverConfig = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateServerConfig(guildId.toLong()) // get server config for guild
 
 		val id = userIdentification.id
-		val member = jdaGuild.getMemberById(id)
+		val member = jdaGuild.retrieveMemberById(id).await()
 		var canAccessDashboardViaPermission = false
 
 		if (member != null) {

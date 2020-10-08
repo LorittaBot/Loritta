@@ -1,15 +1,17 @@
 package net.perfectdreams.loritta.website.routes.api.v1.loritta
 
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.github.salomonbrys.kotson.bool
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.string
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import java.io.File
@@ -21,7 +23,7 @@ class PostLorittaActionRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticatio
 		val body = call.receiveText()
 		val actionType = call.parameters["actionType"]
 
-		val json = jsonParser.parse(body)
+		val json = JsonParser.parseString(body)
 
 		when (actionType) {
 			"plugin_reload" -> {
@@ -61,22 +63,8 @@ class PostLorittaActionRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticatio
 					com.mrpowergamerbr.loritta.utils.loritta.pluginManager.loadPlugin(File(com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.folders.plugins, "${pluginFileName}.jar"))
 				}
 			}
-			"locales" -> {
-				com.mrpowergamerbr.loritta.utils.loritta.loadLocales()
-				com.mrpowergamerbr.loritta.utils.loritta.loadLegacyLocales()
-			}
-			"website" -> {
-				LorittaWebsite.kotlinTemplateCache.clear()
-				LorittaWebsite.ENGINE.templateCache.invalidateAll()
-			}
-			"websitekt" -> {
-				net.perfectdreams.loritta.website.LorittaWebsite.INSTANCE.pathCache.clear()
-			}
-			"config" -> {
-				val file = File(System.getProperty("conf") ?: "./loritta.conf")
-				com.mrpowergamerbr.loritta.utils.loritta.config = Constants.HOCON_MAPPER.readValue(file.readText())
-				val file2 = File(System.getProperty("discordConf") ?: "./discord.conf")
-				com.mrpowergamerbr.loritta.utils.loritta.discordConfig = Constants.HOCON_MAPPER.readValue(file2.readText())
+			"economy" -> {
+				PaymentUtils.economyEnabled = json["enabled"].bool
 			}
 		}
 

@@ -2,31 +2,33 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.nullArray
+import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
-import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.gifs.GifSequenceWriter
-import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.profile.ProfileCreator
 import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
 import com.mrpowergamerbr.loritta.tables.DonationConfigs
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.tables.BotVotes
+import net.perfectdreams.loritta.utils.ClusterOfflineException
 import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.ServerPremiumPlans
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
@@ -34,12 +36,55 @@ import javax.imageio.stream.FileImageOutputStream
 
 class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCategory.SOCIAL) {
 	companion object {
-		fun getUserBadges(user: User, profile: Profile, mutualGuilds: List<JsonElement> = runBlocking { lorittaShards.queryMutualGuildsInAllLorittaClusters(user.id) }): List<BufferedImage> {
-			// Para pegar o "Jogando" do usuário, nós precisamos pegar uma guild que o usuário está
-			fun hasRole(guildId: String, roleId: String): Boolean {
+		/**
+		 * Gets the user's badges, the user's mutual guilds will be retrieved
+		 *
+		 * @param user                   the user
+		 * @param profile                the user's profile
+		 * @param failIfClusterIsOffline if true, the method will throw a [ClusterOfflineException] if the queried cluster is offline
+		 * @return a list containing all the images of the user's badges
+		 */
+		suspend fun getUserBadges(user: User, profile: Profile, failIfClusterIsOffline: Boolean = false): List<BufferedImage> {
+			val mutualGuilds = try {
+				lorittaShards.queryMutualGuildsInAllLorittaClusters(user.id)
+			} catch (e: ClusterOfflineException) {
+				if (failIfClusterIsOffline)
+					throw e
+				listOf<JsonObject>()
+			}
+
+			return getUserBadges(user, profile, mutualGuilds, failIfClusterIsOffline)
+		}
+
+		/**
+		 * Gets the user's badges, the user's mutual guilds will be retrieved
+		 *
+		 * @param user                   the user
+		 * @param profile                the user's profile
+		 * @param mutualGuilds           the user's mutual guilds, retrieved via [LorittaShards.queryMutualGuildsInAllLorittaClusters]
+		 * @param failIfClusterIsOffline if true, the method will throw a [ClusterOfflineException] if the queried cluster is offline
+		 * @return a list containing all the images of the user's badges
+		 */
+		suspend fun getUserBadges(user: User, profile: Profile, mutualGuilds: List<JsonObject>, failIfClusterIsOffline: Boolean = false): List<BufferedImage> {
+			/**
+			 * Checks if the user has the role in the specified guild
+			 *
+			 * @param guildId the guild ID
+			 * @param roleId  the role ID
+			 * @return if the user has the role
+			 */
+			suspend fun hasRole(guildId: String, roleId: String): Boolean {
 				val cluster = DiscordUtils.getLorittaClusterForGuildId(guildId.toLong())
 
-				val usersWithRolesPayload = runBlocking { lorittaShards.queryCluster(cluster, "/api/v1/guilds/$guildId/users-with-any-role/$roleId").await() }
+				val usersWithRolesPayload = try {
+					lorittaShards.queryCluster(cluster, "/api/v1/guilds/$guildId/users-with-any-role/$roleId")
+							.await()
+							.obj
+				} catch (e: ClusterOfflineException) {
+					if (failIfClusterIsOffline)
+						throw e
+					return false
+				}
 
 				val membersArray = usersWithRolesPayload["members"].nullArray ?: return false
 
@@ -48,18 +93,24 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 				return usersWithRoles.contains(user.id)
 			}
 
-			val hasUpvoted = transaction(Databases.loritta) {
+			val hasUpvoted = loritta.newSuspendedTransaction {
 				BotVotes.select {
 					BotVotes.userId eq user.idLong and (BotVotes.votedAt greaterEq System.currentTimeMillis() - (Constants.ONE_HOUR_IN_MILLISECONDS * 12))
 				}.count() != 0L
 			}
 
-			val hasNotifyMeRole = hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "334734175531696128")
-			val isLorittaPartner = hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "434512654292221952")
-			val isTranslator = hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "385579854336360449")
-			val isGitHubContributor = hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "505144985591480333")
+			val hasNotifyMeRoleJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "334734175531696128") }
+			val isLorittaPartnerJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "434512654292221952") }
+			val isTranslatorJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "385579854336360449") }
+			val isGitHubContributorJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "505144985591480333") }
+			val isPocketDreamsStaffJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(Constants.SPARKLYPOWER_GUILD_ID, "332650495522897920") }
 			val hasLoriStickerArt = loritta.fanArtArtists.any { it.id == user.id }
-			val isPocketDreamsStaff = hasRole(Constants.SPARKLYPOWER_GUILD_ID, "332650495522897920")
+
+			val hasNotifyMeRole = hasNotifyMeRoleJob.await()
+			val isLorittaPartner = isLorittaPartnerJob.await()
+			val isTranslator = isTranslatorJob.await()
+			val isGitHubContributor = isGitHubContributorJob.await()
+			val isPocketDreamsStaff = isPocketDreamsStaffJob.await()
 
 			val badges = mutableListOf<BufferedImage>()
 
@@ -76,7 +127,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			if (user.support) badges += ImageIO.read(File(Loritta.ASSETS + "support.png"))
 			if (hasLoriStickerArt) badges += ImageIO.read(File(Loritta.ASSETS + "sticker_badge.png"))
 
-			val money = loritta.getActiveMoneyFromDonations(user.idLong)
+			val money = loritta.getActiveMoneyFromDonationsAsync(user.idLong)
 
 			if (money != 0.0) {
 				badges += ImageIO.read(File(Loritta.ASSETS + "donator.png"))
@@ -93,7 +144,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			if (user.idLong == 249508932861558785L || user.idLong == 336892460280315905L)
 				badges += ImageIO.read(File(Loritta.ASSETS + "loritta_sweater.png"))
 
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				var specialCase = false
 
 				val results = if (user.idLong == loritta.discordConfig.discord.clientId.toLong()) { // Como estamos em MUITOS servidores, um in list dá problema! E como a gente é fofis, vamos apenas pegar todos os servidores
@@ -123,7 +174,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 					if (specialCase && mutualGuilds.any { it["id"].string.toLong() == config.id.value })
 						continue
 
-					val donationKeysValue = config.getActiveDonationKeysValue()
+					val donationKeysValue = config.getActiveDonationKeysValueNested()
 					if (ServerPremiumPlans.getPlanFromValue(donationKeysValue).hasCustomBadge) {
 						val badge = LorittaUtils.downloadImage("${loritta.instanceConfig.loritta.website.url}/assets/img/badges/custom/${config.guildId}.png?t=${System.currentTimeMillis()}", bypassSafety = true)
 
@@ -137,7 +188,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			if (hasNotifyMeRole) badges += ImageIO.read(File(Loritta.ASSETS + "notify_me.png"))
 			if (user.id == loritta.discordConfig.discord.clientId) badges += ImageIO.read(File(Loritta.ASSETS + "loritta_badge.png"))
 			if (user.isBot) badges += ImageIO.read(File(Loritta.ASSETS + "robot_badge.png"))
-			val marriage = transaction(Databases.loritta) { profile.marriage }
+			val marriage = loritta.newSuspendedTransaction { profile.marriage }
 			if (marriage != null) {
 				if (System.currentTimeMillis() - marriage.marriedSince > 2_592_000_000) {
 					badges += ImageIO.read(File(Loritta.ASSETS + "blob_snuggle.png"))
@@ -172,23 +223,24 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			userProfile = loritta.getOrCreateLorittaProfile(contextUser.id)
 		}
 
-		val settings = transaction(Databases.loritta) { userProfile.settings }
+		val settings = loritta.newSuspendedTransaction { userProfile.settings }
+		val bannedState = userProfile.getBannedState()
 
-		if (contextUser != null && userProfile.isBanned) {
+		if (contextUser != null && bannedState != null) {
 			context.reply(
-					LoriReply(
-							"${contextUser.asMention} está **banido**",
-							"\uD83D\uDE45"
-					),
-					LoriReply(
-							"**Motivo:** `${userProfile.bannedReason}`",
-							"✍"
-					)
+                    LorittaReply(
+                            "${contextUser.asMention} está **banido**",
+                            "\uD83D\uDE45"
+                    ),
+                    LorittaReply(
+                            "**Motivo:** `${bannedState[BannedUsers.reason]}`",
+                            "✍"
+                    )
 			)
 			return
 		}
 		if (contextUser == null && context.args.isNotEmpty() && (context.args.first() == "shop" || context.args.first() == "loja")) {
-			context.reply(LoriReply(context.locale["commands.social.profile.profileshop","${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/profiles"], Emotes.LORI_OWO))
+			context.reply(LorittaReply(context.locale["commands.social.profile.profileshop", "${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/profiles"], Emotes.LORI_OWO))
 			return
 		}
 
@@ -216,91 +268,10 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			aboutMe = "A Loritta é a minha amiga! Sabia que você pode alterar este texto usando \"${context.config.commandPrefix}sobremim\"? :3"
 		}
 
-		val availableDesigns = if (loritta.config.isOwner(context.userHandle.idLong)) {
-			loritta.profileDesignManager.designs
-		} else {
-			loritta.profileDesignManager.publicDesigns
-		}
+		val activeProfile = settings.activeProfileDesignInternalName?.value ?: "defaultDark"
+		val profileCreator = loritta.profileDesignManager.designs.first { it.internalName == activeProfile }
 
-		var type = if (user.idLong == context.userHandle.idLong && contextUser == null) {
-			context.rawArgs.getOrNull(0)
-		} else {
-			context.rawArgs.getOrNull(1)
-		}
-
-		// Caso coloque "force_" no nome do type (Por exemplo: "force_nostalgia"), a Lori não irá verificar se o usuário realmente tem o design comprado
-		// Utilizado para debugging, apenas para pessoas especiais :3
-		val shouldForceDesignEvenIfItIsNotBought = if (loritta.config.isOwner(context.userHandle.idLong) && type?.startsWith("force_") == true) {
-			type = type.removePrefix("force_")
-			true
-		} else { false }
-
-		if (type == null)
-			type = availableDesigns.firstOrNull { settings.activeProfile == it.clazz.simpleName }?.internalType
-
-		if (type == null || !availableDesigns.any { it.internalType == type } || (!shouldForceDesignEvenIfItIsNotBought && !settings.boughtProfiles.contains(availableDesigns.first { it.internalType == type }.clazz.simpleName)))
-			type = "default"
-
-		val creator = availableDesigns.first { it.internalType == type }.clazz
-		val profileCreator = creator.constructors.first().newInstance() as ProfileCreator
-		val background = try {
-			loritta.getUserProfileBackground(userProfile)
-		} catch (e: IsAnimatedBackgroundHack) {
-			// looks like it is animated, wow
-			/* val zip = ZipInputStream(e.bytes.inputStream())
-			val fileMap = mutableMapOf<String, ByteArray>()
-
-			while (true) {
-				val next = zip.nextEntry ?: break
-				if (next.isDirectory)
-					continue
-
-				val fileAsByteArray = zip.readAllBytes()
-
-				fileMap[next.name] = fileAsByteArray
-			}
-
-			val json = JsonParser.parseString(fileMap["background.json"]!!.toString(Charsets.UTF_8))
-
-			val image = profileCreator.create(
-					context.userHandle,
-					user,
-					userProfile,
-					context.guild,
-					context.legacyConfig,
-					badges,
-					locale,
-					BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB),
-					aboutMe,
-					member
-			)
-
-			val frames = json["frames"].array
-
-			val fileName = Loritta.TEMP + "profile-" + System.currentTimeMillis() + ".gif"
-
-			val output = FileImageOutputStream(File(fileName))
-			val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 10, true)
-
-			for (frameName in frames.map { it.string }) {
-				val frame = ImageIO.read(fileMap["frames/$frameName"]!!.inputStream())
-				val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB)
-				val graphics = base.graphics
-				graphics.drawImage(frame.getScaledInstance(800, 600, BufferedImage.SCALE_FAST), 0, 0, null)
-				graphics.drawImage(image, 0, 0, null)
-				writer.writeToSequence(base)
-			}
-
-			writer.close()
-			output.close()
-
-			val outputFile = File(fileName)
-			MiscUtils.optimizeGIF(outputFile)
-
-			context.sendFile(outputFile, "lori_profile.gif", "📝 **|** " + context.getAsMention(true) + context.legacyLocale["PEFIL_PROFILE"]) // E agora envie o arquivo
-			 */
-			return
-		}
+		val background = loritta.getUserProfileBackground(userProfile)
 
 		val senderUserInfo = ProfileUserInfoData(
 				context.userHandle.idLong,
@@ -349,6 +320,4 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			context.sendFile(outputFile, "lori_profile.gif", "📝 **|** " + context.getAsMention(true) + context.legacyLocale["PEFIL_PROFILE"]) // E agora envie o arquivo
 		}
 	}
-
-	class IsAnimatedBackgroundHack(val bytes: ByteArray) : RuntimeException()
 }

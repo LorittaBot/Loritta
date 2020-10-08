@@ -1,16 +1,13 @@
 package com.mrpowergamerbr.loritta.utils.debug
 
-import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.modules.InviteLinkModule
-import com.mrpowergamerbr.loritta.threads.NewRssFeedTask
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import mu.KotlinLogging
 import net.perfectdreams.loritta.website.LorittaWebsite
 import java.lang.management.ManagementFactory
 import java.util.concurrent.ThreadPoolExecutor
-import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.thread
 
 object DebugLog {
@@ -59,13 +56,20 @@ object DebugLog {
 		logger.info("loritta.twitch.cachedGames: ${loritta.twitch.cachedGames.size}")
 		logger.info("loritta.twitch.cachedStreamerInfo: ${loritta.twitch.cachedStreamerInfo.size}")
 		logger.info("gameInfoCache.size: ${loritta.twitch.cachedGames.size}")
-		logger.info("storedLastEntries.size: ${NewRssFeedTask.storedLastEntries.size}")
 		logger.info("> Invite Stuff")
 		logger.info("cachedInviteLinks.size: ${InviteLinkModule.cachedInviteLinks.size}")
 		logger.info("> Misc Stuff")
 		logger.info("fanArts.size: ${loritta.fanArts.size}")
 		logger.info("eventLogListener.downloadedAvatarJobs: ${EventLogListener.downloadedAvatarJobs}")
 		logger.info("Cached Retrieved Users: ${lorittaShards.cachedRetrievedUsers.size()}")
+		logger.info("> Executors")
+
+		val pendingMessagesSize = loritta.pendingMessages.size
+		val availableProcessors = Runtime.getRuntime().availableProcessors()
+		val isMessagesOverloaded = pendingMessagesSize > availableProcessors
+		logger.info("Pending Messages ($pendingMessagesSize): Active: ${loritta.pendingMessages.filter { it.isActive }.count()}; Cancelled: ${loritta.pendingMessages.filter { it.isCancelled }.count()}; Complete: ${loritta.pendingMessages.filter { it.isCompleted }.count()};")
+		if (isMessagesOverloaded)
+			logger.warn { "Loritta is overloaded! There are $pendingMessagesSize messages pending to be executed, ${pendingMessagesSize - availableProcessors} more than it should be!" }
 	}
 
 	fun handleLine(line: String) {
@@ -79,15 +83,6 @@ object DebugLog {
 				cancelAllEvents = toggleState
 
 				println("Cancel all events: $cancelAllEvents")
-			}
-			"reload" -> {
-				val arg0 = args.getOrNull(0)
-
-				if (arg0 == "commands") {
-					LorittaLauncher.loritta.loadCommandManager()
-					println("${com.mrpowergamerbr.loritta.utils.loritta.legacyCommandManager.commandMap.size} comandos carregados")
-					return
-				}
 			}
 			"info" -> {
 				val mb = 1024 * 1024

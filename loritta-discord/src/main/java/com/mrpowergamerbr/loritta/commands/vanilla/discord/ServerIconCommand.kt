@@ -5,7 +5,7 @@ import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -43,10 +43,10 @@ class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "ico
 
 		if (guild == null) {
 			context.reply(
-					LoriReply(
-							context.locale["commands.guildDoesNotExist", guildId],
-							Emotes.LORI_HM
-					)
+                    LorittaReply(
+                            context.locale["commands.guildDoesNotExist", guildId],
+                            Emotes.LORI_HM
+                    )
 			)
 			return
 		}
@@ -56,10 +56,10 @@ class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "ico
 
 		if (iconUrl == null) {
 			context.reply(
-					LoriReply(
-							message = context.locale["$LOCALE_PREFIX.noIcon", Emotes.LORI_PAT],
-							prefix = Constants.ERROR
-					)
+                    LorittaReply(
+                            message = context.locale["$LOCALE_PREFIX.noIcon", Emotes.LORI_PAT],
+                            prefix = Constants.ERROR
+                    )
 			)
 			return
 		}

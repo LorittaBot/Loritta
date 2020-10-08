@@ -7,25 +7,33 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Background
+import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.dao.ProfileDesign
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.OptimizeAssets
-import io.ktor.application.ApplicationCall
-import io.ktor.request.path
-import io.ktor.util.AttributeKey
+import com.mrpowergamerbr.loritta.website.WebsiteAPIException
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.request.*
+import io.ktor.util.*
+import kotlinx.html.*
+import kotlinx.html.stream.createHTML
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.ReactionOption
-import net.perfectdreams.loritta.tables.Backgrounds
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.ReactionOptions
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedRssFeeds
+import net.perfectdreams.loritta.utils.CachedUserInfo
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.config.types.ConfigTransformers
+import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -39,11 +47,126 @@ object WebsiteUtils {
 	val localeKey = AttributeKey<BaseLocale>("locale")
 	val handledStatusBefore = AttributeKey<Boolean>("handledStatusBefore")
 
+	/**
+	 * Creates an JSON object wrapping the error object
+	 *
+	 * @param code    the error code
+	 * @param message the error reason
+	 * @return        the json object containing the error
+	 */
+	fun createErrorPayload(code: LoriWebCode, message: String? = null, data: ((JsonObject) -> Unit)? = null): JsonObject {
+		val result = jsonObject("error" to createErrorObject(code, message))
+		data?.invoke(result)
+		return result
+	}
+
+	/**
+	 * Creates an JSON object containing the code error
+	 *
+	 * @param code    the error code
+	 * @param message the error reason
+	 * @return        the json object with the error
+	 */
+	fun createErrorObject(code: LoriWebCode, message: String? = null): JsonObject {
+		val jsonObject = jsonObject(
+				"code" to code.errorId,
+				"reason" to code.fancyName,
+				"help" to "${loritta.instanceConfig.loritta.website.url}docs/api"
+		)
+
+		if (message != null) {
+			jsonObject["message"] = message
+		}
+
+		return jsonObject
+	}
+
+	fun transformToJson(user: User): JsonObject {
+		return jsonObject(
+				"id" to user.id,
+				"name" to user.name,
+				"discriminator" to user.discriminator,
+				"effectiveAvatarUrl" to user.effectiveAvatarUrl
+		)
+	}
+
+	fun transformToJson(user: CachedUserInfo): JsonObject {
+		return jsonObject(
+				"id" to user.id,
+				"name" to user.name,
+				"discriminator" to user.discriminator,
+				"effectiveAvatarUrl" to user.effectiveAvatarUrl
+		)
+	}
+
+	fun getProfileAsJson(profile: Profile): JsonObject {
+		return jsonObject(
+				"id" to profile.id.value,
+				"money" to profile.money
+		)
+	}
+
+	fun transformProfileToJson(profile: Profile): JsonObject {
+		// TODO: É necessário alterar o frontend para usar os novos valores
+		val jsonObject = JsonObject()
+		jsonObject["userId"] = profile.id.value
+		jsonObject["money"] = profile.money
+		jsonObject["dreams"] = profile.money // Deprecated
+		return jsonObject
+	}
+
+	fun getDiscordCrawlerAuthenticationPage(): String {
+		return createHTML().html {
+			head {
+				fun setMetaProperty(property: String, content: String) {
+					meta(content = content) { attributes["property"] = property }
+				}
+				title("Login • Loritta")
+				setMetaProperty("og:site_name", "Loritta")
+				setMetaProperty("og:title", "Painel da Loritta")
+				setMetaProperty("og:description", "Meu painel de configuração, aonde você pode me configurar para deixar o seu servidor único e incrível!")
+				setMetaProperty("og:image", loritta.instanceConfig.loritta.website.url + "assets/img/loritta_dashboard.png")
+				setMetaProperty("og:image:width", "320")
+				setMetaProperty("og:ttl", "660")
+				setMetaProperty("og:image:width", "320")
+				setMetaProperty("theme-color", "#7289da")
+				meta("twitter:card", "summary_large_image")
+			}
+			body {
+				p {
+					+ "Parabéns, você encontrou um easter egg!"
+				}
+			}
+		}
+	}
+
+	fun checkIfAccountHasMFAEnabled(userIdentification: TemmieDiscordAuth.UserIdentification): Boolean {
+		// This is a security measure, to avoid "high risk" purchases.
+		// We will require that users need to verify their account + have MFA enabled.
+		if (!userIdentification.verified)
+			throw WebsiteAPIException(
+					HttpStatusCode.Forbidden,
+					WebsiteUtils.createErrorPayload(
+							LoriWebCode.UNVERIFIED_ACCOUNT
+					)
+			)
+
+		if (userIdentification.mfaEnabled == false)
+			throw WebsiteAPIException(
+					HttpStatusCode.Forbidden,
+					WebsiteUtils.createErrorPayload(
+							LoriWebCode.MFA_DISABLED
+					)
+			)
+
+		return true
+	}
+
 	fun initializeVariables(call: ApplicationCall, locale: BaseLocale, legacyLocale: LegacyBaseLocale, languageCode: String?) {
 		val req = call.request
 		val attributes = call.attributes
 
-		val variables = mutableMapOf(
+		val variables = mutableMapOf<String, Any?>(
 				"discordAuth" to null,
 				"userIdentification" to null,
 				"epochMillis" to System.currentTimeMillis(),
@@ -84,10 +207,9 @@ object WebsiteUtils {
 
 		attributes.put(localeKey, locale)
 
-		for ((key, value) in locale.localeEntries) {
-			if (value is String) {
+		for ((key, value) in locale.localeStringEntries) {
+			if (value != null)
 				variables[key.replace(".", "_")] = MessageFormat.format(value)
-			}
 		}
 
 		repeat(10) {
@@ -113,26 +235,19 @@ object WebsiteUtils {
 		variables["asset_hash_app"] = WebsiteAssetsHashes.getAssetHash("assets/js/app.js")
 	}
 
-	fun toJson(background: Background) = fromBackgroundToJson(background.readValues)
-
-	fun fromBackgroundToJson(background: ResultRow) = jsonObject(
-			"internalName" to background[Backgrounds.id].value,
-			"imageFile" to background[Backgrounds.imageFile],
-			"enabled" to background[Backgrounds.enabled],
-			"createdBy" to background[Backgrounds.createdBy].toList().toJsonArray(),
-			"rarity" to background[Backgrounds.rarity].name,
-			"crop" to background[Backgrounds.crop],
-			"set" to background[Backgrounds.set]?.value
-	)
+	fun toSerializable(background: Background) = transaction(Databases.loritta) { fromBackgroundToSerializable(background.readValues) }
+	fun fromBackgroundToSerializable(background: ResultRow) = transaction(Databases.loritta) { Background.wrapRow(background).toSerializable() }
+	fun toSerializable(profileDesign: ProfileDesign) = transaction(Databases.loritta) { fromProfileDesignToSerializable(profileDesign.readValues) }
+	fun fromProfileDesignToSerializable(profileDesign: ResultRow) = transaction(Databases.loritta) { ProfileDesign.wrapRow(profileDesign).toSerializable() }
 
 	suspend fun transformToDashboardConfigurationJson(user: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig): JsonObject {
 		val guildJson = jsonObject(
 				"name" to guild.name
 		)
 
-		val selfMember = WebsiteUtils.transformToJson(lorittaShards.getUserById(user.id)!!)
+		val selfMember = WebsiteUtils.transformToJson(lorittaShards.retrieveUserById(user.id)!!)
 
-		guildJson["donationConfig"] = transaction(Databases.loritta) {
+		guildJson["donationConfig"] = loritta.newSuspendedTransaction {
 			val donationConfig = serverConfig.donationConfig
 			jsonObject(
 					"customBadge" to (donationConfig?.customBadge ?: false),
@@ -140,7 +255,7 @@ object WebsiteUtils {
 			)
 		}
 
-		guildJson["reactionRoleConfigs"] = transaction(Databases.loritta) {
+		guildJson["reactionRoleConfigs"] = loritta.newSuspendedTransaction {
 			val reactionOptions = ReactionOption.find {
 				ReactionOptions.guildId eq guild.idLong
 			}
@@ -156,7 +271,7 @@ object WebsiteUtils {
 			}.toJsonArray()
 		}
 
-		guildJson["trackedRssFeeds"] = transaction(Databases.loritta) {
+		guildJson["trackedRssFeeds"] = loritta.newSuspendedTransaction {
 			val array = JsonArray()
 
 			TrackedRssFeeds.select {

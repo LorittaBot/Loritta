@@ -4,22 +4,19 @@ import com.github.salomonbrys.kotson.int
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.vanilla.economy.LoraffleCommand
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.threads.RaffleThread
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.tables.SonhosTransaction
+import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class PostRaffleStatusRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/raffle") {
 	companion object {
@@ -28,7 +25,7 @@ class PostRaffleStatusRoute(loritta: LorittaDiscord) : RequiresAPIAuthentication
 	}
 
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
-		val json = jsonParser.parse(call.receiveText()).obj
+		val json = JsonParser.parseString(call.receiveText()).obj
 
 		val userId = json["userId"].string
 		val quantity = json["quantity"].int
@@ -61,16 +58,13 @@ class PostRaffleStatusRoute(loritta: LorittaDiscord) : RequiresAPIAuthentication
 			val lorittaProfile = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(userId)
 
 			if (lorittaProfile.money >= requiredCount) {
-				transaction(Databases.loritta) {
-					lorittaProfile.money -= requiredCount
-
-					SonhosTransaction.insert {
-						it[givenBy] = lorittaProfile.id.value
-						it[receivedBy] = null
-						it[givenAt] = System.currentTimeMillis()
-						it[SonhosTransaction.quantity] = requiredCount.toBigDecimal()
-						it[reason] = SonhosPaymentReason.RAFFLE
-					}
+				loritta.newSuspendedTransaction {
+					lorittaProfile.takeSonhosNested(requiredCount)
+					PaymentUtils.addToTransactionLogNested(
+							requiredCount,
+							SonhosPaymentReason.RAFFLE,
+							givenBy = lorittaProfile.id.value
+					)
 				}
 
 				for (i in 0 until quantity) {

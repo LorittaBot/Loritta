@@ -77,7 +77,7 @@ class AutomodModule : MessageReceivedModule {
 		private val logger = KotlinLogging.logger {}
 	}
 
-	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
+	override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
 		if (lorittaUser.hasPermission(LorittaPermission.BYPASS_AUTO_MOD))
 			return false
 
@@ -210,9 +210,11 @@ class AutomodModule : MessageReceivedModule {
 			}
 			if (raidingPercentage >= BAN_THRESHOLD) {
 				logger.info("Aplicando punimentos em ${event.guild.name} -> ${event.channel.name}, causado por ${event.author.id}!")
+
+				val settings = AdminUtils.retrieveModerationInfo(serverConfig)
+
 				synchronized(event.guild) {
 					val alreadyBanned = mutableListOf<User>()
-					val settings = AdminUtils.retrieveModerationInfo(serverConfig)
 
 					for (storedMessage in messages) {
 						if (!event.guild.isMember(event.author) || alreadyBanned.contains(storedMessage.author)) // O usuário já pode estar banido

@@ -1,5 +1,8 @@
 package net.perfectdreams.loritta.api.utils
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 enum class Rarity {
 	COMMON,
 	UNCOMMON,
@@ -8,11 +11,11 @@ enum class Rarity {
 	LEGENDARY;
 
 	fun getProfilePrice() = when (this) {
-		COMMON -> 7_500 // 900 * 3
-		UNCOMMON -> 35_500 // 900 * 14
-		RARE -> 75_000 // 900 * 45
-		EPIC -> 150_000 // 900 * 90
-		LEGENDARY -> 250_000 // 900 * 120
+		COMMON -> 6_000 // 900 * 3
+		UNCOMMON -> 12_500 // 900 * 14
+		RARE -> 25_000 // 900 * 45
+		EPIC -> 60_000 // 900 * 90
+		LEGENDARY -> 150_000 // 900 * 120
 	}
 
 	fun getBackgroundPrice() = when (this) {

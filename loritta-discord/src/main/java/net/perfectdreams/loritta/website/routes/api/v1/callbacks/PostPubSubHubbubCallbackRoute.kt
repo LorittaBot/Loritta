@@ -2,12 +2,12 @@ package net.perfectdreams.loritta.website.routes.api.v1.callbacks
 
 import com.github.salomonbrys.kotson.*
 import com.google.common.cache.CacheBuilder
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
 import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.bytesToHex
+import com.mrpowergamerbr.loritta.utils.extensions.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.ApplicationCall
@@ -27,13 +27,14 @@ import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.SentYouTubeVideoIds
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedTwitchAccounts
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedYouTubeAccounts
+import net.perfectdreams.loritta.utils.ClusterOfflineException
 import net.perfectdreams.loritta.website.routes.BaseRoute
+import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.website.utils.extensions.urlQueryString
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.jsoup.Jsoup
 import org.jsoup.parser.Parser
 import java.util.concurrent.TimeUnit
@@ -113,14 +114,14 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 			val publishedEpoch = Constants.YOUTUBE_DATE_FORMAT.parse(published).time
 
 			if (com.mrpowergamerbr.loritta.utils.loritta.isMaster) {
-				val wasAlreadySent = transaction(Databases.loritta) {
+				val wasAlreadySent = loritta.newSuspendedTransaction {
 					SentYouTubeVideoIds.select {
 						SentYouTubeVideoIds.channelId eq channelId and (SentYouTubeVideoIds.videoId eq videoId)
 					}.count() != 0L
 				}
 
 				if (!wasAlreadySent) {
-					transaction(Databases.loritta) {
+					loritta.newSuspendedTransaction {
 						SentYouTubeVideoIds.insert {
 							it[SentYouTubeVideoIds.videoId] = videoId
 							it[SentYouTubeVideoIds.channelId] = channelId
@@ -136,13 +137,14 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 
 			logger.info("Recebi notificação de vídeo $lastVideoTitle ($videoId) de $channelId")
 
-			val trackedAccounts = transaction(Databases.loritta) {
+			val trackedAccounts = loritta.newSuspendedTransaction {
 				TrackedYouTubeAccounts.select {
 					TrackedYouTubeAccounts.youTubeChannelId eq channelId
 				}.toList()
 			}
 
 			val guildIds = mutableListOf<Long>()
+			val canTalkGuildIds = mutableListOf<Long>()
 
 			for (trackedAccount in trackedAccounts) {
 				guildIds.add(trackedAccount[TrackedYouTubeAccounts.guildId])
@@ -173,7 +175,10 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 						customTokens
 				) ?: continue
 
-				textChannel.sendMessage(discordMessage).queue()
+				textChannel.sendMessage(discordMessage)
+						.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing(canTalkGuildIds.size)
+
+				canTalkGuildIds.add(trackedAccount[TrackedYouTubeAccounts.guildId])
 			}
 
 			// Nós iremos fazer relay de todos os vídeos para o servidor da Lori
@@ -191,10 +196,11 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 
 			val userId = call.parameters["userid"]!!.toLong()
 
-			val payload = jsonParser.parse(response)
+			val payload = JsonParser.parseString(response)
 			val data = payload["data"].array
 
 			val guildIds = mutableListOf<Long>()
+			val canTalkGuildIds = mutableListOf<Long>()
 
 			// Se for vazio, quer dizer que é um stream down
 			if (data.size() != 0) {
@@ -227,7 +233,7 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 					} else {
 						logger.info { "Received livestream notification (Twitch) $title ($gameId) of ${accountInfo.id} ($userId)" }
 
-						val trackedAccounts = transaction(Databases.loritta) {
+						val trackedAccounts = loritta.newSuspendedTransaction {
 							TrackedTwitchAccounts.select {
 								TrackedTwitchAccounts.twitchUserId eq userId
 							}.toList()
@@ -259,7 +265,17 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 									"link" to "https://www.twitch.tv/${accountInfo.login}"
 							)
 
-							textChannel.sendMessage(MessageUtils.generateMessage(message, null, guild, customTokens)!!).queue()
+							val discordMessage = MessageUtils.generateMessage(
+									message,
+									listOf(guild),
+									guild,
+									customTokens
+							) ?: continue
+
+							textChannel.sendMessage(discordMessage)
+									.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing(canTalkGuildIds.size)
+
+							canTalkGuildIds.add(trackedAccount[TrackedYouTubeAccounts.guildId])
 						}
 
 						// Nós iremos fazer relay de todos os vídeos para o servidor da Lori
@@ -298,7 +314,7 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 					}
 				} catch (e: Exception) {
 					logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
-					throw PingCommand.ShardOfflineException(it.id, it.name)
+					throw ClusterOfflineException(it.id, it.name)
 				}
 			}
 		}

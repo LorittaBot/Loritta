@@ -1,10 +1,10 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
+import club.minnced.discord.webhook.send.WebhookMessageBuilder
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.WebhookUtils.getOrCreateWebhook
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), CommandCategory.FUN) {
@@ -87,8 +87,6 @@ class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), CommandCa
 				"Por que Hitler não conquistou a Rússia?\n\nPorque ele Moscou",
 				"Vocês sabiam?\n\nSe o Hino for cantado de trás pra frente, ele deixar de ser Hino e passa a se chamar \"Voltano\".",
 				"Porque a fita isolante é melhor que a fita crepe?\n\nPorque ela é faixa preta 🥋",
-				"O cadeirante vira para o cego e diz...\n\nolha que mulher gostosa passando o cego: corre atrás dela",
-				"Depois que o meu sobrinho virou mulher, nunca mais o vi.\n\nEle tornou-se transparente!",
 				"Em plena primavera, registramos neve em Gramado.\n\nFlagrante do sinistro",
 				"Por que a mala estava servindo café?\n\nPorque ela é uma malabarista",
 				"O que o gato faz na academia ?\n\nAbdomiau.",
@@ -215,7 +213,6 @@ class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), CommandCa
 				"Acho que eu deveria fazer um curso de chaveiro\n\nÉ um curso que abre portas",
 				"Por que a caipira tranquila se dá bem no reddit?\n\nPorque ela ta cheia de karma",
 				"Está com Frio?\n\nQuando você estiver com frio, é só ir pro canto da sala, lá tá 90 graus.",
-				"Tá sabendo que o pai da Dora tá puto com você?\n\nPorque você anda dizendo por aí que a Dora dá a bunda...",
 				"Por que instalaram escadas no oculista?\n\nPara óculos de-graus",
 				"O que o ascensorista disse pro Batman no elevador?\n\nVai DC?",
 				"Para que santo rezar quando você esquece a senha?\n\nSão Login",
@@ -313,17 +310,18 @@ class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), CommandCa
 				"Qual é a profissão mais frustrante do mundo?\n\nProfessor de Natação. Sabe porquê? Ele ensina, ensina e ensina e o aluno NADA.",
 				"Não vou contar a piada da nuvem...\n\nPorque é o cumulus ! PS: essa piada é passageira",
 				"Duas baleias entraram num bar\n\nComeçaram a discutir e se mataram com pistolas. No outro dia o jornal noticia a calamidade: Baleia baleia baleia",
-				"Qual a diferença entre ignorância e apatia?\n\nEu não sei e eu não me importo."
+				"Qual a diferença entre ignorância e apatia?\n\nEu não sei e eu não me importo.",
+				"Se cuidar de um cachorro já é difícil...\n\nImagine Dragons"
 		)
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val temmie = getOrCreateWebhook(context.event.textChannel!!, "Tio do Pavê")
 
-		context.sendMessage(temmie, DiscordMessage.builder()
-				.username("Tio do Pavê")
-				.content(context.getAsMention(true) + PIADAS.random())
-				.avatarUrl("https://loritta.website/assets/img/tio_do_pave.jpg")
+		context.sendMessage(temmie, WebhookMessageBuilder()
+				.setUsername("Tio do Pavê")
+				.setContent(context.getAsMention(true) + PIADAS.random())
+				.setAvatarUrl("https://loritta.website/assets/img/tio_do_pave.jpg")
 				.build())
 	}
 }

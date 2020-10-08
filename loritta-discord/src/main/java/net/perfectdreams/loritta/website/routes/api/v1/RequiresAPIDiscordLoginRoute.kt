@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.website.routes.api.v1
 
-import com.mrpowergamerbr.loritta.utils.WebsiteUtils
+import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.ApplicationCall
@@ -35,8 +35,9 @@ abstract class RequiresAPIDiscordLoginRoute(loritta: LorittaDiscord, path: Strin
 			)
 
 		val profile = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(userIdentification.id)
+		val bannedState = profile.getBannedState()
 
-		if (profile.isBanned)
+		if (bannedState != null)
 			throw WebsiteAPIException(
 					HttpStatusCode.Unauthorized,
 					WebsiteUtils.createErrorPayload(

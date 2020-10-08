@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.plugin.fortnite.commands.fortnite
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.utils.*
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.messages.LorittaReply
@@ -49,7 +50,7 @@ object FortniteStatsCommand : DSLCommandBase {
 					.header("Authorization", com.mrpowergamerbr.loritta.utils.loritta.config.fortniteApi.token)
 					.body()
 
-			val statsV2 = jsonParser.parse(payloadV2).obj
+			val statsV2 = JsonParser.parseString(payloadV2).obj
 
 			if (statsV2["error"].nullString != null) {
 				reply(

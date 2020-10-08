@@ -2,11 +2,9 @@ package net.perfectdreams.loritta.profile
 
 import com.google.gson.JsonElement
 import com.mrpowergamerbr.loritta.dao.Profile
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.utils.config.FanArtArtist
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
 
 class ArtistBadge : Badge("artist_badge.png", 25) {

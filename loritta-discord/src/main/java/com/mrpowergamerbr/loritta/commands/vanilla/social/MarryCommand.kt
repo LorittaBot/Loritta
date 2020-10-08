@@ -3,18 +3,15 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Marriage
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAdd
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import net.perfectdreams.loritta.tables.SonhosTransaction
+import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.SOCIAL) {
 	companion object {
@@ -30,27 +27,27 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 
 		if (proposeTo != null) {
 			val proposeToProfile = loritta.getOrCreateLorittaProfile(proposeTo.id)
-			val marriage = transaction(Databases.loritta) { context.lorittaUser.profile.marriage }
-			val proposeMarriage = transaction(Databases.loritta) { proposeToProfile.marriage }
+			val marriage = loritta.newSuspendedTransaction { context.lorittaUser.profile.marriage }
+			val proposeMarriage = loritta.newSuspendedTransaction { proposeToProfile.marriage }
 
 			val splitCost = MARRIAGE_COST / 2
 
 			if (proposeTo.id == context.userHandle.id) {
 				context.reply(
-						LoriReply(
-								locale["MARRY_CantMarryYourself"],
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                locale["MARRY_CantMarryYourself"],
+                                Constants.ERROR
+                        )
 				)
 				return
 			}
 
 			if (proposeTo.id == loritta.discordConfig.discord.clientId) {
 				context.reply(
-						LoriReply(
-								locale["MARRY_Loritta"],
-								"<:smol_lori_putassa:395010059157110785>"
-						)
+                        LorittaReply(
+                                locale["MARRY_Loritta"],
+                                "<:smol_lori_putassa:395010059157110785>"
+                        )
 				)
 				return
 			}
@@ -58,10 +55,10 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 			if (marriage != null) {
 				// Já está casado!
 				context.reply(
-						LoriReply(
-								locale["MARRY_AlreadyMarried", context.config.commandPrefix],
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                locale["MARRY_AlreadyMarried", context.config.commandPrefix],
+                                Constants.ERROR
+                        )
 				)
 				return
 			}
@@ -69,10 +66,10 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 			if (proposeMarriage != null) {
 				// Já está casado!
 				context.reply(
-						LoriReply(
-								locale["MARRY_AlreadyMarriedOther", proposeTo.asMention],
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                locale["MARRY_AlreadyMarriedOther", proposeTo.asMention],
+                                Constants.ERROR
+                        )
 				)
 				return
 			}
@@ -81,10 +78,10 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 				// Não tem dinheiro suficiente!
 				val diff = splitCost - context.lorittaUser.profile.money
 				context.reply(
-						LoriReply(
-								locale["MARRY_InsufficientFunds", diff],
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                locale["MARRY_InsufficientFunds", diff],
+                                Constants.ERROR
+                        )
 				)
 				return
 			}
@@ -93,24 +90,24 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 				// Não tem dinheiro suficiente!
 				val diff = splitCost - proposeToProfile.money
 				context.reply(
-						LoriReply(
-								locale["MARRY_InsufficientFundsOther", proposeTo.asMention, diff],
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                locale["MARRY_InsufficientFundsOther", proposeTo.asMention, diff],
+                                Constants.ERROR
+                        )
 				)
 				return
 			}
 
 			// Pedido enviado!
 			val replies = listOf(
-					LoriReply(
-							proposeTo.asMention + " Você recebeu uma proposta de casamento de " + context.userHandle.asMention + "!",
-							"\uD83D\uDC8D"
-					),
-					LoriReply(
-							"Para aceitar, clique no \uD83D\uDC8D! Mas lembrando, o custo de um casamento é **10000 Sonhos**, e **200 Sonhos** todos os dias!",
-							"\uD83D\uDCB5"
-					)
+                    LorittaReply(
+                            proposeTo.asMention + " Você recebeu uma proposta de casamento de " + context.userHandle.asMention + "!",
+                            "\uD83D\uDC8D"
+                    ),
+                    LorittaReply(
+                            "Para aceitar, clique no \uD83D\uDC8D! Mas lembrando, o custo de um casamento é **15000 Sonhos** (7500 para cada usuário), e **250 Sonhos** todos os dias!",
+                            "\uD83D\uDCB5"
+                    )
 			)
 
 			val response = replies.joinToString("\n", transform = { it.build() })
@@ -122,25 +119,25 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 
 					val profile = loritta.getOrCreateLorittaProfile(context.userHandle.id)
 					val proposeToProfile = loritta.getOrCreateLorittaProfile(proposeTo.id)
-					val marriage = transaction(Databases.loritta) { context.lorittaUser.profile.marriage }
-					val proposeMarriage = transaction(Databases.loritta) { context.lorittaUser.profile.marriage }
+					val marriage = loritta.newSuspendedTransaction { context.lorittaUser.profile.marriage }
+					val proposeMarriage = loritta.newSuspendedTransaction { context.lorittaUser.profile.marriage }
 
 					if (proposeTo.id == context.userHandle.id) {
 						context.reply(
-								LoriReply(
-										locale["MARRY_CantMarryYourself"],
-										Constants.ERROR
-								)
+                                LorittaReply(
+                                        locale["MARRY_CantMarryYourself"],
+                                        Constants.ERROR
+                                )
 						)
 						return@onReactionAdd
 					}
 
 					if (proposeTo.id == loritta.discordConfig.discord.clientId) {
 						context.reply(
-								LoriReply(
-										locale["MARRY_Loritta"],
-										"<:smol_lori_putassa:395010059157110785>"
-								)
+                                LorittaReply(
+                                        locale["MARRY_Loritta"],
+                                        "<:smol_lori_putassa:395010059157110785>"
+                                )
 						)
 						return@onReactionAdd
 					}
@@ -148,10 +145,10 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 					if (marriage != null) {
 						// Não tem dinheiro suficiente!
 						context.reply(
-								LoriReply(
-										locale["MARRY_AlreadyMarried"],
-										Constants.ERROR
-								)
+                                LorittaReply(
+                                        locale["MARRY_AlreadyMarried"],
+                                        Constants.ERROR
+                                )
 						)
 						return@onReactionAdd
 					}
@@ -159,10 +156,10 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 					if (proposeMarriage != null) {
 						// Já está casado!
 						context.reply(
-								LoriReply(
-										locale["MARRY_AlreadyMarriedOther"],
-										Constants.ERROR
-								)
+                                LorittaReply(
+                                        locale["MARRY_AlreadyMarriedOther"],
+                                        Constants.ERROR
+                                )
 						)
 						return@onReactionAdd
 					}
@@ -171,10 +168,10 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 						// Não tem dinheiro suficiente!
 						val diff = splitCost - profile.money
 						context.reply(
-								LoriReply(
-										locale["MARRY_InsufficientFunds", diff],
-										Constants.ERROR
-								)
+                                LorittaReply(
+                                        locale["MARRY_InsufficientFunds", diff],
+                                        Constants.ERROR
+                                )
 						)
 						return@onReactionAdd
 					}
@@ -183,16 +180,16 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 						// Não tem dinheiro suficiente!
 						val diff = splitCost - proposeToProfile.money
 						context.reply(
-								LoriReply(
-										locale["MARRY_InsufficientFundsOther", proposeTo.asMention, diff],
-										Constants.ERROR
-								)
+                                LorittaReply(
+                                        locale["MARRY_InsufficientFundsOther", proposeTo.asMention, diff],
+                                        Constants.ERROR
+                                )
 						)
 						return@onReactionAdd
 					}
 
 					// Okay, tudo certo, vamos lá!
-					transaction(Databases.loritta) {
+					loritta.newSuspendedTransaction {
 						val newMarriage = Marriage.new {
 							user1 = context.userHandle.idLong
 							user2 = proposeTo.idLong
@@ -200,31 +197,28 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 						}
 						profile.marriage = newMarriage
 						proposeToProfile.marriage = newMarriage
-						profile.money -= splitCost
-						proposeToProfile.money -= splitCost
 
-						SonhosTransaction.insert {
-							it[givenBy] = profile.id.value
-							it[receivedBy] = null
-							it[givenAt] = System.currentTimeMillis()
-							it[quantity] = splitCost.toBigDecimal()
-							it[reason] = SonhosPaymentReason.MARRIAGE
-						}
+						profile.takeSonhosNested(splitCost.toLong())
+						proposeToProfile.takeSonhosNested(splitCost.toLong())
 
-						SonhosTransaction.insert {
-							it[givenBy] = proposeToProfile.id.value
-							it[receivedBy] = null
-							it[givenAt] = System.currentTimeMillis()
-							it[quantity] = splitCost.toBigDecimal()
-							it[reason] = SonhosPaymentReason.MARRIAGE
-						}
+						PaymentUtils.addToTransactionLogNested(
+								splitCost.toLong(),
+								SonhosPaymentReason.MARRIAGE,
+								givenBy = profile.id.value
+						)
+
+						PaymentUtils.addToTransactionLogNested(
+								splitCost.toLong(),
+								SonhosPaymentReason.MARRIAGE,
+								givenBy = proposeToProfile.id.value
+						)
 					}
 
 					context.reply(
-							LoriReply(
-									"Vocês se casaram! Felicidades para vocês dois!",
-									"❤"
-							)
+                            LorittaReply(
+                                    "Vocês se casaram! Felicidades para vocês dois!",
+                                    "❤"
+                            )
 					)
 				}
 			}

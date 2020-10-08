@@ -1,34 +1,20 @@
 package net.perfectdreams.spicymorenitta.utils
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonProperty
-import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class FanArtArtist @JsonCreator constructor(
-        @param:JsonProperty("id")
-        @field:JsonProperty("id")
+data class FanArtArtist constructor(
         val id: String,
-        @param:JsonProperty("info")
-        @field:JsonProperty("info")
+        val aboutMe: String? = null,
         val info: Info,
-        @Optional val user: User? = null,
-        @param:JsonProperty("fanArts")
-        @field:JsonProperty("fanArts")
+        val user: User? = null,
         val fanArts: List<FanArt>
 ) {
     @Serializable
     data class Info(
-            @param:JsonProperty("name")
-            @field:JsonProperty("name")
             val name: String?,
-            @param:JsonProperty("avatarUrl")
-            @field:JsonProperty("avatarUrl")
             val avatarUrl: String?,
-            @param:JsonProperty("override")
-            @field:JsonProperty("override")
-            @Optional val override: Info? = null
+            val override: Info? = null
     )
 
     @Serializable

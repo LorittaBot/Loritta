@@ -1,7 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.RegisterConfig
@@ -12,24 +11,14 @@ import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
-import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import net.perfectdreams.loritta.dao.servers.moduleconfigs.LevelConfig
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.ReactionOption
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.LevelAnnouncementConfigs
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.RolesByExperience
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedTwitterAccounts
 import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.levels.LevelUpAnnouncementType
-import net.perfectdreams.loritta.utils.levels.RoleGiveType
 import net.perfectdreams.loritta.website.utils.WebsiteAssetsHashes
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.transactions.transaction
-import twitter4j.TwitterFactory
 import java.io.File
-import kotlin.concurrent.thread
 
 class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC, onlyOwner = true) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -45,9 +34,9 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			loritta.newWebsite?.loadBlogPosts()
 
 			context.reply(
-					LoriReply(
-							"Posts recarregados!"
-					)
+                    LorittaReply(
+                            "Posts recarregados!"
+                    )
 			)
 			return
 		}
@@ -55,56 +44,58 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 		if (arg0 == "action") {
 			lorittaShards.queryAllLorittaClusters("/api/v1/loritta/action/$arg1")
 			context.reply(
-					LoriReply(
-							"Enviado ação para todos os clusters!"
-					)
+                    LorittaReply(
+                            "Enviado ação para todos os clusters!"
+                    )
 			)
 			return
 		}
 
 		if (arg0 == "emotes") {
 			context.reply(
-					LoriReply(
-							"Recarregando emotes!"
-					)
+                    LorittaReply(
+                            "Recarregando emotes!"
+                    )
 			)
 			Emotes.emoteManager?.loadEmotes()
 			return
 		}
 		if (arg0 == "dailytax") {
 			context.reply(
-					LoriReply(
-							"Retirando granas de pessoas!"
-					)
+                    LorittaReply(
+                            "Retirando granas de pessoas!"
+                    )
 			)
 			LorittaTasks.DAILY_TAX_TASK.runDailyTax(true)
 			return
 		}
 		if (arg0 == "shard") {
-			val shardId = context.rawArgs.getOrNull(1)!!.toInt()
-			lorittaShards.shardManager.restart(shardId)
+			val shardId = context.rawArgs.getOrNull(1)!!.split(",").map { it.toInt() }
+			shardId.forEach {
+				lorittaShards.shardManager.restart(it)
+			}
 			context.reply(
-					LoriReply(
-							message = "Shard $shardId está sendo reiniciada... Gotta go fast!!!"
-					)
+                    LorittaReply(
+                            message = "Shard $shardId está sendo reiniciada... Gotta go fast!!!"
+                    )
 			)
 			return
 		}
 		if (arg0 == "setindex") {
 			UpdateStatusThread.skipToIndex = context.args[1].toInt()
 			context.reply(
-					LoriReply(
-							message = "Index alterada!"
-					)
+                    LorittaReply(
+                            message = "Index alterada!"
+                    )
 			)
 			return
 		}
 		if (arg0 == "fan_arts" || arg0 == "fanarts") {
 			loritta.loadFanArts()
 			context.reply(
-					LoriReply(
-							message = "Fan Arts recarregadas!"
-					)
+                    LorittaReply(
+                            message = "Fan Arts recarregadas!"
+                    )
 			)
 			return
 		}
@@ -112,20 +103,9 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			loritta.loadLocales()
 			loritta.loadLegacyLocales()
 			context.reply(
-					LoriReply(
-							message = "Locales recarregadas!"
-					)
-			)
-			return
-		}
-
-		if (arg0 == "commands") {
-			val oldCommandCount = loritta.legacyCommandManager.commandMap.size
-			LorittaLauncher.loritta.loadCommandManager()
-			context.reply(
-					LoriReply(
-							"Comandos recarregados com sucesso! **(${loritta.legacyCommandManager.commandMap.size} comandos ativados, ${loritta.legacyCommandManager.commandMap.size - oldCommandCount} comandos adicionados)**"
-					)
+                    LorittaReply(
+                            message = "Locales recarregadas!"
+                    )
 			)
 			return
 		}
@@ -215,99 +195,22 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			return
 		}
 
-		if (arg0 == "add_role_by_level") {
-			val reactionRole = transaction(Databases.loritta) {
-				RolesByExperience.insertAndGetId {
-					it[RolesByExperience.guildId] = 297732013006389252L
-					it[RolesByExperience.requiredExperience] = arg1!!.toLong()
-					it[RolesByExperience.roles] = arrayOf(arg2!!.toLong())
-				}
-			}
-
-			context.sendMessage("Adicionado configuração de nível por cargo por XP! ID: ${reactionRole.value}")
-			return
-		}
-
-		if (arg0 == "inject_level_config") {
-			val levelConfig = transaction(Databases.loritta) {
-				LevelConfig.new {
-					this.roleGiveType = RoleGiveType.STACK
-					this.noXpRoles = arrayOf()
-					this.noXpChannels = arrayOf()
-				}
-			}
-
-			val config = loritta.getOrCreateServerConfig(context.guild.idLong)
-
-			transaction(Databases.loritta) {
-				config.levelConfig = levelConfig
-			}
-
-			context.sendMessage("Adicionado configuração de level up! ID: ${levelConfig.id.value}")
-			return
-		}
-
-		if (arg0 == "inject_twitter_track") {
-			val channel = arg1
-			val handle = arg2
-
-			val tf = TwitterFactory(loritta.tweetTracker.buildTwitterConfig())
-			val twitter = tf.instance
-
-			val twitterUser = twitter.users().lookupUsers(handle)[0]
-
-			transaction(Databases.loritta) {
-				TrackedTwitterAccounts.insert {
-					it[TrackedTwitterAccounts.guildId] = context.guild.idLong
-					it[TrackedTwitterAccounts.channelId] = arg1?.toLong() ?: 0L
-					it[TrackedTwitterAccounts.twitterAccountId] = twitterUser.id
-					it[TrackedTwitterAccounts.message] = "{link}"
-				}
-			}
-
-			loritta.tweetTracker.updateStreams()
-
-			context.reply(
-					LoriReply(
-							"Adicionado track do usuário ${twitterUser.id} para canal $channel"
-					)
-			)
-			return
-		}
-
-		if (arg0 == "add_announcement_by_level") {
-			val config = loritta.getOrCreateServerConfig(context.guild.idLong)
-
-			val reactionRole = transaction(Databases.loritta) {
-				LevelAnnouncementConfigs.insertAndGetId {
-					it[levelConfig] = config.levelConfig!!.id
-					it[type] = LevelUpAnnouncementType.valueOf(arg1!!)
-					it[channelId] = arg2!!.toLongOrNull()
-					it[message] = "{@user} Yay, você passou de {previous-level} para {level}!! Antes você tinha {previous-xp} mas devido a toda sua força e determinação você passou para {xp} experiência!"
-				}
-			}
-
-			context.sendMessage("Adicionado notificação de level up por XP! ID: ${reactionRole.value}")
-			return
-		}
-
 		if (arg0 == "websitekt") {
 			net.perfectdreams.loritta.website.LorittaWebsite.INSTANCE.pathCache.clear()
 			context.reply(
-					LoriReply(
-							"Views regeneradas!"
-					)
+                    LorittaReply(
+                            "Views regeneradas!"
+                    )
 			)
 			return
 		}
 
 		if (arg0 == "website") {
-			LorittaWebsite.kotlinTemplateCache.clear()
 			LorittaWebsite.ENGINE.templateCache.invalidateAll()
 			context.reply(
-					LoriReply(
-							"Views regeneradas!"
-					)
+                    LorittaReply(
+                            "Views regeneradas!"
+                    )
 			)
 			return
 		}
@@ -317,36 +220,43 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			WebsiteAssetsHashes.legacyWebsiteFileHashes.clear()
 
 			context.reply(
-					LoriReply(
-							"Assets regenerados!"
-					)
+                    LorittaReply(
+                            "Assets regenerados!"
+                    )
+			)
+			return
+		}
+
+		if (arg0 == "restartweb") {
+			loritta.stopWebServer()
+			loritta.startWebServer()
+
+			context.reply(
+                    LorittaReply(
+                            "Website reiniciando!"
+                    )
 			)
 			return
 		}
 
 		if (arg0 == "stopweb") {
-			loritta.newWebsite?.stop()
-			loritta.newWebsiteThread?.interrupt()
+			loritta.stopWebServer()
 
 			context.reply(
-					LoriReply(
-							"Website desligado!"
-					)
+                    LorittaReply(
+                            "Website desligado!"
+                    )
 			)
 			return
 		}
 
 		if (arg0 == "startweb") {
-			loritta.newWebsiteThread = thread(true, name = "Website Thread") {
-				val nWebsite = net.perfectdreams.loritta.website.LorittaWebsite(loritta)
-				loritta.newWebsite = nWebsite
-				nWebsite.start()
-			}
+			loritta.startWebServer()
 
 			context.reply(
-					LoriReply(
-							"Website ligado!"
-					)
+                    LorittaReply(
+                            "Website ligado!"
+                    )
 			)
 			return
 		}
@@ -373,9 +283,9 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			file.writeText(sorted.joinToString("\n", transform = { it.key + " - " + it.value + " servidores"}) + "\n\nTotal: ${servers} servidores")
 
 			context.reply(
-					LoriReply(
-							"Datas exportadas!"
-					)
+                    LorittaReply(
+                            "Datas exportadas!"
+                    )
 			)
 			return
 		}
@@ -387,18 +297,18 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			loritta.discordConfig = Constants.HOCON_MAPPER.readValue(file2.readText())
 
 			context.reply(
-					LoriReply(
-							"Config recarregada!"
-					)
+                    LorittaReply(
+                            "Config recarregada!"
+                    )
 			)
 			return
 		}
 
 		context.reply(
-				LoriReply(
-						"Mas... cadê o sub argumento?",
-						Emotes.LORI_SHRUG
-				)
+                LorittaReply(
+                        "Mas... cadê o sub argumento?",
+                        Emotes.LORI_SHRUG
+                )
 		)
 	}
 }

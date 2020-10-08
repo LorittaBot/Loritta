@@ -2,19 +2,16 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.obj
-import com.google.gson.stream.JsonReader
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.Color
-import java.io.StringReader
 import java.net.URLEncoder
-
 
 class TempoCommand : AbstractCommand("weather", listOf("tempo", "previsão", "previsao"), CommandCategory.UTILS) {
 	override fun getUsage(): String {
@@ -31,30 +28,28 @@ class TempoCommand : AbstractCommand("weather", listOf("tempo", "previsão", "pr
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
-			var cidade = context.args.joinToString(separator = " ")
+			val cidade = context.args.joinToString(separator = " ")
 
-			var cidadeResponse = HttpRequest.get("http://api.openweathermap.org/data/2.5/forecast?q=" + URLEncoder.encode(cidade, "UTF-8") + "&units=metric&lang=pt&APPID=" + loritta.config.openWeatherMap.apiKey).body()
-			val reader = StringReader(cidadeResponse)
-			val jsonReader = JsonReader(reader)
-			val cidadeJsonResponse = jsonParser.parse(jsonReader).asJsonObject // Base
+			val cidadeResponse = HttpRequest.get("http://api.openweathermap.org/data/2.5/forecast?q=" + URLEncoder.encode(cidade, "UTF-8") + "&units=metric&lang=pt&APPID=" + loritta.config.openWeatherMap.apiKey).body()
+			val cidadeJsonResponse = JsonParser.parseString(cidadeResponse).asJsonObject // Base
 
 			if (cidadeJsonResponse.get("cod").asString == "200") { // Nós encontramos alguma coisa?
-				var status = cidadeJsonResponse.get("list").asJsonArray.get(0).asJsonObject
+				val status = cidadeJsonResponse.get("list").asJsonArray.get(0).asJsonObject
 
-				var now = status.getAsJsonObject("main").get("temp").asDouble
-				var max = status.getAsJsonObject("main").get("temp_max").asDouble
-				var min = status.getAsJsonObject("main").get("temp_min").asDouble
-				var pressure = status.getAsJsonObject("main").get("pressure").asDouble
-				var humidity = status.getAsJsonObject("main").get("humidity").asDouble
-				var windSpeed = status.getAsJsonObject("wind").get("speed").asDouble
-				var realCityName = cidadeJsonResponse.get("city").asJsonObject.get("name").asString
-				var countryShort = if (cidadeJsonResponse["city"].obj.has("country")) cidadeJsonResponse.get("city").asJsonObject.get("country").asString else realCityName
+				val now = status.getAsJsonObject("main").get("temp").asDouble
+				val max = status.getAsJsonObject("main").get("temp_max").asDouble
+				val min = status.getAsJsonObject("main").get("temp_min").asDouble
+				val pressure = status.getAsJsonObject("main").get("pressure").asDouble
+				val humidity = status.getAsJsonObject("main").get("humidity").asDouble
+				val windSpeed = status.getAsJsonObject("wind").get("speed").asDouble
+				val realCityName = cidadeJsonResponse.get("city").asJsonObject.get("name").asString
+				val countryShort = if (cidadeJsonResponse["city"].obj.has("country")) cidadeJsonResponse.get("city").asJsonObject.get("country").asString else realCityName
 				var icon = ""
 
-				var embed = EmbedBuilder()
+				val embed = EmbedBuilder()
 
-				var description = status.get("weather").asJsonArray.get(0).asJsonObject.get("description").asString
-				var abbr = status.get("weather").asJsonArray.get(0).asJsonObject.get("icon").asString
+				val description = status.get("weather").asJsonArray.get(0).asJsonObject.get("description").asString
+				val abbr = status.get("weather").asJsonArray.get(0).asJsonObject.get("icon").asString
 
 				if (abbr.startsWith("01")) {
 					icon = "☀ "

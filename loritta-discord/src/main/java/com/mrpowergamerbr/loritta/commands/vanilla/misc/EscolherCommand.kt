@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.misc
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.Emotes
@@ -25,10 +25,10 @@ class EscolherCommand : AbstractCommand("choose", listOf("escolher"), category =
 			// Hora de escolher algo aleatório!
 			val chosen = split[Loritta.RANDOM.nextInt(split.size)]
 			context.reply(
-					LoriReply(
-							message = context.legacyLocale["ESCOLHER_RESULT", chosen],
-							prefix = Emotes.LORI_HM
-					)
+                    LorittaReply(
+                            message = context.legacyLocale["ESCOLHER_RESULT", chosen],
+                            prefix = Emotes.LORI_HM
+                    )
 			)
 		} else {
 			context.explain()

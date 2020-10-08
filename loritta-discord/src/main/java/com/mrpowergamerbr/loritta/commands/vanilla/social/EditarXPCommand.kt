@@ -2,12 +2,11 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category = CommandCategory.SOCIAL) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -43,7 +42,7 @@ class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category =
 
 			val userData = context.config.getUserData(user.idLong)
 
-			transaction(Databases.loritta) {
+			loritta.newSuspendedTransaction {
 				userData.xp = newXp
 			}
 

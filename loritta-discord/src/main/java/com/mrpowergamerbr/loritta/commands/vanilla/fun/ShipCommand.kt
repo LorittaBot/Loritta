@@ -13,6 +13,7 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -85,7 +86,7 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 
 			// Loritta presa amanhã por manipulação de resultados
 			if (user1 != null && user2 != null) {
-				val marriage = transaction(Databases.loritta) {
+				val marriage = loritta.newSuspendedTransaction {
 					Marriage.find {
 						(Marriages.user1 eq user1.idLong and (Marriages.user2 eq user2.idLong)) or
 								(Marriages.user2 eq user1.idLong and (Marriages.user1 eq user2.idLong))
@@ -97,7 +98,7 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 					percentage = 100
 
 				// But effects can override the percentage!
-				val effect = transaction(Databases.loritta) {
+				val effect = loritta.newSuspendedTransaction {
 					ShipEffect.find {
 						(((ShipEffects.user1Id eq user1.idLong) and (ShipEffects.user2Id eq user2.idLong)) or
 								(ShipEffects.user2Id eq user1.idLong and (ShipEffects.user1Id eq user2.idLong))) and
@@ -116,9 +117,9 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 
 			if (Loritta.RANDOM.nextInt(0, 50) == 9 && context.lorittaUser.profile.money >= 3000) {
 				context.reply(
-						LoriReply(
-								context.locale["commands.fun.ship.bribeLove", "${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/ship-effects"]
-						)
+                        LorittaReply(
+                                context.locale["commands.fun.ship.bribeLove", "${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/ship-effects"]
+                        )
 				)
 			}
 
@@ -129,16 +130,16 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 			}
 
 			val messages: List<String> = when {
-				percentage >= 90 -> context.locale.getWithType("commands.fun.ship.value90")
-				percentage >= 80 -> context.locale.getWithType("commands.fun.ship.value80")
-				percentage >= 70 -> context.locale.getWithType("commands.fun.ship.value70")
-				percentage >= 60 -> context.locale.getWithType("commands.fun.ship.value60")
-				percentage >= 50 -> context.locale.getWithType("commands.fun.ship.value50")
-				percentage >= 40 -> context.locale.getWithType("commands.fun.ship.value40")
-				percentage >= 30 -> context.locale.getWithType("commands.fun.ship.value30")
-				percentage >= 20 -> context.locale.getWithType("commands.fun.ship.value20")
-				percentage >= 10 -> context.locale.getWithType("commands.fun.ship.value10")
-				percentage >= 0  -> context.locale.getWithType("commands.fun.ship.value0")
+				percentage >= 90 -> context.locale.getList("commands.fun.ship.value90")
+				percentage >= 80 -> context.locale.getList("commands.fun.ship.value80")
+				percentage >= 70 -> context.locale.getList("commands.fun.ship.value70")
+				percentage >= 60 -> context.locale.getList("commands.fun.ship.value60")
+				percentage >= 50 -> context.locale.getList("commands.fun.ship.value50")
+				percentage >= 40 -> context.locale.getList("commands.fun.ship.value40")
+				percentage >= 30 -> context.locale.getList("commands.fun.ship.value30")
+				percentage >= 20 -> context.locale.getList("commands.fun.ship.value20")
+				percentage >= 10 -> context.locale.getList("commands.fun.ship.value10")
+				percentage >= 0  -> context.locale.getList("commands.fun.ship.value0")
 				else -> {
 					throw RuntimeException("Can't find ship value for percentage $percentage")
 				}

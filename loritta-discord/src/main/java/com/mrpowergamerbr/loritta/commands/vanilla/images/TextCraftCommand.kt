@@ -3,12 +3,12 @@ package com.mrpowergamerbr.loritta.commands.vanilla.images
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.string
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.encodeToUrl
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.json.XML
 import java.net.HttpURLConnection
 import java.net.URL
@@ -73,7 +73,7 @@ class TextCraftCommand : AbstractCommand("textcraft", category = CommandCategory
 
 			val xmlJSONObj = XML.toJSONObject(body)
 			val jsonPrettyPrintString = xmlJSONObj.toString(4)
-			val payload = jsonParser.parse(jsonPrettyPrintString)
+			val payload = JsonParser.parseString(jsonPrettyPrintString)
 
 			val dataDir = payload["image"]["datadir"].string
 			val fullFilename = payload["image"]["fullfilename"].string

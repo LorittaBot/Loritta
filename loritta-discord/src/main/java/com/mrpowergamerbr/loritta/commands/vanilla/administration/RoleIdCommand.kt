@@ -1,11 +1,11 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.util.*
 
 class RoleIdCommand : AbstractCommand("roleid", listOf("cargoid", "iddocargo"), CommandCategory.ADMIN) {
@@ -35,43 +35,43 @@ class RoleIdCommand : AbstractCommand("roleid", listOf("cargoid", "iddocargo"), 
 
 			val mentionedRoles = context.message.mentionedRoles // Se o usuário mencionar o cargo, vamos mostrar o ID dos cargos mencionados
 
-			val list = mutableListOf<LoriReply>()
+			val list = mutableListOf<LorittaReply>()
 
 			if (mentionedRoles.isNotEmpty()) {
 
-				list.add(LoriReply(
-						message = locale["ROLEID_RoleIds", argument],
-						prefix = "\uD83D\uDCBC"
-				))
+				list.add(LorittaReply(
+                        message = locale["ROLEID_RoleIds", argument],
+                        prefix = "\uD83D\uDCBC"
+                ))
 
 				mentionedRoles.mapTo(list) {
-					LoriReply(
-							message = "*${it.name}* - `${it.id}`",
-							mentionUser = false
-					)
+                    LorittaReply(
+                            message = "*${it.name}* - `${it.id}`",
+                            mentionUser = false
+                    )
 				}
 			} else {
 				val roles = context.guild.roles.filter { it.name.contains(argument, true) }
 
-				list.add(LoriReply(
-						message = locale["ROLEID_RolesThatContains", argument],
-						prefix = "\uD83D\uDCBC"
-				))
+				list.add(LorittaReply(
+                        message = locale["ROLEID_RolesThatContains", argument],
+                        prefix = "\uD83D\uDCBC"
+                ))
 
 				if (roles.isEmpty()) {
 					list.add(
-							LoriReply(
-									message = "*${locale["ROLEID_NoRole"]}*",
-									mentionUser = false,
-									prefix = "\uD83D\uDE22"
-							)
+                            LorittaReply(
+                                    message = "*${locale["ROLEID_NoRole"]}*",
+                                    mentionUser = false,
+                                    prefix = "\uD83D\uDE22"
+                            )
 					)
 				} else {
 					roles.mapTo(list) {
-						LoriReply(
-								message = "*${it.name}* - `${it.id}`",
-								mentionUser = false
-						)
+                        LorittaReply(
+                                message = "*${it.name}* - `${it.id}`",
+                                mentionUser = false
+                        )
 					}
 				}
 

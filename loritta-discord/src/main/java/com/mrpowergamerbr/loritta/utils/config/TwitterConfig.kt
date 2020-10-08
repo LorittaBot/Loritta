@@ -11,5 +11,6 @@ class TwitterConfig @JsonCreator constructor(
         @JsonProperty("access-token")
         val oAuthAccessToken: String,
         @JsonProperty("access-token-secret")
-        val oAuthAccessTokenSecret: String
+        val oAuthAccessTokenSecret: String,
+        val enableTweetStream: Boolean
 )

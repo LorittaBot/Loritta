@@ -17,7 +17,7 @@ class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "comman
 	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
 		val embed = EmbedBuilder()
 				.setTitle("${Emotes.LORI_HEART} ${context.locale["commands.misc.help.lorittaHelp"]}")
-				.setDescription(context.locale.getWithType<List<String>>("commands.misc.help.intro").joinToString("\n\n", transform = { it.replace("{0}", context.asMention) }))
+				.setDescription(context.locale.getList("commands.misc.help.intro").joinToString("\n\n", transform = { it.replace("{0}", context.asMention) }))
 				.addField(
 						"${Emotes.LORI_PAT} ${context.locale["commands.misc.help.commandList"]}",
 						"${loritta.instanceConfig.loritta.website.url}commands",

@@ -6,9 +6,9 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.dao.ServerConfig
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.DonationKeys
-import com.mrpowergamerbr.loritta.utils.WebsiteUtils
+import net.perfectdreams.loritta.website.utils.WebsiteUtils
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -16,21 +16,20 @@ import kotlinx.coroutines.awaitAll
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.transactions.transaction
 
 object UserDonationKeysTransformer : ConfigTransformer {
     override val payloadType: String = "userkeys"
     override val configKey: String = "donationKeys"
 
     override suspend fun toJson(userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig): JsonElement {
-        val userDonationKeys = transaction(Databases.loritta) {
+        val userDonationKeys = loritta.newSuspendedTransaction {
             DonationKey.find { DonationKeys.userId eq userIdentification.id.toLong() and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
                     .toList()
         }
         
         val serverInfo = mutableMapOf<Long, JsonObject?>()
         
-        val guildIdsToBeQueried = transaction(Databases.loritta) {
+        val guildIdsToBeQueried = loritta.newSuspendedTransaction {
             userDonationKeys.filter { it.activeIn != null }.mapNotNull {
                 it.activeIn?.guildId
             }.distinct()
@@ -49,8 +48,8 @@ object UserDonationKeysTransformer : ConfigTransformer {
                     "id" to it.id.value,
                     "value" to it.value,
                     "expiresAt" to it.expiresAt,
-                    "user" to WebsiteUtils.transformToJson(lorittaShards.getUserById(it.userId)!!),
-                    "activeIn" to transaction(Databases.loritta) { it.activeIn?.guildId?.let { serverInfo[it] } }
+                    "user" to WebsiteUtils.transformToJson(lorittaShards.retrieveUserById(it.userId)!!),
+                    "activeIn" to loritta.newSuspendedTransaction { it.activeIn?.guildId?.let { serverInfo[it] } }
             )
         }
         return array.toJsonArray()

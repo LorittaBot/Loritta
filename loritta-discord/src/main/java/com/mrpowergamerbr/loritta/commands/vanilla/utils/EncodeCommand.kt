@@ -1,12 +1,12 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.apache.commons.codec.digest.DigestUtils
 import java.util.*
 
@@ -71,16 +71,16 @@ class EncodeCommand : AbstractCommand("encode", listOf("codificar", "encrypt", "
 
 		context.reply(
 				true,
-				LoriReply(
-						"**${locale["ENCODE_OriginalText"]}:** `${text.stripCodeMarks()}`",
-						"\uD83D\uDCC4",
-						mentionUser = false
-				),
-				LoriReply(
-						"**${locale["ENCODE_EncodedText"]}:** `${encodedText.stripCodeMarks()}`",
-						"<:blobspy:465979979876794368>",
-						mentionUser = false
-				)
+                LorittaReply(
+                        "**${locale["ENCODE_OriginalText"]}:** `${text.stripCodeMarks()}`",
+                        "\uD83D\uDCC4",
+                        mentionUser = false
+                ),
+                LorittaReply(
+                        "**${locale["ENCODE_EncodedText"]}:** `${encodedText.stripCodeMarks()}`",
+                        "<:blobspy:465979979876794368>",
+                        mentionUser = false
+                )
 		)
 	}
 

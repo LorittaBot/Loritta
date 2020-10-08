@@ -81,7 +81,7 @@ class BannerChanger(val loritta: Loritta, val m: AutoBannerChangerPlugin, val co
                     ?.firstIsInstanceOrNull<FanArtArtist.SocialNetwork.DiscordSocialNetwork>()
                     ?.id
 
-            artistUser = lorittaShards.getUserById(discordId)
+            artistUser = lorittaShards.retrieveUserById(discordId)
         }
 
         randomBanner!!

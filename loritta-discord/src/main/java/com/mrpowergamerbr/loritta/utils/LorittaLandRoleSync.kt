@@ -1,22 +1,15 @@
 package com.mrpowergamerbr.loritta.utils
 
-import com.github.salomonbrys.kotson.array
-import com.github.salomonbrys.kotson.get
-import com.github.salomonbrys.kotson.nullString
-import com.github.salomonbrys.kotson.string
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.extensions.retrieveAllMessages
+import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNullById
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
-import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.Member
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.tables.Payments
-import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.utils.config.FanArtArtist
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.sql.and
@@ -32,28 +25,10 @@ class LorittaLandRoleSync : Runnable {
 
 	override fun run() {
 		try {
-			if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount())
-				return
-
-			val roleRemap = mutableMapOf(
-					"316363779518627842" to "420630427837923328", // Deusas Supremas
-					"301764115582681088" to "420630186061725696", // Loritta (Integration)
-					"351473717194522647" to "421325022951637015", // Guarda-Costas da Lori
-					"399301696892829706" to "421325387889377291", // Suporte
-					"341343754336337921" to "467750037812936704", // Desenhistas
-					"385579854336360449" to "467750852610752561", // Tradutores
-					"434512654292221952" to "467751141363548171", // Loritta Partner
-					"334734175531696128" to "420710241693466627"  // Notificar Novidades
-			)
-
 			val originalGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID) ?: run {
 				logger.error("Erro ao sincronizar cargos! Servidor da Loritta (Original) não existe!")
 				return
 			}
-			val usGuild = lorittaShards.getGuildById(Constants.ENGLISH_SUPPORT_GUILD_ID) /* ?: run {
-				logger.error("Erro ao sincronizar cargos! Servidor da Loritta (Inglês) não existe!")
-				return
-			} */
 
 			logger.info("Dando cargos especiais da LorittaLand...")
 
@@ -67,7 +42,7 @@ class LorittaLandRoleSync : Runnable {
 						?.id
 
 				if (discordId != null) {
-					originalGuild.getMemberById(discordId)
+					runBlocking { originalGuild.retrieveMemberOrNullById(discordId) }
 				} else {
 					null
 				}
@@ -90,54 +65,6 @@ class LorittaLandRoleSync : Runnable {
 
 			// ===[ TRADUTORES ]===
 			synchronizeTranslatorsRoles(originalGuild)
-
-			/* logger.info("Sincronizando cargos da LorittaLand...")
-
-			for ((originalRoleId, usRoleId) in roleRemap) {
-				val originalRole = originalGuild.getRoleById(originalRoleId)
-				val usRole = usGuild.getRoleById(usRoleId)
-
-				if (originalRole != null && usRole != null) {
-					val manager = usRole.manager
-					var changed = false
-
-					if (originalRole.color != usRole.color) {
-						manager.setColor(originalRole.color)
-						changed = true
-					}
-
-					if (originalRole.permissionsRaw != usRole.permissionsRaw) {
-						manager.setPermissions(originalRole.permissionsRaw)
-						changed = true
-					}
-
-					if (originalRole.isHoisted != usRole.isHoisted) {
-						manager.setHoisted(originalRole.isHoisted)
-						changed = true
-					}
-
-					if (originalRole.isMentionable != usRole.isMentionable) {
-						manager.setMentionable(originalRole.isMentionable)
-						changed = true
-					}
-
-					if (changed) {
-						logger.info("Atualizando ${usRole.name}...")
-						manager.queue()
-					}
-				}
-			}
-
-			// Give roles
-			synchronizeRoles(originalGuild, usGuild, "351473717194522647", "421325022951637015") // Guarda-Costas
-			synchronizeRoles(originalGuild, usGuild, "399301696892829706", "421325387889377291") // Suporte
-			synchronizeRoles(originalGuild, usGuild, "341343754336337921", "467750037812936704") // Desenhistas
-			synchronizeRoles(originalGuild, usGuild, "385579854336360449", "467750852610752561") // Tradutores
-			synchronizeRoles(originalGuild, usGuild, "434512654292221952", "467751141363548171") // Lori Partner
-			synchronizeRoles(originalGuild, usGuild, "534659343656681474", "568505810825642029") // LorittaLand
-			synchronizeRoles(originalGuild, usGuild, "463652112656629760", "568506127977938977") // Super Contribuidor
-			synchronizeRoles(originalGuild, usGuild, "364201981016801281", "420640526711390208") // Contribuidor
-			*/
 
 			// Apply donators roles
 			val payments = transaction(Databases.loritta) {
@@ -283,38 +210,14 @@ class LorittaLandRoleSync : Runnable {
 		}
 	}
 
-	fun synchronizeRoles(fromGuild: Guild, toGuild: Guild, originalRoleId: String, giveRoleId: String) {
-		val originalRole = fromGuild.getRoleById(originalRoleId) ?: return
-		val giveRole = toGuild.getRoleById(giveRoleId) ?: return
-
-		val membersWithOriginalRole = fromGuild.getMembersWithRoles(originalRole)
-		val membersWithNewRole = toGuild.getMembersWithRoles(giveRole)
-
-		for (member in membersWithNewRole) {
-			if (!membersWithOriginalRole.any { it.user.id == member.user.id }) {
-				logger.info("Removendo cargo  ${giveRole.id} de ${member.effectiveName} (${member.user.id})...")
-				toGuild.removeRoleFromMember(member, giveRole).queue()
-			}
-		}
-
-		for (member in membersWithOriginalRole) {
-			if (!membersWithNewRole.any { it.user.id == member.user.id }) {
-				val usMember = toGuild.getMember(member.user) ?: continue
-
-				logger.info("Adicionado cargo ${giveRole.id} para ${usMember.effectiveName} (${usMember.user.id})...")
-				toGuild.addRoleToMember(usMember, giveRole).queue()
-			}
-		}
-	}
-
 	fun synchronizeTranslatorsRoles(originalGuild: Guild) {
 		val translatorRole = originalGuild.getRoleById("385579854336360449")
 
 		logger.info("Processing translators roles...")
-		val translators = loritta.locales.flatMap { it.value.getWithType<List<String>>("loritta.translationAuthors") }.distinct()
+		val translators = loritta.locales.flatMap { it.value.getList("loritta.translationAuthors") }.distinct()
 
 		val validTranslators = translators.mapNotNull {
-			originalGuild.getMemberById(it)
+			runBlocking { originalGuild.retrieveMemberOrNullById(it) }
 		}
 
 		if (translatorRole != null) {

@@ -11,6 +11,8 @@ import java.io.File
 import kotlin.reflect.full.createType
 
 class TranslateRoute(loritta: LorittaDiscord) : LocalizedRoute(loritta, "/translate") {
+	override val isMainClusterOnlyRoute = true
+
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
 		val html = ScriptingUtils.evaluateWebPageFromTemplate(
 				File(

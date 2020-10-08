@@ -1,13 +1,10 @@
 
-import kotlinx.serialization.ImplicitReflectionSerializer
 import utils.LegacyBaseLocale
-import utils.LorittaProfile
 import kotlin.browser.document
 import kotlin.browser.window
 import kotlin.js.Json
 
 lateinit var legacyLocale: LegacyBaseLocale
-var selfProfile: LorittaProfile? = null
 
 val loriUrl: String
 	get() = "${window.location.protocol}//${window.location.host}/"
@@ -28,7 +25,6 @@ fun Any.stringify(): String {
 	return JSON.stringify(this)
 }
 
-@ImplicitReflectionSerializer
 fun loadEmbeddedLocale() {
 	println("Loading locale from embedded data... (if available)")
 	val legacyLocaleJson = document.getElementById("locale-json")?.innerHTML
@@ -55,17 +51,6 @@ fun loadEmbeddedLocale() {
 	} else {
 		println("Couldn't find embedded data in body!")
 	}
-}
-
-@ImplicitReflectionSerializer
-fun oldMain(args: Array<String>) {
-	println("LoriUtils! ^-^")
-
-	document.addEventListener("DOMContentLoaded", {
-		loadEmbeddedLocale()
-
-		true
-	})
 }
 
 fun testError() {

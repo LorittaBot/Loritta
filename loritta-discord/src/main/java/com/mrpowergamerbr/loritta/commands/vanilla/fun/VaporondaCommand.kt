@@ -1,11 +1,11 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.misc.VaporwaveUtils
+import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class VaporondaCommand : AbstractCommand("vaporonda", listOf("vaporwave"), category = CommandCategory.FUN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -28,7 +28,7 @@ class VaporondaCommand : AbstractCommand("vaporonda", listOf("vaporwave"), categ
 		if (context.args.isNotEmpty()) {
 			val vaporwave = VaporwaveUtils.vaporwave(context.args.joinToString(" "))
 			context.reply(
-					LoriReply(message = vaporwave, prefix = "✍")
+                    LorittaReply(message = vaporwave, prefix = "✍")
 			)
 		} else {
 			this.explain(context)

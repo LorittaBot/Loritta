@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.api.commands
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import mu.KotlinLogging
@@ -22,10 +22,10 @@ abstract class LorittaCommandManager(val loritta: LorittaDiscord) : CommandManag
 		commandListeners.addThrowableListener { context, command, throwable ->
 			if (throwable is CommandException) {
 				context.reply(
-						LoriReply(
-								throwable.reason,
-								throwable.prefix
-						)
+                        LorittaReply(
+                                throwable.reply.message,
+                                throwable.reply.prefix
+                        )
 				)
 				return@addThrowableListener CommandContinuationType.CANCEL
 			}

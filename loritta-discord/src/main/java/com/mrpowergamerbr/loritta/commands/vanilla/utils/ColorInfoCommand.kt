@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.ColorUtils
 import net.perfectdreams.loritta.utils.Emotes
 import java.awt.Color
@@ -30,10 +31,10 @@ class ColorInfoCommand : AbstractCommand("colorinfo", listOf("rgb", "hexcolor", 
 
 			if (color == null) { // Cor inválida!
 				context.reply(
-						LoriReply(
-								message = context.locale["commands.invalidColor", input.stripCodeMarks()],
-								prefix = Emotes.LORI_HM
-						)
+                        LorittaReply(
+                                message = context.locale["commands.invalidColor", input.stripCodeMarks()],
+                                prefix = Emotes.LORI_HM
+                        )
 				)
 				return
 			}

@@ -4,6 +4,8 @@ import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
 import com.mrpowergamerbr.loritta.dao.Mute
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Mutes
+import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNullById
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -41,7 +43,7 @@ class MutedUsersTask : Runnable {
 					continue
 				}
 
-				val member = guild.getMemberById(mute.userId)
+				val member = runBlocking { guild.retrieveMemberOrNullById(mute.userId) }
 
 				if (member == null) {
 					logger.debug { "Member ${mute.userId} has a mute status in $guild, but the member isn't there anymore!" }

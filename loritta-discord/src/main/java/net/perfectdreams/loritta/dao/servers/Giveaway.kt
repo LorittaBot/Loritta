@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.dao.servers
 
 import net.perfectdreams.loritta.tables.servers.Giveaways
-import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
+import org.jetbrains.exposed.dao.id.EntityID
 
 class Giveaway(id: EntityID<Long>) : LongEntity(id) {
     companion object : LongEntityClass<Giveaway>(Giveaways)

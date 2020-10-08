@@ -4,7 +4,6 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
@@ -17,7 +16,6 @@ import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
 
@@ -26,7 +24,7 @@ class InviteLinkModule : MessageReceivedModule {
 		val cachedInviteLinks = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.MINUTES).build<Long, List<String>>().asMap()
 	}
 
-	override fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
+	override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
 		val inviteBlockerConfig = serverConfig.getCachedOrRetreiveFromDatabase<InviteBlockerConfig?>(ServerConfig::inviteBlockerConfig)
 				?: return false
 
@@ -49,6 +47,9 @@ class InviteLinkModule : MessageReceivedModule {
 				?: return false
 
 		val content = message.contentRaw
+				// We need to strip the code marks to avoid this:
+				// https://cdn.discordapp.com/attachments/513405772911345664/760887806191992893/invite-bug.png
+				.stripCodeMarks()
 				.replace("\u200B", "")
 				.replace("\\", "")
 
@@ -155,11 +156,11 @@ class InviteLinkModule : MessageReceivedModule {
 									).joinToString("\n") { it.build(JDAUser(event.member.user)) }
 							)
 
-							enableBypassMessage.onReactionAddByAuthor(event.author.id) {
+							enableBypassMessage.onReactionAddByAuthor(event.author.idLong) {
 								if (it.reactionEmote.id == (Emotes.LORI_PAT as DiscordEmote).id) {
 									enableBypassMessage.removeAllFunctions()
 
-									transaction(Databases.loritta) {
+									loritta.newSuspendedTransaction {
 										ServerRolePermissions.insert {
 											it[ServerRolePermissions.guild] = serverConfig.id
 											it[ServerRolePermissions.roleId] = topRole.idLong
@@ -180,7 +181,7 @@ class InviteLinkModule : MessageReceivedModule {
 						}
 					}
 
-					val toBeSent = MessageUtils.generateMessage(warnMessage, listOf(message.author, guild), guild)
+					val toBeSent = MessageUtils.generateMessage(warnMessage, listOf(message.author, guild, message.channel), guild)
 							?: return true
 
 					message.textChannel.sendMessage(toBeSent).queue()

@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.website.routes.dashboard.configure
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.ServerConfig
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.website.evaluate
 import io.ktor.application.ApplicationCall
@@ -13,14 +12,13 @@ import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.extensions.legacyVariables
 import net.perfectdreams.loritta.website.utils.extensions.respondHtml
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
-import org.jetbrains.exposed.sql.transactions.transaction
 import kotlin.collections.set
 
 class ConfigureWelcomerRoute(loritta: LorittaDiscord) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/welcomer") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
 		loritta as Loritta
 
-		val welcomerConfig = transaction(Databases.loritta) {
+		val welcomerConfig = loritta.newSuspendedTransaction {
 			serverConfig.welcomerConfig
 		}
 
@@ -37,7 +35,9 @@ class ConfigureWelcomerRoute(loritta: LorittaDiscord) : RequiresGuildAuthLocaliz
 						welcomerConfig?.joinMessage ?: "\uD83D\uDC49 {@user} entrou no servidor!",
 						welcomerConfig?.removeMessage ?: "\uD83D\uDC48 {nickname} saiu do servidor!",
 						welcomerConfig?.joinPrivateMessage ?: "Obrigado por entrar na {guild} {@user}! Espero que você curta o nosso servidor!",
-						welcomerConfig?.bannedMessage ?: "{user} foi banido do servidor!"
+						welcomerConfig?.bannedMessage ?: "{user} foi banido do servidor!",
+						welcomerConfig?.deleteJoinMessagesAfter ?: 0L,
+						welcomerConfig?.deleteRemoveMessagesAfter ?: 0L
 				)
 		)
 
@@ -57,7 +57,9 @@ class ConfigureWelcomerRoute(loritta: LorittaDiscord) : RequiresGuildAuthLocaliz
 				val joinMessage: String,
 				val removeMessage: String,
 				val joinPrivateMessage: String,
-				val bannedMessage: String
+				val bannedMessage: String,
+				val deleteJoinMessagesAfter: Long,
+				val deleteRemoveMessagesAfter: Long
 		)
 	}
 }

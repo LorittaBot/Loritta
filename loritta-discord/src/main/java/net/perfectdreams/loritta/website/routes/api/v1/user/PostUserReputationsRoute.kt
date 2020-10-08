@@ -5,13 +5,13 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.string
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.Reputation
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.PersonalPronoun
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
@@ -27,18 +27,17 @@ import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.utils.DiscordUtils
-import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.UserPremiumPlans
+import net.perfectdreams.loritta.utils.*
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.website.utils.extensions.trueIp
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/{userId}/reputation") {
 	companion object {
@@ -69,12 +68,12 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 							.ok()
 				} catch (e: Exception) {
 					logger.warn(e) { "Shard ${cluster.name} ${cluster.id} offline!" }
-					throw PingCommand.ShardOfflineException(cluster.id, cluster.name)
+					throw ClusterOfflineException(cluster.id, cluster.name)
 				}
 			}
 		}
 
-		fun sendReputationReceivedMessage(guildId: String, channelId: String, giverId: String, giverProfile: Profile, receiverId: String, reputationCount: Int) {
+		suspend fun sendReputationReceivedMessage(guildId: String, channelId: String, giverId: String, giverProfile: Profile, receiverId: String, reputationCount: Int) {
 			logger.info { "Received sendReputation request in $guildId $channelId by $giverId for $receiverId" }
 
 			if (guildId.isValidSnowflake() && channelId.isValidSnowflake()) {
@@ -84,7 +83,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 				if (channel != null) {
 					if (!channel.canTalk()) // Eu não posso falar!
 						return
-					val member = channel.guild.getMemberById(giverId)
+					val member = channel.guild.retrieveMemberById(giverId).await()
 					if (member == null || !channel.canTalk(member)) // O usuário não está no servidor ou não pode falar no chat
 						return
 
@@ -93,7 +92,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 
 					val serverConfig = loritta.getOrCreateServerConfig(guildId.toLong())
 					val receiverProfile = loritta.getOrCreateLorittaProfile(giverId)
-					val receiverSettings = transaction(Databases.loritta) {
+					val receiverSettings = loritta.newSuspendedTransaction {
 						receiverProfile.settings
 					}
 
@@ -105,18 +104,18 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 					val locale = loritta.getLocaleById(serverConfig.localeId)
 
 					// Tudo certo? Então vamos enviar!
-					val reply = LoriReply(
-							locale[
-									"commands.social.reputation.success",
-									"<@${giverId}>",
-									"<@$receiverId>",
-									reputationCount,
-									Emotes.LORI_OWO,
-									"<${loritta.instanceConfig.loritta.website.url}user/${receiverId}/rep?guild=${guildId}&channel=${channelId}>",
-									receiverSettings.gender.getPersonalPronoun(locale, PersonalPronoun.THIRD_PERSON, "<@$receiverId>")
-							],
-							Emotes.LORI_HUG
-					)
+					val reply = LorittaReply(
+                            locale[
+                                    "commands.social.reputation.success",
+                                    "<@${giverId}>",
+                                    "<@$receiverId>",
+                                    reputationCount,
+                                    Emotes.LORI_OWO,
+                                    "<${loritta.instanceConfig.loritta.website.url}user/${receiverId}/rep?guild=${guildId}&channel=${channelId}>",
+                                    receiverSettings.gender.getPersonalPronoun(locale, PersonalPronoun.THIRD_PERSON, "<@$receiverId>")
+                            ],
+                            Emotes.LORI_HUG
+                    )
 
 					channel.sendMessage(reply.build()).queue()
 				}
@@ -137,7 +136,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 			)
 		}
 
-		val json = jsonParser.parse(call.receiveText())
+		val json = JsonParser.parseString(call.receiveText())
 		val content = json["content"].string
 		val token = json["token"].string
 		val guildId = json["guildId"].nullString
@@ -154,7 +153,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 		val ip = call.request.trueIp
 
 		mutex.withLock {
-			val lastReputationGiven = transaction(Databases.loritta) {
+			val lastReputationGiven = loritta.newSuspendedTransaction {
 				Reputation.find {
 					(Reputations.givenById eq userIdentification.id.toLong()) or
 							(Reputations.givenByEmail eq userIdentification.email!!) or
@@ -182,7 +181,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 
 			giveReputation(userIdentification.id.toLong(), ip, userIdentification.email!!, receiver.toLong(), content)
 
-			val donatorPaid = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonations(userIdentification.id.toLong())
+			val donatorPaid = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonationsAsync(userIdentification.id.toLong())
 			var randomChance = UserPremiumPlans.getPlanFromValue(donatorPaid).loriReputationRetribution
 
 			if (chance(randomChance)) { // Lori é fofis e retribuiu reputações :eu_te_moido:
@@ -197,7 +196,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 							"Stay awesome :3"
 					)
 
-					val reputationCount = transaction(Databases.loritta) {
+					val reputationCount = loritta.newSuspendedTransaction {
 						Reputations.select { Reputations.receivedById eq userIdentification.id.toLong() }.count()
 					}
 
@@ -207,81 +206,20 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 				}
 			}
 
-			val reputations = transaction(Databases.loritta) {
+			val reputations = loritta.newSuspendedTransaction {
 				Reputation.find { Reputations.receivedById eq receiver.toLong() }.sortedByDescending { it.receivedAt }
 			}
 
 			if (guildId != null && channelId != null)
 				sendReputationToCluster(guildId, channelId, userIdentification.id, receiver, reputations.size.toLong())
 
-			val rank = StringBuilder().appendHTML().div(classes = "box-item") {
-				val map = reputations.groupingBy { it.givenById }.eachCount()
-						.entries
-						.sortedByDescending { it.value }
-
-				var idx = 0
-				div(classes = "rank-title") {
-					+"Placar de Reputações"
-				}
-				table {
-					tbody {
-						tr {
-							th {
-								// + "Posição"
-							}
-							th {}
-							th {
-								// + "Nome"
-							}
-						}
-						for ((userId, count) in map) {
-							if (idx == 5) break
-							val rankUser = lorittaShards.getUserById(userId)
-
-							if (rankUser != null) {
-								tr {
-									td {
-										img(classes = "rank-avatar", src = rankUser.effectiveAvatarUrl) { width = "64" }
-									}
-									td(classes = "rank-position") {
-										+"#${idx + 1}"
-									}
-									td {
-										if (idx == 0) {
-											div(classes = "rank-name rainbow") {
-												+rankUser.name
-											}
-
-										} else {
-											div(classes = "rank-name") {
-												+rankUser.name
-											}
-										}
-										div(classes = "reputations-received") {
-											+"${count} reputações"
-										}
-									}
-								}
-								idx++
-							}
-						}
-					}
-				}
-			}
-
-			// Vamos reenviar vários dados utilizados na hora de gerar a telinha
-			val response = jsonObject(
-					"count" to transaction(Databases.loritta) { Reputations.select { Reputations.receivedById eq receiver.toLong() }.count() },
-					"rank" to rank.toString()
-			)
-
-			call.respondJson(response)
+			call.respondJson(jsonObject())
 		}
 	}
 
-	fun giveReputation(giver: Long, giverIp: String, giverEmail: String, receiver: Long, content: String) {
+	suspend fun giveReputation(giver: Long, giverIp: String, giverEmail: String, receiver: Long, content: String) {
 		logger.info("$giver ($giverIp/$giverEmail) deu uma reputação para $receiver! Motivo: $content")
-		transaction(Databases.loritta) {
+		loritta.newSuspendedTransaction {
 			Reputation.new {
 				this.givenById = giver
 				this.givenByIp = giverIp

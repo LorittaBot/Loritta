@@ -1,5 +1,6 @@
 package net.perfectdreams.spicymorenitta
 
+import kotlinx.serialization.Serializable
 import net.perfectdreams.spicymorenitta.utils.onDOMReady
 import net.perfectdreams.spicymorenitta.utils.select
 import org.w3c.dom.Element
@@ -39,6 +40,7 @@ object WebsiteThemeUtils {
 			callback.invoke()
 	}
 
+	@Serializable
 	enum class WebsiteTheme(val bodyClass: String, val icon: String) {
 		DEFAULT("light", "fas fa-moon"),
 		DARK_THEME("dark", "fas fa-sun")

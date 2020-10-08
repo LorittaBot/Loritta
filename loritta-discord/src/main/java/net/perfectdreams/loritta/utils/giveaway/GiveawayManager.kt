@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNull
 import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -126,7 +127,7 @@ object GiveawayManager {
 
         logger.trace { "Storing giveaway info..." }
 
-        val giveaway = transaction(Databases.loritta) {
+        val giveaway = loritta.newSuspendedTransaction {
             Giveaway.new {
                 this.guildId = channel.guild.idLong
                 this.textChannelId = channel.idLong
@@ -342,15 +343,21 @@ object GiveawayManager {
                 val reactedUsers = messageReaction.retrieveUsers().await()
                         .asSequence()
                         .filter { it.id != loritta.discordConfig.discord.clientId }
-                        .filter { message.guild.getMemberById(it.idLong) != null }
                         .toMutableList()
 
-                repeat(giveaway.numberOfWinners) {
+                while (true) {
+                    if (giveaway.numberOfWinners == winners.size)
+                        break
                     if (reactedUsers.isEmpty())
-                        return@repeat
+                        break
 
                     val user = reactedUsers.random()
-                    winners.add(user)
+
+                    val member = message.guild.retrieveMemberOrNull(user)
+
+                    if (member != null)
+                        winners.add(user)
+
                     reactedUsers.remove(user)
                 }
 
@@ -404,7 +411,7 @@ object GiveawayManager {
 
         rollWinners(message, giveaway)
 
-        transaction(Databases.loritta) {
+        loritta.suspendedTransactionAsync {
             giveaway.finished = true
         }
 

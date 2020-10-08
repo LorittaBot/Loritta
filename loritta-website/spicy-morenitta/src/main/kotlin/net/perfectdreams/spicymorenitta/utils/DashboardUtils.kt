@@ -3,11 +3,13 @@ package net.perfectdreams.spicymorenitta.utils
 import io.ktor.client.request.get
 import io.ktor.client.request.url
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.html.*
 import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.parse
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
+import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import kotlin.browser.window

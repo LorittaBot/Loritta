@@ -1,12 +1,13 @@
 package net.perfectdreams.spicymorenitta.utils
 
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import io.ktor.client.request.post
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
-import net.perfectdreams.spicymorenitta.utils.locale.BaseLocale
+import net.perfectdreams.spicymorenitta.utils.locale.buildAsHtml
 import org.w3c.dom.HTMLScriptElement
 import org.w3c.dom.HTMLSpanElement
 import org.w3c.dom.url.URL
@@ -60,7 +61,7 @@ object ErrorTracker : Logging {
 			try {
 				URLSearchParams(URL(it.src).search.substring(1)).get("hash")
 			} catch (e: Error) {
-				warn("Something went wrong while trying to get the app hashm upda")
+				warn("Something went wrong while trying to get the app hash")
 			}
 		}
 
@@ -68,7 +69,7 @@ object ErrorTracker : Logging {
 		// Gambiarra, a gente só quer usar o buildAsHtml do BaseLocale
 		// Ele nem usa nenhuma das entries, então vamos apenas criar um dummy locale e utilizá-lo
 		// No futuro seria melhor mover o buildAsHtml para um código separado
-		val locale = BaseLocale("dummy", mutableMapOf())
+		val locale = BaseLocale("dummy")
 
 		warn("Message: $message")
 		warn("File: $file")

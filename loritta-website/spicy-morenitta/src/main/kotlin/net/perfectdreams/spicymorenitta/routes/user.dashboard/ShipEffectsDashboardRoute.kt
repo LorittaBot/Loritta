@@ -2,11 +2,9 @@ package net.perfectdreams.spicymorenitta.routes.user.dashboard
 
 import kotlinx.html.div
 import kotlinx.html.dom.append
-import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.list
 import kotlinx.serialization.json.JSON
-import kotlinx.serialization.parse
-import kotlinx.serialization.parseList
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
@@ -20,16 +18,15 @@ import kotlin.browser.window
 import kotlin.dom.addClass
 
 class ShipEffectsDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/user/@me/dashboard/ship-effects") {
-    @UseExperimental(ImplicitReflectionSerializer::class)
     override fun onRender(call: ApplicationCall) {
         super.onRender(call)
 
         val premiumAsJson = document.getElementById("ship-effects-json")?.innerHTML!!
 
-        val shipEffects = JSON.nonstrict.parseList<ShipEffect>(premiumAsJson)
+        val shipEffects = JSON.nonstrict.parse(ShipEffect.serializer().list, premiumAsJson)
         val profileAsJson = document.getElementById("profile-json")?.innerHTML!!
 
-        val profile = JSON.nonstrict.parse<ProfileListDashboardRoute.Profile>(profileAsJson)
+        val profile = JSON.nonstrict.parse(Profile.serializer(), profileAsJson)
 
         val buyButton = page.getElementById("buy-button") as HTMLButtonElement
         if (3000 > profile.money) {
@@ -75,6 +72,12 @@ class ShipEffectsDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRen
             }
         })
     }
+
+    @Serializable
+    class Profile(
+            val id: Long,
+            val money: Double
+    )
 
     @Serializable
     class ShipEffect(

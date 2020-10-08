@@ -22,7 +22,7 @@ class DonatorsOstentationPlugin(name: String, loritta: LorittaBot) : LorittaDisc
 
         val config = Constants.HOCON_MAPPER.readValue<DonatorsOstentationConfig>(File(dataFolder, "config.conf"))
 
-        addEventListener(BoostGuildListener(config))
+        // addEventListener(BoostGuildListener(config))
         launch(NitroBoostUtils.createBoostTask(config))
         launch(NitroBoostUtils.updateValidBoostServers(config))
         launch(PremiumSlotsUtils.createPremiumSlotsAdvertisementTask(config))

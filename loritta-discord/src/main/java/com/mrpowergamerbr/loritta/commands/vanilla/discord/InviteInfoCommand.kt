@@ -2,12 +2,14 @@ package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import java.util.*
 
 class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCategory.DISCORD) {
@@ -33,21 +35,21 @@ class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCatego
 						.replace("http://", "")
 			}
 
-			val inviteBody = HttpRequest.get("https://canary.discordapp.com/api/v6/invite/$inviteId?with_counts=true")
+			val inviteBody = HttpRequest.get("https://canary.discordapp.com/api/v6/invite/${inviteId.encodeToUrl()}?with_counts=true")
 					.userAgent(Constants.USER_AGENT)
 					.body()
 
-			val payload = jsonParser.parse(inviteBody).obj
+			val payload = JsonParser.parseString(inviteBody).obj
 
 			val code = payload["code"]
 
 			if (code.asJsonPrimitive.isNumber && code.int == 10006) {
 				// Invite não existe!
 				context.reply(
-						LoriReply(
-								locale["INVITEINFO_InviteDoesNotExist", inviteId.stripCodeMarks()],
-								Constants.ERROR
-						)
+                        LorittaReply(
+                                locale["INVITEINFO_InviteDoesNotExist", inviteId.stripCodeMarks()],
+                                Constants.ERROR
+                        )
 				)
 			} else {
 				val guild = payload["guild"].obj

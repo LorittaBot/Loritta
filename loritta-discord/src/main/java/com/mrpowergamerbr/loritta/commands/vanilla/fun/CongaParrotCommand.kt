@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
@@ -32,10 +32,10 @@ class CongaParrotCommand : AbstractCommand("congaparrot", category = CommandCate
 
 		if (upTo == null) {
 			context.reply(
-					LoriReply(
-							message = locale["INVALID_NUMBER", context.args[0]],
-							prefix = Constants.ERROR
-					)
+                    LorittaReply(
+                            message = locale["INVALID_NUMBER", context.args[0]],
+                            prefix = Constants.ERROR
+                    )
 			)
 			return
 		}
@@ -50,11 +50,11 @@ class CongaParrotCommand : AbstractCommand("congaparrot", category = CommandCate
 			context.sendMessage(message)
 		} else {
 			context.reply(
-					LoriReply(
-							message = locale["CONGAPARROT_InvalidRange"],
-							prefix = Constants.ERROR
+                    LorittaReply(
+                            message = locale["CONGAPARROT_InvalidRange"],
+                            prefix = Constants.ERROR
 
-					)
+                    )
 			)
 		}
 	}

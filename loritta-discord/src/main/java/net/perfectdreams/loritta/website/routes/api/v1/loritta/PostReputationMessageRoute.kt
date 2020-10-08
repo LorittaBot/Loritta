@@ -4,7 +4,7 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.int
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.string
-import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.google.gson.JsonParser
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.website.utils.extensions.respondJson
 
 class PostReputationMessageRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/send-reputation-message") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
-		val json = jsonParser.parse(call.receiveText())
+		val json = JsonParser.parseString(call.receiveText())
 
 		val guildId = json["guildId"].string
 		val channelId = json["channelId"].string

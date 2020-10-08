@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -14,12 +13,11 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 
 class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak"), category = CommandCategory.MISC) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.miscellaneous.language.description", "\uD83D\uDE0A"]
+		return locale.toNewLocale()["commands.misc.language.description", "\uD83D\uDE0A"]
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
@@ -44,7 +42,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 						"\uD83C\uDDF5\uD83C\uDDF9"
 				), */
 				LocaleWrapper(
-						"English-US",
+						"English (United States)",
 						loritta.getLocaleById("en-us"),
 						loritta.getLegacyLocaleById("en-us"),
 						"\uD83C\uDDFA\uD83C\uDDF8"
@@ -80,7 +78,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 					context,
 					LocaleWrapper(
 							"Auto-PT-BR-Debug",
-							loritta.getLocaleById("pt-debug"),
+							loritta.getLocaleById("br-debug"),
 							loritta.getLegacyLocaleById("default"),
 							"\uD83D\uDC31"
 					)
@@ -105,7 +103,8 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 				context.getAsMention(true),
 				buildLanguageEmbed(
 						locale.toNewLocale(),
-						validLanguages.subList(0, 2)
+						validLanguages.subList(0, 2),
+						context.isPrivateChannel
 				)
 		)
 
@@ -115,7 +114,8 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 						" ",
 						buildLanguageEmbed(
 								locale.toNewLocale(),
-								validLanguages.subList(2, validLanguages.size)
+								validLanguages.subList(2, validLanguages.size),
+								context.isPrivateChannel
 						),
 						true
 				)
@@ -135,8 +135,8 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 				}
 			}
 
-			activateLanguage(context, newLanguage ?: validLanguages.first { it.locale.id == "default" })
 			message.delete().queue()
+			activateLanguage(context, newLanguage ?: validLanguages.first { it.locale.id == "default" }, context.isPrivateChannel)
 		}
 
 		for (wrapper in validLanguages.subList(0, 2)) {
@@ -147,11 +147,15 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 		message.addReaction("lori_ok_hand:426183783008698391").queue()
 	}
 
-	private suspend fun activateLanguage(context: CommandContext, newLanguage: LocaleWrapper) {
+	private suspend fun activateLanguage(context: CommandContext, newLanguage: LocaleWrapper, isPrivateChannel: Boolean = false) {
 		var localeId = newLanguage.locale.id
 
-		transaction(Databases.loritta) {
-			context.config.localeId = localeId
+		val profile = loritta.getOrCreateLorittaProfile(context.userHandle.idLong)
+		loritta.newSuspendedTransaction {
+			if (isPrivateChannel) // If command was executed in DM channel, will be set only to user
+				profile.settings.language = localeId
+			else
+				context.config.localeId = localeId
 		}
 
 		val newLocale = loritta.getLocaleById(localeId)
@@ -159,25 +163,31 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 			localeId = "pt-br" // Já que nós já salvamos, vamos trocar o localeId para algo mais "decente"
 		}
 
-		context.reply(newLocale["commands.miscellaneous.language.languageChanged", "`$localeId`"], "\uD83C\uDFA4")
+		if(isPrivateChannel)
+			context.reply(newLocale["commands.misc.language.languageChanged", "`${localeId}`"], "\uD83C\uDFA4")
+		else
+			context.reply(newLocale["commands.misc.language.serverLanguageChanged", "`${localeId}`"], "\uD83C\uDFA4")
 	}
 
-	private suspend fun buildLanguageEmbed(locale: BaseLocale, languages: List<LocaleWrapper>): MessageEmbed {
+	private suspend fun buildLanguageEmbed(locale: BaseLocale, languages: List<LocaleWrapper>, isPrivateChannel: Boolean): MessageEmbed {
 		val embed = EmbedBuilder()
 		embed.setColor(Color(0, 193, 223))
-
-		embed.setTitle("\uD83C\uDF0E " + locale["commands.miscellaneous.language.pleaseSelectYourLanguage"])
+		embed.setTitle("\uD83C\uDF0E " + locale["commands.misc.language.pleaseSelectYourLanguage"])
+		if (isPrivateChannel) {
+			embed.setDescription(locale["commands.misc.language.changeLanguageDescription"])
+		} else {
+			embed.setDescription(locale["commands.misc.language.changeServerLanguageDescription"])
+		}
 
 		for (wrapper in languages) {
-			val translators = wrapper.locale.getWithType<List<String>>("loritta.translationAuthors").mapNotNull { lorittaShards.retrieveUserInfoById(it.toLong()) }
-
-			embed.addField(
+			val translators = wrapper.locale.getList("loritta.translationAuthors").mapNotNull { lorittaShards.retrieveUserInfoById(it.toLong()) }
+			
+      embed.addField(
 					wrapper.emoteName + " " + wrapper.name,
-					"**${locale["commands.miscellaneous.language.translatedBy"]}:** ${translators.joinToString(transform = { "`${it.name}`" })}",
+					"**${locale["commands.misc.language.translatedBy"]}:** ${translators.joinToString(transform = { "`${it.name}`" })}",
 					true
 			)
 		}
-
 		return embed.build()
 	}
 

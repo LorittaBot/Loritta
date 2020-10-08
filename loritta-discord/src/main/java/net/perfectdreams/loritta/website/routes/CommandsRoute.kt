@@ -11,6 +11,8 @@ import java.io.File
 import kotlin.reflect.full.createType
 
 class CommandsRoute(loritta: LorittaDiscord) : LocalizedRoute(loritta, "/commands") {
+	override val isMainClusterOnlyRoute = true
+
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
 		val html = ScriptingUtils.evaluateWebPageFromTemplate(
 				File(

@@ -1,23 +1,23 @@
 package com.mrpowergamerbr.loritta.utils
 
-import com.github.kevinsawicki.http.HttpRequest
-import com.google.gson.stream.JsonReader
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import mu.KotlinLogging
+import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.utils.MiscUtil
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
+import net.perfectdreams.loritta.tables.BannedUsers
+import net.perfectdreams.loritta.utils.Emotes
 import org.apache.commons.lang3.ArrayUtils
 import java.awt.Graphics
 import java.awt.Image
 import java.awt.image.BufferedImage
-import java.io.StringReader
-import java.net.URLEncoder
-import java.util.*
 
 fun Image.toBufferedImage() : BufferedImage {
 	return ImageUtils.toBufferedImage(this)
@@ -78,7 +78,6 @@ val loritta get() = LorittaLauncher.loritta
 val lorittaShards get() = LorittaLauncher.loritta.lorittaShards
 
 val gson get() = Loritta.GSON
-val jsonParser get() = Loritta.JSON_PARSER
 
 fun String.isValidSnowflake(): Boolean {
 	try {
@@ -89,101 +88,72 @@ fun String.isValidSnowflake(): Boolean {
 	}
 }
 
-enum class NSFWResponse {
-	OK, ERROR, NSFW, EXCEPTION
-}
-
 object LorittaUtilsKotlin {
 	val logger = KotlinLogging.logger {}
 
-	fun handleIfBanned(context: CommandContext, profile: Profile): Boolean {
-		if (profile.isBanned) {
-			LorittaLauncher.loritta.ignoreIds.add(context.userHandle.idLong)
+	/**
+	 * Checks if a user is banned and, if it is, a message is sent to the user via direct messages or, if their DMs are disabled, in the current channel.
+	 *
+	 * @return if the user is banned
+	 */
+	suspend fun handleIfBanned(context: CommandContext, profile: Profile)
+			= handleIfBanned(context.userHandle, profile, context.event.channel, context.locale, context.legacyLocale)
 
-			// Se um usuário está banido...
-			context.userHandle
-					.openPrivateChannel()
-					.queue (
-							{ it.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.legacyLocale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() },
-							{ context.event.textChannel!!.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.legacyLocale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() }
-					)
-			return true
-		}
-		return false
-	}
-
-
-	fun handleIfBanned(context: LorittaCommandContext, profile: Profile): Boolean {
+	/**
+	 * Checks if a user is banned and, if it is, a message is sent to the user via direct messages or, if their DMs are disabled, in the current channel.
+	 *
+	 * @return if the user is banned
+	 */
+	suspend fun handleIfBanned(context: LorittaCommandContext, profile: Profile): Boolean {
 		if (context !is DiscordCommandContext)
 			throw UnsupportedOperationException("I don't know how to handle a $context yet!")
 
-		if (profile.isBanned) {
-			LorittaLauncher.loritta.ignoreIds.add(context.userHandle.idLong)
-
-			// Se um usuário está banido...
-			context.userHandle
-					.openPrivateChannel()
-					.queue (
-							{ it.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.legacyLocale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() },
-							{ context.event.textChannel!!.sendMessage("\uD83D\uDE45 **|** " + context.getAsMention(true) + context.legacyLocale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() }
-					)
-			return true
-		}
-		return false
+		return handleIfBanned(context.userHandle, profile, context.discordMessage.channel, context.locale, context.legacyLocale)
 	}
 
-	fun handleIfBanned(context: net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext, profile: Profile): Boolean {
-		if (profile.isBanned) {
-			val legacyLocale = loritta.getLegacyLocaleById(context.locale.id)
-			LorittaLauncher.loritta.ignoreIds.add(context.user.idLong)
+	/**
+	 * Checks if a user is banned and, if it is, a message is sent to the user via direct messages or, if their DMs are disabled, in the current channel.
+	 *
+	 * @return if the user is banned
+	 */
+	suspend fun handleIfBanned(context: net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext, profile: Profile)
+			= handleIfBanned(context.user, profile, context.discordMessage.channel, context.locale, loritta.getLegacyLocaleById(context.locale.id))
 
-			// Se um usuário está banido...
-			context.user
-					.openPrivateChannel()
-					.queue (
-							{ it.sendMessage("\uD83D\uDE45 **|** " + context.getUserMention(true) + legacyLocale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() },
-							{ context.discordMessage.channel.sendMessage("\uD83D\uDE45 **|** " + context.getUserMention(true) + legacyLocale["USER_IS_LORITTABANNED", profile.bannedReason]).queue() }
-					)
-			return true
-		}
-		return false
-	}
+	/**
+	 * Checks if a user is banned and, if it is, a message is sent to the user via direct messages or, if their DMs are disabled, in the current channel.
+	 *
+	 * @param user           the user that will be checked if they are banned or not
+	 * @param profile        the user's profile
+	 * @param commandChannel where the banned message will be sent if the user's direct messages are disabled
+	 * @param legacyLocale   the user's locale
+	 * @return               if the user is banned
+	 */
+	private suspend fun handleIfBanned(user: User, profile: Profile, commandChannel: MessageChannel, locale: BaseLocale, legacyLocale: LegacyBaseLocale): Boolean {
+		val bannedState = profile.getBannedState() ?: return false
 
-	fun <T:Comparable<T>>shuffle(items:MutableList<T>):List<T>{
-		val rg : Random = Random()
-		for (i in 0..items.size - 1) {
-			val randomPosition = rg.nextInt(items.size)
-			val tmp : T = items[i]
-			items[i] = items[randomPosition]
-			items[randomPosition] = tmp
-		}
-		return items
-	}
+		LorittaLauncher.loritta.ignoreIds.add(user.idLong)
 
-	fun getImageStatus(url: String): NSFWResponse {
-		var response = HttpRequest.get("https://mdr8.p.mashape.com/api/?url=" + URLEncoder.encode(url, "UTF-8"))
-				.header("X-Mashape-Key", loritta.config.mashape.apiKey)
-				.header("Accept", "application/json")
-				.acceptJson()
-				.body()
+		val message = locale.getList(
+				"commands.youAreLorittaBanned",
+				bannedState[BannedUsers.reason],
+				bannedState[BannedUsers.expiresAt].let {
+					if (it != null)
+						DateUtils.formatMillis(it - System.currentTimeMillis(), legacyLocale)
+					else
+						locale["commands.moderation.mute.forever"]
+				},
+				loritta.instanceConfig.loritta.website.url + "support",
+				loritta.instanceConfig.loritta.website.url + "guidelines",
+				Emotes.DEFAULT_DANCE,
+				Emotes.LORI_DEMON
+		).joinToString("\n")
 
-		// Nós iremos ignorar caso a API esteja sobrecarregada
-		try {
-			val reader = StringReader(response)
-			val jsonReader = JsonReader(reader)
-			val apiResponse = jsonParser.parse(jsonReader).asJsonObject // Base
-
-			if (apiResponse.has("error")) {
-				return NSFWResponse.ERROR
-			}
-
-			if (apiResponse.get("rating_label").asString == "adult") {
-				return NSFWResponse.NSFW
-			}
-		} catch (e: Exception) {
-			logger.info("Ignorando verificação de conteúdo NSFW ($url) - Causa: ${e.message} - Resposta: $response")
-			return NSFWResponse.EXCEPTION
-		}
-		return NSFWResponse.OK
+		// Se um usuário está banido...
+		user.openPrivateChannel()
+				.queue (
+						{ it.sendMessage(message).queue() },
+						{ commandChannel.sendMessage(message).queue() }
+				)
+		return true
 	}
 }

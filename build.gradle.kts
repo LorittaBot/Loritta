@@ -4,9 +4,9 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 // val kotlinVersion by lazy { ext["kotlin-version"] as String }
 // val ktorVersion by lazy { ext["ktor-version"] as String }
 val loriVersion   = "2020-SNAPSHOT"
-val kotlinVersion = "1.3.72"
+val kotlinVersion = "1.3.70"
 val ktorVersion   = "1.3.1"
-val jdaVersion    = "4.1.1_145"
+val jdaVersion    = "4.2.0_204"
 
 println("Compiling Loritta $loriVersion")
 println("Kotlin Version: $kotlinVersion")
@@ -27,7 +27,9 @@ allprojects {
                     return task("fatJar", type = Jar::class) {
                         println("Building fat jar for ${project.name}...")
                         val addToFinalJarSourceProjects = arrayOf(
-                                "loritta-api-"
+                                "loritta-api-",
+                                "loritta-serializable-commons-",
+                                "parallax-code-api-"
                         )
 
                         archiveBaseName.set("${project.name}-fat")
@@ -44,7 +46,7 @@ allprojects {
                             addIfAvailable("compiled.at", "Compiled-At")
                             attributes["Main-Class"] = mainClass
                             attributes["Kotlin-Version"] = kotlinVersion
-                            attributes["Class-Path"] = configurations.compile.get()
+                            attributes["Class-Path"] = configurations.runtimeClasspath.get()
                                     .filterNot { addToFinalJarSourceProjects.any { sourceName -> it.name.startsWith(sourceName) } }
                                     .filter { it.extension == "jar" }
                                     .distinctBy { it.name }
@@ -84,6 +86,7 @@ allprojects {
 
         maven("https://dl.bintray.com/kotlin/kotlin-dev/")
         maven("https://dl.bintray.com/kotlin/kotlin-eap/")
+        maven("https://dl.bintray.com/kotlin/kotlinx.html")
         maven("https://jcenter.bintray.com")
         maven("https://oss.sonatype.org/content/repositories/snapshots/")
         maven("https://repo.perfectdreams.net/")
@@ -94,7 +97,7 @@ allprojects {
 
 plugins {
     java
-    kotlin("jvm") version "1.3.61" apply false
+    kotlin("jvm") version "1.3.70" apply false
     `maven-publish`
 }
 

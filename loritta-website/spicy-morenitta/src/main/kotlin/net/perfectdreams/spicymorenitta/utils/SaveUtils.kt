@@ -9,8 +9,8 @@ import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
-import utils.TingleModal
-import utils.TingleOptions
+import net.perfectdreams.spicymorenitta.utils.TingleModal
+import net.perfectdreams.spicymorenitta.utils.TingleOptions
 import kotlin.js.Json
 import kotlin.js.json
 

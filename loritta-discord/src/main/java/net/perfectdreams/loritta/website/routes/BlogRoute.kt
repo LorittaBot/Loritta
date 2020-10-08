@@ -2,9 +2,7 @@ package net.perfectdreams.loritta.website.routes
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import io.ktor.application.ApplicationCall
-import io.ktor.http.ContentType
 import io.ktor.request.path
-import io.ktor.response.respondText
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.LorittaWebsite
 import net.perfectdreams.loritta.website.blog.Post
@@ -15,6 +13,8 @@ import kotlin.reflect.KTypeProjection
 import kotlin.reflect.full.createType
 
 class BlogRoute(loritta: LorittaDiscord) : LocalizedRoute(loritta, "/blog") {
+	override val isMainClusterOnlyRoute = true
+
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
 		val html = ScriptingUtils.evaluateWebPageFromTemplate(
 				File(

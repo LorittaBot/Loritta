@@ -2,14 +2,14 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.LoriReply
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.Emotes
 
-class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calculator"), CommandCategory.UTILS) {
+class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calculator", "calcular", "calculate"), CommandCategory.UTILS) {
 	companion object {
 		const val LOCALE_PREFIX = "commands.utils.calc"
 	}
@@ -60,9 +60,9 @@ class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calcul
 					// resultNumber0 --- resultNumber1
 					// resultNumber2 --- x
 					context.reply(
-							LoriReply(
-									context.locale["$LOCALE_PREFIX.result", (resultNumber2 * resultNumber1) / resultNumber0]
-							)
+                            LorittaReply(
+                                    context.locale["$LOCALE_PREFIX.result", (resultNumber2 * resultNumber1) / resultNumber0]
+                            )
 					)
 					return
 				}
@@ -70,16 +70,16 @@ class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calcul
 				val result = LorittaUtils.evalMath(expression)
 
 				context.reply(
-						LoriReply(
-								context.locale["$LOCALE_PREFIX.result", result]
-						)
+                        LorittaReply(
+                                context.locale["$LOCALE_PREFIX.result", result]
+                        )
 				)
 			} catch (e: Exception) {
 				context.reply(
-						LoriReply(
-								context.locale["$LOCALE_PREFIX.invalid", expression.stripCodeMarks()] + " ${Emotes.LORI_CRYING}",
-								Emotes.LORI_HM
-						)
+                        LorittaReply(
+                                context.locale["$LOCALE_PREFIX.invalid", expression.stripCodeMarks()] + " ${Emotes.LORI_CRYING}",
+                                Emotes.LORI_HM
+                        )
 				)
 			}
 		} else {

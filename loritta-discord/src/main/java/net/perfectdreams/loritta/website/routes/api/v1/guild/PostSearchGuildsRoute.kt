@@ -4,7 +4,7 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.string
 import com.github.salomonbrys.kotson.toJsonArray
-import com.mrpowergamerbr.loritta.utils.jsonParser
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.website.utils.extensions.respondJson
 class PostSearchGuildsRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/guilds/search") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
 		val body = call.receiveText()
-		val json = jsonParser.parse(body)
+		val json = JsonParser.parseString(body)
 		val pattern = json["pattern"].string
 
 		val regex = Regex(pattern)

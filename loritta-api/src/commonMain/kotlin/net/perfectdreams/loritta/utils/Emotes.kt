@@ -32,10 +32,27 @@ object Emotes {
 	val LORI_YAY: LorittaEmote by resettableLazy(lazyMgr) { getEmote("lori_yay") }
 	val LORI_HEART: LorittaEmote by resettableLazy(lazyMgr) { getEmote("lori_heart") }
 	val LORI_HMPF: LorittaEmote by resettableLazy(lazyMgr) { getEmote("lori_hmpf") }
+	val LORI_DEMON: LorittaEmote by resettableLazy(lazyMgr) { getEmote("lori_demon") }
+	val LORI_BAN_HAMMER: LorittaEmote by resettableLazy(lazyMgr) { getEmote("lori_ban_hammer") }
+	val LORI_COFFEE: LorittaEmote by resettableLazy(lazyMgr) { getEmote("lori_coffee") }
 	val MINECRAFT_GRASS: LorittaEmote by resettableLazy(lazyMgr) { getEmote("minecraft_grass") }
 	val DEFAULT_DANCE: LorittaEmote by resettableLazy(lazyMgr) { getEmote("default_dance") }
 	val KOTLIN: LorittaEmote by resettableLazy(lazyMgr) { getEmote("kotlin") }
 	val JDA: LorittaEmote by resettableLazy(lazyMgr) { getEmote("jda") }
+
+	// DISCORD BADGES
+	val DISCORD_STAFF: LorittaEmote by resettableLazy(lazyMgr) { getEmote("discord_staff") }
+	val DISCORD_PARTNER: LorittaEmote by resettableLazy(lazyMgr) { getEmote("discord_partner") }
+	val VERIFIED_DEVELOPER: LorittaEmote by resettableLazy(lazyMgr) { getEmote("verified_developer") }
+	val HYPESQUAD_EVENTS: LorittaEmote by resettableLazy(lazyMgr) { getEmote("hypesquad_events") }
+	val EARLY_SUPPORTER: LorittaEmote by resettableLazy(lazyMgr) { getEmote("early_supporter") }
+	val BUG_HUNTER_1: LorittaEmote by resettableLazy(lazyMgr) { getEmote("bug_hunter_1") }
+	val BUG_HUNTER_2: LorittaEmote by resettableLazy(lazyMgr) { getEmote("bug_hunter_2") }
+
+	// HYPESQUAD BADGES
+	val BRAVERY_HOUSE: LorittaEmote by resettableLazy(lazyMgr) { getEmote("bravery_house") }
+	val BRILLIANCE_HOUSE: LorittaEmote by resettableLazy(lazyMgr) { getEmote("brilliance_house") }
+	val BALANCE_HOUSE: LorittaEmote by resettableLazy(lazyMgr) { getEmote("balance_house") }
 
 	var emoteMap = mapOf<String, String>()
 

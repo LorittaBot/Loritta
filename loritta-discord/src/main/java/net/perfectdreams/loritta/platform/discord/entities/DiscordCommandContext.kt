@@ -1,5 +1,7 @@
 package net.perfectdreams.loritta.platform.discord.entities
 
+import club.minnced.discord.webhook.WebhookClient
+import club.minnced.discord.webhook.send.WebhookMessage
 import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.dao.ServerConfig
@@ -10,8 +12,6 @@ import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import com.mrpowergamerbr.temmiewebhook.DiscordMessage
-import com.mrpowergamerbr.temmiewebhook.TemmieWebhook
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
@@ -20,15 +20,18 @@ import net.dv8tion.jda.api.exceptions.PermissionException
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
 import net.perfectdreams.loritta.api.entities.MessageChannel
+import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.api.utils.NoCopyByteArrayOutputStream
 import net.perfectdreams.loritta.platform.discord.commands.LorittaDiscordCommand
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAGuild
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
+import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.extensions.build
 import org.jsoup.Jsoup
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.InputStream
 import java.time.Instant
@@ -101,14 +104,14 @@ class DiscordCommandContext(val config: ServerConfig, val lorittaUser: LorittaUs
 		return sendMessage(send)
 	}
 
-	override suspend fun reply(vararg loriReplies: LoriReply): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
+	override suspend fun reply(vararg loriReplies: LorittaReply): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
 		return reply(false, *loriReplies)
 	}
 
-	override suspend fun reply(mentionUserBeforeReplies: Boolean, vararg loriReplies: LoriReply): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
+	override suspend fun reply(mentionUserBeforeReplies: Boolean, vararg loriReplies: LorittaReply): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
 		val message = StringBuilder()
 		if (mentionUserBeforeReplies) {
-			message.append(LoriReply().build(this))
+			message.append(LorittaReply().build(this))
 			message.append("\n")
 		}
 		for (loriReply in loriReplies) {
@@ -118,7 +121,7 @@ class DiscordCommandContext(val config: ServerConfig, val lorittaUser: LorittaUs
 		return sendMessage(message.toString())
 	}
 
-	override suspend fun reply(image: BufferedImage, fileName: String, vararg loriReplies: LoriReply): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
+	override suspend fun reply(image: BufferedImage, fileName: String, vararg loriReplies: LorittaReply): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
 		val message = StringBuilder()
 		for (loriReply in loriReplies) {
 			message.append(loriReply.build(this) + "\n")
@@ -143,32 +146,19 @@ class DiscordCommandContext(val config: ServerConfig, val lorittaUser: LorittaUs
 			val sentMessage = event.channel.sendMessage(message).await()
 			return DiscordMessage(sentMessage)
 		} else {
-			LorittaUtils.warnOwnerNoPermission(discordGuild, event.textChannel, config)
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
 	}
 
-	suspend fun sendMessage(webhook: TemmieWebhook?, message: DiscordMessage) {
+	suspend fun sendMessage(webhook: WebhookClient?, message: WebhookMessage) {
 		if (!isPrivateChannel && webhook != null) { // Se a webhook é diferente de null, então use a nossa webhook disponível!
-			webhook.sendMessage(message)
+			webhook.send(message)
 		} else { // Se não, iremos usar embeds mesmo...
 			val builder = EmbedBuilder()
 			builder.setAuthor(message.username, null, message.avatarUrl)
 			builder.setDescription(message.content)
 			builder.setFooter("Não consigo usar as permissões de webhook aqui... então estou usando o modo de pobre!", null)
 
-			for (embed in message.embeds) {
-				builder.setImage(if (embed.image != null) embed.image.url else null)
-				if (embed.title != null) {
-					builder.setTitle(builder.descriptionBuilder.toString() + "\n\n**" + embed.title + "**")
-				}
-				if (embed.description != null) {
-					builder.setDescription(builder.descriptionBuilder.toString() + "\n\n" + embed.description)
-				}
-				if (embed.thumbnail != null) {
-					builder.setThumbnail(embed.thumbnail.url)
-				}
-			}
 			sendMessage(builder.build())
 		}
 	}
@@ -205,13 +195,7 @@ class DiscordCommandContext(val config: ServerConfig, val lorittaUser: LorittaUs
 	}
 
 	suspend fun sendFile(image: BufferedImage, name: String, message: Message): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
-		// https://stackoverflow.com/a/12253091/7271796
-		val output = object : ByteArrayOutputStream() {
-			@Synchronized
-			override fun toByteArray(): ByteArray {
-				return this.buf
-			}
-		}
+		val output = NoCopyByteArrayOutputStream()
 
 		ImageIO.write(image, "png", output)
 
@@ -245,7 +229,6 @@ class DiscordCommandContext(val config: ServerConfig, val lorittaUser: LorittaUs
 			val sentMessage = event.channel.sendMessage(message).addFile(inputStream, name).await()
 			return DiscordMessage(sentMessage)
 		} else {
-			LorittaUtils.warnOwnerNoPermission(discordGuild, event.textChannel, config)
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
 	}
@@ -433,64 +416,14 @@ class DiscordCommandContext(val config: ServerConfig, val lorittaUser: LorittaUs
 	 * @return         the user object or null, if nothing was found
 	 * @see            User
 	 */
-	override suspend fun getUserAt(argument: Int): User? {
-		if (this.args.size > argument) { // Primeiro iremos verificar se existe uma imagem no argumento especificado
-			val link = this.args[argument] // Ok, será que isto é uma URL?
-
-			// Vamos verificar por menções, uma menção do Discord é + ou - assim: <@123170274651668480>
-			for (user in this.discordMessage.mentionedUsers) {
-				if (user.asMention == link.replace("!", "")) { // O replace é necessário já que usuários com nick tem ! no mention (?)
-					// Diferente de null? Então vamos usar o avatar do usuário!
-					return user
-				}
+	override suspend fun getUserAt(argument: Int) = this.args.getOrNull(argument)
+			?.let {
+				DiscordUtils.extractUserFromString(
+						it,
+						message.handle.mentionedUsers,
+						if (isPrivateChannel) null else message.handle.guild
+				)
 			}
-
-			// Vamos tentar procurar pelo username + discriminator
-			if (this.guild is DiscordGuild) {
-				val handle = (this.guild as JDAGuild).handle
-				if (!this.isPrivateChannel && !link.isEmpty()) {
-					val split = link.split("#").dropLastWhile { it.isEmpty() }.toTypedArray()
-
-					if (split.size == 2 && split[0].isNotEmpty()) {
-						val matchedMember = handle.getMembersByName(split[0], false).stream().filter { it -> it.user.discriminator == split[1] }.findFirst()
-
-						if (matchedMember.isPresent) {
-							return matchedMember.get().user
-						}
-					}
-				}
-
-				// Ok então... se não é link e nem menção... Que tal então verificar por nome?
-				if (!this.isPrivateChannel && !link.isEmpty()) {
-					val matchedMembers = handle.getMembersByEffectiveName(link, true)
-
-					if (!matchedMembers.isEmpty()) {
-						return matchedMembers[0].user
-					}
-				}
-
-				// Se não, vamos procurar só pelo username mesmo
-				if (!this.isPrivateChannel && !link.isEmpty()) {
-					val matchedMembers = handle.getMembersByName(link, true)
-
-					if (!matchedMembers.isEmpty()) {
-						return matchedMembers[0].user
-					}
-				}
-			}
-
-			// Ok, então só pode ser um ID do Discord!
-			try {
-				val user = LorittaLauncher.loritta.lorittaShards.retrieveUserById(link)
-
-				if (user != null) { // Pelo visto é!
-					return user
-				}
-			} catch (e: Exception) {
-			}
-		}
-		return null
-	}
 
 	/**
 	 * Gets an user from the argument index via mentions, username#oldDiscriminator, effective name, username and user ID

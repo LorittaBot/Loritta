@@ -1,9 +1,20 @@
 
 import kotlinx.html.*
+import kotlinx.html.dom.append
+import kotlinx.html.dom.create
+import kotlinx.html.js.onClickFunction
 import kotlinx.html.stream.appendHTML
+import net.perfectdreams.loritta.embededitor.EmbedEditorCrossWindow
+import net.perfectdreams.loritta.embededitor.EmbedRenderer
+import net.perfectdreams.loritta.embededitor.data.DiscordMessage
+import net.perfectdreams.loritta.embededitor.data.crosswindow.*
 import net.perfectdreams.spicymorenitta.locale
+import net.perfectdreams.spicymorenitta.utils.TingleModal
+import net.perfectdreams.spicymorenitta.utils.TingleOptions
 import net.perfectdreams.spicymorenitta.utils.select
 import org.w3c.dom.HTMLDivElement
+import org.w3c.dom.MessageEvent
+import org.w3c.dom.Audio
 import utils.*
 import kotlin.browser.document
 import kotlin.browser.window
@@ -196,14 +207,29 @@ object LoriDashboard {
 		SUMMARY(consumer).visit(block)
 	}
 
-	fun configureTextArea(jquery: JQuery, markdownPreview: Boolean = false, serverConfig: ServerConfig?, sendTestMessages: Boolean = false, textChannelSelect: JQuery? = null, showPlaceholders: Boolean = false, placeholders: Map<String, String> = mapOf(), showTemplates: Boolean = false, templates: Map<String, String> = mapOf(), customTokens: Map<String, String> = mapOf()) {
+	fun configureTextArea(
+			jquery: JQuery,
+			markdownPreview: Boolean = false,
+			serverConfig: ServerConfig?,
+			sendTestMessages: Boolean = false,
+			textChannelSelect: JQuery? = null,
+			showPlaceholders: Boolean = false,
+			placeholders: List<Placeholder> = listOf(),
+			showTemplates: Boolean = false,
+			templates: Map<String, String> = mapOf()
+	) {
 		val div = jq("<div>") // wrapper
 				.css("position", "relative")
 
+		val wrapperWithButtons = jq("<div>")
+				.css("display", "flex")
+				.css("gap", "0.5em")
+				.css("flex-wrap", "wrap")
+				.css("justify-content", "space-between")
+
 		if (showTemplates) {
-			println("Displaying templates")
 			val select = jq("<select>")
-			select.insertBefore(jquery)
+			wrapperWithButtons.append(select)
 
 			val optionData = mutableListOf<dynamic>()
 
@@ -274,76 +300,59 @@ object LoriDashboard {
 			}
 		}
 
-		div.insertBefore(jquery)
-		jquery.appendTo(div)
+		val newElement = document.create.button(classes = "button-discord button-discord-info pure-button") {
+			i(classes = "fas fa-edit") {}
+			+ " ${locale["website.dashboard.advancedEditor"]}"
 
-		val extendedMode = 	jq("<div>")
-				.html("<i class=\"fas fa-code\"></i> Extended Mode")
-				.css("background-color", "green")
-				.css("top", "0px")
-				.css("right", "0px")
-				.css("position", "absolute")
-				.css("color", "white")
-				.css("opacity", "0.75")
-				.css("padding", "3px")
-				.css("border-radius", "0px 3px 0px 8px")
-				.css("display", "none")
-				.css("margin-top", "8px")
+			onClickFunction = {
+				val extendedWindow = window.open("https://embeds.loritta.website/")!!
 
-		div.append(
-				extendedMode
-		)
+				window.addEventListener("message", { event ->
+					event as MessageEvent
+					println("Received message ${event.data} from ${event.origin}")
 
-		autosize(jquery)
+					// We check for embeds.loritta.website because AdSense can also send messages via postMessage
+					if (event.origin.contains("embeds.loritta.website") && event.source == extendedWindow) {
+						println("Received message from our target source, yay!")
 
-		if (showPlaceholders) {
-			println("Displaying placeholders...")
-			// Placeholders são algo mágico, parça
+						val packet = EmbedEditorCrossWindow.communicationJson.parse(PacketWrapper.serializer(), event.data as String)
 
-			val html = StringBuilder().appendHTML(false).div {
-				details(classes = "fancy-details") {
-					summary {
-						+ "${locale["loritta.modules.generic.showPlaceholders"]} "
-						i(classes = "fas fa-chevron-down") {}
-					}
-					div(classes = "details-content") {
-						table(classes = "fancy-table") {
-							thead {
-								tr {
-									th {
-										+"Placeholder"
-									}
-									th {
-										+"Significado"
-									}
-								}
-								placeholders.forEach {
-									tr {
-										td {
-											style = "white-space: nowrap;"
-											code(classes = "inline") {
-												+"{${it.key}}"
-											}
-										}
-										td {
-											+it.value
-										}
-									}
-								}
-							}
+						if (packet.m is ReadyPacket) {
+							println("Is ready packet, current text area is ${jquery.`val`()}")
+
+							val content = createMessageFromString(jquery.`val`() as String)
+
+							extendedWindow.postMessage(
+									EmbedEditorCrossWindow.communicationJson.stringify(
+											PacketWrapper.serializer(),
+											PacketWrapper(
+													MessageSetupPacket(
+															content,
+															placeholders
+													)
+											)
+									),
+									"*"
+							)
+						} else if (packet.m is UpdatedMessagePacket) {
+							jquery.`val`((packet.m as UpdatedMessagePacket).content)
+
+							// Trigger a update
+							jquery.trigger("input", null) // Para recalcular a preview
+							AutoSize.update(jquery) // E para o AutoSize recalcular o tamanho
 						}
 					}
-				}
-			}.toString()
-
-			jq(html).insertAfter(jquery)
+				})
+			}
 		}
+
+		wrapperWithButtons.append(newElement)
 
 		if (sendTestMessages) {
 			// <button onclick="sendMessage('joinMessage', 'canalJoinId')" class="button-discord button-discord-info pure-button">Test Message</button>
 			val button = jq("<button>")
 					.addClass("button-discord button-discord-info pure-button")
-					.html("<i class=\"fas fa-paper-plane\"></i> ${legacyLocale["DASHBOARD_TestMessage"]}")
+					.html("<i class=\"fas fa-paper-plane\"></i> ${locale["website.dashboard.testMessage"]}")
 
 			button.on("click") { event, args ->
 				val textChannelId = if (textChannelSelect != null) {
@@ -377,205 +386,78 @@ object LoriDashboard {
 				)
 			}
 
-			button.insertAfter(
-					jquery
-			)
+			wrapperWithButtons.append(button)
+		}
+
+		wrapperWithButtons.insertBefore(jquery)
+
+		console.log(div)
+
+		autosize(jquery)
+
+		if (showPlaceholders) {
+			println("Displaying placeholders...")
+			// Placeholders são algo mágico, parça
+
+			val html = StringBuilder().appendHTML(false).div {
+				details(classes = "fancy-details") {
+					summary {
+						+ "${locale["loritta.modules.generic.showPlaceholders"]} "
+						i(classes = "fas fa-chevron-down") {}
+					}
+					div(classes = "details-content") {
+						table(classes = "fancy-table") {
+							thead {
+								tr {
+									th {
+										+"Placeholder"
+									}
+									th {
+										+"Significado"
+									}
+								}
+								placeholders.filterNot { it.hidden }.forEach {
+									tr {
+										td {
+											style = "white-space: nowrap;"
+											code(classes = "inline") {
+												+ it.name
+											}
+										}
+										td {
+											+ (it.description ?: "???")
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}.toString()
+
+			jq(html).insertAfter(jquery)
 		}
 
 		if (markdownPreview) {
 			val markdownPreview = jq("<div>")
 					.attr("id", jquery.attr("id") + "-markdownpreview")
-
-			val converter = ShowdownConverter()
-			converter.setOption("simpleLineBreaks", true)
+					.attr("class", "discord-style")
 
 			jquery.on("input") { event, args ->
-				var description = jquery.`val`() as String
+				val content = jquery.`val`() as String
 
-				val isUsingExtendedMode = try {
-					val json = JSON.parse<Json>(description.replace("\r", ""))
-					json["content"] != null || json["embed"] != null
-				} catch (e: dynamic) {
-					false
-				}
+				val message = createMessageFromString(content)
 
-				if (isUsingExtendedMode) {
-					extendedMode.css("display", "")
-					val json = JSON.parse<Json>(description.replace("\r", ""))
+				val renderer = EmbedRenderer(message, placeholders)
 
-					markdownPreview.empty()
+				// Clear the current preview
+				markdownPreview.empty()
 
-					// extended mode
-					val content = json["content"]
-					val embed = json["embed"]
-					if (content != null && content is String) {
-						description = replaceTokens(content, serverConfig, customTokens)
-						description = converter.makeHtml(description)
-
-						markdownPreview.append(description)
+				// And now render the embed!
+				markdownPreview.get()[0].append {
+					div(classes = "theme-light") {
+						renderer.generateMessagePreview(this)
 					}
-
-					if (embed != null) {
-						val markdownEmbedConverter = ShowdownConverter()
-						markdownEmbedConverter.setOption("simpleLineBreaks", true)
-
-						fun replaceAndConvert(text: String): String {
-							var _text = replaceTokens(text, serverConfig, customTokens)
-							_text = converter.makeHtml(_text)
-
-							return jq(_text).html()
-						}
-
-						val embed = embed as Json
-
-						val color = embed["color"] as Int?
-						val author = embed["author"] as Json?
-						val title = embed["title"] as String?
-						val url = embed["url"] as String?
-						val description = embed["description"] as String?
-						val fields = embed["fields"] as Array<Json>?
-						val thumbnailObj = embed["thumbnail"] as Json?
-						val thumbnailUrl = thumbnailObj?.get("url") as String?
-						val imageObj = embed["image"] as Json?
-						val imageUrl = imageObj?.get("url") as String?
-						val footer = embed["footer"] as Json?
-
-						// oh, embeds...
-						// Baseado no https://leovoel.github.io/embed-visualizer/
-						val stringBuilder = StringBuilder()
-						stringBuilder.appendHTML(false)
-								.div(classes = "accessory") {
-									div(classes = "embed-wrapper") {
-										div(classes = "embed-color-pill") {
-											if (color != null) {
-												val aux = ("000000" + ((color) ushr 0).toString(16))
-												val hex = "#" + aux.slice(aux.length - 6 until aux.length)
-												println("Hex: ${hex}")
-												style = "background-color: $hex;"
-											}
-										}
-										div(classes = "embed embed-rich") {
-											div(classes = "embed-content") {
-												div(classes = "embed-content-inner") {
-													if (author != null) {
-														div(classes = "embed-author") {
-															val iconUrl = author["icon_url"] as String?
-															if (iconUrl != null) {
-																img(src = replaceTokens(iconUrl, serverConfig, customTokens), classes = "embed-author-icon")
-															}
-															val url = author["url"] as String?
-															val name = author["name"] as String?
-
-															if (name != null) {
-																if (url != null) {
-																	a(url, classes = "embed-author-name") {
-																		unsafe {
-																			+replaceAndConvert(name)
-																		}
-																	}
-																} else {
-																	span(classes = "embed-author-name") {
-																		unsafe {
-																			+replaceAndConvert(name)
-																		}
-																	}
-																}
-															}
-														}
-													}
-													if (title != null) {
-														if (url != null) {
-															a(target = url, classes = "embed-title") {
-																unsafe {
-																	+replaceAndConvert(title)
-																}
-															}
-														} else {
-															span(classes = "embed-title") {
-																unsafe {
-																	+replaceAndConvert(title)
-																}
-															}
-														}
-													}
-													if (description != null) {
-														div(classes = "embed-description markup") {
-															unsafe {
-																+replaceAndConvert(description)
-															}
-														}
-													}
-													if (fields != null) {
-														div(classes = "embed-fields") {
-															for (field in fields) {
-																val name = field["name"] as String?
-																val value = field["value"] as String?
-																val inline = field["inline"] as Boolean? ?: false
-
-																if (name != null && value != null) {
-																	div(classes = "embed-field${if (inline) " embed-field-inline" else ""}") {
-																		div(classes = "embed-field-name") {
-																			unsafe {
-																				+replaceAndConvert(name)
-																			}
-																		}
-																		div(classes = "embed-field-value markup") {
-																			unsafe {
-																				+replaceAndConvert(value)
-																			}
-																		}
-																	}
-																}
-															}
-														}
-													}
-												}
-												if (thumbnailUrl != null) {
-													img(src = replaceTokens(thumbnailUrl, serverConfig, customTokens)) {
-														style = "max-width: 80px; max-height: 80px;"
-													}
-												}
-											}
-											if (imageUrl != null) {
-												a(classes = "embed-thumbnail embed-thumbnail-rich") {
-													img(classes = "image", src = replaceTokens(imageUrl, serverConfig, customTokens))
-												}
-											}
-											if (footer != null) {
-												div {
-													val iconUrl = footer["icon_url"] as String?
-													val text = footer["text"] as String?
-
-													if (iconUrl != null) {
-														img(src = replaceTokens(iconUrl, serverConfig, customTokens), classes = "embed-footer-icon") {
-															width = "20"
-															height = "20"
-														}
-													}
-
-													if (text != null) {
-														span("embed-footer") {
-															unsafe {
-																+replaceAndConvert(text)
-															}
-														}
-													}
-												}
-											}
-										}
-									}
-								}
-
-						markdownPreview.append(
-								stringBuilder.toString()
-						)
-					}
-				} else {
-					extendedMode.css("display", "none")
-					description = replaceTokens(description, serverConfig, customTokens)
-					description = converter.makeHtml(description)
-
-					markdownPreview.html(description)
 				}
 			}
 
@@ -585,6 +467,34 @@ object LoriDashboard {
 		}
 
 		jquery.trigger("input", null)
+	}
+
+	/**
+	 * Creates a (Discord) message from a string.
+	 *
+	 * If it is a valid JSON, it will be generated via [EmbedRenderer.json], if it is invalid, a object
+	 * will be created with the [content]
+	 *
+	 * @param  the input, can be a JSON object as a string or a raw message
+	 * @return a [DiscordMessage]
+	 */
+	fun createMessageFromString(content: String): DiscordMessage {
+		return try {
+			val rawMessage = content
+					.replace("\n", "")
+					.replace("\r", "")
+
+			// Try parsing the current content as JSON
+			if (!(rawMessage.startsWith("{") && rawMessage.endsWith("}"))) // Just to avoid parsing the (probably invalid) JSON
+				throw RuntimeException("Not in a JSON format")
+
+			EmbedRenderer.json
+					.parse(DiscordMessage.serializer(), content)
+		} catch (e: Throwable) {
+			// If it fails, probably it is a raw message, so we are going to just create a
+			// DiscordMessage based on that
+			DiscordMessage(content)
+		}
 	}
 
 	fun replaceTokens(text: String, serverConfig: ServerConfig?, customTokens: Map<String, String?> = mutableMapOf<String, String?>()): String {
@@ -605,6 +515,7 @@ object LoriDashboard {
 			guildName = serverConfig.guildName
 			guildSize = serverConfig.memberCount.toString()
 		}
+
 		for ((token, value) in customTokens) {
 			message = message.replace("{$token}", value ?: "\uD83E\uDD37")
 		}

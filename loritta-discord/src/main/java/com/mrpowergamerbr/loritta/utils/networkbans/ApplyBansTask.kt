@@ -1,9 +1,6 @@
 package com.mrpowergamerbr.loritta.utils.networkbans
 
-import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.utils.loritta
 import mu.KotlinLogging
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.ConcurrentHashMap
 
 class ApplyBansTask : Runnable {
@@ -16,7 +13,7 @@ class ApplyBansTask : Runnable {
 		try {
 			logger.info { "Applying user ban wave..." }
 
-			banWaveUsers.forEach {
+			/* banWaveUsers.forEach {
 				logger.info { "Banning ${it.key} due to ${it.value} " }
 
 				val profile = loritta.getLorittaProfile(it.key)
@@ -26,7 +23,7 @@ class ApplyBansTask : Runnable {
 						profile.bannedReason = it.value
 					}
 				}
-			}
+			} */
 
 			banWaveUsers.clear()
 		} catch (e: Exception) {

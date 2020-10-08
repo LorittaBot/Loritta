@@ -2,8 +2,8 @@ package com.mrpowergamerbr.loritta.threads
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
-import mu.KotlinLogging
 import com.mrpowergamerbr.loritta.utils.loritta
+import mu.KotlinLogging
 
 /**
  * Thread para o Bom Dia & Cia

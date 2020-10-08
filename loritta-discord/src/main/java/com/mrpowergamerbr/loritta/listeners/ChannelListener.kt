@@ -1,24 +1,18 @@
 package com.mrpowergamerbr.loritta.listeners
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.channel.text.TextChannelCreateEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import org.jetbrains.exposed.sql.transactions.transaction
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.MiscellaneousConfig
 
 class ChannelListener(val loritta: Loritta) : ListenerAdapter() {
 	override fun onTextChannelCreate(event: TextChannelCreateEvent) {
-		if (loritta.isMainAccountOnlineAndWeAreNotTheMainAccount(event.guild))
-			return
-
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
-
-			val miscellaneousConfig = transaction(Databases.loritta) {
-				serverConfig.miscellaneousConfig
-			}
+			val miscellaneousConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<MiscellaneousConfig?>(com.mrpowergamerbr.loritta.utils.loritta, ServerConfig::miscellaneousConfig)
 
 			val enableQuirky = miscellaneousConfig?.enableQuirky ?: false
 

@@ -4,17 +4,16 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.ServerConfig
-import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.AutoroleConfig
-import org.jetbrains.exposed.sql.transactions.transaction
 
 object AutoroleConfigTransformer : ConfigTransformer {
     override val payloadType: String = "autorole"
     override val configKey: String = "autoroleConfig"
 
     override suspend fun toJson(guild: Guild, serverConfig: ServerConfig): JsonElement {
-        val autoroleConfig = transaction(Databases.loritta) {
+        val autoroleConfig = loritta.newSuspendedTransaction {
             serverConfig.autoroleConfig
         }
 
@@ -27,7 +26,7 @@ object AutoroleConfigTransformer : ConfigTransformer {
     }
 
     override suspend fun fromJson(guild: Guild, serverConfig: ServerConfig, payload: JsonObject) {
-        transaction(Databases.loritta) {
+        loritta.newSuspendedTransaction {
             val autoroleConfig = serverConfig.autoroleConfig ?: AutoroleConfig.new {
                 this.enabled = false
                 this.roles = arrayOf()

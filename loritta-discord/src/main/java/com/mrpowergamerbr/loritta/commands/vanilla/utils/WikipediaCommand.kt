@@ -1,10 +1,10 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.github.kevinsawicki.http.HttpRequest
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -13,7 +13,7 @@ import java.awt.Color
 import java.net.URLEncoder
 import java.util.*
 
-class WikipediaCommand : AbstractCommand("wikipedia", category = CommandCategory.UTILS) {
+class WikipediaCommand : AbstractCommand("wikipedia", listOf("wiki"), CommandCategory.UTILS) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale["WIKIPEDIA_DESCRIPTION"]
 	}
@@ -49,7 +49,7 @@ class WikipediaCommand : AbstractCommand("wikipedia", category = CommandCategory
 			try {
 				val query = StringUtils.join(context.args, " ", if (hasValidLanguageId) 1 else 0, context.args.size)
 				val wikipediaResponse = HttpRequest.get("https://" + languageId + ".wikipedia.org/w/api.php?format=json&action=query&prop=extracts&redirects=1&exintro=&explaintext=&titles=" + URLEncoder.encode(query, "UTF-8")).body()
-				val wikipedia = jsonParser.parse(wikipediaResponse).asJsonObject // Base
+				val wikipedia = JsonParser.parseString(wikipediaResponse).asJsonObject // Base
 				val wikiQuery = wikipedia.getAsJsonObject("query") // Query
 				val wikiPages = wikiQuery.getAsJsonObject("pages") // Páginas
 				val entryWikiContent = wikiPages.entrySet().iterator().next() // Conteúdo

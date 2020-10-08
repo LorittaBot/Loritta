@@ -1,10 +1,13 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
-import com.mrpowergamerbr.loritta.commands.*
-import com.mrpowergamerbr.loritta.modules.InviteLinkModule
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.commands.AbstractCommand
+import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
+import net.perfectdreams.loritta.api.messages.LorittaReply
+import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -12,11 +15,11 @@ import net.perfectdreams.loritta.api.commands.arguments
 
 class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.FUN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale().getWithType("commands.entertainment.vemDeZap.description")
+		return locale.toNewLocale()["commands.entertainment.vemDeZap.description"]
 	}
 
 	override fun getExamples(locale: LegacyBaseLocale): List<String> {
-		return locale.toNewLocale().getWithType("commands.entertainment.vemDeZap.examples")
+		return locale.toNewLocale().getList("commands.entertainment.vemDeZap.examples")
 	}
 
 	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
@@ -356,35 +359,35 @@ class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.F
 			val input = context.args.joinToString(" ").escapeMentions()
 
 			val message = context.reply(
-					LoriReply(
-							locale["VEMDEZAP_WhatIsTheMood"],
-							"\uD83E\uDD14"
-					),
-					LoriReply(
-							locale["VEMDEZAP_MoodHappy"],
-							"\uD83D\uDE0A",
-							mentionUser = false
-					),
-					LoriReply(
-							locale["VEMDEZAP_MoodAngry"],
-							"\uD83D\uDE21",
-							mentionUser = false
-					),
-					LoriReply(
-							locale["VEMDEZAP_MoodSassy"],
-							"\uD83D\uDE0F",
-							mentionUser = false
-					),
-					LoriReply(
-							locale["VEMDEZAP_MoodSad"],
-							"\uD83D\uDE22",
-							mentionUser = false
-					),
-					LoriReply(
-							locale["VEMDEZAP_MoodSick"],
-							"\uD83E\uDD12",
-							mentionUser = false
-					)
+                    LorittaReply(
+                            locale["VEMDEZAP_WhatIsTheMood"],
+                            "\uD83E\uDD14"
+                    ),
+                    LorittaReply(
+                            locale["VEMDEZAP_MoodHappy"],
+                            "\uD83D\uDE0A",
+                            mentionUser = false
+                    ),
+                    LorittaReply(
+                            locale["VEMDEZAP_MoodAngry"],
+                            "\uD83D\uDE21",
+                            mentionUser = false
+                    ),
+                    LorittaReply(
+                            locale["VEMDEZAP_MoodSassy"],
+                            "\uD83D\uDE0F",
+                            mentionUser = false
+                    ),
+                    LorittaReply(
+                            locale["VEMDEZAP_MoodSad"],
+                            "\uD83D\uDE22",
+                            mentionUser = false
+                    ),
+                    LorittaReply(
+                            locale["VEMDEZAP_MoodSick"],
+                            "\uD83E\uDD12",
+                            mentionUser = false
+                    )
 			)
 
 			message.onReactionAddByAuthor(context) {
@@ -400,35 +403,35 @@ class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.F
 				message.delete().queue()
 
 				val levelMessage = context.reply(
-						LoriReply(
-								locale["VEMDEZAP_WhatIsTheLevel"],
-								"\uD83E\uDD14"
-						),
-						LoriReply(
-								locale["VEMDEZAP_Level1"],
-								"1⃣",
-								mentionUser = false
-						),
-						LoriReply(
-								locale["VEMDEZAP_Level2"],
-								"2⃣",
-								mentionUser = false
-						),
-						LoriReply(
-								locale["VEMDEZAP_Level3"],
-								"3⃣",
-								mentionUser = false
-						),
-						LoriReply(
-								locale["VEMDEZAP_Level4"],
-								"4⃣",
-								mentionUser = false
-						),
-						LoriReply(
-								locale["VEMDEZAP_Level5"],
-								"5⃣",
-								mentionUser = false
-						)
+                        LorittaReply(
+                                locale["VEMDEZAP_WhatIsTheLevel"],
+                                "\uD83E\uDD14"
+                        ),
+                        LorittaReply(
+                                locale["VEMDEZAP_Level1"],
+                                "1⃣",
+                                mentionUser = false
+                        ),
+                        LorittaReply(
+                                locale["VEMDEZAP_Level2"],
+                                "2⃣",
+                                mentionUser = false
+                        ),
+                        LorittaReply(
+                                locale["VEMDEZAP_Level3"],
+                                "3⃣",
+                                mentionUser = false
+                        ),
+                        LorittaReply(
+                                locale["VEMDEZAP_Level4"],
+                                "4⃣",
+                                mentionUser = false
+                        ),
+                        LorittaReply(
+                                locale["VEMDEZAP_Level5"],
+                                "5⃣",
+                                mentionUser = false
+                        )
 				)
 
 				levelMessage.onReactionAddByAuthor(context) {

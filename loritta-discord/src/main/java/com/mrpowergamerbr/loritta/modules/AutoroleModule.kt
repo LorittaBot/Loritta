@@ -1,26 +1,20 @@
 package com.mrpowergamerbr.loritta.modules
 
+import com.mrpowergamerbr.loritta.utils.extensions.filterOnlyGiveableRoles
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.Role
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.AutoroleConfig
 import java.util.concurrent.TimeUnit
 
 object AutoroleModule {
 	fun giveRoles(member: Member, autoroleConfig: AutoroleConfig) {
 		val guild = member.guild
-		val rolesId = autoroleConfig.roles // Então vamos pegar todos os IDs...
-
-		val roles = mutableListOf<Role>()
-
-		rolesId.forEach { // E pegar a role dependendo do ID!
-			try {
-				val role = guild.getRoleById(it)
-
-				if (role != null && !role.isPublicRole && !role.isManaged && guild.selfMember.canInteract(role)) {
-					roles.add(role)
-				}
-			} catch (e: NumberFormatException) {} // The specified ID is not a valid snowflake (null).
-		}
+		// Transform all role IDs to a role list
+		val roles = autoroleConfig.roles
+				.asSequence()
+				.mapNotNull { guild.getRoleById(it) }
+				.distinct()
+				.filterOnlyGiveableRoles()
+				.toList()
 
 		val filteredRoles = roles.filter { !member.roles.contains(it) }
 

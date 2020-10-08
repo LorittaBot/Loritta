@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.website
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.mitchellbosecke.pebble.PebbleEngine
+import com.mitchellbosecke.pebble.attributes.methodaccess.NoOpMethodAccessValidator
 import com.mitchellbosecke.pebble.cache.tag.CaffeineTagCache
 import com.mitchellbosecke.pebble.cache.template.CaffeineTemplateCache
 import com.mitchellbosecke.pebble.loader.FileLoader
@@ -14,7 +15,6 @@ class LorittaWebsite(val loritta: Loritta, val websiteUrl: String, var frontendF
 		lateinit var ENGINE: PebbleEngine
 		lateinit var FOLDER: String
 		lateinit var WEBSITE_URL: String
-		val kotlinTemplateCache = Caffeine.newBuilder().build<String, Any>().asMap()
 
 		fun canManageGuild(g: TemmieDiscordAuth.Guild): Boolean {
 			val isAdministrator = g.permissions shr 3 and 1 == 1
@@ -46,7 +46,7 @@ class LorittaWebsite(val loritta: Loritta, val websiteUrl: String, var frontendF
 		ENGINE = PebbleEngine.Builder().cacheActive(true) // Deixar o cache ativo ajuda na performance ao usar "extends" em templates (e não ao carregar templates de arquivos!)
 				.templateCache(CaffeineTemplateCache()) // Utilizar o cache do Caffeine em vez do padrão usando ConcurrentMapTemplateCache
 				.tagCache(CaffeineTagCache()) // Cache para tags de {% cache %} do Pebble
-				.allowUnsafeMethods(true)
+				.methodAccessValidator(NoOpMethodAccessValidator())
 				.strictVariables(true)
 				.loader(fl)
 				.build()

@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.website.session
 
 import com.github.salomonbrys.kotson.*
+import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.utils.gson
-import com.mrpowergamerbr.loritta.utils.jsonParser
 import com.mrpowergamerbr.loritta.utils.loritta
 import io.ktor.application.ApplicationCall
 import mu.KotlinLogging
@@ -54,7 +54,7 @@ data class LorittaJsonWebSession(
 		if (storedDiscordAuthTokens == null)
 			return null
 
-		val json = jsonParser.parse(storedDiscordAuthTokens)
+		val json = JsonParser.parseString(storedDiscordAuthTokens)
 
 		return TemmieDiscordAuth(
 				loritta.discordConfig.discord.clientId,

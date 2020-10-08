@@ -54,7 +54,7 @@ class TristeRealidadeCommand : LorittaCommand(arrayOf("sadreality", "tristereali
         if (user6 != null)
             users.add(user6)
 
-        val members = context.channel.participants.toMutableList()
+        val members = context.channel.participants.filter { !it.isBot }.toMutableList()
 
         while (6 > users.size) {
             val member = if (members.isNotEmpty()) {
@@ -112,9 +112,20 @@ class TristeRealidadeCommand : LorittaCommand(arrayOf("sadreality", "tristereali
                 if (aux == 0)
                     gender = lovedGender
 
+                // If we use '0', '1', '2' in the YAML, Crowdin may think that's an array, and that's no good
+                val slot = when (aux) {
+                    0 -> "theGuyYouLike"
+                    1 -> "theFather"
+                    2 -> "theBrother"
+                    3 -> "theFirstLover"
+                    4 -> "theBestFriend"
+                    5 -> "you"
+                    else -> throw RuntimeException("Invalid slot $aux")
+                }
+
                 drawCentralizedTextOutlined(
                         baseGraph,
-                        locale["commands.images.tristerealidade.slot.$aux.${gender.name}", lovedGender.getPossessivePronoun(locale, PersonalPronoun.THIRD_PERSON, member.name)],
+                        locale["commands.images.tristerealidade.slot.$slot.${gender.name}", lovedGender.getPossessivePronoun(locale, PersonalPronoun.THIRD_PERSON, member.name)],
                         Rectangle(x, y + 80, 128, 42),
                         Color.WHITE,
                         Color.BLACK,

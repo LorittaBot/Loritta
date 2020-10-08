@@ -1,12 +1,12 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
+import club.minnced.discord.webhook.send.WebhookMessageBuilder
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.WebhookUtils
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class BemBoladaCommand : AbstractCommand("bembolada", listOf("kenji"), CommandCategory.FUN) {
@@ -202,10 +202,10 @@ class BemBoladaCommand : AbstractCommand("bembolada", listOf("kenji"), CommandCa
 
 		val temmie = WebhookUtils.getOrCreateWebhook(context.event.textChannel!!, "Kenji do Loop Infinito")
 
-		context.sendMessage(temmie, DiscordMessage.builder()
-				.username("Kenji do Loop Infinito")
-				.content(context.getAsMention(true) + bemBoladas[RANDOM.nextInt(bemBoladas.size)])
-				.avatarUrl("${loritta.instanceConfig.loritta.website.url}assets/img/kenji.jpg")
+		context.sendMessage(temmie, WebhookMessageBuilder()
+				.setUsername("Kenji do Loop Infinito")
+				.setContent(context.getAsMention(true) + bemBoladas[RANDOM.nextInt(bemBoladas.size)])
+				.setAvatarUrl("${loritta.instanceConfig.loritta.website.url}assets/img/kenji.jpg")
 				.build())
 	}
 }
