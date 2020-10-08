@@ -1,11 +1,14 @@
 package net.perfectdreams.loritta.embededitor
 
+import kotlinx.browser.document
+import kotlinx.browser.window
+import kotlinx.dom.addClass
+import kotlinx.dom.clear
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.js.onInputFunction
 import kotlinx.html.stream.createHTML
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import net.perfectdreams.loritta.embededitor.data.DiscordEmbed
 import net.perfectdreams.loritta.embededitor.data.DiscordMessage
 import net.perfectdreams.loritta.embededitor.data.crosswindow.*
@@ -17,21 +20,15 @@ import net.perfectdreams.loritta.embededitor.utils.lovelyButton
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLTextAreaElement
 import org.w3c.dom.MessageEvent
-import kotlin.browser.document
-import kotlin.browser.window
-import kotlin.dom.addClass
-import kotlin.dom.clear
 
 class EmbedEditor {
     var activeMessage: DiscordMessage? = null
-    val json = Json(
-            JsonConfiguration(
-                    prettyPrint = true,
-                    encodeDefaults = false,
-                    indent = "  ",
-                    ignoreUnknownKeys = true
-            )
-    )
+    val json = Json {
+        prettyPrint = true
+        encodeDefaults = false
+        prettyPrintIndent = "  "
+        ignoreUnknownKeys = true
+    }
     val markdownConverter = ShowdownConverter().apply {
         setOption("simpleLineBreaks", true)
         setOption("strikethrough", true)
@@ -96,7 +93,8 @@ class EmbedEditor {
             // "IllegalCastException"
             // So we use the good old asDynamic call
             opener.asDynamic().postMessage(
-                    EmbedEditorCrossWindow.communicationJson.stringify(PacketWrapper.serializer(),
+                    EmbedEditorCrossWindow.communicationJson.encodeToString(
+                            PacketWrapper.serializer(),
                             PacketWrapper(
                                     ReadyPacket()
                             )
@@ -112,7 +110,7 @@ class EmbedEditor {
                 if (event.source == opener) {
                     println("Received message from our target source, yay!")
 
-                    val packetWrapper = EmbedEditorCrossWindow.communicationJson.parse(PacketWrapper.serializer(), event.data as String)
+                    val packetWrapper = EmbedEditorCrossWindow.communicationJson.decodeFromString(PacketWrapper.serializer(), event.data as String)
                     val packet = packetWrapper.m
 
                     if (packet is MessageSetupPacket) {
@@ -128,7 +126,7 @@ class EmbedEditor {
     }
 
     fun parseAndLoadFromJson(rawJson: String) {
-        val result = json.parse(DiscordMessage.serializer(), rawJson)
+        val result = json.decodeFromString(DiscordMessage.serializer(), rawJson)
         generateMessageAndUpdateJson(result)
     }
 
@@ -200,17 +198,17 @@ class EmbedEditor {
             }
         }
 
-        document.select<HTMLTextAreaElement>("#json-code").value = json.stringify(DiscordMessage.serializer(), discordMessage)
+        document.select<HTMLTextAreaElement>("#json-code").value = json.encodeToString(DiscordMessage.serializer(), discordMessage)
 
         if (connectedViaExternalSources) {
             val opener = window.opener
             // Same thing here, can't cast opener because "IllegalCastException" :sad_cat:
             opener?.asDynamic().postMessage(
-                    EmbedEditorCrossWindow.communicationJson.stringify(
+                    EmbedEditorCrossWindow.communicationJson.encodeToString(
                             PacketWrapper.serializer(),
                             PacketWrapper(
                                     UpdatedMessagePacket(
-                                            json.stringify(
+                                            json.encodeToString(
                                                     DiscordMessage.serializer(),
                                                     discordMessage
                                             )

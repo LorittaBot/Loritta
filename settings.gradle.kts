@@ -50,13 +50,12 @@ include(":loritta-discord")
 // include(":loritta-plugins:html-provider")
 
 // Website
-// include(":loritta-website")
-// include(":loritta-website:sweet-morenitta")
+include(":loritta-website")
 // include(":loritta-website:spicy-morenitta")
 // include(":loritta-website:lotrunfo-server")
-// include(":loritta-website:embed-renderer")
-// include(":loritta-website:embed-editor-crosswindow")
-// include(":loritta-website:embed-editor")
+include(":loritta-website:embed-renderer")
+include(":loritta-website:embed-editor-crosswindow")
+include(":loritta-website:embed-editor")
 
 // Parallax Code Server
 // include(":parallax-kotlin:parallax-code-api")
