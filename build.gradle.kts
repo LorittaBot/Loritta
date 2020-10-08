@@ -7,6 +7,7 @@ val loriVersion   = "2020-SNAPSHOT"
 val kotlinVersion = "1.4.10"
 val ktorVersion   = "1.4.1"
 val jdaVersion    = "4.2.0_204"
+val kotlinSerialization = "1.0.0"
 
 println("Compiling Loritta $loriVersion")
 println("Kotlin Version: $kotlinVersion")
@@ -21,6 +22,7 @@ allprojects {
         set("kotlin-version", kotlinVersion)
         set("ktor-version", ktorVersion)
         set("jda-version", jdaVersion)
+        set("kotlin-serialization", kotlinSerialization)
         set(
                 "fat-jar-stuff",
                 fun(mainClass: String, customAttributes: Map<String, String>): Task {

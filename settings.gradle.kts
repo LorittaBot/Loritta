@@ -51,7 +51,7 @@ include(":loritta-discord")
 
 // Website
 include(":loritta-website")
-// include(":loritta-website:spicy-morenitta")
+include(":loritta-website:spicy-morenitta")
 // include(":loritta-website:lotrunfo-server")
 include(":loritta-website:embed-renderer")
 include(":loritta-website:embed-editor-crosswindow")
