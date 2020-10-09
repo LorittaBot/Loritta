@@ -2,7 +2,7 @@ package net.perfectdreams.spicymorenitta.utils
 
 import org.w3c.dom.*
 import org.w3c.dom.events.Event
-import kotlin.browser.window
+import kotlinx.browser.window
 
 inline fun <T> ParentNode.select(query: String): T {
     return this.querySelector(query) as T

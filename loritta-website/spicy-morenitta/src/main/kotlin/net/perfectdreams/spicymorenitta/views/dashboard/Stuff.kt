@@ -5,8 +5,8 @@ import kotlinx.html.dom.create
 import net.perfectdreams.spicymorenitta.utils.loriUrl
 import net.perfectdreams.spicymorenitta.utils.TingleModal
 import net.perfectdreams.spicymorenitta.utils.TingleOptions
-import kotlin.browser.document
-import kotlin.browser.window
+import kotlinx.browser.document
+import kotlinx.browser.window
 
 object Stuff {
     fun showPremiumFeatureModal(description: (DIV.() -> (Unit))? = null) {

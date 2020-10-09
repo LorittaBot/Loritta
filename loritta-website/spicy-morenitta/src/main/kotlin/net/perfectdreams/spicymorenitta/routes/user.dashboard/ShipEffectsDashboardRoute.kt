@@ -1,9 +1,12 @@
 package net.perfectdreams.spicymorenitta.routes.user.dashboard
 
+import kotlinx.browser.document
+import kotlinx.browser.window
+import kotlinx.dom.addClass
 import kotlinx.html.div
 import kotlinx.html.dom.append
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.builtins.list
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.JSON
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
@@ -13,9 +16,6 @@ import net.perfectdreams.spicymorenitta.utils.loriUrl
 import net.perfectdreams.spicymorenitta.utils.page
 import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.HTMLInputElement
-import kotlin.browser.document
-import kotlin.browser.window
-import kotlin.dom.addClass
 
 class ShipEffectsDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/user/@me/dashboard/ship-effects") {
     override fun onRender(call: ApplicationCall) {
@@ -23,10 +23,10 @@ class ShipEffectsDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRen
 
         val premiumAsJson = document.getElementById("ship-effects-json")?.innerHTML!!
 
-        val shipEffects = JSON.nonstrict.parse(ShipEffect.serializer().list, premiumAsJson)
+        val shipEffects = JSON.nonstrict.decodeFromString(ListSerializer(ShipEffect.serializer()), premiumAsJson)
         val profileAsJson = document.getElementById("profile-json")?.innerHTML!!
 
-        val profile = JSON.nonstrict.parse(Profile.serializer(), profileAsJson)
+        val profile = JSON.nonstrict.decodeFromString(Profile.serializer(), profileAsJson)
 
         val buyButton = page.getElementById("buy-button") as HTMLButtonElement
         if (3000 > profile.money) {

@@ -5,20 +5,15 @@ import kotlin.reflect.KProperty
 
 // https://stackoverflow.com/questions/35752575/kotlin-lazy-properties-and-values-reset-a-resettable-lazy-delegate
 class ResettableLazyManager {
-    // we synchronize to make sure the timing of a reset() call and new inits do not collide
     val managedDelegates = mutableListOf<Resettable>()
 
     fun register(managed: Resettable) {
-        synchronized (managedDelegates) {
-            managedDelegates.add(managed)
-        }
+        managedDelegates.add(managed)
     }
 
     fun reset() {
-        synchronized (managedDelegates) {
-            managedDelegates.forEach { it.reset() }
-            managedDelegates.clear()
-        }
+        managedDelegates.forEach { it.reset() }
+        managedDelegates.clear()
     }
 }
 

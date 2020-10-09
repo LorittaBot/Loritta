@@ -4,10 +4,10 @@ import kotlinx.html.*
 import kotlinx.html.js.onChangeFunction
 import kotlinx.serialization.Serializable
 import org.w3c.dom.HTMLInputElement
-import kotlin.browser.document
-import kotlin.browser.window
-import kotlin.dom.addClass
-import kotlin.dom.removeClass
+import kotlinx.browser.document
+import kotlinx.browser.window
+import kotlinx.dom.addClass
+import kotlinx.dom.removeClass
 
 object WebsiteUtils : Logging {
     fun getUrlWithLocale(): String {

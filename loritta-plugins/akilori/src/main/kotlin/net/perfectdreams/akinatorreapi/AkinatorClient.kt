@@ -1,17 +1,10 @@
 package net.perfectdreams.akinatorreapi
 
-import io.ktor.client.HttpClient
-import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.client.request.parameter
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.readText
-import io.ktor.http.HttpStatusCode
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.content
-import kotlinx.serialization.json.double
-import kotlinx.serialization.json.int
+import io.ktor.client.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import kotlinx.serialization.json.*
 import mu.KotlinLogging
 import net.perfectdreams.akinatorreapi.payload.CharacterGuess
 import net.perfectdreams.akinatorreapi.payload.GameIdentification
@@ -63,20 +56,20 @@ class AkinatorClient(val region: Region, val childMode: Boolean = false) {
             .removePrefix("$callbackCode(")
             .removeSuffix(")")
 
-        val json = Json.parseJson(result).jsonObject
+        val json = Json.parseToJsonElement(result).jsonObject
         val identification = json["parameters"]!!.jsonObject["identification"]!!.jsonObject
         val stepInformation = json["parameters"]!!.jsonObject["step_information"]!!.jsonObject
 
-        gameIdentification = Json.parse(GameIdentification.serializer(), identification.toString())
+        gameIdentification = Json.decodeFromString(GameIdentification.serializer(), identification.toString())
         logger.trace { gameIdentification }
 
         currentStep = AkinatorStep(
-            stepInformation["question"]!!.content,
-            stepInformation["answers"]!!.jsonArray.map { it.jsonObject["answer"]!!.content },
-            stepInformation["step"]!!.int,
-            stepInformation["progression"]!!.double,
-            stepInformation["questionid"]!!.int,
-            stepInformation["infogain"]!!.double
+            stepInformation["question"]!!.jsonPrimitive.content,
+            stepInformation["answers"]!!.jsonArray.map { it.jsonObject["answer"]!!.jsonPrimitive.content },
+            stepInformation["step"]!!.jsonPrimitive.int,
+            stepInformation["progression"]!!.jsonPrimitive.double,
+            stepInformation["questionid"]!!.jsonPrimitive.int,
+            stepInformation["infogain"]!!.jsonPrimitive.double
         )
     }
 
@@ -94,17 +87,17 @@ class AkinatorClient(val region: Region, val childMode: Boolean = false) {
             .removeSuffix(")")
         logger.trace { text }
 
-        val json = Json.parseJson(text).jsonObject
+        val json = Json.parseToJsonElement(text).jsonObject
         val stepInformation = json["parameters"]!!.jsonObject
 
         try {
             currentStep = AkinatorStep(
-                    stepInformation["question"]!!.content,
-                    stepInformation["answers"]!!.jsonArray.map { it.jsonObject["answer"]!!.content },
-                    stepInformation["step"]!!.int,
-                    stepInformation["progression"]!!.double,
-                    stepInformation["questionid"]!!.int,
-                    stepInformation["infogain"]!!.double
+                    stepInformation["question"]!!.jsonPrimitive.content,
+                    stepInformation["answers"]!!.jsonArray.map { it.jsonObject["answer"]!!.jsonPrimitive.content },
+                    stepInformation["step"]!!.jsonPrimitive.int,
+                    stepInformation["progression"]!!.jsonPrimitive.double,
+                    stepInformation["questionid"]!!.jsonPrimitive.int,
+                    stepInformation["infogain"]!!.jsonPrimitive.double
             )
         } catch (e: Exception) {
             currentStep = null
@@ -133,16 +126,16 @@ class AkinatorClient(val region: Region, val childMode: Boolean = false) {
             .removeSuffix(")")
         logger.trace { text }
 
-        val json = Json.parseJson(text).jsonObject
+        val json = Json.parseToJsonElement(text).jsonObject
         val stepInformation = json["parameters"]!!.jsonObject
 
         currentStep = AkinatorStep(
-            stepInformation["question"]!!.content,
-            stepInformation["answers"]!!.jsonArray.map { it.jsonObject["answer"]!!.content },
-            stepInformation["step"]!!.int,
-            stepInformation["progression"]!!.double,
-            stepInformation["questionid"]!!.int,
-            stepInformation["infogain"]!!.double
+            stepInformation["question"]!!.jsonPrimitive.content,
+            stepInformation["answers"]!!.jsonArray.map { it.jsonObject["answer"]!!.jsonPrimitive.content },
+            stepInformation["step"]!!.jsonPrimitive.int,
+            stepInformation["progression"]!!.jsonPrimitive.double,
+            stepInformation["questionid"]!!.jsonPrimitive.int,
+            stepInformation["infogain"]!!.jsonPrimitive.double
         )
     }
 
@@ -159,8 +152,8 @@ class AkinatorClient(val region: Region, val childMode: Boolean = false) {
             .removeSuffix(")")
         logger.trace { text }
 
-        val json = Json.parseJson(text).jsonObject
-        return json["parameters"]!!.jsonObject["elements"]!!.jsonArray.map { it.jsonObject["element"]!!.jsonObject }.map { Json.parse(CharacterGuess.serializer(), it.toString()) }
+        val json = Json.parseToJsonElement(text).jsonObject
+        return json["parameters"]!!.jsonObject["elements"]!!.jsonArray.map { it.jsonObject["element"]!!.jsonObject }.map { Json.decodeFromString(CharacterGuess.serializer(), it.toString()) }
     }
 
     /**

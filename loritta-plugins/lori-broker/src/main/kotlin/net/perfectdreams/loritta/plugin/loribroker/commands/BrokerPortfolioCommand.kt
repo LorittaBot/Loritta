@@ -1,14 +1,12 @@
 package net.perfectdreams.loritta.plugin.loribroker.commands
 
 import com.mrpowergamerbr.loritta.Loritta
-import kotlinx.serialization.json.content
 import kotlinx.serialization.json.double
+import kotlinx.serialization.json.jsonPrimitive
 import net.perfectdreams.loritta.plugin.loribroker.LoriBrokerPlugin
 import net.perfectdreams.loritta.plugin.loribroker.commands.base.DSLCommandBase
 import net.perfectdreams.loritta.plugin.loribroker.tables.BoughtStocks
-import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.kotlin.utils.addToStdlib.sumByLong
 
 object BrokerPortfolioCommand : DSLCommandBase {
 	override fun command(plugin: LoriBrokerPlugin, loritta: Loritta) = create(
@@ -45,7 +43,7 @@ object BrokerPortfolioCommand : DSLCommandBase {
 
 				val stockCount = totalStockCountById[tickerId] ?: 0
 
-				val totalGainsIfSoldNow = plugin.convertReaisToSonhos(ticker["lp"]!!.double) * stockCount
+				val totalGainsIfSoldNow = plugin.convertReaisToSonhos(ticker["lp"]!!.jsonPrimitive.double) * stockCount
 				val diff = totalGainsIfSoldNow - totalSpent
 				val emoji = when {
 					diff > 0 -> "\uD83D\uDD3C"
@@ -54,7 +52,7 @@ object BrokerPortfolioCommand : DSLCommandBase {
 				}
 
 				embed.addField(
-						"$emoji `${ticker["short_name"]?.content}` ($tickerName)",
+						"$emoji `${ticker["short_name"]?.jsonPrimitive?.content}` ($tickerName)",
 						locale[
 								"commands.economy.brokerPortfolio.youHaveStocksInThisTicker",
 								stockCount,

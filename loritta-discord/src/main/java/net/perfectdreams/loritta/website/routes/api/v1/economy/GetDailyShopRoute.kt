@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.website.routes.api.v1.economy
 
-import io.ktor.application.ApplicationCall
+import io.ktor.application.*
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.serializable.DailyShopResult
@@ -54,6 +54,6 @@ class GetDailyShopRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/e
 				generatedAt ?: -1L
 		)
 
-		call.respondJson(Json.stringify(DailyShopResult.serializer(), shopPayload))
+		call.respondJson(Json.encodeToString(DailyShopResult.serializer(), shopPayload))
 	}
 }

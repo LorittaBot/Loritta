@@ -1,16 +1,17 @@
 package net.perfectdreams.spicymorenitta.routes.user.dashboard
 
-import io.ktor.client.request.get
-import io.ktor.client.request.post
-import io.ktor.client.request.url
-import io.ktor.http.HttpStatusCode
+import io.ktor.client.request.*
 import io.ktor.client.statement.HttpResponse
+import io.ktor.http.*
+import kotlinx.browser.document
+import kotlinx.browser.window
 import kotlinx.coroutines.delay
+import kotlinx.dom.clear
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.dom.create
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.builtins.list
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.JSON
 import net.perfectdreams.loritta.api.utils.Rarity
 import net.perfectdreams.loritta.serializable.Background
@@ -24,10 +25,6 @@ import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
 import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.utils.locale.buildAsHtml
 import org.w3c.dom.*
-import org.w3c.dom.Audio
-import kotlin.browser.document
-import kotlin.browser.window
-import kotlin.dom.clear
 import kotlin.js.Date
 
 class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/user/@me/dashboard/daily-shop") {
@@ -100,7 +97,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
                     url("${window.location.origin}/api/v1/economy/daily-shop")
                 }
 
-                val result = kotlinx.serialization.json.JSON.nonstrict.parse(DailyShopResult.serializer(), payload)
+                val result = kotlinx.serialization.json.JSON.nonstrict.decodeFromString(DailyShopResult.serializer(), payload)
 
                 if (keepRechecking && generatedAt == result.generatedAt) {
                     info("Waiting for 5_000ms until we recheck the shop again, looks like it wasn't fully updated yet...")
@@ -124,7 +121,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
             }
 
             debug("Retrieved profiles & background info!")
-            val result = kotlinx.serialization.json.JSON.nonstrict.parse(UserInfoResult.serializer(), payload)
+            val result = kotlinx.serialization.json.JSON.nonstrict.decodeFromString(UserInfoResult.serializer(), payload)
             return@async result
         }
 
@@ -157,7 +154,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
                 url("${window.location.origin}/api/v1/loritta/fan-arts?query=all&filter=${allArtists.joinToString(",")}")
             }
 
-            JSON.nonstrict.parse(FanArtArtist.serializer().list, payload)
+            JSON.nonstrict.decodeFromString(ListSerializer(FanArtArtist.serializer()), payload)
         }
 
         val fanArtArtists = fanArtArtistsJob.await()

@@ -9,10 +9,10 @@ import net.perfectdreams.spicymorenitta.utils.select
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.WebSocket
-import kotlin.browser.document
-import kotlin.browser.window
-import kotlin.dom.addClass
-import kotlin.dom.removeClass
+import kotlinx.browser.document
+import kotlinx.browser.window
+import kotlinx.dom.addClass
+import kotlinx.dom.removeClass
 import kotlin.js.Json
 
 object Trunfo : Logging {

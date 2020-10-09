@@ -11,7 +11,7 @@ import kotlinx.html.js.onClickFunction
 import org.w3c.dom.Audio
 import net.perfectdreams.spicymorenitta.utils.onDOMReady
 import org.w3c.dom.HTMLElement
-import kotlin.browser.document
+import kotlinx.browser.document
 
 object TrunfoGame {
 	val nintendoWfc by lazy { Audio("nintendo_wfc.mp3") }

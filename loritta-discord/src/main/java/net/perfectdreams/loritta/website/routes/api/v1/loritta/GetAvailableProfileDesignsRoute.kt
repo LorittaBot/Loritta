@@ -1,11 +1,10 @@
 package net.perfectdreams.loritta.website.routes.api.v1.loritta
 
 import com.mrpowergamerbr.loritta.dao.ProfileDesign
-import io.ktor.application.ApplicationCall
-import kotlinx.serialization.builtins.list
+import io.ktor.application.*
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.tables.Backgrounds
 import net.perfectdreams.loritta.tables.ProfileDesigns
 import net.perfectdreams.loritta.website.routes.BaseRoute
 import net.perfectdreams.loritta.website.utils.WebsiteUtils
@@ -19,7 +18,7 @@ class GetAvailableProfileDesignsRoute(loritta: LorittaDiscord) : BaseRoute(lorit
 			}.toList()
 		}.map { WebsiteUtils.toSerializable(it) }
 				.let {
-					Json.toJson(net.perfectdreams.loritta.serializable.ProfileDesign.serializer().list, it)
+					Json.encodeToJsonElement(ListSerializer(net.perfectdreams.loritta.serializable.ProfileDesign.serializer()), it)
 				}
 
 		call.respondJson(array)

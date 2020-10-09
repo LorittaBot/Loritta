@@ -6,7 +6,6 @@ import jQuery
 import jq
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
-import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.Serializable
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
@@ -25,8 +24,8 @@ import org.w3c.dom.HTMLSelectElement
 import userdata.CounterThemes
 import userdata.CounterUtils
 import userdata.MemberCounterConfig
-import kotlin.browser.document
-import kotlin.dom.clear
+import kotlinx.browser.document
+import kotlinx.dom.clear
 
 class MemberCounterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{guildid}/configure/member-counter") {
 	override val keepLoadingScreen: Boolean
@@ -43,7 +42,6 @@ class MemberCounterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/g
 			val memberCounters: List<ServerConfig.MemberCounterConfig>
 	)
 
-	@ImplicitReflectionSerializer
 	override fun onRender(call: ApplicationCall) {
 		launchWithLoadingScreenAndFixContent(call) {
 			val guild = DashboardUtils.retrievePartialGuildConfiguration<PartialGuildConfiguration>(call.parameters["guildid"]!!, "textchannels", "member_counter", "activekeys")

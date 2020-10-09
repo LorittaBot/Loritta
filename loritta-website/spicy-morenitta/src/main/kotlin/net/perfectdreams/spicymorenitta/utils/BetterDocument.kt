@@ -2,7 +2,7 @@ package net.perfectdreams.spicymorenitta.utils
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.get
-import kotlin.browser.document
+import kotlinx.browser.document
 
 val page = BetterDocument(document)
 

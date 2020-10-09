@@ -1,10 +1,11 @@
 package net.perfectdreams.spicymorenitta.routes.user.dashboard
 
-import io.ktor.client.request.get
-import io.ktor.client.request.url
+import io.ktor.client.request.*
+import kotlinx.browser.document
+import kotlinx.browser.window
 import kotlinx.html.*
 import kotlinx.html.dom.append
-import kotlinx.serialization.builtins.list
+import kotlinx.serialization.builtins.ListSerializer
 import net.perfectdreams.loritta.serializable.Background
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
@@ -17,8 +18,6 @@ import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLCanvasElement
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.Image
-import kotlin.browser.document
-import kotlin.browser.window
 
 class AllBackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/user/@me/dashboard/all-backgrounds") {
     override val keepLoadingScreen: Boolean
@@ -34,7 +33,7 @@ class AllBackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSize
                 url("${window.location.origin}/api/v1/loritta/backgrounds")
             }
 
-            val list = kotlinx.serialization.json.JSON.nonstrict.parse(Background.serializer().list, result)
+            val list = kotlinx.serialization.json.JSON.nonstrict.decodeFromString(ListSerializer(Background.serializer()), result)
 
             val profileWrapper = Image()
             debug("Awaiting load...")

@@ -1,8 +1,10 @@
 package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
 
+import kotlinx.browser.document
+import kotlinx.dom.addClass
+import kotlinx.dom.removeClass
 import kotlinx.html.*
 import kotlinx.html.dom.append
-import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.Serializable
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
@@ -19,9 +21,6 @@ import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.HTMLSelectElement
-import kotlin.browser.document
-import kotlin.dom.addClass
-import kotlin.dom.removeClass
 
 class FortniteConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{guildid}/configure/fortnite") {
 	companion object {
@@ -49,7 +48,6 @@ class FortniteConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 	override val keepLoadingScreen: Boolean
 		get() = true
 
-	@ImplicitReflectionSerializer
 	override fun onRender(call: ApplicationCall) {
 		launchWithLoadingScreenAndFixContent(call) {
 			val guild = DashboardUtils.retrievePartialGuildConfiguration<PartialGuildConfiguration>(call.parameters["guildid"]!!, "textchannels", "fortnite")
