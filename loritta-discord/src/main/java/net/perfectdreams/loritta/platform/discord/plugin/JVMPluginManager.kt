@@ -107,7 +107,15 @@ class JVMPluginManager(val loritta: LorittaDiscord) : PluginManager {
 
 			val clazz = Class.forName(info.main, true, classLoader)
 
-			val plugin = clazz.getConstructor(String::class.java, LorittaBot::class.java).newInstance(info.pluginName, loritta) as LorittaPlugin
+			val constructors = clazz.constructors
+
+			val firstMatchingConstructor = constructors
+					.firstOrNull { it.parameters.getOrNull(1)?.type == LorittaDiscord::class.java }
+					?: constructors
+							.firstOrNull { it.parameters.getOrNull(1)?.type == LorittaBot::class.java }
+					?: throw IllegalArgumentException("No matching constructors found for plugin ${info.pluginName}! Check if you have a primary construction with the parameters (name: String, loritta: LorittaBot|LorittaDiscord)")
+
+			val plugin = firstMatchingConstructor.newInstance(info.pluginName, loritta) as LorittaPlugin
 			loadPlugin(plugin)
 			loadedFromFile[plugin] = file
 		} catch (e: Throwable) {
