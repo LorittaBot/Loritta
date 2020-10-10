@@ -11,7 +11,10 @@ import net.perfectdreams.loritta.api.utils.image.Image
 import net.perfectdreams.loritta.utils.Emotes
 
 abstract class CommandContext(
-		val loritta: LorittaBot,
+		// Nifty trick: By keeping it "open", implementations can override this variable.
+		// By doing this, classes can use their own platform implementation (example: LorittaDiscord instead of LorittaBot)
+		// If you don't keep it "open", the type will always be "LorittaBot", which sucks.
+		open val loritta: LorittaBot,
 		val command: Command<CommandContext>,
 		val args: List<String>,
 		val message: Message,
