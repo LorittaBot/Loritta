@@ -4,13 +4,13 @@ import com.mrpowergamerbr.loritta.tables.Profiles
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.utils.image.JVMImage
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.commands.discordCommand
+import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.utils.RankingGenerator
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.selectAll
 
-object SonhosTopCommand {
-	fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("sonhos top", "atm top"), CommandCategory.ECONOMY) {
+class SonhosTopCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("sonhos top", "atm top"), CommandCategory.ECONOMY) {
+	override fun command() = create {
 		localizedDescription("commands.economy.sonhostop.description")
 
 		executesDiscord {

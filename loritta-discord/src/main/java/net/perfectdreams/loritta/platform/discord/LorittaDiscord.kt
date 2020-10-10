@@ -81,18 +81,26 @@ import kotlin.random.Random
  */
 abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig: GeneralDiscordInstanceConfig, var config: GeneralConfig, var instanceConfig: GeneralInstanceConfig) : LorittaBot() {
     override val commandMap = DiscordCommandMap(this).apply {
-        register(LoriToolsCommand.create(discordLoritta))
-        register(SonhosTopCommand.create(discordLoritta))
-        register(SonhosTopLocalCommand.create(discordLoritta))
+        registerAll(
+                // ===[ MAGIC ]===
+                LoriToolsCommand(this@LorittaDiscord),
 
-        register(BanInfoCommand.create(discordLoritta))
+                // ===[ ECONOMY ]===
+                SonhosTopCommand(this@LorittaDiscord),
+                SonhosTopLocalCommand(this@LorittaDiscord),
+                TransactionsCommand(this@LorittaDiscord),
 
-        register(BomDiaECiaTopCommand.create(discordLoritta))
-        register(RankGlobalCommand.create(discordLoritta))
-        register(RepTopCommand.create(discordLoritta))
-        register(XpNotificationsCommand.create(discordLoritta))
-        register(TransactionsCommand.create(discordLoritta))
+                // ===[ SOCIAL ]===
+                BomDiaECiaTopCommand(this@LorittaDiscord),
+                RankGlobalCommand(this@LorittaDiscord),
+                RepTopCommand(this@LorittaDiscord),
+                XpNotificationsCommand(this@LorittaDiscord),
+
+                // ===[ ADMIN ]===
+                BanInfoCommand(this@LorittaDiscord)
+        )
     }
+
     override val pluginManager = JVMPluginManager(this)
     override val assets = JVMLorittaAssets(this)
     var locales = mapOf<String, BaseLocale>()

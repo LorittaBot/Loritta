@@ -7,6 +7,15 @@ interface CommandMap<Cmd: Command<CommandContext>> {
 		commands.forEach { register(it) }
 	}
 
+	fun registerAll(vararg commands: AbstractCommandBase<*, *>) {
+		commands.forEach { register(it) }
+	}
+
+	fun register(commandBase: AbstractCommandBase<*, *>) {
+		val command = commandBase.command()
+		register(command as Cmd)
+	}
+
 	fun unregister(command: Cmd)
 
 	fun unregisterAll(vararg commands: Cmd) {

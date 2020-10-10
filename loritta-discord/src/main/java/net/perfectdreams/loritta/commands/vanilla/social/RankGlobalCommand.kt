@@ -7,13 +7,13 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.utils.image.JVMImage
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.commands.discordCommand
+import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.utils.RankingGenerator
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.selectAll
 
-object RankGlobalCommand {
-	fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("rank global", "top global", "leaderboard global", "ranking global"), CommandCategory.SOCIAL) {
+class RankGlobalCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("rank global", "top global", "leaderboard global", "ranking global"), CommandCategory.SOCIAL) {
+	override fun command() = create {
 		localizedDescription("commands.social.rankglobal.description")
 
 		arguments {

@@ -5,6 +5,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.utils.image.JVMImage
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.platform.discord.commands.discordCommand
 import net.perfectdreams.loritta.tables.BomDiaECiaWinners
 import net.perfectdreams.loritta.utils.RankingGenerator
@@ -12,8 +13,8 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.selectAll
 
-object BomDiaECiaTopCommand {
-	fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("bomdiaecia top", "bd&c top"), CommandCategory.SOCIAL) {
+class BomDiaECiaTopCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("bomdiaecia top", "bd&c top"), CommandCategory.SOCIAL) {
+	override fun command() = create {
 		localizedDescription("commands.social.bomdiaeciatop.description")
 
 		arguments {

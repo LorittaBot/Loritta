@@ -7,7 +7,7 @@ import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.commands.discordCommand
+import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
@@ -17,8 +17,8 @@ import org.jetbrains.exposed.sql.select
 import java.time.Instant
 import java.time.ZoneId
 
-object TransactionsCommand {
-	fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("transactions", "transações"),  CommandCategory.ECONOMY) {
+class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("transactions", "transações"), CommandCategory.ECONOMY) {
+	override fun command() = create {
 		localizedDescription("commands.economy.transactions.description")
 
 		arguments {
