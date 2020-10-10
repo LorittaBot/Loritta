@@ -53,15 +53,13 @@ class CoinFlipBetXCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComma
 			if (2 > args.size)
 				this.explainAndExit()
 
-			val context = checkType<DiscordCommandContext>(this)
-
-			val _user = validate(context.user(0))
+			val _user = validate(user(0))
 			val invitedUser = _user.toJDA()
 
-			if (invitedUser == context.user)
+			if (invitedUser == user)
 				fail(locale["commands.economy.flipcoinbet.cantBetSelf"], Constants.ERROR)
 
-			val selfActiveDonations = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonationsAsync(context.discordMessage.author.idLong)
+			val selfActiveDonations = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonationsAsync(discordMessage.author.idLong)
 			val otherActiveDonations = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonationsAsync(invitedUser.idLong)
 
 			val selfPlan = UserPremiumPlans.getPlanFromValue(selfActiveDonations)
@@ -72,7 +70,7 @@ class CoinFlipBetXCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComma
 			val plan: UserPremiumPlans?
 
 			if (selfPlan.totalCoinFlipReward == 1.0) {
-				whoHasTheNoTaxReward = context.discordMessage.author
+				whoHasTheNoTaxReward = discordMessage.author
 				hasNoTax = true
 				plan = selfPlan
 			} else if (otherPlan.totalCoinFlipReward == 1.0) {
@@ -85,8 +83,8 @@ class CoinFlipBetXCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComma
 				plan = UserPremiumPlans.Essential
 			}
 
-			val number = NumberUtils.convertShortenedNumberToLong(context.args[1])
-					?: fail(locale["commands.invalidNumber", context.args[1].stripCodeMarks()], Emotes.LORI_CRYING.toString())
+			val number = NumberUtils.convertShortenedNumberToLong(args[1])
+					?: fail(locale["commands.invalidNumber", args[1].stripCodeMarks()], Emotes.LORI_CRYING.toString())
 			val tax = (number * (1.0 - plan.totalCoinFlipReward)).toLong()
 			val money = number - tax
 
@@ -96,7 +94,7 @@ class CoinFlipBetXCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComma
 			if (0 >= number)
 				fail(locale["commands.economy.flipcoinbet.zeroMoney"], Constants.ERROR)
 
-			val selfUserProfile = context.lorittaUser.profile
+			val selfUserProfile = lorittaUser.profile
 
 			if (number > selfUserProfile.money)
 				fail(locale["commands.economy.flipcoinbet.notEnoughMoneySelf"], Constants.ERROR)
@@ -112,7 +110,7 @@ class CoinFlipBetXCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComma
 						locale[
 								"commands.economy.flipcoinbet.startBetNoTax",
 								invitedUser.asMention,
-								context.user.asMention,
+								user.asMention,
 								locale["commands.fun.flipcoin.heads"],
 								money,
 								locale["commands.fun.flipcoin.tails"],
@@ -122,7 +120,7 @@ class CoinFlipBetXCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComma
 						locale[
 								"commands.economy.flipcoinbet.startBet",
 								invitedUser.asMention,
-								context.user.asMention,
+								user.asMention,
 								locale["commands.fun.flipcoin.heads"],
 								money,
 								locale["commands.fun.flipcoin.tails"],
@@ -155,17 +153,17 @@ class CoinFlipBetXCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComma
 
 							if (isTails) {
 								prefix = "<:coroa:412586257114464259>"
-								message = context.locale["${CaraCoroaCommand.LOCALE_PREFIX}.tails"]
+								message = locale["${CaraCoroaCommand.LOCALE_PREFIX}.tails"]
 							} else {
 								prefix = "<:cara:412586256409559041>"
-								message = context.locale["${CaraCoroaCommand.LOCALE_PREFIX}.heads"]
+								message = locale["${CaraCoroaCommand.LOCALE_PREFIX}.heads"]
 							}
 
 							val winner: User
 							val loser: User
 
 							if (isTails) {
-								winner = context.user
+								winner = user
 								loser = invitedUser
 								loritta.newSuspendedTransaction {
 									selfUserProfile.addSonhosNested(money)
@@ -180,7 +178,7 @@ class CoinFlipBetXCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComma
 								}
 							} else {
 								winner = invitedUser
-								loser = context.user
+								loser = user
 								loritta.newSuspendedTransaction {
 									invitedUserProfile.addSonhosNested(money)
 									selfUserProfile.takeSonhosNested(number)
@@ -194,7 +192,7 @@ class CoinFlipBetXCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComma
 								}
 							}
 
-							context.reply(
+							reply(
 									LorittaReply(
 											"**$message!**",
 											prefix,
