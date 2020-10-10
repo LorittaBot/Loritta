@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.plugin.helpinghands.commands
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -10,9 +9,8 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
-import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
-import net.perfectdreams.loritta.platform.discord.commands.discordCommand
+import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.plugin.helpinghands.HelpingHandsPlugin
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.extensions.toJDA
 import org.jetbrains.exposed.sql.SortOrder
@@ -21,8 +19,12 @@ import org.jetbrains.exposed.sql.select
 import java.time.Instant
 import java.time.ZoneId
 
-object RepListCommand {
-    fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("rep list", "reps", "reputations", "reputações", "reputacoes", "reputation list", "reputação list", "reputacao list"), CommandCategory.SOCIAL) {
+class RepListCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractCommandBase(
+        plugin.lorittaDiscord,
+        listOf("rep list", "reps", "reputations", "reputações", "reputacoes", "reputation list", "reputação list", "reputacao list"),
+        CommandCategory.SOCIAL
+) {
+    override fun command() = create {
         localizedDescription("commands.social.repList.description")
 
         examples {
@@ -39,10 +41,7 @@ object RepListCommand {
         }
 
         executesDiscord {
-            loritta as Loritta
-
-            val context = checkType<DiscordCommandContext>(this)
-            val user = context.user(0)?.toJDA() ?: context.user
+            val user = user(0)?.toJDA() ?: user
 
             val reputations = loritta.newSuspendedTransaction {
                 Reputations.select {
@@ -66,9 +65,9 @@ object RepListCommand {
 
             val description = buildString {
                 if (reputations.size == 0) {
-                    this.append(context.locale["commands.social.repList.noReps"])
+                    this.append(locale["commands.social.repList.noReps"])
                 } else {
-                    this.append(context.locale["commands.social.repList.reputationsTotalDescription", totalReputationReceived, totalReputationGiven])
+                    this.append(locale["commands.social.repList.reputationsTotalDescription", totalReputationReceived, totalReputationGiven])
                     this.append("\n")
                     this.append("\n")
 
@@ -107,19 +106,19 @@ object RepListCommand {
 
                         val receivedByLoritta = reputation[Reputations.givenById] == com.mrpowergamerbr.loritta.utils.loritta.discordConfig.discord.clientId.toLong()
                         if (receivedByLoritta) {
-                            str.append(context.locale["commands.social.repList.receivedReputationByLoritta", "`${user.name + "#" + user.discriminator}`"])
+                            str.append(locale["commands.social.repList.receivedReputationByLoritta", "`${user.name + "#" + user.discriminator}`"])
                         } else {
                             if (receivedReputation) {
                                 if (content.isNullOrBlank()) {
-                                    str.append(context.locale["commands.social.repList.receivedReputation", "`${name}`"])
+                                    str.append(locale["commands.social.repList.receivedReputation", "`${name}`"])
                                 } else {
-                                    str.append(context.locale["commands.social.repList.receivedReputationWithContent", "`${name}`", "`$content`"])
+                                    str.append(locale["commands.social.repList.receivedReputationWithContent", "`${name}`", "`$content`"])
                                 }
                             } else {
                                 if (content.isNullOrBlank()) {
-                                    str.append(context.locale["commands.social.repList.sentReputation", "`${name}`"])
+                                    str.append(locale["commands.social.repList.sentReputation", "`${name}`"])
                                 } else {
-                                    str.append(context.locale["commands.social.repList.sentReputationWithContent", "`${name}`", "`$content`"])
+                                    str.append(locale["commands.social.repList.sentReputationWithContent", "`${name}`", "`$content`"])
                                 }
                             }
                         }
@@ -139,15 +138,15 @@ object RepListCommand {
             val embed = EmbedBuilder()
                     .setTitle(
                             "${Emotes.LORI_RICH} " +
-                                    if (user != context.user)
-                                        context.locale["commands.social.repList.otherUserRepList", user.asTag]
+                                    if (user != user)
+                                        locale["commands.social.repList.otherUserRepList", user.asTag]
                                     else
-                                        context.locale["commands.social.repList.title"]
+                                        locale["commands.social.repList.title"]
                     )
                     .setColor(Constants.LORITTA_AQUA)
                     .setDescription(description)
 
-            context.sendMessage(context.getUserMention(true), embed.build())
+            sendMessage(getUserMention(true), embed.build())
         }
     }
 }
