@@ -13,7 +13,7 @@ object BrokerPortfolioCommand : DSLCommandBase {
 			loritta,
 			plugin.aliases.flatMap { listOf("$it portfolio", "$it portfólio", "$it p") }
 	) {
-		description { it["commands.economy.brokerPortfolio.description"] }
+		localizedDescription("commands.economy.brokerPortfolio.description")
 
 		executesDiscord {
 			// This may seem extremely dumb

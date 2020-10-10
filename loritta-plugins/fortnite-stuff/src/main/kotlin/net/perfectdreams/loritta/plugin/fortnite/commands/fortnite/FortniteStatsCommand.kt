@@ -24,18 +24,16 @@ object FortniteStatsCommand : DSLCommandBase {
 	private val LOCALE_PREFIX = "commands.fortnite.stats"
 
 	override fun command(loritta: LorittaDiscord, m: FortniteStuff) = create(loritta, listOf("fortnitestats", "fnstats", "fortniteprofile", "fnprofile")) {
-		description { it["${LOCALE_PREFIX}.description"] }
+		localizedDescription("${LOCALE_PREFIX}.description")
 
 		usage {
 			argument(ArgumentType.TEXT) {}
 		}
 
 		examples {
-			listOf(
-					"Ninja",
-					"SypherPK",
-					"MrPowerGamerBR"
-			)
+			+ "Ninja"
+			+ "SypherPK"
+			+ "MrPowerGamerBR"
 		}
 
 		executesDiscord {

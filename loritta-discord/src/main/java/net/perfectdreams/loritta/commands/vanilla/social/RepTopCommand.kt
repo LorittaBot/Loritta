@@ -15,15 +15,13 @@ import org.jetbrains.exposed.sql.selectAll
 
 object RepTopCommand {
 	fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("rep top", "reputation top", "reputacao top", "reputação top"), CommandCategory.SOCIAL) {
-		description { it["commands.social.topreputation.description"] }
+		localizedDescription("commands.social.topreputation.description")
 
 		examples {
-			listOf(
-					it["commands.social.topreputation.received"],
-					it["commands.social.topreputation.given"],
-					"${it["commands.social.topreputation.received"]} 5",
-					"${it["commands.social.topreputation.given"]} 5"
-			)
+			+ it["commands.social.topreputation.received"]
+			+ it["commands.social.topreputation.given"]
+			+ "${it["commands.social.topreputation.received"]} 5"
+			+ "${it["commands.social.topreputation.given"]} 5"
 		}
 
 		arguments {

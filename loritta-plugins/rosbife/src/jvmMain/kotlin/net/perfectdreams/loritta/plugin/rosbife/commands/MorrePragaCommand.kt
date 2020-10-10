@@ -9,7 +9,6 @@ import net.perfectdreams.loritta.api.utils.image.JVMImage
 import net.perfectdreams.loritta.plugin.rosbife.commands.base.DSLCommandBase
 import java.awt.Color
 import java.awt.Font
-import java.awt.Graphics
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
 import java.io.File
@@ -19,7 +18,7 @@ object MorrePragaCommand : DSLCommandBase {
 			loritta,
 			listOf("dieplague", "morrepraga")
 	) {
-		description { it["commands.images.morrepraga.description"] }
+		localizedDescription("commands.images.morrepraga.description")
 
 		usage {
 			argument(ArgumentType.IMAGE) {}

@@ -21,7 +21,7 @@ object BrokerBuyStockCommand : DSLCommandBase {
 			loritta,
 			plugin.aliases.flatMap { listOf("$it buy", "$it comprar") }
 	) {
-		description { it["commands.economy.brokerBuy.description"] }
+		localizedDescription("commands.economy.brokerBuy.description")
 
 		arguments {
 			argument(ArgumentType.TEXT) {}

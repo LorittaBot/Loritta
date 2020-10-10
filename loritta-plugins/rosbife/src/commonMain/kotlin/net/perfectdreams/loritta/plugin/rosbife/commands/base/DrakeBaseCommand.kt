@@ -18,10 +18,10 @@ interface DrakeBaseCommand : DSLCommandBase {
 				labels,
 				CommandCategory.IMAGES
 		) {
-			description { it[descriptionKey] }
+			localizedDescription(descriptionKey)
 
 			examples {
-				listOf("@Loritta @MrPowerGamerBR")
+				+ "@Loritta @MrPowerGamerBR"
 			}
 
 			usage {

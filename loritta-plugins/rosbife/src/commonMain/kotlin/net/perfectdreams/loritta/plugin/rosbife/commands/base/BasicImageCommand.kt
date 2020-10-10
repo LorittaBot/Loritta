@@ -16,7 +16,7 @@ interface BasicImageCommand {
 				labels,
 				CommandCategory.IMAGES
 		) {
-			description { it[descriptionKey] }
+			localizedDescription(descriptionKey)
 
 			usage {
 				argument(ArgumentType.IMAGE) {}

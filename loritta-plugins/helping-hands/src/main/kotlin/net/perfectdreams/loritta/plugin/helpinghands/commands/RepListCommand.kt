@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.plugin.helpinghands.commands
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -19,19 +18,16 @@ import net.perfectdreams.loritta.utils.extensions.toJDA
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
 import java.time.ZoneId
 
 object RepListCommand {
     fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("rep list", "reps", "reputations", "reputações", "reputacoes", "reputation list", "reputação list", "reputacao list"), CommandCategory.SOCIAL) {
-        description { it["commands.social.repList.description"] }
+        localizedDescription("commands.social.repList.description")
 
         examples {
-            listOf(
-                    "@MrPowerGamerBR",
-                    "@Loritta"
-            )
+            + "@MrPowerGamerBR"
+            + "@Loritta"
         }
 
         usage {

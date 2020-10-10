@@ -25,7 +25,7 @@ object HungerGamesCommand {
     fun command(loritta: LorittaDiscord) = discordCommand(loritta, listOf("hungergames", "jogosvorazes", "hg"), CommandCategory.FUN) {
         loritta as Loritta
 
-        description { it["$LOCALE_PREFIX.description"] }
+        localizedDescription("$LOCALE_PREFIX.description")
 
         usage {
             repeat(24) {

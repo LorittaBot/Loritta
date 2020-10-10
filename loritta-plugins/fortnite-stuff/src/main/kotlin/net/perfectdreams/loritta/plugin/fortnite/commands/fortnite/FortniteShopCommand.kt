@@ -11,7 +11,7 @@ object FortniteShopCommand : DSLCommandBase {
 	private val LOCALE_PREFIX = "commands.fortnite.shop"
 
 	override fun command(loritta: LorittaDiscord, m: FortniteStuff) = create(loritta, listOf("fortniteshop", "fortniteloja", "fnshop", "fnloja")) {
-		description { it["${LOCALE_PREFIX}.description"] }
+		localizedDescription("${LOCALE_PREFIX}.description")
 
 		executesDiscord {
 			val storeFileName = when {

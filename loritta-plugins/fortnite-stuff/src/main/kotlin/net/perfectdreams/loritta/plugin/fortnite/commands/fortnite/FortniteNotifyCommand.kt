@@ -26,19 +26,17 @@ object FortniteNotifyCommand : DSLCommandBase {
 	private val LOCALE_PREFIX = "commands.fortnite.notify"
 
 	override fun command(loritta: LorittaDiscord, m: FortniteStuff) = create(loritta, listOf("fnnotify", "fortnitenotify", "fnnotificar", "fortnitenotificar")) {
-		description { it["${LOCALE_PREFIX}.description"] }
+		localizedDescription("${LOCALE_PREFIX}.description")
 
 		usage {
 			argument(ArgumentType.TEXT) {}
 		}
 
 		examples {
-			listOf(
-					"Skull Trooper",
-					"Ghoul Trooper",
-					"Tsuki",
-					"Savor the W"
-			)
+			+ "Skull Trooper"
+			+ "Ghoul Trooper"
+			+ "Tsuki"
+			+ "Savor the W"
 		}
 
 		executesDiscord {

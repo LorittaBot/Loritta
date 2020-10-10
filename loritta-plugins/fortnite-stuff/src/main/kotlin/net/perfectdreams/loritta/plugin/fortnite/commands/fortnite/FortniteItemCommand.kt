@@ -20,21 +20,19 @@ object FortniteItemCommand : DSLCommandBase {
 	private val LOCALE_PREFIX = "commands.fortnite.item"
 
 	override fun command(loritta: LorittaDiscord, m: FortniteStuff) = create(loritta, listOf("fortniteitem", "fnitem")) {
-		description { it["${LOCALE_PREFIX}.description"] }
+		localizedDescription("${LOCALE_PREFIX}.description")
 
 		usage {
 			argument(ArgumentType.TEXT) {}
 		}
 
 		examples {
-			listOf(
-					"Tsuki",
-					"Glow",
-					"Savor the W",
-					"Jaywalking",
-					"Kitsune",
-					"13dfe12e98005d104710b724cafd26d42432ce81"
-			)
+			+ "Tsuki"
+			+ "Glow"
+			+ "Savor the W"
+			+ "Jaywalking"
+			+ "Kitsune"
+			+ "13dfe12e98005d104710b724cafd26d42432ce81"
 		}
 
 		executesDiscord {

@@ -14,9 +14,8 @@ import javax.imageio.ImageIO
 
 object McSignCommand : DSLCommandBase {
 	override fun command(loritta: LorittaBot) = create(loritta, listOf("mcsign", "mcplaca")) {
-		description { it["commands.minecraft.mcsign.description"] }
-
-		examples { it.getList("commands.minecraft.mcsign.examples") }
+		localizedDescription("commands.minecraft.mcsign.description")
+		localizedExamples("commands.minecraft.mcsign.examples")
 
 		usage {
 			argument(ArgumentType.TEXT) {}

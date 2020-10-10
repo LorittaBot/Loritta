@@ -12,7 +12,7 @@ object ToBeContinuedCommand : DSLCommandBase {
 			loritta,
 			listOf("tobecontinued")
 	) {
-		description { it["commands.images.tobecontinued.description"] }
+		localizedDescription("commands.images.tobecontinued.description")
 
 		usage {
 			argument(ArgumentType.TEXT) {}

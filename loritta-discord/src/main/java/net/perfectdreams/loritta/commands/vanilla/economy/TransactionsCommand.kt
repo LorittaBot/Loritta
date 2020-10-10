@@ -19,7 +19,7 @@ import java.time.ZoneId
 
 object TransactionsCommand {
 	fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("transactions", "transações"),  CommandCategory.ECONOMY) {
-		description { it["commands.economy.transactions.description"] }
+		localizedDescription("commands.economy.transactions.description")
 
 		arguments {
 			argument(ArgumentType.USER) {

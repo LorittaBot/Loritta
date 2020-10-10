@@ -22,7 +22,7 @@ object FortniteNewsCommand : DSLCommandBase {
 	private val LOCALE_PREFIX = "commands.fortnite.news"
 
 	override fun command(loritta: LorittaDiscord, m: FortniteStuff) = create(loritta, listOf("fortnitenews", "fortnitenoticias", "fortnitenotícias", "fnnews", "fnnoticias", "fnnotícias")) {
-		description { it["${LOCALE_PREFIX}.description"] }
+		localizedDescription("${LOCALE_PREFIX}.description")
 
 		executesDiscord {
 			val newsPayload = m.updateStoreItems!!.getNewsData("br", locale["commands.fortnite.shop.localeId"])

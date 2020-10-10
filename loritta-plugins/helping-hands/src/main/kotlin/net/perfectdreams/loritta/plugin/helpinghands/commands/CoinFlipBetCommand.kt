@@ -29,13 +29,11 @@ object CoinFlipBetCommand : DSLCommandBase {
 			listOf("coinflip", "flipcoin", "girarmoeda", "caracoroa")
 					.flatMap { listOf("$it bet", "$it apostar") }
 	) {
-		description { it["commands.economy.flipcoinbet.description"] }
+		localizedDescription("commands.economy.flipcoinbet.description")
 
 		examples {
-			listOf(
-					"@MrPowerGamerBR 100",
-					"@Loritta 1000"
-			)
+			+ "@MrPowerGamerBR 100"
+			+ "@Loritta 1000"
 		}
 
 		usage {

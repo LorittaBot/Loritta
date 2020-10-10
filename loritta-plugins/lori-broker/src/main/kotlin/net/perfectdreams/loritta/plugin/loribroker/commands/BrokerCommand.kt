@@ -12,7 +12,7 @@ object BrokerCommand : DSLCommandBase {
 			loritta,
 			plugin.aliases
 	) {
-		description { it["commands.economy.broker.description"] }
+		localizedDescription("commands.economy.broker.description")
 
 		executesDiscord {
 			val stocks = plugin.validStocksCodes.map {

@@ -11,8 +11,11 @@ object SAMCommand : DSLCommandBase {
 			loritta,
 			listOf("sam", "southamericamemes")
 	) {
-		description { it["commands.images.sam.description"] }
-		examples { listOf("@MrPowerGamerBR") }
+		localizedDescription("commands.images.sam.description")
+
+		examples {
+			+ "@MrPowerGamerBR"
+		}
 
 		usage {
 			argument(ArgumentType.IMAGE) {}

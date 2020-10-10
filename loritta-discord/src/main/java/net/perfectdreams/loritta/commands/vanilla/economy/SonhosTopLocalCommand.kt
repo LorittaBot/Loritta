@@ -13,7 +13,7 @@ import org.jetbrains.exposed.sql.select
 
 object SonhosTopLocalCommand {
 	fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("sonhos top local", "atm top local"),  CommandCategory.ECONOMY) {
-		description { it["commands.economy.sonhostoplocal.description"] }
+		localizedDescription("commands.economy.sonhostoplocal.description")
 
 		executesDiscord {
 			var page = args.getOrNull(0)?.toLongOrNull()

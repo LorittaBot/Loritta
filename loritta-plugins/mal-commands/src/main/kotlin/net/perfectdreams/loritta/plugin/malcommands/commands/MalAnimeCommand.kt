@@ -18,14 +18,13 @@ object MalAnimeCommand : DSLCommandBase {
     private val logger = KotlinLogging.logger { }
 
     override fun command(loritta: LorittaDiscord, m: MalCommandsPlugin) = create(loritta, listOf("malanime", "anime")) {
-        description { it["$LOCALE_PREFIX.description"] }
+        localizedDescription("$LOCALE_PREFIX.description")
 
         examples {
-            listOf(
-                    "Nichijou",
-                    "Pop Team Epic"
-            )
+            + "Nichijou"
+            + "Pop Team Epic"
         }
+
         usage {
             argument(ArgumentType.TEXT) {}
         }

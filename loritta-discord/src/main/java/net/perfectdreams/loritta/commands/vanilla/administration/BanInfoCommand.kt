@@ -8,17 +8,17 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
-import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.discordCommand
+import net.perfectdreams.loritta.utils.Emotes
 
 object BanInfoCommand {
     fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("baninfo", "infoban"), CommandCategory.ADMIN) {
-        description { it["commands.moderation.baninfo.description"] }
+        localizedDescription("commands.moderation.baninfo.description")
 
         arguments {
             argument(ArgumentType.USER) {
@@ -27,7 +27,7 @@ object BanInfoCommand {
         }
 
         examples {
-            listOf("159985870458322944")
+            + "159985870458322944"
         }
 
         userRequiredPermissions = listOf(Permission.BAN_MEMBERS)

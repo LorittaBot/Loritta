@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.utils.Emotes
 
 object XpNotificationsCommand {
 	fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("xpnotifications"), CommandCategory.SOCIAL) {
-		description { it["commands.social.xpnotifications.description"] }
+		localizedDescription("commands.social.xpnotifications.description")
 
 		arguments {
 			argument(ArgumentType.NUMBER) {

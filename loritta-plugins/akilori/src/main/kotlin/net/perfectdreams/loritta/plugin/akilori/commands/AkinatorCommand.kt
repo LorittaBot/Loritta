@@ -33,7 +33,7 @@ object AkinatorCommand {
 	private const val CHARACTER_PROBABILITY = 0.85
 
 	fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("akinator"), CommandCategory.FUN) {
-		description { it["commands.fun.akinator.description"] }
+		localizedDescription("commands.fun.akinator.description")
 
 		botRequiredPermissions = listOf(Permission.MESSAGE_MANAGE)
 

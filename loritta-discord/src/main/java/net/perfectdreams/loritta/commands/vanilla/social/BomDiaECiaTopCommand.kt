@@ -14,7 +14,7 @@ import org.jetbrains.exposed.sql.selectAll
 
 object BomDiaECiaTopCommand {
 	fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("bomdiaecia top", "bd&c top"), CommandCategory.SOCIAL) {
-		description { it["commands.social.bomdiaeciatop.description"] }
+		localizedDescription("commands.social.bomdiaeciatop.description")
 
 		arguments {
 			argument(ArgumentType.NUMBER) {

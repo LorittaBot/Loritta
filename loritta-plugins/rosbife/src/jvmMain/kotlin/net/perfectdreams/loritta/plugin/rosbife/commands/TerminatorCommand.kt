@@ -9,7 +9,6 @@ import net.perfectdreams.loritta.api.utils.image.JVMImage
 import net.perfectdreams.loritta.plugin.rosbife.commands.base.DSLCommandBase
 import java.awt.Color
 import java.awt.Font
-import java.awt.Graphics
 import java.awt.image.BufferedImage
 import java.io.File
 
@@ -18,11 +17,9 @@ object TerminatorCommand : DSLCommandBase {
 			loritta,
 			listOf("terminator", "animeterminator", "terminatoranime")
 	) {
-		description { it["commands.images.terminator.description"] }
+		localizedDescription("commands.images.terminator.description")
+		localizedExamples("commands.images.terminator.examples")
 
-		examples {
-			it.getList("commands.images.terminator.examples")
-		}
 		usage {
 			argument(ArgumentType.TEXT) {}
 		}

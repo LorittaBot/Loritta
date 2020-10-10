@@ -15,7 +15,7 @@ object PetPetCommand : DSLCommandBase {
 			loritta,
 			listOf("petpet", "patpat")
 	) {
-		description { it["commands.images.petpet.description"] }
+		localizedDescription("commands.images.petpet.description")
 
 		usage {
 			argument(ArgumentType.IMAGE) {}

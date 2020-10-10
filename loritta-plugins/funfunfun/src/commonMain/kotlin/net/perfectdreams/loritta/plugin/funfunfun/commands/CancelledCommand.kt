@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.utils.Emotes
 
 object CancelledCommand : DSLCommandBase {
 	override fun command(loritta: LorittaBot) = create(loritta, listOf("cancelled", "cancelado", "cancel", "cancelar")) {
-		description { it["commands.fun.cancelled.description"] }
+		localizedDescription("commands.fun.cancelled.description")
 
 		usage {
 			argument(ArgumentType.USER) {}

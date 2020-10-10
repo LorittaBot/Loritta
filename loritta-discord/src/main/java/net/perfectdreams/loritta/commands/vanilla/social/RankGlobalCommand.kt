@@ -14,7 +14,7 @@ import org.jetbrains.exposed.sql.selectAll
 
 object RankGlobalCommand {
 	fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("rank global", "top global", "leaderboard global", "ranking global"), CommandCategory.SOCIAL) {
-		description { it["commands.social.rankglobal.description"] }
+		localizedDescription("commands.social.rankglobal.description")
 
 		arguments {
 			argument(ArgumentType.NUMBER) {
