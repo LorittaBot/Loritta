@@ -12,6 +12,7 @@ import net.perfectdreams.loritta.api.utils.image.JVMImage
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.plugin.fortnite.FortniteStuff
+import net.perfectdreams.loritta.plugin.fortnite.commands.fortnite.base.DSLCommandBase
 import java.awt.Color
 import java.awt.FontMetrics
 import java.awt.Rectangle
