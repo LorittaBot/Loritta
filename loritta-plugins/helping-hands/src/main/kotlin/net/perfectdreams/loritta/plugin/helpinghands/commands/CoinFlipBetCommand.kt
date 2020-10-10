@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.plugin.helpinghands.commands
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.CaraCoroaCommand
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MessageInteractionFunctions
 import com.mrpowergamerbr.loritta.utils.removeAllFunctions
@@ -18,12 +17,9 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
 import net.perfectdreams.loritta.plugin.helpinghands.HelpingHandsPlugin
 import net.perfectdreams.loritta.plugin.helpinghands.commands.base.DSLCommandBase
-import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.utils.*
 import net.perfectdreams.loritta.utils.extensions.refreshInDeferredTransaction
 import net.perfectdreams.loritta.utils.extensions.toJDA
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.transactions.transaction
 
 object CoinFlipBetCommand : DSLCommandBase {
 	val mutex = Mutex()
