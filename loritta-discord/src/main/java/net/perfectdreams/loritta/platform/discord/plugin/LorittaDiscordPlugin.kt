@@ -8,7 +8,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.plugin.LorittaPlugin
 import net.perfectdreams.loritta.commands.vanilla.magic.LoriToolsCommand
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
@@ -17,8 +16,7 @@ import net.perfectdreams.loritta.website.utils.LorittaHtmlProvider
 import net.perfectdreams.loritta.website.utils.config.types.ConfigTransformer
 import java.io.File
 
-open class LorittaDiscordPlugin(name: String, loritta: LorittaBot) : LorittaPlugin(name, loritta) {
-	val lorittaDiscord = loritta as LorittaDiscord
+open class LorittaDiscordPlugin(name: String, override val loritta: LorittaDiscord) : LorittaPlugin(name, loritta) {
 	val routes = mutableListOf<BaseRoute>()
 	val configTransformers = mutableListOf<ConfigTransformer>()
 	val dataFolder by lazy { File(Loritta.FOLDER, "plugins/$name") }
@@ -61,7 +59,7 @@ open class LorittaDiscordPlugin(name: String, loritta: LorittaBot) : LorittaPlug
 
 	override fun launch(block: suspend CoroutineScope.() -> Unit): Job {
 		pluginTasks.removeAll { it.isCompleted }
-		val job = GlobalScope.launch((lorittaDiscord as Loritta).coroutineDispatcher, block = block)
+		val job = GlobalScope.launch(loritta.coroutineDispatcher, block = block)
 		pluginTasks.add(job)
 		return job
 	}

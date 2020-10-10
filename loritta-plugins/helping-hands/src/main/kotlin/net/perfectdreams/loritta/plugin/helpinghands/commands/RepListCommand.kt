@@ -20,7 +20,7 @@ import java.time.Instant
 import java.time.ZoneId
 
 class RepListCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractCommandBase(
-        plugin.lorittaDiscord,
+        plugin.loritta,
         listOf("rep list", "reps", "reputations", "reputações", "reputacoes", "reputation list", "reputação list", "reputacao list"),
         CommandCategory.SOCIAL
 ) {

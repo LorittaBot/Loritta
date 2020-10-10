@@ -21,7 +21,7 @@ import net.perfectdreams.loritta.utils.extensions.refreshInDeferredTransaction
 import net.perfectdreams.loritta.utils.extensions.toJDA
 
 class CoinFlipBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractCommandBase(
-		plugin.lorittaDiscord,
+		plugin.loritta,
 		listOf("coinflip", "flipcoin", "girarmoeda", "caracoroa")
 				.flatMap { listOf("$it bet", "$it apostar") },
 		CommandCategory.ECONOMY

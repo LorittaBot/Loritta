@@ -5,7 +5,7 @@ import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractComman
 import net.perfectdreams.loritta.plugin.helpinghands.HelpingHandsPlugin
 
 class TestCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractCommandBase(
-        plugin.lorittaDiscord,
+        plugin.loritta,
         listOf("testcommand"),
         CommandCategory.MISC
 ) {

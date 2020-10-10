@@ -9,7 +9,13 @@ import net.perfectdreams.loritta.api.commands.AbstractCommandBase
 import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandContext
 
-abstract class LorittaPlugin(val name: String, val loritta: LorittaBot) {
+abstract class LorittaPlugin(
+		val name: String,
+		// Nifty trick: By keeping it "open", implementations can override this variable.
+		// By doing this, classes can use their own platform implementation (example: LorittaDiscord instead of LorittaBot)
+		// If you don't keep it "open", the type will always be "LorittaBot", which sucks.
+		open val loritta: LorittaBot
+) {
 	val registeredCommands = mutableListOf<Command<CommandContext>>()
 	val pluginTasks = mutableListOf<Job>()
 
