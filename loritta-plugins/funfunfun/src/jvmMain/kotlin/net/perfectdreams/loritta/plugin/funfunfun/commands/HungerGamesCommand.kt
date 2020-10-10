@@ -2,27 +2,25 @@ package net.perfectdreams.loritta.plugin.funfunfun.commands
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.locale.Gender
-import io.ktor.client.request.forms.formData
-import io.ktor.client.request.forms.submitFormWithBinaryData
-import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.readText
+import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
+import io.ktor.client.statement.*
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.commands.discordCommand
+import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.plugin.funfunfun.FunFunFunPlugin
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.extensions.toJDA
 import org.jsoup.Jsoup
 
-object HungerGamesCommand {
-    private const val LOCALE_PREFIX = "commands.fun.hungergames"
-    private const val WEBSITE_URL = "https://brantsteele.net"
+class HungerGamesCommand(m: FunFunFunPlugin) : DiscordAbstractCommandBase(m.loritta as LorittaDiscord, listOf("hungergames", "jogosvorazes", "hg"), CommandCategory.FUN) {
+    private val LOCALE_PREFIX = "commands.fun.hungergames"
+    private val WEBSITE_URL = "https://brantsteele.net"
 
-    fun command(loritta: LorittaDiscord) = discordCommand(loritta, listOf("hungergames", "jogosvorazes", "hg"), CommandCategory.FUN) {
+    override fun command() = create {
         loritta as Loritta
 
         localizedDescription("$LOCALE_PREFIX.description")

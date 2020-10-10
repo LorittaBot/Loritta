@@ -1,20 +1,26 @@
 package net.perfectdreams.loritta.plugin.rosbife.commands.base
 
 import net.perfectdreams.loritta.api.LorittaBot
-import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandBuilder
 import net.perfectdreams.loritta.api.commands.CommandContext
 import net.perfectdreams.loritta.api.utils.createImage
 import net.perfectdreams.loritta.api.utils.image.Image
 
-interface BasicSkewedImageCommand : BasicImageCommand {
-	val corners: List<Corners>
+open class BasicSkewedImageCommand(
+		loritta: LorittaBot,
+		labels: List<String>,
+		descriptionKey: String,
+		sourceTemplatePath: String,
+		val corners: List<Corners>,
+		builder: CommandBuilder<CommandContext>.() -> (Unit) = {}
+) : BasicImageCommand(
+		loritta,
+		labels,
+		descriptionKey,
+		sourceTemplatePath,
+		{
+			builder.invoke(this)
 
-	override fun create(loritta: LorittaBot, labels: List<String>, builder: CommandBuilder<CommandContext>.() -> (Unit)): Command<CommandContext> {
-		return super.create(
-				loritta,
-				labels
-		) {
 			executes {
 				val contextImage = validate(image(0))
 				val template = loritta.assets.loadImage(sourceTemplatePath, loadFromCache = true)
@@ -43,7 +49,15 @@ interface BasicSkewedImageCommand : BasicImageCommand {
 				sendImage(base, sourceTemplatePath)
 			}
 		}
-	}
+) {
+	constructor(
+			loritta: LorittaBot,
+			labels: List<String>,
+			descriptionKey: String,
+			sourceTemplatePath: String,
+			corner: Corners,
+			builder: CommandBuilder<CommandContext>.() -> (Unit) = {}
+	) : this(loritta, labels, descriptionKey, sourceTemplatePath, listOf(corner), builder)
 
 	data class Corners(
 			val upperLeftX: Float, val upperLeftY: Float,

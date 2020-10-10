@@ -1,26 +1,23 @@
 package net.perfectdreams.loritta.plugin.loribroker.commands
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.double
 import kotlinx.serialization.json.jsonPrimitive
 import net.perfectdreams.loritta.api.commands.ArgumentType
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.plugin.loribroker.LoriBrokerPlugin
-import net.perfectdreams.loritta.plugin.loribroker.commands.base.DSLCommandBase
 import net.perfectdreams.loritta.plugin.loribroker.tables.BoughtStocks
 import net.perfectdreams.loritta.utils.*
 import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.select
 
-object BrokerBuyStockCommand : DSLCommandBase {
-	override fun command(plugin: LoriBrokerPlugin, loritta: Loritta) = create(
-			loritta,
-			plugin.aliases.flatMap { listOf("$it buy", "$it comprar") }
-	) {
+class BrokerBuyStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractCommandBase(plugin.loritta, plugin.aliases.flatMap { listOf("$it buy", "$it comprar") }, CommandCategory.ECONOMY) {
+	override fun command() = create {
 		localizedDescription("commands.economy.brokerBuy.description")
 
 		arguments {

@@ -7,7 +7,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.plugin.loribroker.commands.BrokerBuyStockCommand
@@ -22,7 +21,7 @@ import java.awt.Color
 import java.util.concurrent.TimeUnit
 import kotlin.math.floor
 
-class LoriBrokerPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(name, loritta) {
+class LoriBrokerPlugin(name: String, loritta: LorittaDiscord) : LorittaDiscordPlugin(name, loritta) {
 	private var _tradingApi: TradingViewRelayConnector? = null
 	val tradingApi: TradingViewRelayConnector
 		get() = _tradingApi ?: throw RuntimeException("TradingView API not started!")
@@ -79,10 +78,10 @@ class LoriBrokerPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlugin
 			)
 		}
 
-		registerCommand(BrokerCommand.command(this, loritta))
-		registerCommand(BrokerBuyStockCommand.command(this, loritta))
-		registerCommand(BrokerSellStockCommand.command(this, loritta))
-		registerCommand(BrokerPortfolioCommand.command(this, loritta))
+		registerCommand(BrokerCommand(this))
+		registerCommand(BrokerBuyStockCommand(this))
+		registerCommand(BrokerSellStockCommand(this))
+		registerCommand(BrokerPortfolioCommand(this))
 	}
 
 	override fun onDisable() {

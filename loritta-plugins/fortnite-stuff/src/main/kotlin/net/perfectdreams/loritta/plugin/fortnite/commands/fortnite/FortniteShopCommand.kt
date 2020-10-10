@@ -1,17 +1,18 @@
 package net.perfectdreams.loritta.plugin.fortnite.commands.fortnite
 
 import com.mrpowergamerbr.loritta.utils.Constants
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.plugin.fortnite.FortniteStuff
-import net.perfectdreams.loritta.plugin.fortnite.commands.fortnite.base.DSLCommandBase
 import net.perfectdreams.loritta.utils.Emotes
 
-object FortniteShopCommand : DSLCommandBase {
+class FortniteShopCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.loritta, listOf("fortniteshop", "fortniteloja", "fnshop", "fnloja"), CommandCategory.FORTNITE) {
 	private val LOCALE_PREFIX = "commands.fortnite.shop"
 
-	override fun command(loritta: LorittaDiscord, m: FortniteStuff) = create(loritta, listOf("fortniteshop", "fortniteloja", "fnshop", "fnloja")) {
+	override fun command() = create {
 		localizedDescription("${LOCALE_PREFIX}.description")
+		needsToUploadFiles = true
 
 		executesDiscord {
 			val storeFileName = when {

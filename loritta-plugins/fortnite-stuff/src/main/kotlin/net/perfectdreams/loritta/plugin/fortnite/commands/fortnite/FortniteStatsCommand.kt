@@ -6,9 +6,11 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.utils.*
 import net.perfectdreams.loritta.api.commands.ArgumentType
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.api.utils.image.JVMImage
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.plugin.fortnite.FortniteStuff
 import net.perfectdreams.loritta.plugin.fortnite.commands.fortnite.base.DSLCommandBase
 import java.awt.Color
@@ -20,11 +22,12 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 
-object FortniteStatsCommand : DSLCommandBase {
+class FortniteStatsCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.loritta, listOf("fortnitestats", "fnstats", "fortniteprofile", "fnprofile"), CommandCategory.FORTNITE) {
 	private val LOCALE_PREFIX = "commands.fortnite.stats"
 
-	override fun command(loritta: LorittaDiscord, m: FortniteStuff) = create(loritta, listOf("fortnitestats", "fnstats", "fortniteprofile", "fnprofile")) {
+	override fun command() = create {
 		localizedDescription("${LOCALE_PREFIX}.description")
+		needsToUploadFiles = true
 
 		usage {
 			argument(ArgumentType.TEXT) {}
@@ -37,10 +40,8 @@ object FortniteStatsCommand : DSLCommandBase {
 		}
 
 		executesDiscord {
-			if (args.isEmpty()) {
-				explain()
-				return@executesDiscord
-			}
+			if (args.isEmpty())
+				explainAndExit()
 
 			val arg0 = args.joinToString(" ")
 

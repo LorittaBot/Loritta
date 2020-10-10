@@ -1,20 +1,20 @@
 package net.perfectdreams.loritta.plugin.rosbife.commands
 
-import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.utils.image.Image
-import net.perfectdreams.loritta.plugin.rosbife.commands.base.DSLCommandBase
+import net.perfectdreams.loritta.plugin.rosbife.RosbifePlugin
+import net.perfectdreams.loritta.plugin.rosbife.commands.base.ImageAbstractCommandBase
 import kotlin.math.max
 
-object SAMCommand : DSLCommandBase {
-	override fun command(loritta: LorittaBot) = create(
-			loritta,
-			listOf("sam", "southamericamemes")
-	) {
+class SAMCommand(m: RosbifePlugin) : ImageAbstractCommandBase(
+		m.loritta,
+		listOf("sam", "southamericamemes")
+) {
+	override fun command() = create {
 		localizedDescription("commands.images.sam.description")
 
 		examples {
-			+ "@MrPowerGamerBR"
+			+"@MrPowerGamerBR"
 		}
 
 		usage {

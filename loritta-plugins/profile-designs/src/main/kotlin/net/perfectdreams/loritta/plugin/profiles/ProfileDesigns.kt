@@ -1,14 +1,11 @@
 package net.perfectdreams.loritta.plugin.profiles
 
 import com.mrpowergamerbr.loritta.profile.ProfileCreator
-import net.perfectdreams.loritta.plugin.profiles.designs.DefaultProfileCreator
-import net.perfectdreams.loritta.plugin.profiles.designs.MSNProfileCreator
-import net.perfectdreams.loritta.plugin.profiles.designs.OrkutProfileCreator
-import net.perfectdreams.loritta.api.LorittaBot
+import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.plugin.profiles.designs.*
 
-class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(name, loritta) {
+class ProfileDesigns(name: String, loritta: LorittaDiscord) : LorittaDiscordPlugin(name, loritta) {
     val registeredProfiles = mutableListOf<ProfileCreator>()
 
     override fun onEnable() {
@@ -32,7 +29,7 @@ class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(n
         registeredProfiles.add(LorittaChristmas2019ProfileCreator())
 
         registeredProfiles.forEach {
-            lorittaDiscord.profileDesignManager.registerDesign(it)
+            loritta.profileDesignManager.registerDesign(it)
         }
     }
 
@@ -40,7 +37,7 @@ class ProfileDesigns(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(n
         super.onDisable()
 
         registeredProfiles.forEach {
-            lorittaDiscord.profileDesignManager.unregisterDesign(it)
+            loritta.profileDesignManager.unregisterDesign(it)
         }
     }
 }

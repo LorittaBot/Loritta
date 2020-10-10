@@ -1,18 +1,15 @@
 package net.perfectdreams.loritta.plugin.loribroker.commands
 
-import com.mrpowergamerbr.loritta.Loritta
 import kotlinx.serialization.json.double
 import kotlinx.serialization.json.jsonPrimitive
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.plugin.loribroker.LoriBrokerPlugin
-import net.perfectdreams.loritta.plugin.loribroker.commands.base.DSLCommandBase
 import net.perfectdreams.loritta.plugin.loribroker.tables.BoughtStocks
 import org.jetbrains.exposed.sql.select
 
-object BrokerPortfolioCommand : DSLCommandBase {
-	override fun command(plugin: LoriBrokerPlugin, loritta: Loritta) = create(
-			loritta,
-			plugin.aliases.flatMap { listOf("$it portfolio", "$it portfólio", "$it p") }
-	) {
+class BrokerPortfolioCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractCommandBase(plugin.loritta, plugin.aliases.flatMap { listOf("$it portfolio", "$it portfólio", "$it p") }, CommandCategory.ECONOMY) {
+	override fun command() = create {
 		localizedDescription("commands.economy.brokerPortfolio.description")
 
 		executesDiscord {

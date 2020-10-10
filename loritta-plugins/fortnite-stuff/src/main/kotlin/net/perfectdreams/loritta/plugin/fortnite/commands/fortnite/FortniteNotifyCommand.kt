@@ -8,11 +8,11 @@ import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.ArgumentType
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
 import net.perfectdreams.loritta.plugin.fortnite.FortniteStuff
-import net.perfectdreams.loritta.plugin.fortnite.commands.fortnite.base.DSLCommandBase
 import net.perfectdreams.loritta.plugin.fortnite.tables.TrackedFortniteItems
 import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.and
@@ -22,11 +22,12 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 
-object FortniteNotifyCommand : DSLCommandBase {
+class FortniteNotifyCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.loritta, listOf("fnnotify", "fortnitenotify", "fnnotificar", "fortnitenotificar"), CommandCategory.FORTNITE) {
 	private val LOCALE_PREFIX = "commands.fortnite.notify"
 
-	override fun command(loritta: LorittaDiscord, m: FortniteStuff) = create(loritta, listOf("fnnotify", "fortnitenotify", "fnnotificar", "fortnitenotificar")) {
+	override fun command() = create {
 		localizedDescription("${LOCALE_PREFIX}.description")
+		needsToUploadFiles = true
 
 		usage {
 			argument(ArgumentType.TEXT) {}

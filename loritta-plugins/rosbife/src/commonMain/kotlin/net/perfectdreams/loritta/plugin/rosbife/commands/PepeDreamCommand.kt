@@ -1,15 +1,15 @@
 package net.perfectdreams.loritta.plugin.rosbife.commands
 
-import net.perfectdreams.loritta.api.LorittaBot
+import net.perfectdreams.loritta.plugin.rosbife.RosbifePlugin
 import net.perfectdreams.loritta.plugin.rosbife.commands.base.BasicScaledImageCommand
 
-object PepeDreamCommand : BasicScaledImageCommand {
-	override val descriptionKey = "commands.images.pepedream.description"
-	override val scaleXTo = 100
-	override val scaleYTo = 100
-	override val x = 81
-	override val y = 2
-	override val sourceTemplatePath = "pepedream.png"
-
-	override fun command(loritta: LorittaBot) = create(loritta, listOf("pepedream", "sonhopepe", "pepesonho")) {}
-}
+class PepeDreamCommand(m: RosbifePlugin) : BasicScaledImageCommand(
+		m.loritta,
+		listOf("pepedream", "sonhopepe", "pepesonho"),
+		"commands.images.pepedream.description",
+		"pepedream.png",
+		100,
+		100,
+		81,
+		2
+)

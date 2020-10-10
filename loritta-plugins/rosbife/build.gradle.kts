@@ -13,6 +13,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib-common"))
                 implementation(project(":loritta-api"))
+                api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0")
             }
         }
 

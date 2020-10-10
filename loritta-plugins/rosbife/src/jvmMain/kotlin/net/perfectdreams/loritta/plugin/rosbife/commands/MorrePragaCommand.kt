@@ -2,22 +2,19 @@ package net.perfectdreams.loritta.plugin.rosbife.commands
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.ImageUtils
-import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.utils.extensions.enableFontAntiAliasing
 import net.perfectdreams.loritta.api.utils.image.JVMImage
-import net.perfectdreams.loritta.plugin.rosbife.commands.base.DSLCommandBase
+import net.perfectdreams.loritta.plugin.rosbife.RosbifePlugin
+import net.perfectdreams.loritta.plugin.rosbife.commands.base.ImageAbstractCommandBase
 import java.awt.Color
 import java.awt.Font
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
 import java.io.File
 
-object MorrePragaCommand : DSLCommandBase {
-	override fun command(loritta: LorittaBot) = create(
-			loritta,
-			listOf("dieplague", "morrepraga")
-	) {
+class MorrePragaCommand(m: RosbifePlugin) : ImageAbstractCommandBase(m.loritta, listOf("dieplague", "morrepraga")) {
+	override fun command() = create {
 		localizedDescription("commands.images.morrepraga.description")
 
 		usage {
