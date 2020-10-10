@@ -14,7 +14,7 @@ import org.jsoup.Jsoup
 
 class RbGameCommand : AbstractCommand("rbgame", listOf("rbjogo", "rbgameinfo"), CommandCategory.ROBLOX) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["RBGAME_Description"]
+		return locale.toNewLocale()["commands.roblox.rbgame.description"]
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
@@ -32,7 +32,7 @@ class RbGameCommand : AbstractCommand("rbgame", listOf("rbjogo", "rbgameinfo"), 
 			if (gameCardLink == null) {
 				context.reply(
                         LorittaReply(
-                                message = locale["RBGAME_CouldntFind"],
+                                message = locale.toNewLocale()["commands.roblox.rbgame.couldntFind", query],
                                 prefix = Constants.ERROR
                         )
 				)
@@ -63,13 +63,13 @@ class RbGameCommand : AbstractCommand("rbgame", listOf("rbjogo", "rbgameinfo"), 
 			val gameStats = gameDocument.getElementsByClass("game-stat")
 
 			val playing = gameStats[0].getElementsByClass("text-lead").text()
-			val favoriteCountFromPage = gameStats[1].getElementsByClass("text-lead").text()
+			// val favoriteCountFromPage = gameStats[1].getElementsByClass("text-lead").text()
 			val visits = gameStats[2].getElementsByClass("text-lead").text()
 			val created = gameStats[3].getElementsByClass("text-lead").text()
 			val updated = gameStats[4].getElementsByClass("text-lead").text()
 			val maxplayers = gameStats[5].getElementsByClass("text-lead").text()
 			val genre = gameStats[6].getElementsByClass("text-lead").text()
-			val allowedgear = gameStats[7].getElementsByClass("text-lead").text()
+			// val allowedgear = gameStats[7].getElementsByClass("text-lead").text()
 
 			val voteBody = HttpRequest.get("https://www.roblox.com/games/votingservice/$placeId")
 					.body()
@@ -81,16 +81,16 @@ class RbGameCommand : AbstractCommand("rbgame", listOf("rbjogo", "rbgameinfo"), 
 			val downvotes = voteSection.attr("data-total-down-votes")
 
 			embed.setTitle("<:roblox_logo:412576693803286528> $gameName", gameUrl)
-			embed.addField("\uD83D\uDCBB ${locale["RBUSER_ID_DO_ROBLOX"]}", placeId, true)
-			embed.addField("<:starstruck:540988091117076481> ${locale["RBGAME_Favorites"]}", favoriteCount, true)
+			embed.addField("\uD83D\uDCBB ${locale.toNewLocale()["commands.roblox.rbuser.robloxId"]}", placeId, true)
+			embed.addField("<:starstruck:540988091117076481> ${locale.toNewLocale()["commands.roblox.rbgame.favorites"]}", favoriteCount, true)
 			embed.addField("\uD83D\uDC4D ${locale["MUSICINFO_LIKES"]}", upvotes, true)
 			embed.addField("\uD83D\uDC4E ${locale["MUSICINFO_DISLIKES"]}", downvotes, true)
-			embed.addField("\uD83C\uDFAE ${locale["RBGAME_Playing"]}", playing, true)
-			embed.addField("\uD83D\uDC3E ${locale["RBUSER_PLACE_VISITS"]}", visits, true)
+			embed.addField("\uD83C\uDFAE ${locale.toNewLocale()["commands.roblox.rbgame.playing"]}", playing, true)
+			embed.addField("\uD83D\uDC3E ${locale.toNewLocale()["commands.roblox.rbuser.visits"]}", visits, true)
 			embed.addField("\uD83C\uDF1F ${locale["SERVERINFO_CREATED_IN"]}", created, true)
-			embed.addField("✨ ${locale["RBGAME_LastUpdate"]}", updated, true)
-			embed.addField("⛔ ${locale["RBGAME_MaxPlayers"]}", maxplayers, true)
-			embed.addField("\uD83C\uDFB2 ${locale["RBGAME_Genre"]}", genre, true)
+			embed.addField("✨ ${locale.toNewLocale()["commands.roblox.rbgame.lastUpdated"]}", updated, true)
+			embed.addField("⛔ ${locale.toNewLocale()["commands.roblox.rbgame.maxPlayers"]}", maxplayers, true)
+			embed.addField("\uD83C\uDFB2 ${locale.toNewLocale()["commands.roblox.rbgame.genre"]}", genre, true)
 
 			embed.setAuthor(gameAuthor)
 			embed.setDescription(gameDescription.substringIfNeeded(0 until 250))
