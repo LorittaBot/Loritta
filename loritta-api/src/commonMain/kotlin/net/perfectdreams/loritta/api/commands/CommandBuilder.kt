@@ -53,6 +53,16 @@ open class CommandBuilder<context : CommandContext>(
 		this.usageCallback = callback
 	}
 
+	/**
+	 * Gets the examples from the specified [localeKey] with the [arguments] from the [BaseLocale]
+	 *
+	 * This is a helper method for the [examples] method
+	 *
+	 * @see BaseLocale
+	 * @see description
+	 */
+	fun localizedExamples(localeKey: String, vararg arguments: Any?) = examples { it.getList(localeKey, arguments) }
+
 	fun examples(callback: (BaseLocale) -> (List<String>)) {
 		this.examplesCallback = callback
 	}
