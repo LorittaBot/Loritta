@@ -44,6 +44,54 @@ abstract class CommandContext(
 	}
 
 	/**
+	 * Creates a [LorittaReply] with the specified parameters and sends the message.
+	 *
+	 * This is a helper method for [reply]
+	 *
+	 * @see    reply
+	 * @return the sent message
+	 */
+	suspend fun reply(
+			message: String = " ",
+			prefix: String? = null,
+			forceMention: Boolean = false,
+			hasPadding: Boolean = true,
+			mentionUser: Boolean = true
+	) = reply(
+			LorittaReply(
+					message,
+					prefix,
+					forceMention,
+					hasPadding,
+					mentionUser
+			)
+	)
+
+	/**
+	 * Creates a [LorittaReply] with the specified parameters and sends the message.
+	 *
+	 * This is a helper method for [reply]
+	 *
+	 * @see    reply
+	 * @return the sent message
+	 */
+	suspend fun reply(
+			message: String = " ",
+			prefix: LorittaEmote,
+			forceMention: Boolean = false,
+			hasPadding: Boolean = true,
+			mentionUser: Boolean = true
+	) = reply(
+			LorittaReply(
+					message,
+					prefix,
+					forceMention,
+					hasPadding,
+					mentionUser
+			)
+	)
+
+	/**
 	 * Throws a [CommandException], halting command execution
 	 *
 	 * @param message the message that will be sent
