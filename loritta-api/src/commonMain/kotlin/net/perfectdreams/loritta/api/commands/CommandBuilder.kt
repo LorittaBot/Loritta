@@ -18,7 +18,8 @@ fun command(loritta: LorittaBot, commandName: String, labels: List<String>, cate
 }
 
 open class CommandBuilder<context : CommandContext>(
-		val loritta: LorittaBot,
+		// Needs to be private to avoid accessing this variable on the builder itself
+		private val loritta: LorittaBot,
 		val commandName: String,
 		val labels: List<String>,
 		val category: CommandCategory
