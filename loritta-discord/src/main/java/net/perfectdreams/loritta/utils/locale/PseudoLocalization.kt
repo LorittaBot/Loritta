@@ -75,7 +75,9 @@ object PseudoLocalization {
                     else -> c
                 }
 
-                after += out;
+                after += out
+            } else {
+                after += c
             }
         }
 
