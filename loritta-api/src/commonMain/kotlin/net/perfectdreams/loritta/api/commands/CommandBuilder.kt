@@ -35,6 +35,16 @@ open class CommandBuilder<context : CommandContext>(
 	var examplesCallback: ((BaseLocale) -> (List<String>))? = null
 	var executeCallback: (suspend context.() -> (Unit))? = null
 
+	/**
+	 * Gets the description from the specified [localeKey] with the [arguments] from the [BaseLocale]
+	 *
+	 * This is a helper method for the [description] method
+	 *
+	 * @see BaseLocale
+	 * @see description
+	 */
+	fun localizedDescription(localeKey: String, vararg arguments: Any?) = description { it[localeKey, arguments] }
+
 	fun description(callback: (BaseLocale) -> (String)) {
 		this.descriptionCallback = callback
 	}
