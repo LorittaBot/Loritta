@@ -20,7 +20,7 @@ import java.net.URLEncoder
 
 class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCategory.ROBLOX) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.get("RBUSER_DESCRIPTION")
+		return locale.toNewLocale()["commands.roblox.rbuser.robloxId"]
 	}
 
 	override fun getUsage(): String {
@@ -53,7 +53,7 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 			}
 
 			if (userId == null || name == null || blurb == null || isOnline == null) {
-				context.sendMessage(Constants.ERROR + " **|** " + context.legacyLocale["RBUSER_COULDNT_FIND", username] + " \uD83D\uDE22")
+				context.sendMessage(Constants.ERROR + " **|** " + locale.toNewLocale()["commands.roblox.rbuser.couldntFind", username] + " \uD83D\uDE22")
 				return
 			}
 
@@ -223,10 +223,10 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 					setDescription(blurb)
 				}
 				setColor(Constants.ROBLOX_RED)
-				addField("\uD83D\uDCBB ${context.legacyLocale.get("RBUSER_ID_DO_ROBLOX")}", userId.toString(), true)
-				addField("\uD83D\uDCC5 ${context.legacyLocale.get("RBUSER_JOIN_DATE")}", joinDate, true)
-				addField("\uD83D\uDC40 ${context.legacyLocale.get("RBUSER_PLACE_VISITS")}", placeVisits, true)
-				addField("\uD83D\uDE4B ${context.legacyLocale.get("RBUSER_SOCIAL")}", "**\uD83D\uDC3E ${context.legacyLocale.get("RBUSER_FOLLOWING")}**: $totalFollowing\n**<:starstruck:540988091117076481> ${context.legacyLocale.get("RBUSER_FOLLOWERS")}**: $totalFollowers\n**\uD83D\uDE0E ${context.legacyLocale.get("RBUSER_FRIENDS")}**: $totalFriends\n", true)
+				addField("\uD83D\uDCBB ${locale.toNewLocale()["commands.roblox.rbuser.robloxId"]}", userId.toString(), true)
+				addField("\uD83D\uDCC5 ${locale.toNewLocale()["commands.roblox.rbuser.joinDate"]}", joinDate, true)
+				addField("\uD83D\uDC40 ${locale.toNewLocale()["commands.roblox.rbuser.placeVisits"]}", placeVisits, true)
+				addField("\uD83D\uDE4B ${locale.toNewLocale()["commands.roblox.rbuser.social"]}", "**\uD83D\uDC3E ${locale.toNewLocale()["commands.roblox.rbuser.following"]}**: $totalFollowing\n**<:starstruck:540988091117076481> ${locale.toNewLocale()["commands.roblox.rbuser.followers"]}**: $totalFollowers\n**\uD83D\uDE0E ${locale.toNewLocale()["commands.roblox.rbuser.friends"]}**: $totalFriends\n", true)
 				setImage("attachment://roblox.png")
 				setThumbnail(avatar)
 			}
