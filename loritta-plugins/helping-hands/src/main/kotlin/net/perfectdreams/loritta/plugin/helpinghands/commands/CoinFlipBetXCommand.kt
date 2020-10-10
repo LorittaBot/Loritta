@@ -15,7 +15,6 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
-import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
 import net.perfectdreams.loritta.plugin.helpinghands.HelpingHandsPlugin
 import net.perfectdreams.loritta.utils.*
 import net.perfectdreams.loritta.utils.extensions.refreshInDeferredTransaction
@@ -59,8 +58,8 @@ class CoinFlipBetXCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComma
 			if (invitedUser == user)
 				fail(locale["commands.economy.flipcoinbet.cantBetSelf"], Constants.ERROR)
 
-			val selfActiveDonations = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonationsAsync(discordMessage.author.idLong)
-			val otherActiveDonations = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonationsAsync(invitedUser.idLong)
+			val selfActiveDonations = loritta.getActiveMoneyFromDonationsAsync(discordMessage.author.idLong)
+			val otherActiveDonations = loritta.getActiveMoneyFromDonationsAsync(invitedUser.idLong)
 
 			val selfPlan = UserPremiumPlans.getPlanFromValue(selfActiveDonations)
 			val otherPlan = UserPremiumPlans.getPlanFromValue(otherActiveDonations)
