@@ -180,6 +180,22 @@ fun Message.onReactionAdd(context: CommandContext, function: suspend (MessageRea
 }
 
 /**
+ * When an user adds a reaction to this message
+ *
+ * @param context  the context of the message
+ * @param function the callback that should be invoked
+ * @return         the message object for chaining
+ */
+fun Message.onReactionAdd(context: net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext, function: suspend (MessageReactionAddEvent) -> Unit): Message {
+	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
+	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
+
+	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.user.idLong) }
+	functions.onReactionAdd = function
+	return this
+}
+
+/**
  * When an user removes a reaction to this message
  *
  * @param context  the context of the message

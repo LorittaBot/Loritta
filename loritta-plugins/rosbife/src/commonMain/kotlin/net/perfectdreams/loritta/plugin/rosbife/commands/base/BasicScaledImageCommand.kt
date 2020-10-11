@@ -1,23 +1,29 @@
 package net.perfectdreams.loritta.plugin.rosbife.commands.base
 
 import net.perfectdreams.loritta.api.LorittaBot
-import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandBuilder
 import net.perfectdreams.loritta.api.commands.CommandContext
 import net.perfectdreams.loritta.api.utils.createImage
 import net.perfectdreams.loritta.api.utils.image.Image
 
-interface BasicScaledImageCommand : BasicImageCommand {
-	val scaleXTo: Int
-	val scaleYTo: Int
-	val x: Int
-	val y: Int
+open class BasicScaledImageCommand(
+		loritta: LorittaBot,
+		labels: List<String>,
+		descriptionKey: String,
+		sourceTemplatePath: String,
+		val scaleXTo: Int,
+		val scaleYTo: Int,
+		val x: Int,
+		val y: Int,
+		builder: CommandBuilder<CommandContext>.() -> (Unit) = {}
+) : BasicImageCommand(
+		loritta,
+		labels,
+		descriptionKey,
+		sourceTemplatePath,
+		{
+			builder.invoke(this)
 
-	override fun create(loritta: LorittaBot, labels: List<String>, builder: CommandBuilder<CommandContext>.() -> (Unit)): Command<CommandContext> {
-		return super.create(
-				loritta,
-				labels
-		) {
 			executes {
 				val contextImage = validate(image(0))
 				val template = loritta.assets.loadImage(sourceTemplatePath, loadFromCache = true)
@@ -33,5 +39,4 @@ interface BasicScaledImageCommand : BasicImageCommand {
 				sendImage(base, sourceTemplatePath)
 			}
 		}
-	}
-}
+)

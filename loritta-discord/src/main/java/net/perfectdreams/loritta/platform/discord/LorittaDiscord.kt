@@ -9,6 +9,7 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Background
 import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.dao.ProfileSettings
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.profile.ProfileDesignManager
@@ -18,6 +19,7 @@ import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordInstanceConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralInstanceConfig
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.Gender
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
@@ -39,16 +41,20 @@ import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaTopCommand
 import net.perfectdreams.loritta.commands.vanilla.social.RankGlobalCommand
 import net.perfectdreams.loritta.commands.vanilla.social.RepTopCommand
 import net.perfectdreams.loritta.commands.vanilla.social.XpNotificationsCommand
+import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandMap
 import net.perfectdreams.loritta.platform.discord.plugin.JVMPluginManager
 import net.perfectdreams.loritta.platform.discord.utils.JVMLorittaAssets
 import net.perfectdreams.loritta.tables.BackgroundPayments
 import net.perfectdreams.loritta.tables.Backgrounds
+import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.loritta.utils.config.FanArt
 import net.perfectdreams.loritta.utils.config.FanArtArtist
 import net.perfectdreams.loritta.utils.locale.DebugLocales
+import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.exceptions.ExposedSQLException
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.image.BufferedImage
@@ -75,18 +81,26 @@ import kotlin.random.Random
  */
 abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig: GeneralDiscordInstanceConfig, var config: GeneralConfig, var instanceConfig: GeneralInstanceConfig) : LorittaBot() {
     override val commandMap = DiscordCommandMap(this).apply {
-        register(LoriToolsCommand.create(discordLoritta))
-        register(SonhosTopCommand.create(discordLoritta))
-        register(SonhosTopLocalCommand.create(discordLoritta))
+        registerAll(
+                // ===[ MAGIC ]===
+                LoriToolsCommand(this@LorittaDiscord),
 
-        register(BanInfoCommand.create(discordLoritta))
+                // ===[ ECONOMY ]===
+                SonhosTopCommand(this@LorittaDiscord),
+                SonhosTopLocalCommand(this@LorittaDiscord),
+                TransactionsCommand(this@LorittaDiscord),
 
-        register(BomDiaECiaTopCommand.create(discordLoritta))
-        register(RankGlobalCommand.create(discordLoritta))
-        register(RepTopCommand.create(discordLoritta))
-        register(XpNotificationsCommand.create(discordLoritta))
-        register(TransactionsCommand.create(discordLoritta))
+                // ===[ SOCIAL ]===
+                BomDiaECiaTopCommand(this@LorittaDiscord),
+                RankGlobalCommand(this@LorittaDiscord),
+                RepTopCommand(this@LorittaDiscord),
+                XpNotificationsCommand(this@LorittaDiscord),
+
+                // ===[ ADMIN ]===
+                BanInfoCommand(this@LorittaDiscord)
+        )
     }
+
     override val pluginManager = JVMPluginManager(this)
     override val assets = JVMLorittaAssets(this)
     var locales = mapOf<String, BaseLocale>()
@@ -129,6 +143,11 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
     // Used for message execution
     val coroutineMessageExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), ThreadFactoryBuilder().setNameFormat("Message Executor Thread %d").build())
     val coroutineMessageDispatcher = coroutineMessageExecutor.asCoroutineDispatcher() // Coroutine Dispatcher
+
+    val coroutineExecutor = createThreadPool("Coroutine Executor Thread %d")
+    val coroutineDispatcher = coroutineExecutor.asCoroutineDispatcher() // Coroutine Dispatcher
+    fun createThreadPool(name: String) = Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat(name).build())
+
     val pendingMessages = ConcurrentLinkedQueue<Job>()
 
     /**
@@ -556,6 +575,140 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
     suspend fun <T> suspendedTransactionAsync(statement: org.jetbrains.exposed.sql.Transaction.() -> T) = org.jetbrains.exposed.sql.transactions.experimental.suspendedTransactionAsync(Dispatchers.IO, Databases.loritta) {
         statement.invoke(this)
+    }
+
+
+    /**
+     * Gets an user's profile background
+     *
+     * @param id the user's ID
+     * @return the background image
+     */
+    suspend fun getUserProfileBackground(id: Long) = getUserProfileBackground(getOrCreateLorittaProfile(id))
+
+    /**
+     * Loads the server configuration of a guild
+     *
+     * @param guildId the guild's ID
+     * @return        the server configuration
+     */
+    fun getOrCreateServerConfig(guildId: Long, loadFromCache: Boolean = false): ServerConfig {
+        if (loadFromCache)
+            cachedServerConfigs.getIfPresent(guildId)?.let { return it }
+
+        return transaction(Databases.loritta) {
+            _getOrCreateServerConfig(guildId)
+        }
+    }
+
+    /**
+     * Loads the server configuration of a guild in a coroutine
+     *
+     * @param guildId the guild's ID
+     * @return        the server configuration
+     */
+    suspend fun getOrCreateServerConfigAsync(guildId: Long, loadFromCache: Boolean = false): ServerConfig {
+        if (loadFromCache)
+            cachedServerConfigs.getIfPresent(guildId)?.let { return it }
+
+        return org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction(Dispatchers.IO, Databases.loritta) { _getOrCreateServerConfig(guildId) }
+    }
+
+    /**
+     * Loads the server configuration of a guild, deferred
+     *
+     * @param guildId the guild's ID
+     * @return        the server configuration
+     */
+    suspend fun getOrCreateServerConfigDeferred(guildId: Long, loadFromCache: Boolean = false): Deferred<ServerConfig> {
+        if (loadFromCache)
+            cachedServerConfigs.getIfPresent(guildId)?.let { return GlobalScope.async(coroutineDispatcher) { it } }
+
+        val job = org.jetbrains.exposed.sql.transactions.experimental.suspendedTransactionAsync(Dispatchers.IO, Databases.loritta) { _getOrCreateServerConfig(guildId) }
+
+        return job
+    }
+
+    private fun _getOrCreateServerConfig(guildId: Long): ServerConfig {
+        val result = ServerConfig.findById(guildId) ?: ServerConfig.new(guildId) {}
+
+        if (loritta.config.caches.serverConfigs.maximumSize != 0L)
+            cachedServerConfigs.put(guildId, result)
+
+        return result
+    }
+
+    fun getLorittaProfile(userId: String): Profile? {
+        return getLorittaProfile(userId.toLong())
+    }
+
+    /**
+     * Loads the profile of an user
+     *
+     * @param userId the user's ID
+     * @return       the user profile
+     */
+    fun getLorittaProfile(userId: Long) = transaction(Databases.loritta) { _getLorittaProfile(userId) }
+
+    /**
+     * Loads the profile of an user in a coroutine
+     *
+     * @param userId the user's ID
+     * @return       the user profile
+     */
+    suspend fun getLorittaProfileAsync(userId: Long) = newSuspendedTransaction { _getLorittaProfile(userId) }
+
+    /**
+     * Loads the profile of an user deferred
+     *
+     * @param userId the user's ID
+     * @return       the user profile
+     */
+    suspend fun getLorittaProfileDeferred(userId: Long) = suspendedTransactionAsync { _getLorittaProfile(userId) }
+
+    fun _getLorittaProfile(userId: Long) = Profile.findById(userId)
+
+    fun getOrCreateLorittaProfile(userId: String): Profile {
+        return getOrCreateLorittaProfile(userId.toLong())
+    }
+
+    fun getOrCreateLorittaProfile(userId: Long): Profile {
+        val sqlProfile = transaction(Databases.loritta) { Profile.findById(userId) }
+        if (sqlProfile != null)
+            return sqlProfile
+
+        val profileSettings = transaction(Databases.loritta) {
+            ProfileSettings.new {
+                gender = Gender.UNKNOWN
+            }
+        }
+
+        return transaction(Databases.loritta) {
+            Profile.new(userId) {
+                xp = 0
+                lastMessageSentAt = 0L
+                lastMessageSentHash = 0
+                money = 0
+                isAfk = false
+                settings = profileSettings
+            }
+        }
+    }
+
+    fun getActiveMoneyFromDonations(userId: Long): Double {
+        return transaction(Databases.loritta) { _getActiveMoneyFromDonations(userId) }
+    }
+
+    suspend fun getActiveMoneyFromDonationsAsync(userId: Long): Double {
+        return loritta.newSuspendedTransaction { _getActiveMoneyFromDonations(userId) }
+    }
+
+    private fun _getActiveMoneyFromDonations(userId: Long): Double {
+        return Payment.find {
+            (Payments.expiresAt greaterEq System.currentTimeMillis()) and
+                    (Payments.reason eq PaymentReason.DONATION) and
+                    (Payments.userId eq userId)
+        }.sumByDouble { it.money.toDouble() }
     }
 
     fun launchMessageJob(block: suspend CoroutineScope.() -> Unit) {

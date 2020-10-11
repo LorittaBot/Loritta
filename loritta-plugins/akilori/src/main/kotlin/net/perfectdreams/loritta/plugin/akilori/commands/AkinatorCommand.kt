@@ -9,7 +9,6 @@ import com.mrpowergamerbr.loritta.utils.extensions.doReactions
 import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionByAuthor
 import com.mrpowergamerbr.loritta.utils.removeAllFunctions
 import io.ktor.client.request.*
@@ -21,19 +20,20 @@ import net.perfectdreams.akinatorreapi.AkinatorClient
 import net.perfectdreams.akinatorreapi.Region
 import net.perfectdreams.akinatorreapi.payload.CharacterGuess
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import net.perfectdreams.loritta.api.messages.LorittaReply
-import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
-import net.perfectdreams.loritta.platform.discord.commands.discordCommand
+import net.perfectdreams.loritta.plugin.akilori.AkiLoriPlugin
 import net.perfectdreams.loritta.utils.Emotes
 import java.awt.Color
 
-object AkinatorCommand {
-	private const val LOCALE_PREFIX = "commands.fun.akinator"
-	private const val CHARACTER_PROBABILITY = 0.85
+class AkinatorCommand(val plugin: AkiLoriPlugin) : DiscordAbstractCommandBase(plugin.loritta, listOf("akinator"), CommandCategory.FUN) {
+	companion object {
+		private const val LOCALE_PREFIX = "commands.fun.akinator"
+		private const val CHARACTER_PROBABILITY = 0.85
+	}
 
-	fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("akinator"), CommandCategory.FUN) {
-		description { it["commands.fun.akinator.description"] }
+	override fun command() = create {
+		localizedDescription("commands.fun.akinator.description")
 
 		botRequiredPermissions = listOf(Permission.MESSAGE_MANAGE)
 
@@ -64,11 +64,7 @@ object AkinatorCommand {
 				}
 			}
 
-			reply(
-					LorittaReply(
-							"Deu ruim!"
-					)
-			)
+			reply("Deu ruim!")
 		}
 	}
 

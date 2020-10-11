@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.plugin.fortnite
 import com.google.gson.JsonArray
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
-import net.perfectdreams.loritta.api.LorittaBot
+import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.plugin.fortnite.commands.fortnite.*
 import net.perfectdreams.loritta.plugin.fortnite.routes.ConfigureFortniteRoute
@@ -17,7 +17,7 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 
-class FortniteStuff(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(name, loritta) {
+class FortniteStuff(name: String, loritta: LorittaDiscord) : LorittaDiscordPlugin(name, loritta) {
     companion object {
         fun convertRarityToColor(type: String): Color {
             return when (type) {
@@ -44,18 +44,18 @@ class FortniteStuff(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(na
         updateStoreItems = UpdateStoreItemsTask(this).apply { start() }
 
         registerCommands(
-                FortniteItemCommand.command(lorittaDiscord, this),
-                FortniteNewsCommand.command(lorittaDiscord, this),
-                FortniteShopCommand.command(lorittaDiscord, this),
-                FortniteNotifyCommand.command(lorittaDiscord, this),
-                FortniteStatsCommand.command(lorittaDiscord, this)
+                FortniteItemCommand(this),
+                FortniteNewsCommand(this),
+                FortniteShopCommand(this),
+                FortniteNotifyCommand(this),
+                FortniteStatsCommand(this)
         )
 
         loriToolsExecutors.add(ForceShopUpdateExecutor)
         configTransformers.add(FortniteConfigTransformer)
-        routes.add(PostShopUpdateRoute(this, lorittaDiscord))
-        routes.add(PostItemListRoute(this, lorittaDiscord))
-        routes.add(ConfigureFortniteRoute(lorittaDiscord))
+        routes.add(PostShopUpdateRoute(this, loritta))
+        routes.add(PostItemListRoute(this, loritta))
+        routes.add(ConfigureFortniteRoute(loritta))
 
         // acessar qualquer coisa só para registrar corretamente
         FakeTable.fortniteConfig

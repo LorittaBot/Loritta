@@ -32,7 +32,8 @@ fun discordCommand(
 }
 
 class DiscordCommandBuilder(
-		val lorittaDiscord: LorittaDiscord,
+		// Needs to be private to avoid accessing this variable on the builder itself
+		private val lorittaDiscord: LorittaDiscord,
 		commandName: String,
 		labels: List<String>,
 		category: CommandCategory

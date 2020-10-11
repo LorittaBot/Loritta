@@ -7,7 +7,7 @@ import net.perfectdreams.loritta.plugin.funfunfun.commands.CancelledCommand
 class FunFunFunPlugin(name: String, loritta: LorittaBot) : LorittaPlugin(name, loritta) {
 	override fun onEnable() {
 		registerCommands(
-				CancelledCommand.command(loritta)
+				CancelledCommand(this)
 		)
 		platformSpecificOnEnable()
 	}

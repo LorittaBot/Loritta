@@ -18,7 +18,8 @@ fun command(loritta: LorittaBot, commandName: String, labels: List<String>, cate
 }
 
 open class CommandBuilder<context : CommandContext>(
-		val loritta: LorittaBot,
+		// Needs to be private to avoid accessing this variable on the builder itself
+		private val loritta: LorittaBot,
 		val commandName: String,
 		val labels: List<String>,
 		val category: CommandCategory
@@ -35,6 +36,16 @@ open class CommandBuilder<context : CommandContext>(
 	var examplesCallback: ((BaseLocale) -> (List<String>))? = null
 	var executeCallback: (suspend context.() -> (Unit))? = null
 
+	/**
+	 * Gets the description from the specified [localeKey] with the [arguments] from the [BaseLocale]
+	 *
+	 * This is a helper method for the [description] method
+	 *
+	 * @see BaseLocale
+	 * @see description
+	 */
+	fun localizedDescription(localeKey: String, vararg arguments: Any?) = description { it[localeKey, arguments] }
+
 	fun description(callback: (BaseLocale) -> (String)) {
 		this.descriptionCallback = callback
 	}
@@ -43,8 +54,24 @@ open class CommandBuilder<context : CommandContext>(
 		this.usageCallback = callback
 	}
 
-	fun examples(callback: (BaseLocale) -> (List<String>)) {
-		this.examplesCallback = callback
+	/**
+	 * Gets the examples from the specified [localeKey] with the [arguments] from the [BaseLocale]
+	 *
+	 * This is a helper method for the [examples] method
+	 *
+	 * @see BaseLocale
+	 * @see description
+	 */
+	fun localizedExamples(localeKey: String, vararg arguments: Any?) = examples {
+		examples.addAll(it.getList(localeKey, arguments))
+	}
+
+	fun examples(callback: ExamplesWrapper.(BaseLocale) -> (Unit)) {
+		this.examplesCallback = {
+			val examplesWrapper = ExamplesWrapper()
+			callback.invoke(examplesWrapper, it)
+			examplesWrapper.examples
+		}
 	}
 
 	fun executes(callback: suspend context.() -> (Unit)) {
@@ -77,5 +104,11 @@ open class CommandBuilder<context : CommandContext>(
 			this.onlyOwner = this@CommandBuilder.onlyOwner
 			this.similarCommands = this@CommandBuilder.similarCommands
 		}
+	}
+
+	class ExamplesWrapper {
+		internal val examples = mutableListOf<String>()
+
+		operator fun String.unaryPlus() = examples.add(this)
 	}
 }
