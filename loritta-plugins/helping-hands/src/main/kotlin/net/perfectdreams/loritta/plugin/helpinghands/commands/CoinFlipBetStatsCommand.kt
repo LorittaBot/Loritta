@@ -21,11 +21,6 @@ class CoinFlipBetStatsCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractC
 				.flatMap { listOf("$it bet stats", "$it apostar stats") },
 		CommandCategory.ECONOMY
 ) {
-	companion object {
-		// Used to avoid dupes
-		private val mutex = Mutex()
-	}
-
 	override fun command() = create {
 		localizedDescription("commands.economy.flipcoinbetstats.description")
 
