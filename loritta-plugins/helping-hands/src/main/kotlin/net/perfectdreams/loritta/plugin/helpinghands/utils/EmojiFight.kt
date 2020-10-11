@@ -242,7 +242,7 @@ class EmojiFight(
                     PaymentUtils.addToTransactionLogNested(
                             taxedRealPrize,
                             SonhosPaymentReason.EMOJI_FIGHT,
-                            givenBy = winnerProfile.id.value
+                            givenBy = loserProfile.id.value
                     )
                 }
 

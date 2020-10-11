@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.utils.NumberUtils
 
 class EmojiFightBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractCommandBase(
 		plugin.loritta,
-		listOf("emojifight bet", "rinhadeemoji bet"),
+		listOf("emojifight bet", "rinhadeemoji bet", "emotefight bet"),
 		CommandCategory.ECONOMY
 ) {
 	override fun command() = create {

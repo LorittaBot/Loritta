@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.plugin.helpinghands.utils.EmojiFight
 
 class EmojiFightCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractCommandBase(
 		plugin.loritta,
-		listOf("emojifight", "rinhadeemoji"),
+		listOf("emojifight", "rinhadeemoji", "emotefight"),
 		CommandCategory.ECONOMY
 ) {
 	override fun command() = create {
