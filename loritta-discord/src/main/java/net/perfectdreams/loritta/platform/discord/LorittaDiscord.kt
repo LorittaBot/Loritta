@@ -703,7 +703,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         return loritta.newSuspendedTransaction { _getActiveMoneyFromDonations(userId) }
     }
 
-    private fun _getActiveMoneyFromDonations(userId: Long): Double {
+    fun _getActiveMoneyFromDonations(userId: Long): Double {
         return Payment.find {
             (Payments.expiresAt greaterEq System.currentTimeMillis()) and
                     (Payments.reason eq PaymentReason.DONATION) and
