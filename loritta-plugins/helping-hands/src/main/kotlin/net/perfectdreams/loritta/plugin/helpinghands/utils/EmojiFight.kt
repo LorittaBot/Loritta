@@ -19,10 +19,13 @@ import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.UserPremiumPlans
 import java.util.concurrent.ConcurrentHashMap
 
+/**
+ * Creates a Emoji Fight
+ */
 class EmojiFight(
         val plugin: HelpingHandsPlugin,
-        val context: DiscordCommandContext,
-        val entryPrice: Long? // null = only for fun emoji fight
+        private val context: DiscordCommandContext,
+        private val entryPrice: Long? // null = only for fun emoji fight
 ) {
     val loritta = context.loritta
     private val availableEmotes = emojis.toMutableList()
@@ -32,6 +35,9 @@ class EmojiFight(
     private val finishingEventMutex = Mutex()
     private var eventFinished = false
 
+    /**
+     * Starts the Emoji Fight
+     */
     suspend fun start() {
         if (entryPrice != null) {
             val tax = (entryPrice * (1.0 * UserPremiumPlans.Free.totalCoinFlipReward)).toLong()
@@ -104,7 +110,7 @@ class EmojiFight(
 
     private fun getEventEmbed(): MessageEmbed {
         val baseEmbed = EmbedBuilder()
-                .setTitle("${Emotes.LORI_BAN_HAMMER} Rinha de Emoji")
+                .setTitle("${Emotes.LORI_BAN_HAMMER} ${context.locale["commands.economy.emojifight.fightTitle"]}")
                 .setDescription(
                         if (entryPrice != null) {
                             context.locale
@@ -237,7 +243,7 @@ class EmojiFight(
         val (winner, losers, realPrize, taxedRealPrize) = result ?: run {
             // Needs to use "reply" because if we use "fail", the exception is triggered on the onReactionAddByAuthor
             context.reply(
-                    "Players insuficientes...",
+                    context.locale["commands.economy.emojifight.needsMorePlayers"],
                     Emotes.LORI_CRYING
             )
             return
