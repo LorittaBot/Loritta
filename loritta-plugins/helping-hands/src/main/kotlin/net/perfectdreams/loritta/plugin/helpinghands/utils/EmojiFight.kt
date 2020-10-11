@@ -240,7 +240,7 @@ class EmojiFight(
                     val loserProfile = userProfiles[loser.key]!!
                     loserProfile.takeSonhosNested(entryPrice)
                     PaymentUtils.addToTransactionLogNested(
-                            taxedRealPrize,
+                            entryPrice,
                             SonhosPaymentReason.EMOJI_FIGHT,
                             givenBy = loserProfile.id.value
                     )
