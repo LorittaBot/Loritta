@@ -16,6 +16,8 @@ import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
 import net.perfectdreams.loritta.plugin.helpinghands.HelpingHandsPlugin
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.PaymentUtils
+import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.utils.UserPremiumPlans
 import java.util.concurrent.ConcurrentHashMap
 
@@ -228,10 +230,20 @@ class EmojiFight(
                 val taxedRealPrize = (selfPlan.totalCoinFlipReward * realPrize).toLong()
 
                 winnerProfile.addSonhosNested(taxedRealPrize)
+                PaymentUtils.addToTransactionLogNested(
+                        taxedRealPrize,
+                        SonhosPaymentReason.EMOJI_FIGHT,
+                        receivedBy = winnerProfile.id.value
+                )
 
                 for (loser in losers) {
                     val loserProfile = userProfiles[loser.key]!!
                     loserProfile.takeSonhosNested(entryPrice)
+                    PaymentUtils.addToTransactionLogNested(
+                            taxedRealPrize,
+                            SonhosPaymentReason.EMOJI_FIGHT,
+                            givenBy = winnerProfile.id.value
+                    )
                 }
 
                 DbResponse(winner, losers, realPrize, taxedRealPrize)

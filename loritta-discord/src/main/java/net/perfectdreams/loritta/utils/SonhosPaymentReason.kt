@@ -19,5 +19,6 @@ enum class SonhosPaymentReason {
 	INACTIVE_DAILY_TAX,
 	COIN_FLIP_BET,
 	STOCKS,
-	GUESS_NUMBER
+	GUESS_NUMBER,
+	EMOJI_FIGHT
 }
