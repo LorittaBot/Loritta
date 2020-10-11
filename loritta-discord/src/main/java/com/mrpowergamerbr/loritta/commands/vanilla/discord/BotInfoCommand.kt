@@ -3,7 +3,6 @@ package com.mrpowergamerbr.loritta.commands.vanilla.discord
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
@@ -17,7 +16,6 @@ import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.lang.management.ManagementFactory
 import java.util.concurrent.TimeUnit
@@ -149,6 +147,8 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		val maxMemory = runtime.maxMemory() / mb
 		val totalMemory = runtime.totalMemory() / mb
 
+		val buildURL = getBuildURL(buildNumber)
+
 		context.reply(
                 LorittaReply(
                         forceMention = true,
@@ -160,7 +160,7 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
                         mentionUser = false
                 ),
                 LorittaReply(
-                        "**${locale["BOTINFO_BuildNumber"]}:** #$buildNumber <https://jenkins.perfectdreams.net/job/Loritta/$buildNumber/>",
+                        "**${locale["BOTINFO_BuildNumber"]}:** #$buildNumber <$buildURL>",
                         "\uD83C\uDFD7",
                         mentionUser = false
                 ),
@@ -231,4 +231,6 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
                 )
 		)
 	}
+
+	private fun getBuildURL(buildNumber: String) = "https://jenkins.perfectdreams.net/job/Loritta/$buildNumber/"
 }
