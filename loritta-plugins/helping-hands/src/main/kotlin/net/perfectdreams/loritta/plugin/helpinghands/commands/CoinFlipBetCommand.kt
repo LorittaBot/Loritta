@@ -83,7 +83,8 @@ class CoinFlipBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComman
 			}
 
 			val number = NumberUtils.convertShortenedNumberToLong(args[1])
-					?: fail(locale["commands.invalidNumber", args[1].stripCodeMarks()], Emotes.LORI_CRYING.toString())
+					?: GenericReplies.invalidNumber(this, args[1].stripCodeMarks())
+
 			val tax = (number * (1.0 - plan.totalCoinFlipReward)).toLong()
 			val money = number - tax
 

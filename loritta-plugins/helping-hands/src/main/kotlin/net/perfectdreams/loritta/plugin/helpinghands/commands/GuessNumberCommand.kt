@@ -39,46 +39,45 @@ class GuessNumberCommand(plugin: HelpingHandsPlugin) : DiscordAbstractCommandBas
             // Gets the first argument
             // If the argument is null (we just show the command explanation and exit)
             // If it is not null, we convert it to a Integer (if it is a invalid number, it will be null)
-            // Then, in the ".also" block, we check if it is null and, if it is, we show that the user provided a invalid number!
+            // Then, in the ".let" block, we check if it is null and, if it is, we show that the user provided a invalid number!
             val number = (args.getOrNull(0) ?: explainAndExit()).toIntOrNull()
-                    .also {
+                    .let {
                         if (it == null)
                             GenericReplies.invalidNumber(this, args[0])
+                        it
                     }
 
             if (number !in 1..10)
                 fail(locale["commands.economy.guessnumber.numberNotInRange", VICTORY_PRIZE])
 
-            if (number != null) {
-                val randomNumber = Loritta.RANDOM.nextInt(1, 11)
-                val won = number == randomNumber
-                val profile = lorittaUser.profile
+            val randomNumber = Loritta.RANDOM.nextInt(1, 11)
+            val won = number == randomNumber
+            val profile = lorittaUser.profile
 
-                if (won) {
-                    loritta.newSuspendedTransaction {
-                        profile.addSonhosNested(VICTORY_PRIZE)
+            if (won) {
+                loritta.newSuspendedTransaction {
+                    profile.addSonhosNested(VICTORY_PRIZE)
 
-                        PaymentUtils.addToTransactionLogNested(
-                                VICTORY_PRIZE,
-                                SonhosPaymentReason.GUESS_NUMBER,
-                                receivedBy = user.idLong
-                        )
-                    }
-
-                    reply(locale["commands.economy.guessnumber.youWin", VICTORY_PRIZE], Emotes.LORI_RICH)
-                } else {
-                    loritta.newSuspendedTransaction {
-                        profile.takeSonhosNested(LOSE_PRIZE)
-
-                        PaymentUtils.addToTransactionLogNested(
-                                LOSE_PRIZE,
-                                SonhosPaymentReason.GUESS_NUMBER,
-                                givenBy = user.idLong
-                        )
-                    }
-
-                    reply(locale.getList("commands.economy.guessnumber.youLose", randomNumber, LOSE_PRIZE).random(), Emotes.LORI_CRYING)
+                    PaymentUtils.addToTransactionLogNested(
+                            VICTORY_PRIZE,
+                            SonhosPaymentReason.GUESS_NUMBER,
+                            receivedBy = user.idLong
+                    )
                 }
+
+                reply(locale["commands.economy.guessnumber.youWin", VICTORY_PRIZE], Emotes.LORI_RICH)
+            } else {
+                loritta.newSuspendedTransaction {
+                    profile.takeSonhosNested(LOSE_PRIZE)
+
+                    PaymentUtils.addToTransactionLogNested(
+                            LOSE_PRIZE,
+                            SonhosPaymentReason.GUESS_NUMBER,
+                            givenBy = user.idLong
+                    )
+                }
+
+                reply(locale.getList("commands.economy.guessnumber.youLose", randomNumber, LOSE_PRIZE).random(), Emotes.LORI_CRYING)
             }
         }
     }
