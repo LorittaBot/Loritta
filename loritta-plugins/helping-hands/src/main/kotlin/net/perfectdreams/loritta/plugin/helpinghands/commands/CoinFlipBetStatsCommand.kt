@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.plugin.helpinghands.commands
 
-import kotlinx.coroutines.sync.Mutex
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
@@ -35,8 +34,6 @@ class CoinFlipBetStatsCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractC
 				}
 			}
 		}
-
-		this.canUseInPrivateChannel = false
 
 		executesDiscord {
 			var checkStatsOfUser = user
