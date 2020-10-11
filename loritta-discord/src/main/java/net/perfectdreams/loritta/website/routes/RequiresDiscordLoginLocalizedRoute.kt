@@ -200,28 +200,33 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 											return
 										}
 
-										val profile = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(guild.owner!!.user.id)
-										val bannedState = profile.getBannedState()
-										if (bannedState != null) { // Dono blacklisted
+										val guildOwner = guild.owner
+
+										// Sometimes the guild owner can be null, that's why we need to check if it is null or not!
+										if (guildOwner != null) {
+											val profile = loritta.getLorittaProfile(guildOwner.user.id)
+											val bannedState = profile?.getBannedState()
+											if (bannedState != null) { // Dono blacklisted
+												// Envie via DM uma mensagem falando sobre a Loritta!
+												val message = locale["LORITTA_OwnerLorittaBanned", guild.owner?.user?.asMention, bannedState[BannedUsers.reason]
+														?: "???"]
+
+												user.openPrivateChannel().queue {
+													it.sendMessage(message).queue({
+														guild.leave().queue()
+													}, {
+														guild.leave().queue()
+													})
+												}
+												return
+											}
+
 											// Envie via DM uma mensagem falando sobre a Loritta!
-											val message = locale["LORITTA_OwnerLorittaBanned", guild.owner?.user?.asMention, bannedState[BannedUsers.reason]
-													?: "???"]
+											val message = locale["LORITTA_ADDED_ON_SERVER", user.asMention, guild.name, com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url + "dashboard", locale["LORITTA_SupportServerInvite"], com.mrpowergamerbr.loritta.utils.loritta.legacyCommandManager.commandMap.size + com.mrpowergamerbr.loritta.utils.loritta.commandManager.commands.size, "${com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url}donate"]
 
 											user.openPrivateChannel().queue {
-												it.sendMessage(message).queue({
-													guild.leave().queue()
-												}, {
-													guild.leave().queue()
-												})
+												it.sendMessage(message).queue()
 											}
-											return
-										}
-
-										// Envie via DM uma mensagem falando sobre a Loritta!
-										val message = locale["LORITTA_ADDED_ON_SERVER", user.asMention, guild.name, com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url + "dashboard", locale["LORITTA_SupportServerInvite"], com.mrpowergamerbr.loritta.utils.loritta.legacyCommandManager.commandMap.size + com.mrpowergamerbr.loritta.utils.loritta.commandManager.commands.size, "${com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url}donate"]
-
-										user.openPrivateChannel().queue {
-											it.sendMessage(message).queue()
 										}
 									}
 								}
