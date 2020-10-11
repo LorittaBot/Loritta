@@ -8,6 +8,7 @@ import net.perfectdreams.loritta.plugin.helpinghands.utils.DailyInactivityTaxUti
 class HelpingHandsPlugin(name: String, loritta: LorittaDiscord) : LorittaDiscordPlugin(name, loritta) {
 	override fun onEnable() {
 		registerCommands(
+				CoinFlipBetStatsCommand(this),
 				CoinFlipBetCommand(this),
 				RepListCommand(this),
 				// TestCommand(this),
