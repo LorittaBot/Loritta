@@ -121,7 +121,7 @@ class EmojiFight(
                                             "\uD83D\uDC14",
                                             context.user.asMention,
                                             "✅"
-                                    ).joinToString("\n") + "\n\n"
+                                    ).joinToString("\n") + "\n\n**" + context.locale["commands.economy.emojifight.participants", participatingUsers.size] + "**\n"
                         } else {
                             context.locale
                                     .getList(
@@ -131,7 +131,7 @@ class EmojiFight(
                                             "\uD83D\uDC14",
                                             context.user.asMention,
                                             "✅"
-                                    ).joinToString("\n") + "\n\n"
+                                    ).joinToString("\n") + "\n\n**" + context.locale["commands.economy.emojifight.participants", participatingUsers.size] + "**\n"
                         }
                 )
                 .setColor(Constants.ROBLOX_RED)
