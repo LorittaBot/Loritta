@@ -82,7 +82,7 @@ import kotlin.random.Random
 abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig: GeneralDiscordInstanceConfig, var config: GeneralConfig, var instanceConfig: GeneralInstanceConfig) : LorittaBot() {
     companion object {
         // We multiply by 2 because... uuuh, sometimes threads get stuck due to dumb stuff that we need to fix.
-        const val MESSAGE_EXECUTOR_THREADS = Runtime.getRuntime().availableProcessors() * 2
+        val MESSAGE_EXECUTOR_THREADS = Runtime.getRuntime().availableProcessors() * 2
     }
 
     override val commandMap = DiscordCommandMap(this).apply {
