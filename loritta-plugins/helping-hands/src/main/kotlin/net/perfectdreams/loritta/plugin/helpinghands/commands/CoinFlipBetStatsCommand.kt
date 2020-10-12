@@ -103,7 +103,7 @@ class CoinFlipBetStatsCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractC
 							mentionUser = false
 					),
 					LorittaReply(
-							locale["commands.economy.flipcoinbetstats.wonMatches", losePercentage, loseCount],
+							locale["commands.economy.flipcoinbetstats.lostMatches", losePercentage, loseCount],
 							mentionUser = false
 					),
 					LorittaReply(
