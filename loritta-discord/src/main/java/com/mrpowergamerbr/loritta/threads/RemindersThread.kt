@@ -3,9 +3,10 @@ package com.mrpowergamerbr.loritta.threads
 import com.mrpowergamerbr.loritta.dao.Reminder
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Reminders
-import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.substringIfNeeded
+import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import mu.KotlinLogging
+import net.dv8tion.jda.api.entities.Message
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -15,6 +16,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class RemindersThread : Thread("Reminders Thread") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
+		private const val SNOOZE_EMOTE = "\uD83D\uDCA4"
+		private const val SNOOZE_MINUTES = 10
 	}
 
 	override fun run() {
@@ -43,16 +46,19 @@ class RemindersThread : Thread("Reminders Thread") {
 				val channel = lorittaShards.getTextChannelById(reminder.channelId.toString())
 
 				if (channel != null && channel.canTalk()) {
-					channel.sendMessage("<a:lori_notification:394165039227207710> | <@" + reminder.userId + "> Lembrete! `" + reminder.content.substringIfNeeded(0..1000) + "`").queue()
-					notifiedReminders.add(reminder)
+					channel.sendMessage("<a:lori_notification:394165039227207710> | <@" + reminder.userId + "> Lembrete! `" + reminder.content.substringIfNeeded(0..1000) + "`").queue {
+						addSnoozeListener(it, reminder)
+					}
 				} else {
 					val user = lorittaShards.getUserById(reminder.userId) ?: return
 
-					user.openPrivateChannel().queue {
-						it.sendMessage("<a:lori_notification:394165039227207710> | <@" + reminder.userId + "> Lembrete! `" + reminder.content + "`").queue()
+					user.openPrivateChannel().queue { privateChannel ->
+						privateChannel.sendMessage("<a:lori_notification:394165039227207710> | <@" + reminder.userId + "> Lembrete! `" + reminder.content + "`").queue {
+							addSnoozeListener(it, reminder)
+						}
 					}
-					notifiedReminders.add(reminder)
 				}
+				notifiedReminders.add(reminder)
 			} catch (e: Throwable) {
 				logger.warn(e) { "Something went wrong while trying to notify ${reminder.userId} about ${reminder.content} at channel ${reminder.channelId}" }
 			}
@@ -62,5 +68,28 @@ class RemindersThread : Thread("Reminders Thread") {
 		transaction(Databases.loritta) {
 			Reminders.deleteWhere { Reminders.id inList notifiedReminders.map { it.id } }
 		}
+	}
+
+	private fun addSnoozeListener(message: Message, reminder: Reminder) {
+		message.onReactionAddByAuthor(reminder.userId) {
+			if (it.reactionEmote.isEmote(SNOOZE_EMOTE)) {
+
+				loritta.newSuspendedTransaction {
+					Reminder.new {
+						userId = reminder.userId
+						channelId = reminder.channelId
+						remindAt = reminder.remindAt + 60_000 * SNOOZE_MINUTES
+						content = reminder.content
+					}
+				}
+
+				message.editMessage("<@${reminder.userId}> | I will remind you again in **$SNOOZE_MINUTES** minutes!").queue()
+				if (message.isFromGuild) {
+					message.clearReactions().queue()
+				}
+
+			}
+		}
+		message.addReaction(SNOOZE_EMOTE).queue()
 	}
 }
