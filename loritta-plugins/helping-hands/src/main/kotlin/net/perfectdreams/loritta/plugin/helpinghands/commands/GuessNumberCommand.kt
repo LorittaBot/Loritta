@@ -50,9 +50,13 @@ class GuessNumberCommand(plugin: HelpingHandsPlugin) : DiscordAbstractCommandBas
             if (number !in 1..10)
                 fail(locale["commands.economy.guessnumber.numberNotInRange", VICTORY_PRIZE])
 
+            val profile = lorittaUser.profile
+
+            if (LOSE_PRIZE > profile.money)
+                fail(locale["commands.economy.guessnumber.notEnoughSonhos"])
+
             val randomNumber = Loritta.RANDOM.nextInt(1, 11)
             val won = number == randomNumber
-            val profile = lorittaUser.profile
 
             if (won) {
                 loritta.newSuspendedTransaction {
