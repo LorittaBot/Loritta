@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit
 import java.util.jar.Attributes
 import java.util.jar.JarFile
 
-class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DISCORD) {
+class BotInfoCommand(private val buildInfo: BuildInfo) : AbstractCommand("botinfo", category = CommandCategory.DISCORD) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
 		return locale.toNewLocale()["commands.discord.botinfo.description"]
 	}
@@ -147,7 +147,7 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		val maxMemory = runtime.maxMemory() / mb
 		val totalMemory = runtime.totalMemory() / mb
 
-		val buildURL = getBuildURL(buildNumber)
+		val buildURL = getBuildURL()
 
 		context.reply(
                 LorittaReply(
@@ -232,5 +232,5 @@ class BotInfoCommand : AbstractCommand("botinfo", category = CommandCategory.DIS
 		)
 	}
 
-	private fun getBuildURL(buildNumber: String) = "https://jenkins.perfectdreams.net/job/Loritta/$buildNumber/"
+	private fun getBuildURL() = buildInfo.buildUrl()
 }

@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.discord
 import java.util.jar.Attributes
 
 class BuildInfo(val attribute: Attributes) {
-    val githubBuildId = attribute[GITHUB_BUILD_ID]
+    val githubBuildId = attribute[GITHUB_BUILD_ID] as String
     fun buildUrl(): String {
         return if (isJenkinsBuild())
             createJenkinsBuildURL()

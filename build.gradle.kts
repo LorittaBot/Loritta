@@ -46,6 +46,7 @@ allprojects {
                             addIfAvailable("commit.hash", "Commit-Hash")
                             addIfAvailable("git.branch", "Git-Branch")
                             addIfAvailable("compiled.at", "Compiled-At")
+                            addIfAvailable("github.build.id", "Github-Build-Id")
                             attributes["Main-Class"] = mainClass
                             attributes["Kotlin-Version"] = kotlinVersion
                             attributes["Class-Path"] = configurations.runtimeClasspath.get()
