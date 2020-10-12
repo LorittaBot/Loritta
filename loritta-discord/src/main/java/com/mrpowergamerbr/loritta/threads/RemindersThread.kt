@@ -46,7 +46,7 @@ class RemindersThread : Thread("Reminders Thread") {
 					channel.sendMessage("<a:lori_notification:394165039227207710> | <@" + reminder.userId + "> Lembrete! `" + reminder.content.substringIfNeeded(0..1000) + "`").queue()
 					notifiedReminders.add(reminder)
 				} else {
-					val user = lorittaShards.getUserById(reminder.userId) ?: return
+					val user = lorittaShards.getUserById(reminder.userId) ?: continue
 
 					user.openPrivateChannel().queue {
 						it.sendMessage("<a:lori_notification:394165039227207710> | <@" + reminder.userId + "> Lembrete! `" + reminder.content + "`").queue()
