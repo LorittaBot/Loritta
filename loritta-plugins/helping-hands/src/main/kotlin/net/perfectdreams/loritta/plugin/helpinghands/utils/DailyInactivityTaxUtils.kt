@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.plugin.helpinghands.utils
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Dailies
 import com.mrpowergamerbr.loritta.tables.Profiles
+import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
@@ -69,7 +70,10 @@ object DailyInactivityTaxUtils {
 	private fun runDailyInactivityForUsersThatCollectedDailyBefore() {
 		logger.info { "Running the daily inactivity for users that collected daily before!" }
 
-		val processedUsers = mutableSetOf<Long>()
+		val processedUsers = mutableSetOf(
+				// lori so cute she doesn't deserve to get daily every single day
+				loritta.discordConfig.discord.clientId.toLong()
+		)
 
 		for (threshold in THRESHOLDS) {
 			logger.info { "Checking daily inactivity tax threshold $threshold" }
@@ -138,7 +142,10 @@ object DailyInactivityTaxUtils {
 		// This query will only match users with >= threshold that *never* got daily before.
 		logger.info { "Running the daily inactivity for users that never collected daily before!" }
 
-		val processedUsers = mutableSetOf<Long>()
+		val processedUsers = mutableSetOf(
+				// lori so cute she doesn't deserve to get daily every single day
+				loritta.discordConfig.discord.clientId.toLong()
+		)
 
 		for (threshold in THRESHOLDS) {
 			logger.info { "Checking daily inactivity tax threshold $threshold" }
