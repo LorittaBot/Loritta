@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.modules.InviteLinkModule
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import mu.KotlinLogging
+import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.LorittaWebsite
 import java.lang.management.ManagementFactory
 import java.util.concurrent.ThreadPoolExecutor
@@ -65,7 +66,7 @@ object DebugLog {
 		logger.info("> Executors")
 
 		val pendingMessagesSize = loritta.pendingMessages.size
-		val availableProcessors = Runtime.getRuntime().availableProcessors()
+		val availableProcessors = LorittaDiscord.MESSAGE_EXECUTOR_THREADS
 		val isMessagesOverloaded = pendingMessagesSize > availableProcessors
 		logger.info("Pending Messages ($pendingMessagesSize): Active: ${loritta.pendingMessages.filter { it.isActive }.count()}; Cancelled: ${loritta.pendingMessages.filter { it.isCancelled }.count()}; Complete: ${loritta.pendingMessages.filter { it.isCompleted }.count()};")
 		if (isMessagesOverloaded)
