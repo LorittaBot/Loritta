@@ -34,7 +34,7 @@ jobs:
 
     # Runs a single command using the runners shell
     - name: Build with Gradle
-      run: "./gradlew build -Dbuild.number=$GITHUB_RUN_NUMBER -Dgit.branch=$GITHUB_REF -Dcommit.hash=$GITHUB_SHA -Dcompiled.at=${{ steps.current-time.outputs.time }}"
+      run: "./gradlew build -Dgithub.build.id=$GITHUB_RUN_ID -Dbuild.number=$GITHUB_RUN_NUMBER -Dgit.branch=$GITHUB_REF -Dcommit.hash=$GITHUB_SHA -Dcompiled.at=${{ steps.current-time.outputs.time }}"
 
     # Upload Artifacts to GitHub
     # Loritta
