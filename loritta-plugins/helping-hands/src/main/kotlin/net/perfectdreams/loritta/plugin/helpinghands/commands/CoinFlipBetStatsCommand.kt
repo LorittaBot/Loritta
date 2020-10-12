@@ -13,6 +13,7 @@ import net.perfectdreams.loritta.utils.extensions.toJDA
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.sum
+import java.math.BigDecimal
 
 class CoinFlipBetStatsCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractCommandBase(
 		plugin.loritta,
@@ -71,15 +72,15 @@ class CoinFlipBetStatsCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractC
 				SonhosTransaction.slice(sumField).select {
 					(SonhosTransaction.receivedBy eq checkStatsOfUser.idLong) and
 							(SonhosTransaction.reason eq SonhosPaymentReason.COIN_FLIP_BET)
-				}.first()[sumField]!!
-			}
+				}.firstOrNull()?.get(sumField)
+			} ?: BigDecimal.ZERO
 
 			val loseSum = loritta.newSuspendedTransaction {
 				SonhosTransaction.slice(sumField).select {
 					(SonhosTransaction.givenBy eq checkStatsOfUser.idLong) and
 							(SonhosTransaction.reason eq SonhosPaymentReason.COIN_FLIP_BET)
-				}.first()[sumField]!!
-			}
+				}.firstOrNull()?.get(sumField)
+			} ?: BigDecimal.ZERO
 
 			val winPercentage = (winCount) / (winCount.toDouble() + loseCount.toDouble())
 			val losePercentage = (loseCount) / (winCount.toDouble() + loseCount.toDouble())
