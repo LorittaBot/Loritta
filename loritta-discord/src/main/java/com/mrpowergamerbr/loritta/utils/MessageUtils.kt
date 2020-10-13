@@ -497,6 +497,21 @@ fun Message.onResponseByAuthor(context: LorittaCommandContext, function: suspend
 }
 
 /**
+ * When the command executor sends a message on the same text channel as the executed command
+ *
+ * @param userId    the user's ID
+ * @param guildId   the guild's ID, may be null
+ * @param channelId the channel's ID, may be null
+ * @param function the callback that should be invoked
+ * @return         the message object for chaining
+ */
+fun Message.onResponseByAuthor(userId: Long, guildId: Long?, channelId: Long?, function: suspend (LorittaMessageEvent) -> Unit): Message {
+	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, userId) }
+	functions.onResponseByAuthor = function
+	return this
+}
+
+/**
  * Removes all interaction functions associated with [this]
  */
 fun Message.removeAllFunctions(): Message {
