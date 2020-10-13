@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.utils.MarkdownUtil
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
@@ -126,7 +127,8 @@ class RemindersThread : Thread("Reminders Thread") {
 					content = reminder.content
 				}
 			}
-			reply.channel.sendMessage("I will remind you again in **${it.message.contentDisplay}**!").queue()
+			val remindIn = MarkdownUtil.bold(MarkdownUtil.monospace(it.message.contentDisplay))
+			reply.channel.sendMessage("I will remind you again in $remindIn!").queue()
 		}
 
 		reply.onReactionAddByAuthor(reminder.userId) {
