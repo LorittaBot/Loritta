@@ -160,7 +160,7 @@ object DailyInactivityTaxUtils {
 							(Profiles.money greaterEq threshold.minimumSonhosForTrigger) and
 									Dailies.id.isNull()
 						}
-						.groupBy(receivedBy, money)
+						.groupBy(receivedBy, money, Dailies.id)
 						.toList()
 						// We display the inactive daily users after the ".toList()" because, if it is placed before, two queries will
 						// be made: One for the query itself and then another for the Exposed ".count()" call.
