@@ -15,7 +15,7 @@ class DonateView(
         locale,
         path
 ) {
-    override fun getTitle() = locale["website.support.title"]
+    override fun getTitle() = locale["website.donate.title"]
 
     override fun DIV.generateContent() {
         div(classes = "odd-wrapper") {

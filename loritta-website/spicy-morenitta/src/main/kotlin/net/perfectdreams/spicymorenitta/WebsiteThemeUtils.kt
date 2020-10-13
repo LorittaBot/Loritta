@@ -5,9 +5,9 @@ import net.perfectdreams.spicymorenitta.utils.onDOMReady
 import net.perfectdreams.spicymorenitta.utils.select
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
-import kotlin.browser.document
-import kotlin.dom.addClass
-import kotlin.dom.removeClass
+import kotlinx.browser.document
+import kotlinx.dom.addClass
+import kotlinx.dom.removeClass
 
 object WebsiteThemeUtils {
 	fun changeWebsiteThemeTo(newTheme: WebsiteTheme, afterPageLoad: Boolean) {

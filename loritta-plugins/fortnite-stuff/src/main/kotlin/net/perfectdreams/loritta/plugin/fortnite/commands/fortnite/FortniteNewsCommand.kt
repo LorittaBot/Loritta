@@ -9,20 +9,21 @@ import com.mrpowergamerbr.loritta.gifs.GifSequenceWriter
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.MiscUtils
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.plugin.fortnite.FortniteStuff
-import net.perfectdreams.loritta.plugin.fortnite.commands.fortnite.base.DSLCommandBase
 import net.perfectdreams.loritta.utils.Emotes
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.stream.FileImageOutputStream
 
-object FortniteNewsCommand : DSLCommandBase {
+class FortniteNewsCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.loritta, listOf("fortnitenews", "fortnitenoticias", "fortnitenotícias", "fnnews", "fnnoticias", "fnnotícias"), CommandCategory.FORTNITE) {
 	private val LOCALE_PREFIX = "commands.fortnite.news"
 
-	override fun command(loritta: LorittaDiscord, m: FortniteStuff) = create(loritta, listOf("fortnitenews", "fortnitenoticias", "fortnitenotícias", "fnnews", "fnnoticias", "fnnotícias")) {
-		description { it["${LOCALE_PREFIX}.description"] }
+	override fun command() = create {
+		localizedDescription("${LOCALE_PREFIX}.description")
+		needsToUploadFiles = true
 
 		executesDiscord {
 			val newsPayload = m.updateStoreItems!!.getNewsData("br", locale["commands.fortnite.shop.localeId"])

@@ -7,23 +7,22 @@ import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.api.utils.image.JVMImage
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.platform.discord.commands.discordCommand
 import net.perfectdreams.loritta.utils.RankingGenerator
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.selectAll
 
-object RepTopCommand {
-	fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("rep top", "reputation top", "reputacao top", "reputação top"), CommandCategory.SOCIAL) {
-		description { it["commands.social.topreputation.description"] }
+class RepTopCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("rep top", "reputation top", "reputacao top", "reputação top"), CommandCategory.SOCIAL) {
+	override fun command() = create {
+		localizedDescription("commands.social.topreputation.description")
 
 		examples {
-			listOf(
-					it["commands.social.topreputation.received"],
-					it["commands.social.topreputation.given"],
-					"${it["commands.social.topreputation.received"]} 5",
-					"${it["commands.social.topreputation.given"]} 5"
-			)
+			+ it["commands.social.topreputation.received"]
+			+ it["commands.social.topreputation.given"]
+			+ "${it["commands.social.topreputation.received"]} 5"
+			+ "${it["commands.social.topreputation.given"]} 5"
 		}
 
 		arguments {

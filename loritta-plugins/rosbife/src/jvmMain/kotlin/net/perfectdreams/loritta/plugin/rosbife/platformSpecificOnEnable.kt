@@ -6,10 +6,10 @@ import net.perfectdreams.loritta.plugin.rosbife.commands.*
 actual fun RosbifePlugin.platformSpecificOnEnable() {
 	registerCommands(
 			// AtendenteCommand.command(loritta),
-			ToBeContinuedCommand.command(loritta),
-			TerminatorCommand.command(loritta),
-			MorrePragaCommand.command(loritta),
-			CarlyAaahCommand.command(loritta),
-			PetPetCommand.command(loritta)
+			ToBeContinuedCommand(this),
+			TerminatorCommand(this),
+			MorrePragaCommand(this),
+			CarlyAaahCommand(this),
+			PetPetCommand(this)
 	)
 }

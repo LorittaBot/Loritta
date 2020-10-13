@@ -141,11 +141,21 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			// Hora de transferir!
 			if (economySource == "global") {
 				// User checks
-
 				if (!checkIfSelfAccountIsOldEnough(context))
 					return
 				if (!checkIfOtherAccountIsOldEnough(context, user))
 					return
+
+				if (user.idLong == loritta.discordConfig.discord.clientId.toLong() && 50_000 > howMuch) {
+					// If the user is transferring to Loritta, we check if the user is transferring less than 50_000 and, if yes, we won't allow it.
+					context.reply(
+							LorittaReply(
+									context.locale["commands.economy.pay.doYouThinkImPoor"],
+									Emotes.LORI_BAN_HAMMER
+							)
+					)
+					return
+				}
 
 				val quirkyMessage = if (howMuch >= 500_000) {
 					" ${context.locale.getList("commands.economy.pay.randomQuirkyRichMessages").random()}"

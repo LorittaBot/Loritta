@@ -4,12 +4,8 @@ plugins {
 
 kotlin {
     jvm()
-    js()
-
-    presets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJsTargetPreset>().forEach {
-        targetFromPreset(it) {
-            this.nodejs
-        }
+    js {
+        nodejs()
     }
 
     sourceSets {

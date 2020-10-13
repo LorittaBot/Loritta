@@ -141,7 +141,7 @@ fun String.convertToEpochMillisRelativeToNow(): Long {
 			val hour = matcher.group(2).toIntOrNull() ?: 0
 			val minute = matcher.group(3).toIntOrNull() ?: 0
 			val seconds = try {
-				matcher.group(5).toIntOrNull() ?: 0
+				matcher.group(5)?.toIntOrNull() ?: 0
 			} catch (e: IllegalStateException) {
 				0
 			}

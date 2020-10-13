@@ -2,27 +2,24 @@ package net.perfectdreams.loritta.plugin.rosbife.commands
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.extensions.drawStringWithOutline
-import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.utils.extensions.enableFontAntiAliasing
 import net.perfectdreams.loritta.api.utils.image.JVMImage
-import net.perfectdreams.loritta.plugin.rosbife.commands.base.DSLCommandBase
+import net.perfectdreams.loritta.plugin.rosbife.RosbifePlugin
+import net.perfectdreams.loritta.plugin.rosbife.commands.base.ImageAbstractCommandBase
 import java.awt.Color
 import java.awt.Font
-import java.awt.Graphics
 import java.awt.image.BufferedImage
 import java.io.File
 
-object TerminatorCommand : DSLCommandBase {
-	override fun command(loritta: LorittaBot) = create(
-			loritta,
-			listOf("terminator", "animeterminator", "terminatoranime")
-	) {
-		description { it["commands.images.terminator.description"] }
+class TerminatorCommand(m: RosbifePlugin) : ImageAbstractCommandBase(
+		m.loritta,
+		listOf("terminator", "animeterminator", "terminatoranime")
+) {
+	override fun command() = create {
+		localizedDescription("commands.images.terminator.description")
+		localizedExamples("commands.images.terminator.examples")
 
-		examples {
-			it.getList("commands.images.terminator.examples")
-		}
 		usage {
 			argument(ArgumentType.TEXT) {}
 		}

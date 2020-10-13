@@ -1,10 +1,11 @@
 package net.perfectdreams.spicymorenitta.routes
 
-import io.ktor.client.request.get
-import io.ktor.client.request.url
+import io.ktor.client.request.*
+import kotlinx.browser.document
+import kotlinx.browser.window
 import kotlinx.html.*
 import kotlinx.html.dom.append
-import kotlinx.serialization.builtins.list
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.JSON
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.serializable.CommandInfo
@@ -14,8 +15,6 @@ import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.utils.select
 import org.w3c.dom.HTMLDivElement
-import kotlin.browser.document
-import kotlin.browser.window
 
 class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/commands") {
     override val keepLoadingScreen: Boolean
@@ -30,7 +29,7 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
                 url("${window.location.origin}/api/v1/loritta/commands/${locale.id}")
             }
 
-            val list = JSON.nonstrict.parse(CommandInfo.serializer().list, result)
+            val list = JSON.nonstrict.decodeFromString(ListSerializer(CommandInfo.serializer()), result)
 
             fixDummyNavbarHeight(call)
 

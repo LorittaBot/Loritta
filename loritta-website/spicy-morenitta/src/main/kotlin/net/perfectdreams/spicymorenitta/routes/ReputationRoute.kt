@@ -3,8 +3,13 @@ package net.perfectdreams.spicymorenitta.routes
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import jq
+import kotlinx.browser.document
+import kotlinx.browser.window
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.dom.addClass
+import kotlinx.dom.clear
+import kotlinx.dom.removeClass
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.serialization.Serializable
@@ -20,11 +25,6 @@ import org.w3c.dom.HTMLTextAreaElement
 import org.w3c.dom.url.URLSearchParams
 import utils.GoogleRecaptcha
 import utils.RecaptchaOptions
-import kotlin.browser.document
-import kotlin.browser.window
-import kotlin.dom.addClass
-import kotlin.dom.clear
-import kotlin.dom.removeClass
 import kotlin.js.json
 
 class ReputationRoute : BaseRoute("/user/{userId}/rep") {
@@ -109,7 +109,7 @@ class ReputationRoute : BaseRoute("/user/{userId}/rep") {
     fun updateReputationLeaderboard() {
         SpicyMorenitta.INSTANCE.launch {
             val leaderboardResultAsString = http.get<String>("${loriUrl}api/v1/users/$userId/reputation")
-            val leaderboardResult = kotlinx.serialization.json.Json.parse(ReputationLeaderboardResponse.serializer(), leaderboardResultAsString)
+            val leaderboardResult = kotlinx.serialization.json.Json.decodeFromString(ReputationLeaderboardResponse.serializer(), leaderboardResultAsString)
 
             page.getElementByClass("reputation-count").textContent = leaderboardResult.count.toString()
 

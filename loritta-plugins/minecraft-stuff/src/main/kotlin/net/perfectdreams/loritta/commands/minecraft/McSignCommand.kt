@@ -2,9 +2,11 @@ package net.perfectdreams.loritta.commands.minecraft
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
-import net.perfectdreams.loritta.api.LorittaBot
+import net.perfectdreams.loritta.MinecraftStuff
 import net.perfectdreams.loritta.api.commands.ArgumentType
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.utils.image.JVMImage
+import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import java.awt.Color
 import java.awt.Font
 import java.awt.Graphics
@@ -12,11 +14,10 @@ import java.awt.Rectangle
 import java.io.File
 import javax.imageio.ImageIO
 
-object McSignCommand : DSLCommandBase {
-	override fun command(loritta: LorittaBot) = create(loritta, listOf("mcsign", "mcplaca")) {
-		description { it["commands.minecraft.mcsign.description"] }
-
-		examples { it.getList("commands.minecraft.mcsign.examples") }
+class McSignCommand(val m: MinecraftStuff) : DiscordAbstractCommandBase(m.loritta, listOf("mcsign", "mcplaca"), CommandCategory.MINECRAFT) {
+	override fun command() = create {
+		localizedDescription("commands.minecraft.mcsign.description")
+		localizedExamples("commands.minecraft.mcsign.examples")
 
 		usage {
 			argument(ArgumentType.TEXT) {}
@@ -80,8 +81,8 @@ object McSignCommand : DSLCommandBase {
 				'e' to Color(255, 255, 85),
 				'f' to Color(255, 255, 255)
 		)
-		var colored = text.replace("&", "§")
-		var stripped = colored.replace(Regex("(?i)§[0-9A-FK-OR]"), "")
+		val colored = text.replace("&", "§")
+		val stripped = colored.replace(Regex("(?i)§[0-9A-FK-OR]"), "")
 		// Get the FontMetrics
 		val metrics = graphics.getFontMetrics(font)
 		// Determine the X coordinate for the text

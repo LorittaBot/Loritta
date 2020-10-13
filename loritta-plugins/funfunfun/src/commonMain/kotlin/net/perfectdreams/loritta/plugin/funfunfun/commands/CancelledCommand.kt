@@ -1,14 +1,15 @@
 package net.perfectdreams.loritta.plugin.funfunfun.commands
 
-import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.commands.ArgumentType
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.LorittaAbstractCommandBase
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import net.perfectdreams.loritta.plugin.funfunfun.commands.base.DSLCommandBase
+import net.perfectdreams.loritta.plugin.funfunfun.FunFunFunPlugin
 import net.perfectdreams.loritta.utils.Emotes
 
-object CancelledCommand : DSLCommandBase {
-	override fun command(loritta: LorittaBot) = create(loritta, listOf("cancelled", "cancelado", "cancel", "cancelar")) {
-		description { it["commands.fun.cancelled.description"] }
+class CancelledCommand(val m: FunFunFunPlugin) : LorittaAbstractCommandBase(m.loritta, listOf("cancelled", "cancelado", "cancel", "cancelar"), CommandCategory.FUN) {
+	override fun command() = create {
+		localizedDescription("commands.fun.cancelled.description")
 
 		usage {
 			argument(ArgumentType.USER) {}

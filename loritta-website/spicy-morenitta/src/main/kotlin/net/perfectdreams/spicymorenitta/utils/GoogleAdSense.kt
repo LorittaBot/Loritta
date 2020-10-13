@@ -4,7 +4,7 @@ import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLModElement
 import org.w3c.dom.MutationObserver
 import org.w3c.dom.MutationObserverInit
-import kotlin.browser.document
+import kotlinx.browser.document
 
 object GoogleAdSense : Logging {
 	@JsName("renderAds")

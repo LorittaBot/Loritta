@@ -6,7 +6,7 @@ import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLCanvasElement
 import org.w3c.dom.Image
-import kotlin.browser.window
+import kotlinx.browser.window
 
 object LockerUtils : Logging {
 	suspend fun prepareBackgroundCanvasPreview(m: SpicyMorenitta, background: Background, canvasPreview: HTMLCanvasElement): CanvasPreviewDownload {

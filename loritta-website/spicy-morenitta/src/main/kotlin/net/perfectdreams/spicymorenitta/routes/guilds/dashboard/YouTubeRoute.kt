@@ -1,20 +1,22 @@
 package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
 
 import LoriDashboard
-import io.ktor.client.request.get
-import io.ktor.client.request.parameter
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.readText
-import io.ktor.http.HttpStatusCode
+import io.ktor.http.*
 import jq
+import kotlinx.browser.document
+import kotlinx.browser.window
+import kotlinx.dom.addClass
+import kotlinx.dom.clear
+import kotlinx.dom.removeClass
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.stream.createHTML
-import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
-import kotlinx.serialization.parse
 import net.perfectdreams.loritta.embededitor.data.crosswindow.Placeholder
 import net.perfectdreams.loritta.embededitor.data.crosswindow.RenderType
 import net.perfectdreams.loritta.utils.Placeholders
@@ -31,11 +33,7 @@ import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import net.perfectdreams.spicymorenitta.views.dashboard.Stuff
 import net.perfectdreams.spicymorenitta.views.dashboard.getPlan
 import org.w3c.dom.*
-import kotlin.browser.document
-import kotlin.browser.window
-import kotlin.dom.addClass
-import kotlin.dom.clear
-import kotlin.dom.removeClass
+import kotlin.collections.set
 import kotlin.js.Json
 import kotlin.js.json
 
@@ -59,7 +57,6 @@ class YouTubeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 		cachedChannelByChannelUrl.clear()
 	}
 
-	@ImplicitReflectionSerializer
 	override fun onRender(call: ApplicationCall) {
 		launchWithLoadingScreenAndFixContent(call) {
 			val guild = DashboardUtils.retrievePartialGuildConfiguration<PartialGuildConfiguration>(call.parameters["guildid"]!!, "activekeys", "youtube", "textchannels")
@@ -110,7 +107,6 @@ class YouTubeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 		}
 	}
 
-	@ImplicitReflectionSerializer
 	private fun updateTrackedYouTubeAccountsList(guild: PartialGuildConfiguration) {
 		val trackedDiv = document.select<HTMLDivElement>(".tracked-youtube-accounts")
 
@@ -127,7 +123,6 @@ class YouTubeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 		}
 	}
 
-	@ImplicitReflectionSerializer
 	private fun TagConsumer<HTMLElement>.createTrackedYouTubeAccountEntry(guild: PartialGuildConfiguration, trackedYouTubeAccount: ServerConfig.TrackedYouTubeAccount) {
 		this.div(classes = "discord-generic-entry timer-entry") {
 			attributes["data-youtube-account"] = trackedYouTubeAccount.youTubeChannelId
@@ -201,7 +196,6 @@ class YouTubeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 		}
 	}
 
-	@ImplicitReflectionSerializer
 	private fun editTrackedYouTubeAccount(guild: PartialGuildConfiguration, accountInfo: YouTubeAccountInfo?, trackedYouTubeAccount: ServerConfig.TrackedYouTubeAccount) {
 		val modal = TingleModal(
 				TingleOptions(
@@ -396,7 +390,6 @@ class YouTubeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 		)
 	}
 
-	@ImplicitReflectionSerializer
 	private suspend fun loadAccountInfoFromUrl(channelUrl: String): YouTubeAccountInfo? {
 		info("Loading info for account ${channelUrl}...")
 
@@ -422,8 +415,7 @@ class YouTubeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 		}
 	}
 
-	@ImplicitReflectionSerializer
-	private fun parseAccountInfo(payload: String) = JSON.nonstrict.parse(YouTubeAccountInfo.serializer(), payload)
+	private fun parseAccountInfo(payload: String) = JSON.nonstrict.decodeFromString(YouTubeAccountInfo.serializer(), payload)
 
 	@Serializable
 	class YouTubeAccountInfo(

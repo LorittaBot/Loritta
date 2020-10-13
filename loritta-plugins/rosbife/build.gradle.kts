@@ -4,12 +4,8 @@ plugins {
 
 kotlin {
     jvm()
-    js()
-
-    presets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJsTargetPreset>().forEach {
-        targetFromPreset(it) {
-            this.nodejs
-        }
+    js {
+        nodejs()
     }
 
     sourceSets {
@@ -17,6 +13,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib-common"))
                 implementation(project(":loritta-api"))
+                api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0")
             }
         }
 
@@ -25,7 +22,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib-jdk8"))
                 implementation(project(":loritta-discord"))
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
+                api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0")
             }
         }
 

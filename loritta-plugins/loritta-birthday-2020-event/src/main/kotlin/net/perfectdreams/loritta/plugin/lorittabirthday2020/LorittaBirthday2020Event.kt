@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.plugin.lorittabirthday2020
 
 import com.mrpowergamerbr.loritta.network.Databases
 import mu.KotlinLogging
-import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.plugin.christmas2019.profile.badges.ChristmasBadge
@@ -15,7 +14,7 @@ import net.perfectdreams.loritta.profile.Badge
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class LorittaBirthday2020Event(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(name, loritta) {
+class LorittaBirthday2020Event(name: String, loritta: LorittaDiscord) : LorittaDiscordPlugin(name, loritta) {
 	val badges = mutableListOf<Badge>()
 
 	override fun onEnable() {

@@ -1,22 +1,20 @@
 package net.perfectdreams.spicymorenitta.routes
 
 import LoriDashboard
-import io.ktor.client.request.get
-import io.ktor.client.request.url
+import io.ktor.client.request.*
+import kotlinx.browser.document
+import kotlinx.browser.window
 import kotlinx.coroutines.delay
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.dom.prepend
-import kotlinx.serialization.builtins.list
+import kotlinx.serialization.builtins.ListSerializer
 import net.perfectdreams.loritta.serializable.Background
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.utils.*
 import org.w3c.dom.*
-import org.w3c.dom.Audio
-import kotlin.browser.document
-import kotlin.browser.window
 import kotlin.js.Json
 
 class Birthday2020StatsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/birthday-2020/stats"), Logging {
@@ -55,7 +53,7 @@ class Birthday2020StatsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender
 				val result = http.get<String> {
 					url("${window.location.origin}/api/v1/loritta/backgrounds")
 				}
-				kotlinx.serialization.json.JSON.nonstrict.parse(Background.serializer().list, result)
+				kotlinx.serialization.json.JSON.nonstrict.decodeFromString(ListSerializer(Background.serializer()), result)
 			}
 
 			val profileWrapperJob = m.async {

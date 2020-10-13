@@ -11,7 +11,10 @@ import net.perfectdreams.loritta.api.utils.image.Image
 import net.perfectdreams.loritta.utils.Emotes
 
 abstract class CommandContext(
-		val loritta: LorittaBot,
+		// Nifty trick: By keeping it "open", implementations can override this variable.
+		// By doing this, classes can use their own platform implementation (example: LorittaDiscord instead of LorittaBot)
+		// If you don't keep it "open", the type will always be "LorittaBot", which sucks.
+		open val loritta: LorittaBot,
 		val command: Command<CommandContext>,
 		val args: List<String>,
 		val message: Message,
@@ -39,6 +42,54 @@ abstract class CommandContext(
 		}
 		return sendMessage(message.toString())
 	}
+
+	/**
+	 * Creates a [LorittaReply] with the specified parameters and sends the message.
+	 *
+	 * This is a helper method for [reply]
+	 *
+	 * @see    reply
+	 * @return the sent message
+	 */
+	suspend fun reply(
+			message: String = " ",
+			prefix: String? = null,
+			forceMention: Boolean = false,
+			hasPadding: Boolean = true,
+			mentionUser: Boolean = true
+	) = reply(
+			LorittaReply(
+					message,
+					prefix,
+					forceMention,
+					hasPadding,
+					mentionUser
+			)
+	)
+
+	/**
+	 * Creates a [LorittaReply] with the specified parameters and sends the message.
+	 *
+	 * This is a helper method for [reply]
+	 *
+	 * @see    reply
+	 * @return the sent message
+	 */
+	suspend fun reply(
+			message: String = " ",
+			prefix: LorittaEmote,
+			forceMention: Boolean = false,
+			hasPadding: Boolean = true,
+			mentionUser: Boolean = true
+	) = reply(
+			LorittaReply(
+					message,
+					prefix,
+					forceMention,
+					hasPadding,
+					mentionUser
+			)
+	)
 
 	/**
 	 * Throws a [CommandException], halting command execution

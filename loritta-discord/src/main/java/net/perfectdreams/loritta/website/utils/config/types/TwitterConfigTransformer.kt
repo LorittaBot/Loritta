@@ -7,7 +7,7 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import kotlinx.serialization.builtins.list
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.serializable.TrackedTwitterAccount
@@ -26,7 +26,7 @@ object TwitterConfigTransformer : ConfigTransformer {
                 TrackedTwitterAccounts.guildId eq guild.idLong
             }
 
-            val accounts = Json.parse(TrackedTwitterAccount.serializer().list, payload["accounts"].array.toString())
+            val accounts = Json.decodeFromString(ListSerializer(TrackedTwitterAccount.serializer()), payload["accounts"].array.toString())
 
             for (account in accounts) {
                 TrackedTwitterAccounts.insert {
@@ -54,7 +54,7 @@ object TwitterConfigTransformer : ConfigTransformer {
             }
 
             JsonParser.parseString(
-                    Json.stringify(TrackedTwitterAccount.serializer().list, trackedTwitterAccounts)
+                    Json.encodeToString(ListSerializer(TrackedTwitterAccount.serializer()), trackedTwitterAccounts)
             )
         }
     }

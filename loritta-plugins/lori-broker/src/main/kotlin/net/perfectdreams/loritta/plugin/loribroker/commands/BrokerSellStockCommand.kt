@@ -1,16 +1,16 @@
 package net.perfectdreams.loritta.plugin.loribroker.commands
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.serialization.json.content
 import kotlinx.serialization.json.double
+import kotlinx.serialization.json.jsonPrimitive
 import net.perfectdreams.loritta.api.commands.ArgumentType
+import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.plugin.loribroker.LoriBrokerPlugin
-import net.perfectdreams.loritta.plugin.loribroker.commands.base.DSLCommandBase
 import net.perfectdreams.loritta.plugin.loribroker.tables.BoughtStocks
 import net.perfectdreams.loritta.utils.*
 import org.jetbrains.exposed.sql.and
@@ -19,12 +19,9 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.kotlin.utils.addToStdlib.sumByLong
 import kotlin.math.abs
 
-object BrokerSellStockCommand : DSLCommandBase {
-	override fun command(plugin: LoriBrokerPlugin, loritta: Loritta) = create(
-			loritta,
-			plugin.aliases.flatMap { listOf("$it sell", "$it vender") }
-	) {
-		description { it["commands.economy.brokerSell.description"] }
+class BrokerSellStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractCommandBase(plugin.loritta, plugin.aliases.flatMap { listOf("$it sell", "$it vender") }, CommandCategory.ECONOMY) {
+	override fun command() = create {
+		localizedDescription("commands.economy.brokerSell.description")
 
 		arguments {
 			argument(ArgumentType.TEXT) {}
@@ -44,7 +41,7 @@ object BrokerSellStockCommand : DSLCommandBase {
 			val ticker = plugin.tradingApi
 					.getOrRetrieveTicker(tickerId, listOf("lp", "description"))
 
-			if (ticker["current_session"]!!.content != LoriBrokerPlugin.MARKET)
+			if (ticker["current_session"]!!.jsonPrimitive.content != LoriBrokerPlugin.MARKET)
 				fail(locale["commands.economy.broker.outOfSession"])
 
 			val mutex = plugin.mutexes.getOrPut(user.idLong, { Mutex() })
@@ -70,7 +67,7 @@ object BrokerSellStockCommand : DSLCommandBase {
 					fail(locale["commands.economy.brokerSell.notEnoughStocks", tickerId])
 
 				val stocksThatWillBeSold = selfStocks.take(number.toInt())
-				val howMuchWillBePaidToTheUser = plugin.convertReaisToSonhos(ticker["lp"]?.double!!) * number
+				val howMuchWillBePaidToTheUser = plugin.convertReaisToSonhos(ticker["lp"]?.jsonPrimitive?.double!!) * number
 
 				val totalEarnings = howMuchWillBePaidToTheUser - stocksThatWillBeSold.sumByLong { it[BoughtStocks.price] }
 

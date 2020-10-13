@@ -4,9 +4,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 // val kotlinVersion by lazy { ext["kotlin-version"] as String }
 // val ktorVersion by lazy { ext["ktor-version"] as String }
 val loriVersion   = "2020-SNAPSHOT"
-val kotlinVersion = "1.3.70"
-val ktorVersion   = "1.3.1"
+val kotlinVersion = "1.4.10"
+val ktorVersion   = "1.4.1"
 val jdaVersion    = "4.2.0_204"
+val kotlinSerialization = "1.0.0"
 
 println("Compiling Loritta $loriVersion")
 println("Kotlin Version: $kotlinVersion")
@@ -21,6 +22,7 @@ allprojects {
         set("kotlin-version", kotlinVersion)
         set("ktor-version", ktorVersion)
         set("jda-version", jdaVersion)
+        set("kotlin-serialization", kotlinSerialization)
         set(
                 "fat-jar-stuff",
                 fun(mainClass: String, customAttributes: Map<String, String>): Task {
@@ -44,6 +46,7 @@ allprojects {
                             addIfAvailable("commit.hash", "Commit-Hash")
                             addIfAvailable("git.branch", "Git-Branch")
                             addIfAvailable("compiled.at", "Compiled-At")
+                            addIfAvailable("github.build.id", "Github-Build-Id")
                             attributes["Main-Class"] = mainClass
                             attributes["Kotlin-Version"] = kotlinVersion
                             attributes["Class-Path"] = configurations.runtimeClasspath.get()
@@ -97,7 +100,7 @@ allprojects {
 
 plugins {
     java
-    kotlin("jvm") version "1.3.70" apply false
+    kotlin("jvm") version "1.4.10" apply false
     `maven-publish`
 }
 

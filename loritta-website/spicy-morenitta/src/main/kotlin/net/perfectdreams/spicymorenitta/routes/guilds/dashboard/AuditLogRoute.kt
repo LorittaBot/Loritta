@@ -1,11 +1,10 @@
 package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
 
-import io.ktor.client.request.get
-import io.ktor.client.request.url
+import io.ktor.client.request.*
+import kotlinx.browser.document
+import kotlinx.browser.window
 import kotlinx.html.*
 import kotlinx.html.dom.append
-import kotlinx.serialization.ImplicitReflectionSerializer
-import kotlinx.serialization.parse
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
@@ -17,8 +16,6 @@ import net.perfectdreams.spicymorenitta.utils.select
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import org.w3c.dom.HTMLDivElement
 import utils.Moment
-import kotlin.browser.document
-import kotlin.browser.window
 
 class AuditLogRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{guildid}/configure/audit-log") {
     override val keepLoadingScreen: Boolean
@@ -34,7 +31,7 @@ class AuditLogRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/
                 url("${window.location.origin}/api/v1/guilds/${call.parameters["guildid"]}/audit-log")
             }
 
-            val list = kotlinx.serialization.json.JSON.nonstrict.parse(ServerConfig.WebAuditLogWrapper.serializer(), result)
+            val list = kotlinx.serialization.json.JSON.nonstrict.decodeFromString(ServerConfig.WebAuditLogWrapper.serializer(), result)
 
             fixDummyNavbarHeight(call)
             m.fixLeftSidebarScroll {

@@ -1,6 +1,6 @@
 package net.perfectdreams.spicymorenitta
 
-import kotlin.browser.document
+import kotlinx.browser.document
 import kotlin.js.Date
 
 object CookiesUtils {

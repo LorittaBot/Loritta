@@ -29,7 +29,7 @@ class Background(id: EntityID<String>) : Entity<String>(id) {
 			enabled,
 			rarity,
 			createdBy.toList(),
-			crop?.let { Json.parse(Crop.serializer(), it.toString()) },
+			crop?.let { Json.decodeFromString(Crop.serializer(), it.toString()) },
 			set?.value
 	)
 }

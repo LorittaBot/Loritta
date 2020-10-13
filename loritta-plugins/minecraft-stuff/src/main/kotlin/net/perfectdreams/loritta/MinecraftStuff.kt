@@ -1,11 +1,11 @@
 package net.perfectdreams.loritta
 
-import net.perfectdreams.loritta.api.LorittaBot
-import net.perfectdreams.loritta.api.plugin.LorittaPlugin
 import net.perfectdreams.loritta.commands.minecraft.McSignCommand
+import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
 
-class MinecraftStuff(name: String, loritta: LorittaBot) : LorittaPlugin(name, loritta) {
+class MinecraftStuff(name: String, loritta: LorittaDiscord) : LorittaDiscordPlugin(name, loritta) {
     override fun onEnable() {
-        registerCommand(McSignCommand.command(loritta))
+        registerCommand(McSignCommand(this))
     }
 }

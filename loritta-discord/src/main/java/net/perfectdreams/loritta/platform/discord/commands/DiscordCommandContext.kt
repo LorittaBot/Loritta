@@ -29,7 +29,7 @@ import java.io.InputStream
 import java.time.Instant
 
 class DiscordCommandContext(
-		loritta: LorittaDiscord,
+		override val loritta: LorittaDiscord,
 		command: Command<CommandContext>,
 		args: List<String>,
 		val discordMessage: Message,
@@ -200,7 +200,6 @@ class DiscordCommandContext(
 	 * @param context the context of the command
 	 */
 	override suspend fun explain() {
-		loritta as LorittaDiscord
 		val embed = EmbedBuilder()
 				.setColor(Constants.LORITTA_AQUA)
 				.setAuthor(locale["commands.explain.clickHereToSeeAllMyCommands"], "${loritta.instanceConfig.loritta.website.url}commands", discordMessage.jda.selfUser.effectiveAvatarUrl)

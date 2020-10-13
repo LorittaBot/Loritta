@@ -13,12 +13,12 @@ import net.perfectdreams.spicymorenitta.utils.Logging
 import net.perfectdreams.spicymorenitta.utils.select
 import net.perfectdreams.spicymorenitta.utils.selectAll
 import org.w3c.dom.*
-import kotlin.browser.document
-import kotlin.browser.window
-import kotlin.dom.addClass
-import kotlin.dom.clear
-import kotlin.dom.hasClass
-import kotlin.dom.removeClass
+import kotlinx.browser.document
+import kotlinx.browser.window
+import kotlinx.dom.addClass
+import kotlinx.dom.clear
+import kotlinx.dom.hasClass
+import kotlinx.dom.removeClass
 import kotlin.math.max
 
 abstract class BaseRoute(val path: String) : Logging {

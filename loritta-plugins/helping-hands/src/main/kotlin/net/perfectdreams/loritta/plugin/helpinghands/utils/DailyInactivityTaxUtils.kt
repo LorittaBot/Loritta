@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.plugin.helpinghands.utils
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Dailies
 import com.mrpowergamerbr.loritta.tables.Profiles
+import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
@@ -62,7 +63,17 @@ object DailyInactivityTaxUtils {
 	fun runDailyInactivityTax() {
 		logger.info { "Running the daily inactivity tax!" }
 
-		val processedUsers = mutableSetOf<Long>()
+		runDailyInactivityForUsersThatCollectedDailyBefore()
+		runDailyInactivityForUsersThatNeverCollectedDailyBefore()
+	}
+
+	private fun runDailyInactivityForUsersThatCollectedDailyBefore() {
+		logger.info { "Running the daily inactivity for users that collected daily before!" }
+
+		val processedUsers = mutableSetOf(
+				// lori so cute she doesn't deserve to get daily every single day
+				loritta.discordConfig.discord.clientId.toLong()
+		)
 
 		for (threshold in THRESHOLDS) {
 			logger.info { "Checking daily inactivity tax threshold $threshold" }
@@ -123,6 +134,63 @@ object DailyInactivityTaxUtils {
 			}
 
 			processedUsers += inactiveUsers.map { it[receivedBy] }
+		}
+	}
+
+	private fun runDailyInactivityForUsersThatNeverCollectedDailyBefore() {
+		// The query above does *not* match users that never got daily before, that's why we need to do this query too.
+		// This query will only match users with >= threshold that *never* got daily before.
+		logger.info { "Running the daily inactivity for users that never collected daily before!" }
+
+		val processedUsers = mutableSetOf(
+				// lori so cute she doesn't deserve to get daily every single day
+				loritta.discordConfig.discord.clientId.toLong()
+		)
+
+		for (threshold in THRESHOLDS) {
+			logger.info { "Checking daily inactivity tax threshold $threshold" }
+
+			val receivedBy = Profiles.id
+			val money = Profiles.money
+
+			// Feito de forma "separada" para evitar erros de concurrent updates, se um falhar, não vai fazer rollback na transação inteira
+			val inactiveUsers = transaction(Databases.loritta) {
+				Profiles.join(Dailies, JoinType.LEFT, Profiles.id, Dailies.receivedById)
+						.select {
+							(Profiles.money greaterEq threshold.minimumSonhosForTrigger) and
+									Dailies.id.isNull()
+						}
+						.groupBy(receivedBy, money, Dailies.id)
+						.toList()
+						// We display the inactive daily users after the ".toList()" because, if it is placed before, two queries will
+						// be made: One for the query itself and then another for the Exposed ".count()" call.
+						.also { logger.info { "There are ${it.size} inactive daily users that never got a daily before!" } }
+			}
+
+			inactiveUsers.filter { it[receivedBy].value !in processedUsers }.forEach {
+				val userId = it[receivedBy].value
+
+				val removeMoney = (it[money] * threshold.tax).toLong()
+
+				logger.info { "Removing $removeMoney from $userId (that has never got a daily before!), using threshold tax $threshold, current total is ${it[Profiles.money]}" }
+
+				transaction(Databases.loritta) {
+					Profiles.update({ Profiles.id eq userId }) {
+						with(SqlExpressionBuilder) {
+							it.update(Profiles.money, money - removeMoney)
+						}
+					}
+
+					SonhosTransaction.insert {
+						it[givenAt] = System.currentTimeMillis()
+						it[quantity] = removeMoney.toBigDecimal()
+						it[reason] = SonhosPaymentReason.INACTIVE_DAILY_TAX
+						it[givenBy] = userId
+					}
+				}
+			}
+
+			processedUsers += inactiveUsers.map { it[receivedBy].value }
 		}
 	}
 

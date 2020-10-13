@@ -3,7 +3,7 @@ package net.perfectdreams.spicymorenitta.routes
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.utils.select
 import org.w3c.dom.HTMLDivElement
-import kotlin.browser.document
+import kotlinx.browser.document
 
 open class UpdateNavbarSizePostRender(path: String, override val requiresUserIdentification: Boolean = true, override val requiresLocales: Boolean= true) : BaseRoute(path) {
     override fun onRender(call: ApplicationCall) {

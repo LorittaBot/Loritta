@@ -4,14 +4,14 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
 import mu.KotlinLogging
-import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.commands.CommandContext
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.commands.vanilla.magic.LoriToolsCommand
+import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
 import java.io.File
 
-class AutoBannerChangerPlugin(name: String, loritta: LorittaBot) : LorittaDiscordPlugin(name, loritta) {
+class AutoBannerChangerPlugin(name: String, loritta: LorittaDiscord) : LorittaDiscordPlugin(name, loritta) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }

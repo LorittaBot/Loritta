@@ -1,13 +1,18 @@
 package net.perfectdreams.spicymorenitta.routes.user.dashboard
 
-import io.ktor.client.request.get
-import io.ktor.client.request.url
+import io.ktor.client.request.*
+import kotlinx.browser.document
+import kotlinx.browser.window
+import kotlinx.dom.addClass
+import kotlinx.dom.clear
+import kotlinx.dom.hasClass
+import kotlinx.dom.removeClass
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.builtins.list
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.JSON
 import net.perfectdreams.loritta.api.utils.Rarity
 import net.perfectdreams.loritta.serializable.Background
@@ -21,12 +26,6 @@ import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.views.dashboard.Stuff
 import org.w3c.dom.*
 import org.w3c.files.FileReader
-import kotlin.browser.document
-import kotlin.browser.window
-import kotlin.dom.addClass
-import kotlin.dom.clear
-import kotlin.dom.hasClass
-import kotlin.dom.removeClass
 import kotlin.js.Date
 
 class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/user/@me/dashboard/backgrounds") {
@@ -61,7 +60,7 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
                 }
 
                 debug("Retrieved profiles & background info!")
-                val result = kotlinx.serialization.json.JSON.nonstrict.parse(UserInfoResult.serializer(), payload)
+                val result = kotlinx.serialization.json.JSON.nonstrict.decodeFromString(UserInfoResult.serializer(), payload)
                 return@async result
             }
 
@@ -87,7 +86,7 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
                     url("${window.location.origin}/api/v1/loritta/fan-arts?query=all&filter=${allArtists.joinToString(",")}")
                 }
 
-                JSON.nonstrict.parse(FanArtArtist.serializer().list, payload)
+                JSON.nonstrict.decodeFromString(ListSerializer(FanArtArtist.serializer()), payload)
             }
 
             val fanArtArtists = fanArtArtistsJob.await()

@@ -12,12 +12,15 @@ import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.utils.TingleModal
 import net.perfectdreams.spicymorenitta.utils.TingleOptions
 import net.perfectdreams.spicymorenitta.utils.select
+import org.w3c.dom.Audio
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.MessageEvent
-import org.w3c.dom.Audio
-import utils.*
-import kotlin.browser.document
-import kotlin.browser.window
+import utils.AutoSize
+import utils.Member
+import utils.ServerConfig
+import utils.autosize
+import kotlinx.browser.document
+import kotlinx.browser.window
 import kotlin.js.*
 
 external val guildId: String
@@ -315,7 +318,7 @@ object LoriDashboard {
 					if (event.origin.contains("embeds.loritta.website") && event.source == extendedWindow) {
 						println("Received message from our target source, yay!")
 
-						val packet = EmbedEditorCrossWindow.communicationJson.parse(PacketWrapper.serializer(), event.data as String)
+						val packet = EmbedEditorCrossWindow.communicationJson.decodeFromString(PacketWrapper.serializer(), event.data as String)
 
 						if (packet.m is ReadyPacket) {
 							println("Is ready packet, current text area is ${jquery.`val`()}")
@@ -323,7 +326,7 @@ object LoriDashboard {
 							val content = createMessageFromString(jquery.`val`() as String)
 
 							extendedWindow.postMessage(
-									EmbedEditorCrossWindow.communicationJson.stringify(
+									EmbedEditorCrossWindow.communicationJson.encodeToString(
 											PacketWrapper.serializer(),
 											PacketWrapper(
 													MessageSetupPacket(
@@ -489,7 +492,7 @@ object LoriDashboard {
 				throw RuntimeException("Not in a JSON format")
 
 			EmbedRenderer.json
-					.parse(DiscordMessage.serializer(), content)
+					.decodeFromString(DiscordMessage.serializer(), content)
 		} catch (e: Throwable) {
 			// If it fails, probably it is a raw message, so we are going to just create a
 			// DiscordMessage based on that

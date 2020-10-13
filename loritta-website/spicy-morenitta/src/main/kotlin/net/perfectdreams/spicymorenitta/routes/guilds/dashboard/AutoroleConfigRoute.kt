@@ -4,25 +4,19 @@ import LoriDashboard
 import SaveStuff
 import jQuery
 import jq
-import kotlinx.serialization.ImplicitReflectionSerializer
+import kotlinx.browser.document
+import kotlinx.browser.window
 import kotlinx.serialization.Serializable
 import legacyLocale
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
-import net.perfectdreams.spicymorenitta.utils.DashboardUtils
+import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.launchWithLoadingScreenAndFixContent
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.switchContentAndFixLeftSidebarScroll
-import net.perfectdreams.spicymorenitta.utils.onClick
-import net.perfectdreams.spicymorenitta.utils.page
-import net.perfectdreams.spicymorenitta.utils.select
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.HTMLInputElement
-import net.perfectdreams.spicymorenitta.utils.TingleModal
-import net.perfectdreams.spicymorenitta.utils.TingleOptions
-import kotlin.browser.document
-import kotlin.browser.window
 
 class AutoroleConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{guildid}/configure/autorole") {
 	override val keepLoadingScreen: Boolean
@@ -33,8 +27,7 @@ class AutoroleConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 			val roles: List<ServerConfig.Role>,
 			val autoroleConfig: ServerConfig.AutoroleConfig
 	)
-	
-	@ImplicitReflectionSerializer
+
 	override fun onRender(call: ApplicationCall) {
 		launchWithLoadingScreenAndFixContent(call) {
 			val guild = DashboardUtils.retrievePartialGuildConfiguration<PartialGuildConfiguration>(call.parameters["guildid"]!!, "roles", "autorole")

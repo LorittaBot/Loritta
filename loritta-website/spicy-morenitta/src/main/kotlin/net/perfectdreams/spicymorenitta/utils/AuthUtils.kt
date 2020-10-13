@@ -4,8 +4,8 @@ import kotlinx.serialization.json.JSON
 import net.perfectdreams.loritta.serializable.UserIdentification
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import org.w3c.dom.HTMLDivElement
-import kotlin.browser.document
-import kotlin.browser.window
+import kotlinx.browser.document
+import kotlinx.browser.window
 
 object AuthUtils {
     fun handlePopup() {
@@ -23,7 +23,7 @@ object AuthUtils {
 
     @JsName("handlePostAuth")
     fun handlePostAuth(payload: String) {
-        val userIdentification = JSON.nonstrict.parse(UserIdentification.serializer(), payload)
+        val userIdentification = JSON.nonstrict.decodeFromString(UserIdentification.serializer(), payload)
         SpicyMorenitta.INSTANCE.updateLoggedInUser(userIdentification)
     }
 }

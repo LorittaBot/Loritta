@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.embededitor
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import net.perfectdreams.loritta.embededitor.data.DiscordMessage
 import net.perfectdreams.loritta.embededitor.data.crosswindow.Placeholder
 import net.perfectdreams.loritta.embededitor.data.crosswindow.RenderType
@@ -12,14 +11,13 @@ import net.perfectdreams.loritta.embededitor.utils.ShowdownConverter
 
 class EmbedRenderer(val message: DiscordMessage, val placeholders: List<Placeholder>) {
     companion object {
-        val json = Json(
-                JsonConfiguration(
-                        prettyPrint = true,
-                        encodeDefaults = false,
-                        indent = "  ",
-                        ignoreUnknownKeys = true
-                )
-        )
+        val json = Json {
+            prettyPrint = true
+            encodeDefaults = false
+            prettyPrintIndent = "  "
+            ignoreUnknownKeys = true
+        }
+
         val markdownConverter = ShowdownConverter().apply {
             setOption("simpleLineBreaks", true)
             setOption("strikethrough", true)

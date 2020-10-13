@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.website.routes.api.v1.economy
 
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import io.ktor.application.ApplicationCall
-import kotlinx.serialization.builtins.list
+import io.ktor.application.*
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.serializable.DiscordUser
@@ -80,7 +80,7 @@ class GetPaymentsLeaderboardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordL
 				} else null
 			}
 
-			call.respondJson(Json.Default.toJson(PaymentScoreboardEntry.serializer().list, users))
+			call.respondJson(Json.encodeToJsonElement(ListSerializer(PaymentScoreboardEntry.serializer()), users))
 		}
 	}
 }

@@ -1,12 +1,14 @@
 package net.perfectdreams.spicymorenitta.routes
 
 import io.ktor.client.request.*
+import kotlinx.browser.document
+import kotlinx.browser.window
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.dom.create
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.stream.appendHTML
-import kotlinx.serialization.builtins.list
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.serializable.PaymentScoreboardEntry
 import net.perfectdreams.loritta.utils.ServerPremiumPlans
@@ -21,8 +23,6 @@ import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.get
-import kotlin.browser.document
-import kotlin.browser.window
 import kotlin.collections.set
 
 class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
@@ -200,7 +200,7 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
         (document.getElementById("renew-button") as HTMLDivElement?)?.onclick = {
             val donationKeysJson = document.getElementById("donation-keys-json")?.innerHTML!!
 
-            val donationKeys = kotlinx.serialization.json.JSON.nonstrict.parse(ServerConfig.DonationKey.serializer().list, donationKeysJson)
+            val donationKeys = kotlinx.serialization.json.JSON.nonstrict.decodeFromString(ListSerializer(ServerConfig.DonationKey.serializer()), donationKeysJson)
 
             if (donationKeys.isNotEmpty()) {
                 val modal = TingleModal(
@@ -266,10 +266,10 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
 
         m.launch {
             val responseMonthly = http.get<String>("${window.location.origin}/api/v1/economy/payments-leaderboard/premium/top/monthly?size=5")
-            val entriesMontly = Json.Default.parse(PaymentScoreboardEntry.serializer().list, responseMonthly)
+            val entriesMontly = Json.Default.decodeFromString(ListSerializer(PaymentScoreboardEntry.serializer()), responseMonthly)
 
             val responseLifetime = http.get<String>("${window.location.origin}/api/v1/economy/payments-leaderboard/premium/top/lifetime?size=5")
-            val entriesLifetime = Json.Default.parse(PaymentScoreboardEntry.serializer().list, responseLifetime)
+            val entriesLifetime = Json.Default.decodeFromString(ListSerializer(PaymentScoreboardEntry.serializer()), responseLifetime)
 
             fun TagConsumer<HTMLElement>.generatePaymentScoreboard(entries: List<PaymentScoreboardEntry>) {
                 table("fancy-table") {

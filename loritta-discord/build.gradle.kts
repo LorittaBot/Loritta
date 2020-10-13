@@ -12,7 +12,7 @@ tasks.withType<KotlinCompile> {
 plugins {
     java
     kotlin("jvm")
-    kotlin("plugin.serialization") version "1.3.70"
+    kotlin("plugin.serialization") version "1.4.10"
     `maven-publish`
 }
 
@@ -42,7 +42,7 @@ dependencies {
     api(project(":loritta-api"))
     api(project(":loritta-serializable-commons"))
     api(project(":temmie-discord-auth"))
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
+    api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5")
     api("com.google.guava:guava:29.0-jre")
 	api(kotlin("script-util"))

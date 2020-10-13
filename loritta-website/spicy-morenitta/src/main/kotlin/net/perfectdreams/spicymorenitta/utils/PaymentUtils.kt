@@ -11,8 +11,8 @@ import kotlinx.html.dom.create
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
-import kotlin.browser.document
-import kotlin.browser.window
+import kotlinx.browser.document
+import kotlinx.browser.window
 import kotlin.js.Json
 
 object PaymentUtils : Logging {

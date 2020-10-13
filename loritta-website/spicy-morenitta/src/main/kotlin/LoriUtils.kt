@@ -1,7 +1,7 @@
 
 import utils.LegacyBaseLocale
-import kotlin.browser.document
-import kotlin.browser.window
+import kotlinx.browser.document
+import kotlinx.browser.window
 import kotlin.js.Json
 
 lateinit var legacyLocale: LegacyBaseLocale

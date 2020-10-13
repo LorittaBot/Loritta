@@ -7,19 +7,15 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
-import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.encodeToUrl
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
-import io.ktor.application.ApplicationCall
-import io.ktor.http.ContentType
-import io.ktor.request.header
-import io.ktor.request.path
-import io.ktor.response.respondText
-import io.ktor.sessions.get
-import io.ktor.sessions.sessions
-import io.ktor.sessions.set
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.request.*
+import io.ktor.response.*
+import io.ktor.sessions.*
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
@@ -29,6 +25,7 @@ import net.perfectdreams.loritta.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.ScriptingUtils
+import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.website.utils.extensions.*
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.select
@@ -200,28 +197,33 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 											return
 										}
 
-										val profile = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(guild.owner!!.user.id)
-										val bannedState = profile.getBannedState()
-										if (bannedState != null) { // Dono blacklisted
+										val guildOwner = guild.owner
+
+										// Sometimes the guild owner can be null, that's why we need to check if it is null or not!
+										if (guildOwner != null) {
+											val profile = loritta.getLorittaProfile(guildOwner.user.id)
+											val bannedState = profile?.getBannedState()
+											if (bannedState != null) { // Dono blacklisted
+												// Envie via DM uma mensagem falando sobre a Loritta!
+												val message = locale["LORITTA_OwnerLorittaBanned", guild.owner?.user?.asMention, bannedState[BannedUsers.reason]
+														?: "???"]
+
+												user.openPrivateChannel().queue {
+													it.sendMessage(message).queue({
+														guild.leave().queue()
+													}, {
+														guild.leave().queue()
+													})
+												}
+												return
+											}
+
 											// Envie via DM uma mensagem falando sobre a Loritta!
-											val message = locale["LORITTA_OwnerLorittaBanned", guild.owner?.user?.asMention, bannedState[BannedUsers.reason]
-													?: "???"]
+											val message = locale["LORITTA_ADDED_ON_SERVER", user.asMention, guild.name, com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url + "dashboard", locale["LORITTA_SupportServerInvite"], com.mrpowergamerbr.loritta.utils.loritta.legacyCommandManager.commandMap.size + com.mrpowergamerbr.loritta.utils.loritta.commandManager.commands.size, "${com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url}donate"]
 
 											user.openPrivateChannel().queue {
-												it.sendMessage(message).queue({
-													guild.leave().queue()
-												}, {
-													guild.leave().queue()
-												})
+												it.sendMessage(message).queue()
 											}
-											return
-										}
-
-										// Envie via DM uma mensagem falando sobre a Loritta!
-										val message = locale["LORITTA_ADDED_ON_SERVER", user.asMention, guild.name, com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url + "dashboard", locale["LORITTA_SupportServerInvite"], com.mrpowergamerbr.loritta.utils.loritta.legacyCommandManager.commandMap.size + com.mrpowergamerbr.loritta.utils.loritta.commandManager.commands.size, "${com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url}donate"]
-
-										user.openPrivateChannel().queue {
-											it.sendMessage(message).queue()
 										}
 									}
 								}

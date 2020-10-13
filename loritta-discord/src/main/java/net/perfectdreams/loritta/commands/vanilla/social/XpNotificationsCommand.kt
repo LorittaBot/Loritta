@@ -5,12 +5,12 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.commands.discordCommand
+import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.utils.Emotes
 
-object XpNotificationsCommand {
-	fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("xpnotifications"), CommandCategory.SOCIAL) {
-		description { it["commands.social.xpnotifications.description"] }
+class XpNotificationsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("xpnotifications"), CommandCategory.SOCIAL) {
+	override fun command() = create {
+		localizedDescription("commands.social.xpnotifications.description")
 
 		arguments {
 			argument(ArgumentType.NUMBER) {

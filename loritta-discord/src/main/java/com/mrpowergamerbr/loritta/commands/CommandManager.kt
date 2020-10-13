@@ -20,7 +20,6 @@ import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBoxCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.*
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.extensions.await
@@ -43,9 +42,9 @@ import net.perfectdreams.loritta.utils.UserPremiumPlans
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 import java.util.concurrent.CancellationException
+import java.util.jar.JarFile
 
 class CommandManager(loritta: Loritta) {
 	companion object {
@@ -151,7 +150,7 @@ class CommandManager(loritta: Loritta) {
 		commandMap.add(LyricsCommand())
 
 		// =======[ DISCORD ]=======
-		commandMap.add(BotInfoCommand())
+		commandMap.add(createBotinfoCommand())
 		commandMap.add(AvatarCommand())
 		commandMap.add(ServerIconCommand())
 		commandMap.add(EmojiCommand())
@@ -227,6 +226,14 @@ class CommandManager(loritta: Loritta) {
 
 		if (false && loritta.config.loritta.environment == EnvironmentType.CANARY)
 			commandMap.add(ExchangeCommand())
+	}
+
+	private fun createBotinfoCommand(): BotInfoCommand {
+		val path = this::class.java.protectionDomain.codeSource.location.path
+		val jar = JarFile(path)
+		val manifest = jar.manifest
+		val mainAttributes = manifest.mainAttributes
+		return BotInfoCommand(BuildInfo(mainAttributes))
 	}
 
 	suspend fun matches(ev: LorittaMessageEvent, rawArguments: List<String>, serverConfig: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {

@@ -1,7 +1,8 @@
 package net.perfectdreams.spicymorenitta.routes.user.dashboard
 
-import io.ktor.client.request.get
-import io.ktor.client.request.url
+import io.ktor.client.request.*
+import kotlinx.browser.document
+import kotlinx.browser.window
 import kotlinx.html.button
 import kotlinx.html.div
 import kotlinx.html.dom.append
@@ -9,7 +10,7 @@ import kotlinx.html.h2
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.style
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.builtins.list
+import kotlinx.serialization.builtins.ListSerializer
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
@@ -18,8 +19,6 @@ import net.perfectdreams.spicymorenitta.utils.PaymentUtils
 import net.perfectdreams.spicymorenitta.utils.loriUrl
 import net.perfectdreams.spicymorenitta.utils.select
 import org.w3c.dom.HTMLDivElement
-import kotlin.browser.document
-import kotlin.browser.window
 
 class AvailableBundlesDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/user/@me/dashboard/bundles") {
     override val keepLoadingScreen: Boolean
@@ -33,7 +32,7 @@ class AvailableBundlesDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePo
                 url("${window.location.origin}/api/v1/economy/bundles/sonhos")
             }
 
-            val list = kotlinx.serialization.json.JSON.nonstrict.parse(Bundle.serializer().list, result)
+            val list = kotlinx.serialization.json.JSON.nonstrict.decodeFromString(ListSerializer(Bundle.serializer()), result)
 
             fixDummyNavbarHeight(call)
             m.fixLeftSidebarScroll {
