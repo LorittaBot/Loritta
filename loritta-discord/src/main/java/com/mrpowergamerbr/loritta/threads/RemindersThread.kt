@@ -6,9 +6,11 @@ import com.mrpowergamerbr.loritta.tables.Reminders
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import mu.KotlinLogging
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.util.*
 
 /**
  * Thread que atualiza o status da Loritta a cada 1s segundos
@@ -16,8 +18,10 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class RemindersThread : Thread("Reminders Thread") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
-		private const val SNOOZE_EMOTE = "\uD83D\uDCA4"
-		private const val SNOOZE_MINUTES = 10
+		private const val SNOOZE_EMOTE = "⏰"
+		private const val SCHEDULE_EMOTE = "\uD83D\uDCC5"
+		private const val CANCEL_EMOTE = "\uD83D\uDE45"
+		private const val DEFAULT_SNOOZE_MINUTES = 10
 	}
 
 	override fun run() {
@@ -71,25 +75,67 @@ class RemindersThread : Thread("Reminders Thread") {
 	}
 
 	private fun addSnoozeListener(message: Message, reminder: Reminder) {
-		message.onReactionAddByAuthor(reminder.userId) {
-			if (it.reactionEmote.isEmote(SNOOZE_EMOTE)) {
+		if (!message.isFromGuild)
+			return
 
+		message.onReactionAddByAuthor(reminder.userId) {
+
+			if (it.reactionEmote.isEmote(SNOOZE_EMOTE)) {
+				loritta.messageInteractionCache.remove(message.idLong)
 				loritta.newSuspendedTransaction {
 					Reminder.new {
 						userId = reminder.userId
 						channelId = reminder.channelId
-						remindAt = reminder.remindAt + 60_000 * SNOOZE_MINUTES
+						remindAt = Calendar.getInstance().timeInMillis + Constants.ONE_MINUTE_IN_MILLISECONDS * DEFAULT_SNOOZE_MINUTES
 						content = reminder.content
 					}
 				}
 
-				message.editMessage("<@${reminder.userId}> | I will remind you again in **$SNOOZE_MINUTES** minutes!").queue()
-				if (message.isFromGuild) {
-					message.clearReactions().queue()
-				}
-
+				message.editMessage("<@${reminder.userId}> | I will remind you again in **$DEFAULT_SNOOZE_MINUTES minutes**!").queue()
+				message.clearReactions().queue()
 			}
+
+			if (it.reactionEmote.isEmote(SCHEDULE_EMOTE)) {
+				val remindStr = "$SCHEDULE_EMOTE | <@${reminder.userId}> When do you want me to remind you again? (`1 hour`, `5 minutes`, `12:00 11/08/2018`, etc)"
+				message.channel.sendMessage(remindStr).queue { reply ->
+					awaitSchedule(reply, message, reminder)
+				}
+				if (message.guild.selfMember.hasPermission(Permission.MESSAGE_MANAGE))
+					it.user?.let { user -> it.reaction.removeReaction(user).queue() }
+			}
+
 		}
 		message.addReaction(SNOOZE_EMOTE).queue()
+		message.addReaction(SCHEDULE_EMOTE).queue()
+
+	}
+
+	private fun awaitSchedule(reply: Message, originalMessage: Message, reminder: Reminder) {
+		reply.onResponseByAuthor(reminder.userId, originalMessage.guild.idLong, reminder.channelId) {
+			loritta.messageInteractionCache.remove(reply.idLong)
+			loritta.messageInteractionCache.remove(originalMessage.idLong)
+			reply.delete().queue()
+
+			val inMillis = it.message.contentDisplay.convertToEpochMillisRelativeToNow()
+
+			loritta.newSuspendedTransaction {
+				Reminder.new {
+					userId = reminder.userId
+					channelId = reminder.channelId
+					remindAt = inMillis
+					content = reminder.content
+				}
+			}
+			reply.channel.sendMessage("I will remind you again in **${it.message.contentDisplay}**!").queue()
+		}
+
+		reply.onReactionAddByAuthor(reminder.userId) {
+			if (it.reactionEmote.isEmote(CANCEL_EMOTE)) {
+				loritta.messageInteractionCache.remove(reply.idLong)
+				reply.delete().queue()
+				reply.channel.sendMessage("\uD83D\uDDD1️| <@${reminder.userId}> Reminder cancelled!").queue()
+			}
+		}
+		reply.addReaction(CANCEL_EMOTE).queue()
 	}
 }
