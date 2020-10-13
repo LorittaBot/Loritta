@@ -5,7 +5,7 @@ import net.perfectdreams.loritta.plugin.rosbife.commands.base.GabrielaImageComma
 
 class PetPetCommand(m: RosbifePlugin) : GabrielaImageCommandBase(
 		m.loritta,
-		listOf("carlyaaah"),
+		listOf("petpet"),
 		"commands.images.petpet.description",
 		"/api/images/pet-pet",
 		"petpet.gif"
