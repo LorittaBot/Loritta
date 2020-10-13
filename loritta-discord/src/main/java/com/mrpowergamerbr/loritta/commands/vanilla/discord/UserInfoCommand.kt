@@ -34,7 +34,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			if (context.args.getOrNull(0) != null) {
 				context.reply(
                         LorittaReply(
-                                locale["USERINFO_UnknownUser", context.args[0].stripCodeMarks()],
+                                locale.toNewLocale()["commands.discord.userinfo.unknownUser", context.args[0].stripCodeMarks()],
                                 Constants.ERROR
                         )
 				)
@@ -70,14 +70,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 				else -> Emotes.WUMPUS_BASIC
 			}
 
-			val statusEmote = when (member?.onlineStatus) {
-				OnlineStatus.ONLINE -> Emotes.ONLINE
-				OnlineStatus.IDLE -> Emotes.IDLE
-				OnlineStatus.DO_NOT_DISTURB -> Emotes.DO_NOT_DISTURB
-				else -> Emotes.OFFLINE
-			}
-
-			setTitle("$ownerEmote$typeEmote${getBadges(user).joinToString("")}$statusEmote $nickname", null)
+			setTitle("$ownerEmote$typeEmote${getBadges(user).joinToString("")} $nickname", null)
 			setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
 
 			if (member != null) {
@@ -93,7 +86,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 		val embed = getEmbedBase(user, member)
 
 		embed.apply {
-			addField("\uD83D\uDD16 ${context.legacyLocale.get("USERINFO_TAG_DO_DISCORD")}", "`${user.name}#${user.discriminator}`", true)
+			addField("\uD83D\uDD16 ${context.locale["commands.discord.userinfo.discordTag"]}", "`${user.name}#${user.discriminator}`", true)
 			addField("\uD83D\uDCBB ${context.locale["commands.discord.userinfo.discordId"]}", "`${user.id}`", true)
 
 			val accountCreatedDiff = DateUtils.formatDateDiff(user.timeCreated.toInstant().toEpochMilli(), context.legacyLocale)
@@ -141,12 +134,11 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 
 	suspend fun showExtendedInfo(message: Message?, context: CommandContext, user: User, member: Member?): Message {
 		val embed = getEmbedBase(user, member)
-		val locale = context.legacyLocale
 
 		embed.apply {
 			if (member != null) {
 				val roles = member.roles.joinToString(separator = ", ", transform = { "`${it.name}`" })
-				addField("\uD83D\uDCBC " + context.legacyLocale["USERINFO_ROLES"] + " (${member.roles.size})", if (roles.isNotEmpty()) roles.substringIfNeeded(0 until 1024) else context.legacyLocale.get("USERINFO_NO_ROLE") + " \uD83D\uDE2D", true)
+				addField("\uD83D\uDCBC " + context.locale["commands.discord.userinfo.roles"] + " (${member.roles.size})", if (roles.isNotEmpty()) roles.substringIfNeeded(0 until 1024) else context.locale["commands.discord.userinfo.noRoles"] + " \uD83D\uDE2D", true)
 
 				val permissions = member.getPermissions(context.message.textChannel).joinToString(", ", transform = { "`${it.localized(context.locale)}`" })
 				addField("\uD83D\uDEE1 Permissões", permissions, false)
