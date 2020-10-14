@@ -1,3 +1,5 @@
+val ktorVersion by lazy { ext["ktor-version"] as String }
+
 plugins {
     kotlin("multiplatform") apply true
     kotlin("plugin.serialization") version "1.4.10"
@@ -22,7 +24,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib-common"))
                 api("io.github.microutils:kotlin-logging-common:1.7.8")
-                api("io.ktor:ktor-client-core:1.4.1")
+                api("io.ktor:ktor-client-core:$ktorVersion")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0")
             }
         }
@@ -34,7 +36,7 @@ kotlin {
                 api("io.github.microutils:kotlin-logging:1.7.8")
                 api("com.fasterxml.jackson.core:jackson-databind:2.9.8")
                 api("com.github.salomonbrys.kotson:kotson:2.5.0")
-                api("io.ktor:ktor-client-apache:1.4.1")
+                api("io.ktor:ktor-client-apache:$ktorVersion")
             }
         }
 
@@ -45,7 +47,7 @@ kotlin {
                 api("io.github.microutils:kotlin-logging-js:1.7.8")
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.3.3")
                 api(npm("canvas", "2.6.1"))
-                api("io.ktor:ktor-client-js:1.4.1")
+                api("io.ktor:ktor-client-js:$ktorVersion")
             }
         }
     }

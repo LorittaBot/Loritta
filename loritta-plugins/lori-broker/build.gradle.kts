@@ -1,7 +1,9 @@
+val ktorVersion by lazy { ext["ktor-version"] as String }
+
 dependencies {
     api(project(":loritta-discord"))
     api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0")
-    implementation("io.ktor:ktor-client-websockets:1.4.1")
+    implementation("io.ktor:ktor-client-websockets:$ktorVersion")
 }
 
 plugins {
