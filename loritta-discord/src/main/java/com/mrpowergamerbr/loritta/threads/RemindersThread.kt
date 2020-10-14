@@ -50,8 +50,8 @@ class RemindersThread : Thread("Reminders Thread") {
 			try {
 				val channel = lorittaShards.getTextChannelById(reminder.channelId.toString())
 
-				val reminderText = "<a:lori_notification:394165039227207710> | <@${reminder.userId}> Reminder! `${reminder.content.substringIfNeeded(0..1000)}`\n" +
-						"Click $SNOOZE_EMOTE to snooze for $DEFAULT_SNOOZE_MINUTES minutes, or click $SCHEDULE_EMOTE to choose how long to snooze."
+				val reminderText = "<a:lori_notification:394165039227207710> **|** <@${reminder.userId}> Reminder! `${reminder.content.substringIfNeeded(0..1000)}`\n" +
+						"🔹 **|** Click $SNOOZE_EMOTE to snooze for $DEFAULT_SNOOZE_MINUTES minutes, or click $SCHEDULE_EMOTE to choose how long to snooze."
 				if (channel != null && channel.canTalk()) {
 					channel.sendMessage(reminderText).queue {
 						addSnoozeListener(it, reminder)
