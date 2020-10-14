@@ -208,6 +208,12 @@ class DailyTaxTask : Runnable {
 				)
 
 				// Primeiro iremos pegar todos os casamentos que serão deletados ANTES de retirar os sonhos
+				val usersThatShouldHaveTheirMarriageTaxed = transaction(Databases.loritta) {
+					Profile.find {
+						Profiles.marriage.isNotNull() and Profiles.money.greaterEq(MARRIAGE_DAILY_TAX)
+					}.toMutableList()
+				}
+
 				val usersThatShouldHaveTheirMarriageRemoved = transaction(Databases.loritta) {
 					Profile.find {
 						Profiles.marriage.isNotNull() and Profiles.money.less(MARRIAGE_DAILY_TAX)
@@ -215,7 +221,7 @@ class DailyTaxTask : Runnable {
 				}
 
 				// MARRY - Remover sonhos de quem merece
-				usersThatShouldHaveTheirMarriageRemoved.forEach {
+				usersThatShouldHaveTheirMarriageTaxed.forEach {
 					transaction(Databases.loritta) {
 						Profiles.update({ Profiles.id eq it.id }) {
 							with(SqlExpressionBuilder) {
