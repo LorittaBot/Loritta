@@ -19,7 +19,7 @@ import java.util.*
 class RemindersThread : Thread("Reminders Thread") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
-		private const val SNOOZE_EMOTE = "⏰"
+		private const val SNOOZE_EMOTE = "\uD83D\uDCA4"
 		private const val SCHEDULE_EMOTE = "\uD83D\uDCC5"
 		private const val CANCEL_EMOTE = "\uD83D\uDE45"
 		private const val DEFAULT_SNOOZE_MINUTES = 10
@@ -32,7 +32,7 @@ class RemindersThread : Thread("Reminders Thread") {
 			try {
 				checkReminders()
 			} catch (e: Exception) {
-				logger.warn(e) { "Something went wrong while checking reminders!"}
+				logger.warn(e) {"Something went wrong while checking reminders!"}
 			}
 			sleep(5000)
 		}
@@ -50,15 +50,17 @@ class RemindersThread : Thread("Reminders Thread") {
 			try {
 				val channel = lorittaShards.getTextChannelById(reminder.channelId.toString())
 
+				val reminderText = "<a:lori_notification:394165039227207710> | <@${reminder.userId}> Reminder! `${reminder.content.substringIfNeeded(0..1000)}`\n" +
+						"Click $SNOOZE_EMOTE to snooze for $DEFAULT_SNOOZE_MINUTES minutes, or click $SCHEDULE_EMOTE to choose how long to snooze."
 				if (channel != null && channel.canTalk()) {
-					channel.sendMessage("<a:lori_notification:394165039227207710> | <@" + reminder.userId + "> Lembrete! `" + reminder.content.substringIfNeeded(0..1000) + "`").queue {
+					channel.sendMessage(reminderText).queue {
 						addSnoozeListener(it, reminder)
 					}
 				} else {
 					val user = lorittaShards.getUserById(reminder.userId) ?: continue
 
 					user.openPrivateChannel().queue { privateChannel ->
-						privateChannel.sendMessage("<a:lori_notification:394165039227207710> | <@" + reminder.userId + "> Lembrete! `" + reminder.content + "`").queue {
+						privateChannel.sendMessage(reminderText).queue {
 							addSnoozeListener(it, reminder)
 						}
 					}
@@ -92,7 +94,7 @@ class RemindersThread : Thread("Reminders Thread") {
 					}
 				}
 
-				message.editMessage("<@${reminder.userId}> | I will remind you again in **$DEFAULT_SNOOZE_MINUTES minutes**!").queue()
+				message.editMessage("<@${reminder.userId}> I will remind you again in **$DEFAULT_SNOOZE_MINUTES minutes**!").queue()
 				message.clearReactions().queue()
 			}
 
@@ -128,7 +130,7 @@ class RemindersThread : Thread("Reminders Thread") {
 				}
 			}
 			val remindIn = MarkdownUtil.bold(MarkdownUtil.monospace(it.message.contentDisplay))
-			reply.channel.sendMessage("I will remind you again in $remindIn!").queue()
+			reply.channel.sendMessage("<@${reminder.userId}> I will remind you again in $remindIn!").queue()
 		}
 
 		reply.onReactionAddByAuthor(reminder.userId) {
