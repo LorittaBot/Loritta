@@ -34,7 +34,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
-			var message = context.strippedArgs.joinToString(separator = " ")
+			val message = context.strippedArgs.joinToString(separator = " ")
 
 			if (message == "lista" || message == "list") {
 				handleReminderList(context, 0, locale)
@@ -55,11 +55,11 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 				val calendar = Calendar.getInstance()
 				calendar.timeInMillis = inMillis
 
-				val message = message.trim()
+				val messageContent = message.trim()
 				logger.trace { "userId = ${context.userHandle.idLong}" }
 				logger.trace { "channelId = ${context.message.channel.idLong}" }
 				logger.trace { "remindAt = $inMillis" }
-				logger.trace { "content = $message" }
+				logger.trace { "content = $messageContent" }
 
 				// Criar o Lembrete
 				loritta.newSuspendedTransaction {
@@ -67,7 +67,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 						userId = context.userHandle.idLong
 						channelId = context.message.textChannel.idLong
 						remindAt = calendar.timeInMillis
-						content = message
+						content = messageContent
 					}
 				}
 
@@ -95,7 +95,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 		}
 	}
 
-	suspend fun handleReminderList(context: CommandContext, page: Int, locale: LegacyBaseLocale) {
+	private suspend fun handleReminderList(context: CommandContext, page: Int, locale: LegacyBaseLocale) {
 		val reminders = loritta.newSuspendedTransaction {
 			Reminder.find { Reminders.userId eq context.userHandle.idLong }.toMutableList()
 		}
@@ -134,19 +134,19 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 
 			val guild = textChannel?.guild
 
-			val embed = EmbedBuilder()
+			val embedBuilder = EmbedBuilder()
 			if (guild != null) {
-				embed.setThumbnail(guild.iconUrl)
+				embedBuilder.setThumbnail(guild.iconUrl)
 			}
 
-			embed.setTitle("<a:lori_notification:394165039227207710> ${reminder.content}".substringIfNeeded(0 until MessageEmbed.TITLE_MAX_LENGTH))
-			embed.appendDescription("**${locale["LEMBRAR_RemindAt"]} ** ${reminder.remindAt.humanize(locale)}\n")
-			embed.appendDescription("**${locale["LEMBRAR_CreatedInGuild"]}** `${guild?.name ?: "Servidor não existe mais..."}`\n")
-			embed.appendDescription("**${locale["LEMBRAR_RemindInTextChannel"]}** ${textChannel?.asMention ?: "Canal de texto não existe mais..."}")
-			embed.setColor(Color(255, 179, 43))
+			embedBuilder.setTitle("<a:lori_notification:394165039227207710> ${reminder.content}".substringIfNeeded(0 until MessageEmbed.TITLE_MAX_LENGTH))
+			embedBuilder.appendDescription("**${locale["LEMBRAR_RemindAt"]} ** ${reminder.remindAt.humanize(locale)}\n")
+			embedBuilder.appendDescription("**${locale["LEMBRAR_CreatedInGuild"]}** `${guild?.name ?: "Servidor não existe mais..."}`\n")
+			embedBuilder.appendDescription("**${locale["LEMBRAR_RemindInTextChannel"]}** ${textChannel?.asMention ?: "Canal de texto não existe mais..."}")
+			embedBuilder.setColor(Color(255, 179, 43))
 
 			message.clearReactions().queue()
-			message.editMessage(embed.build()).queue()
+			message.editMessage(embedBuilder.build()).queue()
 
 			message.onReactionAddByAuthor(context) {
 				message.delete().queue()
