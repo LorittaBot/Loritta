@@ -30,6 +30,8 @@ abstract class GabrielaImageCommandBase(
 		CommandCategory.IMAGES
 ) {
 	override fun command() = create {
+		localizedDescription(descriptionKey)
+		
 		executes {
 			val mppImage = validate(image(0))
 
