@@ -184,7 +184,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						val embed = WebhookEmbedBuilder()
 						embed.setTimestamp(Instant.now())
-
+						embed.setFooter(WebhookEmbed.EmbedFooter(locale["EVENTLOG_USER_ID", user.id], null))
 						embed.setColor(Color(221, 0, 0).rgb)
 
 						embed.setAuthor(WebhookEmbed.EmbedAuthor(user.name + "#" + user.discriminator, null, user.effectiveAvatarUrl))
