@@ -52,21 +52,13 @@ class RemindersThread : Thread("Reminders Thread") {
 
 				val reminderText = "<a:lori_notification:394165039227207710> **|** <@${reminder.userId}> Reminder! `${reminder.content.substringIfNeeded(0..1000)}`\n" +
 						"🔹 **|** Click $SNOOZE_EMOTE to snooze for $DEFAULT_SNOOZE_MINUTES minutes, or click $SCHEDULE_EMOTE to choose how long to snooze."
+
 				if (channel != null && channel.canTalk()) {
 					channel.sendMessage(reminderText).queue {
 						addSnoozeListener(it, reminder)
 					}
-				} else {
-					val user = lorittaShards.getUserById(reminder.userId) ?: continue
-
-					user.openPrivateChannel().queue { privateChannel ->
-						privateChannel.sendMessage(reminderText).queue {
-							addSnoozeListener(it, reminder)
-						}
-					}
 				}
-				notifiedReminders.add(reminder)
-			} catch (e: Throwable) {
+			} catch (e: Exception) {
 				logger.warn(e) { "Something went wrong while trying to notify ${reminder.userId} about ${reminder.content} at channel ${reminder.channelId}" }
 			}
 		}
