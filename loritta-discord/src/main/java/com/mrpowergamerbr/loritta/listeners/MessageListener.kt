@@ -17,10 +17,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.ChannelType
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.MessageType
-import net.dv8tion.jda.api.entities.Role
+import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent
@@ -462,6 +459,10 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	 * @return if a command was dispatched
 	 */
 	suspend fun checkCommandsAndDispatch(lorittaMessageEvent: LorittaMessageEvent, serverConfig: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
+		// If Loritta can't speak in the current channel, do *NOT* try to process a command! If we try to process, Loritta will have issues that she wants to talk in a channel, but she doesn't have the "canTalk()" permission!
+		if (lorittaMessageEvent.channel is TextChannel && !lorittaMessageEvent.channel.canTalk())
+			return false
+
 		val author = lorittaMessageEvent.author
 		val enableProfiling = loritta.config.isOwner(author.idLong)
 
