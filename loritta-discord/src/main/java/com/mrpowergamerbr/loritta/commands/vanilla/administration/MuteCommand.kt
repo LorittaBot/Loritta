@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNull
+import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNullById
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.*
@@ -419,7 +420,8 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 					return
 				}
 
-				val member = guild.retrieveMemberById(userId).complete()
+				// Maybe the user is not in the guild, but we want to remove the mute anyway, just get the member (or null)
+				val member = runBlocking { guild.retrieveMemberOrNullById(userId) }
 
 				transaction(Databases.loritta) {
 					Mutes.deleteWhere {
@@ -434,7 +436,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 				return
 			}
 
-			val currentMember = currentGuild.retrieveMemberById(userId).complete()
+			val currentMember = runBlocking { currentGuild.retrieveMemberOrNullById(userId) }
 
 			if (currentMember == null) {
 				logger.warn("Ignorando job removal de $userId em $guildId - Motivo: Ela não está mais no servidor!")
