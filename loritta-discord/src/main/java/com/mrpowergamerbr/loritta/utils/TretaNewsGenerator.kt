@@ -3,7 +3,6 @@ package com.mrpowergamerbr.loritta.utils
 import com.mrpowergamerbr.loritta.Loritta
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
 import java.awt.Color
 import java.awt.Font
