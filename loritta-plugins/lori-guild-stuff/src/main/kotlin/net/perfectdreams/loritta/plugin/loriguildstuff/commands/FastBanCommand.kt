@@ -16,7 +16,9 @@ object FastBanCommand {
             "nsfw" to "É proibido compartilhar conteúdo NSFW (coisas obscenas como pornografia, gore e coisas relacionadas), conteúdo sugestivo, jumpscares, conteúdo de ódio, racismo, assédio, links com conteúdo ilegal e links falsos. Será punido até se passar via mensagem direta, até mesmo se a outra pessoa pedir.",
             "toxic" to "Ser tóxico (irritar e desrespeitar) com outros membros do servidor. Aprenda a respeitar e conviver com outras pessoas!",
             "under13" to "É proibido ter uma conta de Discord caso você tenha menos de 13 anos!",
-            "owo" to "Apenas um teste uwu owo"
+            "owo" to "Apenas um teste uwu owo",
+            "terms" to "Comercialização de produtos com valores monetários reais em troca de sonhos sem ter aceitado os termos de venda.",
+            "bob" to "Imagine fazer spam dizendo que não é para fazer spam"
     )
 
     fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("b", "fastban"), CommandCategory.ADMIN) {
