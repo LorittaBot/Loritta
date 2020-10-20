@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.api.commands.LorittaCommandContext
 import net.perfectdreams.loritta.api.entities.User
 import net.perfectdreams.loritta.platform.discord.entities.DiscordUser
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
+import net.perfectdreams.loritta.utils.ImageFormat
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.*
 import java.awt.image.BufferedImage
@@ -85,7 +86,10 @@ class TristeRealidadeCommand : LorittaCommand(arrayOf("sadreality", "tristereali
             val member = users[0]
 
             if (member is JDAUser) {
-                val avatarImg = (LorittaUtils.downloadImage(member.effectiveAvatarUrl) ?: LorittaUtils.downloadImage(member.handle.defaultAvatarUrl))!!
+                val avatarImg = (
+                        LorittaUtils.downloadImage(
+                                member.getEffectiveAvatarUrl(ImageFormat.PNG, 128)
+                        ) ?: LorittaUtils.downloadImage(member.handle.defaultAvatarUrl))!!
                         .getScaledInstance(128, 128, Image.SCALE_SMOOTH)
 
                 baseGraph.drawImage(avatarImg, x, y, null)

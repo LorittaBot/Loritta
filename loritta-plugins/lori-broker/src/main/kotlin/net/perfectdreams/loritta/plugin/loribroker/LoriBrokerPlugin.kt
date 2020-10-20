@@ -9,10 +9,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
-import net.perfectdreams.loritta.plugin.loribroker.commands.BrokerBuyStockCommand
-import net.perfectdreams.loritta.plugin.loribroker.commands.BrokerCommand
-import net.perfectdreams.loritta.plugin.loribroker.commands.BrokerPortfolioCommand
-import net.perfectdreams.loritta.plugin.loribroker.commands.BrokerSellStockCommand
+import net.perfectdreams.loritta.plugin.loribroker.commands.*
 import net.perfectdreams.loritta.plugin.loribroker.tables.BoughtStocks
 import net.perfectdreams.loritta.plugin.loribroker.utils.TradingViewRelayConnector
 import org.jetbrains.exposed.sql.SchemaUtils
