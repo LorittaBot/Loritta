@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Marriage
 import com.mrpowergamerbr.loritta.dao.ShipEffect
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Marriages
 import com.mrpowergamerbr.loritta.tables.ShipEffects
 import com.mrpowergamerbr.loritta.utils.*
@@ -14,9 +13,10 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.utils.ImageFormat
+import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.or
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
@@ -51,12 +51,12 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 
 		if (user1 != null) {
 			user1Name = user1.name
-			user1AvatarUrl = user1.effectiveAvatarUrl
+			user1AvatarUrl = user1.getEffectiveAvatarUrl(ImageFormat.PNG, 128)
 		}
 
 		if (user2 != null) {
 			user2Name = user2.name
-			user2AvatarUrl = user2.effectiveAvatarUrl
+			user2AvatarUrl = user2.getEffectiveAvatarUrl(ImageFormat.PNG, 128)
 		}
 
 		if (user1Name != null && user2Name != null && user1Name.isNotEmpty() && user2Name.isNotEmpty()) {
@@ -160,8 +160,8 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 			message = message.replace("%ship%", "`$shipName`")
 			texto += message
 
-			val avatar1Old = LorittaUtils.downloadImage("$user1AvatarUrl?size=128") ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR
-			val avatar2Old = LorittaUtils.downloadImage("$user2AvatarUrl?size=128") ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR
+			val avatar1Old = user1AvatarUrl?.let { LorittaUtils.downloadImage(it) } ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR
+			val avatar2Old = user2AvatarUrl?.let { LorittaUtils.downloadImage(it) } ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR
 
 			var avatar1 = avatar1Old
 			var avatar2 = avatar2Old

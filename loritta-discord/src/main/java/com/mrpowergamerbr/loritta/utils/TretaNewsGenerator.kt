@@ -4,6 +4,8 @@ import com.mrpowergamerbr.loritta.Loritta
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.utils.ImageFormat
+import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
 import java.awt.Color
 import java.awt.Font
 import java.awt.Image
@@ -433,8 +435,8 @@ object TretaNewsGenerator {
 			}
 		}
 
-		val url1 = usr1.effectiveAvatarUrl
-		val url2 = usr2.effectiveAvatarUrl
+		val url1 = usr1.getEffectiveAvatarUrl(ImageFormat.PNG, 128)
+		val url2 = usr2.getEffectiveAvatarUrl(ImageFormat.PNG, 128)
 
 		var avatar = LorittaUtils.downloadImage(url1)
 		var avatar2 = LorittaUtils.downloadImage(url2)

@@ -8,6 +8,8 @@ import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.ImageFormat
+import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
 import java.awt.Color
 import java.awt.Font
 import java.awt.Image
@@ -58,7 +60,7 @@ class UndertaleBoxCommand : AbstractCommand("utbox", listOf("undertalebox"), Com
 				// graph.getFontMetrics(determinationMono) tem problemas, a width do char é sempre 1 (bug?)
 				ImageUtils.drawTextWrap(str, 180, 56 + determinationMono.size, 578, 0, graph.fontMetrics, graph)
 
-				val avatarImg = LorittaUtils.downloadImage(user.effectiveAvatarUrl)!!.getScaledInstance(128, 128, Image.SCALE_SMOOTH)
+				val avatarImg = LorittaUtils.downloadImage(user.getEffectiveAvatarUrl(ImageFormat.PNG, 128))!!.getScaledInstance(128, 128, Image.SCALE_SMOOTH)
 
 				val blackWhite = BufferedImage(avatarImg.getWidth(null), avatarImg.getHeight(null), BufferedImage.TYPE_BYTE_GRAY)
 				val g2d = blackWhite.createGraphics()

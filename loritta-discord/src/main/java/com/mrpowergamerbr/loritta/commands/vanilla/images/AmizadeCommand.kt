@@ -9,6 +9,8 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.ImageFormat
+import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
 import java.awt.Color
 import java.awt.GradientPaint
 import java.awt.Rectangle
@@ -43,9 +45,9 @@ class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), CommandC
 			val user = context.message.mentionedUsers[0]
 			val user2 = context.message.mentionedUsers[1]
 
-			val avatar = LorittaUtils.downloadImage(context.userHandle.effectiveAvatarUrl)
-			val avatar2 = LorittaUtils.downloadImage(user.effectiveAvatarUrl)
-			val avatar3 = LorittaUtils.downloadImage(user2.effectiveAvatarUrl)
+			val avatar = LorittaUtils.downloadImage(context.userHandle.getEffectiveAvatarUrl(ImageFormat.PNG, 128))
+			val avatar2 = LorittaUtils.downloadImage(user.getEffectiveAvatarUrl(ImageFormat.PNG, 128))
+			val avatar3 = LorittaUtils.downloadImage(user2.getEffectiveAvatarUrl(ImageFormat.PNG, 128))
 
 			val template = ImageIO.read(File(Loritta.ASSETS + "amizade.png")) // Template
 

@@ -9,6 +9,8 @@ import com.mrpowergamerbr.loritta.utils.LorittaImage
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.ImageFormat
+import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
 import java.awt.Color
 import java.awt.Toolkit
 import java.awt.image.BufferedImage
@@ -40,7 +42,7 @@ class RazoesCommand : AbstractCommand("reasons", listOf("razões", "razoes"), Co
 		skewed.resize(202, 202)
 
 		// Vamos baixar o avatar do usuário
-		val avatar = LorittaUtils.downloadImage(context.userHandle.effectiveAvatarUrl)
+		val avatar = LorittaUtils.downloadImage(context.userHandle.getEffectiveAvatarUrl(ImageFormat.PNG, 128))
 
 		// Agora nós iremos pegar a cor mais prevalente na imagem do avatar do usuário
 		val dominantImage = ImageUtils.toBufferedImage(avatar!!.getScaledInstance(1, 1, BufferedImage.SCALE_AREA_AVERAGING))

@@ -10,6 +10,8 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.ImageFormat
+import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
 import java.awt.Font
 import java.awt.Image
 import java.awt.Rectangle
@@ -60,7 +62,7 @@ class TodoGrupoTemCommand : AbstractCommand("everygrouphas", listOf("todogrupote
 		for (aux in 5 downTo 0) {
 			val member = users[0]
 
-			val avatarImg = LorittaUtils.downloadImage(member.effectiveAvatarUrl)!!.getScaledInstance(122, 122, Image.SCALE_SMOOTH)
+			val avatarImg = LorittaUtils.downloadImage(member.getEffectiveAvatarUrl(ImageFormat.PNG, 128))!!.getScaledInstance(122, 122, Image.SCALE_SMOOTH)
 			baseGraph.drawImage(avatarImg, x, y, null)
 
 			x += 122
