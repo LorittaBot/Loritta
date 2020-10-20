@@ -6,7 +6,6 @@ import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
 import com.mrpowergamerbr.loritta.dao.Mute
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.modules.*
-import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Mutes
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
@@ -55,7 +54,6 @@ import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
 import okio.Buffer
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.kotlin.utils.getOrPutNullable
 import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
@@ -189,16 +187,26 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 	override fun onHttpRequest(event: HttpRequestEvent) {
 		val copy = event.requestRaw?.newBuilder()?.build()
-		val buffer = Buffer()
-		copy?.body()?.writeTo(buffer)
 
-		val input = buffer.readUtf8()
-		if (input.startsWith("--")) {
-			val lines = input.lines()
+		val body = copy?.body()
+		val originalMediaType = body?.contentType()
+		val mediaType = "${originalMediaType?.type()}/${originalMediaType?.subtype()}"
 
-			requestLogger.info("${event.route.method.name} ${event.route.compiledRoute} -> ${event.response?.code}\n${lines.take(3).joinToString("\n")}")
+		if (mediaType == "application/json") {
+			// We will only write the content if the input is "application/json"
+			//
+			// Because if we write every body, this also includes images... And that causes Humongous Allocations (a lot of memory used)! And that's bad!!
+			val buffer = Buffer()
+			copy?.body()?.writeTo(buffer)
+
+			val input = buffer.readUtf8()
+			val length = body?.contentLength()
+
+			requestLogger.info("${event.route.method.name} ${event.route.compiledRoute} Media Type: $mediaType; Content Length: $length; -> ${event.response?.code}\n$input")
+		} else if (originalMediaType != null) {
+			requestLogger.info("${event.route.method.name} ${event.route.compiledRoute} Media Type: $mediaType; -> ${event.response?.code}")
 		} else {
-			requestLogger.info("${event.route.method.name} ${event.route.compiledRoute} -> ${event.response?.code}\n$input")
+			requestLogger.info("${event.route.method.name} ${event.route.compiledRoute} -> ${event.response?.code}")
 		}
 	}
 
