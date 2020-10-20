@@ -23,6 +23,7 @@ import net.perfectdreams.loritta.platform.discord.entities.DiscordMessage
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.ImageFormat
 import org.jsoup.Jsoup
 import java.io.File
 import java.io.InputStream
@@ -104,7 +105,7 @@ class DiscordCommandContext(
 			// Vamos verificar por usuários no argumento especificado
 			val user = user(argument)
 			if (user != null)
-				return user.avatarUrl + "?size=256"
+				return user.getEffectiveAvatarUrl(ImageFormat.PNG, 256)
 
 			// Ainda não?!? Vamos verificar se é um emoji.
 			// Um emoji custom do Discord é + ou - assim: <:loritta:324931508542504973>
