@@ -33,6 +33,8 @@ import net.perfectdreams.loritta.dao.servers.moduleconfigs.EventLogConfig
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.EventLogConfigs
 import net.perfectdreams.loritta.utils.CachedUserInfo
 import net.perfectdreams.loritta.utils.DateUtils
+import net.perfectdreams.loritta.utils.ImageFormat
+import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
 import org.apache.commons.io.IOUtils
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
@@ -81,8 +83,12 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				embed.setColor(Constants.DISCORD_BLURPLE)
 				embed.setImage("attachment://avatar.png")
 
-				val rawOldAvatar = LorittaUtils.downloadImage(if (event.oldAvatarUrl == null) event.user.defaultAvatarUrl else event.oldAvatarUrl!!.replace("jpg", "png"))
-				val rawNewAvatar = LorittaUtils.downloadImage(event.user.effectiveAvatarUrl.replace("jpg", "png"))
+				val oldAvatarUrl = event.oldAvatarUrl
+						?.replace("gif", "png")
+						?: event.user.defaultAvatarUrl
+
+				val rawOldAvatar = LorittaUtils.downloadImage(oldAvatarUrl)
+				val rawNewAvatar = LorittaUtils.downloadImage(event.user.getEffectiveAvatarUrl(ImageFormat.PNG))
 
 				if (rawOldAvatar == null || rawNewAvatar == null) { // As vezes o avatar pode ser null
 					downloadedAvatarJobs.remove(event.entity.id)

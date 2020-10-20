@@ -44,20 +44,12 @@ class CachedUserInfo(
 	fun getEffectiveAvatarUrl(format: ImageFormat, imageSize: Int): String {
 		val extension = format.extension
 
-		val avatarUrl = if (avatarId != null) {
-			"https://cdn.discordapp.com/avatars/${id}/${avatarId}.${extension}?size=$imageSize"
+		return if (avatarId != null) {
+			"https://cdn.discordapp.com/avatars/$id/$avatarId.${extension}?size=$imageSize"
 		} else {
 			val avatarId = id % 5
 			// This only exists in png AND doesn't have any other sizes
 			"https://cdn.discordapp.com/embed/avatars/$avatarId.png"
 		}
-
-		return avatarUrl
-	}
-
-	enum class ImageFormat(val extension: String) {
-		PNG("png"),
-		JPG("jpg"),
-		GIF("gif")
 	}
 }

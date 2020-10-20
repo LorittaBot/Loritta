@@ -23,10 +23,8 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.tables.BotVotes
-import net.perfectdreams.loritta.utils.ClusterOfflineException
-import net.perfectdreams.loritta.utils.DiscordUtils
-import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.utils.*
+import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import java.awt.image.BufferedImage
@@ -261,14 +259,15 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 				context.userHandle.idLong,
 				context.userHandle.name,
 				context.userHandle.discriminator,
-				context.userHandle.effectiveAvatarUrl
+				context.userHandle
+						.getEffectiveAvatarUrl(ImageFormat.PNG)
 		)
 
 		val profileUserInfo = ProfileUserInfoData(
 				user.idLong,
 				user.name,
 				user.discriminator,
-				user.effectiveAvatarUrl
+				user.getEffectiveAvatarUrl(ImageFormat.PNG)
 		)
 
 		val images = profileCreator.createGif(

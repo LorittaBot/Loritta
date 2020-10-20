@@ -20,7 +20,9 @@ import net.dv8tion.jda.api.exceptions.PermissionException
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.api.utils.NoCopyByteArrayOutputStream
 import net.perfectdreams.loritta.utils.DiscordUtils
+import net.perfectdreams.loritta.utils.ImageFormat
 import net.perfectdreams.loritta.utils.extensions.build
+import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
 import org.jsoup.Jsoup
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
@@ -242,7 +244,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 			// Vamos verificar por usuários no argumento especificado
 			val user = getUserAt(argument)
 			if (user != null)
-				return user.effectiveAvatarUrl + "?size=" + avatarSize
+				return user.getEffectiveAvatarUrl(ImageFormat.PNG, avatarSize)
 
 			// Ainda não?!? Vamos verificar se é um emoji.
 			// Um emoji custom do Discord é + ou - assim: <:loritta:324931508542504973>

@@ -87,7 +87,7 @@ object RankingGenerator {
 
 				val avatar = (
 						LorittaUtils.downloadImage(
-								member.getEffectiveAvatarUrl(CachedUserInfo.ImageFormat.PNG)
+								member.getEffectiveAvatarUrl(ImageFormat.PNG)
 						) ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR
 						).getScaledInstance(143, 143, BufferedImage.SCALE_SMOOTH)
 
