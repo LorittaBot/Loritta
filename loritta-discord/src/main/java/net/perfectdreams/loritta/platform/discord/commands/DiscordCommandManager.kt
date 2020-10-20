@@ -236,7 +236,8 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                                     listOf(ev.member, ev.textChannel),
                                     ev.guild
                             )
-                            ev.textChannel.sendMessage(generatedMessage!!).queue()
+                            if (generatedMessage != null)
+                                ev.textChannel.sendMessage(generatedMessage).queue()
                         }
                     }
                     return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
