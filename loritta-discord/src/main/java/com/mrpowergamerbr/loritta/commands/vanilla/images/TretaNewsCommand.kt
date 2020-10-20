@@ -3,10 +3,10 @@ package com.mrpowergamerbr.loritta.commands.vanilla.images
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.TretaNewsGenerator
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import java.util.*
 
 class TretaNewsCommand : AbstractCommand("tretanews", category = CommandCategory.FUN) {
@@ -35,7 +35,7 @@ class TretaNewsCommand : AbstractCommand("tretanews", category = CommandCategory
 		val user1 = context.getUserAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		val user2 = context.getUserAt(1) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
-		val base = TretaNewsGenerator.generate(context.guild, context.guild.getMember(user1)!!, context.guild.getMember(user2)!!)
+		val base = TretaNewsGenerator.generate(context.guild, user1, user2)
 
 		context.reply(base.image, "tretanews.png",
                 LorittaReply(
