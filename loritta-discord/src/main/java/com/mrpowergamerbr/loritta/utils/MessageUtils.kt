@@ -86,8 +86,13 @@ object MessageUtils {
 			handleJsonTokenReplacer(jsonObject, sources, guild, tokens)
 			val jsonEmbed = jsonObject["embed"].nullObj
 			if (jsonEmbed != null) {
-				val parallaxEmbed = Loritta.GSON.fromJson<ParallaxEmbed>(jsonObject["embed"])
-				messageBuilder.setEmbed(parallaxEmbed.toDiscordEmbed(safe))
+				try {
+					val parallaxEmbed = Loritta.GSON.fromJson<ParallaxEmbed>(jsonObject["embed"])
+					messageBuilder.setEmbed(parallaxEmbed.toDiscordEmbed(safe))
+				} catch (e: Exception) {
+					// Creating a empty embed can cause errors, so we just wrap it in a try .. catch block and hope
+					// for the best!
+				}
 			}
 			messageBuilder.append(jsonObject.obj["content"].nullString ?: " ")
 		} else {
