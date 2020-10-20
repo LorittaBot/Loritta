@@ -13,7 +13,7 @@ class CachedUserInfo(
 					"gif"
 				} else { "png" }
 
-				"https://cdn.discordapp.com/avatars/${id}/${avatarId}.${extension}?size=256"
+				"https://cdn.discordapp.com/avatars/${id}/${avatarId}.${extension}"
 			} else null
 		}
 
@@ -21,11 +21,43 @@ class CachedUserInfo(
 		get() {
 			val avatarId = id % 5
 
-			return "https://cdn.discordapp.com/embed/avatars/$avatarId.png?size=256"
+			return "https://cdn.discordapp.com/embed/avatars/$avatarId.png"
 		}
 
 	val effectiveAvatarUrl: String
 		get() {
 			return avatarUrl ?: defaultAvatarUrl
 		}
+
+	/**
+	 * Gets the effective avatar URL in the specified [format]
+	 *
+	 * @see getEffectiveAvatarUrl
+	 */
+	fun getEffectiveAvatarUrl(format: ImageFormat) = getEffectiveAvatarUrl(format, 128)
+
+	/**
+	 * Gets the effective avatar URL in the specified [format] and [ímageSize]
+	 *
+	 * @see getEffectiveAvatarUrlInFormat
+	 */
+	fun getEffectiveAvatarUrl(format: ImageFormat, imageSize: Int): String {
+		val extension = format.extension
+
+		val avatarUrl = if (avatarId != null) {
+			"https://cdn.discordapp.com/avatars/${id}/${avatarId}.${extension}?size=$imageSize"
+		} else {
+			val avatarId = id % 5
+			// This only exists in png AND doesn't have any other sizes
+			"https://cdn.discordapp.com/embed/avatars/$avatarId.png"
+		}
+
+		return avatarUrl
+	}
+
+	enum class ImageFormat(val extension: String) {
+		PNG("png"),
+		JPG("jpg"),
+		GIF("gif")
+	}
 }

@@ -85,8 +85,11 @@ object RankingGenerator {
 				if (profile.subsubtitle != null)
 					ImageUtils.drawTextWrap(profile.subsubtitle, 145, currentY + 48, 9999, 9999, graphics.fontMetrics, graphics)
 
-				val avatar = (LorittaUtils.downloadImage(member.effectiveAvatarUrl) ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR)
-						.getScaledInstance(143, 143, BufferedImage.SCALE_SMOOTH)
+				val avatar = (
+						LorittaUtils.downloadImage(
+								member.getEffectiveAvatarUrl(CachedUserInfo.ImageFormat.PNG)
+						) ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR
+						).getScaledInstance(143, 143, BufferedImage.SCALE_SMOOTH)
 
 				var editedAvatar = BufferedImage(143, 143, BufferedImage.TYPE_INT_ARGB)
 				val avatarGraphics = editedAvatar.graphics as Graphics2D
