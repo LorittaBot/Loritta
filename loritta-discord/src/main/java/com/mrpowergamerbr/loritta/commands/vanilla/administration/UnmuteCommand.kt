@@ -4,7 +4,6 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Mutes
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNull
@@ -18,6 +17,7 @@ import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
@@ -136,24 +136,26 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 				}
 			}
 
+			// Cancel the roleRemovalJob (if it exists, it may not exist at all!)
+			val roleRemovalKey = guild.id + "#" + user.id
+			val thread = MuteCommand.roleRemovalJobs[roleRemovalKey]
+			thread?.cancel()
+			MuteCommand.roleRemovalJobs.remove(roleRemovalKey)
+
+			// Delete the mute from the database, this avoids the MutedUserTask rechecking the mute again even after it was deleted
+			transaction(Databases.loritta) {
+				Mutes.deleteWhere {
+					(Mutes.guildId eq guild.idLong) and (Mutes.userId eq user.idLong)
+				}
+			}
+
+			// And now remove the "Muted" role if needed!
 			val member = guild.getMember(user)
 
 			if (member != null) {
 				val mutedRoles = MuteCommand.getMutedRole(guild, locale.toNewLocale())
-
-				val thread = MuteCommand.roleRemovalJobs[member.guild.id + "#" + member.user.id]
-				thread?.cancel()
-				MuteCommand.roleRemovalJobs.remove(member.guild.id + "#" + member.user.id)
-
-				if (mutedRoles != null) {
-					member.guild.removeRoleFromMember(member, mutedRoles).queue()
-				}
-
-				transaction(Databases.loritta) {
-					Mutes.deleteWhere {
-						(Mutes.guildId eq guild.idLong) and (Mutes.userId eq member.user.idLong)
-					}
-				}
+				if (mutedRoles != null)
+					guild.removeRoleFromMember(member, mutedRoles).queue()
 			}
 		}
 	}
