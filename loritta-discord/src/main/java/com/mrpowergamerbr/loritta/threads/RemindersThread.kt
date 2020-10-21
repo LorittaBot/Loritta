@@ -57,6 +57,8 @@ class RemindersThread : Thread("Reminders Thread") {
 					channel.sendMessage(reminderText).queue {
 						addSnoozeListener(it, reminder)
 					}
+
+					notifiedReminders += reminder
 				}
 			} catch (e: Exception) {
 				logger.warn(e) { "Something went wrong while trying to notify ${reminder.userId} about ${reminder.content} at channel ${reminder.channelId}" }
