@@ -145,7 +145,11 @@ private suspend fun DiscordCommandContext.handle(dsl: ActionCommandDSL, receiver
                     .setDescription("${dsl.emoji} $response")
                     .setColor(dsl.color)
                     .setImage(loritta.instanceConfig.loritta.website.url + "assets/img/actions/${dsl.folderName}/${randomImage.folderName}/${randomImage.fileName}")
-                    .setFooter(locale["commands.actions.clickToRetribute", "\uD83D\uDD01"], null)
+                    .also {
+                        if (user != receiver && !repeat) {
+                            it.setFooter(locale["commands.actions.clickToRetribute", "\uD83D\uDD01"], null)
+                        }
+                    }
                     .build()
     )
 
