@@ -473,8 +473,6 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 						return@launch
 					}
 
-					val member = guild.retrieveMemberById(userId).complete() ?: return@launch
-
 					val settings = AdminUtils.retrieveModerationInfo(loritta.getOrCreateServerConfig(guildId))
 
 					UnmuteCommand.unmute(
@@ -482,7 +480,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 							guild,
 							guild.selfMember.user,
 							locale,
-							member.user,
+							currentMember.user,
 							locale.toNewLocale()["commands.moderation.unmute.automaticallyExpired", "<:lori_owo:417813932380520448>"],
 							false
 					)
