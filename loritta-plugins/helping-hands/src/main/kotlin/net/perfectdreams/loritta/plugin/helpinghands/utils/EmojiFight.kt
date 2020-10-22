@@ -174,7 +174,7 @@ class EmojiFight(
             if (entryPrice != null) {
                 val profile = loritta.getLorittaProfile(user.idLong) ?: return false
 
-                if (entryPrice > profile.money)
+                if (entryPrice > profile.money || profile.getBannedState() != null)
                     return false
             }
 
