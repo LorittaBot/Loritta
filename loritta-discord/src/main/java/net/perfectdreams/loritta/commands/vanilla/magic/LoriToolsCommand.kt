@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.commands.vanilla.magic
 
+import mu.KotlinLogging
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.CommandContext
 import net.perfectdreams.loritta.api.messages.LorittaReply
@@ -8,11 +9,16 @@ import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractComman
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
 
 class LoriToolsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("loritools"), CommandCategory.MAGIC) {
+	companion object {
+		private val logger = KotlinLogging.logger {}
+	}
+
 	override fun command() = create {
 		description { "Ferramentas de Administração da Loritta" }
 		onlyOwner = true
 
-		executes {
+		executesDiscord {
+			logger.info { "Executing Lori Tools!" }
 			val validPlugins = loritta.pluginManager.plugins.filterIsInstance<LorittaDiscordPlugin>()
 
 			val allExecutors = listOf(
@@ -31,8 +37,10 @@ class LoriToolsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lor
 			allExecutors.forEach {
 				val result = it.executes().invoke(this)
 
-				if (result)
-					return@executes
+				if (result) {
+					logger.info { "Executed ${it::class.simpleName} Executor!" }
+					return@executesDiscord
+				}
 			}
 
 			val replies = mutableListOf<LorittaReply>()

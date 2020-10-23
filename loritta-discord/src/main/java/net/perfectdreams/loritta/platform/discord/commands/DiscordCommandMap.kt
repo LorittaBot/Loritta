@@ -328,6 +328,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 
 				lorittaShards.updateCachedUserData(user)
 
+				logger.info { "Executor Callback: ${command.executor}" }
 				command.executor.invoke(context)
 
 				if (!isPrivateChannel && ev.guild != null) {
