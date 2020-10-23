@@ -112,7 +112,7 @@ class PostBuyDailyShopItemRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLog
 						PaymentUtils.addToTransactionLogNested(
 								creatorReceived,
 								SonhosPaymentReason.BACKGROUND,
-								receivedBy = profile.id.value
+								receivedBy = creatorReceived
 						)
 					}
 				} else if (type == "profile-design") {
@@ -182,7 +182,7 @@ class PostBuyDailyShopItemRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLog
 						PaymentUtils.addToTransactionLogNested(
 								creatorReceived,
 								SonhosPaymentReason.PROFILE,
-								receivedBy = profile.id.value
+								receivedBy = creatorReceived
 						)
 					}
 				}
