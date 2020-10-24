@@ -100,7 +100,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 	private suspend fun createReply(context: CommandContext, locale: LegacyBaseLocale): Message {
 		return context.reply(
 				LorittaReply(
-						message = locale.toNewLocale()["${LOCALE_PREFIX}.sethour"],
+						message = locale.toNewLocale()["${LOCALE_PREFIX}.setHour"],
 						prefix = "⏰"
 				)
 		)
@@ -119,7 +119,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 
 		val visReminders = reminders.subList(page * 9, Math.min((page * 9) + 9, reminders.size))
 		val embed = EmbedBuilder()
-		embed.setTitle("<a:lori_notification:394165039227207710> ${locale.toNewLocale()["${LOCALE_PREFIX}.yourreminders"]} (${reminders.size})")
+		embed.setTitle("<a:lori_notification:394165039227207710> ${locale.toNewLocale()["${LOCALE_PREFIX}.yourReminders"]} (${reminders.size})")
 		embed.setColor(Color(255, 179, 43))
 
 		for ((idx, reminder) in visReminders.withIndex()) {
@@ -157,9 +157,9 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 			}
 
 			embedBuilder.setTitle("<a:lori_notification:394165039227207710> ${reminder.content}".substringIfNeeded(0 until MessageEmbed.TITLE_MAX_LENGTH))
-			embedBuilder.appendDescription("**${locale.toNewLocale()["${LOCALE_PREFIX}.remindat"]} ** ${reminder.remindAt.humanize(locale)}\n")
-			embedBuilder.appendDescription("**${locale.toNewLocale()["${LOCALE_PREFIX}.createdinguild"]}** `${guild?.name ?: "Servidor não existe mais..."}`\n")
-			embedBuilder.appendDescription("**${locale.toNewLocale()["${LOCALE_PREFIX}.remindintextchannel"]}** ${textChannel?.asMention ?: "Canal de texto não existe mais..."}")
+			embedBuilder.appendDescription("**${locale.toNewLocale()["${LOCALE_PREFIX}.remindAt"]} ** ${reminder.remindAt.humanize(locale)}\n")
+			embedBuilder.appendDescription("**${locale.toNewLocale()["${LOCALE_PREFIX}.createdInGuild"]}** `${guild?.name ?: "Servidor não existe mais..."}`\n")
+			embedBuilder.appendDescription("**${locale.toNewLocale()["${LOCALE_PREFIX}.remindInTextChannel"]}** ${textChannel?.asMention ?: "Canal de texto não existe mais..."}")
 			embedBuilder.setColor(Color(255, 179, 43))
 
 			message.clearReactions().queue()
@@ -174,7 +174,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 
 				context.reply(
                         LorittaReply(
-                                locale.toNewLocale()["${LOCALE_PREFIX}.reminderremoved"],
+                                locale.toNewLocale()["${LOCALE_PREFIX}.reminderRemoved"],
                                 "\uD83D\uDDD1"
                         )
 				)
