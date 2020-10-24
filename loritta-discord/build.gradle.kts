@@ -49,7 +49,6 @@ dependencies {
 	api(kotlin("compiler"))
 	api(kotlin("scripting-compiler"))
     api("net.perfectdreams.commands:command-framework-core:0.0.8")
-    api("net.perfectdreams:merkadopago:1.0.0")
     api("org.jetbrains.kotlinx:kotlinx-html-jvm:0.6.12")
     api("org.twitter4j:twitter4j-core:[4.0,)")
     api("org.twitter4j:twitter4j-stream:[4.0,)")
@@ -87,7 +86,10 @@ dependencies {
     api("org.json:json:20190722")
     api("com.github.salomonbrys.kotson:kotson:2.5.0")
     api("com.vladsch.flexmark:flexmark-all:0.62.2")
+
+    // Graylog GELF (Logback)
     api("de.siegmar:logback-gelf:3.0.0")
+
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.0-M1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.0-M1")
     testImplementation("io.mockk:mockk:1.9.3")
