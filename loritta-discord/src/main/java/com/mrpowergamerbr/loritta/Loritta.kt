@@ -45,7 +45,6 @@ import net.perfectdreams.loritta.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.twitch.TwitchAPI
 import net.perfectdreams.loritta.utils.*
 import net.perfectdreams.loritta.utils.payments.PaymentReason
-import net.perfectdreams.mercadopago.MercadoPago
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
