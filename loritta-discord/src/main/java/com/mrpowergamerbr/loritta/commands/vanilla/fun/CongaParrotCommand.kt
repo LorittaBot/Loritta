@@ -40,7 +40,7 @@ class CongaParrotCommand : AbstractCommand("congaparrot", category = CommandCate
 			return
 		}
 
-		if (upTo in 1..50) {
+		if (upTo in 1..30) {
 			var message = ""
 
 			for (idx in 1..upTo) {
