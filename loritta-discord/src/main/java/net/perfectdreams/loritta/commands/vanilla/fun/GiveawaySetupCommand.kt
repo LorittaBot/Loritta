@@ -35,7 +35,13 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
         if (args.isNotEmpty()) {
             val customMessage = args.joinToString(" ")
 
-            val message = MessageUtils.generateMessage(args.joinToString(" "), listOf(), context.discordGuild, mapOf(), true)
+            val watermarkedMessage = MessageUtils.watermarkMessage(
+                    customMessage,
+                    context.userHandle,
+                    context.locale["commands.fun.giveaway.giveawayCreatedBy"]
+            )
+
+            val message = MessageUtils.generateMessage(watermarkedMessage, listOf(), context.discordGuild, mapOf(), true)
 
             if (message != null) {
                 context.reply(
@@ -52,11 +58,11 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
                         "\uD83C\uDF89",
                         System.currentTimeMillis() + 120_000,
                         context.discordGuild!!,
-                        customMessage
+                        watermarkedMessage
                 )
 
                 context.sendMessage(giveawayMessage)
-                customGiveawayMessage = customMessage
+                customGiveawayMessage = watermarkedMessage
             }
         }
 

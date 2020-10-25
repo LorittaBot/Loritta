@@ -116,9 +116,17 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN
 			if (!context.isPrivateChannel && !context.handle.hasPermission(channel as TextChannel, Permission.MESSAGE_MENTION_EVERYONE))
 				message = message.escapeMentions()
 
+			// Watermarks the message to "deanonymise" the message, to avoid users reporting Loritta for ToS breaking stuff, even tho it was
+			// a malicious user sending the messages.
+			val watermarkedMessage = MessageUtils.watermarkMessage(
+					message,
+					context.userHandle,
+					context.locale["commands.discord.say.messageSentBy"]
+			)
+
 			val discordMessage = try {
 				MessageUtils.generateMessage(
-						message,
+						watermarkedMessage,
 						listOf(context.guild, context.userHandle),
 						context.guild
 				)

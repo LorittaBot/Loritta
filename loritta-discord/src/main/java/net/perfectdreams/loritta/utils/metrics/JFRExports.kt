@@ -274,7 +274,8 @@ object JFRExports {
          *   readRate = 4,4 kbps
          *   writeRate = 3,3 kbps
          * }
-         */event(rs, "jdk.NetworkUtilization", Consumer<RecordedEvent> { e ->
+         */
+        event(rs, "jdk.NetworkUtilization", Consumer<RecordedEvent> { e ->
             var itf = e.getString("networkInterface")
             if (itf == null) itf = "N/A"
             NETWORK_READ.labels(itf).set(e.getLong("readRate").toDouble())

@@ -15,11 +15,65 @@ import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent
 import net.perfectdreams.loritta.api.commands.LorittaCommandContext
+import net.perfectdreams.loritta.api.utils.format
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
+import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.Placeholders
 
 object MessageUtils {
 	private val logger = KotlinLogging.logger {}
+
+	/**
+	 * Watermarks the message with a user mention, to avoid ToS issues affecting Loritta with "anonymous message sends"
+	 *
+	 * @param message          the message content itself, can be a Discord Message in JSON format as String
+	 * @param watermarkForUser the user that this message is going to be watermarked with
+	 * @param watermarkText    the text that should be watermarked for, {0} will be replaced with the user's mention
+	 * @return                 a Discord Message in JSON format as a String with a watermarked
+	 */
+	fun watermarkMessage(message: String, watermarkForUser: User, watermarkText: String): String {
+		val jsonObject = try {
+			JsonParser.parseString(message).obj
+		} catch (ex: Exception) {
+			// If it is not a valid JSON Message, let's create a JSON with the message content
+			jsonObject(
+					"content" to message
+			)
+		}
+
+		var isWatermarked = false
+
+		val messageEmbed = jsonObject["embed"]
+				.nullObj
+
+		if (messageEmbed != null) {
+			val footer = jsonObject["footer"]
+					.nullObj
+
+			if (footer == null) {
+				// If the message has an embed, but doesn't have a footer, place the watermark on the embed's footer!
+				isWatermarked = true
+				messageEmbed["footer"] = jsonObject(
+						"text" to watermarkForUser.name + "#" + watermarkForUser.discriminator + " (${watermarkForUser.idLong})",
+						"icon_url" to watermarkForUser.effectiveAvatarUrl
+				)
+			}
+		}
+
+		if (!isWatermarked) {
+			// If the message isn't watermarked yet, let's place the watermark on the content itself
+			isWatermarked = true
+			val watermarkMessage = "\n\n${Emotes.LORI_COFFEE} *${watermarkText.format(watermarkForUser.asMention)}*"
+			val originalContent = jsonObject["content"]
+					.nullString ?: ""
+
+			jsonObject["content"] = originalContent.substringIfNeeded(
+					range = 0 until (2000 - watermarkMessage.length)
+			) + watermarkMessage
+		}
+
+		return jsonObject.toString()
+	}
 
 	fun generateMessage(message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf(), safe: Boolean = true): Message? {
 		val jsonObject = try {
