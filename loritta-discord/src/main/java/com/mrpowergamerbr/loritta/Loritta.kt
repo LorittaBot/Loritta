@@ -44,6 +44,7 @@ import net.perfectdreams.loritta.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.twitch.TwitchAPI
 import net.perfectdreams.loritta.utils.*
+import net.perfectdreams.loritta.utils.metrics.JFRExports
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
@@ -110,6 +111,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	var messageListener = MessageListener(this)
 	var voiceChannelListener = VoiceChannelListener(this)
 	var channelListener = ChannelListener(this)
+	var discordMetricsListener = DiscordMetricsListener(this)
 	var builder: DefaultShardManagerBuilder
 
 	lateinit var raffleThread: RaffleThread
@@ -178,7 +180,8 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 						eventLogListener,
 						messageListener,
 						voiceChannelListener,
-						channelListener
+						channelListener,
+						discordMetricsListener
 				)
 	}
 
@@ -194,6 +197,8 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 
 	// Inicia a Loritta
 	fun start() {
+		JFRExports.register()
+
 		logger.info { "Creating folders..." }
 		File(FOLDER).mkdirs()
 		File(ASSETS).mkdirs()

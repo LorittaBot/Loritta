@@ -26,6 +26,7 @@ import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.utils.CommandUtils
 import net.perfectdreams.loritta.utils.DonateUtils
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.metrics.Prometheus
 import org.jetbrains.exposed.sql.insert
 import java.util.*
 import java.util.concurrent.CancellationException
@@ -436,10 +437,12 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                 }
 
                 val end = System.currentTimeMillis()
+                val commandLatency = end - start
+                Prometheus.COMMAND_LATENCY.labels(command::class.simpleName).observe(commandLatency.toDouble())
                 if (ev.message.isFromType(ChannelType.TEXT)) {
-                    logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - OK! Processado em ${end - start}ms")
+                    logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - OK! Processed in ${commandLatency}ms")
                 } else {
-                    logger.info("(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - OK! Processado em ${end - start}ms")
+                    logger.info("(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - OK! Processed in ${commandLatency}ms")
                 }
                 return result
             } catch (e: Exception) {

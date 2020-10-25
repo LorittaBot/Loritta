@@ -90,6 +90,11 @@ dependencies {
     // Graylog GELF (Logback)
     api("de.siegmar:logback-gelf:3.0.0")
 
+    // Prometheus
+    api("io.prometheus:simpleclient:0.9.0")
+    api("io.prometheus:simpleclient_hotspot:0.9.0")
+    api("io.prometheus:simpleclient_common:0.9.0")
+
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.0-M1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.0-M1")
     testImplementation("io.mockk:mockk:1.9.3")
