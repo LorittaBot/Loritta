@@ -47,7 +47,7 @@ object MessageUtils {
 				.nullObj
 
 		if (messageEmbed != null) {
-			val footer = jsonObject["footer"]
+			val footer = messageEmbed["footer"]
 					.nullObj
 
 			if (footer == null) {
