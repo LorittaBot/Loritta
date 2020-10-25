@@ -15,18 +15,18 @@ import net.perfectdreams.loritta.utils.metrics.Prometheus
  */
 class DiscordMetricsListener(val loritta: Loritta) : ListenerAdapter() {
     override fun onGuildReady(event: GuildReadyEvent) {
-        Prometheus.GUILD_COUNT.set(event.jda.guildCache.size().toDouble())
-        Prometheus.USER_COUNT.set(event.jda.userCache.size().toDouble())
+        Prometheus.GUILD_COUNT.labels(event.jda.shardInfo.shardId.toString()).set(event.jda.guildCache.size().toDouble())
+        Prometheus.USER_COUNT.labels(event.jda.shardInfo.shardId.toString()).set(event.jda.userCache.size().toDouble())
     }
 
     override fun onGuildJoin(event: GuildJoinEvent) {
-        Prometheus.GUILD_COUNT.set(event.jda.guildCache.size().toDouble())
-        Prometheus.USER_COUNT.set(event.jda.userCache.size().toDouble())
+        Prometheus.GUILD_COUNT.labels(event.jda.shardInfo.shardId.toString()).set(event.jda.guildCache.size().toDouble())
+        Prometheus.USER_COUNT.labels(event.jda.shardInfo.shardId.toString()).set(event.jda.userCache.size().toDouble())
     }
 
     override fun onGuildLeave(event: GuildLeaveEvent) {
-        Prometheus.GUILD_COUNT.set(event.jda.guildCache.size().toDouble())
-        Prometheus.USER_COUNT.set(event.jda.userCache.size().toDouble())
+        Prometheus.GUILD_COUNT.labels(event.jda.shardInfo.shardId.toString()).set(event.jda.guildCache.size().toDouble())
+        Prometheus.USER_COUNT.labels(event.jda.shardInfo.shardId.toString()).set(event.jda.userCache.size().toDouble())
     }
 
     override fun onGenericEvent(event: GenericEvent) {

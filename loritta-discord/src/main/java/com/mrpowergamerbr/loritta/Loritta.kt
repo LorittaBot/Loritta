@@ -45,6 +45,7 @@ import net.perfectdreams.loritta.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.twitch.TwitchAPI
 import net.perfectdreams.loritta.utils.*
 import net.perfectdreams.loritta.utils.metrics.JFRExports
+import net.perfectdreams.loritta.utils.metrics.Prometheus
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
@@ -197,9 +198,10 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 
 	// Inicia a Loritta
 	fun start() {
-		JFRExports.register()
+		logger.info { "Registering Prometheus Collectors..." }
+		Prometheus.register()
 
-		logger.info { "Creating folders..." }
+		logger.info { "Success! Creating folders..." }
 		File(FOLDER).mkdirs()
 		File(ASSETS).mkdirs()
 		File(TEMP).mkdirs()

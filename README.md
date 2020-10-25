@@ -115,7 +115,7 @@ You can also host Loritta yourself, however we won't give support for people tha
 
 * PowerShell (Windows) or Terminal (Linux).
 > ⚠️ While Windows' command prompt may work, it is better to use PowerShell!
-* You need to have the [Java Development Kit](https://adoptopenjdk.net/) installed on your machine. The minimum required version to compile and run Loritta is JDK 11.
+* You need to have the [Java Development Kit](https://adoptopenjdk.net/) installed on your machine. The minimum required version to compile and run Loritta is JDK 14.
 * You need to have Git installed on your machine.
 * Check if your machine has the `JAVA_HOME` property set correctly, newer JDK versions downloaded from AdoptOpenJDK may already have the variable set correctly. You can check if the variable is set by using `echo $env:JAVA_HOME` in PowerShell.
 * If you want to help to develop Loritta, or if you only want a good Kotlin IDE, then download [JetBrains IntelliJ IDEA](https://www.jetbrains.com/pt-br/idea/)! The community edition is enough, so you don't need to be like "oh my god I need to *pay* for it". 😉
