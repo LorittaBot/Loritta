@@ -58,6 +58,12 @@ object Prometheus {
             .labelNames("name")
             .create()
 
+    val SHARD_STATUS: Gauge = Gauge.build()
+            .name("shard_status")
+            .help("JDA Shard Status")
+            .labelNames("shard")
+            .create()
+
     fun register() {
         JFRExports.register()
 
@@ -69,5 +75,6 @@ object Prometheus {
         GATEWAY_PING.register<Gauge>()
         SHARD_EVENTS.register<Counter>()
         COMMAND_LATENCY.register<Histogram>()
+        SHARD_STATUS.register<Gauge>()
     }
 }

@@ -14,6 +14,10 @@ import net.perfectdreams.loritta.utils.metrics.Prometheus
  * Used to track Discord events to Prometheus
  */
 class DiscordMetricsListener(val loritta: Loritta) : ListenerAdapter() {
+    override fun onStatusChange(event: StatusChangeEvent) {
+        Prometheus.SHARD_STATUS.labels(event.jda.shardInfo.shardId.toString()).set(event.newStatus.ordinal.toDouble())
+    }
+
     override fun onGuildReady(event: GuildReadyEvent) {
         Prometheus.GUILD_COUNT.labels(event.jda.shardInfo.shardId.toString()).set(event.jda.guildCache.size().toDouble())
         Prometheus.USER_COUNT.labels(event.jda.shardInfo.shardId.toString()).set(event.jda.userCache.size().toDouble())
