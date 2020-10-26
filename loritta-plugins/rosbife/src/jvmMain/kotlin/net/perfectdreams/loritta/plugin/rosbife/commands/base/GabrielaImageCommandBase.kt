@@ -35,7 +35,7 @@ abstract class GabrielaImageCommandBase(
 		executes {
 			val mppImage = validate(image(0))
 
-			val response = loritta.http.post<HttpResponse>("https://gabriela.loritta.website$endpoint") {
+			val response = loritta.http.post<HttpResponse>("https://gabriela-canary.loritta.website$endpoint") {
 				body = buildJsonObject {
 					put("image", Base64.getEncoder().encodeToString(mppImage.toByteArray()))
 				}.toString()

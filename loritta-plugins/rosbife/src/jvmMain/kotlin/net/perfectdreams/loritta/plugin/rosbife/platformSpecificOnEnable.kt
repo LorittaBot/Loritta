@@ -10,6 +10,8 @@ actual fun RosbifePlugin.platformSpecificOnEnable() {
 			TerminatorCommand(this),
 			MorrePragaCommand(this),
 			CarlyAaahCommand(this),
-			PetPetCommand(this)
+			PetPetCommand(this),
+			EdnaldoTvCommand(this),
+			EdnaldoBandeiraCommand(this)
 	)
 }
