@@ -155,18 +155,18 @@ private suspend fun DiscordCommandContext.handle(dsl: ActionCommandDSL, receiver
 
     // Para evitar floods de actions, nós apenas iremos adicionar a reação *caso* o usuário tenha usado o comando em outra pessoa
     if (user != receiver && !repeat) {
-        addReactionButton(dsl, message, receiver)
+        addReactionButton(dsl, message, user, receiver)
     }
 }
 
-private fun DiscordCommandContext.addReactionButton(dsl: ActionCommandDSL, message: Message, receiver: User) {
+private fun DiscordCommandContext.addReactionButton(dsl: ActionCommandDSL, message: Message, sender: User, receiver: User) {
     message.addReaction("\uD83D\uDD01").queue()
 
     message.onReactionAdd(this) {
         val user = it.user ?: return@onReactionAdd
 
         if (it.reactionEmote.name == "\uD83D\uDD01" && user.id == receiver.id) { message.removeAllFunctions()
-            handle(dsl, receiver, true)
+            handle(dsl, sender, true)
         }
     }
 }
