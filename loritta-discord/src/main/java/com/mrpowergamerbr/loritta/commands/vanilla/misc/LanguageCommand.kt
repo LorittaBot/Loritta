@@ -2,6 +2,8 @@ package com.mrpowergamerbr.loritta.commands.vanilla.misc
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.dao.ProfileSettings
+import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -13,6 +15,8 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 
 class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak"), category = CommandCategory.MISC) {
@@ -25,6 +29,10 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 	}
 
 	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
+		val resetPersonalEmote = "\uD83D\uDE45"
+		val profile = loritta.getOrCreateLorittaProfile(context.userHandle.idLong)
+		val hasPersonalLanguage = profile.settings.language != null && context.isPrivateChannel
+
 		val embed = EmbedBuilder()
 		embed.setColor(Color(0, 193, 223))
 
@@ -127,6 +135,20 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 				return@onReactionAddByAuthor
 			}
 
+			// This resets le personal language (when you choose a language in DM)
+			if (it.reactionEmote.isEmote(resetPersonalEmote) && hasPersonalLanguage) {
+				loritta.newSuspendedTransaction {
+					profile.settings.language = null
+				}
+				context.reply(
+						// TODO: Locale
+						LorittaReply(
+								"Seu idioma pessoal foi redefinido! ^_^"
+						)
+				)
+				return@onReactionAddByAuthor
+			}
+
 			val newLanguage = validLanguages.firstOrNull { language ->
 				if (language.emoteName.startsWith("<")) {
 					it.reactionEmote.isEmote(language.emoteName.split(":")[2].removeSuffix(">"))
@@ -145,6 +167,8 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 		}
 
 		message.addReaction("lori_ok_hand:426183783008698391").queue()
+
+		if (hasPersonalLanguage) message.addReaction(resetPersonalEmote).queue()
 	}
 
 	private suspend fun activateLanguage(context: CommandContext, newLanguage: LocaleWrapper, isPrivateChannel: Boolean = false) {
