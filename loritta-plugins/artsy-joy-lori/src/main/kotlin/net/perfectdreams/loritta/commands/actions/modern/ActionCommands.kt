@@ -169,6 +169,7 @@ private fun DiscordCommandContext.addReactionButton(dsl: ActionCommandDSL, messa
         val user = it.user ?: return@onReactionAdd
 
         if (it.reactionEmote.name == "\uD83D\uDD01" && user.id == receiver.id) { message.removeAllFunctions()
+            message.removeAllFunctions()
             handle(dsl, sender, true)
         }
     }
