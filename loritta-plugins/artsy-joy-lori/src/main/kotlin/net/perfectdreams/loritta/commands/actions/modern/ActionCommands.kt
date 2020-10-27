@@ -124,12 +124,14 @@ private suspend fun DiscordCommandContext.handle(dsl: ActionCommandDSL, receiver
     val userGender = transaction(Databases.loritta) { senderProfile.settings.gender }
     val receiverGender = transaction(Databases.loritta) { receiverProfile?.settings?.gender ?: Gender.UNKNOWN  }
 
-    val response: String = dsl.response(locale, user, receiver)
+    var response: String
 
     // Quem tentar estapear a Loritta, vai ser estapeado
     var files = if ((dsl.command is SlapCommand || dsl.command is AttackCommand) && receiver.id == LorittaLauncher.loritta.discordConfig.discord.clientId) {
+        response = dsl.response(locale, receiver, user)
         dsl.selectGifsByGender(receiverGender, userGender)
     } else {
+        response = dsl.response(locale, user, receiver)
         dsl.selectGifsByGender(userGender, receiverGender)
     }
 
