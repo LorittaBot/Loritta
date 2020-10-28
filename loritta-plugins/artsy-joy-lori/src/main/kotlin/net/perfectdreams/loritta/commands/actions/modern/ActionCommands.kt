@@ -120,7 +120,7 @@ private suspend fun DiscordCommandContext.handle(dsl: ActionCommandDSL, receiver
         return
     }
 
-    // R U a boy or girl?
+    // Searching for receiver's and sender's genders
     val userGender = transaction(Databases.loritta) { senderProfile.settings.gender }
     val receiverGender = transaction(Databases.loritta) { receiverProfile?.settings?.gender ?: Gender.UNKNOWN  }
 
@@ -135,7 +135,7 @@ private suspend fun DiscordCommandContext.handle(dsl: ActionCommandDSL, receiver
         dsl.selectGifsByGender(userGender, receiverGender)
     }
 
-    // If there's no GIFs available, we'll try to avoid errors by searching for all gifs
+    // If there're no GIFs available, we'll try to avoid errors by searching for all gifs
     while (files.isEmpty()) {
         files = dsl.selectGifsByGender(Gender.UNKNOWN, Gender.UNKNOWN)
     }
@@ -155,13 +155,13 @@ private suspend fun DiscordCommandContext.handle(dsl: ActionCommandDSL, receiver
                     .build()
     )
 
-    // To avoid actions flood, we'll only add the reaction if the receiver is another person or it's already a retribution.
+    // To avoid actions flood, we'll only add the reaction if the receiver is another person or the action is already a retribution.
     if (user != receiver && !repeat) {
         addReactionButton(dsl, message, user, receiver)
     }
 }
 
-// Adding the retribute button
+// Adding the "retribute" button
 private fun DiscordCommandContext.addReactionButton(dsl: ActionCommandDSL, message: Message, sender: User, receiver: User) {
     message.addReaction("\uD83D\uDD01").queue()
 
