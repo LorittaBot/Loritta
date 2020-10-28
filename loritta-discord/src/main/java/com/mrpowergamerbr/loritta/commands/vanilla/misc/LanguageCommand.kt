@@ -38,100 +38,100 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
         embed.setColor(Color(0, 193, 223))
 
         val validLanguages = listOf(
-				LocaleWrapper(
-						"Português-Brasil",
-						loritta.getLocaleById("default"),
-						loritta.getLegacyLocaleById("default"),
-						"\uD83C\uDDE7\uD83C\uDDF7"
-				),
-				/* LocaleWrapper(
+                LocaleWrapper(
+                        "Português-Brasil",
+                        loritta.getLocaleById("default"),
+                        loritta.getLegacyLocaleById("default"),
+                        "\uD83C\uDDE7\uD83C\uDDF7"
+                ),
+                /* LocaleWrapper(
                         "Português-Portugal",
                         loritta.getLocaleById("pt-pt"),
                         loritta.getLegacyLocaleById("pt-pt"),
                         "\uD83C\uDDF5\uD83C\uDDF9"
                 ), */
-				LocaleWrapper(
-						"English (United States)",
-						loritta.getLocaleById("en-us"),
-						loritta.getLegacyLocaleById("en-us"),
-						"\uD83C\uDDFA\uD83C\uDDF8"
-				),
-				/* LocaleWrapper(
+                LocaleWrapper(
+                        "English (United States)",
+                        loritta.getLocaleById("en-us"),
+                        loritta.getLegacyLocaleById("en-us"),
+                        "\uD83C\uDDFA\uD83C\uDDF8"
+                ),
+                /* LocaleWrapper(
                         "Español",
                         loritta.getLocaleById("es-es"),
                         loritta.getLegacyLocaleById("es-es"),
                         "\uD83C\uDDEA\uD83C\uDDF8"
                 ), */
-				LocaleWrapper(
-						"Português-Funk",
-						loritta.getLocaleById("pt-funk"),
-						loritta.getLegacyLocaleById("pt-funk"),
-						"<:loritta_quebrada:338679008210190336>"
-				),
-				LocaleWrapper(
-						"Português-Furry",
-						loritta.getLocaleById("pt-furry"),
-						loritta.getLegacyLocaleById("default"),
-						"\uD83D\uDC3E"
-				),
-				LocaleWrapper(
-						"English-Furry",
-						loritta.getLocaleById("en-furry"),
-						loritta.getLegacyLocaleById("default"),
-						"\uD83D\uDC31"
-				)
-		)
+                LocaleWrapper(
+                        "Português-Funk",
+                        loritta.getLocaleById("pt-funk"),
+                        loritta.getLegacyLocaleById("pt-funk"),
+                        "<:loritta_quebrada:338679008210190336>"
+                ),
+                LocaleWrapper(
+                        "Português-Furry",
+                        loritta.getLocaleById("pt-furry"),
+                        loritta.getLegacyLocaleById("default"),
+                        "\uD83D\uDC3E"
+                ),
+                LocaleWrapper(
+                        "English-Furry",
+                        loritta.getLocaleById("en-furry"),
+                        loritta.getLegacyLocaleById("default"),
+                        "\uD83D\uDC31"
+                )
+        )
 
         if (context.rawArgs.getOrNull(0) == "br-debug") {
             activateLanguage(
-					context,
-					profile,
-					LocaleWrapper(
-							"Auto-PT-BR-Debug",
-							loritta.getLocaleById("br-debug"),
-							loritta.getLegacyLocaleById("default"),
-							"\uD83D\uDC31"
-					)
-			)
+                    context,
+                    profile,
+                    LocaleWrapper(
+                            "Auto-PT-BR-Debug",
+                            loritta.getLocaleById("br-debug"),
+                            loritta.getLegacyLocaleById("default"),
+                            "\uD83D\uDC31"
+                    )
+            )
             return
         }
 
         if (context.rawArgs.getOrNull(0) == "en-debug") {
             activateLanguage(
-					context,
-					profile,
-					LocaleWrapper(
-							"Auto-EN-Debug",
-							loritta.getLocaleById("en-debug"),
-							loritta.getLegacyLocaleById("default"),
-							"\uD83D\uDC31"
-					)
-			)
+                    context,
+                    profile,
+                    LocaleWrapper(
+                            "Auto-EN-Debug",
+                            loritta.getLocaleById("en-debug"),
+                            loritta.getLegacyLocaleById("default"),
+                            "\uD83D\uDC31"
+                    )
+            )
             return
         }
 
         val message = context.sendMessage(
-				context.getAsMention(true),
-				buildLanguageEmbed(
-						locale.toNewLocale(),
-						validLanguages.subList(0, 2),
-						context.isPrivateChannel,
-						hasPersonalLanguage
-				)
-		)
+                context.getAsMention(true),
+                buildLanguageEmbed(
+                        locale.toNewLocale(),
+                        validLanguages.subList(0, 2),
+                        context.isPrivateChannel,
+                        hasPersonalLanguage
+                )
+        )
 
         message.onReactionAddByAuthor(context) {
             if (it.reactionEmote.isEmote("426183783008698391")) {
                 message.edit(
-						" ",
-						buildLanguageEmbed(
-								locale.toNewLocale(),
-								validLanguages.subList(2, validLanguages.size),
-								context.isPrivateChannel,
-								hasPersonalLanguage
-						),
-						true
-				)
+                        " ",
+                        buildLanguageEmbed(
+                                locale.toNewLocale(),
+                                validLanguages.subList(2, validLanguages.size),
+                                context.isPrivateChannel,
+                                hasPersonalLanguage
+                        ),
+                        true
+                )
 
                 for (wrapper in validLanguages.subList(2, validLanguages.size)) {
                     // O "replace" é necessário já que a gente usa emojis personalizados para algumas linguagens
@@ -146,10 +146,10 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
                     profile.settings.language = null
                 }
                 context.reply(
-						LorittaReply(
-								locale.toNewLocale()["commands.misc.language.removedPersonalLanguage"]
-						)
-				)
+                        LorittaReply(
+                                locale.toNewLocale()["commands.misc.language.removedPersonalLanguage"]
+                        )
+                )
                 return@onReactionAddByAuthor
             }
 
@@ -163,7 +163,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 
             message.delete().queue()
             activateLanguage(context, profile, newLanguage
-					?: validLanguages.first { it.locale.id == "default" }, context.isPrivateChannel)
+                    ?: validLanguages.first { it.locale.id == "default" }, context.isPrivateChannel)
         }
 
         for (wrapper in validLanguages.subList(0, 2)) {
@@ -206,7 +206,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
             embed.setDescription(locale["commands.misc.language.changeLanguageDescription"])
         } else {
             embed.setDescription(locale["commands.misc.language.changeServerLanguageDescription"])
-			embed.setFooter(locale["commands.misc.language.personalLanguageTip"])
+            embed.setFooter(locale["commands.misc.language.personalLanguageTip"])
         }
 
         if (hasPersonalLanguage)
@@ -216,18 +216,18 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
             val translators = wrapper.locale.getList("loritta.translationAuthors").mapNotNull { lorittaShards.retrieveUserInfoById(it.toLong()) }
 
             embed.addField(
-					wrapper.emoteName + " " + wrapper.name,
-					"**${locale["commands.misc.language.translatedBy"]}:** ${translators.joinToString(transform = { "`${it.name}`" })}",
-					true
-			)
+                    wrapper.emoteName + " " + wrapper.name,
+                    "**${locale["commands.misc.language.translatedBy"]}:** ${translators.joinToString(transform = { "`${it.name}`" })}",
+                    true
+            )
         }
         return embed.build()
     }
 
     private class LocaleWrapper(
-			val name: String,
-			val locale: BaseLocale,
-			val legacyLocale: LegacyBaseLocale,
-			val emoteName: String
-	)
+            val name: String,
+            val locale: BaseLocale,
+            val legacyLocale: LegacyBaseLocale,
+            val emoteName: String
+    )
 }
