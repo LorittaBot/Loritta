@@ -206,10 +206,11 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
             embed.setDescription(locale["commands.misc.language.changeLanguageDescription"])
         } else {
             embed.setDescription(locale["commands.misc.language.changeServerLanguageDescription"])
+			embed.setFooter(locale["commands.misc.language.personalLanguageTip"])
         }
 
         if (hasPersonalLanguage)
-            embed.setFooter(locale["commands.misc.language.personalLanguageRemovalTip"])
+            embed.setFooter(locale["commands.misc.language.personalLanguageRemovalTip", resetPersonalLanguageEmote])
 
         for (wrapper in languages) {
             val translators = wrapper.locale.getList("loritta.translationAuthors").mapNotNull { lorittaShards.retrieveUserInfoById(it.toLong()) }
