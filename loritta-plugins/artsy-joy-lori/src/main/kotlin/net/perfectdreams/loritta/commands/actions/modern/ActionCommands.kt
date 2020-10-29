@@ -114,26 +114,28 @@ private suspend fun DiscordCommandContext.handle(dsl: ActionCommandDSL, receiver
     val senderProfile = lorittaUser.profile
     val receiverProfile = LorittaLauncher.loritta.getLorittaProfile(receiver.id)
 
-    // Anti-gente idiota
+    // Anti-idiot people
     if (dsl.command is KissCommand && receiver.id == LorittaLauncher.loritta.discordConfig.discord.clientId) {
         addIdiotReply()
         return
     }
 
-    // R U a boy or girl?
+    // Searching for receiver's and sender's genders
     val userGender = transaction(Databases.loritta) { senderProfile.settings.gender }
     val receiverGender = transaction(Databases.loritta) { receiverProfile?.settings?.gender ?: Gender.UNKNOWN  }
 
-    val response: String = dsl.response(locale, user, receiver)
+    val response: String
 
-    // Quem tentar estapear a Loritta, vai ser estapeado
+    // If the sender tried to slap Lori, Lori'll slap him!
     var files = if ((dsl.command is SlapCommand || dsl.command is AttackCommand) && receiver.id == LorittaLauncher.loritta.discordConfig.discord.clientId) {
+        response = dsl.response(locale, receiver, user)
         dsl.selectGifsByGender(receiverGender, userGender)
     } else {
+        response = dsl.response(locale, user, receiver)
         dsl.selectGifsByGender(userGender, receiverGender)
     }
 
-    // Caso não tenha nenhuma GIF disponível, vamos abrir o nosso "leque" de GIFs, para evitar que dê erro
+    // If there're no GIFs available, we'll try to avoid errors by searching for all gifs
     while (files.isEmpty()) {
         files = dsl.selectGifsByGender(Gender.UNKNOWN, Gender.UNKNOWN)
     }
@@ -153,20 +155,22 @@ private suspend fun DiscordCommandContext.handle(dsl: ActionCommandDSL, receiver
                     .build()
     )
 
-    // Para evitar floods de actions, nós apenas iremos adicionar a reação *caso* o usuário tenha usado o comando em outra pessoa
+    // To avoid actions flood, we'll only add the reaction if the receiver is another person or the action is already a retribution.
     if (user != receiver && !repeat) {
-        addReactionButton(dsl, message, receiver)
+        addReactionButton(dsl, message, user, receiver)
     }
 }
 
-private fun DiscordCommandContext.addReactionButton(dsl: ActionCommandDSL, message: Message, receiver: User) {
+// Adding the "retribute" button
+private fun DiscordCommandContext.addReactionButton(dsl: ActionCommandDSL, message: Message, sender: User, receiver: User) {
     message.addReaction("\uD83D\uDD01").queue()
 
     message.onReactionAdd(this) {
         val user = it.user ?: return@onReactionAdd
 
         if (it.reactionEmote.name == "\uD83D\uDD01" && user.id == receiver.id) { message.removeAllFunctions()
-            handle(dsl, receiver, true)
+            message.removeAllFunctions()
+            handle(dsl, sender, true)
         }
     }
 }
