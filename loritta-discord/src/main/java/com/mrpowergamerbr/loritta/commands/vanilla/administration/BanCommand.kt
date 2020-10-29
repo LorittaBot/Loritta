@@ -3,10 +3,9 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.MessageUtils
-import com.mrpowergamerbr.loritta.utils.extensions.isEmote
-import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNull
+import com.mrpowergamerbr.loritta.utils.extensions.getValidMembersForPunishment
+import com.mrpowergamerbr.loritta.utils.extensions.handlePunishmentConfirmation
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
@@ -19,7 +18,7 @@ import net.perfectdreams.loritta.utils.PunishmentAction
 
 class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["BAN_Description"]
+		return locale.toNewLocale()["$LOCALE_PREFIX.ban.description"]
 	}
 
 	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
@@ -33,8 +32,8 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 		}
 	}
 
-	override fun getExamples(): List<String> {
-		return listOf("159985870458322944", "159985870458322944 Algum motivo bastante aleatório")
+	override fun getExamples(locale: LegacyBaseLocale): List<String> {
+		return listOf("159985870458322944", "159985870458322944 ${locale.toNewLocale()["$LOCALE_PREFIX.ban.randomReason"]}")
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
@@ -50,53 +49,35 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
-		if (context.args.isNotEmpty()) {
-			val (users, rawReason) = AdminUtils.checkAndRetrieveAllValidUsersFromMessages(context) ?: return
+		if (context.args.isEmpty()) return this.explain(context)
 
-			for (user in users) {
-				val member = context.guild.retrieveMemberOrNull(user)
+		val (users, rawReason) = AdminUtils.checkAndRetrieveAllValidUsersFromMessages(context) ?: return
+		val members = context.getValidMembersForPunishment(users)
 
-				if (member != null) {
-					if (!AdminUtils.checkForPermissions(context, member))
-						return
-				}
-			}
+		if (members.isEmpty()) return
 
-			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context, rawReason) ?: return
+		val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context, rawReason) ?: return
 
-			val settings = AdminUtils.retrieveModerationInfo(context.config)
+		val settings = AdminUtils.retrieveModerationInfo(context.config)
 
-			val banCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
-				for (user in users)
-					ban(settings, context.guild, context.userHandle, locale, user, reason, isSilent, delDays)
+		val banCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
+			for (user in users)
+				ban(settings, context.guild, context.userHandle, locale, user, reason, isSilent, delDays)
 
-				message?.delete()?.queue()
+			message?.delete()?.queue()
 
-				AdminUtils.sendSuccessfullyPunishedMessage(context, reason, delDays == 0)
-			}
-
-			if (skipConfirmation) {
-				banCallback.invoke(null, silent)
-				return
-			}
-
-			val hasSilent = settings.sendPunishmentViaDm || settings.sendPunishmentToPunishLog
-			val message = AdminUtils.sendConfirmationMessage(context, users, hasSilent, "ban")
-
-			message.onReactionAddByAuthor(context) {
-				if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
-					banCallback.invoke(message, it.reactionEmote.isEmote("\uD83D\uDE4A"))
-				}
-				return@onReactionAddByAuthor
-			}
-
-			message.addReaction("✅").queue()
-			if (hasSilent) {
-				message.addReaction("\uD83D\uDE4A").queue()
-			}
-		} else {
-			this.explain(context)
+			AdminUtils.sendSuccessfullyPunishedMessage(context, reason, delDays == 0)
 		}
+
+		if (skipConfirmation) {
+			banCallback.invoke(null, silent)
+			return
+		}
+
+		val hasSilent = settings.sendPunishmentViaDm || settings.sendPunishmentToPunishLog
+		val message = AdminUtils.sendConfirmationMessage(context, users, hasSilent, "ban")
+
+		context.handlePunishmentConfirmation(message, banCallback)
 	}
 
 	companion object {

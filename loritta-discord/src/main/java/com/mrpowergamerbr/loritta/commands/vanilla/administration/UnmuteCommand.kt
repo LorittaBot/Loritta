@@ -5,10 +5,9 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Mutes
 import com.mrpowergamerbr.loritta.utils.MessageUtils
-import com.mrpowergamerbr.loritta.utils.extensions.isEmote
+import com.mrpowergamerbr.loritta.utils.extensions.handlePunishmentConfirmation
 import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNull
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
@@ -25,7 +24,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar", "desilenciar"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["UNMUTE_DESCRIPTION"]
+		return locale.toNewLocale()["$LOCALE_PREFIX.unmute.description"]
 	}
 
 	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
@@ -65,7 +64,7 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 				}
 			}
 
-			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context, rawReason) ?: return
+			val (reason, skipConfirmation, _, _) = AdminUtils.getOptions(context, rawReason) ?: return
 			val settings = AdminUtils.retrieveModerationInfo(context.config)
 
 			val banCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
@@ -90,23 +89,15 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 			val hasSilent = settings.sendPunishmentViaDm || settings.sendPunishmentToPunishLog
 			val message = AdminUtils.sendConfirmationMessage(context, users, hasSilent, "unmute")
 
-			message.onReactionAddByAuthor(context) {
-				if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
-					banCallback.invoke(message, it.reactionEmote.isEmote("\uD83D\uDE4A"))
-				}
-				return@onReactionAddByAuthor
-			}
-
-			message.addReaction("✅").queue()
-			if (hasSilent) {
-				message.addReaction("\uD83D\uDE4A").queue()
-			}
+			context.handlePunishmentConfirmation(message, banCallback)
 		} else {
 			this.explain(context)
 		}
 	}
 
 	companion object {
+		const val LOCALE_PREFIX = "commands.moderation"
+
 		fun unmute(settings: AdminUtils.ModerationConfigSettings, guild: Guild, punisher: User, locale: LegacyBaseLocale, user: User, reason: String, isSilent: Boolean) {
 			if (!isSilent) {
 				val punishLogMessage = AdminUtils.getPunishmentForMessage(

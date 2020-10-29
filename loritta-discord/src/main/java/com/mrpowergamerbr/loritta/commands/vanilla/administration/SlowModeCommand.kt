@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.api.commands.arguments
 
 class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["SLOWMODE_Description"]
+		return locale.toNewLocale()["$LOCALE_PREFIX.slowmode.description"]
 	}
 
 	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
@@ -44,7 +44,7 @@ class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), Command
 			val seconds = context.args[0].toIntOrNull()
 
 			if (seconds == null) {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["INVALID_NUMBER", context.args[0]])
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["commands.invalidNumber", context.args[0]])
 				return
 			}
 
@@ -52,7 +52,7 @@ class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), Command
 				if (context.guild.selfMember.hasPermission(Permission.MANAGE_CHANNEL))
 					context.message.textChannel.manager.setSlowmode(0).queue()
 
-				context.sendMessage("\uD83C\uDFC3 **|** " + context.getAsMention(true) + context.legacyLocale["SLOWMODE_DisabledInChannel", context.event.textChannel!!.asMention])
+				context.sendMessage("\uD83C\uDFC3 **|** " + context.getAsMention(true) + context.locale["$LOCALE_PREFIX.slowmode.disabledInChannel", context.event.textChannel!!.asMention])
 				return
 			}
 
@@ -60,13 +60,18 @@ class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), Command
 				context.message.textChannel.manager.setSlowmode(seconds).queue()
 			else {
 				// TODO: Colocar uma mensagem melhor
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["INVALID_NUMBER", context.args[0]])
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["commands.invalidNumber", context.args[0]])
 				return
 			}
 
-			context.sendMessage("\uD83D\uDC0C **|** " + context.getAsMention(true) + context.legacyLocale["SLOWMODE_EnabledInChannel", context.event.textChannel!!.asMention, seconds])
+			context.sendMessage("\uD83D\uDC0C **|** " + context.getAsMention(true) + context.locale["$LOCALE_PREFIX.slowmode.enabledInChannel", context.event.textChannel!!.asMention, seconds])
 		} else {
 			this.explain(context)
 		}
 	}
+
+	companion object {
+		const val LOCALE_PREFIX = "commands.moderation"
+	}
+
 }
