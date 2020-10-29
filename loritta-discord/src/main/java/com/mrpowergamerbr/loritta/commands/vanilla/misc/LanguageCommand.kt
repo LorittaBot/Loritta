@@ -137,7 +137,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
                 }
 
                 if (hasPersonalLanguage) message.addReaction(resetPersonalLanguageEmote).queue()
-                
+
                 return@onReactionAddByAuthor
             }
 

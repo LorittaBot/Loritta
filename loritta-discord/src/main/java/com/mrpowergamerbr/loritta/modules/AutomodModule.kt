@@ -8,12 +8,10 @@ import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LorittaPermission
-import com.mrpowergamerbr.loritta.utils.LorittaUser
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.locale.getLegacyBaseLocale
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
@@ -211,6 +209,9 @@ class AutomodModule : MessageReceivedModule {
 			if (raidingPercentage >= BAN_THRESHOLD) {
 				logger.info("Aplicando punimentos em ${event.guild.name} -> ${event.channel.name}, causado por ${event.author.id}!")
 
+				val userLocale = event.member?.user?.getLorittaProfile()?.getLegacyBaseLocale()
+						?: locale
+
 				val settings = AdminUtils.retrieveModerationInfo(serverConfig)
 
 				synchronized(event.guild) {
@@ -226,7 +227,7 @@ class AutomodModule : MessageReceivedModule {
 							alreadyBanned.add(storedMessage.author)
 							if (event.guild.selfMember.canInteract(event.member!!)) {
 								logger.info("Punindo ${storedMessage.author.id} em ${event.guild.name} -> ${event.channel.name} por tentativa de raid! ($percentage%)!")
-								BanCommand.ban(settings, event.guild, event.guild.selfMember.user, locale, storedMessage.author, "Tentativa de Raid (Spam/Flood)! Que feio, para que fazer isto? Vá procurar algo melhor para fazer em vez de incomodar outros servidores. ᕙ(⇀‸↼‶)ᕗ", false, 7)
+								BanCommand.ban(settings, event.guild, event.guild.selfMember.user, locale, userLocale, storedMessage.author, "Tentativa de Raid (Spam/Flood)! Que feio, para que fazer isto? Vá procurar algo melhor para fazer em vez de incomodar outros servidores. ᕙ(⇀‸↼‶)ᕗ", false, 7)
 							}
 						}
 					}
@@ -236,7 +237,7 @@ class AutomodModule : MessageReceivedModule {
 
 					if (event.guild.selfMember.canInteract(event.member!!)) {
 						logger.info("Punindo ${event.author.id} em ${event.guild.name} -> ${event.channel.name} por tentativa de raid! ($raidingPercentage%)!")
-						BanCommand.ban(settings, event.guild, event.guild.selfMember.user, locale, event.author, "Tentativa de Raid (Spam/Flood)! Que feio, para que fazer isto? Vá procurar algo melhor para fazer em vez de incomodar outros servidores. ᕙ(⇀‸↼‶)ᕗ", false, 7)
+						BanCommand.ban(settings, event.guild, event.guild.selfMember.user, locale, userLocale, event.author, "Tentativa de Raid (Spam/Flood)! Que feio, para que fazer isto? Vá procurar algo melhor para fazer em vez de incomodar outros servidores. ᕙ(⇀‸↼‶)ᕗ", false, 7)
 					}
 				}
 				return true
