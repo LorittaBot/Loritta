@@ -98,7 +98,7 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 	companion object {
 		const val LOCALE_PREFIX = "commands.moderation"
 
-		fun unmute(settings: AdminUtils.ModerationConfigSettings, guild: Guild, punisher: User, locale: LegacyBaseLocale, user: User, reason: String, isSilent: Boolean) {
+		fun unmute(settings: AdminUtils.ModerationConfigSettings, guild: Guild, punisher: User, guildLocale: LegacyBaseLocale, user: User, reason: String, isSilent: Boolean) {
 			if (!isSilent) {
 				val punishLogMessage = AdminUtils.getPunishmentForMessage(
 						settings,
@@ -115,9 +115,9 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 								listOf(user, guild),
 								guild,
 								mutableMapOf(
-										"duration" to locale.toNewLocale()["commands.moderation.mute.forever"]
+										"duration" to guildLocale.toNewLocale()["commands.moderation.mute.forever"]
 								) + AdminUtils.getStaffCustomTokens(punisher)
-										+ AdminUtils.getPunishmentCustomTokens(locale.toNewLocale(), reason, "commands.moderation.unmute")
+										+ AdminUtils.getPunishmentCustomTokens(guildLocale.toNewLocale(), reason, "commands.moderation.unmute")
 						)
 
 						message?.let {
@@ -144,7 +144,7 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 			val member = guild.getMember(user)
 
 			if (member != null) {
-				val mutedRoles = MuteCommand.getMutedRole(guild, locale.toNewLocale())
+				val mutedRoles = MuteCommand.getMutedRole(guild, guildLocale.toNewLocale())
 				if (mutedRoles != null)
 					guild.removeRoleFromMember(member, mutedRoles).queue()
 			}

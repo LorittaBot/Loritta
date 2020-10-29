@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.utils.convertToEpochMillisRelativeToNow
 import com.mrpowergamerbr.loritta.utils.extensions.getValidMembersForPunishment
 import com.mrpowergamerbr.loritta.utils.extensions.handlePunishmentConfirmation
 import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNull
+import com.mrpowergamerbr.loritta.utils.getLorittaProfile
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.getLegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -127,8 +128,11 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 				val punishments = punishmentActions.filter { it.warnCount == warnCount }
 
 				loop@ for (punishment in punishments) {
+					val userLocale = user.getLorittaProfile()?.getLegacyBaseLocale()
+							?: context.guildLegacyLocale
+
 					when {
-						punishment.punishmentAction == PunishmentAction.BAN -> BanCommand.ban(settings, context.guild, context.userHandle, locale, user, reason, isSilent, 0)
+						punishment.punishmentAction == PunishmentAction.BAN -> BanCommand.ban(settings, context.guild, context.userHandle, context.guildLegacyLocale, userLocale, user, reason, isSilent, 0)
 						member != null && punishment.punishmentAction == PunishmentAction.KICK -> KickCommand.kick(context, settings, locale, member, user, reason, isSilent)
 						member != null && punishment.punishmentAction == PunishmentAction.MUTE -> {
 							val metadata = punishment.metadata ?: continue@loop

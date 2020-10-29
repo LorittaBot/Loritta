@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.extensions.getValidMembersForPunishment
 import com.mrpowergamerbr.loritta.utils.extensions.handlePunishmentConfirmation
@@ -15,6 +14,7 @@ import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.PunishmentAction
 
@@ -60,7 +60,7 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 
 		val banCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
 			for (user in users)
-				unban(settings, context.guild, context.userHandle, locale, user, reason, isSilent)
+				unban(settings, context.guild, context.userHandle, context.guildLegacyLocale, user, reason, isSilent)
 
 			message?.delete()?.queue()
 
@@ -86,7 +86,7 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 	companion object {
 		private const val LOCALE_PREFIX = "commands.moderation"
 
-		fun unban(settings: AdminUtils.ModerationConfigSettings, guild: Guild, punisher: User, locale: LegacyBaseLocale, user: User, reason: String, isSilent: Boolean) {
+		fun unban(settings: AdminUtils.ModerationConfigSettings, guild: Guild, punisher: User, guildLocale: LegacyBaseLocale, user: User, reason: String, isSilent: Boolean) {
 			if (!isSilent) {
 				val punishLogMessage = AdminUtils.getPunishmentForMessage(
 						settings,
@@ -103,9 +103,9 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 								listOf(user, guild),
 								guild,
 								mutableMapOf(
-										"duration" to locale.toNewLocale()["$LOCALE_PREFIX.mute.forever"]
+										"duration" to guildLocale.toNewLocale()["$LOCALE_PREFIX.mute.forever"]
 								) + AdminUtils.getStaffCustomTokens(punisher)
-										+ AdminUtils.getPunishmentCustomTokens(locale.toNewLocale(), reason, "${LOCALE_PREFIX}.unban")
+										+ AdminUtils.getPunishmentCustomTokens(guildLocale.toNewLocale(), reason, "${LOCALE_PREFIX}.unban")
 						)
 
 						message?.let {
@@ -115,7 +115,7 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 				}
 			}
 
-			guild.unban(user).reason(AdminUtils.generateAuditLogMessage(locale.toNewLocale(), punisher, reason))
+			guild.unban(user).reason(AdminUtils.generateAuditLogMessage(guildLocale.toNewLocale(), punisher, reason))
 					.queue()
 		}
 	}

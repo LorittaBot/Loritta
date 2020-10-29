@@ -5,8 +5,8 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.extensions.getValidMembersForPunishment
 import com.mrpowergamerbr.loritta.utils.extensions.handlePunishmentConfirmation
+import com.mrpowergamerbr.loritta.utils.getLorittaProfile
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
-import com.mrpowergamerbr.loritta.utils.locale.getBaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.getLegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.Permission
@@ -62,12 +62,13 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 		val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context, rawReason) ?: return
 
 		val settings = AdminUtils.retrieveModerationInfo(context.config)
-		val profileLocale = context.lorittaUser.profile.getLegacyBaseLocale(loritta, locale)
 
 		val banCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
-			for (user in users)
-				ban(settings, context.guild, context.userHandle, profileLocale, user, reason, isSilent, delDays)
-
+			for (user in users) {
+				val userLocale = user.getLorittaProfile()?.getLegacyBaseLocale(loritta, locale)
+						?: context.guildLegacyLocale
+				ban(settings, context.guild, context.userHandle, context.guildLegacyLocale, userLocale, user, reason, isSilent, delDays)
+			}
 			message?.delete()?.queue()
 
 			AdminUtils.sendSuccessfullyPunishedMessage(context, reason, delDays == 0)
@@ -87,11 +88,11 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 	companion object {
 		private val LOCALE_PREFIX = "commands.moderation"
 
-		fun ban(settings: AdminUtils.ModerationConfigSettings, guild: Guild, punisher: User, locale: LegacyBaseLocale, user: User, reason: String, isSilent: Boolean, delDays: Int) {
+		fun ban(settings: AdminUtils.ModerationConfigSettings, guild: Guild, punisher: User, serverLocale: LegacyBaseLocale, userProfile: LegacyBaseLocale, user: User, reason: String, isSilent: Boolean, delDays: Int) {
 			if (!isSilent) {
 				if (settings.sendPunishmentViaDm && guild.isMember(user)) {
 					try {
-						val embed =  AdminUtils.createPunishmentMessageSentViaDirectMessage(guild, locale, punisher, locale.toNewLocale()["$LOCALE_PREFIX.ban.punishAction"], reason)
+						val embed =  AdminUtils.createPunishmentMessageSentViaDirectMessage(guild, userProfile, punisher, userProfile.toNewLocale()["$LOCALE_PREFIX.ban.punishAction"], reason)
 
 						user.openPrivateChannel().queue {
 							it.sendMessage(embed).queue()
@@ -116,9 +117,9 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 								listOf(user, guild),
 								guild,
 								mutableMapOf(
-										"duration" to locale.toNewLocale()["$LOCALE_PREFIX.mute.forever"]
+										"duration" to serverLocale.toNewLocale()["$LOCALE_PREFIX.mute.forever"]
 								) + AdminUtils.getStaffCustomTokens(punisher)
-										+ AdminUtils.getPunishmentCustomTokens(locale.toNewLocale(), reason, "$LOCALE_PREFIX.ban")
+										+ AdminUtils.getPunishmentCustomTokens(serverLocale.toNewLocale(), reason, "$LOCALE_PREFIX.ban")
 						)
 
 						message?.let {
@@ -128,7 +129,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 				}
 			}
 
-			guild.ban(user, delDays, AdminUtils.generateAuditLogMessage(locale.toNewLocale(), punisher, reason))
+			guild.ban(user, delDays, AdminUtils.generateAuditLogMessage(serverLocale.toNewLocale(), punisher, reason))
 					.queue()
 		}
 	}

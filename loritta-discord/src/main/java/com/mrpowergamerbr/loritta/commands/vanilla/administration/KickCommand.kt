@@ -5,9 +5,11 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.extensions.getValidMembersForPunishment
 import com.mrpowergamerbr.loritta.utils.extensions.handlePunishmentConfirmation
+import com.mrpowergamerbr.loritta.utils.getLorittaProfile
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.getLegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaSupervisor
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
@@ -87,10 +89,14 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 		private const val LOCALE_PREFIX = "commands.moderation"
 
 		fun kick(context: CommandContext, settings: AdminUtils.ModerationConfigSettings, locale: LegacyBaseLocale, member: Member, user: User, reason: String, isSilent: Boolean) {
+			val userLocale = user.getLorittaProfile()?.getLegacyBaseLocale(loritta, locale)
+					?: context.guildLegacyLocale
+			val guildLocale = context.guildLocale
+
 			if (!isSilent) {
 				if (settings.sendPunishmentViaDm && context.guild.isMember(user)) {
 					try {
-						val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, context.locale["$LOCALE_PREFIX.kick.punishAction"], reason)
+						val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, userLocale, context.userHandle, context.locale["$LOCALE_PREFIX.kick.punishAction"], reason)
 
 						user.openPrivateChannel().queue {
 							it.sendMessage(embed).queue()

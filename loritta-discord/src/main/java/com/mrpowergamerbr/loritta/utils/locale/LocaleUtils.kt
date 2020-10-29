@@ -4,7 +4,6 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.loritta
 
 fun BaseLocale.getLocaleId(loritta: Loritta = LorittaLauncher.loritta) =
         loritta.locales.entries.first { it.value == this }.key

@@ -169,16 +169,20 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			}
 
 			if (!isSilent) {
+				val userLocale = user.getLorittaProfile()?.getLegacyBaseLocale(loritta, locale)
+						?: context.guildLegacyLocale
+				val guildLocale = context.guildLocale
+
 				if (settings.sendPunishmentViaDm && context.guild.isMember(user)) {
 					try {
-						val embed = AdminUtils.createPunishmentEmbedBuilderSentViaDirectMessage(context.guild, context.lorittaUser.profile.getLegacyBaseLocale(loritta, locale), context.userHandle, locale.toNewLocale()["$LOCALE_PREFIX.mute.punishAction"], reason)
+						val embed = AdminUtils.createPunishmentEmbedBuilderSentViaDirectMessage(context.guild, userLocale, context.userHandle, userLocale.toNewLocale()["$LOCALE_PREFIX.mute.punishAction"], reason)
 
 						val timePretty = if (time != null)
-							DateUtils.formatDateDiff(System.currentTimeMillis(), time, locale)
-						else context.locale["commands.moderation.mute.forever"]
+							DateUtils.formatDateDiff(System.currentTimeMillis(), time, context.guildLegacyLocale)
+						else guildLocale["commands.moderation.mute.forever"]
 
 						embed.addField(
-								context.locale["commands.moderation.mute.duration"],
+								guildLocale["commands.moderation.mute.duration"],
 								timePretty,
 								false
 						)
@@ -207,10 +211,10 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 										"duration" to if (delay != null) {
 											DateUtils.formatMillis(delay, locale)
 										} else {
-											locale.toNewLocale()["commands.moderation.mute.forever"]
+											guildLocale["commands.moderation.mute.forever"]
 										}
 								) + AdminUtils.getStaffCustomTokens(context.userHandle)
-										+ AdminUtils.getPunishmentCustomTokens(locale.toNewLocale(), reason, "${LOCALE_PREFIX}.mute")
+										+ AdminUtils.getPunishmentCustomTokens(guildLocale, reason, "${LOCALE_PREFIX}.mute")
 						)
 
 						message?.let {
@@ -340,7 +344,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 							break
 						delay(250)
 					}
-					spawnRoleRemovalThread(context.guild, context.legacyLocale, user, time!!)
+					spawnRoleRemovalThread(context.guild, context.guildLegacyLocale, user, time!!)
 				}
 			} catch (e: HierarchyException) {
 				return AdminUtils.checkForPermissions(context, member)
