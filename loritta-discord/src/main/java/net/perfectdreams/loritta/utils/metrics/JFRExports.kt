@@ -1,4 +1,4 @@
-/*package net.perfectdreams.loritta.utils.metrics
+package net.perfectdreams.loritta.utils.metrics
 
 import io.prometheus.client.Collector
 import io.prometheus.client.Counter
@@ -7,6 +7,7 @@ import io.prometheus.client.Histogram
 import jdk.jfr.EventSettings
 import jdk.jfr.consumer.RecordedEvent
 import jdk.jfr.consumer.RecordedObject
+import jdk.jfr.consumer.RecordingStream
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.Instant
@@ -445,4 +446,4 @@ object JFRExports {
             Arrays.fill(table, -1)
         }
     }
-}*/
+}
