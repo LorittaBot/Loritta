@@ -135,6 +135,9 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
                     // O "replace" é necessário já que a gente usa emojis personalizados para algumas linguagens
                     message.addReaction(wrapper.emoteName.replace("<", "").replace(">", "")).queue()
                 }
+
+                if (hasPersonalLanguage) message.addReaction(resetPersonalLanguageEmote).queue()
+                
                 return@onReactionAddByAuthor
             }
 
