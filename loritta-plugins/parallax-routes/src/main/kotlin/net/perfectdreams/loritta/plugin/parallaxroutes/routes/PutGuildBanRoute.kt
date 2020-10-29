@@ -5,6 +5,8 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.AdminUtils
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
+import com.mrpowergamerbr.loritta.utils.getLorittaProfile
+import com.mrpowergamerbr.loritta.utils.locale.getLegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
@@ -27,11 +29,15 @@ class PutGuildBanRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationRoute
 		val serverConfig = loritta.getOrCreateServerConfig(guildId.toLong(), true)
 		val moderationInfo = AdminUtils.retrieveModerationInfo(serverConfig)
 
+		val userLocale = user.getLorittaProfile()?.getLegacyBaseLocale(com.mrpowergamerbr.loritta.utils.loritta)
+				?: loritta.getLegacyLocaleById(serverConfig.localeId)
+
 		BanCommand.ban(
 				moderationInfo,
 				guild,
 				punisher,
 				com.mrpowergamerbr.loritta.utils.loritta.getLegacyLocaleById(serverConfig.localeId),
+				userLocale,
 				user,
 				options["reason"].nullString ?: "",
 				options["isSilent"].nullBool ?: false,
