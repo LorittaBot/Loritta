@@ -221,7 +221,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			}
 
 			// Vamos pegar se a nossa role existe
-			val mutedRoleName = context.locale["$LOCALE_PREFIX.mute.roleName"]
+			val mutedRoleName = context.guildLocale["$LOCALE_PREFIX.mute.roleName"]
 			val mutedRoles = context.guild.getRolesByName(mutedRoleName, false)
 			val mutedRole: Role?
 			mutedRole = if (mutedRoles.isEmpty()) {
