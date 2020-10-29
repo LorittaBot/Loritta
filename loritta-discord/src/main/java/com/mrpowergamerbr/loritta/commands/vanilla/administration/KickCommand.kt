@@ -6,6 +6,8 @@ import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.extensions.getValidMembersForPunishment
 import com.mrpowergamerbr.loritta.utils.extensions.handlePunishmentConfirmation
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.getLegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
@@ -59,9 +61,11 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 		val settings = AdminUtils.retrieveModerationInfo(context.config)
 		val (reason, skipConfirmation, silent) = AdminUtils.getOptions(context, rawReason) ?: return
 
+		val profileLocale = context.lorittaUser.profile.getLegacyBaseLocale(loritta, locale)
+
 		val kickCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
 			for (member in members)
-				kick(context, settings, locale, member, member.user, reason, isSilent)
+				kick(context, settings, profileLocale, member, member.user, reason, isSilent)
 
 			message?.delete()?.queue()
 

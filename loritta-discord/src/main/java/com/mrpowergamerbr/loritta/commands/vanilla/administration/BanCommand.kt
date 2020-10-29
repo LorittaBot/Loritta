@@ -6,6 +6,9 @@ import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.extensions.getValidMembersForPunishment
 import com.mrpowergamerbr.loritta.utils.extensions.handlePunishmentConfirmation
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.getBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.getLegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
@@ -59,10 +62,11 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 		val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context, rawReason) ?: return
 
 		val settings = AdminUtils.retrieveModerationInfo(context.config)
+		val profileLocale = context.lorittaUser.profile.getLegacyBaseLocale(loritta, locale)
 
 		val banCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
 			for (user in users)
-				ban(settings, context.guild, context.userHandle, locale, user, reason, isSilent, delDays)
+				ban(settings, context.guild, context.userHandle, profileLocale, user, reason, isSilent, delDays)
 
 			message?.delete()?.queue()
 

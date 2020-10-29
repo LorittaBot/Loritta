@@ -12,6 +12,7 @@ import com.mrpowergamerbr.loritta.utils.extensions.getValidMembersForPunishment
 import com.mrpowergamerbr.loritta.utils.extensions.handlePunishmentConfirmation
 import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNull
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.getLegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
@@ -72,13 +73,15 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 		val punishmentActions = AdminUtils.retrieveWarnPunishmentActions(context.config)
 		val (reason, skipConfirmation, silent, _) = AdminUtils.getOptions(context, rawReason) ?: return
 
+		val profileLocale = context.lorittaUser.profile.getLegacyBaseLocale(loritta, locale)
+
 		val warnCallback: (suspend (Message?, Boolean) -> Unit) = { message, isSilent ->
 			for (user in users) {
 				val member = context.guild.retrieveMemberOrNull(user)
 				if (!isSilent) {
 					if (settings.sendPunishmentViaDm && context.guild.isMember(user)) {
 						try {
-							val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, context.locale["$LOCALE_PREFIX.warn.punishAction"], reason)
+							val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, profileLocale, context.userHandle, context.locale["$LOCALE_PREFIX.warn.punishAction"], reason)
 
 							user.openPrivateChannel().queue {
 								it.sendMessage(embed).queue()
