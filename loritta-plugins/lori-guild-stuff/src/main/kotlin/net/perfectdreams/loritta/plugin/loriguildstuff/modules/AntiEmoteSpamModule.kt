@@ -30,8 +30,7 @@ class AntiEmoteSpamModule(val plugin: LoriGuildStuffPlugin): MessageReceivedModu
         private val GUILD_IDS = listOf(
                 297732013006389252L,
                 420626099257475072L,
-                320248230917046282L,
-                501445050207830016L
+                320248230917046282L
         )
     }
 
