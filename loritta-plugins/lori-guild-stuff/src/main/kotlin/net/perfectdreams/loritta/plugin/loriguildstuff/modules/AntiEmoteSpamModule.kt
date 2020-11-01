@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.getLegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.vdurmont.emoji.EmojiParser
 import mu.KotlinLogging
@@ -76,6 +77,7 @@ class AntiEmoteSpamModule(val plugin: LoriGuildStuffPlugin): MessageReceivedModu
                         guild,
                         guild.selfMember.user,
                         loritta.getLegacyLocaleById(serverConfig.localeId),
+                        lorittaUser.profile.getLegacyBaseLocale(),
                         event.author,
                         "Automaticamente banido por enviar uma quantidade demasiadamente enrome de emojis (Spam/Flood)",
                         false,
