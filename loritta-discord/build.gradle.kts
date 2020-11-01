@@ -95,6 +95,9 @@ dependencies {
     api("io.prometheus:simpleclient_hotspot:0.9.0")
     api("io.prometheus:simpleclient_common:0.9.0")
 
+    // Emoji Unicode stuff
+    api("com.vdurmont:emoji-java:5.1.1")
+
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.0-M1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.0-M1")
     testImplementation("io.mockk:mockk:1.9.3")

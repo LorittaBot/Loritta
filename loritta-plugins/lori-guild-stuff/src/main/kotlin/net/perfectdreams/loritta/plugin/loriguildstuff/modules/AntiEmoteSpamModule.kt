@@ -11,22 +11,26 @@ import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.vdurmont.emoji.EmojiParser
 import mu.KotlinLogging
 import net.perfectdreams.loritta.plugin.loriguildstuff.LoriGuildStuffPlugin
+import org.apache.commons.lang3.StringUtils
 
 class AntiEmoteSpamModule(val plugin: LoriGuildStuffPlugin): MessageReceivedModule {
     companion object {
         private val logger = KotlinLogging.logger {}
-        private const val maximumAllowedEmoteAmount = 50
+        private const val maximumAllowedEmoteAmount = 100
 
-        val UNICODE_EMOJI_MATCHER = "(\\\\u00a9|\\\\u00ae|\\[\\\\u2000-\\\\u3300\\]|\\\\ud83c\\[\\\\ud000-\\\\udfff\\]|\\\\ud83d\\[\\\\ud000-\\\\udfff\\]|\\\\ud83e\\[\\\\ud000-\\\\udfff\\])".toRegex()
-        val EMOJI_MATCHER = "<:.+?:\\d+>".toRegex()
+        // Call this "fallback" because emoji-java can't extract some certain emojis (maybe the newer ones)
+        private val FALLBACK_EMOJIS_CODEPOINTS = listOf(
+                "\uD83E"
+        )
 
         private val GUILD_IDS = listOf(
-                //297732013006389252L,
-                //420626099257475072L,
-                //320248230917046282L,
-                501445050207830016L // TODO: remove this guild
+                297732013006389252L,
+                420626099257475072L,
+                320248230917046282L,
+                501445050207830016L
         )
     }
 
@@ -36,41 +40,52 @@ class AntiEmoteSpamModule(val plugin: LoriGuildStuffPlugin): MessageReceivedModu
     }
 
     override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
-        logger.info { "Module Anti Emote fired" }
         val guild = event.guild ?: return false
         val content = event.message.contentRaw
         logger.info { content }
 
-        Constants.EMOJI_PATTERN
+        val emoteCollection = EmojiParser.extractEmojis(content)
 
+        val fallbackEmoteAmount = FALLBACK_EMOJIS_CODEPOINTS.sumBy {
+            StringUtils.countMatches(content, it)
+        } - emoteCollection.distinct().toList().sumBy {
+            StringUtils.countMatches(content, it)
+        }
         // How many unicode emotes?
-        val uniEmoteAmount = UNICODE_EMOJI_MATCHER.findAll(content).count()
+        val uniEmoteAmount = emoteCollection.size
         // How many discord emotes?
-        val emoteAmount = EMOJI_MATCHER.findAll(content).count()
+        val emoteAmount = event.message.emotesBag.size
 
-        logger.info { "Unicode Emote: $uniEmoteAmount, Emotes: $emoteAmount" }
+        logger.info { "\"Fallback\" Emotes: $fallbackEmoteAmount" }
+        logger.info { "Unicode Emotes: $uniEmoteAmount, Discord emotes: $emoteAmount" }
 
-        if (uniEmoteAmount > maximumAllowedEmoteAmount || emoteAmount > maximumAllowedEmoteAmount) {
-            logger.info { "Usuário ${event.author.id} está enviando emojis demais, banindo..." }
+        if (fallbackEmoteAmount + uniEmoteAmount + emoteAmount > maximumAllowedEmoteAmount) {
+            logger.info { "[Servidor: ${guild.id}] [Canal: ${event.channel.id}] Usuário ${event.author.id} está enviando emojis demais do permitido, irei banir..." }
 
-            // fucc off, kiddy spammer
+            // Fuck off
             event.message.delete().queue()
 
             val moderationInfo = AdminUtils.retrieveModerationInfo(serverConfig)
 
-            BanCommand.ban(
-                    moderationInfo.copy(
-                            sendPunishmentViaDm = false
-                    ),
-                    guild,
-                    event.author,
-                    loritta.getLegacyLocaleById(serverConfig.localeId),
-                    event.author,
-                    "Automaticamente banido por enviar uma quantidade demasiadamente enrome de emojis (Spam/Flood)",
-                    false,
-                    7
-            )
-            return true
+            // The member SHOULD BE NOT NULL
+            if (guild.selfMember.canInteract(event.message.member!!)) {
+                BanCommand.ban(
+                        moderationInfo.copy(
+                                sendPunishmentViaDm = false
+                        ),
+                        guild,
+                        guild.selfMember.user,
+                        loritta.getLegacyLocaleById(serverConfig.localeId),
+                        event.author,
+                        "Automaticamente banido por enviar uma quantidade demasiadamente enrome de emojis (Spam/Flood)",
+                        false,
+                        7
+                )
+                return true
+            } else {
+                logger.info { "Eu não consigo banir o usuário infrator, provavelmente eu não tenho permissão!~" }
+                return false
+            }
         }
 
         return false
