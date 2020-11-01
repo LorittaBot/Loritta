@@ -13,6 +13,7 @@ import com.mrpowergamerbr.loritta.modules.MessageReceivedModule
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.getLegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import mu.KotlinLogging
 import net.perfectdreams.loritta.plugin.loriguildstuff.LoriGuildStuffPlugin
@@ -56,6 +57,7 @@ class BlockBadWordsModule(val plugin: LoriGuildStuffPlugin) : MessageReceivedMod
                     guild,
                     event.author,
                     loritta.getLegacyLocaleById(serverConfig.localeId),
+                    lorittaUser.profile.getLegacyBaseLocale(loritta),
                     event.author,
                     "Automaticamente banido por Bad Words",
                     false,

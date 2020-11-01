@@ -44,7 +44,6 @@ import net.perfectdreams.loritta.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.twitch.TwitchAPI
 import net.perfectdreams.loritta.utils.*
-import net.perfectdreams.loritta.utils.metrics.JFRExports
 import net.perfectdreams.loritta.utils.metrics.Prometheus
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import okhttp3.Dispatcher

@@ -38,8 +38,13 @@ class AkinatorCommand(val plugin: AkiLoriPlugin) : DiscordAbstractCommandBase(pl
 		botRequiredPermissions = listOf(Permission.MESSAGE_MANAGE)
 
 		executesDiscord {
-			// TODO: Load correct region
-			val gameHtmlPage = loritta.http.get<String>("https://pt.akinator.com/")
+			// TODO: Add more regions
+			val regionUrl = when (serverConfig.localeId) {
+				"en-us" -> "https://en.akinator.com/"
+				else -> "https://pt.akinator.com/"
+			}
+
+			val gameHtmlPage = loritta.http.get<String>(regionUrl)
 
 			val regex = Regex("arrUrlThemesToPlay', (.*)\\);")
 			val result = regex.find(gameHtmlPage)

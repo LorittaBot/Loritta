@@ -9,6 +9,8 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
@@ -99,8 +101,18 @@ class DiscordCommandContext(
 		if (this.args.size > argument) { // Primeiro iremos verificar se existe uma imagem no argumento especificado
 			val link = this.args[argument] // Ok, será que isto é uma URL?
 
-			if (LorittaUtils.isValidUrl(link))
+			if (LorittaUtils.isValidUrl(link)) {
+				// Workaround for direct prnt.sc image links (Lightshot is trash but a lot of people use it)
+				if (link.contains("prnt.sc")) {
+					val document = withContext(Dispatchers.IO) { Jsoup.connect(link).get() }
+					val elements = document.getElementsByAttributeValue("property", "og:image")
+					if (!elements.isEmpty()) {
+						return elements.attr("content")
+					}
+				}
+
 				return link // Se é um link, vamos enviar para o usuário agora
+			}
 
 			// Vamos verificar por usuários no argumento especificado
 			val user = user(argument)
@@ -180,15 +192,7 @@ class DiscordCommandContext(
 
 		// Vamos baixar a imagem!
 		try {
-			// Workaround para imagens do prnt.scr/prntscr.com (mesmo que o Lightshot seja um lixo)
-			if (toBeDownloaded.contains("prnt.sc") || toBeDownloaded.contains("prntscr.com")) {
-				val document = Jsoup.connect(toBeDownloaded).get()
-				val elements = document.getElementsByAttributeValue("property", "og:image")
-				if (!elements.isEmpty()) {
-					toBeDownloaded = elements.attr("content")
-				}
-			}
-			val image = LorittaUtils.downloadImage(toBeDownloaded ?: return null) ?: return null
+			val image = LorittaUtils.downloadImage(toBeDownloaded) ?: return null
 			return JVMImage(image)
 		} catch (e: Exception) {
 			return null

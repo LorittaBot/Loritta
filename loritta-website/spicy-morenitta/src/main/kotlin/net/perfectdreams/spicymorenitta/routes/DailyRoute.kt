@@ -156,9 +156,6 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
     }
 
     fun updateLeaderboard() {
-        if (true) // laaaaag
-            return
-
         // Iremos pegar o leaderboard em uma task separada, já que o endpoint é diferente :)
         m.launch {
             val leaderboardElement = document.select<HTMLElement>("#leaderboard")

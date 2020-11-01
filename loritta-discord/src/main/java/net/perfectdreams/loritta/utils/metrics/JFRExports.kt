@@ -354,7 +354,7 @@ object JFRExports {
          *   }
          * }
          */
-        event(rs, "jdk.MetaspaceSummary", Consumer<RecordedEvent> { e ->
+        event(rs, "jdk.MetaspaceSummaryX", Consumer<RecordedEvent> { e ->
             val amt = (getNestedUsed(e, "metaspace")
                     + getNestedUsed(e, "dataSpace")
                     + getNestedUsed(e, "classSpace"))
