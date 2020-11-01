@@ -23,8 +23,8 @@ class LoriGuildStuffPlugin(name: String, loritta: LorittaDiscord) : LorittaDisco
         )
 
         addMessageReceivedModules(
-                //AddReactionsToChannelsModule(this),
-                //BlockBadWordsModule(this),
+                AddReactionsToChannelsModule(this),
+                BlockBadWordsModule(this),
                 AntiEmoteSpamModule(this)
         )
     }
