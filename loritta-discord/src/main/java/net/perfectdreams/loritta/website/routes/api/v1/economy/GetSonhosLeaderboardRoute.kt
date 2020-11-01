@@ -4,7 +4,7 @@ import com.github.salomonbrys.kotson.jsonArray
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.set
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import io.ktor.application.ApplicationCall
+import io.ktor.application.*
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
@@ -27,21 +27,27 @@ class GetSonhosLeaderboardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLog
 			val usersAround = mutableListOf<SonhosLeaderboardUser>()
 
 			loritta.newSuspendedTransaction {
-				// Não achei muito bom porque poderia ser direto pelo Exposed, but whatever
-				// Como IDs sempre vão ser um long, não tem risco de SQL Injection
-				// Primeiro iremos pegar a posição do user no ranking (se existe)
-				TransactionManager.current().exec("select * FROM (select profiles.id, RANK() over (ORDER BY money desc) rank_number FROM profiles WHERE money > 0) a WHERE id = ${userIdentification.id};") { rs ->
+				// It would be nicer if we did that directly via Exposed, but whatever.
+				// Because IDs are always a long, there is no risk of SQL Injection
+				// First we are going to get the user's ranking position (if it exists)
+				// The "LIMIT 1" seems useless, but it actually speeds up the query a ton if the user has a lot of sonhos.
+				// With ID: 351760430991147010
+				// Without limit: ~800ms
+				// With limit: ~1ms
+				TransactionManager.current().exec("select * FROM (select profiles.id, RANK() over (ORDER BY money desc) rank_number FROM profiles WHERE money > 0) a WHERE id = ${userIdentification.id} LIMIT 1;") { rs ->
 					while (rs.next()) {
 						rankPosition = rs.getLong("rank_number")
 					}
 				}
 
 				if (padding != 0) {
-					// Se Rank Position != null, iremos pegar os usuários que estão "próximos"
-					// Iremos selecionar os 3 usuários acima do user e os 3 usuários abaixos do user
+					// If Rank Position != null, we are going to get the users that are "round" the user's rank position
+					// We are going to select the ${padding} users above and the ${padding} users below.
+					// Again, there is a limit because it improves performance!
+					// The limit is ${padding + padding + 1} (The one is the "self" user ranking)
 					val rankPosition = rankPosition
 					if (rankPosition != null) {
-						TransactionManager.current().exec("select * FROM (select profiles.id, profiles.money, RANK() over (ORDER BY money desc) rank_number FROM profiles WHERE money > 0) a WHERE rank_number BETWEEN ${rankPosition - padding} AND ${rankPosition + padding}") { rs ->
+						TransactionManager.current().exec("select * FROM (select profiles.id, profiles.money, RANK() over (ORDER BY money desc) rank_number FROM profiles WHERE money > 0) a WHERE rank_number BETWEEN ${rankPosition - padding} AND ${rankPosition + padding} LIMIT ${padding + padding + 1}") { rs ->
 							while (rs.next()) {
 								usersAround.add(
 										SonhosLeaderboardUser(
