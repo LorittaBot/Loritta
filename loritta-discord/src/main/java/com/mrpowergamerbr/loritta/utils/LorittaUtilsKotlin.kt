@@ -35,6 +35,10 @@ fun Array<String>.remove(index: Int): Array<String> {
 	return ArrayUtils.remove(this, index)
 }
 
+fun User.getLorittaProfile(loritta: Loritta = LorittaLauncher.loritta): Profile? {
+	return loritta.getLorittaProfile(this.idLong)
+}
+
 val User.lorittaSupervisor: Boolean
 	get() {
 		val lorittaGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)

@@ -2,6 +2,8 @@ package net.perfectdreams.loritta.plugin.loriguildstuff.commands
 
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.AdminUtils
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
+import com.mrpowergamerbr.loritta.utils.getLorittaProfile
+import com.mrpowergamerbr.loritta.utils.locale.getLegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
@@ -50,11 +52,16 @@ object FastBanCommand {
 
             if (proof != null) fancyReason = "[$fancyReason]($proof)"
 
+            val banLocale = loritta.getLegacyLocaleById("default")
+            val userLocale = user.getLorittaProfile()?.getLegacyBaseLocale(com.mrpowergamerbr.loritta.utils.loritta)
+                    ?: banLocale
+
             BanCommand.ban(
                     settings,
                     this.guild,
                     author.user,
-                    loritta.getLegacyLocaleById("default"),
+                    banLocale,
+                    userLocale,
                     userToBePunished,
                     fancyReason,
                     false,
