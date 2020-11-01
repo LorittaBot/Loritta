@@ -2,20 +2,18 @@ package net.perfectdreams.loritta.watchdog
 
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonParser
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.request.get
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.readText
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.userAgent
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity
-import net.dv8tion.jda.api.utils.cache.CacheFlag
+import net.dv8tion.jda.api.requests.GatewayIntent
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.watchdog.listeners.MessageListener
 import net.perfectdreams.loritta.watchdog.utils.Bot
@@ -24,7 +22,6 @@ import net.perfectdreams.loritta.watchdog.utils.config.WatchdogConfig
 import org.jsoup.Jsoup
 import java.awt.Color
 import java.time.Instant
-import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLPeerUnverifiedException
 
@@ -62,10 +59,11 @@ class WatchdogBot(val config: WatchdogConfig) {
 			}
 		}
 
-		val jda = JDABuilder()
-				.setToken(config.discordToken)
+		val jda = JDABuilder.createLight(
+				config.discordToken,
+				GatewayIntent.GUILD_MESSAGES
+		)
 				.setStatus(OnlineStatus.IDLE)
-				.setDisabledCacheFlags(EnumSet.of(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS, CacheFlag.EMOTE, CacheFlag.VOICE_STATE))
 				.addEventListeners(MessageListener(this))
 				.build()
 				.awaitReady()
