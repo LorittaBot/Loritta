@@ -1,17 +1,13 @@
 package net.perfectdreams.loritta.plugin.rosbife.commands
 
 import net.perfectdreams.loritta.plugin.rosbife.RosbifePlugin
-import net.perfectdreams.loritta.plugin.rosbife.commands.base.BasicSkewedImageCommand
+import net.perfectdreams.loritta.plugin.rosbife.commands.base.GabrielaImageServerCommandBase
 
-class AtaCommand(m: RosbifePlugin) : BasicSkewedImageCommand(
+class AtaCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
-		listOf("ata"),
+		listOf("ata", "monicaata", "mônicaata"),
+		1,
 		"commands.images.ata.description",
-		"ata.png",
-		Corners(
-				107F, 0F,
-				300F, 0F,
-				300F, 177F,
-				96F, 138F
-		)
+		"/api/v1/images/monica-ata",
+		"ata.png"
 )

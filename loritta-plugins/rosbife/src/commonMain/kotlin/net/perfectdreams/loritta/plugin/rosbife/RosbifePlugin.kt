@@ -29,7 +29,11 @@ class RosbifePlugin(name: String, loritta: LorittaBot) : LorittaPlugin(name, lor
 				RomeroBrittoCommands(this),
 				SAMCommand(this),
 				StudiopolisTvCommand(this),
-				SustoCommand(this)
+				SustoCommand(this),
+				CarlyAaahCommand(this),
+				PetPetCommand(this),
+				EdnaldoTvCommand(this),
+				EdnaldoBandeiraCommand(this)
 		)
 		platformSpecificOnEnable()
 	}

@@ -1,15 +1,13 @@
 package net.perfectdreams.loritta.plugin.rosbife.commands
 
 import net.perfectdreams.loritta.plugin.rosbife.RosbifePlugin
-import net.perfectdreams.loritta.plugin.rosbife.commands.base.BasicScaledImageCommand
+import net.perfectdreams.loritta.plugin.rosbife.commands.base.GabrielaImageServerCommandBase
 
-class StudiopolisTvCommand(m: RosbifePlugin) : BasicScaledImageCommand(
+class StudiopolisTvCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
-		listOf("studiopolis"),
+		listOf("studiopolistv", "studiopolis"),
+		1,
 		"commands.images.studiopolistv.description",
-		"studiopolis.png",
-		190,
-		115,
-		154,
-		61
+		"/api/v1/images/studiopolis-tv",
+		"studiopolis_tv.png",
 )

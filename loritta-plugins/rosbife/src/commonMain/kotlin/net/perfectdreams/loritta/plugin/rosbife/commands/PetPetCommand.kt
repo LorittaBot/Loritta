@@ -1,12 +1,13 @@
 package net.perfectdreams.loritta.plugin.rosbife.commands
 
 import net.perfectdreams.loritta.plugin.rosbife.RosbifePlugin
-import net.perfectdreams.loritta.plugin.rosbife.commands.base.GabrielaImageCommandBase
+import net.perfectdreams.loritta.plugin.rosbife.commands.base.GabrielaImageServerCommandBase
 
-class PetPetCommand(m: RosbifePlugin) : GabrielaImageCommandBase(
+class PetPetCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("petpet"),
+		1,
 		"commands.images.petpet.description",
-		"/api/images/pet-pet",
+		"/api/v1/images/pet-pet",
 		"petpet.gif"
 )

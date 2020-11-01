@@ -1,17 +1,13 @@
 package net.perfectdreams.loritta.plugin.rosbife.commands
 
 import net.perfectdreams.loritta.plugin.rosbife.RosbifePlugin
-import net.perfectdreams.loritta.plugin.rosbife.commands.base.BasicSkewedImageCommand
+import net.perfectdreams.loritta.plugin.rosbife.commands.base.GabrielaImageServerCommandBase
 
-class ChicoAtaCommand(m: RosbifePlugin) : BasicSkewedImageCommand(
+class ChicoAtaCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("chicoata"),
+		1,
 		"commands.images.chicoata.description",
-		"chicoata.png",
-		Corners(
-				300F, 0F,
-				768F, 0F,
-				768F, 480F,
-				300F, 383F
-		)
+		"/api/v1/images/chico-ata",
+		"chico_ata.png",
 )

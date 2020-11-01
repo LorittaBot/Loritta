@@ -1,17 +1,13 @@
 package net.perfectdreams.loritta.plugin.rosbife.commands
 
 import net.perfectdreams.loritta.plugin.rosbife.RosbifePlugin
-import net.perfectdreams.loritta.plugin.rosbife.commands.base.BasicSkewedImageCommand
+import net.perfectdreams.loritta.plugin.rosbife.commands.base.GabrielaImageServerCommandBase
 
-class ArtCommand(m: RosbifePlugin) : BasicSkewedImageCommand(
+class ArtCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("art", "arte"),
+		1,
 		"commands.images.art.description",
-		"art.png",
-		Corners(
-				75f, 215f,
-				172f, 242f,
-				106f, 399f,
-				13f, 369f
-		)
+		"/api/v1/images/art",
+		"art.png"
 )

@@ -1,15 +1,13 @@
 package net.perfectdreams.loritta.plugin.rosbife.commands
 
 import net.perfectdreams.loritta.plugin.rosbife.RosbifePlugin
-import net.perfectdreams.loritta.plugin.rosbife.commands.base.BasicScaledImageCommand
+import net.perfectdreams.loritta.plugin.rosbife.commands.base.GabrielaImageServerCommandBase
 
-class SustoCommand(m: RosbifePlugin) : BasicScaledImageCommand(
+class SustoCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("scared", "fright", "susto"),
+		1,
 		"commands.images.susto.description",
+		"/api/v1/images/lori-scared",
 		"loritta_susto.png",
-		84,
-		63,
-		61,
-		138
 )

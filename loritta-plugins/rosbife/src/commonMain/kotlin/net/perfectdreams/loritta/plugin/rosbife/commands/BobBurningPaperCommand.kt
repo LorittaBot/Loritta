@@ -1,31 +1,13 @@
 package net.perfectdreams.loritta.plugin.rosbife.commands
 
 import net.perfectdreams.loritta.plugin.rosbife.RosbifePlugin
-import net.perfectdreams.loritta.plugin.rosbife.commands.base.BasicSkewedImageCommand
+import net.perfectdreams.loritta.plugin.rosbife.commands.base.GabrielaImageServerCommandBase
 
-class BobBurningPaperCommand(m: RosbifePlugin) : BasicSkewedImageCommand(
+class BobBurningPaperCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("bobburningpaper", "bobpaperfire", "bobfire", "bobpapelfogo", "bobfogo"),
+		1,
 		"commands.images.bobfire.description",
+		"/api/v1/images/bob-burning-paper",
 		"bobfire.png",
-		listOf(
-				Corners(
-						21f, 373f,
-
-						14f, 353f,
-
-						48f, 334f,
-
-						82f, 354f
-				),
-				Corners(
-						24f, 32f,
-
-						138f, 33f,
-
-						137f, 177f,
-
-						20f, 175f
-				)
-		)
 )
