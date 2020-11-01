@@ -42,7 +42,6 @@ class AntiEmoteSpamModule(val plugin: LoriGuildStuffPlugin): MessageReceivedModu
     override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
         val guild = event.guild ?: return false
         val content = event.message.contentRaw
-        logger.info { content }
 
         val emoteCollection = EmojiParser.extractEmojis(content)
 
@@ -60,6 +59,7 @@ class AntiEmoteSpamModule(val plugin: LoriGuildStuffPlugin): MessageReceivedModu
         logger.info { "Unicode Emotes: $uniEmoteAmount, Discord emotes: $emoteAmount" }
 
         if (fallbackEmoteAmount + uniEmoteAmount + emoteAmount > maximumAllowedEmoteAmount) {
+            logger.info { content }
             logger.info { "[Servidor: ${guild.id}] [Canal: ${event.channel.id}] Usuário ${event.author.id} está enviando emojis demais do permitido, irei banir..." }
 
             // Fuck off
