@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.plugin.fortnite.commands.fortnite
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
-import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.utils.*
 import net.perfectdreams.loritta.api.commands.ArgumentType
@@ -43,13 +42,13 @@ class FortniteStatsCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.
 
 			val arg0 = args.joinToString(" ")
 
-			val payloadV2 = HttpRequest.get("https://fnapi.me/api/stats2v/username?name=${arg0?.encodeToUrl()}")
+			val payloadV2 = HttpRequest.get("https://fortnite-api.com/v1/stats/br/v2?name=${arg0.encodeToUrl()}")
 					.header("Authorization", com.mrpowergamerbr.loritta.utils.loritta.config.fortniteApi.token)
 					.body()
 
 			val statsV2 = JsonParser.parseString(payloadV2).obj
 
-			if (statsV2["error"].nullString != null) {
+			if (statsV2["status"].nullInt != 200) {
 				reply(
 						LorittaReply(
 								locale["${LOCALE_PREFIX}.unknownPlayer", "`${arg0.stripCodeMarks()}`"],
@@ -60,95 +59,39 @@ class FortniteStatsCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.
 			}
 			val dataV2 = statsV2["data"].obj
 
-			val inputTypesV2 = listOf(
-					"mouseAndKeyboard",
-					"touch",
-					"controller"
+			val overall = dataV2["stats"]["all"]["overall"]
+			val solo = dataV2["stats"]["all"]["solo"]
+			val duo = dataV2["stats"]["all"]["duo"]
+			val squad = dataV2["stats"]["all"]["squad"]
+			val ltm = dataV2["stats"]["all"]["ltm"]
+
+			val wins = overall["wins"].int
+			val matchesPlayed = overall["matches"].int
+			val totalKills = overall["kills"].int
+			val totalMinutesPlayed = overall["minutesPlayed"].int
+
+			val foundGameModes = mapOf<String, GameMode>(
+					"defaultsolo" to GameMode(
+							solo["matches"].int,
+							solo["wins"].int,
+							solo["kills"].int,
+							solo["score"].int
+					),
+					"defaultduos" to GameMode(
+							duo["matches"].int,
+							duo["wins"].int,
+							duo["kills"].int,
+							duo["score"].int
+					),
+					"defaultsquad" to GameMode(
+							squad["matches"].int,
+							squad["wins"].int,
+							squad["kills"].int,
+							squad["score"].int
+					)
 			)
 
-			var wins = 0
-			var matchesPlayed = 0
-			var totalKills = 0
-			var totalMinutesPlayed = 0
-
-			val foundGameModes = mutableMapOf<String, GameMode>()
-
-			for (inputType in inputTypesV2) {
-				fun fillGameModeInfo(name: String, obj: JsonObject, fillGlobal: Boolean) {
-					if (fillGlobal) {
-						wins += obj["placeTop1"].nullInt ?: 0
-						matchesPlayed += obj["matchesPlayed"].nullInt ?: 0
-						totalKills += obj["kills"].nullInt ?: 0
-					}
-
-					val gameMode = foundGameModes.getOrPut(name, { GameMode() })
-					gameMode.matchesPlayed += obj["matchesPlayed"].nullInt ?: 0
-					gameMode.placeTop1 += obj["placeTop1"].nullInt ?: 0
-					gameMode.kills += obj["kills"].nullInt ?: 0
-					gameMode.score += obj["score"].nullInt ?: 0
-				}
-
-				val inputTypeWrapper = dataV2[inputType].nullObj ?: continue
-
-				val gameModes = inputTypeWrapper["gameMode"].nullObj ?: continue
-
-				val defaultSolo = gameModes["defaultsolo"].nullObj
-				val defaultDuo = gameModes["defaultduo"].nullObj
-				val defaultSquad = gameModes["defaultsquad"].nullObj
-				val showdownAlt = gameModes["showdownalt"].nullObj
-				val respawn = gameModes["respawn"].nullObj
-
-				if (respawn != null) {
-					val teamRumble = respawn["24"].nullObj
-
-					if (teamRumble != null) {
-						fillGameModeInfo("teamrumble", teamRumble, false)
-					}
-				}
-
-				if (defaultSolo != null)
-					fillGameModeInfo("defaultsolo", defaultSolo, true)
-
-				if (defaultDuo != null)
-					fillGameModeInfo("defaultduo", defaultDuo, true)
-
-				if (defaultSquad != null)
-					fillGameModeInfo("defaultsquad", defaultSquad, true)
-
-				if (showdownAlt != null) {
-					val defaultSolo = showdownAlt["solo"].nullObj
-					val defaultDuo = showdownAlt["duos"].nullObj
-					val defaultTrio = showdownAlt["trios"].nullObj
-					val defaultSquad = showdownAlt["squad"].nullObj
-
-					if (defaultSolo != null)
-						fillGameModeInfo("showdownsolo", defaultSolo, true)
-
-					if (defaultDuo != null)
-						fillGameModeInfo("showdownduos", defaultDuo, true)
-
-					if (defaultTrio != null)
-						fillGameModeInfo("showdowntrios", defaultTrio, true)
-
-					if (defaultSquad != null)
-						fillGameModeInfo("showdownsquads", defaultSquad, true)
-				}
-
-				// Para o total minutes played, vamos fazer algo recursivo
-				fun findTotalMinutesPlayed(element: JsonObject) {
-					for ((name, value) in element.entrySet()) {
-						if (value.isJsonObject) {
-							findTotalMinutesPlayed(value.obj)
-						}
-					}
-
-					totalMinutesPlayed += element["minutesPlayed"].nullInt ?: 0
-				}
-
-				findTotalMinutesPlayed(gameModes)
-			}
-
-			val userName = statsV2["general"]["userName"].string
+			val userName = dataV2["account"]["name"].string
 
 			val image = ImageIO.read(File(loritta.instanceConfig.loritta.folders.assets, "fortnite_stats.png"))
 			val graphics = image.graphics.enableFontAntiAliasing()
@@ -244,22 +187,22 @@ class FortniteStatsCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.
 				ImageUtils.drawCenteredString(graphics, gameMode.score.toString(), Rectangle(x + 581, y + 70 + 45, 119, 49), inlineBodyStatsFont)
 			}
 
-			val defaultSoloGameMode = foundGameModes["defaultsolo"] ?: FortniteStatsCommand.GameMode()
-			val defaultDuosGameMode = foundGameModes["defaultduo"] ?: FortniteStatsCommand.GameMode()
-			val defaultSquadGameMode = foundGameModes["defaultsquad"] ?: FortniteStatsCommand.GameMode()
-			val defaultTeamRumbleGameMode = foundGameModes["teamrumble"] ?: FortniteStatsCommand.GameMode()
+			val defaultSoloGameMode = foundGameModes["defaultsolo"]!!
+			val defaultDuosGameMode = foundGameModes["defaultduos"]!!
+			val defaultSquadGameMode = foundGameModes["defaultsquad"]!!
+			// val defaultTeamRumbleGameMode = foundGameModes["teamrumble"]
 
 			drawGameModeStats(defaultSoloGameMode, locale["${LOCALE_PREFIX}.solo"], Color(0, 123, 255), 589, 186, false)
 			drawGameModeStats(defaultDuosGameMode, locale["${LOCALE_PREFIX}.duos"], Color(124, 229, 67), 589, 393, false)
 			drawGameModeStats(defaultSquadGameMode, locale["${LOCALE_PREFIX}.squad"], Color(255, 132, 0), 589, 600, false)
-			drawGameModeStats(defaultTeamRumbleGameMode, locale["${LOCALE_PREFIX}.rumble"], Color(255, 0, 132), 589, 807, true)
+			// drawGameModeStats(defaultTeamRumbleGameMode, locale["${LOCALE_PREFIX}.rumble"], Color(255, 0, 132), 589, 807, true)
 
 			sendImage(JVMImage(image), "fortnite-stats.png")
 		}
 	}
 
 
-	fun getPrettyPercentage(percentage: Double): String {
+	private fun getPrettyPercentage(percentage: Double): String {
 		val fmt = "%.2f".format(percentage)
 
 		if (fmt == "0.00")
@@ -301,10 +244,10 @@ class FortniteStatsCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.
 		return subHeaderApplyPath
 	}
 
-	class GameMode {
-		var matchesPlayed = 0
-		var placeTop1 = 0
-		var kills = 0
-		var score = 0
-	}
+	class GameMode(
+			val matchesPlayed: Int,
+			val placeTop1: Int,
+			val kills: Int,
+			val score: Int
+	)
 }
