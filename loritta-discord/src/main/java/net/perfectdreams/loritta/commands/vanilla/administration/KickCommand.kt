@@ -1,25 +1,26 @@
 package net.perfectdreams.loritta.commands.vanilla.administration
 
+import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.commands.vanilla.administration.AdminUtils
+import com.mrpowergamerbr.loritta.utils.getLorittaProfile
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.getBaseLocale
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
-import net.perfectdreams.loritta.api.commands.ArgumentType
-import net.perfectdreams.loritta.api.commands.Command
-import net.perfectdreams.loritta.api.commands.CommandCategory
-import net.perfectdreams.loritta.api.commands.CommandContext
+import net.perfectdreams.loritta.api.commands.*
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.utils.PunishmentAction
 import net.perfectdreams.loritta.utils.commands.*
 
-class BanCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta, listOf("ban", "banir", "hackban", "forceban"), CommandCategory.ADMIN) {
+class KickCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta, listOf("kick", "expulsar", "kickar"), CommandCategory.ADMIN) {
 
     override fun command(): Command<CommandContext> = create {
-        localizedDescription("commands.moderation.ban.description")
+        localizedDescription("commands.moderation.kick.description")
 
-        userRequiredPermissions = listOf(Permission.BAN_MEMBERS)
-        botRequiredPermissions = listOf(Permission.BAN_MEMBERS)
+        userRequiredPermissions = listOf(Permission.KICK_MEMBERS)
+        botRequiredPermissions = listOf(Permission.KICK_MEMBERS)
 
         examples {
             + "159985870458322944"
@@ -50,11 +51,13 @@ class BanCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta, l
     companion object: PunishmentHandler {
 
         override fun applyPunishment(settings: ModerationConfigSettings, guild: Guild, punisher: User, guildLocale: BaseLocale, userLocale: BaseLocale, user: User, reason: String, isSilent: Boolean, delDays: Int) {
+            val member = guild.getMember(user) ?: return
             if (!isSilent) {
-                settings.handleNonSilentPunishment(PunishmentAction.BAN, guild, punisher, guildLocale, userLocale, user, reason)
+                settings.handleNonSilentPunishment(PunishmentAction.KICK, guild, punisher, guildLocale, userLocale, user, reason)
             }
 
-            guild.ban(user, delDays, generateAuditLogMessage(guildLocale, punisher, reason)).queue()
+            guild.kick(member, generateAuditLogMessage(guildLocale, punisher, reason)).queue()
         }
     }
+
 }
