@@ -1,0 +1,404 @@
+package net.perfectdreams.loritta.utils.commands
+
+import com.mrpowergamerbr.loritta.dao.ServerConfig
+import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
+import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNull
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import kotlinx.atomicfu.atomic
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.*
+import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.WarnAction
+import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
+import net.perfectdreams.loritta.tables.AuditLog
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.WarnActions
+import net.perfectdreams.loritta.utils.DiscordUtils
+import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.Placeholders
+import net.perfectdreams.loritta.utils.PunishmentAction
+import net.perfectdreams.loritta.utils.extensions.toJDA
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
+import java.awt.Color
+import java.time.Instant
+
+/** The prefix to the according section */
+const val LOCALE_PREFIX = "commands.moderation"
+
+/** An alias to lazy punishments */
+typealias LazyPunishment = suspend (Message?, Boolean) -> (Unit)
+
+/**
+ * Represents a server's moderation section config
+ * with all the configurable data
+ *
+ * @see retrieveModerationInfo
+ */
+data class ModerationConfigSettings(
+        val sendPunishmentViaDm: Boolean,
+        val sendPunishmentToPunishLog: Boolean,
+        val punishLogChannelId: Long? = null,
+        val punishLogMessage: String? = null
+)
+
+/**
+ * Represents a punishment data, containing all valid users and the punishment reason
+ *
+ * @property users All valid found users
+ * @property reason The punishment reason
+ */
+data class ProvidedPunishmentData(
+        val users: List<User>,
+        val reason: String
+)
+
+data class PunishmentStatementModifiers(
+        val reason: String,
+        val skipConfirmation: Boolean,
+        val silent: Boolean,
+        val delDays: Int
+)
+
+/**
+ * Retrieves the moderation settings for the [serverConfig]
+ *
+ * @see ModerationConfigSettings
+ * @return the settings of the server or, if the server didn't configure the moderation module, default values
+ */
+suspend fun retrieveModerationInfo(serverConfig: ServerConfig): ModerationConfigSettings {
+    val moderationConfig = loritta.newSuspendedTransaction { serverConfig.moderationConfig }
+
+    return ModerationConfigSettings(
+            moderationConfig?.sendPunishmentViaDm ?: false,
+            moderationConfig?.sendPunishmentToPunishLog ?: false,
+            moderationConfig?.punishLogChannelId,
+            moderationConfig?.punishLogMessage
+    )
+}
+
+/**
+ * Retrieves the punishment actions for warns, ordered by required warn count (ascending)
+ *
+ * @return the list of warn punishments, can be empty
+ */
+suspend fun retrieveWarnPunishmentActions(serverConfig: ServerConfig): List<WarnAction> {
+    val moderationConfig = loritta.newSuspendedTransaction { serverConfig.moderationConfig } ?: return emptyList()
+
+    return loritta.newSuspendedTransaction {
+        WarnAction.find {
+            WarnActions.config eq moderationConfig.id
+        }.toList().sortedBy {
+            it.warnCount
+        }
+    }
+}
+
+/**
+ * Retrieve the following punishment's [ProvidedPunishmentData], including targets and reason
+ * We ignore if the users are apt or not for the punishment, because the command itself must do that.
+ *
+ * @see ProvidedPunishmentData
+ * @return The obtained data
+ */
+suspend fun DiscordCommandContext.checkAndRetrieveAllValidUsersFromMessages(): ProvidedPunishmentData? {
+    val validCount = atomic(0)
+    val validUsers = args.mapNotNull {
+        val shouldUseExtensiveMatching = validCount.value != 0
+
+        DiscordUtils.extractUserFromString(
+                it,
+                discordMessage.mentionedUsers,
+                guild,
+                extractUserViaEffectiveName = shouldUseExtensiveMatching,
+                extractUserViaUsername = shouldUseExtensiveMatching
+        )?.also { validCount += 1 }
+    }
+
+    if (validUsers.isEmpty()) {
+        reply(
+                LorittaReply(
+                        locale["commands.userDoesNotExist", "`${args[0].stripCodeMarks()}`"],
+                        Emotes.LORI_HM
+                )
+        )
+        return null
+    }
+
+    return ProvidedPunishmentData(validUsers, args.drop(validUsers.size).joinToString(" "))
+}
+
+/**
+ * This will check if the user and the [SelfUser] can both punish the provided target, and if not,
+ * we'll fail the command execution.
+ *
+ * @param target The provided user
+ */
+fun DiscordCommandContext.checkForPunishmentPermissions(target: Member) {
+    requireNotNull(member)
+
+    if (guild.selfMember.canInteract(target).not()) {
+        val reply = buildString {
+            append(locale["$LOCALE_PREFIX.roleTooLow"])
+
+            if (member.hasPermission(Permission.MANAGE_ROLES))
+                append(" ${locale["$LOCALE_PREFIX.roleTooLowHowToFix"]}")
+        }
+
+        fail(reply, Constants.ERROR)
+    } else if (member.canInteract(target).not()) {
+        val reply = buildString {
+            append(locale["$LOCALE_PREFIX.punisherRoleTooLow"])
+
+            if (member.hasPermission(Permission.MANAGE_ROLES))
+                append(" ${locale["$LOCALE_PREFIX.punisherRoleTooLowHowToFix"]}")
+        }
+
+        fail(reply, Constants.ERROR)
+    }
+}
+
+/**
+ * This will consider all apt members for the punishment, also using the [checkForPunishmentPermissions] method.
+ * They must pass on the [checkForPunishmentPermissions] requirement and must be a member of the guild too.
+ *
+ * @see checkForPunishmentPermissions
+ */
+suspend fun DiscordCommandContext.mapToMemberFollowingPunishmentRequirements(users: List<User>): List<Member> = users.mapNotNull {
+    val member = guild.retrieveMemberOrNull(it) ?: reply(
+            LorittaReply(
+                    locale["commands.userNotOnTheGuild", "${it.asMention} (`${it.name.stripCodeMarks()}#${it.discriminator} (${it.idLong})`)"],
+                    Emotes.LORI_HM
+            )
+    ).run { return@mapNotNull null }
+
+    checkForPunishmentPermissions(member); member
+}
+
+/**
+ * This will just transform the [EmbedBuilder] from [createPunishmentEmbedBuilderSentViaDirectMessage] to a [MessageEmbed]
+ *
+ * @see createPunishmentEmbedBuilderSentViaDirectMessage
+ */
+fun createPunishmentMessageSentViaDirectMessage(guild: Guild, locale: BaseLocale, punisher: User, punishmentAction: String, reason: String): MessageEmbed =
+        createPunishmentEmbedBuilderSentViaDirectMessage(guild, locale, punisher, punishmentAction, reason).build()
+
+/**
+ * This will just create the message that'll be sent to the punished user at his DMs (if public)
+ *
+ * @see createPunishmentMessageSentViaDirectMessage
+ */
+fun createPunishmentEmbedBuilderSentViaDirectMessage(guild: Guild, locale: BaseLocale, punisher: User, punishmentAction: String, reason: String): EmbedBuilder = EmbedBuilder().also { embed ->
+    embed.setTimestamp(Instant.now())
+    embed.setColor(Color(221, 0, 0))
+
+    embed.setThumbnail(guild.iconUrl)
+    embed.setAuthor(punisher.name + "#" + punisher.discriminator, null, punisher.avatarUrl)
+    embed.setTitle("\uD83D\uDEAB ${locale["$LOCALE_PREFIX.youGotPunished", punishmentAction.toLowerCase(), guild.name]}!")
+    embed.addField("\uD83D\uDC6E ${locale["$LOCALE_PREFIX.punishedBy"]}", punisher.name + "#" + punisher.discriminator, false)
+    embed.addField("\uD83D\uDCDD ${locale["$LOCALE_PREFIX.punishmentReason"]}", reason, false)
+}
+
+fun getPunishmentForMessage(settings: ModerationConfigSettings, guild: Guild, action: PunishmentAction): String? {
+    val messageConfig = transaction(Databases.loritta) {
+        ModerationPunishmentMessagesConfig.select {
+            ModerationPunishmentMessagesConfig.guild eq guild.idLong and
+                    (ModerationPunishmentMessagesConfig.punishmentAction eq action)
+        }.firstOrNull()
+    }
+
+    return messageConfig?.get(ModerationPunishmentMessagesConfig.punishLogMessage) ?: settings.punishLogMessage
+}
+
+/**
+ * Parsing the placeholders with the provided user (usually the one who punished)
+ *
+ * @see getPunishmentCustomTokens
+ */
+fun getStaffCustomTokens(punisher: User) = mapOf(
+        Placeholders.STAFF_NAME_SHORT.name to punisher.name,
+        Placeholders.STAFF_NAME.name to punisher.name,
+        Placeholders.STAFF_MENTION.name to punisher.asMention,
+        Placeholders.STAFF_DISCRIMINATOR.name to punisher.discriminator,
+        Placeholders.STAFF_AVATAR_URL.name to punisher.effectiveAvatarUrl,
+        Placeholders.STAFF_ID.name to punisher.id,
+        Placeholders.STAFF_TAG.name to punisher.asTag,
+
+        Placeholders.Deprecated.STAFF_DISCRIMINATOR.name to punisher.discriminator,
+        Placeholders.Deprecated.STAFF_AVATAR_URL.name to punisher.effectiveAvatarUrl,
+        Placeholders.Deprecated.STAFF_ID.name to punisher.id
+)
+
+/**
+ * Parsing the placeholders with the provided reason and type
+ *
+ * @see getPunishmentCustomTokens
+ */
+fun getPunishmentCustomTokens(locale: BaseLocale, reason: String, typePrefix: String) = mapOf(
+        Placeholders.PUNISHMENT_REASON.name to reason,
+        Placeholders.PUNISHMENT_REASON_SHORT.name to reason,
+
+        Placeholders.PUNISHMENT_TYPE.name to locale["$typePrefix.punishAction"],
+        Placeholders.PUNISHMENT_TYPE_SHORT.name to locale["$typePrefix.punishAction"]
+)
+
+/**
+ * Function to make [LazyPunishment] creation easier and cleaner.
+ *
+ * @see LazyPunishment
+ */
+fun createPunishmentAction(lazyPunishment: LazyPunishment): LazyPunishment =
+        lazyPunishment
+
+/**
+ * Creating the logs to the punishment with the provided data
+ *
+ * @see AuditLog
+ */
+fun generateAuditLogMessage(locale: BaseLocale, punisher: User, reason: String) =
+        locale["$LOCALE_PREFIX.punishedLog", "${punisher.name}#${punisher.discriminator}", reason].substringIfNeeded(0 until 512)
+
+/**
+ * Sending the success message, usually after the [handlePunishmentConfirmation] or, if the user has the quick punishments enabled,
+ * it will be executed at the command class itself.
+ *
+ * @see handlePunishmentConfirmation
+ */
+suspend fun DiscordCommandContext.sendSuccessfullyPunishedMessage(reason: String, sendDiscordReportAdvise: Boolean = true) {
+    val replies = mutableListOf(
+            LorittaReply(
+                    locale["$LOCALE_PREFIX.successfullyPunished"] + " ${Emotes.LORI_RAGE}",
+                    "\uD83C\uDF89"
+            )
+    )
+
+    val reportExplanation = when {
+        reason.contains("raid", true) -> locale["$LOCALE_PREFIX.reports.raidReport"]
+        reason.contains("porn", true) || reason.contains("nsfw", true) -> locale["$LOCALE_PREFIX.reports.nsfwReport"]
+        else -> null
+    }
+
+    if (reportExplanation != null && sendDiscordReportAdvise) {
+        replies.add(
+                LorittaReply(
+                        locale["$LOCALE_PREFIX.reports.pleaseReportToDiscord", reportExplanation, Emotes.LORI_PAT, "<${locale["$LOCALE_PREFIX.reports.pleaseReportUrl"]}>"],
+                        Emotes.LORI_HM,
+                        mentionUser = false
+                )
+        )
+    }
+
+    reply(*replies.toTypedArray())
+}
+
+/**
+ * Sending the confirmation to the execution's channel.
+ * This will be handled at [handlePunishmentConfirmation] if the user doesn't have the quick punishments option enabled.
+ *
+ * @see handlePunishmentConfirmation
+ */
+suspend fun DiscordCommandContext.sendConfirmationMessage(users: List<User>, hasSilent: Boolean, type: String): Message {
+    val str = locale["$LOCALE_PREFIX.readyToPunish", locale["$LOCALE_PREFIX.$type.punishName"], users.joinToString { it.asMention }, users.joinToString { it.asTag }, users.joinToString { it.id }]
+
+    val replies = mutableListOf(
+            LorittaReply(
+                    str,
+                    "⚠"
+            )
+    )
+
+    if (hasSilent) {
+        replies += LorittaReply(
+                locale["$LOCALE_PREFIX.silentTip"],
+                "\uD83D\uDC40",
+                mentionUser = false
+        )
+    }
+
+    if (!serverConfig.getUserData(user.idLong).quickPunishment) {
+        replies += LorittaReply(
+                locale["$LOCALE_PREFIX.skipConfirmationTip", "`${serverConfig.commandPrefix}quickpunishment`"],
+                mentionUser = false
+        )
+    }
+
+    return reply(*replies.toTypedArray()).toJDA()
+}
+
+/**
+ * This will handle the confirmation executing the provided [LazyPunishment] if
+ * the user confirms the punishment.
+ *
+ * @see LazyPunishment
+ */
+suspend fun DiscordCommandContext.handlePunishmentConfirmation(message: Message, punishment: LazyPunishment) {
+    message.onReactionAddByAuthor(this) {
+        if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
+            punishment(message, it.reactionEmote.isEmote("\uD83D\uDE4A"))
+        }
+        return@onReactionAddByAuthor
+    }
+
+    val settings = retrieveModerationInfo(serverConfig)
+    val hasSilent = settings.sendPunishmentViaDm || settings.sendPunishmentToPunishLog
+
+    message.addReaction("✅").queue()
+    if (hasSilent) {
+        message.addReaction("\uD83D\uDE4A").queue()
+    }
+}
+
+suspend fun DiscordCommandContext.parsePunishmentModifiers(rawReason: String): PunishmentStatementModifiers {
+    var reason = rawReason
+
+    val pipedReason = reason.split("|")
+
+    var delDays = 0
+    var usingPipedArgs = false
+    var skipConfirmation = serverConfig.getUserData(user.idLong).quickPunishment
+
+    var silent = false
+
+    if (pipedReason.size > 1) {
+        val pipedArgs = pipedReason.toMutableList()
+        val _reason = pipedArgs[0]
+        pipedArgs.removeAt(0)
+
+        pipedArgs.forEach {
+            val arg = it.trim()
+            if (arg == "force" || arg == "f") {
+                skipConfirmation = true
+                usingPipedArgs = true
+            }
+            if (arg == "s" || arg == "silent") {
+                skipConfirmation = true
+                usingPipedArgs = true
+                silent = true
+            }
+            if (arg.endsWith("days") || arg.endsWith("dias") || arg.endsWith("day") || arg.endsWith("dia")) {
+                delDays = arg.split(" ")[0].toIntOrNull() ?: 0
+
+                if (delDays > 7) {
+                    fail(locale["$LOCALE_PREFIX.cantDeleteMessagesMoreThan7Days"], Constants.ERROR)
+                }
+                if (0 > delDays) {
+                    fail(locale["$LOCALE_PREFIX.cantDeleteMessagesLessThan0Days"], Constants.ERROR)
+                }
+
+                usingPipedArgs = true
+            }
+        }
+
+        if (usingPipedArgs) reason = _reason
+    }
+
+    val attachment = discordMessage.attachments.firstOrNull { it.isImage }
+
+    if (attachment != null) reason += " " + attachment.url
+
+    return PunishmentStatementModifiers(reason, skipConfirmation, silent, delDays)
+}

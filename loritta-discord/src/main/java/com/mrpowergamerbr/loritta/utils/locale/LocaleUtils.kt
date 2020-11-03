@@ -11,9 +11,12 @@ fun BaseLocale.getLocaleId(loritta: Loritta = LorittaLauncher.loritta) =
 fun LegacyBaseLocale.getLocaleId(loritta: Loritta = LorittaLauncher.loritta) =
         loritta.legacyLocales.entries.first { it.value == this }.key
 
-fun Profile.getBaseLocale(loritta: Loritta = LorittaLauncher.loritta, default: LegacyBaseLocale? = null): BaseLocale =
-        getLegacyBaseLocale(loritta).toNewLocale()
+fun Profile.getBaseLocale(loritta: Loritta = LorittaLauncher.loritta, default: BaseLocale? = null): BaseLocale =
+        getLegacyBaseLocale(loritta, default?.adaptToLegacy(loritta)).toNewLocale()
 
 fun Profile.getLegacyBaseLocale(loritta: Loritta = LorittaLauncher.loritta, default: LegacyBaseLocale? = null): LegacyBaseLocale = if (settings.language == null && default != null)
     default
 else loritta.getLegacyLocaleById(settings.language ?: default?.getLocaleId(loritta) ?: Constants.DEFAULT_LOCALE_ID)
+
+fun BaseLocale.adaptToLegacy(loritta: Loritta = LorittaLauncher.loritta): LegacyBaseLocale =
+        loritta.getLegacyLocaleById(getLocaleId(loritta))

@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.EmbedBuilder
@@ -46,6 +47,12 @@ class DiscordCommandContext(
 		get() = discordMessage.guild
 	val user = discordMessage.author
 	val member = discordMessage.member
+
+	val guildLocale: BaseLocale
+		get() = loritta.getLocaleById(serverConfig.localeId)
+
+	val guildLegacyLocale: LegacyBaseLocale
+		get() = loritta.getLegacyLocaleById(serverConfig.localeId)
 
 	suspend fun sendMessage(message: String, embed: MessageEmbed): Message {
 		return sendMessage(MessageBuilder().setEmbed(embed).append(if (message.isEmpty()) " " else message).build())
