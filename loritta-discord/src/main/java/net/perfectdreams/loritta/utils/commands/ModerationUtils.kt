@@ -88,8 +88,10 @@ data class PunishmentStatementData(
  * @return the settings of the server or, if the server didn't configure the moderation module, default values
  */
 suspend fun retrieveModerationInfo(serverConfig: ServerConfig): ModerationConfigSettings {
+    // Retrieving guild's moderation config
     val moderationConfig = loritta.newSuspendedTransaction { serverConfig.moderationConfig }
 
+    // Adapting the config to a ModerationConfigSettings object
     return ModerationConfigSettings(
             moderationConfig?.sendPunishmentViaDm ?: false,
             moderationConfig?.sendPunishmentToPunishLog ?: false,
@@ -104,8 +106,10 @@ suspend fun retrieveModerationInfo(serverConfig: ServerConfig): ModerationConfig
  * @return the list of warn punishments, can be empty
  */
 suspend fun retrieveWarnPunishmentActions(serverConfig: ServerConfig): List<WarnAction> {
+    // Returning an empty list if the guild's moderation config is null
     val moderationConfig = loritta.newSuspendedTransaction { serverConfig.moderationConfig } ?: return emptyList()
 
+    // Here we're going to find the guild's warnings
     return loritta.newSuspendedTransaction {
         WarnAction.find {
             WarnActions.config eq moderationConfig.id
@@ -116,18 +120,22 @@ suspend fun retrieveWarnPunishmentActions(serverConfig: ServerConfig): List<Warn
 }
 
 /**
- * This will parse the [PunishmentStatementData], it's non-nullable, if an error occurs,
+ * This will parse the [PunishmentStatementData], it's non-nullable, if an unexpected or expected error occurs,
  * the command execution will be killed throwing a [CommandException]
  *
  * @throws CommandException
  */
 suspend fun DiscordCommandContext.parsePunishmentStatementData(): PunishmentStatementData {
+    // Retrieving the raw reason (with all the modifiers and related stuff)
     val (users, rawReason) = this.checkAndRetrieveAllValidUsersFromMessages()
+    // Parsing all users to members, if there's one invalid, we'll throw a CommandException
     val members = this.mapToMemberFollowingPunishmentRequirements(users)
 
+    // Parsing modifiers to retrieve the modifiers theyself & the stripped reason
     val modifiers = this.parsePunishmentModifiers(rawReason)
 
-    return PunishmentStatementData(users, members, modifiers) }
+    return PunishmentStatementData(users, members, modifiers)
+}
 
 /**
  * Retrieve the following punishment's [ProvidedPunishmentData], including targets and reason
@@ -141,6 +149,7 @@ suspend fun DiscordCommandContext.checkAndRetrieveAllValidUsersFromMessages(): P
     val validUsers = args.mapNotNull {
         val shouldUseExtensiveMatching = validCount.value != 0
 
+        // Trying to parse the user
         DiscordUtils.extractUserFromString(
                 it,
                 discordMessage.mentionedUsers,
@@ -150,6 +159,7 @@ suspend fun DiscordCommandContext.checkAndRetrieveAllValidUsersFromMessages(): P
         )?.also { validCount += 1 }
     }
 
+    // If no valid users were found, we're going to cancel the command execution sending a message
     if (validUsers.isEmpty()) {
         fail(
                 LorittaReply(
@@ -201,11 +211,13 @@ fun DiscordCommandContext.checkForPunishmentPermissions(target: Member) {
  * @see checkForPunishmentPermissions
  */
 suspend fun DiscordCommandContext.mapToMemberFollowingPunishmentRequirements(users: List<User>): List<Member> = users.map {
+    // Trying to parse the member, if he's not on the guild, we're failing the execution
     val member = guild.retrieveMemberOrNull(it) ?: fail(
             locale["commands.userNotOnTheGuild", "${it.asMention} (`${it.name.stripCodeMarks()}#${it.discriminator} (${it.idLong})`)"],
             Emotes.LORI_HM
     )
 
+    // Checking if the user can be punished, and if so, we'll validate him
     checkForPunishmentPermissions(member); member
 }
 
@@ -233,7 +245,12 @@ fun createPunishmentEmbedBuilderSentViaDirectMessage(guild: Guild, locale: BaseL
     embed.addField("\uD83D\uDCDD ${locale["$LOCALE_PREFIX.punishmentReason"]}", reason, false)
 }
 
-fun getPunishmentForMessage(settings: ModerationConfigSettings, guild: Guild, action: PunishmentAction): String? {
+/**
+ * Here we'll get the message for the given [PunishmentAction]
+ * It's configurable, you can customize it at Loritta's dashboard
+ */
+fun getMessageForPunishment(settings: ModerationConfigSettings, guild: Guild, action: PunishmentAction): String? {
+    // Getting the config to the provided action
     val messageConfig = transaction(Databases.loritta) {
         ModerationPunishmentMessagesConfig.select {
             ModerationPunishmentMessagesConfig.guild eq guild.idLong and
@@ -241,6 +258,7 @@ fun getPunishmentForMessage(settings: ModerationConfigSettings, guild: Guild, ac
         }.firstOrNull()
     }
 
+    // Getting the message from the config
     return messageConfig?.get(ModerationPunishmentMessagesConfig.punishLogMessage) ?: settings.punishLogMessage
 }
 
@@ -284,15 +302,18 @@ fun getPunishmentCustomTokens(locale: BaseLocale, reason: String, typePrefix: St
 fun createLazyPunishment(lazyPunishment: LazyPunishment): LazyPunishment =
         lazyPunishment
 
-suspend fun DiscordCommandContext.createStandardLazyPunishment(handler: PunishmentHandler, settings: ModerationConfigSettings, data: PunishmentStatementData): LazyPunishment = createLazyPunishment { message, _ ->
+suspend fun DiscordCommandContext.createStandardLazyPunishment(handler: PunishmentHandler, settings: ModerationConfigSettings, data: PunishmentStatementData): LazyPunishment = createLazyPunishment { message, silent ->
     for (member in data.members) {
         val userLocale = member.user.getLorittaProfile()?.getBaseLocale(loritta as Loritta) ?: guildLocale
 
-        handler.applyPunishment(settings, guild, user, userLocale, guildLocale, member.user, data.modifiers.reason, data.modifiers.isSilent, data.modifiers.delDays)
+        // Applying punishment to user using the provided handler
+        handler.applyPunishment(settings, guild, user, userLocale, guildLocale, member.user, data.modifiers.reason, silent, data.modifiers.delDays)
     }
 
+    // Deleting the message if it's not a silent punishment
     message?.delete()?.queue()
 
+    // Sending the "punished" message
     sendSuccessfullyPunishedMessage(data.modifiers.reason)
 }
 
@@ -371,6 +392,13 @@ suspend fun DiscordCommandContext.sendConfirmationMessage(users: List<User>, has
     return reply(*replies.toTypedArray()).toJDA()
 }
 
+/**
+ * This will handle the lazy punishment to execute if it's silent or on the
+ * confirmation at [handlePunishmentConfirmation]
+ *
+ * @see LazyPunishment
+ * @see handlePunishmentConfirmation
+ */
 suspend fun DiscordCommandContext.handleLazyPunishment(settings: ModerationConfigSettings, punishment: LazyPunishment, data: PunishmentStatementData) {
     if (data.modifiers.skipConfirmation) {
         return punishment(null, data.modifiers.isSilent)
@@ -389,16 +417,21 @@ suspend fun DiscordCommandContext.handleLazyPunishment(settings: ModerationConfi
  * @see LazyPunishment
  */
 suspend fun DiscordCommandContext.handlePunishmentConfirmation(message: Message, punishment: LazyPunishment) {
+    // Handling the reaction
     message.onReactionAddByAuthor(this) {
+        // Chewcking the emote if it's expected
         if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
             punishment(message, it.reactionEmote.isEmote("\uD83D\uDE4A"))
         }
         return@onReactionAddByAuthor
     }
 
+    // Parsing the moderation settings
+    // TODO: Add it to the parameters
     val settings = retrieveModerationInfo(serverConfig)
     val hasSilent = settings.sendPunishmentViaDm || settings.sendPunishmentToPunishLog
 
+    //Adding the reaction
     message.addReaction("✅").queue()
     if (hasSilent) {
         message.addReaction("\uD83D\uDE4A").queue()
@@ -437,7 +470,7 @@ interface PunishmentHandler {
             }.onFailure { it.printStackTrace() }
         }
 
-        val punishLogMessage = getPunishmentForMessage(this, guild, type)
+        val punishLogMessage = getMessageForPunishment(this, guild, type)
 
         if (this.sendPunishmentToPunishLog && this.punishLogChannelId != null && punishLogMessage != null) {
             val textChannel = guild.getTextChannelById(this.punishLogChannelId)
