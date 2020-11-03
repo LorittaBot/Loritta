@@ -60,17 +60,18 @@ fun DIV.trust(locale: BaseLocale) {
             + "Texto e mais texto"
         } */
 
-        iframe() {
-            // src = "https://clips.twitch.tv/embed?clip=PeacefulAlertEggplantBudStar&autoplay=false"
+        // Drawn Mask YouTube Video
+        iframe {
             attributes["frameborder"] = "0"
             attributes["allowfullscreen"] = "true"
+            attributes["allow"] = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             attributes["height"] = "279"
             attributes["width"] = "496"
-            attributes["lazy-load-url"] = "https://clips.twitch.tv/embed?clip=PeacefulAlertEggplantBudStar&autoplay=false&parent=canary.loritta.website&parent=loritta.website"
+            attributes["lazy-load-url"] = "https://www.youtube.com/embed/PwTKQyiTBVU"
         }
 
-        iframe() {
-            // src = "https://clips.twitch.tv/embed?clip=PeacefulAlertEggplantBudStar&autoplay=false"
+        // Chavecu Twitch Clip
+        iframe {
             attributes["frameborder"] = "0"
             attributes["allowfullscreen"] = "true"
             attributes["height"] = "279"
