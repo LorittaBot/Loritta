@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import net.dv8tion.jda.api.entities.TextChannel
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
 
-fun DiscordCommandContext.getTextChannel(input: String?, executedIfNull: Boolean = false): TextChannel? {
+fun DiscordCommandContext.getTextChannel(input: String?, executedIfNull: Boolean = false): TextChannel? = runCatching {
     if (input == null)
         return discordMessage.textChannel
 
@@ -23,5 +23,5 @@ fun DiscordCommandContext.getTextChannel(input: String?, executedIfNull: Boolean
 
     val channel = guild.getTextChannelById(id)
 
-    return if (channel == null && discordMessage.channel is TextChannel) discordMessage.textChannel else if (executedIfNull) channel else null
-}
+    return@runCatching if (channel == null && discordMessage.channel is TextChannel && executedIfNull) discordMessage.textChannel else channel
+}.getOrNull()

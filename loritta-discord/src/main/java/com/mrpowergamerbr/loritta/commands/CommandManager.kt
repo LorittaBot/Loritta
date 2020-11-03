@@ -113,7 +113,7 @@ class CommandManager(loritta: Loritta) {
 		commandMap.add(AjudaCommand())
 		commandMap.add(PingCommand())
 		commandMap.add(QuoteCommand())
-		commandMap.add(SayCommand())
+		// commandMap.add(SayCommand())
 		commandMap.add(EscolherCommand())
 		commandMap.add(LanguageCommand())
 		commandMap.add(PatreonCommand())

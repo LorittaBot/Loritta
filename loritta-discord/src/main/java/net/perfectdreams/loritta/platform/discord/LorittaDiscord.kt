@@ -107,6 +107,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
                 ClearCommand(this@LorittaDiscord),
                 KickCommand(this@LorittaDiscord),
                 LockCommand(this@LorittaDiscord),
+                SayCommand(this@LorittaDiscord),
                 UnlockCommand(this@LorittaDiscord)
         )
     }
