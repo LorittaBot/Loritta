@@ -32,12 +32,13 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
             }
         }
 
-        // TODO: Improve
         executesDiscord {
             if (args.isEmpty()) return@executesDiscord explain()
 
             val count = args[0].toIntOrNull()
             val channel = discordMessage.channel as? TextChannel ?: return@executesDiscord
+
+            val target = user(1)
 
             if (count == null || count !in 2..100)
                 fail(locale["commands.moderation.clear.invalidClearRange"], Constants.ERROR)
@@ -48,7 +49,7 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
 
             val messages = channel.history.retrievePast(count).await()
 
-            val disallowedMessages = messages.filter { (((System.currentTimeMillis() / 1000) - it.timeCreated.toEpochSecond()) > 1209600) || (it.isPinned) }
+            val disallowedMessages = messages.filter { ((((System.currentTimeMillis() / 1000) - it.timeCreated.toEpochSecond()) > 1209600) || (it.isPinned)) && if (target != null) it.author.idLong == target.id else true }
             val allowedMessages = messages - disallowedMessages
 
             if (allowedMessages.isEmpty())
