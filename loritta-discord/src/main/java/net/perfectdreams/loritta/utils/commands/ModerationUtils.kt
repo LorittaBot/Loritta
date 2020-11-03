@@ -66,7 +66,7 @@ data class ProvidedPunishmentData(
  * @property reason The punishment reason (can be empty)
  * @property skipConfirmation If we'll skip the punishment confirmation (represented by |f)
  * @property isSilent If we won't notify the user and the moderation logs about the punishment (represented by |s)
- * @property delDays The time of the messages that're going to be deleted (example |7 days)
+ * @property delDays The time of the messages that are going to be deleted (example |7 days)
  */
 data class PunishmentStatementModifiers(
         val reason: String,
@@ -131,7 +131,7 @@ suspend fun DiscordCommandContext.parsePunishmentStatementData(): PunishmentStat
     // Parsing all users to members, if there's one invalid, we'll throw a CommandException
     val members = this.mapToMemberFollowingPunishmentRequirements(users)
 
-    // Parsing modifiers to retrieve the modifiers theyself & the stripped reason
+    // Parsing modifiers to retrieve them & the stripped reason
     val modifiers = this.parsePunishmentModifiers(rawReason)
 
     return PunishmentStatementData(users, members, modifiers)
@@ -194,10 +194,10 @@ fun DiscordCommandContext.checkForPunishmentPermissions(target: Member) {
         fail(reply, Constants.ERROR)
     } else if (member.canInteract(target).not()) {
         val reply = buildString {
-            append(locale["$LOCALE_PREFIX.punisherRoleTooLow"])
+            append(locale["$LOCALE_PREFIX.staffRoleTooLow"])
 
             if (member.hasPermission(Permission.MANAGE_ROLES))
-                append(" ${locale["$LOCALE_PREFIX.punisherRoleTooLowHowToFix"]}")
+                append(" ${locale["$LOCALE_PREFIX.staffRoleTooLowHowToFix"]}")
         }
 
         fail(reply, Constants.ERROR)
@@ -226,22 +226,22 @@ suspend fun DiscordCommandContext.mapToMemberFollowingPunishmentRequirements(use
  *
  * @see createPunishmentEmbedBuilderSentViaDirectMessage
  */
-fun createPunishmentMessageSentViaDirectMessage(guild: Guild, locale: BaseLocale, punisher: User, punishmentAction: String, reason: String): MessageEmbed =
-        createPunishmentEmbedBuilderSentViaDirectMessage(guild, locale, punisher, punishmentAction, reason).build()
+fun createPunishmentMessageSentViaDirectMessage(guild: Guild, locale: BaseLocale, staff: User, punishmentAction: String, reason: String): MessageEmbed =
+        createPunishmentEmbedBuilderSentViaDirectMessage(guild, locale, staff, punishmentAction, reason).build()
 
 /**
  * This will just create the message that'll be sent to the punished user at his DMs (if public)
  *
  * @see createPunishmentMessageSentViaDirectMessage
  */
-fun createPunishmentEmbedBuilderSentViaDirectMessage(guild: Guild, locale: BaseLocale, punisher: User, punishmentAction: String, reason: String): EmbedBuilder = EmbedBuilder().also { embed ->
+fun createPunishmentEmbedBuilderSentViaDirectMessage(guild: Guild, locale: BaseLocale, staff: User, punishmentAction: String, reason: String): EmbedBuilder = EmbedBuilder().also { embed ->
     embed.setTimestamp(Instant.now())
     embed.setColor(Color(221, 0, 0))
 
     embed.setThumbnail(guild.iconUrl)
-    embed.setAuthor(punisher.name + "#" + punisher.discriminator, null, punisher.avatarUrl)
+    embed.setAuthor(staff.name + "#" + staff.discriminator, null, staff.avatarUrl)
     embed.setTitle("\uD83D\uDEAB ${locale["$LOCALE_PREFIX.youGotPunished", punishmentAction.toLowerCase(), guild.name]}!")
-    embed.addField("\uD83D\uDC6E ${locale["$LOCALE_PREFIX.punishedBy"]}", punisher.name + "#" + punisher.discriminator, false)
+    embed.addField("\uD83D\uDC6E ${locale["$LOCALE_PREFIX.punishedBy"]}", staff.name + "#" + staff.discriminator, false)
     embed.addField("\uD83D\uDCDD ${locale["$LOCALE_PREFIX.punishmentReason"]}", reason, false)
 }
 
@@ -267,18 +267,18 @@ fun getMessageForPunishment(settings: ModerationConfigSettings, guild: Guild, ac
  *
  * @see getPunishmentCustomTokens
  */
-fun getStaffCustomTokens(punisher: User) = mapOf(
-        Placeholders.STAFF_NAME_SHORT.name to punisher.name,
-        Placeholders.STAFF_NAME.name to punisher.name,
-        Placeholders.STAFF_MENTION.name to punisher.asMention,
-        Placeholders.STAFF_DISCRIMINATOR.name to punisher.discriminator,
-        Placeholders.STAFF_AVATAR_URL.name to punisher.effectiveAvatarUrl,
-        Placeholders.STAFF_ID.name to punisher.id,
-        Placeholders.STAFF_TAG.name to punisher.asTag,
+fun getStaffCustomTokens(staff: User) = mapOf(
+        Placeholders.STAFF_NAME_SHORT.name to staff.name,
+        Placeholders.STAFF_NAME.name to staff.name,
+        Placeholders.STAFF_MENTION.name to staff.asMention,
+        Placeholders.STAFF_DISCRIMINATOR.name to staff.discriminator,
+        Placeholders.STAFF_AVATAR_URL.name to staff.effectiveAvatarUrl,
+        Placeholders.STAFF_ID.name to staff.id,
+        Placeholders.STAFF_TAG.name to staff.asTag,
 
-        Placeholders.Deprecated.STAFF_DISCRIMINATOR.name to punisher.discriminator,
-        Placeholders.Deprecated.STAFF_AVATAR_URL.name to punisher.effectiveAvatarUrl,
-        Placeholders.Deprecated.STAFF_ID.name to punisher.id
+        Placeholders.Deprecated.STAFF_DISCRIMINATOR.name to staff.discriminator,
+        Placeholders.Deprecated.STAFF_AVATAR_URL.name to staff.effectiveAvatarUrl,
+        Placeholders.Deprecated.STAFF_ID.name to staff.id
 )
 
 /**
@@ -322,8 +322,8 @@ suspend fun DiscordCommandContext.createStandardLazyPunishment(handler: Punishme
  *
  * @see AuditLog
  */
-fun generateAuditLogMessage(locale: BaseLocale, punisher: User, reason: String) =
-        locale["$LOCALE_PREFIX.punishedLog", "${punisher.name}#${punisher.discriminator}", reason].substringIfNeeded(0 until 512)
+fun generateAuditLogMessage(locale: BaseLocale, staff: User, reason: String) =
+        locale["$LOCALE_PREFIX.punishedLog", "${staff.name}#${staff.discriminator}", reason].substringIfNeeded(0 until 512)
 
 /**
  * Sending the success message, usually after the [handlePunishmentConfirmation] or, if the user has the quick punishments enabled,
@@ -419,7 +419,7 @@ suspend fun DiscordCommandContext.handleLazyPunishment(settings: ModerationConfi
 suspend fun DiscordCommandContext.handlePunishmentConfirmation(message: Message, punishment: LazyPunishment) {
     // Handling the reaction
     message.onReactionAddByAuthor(this) {
-        // Chewcking the emote if it's expected
+        // Checking the emote if it's expected
         if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
             punishment(message, it.reactionEmote.isEmote("\uD83D\uDE4A"))
         }
@@ -454,15 +454,15 @@ interface PunishmentHandler {
      *
      * @see handleNonSilentPunishment
      */
-    fun applyPunishment(settings: ModerationConfigSettings, guild: Guild, punisher: User, guildLocale: BaseLocale, userLocale: BaseLocale, user: User, reason: String, isSilent: Boolean, delDays: Int)
+    fun applyPunishment(settings: ModerationConfigSettings, guild: Guild, staff: User, guildLocale: BaseLocale, userLocale: BaseLocale, user: User, reason: String, isSilent: Boolean, delDays: Int)
 
-    fun ModerationConfigSettings.handleNonSilentPunishment(type: PunishmentAction, guild: Guild, punisher: User, serverLocale: BaseLocale, userLocale: BaseLocale, user: User, reason: String) {
+    fun ModerationConfigSettings.handleNonSilentPunishment(type: PunishmentAction, guild: Guild, staff: User, serverLocale: BaseLocale, userLocale: BaseLocale, user: User, reason: String) {
         /** The locale prefix for the provided [PunishmentAction] */
         val prefix = "$LOCALE_PREFIX.${type.name.toLowerCase()}"
 
         if (this.sendPunishmentViaDm && guild.isMember(user)) {
             runCatching {
-                val embed = createPunishmentMessageSentViaDirectMessage(guild, userLocale, punisher, userLocale["$prefix.punishAction"], reason)
+                val embed = createPunishmentMessageSentViaDirectMessage(guild, userLocale, staff, userLocale["$prefix.punishAction"], reason)
 
                 user.openPrivateChannel().queue {
                     it.sendMessage(embed).queue()
@@ -482,7 +482,7 @@ interface PunishmentHandler {
                         guild,
                         mutableMapOf(
                                 "duration" to serverLocale["commands.moderation.mute.forever"]
-                        ) + getStaffCustomTokens(punisher) + getPunishmentCustomTokens(serverLocale, reason,prefix)
+                        ) + getStaffCustomTokens(staff) + getPunishmentCustomTokens(serverLocale, reason,prefix)
                 )
 
                 message?.let {
