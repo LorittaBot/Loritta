@@ -30,7 +30,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 
     override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
         val profile = loritta.getOrCreateLorittaProfile(context.userHandle.idLong)
-        val hasPersonalLanguage = profile.settings.language != null && context.isPrivateChannel
+        val hasPersonalLanguage = loritta.newSuspendedTransaction { profile.settings.language != null && context.isPrivateChannel }
 
         val embed = EmbedBuilder()
         embed.setColor(Color(0, 193, 223))
