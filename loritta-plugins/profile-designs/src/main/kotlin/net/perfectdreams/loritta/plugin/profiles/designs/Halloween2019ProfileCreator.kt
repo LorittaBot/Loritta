@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.profile.ProfileUtils
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.io.File
@@ -140,11 +141,14 @@ class Halloween2019ProfileCreator : ProfileCreator("halloween2019") {
 		ImageUtils.drawCenteredString(graphics, "$reputations reps", Rectangle(634, 404, 166, 52), font)
 	}
 
-	fun drawUserInfo(user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, graphics: Graphics, globalPosition: Long, localPosition: Long?, xpLocal: Long?, globalEconomyPosition: Long): Int {
+	fun drawUserInfo(user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, graphics: Graphics, globalPosition: Long?, localPosition: Long?, xpLocal: Long?, globalEconomyPosition: Long?): Int {
 		val userInfo = mutableListOf<String>()
 		userInfo.add("Global")
 
-		userInfo.add("#$globalPosition / ${userProfile.xp} XP")
+		if (globalPosition != null)
+			userInfo.add("#$globalPosition / ${userProfile.xp} XP")
+		else
+			userInfo.add("${userProfile.xp} XP")
 
 		if (guild != null) {
 			// Iremos remover os emojis do nome da guild, já que ele não calcula direito no stringWidth
@@ -157,7 +161,10 @@ class Halloween2019ProfileCreator : ProfileCreator("halloween2019") {
 		}
 
 		userInfo.add("Sonhos")
-		userInfo.add("#$globalEconomyPosition / ${userProfile.money}")
+		if (globalEconomyPosition != null)
+			userInfo.add("#$globalEconomyPosition / ${userProfile.money}")
+		else
+			userInfo.add("${userProfile.money}")
 
 		val biggestStrWidth = graphics.fontMetrics.stringWidth(userInfo.maxBy { graphics.fontMetrics.stringWidth(it) }!!)
 

@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
+import net.perfectdreams.loritta.profile.ProfileUtils
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.io.File
@@ -112,7 +113,10 @@ open class PlainProfileCreator(internalName: String, val folderName: String) : P
 		val userInfo = mutableListOf<String>()
 		userInfo.add("Global")
 		val globalPosition = ProfileUtils.getGlobalExperiencePosition(userProfile)
-		userInfo.add("#$globalPosition / ${userProfile.xp} XP")
+		if (globalPosition != null)
+			userInfo.add("#$globalPosition / ${userProfile.xp} XP")
+		else
+			userInfo.add("${userProfile.xp} XP")
 
 		if (guild != null) {
 			val localProfile = ProfileUtils.getLocalProfile(guild, user)
@@ -133,7 +137,10 @@ open class PlainProfileCreator(internalName: String, val folderName: String) : P
 		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(userProfile)
 
 		userInfo.add("Sonhos")
-		userInfo.add("#$globalEconomyPosition / ${userProfile.money}")
+		if (globalEconomyPosition != null)
+			userInfo.add("#$globalEconomyPosition / ${userProfile.money}")
+		else
+			userInfo.add("${userProfile.money}")
 
 		val biggestStrWidth = graphics.fontMetrics.stringWidth(userInfo.maxBy { graphics.fontMetrics.stringWidth(it) }!!)
 

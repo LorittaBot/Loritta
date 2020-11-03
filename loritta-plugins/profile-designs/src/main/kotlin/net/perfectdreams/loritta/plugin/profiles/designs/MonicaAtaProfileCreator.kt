@@ -15,6 +15,7 @@ import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.profile.ProfileUtils
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -42,7 +43,10 @@ class MonicaAtaProfileCreator : ProfileCreator("monicaAta") {
 		val userInfo = mutableListOf<String>()
 		userInfo.add("Global")
 		val globalPosition = ProfileUtils.getGlobalExperiencePosition(userProfile)
-		userInfo.add("#$globalPosition / ${userProfile.xp} XP")
+		if (globalPosition != null)
+			userInfo.add("#$globalPosition / ${userProfile.xp} XP")
+		else
+			userInfo.add("${userProfile.xp} XP")
 
 		if (guild != null) {
 			val localProfile = ProfileUtils.getLocalProfile(guild, user)
@@ -63,7 +67,10 @@ class MonicaAtaProfileCreator : ProfileCreator("monicaAta") {
 		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(userProfile)
 
 		userInfo.add("Sonhos")
-		userInfo.add("#$globalEconomyPosition / ${userProfile.money}")
+		if (globalEconomyPosition != null)
+			userInfo.add("#$globalEconomyPosition / ${userProfile.money}")
+		else
+			userInfo.add("${userProfile.money}")
 
 		graphics.font = KOMIKA.deriveFont(13f)
 		val biggestStrWidth = graphics.fontMetrics.stringWidth(userInfo.maxBy { graphics.fontMetrics.stringWidth(it) }!!)

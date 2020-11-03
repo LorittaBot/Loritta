@@ -10,7 +10,7 @@ import com.mrpowergamerbr.loritta.utils.drawText
 import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.Member
+import net.perfectdreams.loritta.profile.ProfileUtils
 import java.awt.Color
 import java.awt.Font
 import java.awt.image.BufferedImage
@@ -102,7 +102,11 @@ class MSNProfileCreator : ProfileCreator("msn") {
 		val globalPosition = ProfileUtils.getGlobalExperiencePosition(userProfile)
 		graphics.drawText("Global", 4, 21 + shiftY, 244)
 		graphics.font = whitneySemiBold20
-		graphics.drawText("#$globalPosition / ${userProfile.xp} XP", 4, 39  + shiftY, 244)
+
+		if (globalPosition != null)
+			graphics.drawText("#$globalPosition / ${userProfile.xp} XP", 4, 39  + shiftY, 244)
+		else
+			graphics.drawText("${userProfile.xp} XP", 4, 39  + shiftY, 244)
 
 		if (guild != null) {
 			val localProfile = ProfileUtils.getLocalProfile(guild, user)

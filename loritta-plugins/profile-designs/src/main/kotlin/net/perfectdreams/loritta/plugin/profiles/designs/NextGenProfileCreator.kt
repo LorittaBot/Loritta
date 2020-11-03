@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.Member
+import net.perfectdreams.loritta.profile.ProfileUtils
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.io.File
@@ -132,7 +132,10 @@ class NextGenProfileCreator : ProfileCreator("nextGenDark") {
 		graphics.drawText("Global", 232, 157)
 		userInfo.add("Global")
 		val globalPosition = ProfileUtils.getGlobalExperiencePosition(userProfile)
-		graphics.drawText("#$globalPosition / ${userProfile.xp} XP", 232, 173)
+		if (globalPosition != null)
+			graphics.drawText("#$globalPosition / ${userProfile.xp} XP", 232, 173)
+		else
+			graphics.drawText("${userProfile.xp} XP", 232, 173)
 
 		if (guild != null) {
 			val localProfile = ProfileUtils.getLocalProfile(guild, user)
@@ -154,7 +157,11 @@ class NextGenProfileCreator : ProfileCreator("nextGenDark") {
 		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(userProfile)
 
 		graphics.drawText("Sonhos", 631, 34)
-		graphics.drawText("#$globalEconomyPosition / ${userProfile.money}", 631, 54)
+		if (globalEconomyPosition != null)
+			graphics.drawText("#$globalEconomyPosition / ${userProfile.money}", 631, 54)
+		else
+			graphics.drawText("${userProfile.money}", 631, 54)
+
 		graphics.color = Color.WHITE
 		return 0
 	}

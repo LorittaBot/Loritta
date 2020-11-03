@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.Member
+import net.perfectdreams.loritta.profile.ProfileUtils
 import java.awt.Font
 import java.awt.image.BufferedImage
 import java.io.File
@@ -74,7 +74,10 @@ class DefaultProfileCreator : ProfileCreator("modernBlurple") {
 		}
 
 		val globalPosition = ProfileUtils.getGlobalExperiencePosition(userProfile)
-		drawSection("Global", "#$globalPosition / ${userProfile.xp} XP", 562, 21)
+		if (globalPosition != null)
+			drawSection("Global", "#$globalPosition / ${userProfile.xp} XP", 562, 21)
+		else
+			drawSection("Global", "${userProfile.xp} XP", 562, 21)
 
 		if (guild != null) {
 			val guildIcon = LorittaUtils.downloadImage(guild.iconUrl?.replace("jpg", "png") ?: "https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/56/shrug_1f937.png")!!.getScaledInstance(38, 38, BufferedImage.SCALE_SMOOTH)
@@ -103,7 +106,10 @@ class DefaultProfileCreator : ProfileCreator("modernBlurple") {
 
 		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(userProfile)
 
-		drawSection(locale["ECONOMY_NamePlural"], "#$globalEconomyPosition / ${userProfile.money}", 562, 492)
+		if (globalEconomyPosition != null)
+			drawSection(locale["ECONOMY_NamePlural"], "#$globalEconomyPosition / ${userProfile.money}", 562, 492)
+		else
+			drawSection(locale["ECONOMY_NamePlural"], "${userProfile.money}", 562, 492)
 
 		ProfileUtils.getMarriageInfo(userProfile)?.let { (marriage, marriedWith) ->
 			val marrySection = ImageIO.read(File(Loritta.ASSETS, "profile/modern/marry.png"))
