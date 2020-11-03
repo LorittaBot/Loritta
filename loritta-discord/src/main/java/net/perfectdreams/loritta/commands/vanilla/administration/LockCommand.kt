@@ -6,7 +6,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.CommandContext
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
-import net.perfectdreams.loritta.utils.commands.*
+import net.perfectdreams.loritta.utils.commands.getTextChannel
 
 class LockCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta, listOf("lock", "trancar"), CommandCategory.ADMIN) {
 
