@@ -32,7 +32,7 @@ import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.utils.format
-import net.perfectdreams.loritta.commands.vanilla.administration.BanInfoCommand
+import net.perfectdreams.loritta.commands.vanilla.administration.*
 import net.perfectdreams.loritta.commands.vanilla.economy.SonhosTopCommand
 import net.perfectdreams.loritta.commands.vanilla.economy.SonhosTopLocalCommand
 import net.perfectdreams.loritta.commands.vanilla.economy.TransactionsCommand
@@ -102,7 +102,12 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
                 XpNotificationsCommand(this@LorittaDiscord),
 
                 // ===[ ADMIN ]===
-                BanInfoCommand(this@LorittaDiscord)
+                BanCommand(this@LorittaDiscord),
+                BanInfoCommand(this@LorittaDiscord),
+                ClearCommand(this@LorittaDiscord),
+                KickCommand(this@LorittaDiscord),
+                LockCommand(this@LorittaDiscord),
+                UnlockCommand(this@LorittaDiscord)
         )
     }
 

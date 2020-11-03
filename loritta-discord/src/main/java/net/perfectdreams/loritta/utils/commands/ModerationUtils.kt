@@ -194,10 +194,10 @@ fun DiscordCommandContext.checkForPunishmentPermissions(target: Member) {
         fail(reply, Constants.ERROR)
     } else if (member.canInteract(target).not()) {
         val reply = buildString {
-            append(locale["$LOCALE_PREFIX.staffRoleTooLow"])
+            append(locale["$LOCALE_PREFIX.punisherRoleTooLow"])
 
             if (member.hasPermission(Permission.MANAGE_ROLES))
-                append(" ${locale["$LOCALE_PREFIX.staffRoleTooLowHowToFix"]}")
+                append(" ${locale["$LOCALE_PREFIX.punisherRoleTooLow"]}")
         }
 
         fail(reply, Constants.ERROR)

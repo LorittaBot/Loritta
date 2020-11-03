@@ -191,20 +191,20 @@ class CommandManager(loritta: Loritta) {
 		// commandMap.add(MALMangaCommand())
 
 		// =======[ ADMIN ]========
-		commandMap.add(LimparCommand())
+		// commandMap.add(LimparCommand())
 		commandMap.add(RoleIdCommand())
 		commandMap.add(MuteCommand())
 		commandMap.add(UnmuteCommand())
 		commandMap.add(SlowModeCommand())
-		commandMap.add(KickCommand())
-		commandMap.add(BanCommand())
+		// commandMap.add(KickCommand())
+		// commandMap.add(BanCommand())
 		commandMap.add(UnbanCommand())
 		commandMap.add(WarnCommand())
 		commandMap.add(UnwarnCommand())
 		commandMap.add(WarnListCommand())
 		commandMap.add(QuickPunishmentCommand())
-		commandMap.add(LockCommand())
-		commandMap.add(UnlockCommand())
+		// commandMap.add(LockCommand())
+		// commandMap.add(UnlockCommand())
 
 		// =======[ MAGIC ]========
 		commandMap.add(ReloadCommand())
