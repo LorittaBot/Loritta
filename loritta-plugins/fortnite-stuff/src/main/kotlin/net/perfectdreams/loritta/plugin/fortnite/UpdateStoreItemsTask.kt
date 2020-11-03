@@ -4,18 +4,14 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.client.request.post
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.readText
-import io.ktor.http.userAgent
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
@@ -33,6 +29,7 @@ import java.time.Instant
 import java.time.ZoneOffset
 import java.util.concurrent.ConcurrentHashMap
 import javax.imageio.ImageIO
+import kotlin.collections.set
 
 class UpdateStoreItemsTask(val m: FortniteStuff) {
 	companion object {
@@ -54,6 +51,8 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 			while (true) {
 				try {
 					if (loritta.isMaster) {
+						delay(5_000)
+
 						if (System.currentTimeMillis() - lastItemListPostUpdate >= 900_000) {
 							lastItemListPostUpdate = System.currentTimeMillis()
 							logger.info { "Updating Fortnite Items..." }
@@ -62,10 +61,13 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 							}.distinct()
 
 							for (apiId in distinctApiIds) {
-								val result = loritta.http.get<String>("https://fnapi.me/api/items/all?lang=$apiId") {
+								val result = loritta.http.get<String>("https://fortnite-api.com/v2/cosmetics/br?language=$apiId") {
 									userAgent(loritta.lorittaCluster.getUserAgent())
 									header("Authorization", com.mrpowergamerbr.loritta.utils.loritta.config.fortniteApi.token)
 								}
+
+								println(apiId)
+								println(result.substring(0, 50))
 
 								val clusters = loritta.config.clusters
 

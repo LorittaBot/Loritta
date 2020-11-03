@@ -44,9 +44,14 @@ class FortniteItemCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.l
 
 			val items = m.itemsInfo.values.flatMap {
 				it.filter {
-					it["itemId"].string == name || it["item"]["name"].nullString?.contains(name, true) == true
+					it["id"].string == name || it["name"].nullString?.contains(name, true) == true
 				}
-			}.distinctBy { it["itemId"].string }
+			}.distinctBy { it["id"].string }
+
+			println("ITEMS INFO")
+			m.itemsInfo.forEach {
+				println(it.key)
+			}
 
 			val fortniteItemsInCurrentLocale = m.itemsInfo[locale["commands.fortnite.shop.localeId"]]!!
 
@@ -54,7 +59,7 @@ class FortniteItemCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.l
 
 			if (items.size == 1) {
 				// Pegar na linguagem do usuário
-				val fortniteItemInCurrentLocale = fortniteItemsInCurrentLocale.first { it["itemId"].string == items.first()["itemId"].string }
+				val fortniteItemInCurrentLocale = fortniteItemsInCurrentLocale.first { it["id"].string == items.first()["id"].string }
 
 				sendMessage(
 						displayItemInfo(fortniteItemInCurrentLocale, locale).build()
@@ -62,11 +67,11 @@ class FortniteItemCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.l
 			} else if (items.isNotEmpty()) {
 				for (i in 0 until Math.min(9, items.size)) {
 					val item = items[i].obj
-					val fortniteItemInCurrentLocale = fortniteItemsInCurrentLocale.first { item["itemId"].string == it["itemId"].string }["item"].obj
+					val fortniteItemInCurrentLocale = fortniteItemsInCurrentLocale.first { item["id"].string == it["id"].string }.obj
 
 					embed.setTitle("${Emotes.LORI_HM} ${locale["$LOCALE_PREFIX.multipleItems"]}")
 					embed.setColor(Color(0, 125, 187))
-					embed.appendDescription("${Constants.INDEXES[i]} ${fortniteItemInCurrentLocale["name"].nullString} (${fortniteItemInCurrentLocale["typeName"].nullString})\n")
+					embed.appendDescription("${Constants.INDEXES[i]} ${fortniteItemInCurrentLocale["name"].nullString} (${fortniteItemInCurrentLocale["type"]["value"].nullString})\n")
 				}
 
 				val result = sendMessage(embed.build())
@@ -79,7 +84,7 @@ class FortniteItemCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.l
 						return@onReactionAddByAuthor
 
 					val item = items[idx]
-					val fortniteItemInCurrentLocale = fortniteItemsInCurrentLocale.first { item["itemId"].string == it["itemId"].string }
+					val fortniteItemInCurrentLocale = fortniteItemsInCurrentLocale.first { item["id"].string == it["id"].string }
 
 					result.edit(getUserMention(true), displayItemInfo(fortniteItemInCurrentLocale, locale).build(), true)
 				}
@@ -100,17 +105,17 @@ class FortniteItemCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.l
 	}
 
 	fun displayItemInfo(item: JsonElement, locale: BaseLocale): EmbedBuilder {
-		val fortniteItem = item["item"].obj
-		val source = fortniteItem["source"].nullString
-		val upcoming = fortniteItem["upcoming"].nullBool ?: true
+		val fortniteItem = item.obj
+		val source: String? = null // fortniteItem["source"].nullString
+		val upcoming = false // fortniteItem["upcoming"].nullBool ?: true
 
 		val embed = EmbedBuilder()
 				.setTitle("${Emotes.DEFAULT_DANCE} ${fortniteItem["name"].nullString}")
 				.setDescription(fortniteItem["description"].nullString)
 
-		embed.addField("\uD83D\uDD16 ${locale["${LOCALE_PREFIX}.type"]}", fortniteItem["typeName"].nullString, true)
+		embed.addField("\uD83D\uDD16 ${locale["${LOCALE_PREFIX}.type"]}", fortniteItem["type"]["displayValue"].nullString, true)
 
-		embed.addField("⭐ ${locale["${LOCALE_PREFIX}.rarity"]}", fortniteItem["rarityName"].nullString, true)
+		embed.addField("⭐ ${locale["${LOCALE_PREFIX}.rarity"]}", fortniteItem["rarity"]["displayValue"].nullString, true)
 
 		if (source != null) {
 			val beautifulSource = when {
@@ -151,20 +156,20 @@ class FortniteItemCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.l
 			embed.addField("\uD83D\uDD0E ${locale["${LOCALE_PREFIX}.source"]}", beautifulSource, true) // both name and value must be set
 		}
 
-		if (fortniteItem["costType"].nullString == "vbucks") {
+		/* if (fortniteItem["costType"].nullString == "vbucks") {
 			embed.addField("<:vbucks:635158614109192199> ${locale["${LOCALE_PREFIX}.cost"]}", fortniteItem["cost"].nullInt.toString(), true)
-		}
+		} */
 
 		embed.addField("\uD83D\uDE80 ${locale["${LOCALE_PREFIX}.alreadyReleased"]}", locale["loritta.fancyBoolean.${!upcoming}"], true)
 
-		val image = fortniteItem["images"]["background"].nullString
+		val image = fortniteItem["images"]["icon"].nullString
 
 		embed.setThumbnail(image)
 		embed.setColor(
-				FortniteStuff.convertRarityToColor(fortniteItem["rarity"].nullString ?: "???")
+				FortniteStuff.convertRarityToColor(fortniteItem["rarity"]["value"].nullString ?: "???")
 		)
 
-		embed.addField("\uD83D\uDCBB ID", "`${item["itemId"].string}`", true)
+		embed.addField("\uD83D\uDCBB ID", "`${item["id"].string}`", true)
 
 		return embed
 	}
