@@ -66,9 +66,6 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 									header("Authorization", com.mrpowergamerbr.loritta.utils.loritta.config.fortniteApi.token)
 								}
 
-								println(apiId)
-								println(result.substring(0, 50))
-
 								val clusters = loritta.config.clusters
 
 								clusters.map {
