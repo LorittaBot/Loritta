@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.getLorittaProfile
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.Gender
 import com.mrpowergamerbr.loritta.utils.onReactionAdd
@@ -24,6 +25,7 @@ import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractComman
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
 import net.perfectdreams.loritta.utils.extensions.toJDA
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.kotlin.utils.addToStdlib.cast
 import java.awt.Color
 import java.io.File
 
@@ -48,7 +50,7 @@ abstract class ActionCommand(loritta: LorittaDiscord, labels: List<String>): Dis
             executesDiscord {
                 if (args.isEmpty()) return@executesDiscord explain()
 
-                handle(it, userOrFail(0).toJDA())
+                it.handle(this, user, userOrFail(0).toJDA())
             }
         }
     }
@@ -110,54 +112,54 @@ private fun ActionCommandDSL.selectGifsByGender(userGender: Gender, receiverGend
     return getCachedGifs(this).filter { folderNames.any { folderName -> folderName == it.folderName } }
 }
 
-private suspend fun DiscordCommandContext.handle(dsl: ActionCommandDSL, receiver: User, repeat: Boolean = false) {
-    val senderProfile = lorittaUser.profile
-    val receiverProfile = LorittaLauncher.loritta.getLorittaProfile(receiver.id)
+private suspend fun ActionCommandDSL.handle(context: DiscordCommandContext, sender: User, receiver: User, repeat: Boolean = false) {
+    val senderProfile = sender.getLorittaProfile()
+    val receiverProfile = receiver.getLorittaProfile()
 
     // Anti-idiot people
-    if (dsl.command is KissCommand && receiver.id == LorittaLauncher.loritta.discordConfig.discord.clientId) {
-        addIdiotReply()
+    if (command is KissCommand && receiver.id == LorittaLauncher.loritta.discordConfig.discord.clientId) {
+        context.addIdiotReply()
         return
     }
 
     // Searching for receiver's and sender's genders
-    val userGender = transaction(Databases.loritta) { senderProfile.settings.gender }
+    val userGender = transaction(Databases.loritta) { senderProfile?.settings?.gender ?: Gender.UNKNOWN }
     val receiverGender = transaction(Databases.loritta) { receiverProfile?.settings?.gender ?: Gender.UNKNOWN  }
 
     val response: String
 
     // If the sender tried to slap Lori, Lori'll slap him!
-    var files = if ((dsl.command is SlapCommand || dsl.command is AttackCommand) && receiver.id == LorittaLauncher.loritta.discordConfig.discord.clientId) {
-        response = dsl.response(locale, receiver, user)
-        dsl.selectGifsByGender(receiverGender, userGender)
+    var files = if ((command is SlapCommand || command is AttackCommand) && receiver.id == LorittaLauncher.loritta.discordConfig.discord.clientId) {
+        response = response(context.locale, receiver, sender)
+        selectGifsByGender(receiverGender, userGender)
     } else {
-        response = dsl.response(locale, user, receiver)
-        dsl.selectGifsByGender(userGender, receiverGender)
+        response = response(context.locale, sender, receiver)
+        selectGifsByGender(userGender, receiverGender)
     }
 
     // If there're no GIFs available, we'll try to avoid errors by searching for all gifs
     while (files.isEmpty()) {
-        files = dsl.selectGifsByGender(Gender.UNKNOWN, Gender.UNKNOWN)
+        files = selectGifsByGender(Gender.UNKNOWN, Gender.UNKNOWN)
     }
 
     val randomImage = files.random()
 
-    val message = sendMessage(user.asMention,
+    val message = context.sendMessage(sender.asMention,
             EmbedBuilder()
-                    .setDescription("${dsl.emoji} $response")
-                    .setColor(dsl.color)
-                    .setImage(loritta.instanceConfig.loritta.website.url + "assets/img/actions/${dsl.folderName}/${randomImage.folderName}/${randomImage.fileName}")
+                    .setDescription("$emoji $response")
+                    .setColor(color)
+                    .setImage(context.loritta.instanceConfig.loritta.website.url + "assets/img/actions/$folderName/${randomImage.folderName}/${randomImage.fileName}")
                     .also {
-                        if (user != receiver && !repeat) {
-                            it.setFooter(locale["commands.actions.clickToRetribute", "\uD83D\uDD01"], null)
+                        if (sender != receiver && !repeat) {
+                            it.setFooter(context.locale["commands.actions.clickToRetribute", "\uD83D\uDD01"], null)
                         }
                     }
                     .build()
     )
 
     // To avoid actions flood, we'll only add the reaction if the receiver is another person or the action is already a retribution.
-    if (user != receiver && !repeat) {
-        addReactionButton(dsl, message, user, receiver)
+    if (sender != receiver && !repeat) {
+        context.addReactionButton(this, message, sender, receiver)
     }
 }
 
@@ -170,7 +172,7 @@ private fun DiscordCommandContext.addReactionButton(dsl: ActionCommandDSL, messa
 
         if (it.reactionEmote.name == "\uD83D\uDD01" && user.id == receiver.id) { message.removeAllFunctions()
             message.removeAllFunctions()
-            handle(dsl, sender, true)
+            dsl.handle(this, sender, receiver,true)
         }
     }
 }
