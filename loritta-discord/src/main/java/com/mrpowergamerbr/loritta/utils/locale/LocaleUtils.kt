@@ -14,6 +14,10 @@ fun LegacyBaseLocale.getLocaleId(loritta: Loritta = LorittaLauncher.loritta) =
 fun Profile.getBaseLocale(loritta: Loritta = LorittaLauncher.loritta, default: LegacyBaseLocale? = null): BaseLocale =
         getLegacyBaseLocale(loritta).toNewLocale()
 
-fun Profile.getLegacyBaseLocale(loritta: Loritta = LorittaLauncher.loritta, default: LegacyBaseLocale? = null): LegacyBaseLocale = if (settings.language == null && default != null)
-    default
-else loritta.getLegacyLocaleById(settings.language ?: default?.getLocaleId(loritta) ?: Constants.DEFAULT_LOCALE_ID)
+fun Profile.getLegacyBaseLocale(loritta: Loritta = LorittaLauncher.loritta, default: LegacyBaseLocale? = null): LegacyBaseLocale {
+    val settings = loritta.transaction { settings }
+
+    return if (settings.language == null && default != null)
+        default
+    else loritta.getLegacyLocaleById(settings.language ?: default?.getLocaleId(loritta) ?: Constants.DEFAULT_LOCALE_ID)
+}
