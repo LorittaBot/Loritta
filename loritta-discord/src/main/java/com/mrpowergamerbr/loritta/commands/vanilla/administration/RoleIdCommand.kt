@@ -6,18 +6,19 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import java.util.*
 
 class RoleIdCommand : AbstractCommand("roleid", listOf("cargoid", "iddocargo"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["$LOCALE_PREFIX.roleId.description"]
+		return locale["ROLEID_DESCRIPTION"]
 	}
 
 	override fun getUsage(): String {
 		return "CargoMencionado"
 	}
 
-	override fun getExamples(locale: LegacyBaseLocale): List<String> {
-		return locale.toNewLocale().getList("$LOCALE_PREFIX.roleId.examples")
+	override fun getExamples(): List<String> {
+		return Arrays.asList("Moderadores")
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
@@ -28,9 +29,9 @@ class RoleIdCommand : AbstractCommand("roleid", listOf("cargoid", "iddocargo"), 
 		return false
 	}
 
-	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.rawArgs.isNotEmpty()) {
-			val argument = context.rawArgs.joinToString(" ")
+			var argument = context.rawArgs.joinToString(" ")
 
 			val mentionedRoles = context.message.mentionedRoles // Se o usuário mencionar o cargo, vamos mostrar o ID dos cargos mencionados
 
@@ -39,38 +40,38 @@ class RoleIdCommand : AbstractCommand("roleid", listOf("cargoid", "iddocargo"), 
 			if (mentionedRoles.isNotEmpty()) {
 
 				list.add(LorittaReply(
-						message = context.locale["$LOCALE_PREFIX.roleId.identifiers", argument],
-						prefix = "\uD83D\uDCBC"
-				))
+                        message = locale["ROLEID_RoleIds", argument],
+                        prefix = "\uD83D\uDCBC"
+                ))
 
 				mentionedRoles.mapTo(list) {
-					LorittaReply(
-							message = "*${it.name}* - `${it.id}`",
-							mentionUser = false
-					)
+                    LorittaReply(
+                            message = "*${it.name}* - `${it.id}`",
+                            mentionUser = false
+                    )
 				}
 			} else {
 				val roles = context.guild.roles.filter { it.name.contains(argument, true) }
 
 				list.add(LorittaReply(
-						message = context.locale["$LOCALE_PREFIX.roleId.rolesThatContains", argument],
-						prefix = "\uD83D\uDCBC"
-				))
+                        message = locale["ROLEID_RolesThatContains", argument],
+                        prefix = "\uD83D\uDCBC"
+                ))
 
 				if (roles.isEmpty()) {
 					list.add(
-							LorittaReply(
-									message = "*${context.locale["$LOCALE_PREFIX.roleId.emptyRoles"]}*",
-									mentionUser = false,
-									prefix = "\uD83D\uDE22"
-							)
+                            LorittaReply(
+                                    message = "*${locale["ROLEID_NoRole"]}*",
+                                    mentionUser = false,
+                                    prefix = "\uD83D\uDE22"
+                            )
 					)
 				} else {
 					roles.mapTo(list) {
-						LorittaReply(
-								message = "*${it.name}* - `${it.id}`",
-								mentionUser = false
-						)
+                        LorittaReply(
+                                message = "*${it.name}* - `${it.id}`",
+                                mentionUser = false
+                        )
 					}
 				}
 
@@ -80,9 +81,4 @@ class RoleIdCommand : AbstractCommand("roleid", listOf("cargoid", "iddocargo"), 
 			context.explain()
 		}
 	}
-
-	companion object {
-		const val LOCALE_PREFIX = "commands.moderation"
-	}
-
 }

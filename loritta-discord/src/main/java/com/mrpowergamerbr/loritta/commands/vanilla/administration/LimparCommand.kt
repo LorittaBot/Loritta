@@ -51,7 +51,7 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 			if (toClear == null) {
 				context.reply(
                         LorittaReply(
-								context.locale["commands.invalidNumber", context.args[0]],
+                                "${context.legacyLocale["INVALID_NUMBER", context.args[0]]}",
                                 Constants.ERROR
                         )
 				)
@@ -61,7 +61,7 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 			if (toClear !in 2..100) {
 				context.reply(
                         LorittaReply(
-                                context.locale["commands.moderation.clear.invalidClearRange"],
+                                "${context.locale["commands.moderation.clear.invalidClearRange"]}",
                                 Constants.ERROR
                         )
 				)
@@ -79,7 +79,7 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 			if (allowedMessages.isEmpty()) {
 				context.reply(
                         LorittaReply(
-                                context.locale["commands.moderation.clear.couldNotFindMessages"],
+                                "${context.locale["commands.moderation.clear.couldNotFindMessages"]}",
                                 Constants.ERROR
                         )
 				)
@@ -89,7 +89,7 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 			if (allowedMessages.size !in 2..100) {
 				context.reply(
                         LorittaReply(
-                                context.locale["commands.moderation.clear.couldNotFindMessages"],
+                                "${context.locale["commands.moderation.clear.couldNotFindMessages"]}",
                                 Constants.ERROR
                         )
 				)
@@ -98,11 +98,11 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 
 			// E agora realmente iremos apagar as mensagens!
 			context.message.textChannel.deleteMessages(allowedMessages).await()
-			if (oldMessages.isNotEmpty() && pinnedMessages.isNotEmpty()) {
+			if (oldMessages.size > 0 && pinnedMessages.size > 0) {
 				context.sendMessage(context.locale["commands.moderation.clear.ignoredTooOldAndPinnedMessages", context.userHandle.asMention, oldMessages.size, pinnedMessages.size])
-			} else if (oldMessages.isNotEmpty()) {
+			} else if (oldMessages.size > 0) {
 				context.sendMessage(context.locale["commands.moderation.clear.ignoredTooOldMessages", context.userHandle.asMention, oldMessages.size])
-			} else if (pinnedMessages.isNotEmpty()) {
+			} else if (pinnedMessages.size > 0) {
 				context.sendMessage(context.locale["commands.moderation.clear.ignoredPinnedMessages", context.userHandle.asMention, pinnedMessages.size])
 			} else {
 				context.sendMessage(context.locale["commands.moderation.clear.success", context.userHandle.asMention])

@@ -18,7 +18,7 @@ open class LegacyBaseLocale {
 		 * Returns the Java Locale (used for dates, etc) for the specified [lcoale]
 		 */
 		fun toJavaLocale(locale: LegacyBaseLocale): Locale {
-			val localeId = locale.getLocaleId()
+			val localeId = loritta.legacyLocales.entries.first { it.value == locale }.key
 
 			return Locale(
 					when (localeId) {

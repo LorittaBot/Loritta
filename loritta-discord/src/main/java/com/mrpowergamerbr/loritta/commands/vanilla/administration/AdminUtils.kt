@@ -27,7 +27,7 @@ import java.awt.Color
 import java.time.Instant
 
 object AdminUtils {
-	private const val LOCALE_PREFIX = "commands.moderation"
+	private val LOCALE_PREFIX = "commands.moderation"
 
 	/**
 	 * Retrieves the moderation settings for the [serverConfig]
@@ -57,12 +57,14 @@ object AdminUtils {
 			serverConfig.moderationConfig
 		} ?: return listOf()
 
-		return loritta.newSuspendedTransaction {
+		val warnActions = loritta.newSuspendedTransaction {
 			WarnAction.find {
 				WarnActions.config eq moderationConfig.id
 			}.toList()
 					.sortedBy { it.warnCount }
 		}
+
+		return warnActions
 	}
 
 	suspend fun checkAndRetrieveAllValidUsersFromMessages(context: CommandContext): UserMatchesResult? {

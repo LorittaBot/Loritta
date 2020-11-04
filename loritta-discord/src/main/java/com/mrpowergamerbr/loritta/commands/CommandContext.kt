@@ -5,7 +5,10 @@ import club.minnced.discord.webhook.send.WebhookMessage
 import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
+import com.mrpowergamerbr.loritta.utils.ImageUtils
+import com.mrpowergamerbr.loritta.utils.LorittaUser
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
@@ -57,11 +60,6 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 	val guild: Guild
 		get() = event.guild!!
 
-	val guildLocale: BaseLocale
-		get() = loritta.getLocaleById(config.localeId)
-
-	val guildLegacyLocale: LegacyBaseLocale
-		get() = loritta.getLegacyLocaleById(config.localeId)
 
 	suspend fun explain() {
 		cmd.explain(this)

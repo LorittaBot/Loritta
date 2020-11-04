@@ -30,6 +30,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
 
     override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
         val profile = loritta.getOrCreateLorittaProfile(context.userHandle.idLong)
+
         val hasPersonalLanguage = loritta.newSuspendedTransaction { profile.settings.language != null && context.isPrivateChannel }
 
         val embed = EmbedBuilder()
@@ -135,9 +136,6 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
                     // O "replace" é necessário já que a gente usa emojis personalizados para algumas linguagens
                     message.addReaction(wrapper.emoteName.replace("<", "").replace(">", "")).queue()
                 }
-
-                if (hasPersonalLanguage) message.addReaction(resetPersonalLanguageEmote).queue()
-
                 return@onReactionAddByAuthor
             }
 

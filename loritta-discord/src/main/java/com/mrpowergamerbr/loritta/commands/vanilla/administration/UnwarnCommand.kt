@@ -19,11 +19,11 @@ import org.jetbrains.exposed.sql.and
 
 class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCategory.ADMIN) {
 	companion object {
-		private const val LOCALE_PREFIX = "commands.moderation"
+		private val LOCALE_PREFIX = "commands.moderation"
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["$LOCALE_PREFIX.unwarn.description"]
+		return locale["UNWARN_Description"]
 	}
 
 	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
@@ -79,13 +79,13 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 			}
 
 
-			val warnIndex: Int
+			var warnIndex: Int = 0
 
 			if (context.args.size >= 2) {
 				if (context.args[1].toIntOrNull() == null) {
 					context.reply(
                             LorittaReply(
-                                    context.locale["commands.invalidNumber", context.args[1]],
+                                    "${context.legacyLocale["INVALID_NUMBER", context.args[1]]}",
                                     Constants.ERROR
                             )
 					)
