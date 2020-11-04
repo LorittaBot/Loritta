@@ -192,7 +192,7 @@ class CommandManager(loritta: Loritta) {
 
 		// =======[ ADMIN ]========
 		// commandMap.add(LimparCommand())
-		commandMap.add(RoleIdCommand())
+		// commandMap.add(RoleIdCommand())
 		commandMap.add(MuteCommand())
 		commandMap.add(UnmuteCommand())
 		commandMap.add(SlowModeCommand())
@@ -202,7 +202,7 @@ class CommandManager(loritta: Loritta) {
 		commandMap.add(WarnCommand())
 		commandMap.add(UnwarnCommand())
 		commandMap.add(WarnListCommand())
-		commandMap.add(QuickPunishmentCommand())
+		// commandMap.add(QuickPunishmentCommand())
 		// commandMap.add(LockCommand())
 		// commandMap.add(UnlockCommand())
 

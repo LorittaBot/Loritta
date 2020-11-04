@@ -87,6 +87,17 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
     override val commandMap = DiscordCommandMap(this).apply {
         registerAll(
+                // ===[ ADMIN ]===
+                BanCommand(this@LorittaDiscord),
+                BanInfoCommand(this@LorittaDiscord),
+                ClearCommand(this@LorittaDiscord),
+                KickCommand(this@LorittaDiscord),
+                LockCommand(this@LorittaDiscord),
+                QuickPunishmentCommand(this@LorittaDiscord),
+                RoleIdCommand(this@LorittaDiscord),
+                SayCommand(this@LorittaDiscord),
+                UnlockCommand(this@LorittaDiscord),
+
                 // ===[ MAGIC ]===
                 LoriToolsCommand(this@LorittaDiscord),
 
@@ -100,15 +111,6 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
                 RankGlobalCommand(this@LorittaDiscord),
                 RepTopCommand(this@LorittaDiscord),
                 XpNotificationsCommand(this@LorittaDiscord),
-
-                // ===[ ADMIN ]===
-                BanCommand(this@LorittaDiscord),
-                BanInfoCommand(this@LorittaDiscord),
-                ClearCommand(this@LorittaDiscord),
-                KickCommand(this@LorittaDiscord),
-                LockCommand(this@LorittaDiscord),
-                SayCommand(this@LorittaDiscord),
-                UnlockCommand(this@LorittaDiscord)
         )
     }
 
