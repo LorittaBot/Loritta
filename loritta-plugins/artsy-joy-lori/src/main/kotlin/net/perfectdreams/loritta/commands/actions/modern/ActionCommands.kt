@@ -113,8 +113,8 @@ private fun ActionCommandDSL.selectGifsByGender(userGender: Gender, receiverGend
 }
 
 private suspend fun ActionCommandDSL.handle(context: DiscordCommandContext, sender: User, receiver: User, repeat: Boolean = false) {
-    val senderProfile = sender.getLorittaProfile()
-    val receiverProfile = receiver.getLorittaProfile()
+    val senderProfile = context.loritta.getLorittaProfile(sender.idLong)
+    val receiverProfile = context.loritta.getLorittaProfile(receiver.idLong)
 
     // Anti-idiot people
     if (command is KissCommand && receiver.id == LorittaLauncher.loritta.discordConfig.discord.clientId) {
