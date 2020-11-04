@@ -1,9 +1,6 @@
 package net.perfectdreams.loritta.plugin.fortnite.commands.fortnite
 
-import com.github.salomonbrys.kotson.array
-import com.github.salomonbrys.kotson.nullString
-import com.github.salomonbrys.kotson.obj
-import com.github.salomonbrys.kotson.string
+import com.github.salomonbrys.kotson.*
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.gifs.GifSequenceWriter
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
@@ -28,7 +25,7 @@ class FortniteNewsCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.l
 		executesDiscord {
 			val newsPayload = m.updateStoreItems!!.getNewsData("br", locale["commands.fortnite.shop.localeId"])
 
-			val data = newsPayload["data"].array
+			val data = newsPayload.obj["data"]["motds"].array
 
 			val embed = EmbedBuilder()
 					.setImage("attachment://fortnite-news.gif")
@@ -40,10 +37,10 @@ class FortniteNewsCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.l
 
 			for (_entry in data) {
 				val entry = _entry.obj
-				val markerText = entry["adspace"].nullString
+				val markerText = entry["tabTitle"].nullString
 				val title = entry["title"].string
 				val body = entry["body"].string
-				val imageUrl = entry["image"].string
+				val imageUrl = entry["tileImage"].string
 
 				val prefix = markerText?.let { "***[$it]*** " } ?: ""
 

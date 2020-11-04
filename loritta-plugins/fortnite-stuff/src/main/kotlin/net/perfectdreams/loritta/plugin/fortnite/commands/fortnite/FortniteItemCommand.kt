@@ -5,7 +5,6 @@ import com.google.gson.JsonElement
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.ArgumentType
@@ -14,7 +13,6 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.plugin.fortnite.FortniteStuff
 import net.perfectdreams.loritta.utils.Emotes
-import java.awt.Color
 
 class FortniteItemCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.loritta, listOf("fortniteitem", "fnitem"), CommandCategory.FORTNITE) {
 	private val LOCALE_PREFIX = "commands.fortnite.item"
@@ -33,7 +31,7 @@ class FortniteItemCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.l
 			+ "Savor the W"
 			+ "Jaywalking"
 			+ "Kitsune"
-			+ "13dfe12e98005d104710b724cafd26d42432ce81"
+			+ "CID_693_Athena_Commando_M_BuffCat"
 		}
 
 		executesDiscord {
@@ -42,107 +40,88 @@ class FortniteItemCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.l
 
 			val name = args.joinToString(" ")
 
-			val items = m.itemsInfo.values.flatMap {
-				it.filter {
-					it["itemId"].string == name || it["item"]["name"].nullString?.contains(name, true) == true
-				}
-			}.distinctBy { it["itemId"].string }
-
-			val fortniteItemsInCurrentLocale = m.itemsInfo[locale["commands.fortnite.shop.localeId"]]!!
-
-			val embed = EmbedBuilder()
-
-			if (items.size == 1) {
-				// Pegar na linguagem do usuário
-				val fortniteItemInCurrentLocale = fortniteItemsInCurrentLocale.first { it["itemId"].string == items.first()["itemId"].string }
-
-				sendMessage(
-						displayItemInfo(fortniteItemInCurrentLocale, locale).build()
-				)
-			} else if (items.isNotEmpty()) {
-				for (i in 0 until Math.min(9, items.size)) {
-					val item = items[i].obj
-					val fortniteItemInCurrentLocale = fortniteItemsInCurrentLocale.first { item["itemId"].string == it["itemId"].string }["item"].obj
-
-					embed.setTitle("${Emotes.LORI_HM} ${locale["$LOCALE_PREFIX.multipleItems"]}")
-					embed.setColor(Color(0, 125, 187))
-					embed.appendDescription("${Constants.INDEXES[i]} ${fortniteItemInCurrentLocale["name"].nullString} (${fortniteItemInCurrentLocale["typeName"].nullString})\n")
-				}
-
-				val result = sendMessage(embed.build())
-
-				result.onReactionAddByAuthor(this) {
-					val idx = Constants.INDEXES.indexOf(it.reactionEmote.name)
-
-					// Caso seja uma reaçõa inválida ou que não tem no metadata, ignore!
-					if (idx == -1 || (idx + 1) > items.size)
-						return@onReactionAddByAuthor
-
-					val item = items[idx]
-					val fortniteItemInCurrentLocale = fortniteItemsInCurrentLocale.first { item["itemId"].string == it["itemId"].string }
-
-					result.edit(getUserMention(true), displayItemInfo(fortniteItemInCurrentLocale, locale).build(), true)
-				}
-
-				// Adicionar os reactions
-				for (i in 0 until Math.min(9, items.size)) {
-					result.addReaction(Constants.INDEXES[i]).queue()
-				}
-			} else {
-				reply(
-						LorittaReply(
-								locale["$LOCALE_PREFIX.unknownItem", "`${name.stripCodeMarks()}`"],
-								Constants.ERROR
+			FortniteStuff.getFortniteItemByName(
+					m,
+					locale,
+					this,
+					name,
+					onSuccess = { element, message ->
+						if (message == null) {
+							sendMessage(
+									displayItemInfo(element, locale).build()
+							)
+						} else {
+							message.edit(getUserMention(true), displayItemInfo(element, locale).build(), true)
+						}
+					},
+					onFailure = {
+						reply(
+								LorittaReply(
+										locale["$LOCALE_PREFIX.unknownItem", "`${name.stripCodeMarks()}`"],
+										Constants.ERROR
+								)
 						)
-				)
-			}
+					}
+			)
 		}
 	}
 
-	fun displayItemInfo(item: JsonElement, locale: BaseLocale): EmbedBuilder {
-		val fortniteItem = item["item"].obj
-		val source = fortniteItem["source"].nullString
-		val upcoming = fortniteItem["upcoming"].nullBool ?: true
+	private fun displayItemInfo(item: JsonElement, locale: BaseLocale): EmbedBuilder {
+		val fortniteItem = item.obj
+		val source = fortniteItem["gameplayTags"].nullArray?.firstOrNull { it.string.startsWith("Cosmetics.Source") }
+				?.string
 
 		val embed = EmbedBuilder()
 				.setTitle("${Emotes.DEFAULT_DANCE} ${fortniteItem["name"].nullString}")
 				.setDescription(fortniteItem["description"].nullString)
 
-		embed.addField("\uD83D\uDD16 ${locale["${LOCALE_PREFIX}.type"]}", fortniteItem["typeName"].nullString, true)
+		embed.addField("\uD83D\uDD16 ${locale["${LOCALE_PREFIX}.type"]}", fortniteItem["type"]["displayValue"].nullString, true)
 
-		embed.addField("⭐ ${locale["${LOCALE_PREFIX}.rarity"]}", fortniteItem["rarityName"].nullString, true)
+		embed.addField("⭐ ${locale["${LOCALE_PREFIX}.rarity"]}", fortniteItem["rarity"]["displayValue"].nullString, true)
 
 		if (source != null) {
+			val splitByDot = source.split(".")
+			// Examples:
+			// "Cosmetics.Source.StarterPack"
+			// "Cosmetics.Source.ItemShop"
+			// "Cosmetics.Source.Season4.FirstWin"
+			val arg0 = splitByDot.getOrNull(0)
+			val arg1 = splitByDot.getOrNull(1)
+			val arg2 = splitByDot.getOrNull(2)
+			val arg3 = splitByDot.getOrNull(3)
+
 			val beautifulSource = when {
-				// Passe de Batalha
-				source.startsWith("battlepass") -> {
-					val seasonTotal = source.substring((source.indexOf("battlepass (season") + "battlepass (season".length) until (source.length - 1)).toInt()
+				// Battle Pass
+				arg3 == "BattlePass" && arg2 != null -> {
+					val seasonTotal = arg2.removePrefix("Season").toInt()
 
 					val chapter = ((seasonTotal - 1) / 10) + 1
 					val season = ((seasonTotal - 1) % 10) + 1
 
 					locale["${LOCALE_PREFIX}.battlePass", chapter, season]
 				}
-				source == "starterpack" -> {
+				// Starter Pack
+				arg2 == "StarterPack" -> {
 					locale["${LOCALE_PREFIX}.starterPack"]
 				}
-				source == "shop" -> {
+				// Item Shop
+				arg2 == "ItemShop" -> {
 					locale["${LOCALE_PREFIX}.shop"]
 				}
-				source.startsWith("firstwin") -> {
-					val seasonOrAnySeason = source.substring((source.indexOf("firstwin (") + "firstwin (".length) until (source.length - 1))
-
-					if (seasonOrAnySeason == "anywin") {
+				// First Win Stuff
+				arg3 == "FirstWin" && arg2 != null -> {
+					if (arg2 == "AnySeason") {
 						locale["${LOCALE_PREFIX}.firstWinAny"]
 					} else {
-						val seasonTotal = seasonOrAnySeason.replace("season", "").toInt()
+						val seasonTotal = arg2.removePrefix("Season").toInt()
 						val chapter = ((seasonTotal - 1)  / 10) + 1
 						val season = ((seasonTotal - 1) % 10) + 1
 
 						locale["${LOCALE_PREFIX}.firstWin", chapter, season]
 					}
 				}
-				source == "promo" -> {
+				// Promotion
+				source == "Cosmetics.Source.Promo" -> {
 					locale["${LOCALE_PREFIX}.promo"]
 				}
 				else -> source
@@ -151,20 +130,14 @@ class FortniteItemCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.l
 			embed.addField("\uD83D\uDD0E ${locale["${LOCALE_PREFIX}.source"]}", beautifulSource, true) // both name and value must be set
 		}
 
-		if (fortniteItem["costType"].nullString == "vbucks") {
-			embed.addField("<:vbucks:635158614109192199> ${locale["${LOCALE_PREFIX}.cost"]}", fortniteItem["cost"].nullInt.toString(), true)
-		}
-
-		embed.addField("\uD83D\uDE80 ${locale["${LOCALE_PREFIX}.alreadyReleased"]}", locale["loritta.fancyBoolean.${!upcoming}"], true)
-
-		val image = fortniteItem["images"]["background"].nullString
+		val image = fortniteItem["images"]["icon"].nullString
 
 		embed.setThumbnail(image)
 		embed.setColor(
-				FortniteStuff.convertRarityToColor(fortniteItem["rarity"].nullString ?: "???")
+				FortniteStuff.convertRarityToColor(fortniteItem["rarity"]["value"].nullString ?: "???")
 		)
 
-		embed.addField("\uD83D\uDCBB ID", "`${item["itemId"].string}`", true)
+		embed.addField("\uD83D\uDCBB ID", "`${item["id"].string}`", true)
 
 		return embed
 	}

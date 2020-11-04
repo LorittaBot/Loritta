@@ -4,18 +4,14 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import com.mrpowergamerbr.loritta.commands.vanilla.misc.PingCommand
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.client.request.post
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.readText
-import io.ktor.http.userAgent
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
@@ -33,6 +29,7 @@ import java.time.Instant
 import java.time.ZoneOffset
 import java.util.concurrent.ConcurrentHashMap
 import javax.imageio.ImageIO
+import kotlin.collections.set
 
 class UpdateStoreItemsTask(val m: FortniteStuff) {
 	companion object {
@@ -43,8 +40,8 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 		private val ELEMENT_HEIGHT = 144
 	}
 
-	// Locale ID -> Last Update Epoch
-	val lastUpdatedAt = ConcurrentHashMap<String, Long>()
+	// Locale ID -> Shop Hash
+	val lastUpdatedAt = ConcurrentHashMap<String, String>()
 	var lastItemListPostUpdate = -1L
 
 	fun start() {
@@ -54,6 +51,8 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 			while (true) {
 				try {
 					if (loritta.isMaster) {
+						delay(5_000)
+
 						if (System.currentTimeMillis() - lastItemListPostUpdate >= 900_000) {
 							lastItemListPostUpdate = System.currentTimeMillis()
 							logger.info { "Updating Fortnite Items..." }
@@ -62,7 +61,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 							}.distinct()
 
 							for (apiId in distinctApiIds) {
-								val result = loritta.http.get<String>("https://fnapi.me/api/items/all?lang=$apiId") {
+								val result = loritta.http.get<String>("https://fortnite-api.com/v2/cosmetics/br?language=$apiId") {
 									userAgent(loritta.lorittaCluster.getUserAgent())
 									header("Authorization", com.mrpowergamerbr.loritta.utils.loritta.config.fortniteApi.token)
 								}
@@ -121,21 +120,21 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 			val apiLocaleId = locale["commands.fortnite.shop.localeId"]
 			logger.info { "Updating shop for ${locale.id}... API Locale ID is $apiLocaleId, Shop Data is ${shopsData[apiLocaleId]}" }
 
-			val shopData = shopsData[apiLocaleId]?.await() ?: continue
-			val newUpdatedAt = shopData["general"]["featuredStoreUpdate"].long + shopData["general"]["dailyStoreUpdate"].long
-			val updatedAt = lastUpdatedAt.getOrDefault(apiLocaleId, 0L)
+			val shopData = try { shopsData[apiLocaleId]?.await() } catch (e: Exception) { continue } ?: continue
+			val newUpdatedAt = shopData["hash"].string
+			val updatedAt = lastUpdatedAt.getOrDefault(apiLocaleId, null)
 
-			val firstUpdate = updatedAt == 0L
+			val firstUpdate = updatedAt == null
 			var isNew = false
 
-			val instant = Instant.ofEpochSecond(shopData["updateAt"].long)
+			val instant = Instant.parse(shopData["date"].string)
 			val instantAtOffset = instant.atOffset(ZoneOffset.UTC)
 
 			val year = instantAtOffset.year
 			val month = instantAtOffset.monthValue.toString().padStart(2, '0')
 			val day = instantAtOffset.dayOfMonth.toString().padStart(2, '0')
 
-			logger.info { "Last shop update for $apiLocaleId was at ${shopData["updateAt"].long} (${year}_${month}_${day}) New updated at = $newUpdatedAt"}
+			logger.info { "Last shop update for $apiLocaleId was at ${shopData["date"].string} (${year}_${month}_${day}) New updated at = $newUpdatedAt"}
 
 			val fileName = "${locale.id}-${year}_${month}_${day}.png"
 
@@ -196,15 +195,14 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 	}
 
 	suspend fun notifyUsersAboutItems(obj: JsonObject) {
-		val items = obj["data"].array
+		val featuredItems = obj["featured"]["entries"].array.flatMap { it["items"].array }
+		val dailyItems = obj["daily"]["entries"].array.flatMap { it["items"].array }
+		val items = featuredItems + dailyItems
 
 		for (storeItem in items) {
-			val itemId = storeItem["itemId"].string
+			val itemId = storeItem["id"].string
 
 			try {
-				val item = (m.itemsInfo["ptbr"]!!.firstOrNull { storeItem["itemId"].string == it["itemId"].string }
-						?: m.itemsInfo["en"]!!.first { storeItem["itemId"].string == it["itemId"].string })["item"].obj
-
 				logger.info { "Finding users that are tracking ${itemId}..." }
 
 				val usersThatAreTrackingThisItem = transaction(Databases.loritta) {
@@ -224,13 +222,12 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 					try {
 						theUser?.openPrivateChannel()?.await()?.sendMessage(
 								EmbedBuilder()
-										.setTitle("${Emotes.DEFAULT_DANCE} ${item["name"].string} voltou para a loja!")
-										.setThumbnail(item["images"]["background"].string)
+										.setTitle("${Emotes.DEFAULT_DANCE} ${storeItem["name"].string} voltou para a loja!")
+										.setThumbnail(storeItem["images"]["smallIcon"].string)
 										.setDescription("O item que você pediu para ser notificado voltou para a loja! Espero que você tenha economizado os V-Bucks para comprar. ${Emotes.LORI_HAPPY}\n\nPor favor use o código de criador `MrPowerGamerBR` na loja de itens antes de comprar! Assim você me ajuda a ficar online, para que eu possa continuar a te notificar novos itens! ${Emotes.LORI_OWO}")
-										.addField("\uD83D\uDD16 ${locale["commands.fortnite.item.type"]}", item["typeName"].nullString, true)
-										.addField("⭐ ${locale["commands.fortnite.item.rarity"]}", item["rarityName"].nullString, true)
-										.addField("<:vbucks:635158614109192199> ${locale["commands.fortnite.item.cost"]}", storeItem["store"]["cost"].nullInt.toString(), true)
-										.setColor(FortniteStuff.convertRarityToColor(item["rarity"].nullString
+										.addField("\uD83D\uDD16 ${locale["commands.fortnite.item.type"]}", storeItem["type"]["displayValue"].nullString, true)
+										.addField("⭐ ${locale["commands.fortnite.item.rarity"]}", storeItem["rarity"]["displayValue"].nullString, true)
+										.setColor(FortniteStuff.convertRarityToColor(storeItem["rarity"]["value"].nullString
 												?: "???"))
 										.build()
 						)?.await()
@@ -246,19 +243,19 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 
 	private fun getShopData(localeId: String): JsonObject {
 		logger.info { "Getting shop data for locale $localeId" }
-		val shop = HttpRequest.get("https://fnapi.me/api/shop?lang=$localeId")
+		val shop = HttpRequest.get("https://fortnite-api.com/v2/shop/br?language=$localeId")
 				.connectTimeout(15_000)
 				.readTimeout(15_000)
 				.header("Authorization", loritta.config.fortniteApi.token)
 				.body()
 
-		return JsonParser.parseString(shop).obj
+		return JsonParser.parseString(shop)["data"].obj
 	}
 
 	fun getNewsData(gameMode: String, localeId: String): JsonObject {
 		logger.info { "Getting news data (game mode: $gameMode) for locale $localeId" }
 
-		val news = HttpRequest.get("https://fnapi.me/api/news/?type=$gameMode&lang=$localeId")
+		val news = HttpRequest.get("https://fortnite-api.com/v2/news/$gameMode?language=$localeId")
 				.connectTimeout(15_000)
 				.readTimeout(15_000)
 				.header("Authorization", loritta.config.fortniteApi.token)
@@ -276,16 +273,19 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 	private fun generateStoreImage(parse: JsonObject, locale: BaseLocale): BufferedImage {
 		val width = 1024 + PADDING + PADDING_BETWEEN_SECTIONS + PADDING + (PADDING_BETWEEN_ITEMS * 4)
 
-		val data = parse["data"].array
+		val data = parse
+
+		val featuredEntries = data["featured"]["entries"]
+				.array
+
+		val dailyEntries = data["daily"]["entries"]
+				.array
 
 		val maxYFeatured = run {
 			var x = 0
 			var y = 36 + PADDING_BETWEEN_ITEMS + PADDING + PADDING
 
-			data.forEach {
-				if (!it["store"]["isFeatured"].bool)
-					return@forEach
-
+			repeat(featuredEntries.size()) {
 				if (x == 512) {
 					x = 0
 					y += ELEMENT_HEIGHT + PADDING_BETWEEN_ITEMS
@@ -293,6 +293,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 
 				x += 128
 			}
+
 			y + ELEMENT_HEIGHT
 		}
 
@@ -301,10 +302,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 			var x = 0
 			var y = 36 + PADDING_BETWEEN_ITEMS + PADDING + PADDING
 
-			data.forEach {
-				if (it["store"]["isFeatured"].bool)
-					return@forEach
-
+			repeat(dailyEntries.size()) {
 				if (x == 512) {
 					x = 0
 					y += ELEMENT_HEIGHT + PADDING_BETWEEN_ITEMS
@@ -312,6 +310,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 
 				x += 128
 			}
+
 			nonFeaturedElementsOnLastLine = (x / 128)
 			y + ELEMENT_HEIGHT
 		}
@@ -350,19 +349,17 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 			var x = 0
 			var y = 36 + PADDING_BETWEEN_ITEMS + PADDING
 
-			data.forEach {
-				if (!it["store"]["isFeatured"].bool)
-					return@forEach
-
+			featuredEntries.forEach {
 				if (x >= 512 + PADDING) {
 					x = 0
 					y += ELEMENT_HEIGHT + PADDING_BETWEEN_ITEMS
 				}
 
-				val url = it["item"]["images"]["icon"].string
+				val firstItem = it["items"].array.first()
+				val url = firstItem["images"]["featured"].string
 
 				graphics.drawImage(
-						createItemBox(url, it["item"]["name"].string, it["item"]["rarity"].string, it["store"]["cost"].asInt),
+						createItemBox(url, firstItem["name"].string, firstItem["rarity"]["value"].string, it["regularPrice"].asInt),
 						x + PADDING,
 						y,
 						null
@@ -376,19 +373,17 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 			var x = 512 + PADDING + PADDING_BETWEEN_SECTIONS
 			var y = 36 + PADDING_BETWEEN_ITEMS + PADDING
 
-			data.forEach {
-				if (it["store"]["isFeatured"].bool)
-					return@forEach
-
+			dailyEntries.forEach {
 				if (x >= 1024 + PADDING) {
 					x = 512 + PADDING + PADDING_BETWEEN_SECTIONS
 					y += ELEMENT_HEIGHT + PADDING_BETWEEN_ITEMS
 				}
 
-				val url = it["item"]["images"]["icon"].string
+				val firstItem = it["items"].array.first()
+				val url = firstItem["images"]["icon"].string
 
 				graphics.drawImage(
-						createItemBox(url, it["item"]["name"].string, it["item"]["rarity"].string, it["store"]["cost"].asInt),
+						createItemBox(url, firstItem["name"].string, firstItem["rarity"]["value"].string, it["regularPrice"].asInt),
 						x + PADDING,
 						y,
 						null
