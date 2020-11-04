@@ -1,10 +1,7 @@
 package net.perfectdreams.loritta.plugin.helpinghands.commands
 
 import com.mrpowergamerbr.loritta.tables.Reputations
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.stripCodeMarks
-import com.mrpowergamerbr.loritta.utils.substringIfNeeded
+import com.mrpowergamerbr.loritta.utils.*
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -102,7 +99,9 @@ class RepListCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractCommandBas
 
                         val name = ("${receivedByUser?.name}#${receivedByUser?.discriminator} ($receivedByUserId)")
                         val content = reputation[Reputations.content]?.stripCodeMarks()
-                                ?.substringIfNeeded(0..500)
+                                // Strip new lines and replace them with " "
+                                ?.replace(Regex("[\\r\\n]"), " ")
+                                ?.substringIfNeeded(0..250)
 
                         val receivedByLoritta = reputation[Reputations.givenById] == com.mrpowergamerbr.loritta.utils.loritta.discordConfig.discord.clientId.toLong()
                         if (receivedByLoritta) {
