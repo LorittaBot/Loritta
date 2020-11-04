@@ -99,7 +99,10 @@ class PostPerfectPaymentsCallbackRoute(loritta: LorittaDiscord) : BaseRoute(lori
 
 					val bundle = loritta.newSuspendedTransaction {
 						SonhosBundles.select {
-							SonhosBundles.id eq bundleId and (SonhosBundles.active eq true)
+							// Before we checked if the bundle was active, but what if we want to add new bundles while taking out old bundles?
+							// If someone bought and the bundle was deactivated, when the payment was approved, the user wouldn't receive the bundle!
+							// So we don't care if the bundle is not active anymore.
+							SonhosBundles.id eq bundleId
 						}.firstOrNull()
 					} ?: run {
 						logger.warn { "PerfectPayments Payment with Reference ID: $referenceId ($internalTransactionId) does not have a valid bundle!" }
