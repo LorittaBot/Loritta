@@ -90,6 +90,7 @@ object MessageUtils {
 				if (source is User) {
 					tokens[Placeholders.USER_MENTION.name] = source.asMention
 					tokens[Placeholders.USER_NAME_SHORT.name] = source.name
+					tokens[Placeholders.USER_NAME.name] = source.name
 					tokens[Placeholders.USER_DISCRIMINATOR.name] = source.discriminator
 					tokens[Placeholders.USER_ID.name] = source.id
 					tokens[Placeholders.USER_AVATAR_URL.name] = source.effectiveAvatarUrl
@@ -102,6 +103,7 @@ object MessageUtils {
 				if (source is Member) {
 					tokens[Placeholders.USER_MENTION.name] = source.asMention
 					tokens[Placeholders.USER_NAME_SHORT.name] = source.user.name
+					tokens[Placeholders.USER_NAME.name] = source.user.name
 					tokens[Placeholders.USER_DISCRIMINATOR.name] = source.user.discriminator
 					tokens[Placeholders.USER_ID.name] = source.id
 					tokens[Placeholders.USER_TAG.name] = source.user.asTag
