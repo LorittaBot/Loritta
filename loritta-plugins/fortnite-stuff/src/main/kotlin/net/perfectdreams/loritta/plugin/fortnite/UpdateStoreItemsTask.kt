@@ -275,45 +275,51 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 
 		val data = parse
 
-		val featuredEntries = data["featured"]["entries"]
-				.array
+		// Both of those entries CAN BE NULL for some reason, so we get them but as a "can be null" thing
+		// This happened after the leaking breakage, when the old defaults were in the shop
+		val featuredEntries = data["featured"].nullObj?.get("entries")
+				?.nullArray
 
-		val dailyEntries = data["daily"]["entries"]
-				.array
+		val dailyEntries = data["daily"].nullObj?.get("entries")
+				?.nullArray
 
-		val maxYFeatured = run {
-			var x = 0
-			var y = 36 + PADDING_BETWEEN_ITEMS + PADDING + PADDING
+		val maxYFeatured = if (featuredEntries != null) {
+			run {
+				var x = 0
+				var y = 36 + PADDING_BETWEEN_ITEMS + PADDING + PADDING
 
-			repeat(featuredEntries.size()) {
-				if (x == 512) {
-					x = 0
-					y += ELEMENT_HEIGHT + PADDING_BETWEEN_ITEMS
+				repeat(featuredEntries.size()) {
+					if (x == 512) {
+						x = 0
+						y += ELEMENT_HEIGHT + PADDING_BETWEEN_ITEMS
+					}
+
+					x += 128
 				}
 
-				x += 128
+				y + ELEMENT_HEIGHT
 			}
-
-			y + ELEMENT_HEIGHT
-		}
+		} else 0
 
 		var nonFeaturedElementsOnLastLine = 0
-		val maxYNotFeatured = run {
-			var x = 0
-			var y = 36 + PADDING_BETWEEN_ITEMS + PADDING + PADDING
+		val maxYNotFeatured = if (dailyEntries != null) {
+			run {
+				var x = 0
+				var y = 36 + PADDING_BETWEEN_ITEMS + PADDING + PADDING
 
-			repeat(dailyEntries.size()) {
-				if (x == 512) {
-					x = 0
-					y += ELEMENT_HEIGHT + PADDING_BETWEEN_ITEMS
+				repeat(dailyEntries.size()) {
+					if (x == 512) {
+						x = 0
+						y += ELEMENT_HEIGHT + PADDING_BETWEEN_ITEMS
+					}
+
+					x += 128
 				}
 
-				x += 128
+				nonFeaturedElementsOnLastLine = (x / 128)
+				y + ELEMENT_HEIGHT
 			}
-
-			nonFeaturedElementsOnLastLine = (x / 128)
-			y + ELEMENT_HEIGHT
-		}
+		} else 0
 
 		var maxY = Math.max(maxYFeatured, maxYNotFeatured)
 		val increaseYForCreatorCode = maxYFeatured == maxYNotFeatured && nonFeaturedElementsOnLastLine > 1
@@ -349,7 +355,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 			var x = 0
 			var y = 36 + PADDING_BETWEEN_ITEMS + PADDING
 
-			featuredEntries.forEach {
+			featuredEntries?.forEach {
 				if (x >= 512 + PADDING) {
 					x = 0
 					y += ELEMENT_HEIGHT + PADDING_BETWEEN_ITEMS
@@ -373,7 +379,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 			var x = 512 + PADDING + PADDING_BETWEEN_SECTIONS
 			var y = 36 + PADDING_BETWEEN_ITEMS + PADDING
 
-			dailyEntries.forEach {
+			dailyEntries?.forEach {
 				if (x >= 1024 + PADDING) {
 					x = 512 + PADDING + PADDING_BETWEEN_SECTIONS
 					y += ELEMENT_HEIGHT + PADDING_BETWEEN_ITEMS
