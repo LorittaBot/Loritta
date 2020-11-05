@@ -45,7 +45,8 @@ class AvailableBundlesDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePo
                 div {
                     style = "display: flex; flex-wrap: wrap;"
 
-                    for (entry in list) {
+                    // Only show active bundles
+                    for (entry in list.filter { it.active }) {
                         div {
                             style = "text-align: center; padding: 8px;"
                             h2 {
