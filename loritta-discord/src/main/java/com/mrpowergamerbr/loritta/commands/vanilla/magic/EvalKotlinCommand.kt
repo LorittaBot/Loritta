@@ -16,6 +16,8 @@ class EvalKotlinCommand : AbstractCommand("eval", listOf("evalkt", "evalkotlin",
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		var kotlinCode = context.args.joinToString(" ")
 
+		val importLines = kotlinCode.lines().takeWhile { it.startsWith("import ") }
+
 		// Agora vamos mudar um pouquinho o nosso código
 		kotlinCode = """
 			import com.mrpowergamerbr.loritta.Loritta
@@ -30,6 +32,7 @@ class EvalKotlinCommand : AbstractCommand("eval", listOf("evalkt", "evalkotlin",
 			import com.mrpowergamerbr.loritta.dao.*
 			import com.mrpowergamerbr.loritta.tables.*
 			import com.mrpowergamerbr.loritta.network.*
+			import com.mrpowergamerbr.loritta.utils.extensions.*
 			import com.github.salomonbrys.kotson.*
 			import org.jetbrains.exposed.sql.transactions.*
 			import java.awt.image.BufferedImage
@@ -39,10 +42,11 @@ class EvalKotlinCommand : AbstractCommand("eval", listOf("evalkt", "evalkotlin",
 			import io.ktor.client.request.*
 			import io.ktor.client.statement.*
 			import io.ktor.http.*
+			${importLines.joinToString("\n")}
 
 			fun loritta(context: CommandContext, locale: LegacyBaseLocale) {
 			    GlobalScope.launch(loritta.coroutineDispatcher) {
-					$kotlinCode
+					${kotlinCode.lines().dropWhile { it.startsWith("import ") }.joinToString("\n") }
 				}
 			}""".trimIndent()
 
