@@ -103,7 +103,6 @@ class CommandManager(loritta: Loritta) {
 		commandMap.add(DrawnMaskCommand())
 
 		// =======[ DIVERSÃO ]======
-		commandMap.add(CongaParrotCommand())
 		commandMap.add(BemBoladaCommand())
 		commandMap.add(TodoGrupoTemCommand())
 		commandMap.add(TioDoPaveCommand())
