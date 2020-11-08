@@ -91,7 +91,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 						return
 
 					val serverConfig = loritta.getOrCreateServerConfig(guildId.toLong())
-					val receiverProfile = loritta.getOrCreateLorittaProfile(giverId)
+					val receiverProfile = loritta.getOrCreateLorittaProfile(receiverId)
 					val receiverSettings = loritta.newSuspendedTransaction {
 						receiverProfile.settings
 					}
