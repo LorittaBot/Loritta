@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Warn
 import com.mrpowergamerbr.loritta.tables.Warns
 import com.mrpowergamerbr.loritta.utils.MessageUtils
-import com.mrpowergamerbr.loritta.utils.convertToEpochMillisRelativeToNow
+import com.mrpowergamerbr.loritta.utils.TimeUtils
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNull
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
@@ -135,7 +135,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 							member != null && punishment.punishmentAction == PunishmentAction.MUTE -> {
 								val metadata = punishment.metadata ?: continue@loop
 								val obj = metadata.obj
-								val time = obj["time"].nullString?.convertToEpochMillisRelativeToNow()
+								val time = obj["time"].nullString?.let { TimeUtils.convertToMillisRelativeToNow(it) }
 								MuteCommand.muteUser(context, settings, member, time, locale, user, reason, isSilent)
 							}
 						}

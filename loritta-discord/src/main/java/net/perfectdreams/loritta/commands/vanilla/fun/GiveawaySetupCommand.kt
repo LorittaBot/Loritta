@@ -367,7 +367,7 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
         val (reason, description, time, _reaction, channel, numberOfWinners, roleIds) = builder
         var reaction = _reaction
 
-        val epoch = time.convertToEpochMillisRelativeToNow()
+        val epoch = TimeUtils.convertToMillisRelativeToNow(time)
 
         try {
             // Testar se é possível usar o emoticon atual

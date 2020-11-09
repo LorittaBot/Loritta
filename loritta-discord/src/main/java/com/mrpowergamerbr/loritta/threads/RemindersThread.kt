@@ -113,7 +113,7 @@ class RemindersThread : Thread("Reminders Thread") {
 			loritta.messageInteractionCache.remove(originalMessage.idLong)
 			reply.delete().queue()
 
-			val inMillis = it.message.contentDisplay.convertToEpochMillisRelativeToNow()
+			val inMillis = TimeUtils.convertToMillisRelativeToNow(it.message.contentDisplay)
 
 			loritta.newSuspendedTransaction {
 				Reminder.new {
