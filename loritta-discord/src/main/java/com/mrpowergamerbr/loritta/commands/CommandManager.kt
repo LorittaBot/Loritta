@@ -129,8 +129,6 @@ class CommandManager(loritta: Loritta) {
 		commandMap.add(MarryCommand())
 		commandMap.add(DivorceCommand())
 		commandMap.add(GenderCommand())
-		if (loritta.config.loritta.environment == EnvironmentType.CANARY)
-			commandMap.add(RegisterCommand())
 
 		// =======[ UTILS ]=======
 		commandMap.add(TranslateCommand())
@@ -207,8 +205,6 @@ class CommandManager(loritta: Loritta) {
 
 		// =======[ MAGIC ]========
 		commandMap.add(ReloadCommand())
-		commandMap.add(EvalCommand())
-		commandMap.add(NashornTestCommand())
 		commandMap.add(ServerInvitesCommand())
 		commandMap.add(LorittaBanCommand())
 		commandMap.add(LorittaUnbanCommand())
@@ -223,9 +219,6 @@ class CommandManager(loritta: Loritta) {
 		commandMap.add(PagarCommand())
 		commandMap.add(SonhosCommand())
 		commandMap.add(LigarCommand())
-
-		if (false && loritta.config.loritta.environment == EnvironmentType.CANARY)
-			commandMap.add(ExchangeCommand())
 	}
 
 	private fun createBotinfoCommand(): BotInfoCommand {
