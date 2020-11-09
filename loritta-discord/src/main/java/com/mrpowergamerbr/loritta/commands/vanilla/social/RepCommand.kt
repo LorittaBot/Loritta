@@ -8,7 +8,9 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
+import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 
@@ -23,6 +25,10 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 
 	override fun canUseInPrivateChannel(): Boolean {
 		return false
+	}
+
+	override fun getUsage(locale: LegacyBaseLocale) = arguments {
+		argument(ArgumentType.USER) {}
 	}
 
 	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {

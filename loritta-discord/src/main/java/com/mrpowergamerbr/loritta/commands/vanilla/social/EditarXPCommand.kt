@@ -6,7 +6,9 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
 
 class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category = CommandCategory.SOCIAL) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -23,6 +25,11 @@ class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category =
 
 	override fun getDiscordPermissions(): List<Permission> {
 		return listOf(Permission.MANAGE_SERVER)
+	}
+
+	override fun getUsage(locale: LegacyBaseLocale) = arguments {
+		argument(ArgumentType.USER) {}
+		argument(ArgumentType.NUMBER) {}
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {

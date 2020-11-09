@@ -19,7 +19,9 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.tables.BotVotes
@@ -188,6 +190,12 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 
 	override fun needsToUploadFiles(): Boolean {
 		return true
+	}
+
+	override fun getUsage(locale: LegacyBaseLocale) = arguments {
+		argument(ArgumentType.USER) {
+			optional = true
+		}
 	}
 
 	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
