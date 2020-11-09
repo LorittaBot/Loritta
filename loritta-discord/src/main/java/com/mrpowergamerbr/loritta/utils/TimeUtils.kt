@@ -6,7 +6,7 @@ import java.time.ZonedDateTime
 
 object TimeUtils {
     private val TIME_PATTERN = "(([01]\\d|2[0-3]):([0-5]\\d)(:([0-5]\\d))?) ?(am|pm)?".toPattern()
-    private val DATE_PATTERN = "(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.]([0-9]+)".toPattern()
+    private val DATE_PATTERN = "(0[1-9]|[12][0-9]|3[01])[-/.](0[1-9]|1[012])[-/.]([0-9]+)".toPattern()
     private val YEAR_PATTERN = "([0-9]+) ?(y|a)".toPattern()
     private val MONTH_PATTERN = "([0-9]+) ?(month(s)?|m(e|ê)s(es)?)".toPattern()
     private val WEEK_PATTERN = "([0-9]+) ?(w)".toPattern()
@@ -16,16 +16,17 @@ object TimeUtils {
     private val MINUTE_PATTERN = "([0-9]+) ?(min)".toPattern()
     private val SECONDS_PATTERN = "([0-9]+) ?(s)".toPattern()
     // TODO: Would be better to not hardcode it
-    private val TIME_ZONE = ZoneId.of("America/Sao_Paulo")
+    val TIME_ZONE = ZoneId.of("America/Sao_Paulo")
 
     fun convertToMillisRelativeToNow(input: String) = convertToLocalDateTimeRelativeToNow(input)
             .toInstant()
             .toEpochMilli()
 
-    fun convertToLocalDateTimeRelativeToNow(input: String): ZonedDateTime {
+    fun convertToLocalDateTimeRelativeToNow(input: String) = convertToLocalDateTimeRelativeToTime(input, LocalDateTime.now().atZone(TIME_ZONE))
+
+    fun convertToLocalDateTimeRelativeToTime(input: String, relativeTo: ZonedDateTime): ZonedDateTime {
         val content = input.toLowerCase()
-        var localDateTime = LocalDateTime.now()
-                .atZone(TIME_ZONE)
+        var localDateTime = relativeTo
                 .withNano(0)
         var foundViaTime = false
 
@@ -74,7 +75,8 @@ object TimeUtils {
                 val month = matcher.group(2).toIntOrNull() ?: 1
                 val year = matcher.group(3).toIntOrNull() ?: 1999
 
-                localDateTime.withDayOfMonth(day)
+                localDateTime = localDateTime
+                        .withDayOfMonth(day)
                         .withMonth(month)
                         .withYear(year)
             }
