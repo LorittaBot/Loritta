@@ -24,7 +24,7 @@ object DebugLog {
 		thread {
 			commandLoop@ while (true) {
 				try {
-					val line = readLine()!!
+					val line = readLine() ?: continue
 					handleLine(line)
 				} catch (e: Exception) {
 					e.printStackTrace()
