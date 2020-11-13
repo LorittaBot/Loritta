@@ -1,9 +1,11 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.dao.Profile
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.utils.SimpleImageInfo
 import net.perfectdreams.loritta.utils.readAllBytes
@@ -129,6 +131,40 @@ object LorittaUtils {
 
 	fun toUnicode(ch: Int): String {
 		return String.format("\\u%04x", ch)
+	}
+
+	/**
+	 * Checks if the owner of the guild is banned and, if true, makes me quit the server
+	 *
+	 * This method checks if the [executorProfile] is the owner of the [guild] and, if it is, we don't load it from the database.
+	 *
+	 * @param executorProfile the profile of the user that invoked this action
+	 * @param guild           the guild
+	 * @return if the owner of the guild is banned
+	 */
+	suspend fun isGuildOwnerBanned(executorProfile: Profile?, guild: Guild): Boolean {
+		val ownerProfile = if (guild.ownerIdLong == executorProfile?.id?.value) executorProfile else loritta.getLorittaProfileAsync(guild.ownerIdLong)
+		return ownerProfile != null && isGuildOwnerBanned(guild, ownerProfile)
+	}
+
+	/**
+	 * Checks if the owner of the guild is banned and, if true, makes me quit the server
+	 *
+	 * @param ownerProfile the profile of the guild's owner
+	 * @param guild        the guild
+	 * @return if the owner of the guild is banned
+	 */
+	suspend fun isGuildOwnerBanned(guild: Guild, ownerProfile: Profile): Boolean {
+		val bannedState = ownerProfile.getBannedState()
+
+		if (bannedState != null && bannedState[BannedUsers.expiresAt] == null) { // Se o dono está banido e não é um ban temporário...
+			if (!loritta.config.isOwner(ownerProfile.userId)) { // E ele não é o dono do bot!
+				logger.info("Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o dono ${ownerProfile.userId} está banido de me usar! ᕙ(⇀‸↼‶)ᕗ")
+				guild.leave().queue() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
+				return true
+			}
+		}
+		return false
 	}
 
 	/**

@@ -406,7 +406,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                     }
                 }
 
-                if (ev.guild != null && LorittaUtils.isGuildBanned(ev.guild))
+                if (ev.guild != null && (LorittaUtils.isGuildOwnerBanned(lorittaUser._profile, ev.guild) || LorittaUtils.isGuildBanned(ev.guild)))
                     return true
 
                 loritta.newSuspendedTransaction {

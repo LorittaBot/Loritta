@@ -136,11 +136,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				logIfEnabled(enableProfiling) { "Changing AFK status took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
-				if (ownerProfile != null && isOwnerBanned(ownerProfile, event.guild))
-					return@launchMessageJob
-				logIfEnabled(enableProfiling) { "Checking for owner profile ban took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
-
-				start = System.nanoTime()
 				EventLog.onMessageReceived(serverConfig, event.message)
 				logIfEnabled(enableProfiling) { "Logging to EventLog took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
@@ -514,26 +509,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	 * @returns if the message is mentioning only me
 	 */
 	fun isMentioningOnlyMe(contentRaw: String): Boolean = contentRaw.replace("!", "").trim() == "<@${loritta.discordConfig.discord.clientId}>"
-
-	/**
-	 * Checks if the owner of the guild is banned and, if true, makes me quit the server
-	 *
-	 * @param ownerProfile the profile of the guild's owner
-	 * @param guild        the guild
-	 * @return if the owner of the guild is banned
-	 */
-	suspend fun isOwnerBanned(ownerProfile: Profile, guild: Guild): Boolean {
-		val bannedState = ownerProfile.getBannedState()
-
-		if (bannedState != null && bannedState[BannedUsers.expiresAt] == null) { // Se o dono está banido e não é um ban temporário...
-			if (!loritta.config.isOwner(ownerProfile.userId)) { // E ele não é o dono do bot!
-				logger.info("Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o dono ${ownerProfile.userId} está banido de me usar! ᕙ(⇀‸↼‶)ᕗ")
-				guild.leave().queue() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
-				return true
-			}
-		}
-		return false
-	}
 
 	/**
 	 * Checks if the user is still banned, if not, remove it from the ignore list

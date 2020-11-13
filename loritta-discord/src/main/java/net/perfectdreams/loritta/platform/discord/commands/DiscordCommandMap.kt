@@ -310,7 +310,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 					}
 				} */
 
-				if (ev.guild != null && LorittaUtils.isGuildBanned(ev.guild))
+				if (ev.guild != null && (LorittaUtils.isGuildOwnerBanned(lorittaUser._profile, ev.guild) || LorittaUtils.isGuildBanned(ev.guild)))
 					return true
 
 				loritta.newSuspendedTransaction {
