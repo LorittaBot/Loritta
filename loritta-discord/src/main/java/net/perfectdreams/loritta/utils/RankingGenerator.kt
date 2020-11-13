@@ -82,8 +82,8 @@ object RankingGenerator {
 
 				graphics.font = oswaldRegular10
 
-				if (profile.subsubtitle != null)
-					ImageUtils.drawTextWrap(profile.subsubtitle, 145, currentY + 48, 9999, 9999, graphics.fontMetrics, graphics)
+				// Show the user's ID in the subsubtitle
+				ImageUtils.drawTextWrap((profile.subsubtitle?.let { "$it // " } ?: "") + "ID: ${profile.userId}", 145, currentY + 48, 9999, 9999, graphics.fontMetrics, graphics)
 
 				val avatar = (
 						LorittaUtils.downloadImage(
