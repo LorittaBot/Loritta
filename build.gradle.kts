@@ -61,22 +61,26 @@ allprojects {
                         // libs.deleteRecursively()
                         libs.mkdirs()
 
+                        // Add any required dependencies inside the JAR
+                        from(configurations.runtimeClasspath.get().mapNotNull {
+                            if (addToFinalJarSourceProjects.any { sourceName -> it.name.startsWith(sourceName) }) {
+                                zipTree(it)
+                            } else null
+                        })
+
                         doLast {
                             // Only copy the libs in a "doLast"
                             // doLast means that this won't be executed when loading the build.gradle.kts
                             // (Yes, by default Gradle will run everything in this task block, even if you are compiling a unrelated project)
                             // Very strange...
                             from(configurations.runtimeClasspath.get().mapNotNull {
-                                if (addToFinalJarSourceProjects.any { sourceName -> it.name.startsWith(sourceName) }) {
-                                    zipTree(it)
-                                } else {
+                                if (!addToFinalJarSourceProjects.any { sourceName -> it.name.startsWith(sourceName) }) {
                                     val output = File(libs, it.name)
 
                                     if (it.exists() && !output.exists() && it.extension == "jar")
                                         it.copyTo(output, true)
-
-                                    null
                                 }
+                                null
                             })
                         }
 
