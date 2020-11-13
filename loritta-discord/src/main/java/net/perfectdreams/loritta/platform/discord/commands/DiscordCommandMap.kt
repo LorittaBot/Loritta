@@ -310,6 +310,9 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 					}
 				} */
 
+				if (ev.guild != null && LorittaUtils.isGuildBanned(ev.guild))
+					return true
+
 				loritta.newSuspendedTransaction {
 					lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
 

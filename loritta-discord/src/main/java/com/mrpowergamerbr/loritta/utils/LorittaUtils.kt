@@ -3,8 +3,11 @@ package com.mrpowergamerbr.loritta.utils
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.utils.SimpleImageInfo
 import net.perfectdreams.loritta.utils.readAllBytes
+import org.jetbrains.exposed.sql.select
 import java.awt.image.BufferedImage
 import java.io.InputStream
 import java.net.HttpURLConnection
@@ -126,6 +129,29 @@ object LorittaUtils {
 
 	fun toUnicode(ch: Int): String {
 		return String.format("\\u%04x", ch)
+	}
+
+	/**
+	 * Checks if the guild is blacklisted and, if yes, makes me quit the server
+	 *
+	 * @param guild        the guild
+	 * @return if the owner of the guild is banned
+	 */
+	suspend fun isGuildBanned(guild: Guild): Boolean {
+		val blacklisted = loritta.newSuspendedTransaction {
+			BlacklistedGuilds.select {
+				BlacklistedGuilds.id eq guild.idLong
+			}.firstOrNull()
+		}
+
+		if (blacklisted != null) { // Se o servidor está banido...
+			if (!loritta.config.isOwner(guild.owner!!.user.id)) { // E ele não é o dono do bot!
+				logger.info("Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o servidor está banido de me usar! ᕙ(⇀‸↼‶)ᕗ *${blacklisted[BlacklistedGuilds.reason]}")
+				guild.leave().queue() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
+				return true
+			}
+		}
+		return false
 	}
 
 	fun evalMath(str: String): Double {

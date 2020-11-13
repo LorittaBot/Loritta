@@ -491,6 +491,9 @@ class CommandManager(loritta: Loritta) {
 					}
 				}
 
+				if (ev.guild != null && LorittaUtils.isGuildBanned(ev.guild))
+					return true
+
 				loritta.newSuspendedTransaction {
 					lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
 

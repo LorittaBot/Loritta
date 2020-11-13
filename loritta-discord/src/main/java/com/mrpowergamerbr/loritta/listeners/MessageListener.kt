@@ -29,10 +29,8 @@ import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.tables.BannedUsers
-import net.perfectdreams.loritta.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.utils.Emotes
 import org.apache.commons.text.similarity.LevenshteinDistance
-import org.jetbrains.exposed.sql.select
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
@@ -141,11 +139,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				if (ownerProfile != null && isOwnerBanned(ownerProfile, event.guild))
 					return@launchMessageJob
 				logIfEnabled(enableProfiling) { "Checking for owner profile ban took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
-
-				start = System.nanoTime()
-				if (isGuildBanned(event.guild))
-					return@launchMessageJob
-				logIfEnabled(enableProfiling) { "Checking for guild ban took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
 				EventLog.onMessageReceived(serverConfig, event.message)
@@ -535,29 +528,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 		if (bannedState != null && bannedState[BannedUsers.expiresAt] == null) { // Se o dono está banido e não é um ban temporário...
 			if (!loritta.config.isOwner(ownerProfile.userId)) { // E ele não é o dono do bot!
 				logger.info("Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o dono ${ownerProfile.userId} está banido de me usar! ᕙ(⇀‸↼‶)ᕗ")
-				guild.leave().queue() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
-				return true
-			}
-		}
-		return false
-	}
-
-	/**
-	 * Checks if the guild is blacklisted and, if yes, makes me quit the server
-	 *
-	 * @param guild        the guild
-	 * @return if the owner of the guild is banned
-	 */
-	private suspend fun isGuildBanned(guild: Guild): Boolean {
-		val blacklisted = loritta.newSuspendedTransaction {
-			BlacklistedGuilds.select {
-				BlacklistedGuilds.id eq guild.idLong
-			}.firstOrNull()
-		}
-
-		if (blacklisted != null) { // Se o servidor está banido...
-			if (!loritta.config.isOwner(guild.owner!!.user.id)) { // E ele não é o dono do bot!
-				logger.info("Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o servidor está banido de me usar! ᕙ(⇀‸↼‶)ᕗ *${blacklisted[BlacklistedGuilds.reason]}")
 				guild.leave().queue() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
 				return true
 			}
