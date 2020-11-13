@@ -6,8 +6,8 @@ import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import io.ktor.application.ApplicationCall
-import io.ktor.request.header
+import io.ktor.application.*
+import io.ktor.request.*
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.LorittaWebsite
 import net.perfectdreams.loritta.website.routes.RequiresDiscordLoginLocalizedRoute
@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.website.utils.RouteKey
 import net.perfectdreams.loritta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.website.utils.extensions.trueIp
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.or
 
 class UserReputationRoute(loritta: LorittaDiscord) : RequiresDiscordLoginLocalizedRoute(loritta, "/user/{userId}/rep") {
@@ -40,7 +41,9 @@ class UserReputationRoute(loritta: LorittaDiscord) : RequiresDiscordLoginLocaliz
 
 		// Vamos agora pegar todas as reputações
 		val reputations = loritta.newSuspendedTransaction {
-			Reputation.find { Reputations.receivedById eq user.idLong }.sortedByDescending { it.receivedAt }
+			Reputation.find { Reputations.receivedById eq user.idLong }
+					.orderBy(Reputations.receivedAt to SortOrder.DESC)
+					.toList()
 		}
 
 		val lastReputationGiven = if (userIdentification != null) {
@@ -49,7 +52,10 @@ class UserReputationRoute(loritta: LorittaDiscord) : RequiresDiscordLoginLocaliz
 					(Reputations.givenById eq userIdentification.id.toLong()) or
 							(Reputations.givenByEmail eq userIdentification.email!!) or
 							(Reputations.givenByIp eq call.request.trueIp)
-				}.sortedByDescending { it.receivedAt }.firstOrNull()
+				}
+						.orderBy(Reputations.receivedAt to SortOrder.DESC)
+						.limit(1)
+						.firstOrNull()
 			}
 		} else null
 
