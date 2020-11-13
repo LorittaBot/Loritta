@@ -151,8 +151,8 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 					jvmUpTime -= TimeUnit.MINUTES.toMillis(minutes)
 					val seconds = TimeUnit.MILLISECONDS.toSeconds(jvmUpTime)
 
-					row2.add("${days}d ${hours}h ${minutes}m ${seconds}s")
-					row3.add("---")
+					row2.add("---")
+					row3.add("${days}d ${hours}h ${minutes}m ${seconds}s")
 
 					val wasMutexLocked = payload["isMutexLocked"].bool
 					row4.add(
