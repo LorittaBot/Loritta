@@ -114,7 +114,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				start = System.nanoTime()
 				// We use "loadMemberRolesLorittaPermissions(...)" to avoid unnecessary retrievals later on, because we recheck the role permission later
-				val rolesLorittaPermissions = LorittaUser.loadMemberRolesLorittaPermissions(serverConfig, member)
+				val rolesLorittaPermissions = serverConfig.getOrLoadGuildRolesLorittaPermissions(event.guild)
 				logIfEnabled(enableProfiling) { "Loading Loritta's role permissions in ${event.guild.idLong} took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
@@ -266,10 +266,10 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 								.substring(serverConfig.commandPrefix.length)
 
 						val list = mutableListOf(
-                                LorittaReply(
-                                        "${legacyLocale["LORITTA_UnknownCommand", command, "${serverConfig.commandPrefix}${legacyLocale["AJUDA_CommandName"]}"]} ${Emotes.LORI_OWO}",
-                                        "\uD83E\uDD37"
-                                )
+								LorittaReply(
+										"${legacyLocale["LORITTA_UnknownCommand", command, "${serverConfig.commandPrefix}${legacyLocale["AJUDA_CommandName"]}"]} ${Emotes.LORI_OWO}",
+										"\uD83E\uDD37"
+								)
 						)
 
 						val allCommandLabels = mutableListOf<String>()
@@ -305,11 +305,11 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 						if (nearestCommand != null && 6 > diff) {
 							list.add(
-                                    LorittaReply(
-                                            prefix = Emotes.LORI_HM,
-                                            message = locale["commands.didYouMeanCommand", serverConfig.commandPrefix + nearestCommand],
-                                            mentionUser = false
-                                    )
+									LorittaReply(
+											prefix = Emotes.LORI_HM,
+											message = locale["commands.didYouMeanCommand", serverConfig.commandPrefix + nearestCommand],
+											mentionUser = false
+									)
 							)
 						}
 
@@ -407,8 +407,13 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				val lorittaProfile = loritta.getOrCreateLorittaProfile(event.author.idLong)
 				val legacyLocale = loritta.getLegacyLocaleById(serverConfig.localeId)
 				val locale = loritta.getLocaleById(serverConfig.localeId)
-				val permissions = LorittaUser.loadMemberLorittaPermissions(serverConfig, member)
-				val lorittaUser = GuildLorittaUser(member, permissions, lorittaProfile)
+				val lorittaUser = GuildLorittaUser(
+						member,
+						LorittaUser.convertRolePermissionsMapToMemberPermissionList(
+								member,
+								serverConfig.getOrLoadGuildRolesLorittaPermissions(event.guild)
+						),
+						lorittaProfile)
 
 				EventLog.onMessageUpdate(serverConfig, legacyLocale, event.message)
 

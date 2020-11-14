@@ -5,11 +5,16 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.DonationKeys
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
+import com.mrpowergamerbr.loritta.utils.LorittaPermission
+import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.extensions.getOrNull
 import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.*
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
@@ -47,6 +52,35 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 	var welcomerConfig by WelcomerConfig optionalReferencedOn ServerConfigs.welcomerConfig
 	var moderationConfig by ModerationConfig optionalReferencedOn ServerConfigs.moderationConfig
 	var migrationVersion by ServerConfigs.migrationVersion
+
+	// Loading guild roles loritta permissions is very expensive, is called on *every* message and 99% of the times the permissions are *always* the same.
+	// So it would be better to just cache them in memory and invalidate when needed, avoiding expensive calls to the database on every message.
+	//
+	// Of course, this means that cache *must* be invalidated when the permissions are updated! If not, the cache will have inconsistencies.
+	private var guildRolesLorittaPermissions: Map<Long, EnumSet<LorittaPermission>>? = null
+	private val guildRolesLorittaPermissionsMutex = Mutex()
+
+	/**
+	 * Loads the guild role Loritta permissions from the cache or, if it is not present in the cache, loads from the database.
+	 *
+	 * This uses [LorittaUser.loadGuildRolesLorittaPermissions], but caches the result to a [guildRolesLorittaPermissions] variable.
+	 *
+	 * @param guild the guild object
+	 * @return a map containing all the loritta permissions of the roles in [guild]
+	 *
+	 * @see LorittaUser.loadGuildRolesLorittaPermissions
+	 */
+	suspend fun getOrLoadGuildRolesLorittaPermissions(guild: Guild): Map<Long, EnumSet<LorittaPermission>> {
+		// Needs to be inside of a mutex to avoid synchronization issues (concurrent changes, etc)
+		return guildRolesLorittaPermissionsMutex.withLock {
+			guildRolesLorittaPermissions ?: run {
+				// If we don't have the permissions cached, load it from the database and store in the guildRolesLorittaPermissions map
+				val guildPermissions = LorittaUser.loadGuildRolesLorittaPermissions(this, guild)
+				guildRolesLorittaPermissions = guildPermissions
+				guildPermissions
+			}
+		}
+	}
 
 	suspend fun getActiveDonationKeys() = loritta.newSuspendedTransaction {
 		DonationKey.find { DonationKeys.activeIn eq this@ServerConfig.id and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
