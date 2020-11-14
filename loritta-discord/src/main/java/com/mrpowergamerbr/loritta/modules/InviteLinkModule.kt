@@ -160,9 +160,6 @@ class InviteLinkModule : MessageReceivedModule {
 								if (it.reactionEmote.id == (Emotes.LORI_PAT as DiscordEmote).id) {
 									enableBypassMessage.removeAllFunctions()
 
-									// Because Loritta caches role permissions, we need to invalidate the current config to avoid cache inconsistencies.
-									loritta.cachedServerConfigs.invalidate(serverConfig.id.value)
-
 									loritta.newSuspendedTransaction {
 										ServerRolePermissions.insert {
 											it[ServerRolePermissions.guild] = serverConfig.id
@@ -170,6 +167,9 @@ class InviteLinkModule : MessageReceivedModule {
 											it[ServerRolePermissions.permission] = LorittaPermission.ALLOW_INVITES
 										}
 									}
+
+									// Because Loritta caches role permissions, we need to invalidate the current config to avoid cache inconsistencies.
+									loritta.cachedServerConfigs.invalidate(serverConfig.id.value)
 
 									message.textChannel.sendMessage(
 											LorittaReply(
