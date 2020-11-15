@@ -11,7 +11,6 @@ import kotlinx.dom.addClass
 import kotlinx.dom.clear
 import kotlinx.dom.removeClass
 import kotlinx.html.*
-import kotlinx.html.dom.append
 import kotlinx.html.dom.prepend
 import kotlinx.serialization.Serializable
 import loriUrl
@@ -106,9 +105,6 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
             ))
             m.hideLoadingScreen()
         }
-
-        // Atualizar sem travar o status
-        updateLeaderboard()
     }
 
     fun checkIfThereAreErrors(response: HttpResponse, data: Json): Boolean {
@@ -153,90 +149,6 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
             }
             return true
         } else return false
-    }
-
-    fun updateLeaderboard() {
-        // Iremos pegar o leaderboard em uma task separada, já que o endpoint é diferente :)
-        m.launch {
-            val leaderboardElement = document.select<HTMLElement>("#leaderboard")
-            val response = http.get<HttpResponse> {
-                url("${window.location.origin}/api/v1/economy/sonhos-leaderboard/around")
-                parameter("padding", "2")
-            }
-
-            val payload = kotlinx.serialization.json.JSON.nonstrict.decodeFromString(LeaderboardResponse.serializer(), response.receive())
-
-            val rankPosition = payload.rankPosition
-            val usersAround = payload.usersAround
-
-            leaderboardElement.clear()
-
-            if (rankPosition != null) {
-                if (usersAround != null) {
-                    document.select<HTMLElement>("#leaderboard").append {
-                        table("fancy-table") {
-                            style = "width: 100%;"
-                            tr {
-                                th {
-                                    + locale["website.daily.leaderboard.position"]
-                                }
-                                th {
-
-                                }
-                                th {
-                                    + locale["website.daily.leaderboard.name"]
-                                }
-                                th {
-                                    + "Sonhos"
-                                }
-                            }
-
-                            for ((index, user) in usersAround.withIndex()) {
-                                tr {
-                                    // Não vamos colocar opacidade se o usuário estiver bem perto do topo
-                                    if (rankPosition >= 2) {
-                                        if (index == 0) {
-                                            style = "opacity: 0.35;"
-                                        }
-                                        if (index == 1) {
-                                            style = "opacity: 0.7;"
-                                        }
-                                    }
-                                    if (index == (USER_PADDING + USER_PADDING + 1) - 2) {
-                                        style = "opacity: 0.7;"
-                                    }
-                                    if (index == (USER_PADDING + USER_PADDING + 1) - 1) {
-                                        style = "opacity: 0.35;"
-                                    }
-
-                                    td {
-                                        +"#${user.position}"
-                                    }
-                                    td {
-                                        img(src = user.avatarUrl) {
-                                            style = "border-radius: 100%; width: 2em;"
-                                        }
-                                    }
-                                    td {
-                                        if (user.id == m.userIdentification?.id) {
-                                            classes += "has-rainbow-text"
-                                        }
-                                        + user.name
-                                        span {
-                                            style = "opacity: 0.5;"
-                                            + "#${user.discriminator}"
-                                        }
-                                    }
-                                    td {
-                                        +"${user.money}"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 
     @JsName("recaptchaCallback")
@@ -396,7 +308,7 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
                     ))
 
                     ts1Promotion2.play()
-                    updateLeaderboard()
+
                     countUp.start {
                         println("Finished!!!")
                         cash.play()
@@ -437,21 +349,5 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
             val type: DailyGuildMissingRequirement,
             val data: Long,
             val multiplier: Double
-    )
-
-    @Serializable
-    class LeaderboardResponse(
-            val rankPosition: Int? = null,
-            val usersAround: List<UserAround>? = null
-    )
-
-    @Serializable
-    class UserAround(
-            val id: Long,
-            val money: Long,
-            val position: Long,
-            val name: String,
-            val discriminator: String,
-            val avatarUrl: String
     )
 }

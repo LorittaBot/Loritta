@@ -95,7 +95,6 @@ object DefaultRoutes {
 			PostTransferBalanceExternalRoute(loritta),
 			GetBundlesRoute(loritta),
 			PostBundlesRoute(loritta),
-			GetSonhosLeaderboardRoute(loritta),
 			GetDailyShopRoute(loritta),
 			PostBuyDailyShopItemRoute(loritta),
 			GetPaymentsLeaderboardRoute(loritta),
