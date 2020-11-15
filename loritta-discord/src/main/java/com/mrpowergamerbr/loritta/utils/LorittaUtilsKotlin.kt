@@ -121,6 +121,7 @@ object LorittaUtilsKotlin {
 
 	/**
 	 * Checks if a user is banned and, if it is, a message is sent to the user via direct messages or, if their DMs are disabled, in the current channel.
+	 * This also checks if the user is still banned, if not, remove it from the ignore list
 	 *
 	 * @param user           the user that will be checked if they are banned or not
 	 * @param profile        the user's profile
@@ -129,7 +130,21 @@ object LorittaUtilsKotlin {
 	 * @return               if the user is banned
 	 */
 	private suspend fun handleIfBanned(user: User, profile: Profile, commandChannel: MessageChannel, locale: BaseLocale, legacyLocale: LegacyBaseLocale): Boolean {
-		val bannedState = profile.getBannedState() ?: return false
+		val bannedState = profile.getBannedState()
+
+		if (loritta.ignoreIds.contains(profile.userId)) { // Se o usuário está sendo ignorado...
+			if (bannedState != null) { // E ele ainda está banido...
+				logger.info { "${profile.id} tried to use me, but they are banned! >:)" }
+				return true // Então flw galerinha
+			} else {
+				// Se não, vamos remover ele da lista do ignoreIds
+				loritta.ignoreIds.remove(profile.userId)
+				return false
+			}
+		}
+
+		if (bannedState == null)
+			return false
 
 		LorittaLauncher.loritta.ignoreIds.add(user.idLong)
 

@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.listeners
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.modules.AutoroleModule
@@ -229,11 +228,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 					return@launchMessageJob
 				logIfEnabled(enableProfiling) { "Checking for ignore permission took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
-				start = System.nanoTime()
-				if (lorittaProfile != null && isUserStillBanned(lorittaProfile))
-					return@launchMessageJob
-				logIfEnabled(enableProfiling) { "Checking for user ban took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
-
 				// Executar comandos
 				start = System.nanoTime()
 				if (checkCommandsAndDispatch(lorittaMessageEvent, serverConfig, locale, legacyLocale, lorittaUser))
@@ -348,9 +342,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			}
 			val locale = loritta.getLocaleById(currentLocale)
 			val legacyLocale = loritta.getLegacyLocaleById(currentLocale)
-
-			if (isUserStillBanned(profile))
-				return@launchMessageJob
 
 			if (isMentioningOnlyMe(event.message.contentRaw)) {
 				event.channel.sendMessage(legacyLocale["LORITTA_CommandsInDirectMessage", event.message.author.asMention, legacyLocale["AJUDA_CommandName"]]).queue()
@@ -513,28 +504,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 	 * @returns if the message is mentioning only me
 	 */
 	fun isMentioningOnlyMe(contentRaw: String): Boolean = contentRaw.replace("!", "").trim() == "<@${loritta.discordConfig.discord.clientId}>"
-
-	/**
-	 * Checks if the user is still banned, if not, remove it from the ignore list
-	 *
-	 * @param profile the profile of the user
-	 * @return if the user is still banned
-	 */
-	suspend fun isUserStillBanned(profile: Profile): Boolean {
-		val bannedState = profile.getBannedState()
-
-		if (loritta.ignoreIds.contains(profile.userId)) { // Se o usuário está sendo ignorado...
-			if (bannedState != null) { // E ele ainda está banido...
-				logger.info { "${profile.id} tried to use me, but they are banned! >:)" }
-				return true // Então flw galerinha
-			} else {
-				// Se não, vamos remover ele da lista do ignoreIds
-				loritta.ignoreIds.remove(profile.userId)
-				return false
-			}
-		}
-		return false
-	}
 
 	fun logIfEnabled(doLog: Boolean, msg: () -> Any?) {
 		if (doLog)
