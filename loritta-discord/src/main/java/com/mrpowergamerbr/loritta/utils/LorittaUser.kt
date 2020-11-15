@@ -89,7 +89,13 @@ open class LorittaUser(val user: User, val permissions: EnumSet<LorittaPermissio
 
 			roles.sortByDescending { it.position }
 
-			enumSet.addAll(rolePermissions.values.flatten())
+			enumSet.addAll(
+					// We need to filter the permissions to only add the permissions from the roles that the user *does* have.
+					// loadMemberRolesLorittaPermissions(...) does filter that for us, but loadGuildRolesLorittaPermissions(...) doesn't!
+					rolePermissions.filterKeys { roleId ->
+						roles.any { it.idLong == roleId }
+					}.values.flatten()
+			)
 
 			// The "IGNORE_COMMANDS" permission check is kinda... tricky
 			// We check if all the roles the user has the IGNORE_COMMANDS, if any of them doesn't have it, we ignore it.
