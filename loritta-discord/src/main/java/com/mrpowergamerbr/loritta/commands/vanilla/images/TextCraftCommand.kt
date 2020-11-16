@@ -22,7 +22,7 @@ class TextCraftCommand : AbstractCommand("textcraft", category = CommandCategory
 	override fun getExamples(): List<String> {
 		return listOf(
 				"Minecraft",
-				"PerfectDreams | é o melhor servidor survival de Minecraft",
+				"SparklyPower | é o melhor servidor survival de Minecraft | font2",
 				"Olá Mundo! | A Lori é fofa! | font6 | font12"
 		)
 	}
