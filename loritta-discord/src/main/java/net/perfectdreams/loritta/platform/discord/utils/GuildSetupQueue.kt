@@ -95,15 +95,21 @@ class GuildSetupQueue(val loritta: LorittaDiscord) {
             val start = System.currentTimeMillis()
 
             // And after getting all serverConfigs, we now can set up the guild!
+            val allJobs = mutableListOf<Deferred<Unit>>()
+
             for (serverConfig in serverConfigs) {
                 val guild = pendingGuildsClone[serverConfig.id.value]
 
                 if (guild != null)
-                    try {
-                        setupGuild(guild, serverConfig)
-                    } catch (e: Exception) {
-                        logger.warn(e) { "Exception while preparing guild $guild with server config $serverConfig" }
-                    }
+                    allJobs.add(setupGuild(guild, serverConfig))
+            }
+
+            allJobs.forEach {
+                try {
+                    it.await()
+                } catch (e: Exception) {
+                    logger.warn(e) { "Exception while preparing guild $guild!" }
+                }
             }
 
             job = null
@@ -111,102 +117,104 @@ class GuildSetupQueue(val loritta: LorittaDiscord) {
         }
     }
 
-    private suspend fun setupGuild(guild: Guild, serverConfig: ServerConfig) {
-        val mutes = loritta.newSuspendedTransaction {
-            Mute.find {
-                (Mutes.isTemporary eq true) and (Mutes.guildId eq guild.idLong)
-            }.toMutableList()
-        }
+    private suspend fun setupGuild(guild: Guild, serverConfig: ServerConfig): Deferred<Unit> {
+        return GlobalScope.async(loritta.coroutineDispatcher) {
+            val mutes = loritta.newSuspendedTransaction {
+                Mute.find {
+                    (Mutes.isTemporary eq true) and (Mutes.guildId eq guild.idLong)
+                }.toMutableList()
+            }
 
-        for (mute in mutes) {
-            val member = guild.retrieveMemberOrNullById(mute.userId) ?: continue
+            for (mute in mutes) {
+                val member = guild.retrieveMemberOrNullById(mute.userId) ?: continue
 
-            logger.info("Adicionado removal thread pelo MutedUsersThread já que a guild iniciou! ~ Guild: ${mute.guildId} - User: ${mute.userId}")
-            MuteCommand.spawnRoleRemovalThread(guild, loritta.getLegacyLocaleById(serverConfig.localeId), member.user, mute.expiresAt!!)
-        }
+                logger.info("Adicionado removal thread pelo MutedUsersThread já que a guild iniciou! ~ Guild: ${mute.guildId} - User: ${mute.userId}")
+                MuteCommand.spawnRoleRemovalThread(guild, loritta.getLegacyLocaleById(serverConfig.localeId), member.user, mute.expiresAt!!)
+            }
 
-        // Ao voltar, vamos reprocessar todas as reações necessárias do reaction role (desta guild)
-        val reactionRoles = loritta.newSuspendedTransaction {
-            ReactionOption.find { ReactionOptions.guildId eq guild.idLong }.toMutableList()
-        }
+            // Ao voltar, vamos reprocessar todas as reações necessárias do reaction role (desta guild)
+            val reactionRoles = loritta.newSuspendedTransaction {
+                ReactionOption.find { ReactionOptions.guildId eq guild.idLong }.toMutableList()
+            }
 
-        // Vamos fazer cache das mensagens para evitar pegando a mesma mensagem várias vezes
-        val messages = mutableMapOf<Long, Message?>()
+            // Vamos fazer cache das mensagens para evitar pegando a mesma mensagem várias vezes
+            val messages = mutableMapOf<Long, Message?>()
 
-        for (option in reactionRoles) {
-            val textChannel = guild.getTextChannelById(option.textChannelId) ?: continue
-            val message = messages.getOrPutNullable(option.messageId) {
+            for (option in reactionRoles) {
+                val textChannel = guild.getTextChannelById(option.textChannelId) ?: continue
+                val message = messages.getOrPutNullable(option.messageId) {
+                    try {
+                        textChannel.retrieveMessageById(option.messageId).await()
+                    } catch (e: ErrorResponseException) {
+                        null
+                    }
+                }
+
+                messages[option.messageId] = message
+
+                if (message == null)
+                    continue
+
+                // Verificar locks
+                // Existem vários tipos de locks: Locks de opções (via ID), locks de mensagens (via... mensagens), etc.
+                // Para ficar mais fácil, vamos verificar TODOS os locks da mensagem
+                val locks = mutableListOf<ReactionOption>()
+
+                for (lock in option.locks) {
+                    if (lock.contains("-")) {
+                        val split = lock.split("-")
+                        val channelOptionLock = loritta.newSuspendedTransaction {
+                            ReactionOption.find {
+                                (ReactionOptions.guildId eq guild.idLong) and
+                                        (ReactionOptions.textChannelId eq split[0].toLong()) and
+                                        (ReactionOptions.messageId eq split[1].toLong())
+                            }.toMutableList()
+                        }
+                        locks.addAll(channelOptionLock)
+                    } else { // Lock por option ID, esse daqui é mais complicado!
+                        val idOptionLock = loritta.newSuspendedTransaction {
+                            ReactionOption.find {
+                                (ReactionOptions.id eq lock.toLong())
+                            }.toMutableList()
+                        }
+                        locks.addAll(idOptionLock)
+                    }
+                }
+
+                // Agora nós já temos a opção desejada, só dar os cargos para o usuário!
+                val roles = option.roleIds.mapNotNull { guild.getRoleById(it) }
+
+                if (roles.isNotEmpty()) {
+                    val reaction = message.reactions.firstOrNull {
+                        it.reactionEmote.name == option.reaction || it.reactionEmote.emote.id == option.reaction
+                    }
+
+                    if (reaction != null) { // Reaction existe!
+                        reaction.retrieveUsers().await().asSequence().filter { !it.isBot }.mapNotNull { guild.getMember(it) }.forEach {
+                            ReactionModule.giveRolesToMember(it, reaction, option, locks, roles)
+                        }
+                    }
+                }
+            }
+
+            val allActiveGiveaways = loritta.newSuspendedTransaction {
+                Giveaway.find { (Giveaways.guildId eq guild.idLong) and (Giveaways.finished eq false) }.toMutableList()
+            }
+
+            allActiveGiveaways.forEach {
                 try {
-                    textChannel.retrieveMessageById(option.messageId).await()
-                } catch (e: ErrorResponseException) {
-                    null
+                    if (GiveawayManager.giveawayTasks[it.id.value] == null)
+                        GiveawayManager.createGiveawayJob(it)
+                } catch (e: Exception) {
+                    logger.error(e) { "Error while creating giveaway ${it.id.value} job on guild ready ${guild.idLong}" }
                 }
             }
 
-            messages[option.messageId] = message
-
-            if (message == null)
-                continue
-
-            // Verificar locks
-            // Existem vários tipos de locks: Locks de opções (via ID), locks de mensagens (via... mensagens), etc.
-            // Para ficar mais fácil, vamos verificar TODOS os locks da mensagem
-            val locks = mutableListOf<ReactionOption>()
-
-            for (lock in option.locks) {
-                if (lock.contains("-")) {
-                    val split = lock.split("-")
-                    val channelOptionLock = loritta.newSuspendedTransaction {
-                        ReactionOption.find {
-                            (ReactionOptions.guildId eq guild.idLong) and
-                                    (ReactionOptions.textChannelId eq split[0].toLong()) and
-                                    (ReactionOptions.messageId eq split[1].toLong())
-                        }.toMutableList()
-                    }
-                    locks.addAll(channelOptionLock)
-                } else { // Lock por option ID, esse daqui é mais complicado!
-                    val idOptionLock = loritta.newSuspendedTransaction {
-                        ReactionOption.find {
-                            (ReactionOptions.id eq lock.toLong())
-                        }.toMutableList()
-                    }
-                    locks.addAll(idOptionLock)
-                }
+            loritta.pluginManager.plugins.filterIsInstance(DiscordPlugin::class.java).flatMap {
+                it.onGuildReadyListeners
+            }.forEach {
+                it.invoke(guild, serverConfig)
             }
-
-            // Agora nós já temos a opção desejada, só dar os cargos para o usuário!
-            val roles = option.roleIds.mapNotNull { guild.getRoleById(it) }
-
-            if (roles.isNotEmpty()) {
-                val reaction = message.reactions.firstOrNull {
-                    it.reactionEmote.name == option.reaction || it.reactionEmote.emote.id == option.reaction
-                }
-
-                if (reaction != null) { // Reaction existe!
-                    reaction.retrieveUsers().await().asSequence().filter { !it.isBot }.mapNotNull { guild.getMember(it) }.forEach {
-                        ReactionModule.giveRolesToMember(it, reaction, option, locks, roles)
-                    }
-                }
-            }
-        }
-
-        val allActiveGiveaways = loritta.newSuspendedTransaction {
-            Giveaway.find { (Giveaways.guildId eq guild.idLong) and (Giveaways.finished eq false) }.toMutableList()
-        }
-
-        allActiveGiveaways.forEach {
-            try {
-                if (GiveawayManager.giveawayTasks[it.id.value] == null)
-                    GiveawayManager.createGiveawayJob(it)
-            } catch (e: Exception) {
-                logger.error(e) { "Error while creating giveaway ${it.id.value} job on guild ready ${guild.idLong}" }
-            }
-        }
-
-        loritta.pluginManager.plugins.filterIsInstance(DiscordPlugin::class.java).flatMap {
-            it.onGuildReadyListeners
-        }.forEach {
-            it.invoke(guild, serverConfig)
         }
     }
 }
