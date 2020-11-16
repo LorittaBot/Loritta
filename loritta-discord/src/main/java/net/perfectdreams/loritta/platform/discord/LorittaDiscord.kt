@@ -44,6 +44,7 @@ import net.perfectdreams.loritta.commands.vanilla.social.XpNotificationsCommand
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandMap
 import net.perfectdreams.loritta.platform.discord.plugin.JVMPluginManager
+import net.perfectdreams.loritta.platform.discord.utils.GuildSetupQueue
 import net.perfectdreams.loritta.platform.discord.utils.JVMLorittaAssets
 import net.perfectdreams.loritta.tables.BackgroundPayments
 import net.perfectdreams.loritta.tables.Backgrounds
@@ -154,6 +155,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
     fun createThreadPool(name: String) = Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat(name).build())
 
     val pendingMessages = ConcurrentLinkedQueue<Job>()
+    val guildSetupQueue = GuildSetupQueue(this)
 
     /**
      * Gets an user's profile background

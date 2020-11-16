@@ -10,7 +10,6 @@ import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Mutes
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNullById
 import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -22,7 +21,6 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
@@ -37,7 +35,6 @@ import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemove
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent
-import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.dao.servers.Giveaway
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.*
@@ -47,14 +44,12 @@ import net.perfectdreams.loritta.tables.servers.Giveaways
 import net.perfectdreams.loritta.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.MemberCounterChannelConfigs
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.ReactionOptions
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.WarnActions
 import net.perfectdreams.loritta.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
 import okio.Buffer
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.kotlin.utils.getOrPutNullable
 import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
 import kotlin.collections.set
@@ -538,107 +533,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildReady(event: GuildReadyEvent) {
-		val guild = event.guild
-
 		GlobalScope.launch(loritta.coroutineDispatcher) {
-			val serverConfig = loritta.getOrCreateServerConfigAsync(event.guild.idLong)
-
-			val mutes = loritta.newSuspendedTransaction {
-				Mute.find {
-					(Mutes.isTemporary eq true) and (Mutes.guildId eq event.guild.idLong)
-				}.toMutableList()
-			}
-
-			for (mute in mutes) {
-				val member = guild.retrieveMemberOrNullById(mute.userId) ?: continue
-
-				logger.info("Adicionado removal thread pelo MutedUsersThread já que a guild iniciou! ~ Guild: ${mute.guildId} - User: ${mute.userId}")
-				MuteCommand.spawnRoleRemovalThread(guild, loritta.getLegacyLocaleById(serverConfig.localeId), member.user, mute.expiresAt!!)
-			}
-
-			// Ao voltar, vamos reprocessar todas as reações necessárias do reaction role (desta guild)
-			val reactionRoles = loritta.newSuspendedTransaction {
-				ReactionOption.find { ReactionOptions.guildId eq event.guild.idLong }.toMutableList()
-			}
-
-			// Vamos fazer cache das mensagens para evitar pegando a mesma mensagem várias vezes
-			val messages = mutableMapOf<Long, Message?>()
-
-			for (option in reactionRoles) {
-				val textChannel = event.guild.getTextChannelById(option.textChannelId) ?: continue
-				val message = messages.getOrPutNullable(option.messageId) {
-					try {
-						textChannel.retrieveMessageById(option.messageId).await()
-					} catch (e: ErrorResponseException) {
-						null
-					}
-				}
-
-				messages[option.messageId] = message
-
-				if (message == null)
-					continue
-
-				// Verificar locks
-				// Existem vários tipos de locks: Locks de opções (via ID), locks de mensagens (via... mensagens), etc.
-				// Para ficar mais fácil, vamos verificar TODOS os locks da mensagem
-				val locks = mutableListOf<ReactionOption>()
-
-				for (lock in option.locks) {
-					if (lock.contains("-")) {
-						val split = lock.split("-")
-						val channelOptionLock = loritta.newSuspendedTransaction {
-							ReactionOption.find {
-								(ReactionOptions.guildId eq event.guild.idLong) and
-										(ReactionOptions.textChannelId eq split[0].toLong()) and
-										(ReactionOptions.messageId eq split[1].toLong())
-							}.toMutableList()
-						}
-						locks.addAll(channelOptionLock)
-					} else { // Lock por option ID, esse daqui é mais complicado!
-						val idOptionLock = loritta.newSuspendedTransaction {
-							ReactionOption.find {
-								(ReactionOptions.id eq lock.toLong())
-							}.toMutableList()
-						}
-						locks.addAll(idOptionLock)
-					}
-				}
-
-				// Agora nós já temos a opção desejada, só dar os cargos para o usuário!
-				val roles = option.roleIds.mapNotNull { event.guild.getRoleById(it) }
-
-				if (roles.isNotEmpty()) {
-					val reaction = message.reactions.firstOrNull {
-						it.reactionEmote.name == option.reaction || it.reactionEmote.emote.id == option.reaction
-					}
-
-					if (reaction != null) { // Reaction existe!
-						reaction.retrieveUsers().await().asSequence().filter { !it.isBot }.mapNotNull { event.guild.getMember(it) }.forEach {
-							ReactionModule.giveRolesToMember(it, reaction, option, locks, roles)
-						}
-					}
-				}
-			}
-
-			val allActiveGiveaways = loritta.newSuspendedTransaction {
-				Giveaway.find { (Giveaways.guildId eq event.guild.idLong) and (Giveaways.finished eq false) }.toMutableList()
-			}
-
-			allActiveGiveaways.forEach {
-				try {
-					if (GiveawayManager.giveawayTasks[it.id.value] == null)
-						GiveawayManager.createGiveawayJob(it)
-				} catch (e: Exception) {
-					logger.error(e) { "Error while creating giveaway ${it.id.value} job on guild ready ${event.guild.idLong}" }
-				}
-			}
-
-			loritta.pluginManager.plugins.filterIsInstance(DiscordPlugin::class.java).flatMap {
-				it.onGuildReadyListeners
-			}.forEach {
-				it.invoke(event.guild, serverConfig)
-			}
+			loritta.guildSetupQueue.addToSetupQueue(event.guild)
 		}
 	}
 }
