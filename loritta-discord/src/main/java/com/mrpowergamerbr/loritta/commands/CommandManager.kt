@@ -111,7 +111,6 @@ class CommandManager(loritta: Loritta) {
 		// =======[ MISC ]======
 		commandMap.add(AjudaCommand())
 		commandMap.add(PingCommand())
-		commandMap.add(QuoteCommand())
 		commandMap.add(SayCommand())
 		commandMap.add(EscolherCommand())
 		commandMap.add(LanguageCommand())
