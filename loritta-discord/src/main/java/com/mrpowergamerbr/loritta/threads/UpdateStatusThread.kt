@@ -101,12 +101,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 
 					val artist = runBlocking { lorittaShards.retrieveUserInfoById(artistId.toLong()) }
 
-					val displayName = fancyName
-							?: if (artist != null) {
-								artist.name + "#" + artist.discriminator
-							} else {
-								"¯\\_(ツ)_/¯"
-							}
+					val displayName = fancyName ?: (artist?.name ?: "¯\\_(ツ)_/¯")
 
 					loritta.lorittaShards.shardManager.setActivity(Activity.of(Activity.ActivityType.WATCHING, "\uD83D\uDCF7 Fan Art by $displayName \uD83C\uDFA8 — \uD83D\uDC81 @Loritta fanarts", "https://www.twitch.tv/mrpowergamerbr"))
 					lastUpdate = System.currentTimeMillis()
