@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.plugin.rosbife.commands.base
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
@@ -10,8 +11,9 @@ import java.util.*
 
 actual suspend fun CommandContext.imageData(argument: Int): JsonObject? {
     val url = imageUrl(argument, 0)
+    val castedLoritta = (loritta as Loritta)
 
-    if (url != null)
+    if (url != null && castedLoritta.connectionManager.isTrusted(url))
         return buildJsonObject {
             put("type", "url")
             put("content", url)
@@ -29,7 +31,7 @@ actual suspend fun CommandContext.imageData(argument: Int): JsonObject? {
         }
     } else {
         val urlSearchingMessages = imageUrl(argument)
-        if (urlSearchingMessages != null)
+        if (urlSearchingMessages != null && castedLoritta.connectionManager.isTrusted(urlSearchingMessages))
             return buildJsonObject {
                 put("type", "url")
                 put("content", urlSearchingMessages)

@@ -3,24 +3,36 @@ package net.perfectdreams.loritta.plugin.rosbife.commands
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.http.*
 import kotlinx.serialization.json.*
 import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.plugin.rosbife.RosbifePlugin
+import net.perfectdreams.loritta.utils.Emotes
+import java.awt.Color
 
 class CortesFlowCommand(
         m: RosbifePlugin,
 ) : DiscordAbstractCommandBase(
         m.loritta as LorittaDiscord,
         listOf(
-                "cortesflow"
+                "cortesflow", "flowcortes"
         ),
         CommandCategory.IMAGES
 ) {
     override fun command() = create {
         localizedDescription("commands.images.cortesflow.description")
+
+        needsToUploadFiles = true
+
+        arguments {
+            argument(ArgumentType.TEXT) {}
+            argument(ArgumentType.TEXT) {}
+        }
 
         executesDiscord {
             if (args.isEmpty()) {
@@ -33,13 +45,27 @@ class CortesFlowCommand(
                         .entries
                         .sortedByDescending { it.value.size }
                 val embed = EmbedBuilder()
+                        .setTitle("${Emotes.FLOW_PODCAST} ${locale["commands.images.cortesflow.embedTitle"]}")
+                        .setDescription(
+                                locale.getList(
+                                        "commands.images.cortesflow.embedDescription",
+                                        locale["commands.images.cortesflow.howToUseExample", serverConfig.commandPrefix],
+                                        locale["commands.images.cortesflow.commandExample", serverConfig.commandPrefix]
+                                ).joinToString("\n")
+                        )
+                        .setFooter(locale["commands.images.cortesflow.findOutThumbnailSource"], "https://yt3.ggpht.com/a/AATXAJwhhX5JXoYvdDwDI56fQfTDinfs21vzivC-DBW6=s88-c-k-c0x00ffffff-no-rj")
+                        .setColor(Color.BLACK)
 
-                for ((key, value) in availableGroupedBy) {
+                for ((_, value) in availableGroupedBy) {
                     embed.addField(
-                            key,
+                            value.first().jsonObject["participantDisplayName"]!!.jsonPrimitive.content,
                             value.joinToString {
-                                "`${it.jsonObject["path"]!!.jsonPrimitive.content.removePrefix("/api/v1/images/cortes-flow/")}` \\[[fonte](${it.jsonObject["source"]!!.jsonPrimitive.content})\\]"
-                            },
+                                locale[
+                                        "commands.images.cortesflow.thumbnailSelection",
+                                        it.jsonObject["path"]!!.jsonPrimitive.content.removePrefix("/api/v1/images/cortes-flow/"),
+                                        it.jsonObject["source"]!!.jsonPrimitive.content
+                                ]
+                             },
                             true
                     )
                 }
@@ -49,6 +75,9 @@ class CortesFlowCommand(
                 )
                 return@executesDiscord
             }
+
+            if (args.size == 1)
+                fail(locale["commands.images.cortesflow.youNeedToAddText"])
 
             val type = args.getOrNull(0)
             val string = args
@@ -64,6 +93,9 @@ class CortesFlowCommand(
                     }
                 }.toString()
             }
+
+            if (response.status == HttpStatusCode.NotFound)
+                fail(locale["commands.images.cortesflow.unknownType", serverConfig.commandPrefix])
 
             sendFile(response.receive<ByteArray>(), "cortes_flow.jpg")
         }
