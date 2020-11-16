@@ -96,11 +96,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				logIfEnabled(enableProfiling) { "Migration Checks took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
-				// Se o dono do servidor for o usuário que está executando o comando, não é necessário pegar o perfil novamente
-				val ownerProfile = if (event.guild.ownerIdLong == member.idLong) lorittaProfile else loritta.getLorittaProfileAsync(event.guild.ownerIdLong)
-				logIfEnabled(enableProfiling) { "Loading owner's profile took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
-
-				start = System.nanoTime()
 				val currentLocale = loritta.newSuspendedTransaction {
 					(lorittaProfile?.settings?.language ?: serverConfig.localeId)
 				}
