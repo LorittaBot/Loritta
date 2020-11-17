@@ -84,6 +84,10 @@ class GuildSetupQueue(val loritta: LorittaDiscord) {
 
             val guildIds = pendingGuildsClone.keys
 
+            // No need to process if the guild map is empty
+            if (guildIds.isEmpty())
+                return@launch
+
             // Everything is good? Great! Let's prepare all guilds then!
             val serverConfigs = loritta.newSuspendedTransaction {
                 ServerConfig.find {
