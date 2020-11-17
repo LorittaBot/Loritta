@@ -5,7 +5,7 @@ import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.set
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import io.ktor.application.ApplicationCall
+import io.ktor.application.*
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.routes.BaseRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
@@ -63,6 +63,7 @@ class GetStatusRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/lori
 				"threadCount" to ManagementFactory.getThreadMXBean().threadCount,
 				"globalRateLimitHits" to loritta.bucketedController?.getGlobalRateLimitHitsInTheLastMinute(),
 				"isIgnoringRequests" to loritta.rateLimitChecker.checkIfRequestShouldBeIgnored(),
+				"pendingMessages" to loritta.pendingMessages.size,
 				"minShard" to currentShard.minShard,
 				"maxShard" to currentShard.maxShard,
 				"uptime" to ManagementFactory.getRuntimeMXBean().uptime

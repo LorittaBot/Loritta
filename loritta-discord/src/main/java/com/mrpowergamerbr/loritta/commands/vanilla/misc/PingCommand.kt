@@ -80,6 +80,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 			val row2 = mutableListOf("Lori Web")
 			val row3 = mutableListOf("Uptime")
 			val row4 = mutableListOf("Guilds")
+			val row5 = mutableListOf("MsgQ")
 
 			results.forEach {
 				try {
@@ -88,6 +89,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 					val shardId = json["id"].long
 					val name = json["name"].string
 					val loriBuild = json["build"]["buildNumber"].string
+					val pendingMessages = json["pendingMessages"].long
 
 					val totalGuildCount = json["shards"].array.sumBy { it["guildCount"].int }
 
@@ -102,11 +104,20 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 
 					val pingAverage = json["shards"].array.map { it["ping"].int }.average().toInt() // arredondar
 
-					row0.add("Loritta Cluster $shardId ($name) [b$loriBuild]")
+					val pendingMessagesStatus = when {
+						pendingMessages == 0L -> "\uD83D\uDE0E"
+						16 >= pendingMessages -> "\uD83D\uDE0A"
+						32 >= pendingMessages -> "\uD83D\uDE42"
+						128 >= pendingMessages -> "\uD83D\uDE22"
+						else -> "\uD83D\uDE2D"
+					}
+
+					row0.add("$pendingMessagesStatus Cluster $shardId ($name) [b$loriBuild]")
 					row1.add("~${pingAverage}ms")
 					row2.add("~${time}ms")
 					row3.add("${days}d ${hours}h ${minutes}m ${seconds}s")
-					row4.add("$totalGuildCount guilds")
+					row4.add("$totalGuildCount")
+					row5.add("$pendingMessages")
 
 					val unstableShards = json["shards"].array.filter {
 						it["status"].string != JDA.Status.CONNECTED.toString() || it["ping"].int == -1 || it["ping"].int >= 250
@@ -122,17 +133,19 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 						unstableShards.forEach {
 							row0.add("> Shard ${it["id"].long}")
 							row1.add("${it["ping"].int}ms")
-							row2.add(it["status"].string)
-							row3.add("${it["guildCount"].long} guilds")
-							row4.add("${it["userCount"].long} users")
+							row2.add("---")
+							row3.add(it["status"].string)
+							row4.add("${it["guildCount"].long}")
+							row5.add("---")
 						}
 					}
 				} catch (e: ClusterOfflineException) {
-					row0.add("Loritta Cluster ${e.id} (${e.name})")
+					row0.add("\uD83D\uDC80 Cluster ${e.id} (${e.name})")
 					row1.add("---")
 					row2.add("---")
 					row3.add("---")
 					row4.add("OFFLINE!")
+					row5.add("---")
 				}
 			}
 
