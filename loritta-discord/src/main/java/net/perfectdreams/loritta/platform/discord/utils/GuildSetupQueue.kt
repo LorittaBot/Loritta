@@ -53,16 +53,13 @@ class GuildSetupQueue(val loritta: LorittaDiscord) {
      * @param guild the guild that will be added to the setup queue
      */
     suspend fun addToSetupQueue(guild: Guild) {
-        val prepareNow = mutex.withLock {
+        mutex.withLock {
             pendingGuilds[guild.idLong] = guild
-
-            // JDBC has a Short.MAX_VALUE limit
-            // And, to avoid any issues with heap memory, we are going to limit to a batch of 10_000 guilds
-            //
-            // If there are more than 10_000 guilds pending, we are going to just process the batch *right now*
-            // instead of waiting 3s
-            pendingGuilds.size >= 10_000
         }
+
+        // If the creating job mutex is locked, we don't need to create it again
+        if (creatingJobMutex.isLocked)
+            return
 
         creatingJobMutex.withLock {
             // Cancel the currently running job
@@ -70,11 +67,7 @@ class GuildSetupQueue(val loritta: LorittaDiscord) {
 
             // And run another one!
             job = GlobalScope.launch(loritta.coroutineDispatcher) {
-                if (!prepareNow)
-                    delay(3_000) // 3s
-
-                if (!this.isActive) // If the job was cancelled, stop processing
-                    return@launch
+                delay(3_000) // 3s
 
                 // If not...
                 // First we clone the map and clear the old one
@@ -121,6 +114,7 @@ class GuildSetupQueue(val loritta: LorittaDiscord) {
                 creatingJobMutex.withLock {
                     job = null
                 }
+                
                 logger.info { "Done! ${guildIds.size} guilds with ${serverConfigs.size} server configs were set up! Let's roll!! Took ${System.currentTimeMillis() - start}ms" }
             }
         }
