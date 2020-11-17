@@ -44,6 +44,7 @@ class GuildSetupQueue(val loritta: LorittaDiscord) {
     private val pendingGuilds = mutableMapOf<Long, Guild>()
     private var job: Job? = null
     private val mutex = Mutex()
+    private val creatingJobMutex = Mutex()
 
     /**
      * Adds the guild to a setup queue and creates a job to setup all guilds in the setup queue after 3s.
@@ -63,61 +64,65 @@ class GuildSetupQueue(val loritta: LorittaDiscord) {
             pendingGuilds.size >= 10_000
         }
 
-        // Cancel the currently running job
-        job?.cancel()
+        creatingJobMutex.withLock {
+            // Cancel the currently running job
+            job?.cancel()
 
-        // And run another one!
-        job = GlobalScope.launch(loritta.coroutineDispatcher) {
-            if (!prepareNow)
-                delay(3_000) // 3s
+            // And run another one!
+            job = GlobalScope.launch(loritta.coroutineDispatcher) {
+                if (!prepareNow)
+                    delay(3_000) // 3s
 
-            if (!this.isActive) // If the job was cancelled, stop processing
-                return@launch
+                if (!this.isActive) // If the job was cancelled, stop processing
+                    return@launch
 
-            // If not...
-            // First we clone the map and clear the old one
-            val pendingGuildsClone = mutex.withLock {
-                val clonedMap = pendingGuilds.toMap()
-                pendingGuilds.clear()
-                clonedMap
-            }
-
-            val guildIds = pendingGuildsClone.keys
-
-            // No need to process if the guild map is empty
-            if (guildIds.isEmpty())
-                return@launch
-
-            // Everything is good? Great! Let's prepare all guilds then!
-            val serverConfigs = loritta.newSuspendedTransaction {
-                ServerConfig.find {
-                    ServerConfigs.id inList guildIds
-                }.toList()
-            }
-
-            logger.info { "Preparing ${guildIds.size} guilds with ${serverConfigs.size} server configs" }
-            val start = System.currentTimeMillis()
-
-            // And after getting all serverConfigs, we now can set up the guild!
-            val allJobs = mutableListOf<Deferred<Unit>>()
-
-            for (serverConfig in serverConfigs) {
-                val guild = pendingGuildsClone[serverConfig.id.value]
-
-                if (guild != null)
-                    allJobs.add(setupGuild(guild, serverConfig))
-            }
-
-            allJobs.forEach {
-                try {
-                    it.await()
-                } catch (e: Exception) {
-                    logger.warn(e) { "Exception while preparing guild $guild!" }
+                // If not...
+                // First we clone the map and clear the old one
+                val pendingGuildsClone = mutex.withLock {
+                    val clonedMap = pendingGuilds.toMap()
+                    pendingGuilds.clear()
+                    clonedMap
                 }
-            }
 
-            job = null
-            logger.info { "Done! ${guildIds.size} guilds with ${serverConfigs.size} server configs were set up! Let's roll!! Took ${System.currentTimeMillis() - start}ms" }
+                val guildIds = pendingGuildsClone.keys
+
+                // No need to process if the guild map is empty
+                if (guildIds.isEmpty())
+                    return@launch
+
+                // Everything is good? Great! Let's prepare all guilds then!
+                val serverConfigs = loritta.newSuspendedTransaction {
+                    ServerConfig.find {
+                        ServerConfigs.id inList guildIds
+                    }.toList()
+                }
+
+                logger.info { "Preparing ${guildIds.size} guilds with ${serverConfigs.size} server configs" }
+                val start = System.currentTimeMillis()
+
+                // And after getting all serverConfigs, we now can set up the guild!
+                val allJobs = mutableListOf<Deferred<Unit>>()
+
+                for (serverConfig in serverConfigs) {
+                    val guild = pendingGuildsClone[serverConfig.id.value]
+
+                    if (guild != null)
+                        allJobs.add(setupGuild(guild, serverConfig))
+                }
+
+                allJobs.forEach {
+                    try {
+                        it.await()
+                    } catch (e: Exception) {
+                        logger.warn(e) { "Exception while preparing guild $guild!" }
+                    }
+                }
+
+                creatingJobMutex.withLock {
+                    job = null
+                }
+                logger.info { "Done! ${guildIds.size} guilds with ${serverConfigs.size} server configs were set up! Let's roll!! Took ${System.currentTimeMillis() - start}ms" }
+            }
         }
     }
 
