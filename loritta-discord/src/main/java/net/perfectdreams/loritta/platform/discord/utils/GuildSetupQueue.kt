@@ -114,7 +114,7 @@ class GuildSetupQueue(val loritta: LorittaDiscord) {
                 creatingJobMutex.withLock {
                     job = null
                 }
-                
+
                 logger.info { "Done! ${guildIds.size} guilds with ${serverConfigs.size} server configs were set up! Let's roll!! Took ${System.currentTimeMillis() - start}ms" }
             }
         }
