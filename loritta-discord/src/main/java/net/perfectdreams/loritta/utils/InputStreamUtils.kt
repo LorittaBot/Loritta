@@ -4,7 +4,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.util.*
 
-private val MAX_BUFFER_SIZE = Integer.MAX_VALUE - 8
+private const val MAX_BUFFER_SIZE = Integer.MAX_VALUE - 8
 
 @Throws(IOException::class)
 fun InputStream.readAllBytes(limit: Int): ByteArray {
