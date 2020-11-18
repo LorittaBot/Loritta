@@ -104,15 +104,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 
 					val pingAverage = json["shards"].array.map { it["ping"].int }.average().toInt() // arredondar
 
-					val pendingMessagesStatus = when {
-						pendingMessages == 0L -> "\uD83D\uDE0E"
-						16 >= pendingMessages -> "\uD83D\uDE0A"
-						32 >= pendingMessages -> "\uD83D\uDE42"
-						128 >= pendingMessages -> "\uD83D\uDE22"
-						else -> "\uD83D\uDE2D"
-					}
-
-					row0.add("$pendingMessagesStatus Cluster $shardId ($name) [b$loriBuild]")
+					row0.add("Cluster $shardId ($name) [b$loriBuild]")
 					row1.add("~${pingAverage}ms")
 					row2.add("~${time}ms")
 					row3.add("${days}d ${hours}h ${minutes}m ${seconds}s")
@@ -143,8 +135,8 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 					row0.add("\uD83D\uDC80 Cluster ${e.id} (${e.name})")
 					row1.add("---")
 					row2.add("---")
-					row3.add("---")
-					row4.add("OFFLINE!")
+					row3.add("OFFLINE!")
+					row4.add("---")
 					row5.add("---")
 				}
 			}
@@ -183,6 +175,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 						row2.add("---")
 						row3.add("---")
 						row4.add("---")
+						row5.add("---")
 
 						for (usedLoginPool in usedLoginPools) {
 							row0.add("> Login Pool ${usedLoginPool.key}")
@@ -190,13 +183,15 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 							row2.add("---")
 							row3.add("---")
 							row4.add("---")
+							row5.add("---")
 						}
 					}
 				} catch (e: Exception) {
 					row1.add("---")
 					row2.add("---")
-					row3.add("---")
-					row4.add("OFFLINE!")
+					row3.add("OFFLINE!")
+					row4.add("---")
+					row5.add("---")
 				}
 			}
 
@@ -213,8 +208,9 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 				val arg2 = row2.getOrNull(i) ?: "---"
 				val arg3 = row3.getOrNull(i) ?: "---"
 				val arg4 = row4.getOrNull(i) ?: "---"
+				val arg5 = row5.getOrNull(i) ?: "---"
 
-				lines += "${arg0.padEnd(maxRow0, ' ')} | ${arg1.padEnd(maxRow1, ' ')} | ${arg2.padEnd(maxRow2, ' ')} | ${arg3.padEnd(maxRow3, ' ')} | ${arg4.padEnd(maxRow4, ' ')}"
+				lines += "${arg0.padEnd(maxRow0, ' ')} | ${arg1.padEnd(maxRow1, ' ')} | ${arg2.padEnd(maxRow2, ' ')} | ${arg3.padEnd(maxRow3, ' ')} | ${arg4.padEnd(maxRow4, ' ')} | ${arg5.padEnd(maxRow4, ' ')}"
 			}
 
 			val asMessage = mutableListOf<String>()
