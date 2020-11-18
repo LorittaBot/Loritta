@@ -129,6 +129,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 						row2.add("---")
 						row3.add("---")
 						row4.add("---")
+						row5.add("---")
 
 						unstableShards.forEach {
 							row0.add("> Shard ${it["id"].long}")
