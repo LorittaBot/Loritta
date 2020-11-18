@@ -22,8 +22,8 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.Gender
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.engine.apache.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -158,9 +158,12 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
     val guildSetupQueue = GuildSetupQueue(this)
 
     /**
-     * Gets an user's profile background
+     * Gets an user's profile background image or, if the user has a custom background, loads the custom background.
      *
-     * @param id the user's profile
+     * To avoid exceeding the available memory, profiles are loaded from the "cropped_profiles" folder,
+     * which has all the images in 800x600 format.
+     *
+     * @param background the user's background
      * @return the background image
      */
     suspend fun getUserProfileBackground(profile: Profile): BufferedImage {
@@ -200,6 +203,37 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         return getUserProfileBackground(background)
     }
 
+    /**
+     * Gets an user's profile background image.
+     *
+     * To avoid exceeding the available memory, profiles are loaded from the "cropped_profiles" folder,
+     * which has all the images in 800x600 format.
+     *
+     * @param background the user's background
+     * @return the background image
+     */
+    suspend fun getUserProfileBackground(background: Background?): BufferedImage {
+        val backgroundOrDefault = background ?: loritta.newSuspendedTransaction {
+            Background.findById(Background.DEFAULT_BACKGROUND_ID)!!
+        }
+
+        val response = loritta.http.get<HttpResponse>("${loritta.instanceConfig.loritta.website.url}assets/img/profiles/backgrounds/cropped_profiles/${backgroundOrDefault.imageFile}") {
+            userAgent(loritta.lorittaCluster.getUserAgent())
+        }
+
+        val bytes = response.readBytes()
+
+        return readImage(bytes.inputStream())
+    }
+
+    /**
+     * Gets an user's profile background URL
+     *
+     * This does *not* crop the profile background
+     *
+     * @param profile the user's profile
+     * @return the background image
+     */
     suspend fun getUserProfileBackgroundUrl(profile: Profile): String {
         var background = loritta.newSuspendedTransaction { profile.settings.activeBackground }
 
@@ -232,42 +266,6 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         }
 
         return "${loritta.instanceConfig.loritta.website.url}assets/img/profiles/backgrounds/${backgroundOrDefault.imageFile}"
-    }
-
-    /**
-     * Gets an user's profile background
-     *
-     * @param background the user's background
-     * @return the background image
-     */
-    suspend fun getUserProfileBackground(background: Background?): BufferedImage {
-        val backgroundOrDefault = background ?: loritta.newSuspendedTransaction {
-            Background.findById(Background.DEFAULT_BACKGROUND_ID)!!
-        }
-
-        val response = loritta.http.get<HttpResponse>("${loritta.instanceConfig.loritta.website.url}assets/img/profiles/backgrounds/${backgroundOrDefault.imageFile}") {
-            userAgent(loritta.lorittaCluster.getUserAgent())
-        }
-
-        val bytes = response.readBytes()
-
-        val image = readImage(bytes.inputStream())
-        val crop = backgroundOrDefault.crop
-        if (crop != null) {
-            // Perfil possível um crop diferenciado
-            val offsetX = crop["offsetX"].int
-            val offsetY = crop["offsetY"].int
-            val width = crop["width"].int
-            val height = crop["height"].int
-
-            // Se o background possui um width/height diferenciado, mas é idêntico ao tamanho correto do perfil... apenas faça nada
-            if (!(offsetX == 0 && offsetY == 0 && width == image.width && height == image.height)) {
-                // Mas... e se for diferente? sad_cat
-                return image.getSubimage(offsetX, offsetY, width, height).toBufferedImage()
-            }
-        }
-
-        return image
     }
 
     /**
