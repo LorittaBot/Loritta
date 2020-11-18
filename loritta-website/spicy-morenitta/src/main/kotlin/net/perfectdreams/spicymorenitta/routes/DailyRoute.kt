@@ -219,7 +219,15 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
                                 h1 {
                                     + locale["website.daily.youEarnedMoreSonhos", payload.sponsoredBy.multipliedBy]
                                 }
-                                img(src = payload.sponsoredBy.guild.iconUrl) {
+
+                                // https://discord.com/developers/docs/reference#image-formatting
+                                val guildIconUrl = "https://cdn.discordapp.com/icons/${payload.sponsoredBy.guild.id}/${payload.sponsoredBy.guild.iconUrl}" +
+                                        if (payload.sponsoredBy.guild.iconUrl.startsWith("a_"))
+                                            ".gif"
+                                        else
+                                            ".png"
+
+                                img(src = guildIconUrl) {
                                     attributes["width"] = "128"
                                     attributes["height"] = "128"
                                     attributes["style"] = "border-radius: 99999px;"
