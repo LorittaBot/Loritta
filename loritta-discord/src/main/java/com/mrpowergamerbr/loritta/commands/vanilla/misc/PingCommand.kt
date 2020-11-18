@@ -104,7 +104,15 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 
 					val pingAverage = json["shards"].array.map { it["ping"].int }.average().toInt() // arredondar
 
-					row0.add("Cluster $shardId ($name) [b$loriBuild]")
+					val pendingMessagesStatus = when {
+						pendingMessages == 0L -> "^"
+						16 >= pendingMessages -> "*"
+						32 >= pendingMessages -> "-"
+						128 >= pendingMessages -> "~"
+						else -> "!"
+					}
+
+					row0.add("$pendingMessagesStatus Cluster $shardId ($name) [b$loriBuild]")
 					row1.add("~${pingAverage}ms")
 					row2.add("~${time}ms")
 					row3.add("${days}d ${hours}h ${minutes}m ${seconds}s")
@@ -132,7 +140,7 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 						}
 					}
 				} catch (e: ClusterOfflineException) {
-					row0.add("\uD83D\uDC80 Cluster ${e.id} (${e.name})")
+					row0.add("X Cluster ${e.id} (${e.name})")
 					row1.add("---")
 					row2.add("---")
 					row3.add("OFFLINE!")
