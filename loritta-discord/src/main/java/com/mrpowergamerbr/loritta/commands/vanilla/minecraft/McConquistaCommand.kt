@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.remove
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
@@ -35,7 +36,7 @@ class McConquistaCommand : AbstractCommand("mcconquista", listOf("mcprogresso", 
 
 			val advancementText = context.rawArgs.remove(0).joinToString(" ")
 
-			val template = ImageIO.read(File(Loritta.ASSETS + "mcconquista.png")) // Template
+			val template = readImage(File(Loritta.ASSETS + "mcconquista.png")) // Template
 
 			val graphics = template.graphics
 

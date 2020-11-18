@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.api.utils.image.JVMImage
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.plugin.fortnite.FortniteStuff
+import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.FontMetrics
 import java.awt.Rectangle
@@ -93,7 +94,7 @@ class FortniteStatsCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.
 
 			val userName = dataV2["account"]["name"].string
 
-			val image = ImageIO.read(File(loritta.instanceConfig.loritta.folders.assets, "fortnite_stats.png"))
+			val image = readImage(File(loritta.instanceConfig.loritta.folders.assets, "fortnite_stats.png"))
 			val graphics = image.graphics.enableFontAntiAliasing()
 
 			val titleFont = Constants.BURBANK_BIG_CONDENSED_BLACK.deriveFont(109f)

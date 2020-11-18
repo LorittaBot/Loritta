@@ -3,13 +3,13 @@ package com.mrpowergamerbr.loritta.gifs
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaImage
+import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.image.BufferedImage
 import java.io.File
-import javax.imageio.ImageIO
 import javax.imageio.stream.FileImageOutputStream
 
 object TrumpGIF {
-	fun getGIF(toUse: BufferedImage, toUse2: BufferedImage): File {
+	suspend fun getGIF(toUse: BufferedImage, toUse2: BufferedImage): File {
 		var ogTeste = ImageUtils.toBufferedImage(toUse.getScaledInstance(240, 240, BufferedImage.SCALE_SMOOTH))
 		var ogTeste2 = ImageUtils.toBufferedImage(toUse2.getScaledInstance(240, 240, BufferedImage.SCALE_SMOOTH))
 
@@ -18,7 +18,7 @@ object TrumpGIF {
 		val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 10, true)
 
 		for (i in 0..70) {
-			var ogImage = ImageIO.read(File(Loritta.ASSETS + "trump/frame_${i}_delay-0.1s.gif"))
+			var ogImage = readImage(File(Loritta.ASSETS + "trump/frame_${i}_delay-0.1s.gif"))
 			var image = BufferedImage(ogImage.width, ogImage.height, BufferedImage.TYPE_INT_ARGB)
 			image.graphics.drawImage(ogImage, 0, 0, null)
 			if (frames.size > i) {

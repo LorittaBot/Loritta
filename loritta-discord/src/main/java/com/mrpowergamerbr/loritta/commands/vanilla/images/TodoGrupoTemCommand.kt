@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.ImageFormat
 import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
+import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Font
 import java.awt.Image
 import java.awt.Rectangle
@@ -30,7 +31,7 @@ class TodoGrupoTemCommand : AbstractCommand("everygrouphas", listOf("todogrupote
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
-		val bi = ImageIO.read(File(Loritta.ASSETS + context.legacyLocale["TODOGRUPOTEM_File"])) // Primeiro iremos carregar o nosso template
+		val bi = readImage(File(Loritta.ASSETS + context.legacyLocale["TODOGRUPOTEM_File"])) // Primeiro iremos carregar o nosso template
 
 		val base = BufferedImage(366, 266, BufferedImage.TYPE_INT_ARGB) // Iremos criar uma imagem 384x256 (tamanho do template)
 		val baseGraph = base.graphics.enableFontAntiAliasing()

@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Font
 import java.io.File
@@ -25,7 +26,7 @@ class PrimeirasPalavrasCommand : AbstractCommand("firstwords", listOf("primeiras
 		if (context.args.isNotEmpty()) {
 			val str = context.args.joinToString(" ")
 
-			val bi = ImageIO.read(File(Loritta.ASSETS + "tirinha_baby.png")) // Primeiro iremos carregar o nosso template
+			val bi = readImage(File(Loritta.ASSETS + "tirinha_baby.png")) // Primeiro iremos carregar o nosso template
 
 			val baseGraph = bi.graphics.enableFontAntiAliasing()
 

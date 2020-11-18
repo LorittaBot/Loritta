@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.perfectdreams.loritta.profile.ProfileUtils
+import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.io.File
@@ -24,7 +25,7 @@ open class PlainProfileCreator(internalName: String, val folderName: String) : P
 	class PlainGreenHeartsProfileCreator : PlainProfileCreator("plainGreenHearts", "green_hearts")
 
 	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
-		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/plain/profile_wrapper_$folderName.png"))
+		val profileWrapper = readImage(File(Loritta.ASSETS, "profile/plain/profile_wrapper_$folderName.png"))
 
 		val whitneySemiBold = FileInputStream(File(Loritta.ASSETS + "whitney-semibold.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
@@ -45,7 +46,7 @@ open class PlainProfileCreator(internalName: String, val folderName: String) : P
 		graphics.drawImage(background.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH), 0, 0, null)
 
 		ProfileUtils.getMarriageInfo(userProfile)?.let { (marriage, marriedWith) ->
-			val marrySection = ImageIO.read(File(Loritta.ASSETS, "profile/plain/marry.png"))
+			val marrySection = readImage(File(Loritta.ASSETS, "profile/plain/marry.png"))
 			graphics.drawImage(marrySection, 0, 0, null)
 
 			graphics.color = Color.WHITE

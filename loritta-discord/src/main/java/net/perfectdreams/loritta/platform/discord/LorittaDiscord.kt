@@ -52,6 +52,7 @@ import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.loritta.utils.config.FanArt
 import net.perfectdreams.loritta.utils.config.FanArtArtist
+import net.perfectdreams.loritta.utils.extensions.readImage
 import net.perfectdreams.loritta.utils.locale.DebugLocales
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.exceptions.ExposedSQLException
@@ -69,7 +70,6 @@ import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.zip.ZipInputStream
-import javax.imageio.ImageIO
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -192,7 +192,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
                 }
 
                 val bytes = response.readBytes()
-                val image = ImageIO.read(bytes.inputStream())
+                val image = readImage(bytes.inputStream())
                 return image
             }
         }
@@ -251,7 +251,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
         val bytes = response.readBytes()
 
-        val image = ImageIO.read(bytes.inputStream())
+        val image = readImage(bytes.inputStream())
         val crop = backgroundOrDefault.crop
         if (crop != null) {
             // Perfil possível um crop diferenciado

@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.utils.extensions.readImage
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import java.awt.image.BufferedImage
@@ -24,7 +25,7 @@ class PatchUpdateServerConfigBadgeRoute(loritta: LorittaDiscord) : RequiresAPIAu
 
 		val base64Image = data.split(",")[1]
 		val imageBytes = Base64.getDecoder().decode(base64Image)
-		val img = ImageIO.read(ByteArrayInputStream(imageBytes))
+		val img = readImage(ByteArrayInputStream(imageBytes))
 
 		if (img != null) {
 			var finalImage = img

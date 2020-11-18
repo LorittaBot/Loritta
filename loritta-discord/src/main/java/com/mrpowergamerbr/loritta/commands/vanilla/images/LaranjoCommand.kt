@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Font
 import java.io.File
@@ -31,7 +32,7 @@ class LaranjoCommand : AbstractCommand("laranjo", category = CommandCategory.IMA
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val template = ImageIO.read(File(Loritta.ASSETS + "laranjo.png")) // Template
+			val template = readImage(File(Loritta.ASSETS + "laranjo.png")) // Template
 			val texto = context.args.joinToString(" ")
 
 			var graphics = template.graphics.enableFontAntiAliasing()

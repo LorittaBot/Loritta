@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.makeRoundedCorners
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
@@ -40,7 +41,7 @@ class GangueCommand : AbstractCommand("gang", listOf("gangue"), CommandCategory.
 		val contextImage3 = context.getImageAt(2) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		val contextImage4 = context.getImageAt(3) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		val contextImage5 = context.getImageAt(4) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
-		val template = ImageIO.read(File(Loritta.ASSETS + "cocielo/cocielo.png"))
+		val template = readImage(File(Loritta.ASSETS + "cocielo/cocielo.png"))
 
 		val scaled = contextImage.getScaledInstance(59, 59, BufferedImage.SCALE_SMOOTH)
 				.toBufferedImage()

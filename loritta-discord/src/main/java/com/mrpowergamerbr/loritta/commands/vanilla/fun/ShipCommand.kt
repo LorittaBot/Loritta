@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.ImageFormat
 import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
+import net.perfectdreams.loritta.utils.extensions.readImage
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.or
 import java.awt.Color
@@ -145,12 +146,16 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 				}
 			}
 
-			val emoji = if (percentage >= 50) {
-				ImageIO.read(File(Loritta.ASSETS + "heart.png"))
-			} else if (percentage >= 30) {
-				ImageIO.read(File(Loritta.ASSETS + "shrug.png"))
-			} else {
-				ImageIO.read(File(Loritta.ASSETS + "crying.png"))
+			val emoji = when {
+				percentage >= 50 -> {
+					readImage(File(Loritta.ASSETS + "heart.png"))
+				}
+				percentage >= 30 -> {
+					readImage(File(Loritta.ASSETS + "shrug.png"))
+				}
+				else -> {
+					readImage(File(Loritta.ASSETS + "crying.png"))
+				}
 			}
 
 			val resizedEmoji = emoji.getScaledInstance(100, 100, BufferedImage.SCALE_SMOOTH)

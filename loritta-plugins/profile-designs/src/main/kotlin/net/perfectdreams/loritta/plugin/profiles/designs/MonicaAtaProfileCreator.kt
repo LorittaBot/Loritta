@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.profile.ProfileUtils
+import net.perfectdreams.loritta.utils.extensions.readImage
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -35,7 +36,7 @@ class MonicaAtaProfileCreator : ProfileCreator("monicaAta") {
 	}
 
 	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
-		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/monica_ata/profile_wrapper.png"))
+		val profileWrapper = readImage(File(Loritta.ASSETS, "profile/monica_ata/profile_wrapper.png"))
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
@@ -103,7 +104,7 @@ class MonicaAtaProfileCreator : ProfileCreator("monicaAta") {
 		ImageUtils.drawCenteredString(graphics, "${reputations} reps", Rectangle(552, 440, 228, 54), graphics.font)
 
 		if (badges.isNotEmpty()) {
-			val badgesBackground = ImageIO.read(File(Loritta.ASSETS, "profile/monica_ata/badges.png"))
+			val badgesBackground = readImage(File(Loritta.ASSETS, "profile/monica_ata/badges.png"))
 			graphics.drawImage(badgesBackground, 0, 0, null)
 
 			var x = 196
@@ -114,7 +115,7 @@ class MonicaAtaProfileCreator : ProfileCreator("monicaAta") {
 		}
 
 		ProfileUtils.getMarriageInfo(userProfile)?.let { (marriage, marriedWith) ->
-			val marrySection = ImageIO.read(File(Loritta.ASSETS, "profile/monica_ata/marry.png"))
+			val marrySection = readImage(File(Loritta.ASSETS, "profile/monica_ata/marry.png"))
 			graphics.drawImage(marrySection, 0, 0, null)
 
 			graphics.font = KOMIKA.deriveFont(21f)

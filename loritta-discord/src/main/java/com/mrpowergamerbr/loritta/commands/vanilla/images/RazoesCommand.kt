@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.ImageFormat
 import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
+import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Toolkit
 import java.awt.image.BufferedImage
@@ -33,7 +34,7 @@ class RazoesCommand : AbstractCommand("reasons", listOf("razões", "razoes"), Co
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
-		var template = ImageIO.read(File(Loritta.ASSETS + "reasons.png")) // Template
+		var template = readImage(File(Loritta.ASSETS + "reasons.png")) // Template
 		val image = BufferedImage(346, 600, BufferedImage.TYPE_INT_ARGB)
 
 		val graphics = image.graphics

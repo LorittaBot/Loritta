@@ -3,13 +3,14 @@ package com.mrpowergamerbr.loritta.gifs
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.LorittaImage
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
+import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 import javax.imageio.stream.FileImageOutputStream
 
 object MentionGIF {
-	fun getGIF(toUse: BufferedImage): File {
+	suspend fun getGIF(toUse: BufferedImage): File {
 		var fileName = Loritta.TEMP + "mention-" + System.currentTimeMillis() + ".gif"
 		var output = FileImageOutputStream(File(fileName))
 		val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 10, true)
@@ -17,7 +18,7 @@ object MentionGIF {
 		for (i in 0..83) {
 			val file = File(Loritta.ASSETS + "mention/mention_${i.toString().padStart(6, '0')}.png")
 			if (file.exists()) {
-				var ogImage = ImageIO.read(File(Loritta.ASSETS + "mention/mention_${i.toString().padStart(6, '0')}.png"))
+				var ogImage = readImage(File(Loritta.ASSETS + "mention/mention_${i.toString().padStart(6, '0')}.png"))
 				var image = BufferedImage(ogImage.width, ogImage.height, BufferedImage.TYPE_INT_ARGB)
 				image.graphics.drawImage(ogImage, 0, 0, null)
 				if (i in 51..58) {

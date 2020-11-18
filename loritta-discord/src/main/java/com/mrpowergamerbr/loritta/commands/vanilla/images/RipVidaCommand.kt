@@ -6,9 +6,9 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.image.BufferedImage
 import java.io.File
-import javax.imageio.ImageIO
 
 class RipVidaCommand : AbstractCommand("riplife", listOf("ripvida"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -30,7 +30,7 @@ class RipVidaCommand : AbstractCommand("riplife", listOf("ripvida"), CommandCate
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
-		val template = ImageIO.read(File(Loritta.ASSETS + context.legacyLocale.get("RIPVIDA_FILE"))) // Template
+		val template = readImage(File(Loritta.ASSETS + context.legacyLocale.get("RIPVIDA_FILE"))) // Template
 
 		val scaled = contextImage.getScaledInstance(133, 133, BufferedImage.SCALE_SMOOTH)
 		template.graphics.drawImage(scaled, 133, 0, null)

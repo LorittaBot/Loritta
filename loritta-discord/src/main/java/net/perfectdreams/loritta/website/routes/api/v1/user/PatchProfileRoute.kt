@@ -19,6 +19,7 @@ import net.perfectdreams.loritta.tables.ProfileDesignsPayments
 import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.utils.UserPremiumPlans
+import net.perfectdreams.loritta.utils.extensions.readImage
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.website.routes.user.dashboard.ProfileListRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
@@ -131,7 +132,7 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 			val data = config["data"].nullString
 			if (internalName == Background.CUSTOM_BACKGROUND_ID && data != null) {
 				val decodedBytes = Base64.getDecoder().decode(data.split(",")[1])
-				val decodedImage = ImageIO.read(decodedBytes.inputStream())
+				val decodedImage = readImage(decodedBytes.inputStream())
 
 				var writeImage = decodedImage
 

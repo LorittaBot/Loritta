@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
@@ -29,7 +30,7 @@ class DeusCommand : AbstractCommand("god", listOf("deus"), CommandCategory.IMAGE
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
-		val template = ImageIO.read(File(Loritta.ASSETS + "deus.png")) // Template
+		val template = readImage(File(Loritta.ASSETS + "deus.png")) // Template
 
 		val scaled = contextImage.getScaledInstance(87, 87, BufferedImage.SCALE_SMOOTH)
 		template.graphics.drawImage(scaled, 1, 1, null)

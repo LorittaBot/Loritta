@@ -9,11 +9,11 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
 import java.util.*
-import javax.imageio.ImageIO
 
 class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebattle"), CommandCategory.UNDERTALE) {
     override fun getDescription(locale: LegacyBaseLocale): String {
@@ -59,8 +59,8 @@ class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebatt
             if (valid) {
                 if (!LorittaUtils.canUploadFiles(context)) { return }
                 // Sim, é válido!
-                var undertaleMonster = ImageIO.read(file) // Monstro
-                var undertaleSpeechBox = ImageIO.read(File(Loritta.ASSETS, "speech_box.png")) // Speech Box
+                var undertaleMonster = readImage(file!!) // Monstro
+                var undertaleSpeechBox = readImage(File(Loritta.ASSETS, "speech_box.png")) // Speech Box
 
                 val blackWhite = BufferedImage(undertaleMonster.width + undertaleSpeechBox.width + 2, undertaleMonster.height, BufferedImage.TYPE_INT_ARGB) // Criar nosso template
                 val graphics = blackWhite.graphics.enableFontAntiAliasing()

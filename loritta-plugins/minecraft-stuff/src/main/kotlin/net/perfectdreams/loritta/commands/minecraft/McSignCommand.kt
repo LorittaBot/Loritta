@@ -7,12 +7,12 @@ import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.utils.image.JVMImage
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Font
 import java.awt.Graphics
 import java.awt.Rectangle
 import java.io.File
-import javax.imageio.ImageIO
 
 class McSignCommand(val m: MinecraftStuff) : DiscordAbstractCommandBase(m.loritta, listOf("mcsign", "mcplaca"), CommandCategory.MINECRAFT) {
 	override fun command() = create {
@@ -39,7 +39,7 @@ class McSignCommand(val m: MinecraftStuff) : DiscordAbstractCommandBase(m.loritt
 				}
 
 				lines.forEach { it.trim() }
-				val template = ImageIO.read(File(Loritta.ASSETS + "sign_${signType.name.toLowerCase()}.png")) // Template
+				val template = readImage(File(Loritta.ASSETS + "sign_${signType.name.toLowerCase()}.png")) // Template
 
 				val graphics = template.graphics
 

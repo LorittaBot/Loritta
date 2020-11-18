@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.ImageFormat
 import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
+import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.GradientPaint
 import java.awt.Rectangle
@@ -49,7 +50,7 @@ class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), CommandC
 			val avatar2 = LorittaUtils.downloadImage(user.getEffectiveAvatarUrl(ImageFormat.PNG, 128))
 			val avatar3 = LorittaUtils.downloadImage(user2.getEffectiveAvatarUrl(ImageFormat.PNG, 128))
 
-			val template = ImageIO.read(File(Loritta.ASSETS + "amizade.png")) // Template
+			val template = readImage(File(Loritta.ASSETS + "amizade.png")) // Template
 
 			val graphics = template.graphics.enableFontAntiAliasing() // É necessário usar Graphics2D para usar gradients
 

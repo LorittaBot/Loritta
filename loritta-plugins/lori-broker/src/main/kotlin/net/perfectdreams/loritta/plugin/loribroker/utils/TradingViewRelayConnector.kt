@@ -6,6 +6,7 @@ import io.ktor.client.features.websocket.*
 import io.ktor.http.cio.websocket.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.*
 import mu.KotlinLogging
@@ -53,9 +54,12 @@ class TradingViewRelayConnector(
             while (this@TradingViewRelayConnector.isActive) {
                 try {
                     connect()
-                } catch (e: Exception) { logger.warn(e) { "Disconnected due to exception! Trying again in 1s..." } }
+                } catch (e: Exception) {
+                    logger.warn(e) { "Disconnected due to exception! Trying again in 1s..." }
+                }
+
                 logger.warn { "Disconnected! Trying again in 1s..." }
-                Thread.sleep(1_000)
+                delay(1_000)
             }
         }
     }

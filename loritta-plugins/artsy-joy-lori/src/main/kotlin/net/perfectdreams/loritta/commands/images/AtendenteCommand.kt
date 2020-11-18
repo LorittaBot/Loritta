@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.commands.images
 
+import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaImage
 import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
@@ -7,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.*
+import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.Rectangle
@@ -34,7 +36,7 @@ class AtendenteCommand : LorittaCommand(arrayOf("atendente"), CommandCategory.IM
     @Subcommand
     suspend fun root(context: LorittaCommandContext, locale: BaseLocale, args: Array<String>) {
         if (args.isNotEmpty()) {
-            val template = ImageIO.read(File(com.mrpowergamerbr.loritta.Loritta.ASSETS, "atendente.png"))
+            val template = readImage(File(Loritta.ASSETS, "atendente.png"))
 
             val width = 214
             val height = 131

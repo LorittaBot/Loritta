@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.perfectdreams.loritta.profile.ProfileUtils
+import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.io.File
@@ -17,7 +18,7 @@ import javax.imageio.ImageIO
 
 class CowboyProfileCreator : ProfileCreator("cowboy") {
 	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
-		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/cowboy/profile_wrapper.png"))
+		val profileWrapper = readImage(File(Loritta.ASSETS, "profile/cowboy/profile_wrapper.png"))
 
 		val whitneySemiBold = FileInputStream(File(Loritta.ASSETS + "whitney-semibold.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
@@ -38,7 +39,7 @@ class CowboyProfileCreator : ProfileCreator("cowboy") {
 		drawAvatar(avatar, graphics)
 
 		ProfileUtils.getMarriageInfo(userProfile)?.let { (marriage, marriedWith) ->
-			val marrySection = ImageIO.read(File(Loritta.ASSETS, "profile/cowboy/marry.png"))
+			val marrySection = readImage(File(Loritta.ASSETS, "profile/cowboy/marry.png"))
 			graphics.drawImage(marrySection, 0, 0, null)
 
 			val whitneySemiBold16 = whitneySemiBold.deriveFont(16f)

@@ -8,10 +8,10 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
-import javax.imageio.ImageIO
 import javax.imageio.stream.FileImageOutputStream
 
 class TriggeredCommand : AbstractCommand("triggered", category = CommandCategory.IMAGES) {
@@ -36,7 +36,7 @@ class TriggeredCommand : AbstractCommand("triggered", category = CommandCategory
 
 		val input = contextImage
 
-		val triggeredLabel = ImageIO.read(File(Loritta.ASSETS, "triggered.png"))
+		val triggeredLabel = readImage(File(Loritta.ASSETS, "triggered.png"))
 		// scale
 
 		val subtractW = input.width / 16

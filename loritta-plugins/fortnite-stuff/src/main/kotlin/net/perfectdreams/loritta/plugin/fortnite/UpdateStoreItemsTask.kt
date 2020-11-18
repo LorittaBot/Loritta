@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.plugin.fortnite.tables.TrackedFortniteItems
 import net.perfectdreams.loritta.utils.ClusterOfflineException
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.extensions.readImage
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.*
@@ -264,13 +265,13 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 		return JsonParser.parseString(news).obj
 	}
 
-	private fun generateAndSaveStoreImage(parse: JsonObject, locale: BaseLocale, fileName: String) {
+	private suspend fun generateAndSaveStoreImage(parse: JsonObject, locale: BaseLocale, fileName: String) {
 		val storeBufferedImage = generateStoreImage(parse, locale)
 
 		ImageIO.write(storeBufferedImage, "png", File(loritta.instanceConfig.loritta.website.folder, "/static/assets/img/fortnite/shop/$fileName"))
 	}
 
-	private fun generateStoreImage(parse: JsonObject, locale: BaseLocale): BufferedImage {
+	private suspend fun generateStoreImage(parse: JsonObject, locale: BaseLocale): BufferedImage {
 		val width = 1024 + PADDING + PADDING_BETWEEN_SECTIONS + PADDING + (PADDING_BETWEEN_ITEMS * 4)
 
 		val data = parse
@@ -431,7 +432,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 		return subHeader
 	}
 
-	private fun createItemBox(itemImageUrl: String, name: String, rarity: String, price: Int): BufferedImage {
+	private suspend fun createItemBox(itemImageUrl: String, name: String, rarity: String, price: Int): BufferedImage {
 		val height = 144
 
 		// rarity = common, uncommon, rare, epic, legendary, marvel
@@ -453,7 +454,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 		graphics.paint = paint
 		graphics.fillRect(2, 2, 124, 124)
 
-		val img = ImageIO.read(URL(itemImageUrl))
+		val img = readImage(URL(itemImageUrl))
 
 		graphics.drawImage(
 				img.getScaledInstance(124, 124, BufferedImage.SCALE_SMOOTH),

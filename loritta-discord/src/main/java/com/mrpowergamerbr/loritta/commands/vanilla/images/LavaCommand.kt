@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Font
 import java.awt.Rectangle
@@ -35,7 +36,7 @@ class LavaCommand : AbstractCommand("lava", category = CommandCategory.IMAGES) {
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
-			val template = ImageIO.read(File(Loritta.ASSETS + "lava.png")) // Template
+			val template = readImage(File(Loritta.ASSETS + "lava.png")) // Template
 
 			context.rawArgs = context.rawArgs.sliceArray(1..context.rawArgs.size - 1)
 

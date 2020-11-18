@@ -4,16 +4,16 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.minecraft.MCUtils
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.image.BufferedImage
 import java.io.File
-import javax.imageio.ImageIO
 
 class McMoletomCommand : AbstractCommand("mcmoletom", listOf("mcsweater"), CommandCategory.MINECRAFT) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
@@ -100,7 +100,7 @@ class McMoletomCommand : AbstractCommand("mcmoletom", listOf("mcsweater"), Comma
 	}
 
 	companion object {
-		fun createSkin(originalSkin: BufferedImage?): BufferedImage? {
+		suspend fun createSkin(originalSkin: BufferedImage?): BufferedImage? {
 			if (originalSkin == null || (originalSkin.height != 64 && originalSkin.height != 32) || originalSkin.width != 64)
 				return null
 
@@ -140,7 +140,7 @@ class McMoletomCommand : AbstractCommand("mcmoletom", listOf("mcsweater"), Comma
 			val alexTestColor = Color(skin.getRGB(50, 16), true)
 			val isAlex = alexTestColor.alpha != 255
 
-			val template = if (isAlex) ImageIO.read(File(Loritta.ASSETS, "template_alex.png")) else ImageIO.read(File(Loritta.ASSETS, "template_steve.png"))
+			val template = if (isAlex) readImage(File(Loritta.ASSETS, "template_alex.png")) else readImage(File(Loritta.ASSETS, "template_steve.png"))
 			val handColor = if (isAlex) {
 				Color(skin.getRGB(48, 17), true)
 			} else {

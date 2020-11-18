@@ -7,12 +7,12 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.*
+import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.FontMetrics
 import java.awt.Graphics
 import java.awt.image.BufferedImage
 import java.io.File
-import javax.imageio.ImageIO
 
 class DrawnWordCommand : LorittaCommand(arrayOf("drawnword"), CommandCategory.IMAGES) {
     override val needsToUploadFiles = true
@@ -75,9 +75,9 @@ class DrawnWordCommand : LorittaCommand(arrayOf("drawnword"), CommandCategory.IM
                 return currentY
             }
 
-            val drawnMaskWordImage  = ImageIO.read(File(Loritta.ASSETS, "drawn_mask_word.png"))
-            val drawnMaskWordBottomImage  = ImageIO.read(File(Loritta.ASSETS, "drawn_mask_word_bottom.png"))
-            val babyMaskChairImage = ImageIO.read(File(Loritta.ASSETS, "baby_mask_chair.png"))
+            val drawnMaskWordImage = readImage(File(Loritta.ASSETS, "drawn_mask_word.png"))
+            val drawnMaskWordBottomImage = readImage(File(Loritta.ASSETS, "drawn_mask_word_bottom.png"))
+            val babyMaskChairImage = readImage(File(Loritta.ASSETS, "baby_mask_chair.png"))
 
             var wordScreenHeight = drawnMaskWordImage.height
 

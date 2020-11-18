@@ -1,11 +1,12 @@
 package net.perfectdreams.loritta.website.routes.api.v1.loritta
 
 import com.mrpowergamerbr.loritta.Loritta
-import io.ktor.application.ApplicationCall
-import io.ktor.http.ContentType
-import io.ktor.response.respondBytes
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.response.*
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.SimpleImageInfo
+import net.perfectdreams.loritta.utils.extensions.readImage
 import net.perfectdreams.loritta.website.LorittaWebsite
 import net.perfectdreams.loritta.website.routes.BaseRoute
 import java.awt.Color
@@ -43,7 +44,7 @@ class GetFanArtImageController(loritta: LorittaDiscord) : BaseRoute(loritta, "/a
 					)
 				} else {
 					// Try to load the image to compress it to jpg
-					val fanArtImage = ImageIO.read(fanArtFile)
+					val fanArtImage = readImage(fanArtFile)
 
 					val targetHeight = when (size) {
 						"small" -> 256

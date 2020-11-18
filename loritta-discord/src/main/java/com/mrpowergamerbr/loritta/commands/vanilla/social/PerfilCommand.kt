@@ -27,6 +27,7 @@ import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.tables.BotVotes
 import net.perfectdreams.loritta.utils.*
 import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
+import net.perfectdreams.loritta.utils.extensions.readImage
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import java.awt.image.BufferedImage
@@ -118,7 +119,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 					loritta.profileDesignManager.badges.filter { it.checkIfUserDeservesBadge(user, profile, mutualGuilds) }
 							.sortedByDescending { it.priority }
 							.map {
-								ImageIO.read(File(Loritta.ASSETS, it.badgeFileName))
+								readImage(File(Loritta.ASSETS, it.badgeFileName))
 							}
 			)
 

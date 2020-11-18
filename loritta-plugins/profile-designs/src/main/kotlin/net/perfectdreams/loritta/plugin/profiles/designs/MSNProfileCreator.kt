@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.profile.ProfileUtils
+import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Font
 import java.awt.image.BufferedImage
@@ -20,7 +21,7 @@ import javax.imageio.ImageIO
 
 class MSNProfileCreator : ProfileCreator("msn") {
 	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
-		val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/msn/profile_wrapper.png"))
+		val profileWrapper = readImage(File(Loritta.ASSETS, "profile/msn/profile_wrapper.png"))
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
@@ -75,7 +76,7 @@ class MSNProfileCreator : ProfileCreator("msn") {
 
 		ProfileUtils.getMarriageInfo(userProfile)?.let { (marriage, marriedWith) ->
 			val marriedWithText = "${locale.toNewLocale()["profile.marriedWith"]} ${marriedWith.name}#${marriedWith.discriminator}"
-			val gameIcon = ImageIO.read(File(Loritta.ASSETS, "profile/msn/game_icon.png"))
+			val gameIcon = readImage(File(Loritta.ASSETS, "profile/msn/game_icon.png"))
 			graphics.drawImage(gameIcon, 0, 5, null)
 			graphics.font = msnFont24
 			graphics.color = Color(51, 51, 51)
@@ -138,7 +139,7 @@ class MSNProfileCreator : ProfileCreator("msn") {
 
 			if (index % 14 == 13) {
 				// Aumentar chat box
-				val extendedChatBox = ImageIO.read(File(Loritta.ASSETS, "profile/msn/extended_chat_box.png"))
+				val extendedChatBox = readImage(File(Loritta.ASSETS, "profile/msn/extended_chat_box.png"))
 				graphics.drawImage(extendedChatBox, 266, y - 38, null)
 				x = 272
 				y -= 32

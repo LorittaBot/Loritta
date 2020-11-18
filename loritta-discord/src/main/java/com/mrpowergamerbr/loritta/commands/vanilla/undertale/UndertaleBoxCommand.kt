@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.ImageFormat
 import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
+import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Font
 import java.awt.Image
@@ -50,7 +51,7 @@ class UndertaleBoxCommand : AbstractCommand("utbox", listOf("undertalebox"), Com
 				// Mas ok, ainda tem uma coisa chamada "nome do usuário mencionado"
 				// Sabe o que a gente faz com ele? Gambiarra!
 				// TODO: Menos gambiarra
-				val bi = ImageIO.read(File(Loritta.ASSETS + "undertale_dialogbox.png"))
+				val bi = readImage(File(Loritta.ASSETS + "undertale_dialogbox.png"))
 				val graph = bi.graphics
 
 				val determinationMono = Constants.DETERMINATION_MONO

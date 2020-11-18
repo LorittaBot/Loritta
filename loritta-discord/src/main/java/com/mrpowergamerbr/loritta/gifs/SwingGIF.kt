@@ -2,13 +2,13 @@ package com.mrpowergamerbr.loritta.gifs
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.LorittaImage
+import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.image.BufferedImage
 import java.io.File
-import javax.imageio.ImageIO
 import javax.imageio.stream.FileImageOutputStream
 
 object SwingGIF {
-	fun getGIF(_toUse1: BufferedImage, _toUse2: BufferedImage): File {
+	suspend fun getGIF(_toUse1: BufferedImage, _toUse2: BufferedImage): File {
 		var fileName = Loritta.TEMP + "swing-" + System.currentTimeMillis() + ".gif"
 		var output = FileImageOutputStream(File(fileName))
 		val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 6, true)
@@ -26,7 +26,7 @@ object SwingGIF {
 		for (i in 0..54) {
 			val file = File(Loritta.ASSETS + "swing/swing_${i.toString().padStart(6, '0')}.png")
 			if (file.exists()) {
-				var ogImage = ImageIO.read(file)
+				var ogImage = readImage(file)
 				var image = BufferedImage(ogImage.width, ogImage.height, BufferedImage.TYPE_INT_ARGB)
 				val graphics = image.graphics as java.awt.Graphics2D
 

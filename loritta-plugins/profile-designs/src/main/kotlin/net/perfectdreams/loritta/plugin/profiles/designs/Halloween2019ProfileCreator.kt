@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.profile.ProfileUtils
+import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.io.File
@@ -40,7 +41,7 @@ class Halloween2019ProfileCreator : ProfileCreator("halloween2019") {
 				.deriveFont(42F)
 
 		val avatar = LorittaUtils.downloadImage(user.avatarUrl)!!.getScaledInstance(152, 152, BufferedImage.SCALE_SMOOTH)
-		val marrySection = ImageIO.read(File(Loritta.ASSETS, "profile/halloween_2019/marry.png"))
+		val marrySection = readImage(File(Loritta.ASSETS, "profile/halloween_2019/marry.png"))
 
 		val marriage = loritta.newSuspendedTransaction { userProfile.marriage }
 
@@ -71,7 +72,7 @@ class Halloween2019ProfileCreator : ProfileCreator("halloween2019") {
 		val resizedBadges = badges.map { it.getScaledInstance(35, 35, BufferedImage.SCALE_SMOOTH).toBufferedImage() }
 
 		for (i in 0..29) {
-			val profileWrapper = ImageIO.read(File(Loritta.ASSETS, "profile/halloween_2019/frames/halloween_2019_${i.toString().padStart(6, '0')}.png"))
+			val profileWrapper = readImage(File(Loritta.ASSETS, "profile/halloween_2019/frames/halloween_2019_${i.toString().padStart(6, '0')}.png"))
 
 			val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 			val graphics = base.graphics.enableFontAntiAliasing()

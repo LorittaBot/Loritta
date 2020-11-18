@@ -5,16 +5,16 @@ import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaImage
 import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Font
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
 import java.io.File
-import javax.imageio.ImageIO
 import javax.imageio.stream.FileImageOutputStream
 
 object GumballGIF {
-	fun getGIF(_toUse: BufferedImage, locale: LegacyBaseLocale): File {
+	suspend fun getGIF(_toUse: BufferedImage, locale: LegacyBaseLocale): File {
 		var toUse = BufferedImage(_toUse.width, _toUse.height, BufferedImage.TYPE_INT_ARGB)
 		toUse.graphics.drawImage(_toUse, 0, 0, null)
 		toUse.graphics.dispose()
@@ -23,7 +23,7 @@ object GumballGIF {
 		var output = FileImageOutputStream(File(fileName))
 		val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 12, true)
 
-		val gumballHand = ImageIO.read(File(Loritta.ASSETS + "gumball/gumball_hand.png"))
+		val gumballHand = readImage(File(Loritta.ASSETS + "gumball/gumball_hand.png"))
 		val paper = LorittaImage(toUse)
 		paper.resize(400, 280)
 		paper.setCorners(
@@ -44,7 +44,7 @@ object GumballGIF {
 		for (i in 0..49) {
 			val file = File(Loritta.ASSETS + "gumball/gumball_${i.toString().padStart(6, '0')}.png")
 			if (file.exists()) {
-				var ogImage = ImageIO.read(File(Loritta.ASSETS + "gumball/gumball_${i.toString().padStart(6, '0')}.png"))
+				var ogImage = readImage(File(Loritta.ASSETS + "gumball/gumball_${i.toString().padStart(6, '0')}.png"))
 				var image = BufferedImage(ogImage.width, ogImage.height, BufferedImage.TYPE_INT_ARGB)
 				val graphics = image.graphics.enableFontAntiAliasing()
 

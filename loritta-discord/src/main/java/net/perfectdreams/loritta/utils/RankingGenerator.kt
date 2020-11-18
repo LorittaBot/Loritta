@@ -2,13 +2,13 @@ package net.perfectdreams.loritta.utils
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.*
+import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.Rectangle
 import java.awt.geom.Path2D
 import java.awt.image.BufferedImage
 import java.io.File
-import javax.imageio.ImageIO
 
 object RankingGenerator {
 	/**
@@ -20,7 +20,7 @@ object RankingGenerator {
 			rankedUsers: List<UserRankInformation>,
 			onNullUser: (suspend (Long) -> (CachedUserInfo?))? = null
 	): BufferedImage {
-		val rankHeader = ImageIO.read(File(Loritta.ASSETS, "rank_header.png"))
+		val rankHeader = readImage(File(Loritta.ASSETS, "rank_header.png"))
 		val base = BufferedImage(400, 300, BufferedImage.TYPE_INT_ARGB_PRE)
 		val graphics = base.graphics.enableFontAntiAliasing()
 
