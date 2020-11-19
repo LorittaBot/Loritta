@@ -45,7 +45,7 @@ object LorittaUtils {
 	 * @return the image as a BufferedImage or null, if the image is considered unsafe
 	 */
 	@JvmOverloads
-	fun downloadImage(url: String, connectTimeout: Int = 10, readTimeout: Int = 60, maxSize: Int = 16_777_216, overrideTimeoutsForSafeDomains: Boolean = false, maxWidth: Int = 2_500, maxHeight: Int = 2_500, bypassSafety: Boolean = false): BufferedImage? {
+	fun downloadImage(url: String, connectTimeout: Int = 10, readTimeout: Int = 60, maxSize: Int = 8_388_608 /* 8mib */, overrideTimeoutsForSafeDomains: Boolean = false, maxWidth: Int = 2_500, maxHeight: Int = 2_500, bypassSafety: Boolean = false): BufferedImage? {
 		try {
 			val imageUrl = URL(url)
 			val connection = if (bypassSafety) {
@@ -54,10 +54,14 @@ object LorittaUtils {
 				imageUrl.openSafeConnection()
 			} as HttpURLConnection
 
-			connection.setRequestProperty("User-Agent",
-					Constants.USER_AGENT)
+			connection.setRequestProperty(
+					"User-Agent",
+					Constants.USER_AGENT
+			)
 
-			if (connection.getHeaderFieldInt("Content-Length", 0) > maxSize) {
+			val contentLength = connection.getHeaderFieldInt("Content-Length", 0)
+
+			if (contentLength > maxSize) {
 				logger.warn { "Image $url exceeds the maximum allowed Content-Length! ${connection.getHeaderFieldInt("Content-Length", 0)} > $maxSize"}
 				return null
 			}
@@ -72,7 +76,14 @@ object LorittaUtils {
 
 			logger.debug { "Reading image $url; connectTimeout = $connectTimeout; readTimeout = $readTimeout; maxSize = $maxSize bytes; overrideTimeoutsForSafeDomains = $overrideTimeoutsForSafeDomains; maxWidth = $maxWidth; maxHeight = $maxHeight"}
 
-			val imageBytes = connection.inputStream.readAllBytes(maxSize)
+			val imageBytes = if (contentLength != 0) {
+				// If the Content-Length is known (example: images on Discord's CDN do have Content-Length on the response header)
+				// we can allocate the array with exactly the same size that the Content-Length provides, this way we avoid a lot of unnecessary Arrays.copyOf!
+				// Of course, this could be abused to allocate a gigantic array that causes Loritta to crash, but if the Content-Length is present, Loritta checks the size
+				// before trying to download it, so no worries :)
+				connection.inputStream.readAllBytes(maxSize, contentLength)
+			} else
+				connection.inputStream.readAllBytes(maxSize)
 
 			val imageInfo = SimpleImageInfo(imageBytes)
 
