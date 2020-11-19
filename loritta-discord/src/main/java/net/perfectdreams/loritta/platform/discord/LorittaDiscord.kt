@@ -30,6 +30,8 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.*
 import mu.KotlinLogging
+import net.dv8tion.jda.api.entities.ChannelType
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.utils.format
 import net.perfectdreams.loritta.commands.vanilla.administration.BanInfoCommand
@@ -716,9 +718,16 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         }.sumByDouble { it.money.toDouble() }
     }
 
-    fun launchMessageJob(block: suspend CoroutineScope.() -> Unit) {
+    fun launchMessageJob(event: MessageReceivedEvent, block: suspend CoroutineScope.() -> Unit) {
+        var coroutineName = "Message ${event.message} by user ${event.author} in ${event.channel}"
+
+        if (event.channelType == ChannelType.TEXT)
+            coroutineName += " on ${event.guild}"
+
         val start = System.currentTimeMillis()
-        val job = GlobalScope.launch(coroutineMessageDispatcher, block = block)
+        val job = GlobalScope.launch(
+                coroutineMessageDispatcher + CoroutineName(coroutineName),
+                block = block)
         // Yes, the order matters, since sometimes the invokeOnCompletion would be invoked before the job was
         // added to the list, causing leaks.
         // invokeOnCompletion is also invoked even if the job was already completed at that point, so no worries!
