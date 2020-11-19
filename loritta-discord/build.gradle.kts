@@ -4,6 +4,8 @@ val loriVersion by lazy { ext["lori-version"] as String }
 val kotlinVersion by lazy { ext["kotlin-version"] as String }
 val ktorVersion by lazy { ext["ktor-version"] as String }
 val jdaVersion by lazy { ext["jda-version"] as String }
+val kotlinSerialization by lazy { ext["kotlin-serialization"] as String }
+val kotlinCoroutines by lazy { ext["kotlin-coroutines"] as String }
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
@@ -49,37 +51,37 @@ dependencies {
     api(kotlin("scripting-compiler"))
 
     // Kotlin Serialization
-    api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0")
+    api("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerialization")
 
     // Kotlin Coroutines
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-debug:1.4.1")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutines")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-debug:$kotlinCoroutines")
 
-    api("com.google.guava:guava:29.0-jre")
+    api("com.google.guava:guava:30.0-jre")
 
     api("net.perfectdreams.commands:command-framework-core:0.0.8")
     api("org.jetbrains.kotlinx:kotlinx-html-jvm:0.6.12")
     api("org.twitter4j:twitter4j-core:[4.0,)")
     api("org.twitter4j:twitter4j-stream:[4.0,)")
-    api("com.github.ben-manes.caffeine:caffeine:2.8.5")
+    api("com.github.ben-manes.caffeine:caffeine:2.8.6")
 
     // Discord
     api("net.dv8tion:JDA:$jdaVersion")
-    api("club.minnced:discord-webhooks:0.3.2")
+    api("club.minnced:discord-webhooks:0.5.0")
 
     // Exposed & Databases
-    api("org.postgresql:postgresql:42.2.14")
-    api("com.impossibl.pgjdbc-ng:pgjdbc-ng:0.8.4")
-    api("org.xerial:sqlite-jdbc:3.32.3")
+    api("org.postgresql:postgresql:42.2.18")
+    api("com.impossibl.pgjdbc-ng:pgjdbc-ng:0.8.6")
+    api("org.xerial:sqlite-jdbc:3.32.3.2")
     api("com.zaxxer:HikariCP:3.4.5")
-    api("org.jetbrains.exposed:exposed-core:0.27.1")
-    api("org.jetbrains.exposed:exposed-dao:0.27.1")
-    api("org.jetbrains.exposed:exposed-jdbc:0.27.1")
+    api("org.jetbrains.exposed:exposed-core:0.28.1")
+    api("org.jetbrains.exposed:exposed-dao:0.28.1")
+    api("org.jetbrains.exposed:exposed-jdbc:0.28.1")
 
-    api("org.apache.commons:commons-lang3:3.10")
-    api("commons-codec:commons-codec:1.14")
-    api("commons-io:commons-io:2.7")
-    api("org.apache.commons:commons-text:1.8")
+    api("org.apache.commons:commons-lang3:3.11")
+    api("commons-codec:commons-codec:1.15")
+    api("commons-io:commons-io:2.8.0")
+    api("org.apache.commons:commons-text:1.9")
     api("org.apache.commons:commons-collections4:4.4")
 
     // Ktor
@@ -89,18 +91,18 @@ dependencies {
     api("io.ktor:ktor-client-apache:$ktorVersion")
 
     api("com.google.code.gson:gson:2.8.6")
-    api("io.github.microutils:kotlin-logging:1.8.0.1")
+    api("io.github.microutils:kotlin-logging:2.0.3")
     api("io.pebbletemplates:pebble:3.1.4")
     api("org.jsoup:jsoup:1.13.1")
     api("com.github.kevinsawicki:http-request:6.0")
-    api("com.rometools:rome:1.14.1")
+    api("com.rometools:rome:1.15.0")
 
     // Jackson
-    api("com.fasterxml.jackson.core:jackson-databind:2.11.1")
-    api("com.fasterxml.jackson.core:jackson-annotations:2.11.1")
-    api("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.1")
-    api("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.1")
-    api("com.fasterxml.jackson.module:jackson-module-parameter-names:2.11.1")
+    api("com.fasterxml.jackson.core:jackson-databind:2.11.3")
+    api("com.fasterxml.jackson.core:jackson-annotations:2.11.3")
+    api("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.3")
+    api("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.3")
+    api("com.fasterxml.jackson.module:jackson-module-parameter-names:2.11.3")
     api("org.honton.chas.hocon:jackson-dataformat-hocon:1.1.1")
 
     api("org.json:json:20190722")
