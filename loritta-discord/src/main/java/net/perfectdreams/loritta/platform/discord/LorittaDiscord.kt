@@ -717,6 +717,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
     }
 
     fun launchMessageJob(block: suspend CoroutineScope.() -> Unit) {
+        val start = System.currentTimeMillis()
         val job = GlobalScope.launch(coroutineMessageDispatcher, block = block)
         // Yes, the order matters, since sometimes the invokeOnCompletion would be invoked before the job was
         // added to the list, causing leaks.
@@ -724,6 +725,11 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         pendingMessages.add(job)
         job.invokeOnCompletion {
             pendingMessages.remove(job)
+
+            val diff = System.currentTimeMillis() - start
+            if (diff >= 60_000) {
+                logger.warn { "Message Coroutine $job took too long to process! ${diff}ms" }
+            }
         }
     }
 }
