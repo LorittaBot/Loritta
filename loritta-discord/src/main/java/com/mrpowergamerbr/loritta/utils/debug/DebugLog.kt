@@ -4,9 +4,12 @@ import com.mrpowergamerbr.loritta.listeners.EventLogListener
 import com.mrpowergamerbr.loritta.modules.InviteLinkModule
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import kotlinx.coroutines.debug.DebugProbes
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.LorittaWebsite
+import java.io.File
+import java.io.PrintStream
 import java.lang.management.ManagementFactory
 import java.util.concurrent.ThreadPoolExecutor
 import kotlin.concurrent.thread
@@ -73,6 +76,17 @@ object DebugLog {
 			logger.warn { "Loritta is overloaded! There are $pendingMessagesSize messages pending to be executed, ${pendingMessagesSize - availableProcessors} more than it should be!" }
 	}
 
+	fun dumpCoroutinesToFile() {
+		println("Dumping Coroutines...")
+		DebugProbes.dumpCoroutines(
+				PrintStream(
+						File("coroutines_dump.txt")
+								.outputStream()
+				)
+		)
+		println("Coroutines dumped!")
+	}
+
 	fun handleLine(line: String) {
 		val args = line.split(" ").toMutableList()
 		val command = args[0]
@@ -118,6 +132,9 @@ object DebugLog {
 			}
 			"posts" -> {
 				LorittaWebsite.INSTANCE.blog.posts = LorittaWebsite.INSTANCE.blog.loadAllBlogPosts()
+			}
+			"dumpc" -> {
+				dumpCoroutinesToFile()
 			}
 		}
 	}
