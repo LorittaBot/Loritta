@@ -52,6 +52,8 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 			currentIndex = skipToIndex
 			skipToIndex = -1
 		}
+		// Used to display the current Loritta cluster in the status
+		val currentCluster = loritta.lorittaCluster
 
 		val calendar = Calendar.getInstance()
 		currentDay = calendar.get(Calendar.DAY_OF_WEEK)
@@ -103,7 +105,14 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 
 					val displayName = fancyName ?: (artist?.name ?: "¯\\_(ツ)_/¯")
 
-					loritta.lorittaShards.shardManager.setActivity(Activity.of(Activity.ActivityType.WATCHING, "\uD83D\uDCF7 Fan Art by $displayName \uD83C\uDFA8 — \uD83D\uDC81 @Loritta fanarts", "https://www.twitch.tv/mrpowergamerbr"))
+					// We use ".setActivityProvider" to show the shard in the status
+					loritta.lorittaShards.shardManager.setActivityProvider {
+						Activity.of(
+								Activity.ActivityType.WATCHING,
+								"\uD83D\uDCF7 Fan Art by $displayName \uD83C\uDFA8 | Cluster ${currentCluster.id} [$it]",
+								"https://www.twitch.tv/mrpowergamerbr"
+						)
+					}
 					lastUpdate = System.currentTimeMillis()
 				}
 			}
@@ -148,7 +157,15 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 					str = "\uD83D\uDEAB Inatividade Agendada: ${instant.hour.toString().padStart(2, '0')}:${instant.minute.toString().padStart(2, '0')}"
 				}
 
-				loritta.lorittaShards.shardManager.setActivity(Activity.of(Activity.ActivityType.valueOf(game.type), str, "https://www.twitch.tv/mrpowergamerbr"))
+				// We use ".setActivityProvider" to show the shard in the status
+				loritta.lorittaShards.shardManager.setActivityProvider {
+					Activity.of(
+							Activity.ActivityType.valueOf(game.type),
+							"$str | Cluster ${currentCluster.id} [$it]",
+							"https://www.twitch.tv/mrpowergamerbr"
+					)
+				}
+
 				currentIndex++
 				lastUpdate = System.currentTimeMillis()
 
