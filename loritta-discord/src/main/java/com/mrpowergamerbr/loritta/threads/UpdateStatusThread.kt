@@ -152,17 +152,8 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 				currentIndex++
 				lastUpdate = System.currentTimeMillis()
 
-				val nextStatus = loritta.discordConfig.discord.activities.getOrNull(currentIndex)
-				if (nextStatus != null) {
-					repeat(10) {
-						if (nextStatus.name == "{sponsor-$it}" && loritta.sponsors.getOrNull(it) == null)
-							currentIndex++
-					}
-				}
-
-				if (currentIndex > loritta.discordConfig.discord.activities.size - 1) {
+				if (currentIndex > loritta.discordConfig.discord.activities.size - 1)
 					currentIndex = 0
-				}
 			}
 		}
 	}
