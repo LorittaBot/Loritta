@@ -55,6 +55,7 @@ dependencies {
 
     // Kotlin Coroutines
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutines")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.4.1")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-debug:$kotlinCoroutines")
 
     api("com.google.guava:guava:30.0-jre")

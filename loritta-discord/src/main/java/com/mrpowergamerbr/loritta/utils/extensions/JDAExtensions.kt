@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.utils.extensions
 
 import com.mrpowergamerbr.loritta.LorittaLauncher.loritta
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import kotlinx.coroutines.future.await
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.Permission.*
@@ -9,15 +10,8 @@ import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.RestAction
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
-suspend fun <T> RestAction<T>.await() : T {
-	return suspendCoroutine { cont ->
-		this.queue({ cont.resume(it)}, { cont.resumeWithException(it) })
-	}
-}
+suspend fun <T> RestAction<T>.await() : T = this.submit().await()
 
 suspend fun MessageChannel.sendMessageAsync(text: String) = this.sendMessage(text).await()
 suspend fun MessageChannel.sendMessageAsync(message: Message) = this.sendMessage(message).await()
