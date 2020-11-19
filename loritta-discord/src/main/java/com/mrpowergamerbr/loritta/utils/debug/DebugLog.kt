@@ -55,7 +55,6 @@ object DebugLog {
 		logger.info("messageInteractionCache.size: ${loritta.messageInteractionCache.size}")
 		logger.info("locales.size: ${loritta.legacyLocales.size}")
 		logger.info("ignoreIds.size: ${loritta.ignoreIds.size}")
-		logger.info("userCooldown.size: ${loritta.userCooldown.size}")
 		logger.info("> Tasks Stuff")
 		logger.info("loritta.twitch.cachedGames: ${loritta.twitch.cachedGames.size}")
 		logger.info("loritta.twitch.cachedStreamerInfo: ${loritta.twitch.cachedStreamerInfo.size}")

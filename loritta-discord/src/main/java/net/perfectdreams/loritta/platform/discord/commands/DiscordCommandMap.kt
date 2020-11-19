@@ -18,8 +18,10 @@ import net.perfectdreams.loritta.api.commands.*
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
+import net.perfectdreams.loritta.utils.CommandCooldownManager
 import net.perfectdreams.loritta.utils.CommandUtils
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.loritta.utils.metrics.Prometheus
 import org.jetbrains.exposed.sql.insert
 import java.util.concurrent.CancellationException
@@ -141,24 +143,24 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 				}
 
 				// Cooldown
-				val diff = System.currentTimeMillis() - userCooldown.getOrDefault(ev.author.idLong, 0L)
-
-				if (1250 > diff && !loritta.config.isOwner(ev.author.id)) { // Tá bom, é alguém tentando floodar, vamos simplesmente ignorar
-					userCooldown.put(ev.author.idLong, System.currentTimeMillis()) // E vamos guardar o tempo atual
-					return true
-				}
-
-				var cooldown = command.cooldown
-				val donatorPaid = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonationsAsync(ev.author.idLong)
+				var commandCooldown = command.cooldown
+				val donatorPaid = discordLoritta.getActiveMoneyFromDonationsAsync(ev.author.idLong)
 				val guildId = ev.guild?.idLong
 				val guildPaid = guildId?.let { serverConfig.getActiveDonationKeysValue() } ?: 0.0
 
-				if (donatorPaid >= 39.99 || guildPaid >= 59.99) {
-					cooldown /= 2
+				val plan = UserPremiumPlans.getPlanFromValue(donatorPaid)
+
+				if (plan.lessCooldown) {
+					commandCooldown /= 2
 				}
 
-				if (cooldown > diff && !loritta.config.isOwner(ev.author.id)) {
-					val fancy = DateUtils.formatDateDiff((cooldown - diff) + System.currentTimeMillis(), legacyLocale)
+				val (cooldownStatus, cooldownTriggeredAt, cooldown) = discordLoritta.commandCooldownManager.checkCooldown(
+						ev,
+						commandCooldown
+				)
+
+				if (cooldownStatus == CommandCooldownManager.CooldownStatus.RATE_LIMITED_SEND_MESSAGE) {
+					val fancy = DateUtils.formatDateDiff(cooldown + cooldownTriggeredAt, legacyLocale)
 					context.reply(
 							LorittaReply(
 									locale["commands.pleaseWaitCooldown", fancy, "\uD83D\uDE45"],
@@ -166,9 +168,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 							)
 					)
 					return true
-				}
-
-				userCooldown[ev.author.idLong] = System.currentTimeMillis()
+				} else if (cooldownStatus == CommandCooldownManager.CooldownStatus.RATE_LIMITED_MESSAGE_ALREADY_SENT) return true
 
 				if (command.hasCommandFeedback) {
 					// Sending typing status for every single command is costly (API limits!)

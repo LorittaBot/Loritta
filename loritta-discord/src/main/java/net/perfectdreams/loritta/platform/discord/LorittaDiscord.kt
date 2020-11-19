@@ -52,6 +52,7 @@ import net.perfectdreams.loritta.platform.discord.utils.JVMLorittaAssets
 import net.perfectdreams.loritta.tables.BackgroundPayments
 import net.perfectdreams.loritta.tables.Backgrounds
 import net.perfectdreams.loritta.tables.Payments
+import net.perfectdreams.loritta.utils.CommandCooldownManager
 import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.loritta.utils.config.FanArt
 import net.perfectdreams.loritta.utils.config.FanArtArtist
@@ -159,6 +160,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
     val pendingMessages = ConcurrentLinkedQueue<Job>()
     val guildSetupQueue = GuildSetupQueue(this)
+    val commandCooldownManager = CommandCooldownManager(this)
 
     /**
      * Gets an user's profile background image or, if the user has a custom background, loads the custom background.
