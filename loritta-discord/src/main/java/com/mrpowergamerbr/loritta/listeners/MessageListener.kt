@@ -66,7 +66,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
 			return
 
-		loritta.launchMessageJob {
+		loritta.launchMessageJob(event) {
 			try {
 				val member = event.member
 				if (member == null) { // This may seem dumb, but it works!
@@ -328,7 +328,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
 			return
 
-		loritta.launchMessageJob {
+		loritta.launchMessageJob(event) {
 			val serverConfig = loritta.getOrCreateServerConfigAsync(-1, true)
 			val profile = loritta.getOrCreateLorittaProfile(event.author.idLong) // Carregar perfil do usuário
 			val lorittaUser = LorittaUser(event.author, EnumSet.noneOf(LorittaPermission::class.java), profile)

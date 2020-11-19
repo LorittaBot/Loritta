@@ -11,6 +11,7 @@ object Databases {
 	val hikariConfigLoritta by lazy {
 		val loritta = com.mrpowergamerbr.loritta.utils.loritta
 
+		val applicationName = loritta.lorittaCluster.getUserAgent()
 		var jdbcUrlPrefix: String? = null
 		var driverClassName: String? = null
 		var dbPath: String? = null
@@ -34,7 +35,7 @@ object Databases {
 			"PostgreSQL" -> {
 				jdbcUrlPrefix = "postgresql"
 				driverClassName = "org.postgresql.Driver"
-				dbPath = "//${NetAddressUtils.fixIp(NetAddressUtils.getWithPortIfMissing(loritta.config.database.address, 5432))}/${loritta.config.database.databaseName}"
+				dbPath = "//${NetAddressUtils.fixIp(NetAddressUtils.getWithPortIfMissing(loritta.config.database.address, 5432))}/${loritta.config.database.databaseName}?ApplicationName=$applicationName"
 			}
 			"PGJDBC-NG" -> {
 				jdbcUrlPrefix = "pgsql"

@@ -30,8 +30,9 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.*
 import mu.KotlinLogging
-import net.dv8tion.jda.api.entities.ChannelType
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.events.Event
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.utils.format
 import net.perfectdreams.loritta.commands.vanilla.administration.BanInfoCommand
@@ -718,16 +719,22 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         }.sumByDouble { it.money.toDouble() }
     }
 
-    fun launchMessageJob(event: MessageReceivedEvent, block: suspend CoroutineScope.() -> Unit) {
-        var coroutineName = "Message ${event.message} by user ${event.author} in ${event.channel}"
-
-        if (event.channelType == ChannelType.TEXT)
-            coroutineName += " on ${event.guild}"
+    fun launchMessageJob(event: Event, block: suspend CoroutineScope.() -> Unit) {
+        val coroutineName = when (event) {
+            is GuildMessageReceivedEvent -> {
+                "Message ${event.message} by user ${event.author} in ${event.channel} on ${event.guild}"
+            }
+            is PrivateMessageReceivedEvent -> {
+                "Message ${event.message} by user ${event.author} in ${event.channel}"
+            }
+            else -> throw IllegalArgumentException("You can't dispatch a $event in a launchMessageJob!")
+        }
 
         val start = System.currentTimeMillis()
         val job = GlobalScope.launch(
                 coroutineMessageDispatcher + CoroutineName(coroutineName),
-                block = block)
+                block = block
+        )
         // Yes, the order matters, since sometimes the invokeOnCompletion would be invoked before the job was
         // added to the list, causing leaks.
         // invokeOnCompletion is also invoked even if the job was already completed at that point, so no worries!
