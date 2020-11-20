@@ -1,10 +1,11 @@
 package net.perfectdreams.loritta.utils
 
+import mu.KotlinLogging
 import net.perfectdreams.loritta.tables.SonhosTransaction
 import org.jetbrains.exposed.sql.insert
-import java.lang.RuntimeException
 
 object PaymentUtils {
+    private val logger = KotlinLogging.logger {}
     var economyEnabled = true
 
     fun addToTransactionLogNested(
@@ -24,6 +25,8 @@ object PaymentUtils {
             it[SonhosTransaction.quantity] = quantity.toBigDecimal()
             it[SonhosTransaction.reason] = reason
         }
+
+        logger.info { "Added transaction $reason with $quantity that was given by $givenBy and received by $receivedBy at $givenAtMillis with reason $reason" }
     }
 
     class EconomyDisabledException : RuntimeException()

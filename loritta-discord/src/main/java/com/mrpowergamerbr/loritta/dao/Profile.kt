@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.dao
 import com.mrpowergamerbr.loritta.tables.Dailies
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.loritta
+import mu.KotlinLogging
 import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.TakingMoreSonhosThanAllowedException
@@ -13,7 +14,9 @@ import org.jetbrains.exposed.sql.*
 import java.util.*
 
 class Profile(id: EntityID<Long>) : Entity<Long>(id) {
-	companion object : EntityClass<Long, Profile>(Profiles)
+	companion object : EntityClass<Long, Profile>(Profiles) {
+		private val logger = KotlinLogging.logger {}
+	}
 
 	val userId = this.id.value
 	var xp by Profiles.xp
@@ -96,6 +99,7 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 				it[Profiles.money] = Profiles.money + quantity
 			}
 		}
+		logger.info { "Added $quantity sonhos to ${id.value}" }
 
 		// If everything went well, refresh the current DAO
 		if (refreshOnSuccess)
@@ -131,6 +135,8 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 				it[Profiles.money] = Profiles.money - quantity
 			}
 		}
+
+		logger.info { "Took $quantity sonhos from ${id.value}" }
 
 		// If everything went well, refresh the current DAO
 		if (refreshOnSuccess)
