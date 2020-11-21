@@ -59,7 +59,7 @@ object ProfileUtils {
      */
     suspend fun getGlobalExperiencePosition(userProfile: Profile) =
             // This is a optimization: Querying the user's position if he has 0 takes too long, if the user does *not* have any XP, we just return null! :3
-            if (userProfile.xp != 0L)
+            if (userProfile.xp >= 100_000L)
                 loritta.newSuspendedTransaction {
                     Profiles.select { Profiles.xp greaterEq userProfile.xp }.count()
                 } else null
@@ -72,7 +72,7 @@ object ProfileUtils {
      */
     suspend fun getGlobalEconomyPosition(userProfile: Profile) =
             // This is a optimization: Querying the user's position if he has 0 takes too long, if the user does *not* have any sonhos, we just return null! :3
-            if (userProfile.money != 0L)
+            if (userProfile.money >= 100_000L)
                 loritta.newSuspendedTransaction {
                     Profiles.select { Profiles.money greaterEq userProfile.money }.count()
                 } else null
