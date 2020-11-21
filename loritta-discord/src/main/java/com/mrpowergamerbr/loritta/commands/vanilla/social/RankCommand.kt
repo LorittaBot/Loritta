@@ -4,9 +4,11 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.RankingGenerator
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
@@ -29,6 +31,16 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		var page = context.args.getOrNull(0)?.toLongOrNull()
+
+		if (page != null && !RankingGenerator.isValidRankingPage(page)) {
+			context.reply(
+					LorittaReply(
+							context.locale["commands.invalidRankingPage"],
+							Constants.ERROR
+					)
+			)
+			return
+		}
 
 		if (page != null)
 			page -= 1

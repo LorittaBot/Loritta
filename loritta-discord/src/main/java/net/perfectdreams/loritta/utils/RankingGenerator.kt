@@ -114,6 +114,17 @@ object RankingGenerator {
 		return base
 	}
 
+	/**
+	 * Checks if the user is trying to retrieve a valid ranking page
+	 *
+	 * To avoid overloading the database with big useless ranking queries, we only allow
+	 * pages from 1 to 100 to be retrieved
+	 *
+	 * @param input the page input
+	 * @return if the input is in a valid range
+	 */
+	suspend fun isValidRankingPage(input: Long) = input in 1..100
+
 	data class UserRankInformation(
 			val userId: Long,
 			val subtitle: String? = null,

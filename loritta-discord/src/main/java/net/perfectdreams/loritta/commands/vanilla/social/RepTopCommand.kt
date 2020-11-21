@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.commands.vanilla.social
 
 import com.mrpowergamerbr.loritta.tables.Reputations
+import com.mrpowergamerbr.loritta.utils.Constants
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
@@ -8,7 +9,6 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.api.utils.image.JVMImage
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
-import net.perfectdreams.loritta.platform.discord.commands.discordCommand
 import net.perfectdreams.loritta.utils.RankingGenerator
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.count
@@ -53,6 +53,16 @@ class RepTopCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritt
 				TopOrder.MOST_RECEIVED
 
 			var page = args.getOrNull(1)?.toLongOrNull()
+
+			if (page != null && !RankingGenerator.isValidRankingPage(page)) {
+				reply(
+						LorittaReply(
+								locale["commands.invalidRankingPage"],
+								Constants.ERROR
+						)
+				)
+				return@executesDiscord
+			}
 
 			if (page != null)
 				page -= 1

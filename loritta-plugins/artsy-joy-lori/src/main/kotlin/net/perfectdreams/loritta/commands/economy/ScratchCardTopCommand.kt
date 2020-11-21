@@ -1,13 +1,12 @@
 package net.perfectdreams.loritta.commands.economy
 
-import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.*
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
-import net.perfectdreams.loritta.tables.BomDiaECiaWinners
 import net.perfectdreams.loritta.tables.Raspadinhas
 import net.perfectdreams.loritta.utils.RankingGenerator
 import org.jetbrains.exposed.sql.SortOrder
@@ -15,13 +14,6 @@ import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.sum
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.awt.Color
-import java.awt.Graphics2D
-import java.awt.Rectangle
-import java.awt.geom.Path2D
-import java.awt.image.BufferedImage
-import java.io.File
-import javax.imageio.ImageIO
 
 class ScratchCardTopCommand : LorittaCommand(arrayOf("scratchcard top", "raspadinha top"), CommandCategory.ECONOMY) {
 	override fun getDescription(locale: BaseLocale): String? {
@@ -43,6 +35,16 @@ class ScratchCardTopCommand : LorittaCommand(arrayOf("scratchcard top", "raspadi
 	@Subcommand
 	suspend fun run(context: DiscordCommandContext, locale: BaseLocale) {
 		var page = context.args.getOrNull(0)?.toLongOrNull()
+
+		if (page != null && !RankingGenerator.isValidRankingPage(page)) {
+			context.reply(
+					LorittaReply(
+							locale["commands.invalidRankingPage"],
+							Constants.ERROR
+					)
+			)
+			return
+		}
 
 		if (page != null)
 			page -= 1
