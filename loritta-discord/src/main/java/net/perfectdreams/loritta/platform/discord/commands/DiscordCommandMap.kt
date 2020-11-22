@@ -136,7 +136,9 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 									ev.guild
 							)
 							if (generatedMessage != null)
-							ev.textChannel.sendMessage(generatedMessage).queue()
+								ev.textChannel.sendMessage(generatedMessage)
+										.reference(ev.message)
+										.queue()
 						}
 					}
 					return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
@@ -391,7 +393,9 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 					reply += " `${e.message!!.escapeMentions()}`"
 
 				if (ev.isFromType(ChannelType.PRIVATE) || (ev.isFromType(ChannelType.TEXT) && ev.textChannel != null && ev.textChannel.canTalk()))
-					ev.channel.sendMessage(reply).queue()
+					ev.channel.sendMessage(reply)
+							.reference(ev.message)
+							.queue()
 
 				return true
 			}

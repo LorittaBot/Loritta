@@ -143,7 +143,9 @@ class DiscordCommandContext(val config: ServerConfig, val lorittaUser: LorittaUs
 
 	suspend fun sendMessage(message: Message): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
 		if (isPrivateChannel || event.textChannel!!.canTalk()) {
-			val sentMessage = event.channel.sendMessage(message).await()
+			val sentMessage = event.channel.sendMessage(message)
+					.reference(discordMessage)
+					.await()
 			return DiscordMessage(sentMessage)
 		} else {
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
@@ -226,7 +228,9 @@ class DiscordCommandContext(val config: ServerConfig, val lorittaUser: LorittaUs
 
 	suspend fun sendFile(inputStream: InputStream, name: String, message: Message): net.perfectdreams.loritta.platform.discord.entities.DiscordMessage {
 		if (isPrivateChannel || event.textChannel!!.canTalk()) {
-			val sentMessage = event.channel.sendMessage(message).addFile(inputStream, name).await()
+			val sentMessage = event.channel.sendMessage(message)
+					.addFile(inputStream, name)
+					.reference(discordMessage).await()
 			return DiscordMessage(sentMessage)
 		} else {
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
@@ -356,10 +360,6 @@ class DiscordCommandContext(val config: ServerConfig, val lorittaUser: LorittaUs
 					false
 			)
 		}
-
-		val messageBuilder = MessageBuilder()
-				.append(getAsMention(true))
-				.setEmbed(embed.build())
 
 		val message = sendMessage(getAsMention(true), embed.build()).handle
 		message.addReaction("❓").queue()
@@ -536,6 +536,19 @@ class DiscordCommandContext(val config: ServerConfig, val lorittaUser: LorittaUs
 					return toBeDownloaded
 				}
 			} catch (e: Exception) {
+			}
+		}
+
+		// Nothing found? Try retrieving the replied message content
+		val referencedMessage = discordMessage.referencedMessage
+		if (referencedMessage != null) {
+			for (embed in referencedMessage.embeds) {
+				if (embed.image != null)
+					return embed.image!!.url
+			}
+			for (attachment in referencedMessage.attachments) {
+				if (attachment.isImage)
+					return attachment.url
 			}
 		}
 

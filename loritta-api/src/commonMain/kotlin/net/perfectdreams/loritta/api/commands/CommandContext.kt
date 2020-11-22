@@ -22,10 +22,10 @@ abstract class CommandContext(
 ) {
 	val sender = message.author
 
-	suspend fun sendMessage(content: String) = message.channel.sendMessage(content)
-	suspend fun sendMessage(lorittaMessage: LorittaMessage) = message.channel.sendMessage(lorittaMessage)
-	suspend fun sendImage(image: Image, fileName: String = "image.png", content: String = getUserMention(true)) = message.channel.sendFile(image.toByteArray(), fileName, content)
-	suspend fun sendFile(byteArray: ByteArray, fileName: String, content: String = getUserMention(true)) = message.channel.sendFile(byteArray, fileName, content)
+	open suspend fun sendMessage(content: String) = message.channel.sendMessage(content)
+	open suspend fun sendMessage(lorittaMessage: LorittaMessage) = message.channel.sendMessage(lorittaMessage)
+	open suspend fun sendImage(image: Image, fileName: String = "image.png", content: String = getUserMention(true)) = message.channel.sendFile(image.toByteArray(), fileName, content)
+	open suspend fun sendFile(byteArray: ByteArray, fileName: String, content: String = getUserMention(true)) = message.channel.sendFile(byteArray, fileName, content)
 
 	abstract suspend fun user(argument: Int): User?
 	suspend fun userOrFail(argument: Int) = validate(user(argument), argument)

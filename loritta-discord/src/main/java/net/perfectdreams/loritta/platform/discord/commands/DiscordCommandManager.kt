@@ -237,7 +237,9 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                                     ev.guild
                             )
                             if (generatedMessage != null)
-                                ev.textChannel.sendMessage(generatedMessage).queue()
+                                ev.textChannel.sendMessage(generatedMessage)
+                                        .reference(ev.message)
+                                        .queue()
                         }
                     }
                     return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
@@ -327,7 +329,9 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                         if (ev.member.hasPermission(Permission.ADMINISTRATOR) || ev.member.hasPermission(Permission.MANAGE_SERVER)) {
                             message += " ${legacyLocale["LORIPERMISSION_MissingPermCanConfigure", loritta.instanceConfig.loritta.website.url]}"
                         }
-                        ev.textChannel.sendMessage(Constants.ERROR + " **|** ${ev.member.asMention} $message").queue()
+                        ev.textChannel.sendMessage(Constants.ERROR + " **|** ${ev.member.asMention} $message")
+                                .reference(ev.message)
+                                .queue()
                         return true
                     }
                 }
@@ -474,7 +478,9 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                     reply += " `${e.message!!.escapeMentions()}`"
 
                 if (ev.isFromType(ChannelType.PRIVATE) || (ev.isFromType(ChannelType.TEXT) && ev.textChannel != null && ev.textChannel.canTalk()))
-                    ev.channel.sendMessage(reply).queue()
+                    ev.channel.sendMessage(reply)
+                            .reference(ev.message)
+                            .queue()
 
                 return true
             }

@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.exceptions.PermissionException
 import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandContext
+import net.perfectdreams.loritta.api.messages.LorittaMessage
 import net.perfectdreams.loritta.api.utils.image.Image
 import net.perfectdreams.loritta.api.utils.image.JVMImage
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
@@ -57,11 +58,30 @@ class DiscordCommandContext(
 
 	suspend fun sendMessage(message: Message): Message {
 		if (isPrivateChannel || discordMessage.textChannel.canTalk()) {
-			val sentMessage = discordMessage.channel.sendMessage(message).await()
-			return sentMessage
+			return discordMessage.channel.sendMessage(message)
+					.reference(discordMessage)
+					.await()
 		} else {
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
+	}
+
+	override suspend fun sendImage(image: Image, fileName: String, content: String): net.perfectdreams.loritta.api.entities.Message {
+		return DiscordMessage(
+				discordMessage.channel.sendMessage(LorittaMessage(content).content)
+						.addFile(image.toByteArray(), fileName)
+						.reference(discordMessage)
+						.await()
+		)
+	}
+
+	override suspend fun sendFile(byteArray: ByteArray, fileName: String, content: String): net.perfectdreams.loritta.api.entities.Message {
+		return DiscordMessage(
+				discordMessage.channel.sendMessage(LorittaMessage(content).content)
+						.addFile(byteArray, fileName)
+						.reference(discordMessage)
+						.await()
+		)
 	}
 
 	suspend fun sendFile(file: File, fileName: String, content: String = this.getUserMention(true), embed: MessageEmbed? = null): DiscordMessage {
@@ -72,6 +92,7 @@ class DiscordCommandContext(
 						.build()
 		)
 				.addFile(file, fileName)
+				.reference(discordMessage)
 				.await()
 		)
 	}
@@ -84,6 +105,7 @@ class DiscordCommandContext(
 						.build()
 		)
 				.addFile(inputStream, fileName)
+				.reference(discordMessage)
 				.await()
 		)
 	}
@@ -146,6 +168,19 @@ class DiscordCommandContext(
 					return toBeDownloaded
 				}
 			} catch (e: Exception) {
+			}
+		}
+
+		// Nothing found? Try retrieving the replied message content
+		val referencedMessage = discordMessage.referencedMessage
+		if (referencedMessage != null) {
+			for (embed in referencedMessage.embeds) {
+				if (embed.image != null)
+					return embed.image!!.url
+			}
+			for (attachment in referencedMessage.attachments) {
+				if (attachment.isImage)
+					return attachment.url
 			}
 		}
 
@@ -289,6 +324,8 @@ class DiscordCommandContext(
 				.append(getUserMention(true))
 				.setEmbed(embed.build())
 
-		discordMessage.channel.sendMessage(messageBuilder.build()).await()
+		discordMessage.channel.sendMessage(messageBuilder.build())
+				.reference(discordMessage)
+				.await()
 	}
 }

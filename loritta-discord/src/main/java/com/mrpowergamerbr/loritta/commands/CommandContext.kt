@@ -124,8 +124,9 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 
 	suspend fun sendMessage(message: Message): Message {
 		if (isPrivateChannel || event.textChannel!!.canTalk()) {
-			val sentMessage = event.channel.sendMessage(message).await()
-			return sentMessage
+			return event.channel.sendMessage(message)
+					.reference(event.message)
+					.await()
 		} else {
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
@@ -203,7 +204,10 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 
 	suspend fun sendFile(inputStream: InputStream, name: String, message: Message): Message {
 		if (isPrivateChannel || event.textChannel!!.canTalk()) {
-			val sentMessage = event.channel.sendMessage(message).addFile(inputStream, name).await()
+			val sentMessage = event.channel.sendMessage(message)
+					.addFile(inputStream, name)
+					.reference(event.message)
+					.await()
 			return sentMessage
 		} else {
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
@@ -264,6 +268,19 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 					return toBeDownloaded
 				}
 			} catch (e: Exception) {
+			}
+		}
+
+		// Nothing found? Try retrieving the replied message content
+		val referencedMessage = message.referencedMessage
+		if (referencedMessage != null) {
+			for (embed in referencedMessage.embeds) {
+				if (embed.image != null)
+					return embed.image!!.url
+			}
+			for (attachment in referencedMessage.attachments) {
+				if (attachment.isImage)
+					return attachment.url
 			}
 		}
 
