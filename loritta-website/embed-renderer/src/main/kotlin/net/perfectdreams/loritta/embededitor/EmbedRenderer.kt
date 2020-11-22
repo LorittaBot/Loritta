@@ -27,7 +27,7 @@ class EmbedRenderer(val message: DiscordMessage, val placeholders: List<Placehol
     fun generateMessagePreview(content: FlowContent, modifyTagCallback: MODIFY_TAG_CALLBACK? = null) {
         content.div(classes = "message-2qnXI6 cozyMessage-3V1Y8y groupStart-23k01U wrapper-2a6GCs cozy-3raOZG zalgo-jN1Ica") {
             div(classes = "contents-2mQqc9") {
-                img(classes = "avatar-1BDn8e", src = "https://cdn.discordapp.com/avatars/297153970613387264/fd27e53031e4e600d06207f6853af908.webp?size=128")
+                img(classes = "avatar-1BDn8e", src = "https://loritta.website/assets/img/lori_avatar_v4.png")
 
                 h2(classes = "header-23xsNx") {
                     span(classes = "username-1A8OIy") {
