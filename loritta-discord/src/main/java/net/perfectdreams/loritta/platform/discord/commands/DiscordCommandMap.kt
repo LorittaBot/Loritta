@@ -142,6 +142,10 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 					return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
 				}
 
+				// Check if user is banned
+				if (LorittaUtilsKotlin.handleIfBanned(context, lorittaUser.profile))
+					return true
+
 				// Cooldown
 				var commandCooldown = command.cooldown
 				val donatorPaid = discordLoritta.getActiveMoneyFromDonationsAsync(ev.author.idLong)
@@ -232,9 +236,6 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 					context.explain()
 					return true
 				}
-
-				if (LorittaUtilsKotlin.handleIfBanned(context, lorittaUser.profile))
-					return true
 
 				if (command.onlyOwner && !loritta.config.isOwner(user.id)) {
 					context.reply(

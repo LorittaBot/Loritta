@@ -331,6 +331,10 @@ class CommandManager(loritta: Loritta) {
 					}
 				}
 
+				// Check if user is banned
+				if (LorittaUtilsKotlin.handleIfBanned(context, lorittaUser.profile))
+					return true
+
 				// Cooldown
 				var commandCooldown = command.cooldown
 				val donatorPaid = loritta.getActiveMoneyFromDonationsAsync(ev.author.idLong)
@@ -414,10 +418,6 @@ class CommandManager(loritta: Loritta) {
 
 				if (args.isNotEmpty() && args[0] == "🤷") { // Usar a ajuda caso 🤷 seja usado
 					command.explain(context)
-					return true
-				}
-
-				if (LorittaUtilsKotlin.handleIfBanned(context, lorittaUser.profile)) {
 					return true
 				}
 

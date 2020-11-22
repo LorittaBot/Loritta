@@ -247,6 +247,10 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                 // if (cmdOptions.override && cmdOptions.blacklistedChannels.contains(ev.channel.id))
                 // 	return true // Ignorar canais bloqueados
 
+                // Check if user is banned
+                if (LorittaUtilsKotlin.handleIfBanned(context, lorittaUser.profile))
+                    return true
+
                 // Cooldown
                 var commandCooldown = command.cooldown
                 val donatorPaid = com.mrpowergamerbr.loritta.utils.loritta.getActiveMoneyFromDonationsAsync(ev.author.idLong)
@@ -330,10 +334,6 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
 
                 if (args.isNotEmpty() && args[0] == "🤷") { // Usar a ajuda caso 🤷 seja usado
                     context.explain()
-                    return true
-                }
-
-                if (LorittaUtilsKotlin.handleIfBanned(context, lorittaUser.profile)) {
                     return true
                 }
 
