@@ -4,8 +4,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.mrpowergamerbr.loritta.utils.Constants
 import mu.KotlinLogging
 import net.perfectdreams.loritta.api.LorittaBot
-import net.perfectdreams.loritta.commands.LoriToolsQuirkyStuffCommand
-import net.perfectdreams.loritta.commands.SouTopDoadorCommand
 import net.perfectdreams.loritta.listeners.AddReactionFurryAminoPtListener
 import net.perfectdreams.loritta.listeners.AddReactionListener
 import net.perfectdreams.loritta.modules.AddReactionForHeathecliffModule
@@ -55,9 +53,6 @@ class QuirkyStuff(name: String, loritta: LorittaBot) : DiscordPlugin(name, lorit
                 ThankYouLoriModule(config),
                 AddReactionForHeathecliffModule()
         )
-
-        registerCommand(LoriToolsQuirkyStuffCommand(this))
-        registerCommand(SouTopDoadorCommand(config))
 
         // ===[ HALLOWEEN 2019 ]===
         // registerCommand(DocesCommand())
