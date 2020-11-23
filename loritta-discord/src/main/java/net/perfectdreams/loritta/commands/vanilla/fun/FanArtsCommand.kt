@@ -6,39 +6,46 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.onReactionByAuthor
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
-import net.perfectdreams.commands.annotation.Subcommand
+import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import net.perfectdreams.loritta.platform.discord.commands.LorittaDiscordCommand
-import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
+import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
 import net.perfectdreams.loritta.utils.config.FanArt
 import net.perfectdreams.loritta.utils.config.FanArtArtist
 import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
 
-class FanArtsCommand : LorittaDiscordCommand(arrayOf("fanarts", "fanart"), category = CommandCategory.MISC) {
-    override val discordPermissions = listOf(
-            Permission.MESSAGE_MANAGE
-    )
+class FanArtsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("fanarts", "fanart"), CommandCategory.MISC) {
+    override fun command() = create {
+        localizedDescription("commands.miscellaneous.fanArts.description", "<a:lori_blobheartseyes:393914347706908683>", "<a:lori_blobheartseyes:393914347706908683>")
 
-    override fun getDescription(locale: BaseLocale): String? {
-        return locale["commands.miscellaneous.fanArts.description", "<a:lori_blobheartseyes:393914347706908683>", "<a:lori_blobheartseyes:393914347706908683>"]
-    }
-
-    @Subcommand
-    suspend fun run(context: DiscordCommandContext, locale: BaseLocale, index: String? = null) {
-        val fanArtsByDate = LorittaLauncher.loritta.fanArts.sortedBy {
-            it.createdAt
+        arguments {
+            argument(ArgumentType.NUMBER) {
+                optional = true
+            }
         }
+        
+        botRequiredPermissions = listOf(Permission.MESSAGE_MANAGE)
 
-        var fanArtIndex = (index?.toIntOrNull() ?: Loritta.RANDOM.nextInt(fanArtsByDate.size) + 1) - 1
-        if (fanArtIndex !in fanArtsByDate.indices) {
-            fanArtIndex = 0
+        executesDiscord {
+            val index = args.getOrNull(0)
+
+            val fanArtsByDate = LorittaLauncher.loritta.fanArts.sortedBy {
+                it.createdAt
+            }
+
+            var fanArtIndex = (index?.toIntOrNull() ?: Loritta.RANDOM.nextInt(fanArtsByDate.size) + 1) - 1
+            if (fanArtIndex !in fanArtsByDate.indices) {
+                fanArtIndex = 0
+            }
+
+            sendFanArtEmbed(this, locale, fanArtsByDate, fanArtIndex, null)
         }
-
-        sendFanArtEmbed(context, locale, fanArtsByDate, fanArtIndex, null)
     }
 
     suspend fun sendFanArtEmbed(context: DiscordCommandContext, locale: BaseLocale, list: List<FanArt>, item: Int, currentMessage: Message?) {
@@ -83,7 +90,7 @@ class FanArtsCommand : LorittaDiscordCommand(arrayOf("fanarts", "fanart"), categ
             setColor(Constants.LORITTA_AQUA)
         }
 
-        var message = currentMessage?.edit(context.getAsMention(true), embed.build(), clearReactions = false) ?: context.sendMessage(context.getAsMention(true), embed.build()).handle
+        var message = currentMessage?.edit(context.getUserMention(true), embed.build(), clearReactions = false) ?: context.sendMessage(context.getUserMention(true), embed.build())
 
         val allowForward = list.size > item + 1
         val allowBack = item != 0
@@ -93,7 +100,7 @@ class FanArtsCommand : LorittaDiscordCommand(arrayOf("fanarts", "fanart"), categ
             message = message.refresh().await() // Precisamos "refrescar", já que o JDA não limpa a lista de reações
         }
 
-        message.onReactionByAuthor(context) {
+        message.onReactionAddByAuthor(context) {
             if (allowForward && it.reactionEmote.isEmote("⏩")) {
                 sendFanArtEmbed(context, locale, list, item + 1, message)
             }

@@ -35,6 +35,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.utils.format
+import net.perfectdreams.loritta.commands.vanilla.`fun`.FanArtsCommand
 import net.perfectdreams.loritta.commands.vanilla.administration.BanInfoCommand
 import net.perfectdreams.loritta.commands.vanilla.economy.SonhosTopCommand
 import net.perfectdreams.loritta.commands.vanilla.economy.SonhosTopLocalCommand
@@ -107,7 +108,10 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
                 XpNotificationsCommand(this@LorittaDiscord),
 
                 // ===[ ADMIN ]===
-                BanInfoCommand(this@LorittaDiscord)
+                BanInfoCommand(this@LorittaDiscord),
+
+                // ===[ MISC ]===
+                FanArtsCommand(this@LorittaDiscord)
         )
     }
 

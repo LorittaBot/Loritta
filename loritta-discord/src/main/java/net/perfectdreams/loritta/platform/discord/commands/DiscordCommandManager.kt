@@ -41,7 +41,6 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
         registerCommand(GiveawayRerollCommand())
         registerCommand(GiveawaySetupCommand())
         registerCommand(GiveawayCommand())
-        registerCommand(FanArtsCommand())
 
         contextManager.registerContext<User>(
                 { clazz: KClass<*> -> clazz.isSubclassOf(User::class) || clazz == User::class },
