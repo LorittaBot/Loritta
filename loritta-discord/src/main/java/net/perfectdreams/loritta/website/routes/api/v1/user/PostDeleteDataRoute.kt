@@ -3,9 +3,8 @@ package net.perfectdreams.loritta.website.routes.api.v1.user
 import com.github.salomonbrys.kotson.jsonObject
 import com.mrpowergamerbr.loritta.tables.*
 import com.mrpowergamerbr.loritta.utils.Constants
-import io.ktor.application.ApplicationCall
-import io.ktor.sessions.clear
-import io.ktor.sessions.sessions
+import io.ktor.application.*
+import io.ktor.sessions.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.*
@@ -68,9 +67,14 @@ class PostDeleteDataRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRout
 				StoredMessages.authorId eq userId
 			}
 
-			logger.info { "Deleting $userId's background payments keys..." }
+			logger.info { "Deleting $userId's background payments..." }
 			BackgroundPayments.deleteWhere {
 				BackgroundPayments.userId eq userId
+			}
+
+			logger.info { "Deleting $userId's profile designs payments..." }
+			ProfileDesignsPayments.deleteWhere {
+				ProfileDesignsPayments.userId eq userId
 			}
 
 			logger.info { "Deleting $userId from bd&c winners..." }
