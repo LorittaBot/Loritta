@@ -171,7 +171,7 @@ private fun DiscordCommandContext.addReactionButton(dsl: ActionCommandDSL, messa
 
         if (it.reactionEmote.name == "\uD83D\uDD01" && user.id == receiver.id) { message.removeAllFunctions()
             message.removeAllFunctions()
-            dsl.handle(this, sender, receiver,true)
+            dsl.handle(this, receiver, sender,true)
         }
     }
 }
