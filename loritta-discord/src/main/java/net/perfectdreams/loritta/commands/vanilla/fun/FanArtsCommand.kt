@@ -29,7 +29,7 @@ class FanArtsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lorit
                 optional = true
             }
         }
-        
+
         botRequiredPermissions = listOf(Permission.MESSAGE_MANAGE)
 
         executesDiscord {

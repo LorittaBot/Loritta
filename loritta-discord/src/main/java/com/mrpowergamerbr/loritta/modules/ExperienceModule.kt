@@ -181,34 +181,33 @@ class ExperienceModule : MessageReceivedModule {
 						.filterOnlyGiveableRoles()
 						.toList()
 
-				if (guildRoles.isEmpty())
-					return
+				if (guildRoles.isNotEmpty()) {
+					if (levelConfig?.roleGiveType == RoleGiveType.REMOVE) {
+						val topRole = guildRoles.firstOrNull()
 
-				if (levelConfig?.roleGiveType == RoleGiveType.REMOVE) {
-					val topRole = guildRoles.firstOrNull()
+						if (topRole != null) {
+							val memberNewRoleList = member.roles.toMutableList()
 
-					if (topRole != null) {
-						val memberNewRoleList = member.roles.toMutableList()
+							memberNewRoleList.removeAll(guildRoles)
+							memberNewRoleList.add(topRole)
 
-						memberNewRoleList.removeAll(guildRoles)
-						memberNewRoleList.add(topRole)
+							if (!memberNewRoleList.containsAll(member.roles) || !member.roles.containsAll(memberNewRoleList)) {
+								receivedNewRoles = true
+								givenNewRoles.add(topRole)
+								guild.modifyMemberRoles(member, memberNewRoleList)
+										.queue()
+							}
+						}
+					} else {
+						val shouldGiveRoles = !member.roles.containsAll(guildRoles)
 
-						if (!memberNewRoleList.containsAll(member.roles) || !member.roles.containsAll(memberNewRoleList)) {
+						if (shouldGiveRoles) {
+							val missingRoles = guildRoles.toMutableList().apply { this.removeAll(member.roles) }
 							receivedNewRoles = true
-							givenNewRoles.add(topRole)
-							guild.modifyMemberRoles(member, memberNewRoleList)
+							givenNewRoles.addAll(missingRoles)
+							guild.modifyMemberRoles(member, member.roles.toMutableList().apply { this.addAll(missingRoles) })
 									.queue()
 						}
-					}
-				} else {
-					val shouldGiveRoles = !member.roles.containsAll(guildRoles)
-
-					if (shouldGiveRoles) {
-						val missingRoles = guildRoles.toMutableList().apply { this.removeAll(member.roles) }
-						receivedNewRoles = true
-						givenNewRoles.addAll(missingRoles)
-						guild.modifyMemberRoles(member, member.roles.toMutableList().apply { this.addAll(missingRoles) })
-								.queue()
 					}
 				}
 			}
