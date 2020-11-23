@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.profile
 
-import net.perfectdreams.loritta.api.utils.Rarity
 import net.perfectdreams.loritta.profile.ArtistBadge
 import net.perfectdreams.loritta.profile.Badge
 import net.perfectdreams.loritta.profile.DiscordNitroBadge
@@ -28,7 +27,10 @@ class ProfileDesignManager {
 	}
 
 	init {
-		registerDesign(NostalgiaProfileCreator())
+		registerDesign(NostalgiaProfileCreator.NostalgiaDarkProfileCreator())
+		registerDesign(NostalgiaProfileCreator.NostalgiaBlurpleProfileCreator())
+		registerDesign(NostalgiaProfileCreator.NostalgiaRedProfileCreator())
+		registerDesign(NostalgiaProfileCreator.NostalgiaBlueProfileCreator())
 
 		// ===[ DISCORD USER FLAGS BADGES ]===
 		registerBadge(DiscordUserFlagBadge.DiscordStaffBadge())

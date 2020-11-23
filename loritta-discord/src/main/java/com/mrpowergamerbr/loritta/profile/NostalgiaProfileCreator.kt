@@ -19,9 +19,14 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
 
-class NostalgiaProfileCreator : ProfileCreator("defaultDark") {
-	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild??, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
-		val profileWrapper = readImage(File(Loritta.ASSETS, "profile/nostalgia/profile_wrapper.png"))
+open class NostalgiaProfileCreator(internalName: String, val folderName: String) : ProfileCreator(internalName) {
+	class NostalgiaDarkProfileCreator : NostalgiaProfileCreator("defaultDark", "dark")
+	class NostalgiaBlurpleProfileCreator : NostalgiaProfileCreator("defaultBlurple", "blurple")
+	class NostalgiaRedProfileCreator : NostalgiaProfileCreator("defaultRed", "red")
+	class NostalgiaBlueProfileCreator : NostalgiaProfileCreator("defaultBlue", "blue")
+
+	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
+		val profileWrapper = readImage(File(Loritta.ASSETS, "profile/nostalgia/profile_wrapper_$folderName.png"))
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
