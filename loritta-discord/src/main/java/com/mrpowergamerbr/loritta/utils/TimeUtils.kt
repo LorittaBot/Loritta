@@ -5,7 +5,7 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 
 object TimeUtils {
-    private val TIME_PATTERN = "(([01]\\d|2[0-3]):([0-5]\\d)(:([0-5]\\d))?) ?(am|pm)?".toPattern()
+    private val TIME_PATTERN = "(([01]?\\d|2[0-3]):([0-5]\\d?)(:([0-5]\\d))?) ?(am|pm)?".toPattern()
     private val DATE_PATTERN = "(0[1-9]|[12][0-9]|3[01])[-/.](0[1-9]|1[012])[-/.]([0-9]+)".toPattern()
     private val YEAR_PATTERN = "([0-9]+) ?(y|a)".toPattern()
     private val MONTH_PATTERN = "([0-9]+) ?(month(s)?|m(e|ê)s(es)?)".toPattern()
