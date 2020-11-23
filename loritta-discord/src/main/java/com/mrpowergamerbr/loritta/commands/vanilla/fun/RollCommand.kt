@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.CalculadoraCommand
 import com.mrpowergamerbr.loritta.utils.Constants
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.remove
@@ -13,6 +12,7 @@ import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.GenericReplies
 
@@ -46,6 +46,8 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 		var expression = ""
 
 		if (context.args.isNotEmpty()) {
+			val joinedArgs = context.args.joinToString(" ")
+
 			try {
 				fun setBounds(arg: String) {
 					// Se o usuário inserir...
@@ -59,8 +61,6 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 						upperBound = bounds[1].toLong()
 					}
 				}
-
-				val joinedArgs = context.args.joinToString(" ")
 
 				if (context.args[0].contains("d")) {
 					val values = context.args[0].split("d")
@@ -89,7 +89,7 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 					}
 				}
 			} catch (e: Exception) {
-				GenericReplies.invalidNumber(context, expression)
+				GenericReplies.invalidNumber(context, joinedArgs)
 				return
 			}
 
