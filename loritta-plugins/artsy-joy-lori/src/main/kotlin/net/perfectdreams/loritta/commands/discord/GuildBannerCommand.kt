@@ -1,43 +1,39 @@
 package net.perfectdreams.loritta.commands.discord
 
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.commands.annotation.Subcommand
-import net.perfectdreams.loritta.api.commands.*
-import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
+import net.perfectdreams.loritta.api.commands.ArgumentType
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 
-class GuildBannerCommand : LorittaCommand(arrayOf("guildbanner", "serverbanner"), CommandCategory.DISCORD) {
+class GuildBannerCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("baninfo", "infoban"), CommandCategory.ADMIN) {
+    override fun command() = create {
+        localizedDescription("commands.discord.guildbanner.description")
 
-    override fun getDescription(locale: BaseLocale): String? {
-        return locale["commands.discord.guildbanner.description"]
-    }
-
-    override val canUseInPrivateChannel: Boolean = false
-
-    override fun getUsage(locale: BaseLocale): CommandArguments {
-        return arguments {
-            argument(ArgumentType.TEXT) {}
+        arguments {
+            argument(ArgumentType.TEXT) {
+                optional = true
+            }
         }
-    }
 
-    @Subcommand
-    suspend fun root(context: DiscordCommandContext, locale: BaseLocale) {
-        val discordGuild = context.discordGuild
-        val guildBanner = discordGuild!!.bannerUrl
+        canUseInPrivateChannel = true
 
-        // Verificar se a guild tem banner
-        if (guildBanner == null) {
-            context.reply(locale["commands.discord.guildbanner.noBanner"], Constants.ERROR)
-        } else {
+        executesDiscord {
+            val discordGuild = guild
+
+            // Verificar se a guild tem banner
+            val guildBanner = discordGuild.bannerUrl ?: fail(locale["commands.discord.guildbanner.noBanner"])
+
             val embed = EmbedBuilder()
 
             embed.setTitle("🖼 ${discordGuild.name}")
             embed.setColor(Constants.DISCORD_BLURPLE)
-            embed.setDescription(locale["loritta.clickHere", guildBanner + "?size=2048"])
-            embed.setImage(guildBanner + "?size=2048")
+            embed.setDescription(locale["loritta.clickHere", "$guildBanner?size=2048"])
+            embed.setImage("$guildBanner?size=2048")
 
-            context.sendMessage(context.getAsMention(true), embed.build())
+            sendMessage(embed.build())
         }
     }
 }

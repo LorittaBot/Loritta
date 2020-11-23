@@ -30,7 +30,7 @@ class ArtsyJoyLori(name: String, loritta: LorittaBot) : LorittaPlugin(name, lori
         // DISCORD
         registerCommand(RoleInfoCommand())
         registerCommand(RenameEmojiCommand())
-        registerCommand(GuildBannerCommand())
+        registerCommand(GuildBannerCommand(loritta).command())
 
         // IMAGES
         registerCommand(AtendenteCommand())
