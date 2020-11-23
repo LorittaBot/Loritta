@@ -24,13 +24,13 @@ class ArtsyJoyLori(name: String, loritta: LorittaBot) : LorittaPlugin(name, lori
         loritta as LorittaDiscord
 
         // ADMIN
-        registerCommand(DashboardCommand())
+        registerCommand(DashboardCommand(loritta))
         registerCommand(RenameChannelCommand())
 
         // DISCORD
         registerCommand(RoleInfoCommand())
         registerCommand(RenameEmojiCommand())
-        registerCommand(GuildBannerCommand(loritta).command())
+        registerCommand(GuildBannerCommand(loritta))
 
         // IMAGES
         registerCommand(AtendenteCommand())

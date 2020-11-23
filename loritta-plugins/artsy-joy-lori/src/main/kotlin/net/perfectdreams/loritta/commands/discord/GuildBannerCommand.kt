@@ -18,7 +18,7 @@ class GuildBannerCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(l
             }
         }
 
-        canUseInPrivateChannel = true
+        canUseInPrivateChannel = false
 
         executesDiscord {
             val discordGuild = guild
