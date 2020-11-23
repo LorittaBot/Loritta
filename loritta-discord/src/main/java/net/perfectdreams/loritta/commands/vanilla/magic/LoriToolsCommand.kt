@@ -28,6 +28,7 @@ class LoriToolsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lor
 					PurgeInactiveUsersExecutor,
 					PurgeInactiveGuildUsersExecutor,
 					SetSelfBackgroundExecutor,
+					SetSelfProfileDesignExecutor,
 					GenerateDailyShopExecutor,
 					PriceCorrectionExecutor,
 					LoriBanIpExecutor,
