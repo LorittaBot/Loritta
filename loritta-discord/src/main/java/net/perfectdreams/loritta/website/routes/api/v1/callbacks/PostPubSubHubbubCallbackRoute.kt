@@ -275,7 +275,7 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 							textChannel.sendMessage(discordMessage)
 									.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing(canTalkGuildIds.size)
 
-							canTalkGuildIds.add(trackedAccount[TrackedYouTubeAccounts.guildId])
+							canTalkGuildIds.add(trackedAccount[TrackedTwitchAccounts.guildId])
 						}
 
 						// Nós iremos fazer relay de todos os vídeos para o servidor da Lori
