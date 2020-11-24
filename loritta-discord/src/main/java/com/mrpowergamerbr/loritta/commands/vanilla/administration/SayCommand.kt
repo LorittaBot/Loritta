@@ -84,28 +84,28 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN
 			if (channel is TextChannel) { // Caso seja text channel...
 				if (!channel.canTalk()) {
 					context.reply(
-                            LorittaReply(
-                                    locale["SAY_IDontHavePermissionToTalkIn", channel.asMention],
-                                    Constants.ERROR
-                            )
+							LorittaReply(
+									locale["SAY_IDontHavePermissionToTalkIn", channel.asMention],
+									Constants.ERROR
+							)
 					)
 					return
 				}
 				if (!channel.canTalk(context.handle)) {
 					context.reply(
-                            LorittaReply(
-                                    locale["SAY_YouDontHavePermissionToTalkIn", channel.asMention],
-                                    Constants.ERROR
-                            )
+							LorittaReply(
+									locale["SAY_YouDontHavePermissionToTalkIn", channel.asMention],
+									Constants.ERROR
+							)
 					)
 					return
 				}
 				if (context.config.blacklistedChannels.contains(channel.idLong) && !context.lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
 					context.reply(
-                            LorittaReply(
-                                    locale["SAY_CommandsCannotBeUsedIn", channel.asMention],
-                                    Constants.ERROR
-                            )
+							LorittaReply(
+									locale["SAY_CommandsCannotBeUsedIn", channel.asMention],
+									Constants.ERROR
+							)
 					)
 					return
 				}
@@ -127,8 +127,15 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN
 			val discordMessage = try {
 				MessageUtils.generateMessage(
 						watermarkedMessage,
-						listOf(context.guild, context.userHandle),
-						context.guild
+						mutableListOf<Any>(context.userHandle)
+								.apply {
+									// If the guild is not null, we add them to the context.
+									// This is needed because "context.event.guild" is null inside a private channel.
+									val guild = context.event.guild
+									if (guild != null)
+										add(guild)
+								},
+						context.event.guild
 				)
 			} catch (e: Exception) {
 				null
@@ -151,10 +158,10 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN
 
 			if (context.event.channel != channel && channel is TextChannel)
 				context.reply(
-                        LorittaReply(
-                                locale["SAY_MessageSuccessfullySent", channel.asMention],
-                                "\uD83C\uDF89"
-                        )
+						LorittaReply(
+								locale["SAY_MessageSuccessfullySent", channel.asMention],
+								"\uD83C\uDF89"
+						)
 				)
 
 		} else {
