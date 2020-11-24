@@ -13,9 +13,6 @@ jobs:
       uses: gerred/actions/current-time@master
       id: current-time
 
-    - name: Get PR info
-      run: echo ::set-env name=PR::$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
-
     - name: Setup Java JDK
       uses: actions/setup-java@v1.4.3
       with:
@@ -33,47 +30,47 @@ jobs:
     - uses: actions/upload-artifact@v2
       name: "Upload Loritta (Discord)"
       with:
-        name: Loritta (Discord) [PR ${{ env.PR }}]
+        name: Loritta (Discord)
         path: loritta-discord/build/libs/loritta-discord-*.jar
 
     # Loritta Plugins
     - uses: actions/upload-artifact@v2
       name: "Upload Loritta (Plugins)"
       with:
-        name: Loritta (Plugins) [PR ${{ env.PR }}]
+        name: Loritta (Plugins)
         path: loritta-plugins/*/build/libs/*.jar
 
     # Spicy Morenitta
     - uses: actions/upload-artifact@v2
       name: "Upload Spicy Morenitta"
       with:
-        name: Spicy Morenitta [PR ${{ env.PR }}]
+        name: Spicy Morenitta
         path: loritta-website/spicy-morenitta/build/web/*.js
 
     # Loritta Watchdog
     - uses: actions/upload-artifact@v2
       name: "Upload Loritta Watchdog"
       with:
-        name: Loritta Watchdog [PR ${{ env.PR }}]
+        name: Loritta Watchdog
         path: loritta-watchdog-bot/build/libs/*.jar
 
     # Parallax Code Server
     - uses: actions/upload-artifact@v2
       name: "Upload Parallax Code Server"
       with:
-        name: Parallax Code Server [PR ${{ env.PR }}]
+        name: Parallax Code Server
         path: parallax-code-server/build/libs/*.jar
 
     # Shard Controller
     - uses: actions/upload-artifact@v2
       name: "Upload Shard Controller"
       with:
-        name: Shard Controller [PR ${{ env.PR }}]
+        name: Shard Controller
         path: shard-controller/build/libs/*.jar
 
     # Libs
     - uses: actions/upload-artifact@v2
       name: "Upload Loritta's Libs"
       with:
-        name: Loritta (Libs) [PR ${{ env.PR }}]
+        name: Loritta (Libs)
         path: libs/*
