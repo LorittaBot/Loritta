@@ -24,6 +24,10 @@ open class NostalgiaProfileCreator(internalName: String, val folderName: String)
 	class NostalgiaBlurpleProfileCreator : NostalgiaProfileCreator("defaultBlurple", "blurple")
 	class NostalgiaRedProfileCreator : NostalgiaProfileCreator("defaultRed", "red")
 	class NostalgiaBlueProfileCreator : NostalgiaProfileCreator("defaultBlue", "blue")
+	class NostalgiaGreenProfileCreator : NostalgiaProfileCreator("defaultGreen", "green")
+	class NostalgiaPurpleProfileCreator : NostalgiaProfileCreator("defaultPurple", "purple")
+	class NostalgiaPinkProfileCreator : NostalgiaProfileCreator("defaultPink", "pink")
+	class NostalgiaOrangeProfileCreator : NostalgiaProfileCreator("defaultOrange", "orange")
 
 	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
 		val profileWrapper = readImage(File(Loritta.ASSETS, "profile/nostalgia/profile_wrapper_$folderName.png"))

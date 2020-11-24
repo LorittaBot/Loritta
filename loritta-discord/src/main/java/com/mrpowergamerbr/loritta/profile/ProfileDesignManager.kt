@@ -31,6 +31,10 @@ class ProfileDesignManager {
 		registerDesign(NostalgiaProfileCreator.NostalgiaBlurpleProfileCreator())
 		registerDesign(NostalgiaProfileCreator.NostalgiaRedProfileCreator())
 		registerDesign(NostalgiaProfileCreator.NostalgiaBlueProfileCreator())
+		registerDesign(NostalgiaProfileCreator.NostalgiaGreenProfileCreator())
+		registerDesign(NostalgiaProfileCreator.NostalgiaPurpleProfileCreator())
+		registerDesign(NostalgiaProfileCreator.NostalgiaPinkProfileCreator())
+		registerDesign(NostalgiaProfileCreator.NostalgiaOrangeProfileCreator())
 
 		// ===[ DISCORD USER FLAGS BADGES ]===
 		registerBadge(DiscordUserFlagBadge.DiscordStaffBadge())
