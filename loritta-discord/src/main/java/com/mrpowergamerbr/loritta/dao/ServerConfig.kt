@@ -67,7 +67,7 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 	//
 	// For more information, check this issue: https://github.com/LorittaBot/Loritta/issues/2258
 	private val creatingGuildUserProfileMutexes = Caffeine.newBuilder()
-			.expireAfterAccess(5, TimeUnit.MINUTES)
+			.expireAfterAccess(1, TimeUnit.MINUTES)
 			.build<Long, Mutex>()
 			.asMap()
 
