@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.dao
 
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.DonationKeys
@@ -24,6 +25,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.math.BigDecimal
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
 import kotlin.reflect.KMutableProperty1
 
 class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
@@ -59,6 +61,15 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 	// Of course, this means that cache *must* be invalidated when the permissions are updated! If not, the cache will have inconsistencies.
 	private var guildRolesLorittaPermissions: Map<Long, EnumSet<LorittaPermission>>? = null
 	private val guildRolesLorittaPermissionsMutex = Mutex()
+
+	// We need to synchronize user profile calls to avoid creating multiple profiles being created due to Loritta processing multiple messages
+	// by the same user at the same time as another message.
+	//
+	// For more information, check this issue: https://github.com/LorittaBot/Loritta/issues/2258
+	private val creatingGuildUserProfileMutexes = Caffeine.newBuilder()
+			.expireAfterAccess(5, TimeUnit.MINUTES)
+			.build<Long, Mutex>()
+			.asMap()
 
 	/**
 	 * Loads the guild role Loritta permissions from the cache or, if it is not present in the cache, loads from the database.
@@ -96,14 +107,18 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 
 	suspend fun getUserData(id: Long): GuildProfile {
 		val t = this
-		return getUserDataIfExistsAsync(id) ?: loritta.newSuspendedTransaction {
-			GuildProfile.new {
-				this.guildId = t.guildId
-				this.userId = id
-				this.money = BigDecimal(0)
-				this.quickPunishment = false
-				this.xp = 0
-				this.isInGuild = true
+		val mutex = creatingGuildUserProfileMutexes.getOrPut(id) { Mutex() }
+
+		return getUserDataIfExistsAsync(id) ?: mutex.withLock {
+			loritta.newSuspendedTransaction {
+				GuildProfile.new {
+					this.guildId = t.guildId
+					this.userId = id
+					this.money = BigDecimal(0)
+					this.quickPunishment = false
+					this.xp = 0
+					this.isInGuild = true
+				}
 			}
 		}
 	}
