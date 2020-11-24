@@ -347,41 +347,42 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				val serverConfig = ServerConfig.findById(e.guild.idLong)
 
 				logger.trace { "Removing all donation keys references about ${e.guild}..." }
-				if (serverConfig != null)
+				if (serverConfig != null) {
 					DonationKeys.update({ DonationKeys.activeIn eq serverConfig.id }) {
 						it[activeIn] = null
 					}
 
-				logger.trace { "Deleting all ${e.guild} role perms..." }
-				if (serverConfig != null)
+					logger.trace { "Deleting all ${e.guild} role perms..." }
+
 					ServerRolePermissions.deleteWhere {
 						ServerRolePermissions.guild eq serverConfig.id
 					}
 
-				logger.trace { "Deleting all ${e.guild} custom commands..." }
-				if (serverConfig != null)
+					logger.trace { "Deleting all ${e.guild} custom commands..." }
+
 					CustomGuildCommands.deleteWhere {
 						CustomGuildCommands.guild eq serverConfig.id
 					}
 
-				val moderationConfig = serverConfig?.moderationConfig
-				logger.trace { "Deleting all ${e.guild} warn actions..." }
-				if (serverConfig != null && moderationConfig != null)
-					WarnActions.deleteWhere {
-						WarnActions.config eq moderationConfig.id
-					}
+					val moderationConfig = serverConfig?.moderationConfig
+					logger.trace { "Deleting all ${e.guild} warn actions..." }
+					if (moderationConfig != null)
+						WarnActions.deleteWhere {
+							WarnActions.config eq moderationConfig.id
+						}
 
-				logger.trace { "Deleting all ${e.guild} member counters..." }
-				if (serverConfig != null)
+					logger.trace { "Deleting all ${e.guild} member counters..." }
+
 					MemberCounterChannelConfigs.deleteWhere {
 						MemberCounterChannelConfigs.guild eq serverConfig.id
 					}
 
-				logger.trace { "Deleting all ${e.guild} moderation messages counters..." }
-				if (serverConfig != null)
+					logger.trace { "Deleting all ${e.guild} moderation messages counters..." }
+
 					ModerationPunishmentMessagesConfig.deleteWhere {
 						ModerationPunishmentMessagesConfig.guild eq serverConfig.id
 					}
+				}
 
 				logger.trace { "Deleting ${e.guild} config..." }
 				serverConfig?.delete()
