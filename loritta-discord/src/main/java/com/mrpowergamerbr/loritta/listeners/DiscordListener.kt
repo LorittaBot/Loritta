@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
 import com.mrpowergamerbr.loritta.dao.Mute
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.modules.*
+import com.mrpowergamerbr.loritta.tables.DonationKeys
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Mutes
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
@@ -50,6 +51,7 @@ import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
 import okio.Buffer
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.update
 import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
 import kotlin.collections.set
@@ -343,6 +345,12 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				// Deletar configurações
 				logger.trace { "Deleting all ${e.guild} configurations..." }
 				val serverConfig = ServerConfig.findById(e.guild.idLong)
+
+				logger.trace { "Removing all donation keys references about ${e.guild}..." }
+				if (serverConfig != null)
+					DonationKeys.update({ DonationKeys.activeIn eq serverConfig.id }) {
+						it[activeIn] = null
+					}
 
 				logger.trace { "Deleting all ${e.guild} role perms..." }
 				if (serverConfig != null)
