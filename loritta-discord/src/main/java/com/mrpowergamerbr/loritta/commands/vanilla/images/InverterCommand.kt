@@ -11,7 +11,7 @@ import java.util.*
 
 class InverterCommand : AbstractCommand("invert", listOf("inverter"), category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["INVERTER_DESCRIPTION"]
+		return locale.toNewLocale()["commands.images.invert.description"]
 	}
 
 	override fun getExamples(): List<String> {

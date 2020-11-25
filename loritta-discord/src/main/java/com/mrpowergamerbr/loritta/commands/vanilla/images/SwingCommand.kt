@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class SwingCommand : AbstractCommand("swing", category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["SWING_Description"]
+		return locale.toNewLocale()["commands.images.swing.description"]
 	}
 
 	override fun getExamples(): List<String> {

@@ -21,7 +21,7 @@ import net.perfectdreams.loritta.utils.PunishmentAction
 
 class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["UNBAN_Description"]
+		return locale.toNewLocale()["commands.moderation.unban.description"]
 	}
 
 	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {

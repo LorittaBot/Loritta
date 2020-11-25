@@ -3,17 +3,17 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import java.awt.Color
 import java.util.*
 
 class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["TWITCH_Description"]
+		return locale.toNewLocale()["commands.fun.twitch.description"]
 	}
 
 	override fun getExamples(): List<String> {
@@ -67,7 +67,7 @@ class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) 
 				if (offlineImageUrl.isNotEmpty()) {
 					setImage(offlineImageUrl)
 				}
-				addField("\uD83D\uDCFA ${context.legacyLocale["MUSICINFO_VIEWS"]}", viewCount.toString(), true)
+				addField("\uD83D\uDCFA ${context.legacyLocale.toNewLocale()["commands.fun.twitch.views"]}", viewCount.toString(), true)
 			}
 
 			context.sendMessage(context.getAsMention(true), embed.build())

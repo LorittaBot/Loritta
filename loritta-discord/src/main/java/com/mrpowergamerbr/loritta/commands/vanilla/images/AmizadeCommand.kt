@@ -81,7 +81,7 @@ class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), CommandC
 			font = font.deriveFont(30F)
 			graphics.font = font
 
-			ImageUtils.drawCenteredStringOutlined(graphics, locale["AMIZADE_ENDED"], Rectangle(0, 30, 400, 40), font)
+			ImageUtils.drawCenteredStringOutlined(graphics, locale.toNewLocale()["commands.images.friendship.ended"], Rectangle(0, 30, 400, 40), font)
 
 			font = font.deriveFont(24F)
 			graphics.font = font
@@ -93,10 +93,10 @@ class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), CommandC
 					Color(103, 216, 11))
 			graphics.paint = gp
 			// graphics.fillRect(0, 0, 400, 300); // debugging
-			ImageUtils.drawCenteredStringOutlined(graphics, "${locale["AMIZADE_NOW"]} " + user2.name, Rectangle(0, 100, 400, 110), font)
-			ImageUtils.drawCenteredStringOutlined(graphics, locale["AMIZADE_IS_MY"], Rectangle(0, 120, 400, 130), font)
+			ImageUtils.drawCenteredStringOutlined(graphics, "${locale.toNewLocale()["commands.images.friendship.now"]} " + user2.name, Rectangle(0, 100, 400, 110), font)
+			ImageUtils.drawCenteredStringOutlined(graphics, locale.toNewLocale()["commands.images.friendship.isMy"], Rectangle(0, 120, 400, 130), font)
 			graphics.color = Color.MAGENTA
-			ImageUtils.drawCenteredStringOutlined(graphics, locale["AMIZADE_BEST_FRIEND"], Rectangle(0, 140, 400, 150), font)
+			ImageUtils.drawCenteredStringOutlined(graphics, locale.toNewLocale()["commands.images.friendship.bestFriend"], Rectangle(0, 140, 400, 150), font)
 
 			context.sendFile(template, "rip_amizade.png", context.getAsMention(true))
 		} else {

@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.api.commands.arguments
 
 class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["SLOWMODE_Description"]
+		return locale.toNewLocale()["commands.moderation.slowmode.description"]
 	}
 
 	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {

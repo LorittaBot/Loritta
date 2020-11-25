@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class BemBoladaCommand : AbstractCommand("bembolada", listOf("kenji"), CommandCategory.FUN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["BEMBOLADA_Description"]
+		return locale.toNewLocale()["commands.fun.bembolada.description"]
 	}
 
 	override fun hasCommandFeedback(): Boolean {

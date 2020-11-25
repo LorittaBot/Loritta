@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), CommandCategory.FUN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["TIODOPAVE_Description"]
+		return locale.toNewLocale()["commands.fun.tiodopave.description"]
 	}
 
 	override fun hasCommandFeedback(): Boolean {

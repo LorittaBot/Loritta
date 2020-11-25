@@ -23,7 +23,7 @@ import javax.imageio.ImageIO
 
 class TodoGrupoTemCommand : AbstractCommand("everygrouphas", listOf("todogrupotem"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["TODOGRUPOTEM_Description"]
+		return locale.toNewLocale()["commands.images.everygrouphas.description"]
 	}
 
 	override fun needsToUploadFiles(): Boolean {
@@ -31,7 +31,7 @@ class TodoGrupoTemCommand : AbstractCommand("everygrouphas", listOf("todogrupote
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
-		val bi = readImage(File(Loritta.ASSETS + context.legacyLocale["TODOGRUPOTEM_File"])) // Primeiro iremos carregar o nosso template
+		val bi = readImage(File(Loritta.ASSETS + context.legacyLocale.toNewLocale()["commands.images.everygrouphas.file"])) // Primeiro iremos carregar o nosso template
 
 		val base = BufferedImage(366, 266, BufferedImage.TYPE_INT_ARGB) // Iremos criar uma imagem 384x256 (tamanho do template)
 		val baseGraph = base.graphics.enableFontAntiAliasing()
@@ -58,7 +58,7 @@ class TodoGrupoTemCommand : AbstractCommand("everygrouphas", listOf("todogrupote
 
 		val font = Font.createFont(0, File(Loritta.ASSETS + "mavenpro-bold.ttf")).deriveFont(16f)
 		baseGraph.font = font
-		ImageUtils.drawCenteredStringOutlined(baseGraph, locale["TODOGRUPOTEM_EveryGroupHas"], Rectangle(0, 0, 366, 22), font)
+		ImageUtils.drawCenteredStringOutlined(baseGraph, locale.toNewLocale()["commands.images.everygrouphas.everygrouphas"], Rectangle(0, 0, 366, 22), font)
 
 		for (aux in 5 downTo 0) {
 			val member = users[0]

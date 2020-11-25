@@ -21,7 +21,7 @@ class AmigosCommand : AbstractCommand("friends", listOf("amigos", "meusamigos", 
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["AMIGOS_DESCRIPTION"]
+		return locale.toNewLocale()["commands.images.friends.description"]
 	}
 
 	override fun needsToUploadFiles(): Boolean {

@@ -13,7 +13,7 @@ class CaraCoroaCommand : AbstractCommand("coinflip", listOf("girarmoeda", "flipc
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["CARACOROA_DESCRIPTION"]
+		return locale.toNewLocale()["commands.fun.flipcoin.description"]
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {

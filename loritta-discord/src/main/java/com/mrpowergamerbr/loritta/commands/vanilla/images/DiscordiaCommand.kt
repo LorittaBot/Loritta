@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class DiscordiaCommand : AbstractCommand("mentions", listOf("discórdia", "discord", "discordia"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["DISCORDIA_DESCRIPTION"]
+		return locale.toNewLocale()["commands.images.discordping.description"]
 	}
 
 	override fun getExamples(): List<String> {

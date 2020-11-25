@@ -22,7 +22,7 @@ import javax.imageio.ImageIO
 
 class RazoesCommand : AbstractCommand("reasons", listOf("razões", "razoes"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["RAZOES_DESCRIPTION"]
+		return locale.toNewLocale()["commands.images.reasons.description"]
 	}
 
 	override fun getExamples(): List<String> {

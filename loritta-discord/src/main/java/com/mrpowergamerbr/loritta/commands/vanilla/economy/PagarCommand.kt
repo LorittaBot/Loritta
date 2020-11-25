@@ -28,7 +28,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["PAY_Description"]
+		return locale.toNewLocale()["commands.economy.pay.description"]
 	}
 
 	override fun getUsage(): String {
@@ -92,7 +92,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			if (user == null || context.userHandle == user) {
 				context.reply(
                         LorittaReply(
-                                locale["REP_InvalidUser"],
+                                locale.toNewLocale()["commands.social.reputation.description"],
                                 Constants.ERROR
                         )
 				)
@@ -216,9 +216,9 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 										context.reply(
                                                 LorittaReply(
                                                         locale["PAY_TransactionComplete", user.asMention, finalMoney, if (finalMoney == 1.0) {
-                                                            locale["ECONOMY_Name"]
+                                                            locale.toNewLocale()["economy.currency.name.singular"]
                                                         } else {
-                                                            locale["ECONOMY_NamePlural"]
+                                                            locale.toNewLocale()["economy.currency.name.plural"]
                                                         }],
                                                         "\uD83D\uDCB8"
                                                 )

@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class VaporondaCommand : AbstractCommand("vaporonda", listOf("vaporwave"), category = CommandCategory.FUN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["VAPORONDA_DESCRIPTION"]
+		return locale.toNewLocale()["commands.fun.vaporwave.description"]
 	}
 
 	override fun getUsage(): String {

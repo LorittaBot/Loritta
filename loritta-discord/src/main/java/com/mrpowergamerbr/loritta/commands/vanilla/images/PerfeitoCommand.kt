@@ -12,7 +12,7 @@ import javax.imageio.ImageIO
 
 class PerfeitoCommand : AbstractCommand("perfect", listOf("perfeito"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["PERFEITO_DESCRIPTION"]
+		return locale.toNewLocale()["commands.images.perfect.description"]
 	}
 
 	override fun getExamples(): List<String> {

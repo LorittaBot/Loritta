@@ -24,7 +24,7 @@ class GameJoltCommand : AbstractCommand("gamejolt", category = CommandCategory.F
 	override fun getBotPermissions() = listOf(Permission.MESSAGE_MANAGE)
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["GAMEJOLT_DESCRIPTION"]
+		return locale.toNewLocale()["willberemovedlol"]
 	}
 
 	override fun getExamples(): List<String> {

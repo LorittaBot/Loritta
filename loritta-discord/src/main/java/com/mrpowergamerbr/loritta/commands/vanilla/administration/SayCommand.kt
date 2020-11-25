@@ -14,7 +14,7 @@ import java.util.*
 
 class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["SAY_Description"]
+		return locale.toNewLocale()["commands.moderation.say.description"]
 	}
 
 	override fun getUsage(): String {

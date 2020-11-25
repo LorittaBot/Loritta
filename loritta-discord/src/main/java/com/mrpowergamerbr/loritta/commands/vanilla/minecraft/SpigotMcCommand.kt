@@ -113,8 +113,8 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 		embed.setTitle("<:spigotmc:375314413357629440> ${resource.name}", "https://www.spigotmc.org/resources/$resourceId/")
 		embed.setDescription(resource.tag.replace("*", "\\*").replace("_", "\\_").replace("~", "\\~"))
 		embed.setThumbnail("https://www.spigotmc.org/${resource.icon}")
-		if (resource.contributors.isNotEmpty()) embed.addField(context.legacyLocale.get("SPIGOTMC_CONTRIBUTORS"), resource.contributors, true)
-		embed.addField(context.legacyLocale.get("SPIGOTMC_DOWNLOADS"), resource.downloads.toString(), true)
+		if (resource.contributors.isNotEmpty()) embed.addField(context.legacyLocale.toNewLocale()["commands.minecraft.spigotmc.contributors"], resource.contributors, true)
+		embed.addField(context.legacyLocale.toNewLocale()["commands.minecraft.spigotmc.downloads"], resource.downloads.toString(), true)
 		if (resource.testedVersions.isNotEmpty()) embed.addField(context.legacyLocale.get("SPIGOTMC_TESTED_VERSIONS"), resource.testedVersions.joinToString(separator = ", "), true)
 
 		val releaseEpoch = resource.releaseDate.toLong()
@@ -125,10 +125,10 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 		val updateInstant = Instant.ofEpochSecond(updateEpoch)
 		ZonedDateTime.ofInstant(updateInstant, ZoneOffset.UTC)
 
-		embed.addField(context.legacyLocale.get("SPIGOTMC_RELEASED"), releaseInstant.atOffset(ZoneOffset.UTC).humanize(locale), true)
-		embed.addField(context.legacyLocale.get("SPIGOTMC_UPDATED"), updateInstant.atOffset(ZoneOffset.UTC).humanize(locale), true)
+		embed.addField(context.legacyLocale.toNewLocale()["commands.minecraft.spigotmc.released"], releaseInstant.atOffset(ZoneOffset.UTC).humanize(locale), true)
+		embed.addField(context.legacyLocale.toNewLocale()["commands.minecraft.spigotmc.lastUpdated"], updateInstant.atOffset(ZoneOffset.UTC).humanize(locale), true)
 
-		embed.addField(context.legacyLocale.get("SPIGOTMC_DOWNLOAD"), "https://www.spigotmc.org/${resource.downloadLink}", true)
+		embed.addField(context.legacyLocale.toNewLocale()["commands.minecraft.spigotmc.download"], "https://www.spigotmc.org/${resource.downloadLink}", true)
 
 		return embed
 	}

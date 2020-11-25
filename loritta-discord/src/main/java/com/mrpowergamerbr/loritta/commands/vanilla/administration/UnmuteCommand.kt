@@ -25,7 +25,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar", "desilenciar"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["UNMUTE_DESCRIPTION"]
+		return locale.toNewLocale()["commands.moderation.unmute.description"]
 	}
 
 	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {

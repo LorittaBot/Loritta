@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class PedraPapelTesouraCommand : AbstractCommand("jankenpon", listOf("pedrapapeltesoura", "ppt"), CommandCategory.FUN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["PPT_DESCRIPTION"]
+		return locale.toNewLocale()["commands.fun.rockpaperscissors.description"]
 	}
 
 	override fun getUsage(): String {
@@ -39,13 +39,13 @@ class PedraPapelTesouraCommand : AbstractCommand("jankenpon", listOf("pedrapapel
 
 				var fancy: String? = null
 				if (status == JankenponStatus.WIN) {
-					fancy = "**${context.legacyLocale["PPT_WIN"]} \uD83D\uDE0A**"
+					fancy = "**${context.legacyLocale.toNewLocale()["commands.fun.rockpaperscissors.win"]} \uD83D\uDE0A**"
 				}
 				if (status == JankenponStatus.LOSE) {
-					fancy = "**${context.legacyLocale["PPT_LOSE"]} \uD83D\uDE42**"
+					fancy = "**${context.legacyLocale.toNewLocale()["commands.fun.rockpaperscissors.lose"]} \uD83D\uDE42**"
 				}
 				if (status == JankenponStatus.DRAW) {
-					fancy = "**${context.legacyLocale["PPT_DRAW"]} \uD83D\uDE0A**"
+					fancy = "**${context.legacyLocale.toNewLocale()["commands.fun.rockpaperscissors.draw"]} \uD83D\uDE0A**"
 				}
 				if (fancy == null) {
 					return
@@ -61,15 +61,15 @@ class PedraPapelTesouraCommand : AbstractCommand("jankenpon", listOf("pedrapapel
 				)
 			} else {
 				if (playerValue.equals("jesus", ignoreCase = true)) {
-					val fancy = "**${context.legacyLocale["PPT_MAYBE_DRAW"]} 🤔 🤷**"
-					val jesus = "🙇 *${context.legacyLocale["PPT_JESUS_CHRIST"]}* 🙇"
+					val fancy = "**${context.legacyLocale.toNewLocale()["commands.fun.rockpaperscissors.maybeDraw"]} 🤔 🤷**"
+					val jesus = "🙇 *${context.legacyLocale.toNewLocale()["commands.fun.rockpaperscissors.jesusChrist"]}* 🙇"
 					context.reply(
                             LorittaReply(message = context.legacyLocale["PPT_CHOSEN", jesus, jesus], prefix = "\uD83C\uDFF3"),
                             LorittaReply(message = fancy, mentionUser = false)
 					)
 				} else {
-					val fancy = "**${context.legacyLocale["PPT_INVALID"]} \uD83D\uDE09**"
-					val jesus = "🙇 *${context.legacyLocale["PPT_JESUS_CHRIST"]}* 🙇"
+					val fancy = "**${context.legacyLocale.toNewLocale()["commands.fun.rockpaperscissors.invalidChoice"]} \uD83D\uDE09**"
+					val jesus = "🙇 *${context.legacyLocale.toNewLocale()["commands.fun.rockpaperscissors.jesusChrist"]}* 🙇"
 					context.reply(
                             LorittaReply(message = context.legacyLocale["PPT_CHOSEN", "\uD83D\uDCA9", jesus], prefix = "\uD83C\uDFF4"),
                             LorittaReply(message = fancy, mentionUser = false)

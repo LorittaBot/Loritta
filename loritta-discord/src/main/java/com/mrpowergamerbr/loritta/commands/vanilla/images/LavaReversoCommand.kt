@@ -20,7 +20,7 @@ import javax.imageio.ImageIO
 
 class LavaReversoCommand : AbstractCommand("lavareverse", listOf("lavareverso", "reverselava"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["LAVAREVERSO_DESCRIPTION"]
+		return locale.toNewLocale()["commands.images.reverselava.description"]
 	}
 
 	override fun getExamples(): List<String> {

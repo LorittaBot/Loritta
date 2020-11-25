@@ -13,7 +13,7 @@ import javax.imageio.ImageIO
 
 class DeusCommand : AbstractCommand("god", listOf("deus"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["DEUS_DESCRIPTION"]
+		return locale.toNewLocale()["commands.images.god.description"]
 	}
 
 	override fun getExamples(): List<String> {

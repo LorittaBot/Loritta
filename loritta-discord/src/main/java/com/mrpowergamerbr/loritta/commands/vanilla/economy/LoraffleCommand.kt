@@ -18,7 +18,7 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["RAFFLE_Description"]
+		return locale.toNewLocale()["commands.economy.raffle.description"]
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {

@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class InviteCommand : AbstractCommand("invite", listOf("convidar", "convidarbot", "invitebot", "convite"), CommandCategory.DISCORD) {
     override fun getDescription(locale: LegacyBaseLocale): String {
-        return locale["INVITE_DESCRIPTION"]
+        return locale.toNewLocale()["commands.discord.invite.info"]
     }
 
     override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {

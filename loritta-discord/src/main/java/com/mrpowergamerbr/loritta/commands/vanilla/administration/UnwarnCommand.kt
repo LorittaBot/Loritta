@@ -23,7 +23,7 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["UNWARN_Description"]
+		return locale.toNewLocale()["commands.moderation.unwarn.description"]
 	}
 
 	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {

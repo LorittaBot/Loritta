@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class QualidadeCommand : AbstractCommand("qualidade", category = CommandCategory.FUN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["QUALIDADE_DESCRIPTION"]
+		return locale.toNewLocale()["commands.fun.quality.description"]
 	}
 
 	override fun getUsage(): String {
