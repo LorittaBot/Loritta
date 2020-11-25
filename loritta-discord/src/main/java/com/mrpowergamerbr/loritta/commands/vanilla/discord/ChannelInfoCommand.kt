@@ -38,7 +38,7 @@ class ChannelInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(l
 					?: context.discordMessage.channel.id
 			val channel = context.guild.getTextChannelById(channelId)!!
 
-			val channelCreatedDiff = DateUtils.formatDateDiff(channel.timeCreated.toInstant().toEpochMilli(), loritta.getLegacyLocaleById(context.locale.id))
+			val channelCreatedDiff = DateUtils.formatDateDiff(channel.timeCreated.toInstant().toEpochMilli(), loritta.getLegacyLocaleById(context.serverConfig.localeId))
 
 			val builder = EmbedBuilder()
 
