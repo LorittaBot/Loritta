@@ -31,7 +31,7 @@ class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) 
 			if (!Constants.TWITCH_USERNAME_PATTERN.matcher(query).matches()) {
 				context.reply(
                         LorittaReply(
-                                context.legacyLocale["YOUTUBE_COULDNT_FIND", query],
+                                context.locale["commands.fun.twitch.couldntFind", query],
                                 Constants.ERROR
                         )
 				)
@@ -43,7 +43,7 @@ class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) 
 			if (payload == null) {
 				context.reply(
                         LorittaReply(
-                                context.legacyLocale["YOUTUBE_COULDNT_FIND", query],
+								context.locale["commands.fun.twitch.couldntFind", query],
                                 Constants.ERROR
                         )
 				)
