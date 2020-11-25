@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.utils.Emotes
 
 class EscolherCommand : AbstractCommand("choose", listOf("escolher"), category = CommandCategory.MISC) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["ESCOLHER_DESCRIPTION"]
+		return locale.toNewLocale()["commands.misc.choose.description"]
 	}
 
 	override fun getExamples(): List<String> {
@@ -26,7 +26,7 @@ class EscolherCommand : AbstractCommand("choose", listOf("escolher"), category =
 			val chosen = split[Loritta.RANDOM.nextInt(split.size)]
 			context.reply(
                     LorittaReply(
-                            message = context.legacyLocale["ESCOLHER_RESULT", chosen],
+                            message = context.locale["commands.misc.choose.result", chosen],
                             prefix = Emotes.LORI_HM
                     )
 			)

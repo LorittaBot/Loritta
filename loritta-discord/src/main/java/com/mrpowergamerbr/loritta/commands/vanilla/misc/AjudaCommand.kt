@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.utils.Emotes
 
 class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "commands"), CommandCategory.MISC) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["AJUDA_DESCRIPTION"]
+		return locale.toNewLocale()["commands.misc.help.description"]
 	}
 
 	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
