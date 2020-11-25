@@ -93,7 +93,7 @@ class DefaultProfileCreator : ProfileCreator("modernBlurple") {
 			graphics.drawText(guild.name, 562, 61, 800 - 6)
 			graphics.font = whitneySemiBold20
 			if (xpLocal != null) {
-				graphics.drawText("#$localPosition / $xpLocal XP", 562, 78, 800 - 6)
+				graphics.drawText("#${localPosition ?: "???"} / $xpLocal XP", 562, 78, 800 - 6)
 			} else {
 				graphics.drawText("???", 562, 78, 800 - 6)
 			}

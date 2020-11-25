@@ -129,7 +129,7 @@ open class PlainProfileCreator(internalName: String, val folderName: String) : P
 			// Iremos remover os emojis do nome da guild, já que ele não calcula direito no stringWidth
 			userInfo.add(guild.name.replace(Constants.EMOJI_PATTERN.toRegex(), ""))
 			if (xpLocal != null) {
-				userInfo.add("#$localPosition / $xpLocal XP")
+				userInfo.add("#${localPosition ?: "???"} / $xpLocal XP")
 			} else {
 				userInfo.add("???")
 			}

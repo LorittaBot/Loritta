@@ -95,7 +95,7 @@ class MSNProfileCreator : ProfileCreator("msn") {
 		ImageUtils.drawTextWrapSpaces("Não inclua informações como senhas ou número de cartões de crédito em uma mensagem instantânea", 297, 224, 768, 1000, graphics.fontMetrics, graphics)
 
 		ImageUtils.drawTextWrapSpaces("${user.name} diz", 267, 302, 768, 1000, graphics.fontMetrics, graphics)
-		ImageUtils.drawTextWrapSpaces(/* "Olá, meu nome é ${user.name}! Atualmente eu tenho ${userProfile.dreams} Sonhos, já recebi ${userProfile.receivedReputations.size} reputações, estou em #$position (${userProfile.xp} XP) no rank global e estou em #$localPosition (${xpLocal?.xp} XP) no rank do ${guild.name}!\n\n${userProfile.aboutMe}" */ aboutMe, 297, 326, 768, 1000, graphics.fontMetrics, graphics)
+		ImageUtils.drawTextWrapSpaces(/* "Olá, meu nome é ${user.name}! Atualmente eu tenho ${userProfile.dreams} Sonhos, já recebi ${userProfile.receivedReputations.size} reputações, estou em #$position (${userProfile.xp} XP) no rank global e estou em #${localPosition ?: "???"} (${xpLocal?.xp} XP) no rank do ${guild.name}!\n\n${userProfile.aboutMe}" */ aboutMe, 297, 326, 768, 1000, graphics.fontMetrics, graphics)
 
 		val shiftY = 291
 
@@ -120,7 +120,7 @@ class MSNProfileCreator : ProfileCreator("msn") {
 			graphics.drawText(guild.name, 4, 61  + shiftY, 244)
 			graphics.font = whitneySemiBold20
 			if (xpLocal != null) {
-				graphics.drawText("#$localPosition / $xpLocal XP", 4, 78 + shiftY, 244)
+				graphics.drawText("#${localPosition ?: "???"} / $xpLocal XP", 4, 78 + shiftY, 244)
 			} else {
 				graphics.drawText("???", 4, 78 + shiftY, 244)
 			}

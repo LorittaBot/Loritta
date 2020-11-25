@@ -162,7 +162,7 @@ class Christmas2019ProfileCreator : ProfileCreator("christmas2019") {
 		if (guild != null) {
 			userInfo.add(guild.name.replace(Constants.EMOJI_PATTERN.toRegex(), ""))
 			if (xpLocal != null) {
-				userInfo.add("#$localPosition / $xpLocal XP")
+				userInfo.add("#${localPosition ?: "???"} / $xpLocal XP")
 			} else {
 				userInfo.add("???")
 			}

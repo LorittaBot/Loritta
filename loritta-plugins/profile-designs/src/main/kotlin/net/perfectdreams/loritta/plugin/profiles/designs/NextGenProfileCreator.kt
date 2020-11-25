@@ -148,7 +148,7 @@ class NextGenProfileCreator : ProfileCreator("nextGenDark") {
 			// Iremos remover os emojis do nome da guild, já que ele não calcula direito no stringWidth
 			graphics.drawText(guild.name.replace(Constants.EMOJI_PATTERN.toRegex(), ""), 16, 51)
 			if (xpLocal != null) {
-				graphics.drawText("#$localPosition / $xpLocal XP", 16, 70)
+				graphics.drawText("#${localPosition ?: "???"} / $xpLocal XP", 16, 70)
 			} else {
 				graphics.drawText("???", 16, 70)
 			}
