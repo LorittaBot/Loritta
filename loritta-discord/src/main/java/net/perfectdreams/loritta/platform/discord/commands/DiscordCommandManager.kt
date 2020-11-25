@@ -1,8 +1,6 @@
 package net.perfectdreams.loritta.platform.discord.commands
 
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.vanilla.discord.ChannelInfoCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.magic.PluginsCommand
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.utils.*
@@ -20,7 +18,6 @@ import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.commands.LorittaCommandManager
 import net.perfectdreams.loritta.api.entities.User
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import net.perfectdreams.loritta.commands.vanilla.`fun`.*
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
@@ -34,13 +31,6 @@ import kotlin.reflect.full.isSubclassOf
 
 class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager(discordLoritta) {
     init {
-        registerCommand(PluginsCommand())
-
-        registerCommand(ChannelInfoCommand())
-        registerCommand(GiveawayEndCommand())
-        registerCommand(GiveawayRerollCommand())
-        registerCommand(GiveawaySetupCommand())
-        registerCommand(GiveawayCommand())
 
         contextManager.registerContext<User>(
                 { clazz: KClass<*> -> clazz.isSubclassOf(User::class) || clazz == User::class },

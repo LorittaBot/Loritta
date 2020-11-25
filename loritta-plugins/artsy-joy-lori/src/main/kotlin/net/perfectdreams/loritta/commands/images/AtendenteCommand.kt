@@ -8,6 +8,9 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.*
+import net.perfectdreams.loritta.api.utils.image.JVMImage
+import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Graphics2D
@@ -16,101 +19,97 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class AtendenteCommand : LorittaCommand(arrayOf("atendente"), CommandCategory.IMAGES) {
-    override val needsToUploadFiles = true
-
-    override fun getDescription(locale: BaseLocale): String? {
-        return locale["commands.images.atendente.description"]
+class AtendenteCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("atendente"), CommandCategory.IMAGES) {
+    companion object {
+        private const val LOCALE_PREFIX = "commands.images"
     }
 
-    override fun getUsage(locale: BaseLocale): CommandArguments {
-        return arguments {
-            argument(ArgumentType.TEXT) {}
+    override fun command() = create {
+        needsToUploadFiles = true
+
+        localizedDescription("$LOCALE_PREFIX.images.atendente.description")
+
+        usage {
+            arguments {
+                argument(ArgumentType.TEXT) {}
+            }
         }
-    }
 
-    override fun getExamples(locale: BaseLocale): List<String> {
-        return locale.getList("commands.images.atendente.examples")
-    }
+        examples {
+            localizedExamples("$LOCALE_PREFIX.images.atendente.examples")
+        }
 
-    @Subcommand
-    suspend fun root(context: LorittaCommandContext, locale: BaseLocale, args: Array<String>) {
-        if (args.isNotEmpty()) {
-            val template = readImage(File(Loritta.ASSETS, "atendente.png"))
+        executesDiscord {
+            val context = this
 
-            val width = 214
-            val height = 131
+            if (args.isNotEmpty()) {
+                val template = readImage(File(Loritta.ASSETS, "atendente.png"))
 
-            val text = args.joinToString(" ")
+                val width = 214
+                val height = 131
 
-            val templateGraphics = template.graphics
+                val text = args.joinToString(" ")
 
-            val image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
-            val graphics = image.graphics.enableFontAntiAliasing()
+                val templateGraphics = template.graphics
 
-            // graphics.color = Color.WHITE
-            // graphics.fillRect(0, 0, width, height)
-            val font = ArtsyJoyLoriConstants.KOMIKA.deriveFont(16f)
+                val image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
+                val graphics = image.graphics.enableFontAntiAliasing()
 
-            graphics.font = font
-            graphics.color = Color.BLACK
-            val fontMetrics = graphics.fontMetrics
+                val font = ArtsyJoyLoriConstants.KOMIKA.deriveFont(16f)
 
-            // Para escrever uma imagem centralizada, nós precisamos primeiro saber algumas coisas sobre o texto
+                graphics.font = font
+                graphics.color = Color.BLACK
+                val fontMetrics = graphics.fontMetrics
 
-            // Lista contendo (texto, posição)
-            val lines = mutableListOf<String>()
+                val lines = mutableListOf<String>()
 
-            // Se está centralizado verticalmente ou não, por enquanto não importa para a gente
-            val split = text.split(" ")
+                val split = text.split(" ")
 
-            var x = 0
-            var currentLine = StringBuilder()
+                var x = 0
+                var currentLine = StringBuilder()
 
-            for (string in split) {
-                val stringWidth = fontMetrics.stringWidth("$string ")
-                val newX = x + stringWidth
+                for (string in split) {
+                    val stringWidth = fontMetrics.stringWidth("$string ")
+                    val newX = x + stringWidth
 
-                if (newX >= width) {
-                    var endResult = currentLine.toString().trim()
-                    if (endResult.isEmpty()) { // okay wtf
-                        // Se o texto é grande demais e o conteúdo atual está vazio... bem... substitua o endResult pela string atual
-                        endResult = string
+                    if (newX >= width) {
+                        var endResult = currentLine.toString().trim()
+                        if (endResult.isEmpty()) {
+                            endResult = string
+                            lines.add(endResult)
+                            x = 0
+                            continue
+                        }
+
                         lines.add(endResult)
-                        x = 0
-                        continue
+                        currentLine = StringBuilder()
+                        currentLine.append(' ')
+                        currentLine.append(string)
+                        x = fontMetrics.stringWidth("$string ")
+                    } else {
+                        currentLine.append(' ')
+                        currentLine.append(string)
+                        x = newX
                     }
-                    lines.add(endResult)
-                    currentLine = StringBuilder()
-                    currentLine.append(' ')
-                    currentLine.append(string)
-                    x = fontMetrics.stringWidth("$string ")
-                } else {
-                    currentLine.append(' ')
-                    currentLine.append(string)
-                    x = newX
                 }
+
+                lines.add(currentLine.toString().trim())
+
+                val skipHeight = fontMetrics.ascent
+                var y = (height / 2) - ((skipHeight - 10) * (lines.size - 1))
+                for (line in lines) {
+                    ImageUtils.drawCenteredStringEmoji(graphics, line, Rectangle(0, y, width, 24), font)
+                    y += skipHeight
+                }
+
+                val loriImage = LorittaImage(image)
+                loriImage.rotate(8.0)
+                templateGraphics.drawImage(loriImage.bufferedImage, 46, -20, null)
+
+                context.sendImage(JVMImage(template), "atendente.png", context.getUserMention(true))
+            } else {
+                context.explain()
             }
-            lines.add(currentLine.toString().trim())
-
-            // got it!!!
-            // bem, supondo que cada fonte tem 22f de altura...
-
-            // para centralizar é mais complicado
-            val skipHeight = fontMetrics.ascent
-            var y = (height / 2) - ((skipHeight - 10) * (lines.size - 1))
-            for (line in lines) {
-                ImageUtils.drawCenteredStringEmoji(graphics, line, Rectangle(0, y, width, 24), font)
-                y += skipHeight
-            }
-
-            val loriImage = LorittaImage(image)
-            loriImage.rotate(8.0)
-            templateGraphics.drawImage(loriImage.bufferedImage, 46, -20, null)
-
-            context.sendFile(template, "atendente.png", context.getAsMention(true))
-        } else {
-            context.explain()
         }
     }
 }
