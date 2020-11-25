@@ -15,13 +15,13 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class GenderCommand : AbstractCommand("gender", listOf("gênero", "genero"), CommandCategory.SOCIAL) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["GENDER_Description"]
+		return locale.toNewLocale()["commands.social.gender.description"]
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val embed = EmbedBuilder()
-				.setTitle(locale["GENDER_WhatAreYou"])
-				.setDescription(locale["GENDER_WhyShouldYouSelect"])
+				.setTitle(locale.toNewLocale()["commands.social.gender.whatAreYou"])
+				.setDescription(locale.toNewLocale()["commands.social.gender.whyShouldYouSelect"])
 				.build()
 
 
@@ -41,7 +41,7 @@ class GenderCommand : AbstractCommand("gender", listOf("gênero", "genero"), Com
 
 				context.reply(
                         LorittaReply(
-                                locale["GENDER_SuccessfullyChanged"],
+                                locale.toNewLocale()["commands.social.gender.successfullyChanged"],
                                 "\uD83C\uDF89"
                         )
 				)
@@ -55,7 +55,7 @@ class GenderCommand : AbstractCommand("gender", listOf("gênero", "genero"), Com
 
                 context.reply(
                         LorittaReply(
-                                locale["GENDER_SuccessfullyChanged"],
+                                locale.toNewLocale()["commands.social.gender.successfullyChanged"],
                                 "\uD83C\uDF89"
                         )
                 )
@@ -68,7 +68,7 @@ class GenderCommand : AbstractCommand("gender", listOf("gênero", "genero"), Com
 
                 context.reply(
                         LorittaReply(
-                                locale["GENDER_SuccessfullyChanged"],
+                                locale.toNewLocale()["commands.social.gender.successfullyChanged"],
                                 "\uD83C\uDF89"
                         )
                 )

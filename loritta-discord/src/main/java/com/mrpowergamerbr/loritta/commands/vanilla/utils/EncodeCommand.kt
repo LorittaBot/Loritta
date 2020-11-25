@@ -72,12 +72,12 @@ class EncodeCommand : AbstractCommand("encode", listOf("codificar", "encrypt", "
 		context.reply(
 				true,
                 LorittaReply(
-                        "**${locale["ENCODE_OriginalText"]}:** `${text.stripCodeMarks()}`",
+                        "**${locale.toNewLocale()["commands.utils.encode.originalText"]}:** `${text.stripCodeMarks()}`",
                         "\uD83D\uDCC4",
                         mentionUser = false
                 ),
                 LorittaReply(
-                        "**${locale["ENCODE_EncodedText"]}:** `${encodedText.stripCodeMarks()}`",
+                        "**${locale.toNewLocale()["commands.utils.encode.encodedText"]}:** `${encodedText.stripCodeMarks()}`",
                         "<:blobspy:465979979876794368>",
                         mentionUser = false
                 )

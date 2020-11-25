@@ -24,7 +24,7 @@ import javax.imageio.ImageIO
 
 class OCRCommand : AbstractCommand("ocr", listOf("ler", "read"), CommandCategory.UTILS) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["OCR_DESCRIPTION"]
+		return locale.toNewLocale()["commands.utils.ocr.description"]
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {

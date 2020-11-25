@@ -15,7 +15,7 @@ import java.util.*
 
 class WikipediaCommand : AbstractCommand("wikipedia", listOf("wiki"), CommandCategory.UTILS) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["WIKIPEDIA_DESCRIPTION"]
+		return locale.toNewLocale()["commands.utils.wikipedia.description"]
 	}
 
 	override fun getUsage(): String {

@@ -20,7 +20,7 @@ class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCa
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["DIVORCE_Description"]
+		return locale.toNewLocale()["commands.social.divorce.description"]
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {

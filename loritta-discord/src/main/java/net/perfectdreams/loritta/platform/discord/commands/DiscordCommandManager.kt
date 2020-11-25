@@ -365,7 +365,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                 }
 
                 if (context.isPrivateChannel && !command.canUseInPrivateChannel) {
-                    context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + legacyLocale["CANT_USE_IN_PRIVATE"])
+                    context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + legacyLocale.toNewLocale()["commands.cantUseInPrivate"])
                     return true
                 }
 
@@ -393,7 +393,7 @@ class DiscordCommandManager(val discordLoritta: Loritta) : LorittaCommandManager
                         if (hasBadNickname) {
                             context.reply(
                                     LorittaReply(
-                                            legacyLocale["LORITTA_BadNickname"],
+                                            legacyLocale.toNewLocale()["commands.lorittaBadNickname"],
                                             "<:lori_triste:370344565967814659>"
                                     )
                             )

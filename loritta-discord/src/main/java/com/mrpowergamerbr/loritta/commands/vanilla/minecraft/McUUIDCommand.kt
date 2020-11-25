@@ -13,7 +13,7 @@ import java.util.*
 
 class McUUIDCommand : AbstractCommand("mcuuid", category = CommandCategory.MINECRAFT) {
     override fun getDescription(locale: LegacyBaseLocale): String {
-        return locale["MCUUID_DESCRIPTION"]
+        return locale.toNewLocale()["commands.minecraft.mcuuid.description"]
     }
 
     override fun getUsage(): String {

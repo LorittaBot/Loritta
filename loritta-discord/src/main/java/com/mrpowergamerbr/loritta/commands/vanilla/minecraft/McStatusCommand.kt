@@ -14,7 +14,7 @@ import java.awt.Color
 
 class McStatusCommand : AbstractCommand("mcstatus", category = CommandCategory.MINECRAFT) {
     override fun getDescription(locale: LegacyBaseLocale): String {
-        return locale["MCSTATUS_DESCRIPTION"]
+        return locale.toNewLocale()["commands.minecraft.mcstatus.description"]
     }
 
     override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {

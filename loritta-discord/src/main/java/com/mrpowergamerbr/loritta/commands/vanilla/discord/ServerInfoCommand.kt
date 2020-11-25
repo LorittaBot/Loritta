@@ -73,7 +73,7 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 		embed.addField("\uD83D\uDCBB Shard ID", "$shardId — Loritta Cluster ${cluster.id} (`${cluster.name}`)", true)
 		embed.addField("👑 ${context.legacyLocale.toNewLocale()["commands.discord.serverinfo.owner"]}", "`${owner?.name}#${owner?.discriminator}` (${ownerId})", true) // Dono da Guild
 		embed.addField("🌎 ${context.legacyLocale.toNewLocale()["commands.discord.serverinfo.region"]}", region.getName(), true) // Região da Guild
-		embed.addField("\uD83D\uDCAC ${context.legacyLocale["SERVERINFO_CHANNELS"]} (${textChannelCount + voiceChannelCount})", "\uD83D\uDCDD **${locale.toNewLocale()["commands.discord.serverinfo.textChannels"]}:** ${textChannelCount}\n\uD83D\uDDE3 **${locale["SERVERINFO_CHANNELS_VOICE"]}:** $voiceChannelCount", true) // Canais da Guild
+		embed.addField("\uD83D\uDCAC ${context.legacyLocale.toNewLocale()["commands.discord.serverinfo.channels"]} (${textChannelCount + voiceChannelCount})", "\uD83D\uDCDD **${locale.toNewLocale()["commands.discord.serverinfo.textChannels"]}:** ${textChannelCount}\n\uD83D\uDDE3 **${locale.toNewLocale()["commands.discord.serverinfo.voiceChannels"]}:** $voiceChannelCount", true) // Canais da Guild
 		val createdAtDiff = DateUtils.formatDateDiff(timeCreated, locale)
 		embed.addField("\uD83D\uDCC5 ${context.legacyLocale.toNewLocale()["commands.discord.serverinfo.createdAt"]}", "${timeCreated.humanize(locale)} ($createdAtDiff)", true)
 		val joinedAtDiff = DateUtils.formatDateDiff(timeJoined, locale)

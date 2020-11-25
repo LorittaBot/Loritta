@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.api.commands.arguments
 
 class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category = CommandCategory.SOCIAL) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["EDITARXP_DESCRIPTION"]
+		return locale.toNewLocale()["commands.social.editxp.description"]
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {
@@ -43,7 +43,7 @@ class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category =
 			}
 
 			if (0 > newXp) {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["EDITARXP_MORE_THAN_ZERO"])
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale.toNewLocale()["commands.social.editxp.moreThanZero"])
 				return
 			}
 

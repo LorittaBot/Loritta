@@ -267,7 +267,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 				if (context.isPrivateChannel && !command.canUseInPrivateChannel) {
 					context.reply(
 							LorittaReply(
-									message = legacyLocale["CANT_USE_IN_PRIVATE"],
+									message = legacyLocale.toNewLocale()["commands.cantUseInPrivate"],
 									prefix = Constants.ERROR
 							)
 					)

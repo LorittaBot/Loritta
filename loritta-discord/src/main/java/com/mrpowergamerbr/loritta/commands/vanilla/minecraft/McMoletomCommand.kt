@@ -77,13 +77,13 @@ class McMoletomCommand : AbstractCommand("mcmoletom", listOf("mcsweater"), Comma
 
 			if (moletom == null) {
 				context.reply(
-						locale["MCMOLETOM_InvalidSkin"],
+						locale.toNewLocale()["commands.minecraft.mcsweater.invalidSkin"],
 						Constants.ERROR
 				)
 				return
 			}
 
-			val str = "<:loritta:331179879582269451> **|** " + context.getAsMention(true) + locale["MCMOLETOM_Done"]
+			val str = "<:loritta:331179879582269451> **|** " + context.getAsMention(true) + locale.toNewLocale()["commands.minecraft.mcsweater.done"]
 			val message = context.sendFile(moletom, "moletom.png", str)
 
 			val image = message.attachments.first()

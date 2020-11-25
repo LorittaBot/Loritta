@@ -22,7 +22,7 @@ import javax.imageio.ImageIO
 
 class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), category = CommandCategory.MUSIC) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["LYRICS_Description"]
+		return locale.toNewLocale()["commands.music.lyrics.description"]
 	}
 
 	override fun getUsage(): String {

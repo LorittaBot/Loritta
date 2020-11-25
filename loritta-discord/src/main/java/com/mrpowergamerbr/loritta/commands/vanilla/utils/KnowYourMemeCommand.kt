@@ -17,7 +17,7 @@ import java.net.URLEncoder
 
 class KnowYourMemeCommand : AbstractCommand("knowyourmeme", listOf("kym"), CommandCategory.UTILS) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["KYM_DESCRIPTION"]
+		return locale.toNewLocale()["commands.utils.knowyourmeme.description"]
 	}
 
 	override fun getExamples(): List<String> {
@@ -48,7 +48,7 @@ class KnowYourMemeCommand : AbstractCommand("knowyourmeme", listOf("kym"), Comma
 				val summary = if (meme.obj.has("summary")) {
 					meme["summary"].string
 				} else {
-					context.legacyLocale["KYM_NO_DESCRIPTION"]
+					context.legacyLocale.toNewLocale()["commands.utils.knowyourmeme.noDescription"]
 				}
 				val url = meme["url"].string
 

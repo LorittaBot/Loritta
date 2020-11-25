@@ -18,7 +18,7 @@ import java.util.*
 
 class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ctt"), CommandCategory.UTILS) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["PACKAGEINFO_DESCRIPTION"]
+		return locale.toNewLocale()["commands.utils.packageinfo.description"]
 	}
 
 	override fun getExamples(): List<String> {
