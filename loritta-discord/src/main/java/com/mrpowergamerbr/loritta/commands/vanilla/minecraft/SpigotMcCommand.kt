@@ -51,7 +51,7 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 
 			if (json.isJsonObject) {
 				// Erro!
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale.get("SPIGOTMC_COULDNT_FIND", query))
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale.toNewLocale()["commands.minecraft.spigotmc.couldntFind", query])
 				return
 			} else {
 				val array = json.array
@@ -70,7 +70,7 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 						context.metadata.put(i.toString(), item["id"].string)
 					}
 					embed.setDescription(format)
-					embed.setTitle("<:spigotmc:375314413357629440> ${context.legacyLocale["YOUTUBE_RESULTS_FOR", query]}")
+					embed.setTitle("<:spigotmc:375314413357629440> ${context.legacyLocale.toNewLocale()["commands.minecraft.spigotmc.results", query]}")
 					val mensagem = context.sendMessage(context.getAsMention(true), embed.build())
 
 					mensagem.onReactionAddByAuthor(context) {
@@ -115,7 +115,7 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 		embed.setThumbnail("https://www.spigotmc.org/${resource.icon}")
 		if (resource.contributors.isNotEmpty()) embed.addField(context.legacyLocale.toNewLocale()["commands.minecraft.spigotmc.contributors"], resource.contributors, true)
 		embed.addField(context.legacyLocale.toNewLocale()["commands.minecraft.spigotmc.downloads"], resource.downloads.toString(), true)
-		if (resource.testedVersions.isNotEmpty()) embed.addField(context.legacyLocale.get("SPIGOTMC_TESTED_VERSIONS"), resource.testedVersions.joinToString(separator = ", "), true)
+		if (resource.testedVersions.isNotEmpty()) embed.addField(context.legacyLocale.toNewLocale()["commands.minecraft.spigotmc.testedVersions"], resource.testedVersions.joinToString(separator = ", "), true)
 
 		val releaseEpoch = resource.releaseDate.toLong()
 		val releaseInstant = Instant.ofEpochSecond(releaseEpoch)
