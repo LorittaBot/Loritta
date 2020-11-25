@@ -60,7 +60,6 @@ dependencies {
 
     api("com.google.guava:guava:30.0-jre")
 
-    api("net.perfectdreams.commands:command-framework-core:0.0.8")
     api("org.jetbrains.kotlinx:kotlinx-html-jvm:0.6.12")
     api("org.twitter4j:twitter4j-core:[4.0,)")
     api("org.twitter4j:twitter4j-stream:[4.0,)")
