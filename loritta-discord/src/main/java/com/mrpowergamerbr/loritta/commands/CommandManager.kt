@@ -407,11 +407,11 @@ class CommandManager(loritta: Loritta) {
 
 					if (missingPermissions.isNotEmpty()) {
 						// oh no
-						val required = missingPermissions.joinToString(", ", transform = { "`" + reparsedLegacyLocale["LORIPERMISSION_${it.name}"] + "`" })
-						var message = reparsedLegacyLocale["LORIPERMISSION_MissingPermissions", required]
+						val required = missingPermissions.joinToString(", ", transform = { "`" + reparsedLegacyLocale.toNewLocale()["commands.loriPermission${it.name}"] + "`" })
+						var message = reparsedLegacyLocale.toNewLocale()["commands.loriMissingPermission", required]
 
 						if (ev.member.hasPermission(Permission.ADMINISTRATOR) || ev.member.hasPermission(Permission.MANAGE_SERVER)) {
-							message += " ${reparsedLegacyLocale["LORIPERMISSION_MissingPermCanConfigure", loritta.instanceConfig.loritta.website.url]}"
+							message += " ${reparsedLegacyLocale.toNewLocale()["commands.loriMissingPermissionCanConfigure", loritta.instanceConfig.loritta.website.url]}"
 						}
 						ev.textChannel.sendMessage(Constants.ERROR + " **|** ${ev.member.asMention} $message")
 								.reference(ev.message)
@@ -448,7 +448,7 @@ class CommandManager(loritta: Loritta) {
 				}
 
 				if (context.isPrivateChannel && !command.canUseInPrivateChannel()) {
-					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + reparsedLegacyLocale["CANT_USE_IN_PRIVATE"])
+					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + reparsedLegacyLocale.toNewLocale()["commands.cantUseInPrivate"])
 					return true
 				}
 
@@ -476,7 +476,7 @@ class CommandManager(loritta: Loritta) {
 						if (hasBadNickname) {
 							context.reply(
 									LorittaReply(
-											reparsedLegacyLocale["LORITTA_BadNickname"],
+											reparsedLegacyLocale.toNewLocale()["commands.lorittaBadNickname"],
 											"<:lori_triste:370344565967814659>"
 									)
 							)
