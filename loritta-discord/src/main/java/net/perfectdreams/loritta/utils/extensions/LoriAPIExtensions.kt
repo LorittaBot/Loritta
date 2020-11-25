@@ -4,7 +4,6 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import net.perfectdreams.loritta.api.entities.Message
 import net.perfectdreams.loritta.api.entities.User
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.DiscordMessage
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 
@@ -31,16 +30,6 @@ fun User.toJDA() = (this as JDAUser).handle
  * @return        the reply as a string
  */
 fun LorittaReply.build(context: CommandContext) = this.build(JDAUser(context.userHandle))
-
-/**
- * Builds a reply based on the current [context]
- *
- * Shouldn't be used! [DiscordCommandContext] is deprecated! Use this only if you know what you are doing!!
- *
- * @param context the current context
- * @return        the reply as a string
- */
-fun LorittaReply.build(context: DiscordCommandContext) = this.build(JDAUser(context.userHandle))
 
 /**
  * Builds a reply based on the user [user]

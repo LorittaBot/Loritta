@@ -219,7 +219,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 											}
 
 											// Envie via DM uma mensagem falando sobre a Loritta!
-											val message = locale["LORITTA_ADDED_ON_SERVER", user.asMention, guild.name, com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url + "dashboard", locale["LORITTA_SupportServerInvite"], com.mrpowergamerbr.loritta.utils.loritta.legacyCommandManager.commandMap.size + com.mrpowergamerbr.loritta.utils.loritta.commandManager.commands.size, "${com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url}donate"]
+											val message = locale["LORITTA_ADDED_ON_SERVER", user.asMention, guild.name, com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url + "dashboard", locale["LORITTA_SupportServerInvite"], com.mrpowergamerbr.loritta.utils.loritta.legacyCommandManager.commandMap.size + com.mrpowergamerbr.loritta.utils.loritta.commandMap.commands.size, "${com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url}donate"]
 
 											user.openPrivateChannel().queue {
 												it.sendMessage(message).queue()

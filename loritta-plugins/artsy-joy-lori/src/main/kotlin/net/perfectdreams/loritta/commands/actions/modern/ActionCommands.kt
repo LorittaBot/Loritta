@@ -24,7 +24,6 @@ import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractComman
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
 import net.perfectdreams.loritta.utils.extensions.toJDA
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.kotlin.utils.addToStdlib.cast
 import java.awt.Color
 import java.io.File
 

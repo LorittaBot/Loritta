@@ -2,81 +2,83 @@ package net.perfectdreams.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.TextChannel
-import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import net.perfectdreams.loritta.platform.discord.commands.LorittaDiscordCommand
-import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
-import net.perfectdreams.loritta.platform.discord.entities.DiscordMessage
+import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
 
-class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "sorteio setup", "giveaway criar", "sorteio criar", "giveaway create", "sorteio create"), CommandCategory.FUN) {
-    override val discordPermissions = listOf(
-            Permission.MESSAGE_MANAGE
-    )
-
-    override val canUseInPrivateChannel = false
-
-    override fun getDescription(locale: BaseLocale): String? {
-        return locale["commands.fun.giveaway.description"]
+class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta, listOf("giveaway setup", "sorteio setup", "giveaway criar", "sorteio criar", "giveaway create", "sorteio create"), CommandCategory.FUN) {
+    companion object {
+        private const val LOCALE_PREFIX = "commands.fun"
+        val logger = KotlinLogging.logger { }
     }
 
-    @Subcommand
-    suspend fun root(context: DiscordCommandContext, locale: BaseLocale, args: Array<String>) {
-        var customGiveawayMessage: String? = null
+    override fun command() = create {
+        userRequiredPermissions = listOf(Permission.MESSAGE_MANAGE)
 
-        if (args.isNotEmpty()) {
-            val customMessage = args.joinToString(" ")
+        canUseInPrivateChannel = false
 
-            val watermarkedMessage = MessageUtils.watermarkMessage(
-                    customMessage,
-                    context.userHandle,
-                    context.locale["commands.fun.giveaway.giveawayCreatedBy"]
-            )
+        localizedDescription("$LOCALE_PREFIX.giveaway.description")
 
-            val message = MessageUtils.generateMessage(watermarkedMessage, listOf(), context.discordGuild, mapOf(), true)
+        executesDiscord {
+            val context = this
 
-            if (message != null) {
-                context.reply(
-                        LorittaReply(
-                                message = locale["commands.fun.giveaway.giveawayValidCustomMessage"],
-                                prefix = Emotes.LORI_TEMMIE
-                        )
+            var customGiveawayMessage: String? = null
+
+            if (args.isNotEmpty()) {
+                val customMessage = args.joinToString(" ")
+
+                val watermarkedMessage = MessageUtils.watermarkMessage(
+                        customMessage,
+                        context.user,
+                        context.locale["$LOCALE_PREFIX.giveaway.giveawayCreatedBy"]
                 )
 
-                val giveawayMessage = GiveawayManager.createGiveawayMessage(
-                        context.locale,
-                        "Exemplo de Giveaway",
-                        "Apenas um exemplo!",
-                        "\uD83C\uDF89",
-                        System.currentTimeMillis() + 120_000,
-                        context.discordGuild!!,
-                        watermarkedMessage
-                )
+                val message = MessageUtils.generateMessage(watermarkedMessage, listOf(), context.guild, mapOf(), true)
 
-                context.sendMessage(giveawayMessage)
-                customGiveawayMessage = watermarkedMessage
+                if (message != null) {
+                    context.reply(
+                            LorittaReply(
+                                    message = locale["commands.fun.giveaway.giveawayValidCustomMessage"],
+                                    prefix = Emotes.LORI_TEMMIE
+                            )
+                    )
+
+                    val giveawayMessage = GiveawayManager.createGiveawayMessage(
+                            context.locale,
+                            "Exemplo de Giveaway",
+                            "Apenas um exemplo!",
+                            "\uD83C\uDF89",
+                            System.currentTimeMillis() + 120_000,
+                            context.guild,
+                            watermarkedMessage
+                    )
+
+                    context.sendMessage(giveawayMessage)
+                    customGiveawayMessage = watermarkedMessage
+                }
             }
+
+
+            getGiveawayName(context, locale, GiveawayBuilder().apply { this.customGiveawayMessage = customGiveawayMessage })
         }
-
-
-        getGiveawayName(context, locale, GiveawayBuilder().apply { this.customGiveawayMessage = customGiveawayMessage })
     }
 
     suspend fun getGiveawayName(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
-        val message = context.reply(
-                LorittaReply(
-                        message = locale["commands.fun.giveaway.giveawayName"],
-                        prefix = "\uD83E\uDD14"
-                )
-        )
+        val message = context.discordMessage.channel.sendMessage(
+                    LorittaReply(
+                            message = locale["$LOCALE_PREFIX.giveaway.giveawayName"],
+                            prefix = "\uD83E\uDD14"
+                    ).build(context.getUserMention(true))
+        ).await()
 
         addCancelOption(context, message)
 
@@ -88,12 +90,12 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
     }
 
     suspend fun getGiveawayDescription(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
-        val message = context.reply(
+        val message = context.discordMessage.channel.sendMessage(
                 LorittaReply(
-                        message = locale["commands.fun.giveaway.giveawayDescription"],
+                        message = locale["$LOCALE_PREFIX.giveaway.giveawayDescription"],
                         prefix = "\uD83E\uDD14"
-                )
-        )
+                ).build(context.getUserMention(true))
+        ).await()
 
         addCancelOption(context, message)
 
@@ -105,12 +107,12 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
     }
 
     suspend fun getGiveawayDuration(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
-        val message = context.reply(
+        val message = context.discordMessage.channel.sendMessage(
                 LorittaReply(
                         message = locale["commands.fun.giveaway.giveawayDuration"],
                         prefix = "\uD83E\uDD14"
-                )
-        )
+                ).build(context.getUserMention(true))
+        ).await()
 
         addCancelOption(context, message)
 
@@ -122,12 +124,12 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
     }
 
     suspend fun getGiveawayReaction(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
-        val message = context.reply(
+        val message = context.discordMessage.channel.sendMessage(
                 LorittaReply(
-                        message = locale["commands.fun.giveaway.giveawayReaction"],
+                        message = locale["$LOCALE_PREFIX.giveaway.giveawayReaction"],
                         prefix = "\uD83E\uDD14"
-                )
-        )
+                ).build(context.getUserMention(true))
+        ).await()
 
         addCancelOption(context, message)
 
@@ -139,12 +141,12 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
     }
 
     suspend fun getGiveawayChannel(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
-        val message = context.reply(
+        val message = context.discordMessage.channel.sendMessage(
                 LorittaReply(
-                        message = locale["commands.fun.giveaway.giveawayChannel"],
+                        message = locale["$LOCALE_PREFIX.giveaway.giveawayChannel"],
                         prefix = "\uD83E\uDD14"
-                )
-        )
+                ).build(context.getUserMention(true))
+        ).await()
 
         addCancelOption(context, message)
 
@@ -152,7 +154,7 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
             val pop = it.message.contentRaw
             var channel: TextChannel? = null
 
-            val channels = context.discordGuild!!.getTextChannelsByName(pop, true)
+            val channels = context.guild.getTextChannelsByName(pop, true)
 
             if (channels.isNotEmpty()) {
                 channel = channels[0]
@@ -163,7 +165,7 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
                         .replace(">", "")
 
                 if (id.isValidSnowflake()) {
-                    channel = context.discordGuild.getTextChannelById(id)
+                    channel = context.guild.getTextChannelById(id)
                 }
             }
 
@@ -187,7 +189,7 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
                 return@onResponseByAuthor
             }
 
-            if (!channel.canTalk(context.handle)) {
+            if (!channel.canTalk(context.member!!)) {
                 context.reply(
                         LorittaReply(
                                 "Você não pode falar no canal de texto!",
@@ -197,7 +199,7 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
                 return@onResponseByAuthor
             }
 
-            val lorittaAsMember = context.discordGuild.selfMember
+            val lorittaAsMember = context.guild.selfMember
 
             if (!lorittaAsMember.hasPermission(channel, Permission.MESSAGE_ADD_REACTION)) {
                 context.reply(
@@ -237,26 +239,26 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
     }
 
     suspend fun getGiveawayWinningRoles(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
-        val message = context.reply(
+        val message = context.discordMessage.channel.sendMessage(
                 LorittaReply(
-                        message = locale["commands.fun.giveaway.giveawayDoYouWantAutomaticRole"],
+                        message = locale["$LOCALE_PREFIX.giveaway.giveawayDoYouWantAutomaticRole"],
                         prefix = "\uD83E\uDD14"
-                )
-        )
+                ).build(context.getUserMention(true))
+        ).await()
 
-        message.handle.addReaction("✅").queue()
-        message.handle.addReaction("\uD83D\uDE45").queue()
+        message.addReaction("✅").queue()
+        message.addReaction("\uD83D\uDE45").queue()
 
-        message.handle.onReactionAddByAuthor(context) {
+        message.onReactionAddByAuthor(context) {
             message.delete()
 
-            if (it.reactionEmote.isEmote("✅")) {
-                val message = context.reply(
+            if (it.reactionEmote.name == "✅") {
+                val message = context.discordMessage.channel.sendMessage(
                         LorittaReply(
-                                message = locale["commands.fun.giveaway.giveawayMentionRoles"],
+                                message = locale["$LOCALE_PREFIX.giveaway.giveawayMentionRoles"],
                                 prefix = "\uD83E\uDD14"
-                        )
-                )
+                        ).build(context.getUserMention(true))
+                ).await()
 
                 addCancelOption(context, message)
 
@@ -273,7 +275,7 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
                         roleName = it.message.contentRaw.substring(1)
                     }
 
-                    val role = context.discordGuild!!.getRolesByName(roleName, true).firstOrNull()
+                    val role = context.guild.getRolesByName(roleName, true).firstOrNull()
 
                     if (role != null)
                         roles.add(role)
@@ -289,7 +291,7 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
                     }
 
                     for (role in roles) {
-                        if (!context.discordGuild.selfMember.canInteract(role) || role.isManaged) {
+                        if (!context.guild.selfMember.canInteract(role) || role.isManaged) {
                             context.reply(
                                     LorittaReply(
                                             locale["commands.fun.giveaway.giveawayCantInteractWithRole", "`${role.name}`"],
@@ -323,12 +325,12 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
     }
 
     suspend fun getGiveawayWinnerCount(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
-        val message = context.reply(
+        val message = context.discordMessage.channel.sendMessage(
                 LorittaReply(
                         message = locale["commands.fun.giveaway.giveawayWinnerCount"],
                         prefix = "\uD83E\uDD14"
-                )
-        )
+                ).build(context.getUserMention(true))
+        ).await()
 
         addCancelOption(context, message)
 
@@ -363,7 +365,7 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
         }
     }
 
-    suspend fun buildGiveaway(message: Message, context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
+    suspend fun buildGiveaway(message: net.dv8tion.jda.api.entities.Message, context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
         val (reason, description, time, _reaction, channel, numberOfWinners, roleIds) = builder
         var reaction = _reaction
 
@@ -409,7 +411,7 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
         message.delete()
 
         GiveawayManager.spawnGiveaway(
-                loritta.getLocaleById(context.config.localeId),
+                loritta.getLocaleById(context.serverConfig.localeId),
                 channel,
                 reason,
                 description,
@@ -421,19 +423,19 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
         )
     }
 
-    fun addCancelOption(context: DiscordCommandContext, message: DiscordMessage) {
-        message.handle.onReactionAddByAuthor(context) {
+    fun addCancelOption(context: DiscordCommandContext, message: net.dv8tion.jda.api.entities.Message) {
+        message.onReactionAddByAuthor(context) {
             if (it.reactionEmote.idLong == 412585701054611458L) {
                 message.delete()
                 context.reply(
                         LorittaReply(
-                                context.locale["commands.fun.giveaway.giveawaySetupCancelled"]
+                                context.locale["$LOCALE_PREFIX.giveaway.giveawaySetupCancelled"]
                         )
                 )
             }
         }
 
-        message.handle.addReaction("error:412585701054611458").queue()
+        message.addReaction("error:412585701054611458").queue()
     }
 
     class GiveawayBuilder {
@@ -474,4 +476,5 @@ class GiveawaySetupCommand : LorittaDiscordCommand(arrayOf("giveaway setup", "so
             return roleIds
         }
     }
+
 }

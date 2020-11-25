@@ -4,26 +4,18 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.salomonbrys.kotson.*
 import com.google.common.util.concurrent.ThreadFactoryBuilder
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonParser
+import com.google.gson.*
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.dao.Background
-import com.mrpowergamerbr.loritta.dao.Profile
-import com.mrpowergamerbr.loritta.dao.ProfileSettings
-import com.mrpowergamerbr.loritta.dao.ServerConfig
+import com.mrpowergamerbr.loritta.commands.vanilla.discord.ChannelInfoCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.magic.*
+import com.mrpowergamerbr.loritta.dao.*
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.profile.ProfileDesignManager
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
-import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordConfig
-import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordInstanceConfig
-import com.mrpowergamerbr.loritta.utils.config.GeneralInstanceConfig
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.locale.Gender
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.config.*
+import com.mrpowergamerbr.loritta.utils.locale.*
 import com.mrpowergamerbr.loritta.utils.loritta
 import io.ktor.client.*
-import io.ktor.client.call.*
 import io.ktor.client.engine.apache.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -35,48 +27,33 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.utils.format
-import net.perfectdreams.loritta.commands.vanilla.`fun`.FanArtsCommand
-import net.perfectdreams.loritta.commands.vanilla.administration.BanInfoCommand
-import net.perfectdreams.loritta.commands.vanilla.economy.SonhosTopCommand
-import net.perfectdreams.loritta.commands.vanilla.economy.SonhosTopLocalCommand
-import net.perfectdreams.loritta.commands.vanilla.economy.TransactionsCommand
-import net.perfectdreams.loritta.commands.vanilla.magic.LoriToolsCommand
-import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaTopCommand
-import net.perfectdreams.loritta.commands.vanilla.social.RankGlobalCommand
-import net.perfectdreams.loritta.commands.vanilla.social.RepTopCommand
-import net.perfectdreams.loritta.commands.vanilla.social.XpNotificationsCommand
+import net.perfectdreams.loritta.commands.vanilla.`fun`.*
+import net.perfectdreams.loritta.commands.vanilla.administration.*
+import net.perfectdreams.loritta.commands.vanilla.economy.*
+import net.perfectdreams.loritta.commands.vanilla.magic.*
+import net.perfectdreams.loritta.commands.vanilla.social.*
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandMap
 import net.perfectdreams.loritta.platform.discord.plugin.JVMPluginManager
-import net.perfectdreams.loritta.platform.discord.utils.GuildSetupQueue
-import net.perfectdreams.loritta.platform.discord.utils.JVMLorittaAssets
-import net.perfectdreams.loritta.tables.BackgroundPayments
-import net.perfectdreams.loritta.tables.Backgrounds
+import net.perfectdreams.loritta.platform.discord.utils.*
+import net.perfectdreams.loritta.tables.*
 import net.perfectdreams.loritta.tables.Payments
-import net.perfectdreams.loritta.utils.CommandCooldownManager
-import net.perfectdreams.loritta.utils.UserPremiumPlans
-import net.perfectdreams.loritta.utils.config.FanArt
-import net.perfectdreams.loritta.utils.config.FanArtArtist
+import net.perfectdreams.loritta.utils.*
+import net.perfectdreams.loritta.utils.config.*
 import net.perfectdreams.loritta.utils.extensions.readImage
 import net.perfectdreams.loritta.utils.locale.DebugLocales
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.exceptions.ExposedSQLException
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.image.BufferedImage
-import java.io.File
-import java.io.FileNotFoundException
-import java.io.FileOutputStream
+import java.io.*
 import java.lang.reflect.Modifier
 import java.net.URL
 import java.util.*
-import java.util.concurrent.ConcurrentLinkedQueue
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 import java.util.zip.ZipInputStream
-import kotlin.collections.component1
-import kotlin.collections.component2
+import kotlin.collections.*
 import kotlin.collections.set
 import kotlin.random.Random
 
@@ -95,6 +72,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         registerAll(
                 // ===[ MAGIC ]===
                 LoriToolsCommand(this@LorittaDiscord),
+                PluginsCommand(this@LorittaDiscord),
 
                 // ===[ ECONOMY ]===
                 SonhosTopCommand(this@LorittaDiscord),
@@ -111,7 +89,15 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
                 BanInfoCommand(this@LorittaDiscord),
 
                 // ===[ MISC ]===
-                FanArtsCommand(this@LorittaDiscord)
+                FanArtsCommand(this@LorittaDiscord),
+
+                // ===[ DISCORD ]===
+                ChannelInfoCommand(this@LorittaDiscord),
+                // ===[ FUN ]===
+                GiveawayCommand(this@LorittaDiscord),
+                GiveawayEndCommand(this@LorittaDiscord),
+                GiveawayRerollCommand(this@LorittaDiscord),
+                GiveawaySetupCommand(this@LorittaDiscord)
         )
     }
 

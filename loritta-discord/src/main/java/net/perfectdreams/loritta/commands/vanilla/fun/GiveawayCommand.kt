@@ -1,54 +1,55 @@
 package net.perfectdreams.loritta.commands.vanilla.`fun`
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
-import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import net.perfectdreams.loritta.platform.discord.commands.LorittaDiscordCommand
-import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
+import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import java.awt.Color
 
-class GiveawayCommand : LorittaDiscordCommand(arrayOf("giveaway", "sorteio"), CommandCategory.MAGIC) {
-	override val discordPermissions = listOf(
-			Permission.MESSAGE_MANAGE
-	)
-
-	override val canUseInPrivateChannel = false
-
-	override fun getDescription(locale: BaseLocale): String? {
-		return locale["commands.fun.giveawaymenu.description"]
+class GiveawayCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("giveaway", "sorteio"), CommandCategory.FUN) {
+	companion object {
+		private const val LOCALE_PREFIX = "commands.fun"
 	}
 
-	@Subcommand
-	suspend fun root(context: DiscordCommandContext, locale: BaseLocale, args: Array<String>) {
-		val embed = EmbedBuilder()
-				.setTitle("\uD83C\uDF89 ${locale["commands.fun.giveawaymenu.categoryTitle"]}")
-				.setThumbnail("https://loritta.website/assets/img/loritta_confetti.png")
-				.setDescription("*${locale["commands.fun.giveawaymenu.categoryDescription"]}*\n\n")
-				.setColor(Color(200, 20, 217))
+	override fun command() = create {
+		userRequiredPermissions = listOf(Permission.MESSAGE_MANAGE)
 
-		val commands = listOf(
-				GiveawaySetupCommand(),
-				GiveawayEndCommand(),
-				GiveawayRerollCommand()
-		)
+		canUseInPrivateChannel = false
 
-		for (cmd in commands) {
-			val toBeAdded = run {
-				val usage = cmd.getUsage(com.mrpowergamerbr.loritta.utils.loritta.getLocaleById(context.config.localeId)).build(context.locale)
-				val usageWithinCodeBlocks = if (usage.isNotEmpty()) {
-					"`$usage` "
-				} else {
-					""
+		localizedDescription("$LOCALE_PREFIX.giveawaymenu.description")
+
+		executesDiscord {
+			val context = this
+
+			val embed = EmbedBuilder()
+					.setTitle("\uD83C\uDF89 ${locale["commands.fun.giveawaymenu.categoryTitle"]}")
+					.setThumbnail("https://loritta.website/assets/img/loritta_confetti.png")
+					.setDescription("*${locale["commands.fun.giveawaymenu.categoryDescription"]}*\n\n")
+					.setColor(Color(200, 20, 217))
+
+			val commands = listOf(
+					GiveawaySetupCommand(loritta),
+					GiveawayEndCommand(loritta),
+					GiveawayRerollCommand(loritta)
+			)
+
+			for (cmd in commands) {
+				val toBeAdded = run {
+					val usage = cmd.command().usage.build(context.locale)
+					val usageWithinCodeBlocks = if (usage.isNotEmpty()) {
+						"`$usage` "
+					} else {
+						""
+					}
+
+					"**${context.serverConfig.commandPrefix}${cmd.labels.firstOrNull()}** $usageWithinCodeBlocks» ${cmd.command().description(com.mrpowergamerbr.loritta.utils.loritta.getLocaleById(context.serverConfig.localeId))}\n"
 				}
 
-				"**${context.config.commandPrefix}${cmd.labels.firstOrNull()}** $usageWithinCodeBlocks» ${cmd.getDescription(com.mrpowergamerbr.loritta.utils.loritta.getLocaleById(context.config.localeId))}\n"
+				embed.appendDescription(toBeAdded)
 			}
 
-			embed.appendDescription(toBeAdded)
+			context.sendMessage(context.getUserMention(true), embed.build())
 		}
-
-		context.sendMessage(context.getAsMention(true), embed.build())
 	}
 }
