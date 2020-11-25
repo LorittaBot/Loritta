@@ -47,7 +47,7 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["MONEY_DESCRIPTION"]
+		return locale.toNewLocale()["commands.utils.money.description"]
 	}
 
 	override fun getExamples(): List<String> {
@@ -62,7 +62,7 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 			}
 
 			if (multiply == null) {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["INVALID_NUMBER", context.args[2]])
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale.toNewLocale()["loritta.invalidNumber", context.args[2]])
 				return
 			}
 
@@ -83,7 +83,7 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 				val euroValueInCurrency = exchangeRates[from] ?: run {
 					context.reply(
                             LorittaReply(
-                                    message = locale["MONEY_INVALID_CURRENCY"].msgFormat(from, exchangeRates.keys.joinToString(transform = { "`$it`" })),
+                                    message = locale.toNewLocale()["commands.utils.money.invalidCurrency"].msgFormat(from, exchangeRates.keys.joinToString(transform = { "`$it`" })),
                                     prefix = Constants.ERROR
                             )
 					)
@@ -95,7 +95,7 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 				val endValueInEuros = exchangeRates[to] ?: run {
 					context.reply(
                             LorittaReply(
-                                    message = locale["MONEY_INVALID_CURRENCY"].msgFormat(to, exchangeRates.keys.joinToString(transform = { "`$it`" })),
+                                    message = locale.toNewLocale()["commands.utils.money.invalidCurrency"].msgFormat(to, exchangeRates.keys.joinToString(transform = { "`$it`" })),
                                     prefix = Constants.ERROR
                             )
 					)
@@ -110,7 +110,7 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 
 			context.reply(
                     LorittaReply(
-                            message = locale["MONEY_CONVERTED", multiply, from, to, df.format(value * multiply)],
+                            message = locale.toNewLocale()["commands.utils.money.converted", multiply, from, to, df.format(value * multiply)],
                             prefix = "\uD83D\uDCB5"
                     )
 			)

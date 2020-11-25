@@ -12,7 +12,7 @@ import java.util.*
 
 class EncodeCommand : AbstractCommand("encode", listOf("codificar", "encrypt", "criptografar", "hash"), CommandCategory.UTILS) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["ENCODE_Description", listOf("md2", "md5", "sha1", "sha256", "sha384", "sha512", "rot13", "uuid", "base64").joinToString(", ", transform = { "`$it`" })]
+		return locale.toNewLocale()["commands.utils.encode.description", listOf("md2", "md5", "sha1", "sha256", "sha384", "sha512", "rot13", "uuid", "base64").joinToString(", ", transform = { "`$it`" })]
 	}
 
 	override fun getDetailedUsage(): Map<String, String> {
@@ -63,7 +63,7 @@ class EncodeCommand : AbstractCommand("encode", listOf("codificar", "encrypt", "
 
 		if (encodedText == null) {
 			context.reply(
-					locale["ENCODE_InvalidMethod", encodeMode.stripCodeMarks()],
+					locale.toNewLocale()["commands.utils.encode.invalidMethod", encodeMode.stripCodeMarks()],
 					Constants.ERROR
 			)
 			return
@@ -72,12 +72,12 @@ class EncodeCommand : AbstractCommand("encode", listOf("codificar", "encrypt", "
 		context.reply(
 				true,
                 LorittaReply(
-                        "**${locale["ENCODE_OriginalText"]}:** `${text.stripCodeMarks()}`",
+                        "**${locale.toNewLocale()["commands.utils.encode.originalText"]}:** `${text.stripCodeMarks()}`",
                         "\uD83D\uDCC4",
                         mentionUser = false
                 ),
                 LorittaReply(
-                        "**${locale["ENCODE_EncodedText"]}:** `${encodedText.stripCodeMarks()}`",
+                        "**${locale.toNewLocale()["commands.utils.encode.encodedText"]}:** `${encodedText.stripCodeMarks()}`",
                         "<:blobspy:465979979876794368>",
                         mentionUser = false
                 )
