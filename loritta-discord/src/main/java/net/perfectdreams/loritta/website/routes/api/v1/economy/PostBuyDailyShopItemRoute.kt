@@ -157,7 +157,7 @@ class PostBuyDailyShopItemRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLog
 					profile.takeSonhosNested(cost.toLong())
 					PaymentUtils.addToTransactionLogNested(
 							cost.toLong(),
-							SonhosPaymentReason.PROFILE_DESIGN,
+							SonhosPaymentReason.PROFILE,
 							givenBy = profile.id.value
 					)
 
@@ -181,7 +181,7 @@ class PostBuyDailyShopItemRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLog
 						creator.addSonhosNested(creatorReceived)
 						PaymentUtils.addToTransactionLogNested(
 								creatorReceived,
-								SonhosPaymentReason.PROFILE_DESIGN,
+								SonhosPaymentReason.PROFILE,
 								receivedBy = creatorReceived
 						)
 					}

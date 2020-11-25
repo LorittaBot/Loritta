@@ -20,6 +20,5 @@ enum class SonhosPaymentReason {
 	COIN_FLIP_BET,
 	STOCKS,
 	GUESS_NUMBER,
-	EMOJI_FIGHT,
-	PROFILE_DESIGN
+	EMOJI_FIGHT
 }
