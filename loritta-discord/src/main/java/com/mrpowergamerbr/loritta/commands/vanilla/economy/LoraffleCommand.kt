@@ -109,7 +109,7 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 			if (status == BuyRaffleTicketStatus.NOT_ENOUGH_MONEY) {
 				context.reply(
                         LorittaReply(
-                                context.legacyLocale["RAFFLE_NotEnoughMoney", json["canOnlyPay"].int, quantity, if (quantity == 1) "" else "s"],
+                                context.locale["commands.economy.raffle.notEnoughMoney", json["canOnlyPay"].int, quantity, if (quantity == 1) "" else "s"],
                                 Constants.ERROR
                         )
 				)
@@ -118,11 +118,11 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 
 			context.reply(
                     LorittaReply(
-                            context.legacyLocale["RAFFLE_YouBoughtAnTicket", quantity, if (quantity == 1) "" else "s", quantity.toLong() * 250],
+                            context.locale["commands.economy.raffle.youBoughtAnTicket", quantity, if (quantity == 1) "" else "s", quantity.toLong() * 250],
                             "\uD83C\uDFAB"
                     ),
                     LorittaReply(
-                            context.legacyLocale["RAFFLE_WantMoreChances", context.config.commandPrefix],
+                            context.locale["commands.economy.raffle.wantMoreChances", context.config.commandPrefix],
                             mentionUser = false
                     )
 			)
@@ -171,32 +171,32 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
                         "<:loritta:331179879582269451>"
                 ),
                 LorittaReply(
-                        context.legacyLocale["RAFFLE_CurrentPrize", (currentTickets * 250).toString()],
+                        context.locale["commands.economy.raffle.currentPrize", (currentTickets * 250).toString()],
                         "<:starstruck:540988091117076481>",
                         mentionUser = false
                 ),
                 LorittaReply(
-                        context.legacyLocale["RAFFLE_BoughtTickets", currentTickets],
+                        context.locale["commands.economy.raffle.boughtTickets", currentTickets],
                         "\uD83C\uDFAB",
                         mentionUser = false
                 ),
                 LorittaReply(
-                        context.legacyLocale["RAFFLE_UsersParticipating", usersParticipating],
+                        context.locale["commands.economy.raffle.usersParticipating", usersParticipating],
                         "\uD83D\uDC65",
                         mentionUser = false
                 ),
                 LorittaReply(
-                        context.legacyLocale["RAFFLE_LastWinner", "$nameAndDiscriminator (${lastWinner?.id})", lastWinnerPrize],
+                        context.locale["commands.economy.raffle.lastWinner", "$nameAndDiscriminator (${lastWinner?.id})", lastWinnerPrize],
                         "\uD83D\uDE0E",
                         mentionUser = false
                 ),
                 LorittaReply(
-                        context.legacyLocale["RAFFLE_ResultsIn", DateUtils.formatDateDiff(Calendar.getInstance(), cal, locale)],
+                        context.locale["commands.economy.raffle.resultsIn", DateUtils.formatDateDiff(Calendar.getInstance(), cal, locale)],
                         prefix = "\uD83D\uDD52",
                         mentionUser = false
                 ),
                 LorittaReply(
-                        context.legacyLocale["RAFFLE_BuyAnTicketFor", context.config.commandPrefix],
+                        context.locale["commands.economy.raffle.buyAnTicketFor", context.config.commandPrefix],
                         prefix = "\uD83D\uDCB5",
                         mentionUser = false
                 )
