@@ -2,10 +2,7 @@ package net.perfectdreams.loritta.platform.discord.commands
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.dao.ServerConfig
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.ImageUtils
-import com.mrpowergamerbr.loritta.utils.LorittaUser
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -184,7 +181,7 @@ class DiscordCommandContext(
 			}
 		}
 
-		// Ainda nada válido? Quer saber, desisto! Vamos pesquisar as mensagens antigas deste servidor & embeds então para encontrar attachments...
+		// Still nothing valid? You know what? I give up! Let's search old messages from this server & embeds to find attachments...
 		if (searchPreviousMessages > 0 && !this.isPrivateChannel && guild.selfMember.hasPermission(discordMessage.channel as TextChannel, Permission.MESSAGE_HISTORY)) {
 			val textChannel = discordMessage.channel as TextChannel
 			try {
@@ -225,12 +222,91 @@ class DiscordCommandContext(
 		if (toBeDownloaded == null)
 			return null
 
-		// Vamos baixar a imagem!
+		// let's download the image!
 		try {
 			val image = LorittaUtils.downloadImage(toBeDownloaded) ?: return null
 			return JVMImage(image)
 		} catch (e: Exception) {
 			return null
+		}
+	}
+
+	fun textChannel(argument: Int): TextChannel? {
+		val channelId = args.getOrNull(argument)
+				?.replace("<#", "")
+				?.replace(">", "")
+
+		return if (channelId?.isValidSnowflake()!!) {
+			guild.getTextChannelById(channelId)
+		} else {
+			null
+		} ?: if (guild.getTextChannelsByName(args[0], true).isNotEmpty()) {
+			guild.getTextChannelsByName(args[0], true).first()
+		} else {
+			null
+		} ?: if (guild.textChannels.filter { it.name == args[0] }.isNotEmpty()) {
+			guild.textChannels.filter { it.name == args[0] }.first()
+		} else {
+			null
+		}
+	}
+
+	fun voiceChannel(argument: Int): VoiceChannel? {
+		val channelId = args.getOrNull(argument)
+				?.replace("<#", "")
+				?.replace(">", "")
+
+		return if (channelId?.isValidSnowflake()!!) {
+			guild.getVoiceChannelById(channelId)
+		} else {
+			null
+		} ?: if (guild.getVoiceChannelsByName(args[0], true).isNotEmpty()) {
+			guild.getVoiceChannelsByName(args[0], true).first()
+		} else {
+			null
+		} ?: if (guild.voiceChannels.filter { it.name == args[0] }.isNotEmpty()) {
+			guild.voiceChannels.filter { it.name == args[0] }.first()
+		} else {
+			null
+		}
+	}
+
+	fun role(argument: Int): Role? {
+		val roleId = args.getOrNull(argument)
+				?.replace("<@&", "")
+				?.replace(">", "")
+
+		return if (roleId?.isValidSnowflake()!!) {
+			guild.getRoleById(roleId)
+		} else {
+			null
+		} ?: if (guild.getRolesByName(args[0], true).isNotEmpty()) {
+			guild.getRolesByName(args[0], true).first()
+		} else {
+			null
+		} ?: if (guild.roles.filter { it.name == args[0] }.isNotEmpty()) {
+			guild.roles.filter { it.name == args[0] }.first()
+		} else {
+			null
+		}
+	}
+
+	fun emote(argument: Int): Emote? {
+		val regexEmote = Regex("(<)|[a-z]|(_)|(:)|(>)")
+		val emoteId = args.getOrNull(argument)?.let { regexEmote.replace(it, "") }
+
+		return if (emoteId?.isValidSnowflake()!!) {
+			guild.getEmoteById(emoteId)
+		} else {
+			null
+		} ?: if (guild.getEmotesByName(args[0], true).isNotEmpty()) {
+			guild.getEmotesByName(args[0], true).first()
+		} else {
+			null
+		} ?: if (guild.emotes.filter { it.name == args[0] }.isNotEmpty()) {
+			guild.emotes.filter { it.name == args[0] }.first()
+		} else {
+			null
 		}
 	}
 

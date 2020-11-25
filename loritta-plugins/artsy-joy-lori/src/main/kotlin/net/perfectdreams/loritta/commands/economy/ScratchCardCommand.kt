@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -18,6 +19,8 @@ import net.dv8tion.jda.api.entities.Message
 import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.*
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.tables.Raspadinhas
 import net.perfectdreams.loritta.utils.Emotes
@@ -28,7 +31,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import java.util.concurrent.TimeUnit
 
-class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), CommandCategory.ECONOMY) {
+class ScratchCardCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("scratchcard", "raspadinha"), CommandCategory.ECONOMY) {
 	companion object {
 		private val mutexes = CacheBuilder.newBuilder().expireAfterWrite(1L, TimeUnit.MINUTES).build<Long, Mutex>()
 				.asMap()
@@ -39,107 +42,108 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 		private const val GESSY_COMBO = 250
 		private const val TOBIAS_COMBO = 130
 		private val logger = KotlinLogging.logger {}
+		private const val LOCALE_PREFIX = "commands.economy"
 	}
 
-	override fun getDescription(locale: BaseLocale): String? {
-		return locale["commands.economy.scratchcard.description"]
-	}
+	override fun command() = create {
+		localizedDescription("$LOCALE_PREFIX.scratchcard.description")
 
-	override fun getUsage(locale: BaseLocale): CommandArguments {
-		return arguments {
-			argument(ArgumentType.TEXT) {}
+		usage {
+			arguments {
+				argument(ArgumentType.TEXT) {}
+			}
+		}
+
+		canUseInPrivateChannel = false
+
+		executesDiscord {
+			val context = this
+
+			if (context.args.firstOrNull() == "ganhar" || context.args.firstOrNull() == "win" || context.args.firstOrNull() == "claim") {
+				checkRaspadinha(context, context.lorittaUser.profile, context.args.getOrNull(1)?.toLongOrNull())
+			} else if (context.args.firstOrNull() == "comprar" || context.args.firstOrNull() == "buy") {
+				buyRaspadinha(context, context.lorittaUser.profile)
+			} else {
+				val raspadinhaCount = transaction(Databases.loritta) {
+					Raspadinhas.select {
+						Raspadinhas.receivedById eq context.user.idLong
+					}.count()
+				}
+				val earnings = Raspadinhas.value.sum()
+				val raspadinhaEarnings = transaction(Databases.loritta) {
+					Raspadinhas.slice(Raspadinhas.receivedById, earnings).select {
+						Raspadinhas.receivedById eq context.user.idLong
+					}.groupBy(Raspadinhas.receivedById)
+							.firstOrNull()
+				}
+
+				context.reply(
+						LorittaReply(
+								"**Raspadinha da Loritta**",
+								"<:loritta:331179879582269451>"
+						),
+						LorittaReply(
+								"Ganhe prêmios comprando um ticket para raspar!",
+								"<:starstruck:540988091117076481>",
+								mentionUser = false
+						),
+						LorittaReply(
+								"Ao comprar, raspe clicando nos spoilers e veja os emojis que aparecem!",
+								"\uD83C\uDFAB",
+								mentionUser = false
+						),
+						LorittaReply(
+								"Se tiver alguma combinação na horizontal, vertical ou na diagional, você pode ganhar prêmios!",
+								"\uD83D\uDC65",
+								mentionUser = false
+						),
+						LorittaReply(
+								"**Combinação de <:loritta:664849802961485894>:** $LORITTA_COMBO sonhos",
+								mentionUser = false
+						),
+						LorittaReply(
+								"**Combinação de <:pantufa:664849802793713686>:** $PANTUFA_COMBO sonhos",
+								mentionUser = false
+						),
+						LorittaReply(
+								"**Combinação de <:gabriela:664849802927800351>:** $GABI_COMBO sonhos",
+								mentionUser = false
+						),
+						LorittaReply(
+								"**Combinação de <:dokyo:664849803397562369>:** $DOKYO_COMBO sonhos",
+								mentionUser = false
+						),
+						LorittaReply(
+								"**Combinação de <:gessy:664847035245002764>:** $GESSY_COMBO sonhos",
+								mentionUser = false
+						),
+						LorittaReply(
+								"**Combinação de <:tobias_nosa:450476856303419432>:** $TOBIAS_COMBO sonhos",
+								mentionUser = false
+						),
+						LorittaReply(
+								"Você já comprou **${raspadinhaCount} raspadinhas** e, com elas, você ganhou **${raspadinhaEarnings?.get(earnings) ?: 0} sonhos**",
+								mentionUser = false
+						),
+						LorittaReply(
+								"Compre uma raspadinha da Loritta por **150 sonhos** usando `${context.serverConfig.commandPrefix}raspadinha comprar`!",
+								prefix = "\uD83D\uDCB5",
+								mentionUser = false
+						)
+				)
+			}
 		}
 	}
-
-	override val canUseInPrivateChannel = false
-
-	@Subcommand
-	suspend fun root(context: DiscordCommandContext, locale: BaseLocale) {
-		if (context.args.firstOrNull() == "ganhar" || context.args.firstOrNull() == "win" || context.args.firstOrNull() == "claim") {
-			checkRaspadinha(context, context.lorittaUser.profile, context.args.getOrNull(1)?.toLongOrNull())
-		} else if (context.args.firstOrNull() == "comprar" || context.args.firstOrNull() == "buy") {
-			buyRaspadinha(context, context.lorittaUser.profile)
-		} else {
-			val raspadinhaCount = transaction(Databases.loritta) {
-				Raspadinhas.select {
-					Raspadinhas.receivedById eq context.userHandle.idLong
-				}.count()
-			}
-			val earnings = Raspadinhas.value.sum()
-			val raspadinhaEarnings = transaction(Databases.loritta) {
-				Raspadinhas.slice(Raspadinhas.receivedById, earnings).select {
-					Raspadinhas.receivedById eq context.userHandle.idLong
-				}.groupBy(Raspadinhas.receivedById)
-						.firstOrNull()
-			}
-
-			context.reply(
-                    LorittaReply(
-                            "**Raspadinha da Loritta**",
-                            "<:loritta:331179879582269451>"
-                    ),
-                    LorittaReply(
-                            "Ganhe prêmios comprando um ticket para raspar!",
-                            "<:starstruck:540988091117076481>",
-                            mentionUser = false
-                    ),
-                    LorittaReply(
-                            "Ao comprar, raspe clicando nos spoilers e veja os emojis que aparecem!",
-                            "\uD83C\uDFAB",
-                            mentionUser = false
-                    ),
-                    LorittaReply(
-                            "Se tiver alguma combinação na horizontal, vertical ou na diagional, você pode ganhar prêmios!",
-                            "\uD83D\uDC65",
-                            mentionUser = false
-                    ),
-                    LorittaReply(
-                            "**Combinação de <:loritta:664849802961485894>:** ${LORITTA_COMBO} sonhos",
-                            mentionUser = false
-                    ),
-                    LorittaReply(
-                            "**Combinação de <:pantufa:664849802793713686>:** ${PANTUFA_COMBO} sonhos",
-                            mentionUser = false
-                    ),
-                    LorittaReply(
-                            "**Combinação de <:gabriela:664849802927800351>:** ${GABI_COMBO} sonhos",
-                            mentionUser = false
-                    ),
-                    LorittaReply(
-                            "**Combinação de <:dokyo:664849803397562369>:** ${DOKYO_COMBO} sonhos",
-                            mentionUser = false
-                    ),
-                    LorittaReply(
-                            "**Combinação de <:gessy:664847035245002764>:** ${GESSY_COMBO} sonhos",
-                            mentionUser = false
-                    ),
-                    LorittaReply(
-                            "**Combinação de <:tobias_nosa:450476856303419432>:** ${TOBIAS_COMBO} sonhos",
-                            mentionUser = false
-                    ),
-                    LorittaReply(
-                            "Você já comprou **${raspadinhaCount} raspadinhas** e, com elas, você ganhou **${raspadinhaEarnings?.get(earnings) ?: 0} sonhos**",
-                            mentionUser = false
-                    ),
-                    LorittaReply(
-                            "Compre uma raspadinha da Loritta por **150 sonhos** usando `${context.config.commandPrefix}raspadinha comprar`!",
-                            prefix = "\uD83D\uDCB5",
-                            mentionUser = false
-                    )
-			)
-		}
-	}
-
-	private suspend fun buyRaspadinha(context: DiscordCommandContext, profile: Profile, message: Message? = null, _boughtScratchCardsInThisMessage: Int = 0) {
+	private suspend fun buyRaspadinha(context: net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext, profile: Profile, message: Message? = null, _boughtScratchCardsInThisMessage: Int = 0) {
 		var boughtScratchCardsInThisMessage = _boughtScratchCardsInThisMessage
-		val mutex = mutexes.getOrPut(context.userHandle.idLong, { Mutex() })
+		val mutex = mutexes.getOrPut(context.user.idLong, { Mutex() })
 		mutex.withLock {
 			if (150 > profile.money) {
 				context.reply(
-                        LorittaReply(
-                                "Você precisa de 150 sonhos para poder comprar uma raspadinha!",
-                                Constants.ERROR
-                        )
+						LorittaReply(
+								"Você precisa de 150 sonhos para poder comprar uma raspadinha!",
+								Constants.ERROR
+						)
 				)
 				return@withLock
 			}
@@ -148,7 +152,7 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 				profile.takeSonhosNested(150)
 			}
 
-			logger.info { "User ${context.userHandle.idLong} bought one raspadinha ticket!" }
+			logger.info { "User ${context.user.idLong} bought one raspadinha ticket!" }
 
 			val array = Array(3) { Array<Char>(3, init = { 'Z' }) }
 
@@ -193,7 +197,7 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 
 			val id = transaction(Databases.loritta) {
 				Raspadinhas.insertAndGetId {
-					it[receivedById] = context.userHandle.idLong
+					it[receivedById] = context.user.idLong
 					it[receivedAt] = System.currentTimeMillis()
 					it[pattern] = array.joinToString(
 							"\n",
@@ -217,7 +221,7 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 				invisibleSpoilers += "||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||||\u200D||"
 			}
 
-			val content = "${Emotes.LORI_RICH} **|** ${context.getAsMention(false)} aqui está a sua raspadinha com número $id! Raspe clicando na parte cinza e, se o seu cartão for premiado com combinações de emojis na horizontal/vertical/diagonal, clique em ${Emotes.LORI_RICH} para receber a sua recompensa! Mas cuidado, não tente resgatar prêmios de uma raspadinha que não tem prêmios!! Se você quiser comprar um novo ticket pagando 150 sonhos, aperte em \uD83D\uDD04!!\n$scratchCardTemplate"
+			val content = "${Emotes.LORI_RICH} **|** ${context.getUserMention(false)} aqui está a sua raspadinha com número $id! Raspe clicando na parte cinza e, se o seu cartão for premiado com combinações de emojis na horizontal/vertical/diagonal, clique em ${Emotes.LORI_RICH} para receber a sua recompensa! Mas cuidado, não tente resgatar prêmios de uma raspadinha que não tem prêmios!! Se você quiser comprar um novo ticket pagando 150 sonhos, aperte em \uD83D\uDD04!!\n$scratchCardTemplate"
 			var contentWithInvisibleSpoilers = "$invisibleSpoilers$content"
 			if (contentWithInvisibleSpoilers.length >= 2000 && message != null) {
 				// Se a mensagem está ficando grande demais por causa dos spoilers, vamos editar para que seja vazia para "liberar" os spoilers usados
@@ -226,27 +230,27 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 				boughtScratchCardsInThisMessage = 0
 			}
 
-			val theMessage = message?.edit(MessageBuilder().append(contentWithInvisibleSpoilers).build(), clearReactions = false) ?: context.sendMessage(contentWithInvisibleSpoilers).handle
+			val theMessage = message?.edit(MessageBuilder().append(contentWithInvisibleSpoilers).build(), clearReactions = false) ?: context.discordMessage.channel.sendMessage(contentWithInvisibleSpoilers).await()
 
-			theMessage.onReactionByAuthor(context) {
+			theMessage?.onReactionByAuthor(context) {
 				if (it.reactionEmote.isEmote("\uD83D\uDD04")) {
-					buyRaspadinha(context, LorittaLauncher.loritta.getOrCreateLorittaProfile(context.handle.idLong), theMessage, boughtScratchCardsInThisMessage + 1)
+					buyRaspadinha(context, LorittaLauncher.loritta.getOrCreateLorittaProfile(context.user.idLong), theMessage, boughtScratchCardsInThisMessage + 1)
 				}
 
 				if (it.reactionEmote.isEmote("593979718919913474")) {
-					checkRaspadinha(context, LorittaLauncher.loritta.getOrCreateLorittaProfile(context.handle.idLong), id.value)
+					checkRaspadinha(context, LorittaLauncher.loritta.getOrCreateLorittaProfile(context.user.idLong), id.value)
 				}
 			}
 
 			if (message == null) {
-				theMessage.addReaction("lori_rica:593979718919913474").queue()
-				theMessage.addReaction("\uD83D\uDD04").queue()
+				theMessage?.addReaction("lori_rica:593979718919913474")?.queue()
+				theMessage?.addReaction("\uD83D\uDD04")?.queue()
 			}
 		}
 	}
 
-	private suspend fun checkRaspadinha(context: DiscordCommandContext, profile: Profile, id: Long?) {
-		val mutex = mutexes.getOrPut(context.userHandle.idLong, { Mutex() })
+	private suspend fun checkRaspadinha(context: net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext, profile: Profile, id: Long?) {
+		val mutex = mutexes.getOrPut(context.user.idLong, { Mutex() })
 		mutex.withLock {
 			val raspadinha = transaction(Databases.loritta) {
 				Raspadinhas.select {
@@ -256,30 +260,30 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 
 			if (raspadinha == null) {
 				context.reply(
-                        LorittaReply(
-                                "Essa raspadinha não existe!",
-                                Constants.ERROR
-                        )
+						LorittaReply(
+								"Essa raspadinha não existe!",
+								Constants.ERROR
+						)
 				)
 				return@withLock
 			}
 
-			if (raspadinha[Raspadinhas.receivedById] != context.userHandle.idLong) {
+			if (raspadinha[Raspadinhas.receivedById] != context.user.idLong) {
 				context.reply(
-                        LorittaReply(
-                                "Nossa, não sabia que você era assim... tentando roubar os prêmios de outras raspadinhas que não foi você que comprou...",
-                                Constants.ERROR
-                        )
+						LorittaReply(
+								"Nossa, não sabia que você era assim... tentando roubar os prêmios de outras raspadinhas que não foi você que comprou...",
+								Constants.ERROR
+						)
 				)
 				return@withLock
 			}
 
 			if (raspadinha[Raspadinhas.scratched]) {
 				context.reply(
-                        LorittaReply(
-                                "Você já recebeu o prêmio desta raspadinha!",
-                                Constants.ERROR
-                        )
+						LorittaReply(
+								"Você já recebeu o prêmio desta raspadinha!",
+								Constants.ERROR
+						)
 				)
 				return@withLock
 			}
@@ -350,20 +354,20 @@ class ScratchCardCommand : LorittaCommand(arrayOf("scratchcard", "raspadinha"), 
 				}
 
 				context.reply(
-                        LorittaReply(
-                                "Qual parte de *não resgate um prêmio se você não ganhou* você não entendeu? Só por fazer perder o meu tempo, você perdeu 1000 sonhos. ${Emotes.LORI_SHRUG}"
-                        )
+						LorittaReply(
+								"Qual parte de *não resgate um prêmio se você não ganhou* você não entendeu? Só por fazer perder o meu tempo, você perdeu 1000 sonhos. ${Emotes.LORI_SHRUG}"
+						)
 				)
 			} else {
-				logger.info { "User ${context.userHandle.idLong} won $prize sonhos in the raspadinha! Combos: Lori: $loriCombos; Pantufa: $pantufaCombos; Gabi: $gabiCombos; Dokyo: $dokyoCombos; Gessy: $gessyCombos; Tobias: $tobiasCombos" }
+				logger.info { "User ${context.user.idLong} won $prize sonhos in the raspadinha! Combos: Lori: $loriCombos; Pantufa: $pantufaCombos; Gabi: $gabiCombos; Dokyo: $dokyoCombos; Gessy: $gessyCombos; Tobias: $tobiasCombos" }
 				loritta.newSuspendedTransaction {
 					profile.addSonhosNested(prize.toLong())
 				}
 				context.reply(
-                        LorittaReply(
-                                "Parabéns, você ganhou **$prize sonhos** na sua raspadinha!",
-                                Emotes.LORI_PAT
-                        )
+						LorittaReply(
+								"Parabéns, você ganhou **$prize sonhos** na sua raspadinha!",
+								Emotes.LORI_PAT
+						)
 				)
 			}
 		}
