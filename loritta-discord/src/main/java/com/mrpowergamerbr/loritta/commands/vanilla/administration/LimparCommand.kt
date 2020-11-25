@@ -51,7 +51,7 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 			if (toClear == null) {
 				context.reply(
                         LorittaReply(
-                                "${context.legacyLocale["INVALID_NUMBER", context.args[0]]}",
+								context.locale["commands.invalidNumber", context.args[0]],
                                 Constants.ERROR
                         )
 				)
@@ -61,7 +61,7 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 			if (toClear !in 2..100) {
 				context.reply(
                         LorittaReply(
-                                "${context.locale["commands.moderation.clear.invalidClearRange"]}",
+								context.locale["commands.moderation.clear.invalidClearRange"],
                                 Constants.ERROR
                         )
 				)
@@ -79,7 +79,7 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 			if (allowedMessages.isEmpty()) {
 				context.reply(
                         LorittaReply(
-                                "${context.locale["commands.moderation.clear.couldNotFindMessages"]}",
+								context.locale["commands.moderation.clear.couldNotFindMessages"],
                                 Constants.ERROR
                         )
 				)
@@ -89,7 +89,7 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 			if (allowedMessages.size !in 2..100) {
 				context.reply(
                         LorittaReply(
-                                "${context.locale["commands.moderation.clear.couldNotFindMessages"]}",
+								context.locale["commands.moderation.clear.couldNotFindMessages"],
                                 Constants.ERROR
                         )
 				)
