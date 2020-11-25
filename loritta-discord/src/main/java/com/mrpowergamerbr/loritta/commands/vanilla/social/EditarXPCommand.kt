@@ -38,12 +38,12 @@ class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category =
 			val newXp = context.rawArgs[1].toLongOrNull()
 
 			if (newXp == null) {
-				context.sendMessage("${Constants.ERROR} **|** ${context.getAsMention(true)}${context.legacyLocale["INVALID_NUMBER", context.rawArgs[1]]}")
+				context.sendMessage("${Constants.ERROR} **|** ${context.getAsMention(true)}${context.locale["loritta.invalidNumber", context.rawArgs[1]]}")
 				return
 			}
 
 			if (0 > newXp) {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale.toNewLocale()["commands.social.editxp.moreThanZero"])
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["commands.social.editxp.moreThanZero"])
 				return
 			}
 
@@ -53,7 +53,7 @@ class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category =
 				userData.xp = newXp
 			}
 
-			context.sendMessage(context.getAsMention(true) + context.legacyLocale["EDITARXP_SUCCESS", user.asMention])
+			context.sendMessage(context.getAsMention(true) + context.locale["commands.social.editxp.success", user.asMention])
 		} else {
 			context.explain()
 		}

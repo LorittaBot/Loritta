@@ -104,7 +104,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			if (howMuch == null) {
 				context.reply(
                         LorittaReply(
-                                locale["INVALID_NUMBER", arg1],
+                                locale.toNewLocale()["loritta.invalidNumber", arg1],
                                 Constants.ERROR
                         )
 				)
@@ -114,7 +114,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			if (1 > howMuch) {
 				context.reply(
                         LorittaReply(
-                                locale["INVALID_NUMBER", context.rawArgs[1]],
+                                locale.toNewLocale()["loritta.invalidNumber", context.rawArgs[1]],
                                 Constants.ERROR
                         )
 				)
@@ -131,7 +131,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			if (howMuch.toBigDecimal() > balanceQuantity) {
 				context.reply(
                         LorittaReply(
-                                locale["PAY_InsufficientFunds", if (economySource == "global") locale["ECONOMY_NamePlural"] else economyConfig?.economyNamePlural],
+                                locale.toNewLocale()["commands.economy.pay..insufficientFunds", if (economySource == "global") locale.toNewLocale()["economy.currency.name.plural"] else economyConfig?.economyNamePlural],
                                 Constants.ERROR
                         )
 				)
@@ -215,7 +215,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 										val finalMoney = result["finalMoney"].double
 										context.reply(
                                                 LorittaReply(
-                                                        locale["PAY_TransactionComplete", user.asMention, finalMoney, if (finalMoney == 1.0) {
+                                                        locale.toNewLocale()["commands.economy.pay.transitionComplete", user.asMention, finalMoney, if (finalMoney == 1.0) {
                                                             locale.toNewLocale()["economy.currency.name.singular"]
                                                         } else {
                                                             locale.toNewLocale()["economy.currency.name.plural"]
@@ -246,7 +246,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 
 				context.reply(
                         LorittaReply(
-                                locale["PAY_TransactionComplete", user.asMention, howMuch, if (howMuch.toLong() == 1L) {
+								locale.toNewLocale()["commands.economy.pay.transitionComplete", user.asMention, howMuch, if (howMuch.toLong() == 1L) {
                                     economyConfig?.economyName
                                 } else {
                                     economyConfig?.economyNamePlural

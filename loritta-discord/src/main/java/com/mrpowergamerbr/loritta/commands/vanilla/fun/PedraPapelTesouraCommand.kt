@@ -56,7 +56,7 @@ class PedraPapelTesouraCommand : AbstractCommand("jankenpon", listOf("pedrapapel
 					JankenponStatus.LOSE -> "\uD83C\uDFF4"
 				}
 				context.reply(
-                        LorittaReply(message = context.legacyLocale["PPT_CHOSEN", janken.emoji, opponent.emoji], prefix = prefix),
+                        LorittaReply(message = context.locale["commands.fun.rockpaperscissors.chosen", janken.emoji, opponent.emoji], prefix = prefix),
                         LorittaReply(message = fancy, mentionUser = false)
 				)
 			} else {
@@ -64,14 +64,14 @@ class PedraPapelTesouraCommand : AbstractCommand("jankenpon", listOf("pedrapapel
 					val fancy = "**${context.legacyLocale.toNewLocale()["commands.fun.rockpaperscissors.maybeDraw"]} 🤔 🤷**"
 					val jesus = "🙇 *${context.legacyLocale.toNewLocale()["commands.fun.rockpaperscissors.jesusChrist"]}* 🙇"
 					context.reply(
-                            LorittaReply(message = context.legacyLocale["PPT_CHOSEN", jesus, jesus], prefix = "\uD83C\uDFF3"),
+                            LorittaReply(message = context.locale["commands.fun.rockpaperscissors.chosen", jesus, jesus], prefix = "\uD83C\uDFF3"),
                             LorittaReply(message = fancy, mentionUser = false)
 					)
 				} else {
 					val fancy = "**${context.legacyLocale.toNewLocale()["commands.fun.rockpaperscissors.invalidChoice"]} \uD83D\uDE09**"
 					val jesus = "🙇 *${context.legacyLocale.toNewLocale()["commands.fun.rockpaperscissors.jesusChrist"]}* 🙇"
 					context.reply(
-                            LorittaReply(message = context.legacyLocale["PPT_CHOSEN", "\uD83D\uDCA9", jesus], prefix = "\uD83C\uDFF4"),
+                            LorittaReply(message = context.locale["commands.fun.rockpaperscissors.chosen", "\uD83D\uDCA9", jesus], prefix = "\uD83C\uDFF4"),
                             LorittaReply(message = fancy, mentionUser = false)
 					)
 				}

@@ -244,7 +244,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		var aboutMe: String? = null
 
 		if (userProfile.userId == loritta.discordConfig.discord.clientId.toLong()) {
-			aboutMe = locale.toNewLocale()["commands.social.profile.lorittaDescription"]
+			aboutMe = locale.toNewLocale()["commands.social.profile.description"]
 		}
 
 		if (userProfile.userId == 390927821997998081L) {
@@ -291,7 +291,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		)
 
 		if (images.size == 1) {
-			context.sendFile(images.first(), "lori_profile.png", "📝 **|** " + context.getAsMention(true) + context.legacyLocale.toNewLocale()["commands.social.profile.profile"]) // E agora envie o arquivo
+			context.sendFile(images.first(), "lori_profile.png", "📝 **|** " + context.getAsMention(true) + context.locale["commands.social.profile.profile"]) // E agora envie o arquivo
 		} else {
 			// Montar a GIF
 			val fileName = Loritta.TEMP + "profile-" + System.currentTimeMillis() + ".gif"
@@ -308,7 +308,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			val outputFile = File(fileName)
 			MiscUtils.optimizeGIF(outputFile)
 
-			context.sendFile(outputFile, "lori_profile.gif", "📝 **|** " + context.getAsMention(true) + context.legacyLocale.toNewLocale()["commands.social.profile.profile"]) // E agora envie o arquivo
+			context.sendFile(outputFile, "lori_profile.gif", "📝 **|** " + context.getAsMention(true) + context.locale["commands.social.profile.profile"]) // E agora envie o arquivo
 		}
 	}
 }

@@ -67,7 +67,7 @@ class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), CommandC
 			graphics.font = font
 			var fontMetrics = graphics.getFontMetrics(font)
 
-			val friendshipEnded = locale["AMIZADE_AMIZADE_COM", user.name]
+			val friendshipEnded = locale.toNewLocale()["commands.images.friendship.friendWith", user.name]
 			var gp = GradientPaint(
 					0.0f, 0.0f,
                     Color(202, 72, 15),

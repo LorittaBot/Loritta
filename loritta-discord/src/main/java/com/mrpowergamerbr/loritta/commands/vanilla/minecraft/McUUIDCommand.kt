@@ -33,9 +33,9 @@ class McUUIDCommand : AbstractCommand("mcuuid", category = CommandCategory.MINEC
 	        try {
                 val json = JsonParser.parseString(data).asJsonObject
 
-	            context.sendMessage(context.getAsMention(true) + context.legacyLocale["MCUUID_RESULT", player, LorittaUtils.getUUID(json["id"].string)])
+	            context.sendMessage(context.getAsMention(true) + context.locale["commands.minecraft.mcuuid.result", player, LorittaUtils.getUUID(json["id"].string)])
             } catch (e: IllegalStateException) {
-                context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["MCUUID_INVALID", player])
+                context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["commands.minecraft.mcuuid.invalid", player])
             }
         } else {
             this.explain(context)

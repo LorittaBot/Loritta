@@ -66,7 +66,7 @@ class PokedexCommand : AbstractCommand("pokedex", listOf("pokédex"), CommandCat
 
 	        embed.addField(locale.toNewLocale()["commands.pokemon.pokedex.types"], strDexTypes, true)
 
-	        embed.addField(locale["POKEDEX_ADDED_IN_GEN"], pokeInfoValue[0].getElementsByTag("img")[0].attr("alt"), true)
+	        embed.addField(locale.toNewLocale()["commands.pokemon.pokedex.addedInGen"], pokeInfoValue[0].getElementsByTag("img")[0].attr("alt"), true)
 
 			embed.addField(locale.toNewLocale()["commands.pokemon.pokedex.number"], pokeInfoValue[1].text(), true)
 

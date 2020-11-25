@@ -64,7 +64,7 @@ class BotInfoCommand(private val buildInfo: BuildInfo) : AbstractCommand("botinf
 			}.count()
 		}
 
-		embed.setAuthor("${locale["BOTINFO_TITLE"]} 💁", loritta.instanceConfig.loritta.website.url, "${loritta.instanceConfig.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
+		embed.setAuthor("${context.locale["commands.discord.botinfo.title"]} 💁", loritta.instanceConfig.loritta.website.url, "${loritta.instanceConfig.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
 		embed.setThumbnail("${loritta.instanceConfig.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
 		embed.setColor(Color(0, 193, 223))
 		embed.setDescription(
@@ -180,7 +180,7 @@ class BotInfoCommand(private val buildInfo: BuildInfo) : AbstractCommand("botinf
                         mentionUser = false
                 ),
                 LorittaReply(
-                        "**${locale["BOTINFO_JavaVersion"]}:** ${System.getProperty("java.version")}",
+                        "**${locale.toNewLocale()["commands.discord.botinfo.javaVersion"]}:** ${System.getProperty("java.version")}",
                         "<:java:467443707160035329>",
                         mentionUser = false
                 ),

@@ -47,7 +47,7 @@ class TretaNewsCommand : AbstractCommand("tretanews", category = CommandCategory
                         mentionUser = false
                 ),
                 LorittaReply(
-                        message = "\uD83D\uDCFA `${base.views}` **${context.legacyLocale.toNewLocale()["commands.fun.twitch.views"]}**, \uD83D\uDE0D `${base.likes}` **${context.legacyLocale.toNewLocale()["commands.images.tretanews.likes"]}**, \uD83D\uDE20 `${base.dislikes}` **${context.legacyLocale.toNewLocale()["commands.images.tretanews.dislikes"]}**",
+                        message = "\uD83D\uDCFA `${base.views}` **${context.legacyLocale.toNewLocale()["commands.fun.twitch.views"]}**, \uD83D\uDE0D `${base.likes}` **${context.locale["commands.images.tretanews.likes"]}**, \uD83D\uDE20 `${base.dislikes}` **${context.locale["commands.images.tretanews.dislikes"]}**",
                         prefix = "\uD83D\uDCC8",
                         mentionUser = false
                 )

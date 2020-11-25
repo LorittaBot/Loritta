@@ -35,7 +35,7 @@ class McBodyCommand : AbstractCommand("mcbody", listOf("mcstatue"), CommandCateg
 			if (uuid == null) {
 				context.reply(
                         LorittaReply(
-                                locale["MCSKIN_UnknownPlayer", context.args.getOrNull(0)],
+                                locale.toNewLocale()["commands.minecraft.unknownPlayer", context.args.getOrNull(0)],
                                 Constants.ERROR
                         )
 				)

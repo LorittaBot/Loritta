@@ -66,7 +66,7 @@ class OCRCommand : AbstractCommand("ocr", listOf("ler", "read"), CommandCategory
 			try {
 				builder.setDescription("```${parsedResponse["responses"][0]["textAnnotations"][0]["description"].string}```")
 			} catch (e: Exception) {
-				builder.setDescription("**${locale["OCR_COUDLNT_FIND"]}**")
+				builder.setDescription("**${locale.toNewLocale()["commands.utils.ocr.couldntFind"]}**")
 			}
 			context.sendMessage(context.getAsMention(true), builder.build())
 		}
