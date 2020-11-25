@@ -268,11 +268,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 								allCommandLabels.addAll(it.labels)
 						}
 
-						loritta.commandManager.commands.forEach {
-							if (!it.onlyOwner && !serverConfig.disabledCommands.contains(it.javaClass.simpleName))
-								allCommandLabels.addAll(it.labels)
-						}
-
 						loritta.legacyCommandManager.commandMap.forEach {
 							if (!it.onlyOwner && !serverConfig.disabledCommands.contains(it.javaClass.simpleName)) {
 								allCommandLabels.add(it.label)
@@ -477,11 +472,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			if (loritta.commandMap.dispatch(lorittaMessageEvent, rawArguments, serverConfig, locale, legacyLocale, lorittaUser))
 				return true
 			logIfEnabled(enableProfiling) { "Checking for command map commands took ${System.nanoTime() - start}ns for ${author.idLong}" }
-
-			start = System.nanoTime()
-			if (loritta.commandManager.dispatch(lorittaMessageEvent, rawArguments, serverConfig, locale, legacyLocale, lorittaUser))
-				return true
-			logIfEnabled(enableProfiling) { "Checking for command manager commands took ${System.nanoTime() - start}ns for ${author.idLong}" }
 
 			start = System.nanoTime()
 			if (loritta.legacyCommandManager.matches(lorittaMessageEvent, rawArguments, serverConfig, locale, legacyLocale, lorittaUser))

@@ -10,8 +10,6 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.utils.MiscUtil
-import net.perfectdreams.loritta.api.commands.LorittaCommandContext
-import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
 import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.utils.Emotes
 import org.apache.commons.lang3.ArrayUtils
@@ -98,18 +96,6 @@ object LorittaUtilsKotlin {
 	 */
 	suspend fun handleIfBanned(context: CommandContext, profile: Profile)
 			= handleIfBanned(context.userHandle, profile, context.event.channel, context.locale, context.legacyLocale)
-
-	/**
-	 * Checks if a user is banned and, if it is, a message is sent to the user via direct messages or, if their DMs are disabled, in the current channel.
-	 *
-	 * @return if the user is banned
-	 */
-	suspend fun handleIfBanned(context: LorittaCommandContext, profile: Profile): Boolean {
-		if (context !is DiscordCommandContext)
-			throw UnsupportedOperationException("I don't know how to handle a $context yet!")
-
-		return handleIfBanned(context.userHandle, profile, context.discordMessage.channel, context.locale, context.legacyLocale)
-	}
 
 	/**
 	 * Checks if a user is banned and, if it is, a message is sent to the user via direct messages or, if their DMs are disabled, in the current channel.

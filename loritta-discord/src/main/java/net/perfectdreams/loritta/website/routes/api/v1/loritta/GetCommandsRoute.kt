@@ -24,15 +24,6 @@ class GetCommandsRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/lo
 					it.getDescription(legacyLocale),
 					it.getUsage(legacyLocale).build(locale)
 			)
-		} + com.mrpowergamerbr.loritta.utils.loritta.commandManager.commands.map {
-			CommandInfo(
-					it::class.java.simpleName,
-					it.labels.first(),
-					it.labels.drop(1).toList(),
-					it.category,
-					it.getDescription(locale),
-					it.getUsage(locale).build(locale)
-			)
 		} + com.mrpowergamerbr.loritta.utils.loritta.commandMap.commands.filter { !it.hideInHelp }.map {
 			CommandInfo(
 					it.commandName,

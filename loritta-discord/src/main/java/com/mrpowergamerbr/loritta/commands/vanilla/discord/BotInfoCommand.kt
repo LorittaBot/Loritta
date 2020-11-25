@@ -72,7 +72,7 @@ class BotInfoCommand(private val buildInfo: BuildInfo) : AbstractCommand("botinf
 						"commands.discord.botinfo.embedDescription",
 						guildCount,
 						sb.toString(),
-						LorittaLauncher.loritta.legacyCommandManager.commandMap.size + loritta.commandManager.commands.size + loritta.commandMap.commands.size,
+						LorittaLauncher.loritta.legacyCommandManager.commandMap.size + loritta.commandMap.commands.size,
 						commandsExecutedInTheLast24Hours,
 						Emotes.KOTLIN,
 						Emotes.JDA,

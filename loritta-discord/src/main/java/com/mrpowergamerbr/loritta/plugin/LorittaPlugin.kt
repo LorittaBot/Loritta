@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.modules.MessageReceivedModule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import net.perfectdreams.loritta.api.LorittaBot
-import net.perfectdreams.loritta.api.commands.LorittaCommand
 import java.io.File
 import java.net.URLClassLoader
 
@@ -14,7 +13,6 @@ open class LorittaPlugin(name: String, loritta: LorittaBot) : net.perfectdreams.
 	lateinit var classLoader: URLClassLoader
 	lateinit var pluginFile: File
 
-	val commands = mutableListOf<LorittaCommand>()
 	val dataFolder by lazy { File(Loritta.FOLDER, "plugins/$name") }
 	val messageReceivedModules = mutableListOf<MessageReceivedModule>()
 	val messageEditedModules = mutableListOf<MessageReceivedModule>()
@@ -28,11 +26,6 @@ open class LorittaPlugin(name: String, loritta: LorittaBot) : net.perfectdreams.
 	override fun onDisable() {
 		messageReceivedModules.clear()
 		messageEditedModules.clear()
-	}
-
-	fun registerCommand(command: LorittaCommand) {
-		lorittaDiscord.commandManager.registerCommand(command)
-		commands.add(command)
 	}
 
 	fun registerMessageReceivedModule(module: MessageReceivedModule) {
