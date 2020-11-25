@@ -4,13 +4,9 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.plugin.LorittaPlugin
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.commands.actions.modern.impl.*
-import net.perfectdreams.loritta.commands.administration.DashboardCommand
-import net.perfectdreams.loritta.commands.administration.RenameChannelCommand
-import net.perfectdreams.loritta.commands.discord.GuildBannerCommand
-import net.perfectdreams.loritta.commands.discord.RenameEmojiCommand
-import net.perfectdreams.loritta.commands.discord.RoleInfoCommand
-import net.perfectdreams.loritta.commands.economy.ScratchCardCommand
-import net.perfectdreams.loritta.commands.economy.ScratchCardTopCommand
+import net.perfectdreams.loritta.commands.administration.*
+import net.perfectdreams.loritta.commands.discord.*
+import net.perfectdreams.loritta.commands.economy.*
 import net.perfectdreams.loritta.commands.images.*
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.Raspadinhas
@@ -25,19 +21,19 @@ class ArtsyJoyLori(name: String, loritta: LorittaBot) : LorittaPlugin(name, lori
 
         // ADMIN
         registerCommand(DashboardCommand(loritta))
-        registerCommand(RenameChannelCommand())
+        registerCommand(RenameChannelCommand(loritta))
 
         // DISCORD
-        registerCommand(RoleInfoCommand())
-        registerCommand(RenameEmojiCommand())
+        registerCommand(RoleInfoCommand(loritta))
+        registerCommand(RenameEmojiCommand(loritta))
         registerCommand(GuildBannerCommand(loritta))
 
         // IMAGES
-        registerCommand(AtendenteCommand())
-        registerCommand(TristeRealidadeCommand())
-        registerCommand(AsciiCommand())
-        registerCommand(DrawnWordCommand())
-        registerCommand(EmojiMashupCommand())
+        registerCommand(AtendenteCommand(loritta))
+        registerCommand(TristeRealidadeCommand(loritta))
+        registerCommand(AsciiCommand(loritta))
+        registerCommand(DrawnWordCommand(loritta))
+        registerCommand(EmojiMashupCommand(loritta))
 
         // ACTIONS
         registerCommand(AttackCommand(loritta))
@@ -46,9 +42,8 @@ class ArtsyJoyLori(name: String, loritta: LorittaBot) : LorittaPlugin(name, lori
         registerCommand(KissCommand(loritta))
         registerCommand(SlapCommand(loritta))
         registerCommand(HeadPatCommand(loritta))
-        // registerCommand(HighFiveCommand(loritta))
-        registerCommand(ScratchCardCommand())
-        registerCommand(ScratchCardTopCommand())
+        registerCommand(ScratchCardCommand(loritta))
+        registerCommand(ScratchCardTopCommand(loritta))
 
         transaction(Databases.loritta) {
             SchemaUtils.createMissingTablesAndColumns(

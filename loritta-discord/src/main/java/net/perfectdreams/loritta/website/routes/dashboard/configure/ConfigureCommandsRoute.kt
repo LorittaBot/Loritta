@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.website.evaluate
-import io.ktor.application.ApplicationCall
+import io.ktor.application.*
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.routes.dashboard.RequiresGuildAuthLocalizedRoute
@@ -19,7 +19,6 @@ class ConfigureCommandsRoute(loritta: LorittaDiscord) : RequiresGuildAuthLocaliz
 		val variables = call.legacyVariables(locale)
 		variables["saveType"] = "vanilla_commands"
 
-		variables["enabledCommands"] = com.mrpowergamerbr.loritta.utils.loritta.commandManager.commands.filter { !serverConfig.disabledCommands.contains(it.javaClass.simpleName) }
 		variables["enabledLegacyCommands"] = com.mrpowergamerbr.loritta.utils.loritta.legacyCommandManager.commandMap.filter { !serverConfig.disabledCommands.contains(it.javaClass.simpleName) }
 		variables["enabledNewCommands"] = com.mrpowergamerbr.loritta.utils.loritta.commandMap.commands.filter { !serverConfig.disabledCommands.contains(it.commandName) }
 				.map {
@@ -29,7 +28,6 @@ class ConfigureCommandsRoute(loritta: LorittaDiscord) : RequiresGuildAuthLocaliz
 					)
 				}
 
-		variables["disabledCommands"] = com.mrpowergamerbr.loritta.utils.loritta.commandManager.commands.filter { serverConfig.disabledCommands.contains(it.javaClass.simpleName) }
 		variables["disabledLegacyCommands"] = com.mrpowergamerbr.loritta.utils.loritta.legacyCommandManager.commandMap.filter { serverConfig.disabledCommands.contains(it.javaClass.simpleName) }
 		variables["disabledNewCommands"] = com.mrpowergamerbr.loritta.utils.loritta.commandMap.commands.filter { serverConfig.disabledCommands.contains(it.commandName) }
 				.map {

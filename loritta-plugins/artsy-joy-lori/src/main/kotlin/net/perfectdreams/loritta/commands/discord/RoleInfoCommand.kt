@@ -5,76 +5,75 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.DateUtils
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.extensions.localized
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.loritta.api.commands.*
-import net.perfectdreams.loritta.platform.discord.entities.DiscordCommandContext
+import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 
-class RoleInfoCommand : LorittaCommand(arrayOf("roleinfo", "taginfo"), CommandCategory.DISCORD) {
-    override fun getDescription(locale: BaseLocale): String? {
-        return locale["commands.discord.roleinfo.description"]
+class RoleInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("roleinfo", "taginfo"), CommandCategory.DISCORD) {
+    companion object {
+        private const val LOCALE_PREFIX = "commands.discord"
     }
 
-    override val canUseInPrivateChannel: Boolean = false
+    override fun command() = create {
+        localizedDescription("$LOCALE_PREFIX.roleinfo.description")
 
-    override fun getUsage(locale: BaseLocale): CommandArguments {
-        return arguments {
+        canUseInPrivateChannel = false
+
+        arguments {
             argument(ArgumentType.TEXT) {}
         }
-    }
 
-    @Subcommand
-    suspend fun root(context: DiscordCommandContext, locale: BaseLocale, argument: String? = null) {
-        if (argument == null) {
-            context.explain()
-            return
-        }
+        executesDiscord {
+            val context = this
 
-        val role = context.getRoleAt(0)
+            if (args.isEmpty()) explainAndExit()
 
-        if (role != null) {
-            val embed = EmbedBuilder()
+            val role = context.role(0)
 
-            val isHoisted = if (role.isHoisted) {
-                locale["loritta.fancyBoolean.true"]
+            if (role != null) {
+                val builder = EmbedBuilder()
+
+                val isHoisted = if (role.isHoisted) {
+                    locale["loritta.fancyBoolean.true"]
+                } else {
+                    locale["loritta.fancyBoolean.false"]
+                }
+                val isMentionable = if (role.isMentionable) {
+                    locale["loritta.fancyBoolean.true"]
+                } else {
+                    locale["loritta.fancyBoolean.false"]
+                }
+                val isIntegrationBot = if (role.isManaged) {
+                    locale["loritta.fancyBoolean.true"]
+                } else {
+                    locale["loritta.fancyBoolean.false"]
+                }
+                val permissions = role.permissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })
+
+                builder.setTitle("\uD83D\uDCBC ${role.name}")
+                if (role.color != null)
+                    builder.setColor(role.color)
+                builder.addField("\uD83D\uDC40 ${locale["$LOCALE_PREFIX.roleinfo.roleMention"]}", "`${role.asMention}`", true)
+                builder.addField("\uD83D\uDCC5 ${locale["$LOCALE_PREFIX.roleinfo.roleCreated"]}", DateUtils.formatDateDiff(role.timeCreated.toInstant().toEpochMilli(), loritta.getLegacyLocaleById(context.locale.id)), true)
+                builder.addField("\uD83D\uDCBB ${locale["$LOCALE_PREFIX.roleinfo.roleID"]}", "`${role.id}`", true)
+                builder.addField(locale["$LOCALE_PREFIX.roleinfo.roleHoisted"], isHoisted, true)
+                builder.addField("<:bot:516314838541008906> ${locale["$LOCALE_PREFIX.roleinfo.roleIntegration"]}", isIntegrationBot, true)
+                builder.addField("\uD83D\uDC40 ${locale["$LOCALE_PREFIX.roleinfo.roleMentionable"]}", isMentionable, true)
+                builder.addField("\uD83D\uDC65 ${locale["$LOCALE_PREFIX.roleinfo.roleMembers"]}", context.guild.getMembersWithRoles(role).size.toString(),true)
+                if (role.color != null)
+                    builder.addField("🎨 ${locale["$LOCALE_PREFIX.roleinfo.roleColor"]}", "`#${Integer.toHexString(role.color!!.rgb).substring(2).toUpperCase()}`", true)
+                builder.addField("\uD83D\uDEE1 ${locale["$LOCALE_PREFIX.roleinfo.rolePermissions"]}", permissions, false)
+
+                context.sendMessage(context.getUserMention(true), builder.build())
             } else {
-                locale["loritta.fancyBoolean.false"]
+                context.reply(
+                        LorittaReply(
+                                locale["commands.discord.roleinfo.roleNotFound"],
+                                Constants.ERROR
+                        )
+                )
             }
-            val isMentionable = if (role.isMentionable) {
-                locale["loritta.fancyBoolean.true"]
-            } else {
-                locale["loritta.fancyBoolean.false"]
-            }
-            val isIntegrationBot = if (role.isManaged) {
-                locale["loritta.fancyBoolean.true"]
-            } else {
-                locale["loritta.fancyBoolean.false"]
-            }
-            val permissions = role.permissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })
-
-            embed.setTitle("\uD83D\uDCBC ${role.name}")
-            if (role.color != null)
-                embed.setColor(role.color)
-            embed.addField("\uD83D\uDC40 ${locale["commands.discord.roleinfo.roleMention"]}", "`${role.asMention}`", true)
-            embed.addField("\uD83D\uDCC5 ${locale["commands.discord.roleinfo.roleCreated"]}", DateUtils.formatDateDiff(role.timeCreated.toInstant().toEpochMilli(), context.legacyLocale), true)
-            embed.addField("\uD83D\uDCBB ${locale["commands.discord.roleinfo.roleID"]}", "`${role.id}`", true)
-            embed.addField(locale["commands.discord.roleinfo.roleHoisted"], isHoisted, true)
-            embed.addField("<:bot:516314838541008906> ${locale["commands.discord.roleinfo.roleIntegration"]}", isIntegrationBot, true)
-            embed.addField("\uD83D\uDC40 ${locale["commands.discord.roleinfo.roleMentionable"]}", isMentionable, true)
-            embed.addField("\uD83D\uDC65 ${locale["commands.discord.roleinfo.roleMembers"]}", context.discordGuild!!.getMembersWithRoles(role).size.toString(),true)
-            if (role.color != null)
-                embed.addField("🎨 ${locale["commands.discord.roleinfo.roleColor"]}", "`#${Integer.toHexString(role.color!!.rgb).substring(2).toUpperCase()}`", true)
-            embed.addField("\uD83D\uDEE1 ${locale["commands.discord.roleinfo.rolePermissions"]}", permissions, false)
-
-            context.sendMessage(context.getAsMention(true), embed.build())
-        } else {
-            context.reply(
-                    LorittaReply(
-                            locale["commands.discord.roleinfo.roleNotFound"],
-                            Constants.ERROR
-                    )
-            )
         }
     }
 }
