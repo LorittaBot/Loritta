@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.utils.Emotes
 
 class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"), CommandCategory.SOCIAL) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["BACKGROUND_DESCRIPTION"]
+		return locale.toNewLocale()["commands.social.background.description"]
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {

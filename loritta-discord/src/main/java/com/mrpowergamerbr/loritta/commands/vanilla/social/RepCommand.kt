@@ -16,7 +16,7 @@ import net.perfectdreams.loritta.utils.Emotes
 
 class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "reputacao"), CommandCategory.SOCIAL) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["REP_DESCRIPTON"]
+		return locale.toNewLocale()["commands.social.reputation.description"]
 	}
 
 	override fun getExamples(): List<String> {
@@ -46,7 +46,7 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 
 			if (3_600_000 > diff) {
 				val fancy = DateUtils.formatDateDiff(lastReputationGiven.receivedAt + 3.6e+6.toLong(), locale)
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["REP_WAIT", fancy])
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["commands.social.reputation.wait", fancy])
 				return
 			}
 		}
@@ -55,7 +55,7 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 			if (user == context.userHandle) {
 				context.reply(
                         LorittaReply(
-                                message = locale["REP_SELF"],
+                                message = locale.toNewLocale()["commands.social.reputation.self"],
                                 prefix = Constants.ERROR
                         )
 				)
@@ -78,7 +78,7 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 			} else {
 				context.reply(
                         LorittaReply(
-                                message = locale["REP_InvalidUser"],
+                                message = locale.toNewLocale()["commands.social.reputation.invalidUser"],
                                 prefix = Constants.ERROR
                         )
 				)

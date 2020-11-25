@@ -14,7 +14,7 @@ class SobreMimCommand : AbstractCommand("aboutme", listOf("sobremim"), CommandCa
     }
 
     override fun getDescription(locale: LegacyBaseLocale): String {
-        return locale["SOBREMIM_DESCRIPTION"]
+        return locale.toNewLocale()["commands.social.aboutme.description"]
     }
 
     override fun getUsage(locale: LegacyBaseLocale) = arguments {
@@ -28,7 +28,7 @@ class SobreMimCommand : AbstractCommand("aboutme", listOf("sobremim"), CommandCa
 	            settings.aboutMe = context.args.joinToString(" ")
             }
 
-            context.sendMessage(context.getAsMention(true) + context.legacyLocale["SOBREMIM_CHANGED", settings.aboutMe])
+            context.sendMessage(context.getAsMention(true) + context.locale["commands.social.aboutme.changed", settings.aboutMe])
         } else {
             this.explain(context)
         }

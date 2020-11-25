@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), CommandCategory.SOCIAL) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["AFK_Description"]
+		return locale.toNewLocale()["commands.social.afk.description"]
 	}
 
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
@@ -23,7 +23,7 @@ class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), Command
 
 			context.reply(
                     LorittaReply(
-                            message = context.legacyLocale["AFK_AfkOff"],
+                            message = context.locale["commands.social.afk.afkOff"],
                             prefix = "\uD83D\uDC24"
                     )
 			)
@@ -42,7 +42,7 @@ class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), Command
 
 			context.reply(
                     LorittaReply(
-                            message = context.legacyLocale["AFK_AfkOn"],
+                            message = context.locale["commands.social.afk.afkOn"],
                             prefix = "\uD83D\uDE34"
                     )
 			)

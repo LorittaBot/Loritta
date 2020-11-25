@@ -18,7 +18,7 @@ import org.jetbrains.exposed.sql.update
 
 class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "ranking"), CommandCategory.SOCIAL) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["RANK_DESCRIPTION"]
+		return locale.toNewLocale()["commands.social.rank.description"]
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {
