@@ -45,7 +45,7 @@ class McConquistaCommand : AbstractCommand("mcconquista", listOf("mcprogresso", 
 			graphics.font = minecraftia
 			graphics.color = Color(255, 255, 0)
 
-			graphics.drawString(context.locale["commands.minecraft.mcadvancement.advacenmentMade"], 90, 41 + 14)
+			graphics.drawString(context.legacyLocale.toNewLocale()["commands.minecraft.mcadvancement.advancementMade"], 90, 41 + 14)
 			graphics.color = Color(255, 255, 255)
 
 			var remadeText = ""

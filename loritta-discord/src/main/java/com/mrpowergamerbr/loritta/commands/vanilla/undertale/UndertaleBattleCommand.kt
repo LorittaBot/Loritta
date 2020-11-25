@@ -17,7 +17,7 @@ import java.util.*
 
 class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebattle"), CommandCategory.UNDERTALE) {
     override fun getDescription(locale: LegacyBaseLocale): String {
-        return locale.toNewLocale()["commands.undertail.battle.description"]
+        return locale.toNewLocale()["commands.undertale.utbattle.description"]
     }
 
     override fun getExamples(): List<String> {

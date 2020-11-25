@@ -31,7 +31,7 @@ class MorseCommand : AbstractCommand("morse", category = CommandCategory.UTILS) 
 			val fromMorse = message.fromMorse()
 
 			if (toMorse.trim().isEmpty()) {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale.toNewLocale()["commands.utils.morse.fail"])
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale.toNewLocale()["commands.utils.morse.failUnknownCharacters"])
 				return
 			}
 

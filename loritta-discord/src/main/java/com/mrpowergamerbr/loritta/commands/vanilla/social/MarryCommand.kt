@@ -45,7 +45,7 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 			if (proposeTo.id == loritta.discordConfig.discord.clientId) {
 				context.reply(
                         LorittaReply(
-                                locale.toNewLocale()["commands.social.marry.loritta"],
+                                locale.toNewLocale()["commands.social.marry.marryLoritta"],
                                 "<:smol_lori_putassa:395010059157110785>"
                         )
 				)
@@ -135,7 +135,7 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 					if (proposeTo.id == loritta.discordConfig.discord.clientId) {
 						context.reply(
                                 LorittaReply(
-                                        locale.toNewLocale()["commands.social.marry.loritta"],
+                                        locale.toNewLocale()["commands.social.marry.marryLoritta"],
                                         "<:smol_lori_putassa:395010059157110785>"
                                 )
 						)

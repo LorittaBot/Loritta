@@ -48,7 +48,7 @@ class KnowYourMemeCommand : AbstractCommand("knowyourmeme", listOf("kym"), Comma
 				val summary = if (meme.obj.has("summary")) {
 					meme["summary"].string
 				} else {
-					context.locale["commands.utils.knowyourmeme.noDescription"]
+					context.legacyLocale.toNewLocale()["commands.utils.knowyourmeme.noDescription"]
 				}
 				val url = meme["url"].string
 

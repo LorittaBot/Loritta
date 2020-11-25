@@ -55,7 +55,7 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 			if (user == context.userHandle) {
 				context.reply(
                         LorittaReply(
-                                message = locale.toNewLocale()["commands.social.reputation.self"],
+                                message = locale.toNewLocale()["commands.social.reputation.repSelf"],
                                 prefix = Constants.ERROR
                         )
 				)

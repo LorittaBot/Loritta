@@ -79,13 +79,13 @@ class PokedexCommand : AbstractCommand("pokedex", listOf("pokédex"), CommandCat
 
 			embed.addField(locale.toNewLocale()["commands.pokemon.pokedex.abilities"], strAbilities, true)
 
-	        var strTraining = "**${context.locale["commands.pokemon.pokedex.baseEXP"]}:** ${trainingInfoValue[0].text()}" +
+	        var strTraining = "**${context.legacyLocale.toNewLocale()["commands.pokemon.pokedex.baseExp"]}:** ${trainingInfoValue[0].text()}" +
 					"\n**${locale.toNewLocale()["commands.pokemon.pokedex.effortPoints"]}:** ${trainingInfoValue[1].text()}" +
 					"\n**${locale.toNewLocale()["commands.pokemon.pokedex.captureRate"]}:** ${trainingInfoValue[2].text()}" +
 					"\n**${locale.toNewLocale()["commands.pokemon.pokedex.baseHappiness"]}:** ${trainingInfoValue[3].text()}" +
 					"\n**${locale.toNewLocale()["commands.pokemon.pokedex.growthRate"]}:** ${trainingInfoValue[4].text()}"
 
-	        embed.addField(locale.toNewLocale()["commands.pokemon.pokedex.training"], strTraining, true)
+	        embed.addField("${locale.toNewLocale()["commands.pokemon.pokedex.training"]}", strTraining, true)
 
 			var strEvolutions = ""
 
@@ -106,7 +106,7 @@ class PokedexCommand : AbstractCommand("pokedex", listOf("pokédex"), CommandCat
 				}
 			}
 
-			embed.addField(locale.toNewLocale()["commands.pokemon.pokedex.evolutions"], strEvolutions, true)
+			embed.addField("${locale.toNewLocale()["commands.pokemon.pokedex.evolutions"]}", strEvolutions, true)
 
 			context.sendMessage(embed.build())
 

@@ -82,10 +82,10 @@ class TempoCommand : AbstractCommand("weather", listOf("tempo", "previsão", "pr
 				embed.setTitle(locale.toNewLocale()["commands.utils.weather.forecastFor", realCityName, countryShort])
 				embed.setDescription(icon + description)
 				embed.setColor(Color(0, 210, 255))
-				embed.addField("🌡 ${context.locale["commands.utils.weather.temperature"]}", "**${context.locale["commands.utils.weather.current"]}: **$now ºC\n**${context.locale["commands.utils.weather.max"]}: **$max ºC\n**${context.locale["commands.utils.weather.min"]}: **$min ºC", true)
-				embed.addField("💦 ${context.locale["commands.utils.weather.humidity"]}", "$humidity%", true)
-				embed.addField("🌬 ${context.locale["commands.utils.weather.airVelocity"]}", "$windSpeed km/h", true)
-				embed.addField("🏋 ${context.locale["commands.utils.weather.pressure"]}", "$pressure kPA", true)
+				embed.addField("🌡 ${context.legacyLocale.toNewLocale()["commands.utils.weather.temperature"]}", "**${context.legacyLocale["TEMPO_ATUAL"]}: **$now ºC\n**${context.legacyLocale["TEMPO_MAX"]}: **$max ºC\n**${context.legacyLocale["TEMPO_MIN"]}: **$min ºC", true)
+				embed.addField("💦 ${context.legacyLocale.toNewLocale()["commands.utils.weather.humidity"]}", "$humidity%", true)
+				embed.addField("🌬 ${context.legacyLocale.toNewLocale()["commands.utils.weather.windSpeed"]}", "$windSpeed km/h", true)
+				embed.addField("🏋 ${context.legacyLocale.toNewLocale()["commands.utils.weather.airPressure"]}", "$pressure kPA", true)
 
 				context.sendMessage(embed.build())
 			} else {

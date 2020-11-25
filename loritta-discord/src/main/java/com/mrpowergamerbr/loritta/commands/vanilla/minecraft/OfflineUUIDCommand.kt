@@ -8,9 +8,9 @@ import org.apache.commons.codec.Charsets
 import java.util.*
 
 class OfflineUUIDCommand : AbstractCommand("mcofflineuuid", listOf("offlineuuid"), CommandCategory.MINECRAFT) {
-    override fun getDescription(locale: LegacyBaseLocale): String {
-        return locale.toNewLocale()["commands.minecraft.mcofflineuuid.description"]
-    }
+	override fun getDescription(locale: LegacyBaseLocale): String {
+		return locale.toNewLocale()["commands.minecraft.mcofflineuuid.description"]
+	}
 
     override fun getUsage(): String {
         return "nickname"

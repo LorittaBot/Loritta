@@ -22,7 +22,7 @@ class PatreonCommand : AbstractCommand("donator", listOf("donators", "patreons",
 			setTitle("${Emotes.LORI_RICH} ${context.locale["commands.misc.donate.thanks"]}")
 			setColor(Color(0, 193, 223))
 			setDescription(patrons)
-			addField("\uD83C\uDF80 " + context.locale["commands.misc.donate.doYouWannaHelp"], context.locale["commands.misc.donate.howToHelp", "${loritta.instanceConfig.loritta.website.url}donate", Emotes.LORI_HEART, Emotes.LORI_CRYING, Emotes.LORI_RICH], false)
+			addField("\uD83C\uDF80 " + context.legacyLocale.toNewLocale()["commands.misc.donate.doYouWannaHelp"], context.locale["commands.misc.donate.howToHelp", "${loritta.instanceConfig.loritta.website.url}donate", Emotes.LORI_HEART, Emotes.LORI_CRYING, Emotes.LORI_RICH], false)
 		}
 
 		context.sendMessage(context.getAsMention(true), embed.build())

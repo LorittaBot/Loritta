@@ -83,7 +83,7 @@ class McMoletomCommand : AbstractCommand("mcmoletom", listOf("mcsweater"), Comma
 				return
 			}
 
-			val str = "<:loritta:331179879582269451> **|** " + context.getAsMention(true) + locale["MCMOLETOM_Done"]
+			val str = "<:loritta:331179879582269451> **|** " + context.getAsMention(true) + locale.toNewLocale()["commands.minecraft.mcsweater.done"]
 			val message = context.sendFile(moletom, "moletom.png", str)
 
 			val image = message.attachments.first()

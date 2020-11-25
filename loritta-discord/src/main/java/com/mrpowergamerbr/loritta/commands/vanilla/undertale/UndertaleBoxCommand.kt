@@ -21,7 +21,7 @@ import javax.imageio.ImageIO
 
 class UndertaleBoxCommand : AbstractCommand("utbox", listOf("undertalebox"), CommandCategory.UNDERTALE) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.undertail.box.description"]
+		return locale.toNewLocale()["commands.undertale.utbox.description"]
 	}
 
 	override fun getExamples(): List<String> {
