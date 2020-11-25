@@ -112,6 +112,12 @@ class BotInfoCommand(private val buildInfo: BuildInfo) : AbstractCommand("botinf
 				false
 		)
 
+		embed.addField(
+				locale.toNewLocale()["commands.misc.botinfo.crowdin"],
+				locale.toNewLocale()["commands.misc.language.crowdinLink"],
+				true
+		)
+
 		embed.setFooter("${locale["BOTINFO_CREATEDBY"]} - https://mrpowergamerbr.com/", lorittaShards.retrieveUserById(123170274651668480L)!!.effectiveAvatarUrl)
 		val message = context.sendMessage(context.getAsMention(true), embed.build())
 

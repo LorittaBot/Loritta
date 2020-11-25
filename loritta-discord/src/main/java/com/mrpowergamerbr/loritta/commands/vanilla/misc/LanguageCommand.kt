@@ -220,6 +220,11 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
                     true
             )
         }
+        embed.addField(
+                locale["commands.misc.language.helpUsTranslate"],
+                locale["commands.misc.language.crowdinLink"],
+                false
+        )
         return embed.build()
     }
 
