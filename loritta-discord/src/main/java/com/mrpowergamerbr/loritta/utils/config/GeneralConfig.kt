@@ -54,6 +54,7 @@ class GeneralConfig @JsonCreator constructor(
 			val ownerIds: List<String>,
 			val subOwnerIds: List<String>,
 			val commands: CommandsConfig,
+			val crowdin: Crowdin,
 			val website: WebsiteConfig,
 			val clusterReadTimeout: Int,
 			val clusterConnectionTimeout: Int
@@ -78,6 +79,10 @@ class GeneralConfig @JsonCreator constructor(
 				val cooldown: Int,
 				val imageCooldown: Int,
 				val commandsCooldown: Map<String, Int>
+		)
+
+		class Crowdin @JsonCreator constructor(
+				val url: String
 		)
 	}
 
