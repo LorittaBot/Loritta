@@ -141,7 +141,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 					if (chance(25.0))
 						event.message.addReaction("smol_lori_putassa_ping:397748526362132483").queue()
 
-					var response = legacyLocale["MENTION_RESPONSE", member.asMention, serverConfig.commandPrefix]
+					var response = locale["commands.mention.response", member.asMention, serverConfig.commandPrefix]
 
 					if (lorittaUser.hasPermission(LorittaPermission.IGNORE_COMMANDS)) {
 						// Usuário não pode usar comandos
@@ -162,9 +162,9 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						}
 
 						if (ignoringCommandsRole == event.guild.publicRole)
-							response = legacyLocale["MENTION_ResponseEveryoneBlocked", event.message.author.asMention, serverConfig.commandPrefix]
+							response = locale["commands.mention.responseEveryoneBlocked", event.message.author.asMention, serverConfig.commandPrefix]
 						else
-							response = legacyLocale["MENTION_ResponseRoleBlocked", event.message.author.asMention, serverConfig.commandPrefix, ignoringCommandsRole?.asMention]
+							response = locale["commands.mention.responseRoleBlocked", event.message.author.asMention, serverConfig.commandPrefix, ignoringCommandsRole?.asMention]
 					} else {
 						if (serverConfig.blacklistedChannels.contains(event.channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
 							// Vamos pegar um canal que seja possível usar comandos
@@ -172,10 +172,10 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 							response = if (useCommandsIn != null) {
 								// Canal não bloqueado!
-								legacyLocale["MENTION_ResponseBlocked", event.message.author.asMention, serverConfig.commandPrefix, useCommandsIn.asMention]
+								locale["commands.mention.responseBlocked", event.message.author.asMention, serverConfig.commandPrefix, useCommandsIn.asMention]
 							} else {
 								// Nenhum canal disponível...
-								legacyLocale["MENTION_ResponseBlockedNoChannels", event.message.author.asMention, serverConfig.commandPrefix]
+								locale["commands.mention.responseBlockedNoChannels", event.message.author.asMention, serverConfig.commandPrefix]
 							}
 						}
 					}
@@ -256,7 +256,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 						val list = mutableListOf(
 								LorittaReply(
-										"${legacyLocale["LORITTA_UnknownCommand", command, "${serverConfig.commandPrefix}${legacyLocale["AJUDA_CommandName"]}"]} ${Emotes.LORI_OWO}",
+										"${locale["commands.unknownCommand", command, "${serverConfig.commandPrefix}${locale["commands.helpCommandName"]}"]} ${Emotes.LORI_OWO}",
 										"\uD83E\uDD37"
 								)
 						)
@@ -334,7 +334,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			val legacyLocale = loritta.getLegacyLocaleById(currentLocale)
 
 			if (isMentioningOnlyMe(event.message.contentRaw)) {
-				event.channel.sendMessage(legacyLocale["LORITTA_CommandsInDirectMessage", event.message.author.asMention, legacyLocale["AJUDA_CommandName"]]).queue()
+				event.channel.sendMessage(locale["commands.commandsInDirectMessage", event.message.author.asMention, locale["commands.helpCommandName"]]).queue()
 				return@launchMessageJob
 			}
 

@@ -53,7 +53,7 @@ object DateUtils {
 		}
 		val sb = StringBuilder()
 		val types = intArrayOf(Calendar.YEAR, Calendar.MONTH, Calendar.DAY_OF_MONTH, Calendar.HOUR_OF_DAY, Calendar.MINUTE, Calendar.SECOND)
-		val names = arrayOf(locale.toNewLocale()["loritta.date.year"], locale["DATEUTILS_Years"], locale["DATEUTILS_Month"], locale["DATEUTILS_Months"], locale["DATEUTILS_Day"], locale["DATEUTILS_Days"], locale["DATEUTILS_Hour"], locale["DATEUTILS_Hours"], locale["DATEUTILS_Minute"], locale["DATEUTILS_Minutes"], locale["DATEUTILS_Second"], locale["DATEUTILS_Seconds"])
+		val names = arrayOf(locale.toNewLocale()["loritta.date.year"], locale.toNewLocale()["loritta.date.years"], locale.toNewLocale()["loritta.date.month"], locale.toNewLocale()["loritta.date.months"], locale.toNewLocale()["loritta.date.day"], locale.toNewLocale()["loritta.date.days"], locale.toNewLocale()["loritta.date.hour"], locale.toNewLocale()["loritta.date.hours"], locale.toNewLocale()["loritta.date.minute"], locale.toNewLocale()["loritta.date.minutes"], locale.toNewLocale()["loritta.date.second"], locale.toNewLocale()["loritta.date.seconds"])
 		var accuracy = 0
 		for (i in types.indices) {
 			if (accuracy > 2) {
