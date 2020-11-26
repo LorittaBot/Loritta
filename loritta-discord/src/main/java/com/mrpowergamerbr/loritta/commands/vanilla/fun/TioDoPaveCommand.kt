@@ -4,12 +4,12 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.WebhookUtils.getOrCreateWebhook
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), CommandCategory.FUN) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.fun.tiodopave.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.fun.tiodopave.description"]
 	}
 
 	override fun hasCommandFeedback(): Boolean {
@@ -315,7 +315,7 @@ class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), CommandCa
 		)
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val temmie = getOrCreateWebhook(context.event.textChannel!!, "Tio do Pavê")
 
 		context.sendMessage(temmie, WebhookMessageBuilder()

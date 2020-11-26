@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Profiles
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
@@ -15,11 +15,11 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.math.BigDecimal
 
 class SonhosCommand : AbstractCommand("sonhos", listOf("atm", "bal", "balance"), category = CommandCategory.ECONOMY) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.economy.sonhos.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.economy.sonhos.description"]
 	}
 
-	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		val retrieveDreamsFromUser = context.getUserAt(0) ?: context.userHandle
 
 		val lorittaProfile = if (retrieveDreamsFromUser == context.userHandle) {
@@ -76,7 +76,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm", "bal", "balance"),
 						false,
 						youHaveReply,
                         LorittaReply(
-                                locale.toNewLocale()["commands.economy.sonhos.youHaveSonhos", localProfile.money, if (localProfile.money == BigDecimal.ONE) {
+                                locale["commands.economy.sonhos.youHaveSonhos", localProfile.money, if (localProfile.money == BigDecimal.ONE) {
                                     economyConfig.economyName
                                 } else {
                                     economyConfig.economyNamePlural
@@ -128,7 +128,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm", "bal", "balance"),
 						false,
 						someoneHasReply,
                         LorittaReply(
-                                locale.toNewLocale()["commands.economy.sonhos.userHasSonhos", retrieveDreamsFromUser.asMention, localProfile.money, if (localProfile.money == BigDecimal.ONE) {
+                                locale["commands.economy.sonhos.userHasSonhos", retrieveDreamsFromUser.asMention, localProfile.money, if (localProfile.money == BigDecimal.ONE) {
                                     economyConfig.economyName
                                 } else {
                                     economyConfig.economyNamePlural

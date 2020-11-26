@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -19,8 +19,8 @@ import java.awt.image.BufferedImage
 import java.net.URLEncoder
 
 class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCategory.ROBLOX) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.roblox.rbuser.robloxId"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.roblox.rbuser.robloxId"]
 	}
 
 	override fun getUsage(): String {
@@ -31,7 +31,7 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 		return listOf("cazum8", "lol738236")
 	}
 
-	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val username = context.args.joinToString(separator = " ")
 
@@ -53,7 +53,7 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 			}
 
 			if (userId == null || name == null || blurb == null || isOnline == null) {
-				context.sendMessage(Constants.ERROR + " **|** " + locale.toNewLocale()["commands.roblox.rbuser.couldntFind", username] + " \uD83D\uDE22")
+				context.sendMessage(Constants.ERROR + " **|** " + locale["commands.roblox.rbuser.couldntFind", username] + " \uD83D\uDE22")
 				return
 			}
 
@@ -223,10 +223,10 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 					setDescription(blurb)
 				}
 				setColor(Constants.ROBLOX_RED)
-				addField("\uD83D\uDCBB ${locale.toNewLocale()["commands.roblox.rbuser.robloxId"]}", userId.toString(), true)
-				addField("\uD83D\uDCC5 ${locale.toNewLocale()["commands.roblox.rbuser.joinDate"]}", joinDate, true)
-				addField("\uD83D\uDC40 ${locale.toNewLocale()["commands.roblox.rbuser.placeVisits"]}", placeVisits, true)
-				addField("\uD83D\uDE4B ${locale.toNewLocale()["commands.roblox.rbuser.social"]}", "**\uD83D\uDC3E ${locale.toNewLocale()["commands.roblox.rbuser.following"]}**: $totalFollowing\n**<:starstruck:540988091117076481> ${locale.toNewLocale()["commands.roblox.rbuser.followers"]}**: $totalFollowers\n**\uD83D\uDE0E ${locale.toNewLocale()["commands.roblox.rbuser.friends"]}**: $totalFriends\n", true)
+				addField("\uD83D\uDCBB ${locale["commands.roblox.rbuser.robloxId"]}", userId.toString(), true)
+				addField("\uD83D\uDCC5 ${locale["commands.roblox.rbuser.joinDate"]}", joinDate, true)
+				addField("\uD83D\uDC40 ${locale["commands.roblox.rbuser.placeVisits"]}", placeVisits, true)
+				addField("\uD83D\uDE4B ${locale["commands.roblox.rbuser.social"]}", "**\uD83D\uDC3E ${locale["commands.roblox.rbuser.following"]}**: $totalFollowing\n**<:starstruck:540988091117076481> ${locale["commands.roblox.rbuser.followers"]}**: $totalFollowers\n**\uD83D\uDE0E ${locale["commands.roblox.rbuser.friends"]}**: $totalFriends\n", true)
 				setImage("attachment://roblox.png")
 				setThumbnail(avatar)
 			}

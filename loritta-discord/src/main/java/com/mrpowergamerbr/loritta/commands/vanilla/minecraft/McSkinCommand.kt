@@ -5,13 +5,13 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.minecraft.MCUtils
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class McSkinCommand : AbstractCommand("mcskin", listOf("skinsteal", "skinstealer"), CommandCategory.MINECRAFT) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.minecraft.mcskin.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.minecraft.mcskin.description"]
 	}
 
 	override fun getUsage(): String {
@@ -26,7 +26,7 @@ class McSkinCommand : AbstractCommand("mcskin", listOf("skinsteal", "skinstealer
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val nickname = context.args[0]
 
@@ -35,7 +35,7 @@ class McSkinCommand : AbstractCommand("mcskin", listOf("skinsteal", "skinstealer
 			if (profile == null) {
 				context.reply(
                         LorittaReply(
-								locale.toNewLocale()["commands.minecraft.unknownPlayer", context.args.getOrNull(0)],
+								locale["commands.minecraft.unknownPlayer", context.args.getOrNull(0)],
                                 Constants.ERROR
                         )
 				)

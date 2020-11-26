@@ -4,7 +4,7 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Emote
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -12,8 +12,8 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 
 class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.discord.emoji.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.discord.emoji.description"]
 	}
 
 	override fun getUsage(): String {
@@ -28,7 +28,7 @@ class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.size == 1) {
 			val arg0 = context.rawArgs[0]
 			val firstEmote = context.message.emotes.firstOrNull()
@@ -47,7 +47,7 @@ class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD
 				} else {
 					context.reply(
                             LorittaReply(
-                                    locale.toNewLocale()["commands.discord.emoji.notFoundId", "`$arg0`"],
+                                    locale["commands.discord.emoji.notFoundId", "`$arg0`"],
                                     Constants.ERROR
                             )
 					)

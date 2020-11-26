@@ -5,7 +5,7 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.apache.commons.lang3.StringUtils
@@ -14,8 +14,8 @@ import java.net.URLEncoder
 import java.util.*
 
 class WikipediaCommand : AbstractCommand("wikipedia", listOf("wiki"), CommandCategory.UTILS) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.utils.wikipedia.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.utils.wikipedia.description"]
 	}
 
 	override fun getUsage(): String {
@@ -31,7 +31,7 @@ class WikipediaCommand : AbstractCommand("wikipedia", listOf("wiki"), CommandCat
 				"conteúdo" to "O que você deseja procurar no Wikipédia")
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var languageId = when (context.config.localeId) {
 				"default" -> "pt"
@@ -55,7 +55,7 @@ class WikipediaCommand : AbstractCommand("wikipedia", listOf("wiki"), CommandCat
 				val entryWikiContent = wikiPages.entrySet().iterator().next() // Conteúdo
 
 				if (entryWikiContent.key == "-1") { // -1 = Nenhuma página encontrada
-					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale.toNewLocale()["commands.utils.wikipedia.couldntFind", query])
+					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["commands.utils.wikipedia.couldntFind", query])
 				} else {
 					// Se não é -1, então é algo que existe! Yay!
 					val pageTitle = entryWikiContent.value.asJsonObject.get("title").asString

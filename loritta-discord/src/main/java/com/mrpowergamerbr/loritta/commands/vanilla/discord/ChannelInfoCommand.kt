@@ -3,7 +3,9 @@ package com.mrpowergamerbr.loritta.commands.vanilla.discord
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.DateUtils
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.api.commands.*
+import net.perfectdreams.loritta.api.commands.ArgumentType
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 
@@ -38,7 +40,7 @@ class ChannelInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(l
 					?: context.discordMessage.channel.id
 			val channel = context.guild.getTextChannelById(channelId)!!
 
-			val channelCreatedDiff = DateUtils.formatDateDiff(channel.timeCreated.toInstant().toEpochMilli(), loritta.getLegacyLocaleById(context.serverConfig.localeId))
+			val channelCreatedDiff = DateUtils.formatDateDiff(channel.timeCreated.toInstant().toEpochMilli(), locale)
 
 			val builder = EmbedBuilder()
 

@@ -2,10 +2,9 @@ package net.perfectdreams.loritta.website.routes.api.v1.user
 
 import com.mrpowergamerbr.loritta.dao.Background
 import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
-import io.ktor.application.ApplicationCall
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
-import io.ktor.response.respondBytes
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.response.*
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
@@ -35,7 +34,7 @@ class GetSelfUserProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 			it.internalName == internalTypeName
 		}
 
-		val locale = loritta.getLegacyLocaleById("default")
+		val locale = loritta.getLocaleById("default")
 
 		val userId = userIdentification.id.toLong()
 		// Disabled because Loritta loads the avatar URL from the user identification cache

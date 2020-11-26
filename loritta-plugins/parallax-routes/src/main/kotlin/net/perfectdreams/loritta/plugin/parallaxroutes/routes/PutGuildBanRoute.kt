@@ -6,8 +6,8 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.AdminUtils
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import io.ktor.application.ApplicationCall
-import io.ktor.request.receiveText
+import io.ktor.application.*
+import io.ktor.request.*
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
@@ -31,7 +31,7 @@ class PutGuildBanRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationRoute
 				moderationInfo,
 				guild,
 				punisher,
-				com.mrpowergamerbr.loritta.utils.loritta.getLegacyLocaleById(serverConfig.localeId),
+				com.mrpowergamerbr.loritta.utils.loritta.getLocaleById(serverConfig.localeId),
 				user,
 				options["reason"].nullString ?: "",
 				options["isSilent"].nullBool ?: false,

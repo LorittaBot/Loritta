@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.threads.RaffleThread
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import java.util.*
@@ -17,11 +17,11 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 		const val MAX_TICKETS_BY_USER_PER_ROUND = 100_000
 	}
 
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.economy.raffle.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.economy.raffle.description"]
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val arg0 = context.args.getOrNull(0)
 
 		if (arg0 == "clear" && loritta.config.isOwner(context.userHandle.id)) {

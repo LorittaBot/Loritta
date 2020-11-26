@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNull
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.api.Permission
@@ -21,11 +21,11 @@ import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.PunishmentAction
 
 class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), CommandCategory.ADMIN) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.moderation.kick.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.moderation.kick.description"]
 	}
 
-	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
+	override fun getUsage(locale: BaseLocale): CommandArguments {
 		return arguments {
 			argument(ArgumentType.USER) {
 				optional = false
@@ -52,7 +52,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 		return listOf(Permission.KICK_MEMBERS)
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val (users, rawReason) = AdminUtils.checkAndRetrieveAllValidUsersFromMessages(context) ?: return
 
@@ -115,11 +115,11 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 	companion object {
 		private val LOCALE_PREFIX = "commands.moderation"
 
-		fun kick(context: CommandContext, settings: AdminUtils.ModerationConfigSettings, locale: LegacyBaseLocale, member: Member, user: User, reason: String, isSilent: Boolean) {
+		fun kick(context: CommandContext, settings: AdminUtils.ModerationConfigSettings, locale: BaseLocale, member: Member, user: User, reason: String, isSilent: Boolean) {
 			if (!isSilent) {
 				if (settings.sendPunishmentViaDm && context.guild.isMember(user)) {
 					try {
-						val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, locale.toNewLocale()["commands.moderation.kick.punishAction"], reason)
+						val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, locale["commands.moderation.kick.punishAction"], reason)
 
 						user.openPrivateChannel().queue {
 							it.sendMessage(embed).queue()
@@ -144,9 +144,9 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 								listOf(user, context.guild),
 								context.guild,
 								mutableMapOf(
-										"duration" to locale.toNewLocale()["commands.moderation.mute.forever"]
+										"duration" to locale["commands.moderation.mute.forever"]
 								) + AdminUtils.getStaffCustomTokens(context.userHandle)
-										+ AdminUtils.getPunishmentCustomTokens(locale.toNewLocale(), reason, "${LOCALE_PREFIX}.kick")
+										+ AdminUtils.getPunishmentCustomTokens(locale, reason, "${LOCALE_PREFIX}.kick")
 						)
 
 						message?.let {
@@ -156,7 +156,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 				}
 			}
 
-			context.guild.kick(member, AdminUtils.generateAuditLogMessage(locale.toNewLocale(), context.userHandle, reason))
+			context.guild.kick(member, AdminUtils.generateAuditLogMessage(locale, context.userHandle, reason))
 					.queue()
 		}
 	}

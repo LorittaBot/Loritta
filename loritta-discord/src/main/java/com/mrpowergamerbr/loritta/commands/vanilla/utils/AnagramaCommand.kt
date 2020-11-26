@@ -4,7 +4,7 @@ import com.google.common.math.BigIntegerMath
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.Emotes
 
@@ -18,8 +18,8 @@ class AnagramaCommand : AbstractCommand("anagram", listOf("anagrama"), CommandCa
 		return "palavra"
 	}
 
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["$LOCALE_PREFIX.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["$LOCALE_PREFIX.description"]
 	}
 
 	override fun getExtendedExamples(): Map<String, String> {
@@ -27,7 +27,7 @@ class AnagramaCommand : AbstractCommand("anagram", listOf("anagrama"), CommandCa
 				"kk eae men" to "Cria um anagrama usando a frase \"kk eae men\"")
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val currentWord = context.args.joinToString(separator = " ")
 

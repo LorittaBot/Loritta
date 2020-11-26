@@ -4,15 +4,15 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.apache.commons.codec.digest.DigestUtils
 import java.util.*
 
 class EncodeCommand : AbstractCommand("encode", listOf("codificar", "encrypt", "criptografar", "hash"), CommandCategory.UTILS) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.utils.encode.description", listOf("md2", "md5", "sha1", "sha256", "sha384", "sha512", "rot13", "uuid", "base64").joinToString(", ", transform = { "`$it`" })]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.utils.encode.description", listOf("md2", "md5", "sha1", "sha256", "sha384", "sha512", "rot13", "uuid", "base64").joinToString(", ", transform = { "`$it`" })]
 	}
 
 	override fun getDetailedUsage(): Map<String, String> {
@@ -28,7 +28,7 @@ class EncodeCommand : AbstractCommand("encode", listOf("codificar", "encrypt", "
 		)
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val args = context.rawArgs.toMutableList()
 		val encodeMode = context.rawArgs.getOrNull(0)?.toLowerCase()
 
@@ -63,7 +63,7 @@ class EncodeCommand : AbstractCommand("encode", listOf("codificar", "encrypt", "
 
 		if (encodedText == null) {
 			context.reply(
-					locale.toNewLocale()["commands.utils.encode.invalidMethod", encodeMode.stripCodeMarks()],
+					locale["commands.utils.encode.invalidMethod", encodeMode.stripCodeMarks()],
 					Constants.ERROR
 			)
 			return
@@ -72,12 +72,12 @@ class EncodeCommand : AbstractCommand("encode", listOf("codificar", "encrypt", "
 		context.reply(
 				true,
                 LorittaReply(
-                        "**${locale.toNewLocale()["commands.utils.encode.originalText"]}:** `${text.stripCodeMarks()}`",
+                        "**${locale["commands.utils.encode.originalText"]}:** `${text.stripCodeMarks()}`",
                         "\uD83D\uDCC4",
                         mentionUser = false
                 ),
                 LorittaReply(
-                        "**${locale.toNewLocale()["commands.utils.encode.encodedText"]}:** `${encodedText.stripCodeMarks()}`",
+                        "**${locale["commands.utils.encode.encodedText"]}:** `${encodedText.stripCodeMarks()}`",
                         "<:blobspy:465979979876794368>",
                         mentionUser = false
                 )

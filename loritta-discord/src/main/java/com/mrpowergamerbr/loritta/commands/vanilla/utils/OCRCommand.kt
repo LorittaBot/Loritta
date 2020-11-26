@@ -9,7 +9,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.gson
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import io.ktor.client.call.receive
 import io.ktor.client.request.post
@@ -23,11 +23,11 @@ import java.util.*
 import javax.imageio.ImageIO
 
 class OCRCommand : AbstractCommand("ocr", listOf("ler", "read"), CommandCategory.UTILS) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.utils.ocr.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.utils.ocr.description"]
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
 		ByteArrayOutputStream().use {
@@ -66,7 +66,7 @@ class OCRCommand : AbstractCommand("ocr", listOf("ler", "read"), CommandCategory
 			try {
 				builder.setDescription("```${parsedResponse["responses"][0]["textAnnotations"][0]["description"].string}```")
 			} catch (e: Exception) {
-				builder.setDescription("**${locale.toNewLocale()["commands.utils.ocr.couldntFind"]}**")
+				builder.setDescription("**${locale["commands.utils.ocr.couldntFind"]}**")
 			}
 			context.sendMessage(context.getAsMention(true), builder.build())
 		}

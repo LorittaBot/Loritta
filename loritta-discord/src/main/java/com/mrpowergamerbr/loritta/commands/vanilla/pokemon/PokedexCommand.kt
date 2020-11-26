@@ -4,7 +4,7 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.encodeToUrl
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.jsoup.Jsoup
@@ -12,8 +12,8 @@ import java.awt.Color
 import java.util.*
 
 class PokedexCommand : AbstractCommand("pokedex", listOf("pokédex"), CommandCategory.POKEMON) {
-    override fun getDescription(locale: LegacyBaseLocale): String {
-        return locale.toNewLocale()["commands.pokemon.pokedex.description"]
+    override fun getDescription(locale: BaseLocale): String {
+        return locale["commands.pokemon.pokedex.description"]
     }
 
     override fun getExamples(): List<String> {
@@ -24,7 +24,7 @@ class PokedexCommand : AbstractCommand("pokedex", listOf("pokédex"), CommandCat
         return "pokémon"
     }
 
-    override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+    override suspend fun run(context: CommandContext,locale: BaseLocale) {
         if (context.args.size == 1) {
             // Argumento 1: Pokémon (ID ou Nome)
 			var http = HttpRequest.get("https://veekun.com/dex/pokemon/${context.args[0].toLowerCase().encodeToUrl()}").userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:53.0) Gecko/20100101 Firefox/53.0")
@@ -64,11 +64,11 @@ class PokedexCommand : AbstractCommand("pokedex", listOf("pokédex"), CommandCat
 			var strAbilities = ""
 	        var strDexTypes = dexTypes.joinToString(separator = ", ", transform = { it.attr("alt") })
 
-	        embed.addField(locale.toNewLocale()["commands.pokemon.pokedex.types"], strDexTypes, true)
+	        embed.addField(locale["commands.pokemon.pokedex.types"], strDexTypes, true)
 
-	        embed.addField(locale.toNewLocale()["commands.pokemon.pokedex.addedInGen"], pokeInfoValue[0].getElementsByTag("img")[0].attr("alt"), true)
+	        embed.addField(locale["commands.pokemon.pokedex.addedInGen"], pokeInfoValue[0].getElementsByTag("img")[0].attr("alt"), true)
 
-			embed.addField(locale.toNewLocale()["commands.pokemon.pokedex.number"], pokeInfoValue[1].text(), true)
+			embed.addField(locale["commands.pokemon.pokedex.number"], pokeInfoValue[1].text(), true)
 
 			for (el in abilities) {
 				// title
@@ -77,15 +77,15 @@ class PokedexCommand : AbstractCommand("pokedex", listOf("pokédex"), CommandCat
 				strAbilities += "**$title** - $description\n"
 			}
 
-			embed.addField(locale.toNewLocale()["commands.pokemon.pokedex.abilities"], strAbilities, true)
+			embed.addField(locale["commands.pokemon.pokedex.abilities"], strAbilities, true)
 
-	        var strTraining = "**${context.legacyLocale.toNewLocale()["commands.pokemon.pokedex.baseExp"]}:** ${trainingInfoValue[0].text()}" +
-					"\n**${locale.toNewLocale()["commands.pokemon.pokedex.effortPoints"]}:** ${trainingInfoValue[1].text()}" +
-					"\n**${locale.toNewLocale()["commands.pokemon.pokedex.captureRate"]}:** ${trainingInfoValue[2].text()}" +
-					"\n**${locale.toNewLocale()["commands.pokemon.pokedex.baseHappiness"]}:** ${trainingInfoValue[3].text()}" +
-					"\n**${locale.toNewLocale()["commands.pokemon.pokedex.growthRate"]}:** ${trainingInfoValue[4].text()}"
+	        var strTraining = "**${context.locale["commands.pokemon.pokedex.baseExp"]}:** ${trainingInfoValue[0].text()}" +
+					"\n**${locale["commands.pokemon.pokedex.effortPoints"]}:** ${trainingInfoValue[1].text()}" +
+					"\n**${locale["commands.pokemon.pokedex.captureRate"]}:** ${trainingInfoValue[2].text()}" +
+					"\n**${locale["commands.pokemon.pokedex.baseHappiness"]}:** ${trainingInfoValue[3].text()}" +
+					"\n**${locale["commands.pokemon.pokedex.growthRate"]}:** ${trainingInfoValue[4].text()}"
 
-	        embed.addField("${locale.toNewLocale()["commands.pokemon.pokedex.training"]}", strTraining, true)
+	        embed.addField("${locale["commands.pokemon.pokedex.training"]}", strTraining, true)
 
 			var strEvolutions = ""
 
@@ -106,7 +106,7 @@ class PokedexCommand : AbstractCommand("pokedex", listOf("pokédex"), CommandCat
 				}
 			}
 
-			embed.addField("${locale.toNewLocale()["commands.pokemon.pokedex.evolutions"]}", strEvolutions, true)
+			embed.addField("${locale["commands.pokemon.pokedex.evolutions"]}", strEvolutions, true)
 
 			context.sendMessage(embed.build())
 

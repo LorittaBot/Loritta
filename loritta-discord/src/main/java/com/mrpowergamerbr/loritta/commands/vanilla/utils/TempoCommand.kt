@@ -6,7 +6,7 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -18,15 +18,15 @@ class TempoCommand : AbstractCommand("weather", listOf("tempo", "previsão", "pr
 		return "cidade"
 	}
 
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.utils.weather.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.utils.weather.description"]
 	}
 
 	override fun getExamples(): List<String> {
 		return listOf("São Paulo")
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val cidade = context.args.joinToString(separator = " ")
 
@@ -79,13 +79,13 @@ class TempoCommand : AbstractCommand("weather", listOf("tempo", "previsão", "pr
 					icon = "\uD83C\uDF2B "
 				}
 
-				embed.setTitle(locale.toNewLocale()["commands.utils.weather.forecastFor", realCityName, countryShort])
+				embed.setTitle(locale["commands.utils.weather.forecastFor", realCityName, countryShort])
 				embed.setDescription(icon + description)
 				embed.setColor(Color(0, 210, 255))
-				embed.addField("🌡 ${context.legacyLocale.toNewLocale()["commands.utils.weather.temperature"]}", "**${context.locale["commands.utils.weather.current"]}: **$now ºC\n**${context.locale["commands.utils.weather.max"]}: **$max ºC\n**${context.locale["commands.utils.weather.min"]}: **$min ºC", true)
-				embed.addField("💦 ${context.legacyLocale.toNewLocale()["commands.utils.weather.humidity"]}", "$humidity%", true)
-				embed.addField("🌬 ${context.legacyLocale.toNewLocale()["commands.utils.weather.windSpeed"]}", "$windSpeed km/h", true)
-				embed.addField("🏋 ${context.legacyLocale.toNewLocale()["commands.utils.weather.airPressure"]}", "$pressure kPA", true)
+				embed.addField("🌡 ${context.locale["commands.utils.weather.temperature"]}", "**${context.locale["commands.utils.weather.current"]}: **$now ºC\n**${context.locale["commands.utils.weather.max"]}: **$max ºC\n**${context.locale["commands.utils.weather.min"]}: **$min ºC", true)
+				embed.addField("💦 ${context.locale["commands.utils.weather.humidity"]}", "$humidity%", true)
+				embed.addField("🌬 ${context.locale["commands.utils.weather.windSpeed"]}", "$windSpeed km/h", true)
+				embed.addField("🏋 ${context.locale["commands.utils.weather.airPressure"]}", "$pressure kPA", true)
 
 				context.sendMessage(embed.build())
 			} else {

@@ -4,15 +4,15 @@ import com.google.common.collect.ImmutableMap
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
 import java.util.*
 
 class JoojCommand : AbstractCommand("jooj", category = CommandCategory.IMAGES) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.images.jooj.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.images.jooj.description"]
 	}
 
 	override fun getExamples(): List<String> {
@@ -29,7 +29,7 @@ class JoojCommand : AbstractCommand("jooj", category = CommandCategory.IMAGES) {
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val image = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
 		val leftSide = image.getSubimage(0, 0, image.width / 2, image.height)

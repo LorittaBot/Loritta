@@ -9,7 +9,7 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.RegisterConfigs
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
@@ -21,11 +21,11 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 
 class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC, onlyOwner = true) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
+	override fun getDescription(locale: BaseLocale): String {
 		return "Recarrega a Loritta"
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val arg0 = context.rawArgs.getOrNull(0)
 		val arg1 = context.rawArgs.getOrNull(1)
 		val arg2 = context.rawArgs.getOrNull(2)

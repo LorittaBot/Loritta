@@ -6,7 +6,7 @@ import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.Constants
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -19,21 +19,21 @@ class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCa
 		const val DIVORCE_REACTION_EMOJI = "\uD83D\uDC94"
 	}
 
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["$LOCALE_PREFIX.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["$LOCALE_PREFIX.description"]
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val marriage = loritta.newSuspendedTransaction { context.lorittaUser.profile.marriage }
 
 		if (marriage != null) {
 			val message = context.reply(
                     LorittaReply(
-                            locale.toNewLocale()["$LOCALE_PREFIX.prepareToDivorce", Emotes.LORI_CRYING],
+                            locale["$LOCALE_PREFIX.prepareToDivorce", Emotes.LORI_CRYING],
                             "\uD83D\uDDA4"
                     ),
                     LorittaReply(
-                            locale.toNewLocale()["$LOCALE_PREFIX.pleaseConfirm", DIVORCE_REACTION_EMOJI],
+                            locale["$LOCALE_PREFIX.pleaseConfirm", DIVORCE_REACTION_EMOJI],
                             mentionUser = false
                     )
 			)
@@ -52,7 +52,7 @@ class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCa
 
 					context.reply(
                             LorittaReply(
-                                    locale.toNewLocale()["$LOCALE_PREFIX.divorced", Emotes.LORI_HUG]
+                                    locale["$LOCALE_PREFIX.divorced", Emotes.LORI_HUG]
                             )
 					)
 				}
@@ -62,7 +62,7 @@ class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCa
 		} else {
 			context.reply(
                     LorittaReply(
-                            locale.toNewLocale()["commands.social.youAreNotMarried", "`${context.config.commandPrefix}casar`", Emotes.LORI_HUG],
+                            locale["commands.social.youAreNotMarried", "`${context.config.commandPrefix}casar`", Emotes.LORI_HUG],
                             Constants.ERROR
                     )
 			)

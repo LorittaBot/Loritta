@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class CaraCoroaCommand : AbstractCommand("coinflip", listOf("girarmoeda", "flipcoin", "caracoroa"), CommandCategory.FUN) {
@@ -12,11 +12,11 @@ class CaraCoroaCommand : AbstractCommand("coinflip", listOf("girarmoeda", "flipc
 		const val LOCALE_PREFIX = "commands.fun.flipcoin"
 	}
 
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.fun.flipcoin.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.fun.flipcoin.description"]
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val isTails = Loritta.RANDOM.nextBoolean()
 		val prefix: String
 		val message: String

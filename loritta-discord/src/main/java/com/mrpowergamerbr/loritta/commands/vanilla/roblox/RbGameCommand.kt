@@ -6,18 +6,18 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.encodeToUrl
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.jsoup.Jsoup
 
 class RbGameCommand : AbstractCommand("rbgame", listOf("rbjogo", "rbgameinfo"), CommandCategory.ROBLOX) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.roblox.rbgame.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.roblox.rbgame.description"]
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val query = context.args.joinToString(" ")
 
@@ -32,7 +32,7 @@ class RbGameCommand : AbstractCommand("rbgame", listOf("rbjogo", "rbgameinfo"), 
 			if (gameCardLink == null) {
 				context.reply(
                         LorittaReply(
-                                message = locale.toNewLocale()["commands.roblox.rbgame.couldntFind", query],
+                                message = locale["commands.roblox.rbgame.couldntFind", query],
                                 prefix = Constants.ERROR
                         )
 				)
@@ -81,16 +81,16 @@ class RbGameCommand : AbstractCommand("rbgame", listOf("rbjogo", "rbgameinfo"), 
 			val downvotes = voteSection.attr("data-total-down-votes")
 
 			embed.setTitle("<:roblox_logo:412576693803286528> $gameName", gameUrl)
-			embed.addField("\uD83D\uDCBB ${locale.toNewLocale()["commands.roblox.rbuser.robloxId"]}", placeId, true)
-			embed.addField("<:starstruck:540988091117076481> ${locale.toNewLocale()["commands.roblox.rbgame.favorites"]}", favoriteCount, true)
-			embed.addField("\uD83D\uDC4D ${locale.toNewLocale()["commands.roblox.rbgame.likes"]}", upvotes, true)
-			embed.addField("\uD83D\uDC4E ${locale.toNewLocale()["commands.roblox.rbgame.dislikes"]}", downvotes, true)
-			embed.addField("\uD83C\uDFAE ${locale.toNewLocale()["commands.roblox.rbgame.playing"]}", playing, true)
-			embed.addField("\uD83D\uDC3E ${locale.toNewLocale()["commands.roblox.rbuser.visits"]}", visits, true)
-			embed.addField("\uD83C\uDF1F ${locale.toNewLocale()["commands.roblox.rbgame.createdAt"]}", created, true)
-			embed.addField("✨ ${locale.toNewLocale()["commands.roblox.rbgame.lastUpdated"]}", updated, true)
-			embed.addField("⛔ ${locale.toNewLocale()["commands.roblox.rbgame.maxPlayers"]}", maxplayers, true)
-			embed.addField("\uD83C\uDFB2 ${locale.toNewLocale()["commands.roblox.rbgame.genre"]}", genre, true)
+			embed.addField("\uD83D\uDCBB ${locale["commands.roblox.rbuser.robloxId"]}", placeId, true)
+			embed.addField("<:starstruck:540988091117076481> ${locale["commands.roblox.rbgame.favorites"]}", favoriteCount, true)
+			embed.addField("\uD83D\uDC4D ${locale["commands.roblox.rbgame.likes"]}", upvotes, true)
+			embed.addField("\uD83D\uDC4E ${locale["commands.roblox.rbgame.dislikes"]}", downvotes, true)
+			embed.addField("\uD83C\uDFAE ${locale["commands.roblox.rbgame.playing"]}", playing, true)
+			embed.addField("\uD83D\uDC3E ${locale["commands.roblox.rbuser.visits"]}", visits, true)
+			embed.addField("\uD83C\uDF1F ${locale["commands.roblox.rbgame.createdAt"]}", created, true)
+			embed.addField("✨ ${locale["commands.roblox.rbgame.lastUpdated"]}", updated, true)
+			embed.addField("⛔ ${locale["commands.roblox.rbgame.maxPlayers"]}", maxplayers, true)
+			embed.addField("\uD83C\uDFB2 ${locale["commands.roblox.rbgame.genre"]}", genre, true)
 
 			embed.setAuthor(gameAuthor)
 			embed.setDescription(gameDescription.substringIfNeeded(0 until 250))

@@ -9,7 +9,7 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.dao.StoredMessage
 import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
@@ -100,7 +100,7 @@ object EventLog {
 		}
 	}
 
-	suspend fun onMessageUpdate(serverConfig: ServerConfig, locale: LegacyBaseLocale, message: Message) {
+	suspend fun onMessageUpdate(serverConfig: ServerConfig, locale: BaseLocale, message: Message) {
 		try {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return
 
@@ -124,9 +124,9 @@ object EventLog {
 						if (webhook != null) {
 							val embed = WebhookEmbedBuilder()
 									.setColor(Color(238, 241, 0).rgb)
-									.setDescription("\uD83D\uDCDD ${locale.toNewLocale().getList("modules.eventLog.messageEdited", message.member?.asMention, storedMessage.content, message.contentRaw, message.textChannel.asMention).joinToString("\n")}")
+									.setDescription("\uD83D\uDCDD ${locale.getList("modules.eventLog.messageEdited", message.member?.asMention, storedMessage.content, message.contentRaw, message.textChannel.asMention).joinToString("\n")}")
 									.setAuthor(WebhookEmbed.EmbedAuthor("${message.member?.user?.name}#${message.member?.user?.discriminator}", null, message.member?.user?.effectiveAvatarUrl))
-									.setFooter(WebhookEmbed.EmbedFooter(locale.toNewLocale()["modules.eventLog.userID", message.member?.user?.id], null))
+									.setFooter(WebhookEmbed.EmbedFooter(locale["modules.eventLog.userID", message.member?.user?.id], null))
 									.setTimestamp(Instant.now())
 
 							webhook.send(
@@ -158,7 +158,7 @@ object EventLog {
 
 			if (eventLogConfig.enabled && eventLogConfig.voiceChannelJoins) {
 				val textChannel = member.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return
-				val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
+				val locale = loritta.getLocaleById(serverConfig.localeId)
 
 				if (!textChannel.canTalk())
 					return
@@ -173,9 +173,9 @@ object EventLog {
 
 				val embed = WebhookEmbedBuilder()
 						.setColor(Color(35, 209, 96).rgb)
-						.setDescription("\uD83D\uDC49\uD83C\uDFA4 **${locale.toNewLocale()["modules.eventLog.joinedVoiceChannel", member.asMention, channelJoined.name]}**")
+						.setDescription("\uD83D\uDC49\uD83C\uDFA4 **${locale["modules.eventLog.joinedVoiceChannel", member.asMention, channelJoined.name]}**")
 						.setAuthor(WebhookEmbed.EmbedAuthor("${member.user.name}#${member.user.discriminator}", null, member.user.effectiveAvatarUrl))
-						.setFooter(WebhookEmbed.EmbedFooter(locale.toNewLocale()["modules.eventLog.userID", member.user.id], null))
+						.setFooter(WebhookEmbed.EmbedFooter(locale["modules.eventLog.userID", member.user.id], null))
 						.setTimestamp(Instant.now())
 
 				webhook.send(
@@ -199,7 +199,7 @@ object EventLog {
 
 			if (eventLogConfig.enabled && eventLogConfig.voiceChannelLeaves) {
 				val textChannel = member.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return
-				val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
+				val locale = loritta.getLocaleById(serverConfig.localeId)
 				if (!textChannel.canTalk())
 					return
 				if (!member.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
@@ -213,9 +213,9 @@ object EventLog {
 
 				val embed = WebhookEmbedBuilder()
 						.setColor(Color(35, 209, 96).rgb)
-						.setDescription("\uD83D\uDC48\uD83C\uDFA4 **${locale.toNewLocale()["modules.eventLog.leftVoiceChannel", member.asMention, channelLeft.name]}**")
+						.setDescription("\uD83D\uDC48\uD83C\uDFA4 **${locale["modules.eventLog.leftVoiceChannel", member.asMention, channelLeft.name]}**")
 						.setAuthor(WebhookEmbed.EmbedAuthor("${member.user.name}#${member.user.discriminator}", null, member.user.effectiveAvatarUrl))
-						.setFooter(WebhookEmbed.EmbedFooter(locale.toNewLocale()["modules.eventLog.userID", member.user.id], null))
+						.setFooter(WebhookEmbed.EmbedFooter(locale["modules.eventLog.userID", member.user.id], null))
 						.setTimestamp(Instant.now())
 
 				webhook.send(

@@ -9,22 +9,22 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.Color
 import java.net.URLEncoder
 
 class KnowYourMemeCommand : AbstractCommand("knowyourmeme", listOf("kym"), CommandCategory.UTILS) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.utils.knowyourmeme.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.utils.knowyourmeme.description"]
 	}
 
 	override fun getExamples(): List<String> {
 		return listOf("Arthur's Headphones")
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val query = context.args.joinToString(" ") // Vamos juntar a nossa query
 
@@ -57,8 +57,8 @@ class KnowYourMemeCommand : AbstractCommand("knowyourmeme", listOf("kym"), Comma
 				embed.setTitle("<:kym:375313574085787648> $name", "http://knowyourmeme.com$url")
 				embed.setThumbnail(iconUrl)
 				embed.setDescription(summary)
-				embed.addField("\uD83C\uDF1F ${locale.toNewLocale()["commands.utils.knowyourmeme.origin"]}", if (origin.isNotBlank()) origin else context.locale["commands.utils.knowyourmeme.unknown"], true)
-				embed.addField("\uD83D\uDCC6 ${locale.toNewLocale()["commands.utils.knowyourmeme.date"]}", if (originDate.isNotBlank()) originDate else context.locale["commands.utils.knowyourmeme.unknown"], true)
+				embed.addField("\uD83C\uDF1F ${locale["commands.utils.knowyourmeme.origin"]}", if (origin.isNotBlank()) origin else context.locale["commands.utils.knowyourmeme.unknown"], true)
+				embed.addField("\uD83D\uDCC6 ${locale["commands.utils.knowyourmeme.date"]}", if (originDate.isNotBlank()) originDate else context.locale["commands.utils.knowyourmeme.unknown"], true)
 				embed.setColor(Color(18, 19, 63))
 
 				context.sendMessage(embed.build())

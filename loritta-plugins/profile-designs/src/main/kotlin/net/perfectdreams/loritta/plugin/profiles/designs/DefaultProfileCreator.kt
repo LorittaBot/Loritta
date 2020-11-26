@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.profile.ProfileCreator
 import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.profile.ProfileUtils
 import net.perfectdreams.loritta.utils.extensions.readImage
@@ -13,10 +13,9 @@ import java.awt.Font
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
-import javax.imageio.ImageIO
 
 class DefaultProfileCreator : ProfileCreator("modernBlurple") {
-	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
+	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
 		val profileWrapper = readImage(File(Loritta.ASSETS, "profile_wrapper_v4.png"))
 		val profileWrapperOverlay = readImage(File(Loritta.ASSETS, "profile_wrapper_v4_overlay.png"))
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
@@ -108,15 +107,15 @@ class DefaultProfileCreator : ProfileCreator("modernBlurple") {
 		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(userProfile)
 
 		if (globalEconomyPosition != null)
-			drawSection(locale.toNewLocale()["economy.currency.name.plural"], "#$globalEconomyPosition / ${userProfile.money}", 562, 492)
+			drawSection(locale["economy.currency.name.plural"], "#$globalEconomyPosition / ${userProfile.money}", 562, 492)
 		else
-			drawSection(locale.toNewLocale()["economy.currency.name.plural"], "${userProfile.money}", 562, 492)
+			drawSection(locale["economy.currency.name.plural"], "${userProfile.money}", 562, 492)
 
 		ProfileUtils.getMarriageInfo(userProfile)?.let { (marriage, marriedWith) ->
 			val marrySection = readImage(File(Loritta.ASSETS, "profile/modern/marry.png"))
 			graphics.drawImage(marrySection, 0, 0, null)
 
-			drawSection(locale.toNewLocale()["profile.marriedWith"], marriedWith.name + "#" + marriedWith.discriminator, 562, 533)
+			drawSection(locale["profile.marriedWith"], marriedWith.name + "#" + marriedWith.discriminator, 562, 533)
 		}
 
 		graphics.font = whitneyMedium22

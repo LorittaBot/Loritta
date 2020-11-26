@@ -6,7 +6,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Icon
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
@@ -16,7 +16,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 
 class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), CommandCategory.DISCORD) {
-	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
+	override fun getUsage(locale: BaseLocale): CommandArguments {
 		return arguments {
 			argument(ArgumentType.TEXT) {
 				optional = false
@@ -27,8 +27,8 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 		}
 	}
 
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.discord.addemoji.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.discord.addemoji.description"]
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
@@ -39,7 +39,7 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 		return listOf(Permission.MANAGE_EMOTES)
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var imageArgument = 1
 		var emoteName: String? = null
 
@@ -66,7 +66,7 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 					val emote = context.guild.createEmote(emoteName, Icon.from(inputStream)).await()
 					context.reply(
                             LorittaReply(
-                                    context.legacyLocale.toNewLocale()["commands.discord.addemoji.success"],
+                                    context.locale["commands.discord.addemoji.success"],
                                     emote.asMention
                             )
 					)
@@ -79,7 +79,7 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 				if (e.errorCode == 30008) {
 					context.reply(
                             LorittaReply(
-                                    context.legacyLocale.toNewLocale()["commands.discord.addemoji.limitReached"],
+                                    context.locale["commands.discord.addemoji.limitReached"],
                                     Constants.ERROR
                             )
 					)
@@ -88,7 +88,7 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 				if (e.errorCode == 400) {
 					context.reply(
                             LorittaReply(
-                                    context.legacyLocale.toNewLocale()["commands.discord.addemoji.emoteTooBig", "`256kb`"],
+                                    context.locale["commands.discord.addemoji.emoteTooBig", "`256kb`"],
                                     Constants.ERROR
                             )
 					)
@@ -98,7 +98,7 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), Co
 
 			context.reply(
                     LorittaReply(
-                            context.legacyLocale.toNewLocale()["commands.discord.addemoji.error"],
+                            context.locale["commands.discord.addemoji.error"],
                             Constants.ERROR
                     )
 			)

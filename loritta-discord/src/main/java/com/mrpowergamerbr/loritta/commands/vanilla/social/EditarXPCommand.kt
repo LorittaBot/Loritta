@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.ArgumentType
@@ -11,8 +11,8 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 
 class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category = CommandCategory.SOCIAL) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.social.editxp.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.social.editxp.description"]
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {
@@ -27,12 +27,12 @@ class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category =
 		return listOf(Permission.MANAGE_SERVER)
 	}
 
-	override fun getUsage(locale: LegacyBaseLocale) = arguments {
+	override fun getUsage(locale: BaseLocale) = arguments {
 		argument(ArgumentType.USER) {}
 		argument(ArgumentType.NUMBER) {}
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val user = context.getUserAt(0)
 		if (user != null && context.rawArgs.size == 2) {
 			val newXp = context.rawArgs[1].toLongOrNull()

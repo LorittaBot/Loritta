@@ -4,15 +4,15 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.modules.AutomodModule
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class AntiRaidCommand : AbstractCommand("antiraid", category = CommandCategory.MAGIC) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
+	override fun getDescription(locale: BaseLocale): String {
 		return "Configura servidores na Lori's Server List"
 	}
 
-	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.message.channel.id != "393332226881880074" && context.message.channel.id != "358774895850815488") {
 			return
 		}

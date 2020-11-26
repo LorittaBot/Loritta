@@ -473,7 +473,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				if (mute != null) {
 					logger.debug { "${event.member} in guild ${event.guild} has a mute! Readding roles and recreating role removal task!" }
-					val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
+					val locale = loritta.getLocaleById(serverConfig.localeId)
 					val muteRole = MuteCommand.getMutedRole(event.guild, loritta.getLocaleById(serverConfig.localeId)) ?: return@launch
 
 					event.guild.addRoleToMember(event.member, muteRole).await()

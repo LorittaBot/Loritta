@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.minecraft.MCUtils
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
@@ -16,8 +16,8 @@ import java.awt.image.BufferedImage
 import java.io.File
 
 class McMoletomCommand : AbstractCommand("mcmoletom", listOf("mcsweater"), CommandCategory.MINECRAFT) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.minecraft.mcsweater.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.minecraft.mcsweater.description"]
 	}
 
 	override fun getUsage(): String {
@@ -32,7 +32,7 @@ class McMoletomCommand : AbstractCommand("mcmoletom", listOf("mcsweater"), Comma
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val attached = context.message.attachments.firstOrNull { it.isImage }
 
 		var skin: BufferedImage? = null
@@ -46,7 +46,7 @@ class McMoletomCommand : AbstractCommand("mcmoletom", listOf("mcsweater"), Comma
 				if (profile == null) {
 					context.reply(
                             LorittaReply(
-									locale.toNewLocale()["commands.minecraft.unknownPlayer", context.args.getOrNull(0)],
+									locale["commands.minecraft.unknownPlayer", context.args.getOrNull(0)],
                                     Constants.ERROR
                             )
 					)
@@ -77,22 +77,22 @@ class McMoletomCommand : AbstractCommand("mcmoletom", listOf("mcsweater"), Comma
 
 			if (moletom == null) {
 				context.reply(
-						locale.toNewLocale()["commands.minecraft.mcsweater.invalidSkin"],
+						locale["commands.minecraft.mcsweater.invalidSkin"],
 						Constants.ERROR
 				)
 				return
 			}
 
-			val str = "<:loritta:331179879582269451> **|** " + context.getAsMention(true) + locale.toNewLocale()["commands.minecraft.mcsweater.done"]
+			val str = "<:loritta:331179879582269451> **|** " + context.getAsMention(true) + locale["commands.minecraft.mcsweater.done"]
 			val message = context.sendFile(moletom, "moletom.png", str)
 
 			val image = message.attachments.first()
 
-			message.editMessage(str + " " + locale.toNewLocale()["commands.minecraft.mcsweater.uploadToMojang"] + " <https://minecraft.net/pt-br/profile/skin/remote/?url=${image.url}>").queue()
+			message.editMessage(str + " " + locale["commands.minecraft.mcsweater.uploadToMojang"] + " <https://minecraft.net/pt-br/profile/skin/remote/?url=${image.url}>").queue()
 		} else {
 			context.reply(
                     LorittaReply(
-							locale.toNewLocale()["commands.minecraft.unknownPlayer", context.args.getOrNull(0)],
+							locale["commands.minecraft.unknownPlayer", context.args.getOrNull(0)],
                             Constants.ERROR
                     )
 			)

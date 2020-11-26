@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -12,8 +12,8 @@ import java.awt.Color
 import java.util.*
 
 class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.fun.twitch.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.fun.twitch.description"]
 	}
 
 	override fun getExamples(): List<String> {
@@ -24,7 +24,7 @@ class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) 
 		return false
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val query = context.args.joinToString(" ")
 
@@ -67,7 +67,7 @@ class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) 
 				if (offlineImageUrl.isNotEmpty()) {
 					setImage(offlineImageUrl)
 				}
-				addField("\uD83D\uDCFA ${context.legacyLocale.toNewLocale()["commands.fun.twitch.views"]}", viewCount.toString(), true)
+				addField("\uD83D\uDCFA ${context.locale["commands.fun.twitch.views"]}", viewCount.toString(), true)
 			}
 
 			context.sendMessage(context.getAsMention(true), embed.build())

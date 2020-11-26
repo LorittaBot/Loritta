@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -13,15 +13,15 @@ class SobreMimCommand : AbstractCommand("aboutme", listOf("sobremim"), CommandCa
         return "<nova mensagem>"
     }
 
-    override fun getDescription(locale: LegacyBaseLocale): String {
-        return locale.toNewLocale()["commands.social.aboutme.description"]
+    override fun getDescription(locale: BaseLocale): String {
+        return locale["commands.social.aboutme.description"]
     }
 
-    override fun getUsage(locale: LegacyBaseLocale) = arguments {
+    override fun getUsage(locale: BaseLocale) = arguments {
         argument(ArgumentType.TEXT) {}
     }
 
-    override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
+    override suspend fun run(context: CommandContext, locale: BaseLocale) {
         val settings = loritta.newSuspendedTransaction { context.lorittaUser.profile.settings }
         if (context.args.isNotEmpty()) {
             loritta.newSuspendedTransaction {

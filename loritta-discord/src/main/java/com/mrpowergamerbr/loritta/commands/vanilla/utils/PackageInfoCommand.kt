@@ -10,22 +10,22 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.correios.CorreiosResponse
 import com.mrpowergamerbr.loritta.utils.correios.EncomendaResponse
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.Color
 import java.util.*
 
 class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ctt"), CommandCategory.UTILS) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.utils.packageinfo.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.utils.packageinfo.description"]
 	}
 
 	override fun getExamples(): List<String> {
 		return Arrays.asList("correios")
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.size == 1) {
 			val packageId = context.args[0]
 			try {
@@ -39,7 +39,7 @@ class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ct
 				if (pair == null) {
 					context.reply(
 							LorittaReply(
-									message = locale.toNewLocale()["commands.utils.packageinfo.couldntFind", packageId],
+									message = locale["commands.utils.packageinfo.couldntFind", packageId],
 									prefix = Constants.ERROR
 							)
 					)
@@ -68,7 +68,7 @@ class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ct
 			} catch (e: Exception) {
 				context.reply(
 						LorittaReply(
-								message = locale.toNewLocale()["commands.utils.packageinfo.invalid", packageId],
+								message = locale["commands.utils.packageinfo.invalid", packageId],
 								prefix = Constants.ERROR
 						)
 				)

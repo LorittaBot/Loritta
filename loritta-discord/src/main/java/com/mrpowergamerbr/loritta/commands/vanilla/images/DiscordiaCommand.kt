@@ -5,12 +5,12 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.gifs.MentionGIF
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MiscUtils
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class DiscordiaCommand : AbstractCommand("mentions", listOf("discórdia", "discord", "discordia"), CommandCategory.IMAGES) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.images.discordping.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.images.discordping.description"]
 	}
 
 	override fun getExamples(): List<String> {
@@ -23,7 +23,7 @@ class DiscordiaCommand : AbstractCommand("mentions", listOf("discórdia", "disco
 
 	override fun needsToUploadFiles() = true
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		var file = MentionGIF.getGIF(contextImage)
 		MiscUtils.optimizeGIF(file)

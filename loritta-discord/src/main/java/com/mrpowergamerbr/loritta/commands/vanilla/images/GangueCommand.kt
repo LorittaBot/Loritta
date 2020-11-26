@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaImage
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.makeRoundedCorners
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -19,8 +19,8 @@ class GangueCommand : AbstractCommand("gang", listOf("gangue"), CommandCategory.
 		val TEMPLATE_OVERLAY by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "cocielo/overlay.png")) }
 	}
 
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.images.gang.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.images.gang.description"]
 	}
 
 	override fun getExamples(): List<String> {
@@ -35,7 +35,7 @@ class GangueCommand : AbstractCommand("gang", listOf("gangue"), CommandCategory.
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		val contextImage2 = context.getImageAt(1) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		val contextImage3 = context.getImageAt(2) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }

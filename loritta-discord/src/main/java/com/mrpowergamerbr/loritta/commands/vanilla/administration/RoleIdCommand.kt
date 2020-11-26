@@ -2,15 +2,15 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import java.util.*
 
 class RoleIdCommand : AbstractCommand("roleid", listOf("cargoid", "iddocargo"), CommandCategory.ADMIN) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.moderation.roleId.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.moderation.roleId.description"]
 	}
 
 	override fun getUsage(): String {
@@ -29,7 +29,7 @@ class RoleIdCommand : AbstractCommand("roleid", listOf("cargoid", "iddocargo"), 
 		return false
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.rawArgs.isNotEmpty()) {
 			var argument = context.rawArgs.joinToString(" ")
 
@@ -40,7 +40,7 @@ class RoleIdCommand : AbstractCommand("roleid", listOf("cargoid", "iddocargo"), 
 			if (mentionedRoles.isNotEmpty()) {
 
 				list.add(LorittaReply(
-                        message = locale.toNewLocale()["commands.moderation.roleId.identifiers", argument],
+                        message = locale["commands.moderation.roleId.identifiers", argument],
                         prefix = "\uD83D\uDCBC"
                 ))
 
@@ -54,14 +54,14 @@ class RoleIdCommand : AbstractCommand("roleid", listOf("cargoid", "iddocargo"), 
 				val roles = context.guild.roles.filter { it.name.contains(argument, true) }
 
 				list.add(LorittaReply(
-                        message = locale.toNewLocale()["commands.moderation.roleId.rolesThatContains", argument],
+                        message = locale["commands.moderation.roleId.rolesThatContains", argument],
                         prefix = "\uD83D\uDCBC"
                 ))
 
 				if (roles.isEmpty()) {
 					list.add(
                             LorittaReply(
-                                    message = "*${locale.toNewLocale()["commands.moderation.roleId.emptyRoles"]}*",
+                                    message = "*${locale["commands.moderation.roleId.emptyRoles"]}*",
                                     mentionUser = false,
                                     prefix = "\uD83D\uDE22"
                             )

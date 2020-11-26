@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
@@ -11,11 +11,11 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 
 class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), CommandCategory.ADMIN) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.moderation.slowmode.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.moderation.slowmode.description"]
 	}
 
-	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
+	override fun getUsage(locale: BaseLocale): CommandArguments {
 		return arguments {
 			argument(ArgumentType.NUMBER) {
 				optional = false
@@ -39,7 +39,7 @@ class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), Command
 		return false
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val seconds = context.args[0].toIntOrNull()
 

@@ -13,7 +13,6 @@ class GetCommandsRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/lo
 		val localeId = call.parameters["localeId"] ?: return
 
 		val locale = loritta.getLocaleById(localeId)
-		val legacyLocale = loritta.getLegacyLocaleById(localeId)
 
 		val commands = com.mrpowergamerbr.loritta.utils.loritta.legacyCommandManager.commandMap.map {
 			CommandInfo(
@@ -21,8 +20,8 @@ class GetCommandsRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/lo
 					it.label,
 					it.aliases,
 					it.category,
-					it.getDescription(legacyLocale),
-					it.getUsage(legacyLocale).build(locale)
+					it.getDescription(locale),
+					it.getUsage(locale).build(locale)
 			)
 		} + com.mrpowergamerbr.loritta.utils.loritta.commandMap.commands.filter { !it.hideInHelp }.map {
 			CommandInfo(

@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.events
 
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUser
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.*
 
@@ -15,7 +15,7 @@ class LorittaMessageEvent(
 		val channel: MessageChannel,
 		val textChannel: TextChannel?,
 		val serverConfig: ServerConfig,
-		val locale: LegacyBaseLocale,
+		val locale: BaseLocale,
 		val lorittaUser: LorittaUser
 ) {
 	val jda: JDA get() = author.jda

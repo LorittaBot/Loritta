@@ -54,7 +54,7 @@ object FastBanCommand {
                     settings,
                     this.guild,
                     author.user,
-                    loritta.getLegacyLocaleById("default"),
+                    locale,
                     userToBePunished,
                     fancyReason,
                     false,

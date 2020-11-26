@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -23,7 +23,7 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 		val coroutineExecutor = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 	}
 
-	override fun getDescription(locale: LegacyBaseLocale): String {
+	override fun getDescription(locale: BaseLocale): String {
 		return "Experimental"
 	}
 
@@ -31,7 +31,7 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 		return false
 	}
 
-	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		val phoneNumber = context.args.getOrNull(0)?.replace("-", "")
 
 		if (phoneNumber != null) {
