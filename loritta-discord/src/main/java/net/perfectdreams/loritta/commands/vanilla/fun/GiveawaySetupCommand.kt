@@ -84,7 +84,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
 
         message.onResponseByAuthor(context) {
             builder.name = it.message.contentRaw
-            message.delete()
+            message.delete().await()
             getGiveawayDescription(context, locale, builder)
         }
     }
@@ -101,7 +101,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
 
         message.onResponseByAuthor(context) {
             builder.description = it.message.contentRaw
-            message.delete()
+            message.delete().await()
             getGiveawayDuration(context, locale, builder)
         }
     }
@@ -118,7 +118,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
 
         message.onResponseByAuthor(context) {
             builder.duration = it.message.contentRaw
-            message.delete()
+            message.delete().await()
             getGiveawayReaction(context, locale, builder)
         }
     }
@@ -135,7 +135,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
 
         message.onResponseByAuthor(context) {
             builder.reaction = it.message.contentRaw
-            message.delete()
+            message.delete().await()
             getGiveawayChannel(context, locale, builder)
         }
     }
@@ -233,7 +233,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
 
             builder.channel = channel
 
-            message.delete()
+            message.delete().await()
             getGiveawayWinningRoles(context, locale, builder)
         }
     }
@@ -250,7 +250,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
         message.addReaction("\uD83D\uDE45").queue()
 
         message.onReactionAddByAuthor(context) {
-            message.delete()
+            message.delete().await()
 
             if (it.reactionEmote.name == "✅") {
                 val message = context.discordMessage.channel.sendMessage(
@@ -312,7 +312,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
                         }
                     }
 
-                    message.delete()
+                    message.delete().await()
 
                     builder.roleIds = roles.map { it.id }
 
@@ -357,7 +357,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
                 return@onResponseByAuthor
             }
 
-            message.delete()
+            message.delete().await()
 
             builder.numberOfWinners = numberOfWinners
 
@@ -408,7 +408,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
 
         builder.numberOfWinners = numberOfWinners
 
-        message.delete()
+        message.delete().await()
 
         GiveawayManager.spawnGiveaway(
                 loritta.getLocaleById(context.serverConfig.localeId),
@@ -426,7 +426,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
     fun addCancelOption(context: DiscordCommandContext, message: net.dv8tion.jda.api.entities.Message) {
         message.onReactionAddByAuthor(context) {
             if (it.reactionEmote.idLong == 412585701054611458L) {
-                message.delete()
+                message.delete().await()
                 context.reply(
                         LorittaReply(
                                 context.locale["$LOCALE_PREFIX.giveaway.giveawaySetupCancelled"]
