@@ -14,7 +14,7 @@ import java.util.*
 
 class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["SAY_Description"]
+		return locale.toNewLocale()["commands.moderation.say.description"]
 	}
 
 	override fun getUsage(): String {
@@ -85,7 +85,7 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN
 				if (!channel.canTalk()) {
 					context.reply(
 							LorittaReply(
-									locale["SAY_IDontHavePermissionToTalkIn", channel.asMention],
+									context.locale["commans.moderation.say.iDontHavePermissionToTalkIn", channel.asMention],
 									Constants.ERROR
 							)
 					)
@@ -94,7 +94,7 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN
 				if (!channel.canTalk(context.handle)) {
 					context.reply(
 							LorittaReply(
-									locale["SAY_YouDontHavePermissionToTalkIn", channel.asMention],
+									context.locale["commans.moderation.say.youDontHavePermissionToTalkIn", channel.asMention],
 									Constants.ERROR
 							)
 					)
@@ -103,7 +103,7 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN
 				if (context.config.blacklistedChannels.contains(channel.idLong) && !context.lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
 					context.reply(
 							LorittaReply(
-									locale["SAY_CommandsCannotBeUsedIn", channel.asMention],
+									context.locale["commans.moderation.say.cannotBeUsedIn", channel.asMention],
 									Constants.ERROR
 							)
 					)
@@ -159,7 +159,7 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN
 			if (context.event.channel != channel && channel is TextChannel)
 				context.reply(
 						LorittaReply(
-								locale["SAY_MessageSuccessfullySent", channel.asMention],
+								context.locale["commans.moderation.say.messageSuccessfullySent", channel.asMention],
 								"\uD83C\uDF89"
 						)
 				)

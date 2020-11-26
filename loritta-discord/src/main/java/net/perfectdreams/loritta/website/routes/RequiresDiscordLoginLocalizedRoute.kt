@@ -185,7 +185,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 											val blacklistedReason = blacklisted[BlacklistedGuilds.reason]
 
 											// Envie via DM uma mensagem falando sobre o motivo do ban
-											val message = locale["LORITTA_BlacklistedServer", blacklistedReason]
+											val message = locale.toNewLocale()["website.router.blacklistedServer", blacklistedReason]
 
 											user.openPrivateChannel().queue {
 												it.sendMessage(message).queue({
@@ -205,8 +205,8 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 											val bannedState = profile?.getBannedState()
 											if (bannedState != null) { // Dono blacklisted
 												// Envie via DM uma mensagem falando sobre a Loritta!
-												val message = locale["LORITTA_OwnerLorittaBanned", guild.owner?.user?.asMention, bannedState[BannedUsers.reason]
-														?: "???"]
+												val message = locale.toNewLocale().getList("website.router.ownerLorittaBanned", guild.owner?.user?.asMention, bannedState[BannedUsers.reason]
+														?: "???").joinToString("\n")
 
 												user.openPrivateChannel().queue {
 													it.sendMessage(message).queue({
@@ -219,7 +219,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 											}
 
 											// Envie via DM uma mensagem falando sobre a Loritta!
-											val message = locale["LORITTA_ADDED_ON_SERVER", user.asMention, guild.name, com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url + "dashboard", locale["LORITTA_SupportServerInvite"], com.mrpowergamerbr.loritta.utils.loritta.legacyCommandManager.commandMap.size + com.mrpowergamerbr.loritta.utils.loritta.commandMap.commands.size, "${com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url}donate"]
+											val message = locale.toNewLocale().getList("", user.asMention, guild.name, com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url + "dashboard", locale.toNewLocale()["website.router.supportServerInvite"], com.mrpowergamerbr.loritta.utils.loritta.legacyCommandManager.commandMap.size + com.mrpowergamerbr.loritta.utils.loritta.commandMap.commands.size, "${com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url}donate").joinToString("\n")
 
 											user.openPrivateChannel().queue {
 												it.sendMessage(message).queue()

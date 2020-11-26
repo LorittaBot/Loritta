@@ -360,31 +360,31 @@ class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.F
 
 			val message = context.reply(
                     LorittaReply(
-                            locale["VEMDEZAP_WhatIsTheMood"],
+                            locale.toNewLocale()["commands.fun.vemdezap.whatIsTheMood"],
                             "\uD83E\uDD14"
                     ),
                     LorittaReply(
-                            locale["VEMDEZAP_MoodHappy"],
+                            locale.toNewLocale()["commands.fun.vemdezap.moodHappy"],
                             "\uD83D\uDE0A",
                             mentionUser = false
                     ),
                     LorittaReply(
-                            locale["VEMDEZAP_MoodAngry"],
+                            locale.toNewLocale()["commands.fun.vemdezap.moodAngry"],
                             "\uD83D\uDE21",
                             mentionUser = false
                     ),
                     LorittaReply(
-                            locale["VEMDEZAP_MoodSassy"],
+                            locale.toNewLocale()["commands.fun.vemdezap.moodSassy"],
                             "\uD83D\uDE0F",
                             mentionUser = false
                     ),
                     LorittaReply(
-                            locale["VEMDEZAP_MoodSad"],
+                            locale.toNewLocale()["commands.fun.vemdezap.moodSad"],
                             "\uD83D\uDE22",
                             mentionUser = false
                     ),
                     LorittaReply(
-                            locale["VEMDEZAP_MoodSick"],
+                            locale.toNewLocale()["commands.fun.vemdezap.moodSick"],
                             "\uD83E\uDD12",
                             mentionUser = false
                     )
@@ -404,31 +404,31 @@ class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.F
 
 				val levelMessage = context.reply(
                         LorittaReply(
-                                locale["VEMDEZAP_WhatIsTheLevel"],
+                                locale.toNewLocale()["commands.fun.vemdezap.whatIsTheLevel"],
                                 "\uD83E\uDD14"
                         ),
                         LorittaReply(
-                                locale["VEMDEZAP_Level1"],
+                                locale.toNewLocale()["commands.fun.vemdezap.level1"],
                                 "1⃣",
                                 mentionUser = false
                         ),
                         LorittaReply(
-                                locale["VEMDEZAP_Level2"],
+                                locale.toNewLocale()["commands.fun.vemdezap.level2"],
                                 "2⃣",
                                 mentionUser = false
                         ),
                         LorittaReply(
-                                locale["VEMDEZAP_Level3"],
+                                locale.toNewLocale()["commands.fun.vemdezap.level3"],
                                 "3⃣",
                                 mentionUser = false
                         ),
                         LorittaReply(
-                                locale["VEMDEZAP_Level4"],
+                                locale.toNewLocale()["commands.fun.vemdezap.level4"],
                                 "4⃣",
                                 mentionUser = false
                         ),
                         LorittaReply(
-                                locale["VEMDEZAP_Level5"],
+                                locale.toNewLocale()["commands.fun.vemdezap.level5"],
                                 "5⃣",
                                 mentionUser = false
                         )

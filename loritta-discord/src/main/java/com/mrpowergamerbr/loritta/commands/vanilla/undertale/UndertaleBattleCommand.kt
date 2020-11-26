@@ -17,7 +17,7 @@ import java.util.*
 
 class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebattle"), CommandCategory.UNDERTALE) {
     override fun getDescription(locale: LegacyBaseLocale): String {
-        return locale["UTBATTLE_DESCRIPTION"]
+        return locale.toNewLocale()["commands.undertale.utbattle.description"]
     }
 
     override fun getExamples(): List<String> {
@@ -82,7 +82,7 @@ class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebatt
                 context.sendFile(blackWhite, "undertale_battle.png", context.getAsMention(true)) // E agora envie o arquivo
             } else {
                 // Não, não é válido!
-                context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["UTBATTLE_INVALID", monster, validMonsterList.joinToString(", ")])
+                context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale.toNewLocale()["commands.undertail.utbattle.invalid", monster, validMonsterList.joinToString(", ")])
             }
         } else {
             this.explain(context)

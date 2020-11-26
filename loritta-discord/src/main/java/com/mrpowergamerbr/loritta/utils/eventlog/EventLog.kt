@@ -124,9 +124,9 @@ object EventLog {
 						if (webhook != null) {
 							val embed = WebhookEmbedBuilder()
 									.setColor(Color(238, 241, 0).rgb)
-									.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_MESSAGE_EDITED", message.member?.asMention, storedMessage.content, message.contentRaw, message.textChannel.asMention]}")
+									.setDescription("\uD83D\uDCDD ${locale.toNewLocale().getList("modules.eventLog.messageEdited", message.member?.asMention, storedMessage.content, message.contentRaw, message.textChannel.asMention).joinToString("\n")}")
 									.setAuthor(WebhookEmbed.EmbedAuthor("${message.member?.user?.name}#${message.member?.user?.discriminator}", null, message.member?.user?.effectiveAvatarUrl))
-									.setFooter(WebhookEmbed.EmbedFooter(locale["EVENTLOG_USER_ID", message.member?.user?.id], null))
+									.setFooter(WebhookEmbed.EmbedFooter(locale.toNewLocale()["modules.eventLog.userID", message.member?.user?.id], null))
 									.setTimestamp(Instant.now())
 
 							webhook.send(
@@ -173,9 +173,9 @@ object EventLog {
 
 				val embed = WebhookEmbedBuilder()
 						.setColor(Color(35, 209, 96).rgb)
-						.setDescription("\uD83D\uDC49\uD83C\uDFA4 **${locale["EVENTLOG_JoinedVoiceChannel", member.asMention, channelJoined.name]}**")
+						.setDescription("\uD83D\uDC49\uD83C\uDFA4 **${locale.toNewLocale()["modules.eventLog.joinedVoiceChannel", member.asMention, channelJoined.name]}**")
 						.setAuthor(WebhookEmbed.EmbedAuthor("${member.user.name}#${member.user.discriminator}", null, member.user.effectiveAvatarUrl))
-						.setFooter(WebhookEmbed.EmbedFooter(locale["EVENTLOG_USER_ID", member.user.id], null))
+						.setFooter(WebhookEmbed.EmbedFooter(locale.toNewLocale()["modules.eventLog.userID", member.user.id], null))
 						.setTimestamp(Instant.now())
 
 				webhook.send(
@@ -213,9 +213,9 @@ object EventLog {
 
 				val embed = WebhookEmbedBuilder()
 						.setColor(Color(35, 209, 96).rgb)
-						.setDescription("\uD83D\uDC48\uD83C\uDFA4 **${locale["EVENTLOG_LeftVoiceChannel", member.asMention, channelLeft.name]}**")
+						.setDescription("\uD83D\uDC48\uD83C\uDFA4 **${locale.toNewLocale()["modules.eventLog.leftVoiceChannel", member.asMention, channelLeft.name]}**")
 						.setAuthor(WebhookEmbed.EmbedAuthor("${member.user.name}#${member.user.discriminator}", null, member.user.effectiveAvatarUrl))
-						.setFooter(WebhookEmbed.EmbedFooter(locale["EVENTLOG_USER_ID", member.user.id], null))
+						.setFooter(WebhookEmbed.EmbedFooter(locale.toNewLocale()["modules.eventLog.userID", member.user.id], null))
 						.setTimestamp(Instant.now())
 
 				webhook.send(

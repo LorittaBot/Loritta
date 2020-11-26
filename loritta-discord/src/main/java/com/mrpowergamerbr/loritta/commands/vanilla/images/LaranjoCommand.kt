@@ -15,7 +15,7 @@ import javax.imageio.ImageIO
 
 class LaranjoCommand : AbstractCommand("laranjo", category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["LARANJO_DESCRIPTION"]
+		return locale.toNewLocale()["commands.images.laranjo.description"]
 	}
 
 	override fun getExamples(): List<String> {

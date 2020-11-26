@@ -19,7 +19,7 @@ import net.perfectdreams.loritta.utils.PunishmentAction
 
 class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["BAN_Description"]
+		return locale.toNewLocale()["commands.moderation.ban.description"]
 	}
 
 	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {

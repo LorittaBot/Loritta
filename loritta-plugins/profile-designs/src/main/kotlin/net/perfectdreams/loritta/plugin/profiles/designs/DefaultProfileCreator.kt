@@ -108,9 +108,9 @@ class DefaultProfileCreator : ProfileCreator("modernBlurple") {
 		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(userProfile)
 
 		if (globalEconomyPosition != null)
-			drawSection(locale["ECONOMY_NamePlural"], "#$globalEconomyPosition / ${userProfile.money}", 562, 492)
+			drawSection(locale.toNewLocale()["economy.currency.name.plural"], "#$globalEconomyPosition / ${userProfile.money}", 562, 492)
 		else
-			drawSection(locale["ECONOMY_NamePlural"], "${userProfile.money}", 562, 492)
+			drawSection(locale.toNewLocale()["economy.currency.name.plural"], "${userProfile.money}", 562, 492)
 
 		ProfileUtils.getMarriageInfo(userProfile)?.let { (marriage, marriedWith) ->
 			val marrySection = readImage(File(Loritta.ASSETS, "profile/modern/marry.png"))

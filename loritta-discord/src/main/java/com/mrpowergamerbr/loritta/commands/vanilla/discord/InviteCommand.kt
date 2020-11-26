@@ -10,12 +10,12 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class InviteCommand : AbstractCommand("invite", listOf("convidar", "convidarbot", "invitebot", "convite"), CommandCategory.DISCORD) {
     override fun getDescription(locale: LegacyBaseLocale): String {
-        return locale["INVITE_DESCRIPTION"]
+        return locale.toNewLocale()["commands.discord.invite.info"]
     }
 
     override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
         var embed = EmbedBuilder()
-                .setDescription(context.legacyLocale["INVITE_INFO", loritta.discordInstanceConfig.discord.addBotUrl, "${loritta.instanceConfig.loritta.website.url}dashboard", "${loritta.instanceConfig.loritta.website.url}support"])
+                .setDescription(context.locale.getList("commands.discord.invite.inviteInfo", loritta.discordInstanceConfig.discord.addBotUrl, "${loritta.instanceConfig.loritta.website.url}dashboard", "${loritta.instanceConfig.loritta.website.url}support").joinToString("\n"))
                 .setThumbnail("${loritta.instanceConfig.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
                 .setColor(Constants.LORITTA_AQUA)
                 .build()

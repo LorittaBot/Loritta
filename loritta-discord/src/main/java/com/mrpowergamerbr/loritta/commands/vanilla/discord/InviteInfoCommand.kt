@@ -14,7 +14,7 @@ import java.util.*
 
 class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCategory.DISCORD) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["INVITEINFO_Description"]
+		return locale.toNewLocale()["commands.discord.inviteinfo.description"]
 	}
 
 	override fun getUsage(): String {
@@ -47,7 +47,7 @@ class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCatego
 				// Invite não existe!
 				context.reply(
                         LorittaReply(
-                                locale["INVITEINFO_InviteDoesNotExist", inviteId.stripCodeMarks()],
+                                context.locale["commands.discord.inviteinfo.doesntExists", inviteId.stripCodeMarks()],
                                 Constants.ERROR
                         )
 				)
@@ -70,13 +70,13 @@ class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCatego
 				embed.setTitle("<:discord:314003252830011395> $name", null) // Nome da Guild
 
 				embed.addField("💻 ID", id, true) // ID da Guild
-				embed.addField("\uD83D\uDC6E ${locale["SERVERINFO_VerificationLevel"]}", verificationLevel.toString(), true) // ID da Guild
-				embed.addField("\uD83D\uDC65 ${locale["SERVERINFO_MEMBERS"]}", "\uD83D\uDC81 **${locale["INVITEINFO_Active"]}:** ${approxPresenceCount}\n\uD83D\uDE34 **Offline:** ${approxMemberCount}", true)
+				embed.addField("\uD83D\uDC6E ${locale.toNewLocale()["commands.discord.serverinfo.verificationLevel"]}", verificationLevel.toString(), true) // ID da Guild
+				embed.addField("\uD83D\uDC65 ${locale.toNewLocale()["commands.discord.serverinfo.members"]}", "\uD83D\uDC81 **${locale.toNewLocale()["commands.discord.inviteinfo.active"]}:** ${approxPresenceCount}\n\uD83D\uDE34 **Offline:** $approxMemberCount", true)
 
 				if (features.size() == 0) {
-					embed.addField("✨ ${locale["SERVERINFO_Features"]}", locale["INVITEINFO_None"], true) // ID da Guild
+					embed.addField("✨ ${locale.toNewLocale()["commands.discord.serverinfo.features"]}", locale.toNewLocale()["commands.discord.inviteinfo.none"], true) // ID da Guild
 				} else {
-					embed.addField("✨ ${locale["SERVERINFO_Features"]}", features.joinToString(", ", transform = { it.string }), true) // ID da Guild
+					embed.addField("✨ ${locale.toNewLocale()["commands.discord.serverinfo.features"]}", features.joinToString(", ", transform = { it.string }), true) // ID da Guild
 				}
 
 				if (icon != null) {
@@ -87,14 +87,14 @@ class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCatego
 					embed.setImage("https://cdn.discordapp.com/splashes/$id/$splash.png?size=1024")
 				}
 
-				embed.addField("\uD83D\uDDE3 ${locale["INVITEINFO_ChannelInvite"]}", "`#${channel["name"].string}` (${channel["id"].string})", true)
+				embed.addField("\uD83D\uDDE3 ${locale.toNewLocale()["commands.discord.inviteinfo.channelInvite"]}", "`#${channel["name"].string}` (${channel["id"].string})", true)
 
 				if (inviter != null) {
 					val username = inviter["username"].string
 					val discriminator = inviter["discriminator"].string
 					val id = inviter["id"].string
 
-					embed.addField("\uD83D\uDC4B ${locale["INVITEINFO_WhoInvited"]}", "`$username#$discriminator` ($id)", true)
+					embed.addField("\uD83D\uDC4B ${locale.toNewLocale()["commands.discord.inviteinfo.whoInvited"]}", "`$username#$discriminator` ($id)", true)
 				}
 
 				val discordGuild = lorittaShards.queryGuildById(id)

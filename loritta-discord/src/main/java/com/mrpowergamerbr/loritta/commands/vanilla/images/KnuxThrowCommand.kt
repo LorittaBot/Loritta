@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class KnuxThrowCommand : AbstractCommand("knuxthrow", listOf("knucklesthrow", "throwknux", "throwknuckles", "knucklesjogar", "knuxjogar", "jogarknuckles", "jogarknux"), category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["KNUXTHROW_Description"]
+		return locale.toNewLocale()["commands.images.knuxthrow.description"]
 	}
 
 	override fun getExamples(): List<String> {

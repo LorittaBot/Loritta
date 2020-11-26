@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class CepoCommand : AbstractCommand("cepo", category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["CEPO_DESCRIPTION"]
+		return locale.toNewLocale()["commands.images.cepo.description"]
 	}
 
 	override fun getExamples(): List<String> {

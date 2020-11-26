@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class TranslateCommand : AbstractCommand("traduzir", listOf("translate"), CommandCategory.UTILS) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["TRANSLATE_DESCRIPTION"]
+		return locale.toNewLocale()["commands.utils.translate.description"]
 	}
 
 	override fun getUsage(): String {

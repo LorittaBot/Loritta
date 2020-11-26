@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class GumballCommand : AbstractCommand("gumball", category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["GUMBALL_Description"]
+		return locale.toNewLocale()["commands.images.gumballliftup.description"]
 	}
 
 	override fun getExamples(): List<String> {

@@ -46,7 +46,7 @@ class FaustaoCommand : AbstractCommand("faustão", listOf("faustao"), CommandCat
 			"http://i.imgur.com/z7Ec5I3.png")
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["FAUSTAO_DESCRIPTION"]
+		return locale.toNewLocale()["commands.fun.faustao.description"]
 	}
 
 	override fun hasCommandFeedback(): Boolean {

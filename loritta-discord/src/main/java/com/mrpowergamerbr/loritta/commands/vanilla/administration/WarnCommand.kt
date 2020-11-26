@@ -29,7 +29,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["WARN_Description"]
+		return locale.toNewLocale()["commands.moderation.warn.description"]
 	}
 
 	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
@@ -83,7 +83,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 					if (!isSilent) {
 						if (settings.sendPunishmentViaDm && context.guild.isMember(user)) {
 							try {
-								val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, locale["WARN_PunishAction"], reason)
+								val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, locale.toNewLocale()["commands.moderation.unwarn.punishAction"], reason)
 
 								user.openPrivateChannel().queue {
 									it.sendMessage(embed).queue()

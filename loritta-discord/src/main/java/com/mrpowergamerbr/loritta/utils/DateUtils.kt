@@ -46,14 +46,14 @@ object DateUtils {
 	fun formatDateDiff(fromDate: Calendar, toDate: Calendar, locale: LegacyBaseLocale): String {
 		var future = false
 		if (toDate == fromDate) {
-			return locale["DATEUTILS_Now"]
+			return locale.toNewLocale()["loritta.date.aFewMilliseconds"]
 		}
 		if (toDate.after(fromDate)) {
 			future = true
 		}
 		val sb = StringBuilder()
 		val types = intArrayOf(Calendar.YEAR, Calendar.MONTH, Calendar.DAY_OF_MONTH, Calendar.HOUR_OF_DAY, Calendar.MINUTE, Calendar.SECOND)
-		val names = arrayOf(locale["DATEUTILS_Year"], locale["DATEUTILS_Years"], locale["DATEUTILS_Month"], locale["DATEUTILS_Months"], locale["DATEUTILS_Day"], locale["DATEUTILS_Days"], locale["DATEUTILS_Hour"], locale["DATEUTILS_Hours"], locale["DATEUTILS_Minute"], locale["DATEUTILS_Minutes"], locale["DATEUTILS_Second"], locale["DATEUTILS_Seconds"])
+		val names = arrayOf(locale.toNewLocale()["loritta.date.year"], locale.toNewLocale()["loritta.date.years"], locale.toNewLocale()["loritta.date.month"], locale.toNewLocale()["loritta.date.months"], locale.toNewLocale()["loritta.date.day"], locale.toNewLocale()["loritta.date.days"], locale.toNewLocale()["loritta.date.hour"], locale.toNewLocale()["loritta.date.hours"], locale.toNewLocale()["loritta.date.minute"], locale.toNewLocale()["loritta.date.minutes"], locale.toNewLocale()["loritta.date.second"], locale.toNewLocale()["loritta.date.seconds"])
 		var accuracy = 0
 		for (i in types.indices) {
 			if (accuracy > 2) {
@@ -66,7 +66,7 @@ object DateUtils {
 			}
 		}
 		return if (sb.isEmpty()) {
-			locale["DATEUTILS_Now"]
+			locale.toNewLocale()["loritta.date.aFewMilliseconds"]
 		} else sb.toString().trim { it <= ' ' }
 	}
 
@@ -86,9 +86,9 @@ object DateUtils {
 			val isPlural = days != 1L
 			sb.append(" ")
 			if (!isPlural) {
-				sb.append(locale["DATEUTILS_Day"])
+				sb.append(locale.toNewLocale()["loritta.date.day"])
 			} else {
-				sb.append(locale["DATEUTILS_Days"])
+				sb.append(locale.toNewLocale()["loritta.date.days"])
 			}
 			sb.append(" ")
 		}
@@ -98,9 +98,9 @@ object DateUtils {
 			val isPlural = hours != 1L
 			sb.append(" ")
 			if (!isPlural) {
-				sb.append(locale["DATEUTILS_Hour"])
+				sb.append(locale.toNewLocale()["loritta.date.hour"])
 			} else {
-				sb.append(locale["DATEUTILS_Hours"])
+				sb.append(locale.toNewLocale()["loritta.date.hours"])
 			}
 			sb.append(" ")
 		}
@@ -110,9 +110,9 @@ object DateUtils {
 			val isPlural = minutes != 1L
 			sb.append(" ")
 			if (!isPlural) {
-				sb.append(locale["DATEUTILS_Minute"])
+				sb.append(locale.toNewLocale()["loritta.date.minute"])
 			} else {
-				sb.append(locale["DATEUTILS_Minutes"])
+				sb.append(locale.toNewLocale()["loritta.date.minutes"])
 			}
 			sb.append(" ")
 		}
@@ -122,9 +122,9 @@ object DateUtils {
 			val isPlural = seconds != 1L
 			sb.append(" ")
 			if (!isPlural) {
-				sb.append(locale["DATEUTILS_Second"])
+				sb.append(locale.toNewLocale()["loritta.date.second"])
 			} else {
-				sb.append(locale["DATEUTILS_Seconds"])
+				sb.append(locale.toNewLocale()["loritta.date.seconds"])
 			}
 			sb.append(" ")
 		}

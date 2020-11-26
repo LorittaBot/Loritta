@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class DemonCommand : AbstractCommand("demon", listOf("demônio", "demonio", "demónio"), category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["DEMON_Description"]
+		return locale.toNewLocale()["commands.images.demon.description"]
 	}
 
 	override fun getExamples(): List<String> {

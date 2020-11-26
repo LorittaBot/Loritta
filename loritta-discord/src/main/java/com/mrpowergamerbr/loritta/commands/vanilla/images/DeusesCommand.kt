@@ -20,7 +20,7 @@ class DeusesCommand : AbstractCommand("deuses", category = CommandCategory.IMAGE
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["DEUSES_DESCRIPTION"]
+		return locale.toNewLocale()["commands.images.gods.description"]
 	}
 
 	override fun getExamples(): List<String> {

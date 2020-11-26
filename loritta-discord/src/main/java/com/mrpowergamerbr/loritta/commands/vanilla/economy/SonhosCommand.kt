@@ -16,7 +16,7 @@ import java.math.BigDecimal
 
 class SonhosCommand : AbstractCommand("sonhos", listOf("atm", "bal", "balance"), category = CommandCategory.ECONOMY) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["SONHOS_Description"]
+		return locale.toNewLocale()["commands.economy.sonhos.description"]
 	}
 
 	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
@@ -76,7 +76,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm", "bal", "balance"),
 						false,
 						youHaveReply,
                         LorittaReply(
-                                locale["SONHOS_YouHave", localProfile.money, if (localProfile.money == BigDecimal.ONE) {
+                                locale.toNewLocale()["commands.economy.sonhos.youHaveSonhos", localProfile.money, if (localProfile.money == BigDecimal.ONE) {
                                     economyConfig.economyName
                                 } else {
                                     economyConfig.economyNamePlural
@@ -128,7 +128,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm", "bal", "balance"),
 						false,
 						someoneHasReply,
                         LorittaReply(
-                                locale["SONHOS_UserHas", retrieveDreamsFromUser.asMention, localProfile.money, if (localProfile.money == BigDecimal.ONE) {
+                                locale.toNewLocale()["commands.economy.sonhos.userHasSonhos", retrieveDreamsFromUser.asMention, localProfile.money, if (localProfile.money == BigDecimal.ONE) {
                                     economyConfig.economyName
                                 } else {
                                     economyConfig.economyNamePlural

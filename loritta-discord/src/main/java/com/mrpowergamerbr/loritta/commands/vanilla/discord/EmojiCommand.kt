@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.utils.Emotes
 
 class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["EMOJI_DESCRIPTION"]
+		return locale.toNewLocale()["commands.discord.emoji.description"]
 	}
 
 	override fun getUsage(): String {

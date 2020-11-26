@@ -11,11 +11,10 @@ import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
-import javax.imageio.ImageIO
 
 class McConquistaCommand : AbstractCommand("mcconquista", listOf("mcprogresso", "mcadvancement", "mcachievement"), CommandCategory.MINECRAFT) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["MCCONQUISTA_Description"]
+		return locale.toNewLocale()["commands.minecraft.mcadvancement.description"]
 	}
 
 	override fun getExamples(): List<String> {
@@ -46,7 +45,7 @@ class McConquistaCommand : AbstractCommand("mcconquista", listOf("mcprogresso", 
 			graphics.font = minecraftia
 			graphics.color = Color(255, 255, 0)
 
-			graphics.drawString(context.legacyLocale["MCCONQUISTA_AdvancementMade"], 90, 41 + 14)
+			graphics.drawString(context.locale["commands.minecraft.mcadvancement.advancementMade"], 90, 41 + 14)
 			graphics.color = Color(255, 255, 255)
 
 			var remadeText = ""

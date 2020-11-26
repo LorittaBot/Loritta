@@ -14,7 +14,7 @@ class RemoveEmojiCommand : AbstractCommand("removeemoji", listOf("deleteemoji", 
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["REMOVEEMOJI_Description"]
+		return locale.toNewLocale()["commands.discord.removeemoji.description"]
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
@@ -38,14 +38,14 @@ class RemoveEmojiCommand : AbstractCommand("removeemoji", listOf("deleteemoji", 
 		if (deletedEmotes != 0) {
 			context.reply(
                     LorittaReply(
-                            locale["REMOVEEMOJI_Success", deletedEmotes, if (deletedEmotes == 1) "emoji" else "emojis"],
+                            locale.toNewLocale()["commands.discord.removeemoji.success", deletedEmotes, if (deletedEmotes == 1) "emoji" else "emojis"],
                             "\uD83D\uDDD1"
                     )
 			)
 		} else {
 			context.reply(
                     LorittaReply(
-                            locale["REMOVEEMOJI_Error"],
+                            locale.toNewLocale()["commands.discord.removeemoji.noEmojiRemoved"],
                             Constants.ERROR
                     )
 			)

@@ -20,7 +20,7 @@ class GangueCommand : AbstractCommand("gang", listOf("gangue"), CommandCategory.
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["GANGUE_DESCRIPTION"]
+		return locale.toNewLocale()["commands.images.gang.description"]
 	}
 
 	override fun getExamples(): List<String> {

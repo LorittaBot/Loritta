@@ -18,7 +18,7 @@ import javax.imageio.ImageIO
 
 class LavaCommand : AbstractCommand("lava", category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["LAVA_DESCRIPTION"]
+		return locale.toNewLocale()["commands.images.lava.description"]
 	}
 
 	override fun getExamples(): List<String> {

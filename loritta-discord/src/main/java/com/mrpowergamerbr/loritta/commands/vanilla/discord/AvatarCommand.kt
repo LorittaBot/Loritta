@@ -22,7 +22,7 @@ class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCO
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["AVATAR_DESCRIPTION"]
+		return locale.toNewLocale()["commands.discord.avatar.description"]
 	}
 
 	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {

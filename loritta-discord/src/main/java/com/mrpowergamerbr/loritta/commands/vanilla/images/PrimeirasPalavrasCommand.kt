@@ -15,7 +15,7 @@ import javax.imageio.ImageIO
 
 class PrimeirasPalavrasCommand : AbstractCommand("firstwords", listOf("primeiraspalavras"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["PRIMEIRAS_DESCRIPTION"]
+		return locale.toNewLocale()["commands.images.firstwords.description"]
 	}
 
 	override fun needsToUploadFiles(): Boolean {

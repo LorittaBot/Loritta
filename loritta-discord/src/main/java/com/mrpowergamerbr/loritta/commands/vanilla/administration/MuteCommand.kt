@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit
 
 class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), CommandCategory.ADMIN) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["MUTE_DESCRIPTION"]
+		return locale.toNewLocale()["commands.moderation.mute.description"]
 	}
 
 	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
@@ -192,7 +192,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			if (!isSilent) {
 				if (settings.sendPunishmentViaDm && context.guild.isMember(user)) {
 					try {
-						val embed = AdminUtils.createPunishmentEmbedBuilderSentViaDirectMessage(context.guild, locale, context.userHandle, locale["MUTE_PunishAction"], reason)
+						val embed = AdminUtils.createPunishmentEmbedBuilderSentViaDirectMessage(context.guild, locale, context.userHandle, locale.toNewLocale()["commands.moderation.mute.punishAction"], reason)
 
 						val timePretty = if (time != null)
 							DateUtils.formatDateDiff(System.currentTimeMillis(), time, locale)
@@ -322,7 +322,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			if (couldntEditChannels.isNotEmpty()) {
 				context.reply(
                         LorittaReply(
-                                context.legacyLocale["MUTE_CouldntEditChannels", couldntEditChannels.joinToString(", ", transform = { "`" + it.name.stripCodeMarks() + "`" })],
+                                context.locale["commands.moderation.mute.couldntEditChannel", couldntEditChannels.joinToString(", ", transform = { "`" + it.name.stripCodeMarks() + "`" })],
                                 Constants.ERROR
                         )
 				)

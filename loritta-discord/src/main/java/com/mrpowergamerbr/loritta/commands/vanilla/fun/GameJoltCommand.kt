@@ -24,7 +24,7 @@ class GameJoltCommand : AbstractCommand("gamejolt", category = CommandCategory.F
 	override fun getBotPermissions() = listOf(Permission.MESSAGE_MANAGE)
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["GAMEJOLT_DESCRIPTION"]
+		return locale.toNewLocale()["commands.fun.gamejolt.description"]
 	}
 
 	override fun getExamples(): List<String> {
@@ -59,7 +59,7 @@ class GameJoltCommand : AbstractCommand("gamejolt", category = CommandCategory.F
 			}
 			embed.setColor(Color(47, 127, 111))
 			embed.setDescription(format)
-			embed.setTitle("<:gamejolt:362325764181590017> ${context.legacyLocale["YOUTUBE_RESULTS_FOR", query]}")
+			embed.setTitle("<:gamejolt:362325764181590017> ${context.locale["commands.fun.gamejolt.resultsFor", query]}")
 			val mensagem = context.sendMessage(context.getAsMention(true), embed.build())
 
 			mensagem.onReactionAddByAuthor(context) {

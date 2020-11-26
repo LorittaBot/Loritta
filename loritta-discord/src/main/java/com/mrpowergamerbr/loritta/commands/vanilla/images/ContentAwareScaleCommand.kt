@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class ContentAwareScaleCommand : AbstractCommand("contentawarescale", listOf("cas", "contentaware", "seamcarver"), category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["CONTENTAWARESCALE_Description"]
+		return locale.toNewLocale()["commands.images.contentawarescale.description"]
 	}
 
 	override fun getExamples(): List<String> {

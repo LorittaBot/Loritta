@@ -15,7 +15,7 @@ import java.util.*
 
 class WikipediaCommand : AbstractCommand("wikipedia", listOf("wiki"), CommandCategory.UTILS) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["WIKIPEDIA_DESCRIPTION"]
+		return locale.toNewLocale()["commands.utils.wikipedia.description"]
 	}
 
 	override fun getUsage(): String {
@@ -55,7 +55,7 @@ class WikipediaCommand : AbstractCommand("wikipedia", listOf("wiki"), CommandCat
 				val entryWikiContent = wikiPages.entrySet().iterator().next() // Conteúdo
 
 				if (entryWikiContent.key == "-1") { // -1 = Nenhuma página encontrada
-					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["WIKIPEDIA_COULDNT_FIND", query])
+					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale.toNewLocale()["commands.utils.wikipedia.couldntFind", query])
 				} else {
 					// Se não é -1, então é algo que existe! Yay!
 					val pageTitle = entryWikiContent.value.asJsonObject.get("title").asString

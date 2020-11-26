@@ -12,7 +12,7 @@ import java.io.File
 
 class RipVidaCommand : AbstractCommand("riplife", listOf("ripvida"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.get("RIPVIDA_DESCRIPTION")
+		return locale.toNewLocale()["commands.images.ripvida.description"]
 	}
 
 	override fun getExamples(): List<String> {
@@ -30,11 +30,11 @@ class RipVidaCommand : AbstractCommand("riplife", listOf("ripvida"), CommandCate
 	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
-		val template = readImage(File(Loritta.ASSETS + context.legacyLocale.get("RIPVIDA_FILE"))) // Template
+		val template = readImage(File(Loritta.ASSETS + context.legacyLocale.toNewLocale()["commands.images.ripvida.file"])) // Template
 
 		val scaled = contextImage.getScaledInstance(133, 133, BufferedImage.SCALE_SMOOTH)
 		template.graphics.drawImage(scaled, 133, 0, null)
 
-		context.sendFile(template, context.legacyLocale.get("RIPVIDA_FILE"), context.getAsMention(true))
+		context.sendFile(template, context.legacyLocale.toNewLocale()["commands.images.ripvida.file"], context.getAsMention(true))
 	}
 }

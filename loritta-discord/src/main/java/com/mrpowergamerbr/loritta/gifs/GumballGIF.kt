@@ -73,7 +73,7 @@ object GumballGIF {
 				if (i in 0..27) {
 					ImageUtils.drawCenteredStringOutlined(
 							graphics,
-							locale["GUMBALL_Subtitle1"],
+							locale.toNewLocale()["commands.images.gumballliftup.subtitle1"],
 							subtitles,
 							font
 					)
@@ -81,7 +81,7 @@ object GumballGIF {
 				if (i in 28..45) {
 					ImageUtils.drawCenteredStringOutlined(
 							graphics,
-							locale["GUMBALL_Subtitle2"],
+							locale.toNewLocale()["commands.images.gumballliftup.subtitle2"],
 							subtitles,
 							font
 					)

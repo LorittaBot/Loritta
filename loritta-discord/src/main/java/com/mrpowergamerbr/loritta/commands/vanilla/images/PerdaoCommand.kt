@@ -15,7 +15,7 @@ class PerdaoCommand : AbstractCommand("perdao", listOf("perdão"), CommandCatego
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["PERDAO_DESCRIPTION"]
+		return locale.toNewLocale()["commands.images.forgive.description"]
 	}
 
 	override fun getExamples(): List<String> {

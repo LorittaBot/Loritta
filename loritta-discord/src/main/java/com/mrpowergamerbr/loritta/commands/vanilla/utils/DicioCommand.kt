@@ -18,7 +18,7 @@ class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "dicionario"
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["DICIO_Description"]
+		return locale.toNewLocale()["commands.utils.dicio.description"]
 	}
 
 	override fun getExamples(): List<String> {

@@ -23,7 +23,7 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 	}
 
 	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["UNWARN_Description"]
+		return locale.toNewLocale()["commands.moderation.unwarn.description"]
 	}
 
 	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
@@ -85,7 +85,7 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 				if (context.args[1].toIntOrNull() == null) {
 					context.reply(
                             LorittaReply(
-                                    "${context.legacyLocale["INVALID_NUMBER", context.args[1]]}",
+									context.locale["commands.invalidNumber", context.args[1]],
                                     Constants.ERROR
                             )
 					)
