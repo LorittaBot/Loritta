@@ -18,7 +18,7 @@ class GeneralConfig @JsonCreator constructor(
 		val openWeatherMap: OpenWeatherMapConfig,
 		val googleVision: GoogleVisionKey,
 		val googleRecaptcha: GoogleRecaptcha,
-		val crowdin: Crowdin,
+		val crowdin: CrowdinConfig,
 		val github: GitHubConfig,
 		val twitter: TwitterConfig,
 		val twitch: TwitchConfig,
@@ -34,7 +34,7 @@ class GeneralConfig @JsonCreator constructor(
 		val caches: CacheConfig
 ) {
 
-	class Crowdin @JsonCreator constructor(
+	class CrowdinConfig @JsonCreator constructor(
 			val url: String
 	)
 
