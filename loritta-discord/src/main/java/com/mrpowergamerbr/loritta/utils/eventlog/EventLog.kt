@@ -124,7 +124,7 @@ object EventLog {
 						if (webhook != null) {
 							val embed = WebhookEmbedBuilder()
 									.setColor(Color(238, 241, 0).rgb)
-									.setDescription("\uD83D\uDCDD ${locale.toNewLocale()["modules.eventLog.messageEdited", message.member?.asMention, storedMessage.content, message.contentRaw, message.textChannel.asMention]}")
+									.setDescription("\uD83D\uDCDD ${locale.toNewLocale().getList("modules.eventLog.messageEdited", message.member?.asMention, storedMessage.content, message.contentRaw, message.textChannel.asMention).joinToString("\n")}")
 									.setAuthor(WebhookEmbed.EmbedAuthor("${message.member?.user?.name}#${message.member?.user?.discriminator}", null, message.member?.user?.effectiveAvatarUrl))
 									.setFooter(WebhookEmbed.EmbedFooter(locale.toNewLocale()["modules.eventLog.userID", message.member?.user?.id], null))
 									.setTimestamp(Instant.now())

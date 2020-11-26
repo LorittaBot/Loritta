@@ -195,7 +195,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						embed.setAuthor(WebhookEmbed.EmbedAuthor(user.name + "#" + user.discriminator, null, user.effectiveAvatarUrl))
 
-						var deletedMessage = "\uD83D\uDCDD ${locale.toNewLocale()["modules.eventLog.messageDeleted", storedMessage.content, "<#${storedMessage.channelId}>"]}"
+						var deletedMessage = "\uD83D\uDCDD ${locale.toNewLocale().getList("modules.eventLog.messageDeleted", storedMessage.content, "<#${storedMessage.channelId}>").joinToString("\n")}"
 
 						if (storedMessage.storedAttachments.isNotEmpty()) {
 							deletedMessage += "\n${locale.toNewLocale()["modules.eventLog.messageDeletedUploads"]}\n" + storedMessage.storedAttachments.joinToString(separator = "\n")
@@ -457,7 +457,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				val oldNickname = if (event.oldNickname == null) "\uD83E\uDD37 ${locale.toNewLocale()["modules.eventLog.noNickname"]}" else event.oldNickname
 				val newNickname = if (event.newNickname == null) "\uD83E\uDD37 ${locale.toNewLocale()["modules.eventLog.noNickname"]}" else event.newNickname
 
-				embed.setDescription("\uD83D\uDCDD ${locale.toNewLocale()["modules.eventLog.nicknameChanged", oldNickname, newNickname]}")
+				embed.setDescription("\uD83D\uDCDD ${locale.toNewLocale().getList("modules.eventLog.nicknameChanged", oldNickname, newNickname).joinToString("\n")}")
 				embed.setFooter(WebhookEmbed.EmbedFooter(locale.toNewLocale()["modules.eventLog.userID", event.member.user.id], null))
 
 				webhook.send(
