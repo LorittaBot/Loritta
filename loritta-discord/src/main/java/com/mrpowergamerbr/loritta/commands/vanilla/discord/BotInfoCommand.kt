@@ -86,7 +86,7 @@ class BotInfoCommand(private val buildInfo: BuildInfo) : AbstractCommand("botinf
 		embed.addField("<:loritta:331179879582269451> ${context.legacyLocale["WEBSITE_ADD_ME"]}", "${loritta.instanceConfig.loritta.website.url}dashboard", true)
 		embed.addField("<:lori_ok_hand:426183783008698391> ${context.legacyLocale["WEBSITE_COMMANDS"]}", "${loritta.instanceConfig.loritta.website.url}commands", true)
 		embed.addField("\uD83D\uDC81 ${context.legacyLocale["WEBSITE_Support"]}", "${loritta.instanceConfig.loritta.website.url}support", true)
-		embed.addField(locale.toNewLocale()["commands.misc.botinfo.crowdin"], loritta.config.loritta.crowdin.url, true)
+		embed.addField(locale.toNewLocale()["commands.misc.botinfo.crowdin"], loritta.config.crowdin.url, true)
 		embed.addField("<:twitter:552840901886738433> Twitter", "[@LorittaBot](https://twitter.com/LorittaBot)", true)
 		embed.addField("<:instagram:552841049660325908> Instagram", "[@lorittabot](https://instagram.com/lorittabot/)", true)
 
