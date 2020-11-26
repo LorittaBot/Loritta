@@ -10,7 +10,6 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.filterOnlyGiveableRoles
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
@@ -44,11 +43,11 @@ class ExperienceModule : MessageReceivedModule {
 			.build<Long, Mutex>()
 			.asMap()
 
-	override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
+	override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
 		return true
 	}
 
-	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
+	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
 		if (!FeatureFlags.isEnabled("experience-gain"))
 			return false
 
@@ -94,7 +93,7 @@ class ExperienceModule : MessageReceivedModule {
 					val profile = serverConfig.getUserData(event.author.idLong)
 
 					if (FeatureFlags.isEnabled("experience-gain-locally")) {
-						handleLocalExperience(event, retrievedProfile, serverConfig, profile, gainedXp, locale.toNewLocale())
+						handleLocalExperience(event, retrievedProfile, serverConfig, profile, gainedXp, locale)
 					}
 				}
 			}

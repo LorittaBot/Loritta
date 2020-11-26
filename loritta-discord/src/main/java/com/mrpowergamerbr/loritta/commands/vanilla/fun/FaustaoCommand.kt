@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.WebhookUtils
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class FaustaoCommand : AbstractCommand("faustão", listOf("faustao"), CommandCategory.FUN) {
@@ -45,15 +45,15 @@ class FaustaoCommand : AbstractCommand("faustão", listOf("faustao"), CommandCat
 			"http://i.imgur.com/rVmgwZC.png",
 			"http://i.imgur.com/z7Ec5I3.png")
 
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["FAUSTAO_DESCRIPTION"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.fun.faustao.description"]
 	}
 
 	override fun hasCommandFeedback(): Boolean {
 		return false
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val temmie = WebhookUtils.getOrCreateWebhook(context.event.channel, "Faustão")
 
 		val mensagem = frases[Loritta.RANDOM.nextInt(frases.size)].replace("{user}", context.userHandle.asMention)

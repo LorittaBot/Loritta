@@ -115,7 +115,7 @@ object WelcomeModule {
 	suspend fun handleJoin(event: GuildMemberJoinEvent, serverConfig: ServerConfig, welcomerConfig: WelcomerConfig) {
 		val joinLeaveConfig = welcomerConfig
 		val tokens = mapOf(
-				"humanized-date" to event.member.timeJoined.humanize(loritta.getLegacyLocaleById(serverConfig.localeId))
+				"humanized-date" to event.member.timeJoined.humanize(loritta.getLocaleById(serverConfig.localeId))
 		)
 
 		logger.trace { "Member = ${event.member}, Guild ${event.guild} has tellOnJoin = ${joinLeaveConfig.tellOnJoin} and the joinMessage is ${joinLeaveConfig.joinMessage}, canalJoinId = ${joinLeaveConfig.channelJoinId}" }

@@ -5,16 +5,14 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.profile.ProfileCreator
 import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.Member
 import net.perfectdreams.loritta.profile.ProfileUtils
 import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
-import javax.imageio.ImageIO
 
 open class PlainProfileCreator(internalName: String, val folderName: String) : ProfileCreator(internalName) {
 	class PlainWhiteProfileCreator : PlainProfileCreator("plainWhite", "white")
@@ -24,7 +22,7 @@ open class PlainProfileCreator(internalName: String, val folderName: String) : P
 	class PlainGreenProfileCreator : PlainProfileCreator("plainGreen", "green")
 	class PlainGreenHeartsProfileCreator : PlainProfileCreator("plainGreenHearts", "green_hearts")
 
-	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
+	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
 		val profileWrapper = readImage(File(Loritta.ASSETS, "profile/plain/profile_wrapper_$folderName.png"))
 
 		val whitneySemiBold = FileInputStream(File(Loritta.ASSETS + "whitney-semibold.ttf")).use {
@@ -51,7 +49,7 @@ open class PlainProfileCreator(internalName: String, val folderName: String) : P
 
 			graphics.color = Color.WHITE
 			graphics.font = whitneyBold12
-			ImageUtils.drawCenteredString(graphics, locale.toNewLocale()["profile.marriedWith"], Rectangle(635, 350, 165, 14), whitneyBold12)
+			ImageUtils.drawCenteredString(graphics, locale["profile.marriedWith"], Rectangle(635, 350, 165, 14), whitneyBold12)
 			graphics.font = whitneyMedium16
 			ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(635, 350 + 16, 165, 18), whitneyMedium16)
 			graphics.font = whitneyBold12

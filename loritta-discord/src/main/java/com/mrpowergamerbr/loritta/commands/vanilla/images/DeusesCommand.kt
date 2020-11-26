@@ -6,7 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.Color
 import java.awt.Font
@@ -19,8 +19,8 @@ class DeusesCommand : AbstractCommand("deuses", category = CommandCategory.IMAGE
 		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "deuses.png")) }
 	}
 
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["DEUSES_DESCRIPTION"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.images.gods.description"]
 	}
 
 	override fun getExamples(): List<String> {
@@ -35,7 +35,7 @@ class DeusesCommand : AbstractCommand("deuses", category = CommandCategory.IMAGE
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val texto = context.args.joinToString(" ")
 

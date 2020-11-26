@@ -6,7 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.escapeMentions
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
@@ -14,15 +14,15 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 
 class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.FUN) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.entertainment.vemDeZap.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.entertainment.vemDeZap.description"]
 	}
 
-	override fun getExamples(locale: LegacyBaseLocale): List<String> {
-		return locale.toNewLocale().getList("commands.entertainment.vemDeZap.examples")
+	override fun getExamples(locale: BaseLocale): List<String> {
+		return locale.getList("commands.entertainment.vemDeZap.examples")
 	}
 
-	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
+	override fun getUsage(locale: BaseLocale): CommandArguments {
 		return arguments {
 			argument(ArgumentType.TEXT) {
 				optional = false
@@ -30,7 +30,7 @@ class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.F
 		}
 	}
 
-	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		// Baseado em http://vemdezapbe.be/ / https://github.com/vmarchesin/vemdezapbe.be
 		// Que até agora eu não entendi porque fizeram uma API externa em vez de deixar tudo client-sided... mas vida que segue né
 		// E pelo ou menos a versão da nossa querida Loritta não tem gemidão do zap aleatório ao fazer zap, quem coloca gemidão nas coisas
@@ -360,31 +360,31 @@ class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.F
 
 			val message = context.reply(
                     LorittaReply(
-                            locale["VEMDEZAP_WhatIsTheMood"],
+                            locale["commands.fun.vemdezap.whatIsTheMood"],
                             "\uD83E\uDD14"
                     ),
                     LorittaReply(
-                            locale["VEMDEZAP_MoodHappy"],
+                            locale["commands.fun.vemdezap.moodHappy"],
                             "\uD83D\uDE0A",
                             mentionUser = false
                     ),
                     LorittaReply(
-                            locale["VEMDEZAP_MoodAngry"],
+                            locale["commands.fun.vemdezap.moodAngry"],
                             "\uD83D\uDE21",
                             mentionUser = false
                     ),
                     LorittaReply(
-                            locale["VEMDEZAP_MoodSassy"],
+                            locale["commands.fun.vemdezap.moodSassy"],
                             "\uD83D\uDE0F",
                             mentionUser = false
                     ),
                     LorittaReply(
-                            locale["VEMDEZAP_MoodSad"],
+                            locale["commands.fun.vemdezap.moodSad"],
                             "\uD83D\uDE22",
                             mentionUser = false
                     ),
                     LorittaReply(
-                            locale["VEMDEZAP_MoodSick"],
+                            locale["commands.fun.vemdezap.moodSick"],
                             "\uD83E\uDD12",
                             mentionUser = false
                     )
@@ -404,31 +404,31 @@ class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.F
 
 				val levelMessage = context.reply(
                         LorittaReply(
-                                locale["VEMDEZAP_WhatIsTheLevel"],
+                                locale["commands.fun.vemdezap.whatIsTheLevel"],
                                 "\uD83E\uDD14"
                         ),
                         LorittaReply(
-                                locale["VEMDEZAP_Level1"],
+                                locale["commands.fun.vemdezap.level1"],
                                 "1⃣",
                                 mentionUser = false
                         ),
                         LorittaReply(
-                                locale["VEMDEZAP_Level2"],
+                                locale["commands.fun.vemdezap.level2"],
                                 "2⃣",
                                 mentionUser = false
                         ),
                         LorittaReply(
-                                locale["VEMDEZAP_Level3"],
+                                locale["commands.fun.vemdezap.level3"],
                                 "3⃣",
                                 mentionUser = false
                         ),
                         LorittaReply(
-                                locale["VEMDEZAP_Level4"],
+                                locale["commands.fun.vemdezap.level4"],
                                 "4⃣",
                                 mentionUser = false
                         ),
                         LorittaReply(
-                                locale["VEMDEZAP_Level5"],
+                                locale["commands.fun.vemdezap.level5"],
                                 "5⃣",
                                 mentionUser = false
                         )

@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.ArgumentType
@@ -11,8 +11,8 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 
 class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category = CommandCategory.SOCIAL) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["EDITARXP_DESCRIPTION"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.social.editxp.description"]
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {
@@ -27,23 +27,23 @@ class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category =
 		return listOf(Permission.MANAGE_SERVER)
 	}
 
-	override fun getUsage(locale: LegacyBaseLocale) = arguments {
+	override fun getUsage(locale: BaseLocale) = arguments {
 		argument(ArgumentType.USER) {}
 		argument(ArgumentType.NUMBER) {}
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val user = context.getUserAt(0)
 		if (user != null && context.rawArgs.size == 2) {
 			val newXp = context.rawArgs[1].toLongOrNull()
 
 			if (newXp == null) {
-				context.sendMessage("${Constants.ERROR} **|** ${context.getAsMention(true)}${context.legacyLocale["INVALID_NUMBER", context.rawArgs[1]]}")
+				context.sendMessage("${Constants.ERROR} **|** ${context.getAsMention(true)}${context.locale["loritta.invalidNumber", context.rawArgs[1]]}")
 				return
 			}
 
 			if (0 > newXp) {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["EDITARXP_MORE_THAN_ZERO"])
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["commands.social.editxp.moreThanZero"])
 				return
 			}
 
@@ -53,7 +53,7 @@ class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category =
 				userData.xp = newXp
 			}
 
-			context.sendMessage(context.getAsMention(true) + context.legacyLocale["EDITARXP_SUCCESS", user.asMention])
+			context.sendMessage(context.getAsMention(true) + context.locale["commands.social.editxp.success", user.asMention])
 		} else {
 			context.explain()
 		}

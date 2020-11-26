@@ -8,7 +8,6 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
@@ -47,7 +46,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 		commands.remove(command)
 	}
 
-	suspend fun dispatch(ev: LorittaMessageEvent, rawArguments: List<String>, serverConfig: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun dispatch(ev: LorittaMessageEvent, rawArguments: List<String>, serverConfig: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
 		// We order by more spaces in the first label -> less spaces, to avoid other commands taking precedence over other commands
 		// I don't like how this works, we should create a command tree instead of doing this
 		for (command in commands.sortedByDescending { it.labels.first().count { it.isWhitespace() }}) {
@@ -55,14 +54,14 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 				command.commandCheckFilter?.invoke(ev, rawArguments, serverConfig, locale, lorittaUser) ?: true
 			else true
 
-			if (shouldBeProcessed && dispatch(command, rawArguments, ev, serverConfig, locale, legacyLocale, lorittaUser))
+			if (shouldBeProcessed && dispatch(command, rawArguments, ev, serverConfig, locale, lorittaUser))
 				return true
 		}
 
 		return false
 	}
 
-	suspend fun dispatch(command: Command<CommandContext>, rawArguments: List<String>, ev: LorittaMessageEvent, serverConfig: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun dispatch(command: Command<CommandContext>, rawArguments: List<String>, ev: LorittaMessageEvent, serverConfig: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
 		val message = ev.message.contentDisplay
 		val user = ev.author
 
@@ -166,7 +165,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 				)
 
 				if (cooldownStatus == CommandCooldownManager.CooldownStatus.RATE_LIMITED_SEND_MESSAGE) {
-					val fancy = DateUtils.formatDateDiff(cooldown + cooldownTriggeredAt, legacyLocale)
+					val fancy = DateUtils.formatDateDiff(cooldown + cooldownTriggeredAt, locale)
 					context.reply(
 							LorittaReply(
 									locale["commands.pleaseWaitCooldown", fancy, "\uD83D\uDE45"],
@@ -218,11 +217,11 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 
 					if (missingPermissions.isNotEmpty()) {
 						// oh no
-						val required = missingPermissions.joinToString(", ", transform = { "`" + legacyLocale["LORIPERMISSION_${it.name}"] + "`"})
-						var message = legacyLocale["LORIPERMISSION_MissingPermissions", required]
+							val required = missingPermissions.joinToString(", ", transform = { "`" + locale["commands.loriPermission${it.name}"] + "`"})
+						var message = locale["commands.loriMissingPermission", required]
 
 						if (ev.member.hasPermission(Permission.ADMINISTRATOR) || ev.member.hasPermission(Permission.MANAGE_SERVER)) {
-							message += " ${legacyLocale["LORIPERMISSION_MissingPermCanConfigure", loritta.instanceConfig.loritta.website.url]}"
+							message += " ${locale["commands.loriMissingPermissionCanConfigure", loritta.instanceConfig.loritta.website.url]}"
 						}
 						context.reply(
 								LorittaReply(
@@ -267,7 +266,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 				if (context.isPrivateChannel && !command.canUseInPrivateChannel) {
 					context.reply(
 							LorittaReply(
-									message = legacyLocale["CANT_USE_IN_PRIVATE"],
+									message = locale["commands.cantUseInPrivate"],
 									prefix = Constants.ERROR
 							)
 					)

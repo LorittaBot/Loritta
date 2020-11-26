@@ -6,7 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -22,16 +22,16 @@ import java.util.*
 import javax.imageio.ImageIO
 
 class TodoGrupoTemCommand : AbstractCommand("everygrouphas", listOf("todogrupotem"), CommandCategory.IMAGES) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["TODOGRUPOTEM_Description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.images.everygrouphas.description"]
 	}
 
 	override fun needsToUploadFiles(): Boolean {
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
-		val bi = readImage(File(Loritta.ASSETS + context.legacyLocale["TODOGRUPOTEM_File"])) // Primeiro iremos carregar o nosso template
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+		val bi = readImage(File(Loritta.ASSETS + context.locale["commands.images.everygrouphas.file"])) // Primeiro iremos carregar o nosso template
 
 		val base = BufferedImage(366, 266, BufferedImage.TYPE_INT_ARGB) // Iremos criar uma imagem 384x256 (tamanho do template)
 		val baseGraph = base.graphics.enableFontAntiAliasing()
@@ -58,7 +58,7 @@ class TodoGrupoTemCommand : AbstractCommand("everygrouphas", listOf("todogrupote
 
 		val font = Font.createFont(0, File(Loritta.ASSETS + "mavenpro-bold.ttf")).deriveFont(16f)
 		baseGraph.font = font
-		ImageUtils.drawCenteredStringOutlined(baseGraph, locale["TODOGRUPOTEM_EveryGroupHas"], Rectangle(0, 0, 366, 22), font)
+		ImageUtils.drawCenteredStringOutlined(baseGraph, locale["commands.images.everygrouphas.everygrouphas"], Rectangle(0, 0, 366, 22), font)
 
 		for (aux in 5 downTo 0) {
 			val member = users[0]

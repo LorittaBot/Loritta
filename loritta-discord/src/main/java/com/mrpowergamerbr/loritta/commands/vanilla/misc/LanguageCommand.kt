@@ -6,7 +6,6 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
@@ -20,15 +19,15 @@ import java.awt.Color
 class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak"), category = CommandCategory.MISC) {
     private val resetPersonalLanguageEmote = "\uD83D\uDE45"
 
-    override fun getDescription(locale: LegacyBaseLocale): String {
-        return locale.toNewLocale()["commands.misc.language.description", "\uD83D\uDE0A"]
+    override fun getDescription(locale: BaseLocale): String {
+        return locale["commands.misc.language.description", "\uD83D\uDE0A"]
     }
 
     override fun getDiscordPermissions(): List<Permission> {
         return listOf(Permission.MANAGE_SERVER)
     }
 
-    override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
+    override suspend fun run(context: CommandContext, locale: BaseLocale) {
         val profile = loritta.getOrCreateLorittaProfile(context.userHandle.idLong)
 
         val hasPersonalLanguage = loritta.newSuspendedTransaction { profile.settings.language != null && context.isPrivateChannel }
@@ -40,7 +39,6 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
                 LocaleWrapper(
                         "Português-Brasil",
                         loritta.getLocaleById("default"),
-                        loritta.getLegacyLocaleById("default"),
                         "\uD83C\uDDE7\uD83C\uDDF7"
                 ),
                 /* LocaleWrapper(
@@ -52,7 +50,6 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
                 LocaleWrapper(
                         "English (United States)",
                         loritta.getLocaleById("en-us"),
-                        loritta.getLegacyLocaleById("en-us"),
                         "\uD83C\uDDFA\uD83C\uDDF8"
                 ),
                 /* LocaleWrapper(
@@ -64,19 +61,16 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
                 LocaleWrapper(
                         "Português-Funk",
                         loritta.getLocaleById("pt-funk"),
-                        loritta.getLegacyLocaleById("pt-funk"),
                         "<:loritta_quebrada:338679008210190336>"
                 ),
                 LocaleWrapper(
                         "Português-Furry",
                         loritta.getLocaleById("pt-furry"),
-                        loritta.getLegacyLocaleById("default"),
                         "\uD83D\uDC3E"
                 ),
                 LocaleWrapper(
                         "English-Furry",
                         loritta.getLocaleById("en-furry"),
-                        loritta.getLegacyLocaleById("default"),
                         "\uD83D\uDC31"
                 )
         )
@@ -88,7 +82,6 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
                     LocaleWrapper(
                             "Auto-PT-BR-Debug",
                             loritta.getLocaleById("br-debug"),
-                            loritta.getLegacyLocaleById("default"),
                             "\uD83D\uDC31"
                     )
             )
@@ -102,7 +95,6 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
                     LocaleWrapper(
                             "Auto-EN-Debug",
                             loritta.getLocaleById("en-debug"),
-                            loritta.getLegacyLocaleById("default"),
                             "\uD83D\uDC31"
                     )
             )
@@ -112,7 +104,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
         val message = context.sendMessage(
                 context.getAsMention(true),
                 buildLanguageEmbed(
-                        locale.toNewLocale(),
+                        locale,
                         validLanguages.subList(0, 2),
                         context.isPrivateChannel,
                         hasPersonalLanguage
@@ -124,7 +116,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
                 message.edit(
                         " ",
                         buildLanguageEmbed(
-                                locale.toNewLocale(),
+                                locale,
                                 validLanguages.subList(2, validLanguages.size),
                                 context.isPrivateChannel,
                                 hasPersonalLanguage
@@ -146,7 +138,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
                 }
                 context.reply(
                         LorittaReply(
-                                locale.toNewLocale()["commands.misc.language.removedPersonalLanguage"]
+                                locale["commands.misc.language.removedPersonalLanguage"]
                         )
                 )
                 return@onReactionAddByAuthor
@@ -231,7 +223,6 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
     private class LocaleWrapper(
             val name: String,
             val locale: BaseLocale,
-            val legacyLocale: LegacyBaseLocale,
             val emoteName: String
     )
 }

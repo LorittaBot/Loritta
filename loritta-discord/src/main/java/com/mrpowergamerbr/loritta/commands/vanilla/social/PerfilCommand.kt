@@ -15,7 +15,7 @@ import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
 import com.mrpowergamerbr.loritta.tables.DonationConfigs
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import net.dv8tion.jda.api.entities.User
@@ -181,8 +181,8 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		}
 	}
 
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["PERFIL_DESCRIPTION"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.social.profile.description"]
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {
@@ -193,13 +193,13 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		return true
 	}
 
-	override fun getUsage(locale: LegacyBaseLocale) = arguments {
+	override fun getUsage(locale: BaseLocale) = arguments {
 		argument(ArgumentType.USER) {
 			optional = true
 		}
 	}
 
-	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		var userProfile = context.lorittaUser.profile
 
 		val contextUser = context.getUserAt(0)
@@ -244,7 +244,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		var aboutMe: String? = null
 
 		if (userProfile.userId == loritta.discordConfig.discord.clientId.toLong()) {
-			aboutMe = locale["PERFIL_LORITTA_DESCRIPTION"]
+			aboutMe = locale["commands.social.profile.description"]
 		}
 
 		if (userProfile.userId == 390927821997998081L) {
@@ -291,7 +291,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		)
 
 		if (images.size == 1) {
-			context.sendFile(images.first(), "lori_profile.png", "📝 **|** " + context.getAsMention(true) + context.legacyLocale["PEFIL_PROFILE"]) // E agora envie o arquivo
+			context.sendFile(images.first(), "lori_profile.png", "📝 **|** " + context.getAsMention(true) + context.locale["commands.social.profile.profile"]) // E agora envie o arquivo
 		} else {
 			// Montar a GIF
 			val fileName = Loritta.TEMP + "profile-" + System.currentTimeMillis() + ".gif"
@@ -308,7 +308,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			val outputFile = File(fileName)
 			MiscUtils.optimizeGIF(outputFile)
 
-			context.sendFile(outputFile, "lori_profile.gif", "📝 **|** " + context.getAsMention(true) + context.legacyLocale["PEFIL_PROFILE"]) // E agora envie o arquivo
+			context.sendFile(outputFile, "lori_profile.gif", "📝 **|** " + context.getAsMention(true) + context.locale["commands.social.profile.profile"]) // E agora envie o arquivo
 		}
 	}
 }

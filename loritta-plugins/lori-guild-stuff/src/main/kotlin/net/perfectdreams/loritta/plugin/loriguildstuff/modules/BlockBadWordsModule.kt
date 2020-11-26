@@ -1,9 +1,5 @@
 package net.perfectdreams.loritta.plugin.loriguildstuff.modules
 
-import com.github.salomonbrys.kotson.jsonObject
-import com.github.salomonbrys.kotson.nullBool
-import com.github.salomonbrys.kotson.nullInt
-import com.github.salomonbrys.kotson.nullString
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.AdminUtils
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
 import com.mrpowergamerbr.loritta.dao.Profile
@@ -12,11 +8,10 @@ import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.modules.MessageReceivedModule
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import mu.KotlinLogging
 import net.perfectdreams.loritta.plugin.loriguildstuff.LoriGuildStuffPlugin
-import net.perfectdreams.loritta.website.utils.extensions.respondJson
 
 class BlockBadWordsModule(val plugin: LoriGuildStuffPlugin) : MessageReceivedModule {
     companion object {
@@ -31,12 +26,12 @@ class BlockBadWordsModule(val plugin: LoriGuildStuffPlugin) : MessageReceivedMod
         )
     }
 
-    override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
+    override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
         return loritta.config.loritta.environment == EnvironmentType.CANARY
                 && (event.guild?.idLong in GUILD_IDS)
     }
 
-    override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
+    override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
         val guild = event.guild ?: return false
 
         val content = event.message.contentRaw
@@ -55,7 +50,7 @@ class BlockBadWordsModule(val plugin: LoriGuildStuffPlugin) : MessageReceivedMod
                     ),
                     guild,
                     event.author,
-                    loritta.getLegacyLocaleById(serverConfig.localeId),
+                    locale,
                     event.author,
                     "Automaticamente banido por Bad Words",
                     false,

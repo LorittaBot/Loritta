@@ -26,7 +26,6 @@ import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
@@ -226,10 +225,10 @@ class CommandManager(loritta: Loritta) {
 		return BotInfoCommand(BuildInfo(mainAttributes))
 	}
 
-	suspend fun matches(ev: LorittaMessageEvent, rawArguments: List<String>, serverConfig: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun matches(ev: LorittaMessageEvent, rawArguments: List<String>, serverConfig: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
 		// Primeiro os comandos vanilla da Loritta(tm)
 		for (command in commandMap) {
-			if (matches(command, rawArguments, ev, serverConfig, locale, legacyLocale, lorittaUser))
+			if (matches(command, rawArguments, ev, serverConfig, locale, lorittaUser))
 				return true
 		}
 
@@ -248,7 +247,7 @@ class CommandManager(loritta: Loritta) {
 		}
 
 		for (command in nashornCommands) {
-			if (matches(command, rawArguments, ev, serverConfig, locale, legacyLocale, lorittaUser))
+			if (matches(command, rawArguments, ev, serverConfig, locale, lorittaUser))
 				return true
 		}
 
@@ -264,7 +263,7 @@ class CommandManager(loritta: Loritta) {
 	 * @param lorittaUser the user that is executing this command
 	 * @return            if the command was handled or not
 	 */
-	suspend fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, serverConfig: ServerConfig, locale: BaseLocale, legacyLocale: LegacyBaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, serverConfig: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
 		val message = ev.message.contentDisplay
 		val baseLocale = locale
 
@@ -291,18 +290,18 @@ class CommandManager(loritta: Loritta) {
 				strippedArgs = rawArgs
 			}
 
-			var reparsedLegacyLocale = legacyLocale
+			var reparsedLegacyLocale = locale
 			if (!isPrivateChannel) { // TODO: Migrar isto para que seja customizável
 				when (ev.channel.id) {
-					"414839559721975818" -> reparsedLegacyLocale = loritta.getLegacyLocaleById("default") // português (default)
-					"404713176995987466" -> reparsedLegacyLocale = loritta.getLegacyLocaleById("en-us") // inglês
-					"414847180285935622" -> reparsedLegacyLocale = loritta.getLegacyLocaleById("es-es") // espanhol
-					"414847291669872661" -> reparsedLegacyLocale = loritta.getLegacyLocaleById("pt-pt") // português de portugal
-					"414847379670564874" -> reparsedLegacyLocale = loritta.getLegacyLocaleById("pt-funk") // português funk
+					"414839559721975818" -> reparsedLegacyLocale = loritta.getLocaleById("default") // português (default)
+					"404713176995987466" -> reparsedLegacyLocale = loritta.getLocaleById("en-us") // inglês
+					"414847180285935622" -> reparsedLegacyLocale = loritta.getLocaleById("es-es") // espanhol
+					"414847291669872661" -> reparsedLegacyLocale = loritta.getLocaleById("pt-pt") // português de portugal
+					"414847379670564874" -> reparsedLegacyLocale = loritta.getLocaleById("pt-funk") // português funk
 				}
 			}
 
-			val context = CommandContext(serverConfig, lorittaUser, baseLocale, legacyLocale, ev, command, args, rawArgs, strippedArgs)
+			val context = CommandContext(serverConfig, lorittaUser, baseLocale, ev, command, args, rawArgs, strippedArgs)
 
 			try {
 				if (ev.message.isFromType(ChannelType.TEXT)) {
@@ -407,11 +406,11 @@ class CommandManager(loritta: Loritta) {
 
 					if (missingPermissions.isNotEmpty()) {
 						// oh no
-						val required = missingPermissions.joinToString(", ", transform = { "`" + reparsedLegacyLocale["LORIPERMISSION_${it.name}"] + "`" })
-						var message = reparsedLegacyLocale["LORIPERMISSION_MissingPermissions", required]
+						val required = missingPermissions.joinToString(", ", transform = { "`" + reparsedLegacyLocale["commands.loriPermission${it.name}"] + "`" })
+						var message = reparsedLegacyLocale["commands.loriMissingPermission", required]
 
 						if (ev.member.hasPermission(Permission.ADMINISTRATOR) || ev.member.hasPermission(Permission.MANAGE_SERVER)) {
-							message += " ${reparsedLegacyLocale["LORIPERMISSION_MissingPermCanConfigure", loritta.instanceConfig.loritta.website.url]}"
+							message += " ${reparsedLegacyLocale["commands.loriMissingPermissionCanConfigure", loritta.instanceConfig.loritta.website.url]}"
 						}
 						ev.textChannel.sendMessage(Constants.ERROR + " **|** ${ev.member.asMention} $message")
 								.reference(ev.message)
@@ -448,7 +447,7 @@ class CommandManager(loritta: Loritta) {
 				}
 
 				if (context.isPrivateChannel && !command.canUseInPrivateChannel()) {
-					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + reparsedLegacyLocale["CANT_USE_IN_PRIVATE"])
+					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + reparsedLegacyLocale["commands.cantUseInPrivate"])
 					return true
 				}
 
@@ -476,7 +475,7 @@ class CommandManager(loritta: Loritta) {
 						if (hasBadNickname) {
 							context.reply(
 									LorittaReply(
-											reparsedLegacyLocale["LORITTA_BadNickname"],
+											reparsedLegacyLocale["commands.lorittaBadNickname"],
 											"<:lori_triste:370344565967814659>"
 									)
 							)
@@ -512,7 +511,7 @@ class CommandManager(loritta: Loritta) {
 
 				lorittaShards.updateCachedUserData(context.userHandle)
 
-				command.run(context, context.legacyLocale)
+				command.run(context, context.locale)
 
 				if (!isPrivateChannel && ev.guild != null) {
 					if (ev.guild.selfMember.hasPermission(ev.textChannel!!, Permission.MESSAGE_MANAGE) && (serverConfig.deleteMessageAfterCommand)) {

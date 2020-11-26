@@ -2,14 +2,14 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class QuickPunishmentCommand : AbstractCommand("quickpunishment", category = CommandCategory.ADMIN) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.moderation.quickpunishment.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.moderation.quickpunishment.description"]
 	}
 
 	override fun getExamples(): List<String> {
@@ -20,19 +20,19 @@ class QuickPunishmentCommand : AbstractCommand("quickpunishment", category = Com
 		return false
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val userData = context.config.getUserData(context.userHandle.idLong)
 
 		if (userData.quickPunishment) {
 			context.reply(
                     LorittaReply(
-                            message = locale.toNewLocale()["commands.moderation.quickpunishment.disabled"]
+                            message = locale["commands.moderation.quickpunishment.disabled"]
                     )
 			)
 		} else {
 			context.reply(
                     LorittaReply(
-                            message = locale.toNewLocale()["commands.moderation.quickpunishment.enabled"]
+                            message = locale["commands.moderation.quickpunishment.enabled"]
                     )
 			)
 		}

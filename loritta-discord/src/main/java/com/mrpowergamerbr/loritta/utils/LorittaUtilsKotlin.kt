@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.User
@@ -95,7 +94,7 @@ object LorittaUtilsKotlin {
 	 * @return if the user is banned
 	 */
 	suspend fun handleIfBanned(context: CommandContext, profile: Profile)
-			= handleIfBanned(context.userHandle, profile, context.event.channel, context.locale, context.legacyLocale)
+			= handleIfBanned(context.userHandle, profile, context.event.channel, context.locale)
 
 	/**
 	 * Checks if a user is banned and, if it is, a message is sent to the user via direct messages or, if their DMs are disabled, in the current channel.
@@ -103,7 +102,7 @@ object LorittaUtilsKotlin {
 	 * @return if the user is banned
 	 */
 	suspend fun handleIfBanned(context: net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext, profile: Profile)
-			= handleIfBanned(context.user, profile, context.discordMessage.channel, context.locale, loritta.getLegacyLocaleById(context.locale.id))
+			= handleIfBanned(context.user, profile, context.discordMessage.channel, context.locale)
 
 	/**
 	 * Checks if a user is banned and, if it is, a message is sent to the user via direct messages or, if their DMs are disabled, in the current channel.
@@ -115,7 +114,7 @@ object LorittaUtilsKotlin {
 	 * @param legacyLocale   the user's locale
 	 * @return               if the user is banned
 	 */
-	private suspend fun handleIfBanned(user: User, profile: Profile, commandChannel: MessageChannel, locale: BaseLocale, legacyLocale: LegacyBaseLocale): Boolean {
+	private suspend fun handleIfBanned(user: User, profile: Profile, commandChannel: MessageChannel, locale: BaseLocale): Boolean {
 		val bannedState = profile.getBannedState()
 
 		if (loritta.ignoreIds.contains(profile.userId)) { // Se o usuário está sendo ignorado...
@@ -139,7 +138,7 @@ object LorittaUtilsKotlin {
 				bannedState[BannedUsers.reason],
 				bannedState[BannedUsers.expiresAt].let {
 					if (it != null)
-						DateUtils.formatMillis(it - System.currentTimeMillis(), legacyLocale)
+						DateUtils.formatMillis(it - System.currentTimeMillis(), locale)
 					else
 						locale["commands.moderation.mute.forever"]
 				},

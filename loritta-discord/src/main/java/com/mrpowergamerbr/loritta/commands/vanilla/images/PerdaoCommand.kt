@@ -3,7 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.images
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.image.BufferedImage
 import java.io.File
@@ -14,8 +14,8 @@ class PerdaoCommand : AbstractCommand("perdao", listOf("perdão"), CommandCatego
 		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "perdao.png")) }
 	}
 
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["PERDAO_DESCRIPTION"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.images.forgive.description"]
 	}
 
 	override fun getExamples(): List<String> {
@@ -30,7 +30,7 @@ class PerdaoCommand : AbstractCommand("perdao", listOf("perdão"), CommandCatego
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
 		// RULE OF THREE!!11!

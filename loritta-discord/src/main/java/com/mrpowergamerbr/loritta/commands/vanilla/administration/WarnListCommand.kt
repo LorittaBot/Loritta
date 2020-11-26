@@ -6,7 +6,7 @@ import com.mrpowergamerbr.loritta.dao.Warn
 import com.mrpowergamerbr.loritta.tables.Warns
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
@@ -22,11 +22,11 @@ class WarnListCommand : AbstractCommand("punishmentlist", listOf("listadeavisos"
 		private val LOCALE_PREFIX = "commands.moderation"
 	}
 
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["$LOCALE_PREFIX.warnlist.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["$LOCALE_PREFIX.warnlist.description"]
 	}
 
-	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
+	override fun getUsage(locale: BaseLocale): CommandArguments {
 		return arguments {
 			argument(ArgumentType.USER) {
 				optional = false
@@ -46,7 +46,7 @@ class WarnListCommand : AbstractCommand("punishmentlist", listOf("listadeavisos"
 		return false
 	}
 
-	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		val user = context.getUserAt(0)
 
 		if (user != null) {

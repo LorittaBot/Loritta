@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
@@ -16,8 +16,8 @@ import java.io.File
 import java.util.*
 
 class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebattle"), CommandCategory.UNDERTALE) {
-    override fun getDescription(locale: LegacyBaseLocale): String {
-        return locale["UTBATTLE_DESCRIPTION"]
+    override fun getDescription(locale: BaseLocale): String {
+        return locale["commands.undertale.utbattle.description"]
     }
 
     override fun getExamples(): List<String> {
@@ -28,7 +28,7 @@ class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebatt
         return "monstro mensagem"
     }
 
-    override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+    override suspend fun run(context: CommandContext,locale: BaseLocale) {
         if (context.args.size >= 2) {
             // Argumento 1: Monstro
             // Argumento 2...: Mensagem
@@ -82,7 +82,7 @@ class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebatt
                 context.sendFile(blackWhite, "undertale_battle.png", context.getAsMention(true)) // E agora envie o arquivo
             } else {
                 // Não, não é válido!
-                context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["UTBATTLE_INVALID", monster, validMonsterList.joinToString(", ")])
+                context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["commands.undertail.utbattle.invalid", monster, validMonsterList.joinToString(", ")])
             }
         } else {
             this.explain(context)

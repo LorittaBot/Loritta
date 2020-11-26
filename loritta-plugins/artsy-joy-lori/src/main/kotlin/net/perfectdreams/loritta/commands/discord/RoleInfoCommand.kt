@@ -3,10 +3,12 @@ package net.perfectdreams.loritta.commands.discord
 
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.DateUtils
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.api.commands.*
+import net.perfectdreams.loritta.api.commands.ArgumentType
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 
@@ -55,7 +57,7 @@ class RoleInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lori
                 if (role.color != null)
                     builder.setColor(role.color)
                 builder.addField("\uD83D\uDC40 ${locale["$LOCALE_PREFIX.roleinfo.roleMention"]}", "`${role.asMention}`", true)
-                builder.addField("\uD83D\uDCC5 ${locale["$LOCALE_PREFIX.roleinfo.roleCreated"]}", DateUtils.formatDateDiff(role.timeCreated.toInstant().toEpochMilli(), loritta.getLegacyLocaleById(context.locale.id)), true)
+                builder.addField("\uD83D\uDCC5 ${locale["$LOCALE_PREFIX.roleinfo.roleCreated"]}", DateUtils.formatDateDiff(role.timeCreated.toInstant().toEpochMilli(), locale), true)
                 builder.addField("\uD83D\uDCBB ${locale["$LOCALE_PREFIX.roleinfo.roleID"]}", "`${role.id}`", true)
                 builder.addField(locale["$LOCALE_PREFIX.roleinfo.roleHoisted"], isHoisted, true)
                 builder.addField("<:bot:516314838541008906> ${locale["$LOCALE_PREFIX.roleinfo.roleIntegration"]}", isIntegrationBot, true)

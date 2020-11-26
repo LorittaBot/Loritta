@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.tables.Warns
 import com.mrpowergamerbr.loritta.utils.Constants
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNull
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.ArgumentType
@@ -22,11 +22,11 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 		private val LOCALE_PREFIX = "commands.moderation"
 	}
 
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["UNWARN_Description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.moderation.unwarn.description"]
 	}
 
-	override fun getUsage(locale: LegacyBaseLocale): CommandArguments {
+	override fun getUsage(locale: BaseLocale): CommandArguments {
 		return arguments {
 			argument(ArgumentType.USER) {
 				optional = false
@@ -53,7 +53,7 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 		return listOf(Permission.KICK_MEMBERS, Permission.BAN_MEMBERS)
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val user = AdminUtils.checkForUser(context) ?: return
 
@@ -85,7 +85,7 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 				if (context.args[1].toIntOrNull() == null) {
 					context.reply(
                             LorittaReply(
-                                    "${context.legacyLocale["INVALID_NUMBER", context.args[1]]}",
+									context.locale["commands.invalidNumber", context.args[1]],
                                     Constants.ERROR
                             )
 					)

@@ -6,7 +6,7 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.profile.ProfileUtils
 import net.perfectdreams.loritta.utils.extensions.readImage
@@ -29,7 +29,7 @@ open class NostalgiaProfileCreator(internalName: String, val folderName: String)
 	class NostalgiaPinkProfileCreator : NostalgiaProfileCreator("defaultPink", "pink")
 	class NostalgiaOrangeProfileCreator : NostalgiaProfileCreator("defaultOrange", "orange")
 
-	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
+	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
 		val profileWrapper = readImage(File(Loritta.ASSETS, "profile/nostalgia/profile_wrapper_$folderName.png"))
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
@@ -59,7 +59,7 @@ open class NostalgiaProfileCreator(internalName: String, val folderName: String)
 		graphics.font = oswaldRegular42
 		ImageUtils.drawCenteredString(graphics, "${reputations} reps", Rectangle(598, 54, 202, 54), oswaldRegular42)
 		graphics.font = oswaldRegular29
-		ImageUtils.drawCenteredString(graphics, locale.toNewLocale()["profile.aboutMe"], Rectangle(0, 465, 132, 38), oswaldRegular29)
+		ImageUtils.drawCenteredString(graphics, locale["profile.aboutMe"], Rectangle(0, 465, 132, 38), oswaldRegular29)
 
 		var x = 162
 		for (badge in badges) {
@@ -146,7 +146,7 @@ open class NostalgiaProfileCreator(internalName: String, val folderName: String)
 				val whitneySemiBold16 = whitneySemiBold.deriveFont(16f)
 				val whitneyMedium20 = whitneyMedium22.deriveFont(20f)
 				graphics.font = whitneySemiBold16
-				ImageUtils.drawCenteredString(graphics, locale.toNewLocale()["profile.marriedWith"], Rectangle(545, 108, 256, 14), whitneySemiBold16)
+				ImageUtils.drawCenteredString(graphics, locale["profile.marriedWith"], Rectangle(545, 108, 256, 14), whitneySemiBold16)
 				graphics.font = whitneyMedium20
 				ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(545, 108 + 14, 256, 18), whitneyMedium20)
 				graphics.font = whitneySemiBold16

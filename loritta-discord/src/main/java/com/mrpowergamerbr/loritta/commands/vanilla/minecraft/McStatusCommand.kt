@@ -7,30 +7,30 @@ import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.Color
 
 class McStatusCommand : AbstractCommand("mcstatus", category = CommandCategory.MINECRAFT) {
-    override fun getDescription(locale: LegacyBaseLocale): String {
-        return locale["MCSTATUS_DESCRIPTION"]
+    override fun getDescription(locale: BaseLocale): String {
+        return locale["commands.minecraft.mcstatus.description"]
     }
 
-    override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+    override suspend fun run(context: CommandContext, locale: BaseLocale) {
         val body = HttpRequest.get("https://status.mojang.com/check").body()
 
-	    val builder = EmbedBuilder()
-                .setTitle("📡 ${locale["MCSTATUS_MOJANG_STATUS"]}", "https://help.mojang.com/")
+        val builder = EmbedBuilder()
+                .setTitle("📡 ${locale["commands.minecraft.mcstatus.mojangStatus"]}", "https://help.mojang.com/")
                 .setColor(Color.GREEN)
 
-	    val json = JsonParser.parseString(body)
-	    for (section in json.array) {
-		    val service = section.obj.entrySet().first()
-		    val status = service.value.string
-		    val prefix = if (service.key.contains("minecraft")) "<:minecraft_logo:412575161041289217> " else "<:mojang:383612358129352704> "
-		    val emoji = if (status == "green") "✅" else "❌"
-	        builder.addField(prefix + service.key, "${emoji} ${status}", true)
+        val json = JsonParser.parseString(body)
+        for (section in json.array) {
+            val service = section.obj.entrySet().first()
+            val status = service.value.string
+            val prefix = if (service.key.contains("minecraft")) "<:minecraft_logo:412575161041289217> " else "<:mojang:383612358129352704> "
+            val emoji = if (status == "green") "✅" else "❌"
+            builder.addField(prefix + service.key, "$emoji $status", true)
         }
 
         context.sendMessage(builder.build())

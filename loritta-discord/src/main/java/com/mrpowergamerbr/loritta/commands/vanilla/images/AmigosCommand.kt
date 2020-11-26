@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import net.dv8tion.jda.api.entities.Member
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -20,15 +20,15 @@ class AmigosCommand : AbstractCommand("friends", listOf("amigos", "meusamigos", 
 		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "thx.png")) }
 	}
 
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["AMIGOS_DESCRIPTION"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.images.friends.description"]
 	}
 
 	override fun needsToUploadFiles(): Boolean {
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val choosen = mutableListOf<Member>()
 
 		var contextImage = context.getImageAt(0, 0, 128, createTextAsImageIfNotFound = false) ?: getRandomAvatar(context, choosen)

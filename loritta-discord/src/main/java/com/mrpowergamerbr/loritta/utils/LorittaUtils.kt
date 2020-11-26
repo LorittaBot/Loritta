@@ -23,7 +23,7 @@ object LorittaUtils {
 
 	fun canUploadFiles(context: CommandContext): Boolean {
 		if (!context.isPrivateChannel && !context.guild.selfMember.hasPermission(context.event.textChannel!!, Permission.MESSAGE_ATTACH_FILES)) {
-			context.message.channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["IMAGE_UPLOAD_NO_PERM"].f() + " \uD83D\uDE22").queue()
+			context.message.channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["loritta.imageUploadNoPerm"].f() + " \uD83D\uDE22").queue()
 			return false
 		}
 		return true

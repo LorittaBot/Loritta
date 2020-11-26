@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.TextChannel
 import net.perfectdreams.loritta.api.messages.LorittaReply
@@ -12,11 +12,11 @@ import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import java.util.concurrent.TimeUnit
 
 class AFKModule : MessageReceivedModule {
-	override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
+	override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
 		return (event.channel as TextChannel).canTalk()
 	}
 
-	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: LegacyBaseLocale): Boolean {
+	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
 		val afkMembers = mutableListOf<Pair<Member, String?>>()
 
 		for (mention in event.message.mentionedMembers) {
@@ -38,8 +38,8 @@ class AFKModule : MessageReceivedModule {
 			if (afkMembers.size == 1) {
 				event.channel.sendMessage(
 						LorittaReply(
-                                message = locale.toNewLocale()["loritta.modules.afk.userIsAfk", "**" + afkMembers[0].first.effectiveName.escapeMentions().stripCodeMarks() + "**"] + if (afkMembers[0].second != null) {
-                                    " **" + locale.toNewLocale()["commands.moderation.punishmentReason"] + "** » `${afkMembers[0].second}`"
+                                message = locale["loritta.modules.afk.userIsAfk", "**" + afkMembers[0].first.effectiveName.escapeMentions().stripCodeMarks() + "**"] + if (afkMembers[0].second != null) {
+                                    " **" + locale["commands.moderation.punishmentReason"] + "** » `${afkMembers[0].second}`"
                                 } else {
                                     ""
                                 },
@@ -52,7 +52,7 @@ class AFKModule : MessageReceivedModule {
 				val replies = mutableListOf<LorittaReply>()
 				replies.add(
                         LorittaReply(
-                                message = locale.toNewLocale()["loritta.modules.afk.usersAreAfk", afkMembers.joinToString(separator = ", ", transform = { "**" + it.first.effectiveName.escapeMentions().stripCodeMarks() + "**" })],
+                                message = locale["loritta.modules.afk.usersAreAfk", afkMembers.joinToString(separator = ", ", transform = { "**" + it.first.effectiveName.escapeMentions().stripCodeMarks() + "**" })],
                                 prefix = "\uD83D\uDE34"
                         )
 				)

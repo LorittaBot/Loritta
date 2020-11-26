@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Region
@@ -17,15 +17,15 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.DiscordUtils
 
 class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), category = CommandCategory.DISCORD) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.discord.serverinfo.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.discord.serverinfo.description"]
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {
 		return false
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val embed = EmbedBuilder()
 
 		var guild: JsonObject? = null
@@ -42,7 +42,7 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 		if (guild == null) {
 			context.reply(
                     LorittaReply(
-                            message = context.legacyLocale["SERVERINFO_UnknownGuild", context.args[0]],
+                            message = context.locale["commands.discord.serverinfo.unknownGuild", context.args[0]],
                             prefix = Constants.ERROR
                     )
 			)
@@ -71,14 +71,14 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 		embed.setTitle("<:discord:314003252830011395> $name", null) // Nome da Guild
 		embed.addField("💻 ID", id, true) // ID da Guild
 		embed.addField("\uD83D\uDCBB Shard ID", "$shardId — Loritta Cluster ${cluster.id} (`${cluster.name}`)", true)
-		embed.addField("👑 ${context.legacyLocale["SERVERINFO_OWNER"]}", "`${owner?.name}#${owner?.discriminator}` (${ownerId})", true) // Dono da Guild
-		embed.addField("🌎 ${context.legacyLocale["SERVERINFO_REGION"]}", region.getName(), true) // Região da Guild
-		embed.addField("\uD83D\uDCAC ${context.legacyLocale["SERVERINFO_CHANNELS"]} (${textChannelCount + voiceChannelCount})", "\uD83D\uDCDD **${locale["SERVERINFO_CHANNELS_TEXT"]}:** ${textChannelCount}\n\uD83D\uDDE3 **${locale["SERVERINFO_CHANNELS_VOICE"]}:** $voiceChannelCount", true) // Canais da Guild
+		embed.addField("👑 ${context.locale["commands.discord.serverinfo.owner"]}", "`${owner?.name}#${owner?.discriminator}` (${ownerId})", true) // Dono da Guild
+		embed.addField("🌎 ${context.locale["commands.discord.serverinfo.region"]}", region.getName(), true) // Região da Guild
+		embed.addField("\uD83D\uDCAC ${context.locale["commands.discord.serverinfo.channels"]} (${textChannelCount + voiceChannelCount})", "\uD83D\uDCDD **${locale["commands.discord.serverinfo.textChannels"]}:** ${textChannelCount}\n\uD83D\uDDE3 **${locale["commands.discord.serverinfo.voiceChannels"]}:** $voiceChannelCount", true) // Canais da Guild
 		val createdAtDiff = DateUtils.formatDateDiff(timeCreated, locale)
-		embed.addField("\uD83D\uDCC5 ${context.legacyLocale["SERVERINFO_CREATED_IN"]}", "${timeCreated.humanize(locale)} ($createdAtDiff)", true)
+		embed.addField("\uD83D\uDCC5 ${context.locale["commands.discord.serverinfo.createdAt"]}", "${timeCreated.humanize(locale)} ($createdAtDiff)", true)
 		val joinedAtDiff = DateUtils.formatDateDiff(timeJoined, locale)
-		embed.addField("\uD83C\uDF1F ${context.legacyLocale["SERVERINFO_JOINED_IN"]}", "${timeJoined.humanize(locale)} ($joinedAtDiff)", true)
-		embed.addField("👥 ${context.legacyLocale["SERVERINFO_MEMBERS"]} ($memberCount)", "", true) // Membros da Guild
+		embed.addField("\uD83C\uDF1F ${context.locale["commands.discord.serverinfo.joinedAt"]}", "${timeJoined.humanize(locale)} ($joinedAtDiff)", true)
+		embed.addField("👥 ${context.locale["commands.discord.serverinfo.members"]} ($memberCount)", "", true) // Membros da Guild
 
 		context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
 	}

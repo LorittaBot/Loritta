@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
@@ -226,7 +225,7 @@ object AdminUtils {
 
 	fun generateAuditLogMessage(locale: BaseLocale, punisher: User, reason: String) = locale["${LOCALE_PREFIX}.punishedLog", "${punisher.name}#${punisher.discriminator}", reason].substringIfNeeded(0 until 512)
 
-	fun createPunishmentEmbedBuilderSentViaDirectMessage(guild: Guild, locale: LegacyBaseLocale, punisher: User, punishmentAction: String, reason: String): EmbedBuilder {
+	fun createPunishmentEmbedBuilderSentViaDirectMessage(guild: Guild, locale: BaseLocale, punisher: User, punishmentAction: String, reason: String): EmbedBuilder {
 		val embed = EmbedBuilder()
 
 		embed.setTimestamp(Instant.now())
@@ -234,14 +233,14 @@ object AdminUtils {
 
 		embed.setThumbnail(guild.iconUrl)
 		embed.setAuthor(punisher.name + "#" + punisher.discriminator, null, punisher.avatarUrl)
-		embed.setTitle("\uD83D\uDEAB ${locale.toNewLocale()["$LOCALE_PREFIX.youGotPunished", punishmentAction.toLowerCase(), guild.name]}!")
-		embed.addField("\uD83D\uDC6E ${locale.toNewLocale()["$LOCALE_PREFIX.punishedBy"]}", punisher.name + "#" + punisher.discriminator, false)
-		embed.addField("\uD83D\uDCDD ${locale.toNewLocale()["$LOCALE_PREFIX.punishmentReason"]}", reason, false)
+		embed.setTitle("\uD83D\uDEAB ${locale["$LOCALE_PREFIX.youGotPunished", punishmentAction.toLowerCase(), guild.name]}!")
+		embed.addField("\uD83D\uDC6E ${locale["$LOCALE_PREFIX.punishedBy"]}", punisher.name + "#" + punisher.discriminator, false)
+		embed.addField("\uD83D\uDCDD ${locale["$LOCALE_PREFIX.punishmentReason"]}", reason, false)
 
 		return embed
 	}
 
-	fun createPunishmentMessageSentViaDirectMessage(guild: Guild, locale: LegacyBaseLocale, punisher: User, punishmentAction: String, reason: String): MessageEmbed {
+	fun createPunishmentMessageSentViaDirectMessage(guild: Guild, locale: BaseLocale, punisher: User, punishmentAction: String, reason: String): MessageEmbed {
 		return createPunishmentEmbedBuilderSentViaDirectMessage(guild, locale, punisher, punishmentAction, reason).build()
 	}
 

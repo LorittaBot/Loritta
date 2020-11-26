@@ -3,13 +3,13 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.misc.VaporwaveUtils
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class VaporondaCommand : AbstractCommand("vaporonda", listOf("vaporwave"), category = CommandCategory.FUN) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["VAPORONDA_DESCRIPTION"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.fun.vaporwave.description"]
 	}
 
 	override fun getUsage(): String {
@@ -24,7 +24,7 @@ class VaporondaCommand : AbstractCommand("vaporonda", listOf("vaporwave"), categ
 		return mapOf("mensagem" to "A mensagem que você deseja transformar")
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val vaporwave = VaporwaveUtils.vaporwave(context.args.joinToString(" "))
 			context.reply(

@@ -4,14 +4,14 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.TextChannel
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), CommandCategory.ADMIN) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.moderation.lock.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.moderation.lock.description"]
 	}
 	
 	override fun getDiscordPermissions(): List<Permission> {
@@ -26,7 +26,7 @@ class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), Command
 		return listOf(Permission.MANAGE_CHANNEL, Permission.MANAGE_PERMISSIONS)
 	}
 	
-	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		val channel = getTextChannel(context, context.args.getOrNull(0)) ?: context.event.textChannel!! // Já que o comando não será executado via DM, podemos assumir que textChannel nunca será nulo
 		
 		val publicRole = context.guild.publicRole
@@ -46,7 +46,7 @@ class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), Command
 		
 		context.reply(
                 LorittaReply(
-                        locale.toNewLocale()["commands.moderation.lock.denied", context.config.commandPrefix],
+                        locale["commands.moderation.lock.denied", context.config.commandPrefix],
                         "\uD83C\uDF89"
                 )
 		)

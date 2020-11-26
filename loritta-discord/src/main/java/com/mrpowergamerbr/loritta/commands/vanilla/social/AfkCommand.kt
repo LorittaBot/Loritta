@@ -3,16 +3,16 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), CommandCategory.SOCIAL) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["AFK_Description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.social.afk.description"]
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var profile = context.lorittaUser.profile
 
 		if (profile.isAfk) {
@@ -23,7 +23,7 @@ class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), Command
 
 			context.reply(
                     LorittaReply(
-                            message = context.legacyLocale["AFK_AfkOff"],
+                            message = context.locale["commands.social.afk.afkOff"],
                             prefix = "\uD83D\uDC24"
                     )
 			)
@@ -42,7 +42,7 @@ class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), Command
 
 			context.reply(
                     LorittaReply(
-                            message = context.legacyLocale["AFK_AfkOn"],
+                            message = context.locale["commands.social.afk.afkOn"],
                             prefix = "\uD83D\uDE34"
                     )
 			)

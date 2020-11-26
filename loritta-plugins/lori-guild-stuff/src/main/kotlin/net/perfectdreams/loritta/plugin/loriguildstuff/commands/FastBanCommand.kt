@@ -17,8 +17,8 @@ object FastBanCommand {
             "toxic" to "Ser tóxico (irritar e desrespeitar) com outros membros do servidor. Aprenda a respeitar e conviver com outras pessoas!",
             "under13" to "É proibido ter uma conta de Discord caso você tenha menos de 13 anos!",
             "owo" to "Apenas um teste uwu owo",
-            "terms" to "Comercialização de produtos com valores monetários reais em troca de sonhos sem ter aceitado os termos de venda.",
-            "bob" to "Imagine fazer spam dizendo que não é para fazer spam"
+            "terms" to "Comercialização de produtos com valores monetários reais em troca de sonhos.",
+            "bob" to "Imagine fazer spam dizendo que não é para fazer spam."
     )
 
     fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("b", "fastban"), CommandCategory.ADMIN) {
@@ -54,7 +54,7 @@ object FastBanCommand {
                     settings,
                     this.guild,
                     author.user,
-                    loritta.getLegacyLocaleById("default"),
+                    locale,
                     userToBePunished,
                     fancyReason,
                     false,

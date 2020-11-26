@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.dao.ShipEffect
 import com.mrpowergamerbr.loritta.tables.Marriages
 import com.mrpowergamerbr.loritta.tables.ShipEffects
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -25,8 +25,8 @@ import java.util.*
 import javax.imageio.ImageIO
 
 class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.FUN) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.fun.ship.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.fun.ship.description"]
 	}
 
 	override fun getExamples(): List<String> {
@@ -41,7 +41,7 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 		return true
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var user1Name: String? = context.rawArgs.getOrNull(0)
 		var user2Name: String? = context.rawArgs.getOrNull(1)
 		var user1AvatarUrl: String? = context.userHandle.defaultAvatarUrl

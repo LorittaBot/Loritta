@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.extensions.localized
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Member
@@ -19,22 +19,22 @@ import net.perfectdreams.loritta.platform.discord.utils.UserFlagBadgeEmotes.getB
 import net.perfectdreams.loritta.utils.Emotes
 
 class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), CommandCategory.DISCORD) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.discord.userinfo.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.discord.userinfo.description"]
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {
 		return false
 	}
 
-	override suspend fun run(context: CommandContext, locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		var user = context.getUserAt(0)
 
 		if (user == null) {
 			if (context.args.getOrNull(0) != null) {
 				context.reply(
                         LorittaReply(
-                                locale.toNewLocale()["commands.discord.userinfo.unknownUser", context.args[0].stripCodeMarks()],
+                                locale["commands.discord.userinfo.unknownUser", context.args[0].stripCodeMarks()],
                                 Constants.ERROR
                         )
 				)
@@ -89,14 +89,14 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			addField("\uD83D\uDD16 ${context.locale["commands.discord.userinfo.discordTag"]}", "`${user.name}#${user.discriminator}`", true)
 			addField("\uD83D\uDCBB ${context.locale["commands.discord.userinfo.discordId"]}", "`${user.id}`", true)
 
-			val accountCreatedDiff = DateUtils.formatDateDiff(user.timeCreated.toInstant().toEpochMilli(), context.legacyLocale)
+			val accountCreatedDiff = DateUtils.formatDateDiff(user.timeCreated.toInstant().toEpochMilli(), context.locale)
 			addField("\uD83D\uDCC5 ${context.locale["commands.discord.userinfo.accountCreated"]}", accountCreatedDiff, true)
 			if (member != null) {
-				val accountJoinedDiff = DateUtils.formatDateDiff(member.timeJoined.toInstant().toEpochMilli(), context.legacyLocale)
+				val accountJoinedDiff = DateUtils.formatDateDiff(member.timeJoined.toInstant().toEpochMilli(), context.locale)
 				addField("\uD83C\uDF1F ${context.locale["commands.discord.userinfo.accountJoined"]}", accountJoinedDiff, true)
 
 				if (member.timeBoosted != null) {
-					val timeBoosted = DateUtils.formatDateDiff(member.timeBoosted!!.toInstant().toEpochMilli(), context.legacyLocale)
+					val timeBoosted = DateUtils.formatDateDiff(member.timeBoosted!!.toInstant().toEpochMilli(), context.locale)
 					addField("${Emotes.LORI_NITRO_BOOST} ${context.locale["commands.discord.userinfo.boostingSince"]}", timeBoosted, true)
 				}
 			}

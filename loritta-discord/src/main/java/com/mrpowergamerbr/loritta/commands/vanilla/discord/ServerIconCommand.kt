@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -18,15 +18,15 @@ class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "ico
 		private const val LOCALE_PREFIX = "commands.discord.servericon"
 	}
 
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["commands.discord.servericon.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.discord.servericon.description"]
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {
 		return false
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var guild: JsonObject? = null
 
 		var guildId = context.guild.idLong

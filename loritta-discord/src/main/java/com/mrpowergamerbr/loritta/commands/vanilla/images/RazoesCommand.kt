@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaImage
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.ImageFormat
 import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
@@ -21,8 +21,8 @@ import java.io.File
 import javax.imageio.ImageIO
 
 class RazoesCommand : AbstractCommand("reasons", listOf("razões", "razoes"), CommandCategory.IMAGES) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["RAZOES_DESCRIPTION"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.images.reasons.description"]
 	}
 
 	override fun getExamples(): List<String> {
@@ -31,7 +31,7 @@ class RazoesCommand : AbstractCommand("reasons", listOf("razões", "razoes"), Co
 
 	override fun needsToUploadFiles() = true
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
 		var template = readImage(File(Loritta.ASSETS + "reasons.png")) // Template

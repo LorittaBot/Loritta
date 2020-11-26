@@ -11,7 +11,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.encodeToUrl
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.api.EmbedBuilder
@@ -23,15 +23,15 @@ import java.util.*
 class GameJoltCommand : AbstractCommand("gamejolt", category = CommandCategory.FUN) {
 	override fun getBotPermissions() = listOf(Permission.MESSAGE_MANAGE)
 
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["GAMEJOLT_DESCRIPTION"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.fun.gamejolt.description"]
 	}
 
 	override fun getExamples(): List<String> {
 		return Arrays.asList("undertale yellow")
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val embed = EmbedBuilder()
 			val query = context.args.joinToString(" ")
@@ -59,7 +59,7 @@ class GameJoltCommand : AbstractCommand("gamejolt", category = CommandCategory.F
 			}
 			embed.setColor(Color(47, 127, 111))
 			embed.setDescription(format)
-			embed.setTitle("<:gamejolt:362325764181590017> ${context.legacyLocale["YOUTUBE_RESULTS_FOR", query]}")
+			embed.setTitle("<:gamejolt:362325764181590017> ${context.locale["commands.fun.gamejolt.resultsFor", query]}")
 			val mensagem = context.sendMessage(context.getAsMention(true), embed.build())
 
 			mensagem.onReactionAddByAuthor(context) {

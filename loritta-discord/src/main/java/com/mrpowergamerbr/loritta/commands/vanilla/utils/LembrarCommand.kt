@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.tables.Reminders
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
@@ -24,15 +24,15 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 	override fun getUsage(): String {
 		return "tempo mensagem"
 	}
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale.toNewLocale()["${LOCALE_PREFIX}.description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["${LOCALE_PREFIX}.description"]
 	}
 
-	override fun getExamples(locale: LegacyBaseLocale): List<String> {
-		return locale.toNewLocale().getList("${LOCALE_PREFIX}.examples")
+	override fun getExamples(locale: BaseLocale): List<String> {
+		return locale.getList("${LOCALE_PREFIX}.examples")
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (thereIsCommandToProcess(context)) {
 			val message = getMessage(context)
 			if ( message.isAValidListCommand() ) {
@@ -49,20 +49,20 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 		}
 	}
 
-	private fun createReactionAddByAuthor(reply: Message, context: CommandContext, locale: LegacyBaseLocale) {
+	private fun createReactionAddByAuthor(reply: Message, context: CommandContext, locale: BaseLocale) {
 		reply.onReactionAddByAuthor(context) {
 			loritta.messageInteractionCache.remove(reply.idLong)
 			reply.delete().queue()
 			context.reply(
 					LorittaReply(
-							message = locale.toNewLocale()["$LOCALE_PREFIX.cancel"],
+							message = locale["$LOCALE_PREFIX.cancel"],
 							prefix = "\uD83D\uDDD1"
 					)
 			)
 		}
 	}
 
-	private fun createResponseByAuthor(reply: Message, context: CommandContext, message: String, locale: LegacyBaseLocale) {
+	private fun createResponseByAuthor(reply: Message, context: CommandContext, message: String, locale: BaseLocale) {
 		reply.onResponseByAuthor(context) {
 			loritta.messageInteractionCache.remove(reply.idLong)
 			reply.delete().queue()
@@ -82,7 +82,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 			val month = String.format("%02d", calendar[Calendar.MONTH] + 1)
 			val hours = String.format("%02d", calendar[Calendar.HOUR_OF_DAY])
 			val minutes = String.format("%02d", calendar[Calendar.MINUTE])
-			context.sendMessage(context.getAsMention(true) + locale.toNewLocale()["${LOCALE_PREFIX}.success", dayOfMonth, month, calendar[Calendar.YEAR], hours, minutes])
+			context.sendMessage(context.getAsMention(true) + locale["${LOCALE_PREFIX}.success", dayOfMonth, month, calendar[Calendar.YEAR], hours, minutes])
 		}
 	}
 
@@ -97,10 +97,10 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 		}
 	}
 
-	private suspend fun createReply(context: CommandContext, locale: LegacyBaseLocale): Message {
+	private suspend fun createReply(context: CommandContext, locale: BaseLocale): Message {
 		return context.reply(
 				LorittaReply(
-						message = locale.toNewLocale()["${LOCALE_PREFIX}.setHour"],
+						message = locale["${LOCALE_PREFIX}.setHour"],
 						prefix = "⏰"
 				)
 		)
@@ -112,14 +112,14 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 	private fun thereIsCommandToProcess(context: CommandContext) =
 			context.args.isNotEmpty()
 
-	private suspend fun handleReminderList(context: CommandContext, page: Int, locale: LegacyBaseLocale) {
+	private suspend fun handleReminderList(context: CommandContext, page: Int, locale: BaseLocale) {
 		val reminders = loritta.newSuspendedTransaction {
 			Reminder.find { Reminders.userId eq context.userHandle.idLong }.toMutableList()
 		}
 
 		val visReminders = reminders.subList(page * 9, Math.min((page * 9) + 9, reminders.size))
 		val embed = EmbedBuilder()
-		embed.setTitle("<a:lori_notification:394165039227207710> ${locale.toNewLocale()["${LOCALE_PREFIX}.yourReminders"]} (${reminders.size})")
+		embed.setTitle("<a:lori_notification:394165039227207710> ${locale["${LOCALE_PREFIX}.yourReminders"]} (${reminders.size})")
 		embed.setColor(Color(255, 179, 43))
 
 		for ((idx, reminder) in visReminders.withIndex()) {
@@ -157,9 +157,9 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 			}
 
 			embedBuilder.setTitle("<a:lori_notification:394165039227207710> ${reminder.content}".substringIfNeeded(0 until MessageEmbed.TITLE_MAX_LENGTH))
-			embedBuilder.appendDescription("**${locale.toNewLocale()["${LOCALE_PREFIX}.remindAt"]} ** ${reminder.remindAt.humanize(locale)}\n")
-			embedBuilder.appendDescription("**${locale.toNewLocale()["${LOCALE_PREFIX}.createdInGuild"]}** `${guild?.name ?: "Servidor não existe mais..."}`\n")
-			embedBuilder.appendDescription("**${locale.toNewLocale()["${LOCALE_PREFIX}.remindInTextChannel"]}** ${textChannel?.asMention ?: "Canal de texto não existe mais..."}")
+			embedBuilder.appendDescription("**${locale["${LOCALE_PREFIX}.remindAt"]} ** ${reminder.remindAt.humanize(locale)}\n")
+			embedBuilder.appendDescription("**${locale["${LOCALE_PREFIX}.createdInGuild"]}** `${guild?.name ?: "Servidor não existe mais..."}`\n")
+			embedBuilder.appendDescription("**${locale["${LOCALE_PREFIX}.remindInTextChannel"]}** ${textChannel?.asMention ?: "Canal de texto não existe mais..."}")
 			embedBuilder.setColor(Color(255, 179, 43))
 
 			message.clearReactions().queue()
@@ -174,7 +174,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 
 				context.reply(
                         LorittaReply(
-                                locale.toNewLocale()["${LOCALE_PREFIX}.reminderRemoved"],
+                                locale["${LOCALE_PREFIX}.reminderRemoved"],
                                 "\uD83D\uDDD1"
                         )
 				)

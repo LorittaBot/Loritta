@@ -37,7 +37,6 @@ import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandMap
 import net.perfectdreams.loritta.platform.discord.plugin.JVMPluginManager
 import net.perfectdreams.loritta.platform.discord.utils.*
 import net.perfectdreams.loritta.tables.*
-import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.utils.*
 import net.perfectdreams.loritta.utils.config.*
 import net.perfectdreams.loritta.utils.extensions.readImage
@@ -550,6 +549,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
      * @return         the locale on BaseLocale format or, if the locale doesn't exist, the default locale will be loaded
      * @see            LegacyBaseLocale
      */
+    @Deprecated("Please use getLocaleById")
     fun getLegacyLocaleById(localeId: String): LegacyBaseLocale {
         return legacyLocales.getOrDefault(localeId, legacyLocales["default"]!!)
     }

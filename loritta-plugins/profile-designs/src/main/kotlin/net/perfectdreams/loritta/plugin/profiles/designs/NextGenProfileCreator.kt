@@ -6,7 +6,6 @@ import com.mrpowergamerbr.loritta.profile.ProfileCreator
 import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.profile.ProfileUtils
 import net.perfectdreams.loritta.utils.extensions.readImage
@@ -14,10 +13,9 @@ import java.awt.*
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
-import javax.imageio.ImageIO
 
 class NextGenProfileCreator : ProfileCreator("nextGenDark") {
-	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: LegacyBaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
+	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
 		val profileWrapper = readImage(File(Loritta.ASSETS, "profile/next_gen/profile_wrapper.png"))
 
 		val whitneySemiBold = FileInputStream(File(Loritta.ASSETS + "whitney-semibold.ttf")).use {
@@ -56,7 +54,7 @@ class NextGenProfileCreator : ProfileCreator("nextGenDark") {
 				val whitneyMedium20 = whitneyMedium22.deriveFont(20f)
 				graphics.color = Color.WHITE
 				graphics.font = whitneySemiBold16
-				ImageUtils.drawCenteredString(graphics, locale.toNewLocale()["profile.marriedWith"], Rectangle(311, 0, 216, 14), whitneySemiBold16)
+				ImageUtils.drawCenteredString(graphics, locale["profile.marriedWith"], Rectangle(311, 0, 216, 14), whitneySemiBold16)
 				graphics.font = whitneyMedium20
 				ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(311, 0 + 18, 216, 18), whitneyMedium20)
 				graphics.font = whitneySemiBold16
@@ -79,7 +77,7 @@ class NextGenProfileCreator : ProfileCreator("nextGenDark") {
 
 		graphics.color = Color.BLACK
 		graphics.font = oswaldRegular42
-		ImageUtils.drawCenteredString(graphics, locale.toNewLocale()["profile.aboutMe"].toUpperCase(), Rectangle(0, 427, 221, 51), oswaldRegular42)
+		ImageUtils.drawCenteredString(graphics, locale["profile.aboutMe"].toUpperCase(), Rectangle(0, 427, 221, 51), oswaldRegular42)
 		graphics.font = oswaldRegular36
 
 		drawReputations(user, graphics)
@@ -92,7 +90,7 @@ class NextGenProfileCreator : ProfileCreator("nextGenDark") {
 		val biggestStrWidth = drawUserInfo(user, userProfile, guild, graphics)
 
 		graphics.color = Color.BLACK
-		drawMarriageStatus(userProfile, locale.toNewLocale(), graphics)
+		drawMarriageStatus(userProfile, locale, graphics)
 		graphics.color = Color.WHITE
 
 		graphics.font = whitneyMedium22

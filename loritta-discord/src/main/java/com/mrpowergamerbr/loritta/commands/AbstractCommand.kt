@@ -4,12 +4,11 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.extensions.localized
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -40,7 +39,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 			return cooldown > loritta.config.loritta.commands.imageCooldown
 		}
 
-	open fun getDescription(locale: LegacyBaseLocale): String {
+	open fun getDescription(locale: BaseLocale): String {
 		return "Insira descrição do comando aqui!"
 	}
 
@@ -49,7 +48,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 		return null
 	}
 
-	open fun getUsage(locale: LegacyBaseLocale): CommandArguments {
+	open fun getUsage(locale: BaseLocale): CommandArguments {
 		return arguments {}
 	}
 
@@ -59,10 +58,10 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 	@Deprecated("Please use getExamples(locale)")
 	open fun getExamples(): List<String> {
-		return getExamples(loritta.getLegacyLocaleById("default"))
+		return getExamples(loritta.getLocaleById("default"))
 	}
 
-	open fun getExamples(locale: LegacyBaseLocale): List<String> {
+	open fun getExamples(locale: BaseLocale): List<String> {
 		return listOf()
 	}
 
@@ -115,7 +114,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 	 * @param context the context of the command
 	 * @param locale  the language the command should use
 	 */
-	abstract suspend fun run(context: CommandContext, locale: LegacyBaseLocale)
+	abstract suspend fun run(context: CommandContext, locale: BaseLocale)
 
 	/**
 	 * Sends an embed explaining what the command does
@@ -126,9 +125,8 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 		val serverConfig = context.config
 		val user = context.userHandle
 		val locale = context.locale
-		val legacyLocale = context.legacyLocale
 		val discordMessage = context.message
-		val commandDescription = getDescription(legacyLocale)
+		val commandDescription = getDescription(locale)
 
 		val executedCommandLabel = this.label
 		val commandLabel = "${serverConfig.commandPrefix}${executedCommandLabel}"
@@ -140,7 +138,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 				.setFooter("${user.name + "#" + user.discriminator} • ${this.category.getLocalizedName(locale)}", user.effectiveAvatarUrl)
 				.setTimestamp(Instant.now())
 
-		val commandArguments = this.getUsage(legacyLocale)
+		val commandArguments = this.getUsage(locale)
 		val description = buildString {
 			this.append(commandDescription)
 			this.append('\n')
@@ -170,9 +168,9 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 		for (example in this.getExamples()) { // Adicionar todos os exemplos simples
 			examples.add("`" + commandLabel + "`" + if (example.isEmpty()) "" else " **`$example`**")
 		}
-		if (this.getExamples(context.legacyLocale).isNotEmpty()) {
+		if (this.getExamples(locale).isNotEmpty()) {
 			examples.clear()
-			for (example in this.getExamples(context.legacyLocale)) { // Adicionar todos os exemplos simples
+			for (example in this.getExamples(locale)) { // Adicionar todos os exemplos simples
 				examples.add("`" + commandLabel + "`" + if (example.isEmpty()) "" else " **`$example`**")
 			}
 		}

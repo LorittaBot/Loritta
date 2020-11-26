@@ -10,11 +10,9 @@ import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
-import io.ktor.client.call.receive
-import io.ktor.client.request.post
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
-import io.ktor.http.userAgent
+import io.ktor.client.call.*
+import io.ktor.client.request.*
+import io.ktor.http.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.launch
@@ -176,7 +174,7 @@ class CheckReactionsForPrivateSpamListener(val config: StaffLorittaBanConfig) : 
 			if (canBan && whoWillBeBanned != null) {
 				msg.onReactionAddByAuthor(event.userIdLong) {
 					val settings = AdminUtils.retrieveModerationInfo(loritta.getOrCreateServerConfig(event.guild.idLong))
-					BanCommand.ban(settings, event.guild, event.user, loritta.getLegacyLocaleById("default"), whoWillBeBanned.user, "Não é permitido divulgar conteúdos sem que a equipe permita, isto inclui divulgar via mensagem direta para outras pessoas e no seu nome/nickname. Enviar convites na DM é considerado spam e é contra os termos de uso do Discord! ${firstImage.url}", false, 0)
+					BanCommand.ban(settings, event.guild, event.user, loritta.getLocaleById("default"), whoWillBeBanned.user, "Não é permitido divulgar conteúdos sem que a equipe permita, isto inclui divulgar via mensagem direta para outras pessoas e no seu nome/nickname. Enviar convites na DM é considerado spam e é contra os termos de uso do Discord! ${firstImage.url}", false, 0)
 					event.channel.sendMessage("Usuário banido com sucesso! :3").queue()
 				}
 

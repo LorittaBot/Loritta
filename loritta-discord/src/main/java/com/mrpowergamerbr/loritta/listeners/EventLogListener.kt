@@ -122,7 +122,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 							val guildId = it[ServerConfigs.id].value
 							val eventLogChannelId = it[EventLogConfigs.eventLogChannelId]
 
-							val locale = loritta.getLegacyLocaleById(it[ServerConfigs.localeId])
+							val locale = loritta.getLocaleById(it[ServerConfigs.localeId])
 
 							val guild = guilds.first { it.idLong == guildId }
 
@@ -138,8 +138,8 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 								if (!guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_READ))
 									return@forEach
 
-								embed.setDescription("\uD83D\uDDBC ${locale.get("EVENTLOG_AVATAR_CHANGED", event.user.asMention)}")
-								embed.setFooter(locale["EVENTLOG_USER_ID", event.user.id], null)
+								embed.setDescription("\uD83D\uDDBC ${locale["modules.eventLog.avatarChanged", event.user.asMention]}")
+								embed.setFooter(locale["modules.eventLog.userID", event.user.id], null)
 
 								val message = MessageBuilder().append(" ").setEmbed(embed.build())
 
@@ -166,7 +166,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
-			val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
+			val locale = loritta.getLocaleById(serverConfig.localeId)
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(com.mrpowergamerbr.loritta.utils.loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.messageDeleted) {
@@ -190,15 +190,15 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						val embed = WebhookEmbedBuilder()
 						embed.setTimestamp(Instant.now())
-						embed.setFooter(WebhookEmbed.EmbedFooter(locale["EVENTLOG_USER_ID", user.id.toString()], null))
+						embed.setFooter(WebhookEmbed.EmbedFooter(locale["modules.eventLog.userID", user.id.toString()], null))
 						embed.setColor(Color(221, 0, 0).rgb)
 
 						embed.setAuthor(WebhookEmbed.EmbedAuthor(user.name + "#" + user.discriminator, null, user.effectiveAvatarUrl))
 
-						var deletedMessage = "\uD83D\uDCDD ${locale["EVENTLOG_MESSAGE_DELETED", storedMessage.content, "<#${storedMessage.channelId}>"]}"
+						var deletedMessage = "\uD83D\uDCDD ${locale.getList("modules.eventLog.messageDeleted", storedMessage.content, "<#${storedMessage.channelId}>").joinToString("\n")}"
 
 						if (storedMessage.storedAttachments.isNotEmpty()) {
-							deletedMessage += "\n${locale.get("EVENTLOG_MESSAGE_DELETED_UPLOADS")}\n" + storedMessage.storedAttachments.joinToString(separator = "\n")
+							deletedMessage += "\n${locale["modules.eventLog.messageDeletedUploads"]}\n" + storedMessage.storedAttachments.joinToString(separator = "\n")
 						}
 
 						embed.setDescription(deletedMessage)
@@ -231,7 +231,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
-			val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
+			val locale = loritta.getLocaleById(serverConfig.localeId)
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(com.mrpowergamerbr.loritta.utils.loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.messageDeleted) {
@@ -274,7 +274,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						val targetStream = IOUtils.toInputStream(lines.joinToString("\n"), Charset.defaultCharset())
 
-						val deletedMessage = "\uD83D\uDCDD ${locale["EVENTLOG_BulkDeleted"]}"
+						val deletedMessage = "\uD83D\uDCDD ${locale["modules.eventLog.bulkDeleted"]}"
 
 						embed.setDescription(deletedMessage)
 
@@ -327,7 +327,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			if (eventLogConfig.enabled && eventLogConfig.memberBanned) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
-				val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
+				val locale = loritta.getLocaleById(serverConfig.localeId)
 
 				if (!textChannel.canTalk())
 					return@launch
@@ -344,11 +344,11 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				embed.setTimestamp(Instant.now())
 				embed.setColor(Color(35, 209, 96).rgb)
 
-				val message = "\uD83D\uDEAB **${locale["EVENTLOG_Banned", event.user.name]}**"
+				val message = "\uD83D\uDEAB **${locale["modules.eventLog.banned", event.user.name]}**"
 
 				embed.setAuthor(WebhookEmbed.EmbedAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl))
 				embed.setDescription(message)
-				embed.setFooter(WebhookEmbed.EmbedFooter(locale["EVENTLOG_USER_ID", event.user.id], null))
+				embed.setFooter(WebhookEmbed.EmbedFooter(locale["modules.eventLog.userID", event.user.id], null))
 
 				webhook.send(
 						WebhookMessageBuilder()
@@ -388,7 +388,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			if (eventLogConfig.enabled && eventLogConfig.memberUnbanned) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
-				val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
+				val locale = loritta.getLocaleById(serverConfig.localeId)
 				if (!textChannel.canTalk())
 					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
@@ -404,11 +404,11 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				embed.setTimestamp(Instant.now())
 				embed.setColor(Color(35, 209, 96).rgb)
 
-				val message = "\uD83E\uDD1D **${locale["EVENTLOG_Unbanned", event.user.name]}**"
+				val message = "\uD83E\uDD1D **${locale["modules.eventLog.unbanned", event.user.name]}**"
 
 				embed.setAuthor(WebhookEmbed.EmbedAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl))
 				embed.setDescription(message)
-				embed.setFooter(WebhookEmbed.EmbedFooter(locale["EVENTLOG_USER_ID", event.user.id], null))
+				embed.setFooter(WebhookEmbed.EmbedFooter(locale["modules.eventLog.userID", event.user.id], null))
 
 				webhook.send(
 						WebhookMessageBuilder()
@@ -435,7 +435,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(com.mrpowergamerbr.loritta.utils.loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.nicknameChanges) {
-				val locale = loritta.getLegacyLocaleById(serverConfig.localeId)
+				val locale = loritta.getLocaleById(serverConfig.localeId)
 				val embed = WebhookEmbedBuilder()
 				embed.setColor(Color(35, 209, 96).rgb)
 				embed.setTimestamp(Instant.now())
@@ -454,11 +454,11 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				val webhook = EventLog.getOrCreateEventLogWebhook(event.guild, eventLogConfig) ?: return@launch
 
-				val oldNickname = if (event.oldNickname == null) "\uD83E\uDD37 ${locale["EVENTLOG_NoNickname"]}" else event.oldNickname
-				val newNickname = if (event.newNickname == null) "\uD83E\uDD37 ${locale["EVENTLOG_NoNickname"]}" else event.newNickname
+				val oldNickname = if (event.oldNickname == null) "\uD83E\uDD37 ${locale["modules.eventLog.noNickname"]}" else event.oldNickname
+				val newNickname = if (event.newNickname == null) "\uD83E\uDD37 ${locale["modules.eventLog.noNickname"]}" else event.newNickname
 
-				embed.setDescription("\uD83D\uDCDD ${locale["EVENTLOG_NicknameChanged", oldNickname, newNickname]}")
-				embed.setFooter(WebhookEmbed.EmbedFooter(locale["EVENTLOG_USER_ID", event.member.user.id], null))
+				embed.setDescription("\uD83D\uDCDD ${locale.getList("modules.eventLog.nicknameChanged", oldNickname, newNickname).joinToString("\n")}")
+				embed.setFooter(WebhookEmbed.EmbedFooter(locale["modules.eventLog.userID", event.member.user.id], null))
 
 				webhook.send(
 						WebhookMessageBuilder()

@@ -7,7 +7,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
@@ -21,8 +21,8 @@ import java.io.IOException
 import javax.imageio.ImageIO
 
 class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), category = CommandCategory.MUSIC) {
-	override fun getDescription(locale: LegacyBaseLocale): String {
-		return locale["LYRICS_Description"]
+	override fun getDescription(locale: BaseLocale): String {
+		return locale["commands.music.lyrics.description"]
 	}
 
 	override fun getUsage(): String {
@@ -42,7 +42,7 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 		)
 	}
 
-	override suspend fun run(context: CommandContext,locale: LegacyBaseLocale) {
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val args = context.rawArgs
 
 		val joined = args.joinToString(" ")
@@ -62,7 +62,7 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 			if (songInfo == null) {
 				context.reply(
                         LorittaReply(
-                                "${locale["LYRICS_CouldntFind"]} ${locale["ERROR_SorryForTheInconvenience"]} \uD83D\uDE2D",
+                                "${locale["commands.music.lyrics.couldntFind"]} ${locale["commands.music.lyrics.Inconvenience"]} \uD83D\uDE2D",
                                 Constants.ERROR
                         )
 				)
