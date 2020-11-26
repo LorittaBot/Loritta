@@ -79,10 +79,10 @@ class TempoCommand : AbstractCommand("weather", listOf("tempo", "previsão", "pr
 					icon = "\uD83C\uDF2B "
 				}
 
-				embed.setTitle(locale["TEMPO_PREVISAO_PARA", realCityName, countryShort])
+				embed.setTitle(locale.toNewLocale()["commands.utils.weather.forecastFor", realCityName, countryShort])
 				embed.setDescription(icon + description)
 				embed.setColor(Color(0, 210, 255))
-				embed.addField("🌡 ${context.legacyLocale.toNewLocale()["commands.utils.weather.temperature"]}", "**${context.legacyLocale["TEMPO_ATUAL"]}: **$now ºC\n**${context.legacyLocale["TEMPO_MAX"]}: **$max ºC\n**${context.legacyLocale["TEMPO_MIN"]}: **$min ºC", true)
+				embed.addField("🌡 ${context.legacyLocale.toNewLocale()["commands.utils.weather.temperature"]}", "**${context.locale["commands.utils.weather.current"]}: **$now ºC\n**${context.locale["commands.utils.weather.max"]}: **$max ºC\n**${context.locale["commands.utils.weather.min"]}: **$min ºC", true)
 				embed.addField("💦 ${context.legacyLocale.toNewLocale()["commands.utils.weather.humidity"]}", "$humidity%", true)
 				embed.addField("🌬 ${context.legacyLocale.toNewLocale()["commands.utils.weather.windSpeed"]}", "$windSpeed km/h", true)
 				embed.addField("🏋 ${context.legacyLocale.toNewLocale()["commands.utils.weather.airPressure"]}", "$pressure kPA", true)
@@ -90,7 +90,7 @@ class TempoCommand : AbstractCommand("weather", listOf("tempo", "previsão", "pr
 				context.sendMessage(embed.build())
 			} else {
 				// Cidade inexistente!
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.legacyLocale["TEMPO_COULDNT_FIND", cidade])
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["commands.utils.weather.couldntFind", cidade])
 			}
 		} else {
 			this.explain(context)

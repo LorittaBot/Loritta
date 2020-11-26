@@ -39,7 +39,7 @@ class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ct
 				if (pair == null) {
 					context.reply(
 							LorittaReply(
-									message = locale["PACKAGEINFO_COULDNT_FIND", packageId],
+									message = locale.toNewLocale()["commands.utils.packageinfo.couldntFind", packageId],
 									prefix = Constants.ERROR
 							)
 					)
@@ -68,7 +68,7 @@ class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ct
 			} catch (e: Exception) {
 				context.reply(
 						LorittaReply(
-								message = locale["PACKAGEINFO_INVALID", packageId],
+								message = locale.toNewLocale()["commands.utils.packageinfo.invalid", packageId],
 								prefix = Constants.ERROR
 						)
 				)

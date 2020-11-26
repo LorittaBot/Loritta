@@ -38,7 +38,7 @@ class RemoveEmojiCommand : AbstractCommand("removeemoji", listOf("deleteemoji", 
 		if (deletedEmotes != 0) {
 			context.reply(
                     LorittaReply(
-                            locale["REMOVEEMOJI_Success", deletedEmotes, if (deletedEmotes == 1) "emoji" else "emojis"],
+                            locale.toNewLocale()["commands.discord.removeemoji.success", deletedEmotes, if (deletedEmotes == 1) "emoji" else "emojis"],
                             "\uD83D\uDDD1"
                     )
 			)

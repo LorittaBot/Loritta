@@ -56,7 +56,7 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 				// Já está casado!
 				context.reply(
                         LorittaReply(
-                                locale["MARRY_AlreadyMarried", context.config.commandPrefix],
+                                locale.toNewLocale()["commands.social.marry.alreadyMarried", context.config.commandPrefix],
                                 Constants.ERROR
                         )
 				)
@@ -67,7 +67,7 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 				// Já está casado!
 				context.reply(
                         LorittaReply(
-                                locale["MARRY_AlreadyMarriedOther", proposeTo.asMention],
+                                locale.toNewLocale()["commands.social.marry.alreadyMarriedOther", proposeTo.asMention],
                                 Constants.ERROR
                         )
 				)
@@ -79,7 +79,7 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 				val diff = splitCost - context.lorittaUser.profile.money
 				context.reply(
                         LorittaReply(
-                                locale["MARRY_InsufficientFunds", diff],
+                                locale.toNewLocale()["commands.social.marry.insufficientFunds", diff],
                                 Constants.ERROR
                         )
 				)
@@ -91,7 +91,7 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 				val diff = splitCost - proposeToProfile.money
 				context.reply(
                         LorittaReply(
-                                locale["MARRY_InsufficientFundsOther", proposeTo.asMention, diff],
+                                locale.toNewLocale()["commands.social.marry.insufficientFundsOther", proposeTo.asMention, diff],
                                 Constants.ERROR
                         )
 				)
@@ -135,7 +135,7 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 					if (proposeTo.id == loritta.discordConfig.discord.clientId) {
 						context.reply(
                                 LorittaReply(
-                                        locale.toNewLocale()["commands.social.marry.marryLoritta"],
+                                        locale.toNewLocale()["commands.social.marry.loritta"],
                                         "<:smol_lori_putassa:395010059157110785>"
                                 )
 						)
@@ -169,7 +169,7 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 						val diff = splitCost - profile.money
 						context.reply(
                                 LorittaReply(
-                                        locale["MARRY_InsufficientFunds", diff],
+                                        locale.toNewLocale()["commands.social.marry.insufficientFunds", diff],
                                         Constants.ERROR
                                 )
 						)
@@ -181,7 +181,7 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 						val diff = splitCost - proposeToProfile.money
 						context.reply(
                                 LorittaReply(
-                                        locale["MARRY_InsufficientFundsOther", proposeTo.asMention, diff],
+                                        locale.toNewLocale()["commands.social.marry.insufficientFundsOther", proposeTo.asMention, diff],
                                         Constants.ERROR
                                 )
 						)
