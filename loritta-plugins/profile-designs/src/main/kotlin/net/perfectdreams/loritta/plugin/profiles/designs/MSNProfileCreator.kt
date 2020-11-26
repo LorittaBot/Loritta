@@ -120,6 +120,11 @@ class MSNProfileCreator : ProfileCreator("msn") {
 			graphics.drawText(guild.name, 4, 61  + shiftY, 244)
 			graphics.font = whitneySemiBold20
 			if (xpLocal != null) {
+				if (localPosition != null) {
+					graphics.drawText("#$localPosition / $xpLocal XP", 4, 78 + shiftY, 244)
+				} else {
+					graphics.drawText("$xpLocal XP", 4, 78 + shiftY, 244)
+				}
 				graphics.drawText("#${localPosition ?: "???"} / $xpLocal XP", 4, 78 + shiftY, 244)
 			} else {
 				graphics.drawText("???", 4, 78 + shiftY, 244)

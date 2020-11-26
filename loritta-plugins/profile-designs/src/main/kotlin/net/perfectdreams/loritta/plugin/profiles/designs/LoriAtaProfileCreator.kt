@@ -57,7 +57,11 @@ class LoriAtaProfileCreator : ProfileCreator("loriAta") {
 			// Iremos remover os emojis do nome da guild, já que ele não calcula direito no stringWidth
 			userInfo.add(guild.name.replace(Constants.EMOJI_PATTERN.toRegex(), ""))
 			if (xpLocal != null) {
-				userInfo.add("#${localPosition ?: "???"} / $xpLocal XP")
+				if (localPosition != null) {
+					userInfo.add("#$localPosition / $xpLocal XP")
+				} else {
+					userInfo.add("$xpLocal XP")
+				}
 			} else {
 				userInfo.add("???")
 			}
