@@ -18,6 +18,7 @@ class GeneralConfig @JsonCreator constructor(
 		val openWeatherMap: OpenWeatherMapConfig,
 		val googleVision: GoogleVisionKey,
 		val googleRecaptcha: GoogleRecaptcha,
+		val crowdin: CrowdinConfig,
 		val github: GitHubConfig,
 		val twitter: TwitterConfig,
 		val twitch: TwitchConfig,
@@ -32,6 +33,11 @@ class GeneralConfig @JsonCreator constructor(
 		val fortniteApi: FortniteApiConfig,
 		val caches: CacheConfig
 ) {
+
+	class CrowdinConfig @JsonCreator constructor(
+			val url: String
+	)
+
 	class LorittaClusterConfig @JsonCreator constructor(
 			val id: Long,
 			val name: String,

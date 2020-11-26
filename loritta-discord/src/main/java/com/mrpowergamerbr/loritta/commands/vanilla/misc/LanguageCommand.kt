@@ -212,6 +212,11 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak")
                     true
             )
         }
+        embed.addField(
+                locale["commands.misc.language.helpUsTranslate"],
+                loritta.config.crowdin.url,
+                false
+        )
         return embed.build()
     }
 
