@@ -36,7 +36,7 @@ class BrokerPortfolioCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComm
 				val ticker = plugin.tradingApi
 						.getOrRetrieveTicker(tickerId, listOf("lp", "description"))
 
-				val tickerName = plugin.fancyTickerNames[tickerId]
+				val tickerName = plugin.trackedTickerCodes[tickerId]
 
 				val stockCount = totalStockCountById[tickerId] ?: 0
 

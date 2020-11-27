@@ -39,7 +39,7 @@ class BrokerSellStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComm
 				fail(locale["commands.economy.broker.invalidTickerId", locale["commands.economy.brokerBuy.baseExample", serverConfig.commandPrefix]])
 
 			val ticker = plugin.tradingApi
-					.getOrRetrieveTicker(tickerId, listOf("lp", "description"))
+					.getOrRetrieveTicker(tickerId, listOf(LoriBrokerPlugin.SELLING_PRICE_FIELD, "description"))
 
 			if (ticker["current_session"]!!.jsonPrimitive.content != LoriBrokerPlugin.MARKET)
 				fail(locale["commands.economy.broker.outOfSession"])
@@ -67,7 +67,7 @@ class BrokerSellStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComm
 					fail(locale["commands.economy.brokerSell.notEnoughStocks", tickerId])
 
 				val stocksThatWillBeSold = selfStocks.take(number.toInt())
-				val howMuchWillBePaidToTheUser = plugin.convertReaisToSonhos(ticker["lp"]?.jsonPrimitive?.double!!) * number
+				val howMuchWillBePaidToTheUser = plugin.convertReaisToSonhos(ticker[LoriBrokerPlugin.SELLING_PRICE_FIELD]?.jsonPrimitive?.double!!) * number
 
 				val totalEarnings = howMuchWillBePaidToTheUser - stocksThatWillBeSold.sumByLong { it[BoughtStocks.price] }
 

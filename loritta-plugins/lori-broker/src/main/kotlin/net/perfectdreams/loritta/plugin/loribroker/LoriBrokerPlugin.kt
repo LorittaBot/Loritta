@@ -26,32 +26,32 @@ class LoriBrokerPlugin(name: String, loritta: LorittaDiscord) : LorittaDiscordPl
 	val tradingApi: TradingViewRelayConnector
 		get() = _tradingApi ?: throw RuntimeException("TradingView API not started!")
 
-	val validStocksCodes = listOf(
-			"GOLL4", // Gol
-			"AZUL4", // Azul
-			"PETR4", // Petrobras
-			"MGLU3", // Magazine Luiza
-			"VVAR3", // ViaVarejo
-			"LAME4", // Americanas
-			"PCAR3", // Pão de Açúcar
-			"ITUB4", // Itaú
-			"VALE3", // Vale
-			"BIDU34" // Baidu
+	val trackedTickerCodes = mapOf(
+			"GOLL4"  to "Gol",
+			"AZUL4"  to "Azul",
+			"PETR4"  to "Petrobrás",
+			"MGLU3"  to "Magazine Luiza",
+			"VVAR3"  to "Via Varejo",
+			"LAME4"  to "Lojas Americanas",
+			"ITUB4"  to "Itaú Unibanco",
+			"VALE3"  to "Vale S.A.",
+			"BBDC4"  to "Bradesco S.A.",
+			"IRBR3"  to "IRB Brasil S.A",
+			"BBAS3"  to "Banco do Brasil S.A",
+			"CRFB3"  to "Atacadão",
+			"CMIG4"  to "Companhia Energética de Minas Gerais",
+			"IGTA3"  to "Iguatemi Empresa de Shopping Centers",
+			"OIBR3"  to "Oi",
+			"ABEV3"  to "AMBEV",
+			"TSLA34" to "Tesla",
+			"B3SA3"  to "B3",
+			"SBSP3"  to "SABESP",
+			"LWSA3"  to "Locaweb",
+			"CIEL3"  to "Cielo"
 	)
 
-	val fancyTickerNames = mapOf(
-			"GOLL4" to "Gol",
-			"AZUL4" to "Azul",
-			"PETR4" to "Petrobrás",
-			"MELI34" to "MercadoLivre",
-			"MGLU3" to "Magazine Luiza",
-			"VVAR3" to "Via Varejo",
-			"LAME4" to "Lojas Americanas",
-			"PCAR3" to "Pão de Açúcar",
-			"ITUB4" to "Itaú Unibanco",
-			"VALE3" to "Vale S.A.",
-			"BIDU34" to "Baidu"
-	)
+	val validStocksCodes = trackedTickerCodes.keys
+
 	// Only allow one transaction per user to buy/sell stocks at the same time, to avoid synchronization issues
 	val mutexes = Caffeine.newBuilder()
 			.expireAfterAccess(5, TimeUnit.MINUTES)
@@ -95,12 +95,12 @@ class LoriBrokerPlugin(name: String, loritta: LorittaDiscord) : LorittaDiscordPl
 	/**
 	 * Converts reais (from TradingView) to sonhos
 	 *
-	 * The input is multiplied by 10, floor'd and then converted to long
+	 * The input is multiplied by 100, floor'd and then converted to long
 	 * @param input the input in reais
 	 * @return      the value in sonhos
 	 */
 	fun convertReaisToSonhos(input: Double): Long {
-		return floor(input * 10).toLong()
+		return floor(input * 100).toLong()
 	}
 
 	fun getBaseEmbed() = EmbedBuilder()
@@ -114,5 +114,9 @@ class LoriBrokerPlugin(name: String, loritta: LorittaDiscord) : LorittaDiscordPl
 		const val OUT_OF_SESSION = "out_of_session" // Inactive stock
 		const val MARKET = "market" // Active stock, can be bought/sold
 		const val MAX_STOCKS = 100_000L
+
+		const val CURRENT_PRICE_FIELD = "lp"
+		const val SELLING_PRICE_FIELD = "bid"
+		const val BUYING_PRICE_FIELD = "ask"
 	}
 }

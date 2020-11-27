@@ -1,56 +1,28 @@
 package net.perfectdreams.loritta.plugin.loribroker.commands
 
 import com.mrpowergamerbr.loritta.LorittaLauncher
-import com.mrpowergamerbr.loritta.network.Databases
-import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.double
 import kotlinx.serialization.json.jsonPrimitive
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.plugin.loribroker.LoriBrokerPlugin
 import net.perfectdreams.loritta.plugin.loribroker.tables.BoughtStocks
-import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import java.sql.Connection
 
 class BrokerCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractCommandBase(plugin.loritta, plugin.aliases, CommandCategory.ECONOMY) {
 	override fun command() = create {
 		localizedDescription("commands.economy.broker.description")
 
 		executesDiscord {
-			if (this.args.getOrNull(0) == "fix" && this.user.idLong == 123170274651668480L) {
-				newSuspendedTransaction(Dispatchers.IO, Databases.loritta, Connection.TRANSACTION_READ_UNCOMMITTED) {
-					val stuff = SonhosTransaction.select {
-						SonhosTransaction.reason eq SonhosPaymentReason.STOCKS and (SonhosTransaction.receivedBy.isNotNull()) and (SonhosTransaction.givenAt greaterEq 1603475884000L) and (SonhosTransaction.givenAt lessEq 1603475890000L)
-					}.toList()
-
-
-					for (r in stuff) {
-						val profile = LorittaLauncher.loritta._getLorittaProfile(r[SonhosTransaction.receivedBy]!!) ?: continue
-
-						profile.money -= r[SonhosTransaction.quantity].toLong()
-
-						SonhosTransaction.deleteWhere { SonhosTransaction.id eq r[SonhosTransaction.id] }
-					}
-				}
-
-				sendMessage("Fixed!")
-				return@executesDiscord
-			}
-
-			if (this.args.getOrNull(0) == "desdobramento" && this.user.idLong == 123170274651668480L) {
+			if (this.args.getOrNull(0) == "sell_all" && this.user.idLong == 123170274651668480L) {
 				val byUser = mutableMapOf<Long, Long>()
 
 				newSuspendedTransaction {
-					val x = BoughtStocks.select {
-						BoughtStocks.ticker eq "MELI34"
-					}
+					val x = BoughtStocks.selectAll()
 
 					x.forEach {
 						byUser[it[BoughtStocks.user]] = byUser.getOrPut(it[BoughtStocks.user], { 0 }) + it[BoughtStocks.price]
@@ -75,14 +47,20 @@ class BrokerCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractCommandBase(p
 					}
 				}
 
-				sendMessage("Desobramento vendido!")
+				sendMessage("Todas as ações foram vendidas!")
 				return@executesDiscord
 			}
 
 			val stocks = plugin.validStocksCodes.map {
 				plugin.tradingApi.getOrRetrieveTicker(
 						it,
-						listOf("lp", "description", "current_session")
+						listOf(
+								LoriBrokerPlugin.CURRENT_PRICE_FIELD,
+								LoriBrokerPlugin.BUYING_PRICE_FIELD,
+								LoriBrokerPlugin.SELLING_PRICE_FIELD,
+								"description",
+								"current_session"
+						)
 				)
 			}
 
@@ -99,20 +77,23 @@ class BrokerCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractCommandBase(p
 							).joinToString("\n")
 					)
 
-			for (stock in stocks) {
+			// Sorted by the ticker name
+			for (stock in stocks.sortedBy { it["short_name"]!!.jsonPrimitive.content }) {
 				val tickerId = stock["short_name"]!!.jsonPrimitive.content
-				val tickerName = plugin.fancyTickerNames[tickerId]
+				val tickerName = plugin.trackedTickerCodes[tickerId]
 
 				if (stock["current_session"]!!.jsonPrimitive.content != LoriBrokerPlugin.MARKET)
 					embed.addField(
 							"${Emotes.DO_NOT_DISTURB} `${stock["short_name"]?.jsonPrimitive?.content}` ($tickerName)",
-							"${plugin.convertReaisToSonhos(stock["lp"]?.jsonPrimitive?.double!!)} sonhos",
+							"**Preço antes do fechamento:** ${plugin.convertReaisToSonhos(stock[LoriBrokerPlugin.CURRENT_PRICE_FIELD]?.jsonPrimitive?.double!!)} sonhos",
 							true
 					)
 				else
 					embed.addField(
 							"${Emotes.ONLINE} `${stock["short_name"]?.jsonPrimitive?.content}` ($tickerName)",
-							"${plugin.convertReaisToSonhos(stock["lp"]?.jsonPrimitive?.double!!)} sonhos",
+							"""**Compra:**  ${plugin.convertReaisToSonhos(stock[LoriBrokerPlugin.BUYING_PRICE_FIELD]?.jsonPrimitive?.double!!)}
+							  |**Venda:**  ${plugin.convertReaisToSonhos(stock[LoriBrokerPlugin.SELLING_PRICE_FIELD]?.jsonPrimitive?.double!!)}
+							""".trimMargin(),
 							true
 					)
 			}
