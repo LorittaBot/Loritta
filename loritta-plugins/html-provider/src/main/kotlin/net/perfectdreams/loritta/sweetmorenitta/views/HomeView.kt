@@ -2,8 +2,8 @@ package net.perfectdreams.loritta.sweetmorenitta.views
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import kotlinx.html.*
-import net.perfectdreams.loritta.sweetmorenitta.utils.generateAdOrSponsor
 import net.perfectdreams.loritta.sweetmorenitta.utils.generateHowToSponsorButton
+import net.perfectdreams.loritta.sweetmorenitta.utils.generateNitroPayAdOrSponsor
 import net.perfectdreams.loritta.sweetmorenitta.utils.imgSrcSet
 import net.perfectdreams.loritta.sweetmorenitta.views.home.*
 
@@ -106,8 +106,8 @@ class HomeView(
 
         div { id = "about-me" }
         div(classes = "odd-wrapper") {
-            generateAdOrSponsor(0, "8349707350", "Loritta v2 Below Header", true)
-            generateAdOrSponsor(1, "8349707350", "Loritta v2 Below Header", false)
+            generateNitroPayAdOrSponsor(0, "home-below-header1", "Loritta v2 Below Header", true)
+            generateNitroPayAdOrSponsor(1, "home-below-header2", "Loritta v2 Below Header", false)
             generateHowToSponsorButton(locale)
 
             div(classes = "media") {

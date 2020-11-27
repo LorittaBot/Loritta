@@ -5,7 +5,6 @@ import io.ktor.client.*
 import io.ktor.client.engine.js.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import io.ktor.client.statement.HttpResponse
 import io.ktor.http.*
 import kotlinx.browser.document
 import kotlinx.browser.window
@@ -241,6 +240,7 @@ class SpicyMorenitta : Logging {
 				onPageChange(window.location.pathname, null)
 
 				GoogleAdSense.renderAds()
+				NitroPay.renderAds()
 
 				AdvertisementUtils.checkIfUserIsBlockingAds()
 

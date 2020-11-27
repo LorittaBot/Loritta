@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.sweetmorenitta.views.home
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import kotlinx.html.*
-import net.perfectdreams.loritta.sweetmorenitta.utils.generateAd
+import net.perfectdreams.loritta.sweetmorenitta.utils.generateNitroPayAd
 import net.perfectdreams.loritta.sweetmorenitta.utils.imgSrcSet
 import net.perfectdreams.loritta.sweetmorenitta.views.BaseView
 
@@ -10,7 +10,7 @@ fun DIV.notify(locale: BaseLocale) {
     div(classes = "even-wrapper wobbly-bg") {
         style = "text-align: center;"
 
-        generateAd("6600193137", "Loritta v2 Digital Influencers", true)
+        generateNitroPayAd("home-digital-influencers", "Loritta v2 Digital Influencers")
 
         div(classes = "media") {
             div(classes = "media-figure") {

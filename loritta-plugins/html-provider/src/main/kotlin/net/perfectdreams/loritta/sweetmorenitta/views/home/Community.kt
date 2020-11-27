@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.sweetmorenitta.views.home
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import kotlinx.html.*
-import net.perfectdreams.loritta.sweetmorenitta.utils.generateAd
+import net.perfectdreams.loritta.sweetmorenitta.utils.generateNitroPayAd
 import net.perfectdreams.loritta.sweetmorenitta.utils.imgSrcSet
 import net.perfectdreams.loritta.sweetmorenitta.views.BaseView
 
@@ -10,7 +10,8 @@ fun DIV.community(locale: BaseLocale) {
     div(classes = "even-wrapper wobbly-bg") {
         style = "text-align: center;"
 
-        generateAd("8109140955", "Loritta v2 Community", true)
+        generateNitroPayAd("home-community", "Loritta v2 Community")
+        // generateAd("8109140955", "Loritta v2 Community", true)
         // generateAd("8109140955", "Loritta v2 Community", false)
 
         div(classes = "media") {

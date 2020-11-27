@@ -115,8 +115,26 @@ window.addEventListener('load', function () {
                     script(src = "${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/assets/js/app.js?hash=${assetHash("assets/js/app.js")}") {}
                 }
 
+                // Google AdSense
                 script(src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js") {}
+
+                // Google ReCAPTCHA
                 script(src = "https://www.google.com/recaptcha/api.js?render=explicit&onload=onGoogleRecaptchaLoadCallback") {}
+
+                // NitroPay
+                unsafe {
+                    raw("""
+<script type="text/javascript">
+  window["nitroAds"] = window["nitroAds"] || {
+    createAd: function() {
+      window.nitroAds.queue.push(["createAd", arguments]);
+    },
+    queue: []
+  };
+</script>
+<script async src="https://s.nitropay.com/ads-595.js"></script>
+                    """.trimIndent())
+                }
 
                 for ((websiteLocaleId, localeName) in listOf("br" to "pt-BR", "us" to "en", "es" to "es", "pt" to "pt")) {
                     link {

@@ -35,6 +35,19 @@ fun DIV.imgSrcSet(filePath: String, sizes: String, srcset: String, block : IMG.(
     }
 }
 
+fun DIV.generateNitroPayAdOrSponsor(sponsorId: Int, adSlot: String, adName: String? = null, showIfSponsorIsMissing: Boolean = true, showOnMobile: Boolean = true)
+        = generateNitroPayAdOrSponsor(loritta.sponsors, sponsorId, adSlot, adName, showIfSponsorIsMissing)
+
+fun DIV.generateNitroPayAdOrSponsor(sponsors: List<Sponsor>, sponsorId: Int, adSlot: String, adName: String? = null, showIfSponsorIsMissing: Boolean = true, showOnMobile: Boolean = true) {
+    val sponsor = sponsors.getOrNull(sponsorId)
+
+    if (sponsor != null) {
+        generateSponsor(sponsor)
+    } else if (showIfSponsorIsMissing) {
+        generateNitroPayAd(adSlot, adName)
+    }
+}
+
 fun DIV.generateAdOrSponsor(sponsorId: Int, adSlot: String, adName: String? = null, showIfSponsorIsMissing: Boolean = true, showOnMobile: Boolean = true)
         = generateAdOrSponsor(loritta.sponsors, sponsorId, adSlot, adName, showIfSponsorIsMissing)
 
@@ -44,7 +57,7 @@ fun DIV.generateAdOrSponsor(sponsors: List<Sponsor>, sponsorId: Int, adSlot: Str
     if (sponsor != null) {
         generateSponsor(sponsor)
     } else if (showIfSponsorIsMissing) {
-        generateAd(adSlot, adName, showIfSponsorIsMissing)
+        generateAd(adSlot, adName, showOnMobile)
     }
 }
 
@@ -110,6 +123,15 @@ fun DIV.generateAd(adSlot: String, adName: String? = null, showOnMobile: Boolean
             unsafe {
                 raw("(adsbygoogle = window.adsbygoogle || []).push({});")
             }
+        }
+    }
+}
+
+fun DIV.generateNitroPayAd(adId: String, adName: String? = null) {
+    // O "adName" não é utilizado para nada, só está aí para que fique mais fácil de analisar aonde está cada ad (caso seja necessário)
+    div(classes = "centralized-ad") {
+        div(classes = "nitropay-ad") {
+            id = adId
         }
     }
 }

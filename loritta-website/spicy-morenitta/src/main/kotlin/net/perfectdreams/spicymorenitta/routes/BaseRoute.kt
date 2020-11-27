@@ -1,5 +1,11 @@
 package net.perfectdreams.spicymorenitta.routes
 
+import kotlinx.browser.document
+import kotlinx.browser.window
+import kotlinx.dom.addClass
+import kotlinx.dom.clear
+import kotlinx.dom.hasClass
+import kotlinx.dom.removeClass
 import kotlinx.html.DIV
 import kotlinx.html.div
 import kotlinx.html.dom.append
@@ -8,17 +14,8 @@ import kotlinx.html.js.i
 import kotlinx.html.js.onClickFunction
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
-import net.perfectdreams.spicymorenitta.utils.GoogleAdSense
-import net.perfectdreams.spicymorenitta.utils.Logging
-import net.perfectdreams.spicymorenitta.utils.select
-import net.perfectdreams.spicymorenitta.utils.selectAll
+import net.perfectdreams.spicymorenitta.utils.*
 import org.w3c.dom.*
-import kotlinx.browser.document
-import kotlinx.browser.window
-import kotlinx.dom.addClass
-import kotlinx.dom.clear
-import kotlinx.dom.hasClass
-import kotlinx.dom.removeClass
 import kotlin.math.max
 
 abstract class BaseRoute(val path: String) : Logging {
@@ -155,6 +152,7 @@ abstract class BaseRoute(val path: String) : Logging {
             }
 
             GoogleAdSense.renderAds()
+            NitroPay.renderAds()
 
             SpicyMorenitta.INSTANCE.setUpLinkPreloader()
             SpicyMorenitta.INSTANCE.setUpLazyLoad()
