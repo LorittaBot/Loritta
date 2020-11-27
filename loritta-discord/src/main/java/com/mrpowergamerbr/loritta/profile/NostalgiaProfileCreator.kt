@@ -27,6 +27,7 @@ open class NostalgiaProfileCreator(internalName: String, val folderName: String)
 	class NostalgiaGreenProfileCreator : NostalgiaProfileCreator("defaultGreen", "green")
 	class NostalgiaPurpleProfileCreator : NostalgiaProfileCreator("defaultPurple", "purple")
 	class NostalgiaPinkProfileCreator : NostalgiaProfileCreator("defaultPink", "pink")
+	class NostalgiaYellowProfileCreator : NostalgiaProfileCreator("defaultYellow", "yellow")
 	class NostalgiaOrangeProfileCreator : NostalgiaProfileCreator("defaultOrange", "orange")
 
 	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {

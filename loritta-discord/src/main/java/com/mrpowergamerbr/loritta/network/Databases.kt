@@ -11,11 +11,6 @@ import java.sql.Connection
 
 object Databases {
 	val hikariConfigLoritta by lazy {
-		// Exposed 0.28.1 changed the transaction isolation level to Connection.TRANSACTION_READ_COMMITED
-		// So we switch back to our good old reliable TRANSACTION_REPETABLE_READ to *trigger* concurrent update exceptions.
-		// Because we don't want our stuff to be overwritten by other concurrent queries!
-		TransactionManager.manager.defaultIsolationLevel = Connection.TRANSACTION_REPEATABLE_READ
-
 		val loritta = com.mrpowergamerbr.loritta.utils.loritta
 
 		val applicationName = loritta.lorittaCluster.getUserAgent()
@@ -70,5 +65,14 @@ object Databases {
 		return@lazy config
 	}
 	val dataSourceLoritta by lazy { HikariDataSource(hikariConfigLoritta) }
-	val loritta by lazy { Database.connect(dataSourceLoritta) }
+	val loritta by lazy {
+		val database = Database.connect(dataSourceLoritta)
+
+		// Exposed 0.28.1 changed the transaction isolation level to Connection.TRANSACTION_READ_COMMITED
+		// So we switch back to our good old reliable TRANSACTION_REPETABLE_READ to *trigger* concurrent update exceptions.
+		// Because we don't want our stuff to be overwritten by other concurrent queries!
+		TransactionManager.manager.defaultIsolationLevel = Connection.TRANSACTION_REPEATABLE_READ
+
+		database
+	}
 }
