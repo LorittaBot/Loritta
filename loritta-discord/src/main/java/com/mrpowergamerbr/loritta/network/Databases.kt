@@ -5,10 +5,17 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import net.perfectdreams.loritta.utils.NetAddressUtils
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.transactions.TransactionManager
 import java.io.File
+import java.sql.Connection
 
 object Databases {
 	val hikariConfigLoritta by lazy {
+		// Exposed 0.28.1 changed the transaction isolation level to Connection.TRANSACTION_READ_COMMITED
+		// So we switch back to our good old reliable TRANSACTION_REPETABLE_READ to *trigger* concurrent update exceptions.
+		// Because we don't want our stuff to be overwritten by other concurrent queries!
+		TransactionManager.manager.defaultIsolationLevel = Connection.TRANSACTION_REPEATABLE_READ
+
 		val loritta = com.mrpowergamerbr.loritta.utils.loritta
 
 		val applicationName = loritta.lorittaCluster.getUserAgent()
