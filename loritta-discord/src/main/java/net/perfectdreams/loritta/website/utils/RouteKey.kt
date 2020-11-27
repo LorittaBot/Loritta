@@ -5,4 +5,5 @@ object RouteKey {
     const val HOME = "home"
     const val USER_REPUTATION = "user_reputation"
     const val DONATE = "donate"
+    const val DAILY = "daily"
 }
