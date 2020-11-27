@@ -107,7 +107,7 @@ class HomeView(
         div { id = "about-me" }
         div(classes = "odd-wrapper") {
             generateNitroPayAdOrSponsor(0, "home-below-header1", "Loritta v2 Below Header", true)
-            generateNitroPayAdOrSponsor(1, "home-below-header2", "Loritta v2 Below Header", false)
+            generateNitroPayAdOrSponsor(1, "home-below-header2", "Loritta v2 Below Header", true)
             generateHowToSponsorButton(locale)
 
             div(classes = "media") {

@@ -11,7 +11,7 @@ fun DIV.funnyCommands(locale: BaseLocale, websiteUrl: String) {
         id = "fun-section"
 
         generateNitroPayAdOrSponsor(2, "home-funny-commands1", "Loritta v2 Funny Commands", true)
-        generateNitroPayAdOrSponsor(3, "home-funny-commands2", "Loritta v2 Funny Commands", false)
+        generateNitroPayAdOrSponsor(3, "home-funny-commands2", "Loritta v2 Funny Commands", true)
 
         /* div(classes = "funny-commands") {
         div {
@@ -68,7 +68,7 @@ fun DIV.funnyCommandsBrasil(locale: BaseLocale, websiteUrl: String) {
         id = "fun-section"
 
         generateNitroPayAdOrSponsor(2, "home-funny-commands-brazil1", "Loritta v2 Funny Commands", true)
-        generateNitroPayAdOrSponsor(3, "home-funny-commands-brazil2", "Loritta v2 Funny Commands", false)
+        generateNitroPayAdOrSponsor(3, "home-funny-commands-brazil2", "Loritta v2 Funny Commands", true)
 
         /* div(classes = "funny-commands") {
         div {
