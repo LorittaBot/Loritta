@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.RestAction
+import net.dv8tion.jda.api.requests.restaction.MessageAction
 
 suspend fun <T> RestAction<T>.await() : T = this.submit().await()
 
@@ -242,6 +243,21 @@ fun RestAction<Message>.queueAfterWithMessagePerSecondTargetAndClusterLoadBalanc
 			sentMessages / Math.max(1, targetMessagesPerSecond - loritta.config.clusters.size.toLong()),
 			java.util.concurrent.TimeUnit.SECONDS
 	)
+}
+
+/**
+ * Make the message a reply to the referenced message.
+ *
+ * This checks if the bot has [net.dv8tion.jda.api.Permission.MESSAGE_HISTORY] and, if it has, the message is referenced.
+ *
+ * @param message The target message
+ *
+ * @return Updated MessageAction for chaining convenience
+ */
+suspend fun MessageAction.referenceIfPossible(message: Message): MessageAction {
+	if (message.isFromGuild && !message.guild.selfMember.hasPermission(message.textChannel, Permission.MESSAGE_HISTORY))
+		return this
+	return this.reference(message)
 }
 
 fun Permission.localized(locale: BaseLocale): String {

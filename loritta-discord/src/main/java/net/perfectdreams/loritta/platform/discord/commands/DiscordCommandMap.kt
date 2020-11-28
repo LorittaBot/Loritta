@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.localized
+import com.mrpowergamerbr.loritta.utils.extensions.referenceIfPossible
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
@@ -136,7 +137,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 							)
 							if (generatedMessage != null)
 								ev.textChannel.sendMessage(generatedMessage)
-										.reference(ev.message)
+										.referenceIfPossible(ev.message)
 										.queue()
 						}
 					}
@@ -393,7 +394,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 
 				if (ev.isFromType(ChannelType.PRIVATE) || (ev.isFromType(ChannelType.TEXT) && ev.textChannel != null && ev.textChannel.canTalk()))
 					ev.channel.sendMessage(reply)
-							.reference(ev.message)
+							.referenceIfPossible(ev.message)
 							.queue()
 
 				return true

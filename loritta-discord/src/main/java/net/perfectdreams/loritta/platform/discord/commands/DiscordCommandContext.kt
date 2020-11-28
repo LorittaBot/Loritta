@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.localized
+import com.mrpowergamerbr.loritta.utils.extensions.referenceIfPossible
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -56,7 +57,7 @@ class DiscordCommandContext(
 	suspend fun sendMessage(message: Message): Message {
 		if (isPrivateChannel || discordMessage.textChannel.canTalk()) {
 			return discordMessage.channel.sendMessage(message)
-					.reference(discordMessage)
+					.referenceIfPossible(discordMessage)
 					.await()
 		} else {
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
@@ -67,7 +68,7 @@ class DiscordCommandContext(
 		return DiscordMessage(
 				discordMessage.channel.sendMessage(LorittaMessage(content).content)
 						.addFile(image.toByteArray(), fileName)
-						.reference(discordMessage)
+						.referenceIfPossible(discordMessage)
 						.await()
 		)
 	}
@@ -76,7 +77,7 @@ class DiscordCommandContext(
 		return DiscordMessage(
 				discordMessage.channel.sendMessage(LorittaMessage(content).content)
 						.addFile(byteArray, fileName)
-						.reference(discordMessage)
+						.referenceIfPossible(discordMessage)
 						.await()
 		)
 	}
@@ -89,7 +90,7 @@ class DiscordCommandContext(
 						.build()
 		)
 				.addFile(file, fileName)
-				.reference(discordMessage)
+				.referenceIfPossible(discordMessage)
 				.await()
 		)
 	}
@@ -102,7 +103,7 @@ class DiscordCommandContext(
 						.build()
 		)
 				.addFile(inputStream, fileName)
-				.reference(discordMessage)
+				.referenceIfPossible(discordMessage)
 				.await()
 		)
 	}
@@ -401,7 +402,7 @@ class DiscordCommandContext(
 				.setEmbed(embed.build())
 
 		discordMessage.channel.sendMessage(messageBuilder.build())
-				.reference(discordMessage)
+				.referenceIfPossible(discordMessage)
 				.await()
 	}
 }

@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.referenceIfPossible
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
@@ -124,7 +125,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 	suspend fun sendMessage(message: Message): Message {
 		if (isPrivateChannel || event.textChannel!!.canTalk()) {
 			return event.channel.sendMessage(message)
-					.reference(event.message)
+					.referenceIfPossible(event.message)
 					.await()
 		} else {
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
@@ -205,7 +206,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 		if (isPrivateChannel || event.textChannel!!.canTalk()) {
 			val sentMessage = event.channel.sendMessage(message)
 					.addFile(inputStream, name)
-					.reference(event.message)
+					.referenceIfPossible(event.message)
 					.await()
 			return sentMessage
 		} else {

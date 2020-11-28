@@ -25,6 +25,7 @@ import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.localized
+import com.mrpowergamerbr.loritta.utils.extensions.referenceIfPossible
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
@@ -324,7 +325,7 @@ class CommandManager(loritta: Loritta) {
 								)
 								if (generatedMessage != null)
 									ev.textChannel.sendMessage(generatedMessage)
-											.reference(ev.message)
+											.referenceIfPossible(ev.message)
 											.queue()
 							}
 						}
@@ -413,7 +414,7 @@ class CommandManager(loritta: Loritta) {
 							message += " ${reparsedLegacyLocale["commands.loriMissingPermissionCanConfigure", loritta.instanceConfig.loritta.website.url]}"
 						}
 						ev.textChannel.sendMessage(Constants.ERROR + " **|** ${ev.member.asMention} $message")
-								.reference(ev.message)
+								.referenceIfPossible(ev.message)
 								.queue()
 						return true
 					}
@@ -560,7 +561,7 @@ class CommandManager(loritta: Loritta) {
 
 				if (ev.isFromType(ChannelType.PRIVATE) || (ev.isFromType(ChannelType.TEXT) && ev.textChannel != null && ev.textChannel.canTalk()))
 					ev.channel.sendMessage(reply)
-							.reference(ev.message)
+							.referenceIfPossible(ev.message)
 							.queue()
 				return true
 			}
