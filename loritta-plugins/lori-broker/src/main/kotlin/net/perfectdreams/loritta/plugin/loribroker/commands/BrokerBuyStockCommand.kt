@@ -5,6 +5,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.double
 import kotlinx.serialization.json.jsonPrimitive
+import mu.KotlinLogging
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
@@ -17,6 +18,10 @@ import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.select
 
 class BrokerBuyStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractCommandBase(plugin.loritta, plugin.aliases.flatMap { listOf("$it buy", "$it comprar") }, CommandCategory.ECONOMY) {
+	companion object {
+		private val logger = KotlinLogging.logger {}
+	}
+
 	override fun command() = create {
 		localizedDescription("commands.economy.brokerBuy.description")
 
@@ -65,6 +70,7 @@ class BrokerBuyStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComma
 			val now = System.currentTimeMillis()
 
 			mutex.withLock {
+				logger.info { "User ${this.user.idLong} is trying to buy $number $tickerId for $quantity" }
 				loritta.newSuspendedTransaction {
 					val currentStockCount = BoughtStocks.select {
 						BoughtStocks.user eq user.idLong
@@ -90,6 +96,7 @@ class BrokerBuyStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComma
 							givenBy = user.idLong
 					)
 				}
+				logger.info { "User ${this.user.idLong} bought $number $tickerId for $quantity" }
 			}
 
 			reply(

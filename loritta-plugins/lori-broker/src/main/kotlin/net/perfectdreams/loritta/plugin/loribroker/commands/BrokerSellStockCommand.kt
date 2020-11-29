@@ -5,6 +5,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.double
 import kotlinx.serialization.json.jsonPrimitive
+import mu.KotlinLogging
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
@@ -20,6 +21,10 @@ import org.jetbrains.kotlin.utils.addToStdlib.sumByLong
 import kotlin.math.abs
 
 class BrokerSellStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractCommandBase(plugin.loritta, plugin.aliases.flatMap { listOf("$it sell", "$it vender") }, CommandCategory.ECONOMY) {
+	companion object {
+		private val logger = KotlinLogging.logger {}
+	}
+
 	override fun command() = create {
 		localizedDescription("commands.economy.brokerSell.description")
 
@@ -57,6 +62,8 @@ class BrokerSellStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComm
 				fail(locale["commands.economy.brokerSell.zeroValue"], Constants.ERROR)
 
 			mutex.withLock {
+				logger.info { "User ${this.user.idLong} is trying to sell $number $tickerId for $quantity" }
+
 				val selfStocks = loritta.newSuspendedTransaction {
 					BoughtStocks.select {
 						BoughtStocks.user eq user.idLong and (BoughtStocks.ticker eq tickerId)
@@ -92,6 +99,8 @@ class BrokerSellStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComm
 							receivedBy = user.idLong
 					)
 				}
+
+				logger.info { "User ${this.user.idLong} sold $number $tickerId for $quantity" }
 
 				reply(
 						LorittaReply(
