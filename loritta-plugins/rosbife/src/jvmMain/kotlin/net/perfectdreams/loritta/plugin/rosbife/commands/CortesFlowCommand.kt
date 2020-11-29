@@ -36,7 +36,7 @@ class CortesFlowCommand(
 
         executesDiscord {
             if (args.isEmpty()) {
-                val result = loritta.http.get<String>("https://gabriela-canary.loritta.website/api/v1/images/cortes-flow")
+                val result = loritta.http.get<String>("https://gabriela.loritta.website/api/v1/images/cortes-flow")
 
                 val elements = Json.parseToJsonElement(result)
                         .jsonArray
@@ -84,7 +84,7 @@ class CortesFlowCommand(
                     .drop(1)
                     .joinToString(" ")
 
-            val response = loritta.http.post<HttpResponse>("https://gabriela-canary.loritta.website/api/v1/images/cortes-flow/$type") {
+            val response = loritta.http.post<HttpResponse>("https://gabriela.loritta.website/api/v1/images/cortes-flow/$type") {
                 body = buildJsonObject {
                     putJsonArray("strings") {
                         addJsonObject {
