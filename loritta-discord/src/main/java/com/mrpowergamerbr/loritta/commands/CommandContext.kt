@@ -5,10 +5,7 @@ import club.minnced.discord.webhook.send.WebhookMessage
 import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
-import com.mrpowergamerbr.loritta.utils.ImageUtils
-import com.mrpowergamerbr.loritta.utils.LorittaUser
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.referenceIfPossible
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -242,7 +239,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 		if (this.rawArgs.size > argument) { // Primeiro iremos verificar se existe uma imagem no argumento especificado
 			val link = this.rawArgs[argument] // Ok, será que isto é uma URL?
 
-			if (LorittaUtils.isValidUrl(link))
+			if (LorittaUtils.isValidUrl(link) && loritta.connectionManager.isTrusted(link))
 				return link // Se é um link, vamos enviar para o usuário agora
 
 			// Vamos verificar por usuários no argumento especificado
@@ -256,6 +253,15 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 				if (link.equals(emote.asMention, ignoreCase = true)) {
 					return emote.imageUrl
 				}
+			}
+
+			for (embed in this.message.embeds) {
+				if (embed.image != null && loritta.connectionManager.isTrusted(embed.image!!.url!!))
+					return embed.image!!.url
+			}
+			for (attachment in this.message.attachments) {
+				if (attachment.isImage && loritta.connectionManager.isTrusted(attachment.url))
+					return attachment.url
 			}
 
 			// Se não é nada... então talvez seja um emoji padrão do Discordão!
@@ -272,15 +278,17 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 		}
 
 		// Nothing found? Try retrieving the replied message content
-		val referencedMessage = message.referencedMessage
-		if (referencedMessage != null) {
-			for (embed in referencedMessage.embeds) {
-				if (embed.image != null)
-					return embed.image!!.url
-			}
-			for (attachment in referencedMessage.attachments) {
-				if (attachment.isImage)
-					return attachment.url
+		if (!this.isPrivateChannel && this.guild.selfMember.hasPermission(this.event.textChannel!!, Permission.MESSAGE_HISTORY)) {
+			val referencedMessage = message.referencedMessage
+			if (referencedMessage != null) {
+				for (embed in referencedMessage.embeds) {
+					if (embed.image != null && loritta.connectionManager.isTrusted(embed.image!!.url!!))
+						return embed.image!!.url
+				}
+				for (attachment in referencedMessage.attachments) {
+					if (attachment.isImage && loritta.connectionManager.isTrusted(attachment.url))
+						return attachment.url
+				}
 			}
 		}
 
@@ -291,12 +299,12 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 
 				attach@ for (msg in message) {
 					for (embed in msg.embeds) {
-						if (embed.image != null) {
+						if (embed.image != null && loritta.connectionManager.isTrusted(embed.image!!.url!!)) {
 							return embed.image!!.url
 						}
 					}
 					for (attachment in msg.attachments) {
-						if (attachment.isImage) {
+						if (attachment.isImage && loritta.connectionManager.isTrusted(attachment.url)) {
 							return attachment.url
 						}
 					}

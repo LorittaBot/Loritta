@@ -121,7 +121,7 @@ class DiscordCommandContext(
 		if (this.args.size > argument) { // Primeiro iremos verificar se existe uma imagem no argumento especificado
 			val link = this.args[argument] // Ok, será que isto é uma URL?
 
-			if (LorittaUtils.isValidUrl(link)) {
+			if (LorittaUtils.isValidUrl(link) && com.mrpowergamerbr.loritta.utils.loritta.connectionManager.isTrusted(link)) {
 				// Workaround for direct prnt.sc image links (Lightshot is trash but a lot of people use it)
 				if (link.contains("prnt.sc")) {
 					val document = withContext(Dispatchers.IO) { Jsoup.connect(link).get() }
@@ -148,11 +148,11 @@ class DiscordCommandContext(
 			}
 
 			for (embed in discordMessage.embeds) {
-				if (embed.image != null)
+				if (embed.image != null && com.mrpowergamerbr.loritta.utils.loritta.connectionManager.isTrusted(embed.image!!.url!!))
 					return embed.image!!.url
 			}
 			for (attachment in discordMessage.attachments) {
-				if (attachment.isImage)
+				if (attachment.isImage && com.mrpowergamerbr.loritta.utils.loritta.connectionManager.isTrusted(attachment.url))
 					return attachment.url
 			}
 
@@ -170,15 +170,17 @@ class DiscordCommandContext(
 		}
 
 		// Nothing found? Try retrieving the replied message content
-		val referencedMessage = discordMessage.referencedMessage
-		if (referencedMessage != null) {
-			for (embed in referencedMessage.embeds) {
-				if (embed.image != null)
-					return embed.image!!.url
-			}
-			for (attachment in referencedMessage.attachments) {
-				if (attachment.isImage)
-					return attachment.url
+		if (!this.isPrivateChannel && this.guild.selfMember.hasPermission(this.discordMessage.textChannel, Permission.MESSAGE_HISTORY)) {
+			val referencedMessage = discordMessage.referencedMessage
+			if (referencedMessage != null) {
+				for (embed in referencedMessage.embeds) {
+					if (embed.image != null && com.mrpowergamerbr.loritta.utils.loritta.connectionManager.isTrusted(embed.image!!.url!!))
+						return embed.image!!.url
+				}
+				for (attachment in referencedMessage.attachments) {
+					if (attachment.isImage && com.mrpowergamerbr.loritta.utils.loritta.connectionManager.isTrusted(attachment.url))
+						return attachment.url
+				}
 			}
 		}
 
@@ -190,11 +192,11 @@ class DiscordCommandContext(
 
 				attach@ for (msg in message) {
 					for (embed in msg.embeds) {
-						if (embed.image != null)
+						if (embed.image != null && com.mrpowergamerbr.loritta.utils.loritta.connectionManager.isTrusted(embed.image!!.url!!))
 							return embed.image!!.url
 					}
 					for (attachment in msg.attachments) {
-						if (attachment.isImage)
+						if (attachment.isImage && com.mrpowergamerbr.loritta.utils.loritta.connectionManager.isTrusted(attachment.url))
 							return attachment.url
 					}
 				}
