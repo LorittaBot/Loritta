@@ -131,7 +131,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			if (howMuch.toBigDecimal() > balanceQuantity) {
 				context.reply(
                         LorittaReply(
-                                locale["commands.economy.pay..insufficientFunds", if (economySource == "global") locale["economy.currency.name.plural"] else economyConfig?.economyNamePlural],
+                                locale["commands.economy.pay.insufficientFunds", if (economySource == "global") locale["economy.currency.name.plural"] else economyConfig?.economyNamePlural],
                                 Constants.ERROR
                         )
 				)
