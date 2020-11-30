@@ -558,11 +558,11 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         statement.invoke(this)
     }
 
-    suspend fun <T> newSuspendedTransaction(repetitions: Int = 5, statement: org.jetbrains.exposed.sql.Transaction.() -> T): T {
+    suspend fun <T> newSuspendedTransaction(repetitions: Int = 5, transactionIsolation: Int? = null, statement: org.jetbrains.exposed.sql.Transaction.() -> T): T {
         var lastException: Exception? = null
         for (i in 1..repetitions) {
             try {
-                return org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction(Dispatchers.IO, Databases.loritta) {
+                return org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction(Dispatchers.IO, Databases.loritta, transactionIsolation) {
                     statement.invoke(this)
                 }
             } catch (e: ExposedSQLException) {

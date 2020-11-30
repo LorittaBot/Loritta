@@ -24,6 +24,8 @@ import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.loritta.utils.metrics.Prometheus
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.transactions.transaction
+import java.sql.Connection
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
 
@@ -316,9 +318,12 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 				if (ev.guild != null && (LorittaUtils.isGuildOwnerBanned(lorittaUser._profile, ev.guild) || LorittaUtils.isGuildBanned(ev.guild)))
 					return true
 
-				loritta.newSuspendedTransaction {
+				// We don't care about locking the row just to update the sent at field
+				loritta.newSuspendedTransaction(transactionIsolation = Connection.TRANSACTION_READ_UNCOMMITTED) {
 					lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
+				}
 
+				loritta.newSuspendedTransaction {
 					ExecutedCommandsLog.insert {
 						it[userId] = lorittaUser.user.idLong
 						it[ExecutedCommandsLog.guildId] = if (ev.message.isFromGuild) ev.message.guild.idLong else null

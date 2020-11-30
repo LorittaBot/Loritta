@@ -41,6 +41,7 @@ import net.perfectdreams.loritta.utils.metrics.Prometheus
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
+import java.sql.Connection
 import java.util.*
 import java.util.concurrent.CancellationException
 import java.util.jar.JarFile
@@ -492,9 +493,12 @@ class CommandManager(loritta: Loritta) {
 				if (ev.guild != null && (LorittaUtils.isGuildOwnerBanned(lorittaUser._profile, ev.guild) || LorittaUtils.isGuildBanned(ev.guild)))
 					return true
 
-				loritta.newSuspendedTransaction {
+				// We don't care about locking the row just to update the sent at field
+				loritta.newSuspendedTransaction(transactionIsolation = Connection.TRANSACTION_READ_UNCOMMITTED) {
 					lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
+				}
 
+				loritta.newSuspendedTransaction {
 					ExecutedCommandsLog.insert {
 						it[userId] = lorittaUser.user.idLong
 						it[ExecutedCommandsLog.guildId] = if (ev.message.isFromGuild) ev.message.guild.idLong else null
