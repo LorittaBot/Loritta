@@ -232,6 +232,12 @@ class CustomCommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 						value = label
 					}
 
+					div(classes = "input-instructions") {
+						style = "font-size: 13px;"
+
+						+ "Importante! Não insira o prefixo do servidor juntamente ao nome do comando, esta ação pode resultar em um mal-funcionamento do comando."
+					}
+
 					h5(classes = "section-title") {
 						+ "Mensagem"
 					}
