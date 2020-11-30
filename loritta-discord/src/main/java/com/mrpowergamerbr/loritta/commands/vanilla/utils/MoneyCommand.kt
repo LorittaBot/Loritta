@@ -62,7 +62,7 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 			}
 
 			if (multiply == null) {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["loritta.invalidNumber", context.args[2]])
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["commands.invalidNumber", context.args[2]])
 				return
 			}
 
