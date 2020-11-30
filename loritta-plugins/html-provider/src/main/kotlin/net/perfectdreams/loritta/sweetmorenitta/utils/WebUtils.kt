@@ -36,9 +36,16 @@ fun DIV.imgSrcSet(filePath: String, sizes: String, srcset: String, block : IMG.(
 }
 
 fun DIV.generateNitroPayAdOrSponsor(sponsorId: Int, adSlot: String, adName: String? = null, callback: (NitroPayAdDisplay) -> (Boolean)) {
-    generateNitroPayAdOrSponsor(sponsorId, "$adSlot-desktop", NitroPayAdDisplay.DESKTOP, "Loritta Daily Reward", callback.invoke(NitroPayAdDisplay.DESKTOP))
-    generateNitroPayAdOrSponsor(sponsorId, "$adSlot-phone", NitroPayAdDisplay.PHONE, "Loritta Daily Reward", callback.invoke(NitroPayAdDisplay.PHONE))
-    generateNitroPayAdOrSponsor(sponsorId, "$adSlot-tablet", NitroPayAdDisplay.TABLET, "Loritta Daily Reward", callback.invoke(NitroPayAdDisplay.TABLET))
+    val sponsors = loritta.sponsors
+    val sponsor = sponsors.getOrNull(sponsorId)
+
+    if (sponsor != null) {
+        generateSponsor(sponsor)
+    } else {
+        generateNitroPayAdOrSponsor(sponsorId, "$adSlot-desktop", NitroPayAdDisplay.DESKTOP, "Loritta Daily Reward", callback.invoke(NitroPayAdDisplay.DESKTOP))
+        generateNitroPayAdOrSponsor(sponsorId, "$adSlot-phone", NitroPayAdDisplay.PHONE, "Loritta Daily Reward", callback.invoke(NitroPayAdDisplay.PHONE))
+        generateNitroPayAdOrSponsor(sponsorId, "$adSlot-tablet", NitroPayAdDisplay.TABLET, "Loritta Daily Reward", callback.invoke(NitroPayAdDisplay.TABLET))
+    }
 }
 
 fun DIV.generateNitroPayAd(adSlot: String, adName: String? = null) {
