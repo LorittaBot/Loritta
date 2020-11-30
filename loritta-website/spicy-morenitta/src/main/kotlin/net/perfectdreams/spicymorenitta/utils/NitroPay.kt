@@ -50,5 +50,6 @@ object NitroPay : Logging {
 					console.log(e)
 				}
 			}
+		}
 	}
 }
