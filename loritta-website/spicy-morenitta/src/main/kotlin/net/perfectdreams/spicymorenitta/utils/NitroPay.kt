@@ -32,7 +32,7 @@ object NitroPay : Logging {
 
 					val dynamic = object {}.asDynamic()
 					dynamic.refreshLimit = 10
-					dynamic.refreshTime = 90
+					dynamic.refreshTime = 30
 					dynamic.renderVisibleOnly = true
 					dynamic.refreshVisibleOnly = true
 					val adType = it.getAttribute("data-nitropay-ad-type")
