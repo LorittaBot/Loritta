@@ -24,6 +24,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.awaitCheckForReplyErrors
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.extensions.referenceIfPossible
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -327,7 +328,7 @@ class CommandManager(loritta: Loritta) {
 								if (generatedMessage != null)
 									ev.textChannel.sendMessage(generatedMessage)
 											.referenceIfPossible(ev.message, serverConfig, true)
-											.queue()
+											.awaitCheckForReplyErrors()
 							}
 						}
 						return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
@@ -416,7 +417,7 @@ class CommandManager(loritta: Loritta) {
 						}
 						ev.textChannel.sendMessage(Constants.ERROR + " **|** ${ev.member.asMention} $message")
 								.referenceIfPossible(ev.message, serverConfig, true)
-								.queue()
+								.awaitCheckForReplyErrors()
 						return true
 					}
 				}
@@ -566,7 +567,7 @@ class CommandManager(loritta: Loritta) {
 				if (ev.isFromType(ChannelType.PRIVATE) || (ev.isFromType(ChannelType.TEXT) && ev.textChannel != null && ev.textChannel.canTalk()))
 					ev.channel.sendMessage(reply)
 							.referenceIfPossible(ev.message, serverConfig, true)
-							.queue()
+							.awaitCheckForReplyErrors()
 				return true
 			}
 		}

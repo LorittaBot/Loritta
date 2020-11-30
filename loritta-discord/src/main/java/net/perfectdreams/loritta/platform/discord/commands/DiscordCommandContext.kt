@@ -4,6 +4,7 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.awaitCheckForReplyErrors
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.extensions.referenceIfPossible
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
@@ -58,7 +59,7 @@ class DiscordCommandContext(
 		if (isPrivateChannel || discordMessage.textChannel.canTalk()) {
 			return discordMessage.channel.sendMessage(message)
 					.referenceIfPossible(discordMessage, serverConfig, true)
-					.await()
+					.awaitCheckForReplyErrors()
 		} else {
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
@@ -405,6 +406,6 @@ class DiscordCommandContext(
 
 		discordMessage.channel.sendMessage(messageBuilder.build())
 				.referenceIfPossible(discordMessage, serverConfig, true)
-				.await()
+				.awaitCheckForReplyErrors()
 	}
 }

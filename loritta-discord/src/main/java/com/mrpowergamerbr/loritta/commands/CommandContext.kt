@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.awaitCheckForReplyErrors
 import com.mrpowergamerbr.loritta.utils.extensions.referenceIfPossible
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
@@ -123,7 +124,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 		if (isPrivateChannel || event.textChannel!!.canTalk()) {
 			return event.channel.sendMessage(message)
 					.referenceIfPossible(event.message, config, addInlineReply)
-					.await()
+					.awaitCheckForReplyErrors()
 		} else {
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
