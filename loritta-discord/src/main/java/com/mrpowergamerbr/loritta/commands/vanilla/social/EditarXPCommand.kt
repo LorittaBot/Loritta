@@ -38,7 +38,7 @@ class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category =
 			val newXp = context.rawArgs[1].toLongOrNull()
 
 			if (newXp == null) {
-				context.sendMessage("${Constants.ERROR} **|** ${context.getAsMention(true)}${context.locale["loritta.invalidNumber", context.rawArgs[1]]}")
+				context.sendMessage("${Constants.ERROR} **|** ${context.getAsMention(true)}${context.locale["commands.invalidNumber", context.rawArgs[1]]}")
 				return
 			}
 
