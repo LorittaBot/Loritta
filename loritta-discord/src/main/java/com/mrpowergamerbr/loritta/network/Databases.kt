@@ -64,6 +64,9 @@ object Databases {
 		// https://stackoverflow.com/a/41206003/7271796
 		config.isAutoCommit = false
 
+		// Useful to check if a connection is not returning to the pool, will be shown in the log as "Apparent connection leak detected"
+		config.leakDetectionThreshold = 30 * 1000
+
 		// We need to use the same transaction isolation used in Exposed, in this case, TRANSACTION_READ_COMMITED.
 		// If not HikariCP will keep resetting to the default when returning to the pool, causing performance issues.
 		if (loritta.config.database.type != "SQLite") // SQLite only supports TRANSACTION_SERIALIZABLE and TRANSACTION_READ_UNCOMMITTED.
