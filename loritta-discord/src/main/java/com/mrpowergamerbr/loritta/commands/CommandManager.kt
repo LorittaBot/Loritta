@@ -326,7 +326,7 @@ class CommandManager(loritta: Loritta) {
 								)
 								if (generatedMessage != null)
 									ev.textChannel.sendMessage(generatedMessage)
-											.referenceIfPossible(ev.message)
+											.referenceIfPossible(ev.message, serverConfig, true)
 											.queue()
 							}
 						}
@@ -415,7 +415,7 @@ class CommandManager(loritta: Loritta) {
 							message += " ${reparsedLegacyLocale["commands.loriMissingPermissionCanConfigure", loritta.instanceConfig.loritta.website.url]}"
 						}
 						ev.textChannel.sendMessage(Constants.ERROR + " **|** ${ev.member.asMention} $message")
-								.referenceIfPossible(ev.message)
+								.referenceIfPossible(ev.message, serverConfig, true)
 								.queue()
 						return true
 					}
@@ -565,7 +565,7 @@ class CommandManager(loritta: Loritta) {
 
 				if (ev.isFromType(ChannelType.PRIVATE) || (ev.isFromType(ChannelType.TEXT) && ev.textChannel != null && ev.textChannel.canTalk()))
 					ev.channel.sendMessage(reply)
-							.referenceIfPossible(ev.message)
+							.referenceIfPossible(ev.message, serverConfig, true)
 							.queue()
 				return true
 			}

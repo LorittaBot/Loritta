@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.utils.extensions
 
 import com.mrpowergamerbr.loritta.LorittaLauncher.loritta
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import kotlinx.coroutines.future.await
 import net.dv8tion.jda.api.MessageBuilder
@@ -258,6 +259,22 @@ fun MessageAction.referenceIfPossible(message: Message): MessageAction {
 	if (message.isFromGuild && !message.guild.selfMember.hasPermission(message.textChannel, MESSAGE_HISTORY))
 		return this
 	return this.reference(message)
+}
+
+/**
+ * Make the message a reply to the referenced message.
+ *
+ * This has the same checks as [referenceIfPossible] plus a check to see if [addInlineReply] is enabled and to check if [ServerConfig.deleteMessageAfterCommand] is false.
+ *
+ * @param message The target message
+ *
+ * @return Updated MessageAction for chaining convenience
+ */
+fun MessageAction.referenceIfPossible(message: Message, serverConfig: ServerConfig, addInlineReply: Boolean = true): MessageAction {
+	// We check if deleteMessageAfterCommand is true because it doesn't matter trying to reply to a message that's going to be deleted.
+	if (!addInlineReply || serverConfig.deleteMessageAfterCommand)
+		return this
+	return this.referenceIfPossible(message)
 }
 
 fun Permission.localized(locale: BaseLocale): String {

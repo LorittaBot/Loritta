@@ -57,7 +57,7 @@ class DiscordCommandContext(
 	suspend fun sendMessage(message: Message): Message {
 		if (isPrivateChannel || discordMessage.textChannel.canTalk()) {
 			return discordMessage.channel.sendMessage(message)
-					.referenceIfPossible(discordMessage)
+					.referenceIfPossible(discordMessage, serverConfig, true)
 					.await()
 		} else {
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
@@ -68,7 +68,7 @@ class DiscordCommandContext(
 		return DiscordMessage(
 				discordMessage.channel.sendMessage(LorittaMessage(content).content)
 						.addFile(image.toByteArray(), fileName)
-						.referenceIfPossible(discordMessage)
+						.referenceIfPossible(discordMessage, serverConfig, true)
 						.await()
 		)
 	}
@@ -77,7 +77,7 @@ class DiscordCommandContext(
 		return DiscordMessage(
 				discordMessage.channel.sendMessage(LorittaMessage(content).content)
 						.addFile(byteArray, fileName)
-						.referenceIfPossible(discordMessage)
+						.referenceIfPossible(discordMessage, serverConfig, true)
 						.await()
 		)
 	}
@@ -90,7 +90,7 @@ class DiscordCommandContext(
 						.build()
 		)
 				.addFile(file, fileName)
-				.referenceIfPossible(discordMessage)
+				.referenceIfPossible(discordMessage, serverConfig, true)
 				.await()
 		)
 	}
@@ -103,7 +103,7 @@ class DiscordCommandContext(
 						.build()
 		)
 				.addFile(inputStream, fileName)
-				.referenceIfPossible(discordMessage)
+				.referenceIfPossible(discordMessage, serverConfig, true)
 				.await()
 		)
 	}
@@ -404,7 +404,7 @@ class DiscordCommandContext(
 				.setEmbed(embed.build())
 
 		discordMessage.channel.sendMessage(messageBuilder.build())
-				.referenceIfPossible(discordMessage)
+				.referenceIfPossible(discordMessage, serverConfig, true)
 				.await()
 	}
 }

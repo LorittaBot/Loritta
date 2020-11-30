@@ -24,7 +24,6 @@ import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.loritta.utils.metrics.Prometheus
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.Connection
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
@@ -139,7 +138,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 							)
 							if (generatedMessage != null)
 								ev.textChannel.sendMessage(generatedMessage)
-										.referenceIfPossible(ev.message)
+										.referenceIfPossible(ev.message, serverConfig, true)
 										.queue()
 						}
 					}
@@ -399,7 +398,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 
 				if (ev.isFromType(ChannelType.PRIVATE) || (ev.isFromType(ChannelType.TEXT) && ev.textChannel != null && ev.textChannel.canTalk()))
 					ev.channel.sendMessage(reply)
-							.referenceIfPossible(ev.message)
+							.referenceIfPossible(ev.message, serverConfig, true)
 							.queue()
 
 				return true

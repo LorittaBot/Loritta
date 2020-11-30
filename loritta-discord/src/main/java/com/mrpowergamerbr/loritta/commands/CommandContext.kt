@@ -122,7 +122,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 	suspend fun sendMessage(message: Message, addInlineReply: Boolean = true): Message {
 		if (isPrivateChannel || event.textChannel!!.canTalk()) {
 			return event.channel.sendMessage(message)
-					.also { sketch -> if (addInlineReply) sketch.referenceIfPossible(event.message) }
+					.referenceIfPossible(event.message, config, addInlineReply)
 					.await()
 		} else {
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
@@ -203,7 +203,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 		if (isPrivateChannel || event.textChannel!!.canTalk()) {
 			val sentMessage = event.channel.sendMessage(message)
 					.addFile(inputStream, name)
-					.referenceIfPossible(event.message)
+					.referenceIfPossible(event.message, config, true)
 					.await()
 			return sentMessage
 		} else {
