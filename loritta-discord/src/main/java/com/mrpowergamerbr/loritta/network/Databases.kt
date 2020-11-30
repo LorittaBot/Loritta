@@ -55,13 +55,20 @@ object Databases {
 
 		config.maximumPoolSize = LorittaLauncher.loritta.config.database.maximumPoolSize
 		config.minimumIdle = LorittaLauncher.loritta.config.database.minimumIdle
+
 		// https://github.com/JetBrains/Exposed/wiki/DSL#batch-insert
 		config.addDataSourceProperty("reWriteBatchedInserts", "true")
 
-		// config.addDataSourceProperty("prepStmtCacheSize", "500")
-		// config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")
-		// config.addDataSourceProperty("cachePrepStmts", "true")
-		// config.addDataSourceProperty("useServerPrepStmts", "true")
+		// Exposed uses autoCommit = false, so we need to set this to false to avoid HikariCP resetting the connection to
+		// autoCommit = true when the transaction goes back to the pool, because resetting this has a "big performance impact"
+		// https://stackoverflow.com/a/41206003/7271796
+		config.isAutoCommit = false
+
+		// We need to use the same transaction isolation used in Exposed, in this case, TRANSACTION_READ_COMMITED.
+		// If not HikariCP will keep resetting to the default when returning to the pool, causing performance issues.
+		if (loritta.config.database.type != "SQLite") // SQLite only supports TRANSACTION_SERIALIZABLE and TRANSACTION_READ_UNCOMMITTED.
+			config.transactionIsolation = "TRANSACTION_REPEATABLE_READ"
+
 		return@lazy config
 	}
 	val dataSourceLoritta by lazy { HikariDataSource(hikariConfigLoritta) }
