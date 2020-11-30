@@ -244,7 +244,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		var aboutMe: String? = null
 
 		if (userProfile.userId == loritta.discordConfig.discord.clientId.toLong()) {
-			aboutMe = locale["commands.social.profile.description"]
+			aboutMe = locale["commands.social.profile.lorittaDescription"]
 		}
 
 		if (userProfile.userId == 390927821997998081L) {

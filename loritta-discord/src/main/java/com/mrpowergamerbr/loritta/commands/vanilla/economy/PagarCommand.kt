@@ -104,7 +104,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			if (howMuch == null) {
 				context.reply(
                         LorittaReply(
-                                locale["loritta.invalidNumber", arg1],
+                                locale["commands.invalidNumber", arg1],
                                 Constants.ERROR
                         )
 				)
@@ -114,7 +114,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			if (1 > howMuch) {
 				context.reply(
                         LorittaReply(
-                                locale["loritta.invalidNumber", context.rawArgs[1]],
+                                locale["commands.invalidNumber", context.rawArgs[1]],
                                 Constants.ERROR
                         )
 				)

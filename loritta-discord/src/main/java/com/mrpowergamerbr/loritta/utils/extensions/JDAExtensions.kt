@@ -254,8 +254,8 @@ fun RestAction<Message>.queueAfterWithMessagePerSecondTargetAndClusterLoadBalanc
  *
  * @return Updated MessageAction for chaining convenience
  */
-suspend fun MessageAction.referenceIfPossible(message: Message): MessageAction {
-	if (message.isFromGuild && !message.guild.selfMember.hasPermission(message.textChannel, Permission.MESSAGE_HISTORY))
+fun MessageAction.referenceIfPossible(message: Message): MessageAction {
+	if (message.isFromGuild && !message.guild.selfMember.hasPermission(message.textChannel, MESSAGE_HISTORY))
 		return this
 	return this.reference(message)
 }
