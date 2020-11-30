@@ -98,14 +98,15 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 
 			// E agora realmente iremos apagar as mensagens!
 			context.message.textChannel.deleteMessages(allowedMessages).await()
-			if (oldMessages.size > 0 && pinnedMessages.size > 0) {
-				context.sendMessage(context.locale["commands.moderation.clear.ignoredTooOldAndPinnedMessages", context.userHandle.asMention, oldMessages.size, pinnedMessages.size])
-			} else if (oldMessages.size > 0) {
-				context.sendMessage(context.locale["commands.moderation.clear.ignoredTooOldMessages", context.userHandle.asMention, oldMessages.size])
-			} else if (pinnedMessages.size > 0) {
-				context.sendMessage(context.locale["commands.moderation.clear.ignoredPinnedMessages", context.userHandle.asMention, pinnedMessages.size])
+
+			if (oldMessages.isNotEmpty() && pinnedMessages.isNotEmpty()) {
+				context.sendMessage(context.locale["commands.moderation.clear.ignoredTooOldAndPinnedMessages", context.userHandle.asMention, oldMessages.size, pinnedMessages.size], inline = false)
+			} else if (oldMessages.isNotEmpty()) {
+				context.sendMessage(context.locale["commands.moderation.clear.ignoredTooOldMessages", context.userHandle.asMention, oldMessages.size], inline = false)
+			} else if (pinnedMessages.isNotEmpty()) {
+				context.sendMessage(context.locale["commands.moderation.clear.ignoredPinnedMessages", context.userHandle.asMention, pinnedMessages.size], inline = false)
 			} else {
-				context.sendMessage(context.locale["commands.moderation.clear.success", context.userHandle.asMention])
+				context.sendMessage(context.locale["commands.moderation.clear.success", context.userHandle.asMention], inline = false)
 			}
 		} else {
 			this.explain(context)
