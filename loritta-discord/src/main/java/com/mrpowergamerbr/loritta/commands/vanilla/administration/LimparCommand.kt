@@ -100,13 +100,13 @@ class LimparCommand : AbstractCommand("clean", listOf("limpar", "clear"), Comman
 			context.message.textChannel.deleteMessages(allowedMessages).await()
 
 			if (oldMessages.isNotEmpty() && pinnedMessages.isNotEmpty()) {
-				context.sendMessage(context.locale["commands.moderation.clear.ignoredTooOldAndPinnedMessages", context.userHandle.asMention, oldMessages.size, pinnedMessages.size], inline = false)
+				context.sendMessage(context.locale["commands.moderation.clear.ignoredTooOldAndPinnedMessages", context.userHandle.asMention, oldMessages.size, pinnedMessages.size], addInlineReply = false)
 			} else if (oldMessages.isNotEmpty()) {
-				context.sendMessage(context.locale["commands.moderation.clear.ignoredTooOldMessages", context.userHandle.asMention, oldMessages.size], inline = false)
+				context.sendMessage(context.locale["commands.moderation.clear.ignoredTooOldMessages", context.userHandle.asMention, oldMessages.size], addInlineReply = false)
 			} else if (pinnedMessages.isNotEmpty()) {
-				context.sendMessage(context.locale["commands.moderation.clear.ignoredPinnedMessages", context.userHandle.asMention, pinnedMessages.size], inline = false)
+				context.sendMessage(context.locale["commands.moderation.clear.ignoredPinnedMessages", context.userHandle.asMention, pinnedMessages.size], addInlineReply = false)
 			} else {
-				context.sendMessage(context.locale["commands.moderation.clear.success", context.userHandle.asMention], inline = false)
+				context.sendMessage(context.locale["commands.moderation.clear.success", context.userHandle.asMention], addInlineReply = false)
 			}
 		} else {
 			this.explain(context)
