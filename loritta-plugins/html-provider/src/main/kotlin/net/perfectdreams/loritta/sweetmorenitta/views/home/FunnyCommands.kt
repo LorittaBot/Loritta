@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.sweetmorenitta.views.home
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import kotlinx.html.*
+import net.perfectdreams.loritta.sweetmorenitta.utils.NitroPayAdDisplay
 import net.perfectdreams.loritta.sweetmorenitta.utils.generateNitroPayAdOrSponsor
 import net.perfectdreams.loritta.sweetmorenitta.utils.imgSrcSet
 import net.perfectdreams.loritta.sweetmorenitta.views.BaseView
@@ -10,8 +11,8 @@ fun DIV.funnyCommands(locale: BaseLocale, websiteUrl: String) {
     div(classes = "odd-wrapper wobbly-bg") {
         id = "fun-section"
 
-        generateNitroPayAdOrSponsor(2, "home-funny-commands1", "Loritta v2 Funny Commands", true)
-        generateNitroPayAdOrSponsor(3, "home-funny-commands2", "Loritta v2 Funny Commands", true)
+        generateNitroPayAdOrSponsor(2, "home-funny-commands1", "Loritta v2 Funny Commands") { true }
+        generateNitroPayAdOrSponsor(3, "home-funny-commands2", "Loritta v2 Funny Commands") { it != NitroPayAdDisplay.PHONE }
 
         /* div(classes = "funny-commands") {
         div {
@@ -67,8 +68,8 @@ fun DIV.funnyCommandsBrasil(locale: BaseLocale, websiteUrl: String) {
     div(classes = "odd-wrapper wobbly-bg") {
         id = "fun-section"
 
-        generateNitroPayAdOrSponsor(2, "home-funny-commands-brazil1", "Loritta v2 Funny Commands", true)
-        generateNitroPayAdOrSponsor(3, "home-funny-commands-brazil2", "Loritta v2 Funny Commands", true)
+        generateNitroPayAdOrSponsor(2, "home-funny-commands1-brazil1", "Loritta v2 Funny Commands") { true }
+        generateNitroPayAdOrSponsor(3, "home-funny-commands2-brazil2", "Loritta v2 Funny Commands") { it != NitroPayAdDisplay.PHONE }
 
         /* div(classes = "funny-commands") {
         div {

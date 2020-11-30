@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.sweetmorenitta.views
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import kotlinx.html.*
+import net.perfectdreams.loritta.sweetmorenitta.utils.NitroPayAdDisplay
 import net.perfectdreams.loritta.sweetmorenitta.utils.generateNitroPayAdOrSponsor
 
 class DailyView(
@@ -92,8 +93,9 @@ class DailyView(
         }
         div(classes = "odd-wrapper") {
             style = "text-align: center;"
-            generateNitroPayAdOrSponsor(0, "daily-top1", "Loritta Daily Reward", true)
-            generateNitroPayAdOrSponsor(1, "daily-top2", "Loritta Daily Reward", true)
+
+            generateNitroPayAdOrSponsor(0, "daily-top1", "Loritta Daily Reward") { true }
+            generateNitroPayAdOrSponsor(1, "daily-top2", "Loritta Daily Reward") { it != NitroPayAdDisplay.PHONE }
 
             div(classes = "media") {
                 div(classes = "media-body") {
@@ -201,8 +203,8 @@ class DailyView(
                 }
             }
 
-            generateNitroPayAdOrSponsor(2, "daily-bottom1", "Loritta Daily Reward", true)
-            generateNitroPayAdOrSponsor(3, "daily-bottom2", "Loritta Daily Reward", true)
+            generateNitroPayAdOrSponsor(2, "daily-bottom1", "Loritta Daily Reward") { true }
+            generateNitroPayAdOrSponsor(3, "daily-bottom2", "Loritta Daily Reward") { it != NitroPayAdDisplay.PHONE }
         }
 
         div(classes = "even-wrapper wobbly-bg") {
