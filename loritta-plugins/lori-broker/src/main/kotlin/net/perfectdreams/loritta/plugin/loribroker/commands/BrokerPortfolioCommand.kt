@@ -40,7 +40,7 @@ class BrokerPortfolioCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComm
 
 				val stockCount = totalStockCountById[tickerId] ?: 0
 
-				val totalGainsIfSoldNow = plugin.convertReaisToSonhos(ticker["lp"]!!.jsonPrimitive.double) * stockCount
+				val totalGainsIfSoldNow = plugin.convertReaisToSonhos(ticker[LoriBrokerPlugin.SELLING_PRICE_FIELD]!!.jsonPrimitive.double) * stockCount
 				val diff = totalGainsIfSoldNow - totalSpent
 				val emoji = when {
 					diff > 0 -> "\uD83D\uDD3C"
