@@ -112,8 +112,8 @@ class RaffleThread : Thread("Raffle Thread") {
 					val embed = EmbedBuilder()
 					embed.setThumbnail("attachment://loritta_money.png")
 					embed.setColor(Constants.LORITTA_AQUA)
-					embed.setTitle("\uD83C\uDF89 ${locale["modules.economy.raffle.congratulations"]}!")
-					embed.setDescription("${locale["modules.economy.raffle.youEarned", lastWinnerPrize]} \uD83E\uDD11")
+					embed.setTitle("\uD83C\uDF89 ${locale["commands.economy.raffle.congratulations"]}!")
+					embed.setDescription("${locale["commands.economy.raffle.youEarned", lastWinnerPrize]} \uD83E\uDD11")
 					embed.setTimestamp(Instant.now())
 					val message = MessageBuilder().setContent(" ").setEmbed(embed.build()).build()
 					user.openPrivateChannel().queue {
