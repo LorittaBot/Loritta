@@ -8,6 +8,17 @@ import org.w3c.dom.get
 object NitroPay : Logging {
 	@JsName("renderAds")
 	fun renderAds() {
+		if (window["nitroAds"] != undefined && window["nitroAds"].loaded == true) {
+			renderNitroPayAds()
+		} else {
+			document.addEventListener("nitroAds.loaded", {
+				// nitroAds just loaded
+				renderNitroPayAds()
+			})
+		}
+	}
+
+	private fun renderNitroPayAds() {
 		val ads = document.selectAll<HTMLModElement>(".nitropay-ad")
 
 		debug("There are ${ads.size} NitroPay ads in the page...")
@@ -39,6 +50,5 @@ object NitroPay : Logging {
 					console.log(e)
 				}
 			}
-		}
 	}
 }
