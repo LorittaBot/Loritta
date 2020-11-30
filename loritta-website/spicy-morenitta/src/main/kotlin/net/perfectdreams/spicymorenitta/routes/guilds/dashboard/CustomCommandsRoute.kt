@@ -80,7 +80,7 @@ class CustomCommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 				modal.setContent(
 						document.create.div {
 							div(classes = "category-name") {
-								+ "Qual tipo de comando você deseja criar?"
+								+ locale["website.custom-commands.commandTypeQuestion"]
 							}
 
 							div {
@@ -90,10 +90,10 @@ class CustomCommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 									style = "text-align: left; line-height: 1; box-sizing: border-box !important; width: 100%;"
 									div {
 										style = "font-size: 1.5em; font-weight: bolder;"
-										+"Comando de Texto"
+										+ locale["website.custom-commands.textCommandType"]
 									}
 									div {
-										+"Um comando que envia uma mensagem pré-definida ao utilizá-lo"
+										+ locale["website.custom-commands.textCommandTypeDescription"]
 									}
 
 									onClickFunction = {
@@ -221,11 +221,11 @@ class CustomCommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 		modal.setContent(
 				document.create.div {
 					div(classes = "category-name") {
-						+ "Comando de Texto"
+						+ locale["website.custom-commands.textCommandType"]
 					}
 
 					h5(classes = "section-title") {
-						+ "Nome do Comando"
+						+ locale["website.custom-commands.modal.name"]
 					}
 
 					input(InputType.text, classes = "command-label") {
@@ -235,11 +235,11 @@ class CustomCommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 					div(classes = "input-instructions") {
 						style = "font-size: 13px;"
 
-						+ "Importante! Não insira o prefixo do servidor juntamente ao nome do comando, esta ação pode resultar em um mal-funcionamento do comando."
+						+ locale["website.custom-commands.modal.warning"]
 					}
 
 					h5(classes = "section-title") {
-						+ "Mensagem"
+						+ locale["website.custom-commands.modal.message"]
 					}
 
 					textArea(classes = "command-text") {
