@@ -159,7 +159,7 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN
 			if (context.event.channel != channel && channel is TextChannel)
 				context.reply(
 						LorittaReply(
-								context.locale["commans.moderation.say.messageSuccessfullySent", channel.asMention],
+								context.locale["commands.moderation.say.messageSuccessfullySent", channel.asMention],
 								"\uD83C\uDF89"
 						)
 				)
