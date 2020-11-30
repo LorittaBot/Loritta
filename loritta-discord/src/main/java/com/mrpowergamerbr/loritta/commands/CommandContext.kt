@@ -73,20 +73,20 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 		return lorittaUser.user.asMention + (if (addSpace) " " else "")
 	}
 
-	suspend fun reply(message: String, prefix: String? = null, forceMention: Boolean = false): Message {
+	suspend fun reply(message: String, prefix: String? = null, addInlineReply: Boolean = true, forceMention: Boolean = false): Message {
 		var send = ""
 		if (prefix != null) {
 			send = "$prefix **|** "
 		}
 		send = send + (if (forceMention) userHandle.asMention + " " else getAsMention(true)) + message
-		return sendMessage(send)
+		return sendMessage(send, addInlineReply = addInlineReply)
 	}
 
-	suspend fun reply(vararg loriReplies: LorittaReply): Message {
-		return reply(false, *loriReplies)
+	suspend fun reply(vararg loriReplies: LorittaReply, addInlineReply: Boolean = true): Message {
+		return reply(false, *loriReplies, addInlineReply = addInlineReply)
 	}
 
-	suspend fun reply(mentionUserBeforeReplies: Boolean, vararg loriReplies: LorittaReply): Message {
+	suspend fun reply(mentionUserBeforeReplies: Boolean, vararg loriReplies: LorittaReply, addInlineReply: Boolean = true): Message {
 		val message = StringBuilder()
 		if (mentionUserBeforeReplies) {
 			message.append(LorittaReply().build(this))
@@ -96,7 +96,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 			message.append(loriReply.build(this))
 			message.append("\n")
 		}
-		return sendMessage(message.toString())
+		return sendMessage(message.toString(), addInlineReply = addInlineReply)
 	}
 
 	suspend fun reply(image: BufferedImage, fileName: String, vararg loriReplies: LorittaReply): Message {
@@ -107,29 +107,29 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 		return sendFile(image, fileName, message.toString())
 	}
 
-	suspend fun sendMessage(message: String): Message {
-		return sendMessage(MessageBuilder().append(if (message.isEmpty()) " " else message).build())
+	suspend fun sendMessage(message: String, addInlineReply: Boolean = true): Message {
+		return sendMessage(MessageBuilder().append(if (message.isEmpty()) " " else message).build(), addInlineReply = addInlineReply)
 	}
 
-	suspend fun sendMessage(message: String, embed: MessageEmbed): Message {
-		return sendMessage(MessageBuilder().setEmbed(embed).append(if (message.isEmpty()) " " else message).build())
+	suspend fun sendMessage(message: String, embed: MessageEmbed, addInlineReply: Boolean = true): Message {
+		return sendMessage(MessageBuilder().setEmbed(embed).append(if (message.isEmpty()) " " else message).build(), addInlineReply = addInlineReply)
 	}
 
-	suspend fun sendMessage(embed: MessageEmbed): Message {
-		return sendMessage(MessageBuilder().append(getAsMention(true)).setEmbed(embed).build())
+	suspend fun sendMessage(embed: MessageEmbed, addInlineReply: Boolean = true): Message {
+		return sendMessage(MessageBuilder().append(getAsMention(true)).setEmbed(embed).build(), addInlineReply = addInlineReply)
 	}
 
-	suspend fun sendMessage(message: Message): Message {
+	suspend fun sendMessage(message: Message, addInlineReply: Boolean = true): Message {
 		if (isPrivateChannel || event.textChannel!!.canTalk()) {
 			return event.channel.sendMessage(message)
-					.referenceIfPossible(event.message)
+					.also { sketch -> if (addInlineReply) sketch.referenceIfPossible(event.message) }
 					.await()
 		} else {
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
 	}
 
-	suspend fun sendMessage(webhook: WebhookClient?, message: WebhookMessage) {
+	suspend fun sendMessage(webhook: WebhookClient?, message: WebhookMessage, addInlineReply: Boolean = true) {
 		if (!isPrivateChannel && webhook != null) { // Se a webhook é diferente de null, então use a nossa webhook disponível!
 			webhook.send(message)
 		} else { // Se não, iremos usar embeds mesmo...
@@ -138,7 +138,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 			builder.setDescription(message.content)
 			builder.setFooter("Não consigo usar as permissões de webhook aqui... então estou usando o modo de pobre!", null)
 
-			sendMessage(builder.build())
+			sendMessage(builder.build(), addInlineReply = addInlineReply)
 		}
 	}
 
