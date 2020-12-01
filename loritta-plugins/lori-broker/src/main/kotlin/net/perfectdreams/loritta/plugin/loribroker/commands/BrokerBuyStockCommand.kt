@@ -41,7 +41,7 @@ class BrokerBuyStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComma
 				fail(locale["commands.economy.broker.invalidTickerId", locale["commands.economy.brokerBuy.baseExample", serverConfig.commandPrefix]])
 
 			val ticker = plugin.tradingApi
-					.getOrRetrieveTicker(tickerId, listOf(LoriBrokerPlugin.BUYING_PRICE_FIELD, "description"))
+					.getOrRetrieveTicker(tickerId, listOf(LoriBrokerPlugin.CURRENT_PRICE_FIELD, "description"))
 
 			if (ticker["current_session"]!!.jsonPrimitive.content != LoriBrokerPlugin.MARKET)
 				fail(locale["commands.economy.broker.outOfSession"])
@@ -60,7 +60,10 @@ class BrokerBuyStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComma
 
 			val selfUserProfile = lorittaUser.profile
 
-			val valueOfStock = plugin.convertReaisToSonhos(ticker[LoriBrokerPlugin.BUYING_PRICE_FIELD]!!.jsonPrimitive.double)
+			val valueOfStock = plugin.convertToBuyingPrice(
+					plugin.convertReaisToSonhos(ticker[LoriBrokerPlugin.CURRENT_PRICE_FIELD]!!.jsonPrimitive.double)
+			)
+			
 			val howMuchValue = valueOfStock * number
 
 			if (howMuchValue > selfUserProfile.money)

@@ -103,6 +103,9 @@ class LoriBrokerPlugin(name: String, loritta: LorittaDiscord) : LorittaDiscordPl
 		return floor(input * 100).toLong()
 	}
 
+	fun convertToBuyingPrice(input: Long) = input + 1
+	fun convertToSellingPrice(input: Long) = input - 1
+
 	fun getBaseEmbed() = EmbedBuilder()
 			.setAuthor("Loritta's Home Broker")
 			.setColor(BROKER_COLOR)
@@ -116,7 +119,5 @@ class LoriBrokerPlugin(name: String, loritta: LorittaDiscord) : LorittaDiscordPl
 		const val MAX_STOCKS = 100_000L
 
 		const val CURRENT_PRICE_FIELD = "lp"
-		const val SELLING_PRICE_FIELD = "bid"
-		const val BUYING_PRICE_FIELD = "ask"
 	}
 }

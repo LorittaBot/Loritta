@@ -56,8 +56,6 @@ class BrokerCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractCommandBase(p
 						it,
 						listOf(
 								LoriBrokerPlugin.CURRENT_PRICE_FIELD,
-								LoriBrokerPlugin.BUYING_PRICE_FIELD,
-								LoriBrokerPlugin.SELLING_PRICE_FIELD,
 								"description",
 								"current_session"
 						)
@@ -81,6 +79,10 @@ class BrokerCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractCommandBase(p
 			for (stock in stocks.sortedBy { it["short_name"]!!.jsonPrimitive.content }) {
 				val tickerId = stock["short_name"]!!.jsonPrimitive.content
 				val tickerName = plugin.trackedTickerCodes[tickerId]
+				val currentPrice = plugin.convertReaisToSonhos(stock[LoriBrokerPlugin.CURRENT_PRICE_FIELD]?.jsonPrimitive?.double!!)
+
+				val buyingPrice = plugin.convertToBuyingPrice(currentPrice)
+				val sellingPrice = plugin.convertToSellingPrice(currentPrice)
 
 				if (stock["current_session"]!!.jsonPrimitive.content != LoriBrokerPlugin.MARKET)
 					embed.addField(
@@ -91,8 +93,8 @@ class BrokerCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractCommandBase(p
 				else
 					embed.addField(
 							"${Emotes.ONLINE} `${stock["short_name"]?.jsonPrimitive?.content}` ($tickerName)",
-							"""**Compra:**  ${plugin.convertReaisToSonhos(stock[LoriBrokerPlugin.BUYING_PRICE_FIELD]?.jsonPrimitive?.double!!)}
-							  |**Venda:**  ${plugin.convertReaisToSonhos(stock[LoriBrokerPlugin.SELLING_PRICE_FIELD]?.jsonPrimitive?.double!!)}
+							"""**Compra:** $buyingPrice
+							  |**Venda:** $sellingPrice
 							""".trimMargin(),
 							true
 					)
