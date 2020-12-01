@@ -86,6 +86,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
                 // ===[ ADMIN ]===
                 BanInfoCommand(this@LorittaDiscord),
+                ClearCommand(this@LorittaDiscord),
 
                 // ===[ MISC ]===
                 FanArtsCommand(this@LorittaDiscord),
