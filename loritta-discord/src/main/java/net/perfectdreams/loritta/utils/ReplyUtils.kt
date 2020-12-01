@@ -5,7 +5,7 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 
 /**
  * Class used for building styled replies with DSL to make creating
- * multiple replies easier and nicier!
+ * multiple replies easier and nicer!
  */
 class ReplyBuilder {
 
@@ -17,16 +17,28 @@ class ReplyBuilder {
     fun append(message: String = " ", prefix: String? = null, forceMention: Boolean = false, hasPadding: Boolean = true, mentionUser: Boolean = true) =
             append(LorittaReply(message, prefix, forceMention, hasPadding, mentionUser))
 
-    inline fun append(reply: LorittaReply.() -> Unit) =
-            append(LorittaReply().apply(reply))
+    inline fun append(reply: StyledReplyWrapper.() -> Unit) =
+            append(StyledReplyWrapper().apply(reply).asLorittaReply())
 
-    inline fun appendIf(condition: Boolean, reply: LorittaReply.() -> Unit) {
+    inline fun appendIf(condition: Boolean, reply: StyledReplyWrapper.() -> Unit) {
         if (condition) {
             append(reply)
         }
     }
 
     fun build(): List<LorittaReply> = replies
+
+}
+
+data class StyledReplyWrapper(
+        var message: String = " ",
+        var prefix: String? = null,
+        var forceMention: Boolean = false,
+        var hasPadding: Boolean = true,
+        var mentionUser: Boolean = true
+) {
+
+    fun asLorittaReply() = LorittaReply(message, prefix, forceMention, hasPadding, mentionUser)
 
 }
 

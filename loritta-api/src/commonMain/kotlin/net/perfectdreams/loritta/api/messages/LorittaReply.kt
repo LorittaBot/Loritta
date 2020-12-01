@@ -5,11 +5,11 @@ import net.perfectdreams.loritta.api.entities.LorittaEmote
 import net.perfectdreams.loritta.api.entities.User
 
 class LorittaReply(
-		var message: String = " ",
-		var prefix: String? = null,
-		var forceMention: Boolean = false,
-		var hasPadding: Boolean = true,
-		var mentionUser: Boolean = true
+		val message: String = " ",
+		val prefix: String? = null,
+		val forceMention: Boolean = false,
+		val hasPadding: Boolean = true,
+		val mentionUser: Boolean = true
 ) {
 	constructor(message: String, prefix: LorittaEmote, forceMention: Boolean = false, hasPadding: Boolean = true, mentionUser: Boolean = true) :
 			this(message, prefix.toString(), forceMention, hasPadding, mentionUser)
