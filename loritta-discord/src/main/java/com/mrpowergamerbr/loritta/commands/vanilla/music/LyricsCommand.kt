@@ -62,7 +62,7 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 			if (songInfo == null) {
 				context.reply(
                         LorittaReply(
-                                "${locale["commands.music.lyrics.couldntFind"]} ${locale["commands.music.lyrics.Inconvenience"]} \uD83D\uDE2D",
+                                "${locale["commands.music.lyrics.couldntFind"]} ${locale["commands.music.lyrics.sorryForTheInconvenience"]} \uD83D\uDE2D",
                                 Constants.ERROR
                         )
 				)
