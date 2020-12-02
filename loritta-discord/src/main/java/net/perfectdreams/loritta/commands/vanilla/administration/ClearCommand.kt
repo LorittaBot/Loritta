@@ -50,7 +50,7 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
             val channel = discordMessage.channel as? TextChannel ?: return@executesDiscord
 
             // The message count can't be null or be higher than 500 and lower than 2
-            if (count == null || count !in 2..500)
+            if (count == null || count !in 2..MAX_RANGE)
                 fail(locale["commands.moderation.clear.invalidClearRange"], Constants.ERROR)
 
             // If the guild already have a clear operation queued, we'll prevent them from creating another one
@@ -108,13 +108,6 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
                 && (if (text != null) it.contentStripped.contains(text.trim(), ignoreCase = true) else true) // If the text isn't null, the message must contains the text
     }
 
-    private fun DiscordCommandContext.sendMessagesToAuditLog(messages: List<Message>) {
-        val channelId = serverConfig.eventLogConfig?.eventLogChannelId ?: return
-        val channel = guild.getTextChannelById(channelId) ?: return
-
-        channel.sendMessage("").queue()
-    }
-
     /**
      * This will clear the provided [messages] using the "purge" function,
      * and will register the operation too.
@@ -128,9 +121,11 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
 
     companion object {
 
+        const val MAX_RANGE = 1000L
+
         @JvmStatic
         private val unavailableGuilds = Collections.newSetFromMap(Caffeine.newBuilder()
-                .expireAfterAccess(4, TimeUnit.SECONDS)
+                .expireAfterWrite(MAX_RANGE / 100, TimeUnit.SECONDS)
                 .build<Long, Boolean>().asMap()
         )
 
