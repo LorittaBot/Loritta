@@ -2,10 +2,10 @@ package net.perfectdreams.loritta.utils
 
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.entities.Member
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 
 object ExperienceUtils {
     fun getLevelExperience(lvl: Int): Long {
@@ -30,7 +30,7 @@ object ExperienceUtils {
         val nextLevelTotalXp = getLevelExperience(nextLevel)
         val nextLevelRequiredXp = getHowMuchExperienceIsLeftToLevelUp(profile.xp, nextLevel)
 
-        val ranking = newSuspendedTransaction {
+        val ranking = loritta.newSuspendedTransaction {
             GuildProfiles.select {
                 GuildProfiles.guildId eq member.guild.idLong and
                         (GuildProfiles.xp greaterEq profile.xp)

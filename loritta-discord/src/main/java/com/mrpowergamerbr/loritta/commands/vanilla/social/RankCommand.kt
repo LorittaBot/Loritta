@@ -13,7 +13,6 @@ import net.perfectdreams.loritta.utils.RankingGenerator
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.update
 
 class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "ranking"), CommandCategory.SOCIAL) {
@@ -74,7 +73,7 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 							)
 						}
 				) {
-					newSuspendedTransaction {
+					loritta.newSuspendedTransaction {
 						GuildProfiles.update({ GuildProfiles.id eq it and (GuildProfiles.guildId eq context.guild.idLong) }) {
 							it[isInGuild] = false
 						}

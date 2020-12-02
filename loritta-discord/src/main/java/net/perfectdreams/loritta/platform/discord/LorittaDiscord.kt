@@ -42,13 +42,13 @@ import net.perfectdreams.loritta.utils.config.*
 import net.perfectdreams.loritta.utils.extensions.readImage
 import net.perfectdreams.loritta.utils.locale.DebugLocales
 import net.perfectdreams.loritta.utils.payments.PaymentReason
-import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.image.BufferedImage
 import java.io.*
 import java.lang.reflect.Modifier
 import java.net.URL
+import java.sql.Connection
 import java.util.*
 import java.util.concurrent.*
 import java.util.zip.ZipInputStream
@@ -554,27 +554,18 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         return legacyLocales.getOrDefault(localeId, legacyLocales["default"]!!)
     }
 
-    fun <T> transaction(statement: org.jetbrains.exposed.sql.Transaction.() -> T) = transaction(Databases.loritta) {
+    fun <T> transaction(statement: Transaction.() -> T) = transaction(Databases.loritta) {
         statement.invoke(this)
     }
 
-    suspend fun <T> newSuspendedTransaction(repetitions: Int = 5, transactionIsolation: Int? = null, statement: org.jetbrains.exposed.sql.Transaction.() -> T): T {
-        var lastException: Exception? = null
-        for (i in 1..repetitions) {
-            try {
-                return org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction(Dispatchers.IO, Databases.loritta, transactionIsolation) {
-                    statement.invoke(this)
-                }
-            } catch (e: ExposedSQLException) {
-                logger.warn(e) { "Exception while trying to execute query. Tries: $i" }
-                lastException = e
-            }
+    suspend fun <T> newSuspendedTransaction(repetitions: Int = 5, transactionIsolation: Int = Connection.TRANSACTION_REPEATABLE_READ, statement: Transaction.() -> T): T = withContext(Dispatchers.IO) {
+        transaction(transactionIsolation, repetitions, Databases.loritta) {
+            statement.invoke(this)
         }
-        throw lastException ?: RuntimeException("This should never happen")
     }
 
-    suspend fun <T> suspendedTransactionAsync(statement: org.jetbrains.exposed.sql.Transaction.() -> T) = org.jetbrains.exposed.sql.transactions.experimental.suspendedTransactionAsync(Dispatchers.IO, Databases.loritta) {
-        statement.invoke(this)
+    suspend fun <T> suspendedTransactionAsync(statement: Transaction.() -> T) = GlobalScope.async(coroutineDispatcher) {
+        newSuspendedTransaction(statement = statement)
     }
 
 
