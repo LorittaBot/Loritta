@@ -85,7 +85,7 @@ class CommandCooldownManager(val loritta: LorittaDiscord) {
                             it[bannedAt] = System.currentTimeMillis()
                             it[bannedBy] = null
                             it[valid] = true
-                            it[expiresAt] = System.currentTimeMillis() + Constants.ONE_WEEK_IN_MILLISECONDS
+                            it[expiresAt] = System.currentTimeMillis() + (Constants.ONE_DAY_IN_MILLISECONDS * 3)
                             it[reason] = "Spamming too many messages during command cooldown! (Macro/Selfbot/Userbot) Guild ID: ${ev.guild?.idLong}; Channel ID: ${ev.message.channel.idLong}"
                         }
                     }
