@@ -24,7 +24,7 @@ class AtendenteCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lor
     override fun command() = create {
         needsToUploadFiles = true
 
-        localizedDescription("$LOCALE_PREFIX.images.atendente.description")
+        localizedDescription("$LOCALE_PREFIX.atendente.description")
 
         usage {
             arguments {
