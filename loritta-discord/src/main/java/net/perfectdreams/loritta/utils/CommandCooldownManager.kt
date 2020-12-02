@@ -4,6 +4,7 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.utils.Constants
 import mu.KotlinLogging
+import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.BannedUsers
 import org.jetbrains.exposed.sql.insert
@@ -37,15 +38,7 @@ class CommandCooldownManager(val loritta: LorittaDiscord) {
         val cooldownTriggeredAt = userCooldown.getOrDefault(ev.author.idLong, 0L)
         val diff = System.currentTimeMillis() - cooldownTriggeredAt
 
-        val commandCooldownMultiplied = commandCooldown *
-                Math.max(
-                        1,
-                        (
-                                growingRatelimitUsers.getOrDefault(
-                                        ev.author.idLong, 1
-                                )
-                                )
-                )
+        val commandCooldownMultiplied = getUserCommandCooldown(ev.author, commandCooldown)
 
         // Example:
         // First command executed:
@@ -68,10 +61,14 @@ class CommandCooldownManager(val loritta: LorittaDiscord) {
             //
             // So, if the user already used a command and is still on cooldown, we are going to ignore the message until the command cooldown is complete.
             val wasMessageAlreadySent = lastRatelimitMessageForUser.containsKey(ev.author.idLong)
+
+            val newValue = growingRatelimitUsers.getOrPut(ev.author.idLong) { 0 } + 1
+            growingRatelimitUsers[ev.author.idLong] = newValue
+
+            val correctedCooldownMultiplied = getUserCommandCooldown(ev.author, commandCooldown)
+
             if (wasMessageAlreadySent) {
-                val newValue = growingRatelimitUsers.getOrPut(ev.author.idLong) { 1 } + 1
                 logger.warn { "User ${ev.author} tried to use command while on cooldown *and* message was already sent! Needs to wait: $commandCooldownMultiplied; New Growing Value: $newValue" }
-                growingRatelimitUsers[ev.author.idLong] = newValue
 
                 val mod = when {
                     5 >= newValue -> 1
@@ -96,7 +93,7 @@ class CommandCooldownManager(val loritta: LorittaDiscord) {
                     return CooldownResponse(
                             CooldownStatus.RATE_LIMITED_MESSAGE_ALREADY_SENT,
                             cooldownTriggeredAt,
-                            commandCooldownMultiplied
+                            correctedCooldownMultiplied
                     )
                 }
 
@@ -105,21 +102,22 @@ class CommandCooldownManager(val loritta: LorittaDiscord) {
                     return CooldownResponse(
                             CooldownStatus.RATE_LIMITED_SEND_MESSAGE,
                             cooldownTriggeredAt,
-                            commandCooldownMultiplied
+                            correctedCooldownMultiplied
                     )
 
                 return CooldownResponse(
                         CooldownStatus.RATE_LIMITED_MESSAGE_ALREADY_SENT,
                         cooldownTriggeredAt,
-                        commandCooldownMultiplied
+                        correctedCooldownMultiplied
                 )
             }
 
             lastRatelimitMessageForUser[ev.author.idLong] = System.currentTimeMillis()
+
             return CooldownResponse(
                     CooldownStatus.RATE_LIMITED_SEND_MESSAGE,
                     cooldownTriggeredAt,
-                    commandCooldownMultiplied
+                    correctedCooldownMultiplied
             )
         } else {
             lastRatelimitMessageForUser.remove(ev.author.idLong)
@@ -134,6 +132,18 @@ class CommandCooldownManager(val loritta: LorittaDiscord) {
                 commandCooldownMultiplied
         )
     }
+
+    private fun getUserCommandCooldown(user: User, commandCooldown: Int) = getUserCommandCooldown(user.idLong, commandCooldown)
+
+    private fun getUserCommandCooldown(userId: Long, commandCooldown: Int) = commandCooldown *
+            Math.max(
+                    1,
+                    (
+                            growingRatelimitUsers.getOrDefault(
+                                    userId, 1
+                            )
+                            )
+            )
 
     data class CooldownResponse(
             val status: CooldownStatus,
