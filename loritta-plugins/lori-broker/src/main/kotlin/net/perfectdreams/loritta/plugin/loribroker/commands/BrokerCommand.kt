@@ -11,7 +11,6 @@ import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 
 class BrokerCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractCommandBase(plugin.loritta, plugin.aliases, CommandCategory.ECONOMY) {
 	override fun command() = create {
@@ -21,7 +20,7 @@ class BrokerCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractCommandBase(p
 			if (this.args.getOrNull(0) == "sell_all" && this.user.idLong == 123170274651668480L) {
 				val byUser = mutableMapOf<Long, Long>()
 
-				newSuspendedTransaction {
+				loritta.newSuspendedTransaction {
 					val x = BoughtStocks.selectAll()
 
 					x.forEach {
@@ -30,7 +29,7 @@ class BrokerCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractCommandBase(p
 				}
 
 				for ((user, track) in byUser) {
-					newSuspendedTransaction {
+					loritta.newSuspendedTransaction {
 						val profile = LorittaLauncher.loritta._getLorittaProfile(user)
 
 						if (profile != null) {

@@ -22,7 +22,6 @@ import net.perfectdreams.loritta.utils.config.FanArtArtist
 import net.perfectdreams.loritta.utils.extensions.toJDA
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import java.io.File
@@ -71,7 +70,7 @@ object AddBackgroundCommand {
 			} else null
 
 			val collectionId = if (collection != null) {
-				newSuspendedTransaction {
+				loritta.newSuspendedTransaction {
 					Sets.select { Sets.internalName eq collection }
 							.firstOrNull()
 				}
