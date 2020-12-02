@@ -73,6 +73,7 @@ class BrokerCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractCommandBase(p
 									Emotes.LORI_CRYING
 							).joinToString("\n")
 					)
+					.setFooter(locale["commands.economy.broker.footer"])
 
 			// Sorted by the ticker name
 			for (stock in stocks.sortedBy { it["short_name"]!!.jsonPrimitive.content }) {
@@ -86,14 +87,14 @@ class BrokerCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractCommandBase(p
 				if (stock["current_session"]!!.jsonPrimitive.content != LoriBrokerPlugin.MARKET)
 					embed.addField(
 							"${Emotes.DO_NOT_DISTURB} `${stock["short_name"]?.jsonPrimitive?.content}` ($tickerName)",
-							"**Preço antes do fechamento:** ${plugin.convertReaisToSonhos(stock[LoriBrokerPlugin.CURRENT_PRICE_FIELD]?.jsonPrimitive?.double!!)} sonhos",
+							locale["commands.economy.broker.priceBeforeMarketClose", plugin.convertReaisToSonhos(stock[LoriBrokerPlugin.CURRENT_PRICE_FIELD]?.jsonPrimitive?.double!!)],
 							true
 					)
 				else
 					embed.addField(
 							"${Emotes.ONLINE} `${stock["short_name"]?.jsonPrimitive?.content}` ($tickerName)",
-							"""**Compra:** $buyingPrice
-							  |**Venda:** $sellingPrice
+							"""${locale["commands.economy.broker.buyPrice", buyingPrice]}
+							  |${locale["commands.economy.broker.sellPrice", sellingPrice]}
 							""".trimMargin(),
 							true
 					)
