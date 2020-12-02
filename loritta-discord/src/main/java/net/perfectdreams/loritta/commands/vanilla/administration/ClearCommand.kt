@@ -2,8 +2,6 @@ package net.perfectdreams.loritta.commands.vanilla.administration
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.extensions.await
-import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.future.await
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
@@ -12,17 +10,12 @@ import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.CommandContext
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
-import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.extensions.build
-import net.perfectdreams.loritta.utils.extensions.toJDA
-import net.perfectdreams.loritta.utils.styledReply
+import net.perfectdreams.loritta.utils.sendStyledReply
 import java.util.*
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
 class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta, listOf("clean", "limpar", "clear"), CommandCategory.ADMIN) {
@@ -76,7 +69,7 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
                 fail(locale["commands.moderation.clear.couldNotFindMessages"], Constants.ERROR)
             else clear(allowedMessages) // But if so, we're going to clear them!
 
-            styledReply {
+            sendStyledReply {
                 append {
                     prefix = "\uD83C\uDF89"
                     message = locale["commands.moderation.clear.success", allowedMessages.size, user.asMention]
