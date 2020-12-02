@@ -92,7 +92,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			if (user == null || context.userHandle == user) {
 				context.reply(
                         LorittaReply(
-                                locale["commands.userDoesNotExist", context.rawArgs[0]],
+                                locale["commands.userDoesNotExist", "`${context.rawArgs[0]}`"],
                                 Constants.ERROR
                         )
 				)
