@@ -16,7 +16,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import java.awt.Color
 
-class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak"), category = CommandCategory.MISC) {
+class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak", "lang"), category = CommandCategory.MISC) {
     private val resetPersonalLanguageEmote = "\uD83D\uDE45"
 
     override fun getDescription(locale: BaseLocale): String {
