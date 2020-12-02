@@ -91,7 +91,7 @@ data class StyledReplyWrapper(
  *
  * @param builder The reply builder
  */
-suspend fun CommandContext.styledReply(builder: ReplyBuilder.() -> Unit) =
+suspend fun CommandContext.sendStyledReply(builder: ReplyBuilder.() -> Unit) =
         reply(buildStyledReply(builder))
 
 /**
