@@ -54,14 +54,14 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
             // The filter text and target user, null if not available
             val (targets, targetInserted, text, textInserted) = getOptions()
 
-            if (targets.isEmpty() && targetInserted)
+            if (targets.filterNotNull().size != targets.size && targetInserted)
                 fail(locale["commands.moderation.clear.invalidUserFilter"], Constants.ERROR)
             if (text == null && textInserted)
                 fail(locale["commands.moderation.clear.invalidTextFilter"], Constants.ERROR)
 
             val messages = channel.iterableHistory.takeAsync(count).await()
 
-            val allowedMessages = messages.applyAvailabilityFilterToCollection(text, targets)
+            val allowedMessages = messages.applyAvailabilityFilterToCollection(text, targets.filterNotNull().toSet())
             val disallowedMessages = messages.minus(allowedMessages)
 
             if (allowedMessages.isEmpty()) // If there are no allowed messages, we'll cancel the execution
@@ -119,14 +119,17 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
         val options = args.drop(1).joinToString("").trim().split("from")
 
         var text: String? = options.firstOrNull()
+        var textInserted = true
+
         if (text?.trim()?.startsWith("$TARGET_OPTION_NAME:") == true) {
             text = null
+            textInserted = false
         }
 
         val targetArguments = options.let { if (text != null) it.drop(text.split(" ").size) else it }
         val targets = getUserIdsFromArguments(guild, targetArguments)
 
-        return CommandOptions(targets, targets.isEmpty(), text, text != null)
+        return CommandOptions(targets, targets.isNotEmpty(), text, textInserted)
     }
 
     /**
@@ -136,18 +139,12 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
      *
      * @param guild The message's guild
      * @param arguments The arguments that will be checked
+     * @return Null if at least one target was inserted but not found
      */
-    private suspend fun getUserIdsFromArguments(guild: Guild?, arguments: List<String>): Set<Long> {
-        val targets = mutableSetOf<Long>()
+    private suspend fun getUserIdsFromArguments(guild: Guild?, arguments: List<String>): Set<Long?> {
+        val targets: MutableSet<Long?> = mutableSetOf()
         for (target in arguments) {
-            val user = DiscordUtils.extractUserFromString(target, guild = guild)?.idLong
-
-            if (user == null) {
-                targets.clear()
-                break
-            }
-
-            targets.add(user)
+            targets.add(DiscordUtils.extractUserFromString(target, guild = guild)?.idLong)
         }
         return targets
     }
@@ -165,7 +162,7 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
     }
 
     data class CommandOptions(
-            val targets: Set<Long>,
+            val targets: Set<Long?>,
             val targetInserted: Boolean,
             val text: String?,
             val textInserted: Boolean
