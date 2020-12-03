@@ -4,6 +4,7 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.utils.Constants
 import kotlinx.coroutines.future.await
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.TextChannel
 import net.perfectdreams.loritta.api.commands.ArgumentType
@@ -118,20 +119,28 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
         val options = args.drop(1).joinToString("").trim().split("from")
 
         var text: String? = options.firstOrNull()
-        var textInserted = true
-
         if (text?.trim()?.startsWith("from:") == true) {
             text = null
-            textInserted = false
         }
 
-        val targets = mutableSetOf<Long>()
         val targetArguments = options.let { if (text != null) it.drop(text.split(" ").size) else it }
+        val targets = getUserIdsFromArguments(guild, targetArguments)
 
-        var targetInserted = false
+        return CommandOptions(targets, targets.isEmpty(), text, text != null)
+    }
 
-        for (target in targetArguments) {
-            val user = DiscordUtils.extractUserFromString(target, guild = discordMessage.guild)?.idLong
+    /**
+     * This method will try to get the max number of users
+     * possible, and if one of them is invalid, it will return an empty list
+     * to provide better validating/debugging
+     *
+     * @param guild The message's guild
+     * @param arguments The arguments that will be checked
+     */
+    private suspend fun getUserIdsFromArguments(guild: Guild?, arguments: List<String>): Set<Long> {
+        val targets = mutableSetOf<Long>()
+        for (target in arguments) {
+            val user = DiscordUtils.extractUserFromString(target, guild = guild)?.idLong
 
             if (user == null) {
                 targets.clear()
@@ -139,10 +148,8 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
             }
 
             targets.add(user)
-            targetInserted = true
         }
-
-        return CommandOptions(targets, targetInserted, text, textInserted)
+        return targets
     }
 
     /**
