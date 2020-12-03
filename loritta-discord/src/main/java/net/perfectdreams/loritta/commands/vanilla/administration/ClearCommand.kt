@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.api.commands.CommandContext
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
-import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
+import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.utils.sendStyledReply
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -31,7 +31,7 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
             argument(ArgumentType.NUMBER) {
                 optional = false
             }
-            argument(ArgumentType.USER){
+            argument(ArgumentType.TEXT){
                 optional = true
             }
         }
@@ -50,8 +50,21 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
             if (unavailableGuilds.contains(guild.idLong))
                 fail(locale["commands.moderation.clear.operationQueued"], Constants.ERROR)
 
-            // The filter text, null if not available
-            val text = args.drop(1).joinToString(" ").split("|").lastOrNull()?.trim()
+            // The filter text and target user, null if not available
+            val (target, targetInserted, text, textInserted) = getOptions()
+
+            if (target == null && targetInserted)
+                fail(locale["commands.moderation.clear.invalidUserFilter"], Constants.ERROR)
+            if (text == null && textInserted)
+                fail(locale["commands.moderation.clear.invalidTextFilter"], Constants.ERROR)
+
+            val messages = channel.iterableHistory.takeAsync(count).await()
+
+            val allowedMessages = messages.applyAvailabilityFilterToCollection(text, target)
+            val disallowedMessages = messages.minus(allowedMessages)
+
+            if (allowedMessages.isEmpty()) // If there are no allowed messages, we'll cancel the execution
+                fail(locale["commands.moderation.clear.couldNotFindMessages"], Constants.ERROR)
 
             // Deleting the user's message (the command one, +clear)
             runCatching {
@@ -60,14 +73,8 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
                         .await()
             }
 
-            val messages = channel.iterableHistory.takeAsync(count).await()
-
-            val allowedMessages = messages.applyAvailabilityFilterToCollection(text, user(1))
-            val disallowedMessages = messages.minus(allowedMessages)
-
-            if (allowedMessages.isEmpty()) // If there are no allowed messages, we'll cancel the execution
-                fail(locale["commands.moderation.clear.couldNotFindMessages"], Constants.ERROR)
-            else clear(allowedMessages) // But if so, we're going to clear them!
+            // Clear the messages after deleting the command's one3
+            clear(allowedMessages)
 
             sendStyledReply {
                 append {
@@ -94,11 +101,40 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
      * @factor If the target isn't null, the message must be from the target
      * @factor If the text isn't null, the message must contains the text
      */
-    private fun List<Message>.applyAvailabilityFilterToCollection(text: String?, target: JDAUser?) = filter {
+    private fun List<Message>.applyAvailabilityFilterToCollection(text: String?, target: Long?) = filter {
         (((System.currentTimeMillis() / 1000) - it.timeCreated.toEpochSecond()) < 1209600) // The message can't be older than 2 weeks
                 && (it.isPinned.not()) // The message can't be pinned
-                && (if (target != null) it.author.idLong == target.id else true) // If the target isn't null, the message must be from the target
+                && (if (target != null) it.author.idLong == target else true) // If the target isn't null, the message must be from the target
                 && (if (text != null) it.contentStripped.contains(text.trim(), ignoreCase = true) else true) // If the text isn't null, the message must contains the text
+    }
+
+    /**
+     * This method will retrieve all the 
+     * command options to the user, including the contains and from one
+     * 
+     * @return Command options
+     */
+    private suspend fun DiscordCommandContext.getOptions(): CommandOptions {
+        val options = args.drop(1).joinToString("").trim().split("and").map { it.replace(" ", "") }
+
+        var target: Long? = null
+        var text: String? = null
+
+        var targetInserted = false
+        var textInserted = false
+
+        for (option in options) {
+            if (option.startsWith("$TARGET_OPTION_NAME:")) {
+                targetInserted = true
+                target = option.substring(TARGET_OPTION_NAME.length+1).let { DiscordUtils.extractUserFromString(it, guild = discordMessage.guild)?.idLong }
+            }
+            if (option.startsWith("$TEXT_FILTERING_OPTION_NAME:")) {
+                textInserted = true
+                text = option.substring(TEXT_FILTERING_OPTION_NAME.length+2)
+            }
+        }
+
+        return CommandOptions(target, targetInserted, text, textInserted)
     }
 
     /**
@@ -112,9 +148,19 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
         discordMessage.textChannel.purgeMessages(messages) // Purging the messages
     }
 
+    data class CommandOptions(
+            val target: Long?,
+            val targetInserted: Boolean,
+            val text: String?,
+            val textInserted: Boolean
+    )
+
     companion object {
 
         const val MAX_RANGE = 1000L
+
+        const val TARGET_OPTION_NAME = "from"
+        const val TEXT_FILTERING_OPTION_NAME = "contains"
 
         @JvmStatic
         private val unavailableGuilds = Collections.newSetFromMap(Caffeine.newBuilder()
