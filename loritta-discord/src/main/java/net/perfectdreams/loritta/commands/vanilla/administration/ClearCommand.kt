@@ -130,9 +130,6 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
         val targetArguments = options.let { if (text != null) it.drop(text.split(" ").size) else it }
         val targets = getUserIdsFromArguments(guild, targetArguments)
 
-        println("TEXTO: $text")
-        println("ALVOS: $targets")
-
         return CommandOptions(targets, text, textInserted)
     }
 
