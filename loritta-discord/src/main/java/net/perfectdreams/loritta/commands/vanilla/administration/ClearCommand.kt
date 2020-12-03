@@ -52,9 +52,9 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
                 fail(locale["commands.moderation.clear.operationQueued"], Constants.ERROR)
 
             // The filter text and target user, null if not available
-            val (targets, targetInserted, text, textInserted) = getOptions()
+            val (targets, text, textInserted) = getOptions()
 
-            if (targets.filterNotNull().size != targets.size && targetInserted)
+            if (targets.filterNotNull().isEmpty() && targets.isNotEmpty())
                 fail(locale["commands.moderation.clear.invalidUserFilter"], Constants.ERROR)
             if (text == null && textInserted)
                 fail(locale["commands.moderation.clear.invalidTextFilter"], Constants.ERROR)
@@ -132,7 +132,7 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
         val targetArguments = options.let { if (text != null) it.drop(text.split(" ").size) else it }
         val targets = getUserIdsFromArguments(guild, targetArguments)
 
-        return CommandOptions(targets, targets.isNotEmpty(), text, textInserted)
+        return CommandOptions(targets, text, textInserted)
     }
 
     /**
@@ -155,7 +155,7 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
     private suspend fun getUserIdsFromArguments(guild: Guild?, arguments: List<String>): Set<Long?> {
         val targets: MutableSet<Long?> = mutableSetOf()
         for (target in arguments) {
-            targets.add(DiscordUtils.extractUserFromString(target, guild = guild)?.idLong)
+            targets.add(DiscordUtils.extractUserFromString(target.trim().substring(1), guild = guild)?.idLong)
         }
         return targets
     }
@@ -174,7 +174,6 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
 
     data class CommandOptions(
             val targets: Set<Long?>,
-            val targetInserted: Boolean,
             val text: String?,
             val textInserted: Boolean
     )
