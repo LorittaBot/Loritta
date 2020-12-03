@@ -51,16 +51,16 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
                 fail(locale["commands.moderation.clear.operationQueued"], Constants.ERROR)
 
             // The filter text and target user, null if not available
-            val (target, targetInserted, text, textInserted) = getOptions()
+            val (targets, targetInserted, text, textInserted) = getOptions()
 
-            if (target == null && targetInserted)
+            if (targets.isEmpty() && targetInserted)
                 fail(locale["commands.moderation.clear.invalidUserFilter"], Constants.ERROR)
             if (text == null && textInserted)
                 fail(locale["commands.moderation.clear.invalidTextFilter"], Constants.ERROR)
 
             val messages = channel.iterableHistory.takeAsync(count).await()
 
-            val allowedMessages = messages.applyAvailabilityFilterToCollection(text, target)
+            val allowedMessages = messages.applyAvailabilityFilterToCollection(text, targets)
             val disallowedMessages = messages.minus(allowedMessages)
 
             if (allowedMessages.isEmpty()) // If there are no allowed messages, we'll cancel the execution
@@ -101,10 +101,10 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
      * @factor If the target isn't null, the message must be from the target
      * @factor If the text isn't null, the message must contains the text
      */
-    private fun List<Message>.applyAvailabilityFilterToCollection(text: String?, target: Long?) = filter {
+    private fun List<Message>.applyAvailabilityFilterToCollection(text: String?, targets: Set<Long>) = filter {
         (((System.currentTimeMillis() / 1000) - it.timeCreated.toEpochSecond()) < 1209600) // The message can't be older than 2 weeks
                 && (it.isPinned.not()) // The message can't be pinned
-                && (if (target != null) it.author.idLong == target else true) // If the target isn't null, the message must be from the target
+                && (if (targets.isNotEmpty()) targets.contains(it.author.idLong) else true) // If the target isn't null, the message must be from one of the targets
                 && (if (text != null) it.contentStripped.contains(text.trim(), ignoreCase = true) else true) // If the text isn't null, the message must contains the text
     }
 
@@ -115,26 +115,34 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
      * @return Command options
      */
     private suspend fun DiscordCommandContext.getOptions(): CommandOptions {
-        val options = args.drop(1).joinToString("").trim().split("and").map { it.replace(" ", "") }
+        val options = args.drop(1).joinToString("").trim().split("from")
 
-        var target: Long? = null
-        var text: String? = null
+        var text: String? = options.firstOrNull()
+        var textInserted = true
 
-        var targetInserted = false
-        var textInserted = false
-
-        for (option in options) {
-            if (option.startsWith("$TARGET_OPTION_NAME:")) {
-                targetInserted = true
-                target = option.substring(TARGET_OPTION_NAME.length+1).let { DiscordUtils.extractUserFromString(it, guild = discordMessage.guild)?.idLong }
-            }
-            if (option.startsWith("$TEXT_FILTERING_OPTION_NAME:")) {
-                textInserted = true
-                text = option.substring(TEXT_FILTERING_OPTION_NAME.length+2)
-            }
+        if (text?.trim()?.startsWith("from:") == true) {
+            text = null
+            textInserted = false
         }
 
-        return CommandOptions(target, targetInserted, text, textInserted)
+        val targets = mutableSetOf<Long>()
+        val targetArguments = options.let { if (text != null) it.drop(text.split(" ").size) else it }
+
+        var targetInserted = false
+
+        for (target in targetArguments) {
+            val user = DiscordUtils.extractUserFromString(target, guild = discordMessage.guild)?.idLong
+
+            if (user == null) {
+                targets.clear()
+                break
+            }
+
+            targets.add(user)
+            targetInserted = true
+        }
+
+        return CommandOptions(targets, targetInserted, text, textInserted)
     }
 
     /**
@@ -149,7 +157,7 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
     }
 
     data class CommandOptions(
-            val target: Long?,
+            val targets: Set<Long>,
             val targetInserted: Boolean,
             val text: String?,
             val textInserted: Boolean
