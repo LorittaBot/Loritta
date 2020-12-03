@@ -61,7 +61,7 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
 
             val messages = channel.iterableHistory.takeAsync(count).await()
 
-            val allowedMessages = messages.applyAvailabilityFilterToCollection(text, targets.filterNotNull().toSet())
+            val allowedMessages = messages.applyAvailabilityFilterToCollection(text, targets.filterNotNull().toSet()).minus(discordMessage)
             val disallowedMessages = messages.minus(allowedMessages)
 
             if (allowedMessages.isEmpty()) // If there are no allowed messages, we'll cancel the execution
@@ -116,32 +116,25 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
      * @return Command options
      */
     private suspend fun DiscordCommandContext.getOptions(): CommandOptions {
-        val options = args.drop(1).joinToString("").trim().split("from")
+        val optionName = locale["commands.moderation.clear.targetOption"]
+        val options = args.drop(1).joinToString(" ").trim().split("$optionName:")
 
         var text: String? = options.firstOrNull()
         var textInserted = true
 
-        for (optionName in getTargetOptionsName()) {
-            if (text?.trim()?.startsWith("$optionName:") == true) {
-                text = null
-                textInserted = false
-                break
-            }
+        if (text?.trim()?.startsWith("$optionName:") == true) {
+            text = null
+            textInserted = false
         }
 
         val targetArguments = options.let { if (text != null) it.drop(text.split(" ").size) else it }
         val targets = getUserIdsFromArguments(guild, targetArguments)
 
+        println("TEXTO: $text")
+        println("ALVOS: $targets")
+
         return CommandOptions(targets, text, textInserted)
     }
-
-    /**
-     * This will retrieve all "from" translations, we'll use this
-     * to add support to all kinds of language, just like Discord does (or not xD)
-     */
-    private fun getTargetOptionsName(): Set<String> = loritta.locales.values.map {
-        it["commands.moderation.clear.targetOption"]
-    }.toSet()
 
     /**
      * This method will try to get the max number of users
@@ -155,7 +148,7 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
     private suspend fun getUserIdsFromArguments(guild: Guild?, arguments: List<String>): Set<Long?> {
         val targets: MutableSet<Long?> = mutableSetOf()
         for (target in arguments) {
-            targets.add(DiscordUtils.extractUserFromString(target.trim().substring(1), guild = guild)?.idLong)
+            targets.add(DiscordUtils.extractUserFromString(target.trim(), guild = guild)?.idLong)
         }
         return targets
     }
