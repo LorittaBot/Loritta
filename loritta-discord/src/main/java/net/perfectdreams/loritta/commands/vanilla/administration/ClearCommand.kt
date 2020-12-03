@@ -121,9 +121,12 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
         var text: String? = options.firstOrNull()
         var textInserted = true
 
-        if (text?.trim()?.startsWith("$TARGET_OPTION_NAME:") == true) {
-            text = null
-            textInserted = false
+        for (optionName in getTargetOptionsName()) {
+            if (text?.trim()?.startsWith("$optionName:") == true) {
+                text = null
+                textInserted = false
+                break
+            }
         }
 
         val targetArguments = options.let { if (text != null) it.drop(text.split(" ").size) else it }
@@ -131,6 +134,14 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
 
         return CommandOptions(targets, targets.isNotEmpty(), text, textInserted)
     }
+
+    /**
+     * This will retrieve all "from" translations, we'll use this
+     * to add support to all kinds of language, just like Discord does (or not xD)
+     */
+    private fun getTargetOptionsName(): Set<String> = loritta.locales.values.map {
+        it["commands.moderation.clear.targetOption"]
+    }.toSet()
 
     /**
      * This method will try to get the max number of users
