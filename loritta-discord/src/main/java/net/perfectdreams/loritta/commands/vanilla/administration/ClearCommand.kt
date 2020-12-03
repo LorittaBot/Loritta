@@ -2,7 +2,9 @@ package net.perfectdreams.loritta.commands.vanilla.administration
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.utils.Constants
+import kotlinx.coroutines.future.asDeferred
 import kotlinx.coroutines.future.await
+import kotlinx.coroutines.joinAll
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
@@ -156,9 +158,11 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
      *
      * @param messages The messages that should be deleted
      */
-    private fun DiscordCommandContext.clear(messages: List<Message>) {
+    private suspend fun DiscordCommandContext.clear(messages: List<Message>) {
         unavailableGuilds.add(guild.idLong) // Adding the operation to the guild
-        discordMessage.textChannel.purgeMessages(messages) // Purging the messages
+        discordMessage.textChannel.purgeMessages(messages)
+                .map { it.asDeferred() }.joinAll() // Purging the messages and awaiting
+
         unavailableGuilds.remove(guild.idLong)
     }
 
