@@ -181,7 +181,6 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
     companion object {
 
         const val MAX_RANGE = 1000L
-        const val TARGET_OPTION_NAME = "from"
 
         @JvmStatic
         private val unavailableGuilds = Collections.newSetFromMap(Caffeine.newBuilder()
