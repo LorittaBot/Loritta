@@ -119,7 +119,7 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
         val options = args.drop(1).joinToString("").trim().split("from")
 
         var text: String? = options.firstOrNull()
-        if (text?.trim()?.startsWith("from:") == true) {
+        if (text?.trim()?.startsWith("$TARGET_OPTION_NAME:") == true) {
             text = null
         }
 
@@ -161,6 +161,7 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
     private fun DiscordCommandContext.clear(messages: List<Message>) {
         unavailableGuilds.add(guild.idLong) // Adding the operation to the guild
         discordMessage.textChannel.purgeMessages(messages) // Purging the messages
+        unavailableGuilds.remove(guild.idLong)
     }
 
     data class CommandOptions(
@@ -173,9 +174,7 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
     companion object {
 
         const val MAX_RANGE = 1000L
-
         const val TARGET_OPTION_NAME = "from"
-        const val TEXT_FILTERING_OPTION_NAME = "contains"
 
         @JvmStatic
         private val unavailableGuilds = Collections.newSetFromMap(Caffeine.newBuilder()
