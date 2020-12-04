@@ -59,15 +59,23 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 	 */
 	suspend fun getBannedState(): ResultRow? {
 		val bannedState = loritta.newSuspendedTransaction {
-			BannedUsers.select { BannedUsers.userId eq this@Profile.id.value }
+			BannedUsers.select {
+				BannedUsers.userId eq this@Profile.id.value and
+						(BannedUsers.valid eq true) and
+						(
+								BannedUsers.expiresAt.isNull()
+										or
+										(
+												BannedUsers.expiresAt.isNotNull() and
+														(BannedUsers.expiresAt greaterEq System.currentTimeMillis()))
+								)
+
+			}
 					.orderBy(BannedUsers.bannedAt, SortOrder.DESC)
 					.firstOrNull()
 		} ?: return null
 
-		if (bannedState[BannedUsers.valid] && bannedState[BannedUsers.expiresAt] ?: Long.MAX_VALUE >= System.currentTimeMillis())
-			return bannedState
-
-		return null
+		return bannedState
 	}
 
 	fun getCurrentLevel(): XpWrapper {
