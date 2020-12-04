@@ -148,6 +148,8 @@ class BomDiaECia {
 
 	private val logger = KotlinLogging.logger {}
 
+	var validTextChannels: Set<TextChannel>? = null
+
 	fun handleBomDiaECia(forced: Boolean) {
 		if (forced)
 			thread.interrupt()
@@ -157,6 +159,7 @@ class BomDiaECia {
 		logger.info("Vamos anunciar o Bom Dia & Cia! (Agora é a hora!)")
 
 		val validTextChannels = getActiveTextChannels()
+		this.validTextChannels = validTextChannels
 
 		available = true
 
@@ -197,9 +200,8 @@ class BomDiaECia {
 
 	@Synchronized
 	fun announceWinner(channel: TextChannel, guild: Guild, user: User) {
-		val validTextChannels = getActiveTextChannels()
-
-		activeTextChannels.clear()
+		val validTextChannels = this.validTextChannels
+				?: return // If there isn't any valid active channels, we don't need to announce the winner
 
 		val messageForLocales = mutableMapOf<String, Message>()
 
@@ -233,6 +235,8 @@ class BomDiaECia {
 				}
 			}
 		}
+
+		this.validTextChannels = null
 	}
 
 	fun getActiveTextChannels(): Set<TextChannel> {
