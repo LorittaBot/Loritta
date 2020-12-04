@@ -187,7 +187,6 @@ class CommandManager(loritta: Loritta) {
 		// commandMap.add(MALMangaCommand())
 
 		// =======[ ADMIN ]========
-		commandMap.add(LimparCommand())
 		commandMap.add(RoleIdCommand())
 		commandMap.add(MuteCommand())
 		commandMap.add(UnmuteCommand())
