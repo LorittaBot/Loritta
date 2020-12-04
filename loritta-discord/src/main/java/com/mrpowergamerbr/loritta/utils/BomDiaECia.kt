@@ -200,6 +200,8 @@ class BomDiaECia {
 
 	@Synchronized
 	fun announceWinner(channel: TextChannel, guild: Guild, user: User) {
+		activeTextChannels.clear()
+		
 		val validTextChannels = this.validTextChannels
 				?: return // If there isn't any valid active channels, we don't need to announce the winner
 
