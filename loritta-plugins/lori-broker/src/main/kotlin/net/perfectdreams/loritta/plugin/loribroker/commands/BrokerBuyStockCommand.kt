@@ -73,7 +73,7 @@ class BrokerBuyStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComma
 			val now = System.currentTimeMillis()
 
 			mutex.withLock {
-				logger.info { "User ${this.user.idLong} is trying to buy $number $tickerId for $quantity" }
+				logger.info { "User ${this.user.idLong} is trying to buy $number $tickerId for $howMuchValue" }
 				loritta.newSuspendedTransaction {
 					val currentStockCount = BoughtStocks.select {
 						BoughtStocks.user eq user.idLong

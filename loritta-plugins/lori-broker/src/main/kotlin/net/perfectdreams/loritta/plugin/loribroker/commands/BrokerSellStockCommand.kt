@@ -102,7 +102,7 @@ class BrokerSellStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComm
 					)
 				}
 
-				logger.info { "User ${this.user.idLong} sold $number $tickerId for $quantity" }
+				logger.info { "User ${this.user.idLong} sold $number $tickerId for $howMuchWillBePaidToTheUser" }
 
 				reply(
 						LorittaReply(
