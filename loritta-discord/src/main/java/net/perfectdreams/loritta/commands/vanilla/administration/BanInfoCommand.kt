@@ -41,11 +41,12 @@ class BanInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lorit
             
             try {
                 val banInformation = userId.let { guild.retrieveBanById(it.toLong()).await() }
+                val banReason = banInformation.reason ?: locale["commands.moderation.baninfo.noReasonSpecified"]
                 val embed = EmbedBuilder()
                         .setTitle("${Emotes.LORI_COFFEE} ${locale["commands.moderation.baninfo.title"]}")
                         .setThumbnail(banInformation.user.avatarUrl)
                         .addField("${Emotes.LORI_TEMMIE} ${locale["commands.moderation.baninfo.user"]}", "`${banInformation.user.asTag}`", false)
-                        .addField("${Emotes.LORI_BAN_HAMMER} ${locale["commands.moderation.baninfo.reason"]}", "`${banInformation.reason}`", false)
+                        .addField("${Emotes.LORI_BAN_HAMMER} ${locale["commands.moderation.baninfo.reason"]}", "`${banReason}`", false)
                         .setColor(Constants.DISCORD_BLURPLE)
                         .setFooter("Se você deseja desbanir este usuário, aperte no ⚒️!")
                 discordMessage.channel.sendMessage(embed.build()).await().also {
