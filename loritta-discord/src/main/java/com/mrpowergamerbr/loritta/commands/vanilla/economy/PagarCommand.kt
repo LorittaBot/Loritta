@@ -170,7 +170,12 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
                                 context.locale["commands.economy.pay.clickToAcceptTheTransaction", user.asMention, "✅"],
                                 "🤝",
                                 mentionUser = false
-                        )
+                        ),
+						LorittaReply(
+								context.locale["commands.economy.pay.sellDisallowedWarning", "${loritta.instanceConfig.loritta.website.url}guidelines"],
+								Emotes.LORI_BAN_HAMMER,
+								mentionUser = false
+						)
 				)
 
 				message.onReactionAdd(context) {
