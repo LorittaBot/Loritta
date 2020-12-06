@@ -560,6 +560,11 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
     }
 
     suspend fun <T> newSuspendedTransaction(repetitions: Int = 5, transactionIsolation: Int = Connection.TRANSACTION_REPEATABLE_READ, statement: Transaction.() -> T): T = withContext(Dispatchers.IO) {
+        val transactionIsolation = if (!loritta.config.database.type.startsWith("SQLite"))
+            transactionIsolation
+        else // SQLite does not support a lot of transaction isolations (only TRANSACTION_READ_UNCOMMITTED and TRANSACTION_SERIALIZABLE)
+            Connection.TRANSACTION_SERIALIZABLE
+
         transaction(transactionIsolation, repetitions, Databases.loritta) {
             statement.invoke(this)
         }
