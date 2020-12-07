@@ -18,13 +18,13 @@ import java.io.File
 
 class AtendenteCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("atendente"), CommandCategory.IMAGES) {
     companion object {
-        private const val LOCALE_PREFIX = "commands.images"
+        private const val LOCALE_PREFIX = "commands.images.atendente"
     }
 
     override fun command() = create {
         needsToUploadFiles = true
 
-        localizedDescription("$LOCALE_PREFIX.atendente.description")
+        localizedDescription("$LOCALE_PREFIX.description")
 
         usage {
             arguments {
@@ -33,7 +33,7 @@ class AtendenteCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lor
         }
 
         examples {
-            localizedExamples("$LOCALE_PREFIX.images.atendente.examples")
+            localizedExamples("$LOCALE_PREFIX.examples")
         }
 
         executesDiscord {
