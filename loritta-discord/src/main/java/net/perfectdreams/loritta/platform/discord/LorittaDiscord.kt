@@ -122,7 +122,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
     override val pluginManager = JVMPluginManager(this)
     override val assets = JVMLorittaAssets(this)
-    var messageInteractionCache = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<Long, MessageInteractionFunctions>().asMap()
+    open var messageInteractionCache = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<Long, MessageInteractionFunctions>().asMap()
     var locales = mapOf<String, BaseLocale>()
     var legacyLocales = mapOf<String, LegacyBaseLocale>()
     override val http = HttpClient(Apache) {
