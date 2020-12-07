@@ -17,7 +17,6 @@ import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbUserCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.*
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBattleCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBoxCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.*
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.utils.*
@@ -34,6 +33,7 @@ import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.utils.MarkdownSanitizer
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.commands.vanilla.utils.*
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.MiscellaneousConfig
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.tables.servers.CustomGuildCommands
@@ -128,23 +128,6 @@ class CommandManager(loritta: Loritta) {
 		commandMap.add(MarryCommand())
 		commandMap.add(DivorceCommand())
 		commandMap.add(GenderCommand())
-
-		// =======[ UTILS ]=======
-		commandMap.add(TranslateCommand())
-		commandMap.add(WikipediaCommand())
-		commandMap.add(MoneyCommand())
-		commandMap.add(ColorInfoCommand())
-		commandMap.add(LembrarCommand())
-		commandMap.add(DicioCommand())
-		commandMap.add(TempoCommand())
-		commandMap.add(PackageInfoCommand())
-		commandMap.add(KnowYourMemeCommand())
-		commandMap.add(AnagramaCommand())
-		commandMap.add(CalculadoraCommand())
-		commandMap.add(MorseCommand())
-		commandMap.add(OCRCommand())
-		commandMap.add(EncodeCommand())
-		commandMap.add(LyricsCommand())
 
 		// =======[ DISCORD ]=======
 		commandMap.add(createBotinfoCommand())

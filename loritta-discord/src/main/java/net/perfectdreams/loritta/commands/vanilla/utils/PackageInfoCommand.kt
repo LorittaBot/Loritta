@@ -1,80 +1,84 @@
-package com.mrpowergamerbr.loritta.commands.vanilla.utils
+package net.perfectdreams.loritta.commands.vanilla.utils
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.AbstractCommand
-import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.PackageInfoCommand.PackageSource.CORREIOS
-import com.mrpowergamerbr.loritta.commands.vanilla.utils.PackageInfoCommand.PackageSource.CTT
+import net.perfectdreams.loritta.commands.vanilla.utils.PackageInfoCommand.PackageSource.CORREIOS
+import net.perfectdreams.loritta.commands.vanilla.utils.PackageInfoCommand.PackageSource.CTT
 import com.mrpowergamerbr.loritta.utils.Constants
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.correios.CorreiosResponse
 import com.mrpowergamerbr.loritta.utils.correios.EncomendaResponse
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import java.awt.Color
-import java.util.*
 
-class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ctt"), CommandCategory.UTILS) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.utils.packageinfo.description"]
+class PackageInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("packageinfo", "correios", "ctt"), CommandCategory.UTILS) {
+	companion object {
+		private const val LOCALE_PREFIX = "commands.utils.packageinfo"
 	}
 
-	override fun getExamples(): List<String> {
-		return Arrays.asList("correios")
-	}
+	override fun command() = create {
+		localizedDescription("$LOCALE_PREFIX.description")
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		if (context.args.size == 1) {
-			val packageId = context.args[0]
-			try {
-				var pair = getCorreiosInfo(packageId)
-				var packageSource = CORREIOS
-				if (pair == null) {
-					pair = getCttInfo(packageId)
-					packageSource = CTT
-				}
+		examples {
+			+ "correios"
+		}
 
-				if (pair == null) {
+		executesDiscord {
+			val context = this
+
+			if (context.args.size == 1) {
+				val packageId = context.args[0]
+				try {
+					var pair = getCorreiosInfo(packageId)
+					var packageSource = CORREIOS
+					if (pair == null) {
+						pair = getCttInfo(packageId)
+						packageSource = CTT
+					}
+
+					if (pair == null) {
+						context.reply(
+								LorittaReply(
+										message = locale["$LOCALE_PREFIX.couldntFind", packageId],
+										prefix = Constants.ERROR
+								)
+						)
+						return@executesDiscord
+					}
+
+					var embed = EmbedBuilder()
+
+					var color = when (packageSource) {
+						CORREIOS -> Color(253, 220, 1)
+						CTT -> Color(223, 0, 36)
+					}
+
+					embed.setColor(color)
+
+					var emoji = when (packageSource) {
+						CORREIOS -> "<:correios:375314171644084234>"
+						CTT -> "<:ctt:385499134263689220>"
+					}
+
+					embed.setTitle("${emoji} " + pair.first) // A categoria é o tipo da encomenda
+
+					embed.setDescription("```diff\n${pair.second}```")
+
+					context.sendMessage(context.getUserMention(true), embed.build())
+				} catch (e: Exception) {
 					context.reply(
 							LorittaReply(
-									message = locale["commands.utils.packageinfo.couldntFind", packageId],
+									message = locale["$LOCALE_PREFIX.invalid", packageId],
 									prefix = Constants.ERROR
 							)
 					)
-					return
 				}
-
-				var embed = EmbedBuilder()
-
-				var color = when (packageSource) {
-					CORREIOS -> Color(253, 220, 1)
-					CTT -> Color(223, 0, 36)
-				}
-
-				embed.setColor(color)
-
-				var emoji = when (packageSource) {
-					CORREIOS -> "<:correios:375314171644084234>"
-					CTT -> "<:ctt:385499134263689220>"
-				}
-
-				embed.setTitle("${emoji} " + pair.first) // A categoria é o tipo da encomenda
-
-				embed.setDescription("```diff\n${pair.second}```")
-
-				context.sendMessage(context.getAsMention(true), embed.build())
-			} catch (e: Exception) {
-				context.reply(
-						LorittaReply(
-								message = locale["commands.utils.packageinfo.invalid", packageId],
-								prefix = Constants.ERROR
-						)
-				)
+			} else {
+				context.explain()
 			}
-		} else {
-			context.explain()
 		}
 	}
 

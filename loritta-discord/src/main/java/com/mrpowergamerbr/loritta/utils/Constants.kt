@@ -11,6 +11,7 @@ import com.jasonclawson.jackson.dataformat.hocon.HoconFactory
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.jackson.FixedMapDeserializer
 import org.yaml.snakeyaml.Yaml

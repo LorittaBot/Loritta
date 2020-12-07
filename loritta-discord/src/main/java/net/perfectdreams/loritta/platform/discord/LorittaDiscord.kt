@@ -6,12 +6,13 @@ import com.github.salomonbrys.kotson.*
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.*
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.vanilla.discord.ChannelInfoCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.discord.*
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.*
 import com.mrpowergamerbr.loritta.dao.*
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.profile.ProfileDesignManager
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.MessageInteractionFunctions
 import com.mrpowergamerbr.loritta.utils.config.*
 import com.mrpowergamerbr.loritta.utils.locale.*
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -32,6 +33,7 @@ import net.perfectdreams.loritta.commands.vanilla.administration.*
 import net.perfectdreams.loritta.commands.vanilla.economy.*
 import net.perfectdreams.loritta.commands.vanilla.magic.*
 import net.perfectdreams.loritta.commands.vanilla.social.*
+import net.perfectdreams.loritta.commands.vanilla.utils.*
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandMap
 import net.perfectdreams.loritta.platform.discord.plugin.JVMPluginManager
@@ -93,16 +95,34 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
                 // ===[ DISCORD ]===
                 ChannelInfoCommand(this@LorittaDiscord),
+
                 // ===[ FUN ]===
                 GiveawayCommand(this@LorittaDiscord),
                 GiveawayEndCommand(this@LorittaDiscord),
                 GiveawayRerollCommand(this@LorittaDiscord),
-                GiveawaySetupCommand(this@LorittaDiscord)
+                GiveawaySetupCommand(this@LorittaDiscord),
+
+                // ===[ UTILS ]===
+                AnagramaCommand(this@LorittaDiscord),
+                CalculadoraCommand(this@LorittaDiscord),
+                ColorInfoCommand(this@LorittaDiscord),
+                DicioCommand(this@LorittaDiscord),
+                EncodeCommand(this@LorittaDiscord),
+                KnowYourMemeCommand(this@LorittaDiscord),
+                LembrarCommand(this@LorittaDiscord),
+                MoneyCommand(this@LorittaDiscord),
+                MorseCommand(this@LorittaDiscord),
+                OCRCommand(this@LorittaDiscord),
+                PackageInfoCommand(this@LorittaDiscord),
+                TempoCommand(this@LorittaDiscord),
+                TranslateCommand(this@LorittaDiscord),
+                WikipediaCommand(this@LorittaDiscord)
         )
     }
 
     override val pluginManager = JVMPluginManager(this)
     override val assets = JVMLorittaAssets(this)
+    var messageInteractionCache = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<Long, MessageInteractionFunctions>().asMap()
     var locales = mapOf<String, BaseLocale>()
     var legacyLocales = mapOf<String, LegacyBaseLocale>()
     override val http = HttpClient(Apache) {
@@ -560,6 +580,11 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
     }
 
     suspend fun <T> newSuspendedTransaction(repetitions: Int = 5, transactionIsolation: Int = Connection.TRANSACTION_REPEATABLE_READ, statement: Transaction.() -> T): T = withContext(Dispatchers.IO) {
+        val transactionIsolation = if (!loritta.config.database.type.startsWith("SQLite"))
+            transactionIsolation
+        else // SQLite does not support a lot of transaction isolations (only TRANSACTION_READ_UNCOMMITTED and TRANSACTION_SERIALIZABLE)
+            Connection.TRANSACTION_SERIALIZABLE
+
         transaction(transactionIsolation, repetitions, Databases.loritta) {
             statement.invoke(this)
         }

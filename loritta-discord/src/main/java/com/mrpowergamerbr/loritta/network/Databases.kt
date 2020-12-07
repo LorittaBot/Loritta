@@ -69,7 +69,7 @@ object Databases {
 
 		// We need to use the same transaction isolation used in Exposed, in this case, TRANSACTION_READ_COMMITED.
 		// If not HikariCP will keep resetting to the default when returning to the pool, causing performance issues.
-		if (loritta.config.database.type != "SQLite") // SQLite only supports TRANSACTION_SERIALIZABLE and TRANSACTION_READ_UNCOMMITTED.
+		if (!loritta.config.database.type.startsWith("SQLite")) // SQLite only supports TRANSACTION_SERIALIZABLE and TRANSACTION_READ_UNCOMMITTED.
 			config.transactionIsolation = "TRANSACTION_REPEATABLE_READ"
 
 		return@lazy config
@@ -83,7 +83,7 @@ object Databases {
 		// Exposed 0.28.1 changed the transaction isolation level to Connection.TRANSACTION_READ_COMMITED
 		// So we switch back to our good old reliable TRANSACTION_REPETABLE_READ to *trigger* concurrent update exceptions.
 		// Because we don't want our stuff to be overwritten by other concurrent queries!
-		if (loritta.config.database.type != "SQLite") // SQLite only supports TRANSACTION_SERIALIZABLE and TRANSACTION_READ_UNCOMMITTED.
+		if (!loritta.config.database.type.startsWith("SQLite")) // SQLite only supports TRANSACTION_SERIALIZABLE and TRANSACTION_READ_UNCOMMITTED.
 			TransactionManager.manager.defaultIsolationLevel = Connection.TRANSACTION_REPEATABLE_READ
 
 		database
