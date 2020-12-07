@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.commands.vanilla.discord
+package net.perfectdreams.loritta.commands.vanilla.discord
 
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.DateUtils
@@ -11,11 +11,11 @@ import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractComman
 
 class ChannelInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("channelinfo", "channel"), CommandCategory.DISCORD) {
 	companion object {
-		private const val LOCALE_PREFIX = "commands.discord"
+		private const val LOCALE_PREFIX = "commands.discord.channelinfo"
 	}
 
 	override fun command() = create {
-		localizedDescription("$LOCALE_PREFIX.channelinfo.description")
+		localizedDescription("$LOCALE_PREFIX.description")
 
 		arguments {
 			argument(ArgumentType.TEXT) {
@@ -45,18 +45,18 @@ class ChannelInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(l
 			val builder = EmbedBuilder()
 
 			val channelTopic = if (channel.topic == null) {
-				"Tópico não definido!"
+				locale["$LOCALE_PREFIX.undefined"]
 			} else {
 				"```\n${channel.topic}```"
 			}
 
 			builder.setColor(Constants.DISCORD_BLURPLE)
-			builder.setTitle("\uD83D\uDC81 ${context.locale["$LOCALE_PREFIX.channelinfo.channelInfo", "#${channel.name}"]}")
+			builder.setTitle("\uD83D\uDC81 ${context.locale["$LOCALE_PREFIX.channelInfo", "#${channel.name}"]}")
 			builder.setDescription(channelTopic)
-			builder.addField("\uD83D\uDD39 ${context.locale["$LOCALE_PREFIX.channelinfo.channelMention"]}", "`${channel.asMention}`", true)
-			builder.addField("\uD83D\uDCBB ${context.locale["$LOCALE_PREFIX.userinfo.discordId"]}", "`${channel.id}`", true)
+			builder.addField("\uD83D\uDD39 ${context.locale["$LOCALE_PREFIX.channelMention"]}", "`${channel.asMention}`", true)
+			builder.addField("\uD83D\uDCBB ${context.locale["$LOCALE_PREFIX.channelId"]}", "`${channel.id}`", true)
 			builder.addField("\uD83D\uDD1E NSFW", if (channel.isNSFW) context.locale["loritta.fancyBoolean.true"] else context.locale["loritta.fancyBoolean.false"], true)
-			builder.addField("\uD83D\uDCC5 ${context.locale["$LOCALE_PREFIX.channelinfo.channelCreated"]}", channelCreatedDiff, true)
+			builder.addField("\uD83D\uDCC5 ${context.locale["$LOCALE_PREFIX.channelCreated"]}", channelCreatedDiff, true)
 			builder.addField("\uD83D\uDD39 Guild", "`${channel.guild.name}`", true)
 			context.sendMessage(context.user.asMention, builder.build())
 		}

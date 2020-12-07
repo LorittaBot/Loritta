@@ -6,7 +6,6 @@ import com.github.salomonbrys.kotson.*
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.*
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.vanilla.discord.*
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.*
 import com.mrpowergamerbr.loritta.dao.*
 import com.mrpowergamerbr.loritta.network.Databases
@@ -30,6 +29,7 @@ import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.utils.format
 import net.perfectdreams.loritta.commands.vanilla.`fun`.*
 import net.perfectdreams.loritta.commands.vanilla.administration.*
+import net.perfectdreams.loritta.commands.vanilla.discord.*
 import net.perfectdreams.loritta.commands.vanilla.economy.*
 import net.perfectdreams.loritta.commands.vanilla.magic.*
 import net.perfectdreams.loritta.commands.vanilla.social.*
@@ -51,8 +51,8 @@ import java.io.*
 import java.lang.reflect.Modifier
 import java.net.URL
 import java.sql.Connection
-import java.util.*
 import java.util.concurrent.*
+import java.util.jar.JarFile
 import java.util.zip.ZipInputStream
 import kotlin.collections.*
 import kotlin.collections.set
@@ -94,7 +94,18 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
                 FanArtsCommand(this@LorittaDiscord),
 
                 // ===[ DISCORD ]===
+                AddEmojiCommand(this@LorittaDiscord),
+                AvatarCommand(this@LorittaDiscord),
+                createBotinfoCommand(),
                 ChannelInfoCommand(this@LorittaDiscord),
+                EmojiCommand(this@LorittaDiscord),
+                EmojiInfoCommand(this@LorittaDiscord),
+                InviteCommand(this@LorittaDiscord),
+                InviteInfoCommand(this@LorittaDiscord),
+                RemoveEmojiCommand(this@LorittaDiscord),
+                ServerIconCommand(this@LorittaDiscord),
+                ServerInfoCommand(this@LorittaDiscord),
+                UserInfoCommand(this@LorittaDiscord),
 
                 // ===[ FUN ]===
                 GiveawayCommand(this@LorittaDiscord),
@@ -171,6 +182,14 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
     val pendingMessages = ConcurrentLinkedQueue<Job>()
     val guildSetupQueue = GuildSetupQueue(this)
     val commandCooldownManager = CommandCooldownManager(this)
+
+    private fun createBotinfoCommand(): BotInfoCommand {
+        val path = this::class.java.protectionDomain.codeSource.location.path
+        val jar = JarFile(path)
+        val manifest = jar.manifest
+        val mainAttributes = manifest.mainAttributes
+        return BotInfoCommand(this@LorittaDiscord, BuildInfo(mainAttributes))
+    }
 
     /**
      * Gets an user's profile background image or, if the user has a custom background, loads the custom background.

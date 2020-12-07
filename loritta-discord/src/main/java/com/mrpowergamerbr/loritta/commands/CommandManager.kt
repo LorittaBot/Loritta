@@ -4,13 +4,11 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.*
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.*
-import com.mrpowergamerbr.loritta.commands.vanilla.discord.*
 import com.mrpowergamerbr.loritta.commands.vanilla.economy.*
 import com.mrpowergamerbr.loritta.commands.vanilla.images.*
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.*
 import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.*
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.*
-import com.mrpowergamerbr.loritta.commands.vanilla.music.LyricsCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.pokemon.PokedexCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbGameCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbUserCommand
@@ -33,7 +31,7 @@ import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.utils.MarkdownSanitizer
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import net.perfectdreams.loritta.commands.vanilla.utils.*
+import net.perfectdreams.loritta.commands.vanilla.discord.*
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.MiscellaneousConfig
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.tables.servers.CustomGuildCommands
@@ -129,19 +127,6 @@ class CommandManager(loritta: Loritta) {
 		commandMap.add(DivorceCommand())
 		commandMap.add(GenderCommand())
 
-		// =======[ DISCORD ]=======
-		commandMap.add(createBotinfoCommand())
-		commandMap.add(AvatarCommand())
-		commandMap.add(ServerIconCommand())
-		commandMap.add(EmojiCommand())
-		commandMap.add(ServerInfoCommand())
-		commandMap.add(InviteCommand())
-		commandMap.add(UserInfoCommand())
-		commandMap.add(InviteInfoCommand())
-		commandMap.add(AddEmojiCommand())
-		commandMap.add(RemoveEmojiCommand())
-		commandMap.add(EmojiInfoCommand())
-
 		// =======[ MINECRAFT ]========
 		commandMap.add(OfflineUUIDCommand())
 		commandMap.add(McAvatarCommand())
@@ -200,14 +185,6 @@ class CommandManager(loritta: Loritta) {
 		commandMap.add(PagarCommand())
 		commandMap.add(SonhosCommand())
 		commandMap.add(LigarCommand())
-	}
-
-	private fun createBotinfoCommand(): BotInfoCommand {
-		val path = this::class.java.protectionDomain.codeSource.location.path
-		val jar = JarFile(path)
-		val manifest = jar.manifest
-		val mainAttributes = manifest.mainAttributes
-		return BotInfoCommand(BuildInfo(mainAttributes))
 	}
 
 	suspend fun matches(ev: LorittaMessageEvent, rawArguments: List<String>, serverConfig: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {

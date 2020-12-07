@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.commands.vanilla.discord
+package net.perfectdreams.loritta.utils
 
 import java.util.jar.Attributes
 

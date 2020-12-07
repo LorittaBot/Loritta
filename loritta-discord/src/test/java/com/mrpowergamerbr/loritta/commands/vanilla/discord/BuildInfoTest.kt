@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
+import net.perfectdreams.loritta.utils.BuildInfo
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.util.jar.Attributes
