@@ -99,7 +99,7 @@ class BrokerBuyStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComma
 							givenBy = user.idLong
 					)
 				}
-				logger.info { "User ${this.user.idLong} bought $number $tickerId for $quantity" }
+				logger.info { "User ${this.user.idLong} bought $number $tickerId for $howMuchValue" }
 			}
 
 			reply(

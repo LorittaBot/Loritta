@@ -62,7 +62,7 @@ class BrokerSellStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComm
 				fail(locale["commands.economy.brokerSell.zeroValue"], Constants.ERROR)
 
 			mutex.withLock {
-				logger.info { "User ${this.user.idLong} is trying to sell $number $tickerId for $quantity" }
+				logger.info { "User ${this.user.idLong} is trying to sell $number $tickerId for $howMuchWillBePaidToTheUser" }
 
 				val selfStocks = loritta.newSuspendedTransaction {
 					BoughtStocks.select {
