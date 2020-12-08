@@ -62,8 +62,6 @@ class BrokerSellStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComm
 				fail(locale["commands.economy.brokerSell.zeroValue"], Constants.ERROR)
 
 			mutex.withLock {
-				logger.info { "User ${this.user.idLong} is trying to sell $number $tickerId for $howMuchWillBePaidToTheUser" }
-
 				val selfStocks = loritta.newSuspendedTransaction {
 					BoughtStocks.select {
 						BoughtStocks.user eq user.idLong and (BoughtStocks.ticker eq tickerId)
@@ -78,6 +76,8 @@ class BrokerSellStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComm
 						plugin.convertReaisToSonhos(ticker[LoriBrokerPlugin.CURRENT_PRICE_FIELD]?.jsonPrimitive?.double!!)
 				) * number
 
+				logger.info { "User ${this.user.idLong} is trying to sell $number $tickerId for $howMuchWillBePaidToTheUser" }
+				
 				val totalEarnings = howMuchWillBePaidToTheUser - stocksThatWillBeSold.sumByLong { it[BoughtStocks.price] }
 
 				loritta.newSuspendedTransaction {
