@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
-import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.WelcomerConfig
 import net.perfectdreams.loritta.utils.Emotes
 import org.apache.commons.io.IOUtils
@@ -179,39 +179,39 @@ object WelcomeModule {
 		}
 	}
 
-	suspend fun handleLeave(event: GuildMemberLeaveEvent, serverConfig: ServerConfig, welcomerConfig: WelcomerConfig) {
+	suspend fun handleLeave(event: GuildMemberRemoveEvent, serverConfig: ServerConfig, welcomerConfig: WelcomerConfig) {
 		val joinLeaveConfig = welcomerConfig
 
-		logger.trace { "Member = ${event.member}, Guild ${event.guild} has tellOnLeave = ${joinLeaveConfig.tellOnRemove} and the leaveMessage is ${joinLeaveConfig.removeMessage}, canalLeaveId = ${joinLeaveConfig.channelRemoveId}" }
+		logger.trace { "User = ${event.user}, Member = ${event.member}, Guild ${event.guild} has tellOnLeave = ${joinLeaveConfig.tellOnRemove} and the leaveMessage is ${joinLeaveConfig.removeMessage}, canalLeaveId = ${joinLeaveConfig.channelRemoveId}" }
 
 		val channelRemoveId = welcomerConfig.channelRemoveId
 		if (joinLeaveConfig.tellOnRemove && !joinLeaveConfig.removeMessage.isNullOrEmpty() && channelRemoveId != null) {
-			logger.trace { "Member = ${event.member}, Guild ${event.guild} has tellOnLeave enabled and the leaveMessage isn't empty!" }
+			logger.trace { "User = ${event.user}, Member = ${event.member}, Guild ${event.guild} has tellOnLeave enabled and the leaveMessage isn't empty!" }
 			val guild = event.guild
 
-			logger.debug { "Member = ${event.member}, Getting ${guild}'s cache list from leftMembersCache..."}
+			logger.debug { "User = ${event.user}, Member = ${event.member}, Getting ${guild}'s cache list from leftMembersCache..."}
 
 			val list = leftMembersCache.getIfPresent(event.guild.idLong) ?: CopyOnWriteArrayList()
-			logger.debug { "Member = ${event.member}, There are ${list.size} entries on the leftMembersCache list for $guild"}
+			logger.debug { "User = ${event.user}, Member = ${event.member}, There are ${list.size} entries on the leftMembersCache list for $guild"}
 			list.add(event.user)
 			leftMembersCache.put(event.guild.idLong, list)
 
-			logger.trace { "Member = ${event.member}, Checking if the leftMembersCache max list entry threshold is > 20 for $guild, currently it is ${list.size}"}
+			logger.trace { "User = ${event.user}, Member = ${event.member}, Checking if the leftMembersCache max list entry threshold is > 20 for $guild, currently it is ${list.size}"}
 
 			if (list.size > 20)
 				return
 
-			logger.trace { "Member = ${event.member}, canalLeaveId is not null for $guild, canalLeaveId = ${joinLeaveConfig.channelRemoveId}"}
+			logger.trace { "User = ${event.user}, Member = ${event.member}, canalLeaveId is not null for $guild, canalLeaveId = ${joinLeaveConfig.channelRemoveId}"}
 
 			val textChannel = guild.getTextChannelById(channelRemoveId)
 
-			logger.trace { "Member = ${event.member}, canalLeaveId = ${joinLeaveConfig.channelRemoveId}, it is $textChannel for $guild"}
+			logger.trace { "User = ${event.user}, Member = ${event.member}, canalLeaveId = ${joinLeaveConfig.channelRemoveId}, it is $textChannel for $guild"}
 			if (textChannel != null) {
-				logger.trace { "Member = ${event.member}, Text channel $textChannel is not null for $guild! Can I talk? ${textChannel.canTalk()}" }
+				logger.trace { "User = ${event.user}, Member = ${event.member}, Text channel $textChannel is not null for $guild! Can I talk? ${textChannel.canTalk()}" }
 
 				if (textChannel.canTalk()) {
 					var msg = joinLeaveConfig.removeMessage
-					logger.trace { "Member = ${event.member}, Leave message is $msg for $guild, it will be sent at $textChannel"}
+					logger.trace { "User = ${event.user}, Member = ${event.member}, Leave message is $msg for $guild, it will be sent at $textChannel"}
 
 					val customTokens = mutableMapOf<String, String>()
 
@@ -227,9 +227,9 @@ object WelcomeModule {
 
 					if (!msg.isNullOrEmpty()) {
 						val deleteRemoveMessagesAfter = welcomerConfig.deleteRemoveMessagesAfter
-						logger.debug { "Member = ${event.member}, Sending quit message \"$msg\" in $textChannel at $guild"}
+						logger.debug { "User = ${event.user}, Member = ${event.member}, Sending quit message \"$msg\" in $textChannel at $guild"}
 
-						textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(event.guild, event.member), guild, customTokens)!!).queue {
+						textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(event.guild, event.user), guild, customTokens)!!).queue {
 							if (deleteRemoveMessagesAfter != null && deleteRemoveMessagesAfter != 0L)
 								it.delete().queueAfter(deleteRemoveMessagesAfter, TimeUnit.SECONDS)
 						}

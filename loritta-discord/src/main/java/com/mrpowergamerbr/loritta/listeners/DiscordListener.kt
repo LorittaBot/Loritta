@@ -29,7 +29,7 @@ import net.dv8tion.jda.api.events.guild.GuildReadyEvent
 import net.dv8tion.jda.api.events.guild.invite.GuildInviteCreateEvent
 import net.dv8tion.jda.api.events.guild.invite.GuildInviteDeleteEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
-import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent
 import net.dv8tion.jda.api.events.http.HttpRequestEvent
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveEvent
@@ -493,20 +493,23 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 	}
 
-	override fun onGuildMemberLeave(event: GuildMemberLeaveEvent) {
+	override fun onGuildMemberRemove(event: GuildMemberRemoveEvent) {
 		if (DebugLog.cancelAllEvents)
 			return
 
 		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
 			return
 
-		logger.debug { "${event.member} left server ${event.guild}" }
+		val member = event.member
+		val user = event.user
+
+		logger.debug { "$user ($member) left server ${event.guild}" }
 
 		// Remover thread de role removal caso o usuário tenha saido do servidor
-		val job = MuteCommand.roleRemovalJobs[event.guild.id + "#" + event.member.user.id]
+		val job = MuteCommand.roleRemovalJobs[event.guild.id + "#" + user.id]
 		logger.debug { "Stopping mute job $job due to member guild quit" }
 		job?.cancel()
-		MuteCommand.roleRemovalJobs.remove(event.guild.id + "#" + event.member.user.id)
+		MuteCommand.roleRemovalJobs.remove(event.guild.id + "#" + user.id)
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			try {
@@ -530,11 +533,12 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				if (welcomerConfig != null)
 					WelcomeModule.handleLeave(event, serverConfig, welcomerConfig)
 
-				loritta.pluginManager.plugins.filterIsInstance(DiscordPlugin::class.java).flatMap {
-					it.onGuildMemberLeaveListeners
-				}.forEach {
-					it.invoke(event.member, event.guild, serverConfig)
-				}
+				if (member != null)
+					loritta.pluginManager.plugins.filterIsInstance(DiscordPlugin::class.java).flatMap {
+						it.onGuildMemberLeaveListeners
+					}.forEach {
+						it.invoke(member, event.guild, serverConfig)
+					}
 			} catch (e: Exception) {
 				logger.error("[${event.guild.name}] Ao sair do servidor ${event.user.name}", e)
 			}
