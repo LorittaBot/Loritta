@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.utils.RankingGenerator
 import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.innerJoin
 import org.jetbrains.exposed.sql.select
 
@@ -38,7 +39,9 @@ class SonhosTopLocalCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBas
 
 			val userData = loritta.newSuspendedTransaction {
 				Profiles.innerJoin(GuildProfiles, { Profiles.id }, { GuildProfiles.userId })
-						.select { GuildProfiles.guildId eq guild.idLong }.orderBy(Profiles.money, SortOrder.DESC).limit(5, page * 5)
+						.select {
+							GuildProfiles.guildId eq guild.idLong and (GuildProfiles.isInGuild eq true)
+						}.orderBy(Profiles.money, SortOrder.DESC).limit(5, page * 5)
 						.toList()
 			}
 
