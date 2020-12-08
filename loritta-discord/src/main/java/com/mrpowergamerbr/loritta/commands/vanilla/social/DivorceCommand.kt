@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
+import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.update
@@ -29,7 +30,6 @@ class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCa
 		val marriage = loritta.newSuspendedTransaction { context.lorittaUser.profile.marriage }
 		val userId = if (context.userHandle.idLong == marriage?.user2) marriage.user1 else marriage?.user2
 		val user = lorittaShards.getUserById(userId)
-		val userDM = user?.openPrivateChannel()?.await()
 
 		if (marriage != null) {
 			val message = context.reply(
@@ -61,7 +61,18 @@ class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCa
                             )
 					)
 					
-					userDM?.sendMessage(locale["$LOCALE_PREFIX.divorcedDM", context.userHandle.name])?.queue()
+					try {
+						val userDM = user?.openPrivateChannel()?.await()
+
+						userDM?.sendMessage(
+							EmbedBuilder()
+								.setTitle(locale["$LOCALE_PREFIX.divorcedTitle"])
+								.setDescription(locale["$LOCALE_PREFIX.divorcedDescription", context.userHandle.name])
+								.setThumbnail("https://cdn.discordapp.com/emojis/556524143281963008.png?size=2048")
+								.setColor(Constants.LORITTA_AQUA)
+								.build()
+						)?.queue()
+					} catch (e: Exception) {}
 				}
 			}
 
