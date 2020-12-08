@@ -9,10 +9,7 @@ import net.perfectdreams.loritta.api.utils.image.JVMImage
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.utils.RankingGenerator
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.innerJoin
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
 
 class SonhosTopLocalCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("sonhos top local", "atm top local"), CommandCategory.ECONOMY) {
 	override fun command() = create {
@@ -56,7 +53,14 @@ class SonhosTopLocalCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBas
 												"${it[Profiles.money]} sonhos"
 										)
 									}
-							)
+							) {
+								loritta.newSuspendedTransaction {
+									GuildProfiles.update({ GuildProfiles.id eq it and (GuildProfiles.guildId eq guild.idLong) }) {
+										it[isInGuild] = false
+									}
+								}
+								null
+							}
 					),
 					"rank.png"
 			)
