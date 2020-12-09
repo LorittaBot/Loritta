@@ -200,7 +200,7 @@ object NitroBoostUtils {
 					if (bestGuildToBoost.isEmpty())
 						this.append("**Atualmente não tenho nenhum servidor disponível para você impulsar... volte mais tarde!** Cansado de esperar? Então compre premium no website da Loritta! https://loritta.website/donate <:lori_ameno:673868465433477126>")
 					else {
-						this.append("**Impulsione os seguintes servidores para ganhar as vantagens de doador, cada servidor que você impulsionar contam como R$ 20 doados! Lembre-se que você apenas deve dar um boost por servidor!** <:lori_feliz:519546310978830355>\n\nBoost é muito chato para você? Então compre premium no website da Loritta! <https://loritta.website/donate>")
+						this.append("**Impulsione os seguintes servidores para ganhar as vantagens de doador, cada servidor que você impulsionar contam como R$ 20 doados! Lembre-se que você apenas deve dar um boost por servidor!** <:lori_feliz:519546310978830355>\n\n**Não se esqueça de verificar se o servidor possui menos de 40 boosts, já que você não receberá a vantagem caso tenha mais que 40!**\n\nApós dar o boost, envie uma mensagem no chat para receber as vantagens. Boost é muito chato para você? Então compre premium no website da Loritta! <https://loritta.website/donate>")
 						for (guild in bestGuildToBoost) {
 							this.append('\n')
 							this.append("https://discord.gg/${guild.inviteId}")
