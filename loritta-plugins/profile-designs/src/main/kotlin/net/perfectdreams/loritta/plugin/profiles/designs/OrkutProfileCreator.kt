@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.profile.ProfileUtils
 import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Font
+import java.awt.Graphics
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
@@ -74,6 +75,8 @@ class OrkutProfileCreator : ProfileCreator("orkut") {
 			graphics.drawString(ch.toString(), startX, 291)
 		}
 
+		drawBadges(badges, graphics)
+
 		/* val mutualGuildsByUsers = lorittaShards.getMutualGuilds(user).filter { it.iconUrl != null }.sortedByDescending { it.members.size }
 
 		var startGuildX = 252
@@ -100,5 +103,24 @@ class OrkutProfileCreator : ProfileCreator("orkut") {
 		graphics.color = Color(51, 51, 93)
 		graphics.drawString("Comunidades (${mutualGuildsByUsers.size})", 226, 332) */
 		return base
+	}
+
+	fun drawBadges(badges: List<BufferedImage>, graphics: Graphics) {
+		var startGuildX = 235
+		var startGuildY = 400
+
+		for ((index, badge) in badges.withIndex()) {
+			if (index == 27)
+				break
+
+			if (index == 9) {
+				startGuildX = 235
+				startGuildY += 57
+			}
+
+			graphics.drawImage(badge.getScaledInstance(56, 56, BufferedImage.SCALE_SMOOTH), startGuildX, startGuildY, null)
+
+			startGuildX += 57
+		}
 	}
 }
