@@ -26,81 +26,88 @@ object NitroPay : Logging {
 		debug("There are ${ads.size} NitroPay ads in the page...")
 
 		ads.forEach {
-			if (!it.hasAttribute("data-adsbygoogle-status")) {
+			if (!it.hasAttribute("data-request-id")) {
 				try {
 					console.log(it)
 
-					val dynamic = object {}.asDynamic()
-					dynamic.refreshLimit = 10
-					dynamic.refreshTime = 30
-					// Lazy loading
-					dynamic.renderVisibleOnly = false
-					dynamic.refreshVisibleOnly = true
 					val adType = it.getAttribute("data-nitropay-ad-type")
 
-					if (adType == "desktop") {
-						dynamic.mediaQuery = "(min-width: 1025px)"
-						dynamic.sizes = arrayOf<Array<String>>(
-								arrayOf(
-										"728",
-										"90"
-								),
-								arrayOf(
-										"970",
-										"90"
-								),
-								arrayOf(
-										"970",
-										"250"
-								)
-						)
-					} else if (adType == "phone") {
-						dynamic.mediaQuery = "(min-width: 320px) and (max-width: 767px)"
-						dynamic.sizes = arrayOf<Array<String>>(
-								arrayOf(
-										"300",
-										"250"
-								),
-								arrayOf(
-										"320",
-										"50"
-								)
-						)
-					} else if (adType == "tablet") {
-						dynamic.mediaQuery = "(min-width: 768px) and (max-width: 1024px)"
-						dynamic.sizes = arrayOf<Array<String>>(
-								arrayOf(
-										"728",
-										"90"
-								),
-								arrayOf(
-										"970",
-										"90"
-								),
-								arrayOf(
-										"970",
-										"250"
-								),
-								arrayOf(
-										"300",
-										"250"
-								),
-								arrayOf(
-										"320",
-										"50"
-								)
-						)
+					val dynamic = object {}.asDynamic()
+
+					if (adType == "video_player") {
+						dynamic.format = "video-ac"
 					} else {
-						dynamic.sizes = arrayOf<Any?>()
+						dynamic.refreshLimit = 10
+						dynamic.refreshTime = 30
+						// Lazy loading
+						dynamic.renderVisibleOnly = false
+						dynamic.refreshVisibleOnly = true
+						val adDisplay = it.getAttribute("data-nitropay-ad-display")
+
+						if (adDisplay == "desktop") {
+							dynamic.mediaQuery = "(min-width: 1025px)"
+							dynamic.sizes = arrayOf<Array<String>>(
+									arrayOf(
+											"728",
+											"90"
+									),
+									arrayOf(
+											"970",
+											"90"
+									),
+									arrayOf(
+											"970",
+											"250"
+									)
+							)
+						} else if (adDisplay == "phone") {
+							dynamic.mediaQuery = "(min-width: 320px) and (max-width: 767px)"
+							dynamic.sizes = arrayOf<Array<String>>(
+									arrayOf(
+											"300",
+											"250"
+									),
+									arrayOf(
+											"320",
+											"50"
+									)
+							)
+						} else if (adDisplay == "tablet") {
+							dynamic.mediaQuery = "(min-width: 768px) and (max-width: 1024px)"
+							dynamic.sizes = arrayOf<Array<String>>(
+									arrayOf(
+											"728",
+											"90"
+									),
+									arrayOf(
+											"970",
+											"90"
+									),
+									arrayOf(
+											"970",
+											"250"
+									),
+									arrayOf(
+											"300",
+											"250"
+									),
+									arrayOf(
+											"320",
+											"50"
+									)
+							)
+						} else {
+							dynamic.sizes = arrayOf<Any?>()
+						}
+
+						val report = object {}.asDynamic()
+						report.enabled = true
+						report.wording = "Report Ad"
+						report.position = "top-right"
+						dynamic.report = report
+
+						console.log(dynamic)
 					}
-
-					val report = object {}.asDynamic()
-					report.enabled = true
-					report.wording = "Report Ad"
-					report.position = "top-right"
-					dynamic.report = report
-
-					console.log(dynamic)
 
 					window["nitroAds"].createAd(it.id, dynamic)
 

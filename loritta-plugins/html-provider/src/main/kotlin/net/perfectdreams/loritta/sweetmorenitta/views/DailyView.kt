@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import kotlinx.html.*
 import net.perfectdreams.loritta.sweetmorenitta.utils.NitroPayAdDisplay
 import net.perfectdreams.loritta.sweetmorenitta.utils.generateNitroPayAdOrSponsor
+import net.perfectdreams.loritta.sweetmorenitta.utils.generateNitroPayVideoAdOrSponsor
 
 class DailyView(
         locale: BaseLocale,
@@ -203,7 +204,7 @@ class DailyView(
                 }
             }
 
-            generateNitroPayAdOrSponsor(2, "daily-bottom1", "Loritta Daily Reward") { true }
+            generateNitroPayVideoAdOrSponsor(2, "daily-bottom1", "Loritta Daily Reward")
             generateNitroPayAdOrSponsor(3, "daily-bottom2", "Loritta Daily Reward") { it != NitroPayAdDisplay.PHONE }
         }
 
