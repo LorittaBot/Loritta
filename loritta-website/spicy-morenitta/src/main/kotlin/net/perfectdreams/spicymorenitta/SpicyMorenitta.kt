@@ -4,8 +4,8 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import io.ktor.client.*
 import io.ktor.client.engine.js.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.readText
 import io.ktor.http.*
 import kotlinx.browser.document
 import kotlinx.browser.window
@@ -25,7 +25,6 @@ import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.routes.*
 import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.*
 import net.perfectdreams.spicymorenitta.routes.user.dashboard.*
-import net.perfectdreams.spicymorenitta.trunfo.TrunfoGame
 import net.perfectdreams.spicymorenitta.utils.*
 import org.w3c.dom.*
 import kotlin.collections.set
@@ -171,11 +170,6 @@ class SpicyMorenitta : Logging {
 
 		if (window.location.pathname == "/auth") { // Nós não precisamos processar o resto do código apenas para verificar o popup de auth
 			AuthUtils.handlePopup()
-			return
-		}
-
-		if (false) {
-			TrunfoGame.start()
 			return
 		}
 

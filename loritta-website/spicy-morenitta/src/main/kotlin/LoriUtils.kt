@@ -1,7 +1,7 @@
 
-import utils.LegacyBaseLocale
 import kotlinx.browser.document
 import kotlinx.browser.window
+import utils.LegacyBaseLocale
 import kotlin.js.Json
 
 lateinit var legacyLocale: LegacyBaseLocale
@@ -11,18 +11,6 @@ val loriUrl: String
 
 fun jq(query: String): JQuery {
 	return jQuery(query as Any)
-}
-
-fun <T> Any.toJson(): T {
-	return JSON.parse(JSON.stringify(this))
-}
-
-fun Any.toJson(): Json {
-	return JSON.parse(JSON.stringify(this))
-}
-
-fun Any.stringify(): String {
-	return JSON.stringify(this)
 }
 
 fun loadEmbeddedLocale() {
@@ -51,10 +39,4 @@ fun loadEmbeddedLocale() {
 	} else {
 		println("Couldn't find embedded data in body!")
 	}
-}
-
-fun testError() {
-	val test: String? = null
-
-	test!!
 }

@@ -2,8 +2,8 @@ package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
 
 import LoriDashboard
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.readText
 import io.ktor.http.*
 import jq
 import kotlinx.browser.document
@@ -368,7 +368,6 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 		LoriDashboard.configureTextArea(
 				jq(".tingle-modal--visible .choose-text"),
 				true,
-				null,
 				false,
 				null,
 				true,

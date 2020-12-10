@@ -2,8 +2,8 @@ package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
 
 import LoriDashboard
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.readText
 import io.ktor.http.*
 import jq
 import kotlinx.browser.document
@@ -33,13 +33,6 @@ import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import net.perfectdreams.spicymorenitta.views.dashboard.Stuff
 import net.perfectdreams.spicymorenitta.views.dashboard.getPlan
 import org.w3c.dom.*
-import kotlin.collections.List
-import kotlin.collections.addAll
-import kotlin.collections.firstOrNull
-import kotlin.collections.last
-import kotlin.collections.listOf
-import kotlin.collections.mutableListOf
-import kotlin.collections.mutableMapOf
 import kotlin.collections.set
 import kotlin.js.Json
 import kotlin.js.json
@@ -369,7 +362,6 @@ class TwitchRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{g
 		LoriDashboard.configureTextArea(
 				jq(".tingle-modal--visible .choose-text"),
 				true,
-				null,
 				false,
 				null,
 				true,

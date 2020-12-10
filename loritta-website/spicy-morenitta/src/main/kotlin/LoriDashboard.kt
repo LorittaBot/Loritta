@@ -1,4 +1,6 @@
 
+import kotlinx.browser.document
+import kotlinx.browser.window
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.dom.create
@@ -16,11 +18,7 @@ import org.w3c.dom.Audio
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.MessageEvent
 import utils.AutoSize
-import utils.Member
-import utils.ServerConfig
 import utils.autosize
-import kotlinx.browser.document
-import kotlinx.browser.window
 import kotlin.js.*
 
 external val guildId: String
@@ -35,18 +33,6 @@ object LoriDashboard {
 
 	val wrapper: JQuery by lazy {
 		jq("#server-configuration")
-	}
-
-	val leftSidebar: JQuery by lazy {
-		jq("#left-sidebar")
-	}
-
-	val rightSidebar: JQuery by lazy {
-		jq("#right-sidebar")
-	}
-
-	val loadingScreen: JQuery by lazy {
-		jq("#loading-screen")
 	}
 
 	fun showLoadingBar(text: String? = "Salvando...") {
@@ -88,18 +74,6 @@ object LoriDashboard {
 			hide.removeClass("noBlur")
 			hide.addClass("blurSection")
 		}
-	}
-
-	fun enableBlur(toBeHidden: String) {
-		val hide = jq(toBeHidden)
-		hide.removeClass("noBlur")
-		hide.addClass("blurSection")
-	}
-
-	fun disableBlur(toBeUnhidden: String) {
-		val hide = jq(toBeUnhidden)
-		hide.removeClass("blurSection")
-		hide.addClass("noBlur")
 	}
 
 	fun createToggle(internalName: String, toggleMainText: String, toggleSubText: String?, needsToBeSaved: Boolean, isEnabled: Boolean): Pair<Int, JQuery> {
@@ -213,7 +187,6 @@ object LoriDashboard {
 	fun configureTextArea(
 			jquery: JQuery,
 			markdownPreview: Boolean = false,
-			serverConfig: ServerConfig?,
 			sendTestMessages: Boolean = false,
 			textChannelSelect: JQuery? = null,
 			showPlaceholders: Boolean = false,
@@ -499,122 +472,7 @@ object LoriDashboard {
 			DiscordMessage(content)
 		}
 	}
-
-	fun replaceTokens(text: String, serverConfig: ServerConfig?, customTokens: Map<String, String?> = mutableMapOf<String, String?>()): String {
-		val selfUser = serverConfig?.selfUser ?: Member("123170274651668480", "Loritta", "0219", "${loriUrl}assets/img/unknown.png")
-		var message = text
-		val mentionUser = "<span class=\"discord-mention\">@${selfUser.name}</span>"
-		val user = selfUser.name
-		val userDiscriminator = selfUser.discriminator
-		val userId = selfUser.id
-		val nickname = selfUser.name
-		val avatarUrl = selfUser.avatar
-		var guildName = ""
-		var guildSize = ""
-		val mentionOwner = ""
-		val owner = ""
-
-		if (serverConfig != null) {
-			guildName = serverConfig.guildName
-			guildSize = serverConfig.memberCount.toString()
-		}
-
-		for ((token, value) in customTokens) {
-			message = message.replace("{$token}", value ?: "\uD83E\uDD37")
-		}
-
-		message = message.replace("{@user}", mentionUser)
-		message = message.replace("{user}", user)
-		message = message.replace("{user-id}", userId)
-		message = message.replace("{user-avatar-url}", avatarUrl)
-		message = message.replace("{user-discriminator}", userDiscriminator)
-		message = message.replace("{nickname}", nickname)
-		message = message.replace("{guild}", guildName)
-		message = message.replace("{guild-size}", guildSize)
-		message = message.replace("{@owner}", mentionOwner)
-		message = message.replace("{owner}", owner)
-
-		// EMOTES
-		// Nós fazemos uma vez antes e depois uma depois, para evitar bugs (já que :emoji: também existe dentro de <:emoji:...>
-		val regex = Regex("<(a)?:([A-z0-9_-]+):([0-9]+)>", RegexOption.MULTILINE)
-		message = regex.replace(message) { matchResult: MatchResult ->
-			matchResult.groups.forEachIndexed { index, result ->
-				println("$index group is $result")
-			}
-			// <img class="inline-emoji" src="https://cdn.discordapp.com/emojis/$2.png?v=1">
-			val extension = if (matchResult.groups[1]?.value == "a")
-				"gif"
-			else
-				"png"
-			"<img class=\"inline-emoji\" src=\"https://cdn.discordapp.com/emojis/${matchResult.groups[3]?.value}.$extension?v=1\">"
-		}
-
-		if (serverConfig != null) {
-			// TEXT CHANNELS
-			for (textChannel in serverConfig.textChannels) {
-				message = message.replace("#${textChannel.name}", "<#" + textChannel.id + ">")
-				message = message.replace("<#" + textChannel.id + ">", "<span class=\"discord-mention\">#${textChannel.name}</span>")
-			}
-
-			// ROLES
-			for (role in serverConfig.roles) {
-				message = message.replace("@${role.name}", "<@&${role.id}>")
-
-				val roleSpan = jq("<span>")
-						.text("@" + role.name)
-						.addClass("discord-mention")
-
-				if (role.color != null) {
-					roleSpan.css("color", "rgb(${role.color.red}, ${role.color.green}, ${role.color.blue})")
-					roleSpan.css("background-color", "rgba(${role.color.red}, ${role.color.green}, ${role.color.blue}, 0.298039)")
-				}
-
-				message = message.replace("<@&${role.id}>", roleSpan.prop("outerHTML") as String)
-			}
-
-			// MEMBERS
-			/* val memberRegex = Regex("<@([0-9]+)>")
-			message = memberRegex.replace(message, transform = {
-				val id = it.groupValues[1]
-
-				val memberResult = serverConfig.members.firstOrNull { it.id == id }
-
-				if (memberResult != null) {
-					"<span class=\"discord-mention\">@${memberResult.name}</span>"
-				} else {
-					it.value
-				}
-			}) */
-
-			// EMOTES (de novo)
-			for (emote in serverConfig.emotes) {
-				message = message.replace(":${emote.name}:", "<:${emote.name}:${emote.id}>")
-			}
-			message = regex.replace(message) { matchResult: MatchResult ->
-				// <img class="inline-emoji" src="https://cdn.discordapp.com/emojis/$2.png?v=1">
-				val extension = if (matchResult.groups[1]?.value == "a")
-					"gif"
-				else
-					"png"
-				"<img class=\"inline-emoji\" src=\"https://cdn.discordapp.com/emojis/${matchResult.groups[3]?.value}.$extension?v=1\">"
-			}
-		}
-
-		return message
-	}
 }
-
-/* fun <T> Any.toJson(): T {
-	return JSON.parse(JSON.stringify(this))
-}
-
-fun Any.toJson(): Json {
-	return JSON.parse(JSON.stringify(this))
-}
-
-fun Any.stringify(): String {
-	return JSON.stringify(this)
-} */
 
 fun Int.toString(radix: Int): String {
 	val value = this

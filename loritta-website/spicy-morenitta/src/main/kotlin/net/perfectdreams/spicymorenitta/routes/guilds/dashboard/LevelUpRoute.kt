@@ -2,6 +2,10 @@ package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
 
 import LoriDashboard
 import jq
+import kotlinx.browser.document
+import kotlinx.dom.addClass
+import kotlinx.dom.clear
+import kotlinx.dom.removeClass
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.js.onChangeFunction
@@ -22,10 +26,6 @@ import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import net.perfectdreams.spicymorenitta.views.dashboard.Stuff
 import net.perfectdreams.spicymorenitta.views.dashboard.getPlan
 import org.w3c.dom.*
-import kotlinx.browser.document
-import kotlinx.dom.addClass
-import kotlinx.dom.clear
-import kotlinx.dom.removeClass
 import kotlin.js.Json
 import kotlin.js.json
 
@@ -436,7 +436,6 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 			LoriDashboard.configureTextArea(
 					jq("#announcement-message"),
 					true,
-					null,
 					false,
 					null,
 					true,

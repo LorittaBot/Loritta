@@ -253,7 +253,6 @@ class GeneralConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/g
 			LoriDashboard.configureTextArea(
 					jq("#blacklisted-warning"),
 					true,
-					null,
 					false,
 					null,
 					true,
