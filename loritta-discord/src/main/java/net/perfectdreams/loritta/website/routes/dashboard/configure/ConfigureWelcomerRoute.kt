@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.website.evaluate
-import io.ktor.application.ApplicationCall
+import io.ktor.application.*
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.routes.dashboard.RequiresGuildAuthLocalizedRoute
@@ -33,7 +33,7 @@ class ConfigureWelcomerRoute(loritta: LorittaDiscord) : RequiresGuildAuthLocaliz
 						welcomerConfig?.tellOnBan ?: false,
 						welcomerConfig?.tellOnPrivateJoin ?: false,
 						welcomerConfig?.joinMessage ?: "\uD83D\uDC49 {@user} entrou no servidor!",
-						welcomerConfig?.removeMessage ?: "\uD83D\uDC48 {nickname} saiu do servidor!",
+						welcomerConfig?.removeMessage ?: "\uD83D\uDC48 {user.name} saiu do servidor!",
 						welcomerConfig?.joinPrivateMessage ?: "Obrigado por entrar na {guild} {@user}! Espero que você curta o nosso servidor!",
 						welcomerConfig?.bannedMessage ?: "{user} foi banido do servidor!",
 						welcomerConfig?.deleteJoinMessagesAfter ?: 0L,
