@@ -1,10 +1,21 @@
 package net.perfectdreams.loritta.sweetmorenitta.views
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import kotlinx.html.*
+import kotlinx.html.DIV
+import kotlinx.html.a
+import kotlinx.html.b
+import kotlinx.html.div
+import kotlinx.html.h1
+import kotlinx.html.i
+import kotlinx.html.id
+import kotlinx.html.img
+import kotlinx.html.p
+import kotlinx.html.script
+import kotlinx.html.style
+import kotlinx.html.unsafe
 import net.perfectdreams.loritta.sweetmorenitta.utils.NitroPayAdDisplay
 import net.perfectdreams.loritta.sweetmorenitta.utils.generateNitroPayAdOrSponsor
-import net.perfectdreams.loritta.sweetmorenitta.utils.generateNitroPayVideoAdOrSponsor
+import net.perfectdreams.loritta.sweetmorenitta.utils.generateNitroPayVideoAd
 
 class DailyView(
         locale: BaseLocale,
@@ -204,8 +215,9 @@ class DailyView(
                 }
             }
 
-            generateNitroPayVideoAdOrSponsor(2, "daily-bottom1", "Loritta Daily Reward")
+            generateNitroPayAdOrSponsor(2, "daily-bottom1", "Loritta Daily Reward") { true }
             generateNitroPayAdOrSponsor(3, "daily-bottom2", "Loritta Daily Reward") { it != NitroPayAdDisplay.PHONE }
+            generateNitroPayVideoAd("daily-bottom3-video", "Loritta Daily Reward")
         }
 
         div(classes = "even-wrapper wobbly-bg") {
