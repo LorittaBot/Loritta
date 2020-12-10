@@ -161,9 +161,6 @@ class SpicyMorenitta : Logging {
 
 		ErrorTracker.start(this)
 
-		// Workaround for KotlinJS's DCE
-		DoNotRemoveDeadCodeWorkaround.methodRefs
-
 		info("HELLO FROM KOTLIN 1.4.10!")
 		info("SpicyMorenitta :3")
 		info("Howdy, my name is Loritta!")
