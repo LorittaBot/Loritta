@@ -44,7 +44,7 @@ open class CommandBuilder<context : CommandContext>(
 	 * @see BaseLocale
 	 * @see description
 	 */
-	fun localizedDescription(localeKey: String, vararg arguments: Any?) = description { it[localeKey, arguments] }
+	fun localizedDescription(localeKey: String, vararg arguments: Any?) = description { it.get(localeKey, *arguments) }
 
 	fun description(callback: (BaseLocale) -> (String)) {
 		this.descriptionCallback = callback
