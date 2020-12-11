@@ -231,6 +231,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 													guild.name,
 													com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url + "commands",
 													com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url + "guild/${guild.id}/configure/",
+													com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url + "guidelines",
 													com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url + "donate",
 													com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url + "support",
 													Emotes.LORI_PAT,
@@ -239,6 +240,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 													Emotes.LORI_COFFEE,
 													Emotes.LORI_SMILE,
 													Emotes.LORI_PRAY,
+													Emotes.LORI_BAN_HAMMER,
 													Emotes.LORI_RICH,
 													Emotes.LORI_HEART1.toString() + Emotes.LORI_HEART2.toString()
 											).joinToString("\n")
