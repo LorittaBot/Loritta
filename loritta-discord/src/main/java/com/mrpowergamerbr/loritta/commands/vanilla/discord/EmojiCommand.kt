@@ -3,8 +3,12 @@ package com.mrpowergamerbr.loritta.commands.vanilla.discord
 import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.ImageUtils
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Emote
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -82,6 +86,8 @@ class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD
 				} catch (e: Exception) {
 					e.printStackTrace()
 				}
+			} else {
+				context.explain()
 			}
 		} else {
 			context.explain()
