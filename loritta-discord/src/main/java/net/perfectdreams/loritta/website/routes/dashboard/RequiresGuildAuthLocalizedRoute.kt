@@ -4,14 +4,13 @@ import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
-import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNullById
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
-import io.ktor.application.ApplicationCall
-import io.ktor.request.path
-import io.ktor.response.respondText
+import io.ktor.application.*
+import io.ktor.request.*
+import io.ktor.response.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
@@ -51,9 +50,7 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaDiscord, original
 			redirect("$scheme://$theNewUrl${call.request.path()}${call.request.urlQueryString}", false)
 
 		val jdaGuild = lorittaShards.getGuildById(guildId)
-
-		if (jdaGuild == null)
-			redirect(com.mrpowergamerbr.loritta.utils.loritta.discordInstanceConfig.discord.addBotUrl, false)
+				?: redirect(com.mrpowergamerbr.loritta.utils.loritta.discordInstanceConfig.discord.addBotUrl + "&guild_id=$guildId", false)
 
 		logger.info { "JDA Guild get and check: ${System.currentTimeMillis() - start}" }
 		start = System.currentTimeMillis()
