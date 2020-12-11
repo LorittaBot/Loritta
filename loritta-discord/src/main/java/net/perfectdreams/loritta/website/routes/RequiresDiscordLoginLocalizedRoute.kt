@@ -23,10 +23,16 @@ import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.utils.DiscordUtils
+import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.ScriptingUtils
 import net.perfectdreams.loritta.website.utils.WebsiteUtils
-import net.perfectdreams.loritta.website.utils.extensions.*
+import net.perfectdreams.loritta.website.utils.extensions.hostFromHeader
+import net.perfectdreams.loritta.website.utils.extensions.lorittaSession
+import net.perfectdreams.loritta.website.utils.extensions.redirect
+import net.perfectdreams.loritta.website.utils.extensions.respondHtml
+import net.perfectdreams.loritta.website.utils.extensions.toJson
+import net.perfectdreams.loritta.website.utils.extensions.toWebSessionIdentification
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.select
 import java.io.File
@@ -219,7 +225,23 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 											}
 
 											// Envie via DM uma mensagem falando sobre a Loritta!
-											val message = locale.getList("website.router.addedOnServer", user.asMention, guild.name, com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url + "dashboard", locale["website.router.supportServerInvite"], com.mrpowergamerbr.loritta.utils.loritta.legacyCommandManager.commandMap.size + com.mrpowergamerbr.loritta.utils.loritta.commandMap.commands.size, "${com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url}donate").joinToString("\n")
+											val message = locale.getList(
+													"website.router.addedOnServer",
+													user.asMention,
+													guild.name,
+													com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url + "commands",
+													com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url + "guild/${guild.id}/configure/",
+													com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url + "donate",
+													com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url + "support",
+													Emotes.LORI_PAT,
+													Emotes.LORI_NICE,
+													Emotes.LORI_HEART,
+													Emotes.LORI_COFFEE,
+													Emotes.LORI_SMILE,
+													Emotes.LORI_PRAY,
+													Emotes.LORI_RICH,
+													Emotes.LORI_HEART1.toString() + Emotes.LORI_HEART2.toString()
+											).joinToString("\n")
 
 											user.openPrivateChannel().queue {
 												it.sendMessage(message).queue()
