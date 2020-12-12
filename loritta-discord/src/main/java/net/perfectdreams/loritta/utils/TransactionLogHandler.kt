@@ -22,11 +22,10 @@ object TransactionLogHandler {
     suspend fun getLogByTransactionData(sender: Long, locale: BaseLocale, transaction: ResultRow): String {
         val isReceiver = transaction[SonhosTransaction.receivedBy] == sender
 
-        return when (transaction[SonhosTransaction.reason]) {
-            SonhosPaymentReason.PAYMENT -> handlePaymentTransactionReason(locale, transaction, isReceiver)
-            // Add more custom transactions here...
-            else -> handleGenericTransactionReason(locale, transaction, isReceiver)
-        }
+        return if (transaction.getTransactionReason().multipleUsersRequired)
+            handleMultipleUserTransaction(locale, transaction, isReceiver)
+        else
+            handleGenericTransactionReason(locale, transaction, isReceiver)
     }
 
     /**
@@ -37,7 +36,7 @@ object TransactionLogHandler {
      * @param [transaction] The transaction result row used to retrieve its data
      * @param [isReceiver] True if the user that's requesting the data is the transaction sender
      */
-    private suspend fun handlePaymentTransactionReason(locale: BaseLocale, transaction: ResultRow, isReceiver: Boolean): String {
+    private suspend fun handleMultipleUserTransaction(locale: BaseLocale, transaction: ResultRow, isReceiver: Boolean): String {
         val receivedByUserId = if (isReceiver) {
             transaction[SonhosTransaction.givenBy]
         } else {
@@ -47,11 +46,12 @@ object TransactionLogHandler {
         val receivedByUser = lorittaShards.retrieveUserInfoById(receivedByUserId)
 
         val name = ("${receivedByUser?.name}#${receivedByUser?.discriminator} ($receivedByUserId)")
+        val type = transaction.getTransactionReason()
 
         return if (isReceiver) {
-            locale["commands.economy.transactions.receivedMoneySonhos", transaction[SonhosTransaction.quantity], "`$name`"]
+            locale["commands.economy.transactions.${getLocaleApplicableName(type.name)}.received", transaction[SonhosTransaction.quantity], "`$name`"]
         } else {
-            locale["commands.economy.transactions.sentMoneySonhos", transaction[SonhosTransaction.quantity], "`$name`"]
+            locale["commands.economy.transactions.${getLocaleApplicableName(type.name)}.sent", transaction[SonhosTransaction.quantity], "`$name`"]
         }
     }
 
@@ -63,7 +63,7 @@ object TransactionLogHandler {
      * @param [isReceiver] True if the user that's requesting the data is the transaction sender
      */
     private fun handleGenericTransactionReason(locale: BaseLocale, transaction: ResultRow, isReceiver: Boolean): String {
-        val type = transaction[SonhosTransaction.reason]
+        val type = transaction.getTransactionReason()
         val genericTypeName = locale["commands.economy.transactions.types.${getLocaleApplicableName(type.name)}"]
 
         return when {
@@ -79,9 +79,23 @@ object TransactionLogHandler {
      *
      * @param origin The original string
      */
-    private fun getLocaleApplicableName(origin: String) = origin.toLowerCase()
+    private fun getLocaleApplicableName(origin: String) = origin
+            .toLowerCase()
             .replace("_", " ")
             .split(" ")
+            .joinToString("") {
+                it.capitalize()
+            }
+            .toCharArray().apply {
+                this[0] = this[0].toLowerCase()
+            }
             .joinToString("")
+
+    /**
+     * Just a simple extension to remove ""boilerplate""
+     * from code that will only work on this class
+     */
+    private fun ResultRow.getTransactionReason(): SonhosPaymentReason =
+            this[SonhosTransaction.reason]
 
 }

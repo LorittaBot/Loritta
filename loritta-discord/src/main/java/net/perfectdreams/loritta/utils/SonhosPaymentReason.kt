@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.utils
 
-enum class SonhosPaymentReason(val overrideLocaleName: String? = null) {
+enum class SonhosPaymentReason(val overrideLocaleName: String? = null, val multipleUsersRequired: Boolean = false) {
 	UNKNOWN,
 
-	PAYMENT,
+	PAYMENT(multipleUsersRequired = true),
 	PAYMENT_TAX("commands.economy.transactions.sentMoneySonhosTax"),
 	BOM_DIA_E_CIA,
 	PROFILE,
@@ -17,7 +17,7 @@ enum class SonhosPaymentReason(val overrideLocaleName: String? = null) {
 	BACKGROUND,
 	SPARKLYPOWER,
 	INACTIVE_DAILY_TAX,
-	COIN_FLIP_BET,
+	COIN_FLIP_BET(multipleUsersRequired = true),
 	STOCKS,
 	GUESS_NUMBER,
 	EMOJI_FIGHT
