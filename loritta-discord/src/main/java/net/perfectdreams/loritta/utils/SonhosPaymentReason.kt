@@ -1,10 +1,10 @@
 package net.perfectdreams.loritta.utils
 
-enum class SonhosPaymentReason {
+enum class SonhosPaymentReason(val overrideLocaleName: String? = null) {
 	UNKNOWN,
 
 	PAYMENT,
-	PAYMENT_TAX,
+	PAYMENT_TAX("commands.economy.transactions.sentMoneySonhosTax"),
 	BOM_DIA_E_CIA,
 	PROFILE,
 	SHIP_EFFECT,

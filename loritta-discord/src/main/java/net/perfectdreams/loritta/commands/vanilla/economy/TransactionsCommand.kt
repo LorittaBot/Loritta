@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.commands.vanilla.economy
 
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -10,7 +9,7 @@ import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.SonhosPaymentReason
+import net.perfectdreams.loritta.utils.TransactionLogHandler
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
@@ -59,49 +58,7 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 					else
 						"\uD83D\uDCB8"
 
-					this.append(emoji)
-
-					this.append(" ")
-
-					if (transaction[SonhosTransaction.reason] == SonhosPaymentReason.PAYMENT) {
-						val receivedByUserId = if (receivedSonhos) {
-							transaction[SonhosTransaction.givenBy]
-						} else {
-							transaction[SonhosTransaction.receivedBy]
-						}
-
-						val receivedByUser = lorittaShards.retrieveUserInfoById(receivedByUserId)
-
-						val name = ("${receivedByUser?.name}#${receivedByUser?.discriminator} ($receivedByUserId)")
-
-						if (receivedSonhos) {
-							this.append(locale["commands.economy.transactions.receivedMoneySonhos", transaction[SonhosTransaction.quantity], "`$name`"])
-						} else {
-							this.append(locale["commands.economy.transactions.sentMoneySonhos", transaction[SonhosTransaction.quantity], "`$name`"])
-						}
-					} else if (transaction[SonhosTransaction.reason] == SonhosPaymentReason.PAYMENT_TAX) {
-						this.append(locale["commands.economy.transactions.sentMoneySonhosTax", transaction[SonhosTransaction.quantity]])
-					} else {
-						val type = transaction[SonhosTransaction.reason].name
-								.toLowerCase()
-								.replace("_", " ")
-								.split(" ")
-								.map {
-									it.capitalize()
-								}
-								.joinToString("")
-								.toCharArray().apply {
-									this[0] = this[0].toLowerCase()
-								}
-								.joinToString("")
-
-						val genericTypeName = locale["commands.economy.transactions.types.${type}"]
-
-						if (receivedSonhos)
-							this.append(locale["commands.economy.transactions.genericReceived", transaction[SonhosTransaction.quantity], genericTypeName])
-						else
-							this.append(locale["commands.economy.transactions.genericSent", transaction[SonhosTransaction.quantity], genericTypeName])
-					}
+					this.append("$emoji ${TransactionLogHandler.getLogByTransactionData(user.idLong, locale, transaction)}")
 					this.append("\n")
 				}
 			}
