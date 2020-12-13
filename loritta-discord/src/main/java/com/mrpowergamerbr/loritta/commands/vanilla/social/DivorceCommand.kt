@@ -29,9 +29,9 @@ class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCa
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		val userProfile = loritta.newSuspendedTransaction { context.loritt
+		val userProfile = loritta.newSuspendedTransaction { context.loritta.profile }
 		val marriage = ProfileUtils.getMarriageInfo(userProfile) ?: return
-		val userMarriage = loritta.newSuspendedTransaction { context.lorit
+		val userMarriage = loritta.newSuspendedTransaction { context.loritta.profile.marriage }
 		val marriagePartner = marriage.partner                            
 		val user = lorittaShards.getUserById(marriagePartner.id) ?: return
 
