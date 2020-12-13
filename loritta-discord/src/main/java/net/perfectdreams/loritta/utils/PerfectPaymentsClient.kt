@@ -28,6 +28,7 @@ object PerfectPaymentsClient {
             userId: Long,
             paymentTitle: String,
             amount: Long,
+            storedAmount: Long,
             paymentReason: PaymentReason,
             externalReference: String,
             discount: Double? = null,
@@ -69,7 +70,7 @@ object PerfectPaymentsClient {
                 if (metadata != null)
                     this.metadata = metadata
 
-                this.money = (amount.toDouble() / 100).toBigDecimal()
+                this.money = (storedAmount.toDouble() / 100).toBigDecimal()
                 this.createdAt = System.currentTimeMillis()
                 this.referenceId = partialPaymentId
             }

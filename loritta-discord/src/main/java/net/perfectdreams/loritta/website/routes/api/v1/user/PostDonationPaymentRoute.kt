@@ -61,6 +61,12 @@ class PostDonationPaymentRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 			grana.toFloat()
 		}
 
+		val storedAmount = if (donationKey != null) {
+			donationKey.value.toFloat()
+		} else {
+			grana.toFloat()
+		}
+
 		var discount: Double? = null
 		var metadata: JsonObject? = null
 		if (donationKey != null) {
@@ -73,6 +79,7 @@ class PostDonationPaymentRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 				userIdentification.id.toLong(),
 				"Doação para a Loritta - $whoDonated",
 				(realValue * 100).toLong(),
+				(storedAmount * 100).toLong(),
 				PaymentReason.DONATION,
 				"LORITTA-PREMIUM-%d",
 				discount,
