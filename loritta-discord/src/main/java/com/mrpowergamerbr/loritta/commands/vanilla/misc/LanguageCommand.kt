@@ -39,7 +39,8 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak",
                 LocaleWrapper(
                         "Português-Brasil",
                         loritta.getLocaleById("default"),
-                        "\uD83C\uDDE7\uD83C\uDDF7"
+                        "\uD83C\uDDE7\uD83C\uDDF7",
+                        false
                 ),
                 /* LocaleWrapper(
                         "Português-Portugal",
@@ -50,28 +51,32 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak",
                 LocaleWrapper(
                         "English (United States)",
                         loritta.getLocaleById("en-us"),
-                        "\uD83C\uDDFA\uD83C\uDDF8"
+                        "\uD83C\uDDFA\uD83C\uDDF8",
+                        false
                 ),
-                /* LocaleWrapper(
+                LocaleWrapper(
                         "Español",
                         loritta.getLocaleById("es-es"),
-                        loritta.getLegacyLocaleById("es-es"),
-                        "\uD83C\uDDEA\uD83C\uDDF8"
-                ), */
+                        "\uD83C\uDDEA\uD83C\uDDF8",
+                        false
+                ),
                 LocaleWrapper(
                         "Português-Funk",
                         loritta.getLocaleById("pt-funk"),
-                        "<:loritta_quebrada:338679008210190336>"
+                        "<:loritta_quebrada:338679008210190336>",
+                        true
                 ),
                 LocaleWrapper(
                         "Português-Furry",
                         loritta.getLocaleById("pt-furry"),
-                        "\uD83D\uDC3E"
+                        "\uD83D\uDC3E",
+                        true
                 ),
                 LocaleWrapper(
                         "English-Furry",
                         loritta.getLocaleById("en-furry"),
-                        "\uD83D\uDC31"
+                        "\uD83D\uDC31",
+                        true
                 )
         )
 
@@ -82,7 +87,8 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak",
                     LocaleWrapper(
                             "Auto-PT-BR-Debug",
                             loritta.getLocaleById("br-debug"),
-                            "\uD83D\uDC31"
+                            "\uD83D\uDC31",
+                            true
                     )
             )
             return
@@ -95,7 +101,8 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak",
                     LocaleWrapper(
                             "Auto-EN-Debug",
                             loritta.getLocaleById("en-debug"),
-                            "\uD83D\uDC31"
+                            "\uD83D\uDC31",
+                            true
                     )
             )
             return
@@ -105,7 +112,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak",
                 context.getAsMention(true),
                 buildLanguageEmbed(
                         locale,
-                        validLanguages.subList(0, 2),
+                        validLanguages.filter { !it.isSecret },
                         context.isPrivateChannel,
                         hasPersonalLanguage
                 )
@@ -117,7 +124,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak",
                         " ",
                         buildLanguageEmbed(
                                 locale,
-                                validLanguages.subList(2, validLanguages.size),
+                                validLanguages.filter { it.isSecret },
                                 context.isPrivateChannel,
                                 hasPersonalLanguage
                         ),
@@ -223,6 +230,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak",
     private class LocaleWrapper(
             val name: String,
             val locale: BaseLocale,
-            val emoteName: String
+            val emoteName: String,
+            val isSecret: Boolean
     )
 }
