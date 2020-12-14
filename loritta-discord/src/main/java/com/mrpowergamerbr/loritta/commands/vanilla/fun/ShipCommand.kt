@@ -7,8 +7,12 @@ import com.mrpowergamerbr.loritta.dao.Marriage
 import com.mrpowergamerbr.loritta.dao.ShipEffect
 import com.mrpowergamerbr.loritta.tables.Marriages
 import com.mrpowergamerbr.loritta.tables.ShipEffects
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.ImageUtils
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -22,7 +26,6 @@ import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
 import java.util.*
-import javax.imageio.ImageIO
 
 class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -48,11 +51,18 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 		var user2AvatarUrl: String? = context.userHandle.defaultAvatarUrl
 
 		val user1 = context.getUserAt(0)
-		val user2 = context.getUserAt(1)
+		var user2 = context.getUserAt(1)
 
 		if (user1 != null) {
 			user1Name = user1.name
 			user1AvatarUrl = user1.getEffectiveAvatarUrl(ImageFormat.PNG, 128)
+		}
+
+		if (user1Name != null && user2Name == null && user2 == null) {
+			// If the user2 is null, but user1 is not null, we are going to use user2 to the user that executed the command
+			//
+			// So, if I use "+ship @Loritta" it would be the same thing as using "+ship @Loritta @YourUserHere"
+			user2 = context.userHandle
 		}
 
 		if (user2 != null) {
@@ -118,9 +128,9 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 
 			if (Loritta.RANDOM.nextInt(0, 50) == 9 && context.lorittaUser.profile.money >= 3000) {
 				context.reply(
-                        LorittaReply(
-                                context.locale["commands.fun.ship.bribeLove", "${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/ship-effects"]
-                        )
+						LorittaReply(
+								context.locale["commands.fun.ship.bribeLove", "${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/ship-effects"]
+						)
 				)
 			}
 
