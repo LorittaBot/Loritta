@@ -37,7 +37,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 	}
 
 	override fun getExamples(): List<String> {
-		return listOf("159985870458322944", "159985870458322944 Algum motivo bastante aleatório")
+		return listOf("159985870458322944", "159985870458322944 Algum motivo bastante aleatório", "159985870458322944 271394014358405121 Raiding")
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
