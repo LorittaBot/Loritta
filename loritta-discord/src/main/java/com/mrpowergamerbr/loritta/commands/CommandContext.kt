@@ -332,7 +332,11 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 
 		if (toBeDownloaded == null) {
 			if (rawArgs.isNotEmpty() && createTextAsImageIfNotFound) {
-				return ImageUtils.createTextAsImage(256, 256, rawArgs.joinToString(" "))
+				val textForTheImage = rawArgs.drop(argument)
+						.joinToString(" ")
+
+				if (textForTheImage.isNotBlank())
+					return ImageUtils.createTextAsImage(256, 256, rawArgs.drop(argument).joinToString(" "))
 			}
 
 			if (search != 0) {
