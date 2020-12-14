@@ -60,7 +60,7 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 		val ownerId = guild["ownerId"].string
 		val region = Region.valueOf(guild["region"].string)
 		val owner = lorittaShards.retrieveUserInfoById(ownerId.toLong())
-		val ownerProfile = loritta.getLorittaProfile(ownerId.toLong())
+		val ownerProfile = loritta.getLorittaProfileAsync(ownerId.toLong())
 		val ownerGender = loritta.newSuspendedTransaction { ownerProfile?.settings?.gender ?: Gender.MALE }
 		val textChannelCount = guild["count"]["textChannels"].int
 		val voiceChannelCount = guild["count"]["voiceChannels"].int
