@@ -4,10 +4,18 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LorittaPermission
+import com.mrpowergamerbr.loritta.utils.LorittaUser
+import com.mrpowergamerbr.loritta.utils.MessageUtils
+import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
+import com.mrpowergamerbr.loritta.utils.removeAllFunctions
+import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.InviteBlockerConfig
@@ -51,7 +59,13 @@ class InviteLinkModule : MessageReceivedModule {
 				// https://cdn.discordapp.com/attachments/513405772911345664/760887806191992893/invite-bug.png
 				.stripCodeMarks()
 				.replace("\u200B", "")
-				.replace("\\", "")
+				// https://discord.gg\loritta is actually detected as https://discord.gg/loritta on Discord
+				// So we are going to flip all \ to /
+				.replace("\\", "/")
+				// https://discord.gg//loritta is actually detected as https://discord.gg/loritta on Discord
+				// (yes, two issues, wow)
+				// So we are going to replace all /+ to /, so https://discord.gg//loritta becomes https://discord.gg/loritta
+				.replace(Regex("/+"), "/")
 
 		val validMatchers = mutableListOf<Matcher>()
 		val contentMatcher = getMatcherIfHasInviteLink(content)
