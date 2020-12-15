@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
+import com.mrpowergamerbr.loritta.LorittaLauncher.loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -9,6 +10,7 @@ import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.Gender
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Region
@@ -58,6 +60,8 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 		val ownerId = guild["ownerId"].string
 		val region = Region.valueOf(guild["region"].string)
 		val owner = lorittaShards.retrieveUserInfoById(ownerId.toLong())
+		val ownerProfile = loritta.getLorittaProfileAsync(ownerId.toLong())
+		val ownerGender = loritta.newSuspendedTransaction { ownerProfile?.settings?.gender ?: Gender.MALE }
 		val textChannelCount = guild["count"]["textChannels"].int
 		val voiceChannelCount = guild["count"]["voiceChannels"].int
 		val timeCreated = guild["timeCreated"].long
@@ -71,7 +75,7 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 		embed.setTitle("<:discord:314003252830011395> $name", null) // Nome da Guild
 		embed.addField("💻 ID", id, true) // ID da Guild
 		embed.addField("\uD83D\uDCBB Shard ID", "$shardId — Loritta Cluster ${cluster.id} (`${cluster.name}`)", true)
-		embed.addField("👑 ${context.locale["commands.discord.serverinfo.owner"]}", "`${owner?.name}#${owner?.discriminator}` (${ownerId})", true) // Dono da Guild
+		embed.addField("👑 ${if (ownerGender == Gender.MALE) context.locale["commands.discord.serverinfo.owner"] else context.locale["commands.discord.serverinfo.ownerFemale"]}", "`${owner?.name}#${owner?.discriminator}` (${ownerId})", true) // Dono da Guild
 		embed.addField("🌎 ${context.locale["commands.discord.serverinfo.region"]}", region.getName(), true) // Região da Guild
 		embed.addField("\uD83D\uDCAC ${context.locale["commands.discord.serverinfo.channels"]} (${textChannelCount + voiceChannelCount})", "\uD83D\uDCDD **${locale["commands.discord.serverinfo.textChannels"]}:** ${textChannelCount}\n\uD83D\uDDE3 **${locale["commands.discord.serverinfo.voiceChannels"]}:** $voiceChannelCount", true) // Canais da Guild
 		val createdAtDiff = DateUtils.formatDateDiff(timeCreated, locale)
