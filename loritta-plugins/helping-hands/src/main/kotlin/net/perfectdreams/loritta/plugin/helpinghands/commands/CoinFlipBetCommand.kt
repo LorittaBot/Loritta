@@ -1,8 +1,10 @@
 package net.perfectdreams.loritta.plugin.helpinghands.commands
 
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.vanilla.`fun`.CaraCoroaCommand
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.onReactionAdd
 import com.mrpowergamerbr.loritta.utils.removeAllFunctions
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
@@ -106,104 +108,123 @@ class CoinFlipBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComman
 				fail(locale["commands.economy.flipcoinbet.notEnoughMoneyInvited", invitedUser.asMention], Constants.ERROR)
 
 			val message = reply(
-					if (hasNoTax)
-						locale[
-								"commands.economy.flipcoinbet.startBetNoTax",
-								invitedUser.asMention,
-								user.asMention,
-								locale["commands.fun.flipcoin.heads"],
-								money,
-								locale["commands.fun.flipcoin.tails"],
-								whoHasTheNoTaxReward?.asMention ?: "???"
-						]
-					else
-						locale[
-								"commands.economy.flipcoinbet.startBet",
-								invitedUser.asMention,
-								user.asMention,
-								locale["commands.fun.flipcoin.heads"],
-								money,
-								locale["commands.fun.flipcoin.tails"],
-								number,
-								tax
-						],
-					Emotes.LORI_RICH,
-					mentionUser = false
+					LorittaReply(
+						if (hasNoTax)
+							locale[
+									"commands.economy.flipcoinbet.startBetNoTax",
+									invitedUser.asMention,
+									user.asMention,
+									locale["commands.fun.flipcoin.heads"],
+									money,
+									locale["commands.fun.flipcoin.tails"],
+									whoHasTheNoTaxReward?.asMention ?: "???"
+							]
+						else
+							locale[
+									"commands.economy.flipcoinbet.startBet",
+									invitedUser.asMention,
+									user.asMention,
+									locale["commands.fun.flipcoin.heads"],
+									money,
+									locale["commands.fun.flipcoin.tails"],
+									number,
+									tax
+							],
+						Emotes.LORI_RICH,
+						mentionUser = false
+					),
+					LorittaReply(
+							locale[
+									"commands.economy.flipcoinbet.clickToAcceptTheBet",
+									invitedUser.asMention,
+									"✅"
+							],
+							"🤝",
+							mentionUser = false
+					)
 			).toJDA()
 
 			message.onReactionAdd(this) {
-				if (it.userIdLong == invitedUser.idLong && it.reactionEmote.name == "✅") {
-					message.removeAllFunctions()
-					plugin.launch {
-						mutex.withLock {
-							listOf(
-									selfUserProfile.refreshInDeferredTransaction(),
-									invitedUserProfile.refreshInDeferredTransaction()
-							).awaitAll()
+				if (it.reactionEmote.name == "✅") {
+					mutex.withLock {
+						if (LorittaLauncher.loritta.messageInteractionCache.containsKey(it.messageIdLong)) {
+							val usersThatReactedToTheMessage = it.reaction.retrieveUsers().await()
 
-							if (number > selfUserProfile.money)
-								return@withLock
+							if (invitedUser in usersThatReactedToTheMessage && user in usersThatReactedToTheMessage) {
+								message.removeAllFunctions()
+								plugin.launch {
+									mutex.withLock {
+										listOf(
+												selfUserProfile.refreshInDeferredTransaction(),
+												invitedUserProfile.refreshInDeferredTransaction()
+										).awaitAll()
 
-							if (number > invitedUserProfile.money)
-								return@withLock
+										if (number > selfUserProfile.money)
+											return@withLock
 
-							val isTails = Loritta.RANDOM.nextBoolean()
-							val prefix: String
-							val message: String
+										if (number > invitedUserProfile.money)
+											return@withLock
 
-							if (isTails) {
-								prefix = "<:coroa:412586257114464259>"
-								message = locale["${CaraCoroaCommand.LOCALE_PREFIX}.tails"]
-							} else {
-								prefix = "<:cara:412586256409559041>"
-								message = locale["${CaraCoroaCommand.LOCALE_PREFIX}.heads"]
-							}
+										val isTails = Loritta.RANDOM.nextBoolean()
+										val prefix: String
+										val message: String
 
-							val winner: User
-							val loser: User
+										if (isTails) {
+											prefix = "<:coroa:412586257114464259>"
+											message = locale["${CaraCoroaCommand.LOCALE_PREFIX}.tails"]
+										} else {
+											prefix = "<:cara:412586256409559041>"
+											message = locale["${CaraCoroaCommand.LOCALE_PREFIX}.heads"]
+										}
 
-							if (isTails) {
-								winner = user
-								loser = invitedUser
-								loritta.newSuspendedTransaction {
-									selfUserProfile.addSonhosNested(money)
-									invitedUserProfile.takeSonhosNested(number)
+										val winner: User
+										val loser: User
 
-									PaymentUtils.addToTransactionLogNested(
-											number,
-											SonhosPaymentReason.COIN_FLIP_BET,
-											givenBy = invitedUserProfile.id.value,
-											receivedBy = selfUserProfile.id.value
-									)
+										if (isTails) {
+											winner = user
+											loser = invitedUser
+											loritta.newSuspendedTransaction {
+												selfUserProfile.addSonhosNested(money)
+												invitedUserProfile.takeSonhosNested(number)
+
+												PaymentUtils.addToTransactionLogNested(
+														number,
+														SonhosPaymentReason.COIN_FLIP_BET,
+														givenBy = invitedUserProfile.id.value,
+														receivedBy = selfUserProfile.id.value
+												)
+											}
+										} else {
+											winner = invitedUser
+											loser = user
+											loritta.newSuspendedTransaction {
+												invitedUserProfile.addSonhosNested(money)
+												selfUserProfile.takeSonhosNested(number)
+
+												PaymentUtils.addToTransactionLogNested(
+														number,
+														SonhosPaymentReason.COIN_FLIP_BET,
+														givenBy = selfUserProfile.id.value,
+														receivedBy = invitedUserProfile.id.value
+												)
+											}
+										}
+
+										reply(
+												LorittaReply(
+														"**$message!**",
+														prefix,
+														mentionUser = false
+												),
+												LorittaReply(
+														locale["commands.economy.flipcoinbet.congratulations", winner.asMention, money, loser.asMention],
+														Emotes.LORI_RICH,
+														mentionUser = false
+												)
+										)
+									}
 								}
-							} else {
-								winner = invitedUser
-								loser = user
-								loritta.newSuspendedTransaction {
-									invitedUserProfile.addSonhosNested(money)
-									selfUserProfile.takeSonhosNested(number)
-
-									PaymentUtils.addToTransactionLogNested(
-											number,
-											SonhosPaymentReason.COIN_FLIP_BET,
-											givenBy = selfUserProfile.id.value,
-											receivedBy = invitedUserProfile.id.value
-									)
-								}
 							}
-
-							reply(
-									LorittaReply(
-											"**$message!**",
-											prefix,
-											mentionUser = false
-									),
-									LorittaReply(
-											locale["commands.economy.flipcoinbet.congratulations", winner.asMention, money, loser.asMention],
-											Emotes.LORI_RICH,
-											mentionUser = false
-									)
-							)
 						}
 					}
 				}
