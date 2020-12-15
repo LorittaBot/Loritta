@@ -1,7 +1,9 @@
 package net.perfectdreams.spicymorenitta.utils
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import io.ktor.client.request.post
+import io.ktor.client.request.*
+import kotlinx.browser.document
+import kotlinx.browser.window
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
@@ -12,8 +14,6 @@ import org.w3c.dom.HTMLScriptElement
 import org.w3c.dom.HTMLSpanElement
 import org.w3c.dom.url.URL
 import org.w3c.dom.url.URLSearchParams
-import kotlinx.browser.document
-import kotlinx.browser.window
 import kotlin.js.Json
 
 object ErrorTracker : Logging {
@@ -46,6 +46,13 @@ object ErrorTracker : Logging {
 
 			if (message.unsafeCast<String>().contains("adsbygoogle")) { // AdSense
 				warn("But looks like it is an AdSense error, we are going to ignore it because we don't need to track *that*")
+				return@callback false
+			}
+
+			// Hack: We don't want to track errors from other scripts (like ads) so we will just ignore if the source doesn't contain "app.js"
+			// (app.js = ourselves)
+			if (error != null && !error.asDynamic().stack.unsafeCast<String>().contains("app.js")) {
+				warn("But looks like it is didn't come from our script, we are going to ignore it because we don't need to track *that*")
 				return@callback false
 			}
 
