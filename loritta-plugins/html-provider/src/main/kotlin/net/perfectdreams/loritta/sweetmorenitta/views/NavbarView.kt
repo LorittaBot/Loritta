@@ -25,11 +25,7 @@ abstract class NavbarView(
                     +"Carregando..."
                 }
             }
-            div(classes = "fade-in-up half-second animated invisible") {
-                id = "not-saved-alert"
 
-                +"Cuidado - Você tem mudanças não salvas!"
-            }
             if (hasNavbar) {
                 nav(classes = "navigation-bar fixed") {
                     id = "navigation-bar"
