@@ -1,5 +1,7 @@
 package net.perfectdreams.loritta.commands.discord
 
+import com.github.salomonbrys.kotson.*
+import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -27,17 +29,17 @@ class GuildBannerCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(l
         executesDiscord {
             val context = this
 
-            var guild: Guild? = null
+            var guild: JsonObject? = null
 
             if (context.args.isNotEmpty()) {
                 val id = context.args.first()
                 if (id.isValidSnowflake()) {
-                    guild = lorittaShards.getGuildById(context.args[0])
+                    guild = lorittaShards.queryGuildById(context.args[0])
                 }
             } else {
-                guild = lorittaShards.getGuildById(context.guild.idLong)
+                guild = lorittaShards.queryGuildById(context.guild.idLong)
             }
-            // Verificar se a guild existe
+            // Verify if the guild exists
             if (guild == null) {
                 context.reply(
                         LorittaReply(
@@ -47,12 +49,13 @@ class GuildBannerCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(l
                 )
             }
 
-            // Verificar se a guild tem banner
-            val guildBanner = guild!!.bannerUrl ?: fail(locale["commands.discord.guildbanner.noBanner"])
+            // Verify if the guild has banner
+            val guildBanner = guild?.get("bannerUrl")?.nullString ?: fail(locale["commands.discord.guildbanner.noBanner"])
+
 
             val embed = EmbedBuilder()
 
-            embed.setTitle("🖼 ${guild.name}")
+            embed.setTitle("🖼 ${guild!!.get("name")!!.string}")
             embed.setColor(Constants.DISCORD_BLURPLE)
             embed.setDescription(locale["loritta.clickHere", "$guildBanner?size=2048"])
             embed.setImage("$guildBanner?size=2048")
