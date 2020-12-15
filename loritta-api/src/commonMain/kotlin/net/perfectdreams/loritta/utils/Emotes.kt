@@ -37,6 +37,7 @@ object Emotes {
 	val LORI_COFFEE: LorittaEmote by resettableLazy(lazyMgr) { getEmote("lori_coffee") }
 	val LORI_NICE: LorittaEmote by resettableLazy(lazyMgr) { getEmote("lori_nice") }
 	val LORI_PRAY: LorittaEmote by resettableLazy(lazyMgr) { getEmote("lori_pray") }
+	val LORI_STONKS: LorittaEmote by resettableLazy(lazyMgr) { getEmote("lori_stonks") }
 	val LORI_HEART1: LorittaEmote by resettableLazy(lazyMgr) { getEmote("lori_heart_1") }
 	val LORI_HEART2: LorittaEmote by resettableLazy(lazyMgr) { getEmote("lori_heart_2") }
 

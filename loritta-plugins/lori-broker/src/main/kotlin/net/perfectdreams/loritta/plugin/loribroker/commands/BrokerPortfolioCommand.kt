@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.plugin.loribroker.LoriBrokerPlugin
 import net.perfectdreams.loritta.plugin.loribroker.tables.BoughtStocks
+import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.select
 
 class BrokerPortfolioCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractCommandBase(plugin.loritta, plugin.aliases.flatMap { listOf("$it portfolio", "$it portfólio", "$it p") }, CommandCategory.ECONOMY) {
@@ -30,7 +31,7 @@ class BrokerPortfolioCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComm
 			}
 
 			val embed = plugin.getBaseEmbed()
-					.setTitle(locale["commands.economy.brokerPortfolio.title"])
+					.setTitle("${Emotes.LORI_STONKS} ${locale["commands.economy.brokerPortfolio.title"]}")
 
 			for ((tickerId, totalSpent) in totalStockExpensesById) {
 				val ticker = plugin.tradingApi

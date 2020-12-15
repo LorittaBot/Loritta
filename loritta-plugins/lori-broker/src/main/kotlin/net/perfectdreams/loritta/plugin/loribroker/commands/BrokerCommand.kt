@@ -62,7 +62,7 @@ class BrokerCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractCommandBase(p
 			}
 
 			val embed = plugin.getBaseEmbed()
-					.setTitle(locale["commands.economy.broker.title"])
+					.setTitle("${Emotes.LORI_STONKS} ${locale["commands.economy.broker.title"]}")
 					.setDescription(
 							locale.getList(
 									"commands.economy.broker.explanation",
