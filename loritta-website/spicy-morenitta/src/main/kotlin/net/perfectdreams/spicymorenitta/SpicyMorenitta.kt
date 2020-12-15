@@ -268,6 +268,9 @@ class SpicyMorenitta : Logging {
 		Moment.locale(momentLocaleId)
 	}
 
+	/**
+	 * Requests the logged in user via "/api/v1/users/@me" and calls [updateLoggedInUser] if the request succeeds.
+	 */
 	suspend fun loadLoggedInUser() {
 		val httpResponse = http.get<HttpResponse>("${window.location.origin}/api/v1/users/@me")
 		val payload = httpResponse.readText()
@@ -281,6 +284,13 @@ class SpicyMorenitta : Logging {
 		}
 	}
 
+	/**
+	 * Updates the current user identification with the [newUser]
+	 *
+	 * This updates the login button (switches to the user login) and sets the [userIdentification] to the [newUser]
+	 *
+	 * @param newUser the logged in user identification
+	 */
 	fun updateLoggedInUser(newUser: UserIdentification) {
 		userIdentification = newUser
 		debug("New user is $newUser")
@@ -590,6 +600,11 @@ class SpicyMorenitta : Logging {
 		debug("Redirect buttons added!")
 	}
 
+	/**
+	 * Checks and, if needed, shows or hides the hamburger button if any of the entries are overflowing to the next line.
+	 *
+	 * This should be called every time when the navbar is updated with new entries, or if a entry changes size. (example: [updateLoggedInUser])
+	 */
 	fun checkAndFixNavbarOverflownEntries() {
 		val leftSidebar = document.select<HTMLDivElement>(".left-side-entries")
 		val hamburgerButton = document.select<HTMLDivElement>("#hamburger-menu-button")
