@@ -1,8 +1,18 @@
 package net.perfectdreams.loritta.sweetmorenitta.views
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import kotlinx.html.*
+import kotlinx.html.HEAD
+import kotlinx.html.HTML
+import kotlinx.html.ScriptType
+import kotlinx.html.head
+import kotlinx.html.html
+import kotlinx.html.link
+import kotlinx.html.meta
+import kotlinx.html.script
 import kotlinx.html.stream.appendHTML
+import kotlinx.html.styleLink
+import kotlinx.html.title
+import kotlinx.html.unsafe
 import net.perfectdreams.loritta.website.LorittaWebsite
 import net.perfectdreams.loritta.website.utils.WebsiteAssetsHashes
 
@@ -66,11 +76,7 @@ window.addEventListener('load', function () {
                 }
                 meta(name = "viewport", content = "width=device-width, initial-scale=1")
 
-
-                if (false && com.mrpowergamerbr.loritta.LorittaLauncher.loritta.config.loritta.environment == com.mrpowergamerbr.loritta.utils.config.EnvironmentType.CANARY)
-                    styleLink("${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/assets/css/style.css?v12345")
-                else
-                    styleLink("${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/assets/css/style.css?hash=${assetHash("assets/css/style.css")}")
+                styleLink("${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/assets/css/style.css?hash=${assetHash("assets/css/style.css")}")
 
                 styleLink("https://use.fontawesome.com/releases/v5.8.1/css/all.css")
 
