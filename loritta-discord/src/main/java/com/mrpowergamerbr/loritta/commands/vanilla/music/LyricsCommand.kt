@@ -7,8 +7,12 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.extensions.await
+import com.mrpowergamerbr.loritta.utils.extensions.edit
+import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import org.jsoup.Jsoup
@@ -71,184 +75,79 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 
 			val lyrics = songInfo.lyrics
 
-			// Vamos pegar a versão "compactada" da lyric
-			val compactLyrics = getCompactLyricsFromLyrics(lyrics.split("\n"))
-			// Para ficar melhor para ver, nós iremos separar em colunas
-			val columns = divideLyricsInColumns(compactLyrics)
+			val embed = EmbedBuilder()
+			embed.setTitle("\uD83C\uDFB6\uD83D\uDCC4 ${songInfo.artistName} - ${songInfo.songName}")
+			embed.setColor(Color.red)
 
-			val useHighResolution = 3 > columns.size // Para evitar OutOfMemoryExceptions, vamos fazer fallback de resolução
-			val fontSize = if (useHighResolution) 18f else 9f
-			val initialImageHeight = if (useHighResolution) 22 else 11
-			val blankHeight = if (useHighResolution) 6 else 3
-			val outlinePadding = if (useHighResolution) 2 else 1
-
-			val lyricFont = Constants.VOLTER.deriveFont(fontSize)
-			val fallbackFont = Constants.JACKEY.deriveFont(fontSize)
-
-			val c = Canvas() // Canvas funciona até em headless mode, e é um jeito para a gente conseguir pegar as font metrics da fonte!
-			val lyricFontMetrics = c.getFontMetrics(lyricFont)
-			val fallbackFontMetrics = c.getFontMetrics(fallbackFont)
-
-			// Fazer por colunas é mais... difícil do que parece na verdade!
-			var imageWidth = 0
-			for (column in columns) {
-				val biggestString = column.maxBy { getStringWidth(it, lyricFont, lyricFontMetrics, fallbackFontMetrics) }!!
-				imageWidth += getStringWidth(biggestString, lyricFont, lyricFontMetrics, fallbackFontMetrics) + 4
-			}
-
-			var imageHeight = initialImageHeight
-
-			for (line in columns.sortedByDescending { it.size }[0]) { // Agora nós iremos pegar a coluna que tem mais letras
-				if (line.isBlank()) {
-					imageHeight += blankHeight
-					continue
+			if (lyrics.length < 1024) {
+				embed.addField("", "${lyrics.slice(IntRange(0, lyrics.length - 1))}", false)
+			} else {
+				embed.addField("", "${lyrics.slice(IntRange(0, 1023))}", false)
+				if (lyrics.length < 2048) {
+					embed.setDescription(lyrics.slice(IntRange(0, lyrics.length - 1)))
+				} else {
+					embed.addField("", "${lyrics.slice(IntRange(1025, 2047))}", false)
 				}
-				imageHeight += lyricFontMetrics.height
 			}
 
-			val image = BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB)
-			val graphics = image.graphics
 
-			val cover = getCoverArt(songInfo.albumUrl)
-
-			val averageColor = cover.getScaledInstance(1, 1, BufferedImage.SCALE_AREA_AVERAGING)
-					.toBufferedImage()
-					.getRGB(0, 0)
-
-			drawCoverArt(graphics, cover, imageWidth, imageHeight, Math.max(imageWidth, imageHeight))
-
-			graphics.color = Color(0, 0, 0, 220)
-			graphics.fillRect(0, 0, imageWidth, imageHeight)
-
-			graphics.font = lyricFont
-			graphics.color = Color.BLACK
-			var x = 2
-			var y = initialImageHeight
-
-			for (column in columns) {
-				val originalX = x
-				for (line in column) {
-					if (line.isBlank()) {
-						y += blankHeight
-						continue
-					}
-
-					for (ch in line) {
-						graphics.color = Color.BLACK
-						if (lyricFont.canDisplay(ch)) {
-							graphics.font = lyricFont
-						} else {
-							graphics.font = fallbackFont
-						}
-
-						graphics.drawString(ch.toString(), x - outlinePadding, y)
-						graphics.drawString(ch.toString(), x + outlinePadding, y)
-						graphics.drawString(ch.toString(), x, y + outlinePadding)
-						graphics.drawString(ch.toString(), x, y - outlinePadding)
-
-						graphics.color = Color.WHITE
-						graphics.drawString(ch.toString(), x, y)
-						x += graphics.fontMetrics.charWidth(ch)
-					}
-					y += graphics.fontMetrics.height
-					x = originalX
+			if (lyrics.length > 4096) {
+				embed.addField("", "${lyrics.slice(IntRange(2049, 4097))}", false)
+				embed.addField("", "${lyrics.slice(IntRange(4099, lyrics.length - 1))}", false)
+			} else {
+				if (lyrics.length < 1024) {
+					embed.addField("", "${lyrics.slice(IntRange(0, lyrics.length - 1))}", false)
+				} else {
+					embed.addField("", "${lyrics.slice(IntRange(0, 1023))}", false)
 				}
 
+				if (lyrics.length > 2048) {
+					embed.addField("", "${lyrics.slice(IntRange(1025, 2047))}", false)
+				} else {
+					embed.addField("", "${lyrics.slice(IntRange(1025, lyrics.length - 1))}", false)
+				}
 
-				val biggestString = column.maxBy { it.length }!!
-				x += getStringWidth(biggestString, lyricFont, lyricFontMetrics, fallbackFontMetrics) + 2
-				y = initialImageHeight
+				if (lyrics.length in 2049..4095) {
+					if (lyrics.length < 3000) {
+						embed.addField("", "${lyrics.slice(IntRange(2049, lyrics.length - 1))}", false)
+					} else {
+						embed.addField("", "${lyrics.slice(IntRange(2049, 2999))}", false)
+						embed.addField("", "${lyrics.slice(IntRange(3001, lyrics.length - 1))}", false)
+					}
+				}
 			}
 
-			val embed = EmbedBuilder().apply {
-				setTitle("\uD83C\uDFB6\uD83D\uDCC4 ${songInfo.artistName} - ${songInfo.songName}")
-				setImage("attachment://lyrics.png")
-				setColor(averageColor)
+			if (lyrics.length > 4098) {
+				embed.addField("", "${lyrics.slice(IntRange(4099, 5999))}", false)
+				embed.setFooter(locale["commands.music.lyrics.goToNextPage"])
+				val message = context.sendMessage(embed.build())
+				message.addReaction("▶").queue()
+
+				message.onReactionAddByAuthor(context.userHandle.idLong) {
+					if (it.reactionEmote.name == "▶") {
+						message.delete().queue()
+
+						val nextPageEmbed = EmbedBuilder()
+						nextPageEmbed.setTitle("\uD83C\uDFB6\uD83D\uDCC4 ${songInfo.artistName} - ${songInfo.songName}")
+						nextPageEmbed.setColor(Color.red)
+						nextPageEmbed.setDescription(lyrics.slice(IntRange(6000, lyrics.length - 1)))
+
+						message.edit(
+								"",
+								nextPageEmbed.build(),
+								true
+						)
+
+						return@onReactionAddByAuthor
+					}
+				}
+			} else {
+				context.sendMessage(embed.build())
 			}
 
-			context.sendFile(
-					image,
-					"lyrics.png",
-					context.getAsMention(true),
-					embed.build()
-			)
 		} else {
 			context.explain()
 		}
-	}
-
-	fun getCompactLyricsFromLyrics(lyrics: List<String>): List<String> {
-		val compactLyrics = mutableListOf<String>() // Letras versão "compacta"
-		var count = 0
-		var lastLine: String? = null
-
-		for (line in lyrics) {
-			val line = line.trim()
-			if (line == lastLine) {
-				count++
-			} else {
-				if (lastLine != null && count != 0) {
-					compactLyrics.removeAt(compactLyrics.size - 1)
-					compactLyrics.add(lastLine + " (${count + 1}x)")
-				}
-				count = 0
-				compactLyrics.add(line)
-			}
-			lastLine = line
-		}
-
-		return compactLyrics
-	}
-
-	fun divideLyricsInColumns(lyrics: List<String>): List<List<String>> {
-		val columns = mutableListOf<List<String>>()
-		var column = mutableListOf<String>()
-
-		for (line in lyrics) {
-			if (column.filter { !it.isBlank() }.size == 40 && line.isNotBlank()) {
-				columns.add(column)
-				column = mutableListOf()
-			}
-			column.add(line)
-		}
-		columns.add(column)
-		return columns
-	}
-
-	fun getCoverArt(coverArtUrl: String?): BufferedImage {
-		var cover = if (coverArtUrl != null) {
-			LorittaUtils.downloadImage(coverArtUrl)
-		} else null
-
-		if (cover == null) {
-			// Baixar imagem de outras fontes
-			// Usar cover art padrão
-			cover = ImageIO.read(File(Loritta.ASSETS, "lobby_mural1.png"))
-		}
-
-		return cover!!
-	}
-
-	fun drawCoverArt(graphics: Graphics, coverArt: BufferedImage, imageWidth: Int, imageHeight: Int, size: Int) {
-		val resized = coverArt.getScaledInstance(size, size, BufferedImage.SCALE_SMOOTH)
-		// Colocar algo no centro é meio complicado, mas nada impossível!
-		val centerX = imageWidth / 2
-		val centerY = imageHeight / 2
-		val halfSize = size / 2
-
-		graphics.drawImage(resized, centerX - halfSize, centerY - halfSize, null)
-	}
-
-	fun getStringWidth(str: String, lyricFont: Font, lyricFontMetrics: FontMetrics, fallbackFontMetrics: FontMetrics): Int {
-		var maxSize = 0
-		for (ch in str) {
-			maxSize += if (lyricFont.canDisplay(ch)) {
-				lyricFontMetrics.charWidth(ch)
-			} else {
-				fallbackFontMetrics.charWidth(ch)
-			}
-		}
-		return maxSize
 	}
 
 	fun retrieveSongInfoFromLyricWikia(artist: String, musicName: String): SongInfo? {
