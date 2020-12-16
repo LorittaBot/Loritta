@@ -335,11 +335,13 @@ object GiveawayManager {
         val locale = loritta.getLocaleById(serverConfig.localeId)
 
         if (messageReaction != null) {
+            logger.info { "Retrieving reactions for the giveaway ${giveaway.id.value}, using ${messageReaction.count} (total reaction count) for the takeAsync(...)" }
             val users = messageReaction.retrieveUsers()
                     // "retrieveUsers()" uses pagination, and we want to get all the users that reacted in the giveaway
-                    // So we need to use .takeAsync(...) with a big value that would cover all reactions (in this case, Int.MAX_VALUE)
+                    // So we need to use .takeAsync(...) with a big value that would cover all reactions (in this case, we are going to use the reaction count, heh)
+                    // Before we did use Int.MAX_VALUE, but that allocates a gigantic array, whoops.
                     // Of course, if a message has A LOT of reactions, that would cause a lot of issues, but I guess that is going to be very rare.
-                    .takeAsync(Int.MAX_VALUE)
+                    .takeAsync(messageReaction.count)
                     .await()
 
             if (users.size == 1 && users[0].id == loritta.discordConfig.discord.clientId) { // Ninguém participou do giveaway! (Só a Lori, mas ela não conta)
