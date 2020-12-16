@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.*
+import kotlinx.coroutines.future.await
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
@@ -334,13 +335,18 @@ object GiveawayManager {
         val locale = loritta.getLocaleById(serverConfig.localeId)
 
         if (messageReaction != null) {
-            val users = messageReaction.retrieveUsers().await()
+            val users = messageReaction.retrieveUsers()
+                    // "retrieveUsers()" uses pagination, and we want to get all the users that reacted in the giveaway
+                    // So we need to use .takeAsync(...) with a big value that would cover all reactions (in this case, Int.MAX_VALUE)
+                    // Of course, if a message has A LOT of reactions, that would cause a lot of issues, but I guess that is going to be very rare.
+                    .takeAsync(Int.MAX_VALUE)
+                    .await()
 
             if (users.size == 1 && users[0].id == loritta.discordConfig.discord.clientId) { // Ninguém participou do giveaway! (Só a Lori, mas ela não conta)
                 message.channel.sendMessageAsync("\uD83C\uDF89 **|** ${locale["commands.fun.giveaway.noWinner"]} ${Emotes.LORI_TEMMIE}")
             } else {
                 val winners = mutableListOf<User>()
-                val reactedUsers = messageReaction.retrieveUsers().await()
+                val reactedUsers = users
                         .asSequence()
                         .filter { it.id != loritta.discordConfig.discord.clientId }
                         .toMutableList()
