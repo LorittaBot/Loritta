@@ -8,7 +8,6 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Background
 import com.mrpowergamerbr.loritta.dao.ProfileDesign
 import com.mrpowergamerbr.loritta.dao.UserDonationKey
-import com.mrpowergamerbr.loritta.tables.DonationKeys
 import com.mrpowergamerbr.loritta.tables.UserDonationKeys
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -125,7 +124,7 @@ class GetSelfInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/us
 
 			if ("userdonationkeys" in sections) {
 				val userDonationKeys = loritta.newSuspendedTransaction {
-					UserDonationKey.find { UserDonationKeys.userId eq userIdentification.id.toLong() and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
+					UserDonationKey.find { UserDonationKeys.userId eq userIdentification.id.toLong() and (UserDonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
 							.toList()
 				}
 
