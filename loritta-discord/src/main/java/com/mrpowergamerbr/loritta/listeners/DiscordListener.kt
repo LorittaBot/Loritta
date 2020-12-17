@@ -518,7 +518,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong, true)
 
-				val profile = serverConfig.getUserDataIfExistsAsync(event.guild.idLong)
+				val profile = serverConfig.getUserDataIfExistsAsync(event.user.idLong)
 
 				if (profile != null) {
 					loritta.newSuspendedTransaction {
