@@ -2,7 +2,23 @@ package net.perfectdreams.loritta.sweetmorenitta.views
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
-import kotlinx.html.*
+import kotlinx.html.DIV
+import kotlinx.html.HTML
+import kotlinx.html.a
+import kotlinx.html.body
+import kotlinx.html.div
+import kotlinx.html.footer
+import kotlinx.html.h2
+import kotlinx.html.h3
+import kotlinx.html.hr
+import kotlinx.html.i
+import kotlinx.html.id
+import kotlinx.html.img
+import kotlinx.html.nav
+import kotlinx.html.p
+import kotlinx.html.script
+import kotlinx.html.style
+import kotlinx.html.unsafe
 
 abstract class NavbarView(
         locale: BaseLocale,
