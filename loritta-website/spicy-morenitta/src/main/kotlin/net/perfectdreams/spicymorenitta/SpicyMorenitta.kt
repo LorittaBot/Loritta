@@ -4,8 +4,8 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import io.ktor.client.*
 import io.ktor.client.engine.js.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.readText
 import io.ktor.http.*
 import kotlinx.browser.document
 import kotlinx.browser.window
@@ -802,7 +802,7 @@ class SpicyMorenitta : Logging {
 	}
 
 	fun showLoadingScreen(text: String = "${locale["loritta.loading"]}...") {
-		document.select<HTMLDivElement>("#loading-screen").apply {
+		document.select<HTMLDivElement?>("#loading-screen")?.apply {
 			select<HTMLDivElement>(".loading-text").apply {
 				textContent = text
 			}
@@ -811,7 +811,7 @@ class SpicyMorenitta : Logging {
 	}
 
 	fun hideLoadingScreen() {
-		document.select<HTMLDivElement>("#loading-screen").apply {
+		document.select<HTMLDivElement?>("#loading-screen")?.apply {
 			style.opacity = "0"
 		}
 	}
