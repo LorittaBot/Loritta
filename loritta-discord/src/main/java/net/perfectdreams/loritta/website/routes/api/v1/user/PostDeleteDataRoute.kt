@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.tables.Reminders
 import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.tables.ShipEffects
 import com.mrpowergamerbr.loritta.tables.StoredMessages
+import com.mrpowergamerbr.loritta.tables.UserDonationKeys
 import com.mrpowergamerbr.loritta.utils.Constants
 import io.ktor.application.*
 import io.ktor.sessions.*
@@ -44,9 +45,14 @@ class PostDeleteDataRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRout
 					Dailies.receivedById eq userId
 				}
 
-				logger.info { "Deleting $userId's donation keys..." }
+				logger.info { "Deleting $userId's server donation keys..." }
 				DonationKeys.deleteWhere {
 					DonationKeys.userId eq userId
+				}
+
+				logger.info { "Deleting $userId's user donation keys..." }
+				UserDonationKeys.deleteWhere {
+					UserDonationKeys.userId eq userId
 				}
 
 				logger.info { "Deleting $userId's guild profiles..." }
