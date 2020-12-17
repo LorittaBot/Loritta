@@ -337,7 +337,8 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					BannedUsers,
 					ProfileDesigns,
 					ProfileDesignsPayments,
-					DailyProfileShopItems
+					DailyProfileShopItems,
+					UserDonationKeys
 			)
 		}
 	}

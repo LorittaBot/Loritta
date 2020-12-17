@@ -7,7 +7,6 @@ import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.tables.DonationKeys
-import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.GlobalScope
@@ -15,9 +14,10 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import org.jetbrains.exposed.sql.and
 
-object UserDonationKeysTransformer : ConfigTransformer {
+object GuildDonationKeysTransformer : ConfigTransformer {
     override val payloadType: String = "userkeys"
     override val configKey: String = "donationKeys"
 

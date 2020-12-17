@@ -9,11 +9,17 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.dao.GuildProfile
+import com.mrpowergamerbr.loritta.dao.UserDonationKey
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Profiles
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LorittaShards
+import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.lorittaSupervisor
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -26,8 +32,12 @@ import net.perfectdreams.loritta.utils.ClusterOfflineException
 import net.perfectdreams.loritta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 
 class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCategory.MAGIC) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -187,7 +197,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				return
 			}
 
-			if (arg0 == "generate_key" && arg1 != null && arg2 != null) {
+			if (arg0 == "generate_guild_key" && arg1 != null && arg2 != null) {
 				transaction(Databases.loritta) {
 					DonationKey.new {
 						this.userId = arg1.toLong()
@@ -198,8 +208,25 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 
 				context.reply(
                         LorittaReply(
-                                "Key criada com sucesso!"
+                                "Guild Key criada com sucesso!"
                         )
+				)
+				return
+			}
+
+			if (arg0 == "generate_user_key" && arg1 != null && arg2 != null) {
+				transaction(Databases.loritta) {
+					UserDonationKey.new {
+						this.userId = arg1.toLong()
+						this.expiresAt = System.currentTimeMillis() + 2_764_800_000
+						this.value = arg2.toDouble()
+					}
+				}
+
+				context.reply(
+						LorittaReply(
+								"User Key criada com sucesso!"
+						)
 				)
 				return
 			}

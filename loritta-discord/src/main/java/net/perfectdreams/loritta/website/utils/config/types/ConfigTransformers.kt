@@ -12,7 +12,7 @@ object ConfigTransformers {
             TwitchConfigTransformer,
             TwitterConfigTransformer,
             TextChannelsTransformer,
-            UserDonationKeysTransformer,
+            GuildDonationKeysTransformer,
             ActiveDonationKeysTransformer,
             GuildInfoTransformer,
             GeneralConfigTransformer,
