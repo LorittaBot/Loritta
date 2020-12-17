@@ -17,6 +17,7 @@ import net.dv8tion.jda.api.Region
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.DiscordUtils
+import net.perfectdreams.loritta.utils.Emotes
 
 class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), category = CommandCategory.DISCORD) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -66,6 +67,13 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 		val voiceChannelCount = guild["count"]["voiceChannels"].int
 		val timeCreated = guild["timeCreated"].long
 		val timeJoined = guild["timeJoined"].long
+		val boostCount = guild["boostCount"].int
+		val boostTier = when {
+			boostCount in 5..14 -> "1"
+			boostCount in 15..29 -> "2"
+			boostCount >= 30 -> "3"
+			else -> "0"
+		}
 		val memberCount = guild["count"]["members"].int
 
 		// Baseado no comando ?serverinfo do Dyno
@@ -82,6 +90,7 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 		embed.addField("\uD83D\uDCC5 ${context.locale["commands.discord.serverinfo.createdAt"]}", "${timeCreated.humanize(locale)} ($createdAtDiff)", true)
 		val joinedAtDiff = DateUtils.formatDateDiff(timeJoined, locale)
 		embed.addField("\uD83C\uDF1F ${context.locale["commands.discord.serverinfo.joinedAt"]}", "${timeJoined.humanize(locale)} ($joinedAtDiff)", true)
+		embed.addField("${Emotes.LORI_NITRO_BOOST} ${context.locale["commands.discord.serverinfo.boosts"]}", "**${context.locale["commands.discord.serverinfo.boostCount"]}:** ${boostCount}\n**${context.locale["commands.discord.serverinfo.boostTier"]}:** $boostTier", true) // Boosts da guild
 		embed.addField("👥 ${context.locale["commands.discord.serverinfo.members"]} ($memberCount)", "", true) // Membros da Guild
 
 		context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
