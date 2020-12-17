@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.magic.*
 import com.mrpowergamerbr.loritta.dao.*
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.profile.ProfileDesignManager
+import com.mrpowergamerbr.loritta.tables.UserDonationKeys
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.config.*
 import com.mrpowergamerbr.loritta.utils.locale.*
@@ -32,7 +33,6 @@ import net.perfectdreams.loritta.commands.vanilla.administration.*
 import net.perfectdreams.loritta.commands.vanilla.economy.*
 import net.perfectdreams.loritta.commands.vanilla.magic.*
 import net.perfectdreams.loritta.commands.vanilla.social.*
-import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandMap
 import net.perfectdreams.loritta.platform.discord.plugin.JVMPluginManager
 import net.perfectdreams.loritta.platform.discord.utils.*
@@ -41,7 +41,6 @@ import net.perfectdreams.loritta.utils.*
 import net.perfectdreams.loritta.utils.config.*
 import net.perfectdreams.loritta.utils.extensions.readImage
 import net.perfectdreams.loritta.utils.locale.DebugLocales
-import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.image.BufferedImage
@@ -701,11 +700,9 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
     }
 
     fun _getActiveMoneyFromDonations(userId: Long): Double {
-        return Payment.find {
-            (Payments.expiresAt greaterEq System.currentTimeMillis()) and
-                    (Payments.reason eq PaymentReason.DONATION) and
-                    (Payments.userId eq userId)
-        }.sumByDouble { it.money.toDouble() }
+        return UserDonationKey.find { UserDonationKeys.activeIn eq userId and (UserDonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
+                .toList()
+                .sumByDouble { it.value }
     }
 
     fun launchMessageJob(event: Event, block: suspend CoroutineScope.() -> Unit) {
