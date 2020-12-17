@@ -8,10 +8,23 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
-import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.*
-import io.ktor.application.ApplicationCall
-import io.ktor.http.HttpStatusCode
-import io.ktor.request.receiveText
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.AutorolePayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.CustomBadgePayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.DailyMultiplierPayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.EconomyPayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.GeneralConfigPayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.LevelPayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.MiscellaneousPayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.ModerationPayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.ResetXpPayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.RssFeedsPayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.TimersPayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.TwitchPayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.TwitterPayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.YouTubePayload
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.request.*
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.ActionType
@@ -63,7 +76,6 @@ class PatchServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRout
 					"miscellaneous" to MiscellaneousPayload::class.java,
 					"economy" to EconomyPayload::class.java,
 					"timers" to TimersPayload::class.java,
-					"premium" to PremiumKeyPayload::class.java,
 					"badge" to CustomBadgePayload::class.java,
 					"daily_multiplier" to DailyMultiplierPayload::class.java,
 					"level" to LevelPayload::class.java,
