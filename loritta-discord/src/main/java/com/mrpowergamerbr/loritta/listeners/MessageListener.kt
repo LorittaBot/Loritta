@@ -159,7 +159,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						if (ignoringCommandsRole == event.guild.publicRole)
 							response = locale["commands.mention.responseEveryoneBlocked", event.message.author.asMention, serverConfig.commandPrefix]
 						else
-							response = locale["commands.mention.responseRoleBlocked", event.message.author.asMention, serverConfig.commandPrefix, ignoringCommandsRole?.asMention]
+							response = locale["commands.mention.responseRoleBlocked", event.message.author.asMention, serverConfig.commandPrefix, "${ignoringCommandsRole?.name}"]
 					} else {
 						if (serverConfig.blacklistedChannels.contains(event.channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
 							// Vamos pegar um canal que seja possível usar comandos
