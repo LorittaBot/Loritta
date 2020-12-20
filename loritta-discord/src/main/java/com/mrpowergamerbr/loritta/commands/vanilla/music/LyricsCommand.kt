@@ -79,71 +79,60 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 			embed.setTitle("\uD83C\uDFB6\uD83D\uDCC4 ${songInfo.artistName} - ${songInfo.songName}")
 			embed.setColor(Color.red)
 
-			if (lyrics.length < 1024) {
-				embed.addField("", "${lyrics.slice(IntRange(0, lyrics.length - 1))}", false)
-			} else {
-				embed.addField("", "${lyrics.slice(IntRange(0, 1023))}", false)
-				if (lyrics.length < 2048) {
-					embed.setDescription(lyrics.slice(IntRange(0, lyrics.length - 1)))
-				} else {
-					embed.addField("", "${lyrics.slice(IntRange(1025, 2047))}", false)
-				}
-			}
+			val lines = lyrics.split("\n")
 
 
-			if (lyrics.length > 4096) {
-				embed.addField("", "${lyrics.slice(IntRange(2049, 4097))}", false)
-				embed.addField("", "${lyrics.slice(IntRange(4099, lyrics.length - 1))}", false)
-			} else {
-				if (lyrics.length < 1024) {
-					embed.addField("", "${lyrics.slice(IntRange(0, lyrics.length - 1))}", false)
-				} else {
-					embed.addField("", "${lyrics.slice(IntRange(0, 1023))}", false)
-				}
 
-				if (lyrics.length > 2048) {
-					embed.addField("", "${lyrics.slice(IntRange(1025, 2047))}", false)
-				} else {
-					embed.addField("", "${lyrics.slice(IntRange(1025, lyrics.length - 1))}", false)
-				}
+			var currentFieldText = StringBuilder()
 
-				if (lyrics.length in 2049..4095) {
-					if (lyrics.length < 3000) {
-						embed.addField("", "${lyrics.slice(IntRange(2049, lyrics.length - 1))}", false)
-					} else {
-						embed.addField("", "${lyrics.slice(IntRange(2049, 2999))}", false)
-						embed.addField("", "${lyrics.slice(IntRange(3001, lyrics.length - 1))}", false)
+			try {
+
+				for (line in lines) {
+					if (currentFieldText.length + line.length > 1024) {
+						embed.addField("", "${currentFieldText.toString()}", false)
+						currentFieldText = StringBuilder()
 					}
-				}
-			}
 
-			// Verify if the lyrics is bigger than 4098 characters
-			if (lyrics.length > 4098) {
-				embed.addField("", "${lyrics.slice(IntRange(4099, 5999))}", false)
-				embed.setFooter(locale["commands.music.lyrics.goToNextPage"])
-				val message = context.sendMessage(embed.build())
+					currentFieldText.append("$line\n")
+				}
+
+				embed.addField("", "${currentFieldText.toString()}", false)
+
+				context.sendMessage(embed.build())
+
+			} catch (e: Exception) {
+				val embed3 = EmbedBuilder()
+				embed3.setTitle("\uD83C\uDFB6\uD83D\uDCC4 ${songInfo.artistName} - ${songInfo.songName}")
+				embed3.setColor(Color.red)
+
+				embed3.addField("", "${lyrics.slice(IntRange(0, 999))}", false)
+				embed3.addField("", "${lyrics.slice(IntRange(1000, 1999))}", false)
+				embed3.addField("", "${lyrics.slice(IntRange(2000, 2999))}", false)
+				embed3.addField("", "${lyrics.slice(IntRange(3000, 3999))}", false)
+				embed3.addField("", "${lyrics.slice(IntRange(4000, 4999))}", false)
+
+				val message = context.sendMessage(embed3.build())
 				message.addReaction("▶").queue()
 
 				message.onReactionAddByAuthor(context.userHandle.idLong) {
-					if (it.reactionEmote.name == "▶") {
-						message.delete().queue()
 
-						val nextPageEmbed = EmbedBuilder()
-						nextPageEmbed.setTitle("\uD83C\uDFB6\uD83D\uDCC4 ${songInfo.artistName} - ${songInfo.songName}")
-						nextPageEmbed.setColor(Color.red)
-						nextPageEmbed.setDescription(lyrics.slice(IntRange(6000, lyrics.length - 1)))
+					if (it.reactionEmote.name == "▶") {
+
+						val embed2 = EmbedBuilder()
+						embed2.setTitle("\uD83C\uDFB6\uD83D\uDCC4 ${songInfo.artistName} - ${songInfo.songName}")
+						embed2.setColor(Color.red)
+						embed2.setDescription(lyrics.slice(IntRange(5000, lyrics.length - 1)))
 
 						message.edit(
 								"",
-								nextPageEmbed.build(),
+								embed2.build(),
 								true
 						)
 
 						return@onReactionAddByAuthor
 					}
+
 				}
-			} else {
-				context.sendMessage(embed.build())
 			}
 
 		} else {
