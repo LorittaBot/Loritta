@@ -172,7 +172,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 					Reminders.deleteWhere { Reminders.id eq reminder.id }
 				}
 				
-				val message = context.sendMessage("locale["${LOCALE_PREFIX}.reminderRemoved"]")
+				val message = context.sendMessage(locale["${LOCALE_PREFIX}.reminderRemoved"])
 				message.onReactionAddByAuthor(context) {
 					message.delete().queue()
 					handleReminderList(context, page, locale)
