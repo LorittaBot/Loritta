@@ -171,13 +171,13 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 				loritta.newSuspendedTransaction {
 					Reminders.deleteWhere { Reminders.id eq reminder.id }
 				}
-
-				context.reply(
-                        LorittaReply(
-                                locale["${LOCALE_PREFIX}.reminderRemoved"],
-                                "\uD83D\uDDD1"
-                        )
-				)
+				
+				val message = context.sendMessage("locale["${LOCALE_PREFIX}.reminderRemoved"]")
+				message.onReactionAddByAuthor(context) {
+					message.delete().queue()
+					handleReminderList(context, page, locale)
+				}
+				message.addReaction("⬅️").queue()
 				return@onReactionAddByAuthor
 			}
 
