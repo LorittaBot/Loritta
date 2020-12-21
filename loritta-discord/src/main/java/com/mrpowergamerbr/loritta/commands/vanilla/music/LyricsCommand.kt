@@ -110,6 +110,7 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 				embed3.addField("", "${lyrics.slice(IntRange(2000, 2999))}", false)
 				embed3.addField("", "${lyrics.slice(IntRange(3000, 3999))}", false)
 				embed3.addField("", "${lyrics.slice(IntRange(4000, 4999))}", false)
+				embed3.setFooter("${locale["commands.music.lyrics.goToNextPage"]}")
 
 				val message = context.sendMessage(embed3.build())
 				message.addReaction("▶").queue()
