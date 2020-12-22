@@ -8,12 +8,19 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import org.apache.commons.lang3.StringUtils
 import java.awt.Color
 import java.net.URLEncoder
 import java.util.*
 
 class WikipediaCommand : AbstractCommand("wikipedia", listOf("wiki"), CommandCategory.UTILS) {
+	companion object {
+		// https://en.wikipedia.org/wiki/List_of_Wikipedias
+		private val VALID_WIKIPEDIAS = listOf(
+				"en", "fr", "de", "es", "ja", "ru", "it", "zh", "pt", "ar", "fa", "pl", "nl", "id", "uk", "he", "sv", "cs", "ko", "vi", "ca", "no", "fi", "hu", "tr", "ro", "el", "th", "hi", "bn", "az", "simple", "ceb", "sw", "kk", "da", "eo", "sr", "lt", "sk", "bg", "sl", "eu", "et", "hr", "ms", "arz", "ur", "ta", "te", "nn", "gl", "af", "bs", "be", "ml", "ka", "is", "sq", "uz", "la", "mk", "lv", "azb", "mr", "sh", "tl", "cy", "sco", "ku", "ckb", "ast", "ba", "be-tarask", "zh-yue", "als", "ga", "hy", "pa", "my", "kn", "mn", "war", "zh-min-nan", "vo", "min", "lmo", "ht", "lb", "br", "gu", "tg", "new", "bpy", "nds", "io", "pms", "su", "oc", "jv", "nap", "scn", "wa", "bar", "an", "ksh", "szl", "fy", "frr", "ia", "yi", "mg", "gd", "vec", "ce", "sa", "mai", "xmf", "sd", "wuu", "as", "mrj", "mhr", "km", "roa-tara", "am", "roa-rup", "map-bms", "bh", "mnw", "shn", "bcl", "co", "cv", "dv", "nds-nl", "fo", "hif", "fur", "gan", "glk", "gu", "hak", "ilo", "pam", "csb", "avk", "lij", "li", "gv", "mi", "mt", "nah", "ne", "nrm", "se", "nov", "qu", "os", "pi", "pag", "ps", "pdc", "rm", "bat-smg", "sc", "si", "tt", "tk", "hsb", "fiu-vro", "vls", "yo", "diq", "zh-classical", "frp", "lad", "kw", "haw", "ang", "ln", "ie", "wo", "crh", "nv", "jbo", "ay", "pcd", "zea", "eml", "ky", "ig", "or", "cbk-zam", "kg", "arc", "rmy", "ab", "gn", "so", "kab", "ug", "stq", "ha", "udm", "ext", "mzn", "pap", "cu", "sah", "tet", "sn", "lo", "pnb", "iu", "na", "got", "bo", "dsb", "chr", "cdo", "om", "sm", "ee", "av", "bm", "zu", "cr", "pih", "ss", "bi", "rw", "ch", "xh", "kl", "ik", "bug", "ts", "kv", "xal", "st", "tw", "bxr", "ak", "ny", "lbe", "za", "ks", "ff", "lg", "chy", "mwl", "lez", "bjn", "gom", "lrc", "tyv", "vep", "nso", "kbd", "ltg", "rue", "pfl", "gag", "koi", "ace", "olo", "kaa", "mdf", "myv", "ady", "tcy", "dty", "atj", "kbp", "din", "lfn", "gor", "inh", "sat", "hyw", "nqo", "ban", "szy", "gcr", "ary", "lld", "smn", "to", "tpi", "ty", "ti", "pnt", "ve", "dz", "tn", "tum", "fj", "ki", "sg", "rn", "krc", "srn", "jam", "awa", "nostalgia",
+		)
+	}
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["commands.utils.wikipedia.description"]
 	}
@@ -42,10 +49,27 @@ class WikipediaCommand : AbstractCommand("wikipedia", listOf("wiki"), CommandCat
 
 			val inputLanguageId = context.args[0]
 			var hasValidLanguageId = false
+
 			if (inputLanguageId.startsWith("[") && inputLanguageId.endsWith("]")) {
 				languageId = inputLanguageId.substring(1, inputLanguageId.length - 1)
+						.toLowerCase()
+
+				if (languageId !in VALID_WIKIPEDIAS) {
+					context.reply(
+							LorittaReply(
+									locale[
+											"commands.utils.wikipedia.invalidLanguage",
+											VALID_WIKIPEDIAS.joinToString(", ", transform = { "`$it`" })
+									],
+									Constants.ERROR
+							)
+					)
+					return
+				}
+
 				hasValidLanguageId = true
 			}
+
 			try {
 				val query = StringUtils.join(context.args, " ", if (hasValidLanguageId) 1 else 0, context.args.size)
 				val wikipediaResponse = HttpRequest.get("https://" + languageId + ".wikipedia.org/w/api.php?format=json&action=query&prop=extracts&redirects=1&exintro=&explaintext=&titles=" + URLEncoder.encode(query, "UTF-8")).body()
