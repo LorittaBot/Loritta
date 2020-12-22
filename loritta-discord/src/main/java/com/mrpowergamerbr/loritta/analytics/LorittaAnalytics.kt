@@ -46,7 +46,7 @@ object LorittaAnalytics {
 	 * @throws AnalyticProcessorService if the provided analytic processor isn't supported
 	 */
 	fun createPayload(service: AnalyticProcessorService): JsonObject {
-		val guildCount = runBlocking { lorittaShards.queryGuildCount() }
+		val guildCount = runBlocking { lorittaShards.queryGuildCountOrThrowExceptionIfAnyClusterIsNotReady() }
 
 		when (service) {
 			DISCORD_BOT_LIST -> {
