@@ -22,9 +22,9 @@ class RenameChannelCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase
         }
 
         examples {
-            + "#lori-é-fofis lori é fofis",
-            + "297732013006389252 bate-papo",
-            + "lorota-pantufa lorota & pantufa",
+            + "#lori-é-fofis lori é fofis"
+            + "297732013006389252 bate-papo"
+            + "lorota-pantufa lorota & pantufa"
             + "bate-papo \uD83D\uDE0E | bate-papo"
         }
 
