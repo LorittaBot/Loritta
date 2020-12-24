@@ -19,7 +19,6 @@ class GeneralConfig @JsonCreator constructor(
 		val googleVision: GoogleVisionKey,
 		val googleRecaptcha: GoogleRecaptcha,
 		val crowdin: CrowdinConfig,
-		val github: GitHubConfig,
 		val twitter: TwitterConfig,
 		val twitch: TwitchConfig,
 		val twitch2: TwitchConfig,

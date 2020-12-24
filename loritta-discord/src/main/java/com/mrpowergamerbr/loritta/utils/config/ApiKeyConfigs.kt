@@ -15,11 +15,6 @@ class GoogleRecaptcha @JsonCreator constructor(
         val reputationToken: String
 )
 
-class GitHubConfig @JsonCreator constructor(
-        val apiKey: String,
-        val repositoryUrl: String
-)
-
 class DiscordBotsConfig @JsonCreator constructor(
         val enabled: Boolean,
         val apiKey: String
