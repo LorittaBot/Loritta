@@ -2,12 +2,12 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import net.perfectdreams.loritta.api.messages.LorittaReply
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.math.MathUtils
 
 class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calculator", "calcular", "calculate"), CommandCategory.UTILS) {
 	companion object {
@@ -53,9 +53,9 @@ class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calcul
 					val number2 = secondSide[0].trim()
 					val number3 = secondSide[1].trim()
 
-					val resultNumber0 = LorittaUtils.evalMath(number0)
-					val resultNumber1 = LorittaUtils.evalMath(number1)
-					val resultNumber2 = LorittaUtils.evalMath(number2)
+					val resultNumber0 = MathUtils.evaluate(number0)
+					val resultNumber1 = MathUtils.evaluate(number1)
+					val resultNumber2 = MathUtils.evaluate(number2)
 
 					// resultNumber0 --- resultNumber1
 					// resultNumber2 --- x
@@ -67,7 +67,7 @@ class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calcul
 					return
 				}
 
-				val result = LorittaUtils.evalMath(expression)
+				val result = MathUtils.evaluate(expression)
 
 				context.reply(
                         LorittaReply(
