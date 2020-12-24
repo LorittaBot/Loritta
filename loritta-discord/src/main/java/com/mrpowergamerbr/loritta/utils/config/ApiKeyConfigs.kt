@@ -30,8 +30,6 @@ class TwitchConfig @JsonCreator constructor(
 		val clientSecret: String
 )
 
-class MixerConfig @JsonCreator constructor(
-        val clientId: String,
-        val clientSecret: String,
+class GeneralWebhookConfig @JsonCreator constructor(
         val webhookSecret: String
 )

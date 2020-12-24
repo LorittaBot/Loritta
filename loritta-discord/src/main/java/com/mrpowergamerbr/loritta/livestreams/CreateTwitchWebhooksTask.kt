@@ -98,7 +98,7 @@ class CreateTwitchWebhooksTask : Runnable {
 										"hub.callback" to "${loritta.instanceConfig.loritta.website.url}api/v1/callbacks/pubsubhubbub?type=twitch&userid=$userId",
 										"hub.lease_seconds" to "864000",
 										"hub.mode" to "subscribe",
-										"hub.secret" to loritta.config.mixer.webhookSecret,
+										"hub.secret" to loritta.config.generalWebhook.webhookSecret,
 										"hub.topic" to "https://api.twitch.tv/helix/streams?user_id=$userId"
 								))
 								.status

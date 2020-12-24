@@ -38,7 +38,7 @@ class PostDiscordBotsCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta,
 			)
 		}
 
-		if (authorizationHeader != com.mrpowergamerbr.loritta.utils.loritta.config.mixer.webhookSecret) {
+		if (authorizationHeader != com.mrpowergamerbr.loritta.utils.loritta.config.generalWebhook.webhookSecret) {
 			logger.error { "Header de Autorização do request não é igual ao nosso!" }
 
 			throw WebsiteAPIException(

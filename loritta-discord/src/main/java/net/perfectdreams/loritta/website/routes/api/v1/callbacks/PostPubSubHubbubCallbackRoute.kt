@@ -64,7 +64,7 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 				)
 
 		val output = if (originalSignature.startsWith("sha1=")) {
-			val signingKey = SecretKeySpec(com.mrpowergamerbr.loritta.utils.loritta.config.mixer.webhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA1")
+			val signingKey = SecretKeySpec(com.mrpowergamerbr.loritta.utils.loritta.config.generalWebhook.webhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA1")
 			val mac = Mac.getInstance("HmacSHA1")
 			mac.init(signingKey)
 			val doneFinal = mac.doFinal(response.toByteArray(Charsets.UTF_8))
@@ -76,7 +76,7 @@ class PostPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta
 
 			output
 		} else if (originalSignature.startsWith("sha256=")) {
-			val signingKey = SecretKeySpec(com.mrpowergamerbr.loritta.utils.loritta.config.mixer.webhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA256")
+			val signingKey = SecretKeySpec(com.mrpowergamerbr.loritta.utils.loritta.config.generalWebhook.webhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA256")
 			val mac = Mac.getInstance("HmacSHA256")
 			mac.init(signingKey)
 			val doneFinal = mac.doFinal(response.toByteArray(Charsets.UTF_8))

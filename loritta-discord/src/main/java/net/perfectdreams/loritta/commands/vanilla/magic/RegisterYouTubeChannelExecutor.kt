@@ -18,10 +18,10 @@ object RegisterYouTubeChannelExecutor : LoriToolsCommand.LoriToolsExecutor {
 						"hub.callback" to "${com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url}api/v1/callbacks/pubsubhubbub?type=ytvideo",
 						"hub.lease_seconds" to "",
 						"hub.mode" to "subscribe",
-						"hub.secret" to com.mrpowergamerbr.loritta.utils.loritta.config.mixer.webhookSecret,
+						"hub.secret" to com.mrpowergamerbr.loritta.utils.loritta.config.generalWebhook.webhookSecret,
 						"hub.topic" to "https://www.youtube.com/xml/feeds/videos.xml?channel_id=${args.getOrNull(2)}",
 						"hub.verify" to "async",
-						"hub.verify_token" to com.mrpowergamerbr.loritta.utils.loritta.config.mixer.webhookSecret
+						"hub.verify_token" to com.mrpowergamerbr.loritta.utils.loritta.config.generalWebhook.webhookSecret
 				))
 				.code()
 

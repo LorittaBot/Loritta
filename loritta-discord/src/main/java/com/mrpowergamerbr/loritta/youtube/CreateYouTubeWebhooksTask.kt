@@ -80,10 +80,10 @@ class CreateYouTubeWebhooksTask : Runnable {
 										"hub.callback" to "${loritta.instanceConfig.loritta.website.url}api/v1/callbacks/pubsubhubbub?type=ytvideo",
 										"hub.lease_seconds" to "",
 										"hub.mode" to "subscribe",
-										"hub.secret" to loritta.config.mixer.webhookSecret,
+										"hub.secret" to loritta.config.generalWebhook.webhookSecret,
 										"hub.topic" to "https://www.youtube.com/xml/feeds/videos.xml?channel_id=$channelId",
 										"hub.verify" to "async",
-										"hub.verify_token" to loritta.config.mixer.webhookSecret
+										"hub.verify_token" to loritta.config.generalWebhook.webhookSecret
 								))
 								.code()
 
