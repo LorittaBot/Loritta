@@ -57,9 +57,7 @@ import kotlin.collections.set
 import kotlin.random.Random
 
 /**
- * Loritta Morenitta :3
- *
- * This should be extended by plataform specific Lori's
+ * Loritta Morenitta :3 (for Discord)
  */
 abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var discordInstanceConfig: GeneralDiscordInstanceConfig, var config: GeneralConfig, var instanceConfig: GeneralInstanceConfig) : LorittaBot() {
     companion object {
