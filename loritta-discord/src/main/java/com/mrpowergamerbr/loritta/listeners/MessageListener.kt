@@ -14,6 +14,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
+import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent
@@ -174,11 +175,16 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 							}
 						}
 					}
+
+					val responseBuilder = MessageBuilder()
+						.setAllowedMentions(listOf(Message.MentionType.USER, Message.MentionType.CHANNEL))
+						.setContent("<:loritta:331179879582269451> **|** $response")
+
 					if (event.channel.canTalk()) {
-						event.channel.sendMessage("<:loritta:331179879582269451> **|** $response").queue()
+						event.channel.sendMessage(responseBuilder.build()).queue()
 					} else {
 						event.author.openPrivateChannel().queue {
-							it.sendMessage("<:loritta:331179879582269451> **|** $response").queue()
+							it.sendMessage(responseBuilder.build()).queue()
 						}
 					}
 				}
