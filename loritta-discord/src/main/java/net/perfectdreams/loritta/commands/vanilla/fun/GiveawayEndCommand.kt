@@ -128,7 +128,7 @@ class GiveawayEndCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(l
 
 			context.reply(
 					LorittaReply(
-							locale["$LOCALE_PREFIX.finishedGiveaway"],
+							locale["$LOCALE_PREFIX.giveawayend.finishedGiveaway"],
 							Emotes.LORI_HAPPY
 					)
 			)
