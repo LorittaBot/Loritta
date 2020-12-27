@@ -75,7 +75,7 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 			} else {
 				context.reply(
                         LorittaReply(
-                                message = locale["commands.userDoesNotExist", "`${arg0.stripCodeMarks()}`"],
+                                message = locale["commands.userDoesNotExist", "`${arg0?.stripCodeMarks()}`"],
                                 prefix = Constants.ERROR
                         )
 				)
