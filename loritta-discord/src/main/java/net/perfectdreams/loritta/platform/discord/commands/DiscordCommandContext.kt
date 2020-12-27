@@ -48,11 +48,27 @@ class DiscordCommandContext(
 	val member = discordMessage.member
 
 	suspend fun sendMessage(message: String, embed: MessageEmbed): Message {
-		return sendMessage(MessageBuilder().setEmbed(embed).append(if (message.isEmpty()) " " else message).build())
+		return sendMessage(MessageBuilder()
+				.denyMentions(
+						Message.MentionType.EVERYONE,
+						Message.MentionType.HERE
+				)
+				.setEmbed(embed)
+				.append(if (message.isEmpty()) " " else message)
+				.build()
+		)
 	}
 
 	suspend fun sendMessage(embed: MessageEmbed): Message {
-		return sendMessage(MessageBuilder().append(getUserMention(true)).setEmbed(embed).build())
+		return sendMessage(MessageBuilder()
+				.denyMentions(
+						Message.MentionType.EVERYONE,
+						Message.MentionType.HERE
+				)
+				.append(getUserMention(true))
+				.setEmbed(embed)
+				.build()
+		)
 	}
 
 	suspend fun sendMessage(message: Message): Message {
@@ -84,8 +100,13 @@ class DiscordCommandContext(
 	}
 
 	suspend fun sendFile(file: File, fileName: String, content: String = this.getUserMention(true), embed: MessageEmbed? = null): DiscordMessage {
-		return DiscordMessage(discordMessage.channel.sendMessage(
+		return DiscordMessage(
+				discordMessage.channel.sendMessage(
 				MessageBuilder()
+						.denyMentions(
+								Message.MentionType.EVERYONE,
+								Message.MentionType.HERE
+						)
 						.append(content)
 						.setEmbed(embed)
 						.build()
@@ -99,6 +120,10 @@ class DiscordCommandContext(
 	suspend fun sendFile(inputStream: InputStream, fileName: String, content: String = this.getUserMention(true), embed: MessageEmbed? = null): DiscordMessage {
 		return DiscordMessage(discordMessage.channel.sendMessage(
 				MessageBuilder()
+						.denyMentions(
+								Message.MentionType.EVERYONE,
+								Message.MentionType.HERE
+						)
 						.append(content)
 						.setEmbed(embed)
 						.build()
@@ -401,6 +426,10 @@ class DiscordCommandContext(
 		}
 
 		val messageBuilder = MessageBuilder()
+				.denyMentions(
+						Message.MentionType.EVERYONE,
+						Message.MentionType.HERE
+				)
 				.append(getUserMention(true))
 				.setEmbed(embed.build())
 
