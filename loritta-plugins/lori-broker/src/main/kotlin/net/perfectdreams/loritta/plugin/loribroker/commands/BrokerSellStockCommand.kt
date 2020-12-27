@@ -55,7 +55,7 @@ class BrokerSellStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComm
 
 			var quantity = this.args.getOrNull(1) ?: "1"
 
-			if (this.args.getOrNull(1) == "all") {
+			if (quantity == "all") {
 				val selfStocks = loritta.newSuspendedTransaction {
 					BoughtStocks.select {
 						BoughtStocks.user eq user.idLong and (BoughtStocks.ticker eq tickerId)
