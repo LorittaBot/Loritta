@@ -147,7 +147,7 @@ abstract class CommandContext(
 			if (args.isEmpty())
 				explainAndExit()
 			else
-				fail(locale["commands.userDoesNotExist", "`${args.getOrNull(argumentIndex)?.replace("`", "")}`"], Emotes.LORI_CRYING.toString())
+				fail(locale["commands.userDoesNotExist", "${args.getOrNull(argumentIndex)?.replace("`", "")}"], Emotes.LORI_CRYING.toString())
 		}
 
 		return user
