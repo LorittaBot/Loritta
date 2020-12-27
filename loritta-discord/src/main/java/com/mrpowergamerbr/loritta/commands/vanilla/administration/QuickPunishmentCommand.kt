@@ -31,7 +31,7 @@ class QuickPunishmentCommand : AbstractCommand("quickpunishment", category = Com
                     ),
 					LorittaReply(
 						message = locale["commands.moderation.quickpunishment.howEnable"],
-                        prefix = Emotes.LORI_BAN_HAMMER,
+						prefix = Emotes.LORI_BAN_HAMMER,
 						mentionUser = false
 					)
 			)
@@ -42,7 +42,7 @@ class QuickPunishmentCommand : AbstractCommand("quickpunishment", category = Com
                     ),
 					LorittaReply(
 						message = locale["commands.moderation.quickpunishment.howDisable"],
-                        prefix = Emotes.LORI_BAN_HAMMER,
+						prefix = Emotes.LORI_BAN_HAMMER,
 						mentionUser = false
 					)
 			)
