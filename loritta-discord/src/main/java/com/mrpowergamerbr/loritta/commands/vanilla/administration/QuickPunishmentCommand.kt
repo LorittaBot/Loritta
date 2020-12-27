@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.utils.Emotes
 
 class QuickPunishmentCommand : AbstractCommand("quickpunishment", category = CommandCategory.ADMIN) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -27,13 +28,23 @@ class QuickPunishmentCommand : AbstractCommand("quickpunishment", category = Com
 			context.reply(
                     LorittaReply(
                             message = locale["commands.moderation.quickpunishment.disabled"]
-                    )
+                    ),
+					LorittaReply(
+						message = locale["commands.moderation.quickpunishment.howEnable"],
+						prefix = Emotes.LORI_BAN_HAMMER,
+						mentionUser = false
+					)
 			)
 		} else {
 			context.reply(
                     LorittaReply(
                             message = locale["commands.moderation.quickpunishment.enabled"]
-                    )
+                    ),
+					LorittaReply(
+						message = locale["commands.moderation.quickpunishment.howDisable"],
+						prefix = Emotes.LORI_BAN_HAMMER,
+						mentionUser = false
+					)
 			)
 		}
 
