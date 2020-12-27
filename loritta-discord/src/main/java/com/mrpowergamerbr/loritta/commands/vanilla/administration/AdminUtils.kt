@@ -93,7 +93,7 @@ object AdminUtils {
 		if (validUsers.isEmpty()) {
 			context.reply(
                     LorittaReply(
-                            context.locale["commands.userDoesNotExist", "`${context.rawArgs[0].stripCodeMarks()}`"],
+                            context.locale["commands.userDoesNotExist", context.rawArgs[0].stripCodeMarks()],
                             Emotes.LORI_HM
                     )
 			)
@@ -114,7 +114,7 @@ object AdminUtils {
 		if (user == null) {
 			context.reply(
                     LorittaReply(
-                            context.locale["commands.userDoesNotExist", "`${context.rawArgs[0].stripCodeMarks()}`"],
+                            context.locale["commands.userDoesNotExist", context.rawArgs[0].stripCodeMarks()],
                             Emotes.LORI_HM
                     )
 			)

@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
@@ -78,7 +79,7 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 			} else {
 				context.reply(
                         LorittaReply(
-                                message = locale["commands.userDoesNotExist", arg0],
+                                message = locale["commands.userDoesNotExist", arg0?.stripCodeMarks()],
                                 prefix = Constants.ERROR
                         )
 				)

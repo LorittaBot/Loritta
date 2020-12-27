@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
+import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
@@ -37,7 +38,7 @@ class BanInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lorit
             val userId = args.getOrNull(0) ?: explainAndExit()
 
             if (!userId.isValidSnowflake())
-                fail(locale["commands.userDoesNotExist", userId])
+                fail(locale["commands.userDoesNotExist", userId.stripCodeMarks()])
             
             try {
                 val banInformation = userId.let { guild.retrieveBanById(it.toLong()).await() }
