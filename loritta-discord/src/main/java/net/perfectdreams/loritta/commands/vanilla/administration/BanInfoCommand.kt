@@ -37,7 +37,7 @@ class BanInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lorit
             val userId = args.getOrNull(0) ?: explainAndExit()
 
             if (!userId.isValidSnowflake())
-                fail(locale["commands.userDoesNotExist", "`${userId.stripCodeMarks()}`"])
+                fail(locale["commands.userDoesNotExist", "`${userId}`"])
             
             try {
                 val banInformation = userId.let { guild.retrieveBanById(it.toLong()).await() }
