@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.utils.Emotes
+import com.mrpowergamerbr.loritta.utils.*
 
 class BanInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("baninfo", "infoban", "checkban"), CommandCategory.ADMIN) {
     override fun command() = create {
@@ -37,7 +38,7 @@ class BanInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lorit
             val userId = args.getOrNull(0) ?: explainAndExit()
 
             if (!userId.isValidSnowflake())
-                fail(locale["commands.userDoesNotExist", userId])
+                fail(locale["commands.userDoesNotExist", "`${userId.stripCodeMarks()}`"])
             
             try {
                 val banInformation = userId.let { guild.retrieveBanById(it.toLong()).await() }
