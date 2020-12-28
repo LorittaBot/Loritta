@@ -471,7 +471,7 @@ class LorittaShards {
 				val shardsArray = json["shards"].array
 				val anyNotReady = shardsArray.any { it["status"].string != "CONNECTED" }
 
-				if (!anyNotReady)
+				if (anyNotReady)
 					throw ClusterNotReadyException(json["id"].long, json["name"].string)
 
 				guildCount += json["shards"].array.sumBy { it["guildCount"].int }
