@@ -53,7 +53,17 @@ class BrokerSellStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComm
 			if (mutex.isLocked)
 				fail(locale["commands.economy.broker.alreadyExecutingAction"])
 
-			val quantity = this.args.getOrNull(1) ?: "1"
+			var quantity = this.args.getOrNull(1) ?: "1"
+
+			if (quantity == "all") {
+				val selfStocks = loritta.newSuspendedTransaction {
+					BoughtStocks.select {
+						BoughtStocks.user eq user.idLong and (BoughtStocks.ticker eq tickerId)
+					}.count()
+				}
+
+				quantity = selfStocks.toString()
+			}
 
 			val number = NumberUtils.convertShortenedNumberToLong(quantity)
 					?: GenericReplies.invalidNumber(this, quantity)
