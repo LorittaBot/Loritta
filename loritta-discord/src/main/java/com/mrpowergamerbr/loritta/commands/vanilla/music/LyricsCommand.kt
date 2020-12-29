@@ -12,6 +12,7 @@ import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.MessageEmbed
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
@@ -82,51 +83,59 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 			val lines = lyrics.split("\n")
 
 
-
 			var currentFieldText = StringBuilder()
 
-			try {
+			if (lyrics.length > MessageEmbed.EMBED_MAX_LENGTH_BOT) {
 
-				for (line in lines) {
-					if (currentFieldText.length + line.length > 1024) {
-						embed.addField("", "${currentFieldText.toString()}", false)
-						currentFieldText = StringBuilder()
+
+				var number2 = 0
+
+				val lyricsEmbed = EmbedBuilder()
+				lyricsEmbed.setTitle("\uD83C\uDFB6\uD83D\uDCC4 ${songInfo.artistName} - ${songInfo.songName}")
+				lyricsEmbed.setColor(Color.red)
+                lyricsEmbed.setFooter(locale["commands.music.lyrics.goToNextPage"])
+
+					for (line in lines) {
+						if (number2 > 5) {} else {
+						if (currentFieldText.length + line.length > 1000) {
+							lyricsEmbed.addField("", "${currentFieldText.toString()}", false)
+							currentFieldText = StringBuilder()
+							number2 += 1
+						}
+
+						currentFieldText.append("$line\n")
+						}
 					}
 
-					currentFieldText.append("$line\n")
-				}
+					lyricsEmbed.addField("", "${currentFieldText.toString()}", false)
 
-				embed.addField("", "${currentFieldText.toString()}", false)
-
-				context.sendMessage(embed.build())
-
-			} catch (e: Exception) {
-				val embed3 = EmbedBuilder()
-				embed3.setTitle("\uD83C\uDFB6\uD83D\uDCC4 ${songInfo.artistName} - ${songInfo.songName}")
-				embed3.setColor(Color.red)
-
-				embed3.addField("", "${lyrics.slice(IntRange(0, 999))}", false)
-				embed3.addField("", "${lyrics.slice(IntRange(1000, 1999))}", false)
-				embed3.addField("", "${lyrics.slice(IntRange(2000, 2999))}", false)
-				embed3.addField("", "${lyrics.slice(IntRange(3000, 3999))}", false)
-				embed3.addField("", "${lyrics.slice(IntRange(4000, 4999))}", false)
-				embed3.setFooter("${locale["commands.music.lyrics.goToNextPage"]}")
-
-				val message = context.sendMessage(embed3.build())
+				val message = context.sendMessage(lyricsEmbed.build())
 				message.addReaction("▶").queue()
 
 				message.onReactionAddByAuthor(context.userHandle.idLong) {
 
 					if (it.reactionEmote.name == "▶") {
 
-						val embed2 = EmbedBuilder()
-						embed2.setTitle("\uD83C\uDFB6\uD83D\uDCC4 ${songInfo.artistName} - ${songInfo.songName}")
-						embed2.setColor(Color.red)
-						embed2.setDescription(lyrics.slice(IntRange(5000, lyrics.length - 1)))
+						val lyricsEditEmbed = EmbedBuilder()
+						lyricsEditEmbed.setTitle("\uD83C\uDFB6\uD83D\uDCC4 ${songInfo.artistName} - ${songInfo.songName}")
+						lyricsEditEmbed.setColor(Color.red)
+
+						val lines2 = lyrics.substring(5000, lyrics.length).split("\n")
+
+						for (line in lines2) {
+								if (currentFieldText.length + line.length > 1000) {
+									lyricsEditEmbed.addField("", "${currentFieldText.toString()}", false)
+									currentFieldText = StringBuilder()
+								}
+
+								currentFieldText.append("$line\n")
+						}
+
+						lyricsEditEmbed.addField("", "${currentFieldText.toString()}", false)
 
 						message.edit(
 								"",
-								embed2.build(),
+								lyricsEditEmbed.build(),
 								true
 						)
 
@@ -134,8 +143,26 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 					}
 
 				}
-			}
+			} else {
+					var number = 0
 
+					for (line in lines) {
+						if (number > 5) {
+						} else {
+							if (currentFieldText.length + line.length > 1000) {
+								embed.addField("", "${currentFieldText.toString()}", false)
+								currentFieldText = StringBuilder()
+								number += 1
+							}
+
+							currentFieldText.append("$line\n")
+						}
+					}
+
+					embed.addField("", "${currentFieldText.toString()}", false)
+
+					context.sendMessage(embed.build())
+			}
 		} else {
 			context.explain()
 		}
@@ -327,3 +354,4 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 
 	class SongInfo(val artistName: String, val songName: String, val albumUrl: String?, val lyrics: String)
 }
+
