@@ -60,6 +60,13 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
                 fail(locale["commands.moderation.clear.invalidUserFilter"], Constants.ERROR)
             if (text == null && textInserted)
                 fail(locale["commands.moderation.clear.invalidTextFilter"], Constants.ERROR)
+            
+            // Deleting the user's message (the command one, +clear)
+            runCatching {
+                discordMessage.delete()
+                        .submit()
+                        .await()
+            }
 
             val messages = channel.iterableHistory.takeAsync(count).await()
 
@@ -68,13 +75,6 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
 
             if (allowedMessages.isEmpty()) // If there are no allowed messages, we'll cancel the execution
                 fail(locale["commands.moderation.clear.couldNotFindMessages"], Constants.ERROR)
-
-            // Deleting the user's message (the command one, +clear)
-            runCatching {
-                discordMessage.delete()
-                        .submit()
-                        .await()
-            }
 
             // Clear the messages after deleting the command's one3
             clear(allowedMessages)
