@@ -69,18 +69,6 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 				}.count()
 			}
 
-			val canProceed: Boolean = allTransactions >= (customPage + 1) * 20
-
-			if (!canProceed) {
-				reply(
-						LorittaReply(
-								locale["$LOCALE_PREFIX.pageDoesNotExist"],
-								Constants.ERROR
-						)
-				)
-				return@executesDiscord
-			}
-
 			if (allTransactions == 0L) {
 				reply(
 						LorittaReply(
@@ -119,6 +107,25 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 			SonhosTransaction.select {
 				SonhosTransaction.givenBy eq user.idLong or (SonhosTransaction.receivedBy eq user.idLong)
 			}.count()
+		}
+
+		if (transactions.isEmpty()) {
+			context.reply(
+					LorittaReply(
+							locale["$LOCALE_PREFIX.pageDoesNotExist"],
+							Constants.ERROR
+					)
+			)
+			return
+		}
+
+		if (allTransactions == 0L) {
+			context.reply(
+					LorittaReply(
+							locale["$LOCALE_PREFIX.unknownTransactions"]
+					)
+			)
+			return
 		}
 
 		val description = buildString {
@@ -187,16 +194,6 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 				}
 				this.append("\n")
 			}
-		}
-
-		if (description.isBlank()) {
-			context.reply(
-					LorittaReply(
-							locale["$LOCALE_PREFIX.pageDoesNotExist"],
-							Constants.ERROR
-					)
-			)
-			return
 		}
 
 		val embed = EmbedBuilder().apply {
