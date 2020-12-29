@@ -63,11 +63,10 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 			val allTransactions = loritta.newSuspendedTransaction {
 				SonhosTransaction.select {
 					SonhosTransaction.givenBy eq user.idLong or (SonhosTransaction.receivedBy eq user.idLong)
-				}.orderBy(SonhosTransaction.givenAt, SortOrder.DESC)
-						.toList()
+				}.count()
 			}
 
-			if (allTransactions.isEmpty()) {
+			if (allTransactions == 0L) {
 				reply(
 						LorittaReply(
 								locale["$LOCALE_PREFIX.unknownTransactions"]
@@ -103,8 +102,7 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 		val allTransactions = loritta.newSuspendedTransaction {
 			SonhosTransaction.select {
 				SonhosTransaction.givenBy eq user.idLong or (SonhosTransaction.receivedBy eq user.idLong)
-			}.orderBy(SonhosTransaction.givenAt, SortOrder.DESC)
-					.toList()
+			}.count()
 		}
 
 		val description = buildString {
@@ -185,7 +183,7 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 			)
 			setColor(Constants.LORITTA_AQUA)
 			setDescription(description)
-			setFooter("${locale["$LOCALE_PREFIX.totalTransactions"]}: ${allTransactions.count()}")
+			setFooter("${locale["$LOCALE_PREFIX.totalTransactions"]}: ${allTransactions}")
 		}
 
 		var message = currentMessage?.edit(context.getUserMention(true), embed.build(), clearReactions = false) ?: context.sendMessage(context.getUserMention(true), embed.build())
