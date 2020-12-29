@@ -188,7 +188,7 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 
 		var message = currentMessage?.edit(context.getUserMention(true), embed.build(), clearReactions = false) ?: context.sendMessage(context.getUserMention(true), embed.build())
 
-		val allowForward = allTransactions.count() >= (page + 1) * 20
+		val allowForward = allTransactions >= (page + 1) * 20
 		val allowBack = page != 0L
 
 		if ((!allowForward && message.reactions.any { it.reactionEmote.isEmote("⏩") }) || (!allowBack && message.reactions.any { it.reactionEmote.isEmote("⏪") })) {
