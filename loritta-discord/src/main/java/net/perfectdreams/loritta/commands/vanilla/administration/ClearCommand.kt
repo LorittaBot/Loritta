@@ -60,7 +60,7 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
                 fail(locale["commands.moderation.clear.invalidUserFilter"], Constants.ERROR)
             if (text == null && textInserted)
                 fail(locale["commands.moderation.clear.invalidTextFilter"], Constants.ERROR)
-            
+
             // Deleting the user's message (the command one, +clear)
             runCatching {
                 discordMessage.delete()
