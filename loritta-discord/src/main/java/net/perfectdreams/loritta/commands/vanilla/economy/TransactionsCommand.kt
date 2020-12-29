@@ -189,6 +189,16 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 			}
 		}
 
+		if (description.isBlank()) {
+			context.reply(
+					LorittaReply(
+							locale["$LOCALE_PREFIX.pageDoesNotExist"],
+							Constants.ERROR
+					)
+			)
+			return
+		}
+
 		val embed = EmbedBuilder().apply {
 			setTitle(
 					"${Emotes.LORI_RICH} " +
