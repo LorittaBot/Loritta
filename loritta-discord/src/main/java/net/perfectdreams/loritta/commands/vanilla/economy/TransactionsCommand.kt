@@ -40,9 +40,16 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 		}
 
 		executesDiscord {
-			val user = user(0)?.handle ?: user
 
-			var customPage = args.getOrNull(1)?.toLongOrNull() ?: args.getOrNull(0)?.toLongOrNull()
+			var customPage = if (user(0) != null) {
+				args.getOrNull(1)?.toLongOrNull()
+			} else {
+				args.getOrNull(0)?.toLongOrNull()
+			}
+
+			if (customPage != null) {
+				customPage -= 1
+			}
 
 			if (customPage != null && !isValidRankingPage(customPage)) {
 				reply(
@@ -54,16 +61,24 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 				return@executesDiscord
 			}
 
-			if (customPage == null) {
-				customPage = 0
-			} else {
-				customPage -= 1
-			}
+			if (customPage == null) customPage = 0
 
 			val allTransactions = loritta.newSuspendedTransaction {
 				SonhosTransaction.select {
 					SonhosTransaction.givenBy eq user.idLong or (SonhosTransaction.receivedBy eq user.idLong)
 				}.count()
+			}
+
+			val canProceed: Boolean = allTransactions >= (customPage + 1) * 20
+
+			if (!canProceed) {
+				reply(
+						LorittaReply(
+								locale["$LOCALE_PREFIX.pageDoesNotExist"],
+								Constants.ERROR
+						)
+				)
+				return@executesDiscord
 			}
 
 			if (allTransactions == 0L) {
@@ -80,12 +95,13 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 					locale,
 					customPage,
 					null,
-					user,
 			)
 		}
 	}
 
-	suspend fun sendTransactionEmbed(context: DiscordCommandContext, locale: BaseLocale, item: Long?, currentMessage: Message?, user: User) {
+	suspend fun sendTransactionEmbed(context: DiscordCommandContext, locale: BaseLocale, item: Long?, currentMessage: Message?) {
+
+		val user = context.user(0)?.handle ?: context.user
 
 		var page = item
 
@@ -176,25 +192,20 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 		val embed = EmbedBuilder().apply {
 			setTitle(
 					"${Emotes.LORI_RICH} " +
-							if (user != user)
-								"${locale["$LOCALE_PREFIX.otherUserTransactions", user.asTag]} — ${locale["$LOCALE_PREFIX.page"]} $page"
+							if (user != context.user)
+								"${locale["$LOCALE_PREFIX.otherUserTransactions", user.asTag]} — ${locale["$LOCALE_PREFIX.page"]} ${page + 1}"
 							else
 								"${locale["$LOCALE_PREFIX.title"]} — ${locale["$LOCALE_PREFIX.page"]} ${page + 1}"
 			)
 			setColor(Constants.LORITTA_AQUA)
 			setDescription(description)
-			setFooter("${locale["$LOCALE_PREFIX.totalTransactions"]}: ${allTransactions}")
+			setFooter("${locale["$LOCALE_PREFIX.totalTransactions"]}: $allTransactions")
 		}
 
-		var message = currentMessage?.edit(context.getUserMention(true), embed.build(), clearReactions = false) ?: context.sendMessage(context.getUserMention(true), embed.build())
+		val message = currentMessage?.edit(context.getUserMention(true), embed.build(), clearReactions = false) ?: context.sendMessage(context.getUserMention(true), embed.build())
 
 		val allowForward = allTransactions >= (page + 1) * 20
 		val allowBack = page != 0L
-
-		if ((!allowForward && message.reactions.any { it.reactionEmote.isEmote("⏩") }) || (!allowBack && message.reactions.any { it.reactionEmote.isEmote("⏪") })) {
-			message.clearReactions().await()
-			message = message.refresh().await()
-		}
 
 		message.onReactionAddByAuthor(context) {
 			if (allowForward && it.reactionEmote.isEmote("⏩")) {
@@ -203,7 +214,6 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 							locale,
 							page + 1,
 							message,
-							user,
 				)
 			}
 			if (allowBack && it.reactionEmote.isEmote("⏪")) {
@@ -212,7 +222,6 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 							locale,
 							page - 1,
 							message,
-							user,
 				)
 			}
 		}
