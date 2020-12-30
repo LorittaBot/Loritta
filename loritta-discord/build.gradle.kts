@@ -117,6 +117,10 @@ dependencies {
     api("io.prometheus:simpleclient_hotspot:0.9.0")
     api("io.prometheus:simpleclient_common:0.9.0")
 
+    // Sequins
+    api("net.perfectdreams.sequins.text:text-utils:1.0.0")
+    api("net.perfectdreams.sequins.ktor:base-route:1.0.0")
+
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.0-M1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.0-M1")
     testImplementation("io.mockk:mockk:1.9.3")

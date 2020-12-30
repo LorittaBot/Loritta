@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import net.perfectdreams.loritta.dao.servers.Giveaway
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.FeatureFlags
+import net.perfectdreams.sequins.text.StringUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
@@ -389,10 +390,22 @@ object GiveawayManager {
                             replies.add("⭐ **|** ¯\\_(ツ)_/¯")
                         }
                     }
-                    messageBuilder
-                       .setAllowedMentions(listOf(Message.MentionType.USER, Message.MentionType.CHANNEL, Message.MentionType.EMOTE))
-                       .setContent(replies.joinToString("\n"))
-                    message.channel.sendMessageAsync(messageBuilder.build())
+
+                    val fullString = replies.joinToString("\n")
+
+                    // Okay, it seems very dumb to split by 1000 chars, but the reason this happens is because Discord's message renderer sucks and
+                    // the last entries are hidden for no reason.
+                    //
+                    // This can be increased to 2000 when the bug is fixed, to check if it is fixed, copy this message and copy into chat and see if the last
+                    // entries era displayed correctly.
+                    // https://gist.github.com/MrPowerGamerBR/078a4f3ad44c8541e3b5241c9823335e
+                    val chunkedResponse = StringUtils.chunkedLines(fullString, 1_000, forceSplit = true, forceSplitOnSpaces = true)
+                    chunkedResponse.forEach {
+                        messageBuilder
+                                .setAllowedMentions(listOf(Message.MentionType.USER, Message.MentionType.CHANNEL, Message.MentionType.EMOTE))
+                                .setContent(it)
+                        message.channel.sendMessageAsync(messageBuilder.build())
+                    }
                 }
 
                 if (giveaway.roleIds != null) { // Dar o prêmio para quem ganhou (yay!)

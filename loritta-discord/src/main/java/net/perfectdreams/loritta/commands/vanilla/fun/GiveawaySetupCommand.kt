@@ -347,10 +347,10 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
                 return@onResponseByAuthor
             }
 
-            if (numberOfWinners !in 1..20) {
+            if (numberOfWinners !in 1..100) {
                 context.reply(
                         LorittaReply(
-                                "Precisa ter, no mínimo, um ganhador e, no máximo, vinte ganhadores!",
+                                "Precisa ter, no mínimo, um ganhador e, no máximo, cem ganhadores!",
                                 Constants.ERROR
                         )
                 )
