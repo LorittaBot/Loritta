@@ -368,9 +368,14 @@ object GiveawayManager {
 
                     reactedUsers.remove(user)
                 }
+                
+                val messageBuilder = MessageBuilder()
 
                 if (winners.size == 1) { // Apenas um ganhador
                     val winner = winners.first()
+                    messageBuilder
+                        .setAllowedMentions(listOf(Message.MentionType.USER, Message.MentionType.CHANNEL, Message.MentionType.EMOTE))
+                        .setContent("\uD83C\uDF89 **|** ${locale["commands.fun.giveaway.oneWinner", winner.asMention, "**${giveaway.reason}**"]} ${Emotes.LORI_HAPPY}")
                     message.channel.sendMessageAsync("\uD83C\uDF89 **|** ${locale["commands.fun.giveaway.oneWinner", winner.asMention, "**${giveaway.reason}**"]} ${Emotes.LORI_HAPPY}")
                 } else { // Mais de um ganhador
                     val replies = mutableListOf("\uD83C\uDF89 **|** ${locale["commands.fun.giveaway.multipleWinners", "**${giveaway.reason}**"]} ${Emotes.LORI_HAPPY}")
@@ -384,6 +389,9 @@ object GiveawayManager {
                             replies.add("⭐ **|** ¯\\_(ツ)_/¯")
                         }
                     }
+                    messageBuilder
+                       .setAllowedMentions(listOf(Message.MentionType.USER, Message.MentionType.CHANNEL, Message.MentionType.EMOTE))
+                       .setContent(replies.joinToString("\n"))
                     message.channel.sendMessageAsync(replies.joinToString("\n"))
                 }
 
