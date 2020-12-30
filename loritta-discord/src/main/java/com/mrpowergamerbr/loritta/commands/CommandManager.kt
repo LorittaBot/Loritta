@@ -86,7 +86,6 @@ class CommandManager(loritta: Loritta) {
 		commandMap.add(RipVidaCommand())
 		commandMap.add(JoojCommand())
 		commandMap.add(OjjoCommand())
-		commandMap.add(GameJoltCommand())
 		commandMap.add(TwitchCommand())
 
 		// =======[ IMAGENS ]======
