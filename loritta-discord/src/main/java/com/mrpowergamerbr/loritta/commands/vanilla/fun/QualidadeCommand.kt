@@ -2,9 +2,10 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import net.perfectdreams.loritta.api.messages.LorittaReply
+import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class QualidadeCommand : AbstractCommand("qualidade", category = CommandCategory.FUN) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -26,6 +27,7 @@ class QualidadeCommand : AbstractCommand("qualidade", category = CommandCategory
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val qualidade = context.args.joinToString(" ").toCharArray().joinToString(" ").toUpperCase()
+					.escapeMentions()
 			context.reply(
                     LorittaReply(message = qualidade, prefix = "✍")
 			)
