@@ -131,7 +131,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak",
                         true
                 )
 
-                for (wrapper in validLanguages.subList(2, validLanguages.size)) {
+                for (wrapper in validLanguages.filter { it.isSecret }) {
                     // O "replace" é necessário já que a gente usa emojis personalizados para algumas linguagens
                     message.addReaction(wrapper.emoteName.replace("<", "").replace(">", "")).queue()
                 }
@@ -164,7 +164,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak",
                     ?: validLanguages.first { it.locale.id == "default" }, context.isPrivateChannel)
         }
 
-        for (wrapper in validLanguages.subList(0, 2)) {
+        for (wrapper in validLanguages.filter { !it.isSecret }) {
             // O "replace" é necessário já que a gente usa emojis personalizados para algumas linguagens
             message.addReaction(wrapper.emoteName.replace("<", "").replace(">", "")).queue()
         }
