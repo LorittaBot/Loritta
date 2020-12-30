@@ -376,7 +376,7 @@ object GiveawayManager {
                     messageBuilder
                         .setAllowedMentions(listOf(Message.MentionType.USER, Message.MentionType.CHANNEL, Message.MentionType.EMOTE))
                         .setContent("\uD83C\uDF89 **|** ${locale["commands.fun.giveaway.oneWinner", winner.asMention, "**${giveaway.reason}**"]} ${Emotes.LORI_HAPPY}")
-                    message.channel.sendMessageAsync("\uD83C\uDF89 **|** ${locale["commands.fun.giveaway.oneWinner", winner.asMention, "**${giveaway.reason}**"]} ${Emotes.LORI_HAPPY}")
+                    message.channel.sendMessageAsync(messageBuilder.build())
                 } else { // Mais de um ganhador
                     val replies = mutableListOf("\uD83C\uDF89 **|** ${locale["commands.fun.giveaway.multipleWinners", "**${giveaway.reason}**"]} ${Emotes.LORI_HAPPY}")
 
@@ -392,7 +392,7 @@ object GiveawayManager {
                     messageBuilder
                        .setAllowedMentions(listOf(Message.MentionType.USER, Message.MentionType.CHANNEL, Message.MentionType.EMOTE))
                        .setContent(replies.joinToString("\n"))
-                    message.channel.sendMessageAsync(replies.joinToString("\n"))
+                    message.channel.sendMessageAsync(messageBuilder.build())
                 }
 
                 if (giveaway.roleIds != null) { // Dar o prêmio para quem ganhou (yay!)
