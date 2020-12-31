@@ -3,8 +3,7 @@ package net.perfectdreams.loritta.platform.discord.entities
 import net.dv8tion.jda.api.entities.Emote
 import net.perfectdreams.loritta.api.entities.LorittaEmote
 
-class DiscordEmote(code: String) : LorittaEmote(code) {
-    private var jdaEmote: Emote? = null
+open class DiscordEmote(code: String) : LorittaEmote(code) {
     val id: String
     private val name: String
     val reactionCode: String
@@ -40,4 +39,6 @@ class DiscordEmote(code: String) : LorittaEmote(code) {
 
     override fun getName() = name
     override fun toString() = asMention
+
+    class DiscordEmoteBackedByJdaEmote(val jdaEmote: Emote) : DiscordEmote("discord:${jdaEmote.asMention.removePrefix("<").removePrefix(":").removeSuffix(">")}")
 }
