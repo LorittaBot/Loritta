@@ -5,9 +5,9 @@ import io.ktor.application.ApplicationCall
 import io.ktor.http.ContentType
 import io.ktor.response.respondText
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.website.routes.BaseRoute
+import net.perfectdreams.sequins.ktor.BaseRoute
 
-class GetLocaleRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/loritta/locale/{localeId}") {
+class GetLocaleRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/loritta/locale/{localeId}") {
 	override suspend fun onRequest(call: ApplicationCall) {
 		val localeId = call.parameters["localeId"]
 

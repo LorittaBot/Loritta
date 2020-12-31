@@ -5,14 +5,14 @@ import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.serializable.DailyShopResult
 import net.perfectdreams.loritta.tables.*
-import net.perfectdreams.loritta.website.routes.BaseRoute
+import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 
-class GetDailyShopRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/economy/daily-shop") {
+class GetDailyShopRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/economy/daily-shop") {
 	override suspend fun onRequest(call: ApplicationCall) {
 		val generatedAt: Long?
 

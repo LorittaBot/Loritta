@@ -19,7 +19,7 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.serializable.UserIdentification
 import net.perfectdreams.loritta.tables.*
-import net.perfectdreams.loritta.website.routes.BaseRoute
+import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
@@ -31,7 +31,7 @@ import kotlin.collections.map
 import kotlin.collections.set
 import kotlin.collections.toSet
 
-class GetSelfInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/users/@me/{sections?}") {
+class GetSelfInfoRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/users/@me/{sections?}") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}

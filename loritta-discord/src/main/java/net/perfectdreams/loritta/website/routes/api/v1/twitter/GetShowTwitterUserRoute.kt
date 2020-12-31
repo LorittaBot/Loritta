@@ -10,13 +10,13 @@ import io.ktor.application.ApplicationCall
 import io.ktor.http.HttpStatusCode
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.website.routes.BaseRoute
+import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import twitter4j.TwitterFactory
 import java.util.concurrent.TimeUnit
 import kotlin.collections.set
 
-class GetShowTwitterUserRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/twitter/users/show") {
+class GetShowTwitterUserRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/twitter/users/show") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}

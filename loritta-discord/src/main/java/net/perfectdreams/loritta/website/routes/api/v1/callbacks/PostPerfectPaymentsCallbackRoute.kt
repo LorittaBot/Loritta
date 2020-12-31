@@ -17,12 +17,12 @@ import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.tables.SonhosBundles
 import net.perfectdreams.loritta.utils.payments.PaymentReason
-import net.perfectdreams.loritta.website.routes.BaseRoute
+import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import org.jetbrains.exposed.sql.*
 import java.util.*
 
-class PostPerfectPaymentsCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/callbacks/perfect-payments") {
+class PostPerfectPaymentsCallbackRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/callbacks/perfect-payments") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}

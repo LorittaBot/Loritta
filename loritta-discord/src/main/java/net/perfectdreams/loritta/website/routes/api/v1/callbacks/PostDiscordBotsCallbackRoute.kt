@@ -15,9 +15,9 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.WebsiteVoteSource
 import net.perfectdreams.loritta.utils.WebsiteVoteUtils
-import net.perfectdreams.loritta.website.routes.BaseRoute
+import net.perfectdreams.sequins.ktor.BaseRoute
 
-class PostDiscordBotsCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/callbacks/discord-bots") {
+class PostDiscordBotsCallbackRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/callbacks/discord-bots") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}

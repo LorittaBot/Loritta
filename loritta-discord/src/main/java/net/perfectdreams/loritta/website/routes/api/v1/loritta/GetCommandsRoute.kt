@@ -5,10 +5,10 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.serializable.CommandInfo
-import net.perfectdreams.loritta.website.routes.BaseRoute
+import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 
-class GetCommandsRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/loritta/commands/{localeId}") {
+class GetCommandsRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/loritta/commands/{localeId}") {
 	override suspend fun onRequest(call: ApplicationCall) {
 		val localeId = call.parameters["localeId"] ?: return
 

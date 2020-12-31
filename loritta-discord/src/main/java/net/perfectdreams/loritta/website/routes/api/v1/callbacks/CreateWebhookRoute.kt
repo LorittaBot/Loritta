@@ -1,14 +1,14 @@
 package net.perfectdreams.loritta.website.routes.api.v1.callbacks
 
-import io.ktor.application.ApplicationCall
+import io.ktor.application.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.website.routes.BaseRoute
 import net.perfectdreams.loritta.website.utils.extensions.hostFromHeader
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
+import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
-class CreateWebhookRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/callbacks/discord-webhook") {
+class CreateWebhookRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/callbacks/discord-webhook") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}

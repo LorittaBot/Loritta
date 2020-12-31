@@ -7,10 +7,10 @@ import io.prometheus.client.exporter.common.TextFormat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.website.routes.BaseRoute
+import net.perfectdreams.sequins.ktor.BaseRoute
 import java.io.StringWriter
 
-class GetPrometheusMetricsRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/loritta/metrics") {
+class GetPrometheusMetricsRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/loritta/metrics") {
 	override suspend fun onRequest(call: ApplicationCall) {
 		val writer = StringWriter()
 
