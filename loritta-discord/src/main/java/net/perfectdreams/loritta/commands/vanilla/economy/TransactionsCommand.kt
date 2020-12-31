@@ -28,7 +28,7 @@ import java.time.ZoneId
 class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("transactions", "transações"), CommandCategory.ECONOMY) {
 	companion object {
 		private const val LOCALE_PREFIX = "commands.economy.transactions"
-                private const val ENTRIES_PER_PAGE = 10
+		private const val ENTRIES_PER_PAGE = 10
 	}
 
 	override fun command() = create {
