@@ -171,7 +171,7 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 					}
 				} else if (transaction[SonhosTransaction.reason] == SonhosPaymentReason.PAYMENT_TAX) {
 					this.append(locale["$LOCALE_PREFIX.sentMoneySonhosTax", transaction[SonhosTransaction.quantity]])
-				} else if { 
+				} else if (transaction[SonhosTransaction.reason] == SonhosPaymentReason.COIN_FLIP_BET) { 
 					val receivedByUserId = if (receivedSonhos) {
 						transaction[SonhosTransaction.givenBy]
 					} else {
