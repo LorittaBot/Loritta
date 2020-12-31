@@ -28,6 +28,7 @@ import java.time.ZoneId
 class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("transactions", "transações"), CommandCategory.ECONOMY) {
 	companion object {
 		private const val LOCALE_PREFIX = "commands.economy.transactions"
+                private const val ENTRIES_PER_PAGE = 15
 	}
 
 	override fun command() = create {
@@ -99,7 +100,7 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 			SonhosTransaction.select {
 				SonhosTransaction.givenBy eq user.idLong or (SonhosTransaction.receivedBy eq user.idLong)
 			}.orderBy(SonhosTransaction.givenAt, SortOrder.DESC)
-					.limit(15, page * 15)
+					.limit(ENTRIES_PER_PAGE, page * ENTRIES_PER_PAGE)
 					.toList()
 		}
 
