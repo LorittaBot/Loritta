@@ -159,12 +159,21 @@ class TradingViewRelayConnector(
             // So, to avoid this, we are going to add some additional checks.
             val currentSession = ticketData?.get("current_session")?.jsonPrimitive?.contentOrNull
 
-            if (!(currentSession != LoriBrokerPlugin.MARKET && !isStockMarketOpen())) {
-                // We are only going to check for outdated stocks time IF the stock market SHOULD be open and the last received status IS "market" (== open)
-                // Because we don't care if the server hasn't sent any new stock updates if the stock market is closed (and that happens A LOT)
+            // We have some fail safes, to avoid buggy states and wrecking havoc.
+            // First, we will check if the currentSession is "market" (open) and the stock market should *not* be open
+            // This is a instant fail
+            if (currentSession == LoriBrokerPlugin.MARKET && !isStockMarketOpen())
+                throw OutdatedStocksDataException("Outdated stocks data when trying to get $tickerId ticker! Ticker is open to market but we are outside of the stock market open hours! Last stock data was received ${diffLastStocks}ms ago!")
+
+            // The second fail safe is if the market is checked whenever the ticker session is market
+            if (currentSession == LoriBrokerPlugin.MARKET) {
+                // In this case, we check if the data is not stale and, if it is, we fail
                 if (diffLastStocks >= outdatedStocksTime)
                     throw OutdatedStocksDataException("Outdated stocks data when trying to get $tickerId ticker! Last stock data was received ${diffLastStocks}ms ago!")
             }
+
+            // We don't really care about if the session is not market because if it ain't market == can't buy/sell, so the problem would be very small. (as in: won't cause Loritta issues)
+            // Also we don't check if != market but stocks should be open, we don't check that because of holidays and stuff like that.
             ticketData
         } else
             null
