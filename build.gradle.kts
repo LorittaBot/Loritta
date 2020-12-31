@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 // val ktorVersion by lazy { ext["ktor-version"] as String }
 val loriVersion   = "2020-SNAPSHOT"
 val kotlinVersion = "1.4.10"
-val ktorVersion   = "1.3.1"
+val ktorVersion   = "1.5.0"
 val jdaVersion    = "4.2.0_221"
 val kotlinSerialization = "1.0.1"
 val kotlinCoroutines = "1.4.1"
