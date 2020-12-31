@@ -99,7 +99,7 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 			SonhosTransaction.select {
 				SonhosTransaction.givenBy eq user.idLong or (SonhosTransaction.receivedBy eq user.idLong)
 			}.orderBy(SonhosTransaction.givenAt, SortOrder.DESC)
-					.limit(20, page * 20)
+					.limit(15, page * 15)
 					.toList()
 		}
 
