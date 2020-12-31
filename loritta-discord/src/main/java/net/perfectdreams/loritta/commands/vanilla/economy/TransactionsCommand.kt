@@ -171,6 +171,22 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 					}
 				} else if (transaction[SonhosTransaction.reason] == SonhosPaymentReason.PAYMENT_TAX) {
 					this.append(locale["$LOCALE_PREFIX.sentMoneySonhosTax", transaction[SonhosTransaction.quantity]])
+				} else if { 
+					val receivedByUserId = if (receivedSonhos) {
+						transaction[SonhosTransaction.givenBy]
+					} else {
+						transaction[SonhosTransaction.receivedBy]
+					}
+
+					val receivedByUser = lorittaShards.retrieveUserInfoById(receivedByUserId)
+
+					val name = ("${receivedByUser?.name}#${receivedByUser?.discriminator} ($receivedByUserId)")
+
+					if (receivedSonhos) {
+						this.append(locale["commands.economy.transactions.receveidMoneySonhosOnCoinFlipBet", transaction[SonhosTransaction.quantity], "`$name`"])
+					} else {
+						this.append(locale["commands.economy.transactions.sentMoneySonhosOnCoinFlipBet", transaction[SonhosTransaction.quantity], "`$name`"])
+					}		
 				} else {
 					val type = transaction[SonhosTransaction.reason].name
 							.toLowerCase()
