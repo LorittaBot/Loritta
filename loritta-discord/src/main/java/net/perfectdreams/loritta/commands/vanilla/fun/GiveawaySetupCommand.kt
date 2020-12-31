@@ -350,7 +350,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
             if (numberOfWinners !in 1..100) {
                 context.reply(
                         LorittaReply(
-                                "Precisa ter, no mínimo, um ganhador e, no máximo, cem ganhadores!",
+                                locale["commands.fun.giveaway.giveawayWinnerCountNotInRange"],
                                 Constants.ERROR
                         )
                 )
