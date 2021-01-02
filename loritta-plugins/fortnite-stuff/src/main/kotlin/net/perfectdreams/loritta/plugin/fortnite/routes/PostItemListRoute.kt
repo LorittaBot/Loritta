@@ -6,6 +6,8 @@ import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.JsonParser
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.plugin.fortnite.FortniteStuff
@@ -17,7 +19,7 @@ class PostItemListRoute(val m: FortniteStuff, loritta: LorittaDiscord) : Require
 	private val logger = KotlinLogging.logger {}
 
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
-		val payload = JsonParser.parseString(call.receiveText())
+		val payload = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()) }
 		logger.info { "Received Fortnite Item Payload! localeId is ${call.parameters["localeId"]}" }
 
 		m.itemsInfo[call.parameters["localeId"]!!] = payload["data"].array

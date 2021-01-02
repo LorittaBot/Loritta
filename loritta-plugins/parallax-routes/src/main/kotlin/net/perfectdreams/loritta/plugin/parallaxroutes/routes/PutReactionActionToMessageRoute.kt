@@ -8,11 +8,13 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.MessageInteractionFunctions
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import io.ktor.application.ApplicationCall
-import io.ktor.client.request.get
-import io.ktor.client.statement.HttpResponse
-import io.ktor.http.userAgent
-import io.ktor.request.receiveText
+import io.ktor.application.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.request.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.NetAddressUtils
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthenticationRoute
@@ -27,7 +29,7 @@ class PutReactionActionToMessageRoute(loritta: LorittaDiscord) : RequiresAPIAuth
 			val channelId = call.parameters["channelId"]!!
 			val messageId = call.parameters["messageId"]!!
 			val emoji = call.parameters["emoji"]!!
-			val payload = call.receiveText()
+			val payload = withContext(Dispatchers.IO) { call.receiveText() }
 			val json = JsonParser.parseString(payload)
 
 			val channel = lorittaShards.getTextChannelById(channelId)!!
