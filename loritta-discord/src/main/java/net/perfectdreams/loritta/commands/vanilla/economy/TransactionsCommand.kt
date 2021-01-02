@@ -97,7 +97,7 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 		val transactions = loritta.newSuspendedTransaction {
 			SonhosTransaction.select {
 				SonhosTransaction.givenBy eq user.idLong or (SonhosTransaction.receivedBy eq user.idLong)
-			}.orderBy(SonhosTransaction.givenAt, SortOrder.DESC)
+			}.orderBy(SonhosTransaction.id, SortOrder.DESC)
 					.limit(ENTRIES_PER_PAGE, page * ENTRIES_PER_PAGE)
 					.toList()
 		}
