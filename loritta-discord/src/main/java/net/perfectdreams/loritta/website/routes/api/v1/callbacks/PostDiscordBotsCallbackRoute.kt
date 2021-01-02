@@ -11,6 +11,8 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.request.header
 import io.ktor.request.receiveText
 import io.ktor.response.respondText
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.WebsiteVoteSource
@@ -23,7 +25,7 @@ class PostDiscordBotsCallbackRoute(val loritta: LorittaDiscord) : BaseRoute("/ap
 	}
 
 	override suspend fun onRequest(call: ApplicationCall) {
-		val response = call.receiveText()
+		val response = withContext(Dispatchers.IO) { call.receiveText() }
 
 		logger.info("Recebi payload do Discord Bots!")
 		logger.trace { response }

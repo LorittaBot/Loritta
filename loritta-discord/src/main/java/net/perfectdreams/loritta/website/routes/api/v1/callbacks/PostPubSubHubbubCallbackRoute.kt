@@ -1,26 +1,31 @@
 package net.perfectdreams.loritta.website.routes.api.v1.callbacks
 
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.array
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.jsonObject
+import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.string
 import com.google.common.cache.CacheBuilder
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.MessageUtils
+import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.extensions.bytesToHex
 import com.mrpowergamerbr.loritta.utils.extensions.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
-import io.ktor.application.ApplicationCall
-import io.ktor.client.request.header
-import io.ktor.client.request.post
-import io.ktor.client.statement.HttpResponse
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.userAgent
-import io.ktor.request.header
-import io.ktor.request.path
-import io.ktor.request.receiveStream
+import io.ktor.application.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.request.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
@@ -28,10 +33,10 @@ import net.perfectdreams.loritta.tables.SentYouTubeVideoIds
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedTwitchAccounts
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedYouTubeAccounts
 import net.perfectdreams.loritta.utils.ClusterOfflineException
-import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.website.utils.extensions.urlQueryString
+import net.perfectdreams.sequins.ktor.BaseRoute
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -40,6 +45,7 @@ import org.jsoup.parser.Parser
 import java.util.concurrent.TimeUnit
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
+import kotlin.collections.set
 
 class PostPubSubHubbubCallbackRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/callbacks/pubsubhubbub") {
 	companion object {
@@ -52,7 +58,9 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaDiscord) : BaseRoute("/a
 
 	override suspend fun onRequest(call: ApplicationCall) {
 		loritta as Loritta
-		val response = call.receiveStream().bufferedReader(charset = Charsets.UTF_8).readText()
+		val response = withContext(Dispatchers.IO) {
+			call.receiveStream().bufferedReader(charset = Charsets.UTF_8).readText()
+		}
 
 		logger.info { "Recebi payload do PubSubHubbub!" }
 		logger.trace { response }

@@ -7,10 +7,12 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.economy.PagarCommand
 import com.mrpowergamerbr.loritta.tables.Dailies
-import io.ktor.application.ApplicationCall
-import io.ktor.request.receiveText
+import io.ktor.application.*
+import io.ktor.request.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.PaymentUtils
@@ -31,7 +33,7 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
 		loritta as Loritta
-		val json = JsonParser.parseString(call.receiveText())
+		val json = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()) }
 		val giverId = json["giverId"].long
 		val receiverId = json["receiverId"].long
 		val howMuch = json["howMuch"].long
@@ -62,12 +64,12 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 					.toEpochMilli()
 
 			val lastReceiverDailyAt = loritta.newSuspendedTransaction {
-				com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.receivedById eq receiverId and (Dailies.receivedAt greaterEq todayAtMidnight) }.orderBy(Dailies.receivedAt, SortOrder.DESC)
+				Dailies.select { Dailies.receivedById eq receiverId and (Dailies.receivedAt greaterEq todayAtMidnight) }.orderBy(Dailies.receivedAt, SortOrder.DESC)
 						.firstOrNull()
 			}
 
 			val lastGiverDailyAt = loritta.newSuspendedTransaction {
-				com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.receivedById eq giverId and (Dailies.receivedAt greaterEq todayAtMidnight) }.orderBy(Dailies.receivedAt, SortOrder.DESC)
+				Dailies.select { Dailies.receivedById eq giverId and (Dailies.receivedAt greaterEq todayAtMidnight) }.orderBy(Dailies.receivedAt, SortOrder.DESC)
 						.firstOrNull()
 			}
 
@@ -83,7 +85,7 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 
 					// Mesmo IP, vamos dar ban em todas as contas do IP atual
 					val sameIpDaily = loritta.newSuspendedTransaction {
-						com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.ip eq lastReceiverDailyAt[Dailies.ip] and (Dailies.receivedAt greaterEq todayAtMidnight) }.orderBy(Dailies.receivedAt, SortOrder.DESC)
+						Dailies.select { Dailies.ip eq lastReceiverDailyAt[Dailies.ip] and (Dailies.receivedAt greaterEq todayAtMidnight) }.orderBy(Dailies.receivedAt, SortOrder.DESC)
 								.toList()
 					}
 

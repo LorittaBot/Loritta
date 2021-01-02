@@ -7,10 +7,12 @@ import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.vanilla.economy.LoraffleCommand
 import com.mrpowergamerbr.loritta.threads.RaffleThread
-import io.ktor.application.ApplicationCall
-import io.ktor.request.receiveText
+import io.ktor.application.*
+import io.ktor.request.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.PaymentUtils
@@ -25,7 +27,7 @@ class PostRaffleStatusRoute(loritta: LorittaDiscord) : RequiresAPIAuthentication
 	}
 
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
-		val json = JsonParser.parseString(call.receiveText()).obj
+		val json = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()).obj }
 
 		val userId = json["userId"].string
 		val quantity = json["quantity"].int

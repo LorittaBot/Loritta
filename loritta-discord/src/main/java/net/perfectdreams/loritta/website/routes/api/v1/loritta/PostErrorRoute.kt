@@ -8,6 +8,8 @@ import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.ApplicationCall
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receiveText
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.SpicyStacktraces
 import net.perfectdreams.sequins.ktor.BaseRoute
@@ -16,7 +18,7 @@ import org.jetbrains.exposed.sql.insertAndGetId
 
 class PostErrorRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/loritta/error/{type}") {
 	override suspend fun onRequest(call: ApplicationCall) {
-		val body = call.receiveText()
+		val body = withContext(Dispatchers.IO) { call.receiveText() }
 		val type = call.parameters["type"]
 
 		val json = JsonParser.parseString(body).obj

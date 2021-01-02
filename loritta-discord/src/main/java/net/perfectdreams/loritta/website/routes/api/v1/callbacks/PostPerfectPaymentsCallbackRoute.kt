@@ -10,6 +10,8 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
@@ -37,7 +39,7 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaDiscord) : BaseRoute(
 			return
 		}
 
-		val body = call.receiveText()
+		val body = withContext(Dispatchers.IO) { call.receiveText() }
 		val json = JsonParser.parseString(body).obj
 
 		val referenceId = UUID.fromString(json["referenceId"].string)
@@ -65,12 +67,12 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaDiscord) : BaseRoute(
 
 			loritta.newSuspendedTransaction {
 				BannedUsers.insert {
-					it[BannedUsers.userId] = internalPayment.userId
-					it[BannedUsers.bannedAt] = System.currentTimeMillis()
-					it[BannedUsers.bannedBy] = null
-					it[BannedUsers.valid] = true
-					it[BannedUsers.expiresAt] = null
-					it[BannedUsers.reason] = "Chargeback/Requesting your money back after a purchase! Why do you pay for something and then chargeback your payment even though you received your product? Payment ID: $referenceId; Gateway: $gateway"
+					it[userId] = internalPayment.userId
+					it[bannedAt] = System.currentTimeMillis()
+					it[bannedBy] = null
+					it[valid] = true
+					it[expiresAt] = null
+					it[reason] = "Chargeback/Requesting your money back after a purchase! Why do you pay for something and then chargeback your payment even though you received your product? Payment ID: $referenceId; Gateway: $gateway"
 				}
 			}
 		} else if (status == "APPROVED") {

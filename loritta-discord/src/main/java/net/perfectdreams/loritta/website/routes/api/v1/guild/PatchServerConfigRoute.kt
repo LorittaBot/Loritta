@@ -8,10 +8,26 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
-import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.*
-import io.ktor.application.ApplicationCall
-import io.ktor.http.HttpStatusCode
-import io.ktor.request.receiveText
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.AutorolePayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.CustomBadgePayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.DailyMultiplierPayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.EconomyPayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.GeneralConfigPayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.LevelPayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.MiscellaneousPayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.ModerationPayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.PremiumKeyPayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.ResetXpPayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.RssFeedsPayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.TimersPayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.TwitchPayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.TwitterPayload
+import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.YouTubePayload
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.request.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.ActionType
@@ -25,7 +41,7 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 class PatchServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRoute(loritta, "/config") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
-		val payload = JsonParser.parseString(call.receiveText())
+		val payload = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()) }
 		val type = payload["type"].string
 		val config = payload["config"].obj
 

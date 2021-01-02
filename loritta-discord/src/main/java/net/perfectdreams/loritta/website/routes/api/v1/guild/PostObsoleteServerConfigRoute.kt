@@ -8,6 +8,8 @@ import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.EventLogConfig
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.InviteBlockerConfig
@@ -28,7 +30,7 @@ import org.jetbrains.exposed.sql.insert
 class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRoute(loritta, "/old-config") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
 		loritta as Loritta
-		val payload = JsonParser.parseString(call.receiveText())
+		val payload = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()) }
 		val receivedPayload = payload.obj
 		val type = receivedPayload["type"].string
 		receivedPayload.remove("type")

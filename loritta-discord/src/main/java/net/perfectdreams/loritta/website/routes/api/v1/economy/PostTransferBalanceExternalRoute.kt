@@ -4,6 +4,8 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonParser
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.PaymentUtils
@@ -17,7 +19,7 @@ class PostTransferBalanceExternalRoute(loritta: LorittaDiscord) : RequiresAPIAut
 	}
 
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
-		val body = call.receiveText()
+		val body = withContext(Dispatchers.IO) { call.receiveText() }
 		val json = JsonParser.parseString(body)
 		val receiverId = json["receiverId"].string
 		val garticos = json["garticos"].long

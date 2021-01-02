@@ -10,6 +10,8 @@ import com.mrpowergamerbr.loritta.utils.extensions.queueAfterWithMessagePerSecon
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receiveText
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedTwitterAccounts
@@ -23,7 +25,7 @@ class PostReceivedTweetRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticatio
 	}
 
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
-		val json = JsonParser.parseString(call.receiveText())
+		val json = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()) }
 		val tweetId = json["tweetId"].long
 		val userId = json["userId"].long
 		val screenName = json["screenName"].string
