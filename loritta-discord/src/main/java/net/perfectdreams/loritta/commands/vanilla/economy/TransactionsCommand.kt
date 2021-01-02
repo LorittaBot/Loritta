@@ -28,6 +28,7 @@ import java.time.ZoneId
 class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("transactions", "transações"), CommandCategory.ECONOMY) {
 	companion object {
 		private const val LOCALE_PREFIX = "commands.economy.transactions"
+		private const val ENTRIES_PER_PAGE = 10
 	}
 
 	override fun command() = create {
@@ -99,7 +100,7 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 			SonhosTransaction.select {
 				SonhosTransaction.givenBy eq user.idLong or (SonhosTransaction.receivedBy eq user.idLong)
 			}.orderBy(SonhosTransaction.givenAt, SortOrder.DESC)
-					.limit(20, page * 20)
+					.limit(ENTRIES_PER_PAGE, page * ENTRIES_PER_PAGE)
 					.toList()
 		}
 
@@ -171,6 +172,22 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 					}
 				} else if (transaction[SonhosTransaction.reason] == SonhosPaymentReason.PAYMENT_TAX) {
 					this.append(locale["$LOCALE_PREFIX.sentMoneySonhosTax", transaction[SonhosTransaction.quantity]])
+				} else if (transaction[SonhosTransaction.reason] == SonhosPaymentReason.COIN_FLIP_BET) { 
+					val receivedByUserId = if (receivedSonhos) {
+						transaction[SonhosTransaction.givenBy]
+					} else {
+						transaction[SonhosTransaction.receivedBy]
+					}
+
+					val receivedByUser = lorittaShards.retrieveUserInfoById(receivedByUserId)
+
+					val name = ("${receivedByUser?.name}#${receivedByUser?.discriminator} ($receivedByUserId)")
+
+					if (receivedSonhos) {
+						this.append(locale["commands.economy.transactions.receveidMoneySonhosOnCoinFlipBet", transaction[SonhosTransaction.quantity], "`$name`"])
+					} else {
+						this.append(locale["commands.economy.transactions.sentMoneySonhosOnCoinFlipBet", transaction[SonhosTransaction.quantity], "`$name`"])
+					}		
 				} else {
 					val type = transaction[SonhosTransaction.reason].name
 							.toLowerCase()
@@ -211,7 +228,7 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 
 		val message = currentMessage?.edit(context.getUserMention(true), embed.build(), clearReactions = false) ?: context.sendMessage(context.getUserMention(true), embed.build())
 
-		val allowForward = allTransactions >= (page + 1) * 20
+		val allowForward = allTransactions >= (page + 1) * ENTRIES_PER_PAGE
 		val allowBack = page != 0L
 
 		message.onReactionAddByAuthor(context) {
