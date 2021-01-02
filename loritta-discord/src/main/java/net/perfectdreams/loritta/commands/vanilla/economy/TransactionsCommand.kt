@@ -24,7 +24,7 @@ import org.jetbrains.exposed.sql.select
 import java.time.Instant
 import java.time.ZoneId
 
-class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("transactions", "transações"), CommandCategory.ECONOMY) {
+class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("transactions", "transações", "transacoes", "transaçoes"), CommandCategory.ECONOMY) {
 	companion object {
 		private const val LOCALE_PREFIX = "commands.economy.transactions"
 		private const val ENTRIES_PER_PAGE = 10
