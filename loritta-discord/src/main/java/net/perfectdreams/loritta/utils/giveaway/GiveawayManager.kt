@@ -453,7 +453,7 @@ object GiveawayManager {
 
         rollWinners(message, giveaway)
 
-        loritta.suspendedTransactionAsync {
+        loritta.newSuspendedTransaction {
             giveaway.finished = true
         }
 
