@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
+import com.mrpowergamerbr.loritta.utils.onReactionByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.perfectdreams.loritta.api.commands.ArgumentType
@@ -229,7 +229,7 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 		val allowForward = allTransactions >= (page + 1) * ENTRIES_PER_PAGE
 		val allowBack = page != 0L
 
-		message.onReactionAddByAuthor(context) {
+		message.onReactionByAuthor(context) {
 			if (allowForward && it.reactionEmote.isEmote("⏩")) {
 				sendTransactionEmbed(
 							context,
