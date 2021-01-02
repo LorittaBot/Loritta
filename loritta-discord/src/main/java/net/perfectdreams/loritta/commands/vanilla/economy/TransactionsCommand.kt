@@ -226,7 +226,8 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 
 		val message = currentMessage?.edit(context.getUserMention(true), embed.build(), clearReactions = false) ?: context.sendMessage(context.getUserMention(true), embed.build())
 
-		val allowForward = allTransactions >= (page + 1) * ENTRIES_PER_PAGE
+		// We don't want the user to see more than 100 pages of transactions
+		val allowForward = allTransactions >= (page + 1) * ENTRIES_PER_PAGE && 100 > page
 		val allowBack = page != 0L
 
 		message.onReactionByAuthor(context) {
