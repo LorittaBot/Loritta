@@ -336,7 +336,14 @@ object GiveawayManager {
             isDiscordEmote = true
             DiscordEmote(reaction).id
         } else {
-            reaction
+            // Workaround: Do not break old giveaways before the emote change by checking if the reaction is a valid snowflake
+            val emoteId = reaction.toLongOrNull()
+            if (emoteId != null) {
+                isDiscordEmote = true
+                emoteId.toString()
+            } else {
+                reaction
+            }
         }
 
         messageReaction = if (isDiscordEmote) {
