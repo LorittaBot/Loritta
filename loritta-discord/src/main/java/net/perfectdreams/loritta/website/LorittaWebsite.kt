@@ -2,31 +2,21 @@ package net.perfectdreams.loritta.website
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.Loritta
-import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
-import io.ktor.application.call
-import io.ktor.application.install
-import io.ktor.features.CachingHeaders
-import io.ktor.features.StatusPages
-import io.ktor.http.CacheControl
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
+import io.ktor.application.*
+import io.ktor.features.*
+import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.request.*
-import io.ktor.response.respondRedirect
-import io.ktor.routing.Routing
-import io.ktor.routing.RoutingApplicationCall
-import io.ktor.routing.get
-import io.ktor.routing.routing
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
-import io.ktor.server.netty.NettyApplicationEngine
+import io.ktor.response.*
+import io.ktor.routing.*
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
 import io.ktor.sessions.*
-import io.ktor.util.AttributeKey
-import io.ktor.util.hex
+import io.ktor.util.*
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import mu.KotlinLogging
@@ -36,11 +26,11 @@ import net.perfectdreams.loritta.website.routes.LocalizedRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.LorittaHtmlProvider
 import net.perfectdreams.loritta.website.utils.ScriptingUtils
+import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.website.utils.extensions.*
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.io.File
-import java.lang.RuntimeException
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
@@ -220,7 +210,33 @@ class LorittaWebsite(val loritta: Loritta) {
 
 				for (route in (routes + loritta.pluginManager.plugins.filterIsInstance<LorittaDiscordPlugin>().flatMap { it.routes })) {
 					if (route is LocalizedRoute) {
-						get(route.originalPath) {
+						val originalPath = route.originalPath
+						val pathWithoutTrailingSlash = originalPath.removeSuffix("/")
+
+						// This is a workaround, I don't really like it
+						// See: https://youtrack.jetbrains.com/issue/KTOR-372
+						if (pathWithoutTrailingSlash.isNotEmpty()) {
+							get(pathWithoutTrailingSlash) {
+								val acceptLanguage = call.request.header("Accept-Language") ?: "en-US"
+								val ranges = Locale.LanguageRange.parse(acceptLanguage).reversed()
+								var localeId = "en-us"
+								for (range in ranges) {
+									localeId = range.range.toLowerCase()
+									if (localeId == "pt-br" || localeId == "pt") {
+										localeId = "default"
+									}
+									if (localeId == "en") {
+										localeId = "en-us"
+									}
+								}
+
+								val locale = loritta.getLocaleById(localeId)
+
+								redirect("/${locale.path}${call.request.uri}")
+							}
+						}
+
+						get("$pathWithoutTrailingSlash/") {
 							val acceptLanguage = call.request.header("Accept-Language") ?: "en-US"
 							val ranges = Locale.LanguageRange.parse(acceptLanguage).reversed()
 							var localeId = "en-us"
@@ -238,6 +254,14 @@ class LorittaWebsite(val loritta: Loritta) {
 
 							redirect("/${locale.path}${call.request.uri}")
 						}
+					}
+
+					// This is a workaround, I don't really like it
+					// See: https://youtrack.jetbrains.com/issue/KTOR-372
+					if (route.path.endsWith("/")) {
+						route.registerWithPath(this, route.path.removeSuffix("/")) { route.onRequest(call) }
+					} else if (!route.path.endsWith("/")) {
+						route.registerWithPath(this, route.path + "/") { route.onRequest(call) }
 					}
 
 					route.register(this)
