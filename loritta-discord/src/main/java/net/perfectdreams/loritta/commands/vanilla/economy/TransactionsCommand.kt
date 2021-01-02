@@ -7,7 +7,6 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
@@ -89,7 +88,6 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 	}
 
 	suspend fun sendTransactionEmbed(context: DiscordCommandContext, locale: BaseLocale, item: Long?, currentMessage: Message?) {
-
 		val user = context.user(0)?.handle ?: context.user
 
 		var page = item
@@ -184,7 +182,7 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 					val name = ("${receivedByUser?.name}#${receivedByUser?.discriminator} ($receivedByUserId)")
 
 					if (receivedSonhos) {
-						this.append(locale["commands.economy.transactions.receveidMoneySonhosOnCoinFlipBet", transaction[SonhosTransaction.quantity], "`$name`"])
+						this.append(locale["commands.economy.transactions.receivedMoneySonhosOnCoinFlipBet", transaction[SonhosTransaction.quantity], "`$name`"])
 					} else {
 						this.append(locale["commands.economy.transactions.sentMoneySonhosOnCoinFlipBet", transaction[SonhosTransaction.quantity], "`$name`"])
 					}		
