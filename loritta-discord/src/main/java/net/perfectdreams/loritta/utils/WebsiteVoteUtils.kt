@@ -14,6 +14,10 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update
 
 object WebsiteVoteUtils {
+	companion object {
+		const val SONHOS_AMOUNT = 1200L
+	}
+	
 	/**
 	 * Adds a new vote (made by the [userId] on the [websiteSource]) to the database
 	 *
@@ -34,14 +38,14 @@ object WebsiteVoteUtils {
 		loritta.newSuspendedTransaction {
 			Profiles.update({ Profiles.id eq userId }) {
 				with(SqlExpressionBuilder) {
-					it.update(money, money + 1200L)
+					it.update(money, money + SONHOS_AMOUNT)
 				}
 			}
 		}
 		
 		loritta.newSuspendedTransaction {
 			PaymentUtils.addToTransactionLogNested(
-				1200L,
+				SONHOS_AMOUNT,
 				SonhosPaymentReason.DISCORD_BOTS,
 				receivedBy = userId
 			)
@@ -69,7 +73,7 @@ object WebsiteVoteUtils {
 								.setColor(Constants.LORITTA_AQUA)
 								.setThumbnail("https://loritta.website/assets/img/fanarts/Loritta_Presents_-_Gabizinha.png")
 								.setTitle("Obrigada por votar, e aqui está um presentinho para você... \uD83D\uDC9D")
-								.setDescription("Obrigada por votar em mim, cada voto me ajuda a crescer! ${Emotes.LORI_SMILE}\n\nVocê agora tem $voteCount votos e, como recompensa, você ganhou **1200 sonhos e uma key premium que você pode ativar nas configurações do seu servidor no meu painel**! ${Emotes.LORI_OWO}\n\nOstente as novidades, você merece por ter me ajudado tanto! ${Emotes.LORI_TEMMIE}\n\nContinue votando e sendo uma pessoa incrível! ${Emotes.LORI_HAPPY}")
+								.setDescription("Obrigada por votar em mim, cada voto me ajuda a crescer! ${Emotes.LORI_SMILE}\n\nVocê agora tem $voteCount votos e, como recompensa, você ganhou **$SONHOS_AMOUNT sonhos e uma key premium que você pode ativar nas configurações do seu servidor no meu painel**! ${Emotes.LORI_OWO}\n\nOstente as novidades, você merece por ter me ajudado tanto! ${Emotes.LORI_TEMMIE}\n\nContinue votando e sendo uma pessoa incrível! ${Emotes.LORI_HAPPY}")
 								.build()
 				)?.await()
 			} catch (e: Exception) {}
@@ -80,7 +84,7 @@ object WebsiteVoteUtils {
 								.setColor(Constants.LORITTA_AQUA)
 								.setThumbnail("https://loritta.website/assets/img/fanarts/l7.png")
 								.setTitle("Obrigada por votar! ⭐")
-								.setDescription("Obrigada por votar em mim, cada voto me ajuda a crescer! ${Emotes.LORI_SMILE}\n\nVocê agora tem $voteCount votos e, como recompensa, você ganhou **1200 sonhos**! ${Emotes.LORI_OWO}\n\nAh, e sabia que a cada 60 votos você ganha um prêmio especial? ${Emotes.LORI_WOW}\n\nContinue votando e sendo uma pessoa incrível! ${Emotes.LORI_HAPPY}")
+								.setDescription("Obrigada por votar em mim, cada voto me ajuda a crescer! ${Emotes.LORI_SMILE}\n\nVocê agora tem $voteCount votos e, como recompensa, você ganhou **$SONHOS_AMOUNT sonhos**! ${Emotes.LORI_OWO}\n\nAh, e sabia que a cada 60 votos você ganha um prêmio especial? ${Emotes.LORI_WOW}\n\nContinue votando e sendo uma pessoa incrível! ${Emotes.LORI_HAPPY}")
 								.build()
 				)?.await()
 			} catch (e: Exception) {}
