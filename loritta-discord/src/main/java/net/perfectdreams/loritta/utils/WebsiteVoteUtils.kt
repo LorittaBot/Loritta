@@ -38,7 +38,15 @@ object WebsiteVoteUtils {
 				}
 			}
 		}
-
+		
+		loritta.newSuspendedTransaction {
+			PaymentUtils.addToTransactionLogNested(
+				1200L,
+				SonhosPaymentReason.DISCORD_BOTS,
+				receivedBy = userId
+			)
+		}
+		
 		val voteCount = loritta.newSuspendedTransaction {
 			BotVotes.select { BotVotes.userId eq userId }.count()
 		}
