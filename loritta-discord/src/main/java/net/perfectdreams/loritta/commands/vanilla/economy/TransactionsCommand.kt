@@ -182,10 +182,12 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 					val name = ("${receivedByUser?.name}#${receivedByUser?.discriminator} ($receivedByUserId)")
 
 					if (receivedSonhos) {
-						this.append(locale["commands.economy.transactions.receivedMoneySonhosOnCoinFlipBet", transaction[SonhosTransaction.quantity], "`$name`"])
+						this.append(locale["$LOCALE_PREFIX.receivedMoneySonhosOnCoinFlipBet", transaction[SonhosTransaction.quantity], "`$name`"])
 					} else {
-						this.append(locale["commands.economy.transactions.sentMoneySonhosOnCoinFlipBet", transaction[SonhosTransaction.quantity], "`$name`"])
+						this.append(locale["$LOCALE_PREFIX.sentMoneySonhosOnCoinFlipBet", transaction[SonhosTransaction.quantity], "`$name`"])
 					}		
+				} else if (transaction[SonhosTransaction.reason] == SonhosPaymentReason.DISCORD_BOTS) { 
+					this.append(locale["$LOCALE_PREFIX.receivedMoneySonhosOnDiscordBotList", transaction[SonhosTransaction.quantity]])
 				} else {
 					val type = transaction[SonhosTransaction.reason].name
 							.toLowerCase()
