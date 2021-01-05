@@ -121,7 +121,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	var sponsors: List<Sponsor> = listOf()
 	val cachedRetrievedArtists = CacheBuilder.newBuilder().expireAfterWrite(7, TimeUnit.DAYS)
 			.build<Long, Optional<CachedUserInfo>>()
-	val tweetTracker = TweetTracker(this)
 	var bucketedController: BucketedController? = null
 	val rateLimitChecker = RateLimitChecker(this)
 
@@ -240,11 +239,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 
 		logger.info { "Iniciando bom dia & cia..." }
 		bomDiaECia = BomDiaECia()
-
-		if (loritta.isMaster && config.twitter.enableTweetStream) { // Apenas o cluster principal deve criar a stream, para evitar que tenha várias streams logando ao mesmo tempo (e tomando rate limit)
-			logger.info { "Iniciando streams de tweets..." }
-			tweetTracker.updateStreams()
-		}
 
 		if (loritta.isMaster) {
 			logger.info { "Carregando raffle..." }
