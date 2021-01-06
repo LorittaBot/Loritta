@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 
-class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji"), CommandCategory.DISCORD) {
+class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji", "createemoji", "criaremoji"), CommandCategory.DISCORD) {
 	override fun getUsage(locale: BaseLocale): CommandArguments {
 		return arguments {
 			argument(ArgumentType.TEXT) {
