@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.await
 import mu.KotlinLogging
@@ -83,7 +84,7 @@ object GiveawayManager {
         else
             builder.setEmbed(
                     EmbedBuilder().apply {
-                        setTitle("\uD83C\uDF81 $reason")
+                        setTitle("\uD83C\uDF81 ${reason.substringIfNeeded(0 until 200)}")
                         setDescription("$description\n\nUse ${getReactionMention(reaction)} para entrar!")
                         // addField("⏰ Tempo restante", message, true)
                         setColor(Constants.DISCORD_BLURPLE)
