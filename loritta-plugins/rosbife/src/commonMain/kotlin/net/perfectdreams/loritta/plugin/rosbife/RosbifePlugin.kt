@@ -4,6 +4,7 @@ import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.plugin.LorittaPlugin
 import net.perfectdreams.loritta.plugin.rosbife.commands.ArtCommand
 import net.perfectdreams.loritta.plugin.rosbife.commands.AtaCommand
+import net.perfectdreams.loritta.plugin.rosbife.commands.AttackOnHeartCommand
 import net.perfectdreams.loritta.plugin.rosbife.commands.BobBurningPaperCommand
 import net.perfectdreams.loritta.plugin.rosbife.commands.BolsoDrakeCommand
 import net.perfectdreams.loritta.plugin.rosbife.commands.BolsoFrameCommand
@@ -61,7 +62,8 @@ class RosbifePlugin(name: String, loritta: LorittaBot) : LorittaPlugin(name, lor
 				PetPetCommand(this),
 				EdnaldoTvCommand(this),
 				EdnaldoBandeiraCommand(this),
-				RipTvCommand(this)
+				RipTvCommand(this),
+				AttackOnHeartCommand(this)
 		)
 		platformSpecificOnEnable()
 	}
