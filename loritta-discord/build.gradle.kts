@@ -62,7 +62,6 @@ dependencies {
 
     api("org.jetbrains.kotlinx:kotlinx-html-jvm:0.6.12")
     api("org.twitter4j:twitter4j-core:[4.0,)")
-    api("org.twitter4j:twitter4j-stream:[4.0,)")
     api("com.github.ben-manes.caffeine:caffeine:2.8.6")
 
     // Discord
