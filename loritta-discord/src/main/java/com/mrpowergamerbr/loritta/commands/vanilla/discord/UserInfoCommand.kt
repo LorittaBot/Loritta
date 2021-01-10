@@ -101,7 +101,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 				}
 			}
 
-			if (context.message.channel.idLong == 358774895850815488L) {
+			if (context.message.channel.idLong == 358774895850815488L || context.message.channel.idLong == 547119872568459284L) {
 				var sharedServersFieldTitle = context.locale["commands.discord.userinfo.sharedServers"]
 				var servers: String?
 
