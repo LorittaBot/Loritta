@@ -15,6 +15,8 @@ import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
 import com.mrpowergamerbr.loritta.tables.DonationConfigs
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.DateUtils
+import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -213,6 +215,9 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		val bannedState = userProfile.getBannedState()
 
 		if (contextUser != null && bannedState != null) {
+			val bannedAt = bannedState[BannedUsers.bannedAt]
+			val bannedAtDiff = DateUtils.formatDateDiff(bannedAt, locale)
+			
 			context.reply(
 					LorittaReply(
 							"${contextUser.asMention} está **banido**",
@@ -221,6 +226,10 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 					LorittaReply(
 							"**Motivo:** `${bannedState[BannedUsers.reason]}`",
 							"✍"
+					),
+					LorittaReply(
+						"**Data do Banimento:** `${bannedAt.humanize(locale)} ($bannedAtDiff)`",
+						"⏰"
 					)
 			)
 			return
