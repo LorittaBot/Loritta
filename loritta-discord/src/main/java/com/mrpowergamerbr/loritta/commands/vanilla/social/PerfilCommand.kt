@@ -106,12 +106,16 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			val isGitHubContributorJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "505144985591480333") }
 			val isPocketDreamsStaffJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(Constants.SPARKLYPOWER_GUILD_ID, "332650495522897920") }
 			val hasLoriStickerArt = loritta.fanArtArtists.any { it.id == user.id }
+			val isLoriBodyguardJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "351473717194522647") }
+			val isLoriSupportJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "399301696892829706") }
 
 			val hasNotifyMeRole = hasNotifyMeRoleJob.await()
 			val isLorittaPartner = isLorittaPartnerJob.await()
 			val isTranslator = isTranslatorJob.await()
 			val isGitHubContributor = isGitHubContributorJob.await()
 			val isPocketDreamsStaff = isPocketDreamsStaffJob.await()
+			val isLoriBodyguard = isLoriBodyguardJob.await()
+			val isLoriSupport = isLoriSupportJob.await()
 
 			val badges = mutableListOf<BufferedImage>()
 
@@ -123,9 +127,9 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 							}
 			)
 
-			if (user.lorittaSupervisor) badges += ImageIO.read(File(Loritta.ASSETS + "supervisor.png"))
+			if (isLoriBodyguard) badges += ImageIO.read(File(Loritta.ASSETS + "supervisor.png"))
 			if (isPocketDreamsStaff) badges += ImageIO.read(File(Loritta.ASSETS + "pocketdreams_staff.png"))
-			if (user.support) badges += ImageIO.read(File(Loritta.ASSETS + "support.png"))
+			if (isLoriSupport) badges += ImageIO.read(File(Loritta.ASSETS + "support.png"))
 			if (hasLoriStickerArt) badges += ImageIO.read(File(Loritta.ASSETS + "sticker_badge.png"))
 
 			val money = loritta.getActiveMoneyFromDonationsAsync(user.idLong)
