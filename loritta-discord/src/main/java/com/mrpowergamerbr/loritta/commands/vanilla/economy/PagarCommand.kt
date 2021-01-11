@@ -94,10 +94,20 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 				return
 			}
 
-			if (user == null || context.userHandle == user) {
+			if (user == null) {
 				context.reply(
 						LorittaReply(
 								locale["commands.userDoesNotExist", context.rawArgs[0].stripCodeMarks()],
+								Constants.ERROR
+						)
+				)
+				return
+			}
+
+			if (context.userHandle == user) {
+				context.reply(
+						LorittaReply(
+								locale["commands.userSameMention", context.rawArgs[0].stripCodeMarks()],
 								Constants.ERROR
 						)
 				)
