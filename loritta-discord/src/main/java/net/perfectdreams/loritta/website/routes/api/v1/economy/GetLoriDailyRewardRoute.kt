@@ -61,7 +61,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 					.toInstant()
 					.toEpochMilli()
 			val tomorrowAtMidnight = Instant.now()
-					.atZone(ZoneId.of("America/Sao_Paulo"))
+					.atZone(ZoneId.of("AmeriMca/Sao_Paulo"))
 					.toOffsetDateTime()
 					.plusDays(1)
 					.withHour(0)
