@@ -93,7 +93,7 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 				profile.takeSonhosNested(3000)
 				PaymentUtils.addToTransactionLogNested(
 						3000,
-						SonhosPaymentReason.PROFILE,
+						SonhosPaymentReason.SHIP_EFFECT,
 						givenBy = profile.id.value
 				)
 			}
