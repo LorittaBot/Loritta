@@ -27,7 +27,7 @@ import net.perfectdreams.loritta.plugin.rosbife.commands.PepeDreamCommand
 import net.perfectdreams.loritta.plugin.rosbife.commands.PetPetCommand
 import net.perfectdreams.loritta.plugin.rosbife.commands.QuadroCommand
 import net.perfectdreams.loritta.plugin.rosbife.commands.RipTvCommand
-import net.perfectdreams.loritta.plugin.rosbife.commands.RomeroBrittoCommands
+import net.perfectdreams.loritta.plugin.rosbife.commands.RomeroBrittoCommand
 import net.perfectdreams.loritta.plugin.rosbife.commands.SAMCommand
 import net.perfectdreams.loritta.plugin.rosbife.commands.StudiopolisTvCommand
 import net.perfectdreams.loritta.plugin.rosbife.commands.SustoCommand
@@ -54,7 +54,7 @@ class RosbifePlugin(name: String, loritta: LorittaBot) : LorittaPlugin(name, lor
 				PassingPaperCommand(this),
 				PepeDreamCommand(this),
 				QuadroCommand(this),
-				RomeroBrittoCommands(this),
+				RomeroBrittoCommand(this),
 				SAMCommand(this),
 				StudiopolisTvCommand(this),
 				SustoCommand(this),

@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.plugin.rosbife.commands
 import net.perfectdreams.loritta.plugin.rosbife.RosbifePlugin
 import net.perfectdreams.loritta.plugin.rosbife.commands.base.GabrielaImageServerCommandBase
 
-class RomeroBrittoCommands(m: RosbifePlugin) : GabrielaImageServerCommandBase(
+class RomeroBrittoCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("romerobritto", "pintura", "painting"),
 		1,
