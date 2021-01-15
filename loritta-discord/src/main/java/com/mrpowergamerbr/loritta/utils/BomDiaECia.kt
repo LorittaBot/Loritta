@@ -7,7 +7,6 @@ import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.extensions.queueAfterWithMessagePerSecondTarget
 import com.mrpowergamerbr.loritta.utils.extensions.stripLinks
 import com.mrpowergamerbr.loritta.utils.locale.Gender
-import com.mrpowergamerbr.loritta.utils.locale.PersonalPronoun
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
