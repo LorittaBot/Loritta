@@ -259,9 +259,9 @@ class LorittaWebsite(val loritta: Loritta) {
 					// This is a workaround, I don't really like it
 					// See: https://youtrack.jetbrains.com/issue/KTOR-372
 					if (route.path.endsWith("/")) {
-						route.registerWithPath(this, route.path.removeSuffix("/")) { route.onRequest(call) }
+						route.registerWithPath(this, route.path.removeSuffix("/"))
 					} else if (!route.path.endsWith("/")) {
-						route.registerWithPath(this, route.path + "/") { route.onRequest(call) }
+						route.registerWithPath(this, route.path + "/")
 					}
 
 					route.register(this)
