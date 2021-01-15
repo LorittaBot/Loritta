@@ -6,6 +6,8 @@ import com.mrpowergamerbr.loritta.threads.BomDiaECiaThread
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.extensions.queueAfterWithMessagePerSecondTarget
 import com.mrpowergamerbr.loritta.utils.extensions.stripLinks
+import com.mrpowergamerbr.loritta.utils.locale.Gender
+import com.mrpowergamerbr.loritta.utils.locale.PersonalPronoun
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -222,7 +224,20 @@ class BomDiaECia {
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			delay(30000)
 			if (triedToCall.isNotEmpty()) {
-				channel.sendMessage("<:yudi:446394608256024597> **|** Sabia que o ${user.asMention} foi o primeiro de **${triedToCall.size} usuários** a conseguir ligar primeiro no Bom Dia & Cia? ${Emotes.LORI_OWO}").queue { message ->
+
+				val pronoun = when (loritta.getOrCreateLorittaProfile(user.idLong).settings.gender) {
+					Gender.MALE -> {
+						"o"
+					}
+					Gender.FEMALE -> {
+						"a"
+					}
+					else -> {
+						null
+					}
+				}
+
+				channel.sendMessage("<:yudi:446394608256024597> **|** Sabia que ${user.asMention} foi ${pronoun ?: ""} primeir${pronoun ?: "o"} de **${triedToCall.size} usuários** a conseguir ligar no Bom Dia & Cia? ${Emotes.LORI_OWO}").queue { message ->
 					if (message.guild.selfMember.hasPermission(Permission.MESSAGE_ADD_REACTION)) {
 						message.onReactionAddByAuthor(user.idLong) {
 							if (it.reactionEmote.isEmote("⁉")) {
