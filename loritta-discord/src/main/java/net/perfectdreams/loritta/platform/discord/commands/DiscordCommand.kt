@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandArguments
@@ -17,11 +18,14 @@ class DiscordCommand(
 		labels: List<String>,
 		commandName: String,
 		category: CommandCategory,
-		description: ((BaseLocale) -> String),
+		descriptionKey: LocaleKeyData = MISSING_DESCRIPTION_KEY,
+		description: ((BaseLocale) -> (String)) = {
+			it.get(descriptionKey)
+		},
 		usage: CommandArguments,
 		examples: ((BaseLocale) -> List<String>)?,
 		executor: suspend CommandContext.() -> Unit
-) : Command<CommandContext>(lorittaDiscord, labels, commandName, category, description, usage, examples, executor) {
+) : Command<CommandContext>(lorittaDiscord, labels, commandName, category, descriptionKey, description, usage, examples, executor) {
 	var userRequiredPermissions = listOf<Permission>()
 	var botRequiredPermissions = listOf<Permission>()
 	var userRequiredLorittaPermissions = listOf<LorittaPermission>()

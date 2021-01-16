@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
@@ -39,9 +40,9 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 			return cooldown > loritta.config.loritta.commands.imageCooldown
 		}
 
-	open fun getDescription(locale: BaseLocale): String {
-		return "Insira descrição do comando aqui!"
-	}
+	open fun getDescriptionKey() = Command.MISSING_DESCRIPTION_KEY
+
+	open fun getDescription(locale: BaseLocale) = locale.get(getDescriptionKey())
 
 	open fun getUsage(): CommandArguments {
 		return arguments {}

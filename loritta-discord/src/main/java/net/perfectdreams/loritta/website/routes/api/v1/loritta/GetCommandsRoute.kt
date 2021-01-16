@@ -20,7 +20,7 @@ class GetCommandsRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/loritta
 					it.label,
 					it.aliases,
 					it.category,
-					it.getDescription(locale),
+					it.getDescriptionKey(),
 					it.getUsage()
 			)
 		} + com.mrpowergamerbr.loritta.utils.loritta.commandMap.commands.filter { !it.hideInHelp }.map {
@@ -29,7 +29,7 @@ class GetCommandsRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/loritta
 					it.labels.first(),
 					it.labels.drop(1).toList(),
 					it.category,
-					it.description.invoke(locale),
+					it.descriptionKey,
 					it.usage
 			)
 		}
