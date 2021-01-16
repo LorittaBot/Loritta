@@ -5,8 +5,8 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.serializable.CommandInfo
-import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
+import net.perfectdreams.sequins.ktor.BaseRoute
 
 class GetCommandsRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/loritta/commands/{localeId}") {
 	override suspend fun onRequest(call: ApplicationCall) {
@@ -21,7 +21,7 @@ class GetCommandsRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/loritta
 					it.aliases,
 					it.category,
 					it.getDescription(locale),
-					it.getUsage(locale).build(locale)
+					it.getUsage(locale)
 			)
 		} + com.mrpowergamerbr.loritta.utils.loritta.commandMap.commands.filter { !it.hideInHelp }.map {
 			CommandInfo(
@@ -30,7 +30,7 @@ class GetCommandsRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/loritta
 					it.labels.drop(1).toList(),
 					it.category,
 					it.description.invoke(locale),
-					it.usage.build(locale)
+					it.usage
 			)
 		}
 

@@ -1,7 +1,9 @@
 package net.perfectdreams.loritta.api.commands
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class CommandArguments(val arguments: List<CommandArgument>) {
 	fun build(locale: BaseLocale): String {
 		val builder = StringBuilder()
@@ -13,6 +15,7 @@ data class CommandArguments(val arguments: List<CommandArgument>) {
 	}
 }
 
+@Serializable
 data class CommandArgument(
 		val type: ArgumentType,
 		val optional: Boolean,
@@ -38,6 +41,7 @@ data class CommandArgument(
 	}
 }
 
+@Serializable
 enum class ArgumentType {
 	TEXT,
 	NUMBER,
