@@ -25,12 +25,13 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 		return locale["$LOCALE_PREFIX.description"]
 	}
 
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(): CommandArguments {
 		return arguments {
 			argument(ArgumentType.NUMBER) {
 				optional = true
 				defaultValue = "6"
-				explanation = locale["$LOCALE_PREFIX.howMuchSides"]
+				// TODO: Fix
+				// explanation = locale["$LOCALE_PREFIX.howMuchSides"]
 			}
 		}
 	}

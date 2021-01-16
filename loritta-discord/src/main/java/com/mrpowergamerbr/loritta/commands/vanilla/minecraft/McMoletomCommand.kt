@@ -20,9 +20,7 @@ class McMoletomCommand : AbstractCommand("mcmoletom", listOf("mcsweater"), Comma
 		return locale["commands.minecraft.mcsweater.description"]
 	}
 
-	override fun getUsage(): String {
-		return "nickname"
-	}
+	// TODO: Fix Usage
 
 	override fun getExamples(): List<String> {
 		return listOf("Monerk")

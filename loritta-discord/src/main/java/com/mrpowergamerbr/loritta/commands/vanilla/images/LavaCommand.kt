@@ -14,7 +14,6 @@ import java.awt.Font
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
 import java.io.File
-import javax.imageio.ImageIO
 
 class LavaCommand : AbstractCommand("lava", category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -25,9 +24,7 @@ class LavaCommand : AbstractCommand("lava", category = CommandCategory.IMAGES) {
 		return listOf("@Loritta bots indecentes")
 	}
 
-	override fun getUsage(): String {
-		return "<imagem>"
-	}
+	// TODO: Fix Usage
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

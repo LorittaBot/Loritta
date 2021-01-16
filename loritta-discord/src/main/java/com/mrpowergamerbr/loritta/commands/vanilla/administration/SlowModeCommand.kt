@@ -15,7 +15,7 @@ class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), Command
 		return locale["commands.moderation.slowmode.description"]
 	}
 
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(): CommandArguments {
 		return arguments {
 			argument(ArgumentType.NUMBER) {
 				optional = false

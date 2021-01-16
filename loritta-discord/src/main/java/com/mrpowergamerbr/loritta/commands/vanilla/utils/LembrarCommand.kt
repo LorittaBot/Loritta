@@ -21,9 +21,8 @@ import java.util.*
 class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "lembrar", "lembrete", "reminder"), CommandCategory.UTILS) {
 	override fun getBotPermissions() = listOf(Permission.MESSAGE_MANAGE)
 
-	override fun getUsage(): String {
-		return "tempo mensagem"
-	}
+	// TODO: Fix Usage
+
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["${LOCALE_PREFIX}.description"]
 	}

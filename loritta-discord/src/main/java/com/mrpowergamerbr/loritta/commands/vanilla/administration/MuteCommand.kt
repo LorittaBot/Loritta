@@ -35,7 +35,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 		return locale["commands.moderation.mute.description"]
 	}
 
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(): CommandArguments {
 		return arguments {
 			argument(ArgumentType.USER) {
 				optional = false

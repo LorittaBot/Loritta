@@ -18,9 +18,7 @@ class SwingCommand : AbstractCommand("swing", category = CommandCategory.IMAGES)
 		return listOf("@Loritta @SparklyBot")
 	}
 
-	override fun getUsage(): String {
-		return "<imagem>"
-	}
+	// TODO: Fix Usage
 
 	override fun needsToUploadFiles() = true
 

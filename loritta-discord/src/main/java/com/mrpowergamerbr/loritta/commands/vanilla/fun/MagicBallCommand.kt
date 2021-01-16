@@ -15,7 +15,7 @@ class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball
 		return locale["commands.entertainment.vieirinha.description"]
 	}
 
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(): CommandArguments {
 		return arguments {
 			argument(ArgumentType.TEXT) {
 				optional = false

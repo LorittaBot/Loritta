@@ -17,9 +17,7 @@ class DemonCommand : AbstractCommand("demon", listOf("demônio", "demonio", "dem
 		return listOf("@Loritta @SparklyBot")
 	}
 
-	override fun getUsage(): String {
-		return "<imagem>"
-	}
+	// TODO: Fix Usage
 
 	override fun needsToUploadFiles() = true
 

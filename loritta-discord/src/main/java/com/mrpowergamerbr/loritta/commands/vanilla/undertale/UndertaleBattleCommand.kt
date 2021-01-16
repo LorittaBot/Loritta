@@ -24,9 +24,7 @@ class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebatt
         return Arrays.asList("Asriel Chara, are you there?")
     }
 
-    override fun getUsage(): String {
-        return "monstro mensagem"
-    }
+    // TODO: Fix Usage
 
     override suspend fun run(context: CommandContext,locale: BaseLocale) {
         if (context.args.size >= 2) {

@@ -20,9 +20,7 @@ class PokedexCommand : AbstractCommand("pokedex", listOf("pokédex"), CommandCat
         return Arrays.asList("Pikachu")
     }
 
-    override fun getUsage(): String {
-        return "pokémon"
-    }
+	// TODO: Fix Usage
 
     override suspend fun run(context: CommandContext,locale: BaseLocale) {
         if (context.args.size == 1) {

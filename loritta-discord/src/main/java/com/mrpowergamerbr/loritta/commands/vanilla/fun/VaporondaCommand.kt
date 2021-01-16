@@ -13,9 +13,7 @@ class VaporondaCommand : AbstractCommand("vaporonda", listOf("vaporwave"), categ
 		return locale["commands.fun.vaporwave.description"]
 	}
 
-	override fun getUsage(): String {
-		return "<mensagem>"
-	}
+	// TODO: Fix Usage
 
 	override fun getExamples(): List<String> {
 		return listOf("Windows 95")

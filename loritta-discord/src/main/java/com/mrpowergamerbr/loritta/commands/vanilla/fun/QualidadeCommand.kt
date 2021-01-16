@@ -12,9 +12,7 @@ class QualidadeCommand : AbstractCommand("qualidade", category = CommandCategory
 		return locale["commands.fun.quality.description"]
 	}
 
-	override fun getUsage(): String {
-		return "<mensagem>"
-	}
+	// TODO: Fix Usage
 
 	override fun getExamples(): List<String> {
 		return listOf("qualidade & sincronia")

@@ -1,12 +1,20 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.array
+import com.github.salomonbrys.kotson.int
+import com.github.salomonbrys.kotson.nullObj
+import com.github.salomonbrys.kotson.nullString
+import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.encodeToUrl
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
@@ -17,9 +25,7 @@ class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCatego
 		return locale["commands.discord.inviteinfo.description"]
 	}
 
-	override fun getUsage(): String {
-		return "ID do invite"
-	}
+	// TODO: Fix Usage
 
 	override fun getExamples(): List<String> {
 		return Arrays.asList("V7Kbh4z", "https://discord.gg/ZWt5mKB", "https://discord.gg/JYN6g2s", "https://discord.gg/A7mnkJJ")

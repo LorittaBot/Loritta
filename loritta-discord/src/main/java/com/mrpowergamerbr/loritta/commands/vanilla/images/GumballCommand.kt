@@ -17,9 +17,7 @@ class GumballCommand : AbstractCommand("gumball", category = CommandCategory.IMA
 		return listOf("@Loritta")
 	}
 
-	override fun getUsage(): String {
-		return "<imagem>"
-	}
+	// TODO: Fix Usage
 
 	override fun needsToUploadFiles() = true
 

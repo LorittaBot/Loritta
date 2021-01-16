@@ -43,12 +43,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 		return "Insira descrição do comando aqui!"
 	}
 
-	@Deprecated("Please use getUsage(locale)")
-	open fun getUsage(): String? {
-		return null
-	}
-
-	open fun getUsage(locale: BaseLocale): CommandArguments {
+	open fun getUsage(): CommandArguments {
 		return arguments {}
 	}
 
@@ -138,7 +133,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 				.setFooter("${user.name + "#" + user.discriminator} • ${this.category.getLocalizedName(locale)}", user.effectiveAvatarUrl)
 				.setTimestamp(Instant.now())
 
-		val commandArguments = this.getUsage(locale)
+		val commandArguments = this.getUsage()
 		val description = buildString {
 			this.append(commandDescription)
 			this.append('\n')

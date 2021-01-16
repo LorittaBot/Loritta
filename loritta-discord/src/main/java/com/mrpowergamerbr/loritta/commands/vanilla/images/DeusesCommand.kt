@@ -27,9 +27,7 @@ class DeusesCommand : AbstractCommand("deuses", category = CommandCategory.IMAGE
 		return listOf("Quando você é nível 4 e vê pessoas de nível 100 jogando")
 	}
 
-	override fun getUsage(): String {
-		return "<texto>"
-	}
+	// TODO: Fix Usage
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

@@ -9,7 +9,6 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.image.BufferedImage
 import java.io.File
-import javax.imageio.ImageIO
 
 class DeusCommand : AbstractCommand("god", listOf("deus"), CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -20,9 +19,7 @@ class DeusCommand : AbstractCommand("god", listOf("deus"), CommandCategory.IMAGE
 		return listOf("@Loritta")
 	}
 
-	override fun getUsage(): String {
-		return "<imagem>"
-	}
+	// TODO: Fix Usage
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

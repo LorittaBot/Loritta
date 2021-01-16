@@ -23,9 +23,7 @@ class TriggeredCommand : AbstractCommand("triggered", category = CommandCategory
 		return listOf("@Loritta")
 	}
 
-	override fun getUsage(): String {
-		return "<imagem>"
-	}
+	// TODO: Fix Usage
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

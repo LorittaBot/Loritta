@@ -11,7 +11,6 @@ import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Font
 import java.io.File
-import javax.imageio.ImageIO
 
 class LaranjoCommand : AbstractCommand("laranjo", category = CommandCategory.IMAGES) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -22,9 +21,7 @@ class LaranjoCommand : AbstractCommand("laranjo", category = CommandCategory.IMA
 		return listOf("ei ademin bane o cara ai pfv")
 	}
 
-	override fun getUsage(): String {
-		return "<texto>"
-	}
+	// TODO: Fix Usage
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

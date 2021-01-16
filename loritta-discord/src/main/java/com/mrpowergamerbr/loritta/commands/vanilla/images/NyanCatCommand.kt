@@ -30,9 +30,7 @@ class NyanCatCommand : AbstractCommand("nyan", category = CommandCategory.IMAGES
 		return locale["commands.images.nyancat.description"]
 	}
 
-	override fun getUsage(): String {
-		return "cat"
-	}
+	// TODO: Fix Usage
 
 	override fun getExamples(): List<String> {
 		return listOf("", "cat", "caaaaaaat", "caaaaaaaaaaaaat", "dog")

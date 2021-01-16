@@ -36,9 +36,7 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 		return listOf("@Loritta @SparklyBot")
 	}
 
-	override fun getUsage(): String {
-		return "<usuário 1> <usuário 2>"
-	}
+	// TODO: Fix Usage
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

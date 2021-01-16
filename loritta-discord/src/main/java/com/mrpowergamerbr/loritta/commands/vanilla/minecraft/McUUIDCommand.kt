@@ -16,9 +16,7 @@ class McUUIDCommand : AbstractCommand("mcuuid", category = CommandCategory.MINEC
         return locale["commands.minecraft.mcuuid.description"]
     }
 
-    override fun getUsage(): String {
-        return "nickname"
-    }
+    // TODO: Fix Usage
 
     override fun getExamples(): List<String> {
         return Arrays.asList("Monerk")

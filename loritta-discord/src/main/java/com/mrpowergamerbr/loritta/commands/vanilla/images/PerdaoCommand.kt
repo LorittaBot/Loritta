@@ -22,9 +22,7 @@ class PerdaoCommand : AbstractCommand("perdao", listOf("perdão"), CommandCatego
 		return listOf("@Loritta")
 	}
 
-	override fun getUsage(): String {
-		return "<imagem>"
-	}
+	// TODO: Fix Usage
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

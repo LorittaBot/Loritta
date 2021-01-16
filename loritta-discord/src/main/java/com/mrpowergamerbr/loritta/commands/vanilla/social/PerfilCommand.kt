@@ -197,7 +197,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		return true
 	}
 
-	override fun getUsage(locale: BaseLocale) = arguments {
+	override fun getUsage() = arguments {
 		argument(ArgumentType.USER) {
 			optional = true
 		}

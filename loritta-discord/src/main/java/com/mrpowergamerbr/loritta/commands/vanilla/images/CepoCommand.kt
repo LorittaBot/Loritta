@@ -17,9 +17,7 @@ class CepoCommand : AbstractCommand("cepo", category = CommandCategory.IMAGES) {
 		return listOf("@Loritta")
 	}
 
-	override fun getUsage(): String {
-		return "<imagem>"
-	}
+	// TODO: Fix Usage
 
 	override fun needsToUploadFiles() = true
 

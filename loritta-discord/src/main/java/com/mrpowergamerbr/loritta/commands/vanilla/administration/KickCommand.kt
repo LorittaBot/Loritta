@@ -25,7 +25,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 		return locale["commands.moderation.kick.description"]
 	}
 
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(): CommandArguments {
 		return arguments {
 			argument(ArgumentType.USER) {
 				optional = false

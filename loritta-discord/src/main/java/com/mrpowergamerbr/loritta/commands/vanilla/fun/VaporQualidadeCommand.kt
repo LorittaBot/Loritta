@@ -13,9 +13,7 @@ class VaporQualidadeCommand : AbstractCommand("vaporqualidade", category = Comma
 		return locale["commands.fun.vaporquality.description"]
 	}
 
-	override fun getUsage(): String {
-		return "<mensagem>"
-	}
+	// TODO: Fix Usage
 
 	override fun getExamples(): List<String> {
 		return listOf("kk eae men, o sam é brabo")

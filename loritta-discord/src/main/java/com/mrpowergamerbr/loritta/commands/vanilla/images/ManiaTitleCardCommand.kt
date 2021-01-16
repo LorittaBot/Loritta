@@ -20,9 +20,7 @@ class ManiaTitleCardCommand : AbstractCommand("maniatitlecard", category = Comma
 		return listOf("@Loritta")
 	}
 
-	override fun getUsage(): String {
-		return "<texto>"
-	}
+	// TODO: Fix Usage
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

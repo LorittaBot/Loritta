@@ -13,9 +13,7 @@ class RoleIdCommand : AbstractCommand("roleid", listOf("cargoid", "iddocargo"), 
 		return locale["commands.moderation.roleId.description"]
 	}
 
-	override fun getUsage(): String {
-		return "CargoMencionado"
-	}
+	// TODO: Fix getUsage
 
 	override fun getExamples(): List<String> {
 		return Arrays.asList("Moderadores")

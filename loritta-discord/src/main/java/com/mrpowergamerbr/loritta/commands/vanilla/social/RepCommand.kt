@@ -28,7 +28,7 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 		return false
 	}
 
-	override fun getUsage(locale: BaseLocale) = arguments {
+	override fun getUsage() = arguments {
 		argument(ArgumentType.USER) {}
 	}
 

@@ -27,9 +27,7 @@ class GangueCommand : AbstractCommand("gang", listOf("gangue"), CommandCategory.
 		return listOf("@Loritta @MrPowerGamerBR @Best Player @Giovanna_GGold @Nirewen")
 	}
 
-	override fun getUsage(): String {
-		return "<usuário 1> <usuário 2> <usuário 3> <usuário 4> <usuário 5>"
-	}
+	// TODO: Fix Usage
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

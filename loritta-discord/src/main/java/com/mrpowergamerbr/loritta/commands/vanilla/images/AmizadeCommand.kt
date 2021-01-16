@@ -32,9 +32,7 @@ class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), CommandC
 		return listOf("@Tatsumaki @Loritta")
 	}
 
-	override fun getUsage(): String {
-		return "<usuário 1> <usuário 2>"
-	}
+	// TODO: Fix Usage
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

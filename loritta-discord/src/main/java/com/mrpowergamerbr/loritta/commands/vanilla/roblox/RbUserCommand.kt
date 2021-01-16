@@ -23,9 +23,7 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 		return locale["commands.roblox.rbuser.robloxId"]
 	}
 
-	override fun getUsage(): String {
-		return "nickname"
-	}
+	// TODO: Fix Usage
 
 	override fun getExamples(): List<String> {
 		return listOf("cazum8", "lol738236")

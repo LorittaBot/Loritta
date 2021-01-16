@@ -11,9 +11,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.Color
 
 class MorseCommand : AbstractCommand("morse", category = CommandCategory.UTILS) {
-	override fun getUsage(): String {
-		return "código morse ou texto"
-	}
+	// TODO: Fix Usage
 
 	override fun getExamples(): List<String> {
 		return listOf("Loritta")

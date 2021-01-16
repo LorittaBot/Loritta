@@ -22,7 +22,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 		return locale["commands.moderation.ban.description"]
 	}
 
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(): CommandArguments {
 		return arguments {
 			argument(ArgumentType.USER) {
 				optional = false

@@ -3,9 +3,9 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 import com.google.common.math.BigIntegerMath
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 
 
@@ -14,9 +14,7 @@ class AnagramaCommand : AbstractCommand("anagram", listOf("anagrama"), CommandCa
 		private const val LOCALE_PREFIX = "commands.utils.anagram"
 	}
 
-	override fun getUsage(): String {
-		return "palavra"
-	}
+	// TODO: Fix Usage
 
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["$LOCALE_PREFIX.description"]

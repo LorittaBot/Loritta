@@ -14,9 +14,7 @@ import java.awt.Color
 import java.net.URLEncoder
 
 class TempoCommand : AbstractCommand("weather", listOf("tempo", "previsão", "previsao"), CommandCategory.UTILS) {
-	override fun getUsage(): String {
-		return "cidade"
-	}
+	// TODO: Fix Usage
 
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["commands.utils.weather.description"]

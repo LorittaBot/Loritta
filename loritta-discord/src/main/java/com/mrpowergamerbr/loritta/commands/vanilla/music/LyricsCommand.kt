@@ -25,9 +25,7 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 		return locale["commands.music.lyrics.description"]
 	}
 
-	override fun getUsage(): String {
-		return "artista - nome da música"
-	}
+	// TODO: Fix Usage
 
 	override fun getExamples(): List<String> {
 		return listOf(

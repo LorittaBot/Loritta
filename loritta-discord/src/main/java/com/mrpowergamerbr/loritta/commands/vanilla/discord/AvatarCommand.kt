@@ -25,7 +25,7 @@ class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCO
 		return locale["commands.discord.avatar.description"]
 	}
 
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(): CommandArguments {
 		return arguments {
 			argument(ArgumentType.USER) {
 				optional = false

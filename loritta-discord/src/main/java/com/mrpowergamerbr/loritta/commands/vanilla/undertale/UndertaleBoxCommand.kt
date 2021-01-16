@@ -17,7 +17,6 @@ import java.awt.Image
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
-import javax.imageio.ImageIO
 
 class UndertaleBoxCommand : AbstractCommand("utbox", listOf("undertalebox"), CommandCategory.UNDERTALE) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -28,9 +27,7 @@ class UndertaleBoxCommand : AbstractCommand("utbox", listOf("undertalebox"), Com
 		return listOf("@Loritta Legendary being made of every SOUL in the underground.")
 	}
 
-	override fun getUsage(): String {
-		return "usuário (caso queira) mensagem"
-	}
+	// TODO: Fix Usage
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

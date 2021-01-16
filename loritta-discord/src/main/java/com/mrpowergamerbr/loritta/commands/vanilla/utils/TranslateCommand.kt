@@ -2,20 +2,18 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.translate.GoogleTranslateUtils
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class TranslateCommand : AbstractCommand("traduzir", listOf("translate"), CommandCategory.UTILS) {
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["commands.utils.translate.description"]
 	}
 
-	override fun getUsage(): String {
-		return "língua texto"
-	}
+	// TODO: Fix Usage
 
 	override fun getExamples(): List<String> {
 		return listOf("pt Hello World!")

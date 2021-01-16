@@ -9,15 +9,11 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 
 class SobreMimCommand : AbstractCommand("aboutme", listOf("sobremim"), CommandCategory.SOCIAL) {
-    override fun getUsage(): String {
-        return "<nova mensagem>"
-    }
-
     override fun getDescription(locale: BaseLocale): String {
         return locale["commands.social.aboutme.description"]
     }
 
-    override fun getUsage(locale: BaseLocale) = arguments {
+    override fun getUsage() = arguments {
         argument(ArgumentType.TEXT) {}
     }
 

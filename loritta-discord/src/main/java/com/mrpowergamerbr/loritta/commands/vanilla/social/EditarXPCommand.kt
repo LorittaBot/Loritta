@@ -19,15 +19,11 @@ class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category =
 		return false
 	}
 
-	override fun getUsage(): String {
-		return "usuário quantidade"
-	}
-
 	override fun getDiscordPermissions(): List<Permission> {
 		return listOf(Permission.MANAGE_SERVER)
 	}
 
-	override fun getUsage(locale: BaseLocale) = arguments {
+	override fun getUsage() = arguments {
 		argument(ArgumentType.USER) {}
 		argument(ArgumentType.NUMBER) {}
 	}

@@ -2,9 +2,13 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LorittaPermission
+import com.mrpowergamerbr.loritta.utils.MessageUtils
+import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.remove
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.TextChannel
@@ -17,9 +21,7 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN
 		return locale["commands.moderation.say.description"]
 	}
 
-	override fun getUsage(): String {
-		return "mensagem"
-	}
+	// TODO: Fix Usage
 
 	override fun getExamples(): List<String> {
 		return Arrays.asList("Eu sou fofa! :3")

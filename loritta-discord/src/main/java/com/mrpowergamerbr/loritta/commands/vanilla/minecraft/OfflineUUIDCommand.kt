@@ -12,9 +12,7 @@ class OfflineUUIDCommand : AbstractCommand("mcofflineuuid", listOf("offlineuuid"
         return locale["commands.minecraft.mcofflineuuid.description"]
     }
 
-    override fun getUsage(): String {
-        return "nickname"
-    }
+    // TODO: Fix Usage
 
     override fun getExamples(): List<String> {
         return Arrays.asList("Monerk")

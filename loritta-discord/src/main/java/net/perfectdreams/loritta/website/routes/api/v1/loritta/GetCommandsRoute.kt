@@ -21,7 +21,7 @@ class GetCommandsRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/loritta
 					it.aliases,
 					it.category,
 					it.getDescription(locale),
-					it.getUsage(locale)
+					it.getUsage()
 			)
 		} + com.mrpowergamerbr.loritta.utils.loritta.commandMap.commands.filter { !it.hideInHelp }.map {
 			CommandInfo(

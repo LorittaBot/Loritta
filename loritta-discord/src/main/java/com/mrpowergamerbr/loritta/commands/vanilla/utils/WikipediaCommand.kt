@@ -25,9 +25,7 @@ class WikipediaCommand : AbstractCommand("wikipedia", listOf("wiki"), CommandCat
 		return locale["commands.utils.wikipedia.description"]
 	}
 
-	override fun getUsage(): String {
-		return "[linguagem] conteúdo"
-	}
+	// TODO: Fix Usage
 
 	override fun getExamples(): List<String> {
 		return Arrays.asList("Minecraft", "[en] Shantae")

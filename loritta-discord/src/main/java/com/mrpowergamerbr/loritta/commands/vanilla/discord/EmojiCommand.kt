@@ -20,9 +20,7 @@ class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD
 		return locale["commands.discord.emoji.description"]
 	}
 
-	override fun getUsage(): String {
-		return "emoji"
-	}
+	// TODO: Fix Usage
 
 	override fun getExamples(): List<String> {
 		return listOf("😏")

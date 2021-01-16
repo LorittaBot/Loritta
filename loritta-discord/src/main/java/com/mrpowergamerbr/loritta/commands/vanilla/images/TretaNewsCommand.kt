@@ -14,9 +14,7 @@ class TretaNewsCommand : AbstractCommand("tretanews", category = CommandCategory
 		return locale["commands.images.tretanews.description"]
 	}
 
-	override fun getUsage(): String {
-		return "[usuário1] [usuário2]"
-	}
+	// TODO: Fix Usage
 
 	override fun getExamples(): List<String> {
 		return Arrays.asList("", "@Loritta @MrPowerGamerBR")

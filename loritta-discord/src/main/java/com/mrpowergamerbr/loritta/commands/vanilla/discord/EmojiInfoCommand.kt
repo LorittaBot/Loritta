@@ -19,7 +19,7 @@ class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory
 		return locale["commands.discord.emojiInfo.description"]
 	}
 
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(): CommandArguments {
 		return arguments {
 			argument(ArgumentType.EMOTE) {}
 		}

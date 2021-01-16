@@ -36,9 +36,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 		return locale["commands.economy.pay.description"]
 	}
 
-	override fun getUsage(): String {
-		return "usuário quantia"
-	}
+	// TODO: Fix Usage
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.rawArgs.size >= 2) {

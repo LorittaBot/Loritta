@@ -19,9 +19,7 @@ class RipVidaCommand : AbstractCommand("riplife", listOf("ripvida"), CommandCate
 		return listOf("@Loritta")
 	}
 
-	override fun getUsage(): String {
-		return "<imagem>"
-	}
+	// TODO: Fix Usage
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

@@ -26,7 +26,7 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 		return locale["commands.moderation.unwarn.description"]
 	}
 
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(): CommandArguments {
 		return arguments {
 			argument(ArgumentType.USER) {
 				optional = false

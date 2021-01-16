@@ -14,9 +14,7 @@ class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calcul
 		const val LOCALE_PREFIX = "commands.utils.calc"
 	}
 
-	override fun getUsage(): String {
-		return "conta"
-	}
+	// TODO: Fix Usage
 
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["$LOCALE_PREFIX.description"]

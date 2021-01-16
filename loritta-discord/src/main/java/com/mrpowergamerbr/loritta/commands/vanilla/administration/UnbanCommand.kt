@@ -24,7 +24,7 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 		return locale["commands.moderation.unban.description"]
 	}
 
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(): CommandArguments {
 		return arguments {
 			argument(ArgumentType.USER) {
 				optional = false

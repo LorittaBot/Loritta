@@ -17,9 +17,7 @@ class DiscordiaCommand : AbstractCommand("mentions", listOf("discórdia", "disco
 		return listOf("@Loritta")
 	}
 
-	override fun getUsage(): String {
-		return "<imagem>"
-	}
+	// TODO: Fix Usage
 
 	override fun needsToUploadFiles() = true
 

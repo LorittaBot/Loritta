@@ -21,9 +21,7 @@ class McConquistaCommand : AbstractCommand("mcconquista", listOf("mcprogresso", 
 		return listOf("@Loritta Ser muito fofa!")
 	}
 
-	override fun getUsage(): String {
-		return "texto"
-	}
+	// TODO: Fix Usage
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

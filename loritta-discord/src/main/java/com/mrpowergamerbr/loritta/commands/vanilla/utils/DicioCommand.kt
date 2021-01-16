@@ -13,9 +13,7 @@ import java.net.URLEncoder
 
 
 class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "dicionario", "definir"), CommandCategory.UTILS) {
-	override fun getUsage(): String {
-		return "palavra"
-	}
+	// TODO: Fix Usage
 
 	override fun getDescription(locale: BaseLocale): String {
 		return locale["commands.utils.dicio.description"]

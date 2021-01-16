@@ -27,9 +27,7 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 		return locale["commands.minecraft.spigotmc.description"]
 	}
 
-	override fun getUsage(): String {
-		return "query"
-	}
+	// TODO: Fix Usage
 
 	override fun getExamples(): List<String> {
 		return Arrays.asList("EssentialsX", "FastAsyncWorldEdit", "ProtocolSupport", "ProtocolSupportStuff")
