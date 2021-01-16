@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.images
 
-import com.google.common.collect.ImmutableMap
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -18,11 +17,7 @@ class OjjoCommand : AbstractCommand("ojjo", category = CommandCategory.IMAGES) {
 		return Arrays.asList("@Loritta")
 	}
 
-	override fun getDetailedUsage(): Map<String, String> {
-		return ImmutableMap.builder<String, String>()
-				.put("imagem", "imagem")
-				.build()
-	}
+	// TODO: Fix Detailed Usage
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

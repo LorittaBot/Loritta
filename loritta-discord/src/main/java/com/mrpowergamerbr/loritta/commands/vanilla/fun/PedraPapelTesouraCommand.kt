@@ -14,13 +14,10 @@ class PedraPapelTesouraCommand : AbstractCommand("jankenpon", listOf("pedrapapel
 	override fun getDescriptionKey() = LocaleKeyData("commands.fun.rockpaperscissors.description")
 
 	// TODO: Fix Usage
+	// TODO: Fix Detailed Usage
 
 	override fun getExamples(): List<String> {
 		return listOf("pedra", "papel", "tesoura")
-	}
-
-	override fun getDetailedUsage(): Map<String, String> {
-		return mapOf("sua escolha" to "Pedra, Papel ou Tesoura")
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {

@@ -19,10 +19,7 @@ class TretaNewsCommand : AbstractCommand("tretanews", category = CommandCategory
 		return Arrays.asList("", "@Loritta @MrPowerGamerBR")
 	}
 
-	override fun getDetailedUsage(): Map<String, String> {
-		return mapOf("usuário1" to "*(Opcional)* \"YouTuber\" sortudo que apareceu no Treta News",
-				"usuário2" to "*(Opcional)* \"YouTuber\" sortudo que apareceu no Treta News")
-	}
+	// TODO: Fix Detailed Usage
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

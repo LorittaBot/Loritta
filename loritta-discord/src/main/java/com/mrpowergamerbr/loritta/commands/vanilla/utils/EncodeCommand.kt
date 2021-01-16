@@ -22,12 +22,7 @@ class EncodeCommand : AbstractCommand("encode", listOf("codificar", "encrypt", "
 			)
 	)
 
-	override fun getDetailedUsage(): Map<String, String> {
-		return mapOf(
-				"tipo de codificação" to "Tipo de codificação que será utilizado",
-				"texto" to "Texto que você quer que seja criptografado"
-		)
-	}
+	// TODO: Fix Detailed Usage
 
 	override fun getExtendedExamples(): Map<String, String> {
 		return mapOf(

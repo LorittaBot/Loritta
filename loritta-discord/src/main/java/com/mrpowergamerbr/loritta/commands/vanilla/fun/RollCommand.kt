@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.commands.vanilla.utils.CalculadoraCommand
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import com.mrpowergamerbr.loritta.utils.locale.LocaleStringData
 import com.mrpowergamerbr.loritta.utils.remove
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
@@ -28,9 +29,8 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 		return arguments {
 			argument(ArgumentType.NUMBER) {
 				optional = true
-				defaultValue = "6"
-				// TODO: Fix
-				// explanation = locale["$LOCALE_PREFIX.howMuchSides"]
+				defaultValue = LocaleStringData("6")
+				explanation = LocaleKeyData("$LOCALE_PREFIX.howMuchSides")
 			}
 		}
 	}

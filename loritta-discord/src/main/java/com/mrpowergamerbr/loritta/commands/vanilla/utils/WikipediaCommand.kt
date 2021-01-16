@@ -25,14 +25,10 @@ class WikipediaCommand : AbstractCommand("wikipedia", listOf("wiki"), CommandCat
 	override fun getDescriptionKey() = LocaleKeyData("commands.utils.wikipedia.description")
 
 	// TODO: Fix Usage
+	// TODO: Fix Detailed Usage
 
 	override fun getExamples(): List<String> {
 		return Arrays.asList("Minecraft", "[en] Shantae")
-	}
-
-	override fun getDetailedUsage(): Map<String, String> {
-		return mapOf("linguagem" to "*(Opcional)* Código de linguagem para procurar no Wikipédia, entre [], por padrão ele irá procurar na Wikipedia de Portugal [pt]",
-				"conteúdo" to "O que você deseja procurar no Wikipédia")
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {

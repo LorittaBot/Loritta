@@ -13,13 +13,10 @@ class VaporQualidadeCommand : AbstractCommand("vaporqualidade", category = Comma
 	override fun getDescriptionKey() = LocaleKeyData("commands.fun.vaporquality.description")
 
 	// TODO: Fix Usage
+	// TODO: Fix Detailed Usage
 
 	override fun getExamples(): List<String> {
 		return listOf("kk eae men, o sam é brabo")
-	}
-
-	override fun getDetailedUsage(): Map<String, String> {
-		return mapOf("mensagem" to "A mensagem que você deseja transformar")
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {

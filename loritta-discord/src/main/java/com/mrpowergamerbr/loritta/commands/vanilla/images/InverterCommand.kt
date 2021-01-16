@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.images
 
-import com.google.common.collect.ImmutableMap
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -17,11 +16,7 @@ class InverterCommand : AbstractCommand("invert", listOf("inverter"), category =
 		return Arrays.asList("http://i.imgur.com/KbHXmKO.png", "@Loritta", "\uD83D\uDC4C")
 	}
 
-	override fun getDetailedUsage(): Map<String, String> {
-		return ImmutableMap.builder<String, String>()
-				.put("mensagem", "Usuário sortudo")
-				.build()
-	}
+	// TODO: Fix Detailed Usage
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

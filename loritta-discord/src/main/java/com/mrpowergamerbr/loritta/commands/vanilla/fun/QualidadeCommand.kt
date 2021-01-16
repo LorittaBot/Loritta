@@ -12,13 +12,10 @@ class QualidadeCommand : AbstractCommand("qualidade", category = CommandCategory
 	override fun getDescriptionKey() = LocaleKeyData("commands.fun.quality.description")
 
 	// TODO: Fix Usage
+	// TODO: Fix Detailed Usage
 
 	override fun getExamples(): List<String> {
 		return listOf("qualidade & sincronia")
-	}
-
-	override fun getDetailedUsage(): Map<String, String> {
-		return mapOf("mensagem" to "A mensagem que você deseja transformar")
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {

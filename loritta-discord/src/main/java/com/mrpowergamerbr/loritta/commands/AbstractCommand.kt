@@ -48,10 +48,6 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 		return arguments {}
 	}
 
-	open fun getDetailedUsage(): Map<String, String> {
-		return mapOf()
-	}
-
 	@Deprecated("Please use getExamples(locale)")
 	open fun getExamples(): List<String> {
 		return getExamples(loritta.getLocaleById("default"))
