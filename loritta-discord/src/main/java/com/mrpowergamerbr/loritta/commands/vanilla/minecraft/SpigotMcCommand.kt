@@ -1,7 +1,13 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.minecraft
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.array
+import com.github.salomonbrys.kotson.double
+import com.github.salomonbrys.kotson.fromJson
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.int
+import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
@@ -9,6 +15,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
@@ -23,9 +30,7 @@ import java.util.*
 class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.MINECRAFT) {
 	override fun getBotPermissions() = listOf(Permission.MESSAGE_MANAGE)
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.minecraft.spigotmc.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.minecraft.spigotmc.description")
 
 	// TODO: Fix Usage
 

@@ -6,12 +6,11 @@ import com.mrpowergamerbr.loritta.gifs.TrumpGIF
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class TrumpCommand : AbstractCommand("trump", category = CommandCategory.IMAGES) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.images.trump.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.images.trump.description")
 
 	override fun getExamples(): List<String> {
 		return listOf("@Loritta")

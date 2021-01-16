@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Emote
@@ -16,9 +17,7 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 
 class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.discord.emoji.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.discord.emoji.description")
 
 	// TODO: Fix Usage
 

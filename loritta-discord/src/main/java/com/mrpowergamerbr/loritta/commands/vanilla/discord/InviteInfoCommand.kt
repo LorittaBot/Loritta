@@ -13,6 +13,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.encodeToUrl
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.api.EmbedBuilder
@@ -21,9 +22,7 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import java.util.*
 
 class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCategory.DISCORD) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.discord.inviteinfo.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.discord.inviteinfo.description")
 
 	// TODO: Fix Usage
 

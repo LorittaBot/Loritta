@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.CalculadoraCommand
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.remove
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
@@ -21,9 +22,7 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 		private const val LOCALE_PREFIX = "commands.fun.roll"
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["$LOCALE_PREFIX.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("$LOCALE_PREFIX.description")
 
 	override fun getUsage(): CommandArguments {
 		return arguments {

@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -16,9 +17,7 @@ import java.net.URLEncoder
 class TempoCommand : AbstractCommand("weather", listOf("tempo", "previsão", "previsao"), CommandCategory.UTILS) {
 	// TODO: Fix Usage
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.utils.weather.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.utils.weather.description")
 
 	override fun getExamples(): List<String> {
 		return listOf("São Paulo")

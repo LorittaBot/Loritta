@@ -3,15 +3,14 @@ package com.mrpowergamerbr.loritta.commands.vanilla.misc
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 
 class EscolherCommand : AbstractCommand("choose", listOf("escolher"), category = CommandCategory.MISC) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.misc.choose.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.misc.choose.description")
 
 	override fun getExamples(): List<String> {
 		return listOf("Sonic, Tails, Knuckles", "Asriel Dreemurr, Chara Dreemurr", "Shantae, Risky Boots")

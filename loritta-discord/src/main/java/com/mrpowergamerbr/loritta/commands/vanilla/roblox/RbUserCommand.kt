@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -19,9 +20,7 @@ import java.awt.image.BufferedImage
 import java.net.URLEncoder
 
 class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCategory.ROBLOX) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.roblox.rbuser.robloxId"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.roblox.rbuser.robloxId")
 
 	// TODO: Fix Usage
 

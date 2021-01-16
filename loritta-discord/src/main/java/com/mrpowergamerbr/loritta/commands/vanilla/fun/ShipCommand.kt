@@ -12,6 +12,7 @@ import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
@@ -28,9 +29,7 @@ import java.io.File
 import java.util.*
 
 class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.FUN) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.fun.ship.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.fun.ship.description")
 
 	override fun getExamples(): List<String> {
 		return listOf("@Loritta @SparklyBot")

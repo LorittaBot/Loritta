@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNull
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.api.Permission
@@ -21,9 +22,7 @@ import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.PunishmentAction
 
 class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), CommandCategory.ADMIN) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.moderation.kick.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.moderation.kick.description")
 
 	override fun getUsage(): CommandArguments {
 		return arguments {

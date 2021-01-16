@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -12,9 +13,7 @@ import java.awt.Color
 import java.util.*
 
 class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.fun.twitch.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.fun.twitch.description")
 
 	override fun getExamples(): List<String> {
 		return Arrays.asList("mrpowergamerbr", "velberan", "coredasantigas")

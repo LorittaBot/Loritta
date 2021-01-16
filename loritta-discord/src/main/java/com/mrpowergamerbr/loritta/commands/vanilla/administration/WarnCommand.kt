@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.utils.TimeUtils
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNull
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.Permission
@@ -28,9 +29,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 		private val LOCALE_PREFIX = "commands.moderation"
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.moderation.warn.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.moderation.warn.description")
 
 	override fun getUsage(): CommandArguments {
 		return arguments {

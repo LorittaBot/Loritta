@@ -21,7 +21,7 @@ fun analyze(files: Array<File>) {
                 println(file)
 
                 // Find the description if possible
-                val regex = Regex("return locale\\[\"([A-z0-9\\.]+)\\\"]")
+                val regex = Regex("return locale\\[\"([\$A-z0-9\\.]+)\\\"]")
                 val probablyTheLocale = (lines[indexOfLine + 1])
                 val probablyTheEndOfTheBlock = (lines[indexOfLine + 2])
 
@@ -30,7 +30,7 @@ fun analyze(files: Array<File>) {
 
                 val findMatch = regex.find(probablyTheLocale)
 
-                if (findMatch != null && probablyTheEndOfTheBlock == "\t}") {
+                if (findMatch != null && probablyTheEndOfTheBlock == "\t}" && probablyTheLocale.contains("$")) {
                     println(findMatch.groupValues)
 
                     // And, if it is found, try to rewrite the file with the new values

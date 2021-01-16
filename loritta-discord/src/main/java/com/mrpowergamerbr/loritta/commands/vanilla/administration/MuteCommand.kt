@@ -11,6 +11,7 @@ import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNull
 import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNullById
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
@@ -31,9 +32,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
 class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), CommandCategory.ADMIN) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.moderation.mute.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.moderation.mute.description")
 
 	override fun getUsage(): CommandArguments {
 		return arguments {

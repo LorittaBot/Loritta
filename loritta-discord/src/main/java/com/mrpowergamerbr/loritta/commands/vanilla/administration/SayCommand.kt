@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.remove
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
@@ -17,9 +18,7 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import java.util.*
 
 class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.moderation.say.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.moderation.say.description")
 
 	// TODO: Fix Usage
 

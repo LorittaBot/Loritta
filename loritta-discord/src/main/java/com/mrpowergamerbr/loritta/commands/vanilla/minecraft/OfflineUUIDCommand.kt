@@ -3,14 +3,13 @@ package com.mrpowergamerbr.loritta.commands.vanilla.minecraft
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.apache.commons.codec.Charsets
 import java.util.*
 
 class OfflineUUIDCommand : AbstractCommand("mcofflineuuid", listOf("offlineuuid"), CommandCategory.MINECRAFT) {
-    override fun getDescription(locale: BaseLocale): String {
-        return locale["commands.minecraft.mcofflineuuid.description"]
-    }
+    override fun getDescriptionKey() = LocaleKeyData("commands.minecraft.mcofflineuuid.description")
 
     // TODO: Fix Usage
 

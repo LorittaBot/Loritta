@@ -5,14 +5,13 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.minecraft.MCUtils
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class McHeadCommand : AbstractCommand("mchead", category = CommandCategory.MINECRAFT) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.minecraft.mchead.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.minecraft.mchead.description")
 
 	// TODO: Fix Usage
 

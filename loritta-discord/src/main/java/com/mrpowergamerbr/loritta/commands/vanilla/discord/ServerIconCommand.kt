@@ -5,12 +5,13 @@ import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 
 class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "iconeserver", "iconeguild", "iconedoserver", "iconedaguild", "íconedoserver", "iconedoservidor", "íconeguild", "íconedoserver", "íconedaguild", "íconedoservidor"), category = CommandCategory.DISCORD) {
@@ -18,9 +19,7 @@ class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "ico
 		private const val LOCALE_PREFIX = "commands.discord.servericon"
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.discord.servericon.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.discord.servericon.description")
 
 	override fun canUseInPrivateChannel(): Boolean {
 		return false

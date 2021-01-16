@@ -16,6 +16,7 @@ import com.mrpowergamerbr.loritta.tables.DonationConfigs
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import net.dv8tion.jda.api.entities.User
@@ -185,9 +186,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		}
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.social.profile.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.social.profile.description")
 
 	override fun canUseInPrivateChannel(): Boolean {
 		return false

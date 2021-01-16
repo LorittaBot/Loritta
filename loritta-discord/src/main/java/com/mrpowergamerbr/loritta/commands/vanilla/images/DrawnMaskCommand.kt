@@ -5,6 +5,8 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaImage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import com.mrpowergamerbr.loritta.utils.locale.LocaleStringData
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.geom.Path2D
@@ -17,9 +19,12 @@ class DrawnMaskCommand : AbstractCommand("drawnmasksign", listOf("drawnmaskplaca
 		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "drawn_mask_placa.png")) }
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.images.drawnmasksign.description", "Drawn Mask"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData(
+			"commands.discord.invite.info",
+			listOf(
+					LocaleStringData("Drawn Mask")
+			)
+	)
 
 	override fun getExamples(): List<String> {
 		return listOf("@Loritta")

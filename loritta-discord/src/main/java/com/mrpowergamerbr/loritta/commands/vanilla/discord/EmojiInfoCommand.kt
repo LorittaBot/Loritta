@@ -2,8 +2,13 @@ package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.DateUtils
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Emote
 import net.dv8tion.jda.api.entities.MessageEmbed
@@ -15,9 +20,7 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import kotlin.streams.toList
 
 class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory.DISCORD) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.discord.emojiInfo.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.discord.emojiInfo.description")
 
 	override fun getUsage(): CommandArguments {
 		return arguments {

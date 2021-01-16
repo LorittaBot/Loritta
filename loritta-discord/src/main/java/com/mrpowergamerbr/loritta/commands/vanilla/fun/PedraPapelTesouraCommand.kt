@@ -6,13 +6,12 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Jankenpon
 import com.mrpowergamerbr.loritta.utils.Jankenpon.JankenponStatus
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class PedraPapelTesouraCommand : AbstractCommand("jankenpon", listOf("pedrapapeltesoura", "ppt"), CommandCategory.FUN) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.fun.rockpaperscissors.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.fun.rockpaperscissors.description")
 
 	// TODO: Fix Usage
 

@@ -6,12 +6,11 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaImage
 import com.mrpowergamerbr.loritta.utils.SeamCarver
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class ContentAwareScaleCommand : AbstractCommand("contentawarescale", listOf("cas", "contentaware", "seamcarver"), category = CommandCategory.IMAGES) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.images.contentawarescale.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.images.contentawarescale.description")
 
 	override fun getExamples(): List<String> {
 		return listOf("@Loritta")

@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.jsoup.Jsoup
@@ -15,9 +16,7 @@ import java.net.URLEncoder
 class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "dicionario", "definir"), CommandCategory.UTILS) {
 	// TODO: Fix Usage
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.utils.dicio.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.utils.dicio.description")
 
 	override fun getExamples(): List<String> {
 		return listOf("sonho")

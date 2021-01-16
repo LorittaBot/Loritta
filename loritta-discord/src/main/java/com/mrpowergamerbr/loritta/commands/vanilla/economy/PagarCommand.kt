@@ -13,6 +13,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAdd
 import com.mrpowergamerbr.loritta.utils.removeAllFunctions
@@ -32,9 +33,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 		private val mutex = Mutex()
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.economy.pay.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.economy.pay.description")
 
 	// TODO: Fix Usage
 

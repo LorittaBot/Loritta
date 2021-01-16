@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
@@ -16,9 +17,7 @@ import java.io.File
 import java.util.*
 
 class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebattle"), CommandCategory.UNDERTALE) {
-    override fun getDescription(locale: BaseLocale): String {
-        return locale["commands.undertale.utbattle.description"]
-    }
+    override fun getDescriptionKey() = LocaleKeyData("commands.undertale.utbattle.description")
 
     override fun getExamples(): List<String> {
         return Arrays.asList("Asriel Chara, are you there?")

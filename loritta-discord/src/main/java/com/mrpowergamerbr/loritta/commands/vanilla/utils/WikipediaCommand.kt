@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
@@ -21,9 +22,7 @@ class WikipediaCommand : AbstractCommand("wikipedia", listOf("wiki"), CommandCat
 				"en", "fr", "de", "es", "ja", "ru", "it", "zh", "pt", "ar", "fa", "pl", "nl", "id", "uk", "he", "sv", "cs", "ko", "vi", "ca", "no", "fi", "hu", "tr", "ro", "el", "th", "hi", "bn", "az", "simple", "ceb", "sw", "kk", "da", "eo", "sr", "lt", "sk", "bg", "sl", "eu", "et", "hr", "ms", "arz", "ur", "ta", "te", "nn", "gl", "af", "bs", "be", "ml", "ka", "is", "sq", "uz", "la", "mk", "lv", "azb", "mr", "sh", "tl", "cy", "sco", "ku", "ckb", "ast", "ba", "be-tarask", "zh-yue", "als", "ga", "hy", "pa", "my", "kn", "mn", "war", "zh-min-nan", "vo", "min", "lmo", "ht", "lb", "br", "gu", "tg", "new", "bpy", "nds", "io", "pms", "su", "oc", "jv", "nap", "scn", "wa", "bar", "an", "ksh", "szl", "fy", "frr", "ia", "yi", "mg", "gd", "vec", "ce", "sa", "mai", "xmf", "sd", "wuu", "as", "mrj", "mhr", "km", "roa-tara", "am", "roa-rup", "map-bms", "bh", "mnw", "shn", "bcl", "co", "cv", "dv", "nds-nl", "fo", "hif", "fur", "gan", "glk", "gu", "hak", "ilo", "pam", "csb", "avk", "lij", "li", "gv", "mi", "mt", "nah", "ne", "nrm", "se", "nov", "qu", "os", "pi", "pag", "ps", "pdc", "rm", "bat-smg", "sc", "si", "tt", "tk", "hsb", "fiu-vro", "vls", "yo", "diq", "zh-classical", "frp", "lad", "kw", "haw", "ang", "ln", "ie", "wo", "crh", "nv", "jbo", "ay", "pcd", "zea", "eml", "ky", "ig", "or", "cbk-zam", "kg", "arc", "rmy", "ab", "gn", "so", "kab", "ug", "stq", "ha", "udm", "ext", "mzn", "pap", "cu", "sah", "tet", "sn", "lo", "pnb", "iu", "na", "got", "bo", "dsb", "chr", "cdo", "om", "sm", "ee", "av", "bm", "zu", "cr", "pih", "ss", "bi", "rw", "ch", "xh", "kl", "ik", "bug", "ts", "kv", "xal", "st", "tw", "bxr", "ak", "ny", "lbe", "za", "ks", "ff", "lg", "chy", "mwl", "lez", "bjn", "gom", "lrc", "tyv", "vep", "nso", "kbd", "ltg", "rue", "pfl", "gag", "koi", "ace", "olo", "kaa", "mdf", "myv", "ady", "tcy", "dty", "atj", "kbp", "din", "lfn", "gor", "inh", "sat", "hyw", "nqo", "ban", "szy", "gcr", "ary", "lld", "smn", "to", "tpi", "ty", "ti", "pnt", "ve", "dz", "tn", "tum", "fj", "ki", "sg", "rn", "krc", "srn", "jam", "awa", "nostalgia",
 		)
 	}
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.utils.wikipedia.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.utils.wikipedia.description")
 
 	// TODO: Fix Usage
 

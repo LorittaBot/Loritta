@@ -6,12 +6,11 @@ import com.mrpowergamerbr.loritta.gifs.GumballGIF
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class GumballCommand : AbstractCommand("gumball", category = CommandCategory.IMAGES) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.images.gumballliftup.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.images.gumballliftup.description")
 
 	override fun getExamples(): List<String> {
 		return listOf("@Loritta")

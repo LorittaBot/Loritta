@@ -8,13 +8,12 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.util.*
 
 class McUUIDCommand : AbstractCommand("mcuuid", category = CommandCategory.MINECRAFT) {
-    override fun getDescription(locale: BaseLocale): String {
-        return locale["commands.minecraft.mcuuid.description"]
-    }
+    override fun getDescriptionKey() = LocaleKeyData("commands.minecraft.mcuuid.description")
 
     // TODO: Fix Usage
 

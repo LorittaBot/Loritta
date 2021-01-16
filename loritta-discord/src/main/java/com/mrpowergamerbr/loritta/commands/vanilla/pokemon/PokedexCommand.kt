@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.encodeToUrl
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.jsoup.Jsoup
@@ -12,9 +13,7 @@ import java.awt.Color
 import java.util.*
 
 class PokedexCommand : AbstractCommand("pokedex", listOf("pokédex"), CommandCategory.POKEMON) {
-    override fun getDescription(locale: BaseLocale): String {
-        return locale["commands.pokemon.pokedex.description"]
-    }
+	override fun getDescriptionKey() = LocaleKeyData("commands.pokemon.pokedex.description")
 
     override fun getExamples(): List<String> {
         return Arrays.asList("Pikachu")

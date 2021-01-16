@@ -6,17 +6,15 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Font
 import java.io.File
-import javax.imageio.ImageIO
 
 class PrimeirasPalavrasCommand : AbstractCommand("firstwords", listOf("primeiraspalavras"), CommandCategory.IMAGES) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.images.firstwords.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.images.firstwords.description")
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

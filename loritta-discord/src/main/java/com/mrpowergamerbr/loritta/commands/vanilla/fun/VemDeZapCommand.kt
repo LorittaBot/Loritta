@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
@@ -14,9 +15,7 @@ import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.FUN) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.entertainment.vemDeZap.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.entertainment.vemDeZap.description")
 
 	override fun getExamples(locale: BaseLocale): List<String> {
 		return locale.getList("commands.entertainment.vemDeZap.examples")

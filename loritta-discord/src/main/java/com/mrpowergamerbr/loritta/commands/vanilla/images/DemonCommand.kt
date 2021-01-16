@@ -6,12 +6,11 @@ import com.mrpowergamerbr.loritta.gifs.DemonGIF
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class DemonCommand : AbstractCommand("demon", listOf("demônio", "demonio", "demónio"), category = CommandCategory.IMAGES) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.images.demon.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.images.demon.description")
 
 	override fun getExamples(): List<String> {
 		return listOf("@Loritta @SparklyBot")

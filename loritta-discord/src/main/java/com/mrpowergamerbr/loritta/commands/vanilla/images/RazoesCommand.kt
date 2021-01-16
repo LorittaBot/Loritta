@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaImage
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.ImageFormat
 import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
@@ -18,12 +19,9 @@ import java.awt.image.BufferedImage
 import java.awt.image.FilteredImageSource
 import java.awt.image.RGBImageFilter
 import java.io.File
-import javax.imageio.ImageIO
 
 class RazoesCommand : AbstractCommand("reasons", listOf("razões", "razoes"), CommandCategory.IMAGES) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.images.reasons.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.images.reasons.description")
 
 	override fun getExamples(): List<String> {
 		return listOf("@Loritta")

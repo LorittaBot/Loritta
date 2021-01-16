@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.apache.commons.lang3.StringUtils
 import java.awt.Color
@@ -26,9 +27,7 @@ class NyanCatCommand : AbstractCommand("nyan", category = CommandCategory.IMAGES
 		val DOG_EARS by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "dog_ears.png")) }
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.images.nyancat.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.images.nyancat.description")
 
 	// TODO: Fix Usage
 

@@ -4,13 +4,12 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class QualidadeCommand : AbstractCommand("qualidade", category = CommandCategory.FUN) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.fun.quality.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.fun.quality.description")
 
 	// TODO: Fix Usage
 

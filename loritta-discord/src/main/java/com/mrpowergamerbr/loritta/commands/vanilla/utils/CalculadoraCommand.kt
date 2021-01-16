@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
@@ -16,9 +17,7 @@ class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calcul
 
 	// TODO: Fix Usage
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["$LOCALE_PREFIX.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("$LOCALE_PREFIX.description")
 
 	override fun getExamples(): List<String> {
 		return listOf(

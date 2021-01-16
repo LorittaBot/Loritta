@@ -4,6 +4,7 @@ import com.google.common.math.BigIntegerMath
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
@@ -16,9 +17,7 @@ class AnagramaCommand : AbstractCommand("anagram", listOf("anagrama"), CommandCa
 
 	// TODO: Fix Usage
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["$LOCALE_PREFIX.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("$LOCALE_PREFIX.description")
 
 	override fun getExtendedExamples(): Map<String, String> {
 		return mapOf("Loritta" to "Cria um anagrama usando a palavra \"Loritta\"",

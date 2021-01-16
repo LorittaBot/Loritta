@@ -4,14 +4,13 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.translate.GoogleTranslateUtils
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class TranslateCommand : AbstractCommand("traduzir", listOf("translate"), CommandCategory.UTILS) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.utils.translate.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.utils.translate.description")
 
 	// TODO: Fix Usage
 

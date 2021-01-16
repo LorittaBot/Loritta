@@ -5,14 +5,13 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.TretaNewsGenerator
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import java.util.*
 
 class TretaNewsCommand : AbstractCommand("tretanews", category = CommandCategory.FUN) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.images.tretanews.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.images.tretanews.description")
 
 	// TODO: Fix Usage
 

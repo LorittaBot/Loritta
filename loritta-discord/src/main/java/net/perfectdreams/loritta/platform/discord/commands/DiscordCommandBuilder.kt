@@ -75,7 +75,10 @@ class DiscordCommandBuilder(
 				commandName = commandName,
 				category = category,
 				labels = labels,
-				description = descriptionCallback ?: { "???" },
+				descriptionKey = builderDescriptionKey,
+				description = descriptionCallback ?: {
+					it.get(builderDescriptionKey)
+				},
 				usage = usage,
 				examples = examplesCallback,
 				executor = executeCallback!!
