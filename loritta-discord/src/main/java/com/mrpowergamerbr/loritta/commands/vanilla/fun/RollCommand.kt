@@ -35,9 +35,7 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 		}
 	}
 
-	override fun getExamples(locale: BaseLocale): List<String> {
-		return listOf("", "12", "24", "2d20", "3d5", "4d10", "5..10", "5..10d10")
-	}
+	override fun getExamplesKey() = LocaleKeyData("commands.fun.roll.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var quantity = 1L

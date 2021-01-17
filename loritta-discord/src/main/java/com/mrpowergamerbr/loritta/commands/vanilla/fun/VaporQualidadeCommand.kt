@@ -11,13 +11,10 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class VaporQualidadeCommand : AbstractCommand("vaporqualidade", category = CommandCategory.FUN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.fun.vaporquality.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.fun.vaporquality.examples")
 
 	// TODO: Fix Usage
 	// TODO: Fix Detailed Usage
-
-	override fun getExamples(): List<String> {
-		return listOf("kk eae men, o sam é brabo")
-	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {

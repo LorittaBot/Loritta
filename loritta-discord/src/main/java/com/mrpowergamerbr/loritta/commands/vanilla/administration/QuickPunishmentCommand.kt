@@ -12,10 +12,6 @@ import net.perfectdreams.loritta.utils.Emotes
 class QuickPunishmentCommand : AbstractCommand("quickpunishment", category = CommandCategory.ADMIN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.moderation.quickpunishment.description")
 
-	override fun getExamples(): List<String> {
-		return listOf()
-	}
-
 	override fun canUseInPrivateChannel(): Boolean {
 		return false
 	}

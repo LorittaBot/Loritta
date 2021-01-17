@@ -12,13 +12,10 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class PedraPapelTesouraCommand : AbstractCommand("jankenpon", listOf("pedrapapeltesoura", "ppt"), CommandCategory.FUN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.fun.rockpaperscissors.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.fun.rockpaperscissors.examples")
 
 	// TODO: Fix Usage
 	// TODO: Fix Detailed Usage
-
-	override fun getExamples(): List<String> {
-		return listOf("pedra", "papel", "tesoura")
-	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {

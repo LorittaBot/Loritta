@@ -19,16 +19,12 @@ import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import java.util.*
 
 class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCategory.DISCORD) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.discord.inviteinfo.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.discord.inviteinfo.examples")
 
 	// TODO: Fix Usage
-
-	override fun getExamples(): List<String> {
-		return Arrays.asList("V7Kbh4z", "https://discord.gg/ZWt5mKB", "https://discord.gg/JYN6g2s", "https://discord.gg/A7mnkJJ")
-	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var inviteId = context.args.getOrNull(0)

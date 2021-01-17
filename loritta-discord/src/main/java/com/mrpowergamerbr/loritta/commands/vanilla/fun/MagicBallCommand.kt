@@ -22,9 +22,7 @@ class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball
 		}
 	}
 
-	override fun getExamples(locale: BaseLocale): List<String> {
-		return locale.getList("commands.entertainment.vieirinha.examples")
-	}
+	override fun getExamplesKey() = LocaleKeyData("commands.entertainment.vieirinha.examples")
 
 	override fun hasCommandFeedback(): Boolean {
 		return false

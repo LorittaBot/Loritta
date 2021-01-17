@@ -18,20 +18,7 @@ class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calcul
 	// TODO: Fix Usage
 
 	override fun getDescriptionKey() = LocaleKeyData("$LOCALE_PREFIX.description")
-
-	override fun getExamples(): List<String> {
-		return listOf(
-				"2 + 2",
-				"40 - 10",
-				"5 * 5",
-				"100 / 5",
-				"(sqrt(10) * 4) / 12",
-				"cos(0)",
-				"sin(90)",
-				"tan(45)",
-				"10 % 2"
-		)
-	}
+	override fun getExamplesKey() = LocaleKeyData("$LOCALE_PREFIX.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {

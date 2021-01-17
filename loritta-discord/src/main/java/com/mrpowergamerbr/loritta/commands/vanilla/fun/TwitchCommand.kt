@@ -10,14 +10,10 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import java.awt.Color
-import java.util.*
 
 class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.fun.twitch.description")
-
-	override fun getExamples(): List<String> {
-		return Arrays.asList("mrpowergamerbr", "velberan", "coredasantigas")
-	}
+	override fun getExamplesKey()  = LocaleKeyData("commands.fun.twitch.examples")
 
 	override fun canUseInPrivateChannel(): Boolean {
 		return false

@@ -16,10 +16,7 @@ class AvaliarWaifuCommand : AbstractCommand("ratewaifu", listOf("avaliarwaifu", 
 	}
 
 	override fun getDescriptionKey() = LocaleKeyData("$LOCALE_PREFIX.description")
-
-	override fun getExamples(): List<String> {
-		return listOf("Loritta")
-	}
+	override fun getExamplesKey() = LocaleKeyData("$LOCALE_PREFIX.examples")
 
 	// TODO: Fix Usage
 

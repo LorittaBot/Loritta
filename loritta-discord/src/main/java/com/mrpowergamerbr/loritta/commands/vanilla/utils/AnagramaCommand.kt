@@ -5,7 +5,9 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 
@@ -15,16 +17,14 @@ class AnagramaCommand : AbstractCommand("anagram", listOf("anagrama"), CommandCa
 		private const val LOCALE_PREFIX = "commands.utils.anagram"
 	}
 
-	// TODO: Fix Usage
-
-	override fun getDescriptionKey() = LocaleKeyData("$LOCALE_PREFIX.description")
-
-	override fun getExtendedExamples(): Map<String, String> {
-		return mapOf("Loritta" to "Cria um anagrama usando a palavra \"Loritta\"",
-				"kk eae men" to "Cria um anagrama usando a frase \"kk eae men\"")
+	override fun getUsage() = arguments {
+		argument(ArgumentType.TEXT) {}
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override fun getDescriptionKey() = LocaleKeyData("$LOCALE_PREFIX.description")
+	override fun getExamplesKey() = LocaleKeyData("$LOCALE_PREFIX.examples")
+
+	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val currentWord = context.args.joinToString(separator = " ")
 

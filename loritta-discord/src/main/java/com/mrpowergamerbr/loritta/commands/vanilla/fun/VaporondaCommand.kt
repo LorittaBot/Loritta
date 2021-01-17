@@ -11,13 +11,10 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class VaporondaCommand : AbstractCommand("vaporonda", listOf("vaporwave"), category = CommandCategory.FUN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.fun.vaporwave.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.fun.vaporwave.examples")
 
 	// TODO: Fix Usage
 	// TODO: Fix Detailed Usage
-
-	override fun getExamples(): List<String> {
-		return listOf("Windows 95")
-	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {

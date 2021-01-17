@@ -5,6 +5,8 @@ import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import com.mrpowergamerbr.loritta.utils.locale.LocaleStringData
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import mu.KotlinLogging
@@ -48,6 +50,8 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 		return arguments {}
 	}
 
+	open fun getExamplesKey(): LocaleKeyData? = null
+
 	@Deprecated("Please use getExamples(locale)")
 	open fun getExamples(): List<String> {
 		return getExamples(loritta.getLocaleById("default"))
@@ -55,10 +59,6 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 	open fun getExamples(locale: BaseLocale): List<String> {
 		return listOf()
-	}
-
-	open fun getExtendedExamples(): Map<String, String> {
-		return mapOf()
 	}
 
 	open fun hasCommandFeedback(): Boolean {
@@ -132,47 +132,94 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 		val commandArguments = this.getUsage()
 		val description = buildString {
+			// Builds the "How to Use" string
 			this.append(commandDescription)
 			this.append('\n')
 			this.append('\n')
-			this.append("${Emotes.LORI_SMILE} **${locale["commands.explain.howToUse"]}** ")
-			this.append('`')
+			this.append("${Emotes.LORI_SMILE} **${locale["commands.explain.howToUse"]}**")
+			this.append(" `")
 			this.append(serverConfig.commandPrefix)
 			this.append(label)
 			this.append('`')
-			this.append(' ')
-			for ((index, argument) in commandArguments.arguments.withIndex()) {
-				// <argumento> - Argumento obrigatório
-				// [argumento] - Argumento opcional
+
+			// Only add the arguments if the list is not empty (to avoid adding a empty "` `")
+			if (commandArguments.arguments.isNotEmpty()) {
 				this.append("**")
 				this.append('`')
-				argument.build(this, locale)
+				this.append(' ')
+				for ((index, argument) in commandArguments.arguments.withIndex()) {
+					argument.build(this, locale)
+
+					if (index != commandArguments.arguments.size - 1)
+						this.append(' ')
+				}
 				this.append('`')
 				this.append("**")
-				if (index != commandArguments.arguments.size - 1)
-					this.append(' ')
+
+				// If we have arguments with explanations, let's show them!
+				val argumentsWithExplanations = commandArguments.arguments.filter { it.explanation != null }
+
+				if (argumentsWithExplanations.isNotEmpty()) {
+					this.append('\n')
+					// Same thing again, but with a *twist*!
+					for ((index, argument) in argumentsWithExplanations.withIndex()) {
+						this.append("**")
+						this.append('`')
+						argument.build(this, locale)
+						this.append('`')
+						this.append("**")
+						this.append(' ')
+
+						when (val explanation = argument.explanation) {
+							is LocaleKeyData -> {
+								this.append(locale.get(explanation))
+							}
+							is LocaleStringData -> {
+								this.append(explanation.text)
+							}
+							else -> throw IllegalArgumentException("I don't know how to process a $argument!")
+						}
+
+						this.append('\n')
+					}
+				}
 			}
 		}
 
 		embed.setDescription(description)
-		// Criar uma lista de exemplos
+
+		// Create example list
+		val examplesKey = getExamplesKey()
 		val examples = ArrayList<String>()
-		for (example in this.getExamples()) { // Adicionar todos os exemplos simples
-			examples.add("`" + commandLabel + "`" + if (example.isEmpty()) "" else " **`$example`**")
-		}
-		if (this.getExamples(locale).isNotEmpty()) {
-			examples.clear()
-			for (example in this.getExamples(locale)) { // Adicionar todos os exemplos simples
-				examples.add("`" + commandLabel + "`" + if (example.isEmpty()) "" else " **`$example`**")
+
+		if (examplesKey != null) {
+			val examplesAsString = locale.getList(examplesKey)
+
+			for (example in examplesAsString) {
+				val split = example.split("|-|")
+						.map { it.trim() }
+
+				if (split.size == 2) {
+					// If the command has a extended description
+					// "12 |-| Gira um dado de 12 lados"
+					// A extended description can also contain "nothing", but contains a extended description
+					// "|-| Gira um dado de 6 lados"
+					val (commandExample, explanation) = split
+
+					examples.add("\uD83D\uDD39 **$explanation**")
+					examples.add("`" + commandLabel + "`" + (if (commandExample.isEmpty()) "" else "**` $commandExample`**"))
+				} else {
+					val commandExample = split[0]
+
+					examples.add("`" + commandLabel + "`" + if (commandExample.isEmpty()) "" else "**` $commandExample`**")
+				}
 			}
 		}
-		for ((key, value) in this.getExtendedExamples()) { // E agora vamos adicionar os exemplos mais complexos/extendidos
-			examples.add("`" + commandLabel + "`" + if (key.isEmpty()) "" else " `$key` - **$value**")
-		}
+
 		if (examples.isNotEmpty()) {
 			embed.addField(
 					"\uD83D\uDCD6 ${locale["commands.explain.examples"]}",
-					examples.joinToString("\n", transform = { "$it" }),
+					examples.joinToString("\n", transform = { it }),
 					false
 			)
 		}

@@ -10,13 +10,9 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class QualidadeCommand : AbstractCommand("qualidade", category = CommandCategory.FUN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.fun.quality.description")
-
+	override fun getExamplesKey() = LocaleKeyData("commands.fun.quality.examples")
 	// TODO: Fix Usage
 	// TODO: Fix Detailed Usage
-
-	override fun getExamples(): List<String> {
-		return listOf("qualidade & sincronia")
-	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {

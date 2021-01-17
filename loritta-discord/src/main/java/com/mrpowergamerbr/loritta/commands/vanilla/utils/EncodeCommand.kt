@@ -7,7 +7,9 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.locale.LocaleStringData
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
+import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import org.apache.commons.codec.digest.DigestUtils
 import java.util.*
@@ -22,15 +24,15 @@ class EncodeCommand : AbstractCommand("encode", listOf("codificar", "encrypt", "
 			)
 	)
 
-	// TODO: Fix Detailed Usage
+	override fun getExamplesKey() = LocaleKeyData("commands.utils.encode.examples")
 
-	override fun getExtendedExamples(): Map<String, String> {
-		return mapOf(
-				"sha256 Loritta é muito fofa!" to "Criptografa \"Loritta é muito fofa!\" em SHA256"
-		)
+	// TODO: Fix Detailed Usage
+	override fun getUsage() = arguments {
+		argument(ArgumentType.TEXT) {}
+		argument(ArgumentType.TEXT) {}
 	}
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		val args = context.rawArgs.toMutableList()
 		val encodeMode = context.rawArgs.getOrNull(0)?.toLowerCase()
 

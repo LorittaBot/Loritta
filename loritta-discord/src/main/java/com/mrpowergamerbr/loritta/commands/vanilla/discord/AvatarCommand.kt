@@ -27,14 +27,12 @@ class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCO
 	override fun getUsage(): CommandArguments {
 		return arguments {
 			argument(ArgumentType.USER) {
-				optional = false
+				optional = true
 			}
 		}
 	}
 
-	override fun getExamples(): List<String> {
-		return Arrays.asList("@Loritta")
-	}
+	override fun getExamplesKey() = LocaleKeyData("commands.discord.avatar.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var getAvatar = context.getUserAt(0)

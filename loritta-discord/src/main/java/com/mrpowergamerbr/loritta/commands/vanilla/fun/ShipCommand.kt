@@ -16,7 +16,9 @@ import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
+import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.ImageFormat
 import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
@@ -30,12 +32,14 @@ import java.util.*
 
 class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.FUN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.fun.ship.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.fun.ship.examples")
 
-	override fun getExamples(): List<String> {
-		return listOf("@Loritta @SparklyBot")
+	override fun getUsage() = arguments {
+		argument(ArgumentType.USER) {}
+		argument(ArgumentType.USER) {
+			optional = true
+		}
 	}
-
-	// TODO: Fix Usage
 
 	override fun needsToUploadFiles(): Boolean {
 		return true
