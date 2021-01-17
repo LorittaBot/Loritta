@@ -39,6 +39,7 @@ open class CommandBuilder<context : CommandContext>(
 	//
 	// And yes, this can't be "private" because then classes extending the builder can't access the description key
 	var builderDescriptionKey = Command.MISSING_DESCRIPTION_KEY
+	var builderExamplesKey: LocaleKeyData? = null
 
 	var descriptionCallback: ((BaseLocale) -> (String))? = null
 	var usageCallback: (CommandArgumentsBuilder.() -> Unit)? = null
@@ -86,16 +87,11 @@ open class CommandBuilder<context : CommandContext>(
 	 * @see BaseLocale
 	 * @see description
 	 */
-	fun localizedExamples(localeKey: String, vararg arguments: Any?) = examples {
-		examples.addAll(it.getList(localeKey, arguments))
-	}
+	fun localizedExamples(localeKey: String, vararg arguments: Any?)
+			= localizedExamples(LocaleKeyData(localeKey, arguments.map { LocaleStringData(it.toString()) }))
 
-	fun examples(callback: ExamplesWrapper.(BaseLocale) -> (Unit)) {
-		this.examplesCallback = {
-			val examplesWrapper = ExamplesWrapper()
-			callback.invoke(examplesWrapper, it)
-			examplesWrapper.examples
-		}
+	fun localizedExamples(localeKey: LocaleKeyData) {
+		builderExamplesKey = localeKey
 	}
 
 	fun executes(callback: suspend context.() -> (Unit)) {
@@ -117,7 +113,7 @@ open class CommandBuilder<context : CommandContext>(
 					it.get(builderDescriptionKey)
 				},
 				usage = usage,
-				examples = examplesCallback,
+				examplesKey = builderExamplesKey,
 				executor = executeCallback!!
 		).apply { build2().invoke(this) }
 	}

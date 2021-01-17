@@ -23,6 +23,13 @@ class BaseLocale(val id: String) {
 		)
 	}
 
+	fun getList(localeKeyData: LocaleKeyData): List<String> {
+		return getList(
+				localeKeyData.key,
+				*(localeKeyData.arguments?.toTypedArray() ?: arrayOf())
+		)
+	}
+
 	operator fun get(key: String, vararg arguments: Any?): String {
 		try {
 			return localeStringEntries[key]?.format(*arguments) ?: throw RuntimeException("Key $key doesn't exist in locale $id!")
