@@ -1,12 +1,21 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.array
+import com.github.salomonbrys.kotson.int
+import com.github.salomonbrys.kotson.nullObj
+import com.github.salomonbrys.kotson.nullString
+import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.encodeToUrl
+import com.mrpowergamerbr.loritta.utils.extensions.isValidUrl
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
@@ -30,9 +39,15 @@ class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCatego
 
 		if (inviteId != null) {
 			if (!inviteId.matches(Regex("[A-z0-9]+"))) {
-				inviteId = inviteId.replace("discord.gg/", "")
-						.replace("https://", "")
-						.replace("http://", "")
+				if (inviteId.isValidUrl()) {
+					// If it is a valid URL, try getting the last element of the URL
+					// https://discord.gg/loritta
+					// https://discord.com/invite/jjjM5tPwS9
+					inviteId = inviteId.substringAfterLast("/")
+				} else {
+					context.explain()
+					return
+				}
 			}
 
 			val inviteBody = HttpRequest.get("https://canary.discordapp.com/api/v6/invite/${inviteId.encodeToUrl()}?with_counts=true")
@@ -46,10 +61,10 @@ class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCatego
 			if (code.asJsonPrimitive.isNumber && code.int == 10006) {
 				// Invite não existe!
 				context.reply(
-                        LorittaReply(
-                                context.locale["commands.discord.inviteinfo.doesntExists", inviteId.stripCodeMarks()],
-                                Constants.ERROR
-                        )
+						LorittaReply(
+								context.locale["commands.discord.inviteinfo.doesntExists", inviteId.stripCodeMarks()],
+								Constants.ERROR
+						)
 				)
 			} else {
 				val guild = payload["guild"].obj
