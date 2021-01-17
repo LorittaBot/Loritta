@@ -46,6 +46,7 @@ object Emotes {
 	val FLOW_PODCAST: LorittaEmote by resettableLazy(lazyMgr) { getEmote("flow_podcast") }
 	val KOTLIN: LorittaEmote by resettableLazy(lazyMgr) { getEmote("kotlin") }
 	val JDA: LorittaEmote by resettableLazy(lazyMgr) { getEmote("jda") }
+	val ROBLOX_PREMIUM: LorittaEmote by resettableLazy(lazyMgr) { getEmote("roblox_premium") }
 
 	// DISCORD BADGES
 	val DISCORD_STAFF: LorittaEmote by resettableLazy(lazyMgr) { getEmote("discord_staff") }
