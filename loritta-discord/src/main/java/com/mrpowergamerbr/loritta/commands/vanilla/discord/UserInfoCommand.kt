@@ -4,14 +4,19 @@ import com.github.salomonbrys.kotson.int
 import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
+import com.mrpowergamerbr.loritta.utils.stripCodeMarks
+import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
@@ -52,7 +57,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 		showQuickGlanceInfo(null, context, user, member)
 	}
 
-	fun getEmbedBase(user: User, member: Member?): EmbedBuilder {
+	fun getEmbedBase(context: CommandContext, user: User, member: Member?): EmbedBuilder {
 		return EmbedBuilder().apply {
 			setThumbnail(user.effectiveAvatarUrl)
 			var nickname = user.name
@@ -70,7 +75,22 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 				else -> Emotes.WUMPUS_BASIC
 			}
 
-			setTitle("$ownerEmote$typeEmote${getBadges(user).joinToString("")} $nickname", null)
+			var title = "$ownerEmote$typeEmote${getBadges(user).joinToString("")} $nickname"
+			var addBadgesToField = false
+
+			// If the title contains more than the maximum length, move them to a field
+			// ID that has issues: 53905483156684800
+			if (title.length > MessageEmbed.TITLE_MAX_LENGTH) {
+				title = "$ownerEmote$typeEmote $nickname"
+				addBadgesToField = true
+			}
+
+			if (addBadgesToField) {
+				addField("\uD83D\uDD16 ${context.locale["commands.discord.userinfo.badges"]}", getBadges(user).joinToString(""), true)
+			}
+
+			setTitle(title)
+
 			setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
 
 			if (member != null) {
@@ -83,7 +103,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 	}
 
 	suspend fun showQuickGlanceInfo(message: Message?, context: CommandContext, user: User, member: Member?): Message {
-		val embed = getEmbedBase(user, member)
+		val embed = getEmbedBase(context, user, member)
 
 		embed.apply {
 			addField("\uD83D\uDD16 ${context.locale["commands.discord.userinfo.discordTag"]}", "`${user.name}#${user.discriminator}`", true)
@@ -133,7 +153,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 	}
 
 	suspend fun showExtendedInfo(message: Message?, context: CommandContext, user: User, member: Member?): Message {
-		val embed = getEmbedBase(user, member)
+		val embed = getEmbedBase(context, user, member)
 
 		embed.apply {
 			if (member != null) {
