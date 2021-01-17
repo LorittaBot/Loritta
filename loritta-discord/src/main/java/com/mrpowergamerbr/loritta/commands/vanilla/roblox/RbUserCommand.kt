@@ -6,17 +6,28 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
+import io.ktor.client.request.*
+import io.ktor.http.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.Emotes
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Element
 import java.awt.image.BufferedImage
 import java.net.URLEncoder
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 
 class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCategory.ROBLOX) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -36,23 +47,23 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 			val username = context.args.joinToString(separator = " ")
 
 			var userId: Long? = null
-			var name: String? = null
-			var blurb: String? = null
-			var isOnline: Boolean? = null
+			var isRobloxPremium = false
+			var favoriteGamesContainer: Element? = null
 
 			val altRobloxQuery = HttpRequest.get("https://www.roblox.com/users/profile?username=${URLEncoder.encode(username, "UTF-8")}")
 
-			altRobloxQuery.ok()
+			val pageStatusCode = altRobloxQuery.code()
 
-			if (altRobloxQuery.code() != 404) {
-				val jsoup = Jsoup.parse(altRobloxQuery.body())
+			if (pageStatusCode != 404) {
 				userId = altRobloxQuery.url().path.split("/")[2].toLong()
-				name = jsoup.getElementsByClass("header-title").text()
-				blurb = jsoup.getElementsByAttribute("data-statustext").attr("data-statustext")
-				isOnline = jsoup.getElementsByClass("avatar-status").isNotEmpty()
+				val document = Jsoup.parse(altRobloxQuery.body())
+				// If null, then the user doesn't have Premium (oof)
+				isRobloxPremium = document.selectFirst(".header-title .icon-premium-medium") != null
+				favoriteGamesContainer = document.getElementsByClass("favorite-games-container").firstOrNull()
 			}
 
-			if (userId == null || name == null || blurb == null || isOnline == null) {
+			// The favoriteGamesContainer *can* be null if the user doesn't has favorite games
+			if (userId == null) {
 				context.sendMessage(Constants.ERROR + " **|** " + locale["commands.roblox.rbuser.couldntFind", username] + " \uD83D\uDE22")
 				return
 			}
@@ -61,10 +72,11 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 				HttpRequest.get("https://www.roblox.com/search/users/avatar?isHeadshot=false&userIds=$userId")
 						.body()
 			}
-			val pageTask = GlobalScope.async(loritta.coroutineDispatcher) {
-				Jsoup.connect("https://www.roblox.com/users/$userId/profile")
-						.get()
-						.body()
+			val usersApiRequest = GlobalScope.async(loritta.coroutineDispatcher) {
+				loritta.http.get<String>("https://users.roblox.com/v1/users/$userId")
+			}
+			val robloxBadgesRequest = GlobalScope.async(loritta.coroutineDispatcher) {
+				loritta.http.get<String>("https://accountinformation.roblox.com/v1/users/$userId/roblox-badges")
 			}
 			val followingBodyTask = GlobalScope.async(loritta.coroutineDispatcher) {
 				HttpRequest.get("https://www.roblox.com/users/friends/list-json?currentPage=0&friendsType=Following&imgHeight=100&imgWidth=100&pageSize=18&userId=$userId")
@@ -81,26 +93,23 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 
 			var bufferedImage = BufferedImage(333, 220, BufferedImage.TYPE_INT_ARGB)
 
-			var x = 0
-			var y = 0
-
 			val collections = GlobalScope.async(loritta.coroutineDispatcher) {
+				var x = 0
+				val y = 0
+
 				val robloxCollectionsResponse = HttpRequest.get("https://www.roblox.com/users/profile/robloxcollections-json?userId=$userId")
 						.body()
 
 				val robloxCollections = JsonParser.parseString(robloxCollectionsResponse).obj
 
-
 				val entries = robloxCollections["CollectionsItems"].array.map {
-					if (x > 275) {
-						y += 55
-						x = 0
-					}
+					if (x > 275) // Break, the list is too big
+						return@async
 
 					val realX = x
 					val realY = y
 
-					val async = GlobalScope.async(loritta.coroutineDispatcher) {
+					val async = async(loritta.coroutineDispatcher) {
 						val thumbnailUrl = it["Thumbnail"]["Url"].string
 
 						val thumbnail = LorittaUtils.downloadImage(thumbnailUrl)?.getScaledInstance(55, 55, BufferedImage.SCALE_SMOOTH)
@@ -116,20 +125,48 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 				entries.awaitAll()
 			}
 
-			y += 55
-			x = 0
+			val robloxBadges = GlobalScope.async(loritta.coroutineDispatcher) {
+				var x = 0
+				val y = 55
+
+				val robloxBadgesResponse = robloxBadgesRequest.await()
+				val robloxBadges = Json.decodeFromString<List<RobloxBadge>>(robloxBadgesResponse)
+
+				val entries = robloxBadges.map {
+					if (x > 275) // Break, the list is too big
+						return@async
+
+					val realX = x
+					val realY = y
+
+					val async = GlobalScope.async(loritta.coroutineDispatcher) {
+						val thumbnailUrl = it.imageUrl
+
+						val thumbnail = LorittaUtils.downloadImage(thumbnailUrl)?.getScaledInstance(55, 55, BufferedImage.SCALE_SMOOTH)
+								?: return@async null
+						bufferedImage.graphics.drawImage(thumbnail, realX, realY, null)
+					}
+
+					x += 55
+
+					return@map async
+				}
+
+				entries.awaitAll()
+			}
 
 			val playerAssets = GlobalScope.async(loritta.coroutineDispatcher) {
+				var x = 0
+				val y = 110
+
 				val robloxCollectionsResponse = HttpRequest.get("https://www.roblox.com/users/profile/playerassets-json?assetTypeId=21&userId=$userId")
 						.body()
 
 				val robloxCollections = JsonParser.parseString(robloxCollectionsResponse).obj
 
 				val entries = robloxCollections["Assets"].array.map {
-					if (x > 275) {
-						y += 55
-						x = 0
-					}
+					if (x > 275) // Break, the list is too big
+						return@async
 
 					val realX = x
 					val realY = y
@@ -150,57 +187,26 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 				entries.awaitAll()
 			}
 
-			val page = pageTask.await()
-
-			y += 55
-			x = 0
-
-			val gameCards = GlobalScope.async(loritta.coroutineDispatcher) {
-				val gameCardsThumbnail = page.getElementsByClass("game-cards").first().getElementsByClass("game-card-thumb")
-
-				val entries = gameCardsThumbnail.mapNotNull { gameCard ->
-					if (x > 275) {
-						y += 55
-						x = 0
-					}
-
-					val thumbnailUrl = gameCard.attr("src")
-
-					if (thumbnailUrl != null) {
-						val realX = x
-						val realY = y
-
-						val async = GlobalScope.async(loritta.coroutineDispatcher) {
-							val thumbnail = LorittaUtils.downloadImage(thumbnailUrl)?.getScaledInstance(55, 55, BufferedImage.SCALE_SMOOTH)
-									?: return@async null
-
-							bufferedImage.graphics.drawImage(thumbnail, realX, realY, null)
-						}
-
-						x += 55
-
-						return@mapNotNull async
-					} else { return@mapNotNull null }
-				}
-
-				entries.awaitAll()
-			}
-
 			collections.await()
+			robloxBadges.await()
 			playerAssets.await()
-			gameCards.await()
 
-			bufferedImage = bufferedImage.getSubimage(0, 0, 333, y + 55)
+			val usersApiResponse = usersApiRequest.await()
+			val robloxUserResponse = Json.decodeFromString<RobloxUserResponse>(usersApiResponse)
+
+			bufferedImage = bufferedImage.getSubimage(0, 0, 333, 110 + 55)
 
 			val avatarResponse = JsonParser.parseString(avatarBodyTask.await()).obj
 
 			// {"PlayerAvatars":[{"Thumbnail":{"Final":true,"Url":"https://t0.rbxcdn.com/fff65b7dc56eefa902fe543b2665da42","RetryUrl":null,"UserId":37271405,"EndpointType":"Avatar"},"UserId":37271405},{"Thumbnail":{"Final":true,"Url":"https://t1.rbxcdn.com/2083a073d0cc644478d06d266c2cc4d6","RetryUrl":null,"UserId":315274565,"EndpointType":"Avatar"},"UserId":315274565}]}
 			val avatar = avatarResponse["PlayerAvatars"].array[0]["Thumbnail"]["Url"].string
 
-			val stats = page.getElementsByClass("profile-stat")
-
-			val joinDate = stats[0].getElementsByClass("text-lead")[0].text()
-			val placeVisits = stats[1].getElementsByClass("text-lead")[0].text()
+			// Convert the date to a Instant
+			// Roblox's dates are in ISO format: "2013-01-22T11:00:23.88Z"
+			val joinDateAsInstant = Instant.from(DateTimeFormatter.ISO_INSTANT.parse(robloxUserResponse.created))
+			val joinDateAsEpochMilli = joinDateAsInstant.toEpochMilli()
+			val joinDateDiff = DateUtils.formatDateDiff(joinDateAsEpochMilli, locale)
+			val joinDate = joinDateAsEpochMilli.humanize(locale)
 
 			// SEGUINDO
 			val followingResponse = JsonParser.parseString(followingBodyTask.await())
@@ -218,15 +224,38 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 			val totalFriends = friendsResponse["TotalFriends"].int
 
 			val embed = EmbedBuilder().apply {
-				setTitle("<:roblox_logo:412576693803286528>${if (isOnline) "<:online:313956277808005120>" else "<:offline:313956277237710868>"}$name")
-				if (blurb.isNotEmpty()) {
-					setDescription(blurb)
+				setTitle("<:roblox_logo:412576693803286528> ${if (isRobloxPremium) (Emotes.ROBLOX_PREMIUM.toString() + " ") else ""}${robloxUserResponse.name}")
+
+				if (robloxUserResponse.description.isNotBlank()) {
+					setDescription(robloxUserResponse.description)
 				}
 				setColor(Constants.ROBLOX_RED)
 				addField("\uD83D\uDCBB ${locale["commands.roblox.rbuser.robloxId"]}", userId.toString(), true)
-				addField("\uD83D\uDCC5 ${locale["commands.roblox.rbuser.joinDate"]}", joinDate, true)
-				addField("\uD83D\uDC40 ${locale["commands.roblox.rbuser.placeVisits"]}", placeVisits, true)
+				addField("\uD83D\uDCC5 ${locale["commands.roblox.rbuser.joinDate"]}", "$joinDate ($joinDateDiff)", true)
+				// addField("\uD83D\uDC40 ${locale["commands.roblox.rbuser.placeVisits"]}", placeVisits, true)
 				addField("\uD83D\uDE4B ${locale["commands.roblox.rbuser.social"]}", "**\uD83D\uDC3E ${locale["commands.roblox.rbuser.following"]}**: $totalFollowing\n**<:starstruck:540988091117076481> ${locale["commands.roblox.rbuser.followers"]}**: $totalFollowers\n**\uD83D\uDE0E ${locale["commands.roblox.rbuser.friends"]}**: $totalFriends\n", true)
+
+				// Favorite Games
+				if (favoriteGamesContainer != null) {
+					val builder = buildString {
+						favoriteGamesContainer.getElementsByClass("game-card-link").forEach {
+							val gameLink = it.attr("href")
+							val title = it.getElementsByClass("game-name-title")
+									.first()
+									.attr("title")
+
+							// This is a "hack" because Roblox loves adding dumb stuff that doesn't really matter
+							// Example: https://www.roblox.com/games/refer?SortFilter=5&PlaceId=31610786&Position=1&SortPosition=1&PageId=703dbc9a-117a-4742-ae56-cd9d63d6be9a&PageType=Profile
+							// We can reduce that to just https://roblox.com/games/31610786
+							val placeId = gameLink.parseUrlEncodedParameters(Charsets.UTF_8)["PlaceId"]
+
+							append("[$title](https://roblox.com/games/$placeId)\n")
+						}
+					}
+
+					addField("\uD83D\uDD79️ ${locale["commands.roblox.rbuser.favoriteGames"]}", builder, false)
+				}
+
 				setImage("attachment://roblox.png")
 				setThumbnail(avatar)
 			}
@@ -237,4 +266,24 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 			context.explain()
 		}
 	}
+
+	// Example data: {"description":"####### ######## ####################################################### Brasil!","created":"2013-01-22T11:00:23.88Z","isBanned":false,"id":37271405,"name":"SonicteamPower","displayName":"SonicteamPower"}
+	@Serializable
+	data class RobloxUserResponse(
+			val description: String,
+			val created: String,
+			val isBanned: Boolean,
+			val id: Long,
+			val name: String,
+			val displayName: String
+	)
+
+	// [{"id":2,"name":"Friendship","description":"This badge is given to players who have embraced the Roblox community and have made at least 20 friends. People who have this badge are good people to know and can probably help you out if you are having trouble.","imageUrl":"https://images.rbxcdn.com/5eb20917cf530583e2641c0e1f7ba95e.png"},{"id":12,"name":"Veteran","description":"This badge recognizes members who have played Roblox for one year or more. They are stalwart community members who have stuck with us over countless releases, and have helped shape Roblox into the game that it is today. These medalists are the true steel, the core of the Robloxian history ... and its future.","imageUrl":"https://images.rbxcdn.com/b7e6cabb5a1600d813f5843f37181fa3.png"},{"id":6,"name":"Homestead","description":"The homestead badge is earned by having your personal place visited 100 times. Players who achieve this have demonstrated their ability to build cool things that other Robloxians were interested enough in to check out. Get a jump-start on earning this reward by inviting people to come visit your place.","imageUrl":"https://images.rbxcdn.com/b66bc601e2256546c5dd6188fce7a8d1.png"},{"id":7,"name":"Bricksmith","description":"The Bricksmith badge is earned by having a popular personal place. Once your place has been visited 1000 times, you will receive this award. Robloxians with Bricksmith badges are accomplished builders who were able to create a place that people wanted to explore a thousand times. They no doubt know a thing or two about putting bricks together.","imageUrl":"https://images.rbxcdn.com/49f3d30f5c16a1c25ea0f97ea8ef150e.png"},{"id":18,"name":"Welcome To The Club","description":"This badge is awarded to players who have ever belonged to the illustrious Builders Club. These players are part of a long tradition of Roblox greatness.","imageUrl":"https://images.rbxcdn.com/6c2a598114231066a386fa716ac099c4.png"}]
+	@Serializable
+	data class RobloxBadge(
+			val id: Long,
+			val name: String,
+			val description: String,
+			val imageUrl: String
+	)
 }
