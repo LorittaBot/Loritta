@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.api.commands.arguments
 
 class SobreMimCommand : AbstractCommand("aboutme", listOf("sobremim"), CommandCategory.SOCIAL) {
     override fun getDescriptionKey() = LocaleKeyData("commands.social.aboutme.description")
+    override fun getExamplesKey() = LocaleKeyData("commands.social.aboutme.examples")
 
     override fun getUsage() = arguments {
         argument(ArgumentType.TEXT) {}

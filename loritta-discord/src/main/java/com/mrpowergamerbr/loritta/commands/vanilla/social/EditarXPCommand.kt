@@ -13,6 +13,7 @@ import net.perfectdreams.loritta.api.commands.arguments
 
 class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category = CommandCategory.SOCIAL) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.social.editxp.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.social.editxp.examples")
 
 	override fun canUseInPrivateChannel(): Boolean {
 		return false

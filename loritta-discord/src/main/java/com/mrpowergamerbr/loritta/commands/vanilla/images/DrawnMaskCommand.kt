@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.locale.LocaleStringData
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
+import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.geom.Path2D
 import java.awt.image.BufferedImage
@@ -25,10 +26,7 @@ class DrawnMaskCommand : AbstractCommand("drawnmasksign", listOf("drawnmaskplaca
 					LocaleStringData("Drawn Mask")
 			)
 	)
-
-	override fun getExamples(): List<String> {
-		return listOf("@Loritta")
-	}
+	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 
 	// TODO: Fix Usage
 

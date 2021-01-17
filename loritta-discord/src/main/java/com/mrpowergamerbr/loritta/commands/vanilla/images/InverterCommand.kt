@@ -5,16 +5,13 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.Color
-import java.util.*
 
 class InverterCommand : AbstractCommand("invert", listOf("inverter"), category = CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.images.invert.description")
-
-	override fun getExamples(): List<String> {
-		return Arrays.asList("http://i.imgur.com/KbHXmKO.png", "@Loritta", "\uD83D\uDC4C")
-	}
+	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 
 	// TODO: Fix Detailed Usage
 

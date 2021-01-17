@@ -13,6 +13,7 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), CommandCategory.SOCIAL) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.social.afk.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.social.afk.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var profile = context.lorittaUser.profile

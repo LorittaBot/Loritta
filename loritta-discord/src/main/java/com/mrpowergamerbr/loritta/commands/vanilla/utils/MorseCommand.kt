@@ -14,11 +14,8 @@ import java.awt.Color
 class MorseCommand : AbstractCommand("morse", category = CommandCategory.UTILS) {
 	// TODO: Fix Usage
 
-	override fun getExamples(): List<String> {
-		return listOf("Loritta")
-	}
-
 	override fun getDescriptionKey() = LocaleKeyData("commands.utils.morse.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.utils.morse.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {

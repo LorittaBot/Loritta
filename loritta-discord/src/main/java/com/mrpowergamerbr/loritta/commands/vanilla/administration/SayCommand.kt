@@ -15,16 +15,11 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.TextChannel
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import java.util.*
 
 class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.moderation.say.description")
-
-	// TODO: Fix Usage
-
-	override fun getExamples(): List<String> {
-		return Arrays.asList("Eu sou fofa! :3")
-	}
+	override fun getExamplesKey()  = LocaleKeyData("commands.moderation.say.examples")
+// TODO: Fix Usage
 
 	override fun getDiscordPermissions(): List<Permission> {
 		return listOf(Permission.MANAGE_SERVER)

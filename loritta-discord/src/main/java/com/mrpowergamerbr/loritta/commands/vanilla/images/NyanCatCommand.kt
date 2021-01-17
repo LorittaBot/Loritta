@@ -28,12 +28,8 @@ class NyanCatCommand : AbstractCommand("nyan", category = CommandCategory.IMAGES
 	}
 
 	override fun getDescriptionKey() = LocaleKeyData("commands.images.nyancat.description")
-
-	// TODO: Fix Usage
-
-	override fun getExamples(): List<String> {
-		return listOf("", "cat", "caaaaaaat", "caaaaaaaaaaaaat", "dog")
-	}
+	override fun getExamplesKey() = LocaleKeyData("commands.images.nyancat.examples")
+// TODO: Fix Usage
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

@@ -30,6 +30,7 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 	}
 
 	override fun getDescriptionKey() = LocaleKeyData("commands.economy.raffle.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.economy.raffle.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val arg0 = context.args.getOrNull(0)

@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.image.BufferedImage
 import java.io.File
@@ -13,10 +14,7 @@ import javax.imageio.ImageIO
 
 class PerfeitoCommand : AbstractCommand("perfect", listOf("perfeito"), CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.images.perfect.description")
-
-	override fun getExamples(): List<String> {
-		return listOf("@Loritta")
-	}
+	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 
 	// TODO: Fix Usage
 

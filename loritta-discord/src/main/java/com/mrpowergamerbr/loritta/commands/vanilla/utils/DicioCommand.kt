@@ -17,10 +17,7 @@ class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "dicionario"
 	// TODO: Fix Usage
 
 	override fun getDescriptionKey() = LocaleKeyData("commands.utils.dicio.description")
-
-	override fun getExamples(): List<String> {
-		return listOf("sonho")
-	}
+	override fun getExamplesKey() = LocaleKeyData("commands.utils.dicio.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.size == 1) {

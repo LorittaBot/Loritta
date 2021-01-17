@@ -34,6 +34,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 	}
 
 	override fun getDescriptionKey() = LocaleKeyData("commands.economy.pay.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.economy.pay.examples")
 
 	// TODO: Fix Usage
 

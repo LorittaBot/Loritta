@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.image.BufferedImage
@@ -13,10 +14,7 @@ import java.io.File
 
 class DeusCommand : AbstractCommand("god", listOf("deus"), CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.images.god.description")
-
-	override fun getExamples(): List<String> {
-		return listOf("@Loritta")
-	}
+	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 
 	// TODO: Fix Usage
 

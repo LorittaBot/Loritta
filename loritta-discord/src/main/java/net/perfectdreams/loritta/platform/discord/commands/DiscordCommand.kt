@@ -23,9 +23,9 @@ class DiscordCommand(
 			it.get(descriptionKey)
 		},
 		usage: CommandArguments,
-		examples: ((BaseLocale) -> List<String>)?,
+		examplesKey: LocaleKeyData?,
 		executor: suspend CommandContext.() -> Unit
-) : Command<CommandContext>(lorittaDiscord, labels, commandName, category, descriptionKey, description, usage, examples, executor) {
+) : Command<CommandContext>(lorittaDiscord, labels, commandName, category, descriptionKey, description, usage, examplesKey, executor) {
 	var userRequiredPermissions = listOf<Permission>()
 	var botRequiredPermissions = listOf<Permission>()
 	var userRequiredLorittaPermissions = listOf<LorittaPermission>()

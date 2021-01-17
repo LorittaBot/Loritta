@@ -17,6 +17,7 @@ import java.math.BigDecimal
 
 class SonhosCommand : AbstractCommand("sonhos", listOf("atm", "bal", "balance"), category = CommandCategory.ECONOMY) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.economy.sonhos.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.economy.sonhos.examples")
 
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		val retrieveDreamsFromUser = context.getUserAt(0) ?: context.userHandle

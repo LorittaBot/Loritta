@@ -121,7 +121,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 		val commandDescription = getDescription(locale)
 
 		val executedCommandLabel = this.label
-		val commandLabel = "${serverConfig.commandPrefix}${executedCommandLabel}"
+		val commandLabelWithPrefix = "${serverConfig.commandPrefix}${executedCommandLabel}"
 
 		val embed = EmbedBuilder()
 				.setColor(Constants.LORITTA_AQUA)
@@ -207,11 +207,11 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 					val (commandExample, explanation) = split
 
 					examples.add("\uD83D\uDD39 **$explanation**")
-					examples.add("`" + commandLabel + "`" + (if (commandExample.isEmpty()) "" else "**` $commandExample`**"))
+					examples.add("`" + commandLabelWithPrefix + "`" + (if (commandExample.isEmpty()) "" else "**` $commandExample`**"))
 				} else {
 					val commandExample = split[0]
 
-					examples.add("`" + commandLabel + "`" + if (commandExample.isEmpty()) "" else "**` $commandExample`**")
+					examples.add("`" + commandLabelWithPrefix + "`" + if (commandExample.isEmpty()) "" else "**` $commandExample`**")
 				}
 			}
 		}

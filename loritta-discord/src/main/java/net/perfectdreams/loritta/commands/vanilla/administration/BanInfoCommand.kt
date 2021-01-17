@@ -27,9 +27,10 @@ class BanInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lorit
             }
         }
 
-        examples {
+        // TODO: Fix Examples
+        /* examples {
             + "159985870458322944"
-        }
+        } */
 
         userRequiredPermissions = listOf(Permission.BAN_MEMBERS)
         botRequiredPermissions = listOf(Permission.BAN_MEMBERS)

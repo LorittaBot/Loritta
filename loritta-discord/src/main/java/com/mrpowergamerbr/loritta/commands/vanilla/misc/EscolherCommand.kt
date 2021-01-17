@@ -11,10 +11,7 @@ import net.perfectdreams.loritta.utils.Emotes
 
 class EscolherCommand : AbstractCommand("choose", listOf("escolher"), category = CommandCategory.MISC) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.misc.choose.description")
-
-	override fun getExamples(): List<String> {
-		return listOf("Sonic, Tails, Knuckles", "Asriel Dreemurr, Chara Dreemurr", "Shantae, Risky Boots")
-	}
+	override fun getExamplesKey() = LocaleKeyData("commands.misc.choose.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {

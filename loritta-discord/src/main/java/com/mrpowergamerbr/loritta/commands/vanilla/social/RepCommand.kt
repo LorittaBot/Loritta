@@ -18,10 +18,7 @@ import net.perfectdreams.loritta.utils.Emotes
 
 class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "reputacao"), CommandCategory.SOCIAL) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.social.reputation.description")
-
-	override fun getExamples(): List<String> {
-		return listOf("@Loritta", "@MrPowerGamerBR")
-	}
+	override fun getExamplesKey() = LocaleKeyData("commands.social.reputation.examples")
 
 	override fun canUseInPrivateChannel(): Boolean {
 		return false

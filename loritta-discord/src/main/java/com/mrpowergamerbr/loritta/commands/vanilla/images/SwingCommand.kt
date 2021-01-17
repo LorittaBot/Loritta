@@ -8,14 +8,12 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class SwingCommand : AbstractCommand("swing", category = CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.images.swing.description")
-
-	override fun getExamples(): List<String> {
-		return listOf("@Loritta @SparklyBot")
-	}
+	override fun getExamplesKey() = Command.TWO_IMAGES_EXAMPLES_KEY
 
 	// TODO: Fix Usage
 

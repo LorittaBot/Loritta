@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.image.BufferedImage
 import java.io.File
@@ -16,10 +17,7 @@ class PerdaoCommand : AbstractCommand("perdao", listOf("perdão"), CommandCatego
 	}
 
 	override fun getDescriptionKey() = LocaleKeyData("commands.images.forgive.description")
-
-	override fun getExamples(): List<String> {
-		return listOf("@Loritta")
-	}
+	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 
 	// TODO: Fix Usage
 

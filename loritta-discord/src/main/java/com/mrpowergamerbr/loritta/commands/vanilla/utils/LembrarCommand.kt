@@ -23,12 +23,8 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 	override fun getBotPermissions() = listOf(Permission.MESSAGE_MANAGE)
 
 	override fun getDescriptionKey() = LocaleKeyData("${LOCALE_PREFIX}.description")
-
+	override fun getExamplesKey() = LocaleKeyData("${LOCALE_PREFIX}.examples")
 	// TODO: Fix Usage
-
-	override fun getExamples(locale: BaseLocale): List<String> {
-		return locale.getList("${LOCALE_PREFIX}.examples")
-	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (thereIsCommandToProcess(context)) {

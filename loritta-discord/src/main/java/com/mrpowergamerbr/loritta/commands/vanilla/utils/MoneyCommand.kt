@@ -48,10 +48,7 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 	}
 
 	override fun getDescriptionKey() = LocaleKeyData("commands.utils.money.description")
-
-	override fun getExamples(): List<String> {
-		return listOf("USD BRL", "USD BRL 5", "USD BRL 19.99")
-	}
+	override fun getExamplesKey() = LocaleKeyData("commands.utils.money.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.size >= 2) {

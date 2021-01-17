@@ -80,7 +80,7 @@ class DiscordCommandBuilder(
 					it.get(builderDescriptionKey)
 				},
 				usage = usage,
-				examples = examplesCallback,
+				examplesKey = builderExamplesKey,
 				executor = executeCallback!!
 		).apply { build2().invoke(this) }.also {
 			it.userRequiredPermissions = userRequiredPermissions

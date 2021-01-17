@@ -20,6 +20,7 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 	}
 
 	override fun getDescriptionKey() = LocaleKeyData("commands.social.marry.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.social.marry.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val proposeTo = context.getUserAt(0)
