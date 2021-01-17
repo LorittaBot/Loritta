@@ -85,9 +85,8 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 				addBadgesToField = true
 			}
 
-			if (addBadgesToField) {
-				addField("\uD83D\uDD16 ${context.locale["commands.discord.userinfo.badges"]}", getBadges(user).joinToString(""), true)
-			}
+			if (addBadgesToField)
+				addField("\uD83D\uDCDB ${context.locale["commands.discord.userinfo.badges"]}", getBadges(user).joinToString(""), true)
 
 			setTitle(title)
 
