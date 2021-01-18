@@ -51,7 +51,7 @@ class BomDiaECiaTopLocalCommand(loritta: LorittaDiscord): DiscordAbstractCommand
             val userIdCount = BomDiaECiaWinners.userId.count()
 
             val userData = loritta.newSuspendedTransaction {
-                BomDiaECiaWinners.innerJoin(GuildProfiles, { BomDiaECiaWinners.id }, { BomDiaECiaWinners.userId })
+                BomDiaECiaWinners.innerJoin(GuildProfiles, { GuildProfiles.userId }, { BomDiaECiaWinners.userId })
                     .select {
                         GuildProfiles.guildId eq guild.idLong and (GuildProfiles.isInGuild eq true)
                     }.orderBy(BomDiaECiaWinners.userId, SortOrder.DESC).limit(5, page * 5)
