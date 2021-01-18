@@ -82,7 +82,7 @@ enum class Gender {
 		}
 	}
 
-	fun getPronoun(locale: BaseLocale): String? {
+	fun getPronoun(locale: BaseLocale): String {
 		return when (this) {
 			MALE -> {
 				"o"
