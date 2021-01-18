@@ -21,7 +21,7 @@ class RbGameCommand : AbstractCommand("rbgame", listOf("rbjogo", "rbgameinfo"), 
 		if (context.args.isNotEmpty()) {
 			val query = context.args.joinToString(" ")
 
-			val url = "https://www.roblox.com/games/moreresultscached?StartRows=0&MaxRows=40&IsUserLoggedIn=false&NumberOfColumns=8&IsInHorizontalScrollMode=false&DeviceTypeId=1&Keyword=${query.encodeToUrl()}&AdSpan=56&AdAlignment=0&v=2&IsSecure=&UseFakeResults=False&SuggestedCorrection=none&SuggestionKeyword=&SuggestionReplacedKeyword="
+			val url = "https://www.roblox.com/games/?StartRows=0&MaxRows=40&IsUserLoggedIn=false&NumberOfColumns=8&IsInHorizontalScrollMode=false&DeviceTypeId=1&Keyword=${query.encodeToUrl()}&AdSpan=56&AdAlignment=0&v=2&IsSecure=&UseFakeResults=False&SuggestedCorrection=none&SuggestionKeyword=&SuggestionReplacedKeyword="
 
 			val body = HttpRequest.get(url)
 					.body()
