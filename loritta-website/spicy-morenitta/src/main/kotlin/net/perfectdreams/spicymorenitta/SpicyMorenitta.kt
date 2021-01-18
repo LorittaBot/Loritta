@@ -160,7 +160,7 @@ class SpicyMorenitta : Logging {
 
 		ErrorTracker.start(this)
 
-		info("HELLO FROM KOTLIN 1.4.10!")
+		info("HELLO FROM KOTLIN 1.4.20!")
 		info("SpicyMorenitta :3")
 		info("Howdy, my name is Loritta!")
 		info("I want to make the world a better place... making people happier and helping other people... changing their lives...")

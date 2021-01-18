@@ -14,7 +14,7 @@ tasks.withType<KotlinCompile> {
 plugins {
     java
     kotlin("jvm")
-    kotlin("plugin.serialization") version "1.4.10"
+    kotlin("plugin.serialization") version "1.4.20"
     `maven-publish`
 }
 
@@ -55,7 +55,7 @@ dependencies {
 
     // Kotlin Coroutines
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutines")
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.4.1")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.4.2")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-debug:$kotlinCoroutines")
 
     api("com.google.guava:guava:30.0-jre")
