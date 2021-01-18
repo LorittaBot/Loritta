@@ -224,17 +224,7 @@ class BomDiaECia {
 			delay(30000)
 			if (triedToCall.isNotEmpty()) {
 
-				val pronoun = when (loritta.getOrCreateLorittaProfile(user.idLong).settings.gender) {
-					Gender.MALE -> {
-						"o"
-					}
-					Gender.FEMALE -> {
-						"a"
-					}
-					else -> {
-						null
-					}
-				}
+				val pronoun = loritta.getOrCreateLorittaProfile(user.idLong).settings.gender.getPronoun()
 
 				channel.sendMessage("<:yudi:446394608256024597> **|** Sabia que ${user.asMention} foi ${pronoun ?: ""} primeir${pronoun ?: "o"} de **${triedToCall.size} usuários** a conseguir ligar no Bom Dia & Cia? ${Emotes.LORI_OWO}").queue { message ->
 					if (message.guild.selfMember.hasPermission(Permission.MESSAGE_ADD_REACTION)) {

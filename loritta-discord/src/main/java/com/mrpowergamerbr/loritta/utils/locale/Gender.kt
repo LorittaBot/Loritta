@@ -1,6 +1,7 @@
 package com.mrpowergamerbr.loritta.utils.locale
 
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.loritta
 
 enum class Gender {
 	MALE,
@@ -78,6 +79,20 @@ enum class Gender {
 			MALE -> locale["loritta.pronoun.his"]
 			FEMALE -> locale["loritta.pronoun.her"]
 			UNKNOWN -> firstName
+		}
+	}
+
+	fun getPronoun(locale: BaseLocale? = null): String? {
+		return when (this) {
+			MALE -> {
+				"o"
+			}
+			FEMALE -> {
+				"a"
+			}
+			else -> {
+				null
+			}
 		}
 	}
 }
