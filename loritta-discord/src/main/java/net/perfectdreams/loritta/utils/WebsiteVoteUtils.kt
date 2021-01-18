@@ -14,7 +14,7 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update
 
 object WebsiteVoteUtils {
-        const val SONHOS_AMOUNT = 1200L
+	const val SONHOS_AMOUNT = 1200L
 
 	/**
 	 * Adds a new vote (made by the [userId] on the [websiteSource]) to the database
