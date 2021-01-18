@@ -83,16 +83,17 @@ class BrokerCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractCommandBase(p
 
 				val buyingPrice = plugin.convertToBuyingPrice(currentPrice)
 				val sellingPrice = plugin.convertToSellingPrice(currentPrice)
+				val changePercentage = stock["chp"]?.jsonPrimitive?.double!!
 
 				if (stock["current_session"]!!.jsonPrimitive.content != LoriBrokerPlugin.MARKET)
 					embed.addField(
-							"${Emotes.DO_NOT_DISTURB} `${stock["short_name"]?.jsonPrimitive?.content}` ($tickerName)",
+							"${Emotes.DO_NOT_DISTURB} `${stock["short_name"]?.jsonPrimitive?.content}` ($tickerName) | ${"%.2f".format(changePercentage)}%",
 							locale["commands.economy.broker.priceBeforeMarketClose", plugin.convertReaisToSonhos(stock[LoriBrokerPlugin.CURRENT_PRICE_FIELD]?.jsonPrimitive?.double!!)],
 							true
 					)
 				else
 					embed.addField(
-							"${Emotes.ONLINE} `${stock["short_name"]?.jsonPrimitive?.content}` ($tickerName)",
+							"${Emotes.ONLINE} `${stock["short_name"]?.jsonPrimitive?.content}` ($tickerName) | ${"%.2f".format(changePercentage)}%",
 							"""${locale["commands.economy.broker.buyPrice", buyingPrice]}
 							  |${locale["commands.economy.broker.sellPrice", sellingPrice]}
 							""".trimMargin(),
