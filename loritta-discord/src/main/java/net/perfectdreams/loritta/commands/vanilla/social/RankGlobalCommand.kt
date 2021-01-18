@@ -14,60 +14,59 @@ import net.perfectdreams.loritta.utils.RankingGenerator
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.selectAll
 
-class RankGlobalCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("rank global", "top global", "leaderboard global", "ranking global"), CommandCategory.SOCIAL) {
-	override fun command() = create {
-		localizedDescription("commands.social.rankglobal.description")
+class RankGlobalCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
+    loritta,
+    listOf("rank global", "top global", "leaderboard global", "ranking global"),
+    CommandCategory.SOCIAL
+) {
 
-		arguments {
-			argument(ArgumentType.NUMBER) {
-				optional = true
-			}
-		}
+    override fun command() = create {
+        localizedDescription("commands.social.rankglobal.description")
 
-		executesDiscord {
-			var page = args.getOrNull(0)?.toLongOrNull()
+        arguments {
+            argument(ArgumentType.NUMBER) {
+                optional = true
+            }
+        }
 
-			if (page != null && !RankingGenerator.isValidRankingPage(page)) {
-				reply(
-						LorittaReply(
-								locale["commands.invalidRankingPage"],
-								Constants.ERROR
-						)
-				)
-				return@executesDiscord
-			}
+        executesDiscord {
+            val pageIndex = when (val value = args.getOrNull(0)?.toLongOrNull()?.coerceAtLeast(0)) {
+                0L, null -> 0L
+                else -> {
+                    if (!RankingGenerator.isValidRankingPage(value)) {
+                        reply(LorittaReply(locale["commands.invalidRankingPage"], Constants.ERROR))
+                        return@executesDiscord
+                    }
+                    value - 1
+                }
+            }
 
-			if (page != null)
-				page -= 1
+            val profiles = loritta.newSuspendedTransaction {
+                Profiles.selectAll()
+                    .orderBy(Profiles.xp to SortOrder.DESC)
+                    .limit(5, pageIndex * 5)
+                    .let { Profile.wrapRows(it) }
+                    .toList()
+            }
 
-			if (page == null)
-				page = 0
+            sendImage(
+                JVMImage(
+                    RankingGenerator.generateRanking(
+                        "Ranking Global",
+                        null,
+                        profiles.map {
+                            RankingGenerator.UserRankInformation(
+                                it.userId,
+                                "XP total // ${it.xp}",
+                                "Nível ${it.getCurrentLevel().currentLevel}"
+                            )
+                        }
+                    )
+                ),
+                "rank.png",
+                getUserMention(true)
+            )
+        }
+    }
 
-			val profiles = loritta.newSuspendedTransaction {
-				Profiles.selectAll()
-						.orderBy(Profiles.xp to SortOrder.DESC)
-						.limit(5, page * 5)
-						.let { Profile.wrapRows(it) }
-						.toList()
-			}
-
-			sendImage(
-					JVMImage(
-							RankingGenerator.generateRanking(
-									"Ranking Global",
-									null,
-									profiles.map {
-										RankingGenerator.UserRankInformation(
-												it.userId,
-												"XP total // " + it.xp,
-												"Nível " + it.getCurrentLevel().currentLevel
-										)
-									}
-							)
-					),
-					"rank.png",
-					getUserMention(true)
-			)
-		}
-	}
 }

@@ -14,113 +14,110 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.selectAll
 
-class RepTopCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("rep top", "reputation top", "reputacao top", "reputação top"), CommandCategory.SOCIAL) {
-	override fun command() = create {
-		localizedDescription("commands.social.topreputation.description")
+class RepTopCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
+    loritta,
+    listOf("rep top", "reputation top", "reputacao top", "reputação top"),
+    CommandCategory.SOCIAL
+) {
+    override fun command() = create {
+        localizedDescription("commands.social.topreputation.description")
 
-		examples {
-			+ it["commands.social.topreputation.received"]
-			+ it["commands.social.topreputation.given"]
-			+ "${it["commands.social.topreputation.received"]} 5"
-			+ "${it["commands.social.topreputation.given"]} 5"
-		}
+        examples {
+            +it["commands.social.topreputation.received"]
+            +it["commands.social.topreputation.given"]
+            +"${it["commands.social.topreputation.received"]} 5"
+            +"${it["commands.social.topreputation.given"]} 5"
+        }
 
-		arguments {
-			argument(ArgumentType.TEXT) {}
-			argument(ArgumentType.NUMBER) {
-				optional = true
-			}
-		}
+        arguments {
+            argument(ArgumentType.TEXT) {}
+            argument(ArgumentType.NUMBER) {
+                optional = true
+            }
+        }
 
-		executesDiscord {
-			val typeName = args.getOrNull(0)
+        executesDiscord {
+            val typeName = args.getOrNull(0)
 
-			if (typeName == null) {
-				reply(
-						LorittaReply(
-								"${serverConfig.commandPrefix}${executedCommandLabel} ${locale["commands.social.topreputation.received"]}"
-						),
-						LorittaReply(
-								"${serverConfig.commandPrefix}${executedCommandLabel} ${locale["commands.social.topreputation.given"]}"
-						)
-				)
-				return@executesDiscord
-			}
+            if (typeName == null) {
+                reply(
+                    LorittaReply(
+                        "${serverConfig.commandPrefix}${executedCommandLabel} ${locale["commands.social.topreputation.received"]}"
+                    ),
+                    LorittaReply(
+                        "${serverConfig.commandPrefix}${executedCommandLabel} ${locale["commands.social.topreputation.given"]}"
+                    )
+                )
+                return@executesDiscord
+            }
 
-			val type = if (typeName in loritta.locales.map { locale["commands.social.topreputation.given"].toLowerCase() }.distinct())
-				TopOrder.MOST_GIVEN
-			else
-				TopOrder.MOST_RECEIVED
+            val type =
+                if (typeName in loritta.locales.map { locale["commands.social.topreputation.given"].toLowerCase() }
+                        .distinct())
+                    TopOrder.MOST_GIVEN
+                else
+                    TopOrder.MOST_RECEIVED
 
-			var page = args.getOrNull(1)?.toLongOrNull()
+            val pageIndex = when (val value = args.getOrNull(0)?.toLongOrNull()?.coerceAtLeast(0)) {
+                0L, null -> 0L
+                else -> {
+                    if (!RankingGenerator.isValidRankingPage(value)) {
+                        reply(LorittaReply(locale["commands.invalidRankingPage"], Constants.ERROR))
+                        return@executesDiscord
+                    }
+                    value - 1
+                }
+            }
 
-			if (page != null && !RankingGenerator.isValidRankingPage(page)) {
-				reply(
-						LorittaReply(
-								locale["commands.invalidRankingPage"],
-								Constants.ERROR
-						)
-				)
-				return@executesDiscord
-			}
+            val receivedBy = Reputations.receivedById
+            val givenBy = Reputations.givenById
+            val receivedByCount = Reputations.receivedById.count()
+            val givenByCount = Reputations.givenById.count()
 
-			if (page != null)
-				page -= 1
+            val userData = loritta.newSuspendedTransaction {
+                if (type == TopOrder.MOST_GIVEN) {
+                    Reputations.slice(givenBy, givenByCount)
+                        .selectAll()
+                        .groupBy(givenBy)
+                        .orderBy(givenByCount, SortOrder.DESC)
+                        .limit(5, pageIndex * 5)
+                } else {
+                    Reputations.slice(receivedBy, receivedByCount)
+                        .selectAll()
+                        .groupBy(receivedBy)
+                        .orderBy(receivedByCount, SortOrder.DESC)
+                        .limit(5, pageIndex * 5)
+                }
+            }
 
-			if (page == null)
-				page = 0
+            sendImage(
+                JVMImage(
+                    RankingGenerator.generateRanking(
+                        "Ranking Global",
+                        null,
+                        userData.map {
+                            if (type == TopOrder.MOST_RECEIVED) {
+                                RankingGenerator.UserRankInformation(
+                                    it[receivedBy],
+                                    locale["commands.social.topreputation.receivedReputations", it[receivedByCount]]
+                                )
+                            } else {
+                                RankingGenerator.UserRankInformation(
+                                    it[givenBy],
+                                    locale["commands.social.topreputation.givenReputations", it[givenByCount]]
+                                )
+                            }
+                        }
+                    )
+                ),
+                "rank.png",
+                getUserMention(true)
+            )
+        }
+    }
 
-			val receivedBy = Reputations.receivedById
-			val givenBy = Reputations.givenById
-			val receivedByCount = Reputations.receivedById.count()
-			val givenByCount = Reputations.givenById.count()
-
-			val userData = loritta.newSuspendedTransaction {
-				if (type == TopOrder.MOST_GIVEN) {
-					Reputations.slice(givenBy, givenByCount)
-							.selectAll()
-							.groupBy(givenBy)
-							.orderBy(givenByCount, SortOrder.DESC)
-							.limit(5, page * 5)
-							.toMutableList()
-				} else {
-					Reputations.slice(receivedBy, receivedByCount)
-							.selectAll()
-							.groupBy(receivedBy)
-							.orderBy(receivedByCount, SortOrder.DESC)
-							.limit(5, page * 5)
-							.toMutableList()
-				}
-			}
-
-			sendImage(
-					JVMImage(
-							RankingGenerator.generateRanking(
-									"Ranking Global",
-									null,
-									userData.map {
-										if (type == TopOrder.MOST_RECEIVED) {
-											RankingGenerator.UserRankInformation(
-													it[receivedBy],
-													locale["commands.social.topreputation.receivedReputations", it[receivedByCount]]
-											)
-										} else {
-											RankingGenerator.UserRankInformation(
-													it[givenBy],
-													locale["commands.social.topreputation.givenReputations", it[givenByCount]]
-											)
-										}
-									}
-							)
-					),
-					"rank.png",
-					getUserMention(true)
-			)
-		}
-	}
-
-	private enum class TopOrder {
-		MOST_RECEIVED,
-		MOST_GIVEN
-	}
+    private enum class TopOrder {
+        MOST_RECEIVED,
+        MOST_GIVEN
+    }
 }

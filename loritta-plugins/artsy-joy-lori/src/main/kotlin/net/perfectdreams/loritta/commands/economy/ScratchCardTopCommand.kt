@@ -32,26 +32,16 @@ class ScratchCardTopCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBas
 		}
 
 		executesDiscord {
-			val context = this
-
-			var page = context.args.getOrNull(0)?.toLongOrNull()
-
-			if (page != null && !RankingGenerator.isValidRankingPage(page)) {
-				context.reply(
-						LorittaReply(
-								locale["commands.invalidRankingPage"],
-								Constants.ERROR
-						)
-				)
-				return@executesDiscord
+			val pageIndex = when (val value = args.getOrNull(0)?.toLongOrNull()?.coerceAtLeast(0)) {
+				0L, null -> 0L
+				else -> {
+					if (!RankingGenerator.isValidRankingPage(value)) {
+						reply(LorittaReply(locale["commands.invalidRankingPage"], Constants.ERROR))
+						return@executesDiscord
+					}
+					value - 1
+				}
 			}
-
-			if (page != null)
-				page -= 1
-
-			if (page == null)
-				page = 0
-
 			val userId = Raspadinhas.receivedById
 			val ticketCount = Raspadinhas.receivedById.count()
 			val moneySum = Raspadinhas.value.sum()
@@ -64,11 +54,11 @@ class ScratchCardTopCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBas
 							moneySum.isNotNull()
 						}
 						.orderBy(moneySum, SortOrder.DESC)
-						.limit(5, page * 5)
+						.limit(5, pageIndex * 5)
 						.toMutableList()
 			}
 
-			context.sendImage(
+			sendImage(
 					JVMImage(
 						RankingGenerator.generateRanking(
 								"Ranking Global",
@@ -81,8 +71,9 @@ class ScratchCardTopCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBas
 								}
 						)),
 					"rank.png",
-					context.getUserMention(true)
+					getUserMention(true)
 			)
 		}
 	}
+
 }

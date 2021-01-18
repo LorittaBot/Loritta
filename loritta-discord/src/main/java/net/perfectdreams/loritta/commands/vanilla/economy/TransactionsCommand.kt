@@ -90,9 +90,7 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 	suspend fun sendTransactionEmbed(context: DiscordCommandContext, locale: BaseLocale, item: Long?, currentMessage: Message?) {
 		val user = context.user(0)?.handle ?: context.user
 
-		var page = item
-
-		if (page == null) page = 0
+		val page = item ?: 0
 
 		val transactions = loritta.newSuspendedTransaction {
 			SonhosTransaction.select {
