@@ -43,12 +43,7 @@ class RemoveEmojiCommand : AbstractCommand("removeemoji", listOf("deleteemoji", 
                     )
 			)
 		} else {
-			context.reply(
-                    LorittaReply(
-                            locale["commands.discord.removeemoji.noEmojiRemoved"],
-                            Constants.ERROR
-                    )
-			)
+			context.explain()
 		}
 	}
 }
