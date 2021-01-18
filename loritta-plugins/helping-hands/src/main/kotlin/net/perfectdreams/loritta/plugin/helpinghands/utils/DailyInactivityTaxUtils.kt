@@ -9,8 +9,14 @@ import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.JoinType
+import org.jetbrains.exposed.sql.SqlExpressionBuilder
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.max
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -84,26 +90,36 @@ object DailyInactivityTaxUtils {
 					.toInstant()
 					.toEpochMilli()
 
+			val receivedAtMax = Dailies.receivedAt.max()
 			val receivedBy = Dailies.receivedById
 			val money = Profiles.money
 
 			// Feito de forma "separada" para evitar erros de concurrent updates, se um falhar, não vai fazer rollback na transação inteira
 			val inactiveUsers = transaction(Databases.loritta) {
-				// select dailies.received_by, profiles.money from dailies inner join profiles on profiles.id = dailies.received_by where received_at < 1587178800000 and received_by not in (select received_by from dailies where received_at > 1587178800000 group by received_by) group by received_by, money order by money desc;
-
-				// (select received_by from dailies where received_at > 1587178800000 group by received_by)
-				Dailies.join(Profiles, JoinType.INNER, Dailies.receivedById, Profiles.id)
-						.slice(receivedBy, money)
+				// This is a *very* optimized query that seems to work fine and runs pretty fast
+				// SELECT
+				//    dailies.received_by, MAX(dailies.received_at), to_timestamp(MAX(dailies.received_at / 1000))
+				//  FROM
+				//    dailies
+				//  WHERE
+				//    dailies.received_by IN (SELECT profiles.id FROM profiles WHERE profiles.money >= 100000)
+				//  GROUP BY dailies.received_by HAVING 1608396362303 >= MAX(dailies.received_at);
+				//
+				// The execution time is way smaller than the previous query that we were using (the previous one was using 4hrs just to get the inactive daily stuff!) while this one
+				// takes a few minutes (max 5 minutes for the 100k sonhos threshold)
+				//
+				// Way better!
+				Dailies.slice(Dailies.receivedById, receivedAtMax)
 						.select {
-							Dailies.receivedAt lessEq nowXDaysAgo and (Profiles.money greaterEq threshold.minimumSonhosForTrigger) and (
-									receivedBy.notInSubQuery(
-											Dailies.slice(receivedBy).select {
-												Dailies.receivedAt greaterEq nowXDaysAgo
-											}.groupBy(receivedBy)
-									)
-									)
+							Dailies.receivedById.inSubQuery(
+									Profiles.slice(Profiles.id)
+											.select { Profiles.money greaterEq threshold.minimumSonhosForTrigger }
+							)
+						}.groupBy(
+								Dailies.receivedById
+						).having {
+							receivedAtMax less nowXDaysAgo
 						}
-						.groupBy(receivedBy, money)
 						.toList()
 						// We display the inactive daily users after the ".toList()" because, if it is placed before, two queries will
 						// be made: One for the query itself and then another for the Exposed ".count()" call.
