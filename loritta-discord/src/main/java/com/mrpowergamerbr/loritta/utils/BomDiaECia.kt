@@ -224,9 +224,9 @@ class BomDiaECia {
 			delay(30000)
 			if (triedToCall.isNotEmpty()) {
 
-				val pronoun = loritta.getOrCreateLorittaProfile(user.idLong).settings.gender.getPronoun()
+				val pronoun = loritta.getOrCreateLorittaProfile(user.idLong).settings.gender.getPronoun(loritta.getLocaleById("default"))
 
-				channel.sendMessage("<:yudi:446394608256024597> **|** Sabia que ${user.asMention} foi ${pronoun ?: ""} primeir${pronoun ?: "o"} de **${triedToCall.size} usuários** a conseguir ligar no Bom Dia & Cia? ${Emotes.LORI_OWO}").queue { message ->
+				channel.sendMessage("<:yudi:446394608256024597> **|** Sabia que ${user.asMention} foi $pronoun primeir$pronoun de **${triedToCall.size} usuários** a conseguir ligar no Bom Dia & Cia? ${Emotes.LORI_OWO}").queue { message ->
 					if (message.guild.selfMember.hasPermission(Permission.MESSAGE_ADD_REACTION)) {
 						message.onReactionAddByAuthor(user.idLong) {
 							if (it.reactionEmote.isEmote("⁉")) {
