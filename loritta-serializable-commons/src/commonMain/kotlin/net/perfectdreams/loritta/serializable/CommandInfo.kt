@@ -13,6 +13,7 @@ class CommandInfo(
 		val category: CommandCategory,
 		val description: LocaleKeyData? = null,
 		val usage: CommandArguments? = null,
+		val examples: LocaleKeyData? = null,
 		val cooldown: Int,
 		val canUseInPrivateChannel: Boolean,
 		val userRequiredPermissions: List<String>,
