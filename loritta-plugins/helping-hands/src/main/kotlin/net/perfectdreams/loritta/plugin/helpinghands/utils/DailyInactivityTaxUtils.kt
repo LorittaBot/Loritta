@@ -13,8 +13,8 @@ import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.max
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import java.time.LocalDate
@@ -90,12 +90,12 @@ object DailyInactivityTaxUtils {
 					.toInstant()
 					.toEpochMilli()
 
-			val receivedAtMax = Dailies.receivedAt.max()
-			val receivedBy = Dailies.receivedById
 			val money = Profiles.money
 
+			val values = mutableListOf<InactiveDailyUser>()
+
 			// Feito de forma "separada" para evitar erros de concurrent updates, se um falhar, não vai fazer rollback na transação inteira
-			val inactiveUsers = transaction(Databases.loritta) {
+			transaction(Databases.loritta) {
 				// This is a *very* optimized query that seems to work fine and runs pretty fast
 				// SELECT
 				//    dailies.received_by, MAX(dailies.received_at), to_timestamp(MAX(dailies.received_at / 1000))
@@ -109,29 +109,39 @@ object DailyInactivityTaxUtils {
 				// takes a few minutes (max 5 minutes for the 100k sonhos threshold)
 				//
 				// Way better!
-				Dailies.slice(Dailies.receivedById, receivedAtMax)
-						.select {
-							Dailies.receivedById.inSubQuery(
-									Profiles.slice(Profiles.id)
-											.select { Profiles.money greaterEq threshold.minimumSonhosForTrigger }
-							)
-						}.groupBy(
-								Dailies.receivedById
-						).having {
-							receivedAtMax less nowXDaysAgo
-						}
-						.toList()
-						// We display the inactive daily users after the ".toList()" because, if it is placed before, two queries will
-						// be made: One for the query itself and then another for the Exposed ".count()" call.
-						.also { logger.info { "There are ${it.size} inactive daily users!" } }
+				//
+				// We also need to do a INNER JOIN to get the Profiles' money (to avoid querying it later)
+				// SELECT received_by, money FROM (
+				//    SELECT dailies.received_by, MAX(dailies.received_at) FROM dailies WHERE dailies.received_by IN (SELECT profiles.id FROM profiles WHERE profiles.money >= 100000) GROUP BY dailies.received_by HAVING MAX(dailies.received_at) < 1608397009722
+				// ) n1
+				// INNER JOIN profiles ON id = received_by;
+				//
+				// Okay, I tried doing this with Exposed DSL but I didn't figure out a way to do the FROM ( ... ) part
+				// So let's just hack around it because it doesn't really matter since a SQL Injection here is impossible
+
+				TransactionManager.current().exec("""SELECT received_by, money FROM (
+							SELECT dailies.received_by, MAX(dailies.received_at) FROM dailies WHERE dailies.received_by IN (SELECT profiles.id FROM profiles WHERE profiles.money >= ${threshold.minimumSonhosForTrigger}) GROUP BY dailies.received_by HAVING MAX(dailies.received_at) < $nowXDaysAgo
+						) n1
+						INNER JOIN profiles ON id = received_by;""") { rs ->
+					while (rs.next()) {
+						values.add(
+								InactiveDailyUser(
+										rs.getLong("received_by"),
+										rs.getLong("money")
+								)
+						)
+					}
+				}
 			}
 
-			inactiveUsers.filter { it[receivedBy] !in processedUsers }.forEach {
-				val userId = it[receivedBy]
+			logger.info { "There are ${values.size} inactive daily users!" }
 
-				val removeMoney = (it[money] * threshold.tax).toLong()
+			values.filter { it.id !in processedUsers }.forEach {
+				val userId = it.id
 
-				logger.info { "Removing $removeMoney from $userId, using threshold tax $threshold, current total is ${it[Profiles.money]}" }
+				val removeMoney = (it.money * threshold.tax).toLong()
+
+				logger.info { "Removing $removeMoney from $userId, using threshold tax $threshold, current total is ${it.money}" }
 
 				transaction(Databases.loritta) {
 					Profiles.update({ Profiles.id eq userId }) {
@@ -149,7 +159,7 @@ object DailyInactivityTaxUtils {
 				}
 			}
 
-			processedUsers += inactiveUsers.map { it[receivedBy] }
+			processedUsers += values.map { it.id }
 		}
 	}
 
@@ -214,5 +224,10 @@ object DailyInactivityTaxUtils {
 			val maxDayThreshold: Long,
 			val minimumSonhosForTrigger: Long,
 			val tax: Double
+	)
+
+	data class InactiveDailyUser(
+			val id: Long,
+			val money: Long
 	)
 }
