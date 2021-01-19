@@ -2,7 +2,7 @@ val ktorVersion by lazy { ext["ktor-version"] as String }
 
 plugins {
     kotlin("multiplatform") apply true
-    kotlin("plugin.serialization") version "1.4.20"
+    kotlin("plugin.serialization") version "1.4.21"
 }
 
 kotlin {

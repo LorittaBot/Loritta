@@ -14,7 +14,7 @@ tasks.withType<KotlinCompile> {
 plugins {
     java
     kotlin("jvm")
-    kotlin("plugin.serialization") version "1.4.20"
+    kotlin("plugin.serialization") version "1.4.21"
     `maven-publish`
 }
 
