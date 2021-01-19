@@ -81,8 +81,8 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 
 				val usersWithRolesPayload = try {
 					lorittaShards.queryCluster(cluster, "/api/v1/guilds/$guildId/users-with-any-role/$roleId")
-							.await()
-							.obj
+						.await()
+						.obj
 				} catch (e: ClusterOfflineException) {
 					if (failIfClusterIsOffline)
 						throw e
@@ -108,26 +108,30 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			val isGitHubContributorJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "505144985591480333") }
 			val isPocketDreamsStaffJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(Constants.SPARKLYPOWER_GUILD_ID, "332650495522897920") }
 			val hasLoriStickerArt = loritta.fanArtArtists.any { it.id == user.id }
+			val isLoriBodyguardJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "351473717194522647") }
+			val isLoriSupportJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "399301696892829706") }
 
 			val hasNotifyMeRole = hasNotifyMeRoleJob.await()
 			val isLorittaPartner = isLorittaPartnerJob.await()
 			val isTranslator = isTranslatorJob.await()
 			val isGitHubContributor = isGitHubContributorJob.await()
 			val isPocketDreamsStaff = isPocketDreamsStaffJob.await()
+			val isLoriBodyguard = isLoriBodyguardJob.await()
+			val isLoriSupport = isLoriSupportJob.await()
 
 			val badges = mutableListOf<BufferedImage>()
 
 			badges.addAll(
-					loritta.profileDesignManager.badges.filter { it.checkIfUserDeservesBadge(user, profile, mutualGuilds) }
-							.sortedByDescending { it.priority }
-							.map {
-								readImage(File(Loritta.ASSETS, it.badgeFileName))
-							}
+				loritta.profileDesignManager.badges.filter { it.checkIfUserDeservesBadge(user, profile, mutualGuilds) }
+					.sortedByDescending { it.priority }
+					.map {
+						readImage(File(Loritta.ASSETS, it.badgeFileName))
+					}
 			)
 
-			if (user.lorittaSupervisor) badges += ImageIO.read(File(Loritta.ASSETS + "supervisor.png"))
+			if (isLoriBodyguard) badges += ImageIO.read(File(Loritta.ASSETS + "supervisor.png"))
 			if (isPocketDreamsStaff) badges += ImageIO.read(File(Loritta.ASSETS + "pocketdreams_staff.png"))
-			if (user.support) badges += ImageIO.read(File(Loritta.ASSETS + "support.png"))
+			if (isLoriSupport) badges += ImageIO.read(File(Loritta.ASSETS + "support.png"))
 			if (hasLoriStickerArt) badges += ImageIO.read(File(Loritta.ASSETS + "sticker_badge.png"))
 
 			val money = loritta.getActiveMoneyFromDonationsAsync(user.idLong)
@@ -149,9 +153,9 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 
 			loritta.newSuspendedTransaction {
 				val results = (ServerConfigs innerJoin DonationConfigs)
-						.select {
-							DonationConfigs.customBadge eq true and (ServerConfigs.id inList mutualGuilds.map { it["id"].string.toLong() })
-						}
+					.select {
+						DonationConfigs.customBadge eq true and (ServerConfigs.id inList mutualGuilds.map { it["id"].string.toLong() })
+					}
 
 				val configs = ServerConfig.wrapRows(results)
 
@@ -217,21 +221,33 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		if (contextUser != null && bannedState != null) {
 			val bannedAt = bannedState[BannedUsers.bannedAt]
 			val bannedAtDiff = DateUtils.formatDateDiff(bannedAt, locale)
-			
-			context.reply(
-					LorittaReply(
-							"${contextUser.asMention} está **banido**",
-							"\uD83D\uDE45"
-					),
-					LorittaReply(
-							"**Motivo:** `${bannedState[BannedUsers.reason]}`",
-							"✍"
-					),
-					LorittaReply(
-						"**Data do Banimento:** `${bannedAt.humanize(locale)} ($bannedAtDiff)`",
-						"⏰"
-					)
+			val banExpiresAt = bannedState[BannedUsers.expiresAt]
+			val responses = mutableListOf(
+				LorittaReply(
+					"${contextUser.asMention} está **banido**",
+					"\uD83D\uDE45"
+				),
+				LorittaReply(
+					"**Motivo:** `${bannedState[BannedUsers.reason]}`",
+					"✍"
+				),
+				LorittaReply(
+					"**Data do Banimento:** `${bannedAt.humanize(locale)} ($bannedAtDiff)`",
+					"⏰"
+				)
 			)
+
+			if (banExpiresAt != null) {
+				val banDurationDiff = DateUtils.formatDateDiff(banExpiresAt, locale)
+				responses.add(
+					LorittaReply(
+						"**Duração do banimento:** `$banDurationDiff`",
+						"⏳"
+					)
+				)
+			}
+
+			context.reply(*responses.toTypedArray())
 			return
 		}
 		if (contextUser == null && context.args.isNotEmpty() && (context.args.first() == "shop" || context.args.first() == "loja")) {
@@ -274,29 +290,29 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		val background = loritta.getUserProfileBackground(userProfile)
 
 		val senderUserInfo = ProfileUserInfoData(
-				context.userHandle.idLong,
-				context.userHandle.name,
-				context.userHandle.discriminator,
-				context.userHandle
-						.getEffectiveAvatarUrl(ImageFormat.PNG)
+			context.userHandle.idLong,
+			context.userHandle.name,
+			context.userHandle.discriminator,
+			context.userHandle
+				.getEffectiveAvatarUrl(ImageFormat.PNG)
 		)
 
 		val profileUserInfo = ProfileUserInfoData(
-				user.idLong,
-				user.name,
-				user.discriminator,
-				user.getEffectiveAvatarUrl(ImageFormat.PNG)
+			user.idLong,
+			user.name,
+			user.discriminator,
+			user.getEffectiveAvatarUrl(ImageFormat.PNG)
 		)
 
 		val images = profileCreator.createGif(
-				senderUserInfo,
-				profileUserInfo,
-				userProfile,
-				context.guild,
-				badges,
-				locale,
-				background,
-				aboutMe
+			senderUserInfo,
+			profileUserInfo,
+			userProfile,
+			context.guild,
+			badges,
+			locale,
+			background,
+			aboutMe
 		)
 
 		if (images.size == 1) {
@@ -321,3 +337,4 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		}
 	}
 }
+
