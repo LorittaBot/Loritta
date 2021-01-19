@@ -15,58 +15,58 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.selectAll
 
 class RankGlobalCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
-    loritta,
-    listOf("rank global", "top global", "leaderboard global", "ranking global"),
-    CommandCategory.SOCIAL
+	loritta,
+	listOf("rank global", "top global", "leaderboard global", "ranking global"),
+	CommandCategory.SOCIAL
 ) {
 
-    override fun command() = create {
-        localizedDescription("commands.social.rankglobal.description")
+	override fun command() = create {
+		localizedDescription("commands.social.rankglobal.description")
 
-        arguments {
-            argument(ArgumentType.NUMBER) {
-                optional = true
-            }
-        }
+		arguments {
+			argument(ArgumentType.NUMBER) {
+				optional = true
+			}
+		}
 
-        executesDiscord {
-            val pageIndex = when (val value = args.getOrNull(0)?.toLongOrNull()?.coerceAtLeast(0)) {
-                0L, null -> 0L
-                else -> {
-                    if (!RankingGenerator.isValidRankingPage(value)) {
-                        reply(LorittaReply(locale["commands.invalidRankingPage"], Constants.ERROR))
-                        return@executesDiscord
-                    }
-                    value - 1
-                }
-            }
+		executesDiscord {
+			val pageIndex = when (val value = args.getOrNull(0)?.toLongOrNull()?.coerceAtLeast(0)) {
+				0L, null -> 0L
+				else -> {
+					if (!RankingGenerator.isValidRankingPage(value)) {
+						reply(LorittaReply(locale["commands.invalidRankingPage"], Constants.ERROR))
+						return@executesDiscord
+					}
+					value - 1
+				}
+			}
 
-            val profiles = loritta.newSuspendedTransaction {
-                Profiles.selectAll()
-                    .orderBy(Profiles.xp to SortOrder.DESC)
-                    .limit(5, pageIndex * 5)
-                    .let { Profile.wrapRows(it) }
-                    .toList()
-            }
+			val profiles = loritta.newSuspendedTransaction {
+				Profiles.selectAll()
+					.orderBy(Profiles.xp to SortOrder.DESC)
+					.limit(5, pageIndex * 5)
+					.let { Profile.wrapRows(it) }
+					.toList()
+			}
 
-            sendImage(
-                JVMImage(
-                    RankingGenerator.generateRanking(
-                        "Ranking Global",
-                        null,
-                        profiles.map {
-                            RankingGenerator.UserRankInformation(
-                                it.userId,
-                                "XP total // ${it.xp}",
-                                "Nível ${it.getCurrentLevel().currentLevel}"
-                            )
-                        }
-                    )
-                ),
-                "rank.png",
-                getUserMention(true)
-            )
-        }
-    }
+			sendImage(
+				JVMImage(
+					RankingGenerator.generateRanking(
+						"Ranking Global",
+						null,
+						profiles.map {
+							RankingGenerator.UserRankInformation(
+								it.userId,
+								"XP total // ${it.xp}",
+								"Nível ${it.getCurrentLevel().currentLevel}"
+							)
+						}
+					)
+				),
+				"rank.png",
+				getUserMention(true)
+			)
+		}
+	}
 
 }

@@ -12,46 +12,46 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.selectAll
 
 class SonhosTopCommand(
-    loritta: LorittaDiscord
+	loritta: LorittaDiscord
 ) : DiscordAbstractCommandBase(loritta, listOf("sonhos top", "atm top"), CommandCategory.ECONOMY) {
 
-    override fun command() = create {
-        localizedDescription("commands.economy.sonhostop.description")
+	override fun command() = create {
+		localizedDescription("commands.economy.sonhostop.description")
 
-        executesDiscord {
-            val pageIndex = when (val value = args.getOrNull(0)?.toLongOrNull()?.coerceAtLeast(0)) {
-                0L, null -> 0L
-                else -> {
-                    if (!RankingGenerator.isValidRankingPage(value)) {
-                        reply(LorittaReply(locale["commands.invalidRankingPage"], Constants.ERROR))
-                        return@executesDiscord
-                    }
-                    value - 1
-                }
-            }
+		executesDiscord {
+			val pageIndex = when (val value = args.getOrNull(0)?.toLongOrNull()?.coerceAtLeast(0)) {
+				0L, null -> 0L
+				else -> {
+					if (!RankingGenerator.isValidRankingPage(value)) {
+						reply(LorittaReply(locale["commands.invalidRankingPage"], Constants.ERROR))
+						return@executesDiscord
+					}
+					value - 1
+				}
+			}
 
-            val userData = loritta.newSuspendedTransaction {
-                Profiles.selectAll()
-                    .orderBy(Profiles.money, SortOrder.DESC).limit(5, pageIndex * 5)
-                    .toList()
-            }
+			val userData = loritta.newSuspendedTransaction {
+				Profiles.selectAll()
+					.orderBy(Profiles.money, SortOrder.DESC).limit(5, pageIndex * 5)
+					.toList()
+			}
 
-            sendImage(
-                JVMImage(
-                    RankingGenerator.generateRanking(
-                        "Ranking Global",
-                        null,
-                        userData.map {
-                            RankingGenerator.UserRankInformation(
-                                it[Profiles.id].value,
-                                "${it[Profiles.money]} sonhos"
-                            )
-                        }
-                    )
-                ),
-                "rank.png"
-            )
-        }
-    }
+			sendImage(
+				JVMImage(
+					RankingGenerator.generateRanking(
+						"Ranking Global",
+						null,
+						userData.map {
+							RankingGenerator.UserRankInformation(
+								it[Profiles.id].value,
+								"${it[Profiles.money]} sonhos"
+							)
+						}
+					)
+				),
+				"rank.png"
+			)
+		}
+	}
 
 }
