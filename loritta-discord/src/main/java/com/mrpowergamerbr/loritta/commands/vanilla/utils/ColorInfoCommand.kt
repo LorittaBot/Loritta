@@ -25,6 +25,7 @@ class ColorInfoCommand : AbstractCommand("colorinfo", listOf("rgb", "hexcolor", 
 	}
 
 	override fun getDescriptionKey() = LocaleKeyData("$LOCALE_PREFIX.description")
+	override fun getExamplesKey() = LocaleKeyData("$LOCALE_PREFIX.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {

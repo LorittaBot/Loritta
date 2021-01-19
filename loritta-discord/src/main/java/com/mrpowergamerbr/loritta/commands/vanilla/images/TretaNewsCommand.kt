@@ -8,17 +8,12 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import java.util.*
 
 class TretaNewsCommand : AbstractCommand("tretanews", category = CommandCategory.FUN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.images.tretanews.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.images.tretanews.examples")
 
 	// TODO: Fix Usage
-
-	override fun getExamples(): List<String> {
-		return Arrays.asList("", "@Loritta @MrPowerGamerBR")
-	}
-
 	// TODO: Fix Detailed Usage
 
 	override fun needsToUploadFiles(): Boolean {

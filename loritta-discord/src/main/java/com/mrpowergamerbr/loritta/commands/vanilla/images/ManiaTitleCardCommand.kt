@@ -14,10 +14,7 @@ import javax.imageio.ImageIO
 
 class ManiaTitleCardCommand : AbstractCommand("maniatitlecard", category = CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.images.maniatitlecard.description")
-
-	override fun getExamples(): List<String> {
-		return listOf("@Loritta")
-	}
+	override fun getExamplesKey() = LocaleKeyData("commands.images.maniatitlecard.examples")
 
 	// TODO: Fix Usage
 
