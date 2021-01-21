@@ -18,10 +18,7 @@ class TempoCommand : AbstractCommand("weather", listOf("tempo", "previsão", "pr
 	// TODO: Fix Usage
 
 	override fun getDescriptionKey() = LocaleKeyData("commands.utils.weather.description")
-
-	override fun getExamples(): List<String> {
-		return listOf("São Paulo")
-	}
+	override fun getExamplesKey() = LocaleKeyData("commands.utils.weather.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {

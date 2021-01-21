@@ -13,13 +13,17 @@ import com.mrpowergamerbr.loritta.utils.remove
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.TextChannel
+import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.moderation.say.description")
 	override fun getExamplesKey()  = LocaleKeyData("commands.moderation.say.examples")
-// TODO: Fix Usage
+	override fun getUsage() = arguments {
+		argument(ArgumentType.TEXT) {}
+	}
 
 	override fun getDiscordPermissions(): List<Permission> {
 		return listOf(Permission.MANAGE_SERVER)

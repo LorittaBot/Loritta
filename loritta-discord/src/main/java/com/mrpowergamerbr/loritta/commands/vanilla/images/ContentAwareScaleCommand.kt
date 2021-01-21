@@ -7,14 +7,17 @@ import com.mrpowergamerbr.loritta.utils.LorittaImage
 import com.mrpowergamerbr.loritta.utils.SeamCarver
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
 
 class ContentAwareScaleCommand : AbstractCommand("contentawarescale", listOf("cas", "contentaware", "seamcarver"), category = CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.images.contentawarescale.description")
 	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
-
-	// TODO: Fix Usage
+	override fun getUsage() = arguments {
+		argument(ArgumentType.IMAGE) {}
+	}
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

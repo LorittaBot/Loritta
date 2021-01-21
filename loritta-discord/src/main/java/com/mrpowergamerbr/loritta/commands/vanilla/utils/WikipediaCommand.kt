@@ -13,7 +13,6 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import org.apache.commons.lang3.StringUtils
 import java.awt.Color
 import java.net.URLEncoder
-import java.util.*
 
 class WikipediaCommand : AbstractCommand("wikipedia", listOf("wiki"), CommandCategory.UTILS) {
 	companion object {
@@ -23,13 +22,9 @@ class WikipediaCommand : AbstractCommand("wikipedia", listOf("wiki"), CommandCat
 		)
 	}
 	override fun getDescriptionKey() = LocaleKeyData("commands.utils.wikipedia.description")
-
+	override fun getExamplesKey() = LocaleKeyData("commands.utils.wikipedia.examples")
 	// TODO: Fix Usage
 	// TODO: Fix Detailed Usage
-
-	override fun getExamples(): List<String> {
-		return Arrays.asList("Minecraft", "[en] Shantae")
-	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {

@@ -11,12 +11,9 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class TranslateCommand : AbstractCommand("traduzir", listOf("translate"), CommandCategory.UTILS) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.utils.translate.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.utils.translate.examples")
 
 	// TODO: Fix Usage
-
-	override fun getExamples(): List<String> {
-		return listOf("pt Hello World!")
-	}
 
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.size >= 2) {
