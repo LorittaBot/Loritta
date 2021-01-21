@@ -20,7 +20,7 @@ class BomDiaECiaThread : Thread("Bom Dia & Cia") {
 			} catch (e: Exception) {
 				e.printStackTrace()
 			}
-			Thread.sleep(1000)
+			sleep(1000)
 		}
 	}
 
@@ -29,7 +29,7 @@ class BomDiaECiaThread : Thread("Bom Dia & Cia") {
 		val wait = Loritta.RANDOM.nextLong(900_000, 2_700_000)
 		val estimatedTime = wait + System.currentTimeMillis()
 		logger.info("Iremos esperar ${wait} até o próximo Funk do Yudi ${estimatedTime.humanize(loritta.getLocaleById("default"))}")
-		Thread.sleep(wait)
+		sleep(wait)
 		loritta.bomDiaECia.handleBomDiaECia(false)
 	}
 }
