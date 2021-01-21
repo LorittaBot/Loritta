@@ -195,15 +195,19 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 			graphics.drawImage(resizedEmoji, 142, 10, null)
 			graphics.drawImage(avatar2, 256, 0, null)
 
+			val r = (255.0 * (percentage / 100.0)).toInt()
+			val g = (132.0 * (percentage / 100.0)).toInt()
+			val b = (188.0 * (percentage / 100.0)).toInt()
+
 			val embed = EmbedBuilder()
-			embed.setColor(Color(255, 132, 188))
+			embed.setColor(Color(r,g,b))
 
 			var text = "[`"
 			for (i in 0..100 step 10) {
-				if (percentage >= i) {
-					text += "█"
+				text += if (percentage >= i) {
+					"█"
 				} else {
-					text += "."
+					"."
 				}
 			}
 			text += "`]"
