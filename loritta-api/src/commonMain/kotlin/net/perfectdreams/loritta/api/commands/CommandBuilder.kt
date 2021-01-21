@@ -30,6 +30,7 @@ open class CommandBuilder<context : CommandContext>(
 	var requiredFeatures = listOf<PlatformFeature>()
 	var onlyOwner = false
 	var similarCommands = listOf<String>()
+	var sendTypingStatus = false
 
 	var descriptionCallback: ((BaseLocale) -> (String))? = null
 	var usageCallback: (CommandArgumentsBuilder.() -> Unit)? = null
@@ -103,6 +104,7 @@ open class CommandBuilder<context : CommandContext>(
 			this.requiredFeatures = this@CommandBuilder.requiredFeatures
 			this.onlyOwner = this@CommandBuilder.onlyOwner
 			this.similarCommands = this@CommandBuilder.similarCommands
+			this.sendTypingStatus = this@CommandBuilder.sendTypingStatus
 		}
 	}
 

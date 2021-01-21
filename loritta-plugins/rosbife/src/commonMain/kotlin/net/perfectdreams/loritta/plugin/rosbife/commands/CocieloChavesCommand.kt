@@ -9,5 +9,6 @@ class CocieloChavesCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		5,
 		"commands.images.cocielochaves.description",
 		"/api/v1/videos/cocielo-chaves",
-		"cocielo_chaves.mp4"
+		"cocielo_chaves.mp4",
+		sendTypingStatus = true
 )
