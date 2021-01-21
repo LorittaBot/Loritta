@@ -203,19 +203,6 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				)
 				return
 			}
-
-			if (arg0 == "inspect_donations" && arg1 != null) {
-				val id = arg1.toLong()
-
-				val moneyFromDonations = loritta.getActiveMoneyFromDonationsAsync(id)
-
-				context.reply(
-                        LorittaReply(
-                                "<@${id}> possui **R$ ${moneyFromDonations}** ativos"
-                        )
-				)
-				return
-			}
 		}
 
 		// Sub-comandos que o dono e os Supervisores de Lori podem usar
@@ -377,6 +364,19 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
                         LorittaReply(
                                 "Alterando status de economia em todos os clusters..."
                         )
+				)
+				return
+			}
+
+			if (arg0 == "inspect_donations" && arg1 != null) {
+				val id = arg1.toLong()
+
+				val moneyFromDonations = loritta.getActiveMoneyFromDonationsAsync(id)
+
+				context.reply(
+					LorittaReply(
+						"<@${id}> possui **R$ ${moneyFromDonations}** ativos"
+					)
 				)
 				return
 			}
