@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.TextChannel
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.utils.Emotes
 
 class UnlockCommand : AbstractCommand("unlock", listOf("destrancar"), CommandCategory.ADMIN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.moderation.unlock.description")
@@ -36,19 +37,33 @@ class UnlockCommand : AbstractCommand("unlock", listOf("destrancar"), CommandCat
 				override.manager
 						.grant(Permission.MESSAGE_WRITE)
 						.queue()
+
+				context.reply(
+					LorittaReply(
+						locale["commands.moderation.unlock.allowed", context.config.commandPrefix],
+						"\uD83C\uDF89"
+					)
+				)
+			} else {
+				context.reply(
+					LorittaReply(
+						locale["commands.moderation.unlock.channelAlreadyIsUnlocked", context.config.commandPrefix],
+						Emotes.LORI_CRYING
+					)
+				)
 			}
 		} else { // Bem, na verdade não seria totalmente necessário este else, mas vamos supor que o cara usou o "+unlock" com o chat destravado sem ter travado antes :rolling_eyes:
 			channel.createPermissionOverride(publicRole)
 					.setAllow(Permission.MESSAGE_WRITE)
 					.queue()
+
+			context.reply(
+				LorittaReply(
+					locale["commands.moderation.unlock.allowed", context.config.commandPrefix],
+					"\uD83C\uDF89"
+				)
+			)
 		}
-		
-		context.reply(
-                LorittaReply(
-                        locale["commands.moderation.unlock.allowed", context.config.commandPrefix],
-                        "\uD83C\uDF89"
-                )
-		)
 	}
 	
 	fun getTextChannel(context: CommandContext, input: String?): TextChannel? {

@@ -32,6 +32,7 @@ open class CommandBuilder<context : CommandContext>(
 	var requiredFeatures = listOf<PlatformFeature>()
 	var onlyOwner = false
 	var similarCommands = listOf<String>()
+	var sendTypingStatus = false
 
 	// I don't really like the name of this variable, the reason we purposely prefix this with "builder" is to avoid acessing
 	// "descriptionKey" inside of a command builder block, causing issues.
@@ -126,6 +127,7 @@ open class CommandBuilder<context : CommandContext>(
 			this.requiredFeatures = this@CommandBuilder.requiredFeatures
 			this.onlyOwner = this@CommandBuilder.onlyOwner
 			this.similarCommands = this@CommandBuilder.similarCommands
+			this.sendTypingStatus = this@CommandBuilder.sendTypingStatus
 		}
 	}
 

@@ -78,6 +78,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
                 // ===[ SOCIAL ]===
                 BomDiaECiaTopCommand(this@LorittaDiscord),
+                BomDiaECiaTopLocalCommand(this@LorittaDiscord),
                 RankGlobalCommand(this@LorittaDiscord),
                 RepTopCommand(this@LorittaDiscord),
                 XpNotificationsCommand(this@LorittaDiscord),

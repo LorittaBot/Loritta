@@ -15,9 +15,11 @@ import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
 import com.mrpowergamerbr.loritta.tables.DonationConfigs
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.LorittaShards
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.MiscUtils
+import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -89,8 +91,8 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 
 				val usersWithRolesPayload = try {
 					lorittaShards.queryCluster(cluster, "/api/v1/guilds/$guildId/users-with-any-role/$roleId")
-							.await()
-							.obj
+						.await()
+						.obj
 				} catch (e: ClusterOfflineException) {
 					if (failIfClusterIsOffline)
 						throw e
@@ -130,11 +132,11 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			val badges = mutableListOf<BufferedImage>()
 
 			badges.addAll(
-					loritta.profileDesignManager.badges.filter { it.checkIfUserDeservesBadge(user, profile, mutualGuilds) }
-							.sortedByDescending { it.priority }
-							.map {
-								readImage(File(Loritta.ASSETS, it.badgeFileName))
-							}
+				loritta.profileDesignManager.badges.filter { it.checkIfUserDeservesBadge(user, profile, mutualGuilds) }
+					.sortedByDescending { it.priority }
+					.map {
+						readImage(File(Loritta.ASSETS, it.badgeFileName))
+					}
 			)
 
 			if (isLoriBodyguard) badges += ImageIO.read(File(Loritta.ASSETS + "supervisor.png"))
@@ -161,9 +163,9 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 
 			loritta.newSuspendedTransaction {
 				val results = (ServerConfigs innerJoin DonationConfigs)
-						.select {
-							DonationConfigs.customBadge eq true and (ServerConfigs.id inList mutualGuilds.map { it["id"].string.toLong() })
-						}
+					.select {
+						DonationConfigs.customBadge eq true and (ServerConfigs.id inList mutualGuilds.map { it["id"].string.toLong() })
+					}
 
 				val configs = ServerConfig.wrapRows(results)
 
@@ -226,16 +228,35 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		val bannedState = userProfile.getBannedState()
 
 		if (contextUser != null && bannedState != null) {
-			context.reply(
-					LorittaReply(
-							"${contextUser.asMention} está **banido**",
-							"\uD83D\uDE45"
-					),
-					LorittaReply(
-							"**Motivo:** `${bannedState[BannedUsers.reason]}`",
-							"✍"
-					)
+			val bannedAt = bannedState[BannedUsers.bannedAt]
+			val bannedAtDiff = DateUtils.formatDateDiff(bannedAt, locale)
+			val banExpiresAt = bannedState[BannedUsers.expiresAt]
+			val responses = mutableListOf(
+				LorittaReply(
+					"${contextUser.asMention} está **banido**",
+					"\uD83D\uDE45"
+				),
+				LorittaReply(
+					"**Motivo:** `${bannedState[BannedUsers.reason]}`",
+					"✍"
+				),
+				LorittaReply(
+					"**Data do Banimento:** `${bannedAt.humanize(locale)} ($bannedAtDiff)`",
+					"⏰"
+				)
 			)
+
+			if (banExpiresAt != null) {
+				val banDurationDiff = DateUtils.formatDateDiff(banExpiresAt, locale)
+				responses.add(
+					LorittaReply(
+						"**Duração do banimento:** `$banDurationDiff`",
+						"⏳"
+					)
+				)
+			}
+
+			context.reply(*responses.toTypedArray())
 			return
 		}
 		if (contextUser == null && context.args.isNotEmpty() && (context.args.first() == "shop" || context.args.first() == "loja")) {
@@ -278,29 +299,29 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		val background = loritta.getUserProfileBackground(userProfile)
 
 		val senderUserInfo = ProfileUserInfoData(
-				context.userHandle.idLong,
-				context.userHandle.name,
-				context.userHandle.discriminator,
-				context.userHandle
-						.getEffectiveAvatarUrl(ImageFormat.PNG)
+			context.userHandle.idLong,
+			context.userHandle.name,
+			context.userHandle.discriminator,
+			context.userHandle
+				.getEffectiveAvatarUrl(ImageFormat.PNG)
 		)
 
 		val profileUserInfo = ProfileUserInfoData(
-				user.idLong,
-				user.name,
-				user.discriminator,
-				user.getEffectiveAvatarUrl(ImageFormat.PNG)
+			user.idLong,
+			user.name,
+			user.discriminator,
+			user.getEffectiveAvatarUrl(ImageFormat.PNG)
 		)
 
 		val images = profileCreator.createGif(
-				senderUserInfo,
-				profileUserInfo,
-				userProfile,
-				context.guild,
-				badges,
-				locale,
-				background,
-				aboutMe
+			senderUserInfo,
+			profileUserInfo,
+			userProfile,
+			context.guild,
+			badges,
+			locale,
+			background,
+			aboutMe
 		)
 
 		if (images.size == 1) {
