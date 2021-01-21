@@ -12,6 +12,8 @@ import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
+import net.perfectdreams.loritta.api.commands.ArgumentType
+import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.WarnAction
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
@@ -29,6 +31,14 @@ import java.time.Instant
 object AdminUtils {
 	private val LOCALE_PREFIX = "commands.moderation"
 	val PUNISHMENT_EXAMPLES_KEY = LocaleKeyData("$LOCALE_PREFIX.punishmentExamples")
+	val PUNISHMENT_USAGES = arguments {
+		argument(ArgumentType.USER) {
+			optional = false
+		}
+		argument(ArgumentType.TEXT) {
+			optional = true
+		}
+	}
 
 	/**
 	 * Retrieves the moderation settings for the [serverConfig]
