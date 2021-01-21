@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.plugin.rosbife.commands.BuckShirtCommand
 import net.perfectdreams.loritta.plugin.rosbife.commands.CanellaDvdCommand
 import net.perfectdreams.loritta.plugin.rosbife.commands.CarlyAaahCommand
 import net.perfectdreams.loritta.plugin.rosbife.commands.ChicoAtaCommand
+import net.perfectdreams.loritta.plugin.rosbife.commands.CocieloChavesCommand
 import net.perfectdreams.loritta.plugin.rosbife.commands.DrakeCommand
 import net.perfectdreams.loritta.plugin.rosbife.commands.EdnaldoBandeiraCommand
 import net.perfectdreams.loritta.plugin.rosbife.commands.EdnaldoTvCommand
@@ -63,7 +64,8 @@ class RosbifePlugin(name: String, loritta: LorittaBot) : LorittaPlugin(name, lor
 				EdnaldoTvCommand(this),
 				EdnaldoBandeiraCommand(this),
 				RipTvCommand(this),
-				AttackOnHeartCommand(this)
+				AttackOnHeartCommand(this),
+				CocieloChavesCommand(this)
 		)
 		platformSpecificOnEnable()
 	}

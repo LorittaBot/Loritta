@@ -26,6 +26,7 @@ kotlin {
                 api("io.github.microutils:kotlin-logging-common:1.7.8")
                 api("io.ktor:ktor-client-core:$ktorVersion")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0")
+                api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
             }
         }
 
