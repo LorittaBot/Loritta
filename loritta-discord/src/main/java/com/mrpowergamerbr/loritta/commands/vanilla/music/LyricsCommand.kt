@@ -33,27 +33,12 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
 import javax.imageio.ImageIO
-import kotlin.Int
-import kotlin.String
-import kotlin.apply
 
 class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), category = CommandCategory.MUSIC) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.music.lyrics.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.music.lyrics.examples")
 
 	// TODO: Fix Usage
-
-	override fun getExamples(): List<String> {
-		return listOf(
-				"she - Atomic",
-				"she - Chiptune Memories",
-				"C418 - tsuki no koibumi",
-				"MC Hariel - Tá Fácil Dizer Que Me Ama",
-				"Jack Ü - Jungle Bae",
-				"Pusher - Clear",
-				"Sega - Sonic Boom",
-				"Macklemore & Ryan Lewis - White Walls"
-		)
-	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val args = context.rawArgs

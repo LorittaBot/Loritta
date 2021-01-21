@@ -26,6 +26,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar", "desilenciar"), CommandCategory.ADMIN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.moderation.unmute.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.moderation.unmute.examples")
 
 	override fun getUsage(): CommandArguments {
 		return arguments {
@@ -33,10 +34,6 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 				optional = false
 			}
 		}
-	}
-
-	override fun getExamples(): List<String> {
-		return listOf("159985870458322944")
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {

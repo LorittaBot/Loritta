@@ -15,10 +15,7 @@ import java.io.File
 
 class McConquistaCommand : AbstractCommand("mcconquista", listOf("mcprogresso", "mcadvancement", "mcachievement"), CommandCategory.MINECRAFT) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.minecraft.mcadvancement.description")
-
-	override fun getExamples(): List<String> {
-		return listOf("@Loritta Ser muito fofa!")
-	}
+	override fun getExamplesKey() = LocaleKeyData("commands.minecraft.mcadvancement.examples")
 
 	// TODO: Fix Usage
 

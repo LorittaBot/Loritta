@@ -18,12 +18,9 @@ import java.io.File
 
 class McMoletomCommand : AbstractCommand("mcmoletom", listOf("mcsweater"), CommandCategory.MINECRAFT) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.minecraft.mcsweater.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.minecraft.skinPlayerNameExamples")
 
 	// TODO: Fix Usage
-
-	override fun getExamples(): List<String> {
-		return listOf("Monerk")
-	}
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

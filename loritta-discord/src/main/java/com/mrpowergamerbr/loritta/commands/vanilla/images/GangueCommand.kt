@@ -21,10 +21,7 @@ class GangueCommand : AbstractCommand("gang", listOf("gangue"), CommandCategory.
 	}
 
 	override fun getDescriptionKey() = LocaleKeyData("commands.images.gang.description")
-
-	override fun getExamples(): List<String> {
-		return listOf("@Loritta @MrPowerGamerBR @Best Player @Giovanna_GGold @Nirewen")
-	}
+	override fun getExamplesKey() = LocaleKeyData("commands.images.gang.examples")
 
 	// TODO: Fix Usage
 

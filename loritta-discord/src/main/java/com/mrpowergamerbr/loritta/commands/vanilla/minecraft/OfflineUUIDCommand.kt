@@ -10,12 +10,9 @@ import java.util.*
 
 class OfflineUUIDCommand : AbstractCommand("mcofflineuuid", listOf("offlineuuid"), CommandCategory.MINECRAFT) {
     override fun getDescriptionKey() = LocaleKeyData("commands.minecraft.mcofflineuuid.description")
+    override fun getExamplesKey() = LocaleKeyData("commands.minecraft.playerNameExamples")
 
     // TODO: Fix Usage
-
-    override fun getExamples(): List<String> {
-        return Arrays.asList("Monerk")
-    }
 
     override suspend fun run(context: CommandContext, locale: BaseLocale) {
         if (context.args.size == 1) {

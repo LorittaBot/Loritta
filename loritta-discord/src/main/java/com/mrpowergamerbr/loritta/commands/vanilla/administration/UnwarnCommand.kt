@@ -24,6 +24,7 @@ class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCate
 	}
 
 	override fun getDescriptionKey() = LocaleKeyData("commands.moderation.unwarn.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.moderation.unwarn.examples")
 
 	override fun getUsage(): CommandArguments {
 		return arguments {

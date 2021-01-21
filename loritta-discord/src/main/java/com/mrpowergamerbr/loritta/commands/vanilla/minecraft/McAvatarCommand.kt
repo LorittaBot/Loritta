@@ -12,12 +12,9 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class McAvatarCommand : AbstractCommand("mcavatar", category = CommandCategory.MINECRAFT) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.minecraft.mcavatar.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.minecraft.skinPlayerNameExamples")
 
 	// TODO: Fix Usage
-
-	override fun getExamples(): List<String> {
-		return listOf("Monerk")
-	}
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

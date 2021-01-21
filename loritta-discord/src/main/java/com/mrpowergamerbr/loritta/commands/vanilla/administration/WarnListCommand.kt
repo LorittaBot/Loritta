@@ -24,6 +24,7 @@ class WarnListCommand : AbstractCommand("punishmentlist", listOf("listadeavisos"
 	}
 
 	override fun getDescriptionKey() = LocaleKeyData("$LOCALE_PREFIX.warnlist.description")
+	override fun getExamplesKey() = LocaleKeyData("$LOCALE_PREFIX.warnlist.examples")
 
 	override fun getUsage(): CommandArguments {
 		return arguments {
@@ -31,10 +32,6 @@ class WarnListCommand : AbstractCommand("punishmentlist", listOf("listadeavisos"
 				optional = false
 			}
 		}
-	}
-
-	override fun getExamples(): List<String> {
-		return listOf("159985870458322944")
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {

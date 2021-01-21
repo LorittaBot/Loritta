@@ -10,16 +10,12 @@ import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import java.util.*
 
 class McUUIDCommand : AbstractCommand("mcuuid", category = CommandCategory.MINECRAFT) {
     override fun getDescriptionKey() = LocaleKeyData("commands.minecraft.mcuuid.description")
+    override fun getExamplesKey() = LocaleKeyData("commands.minecraft.playerNameExamples")
 
     // TODO: Fix Usage
-
-    override fun getExamples(): List<String> {
-        return Arrays.asList("Monerk")
-    }
 
     override suspend fun run(context: CommandContext,locale: BaseLocale) {
         if (context.args.size > 0) {

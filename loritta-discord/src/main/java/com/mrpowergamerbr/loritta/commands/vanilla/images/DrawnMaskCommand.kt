@@ -21,7 +21,7 @@ class DrawnMaskCommand : AbstractCommand("drawnmasksign", listOf("drawnmaskplaca
 	}
 
 	override fun getDescriptionKey() = LocaleKeyData(
-			"commands.discord.invite.info",
+			"commands.images.drawnmasksign.description",
 			listOf(
 					LocaleStringData("Drawn Mask")
 			)
