@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.plugin.rosbife.commands.base
 
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -28,7 +29,8 @@ abstract class GabrielaImageServerCommandBase(
         val descriptionKey: String,
         val endpoint: String,
         val fileName: String,
-        val sendTypingStatus: Boolean = false
+        val sendTypingStatus: Boolean = false,
+        val examplesKey: String? = null,
 ) : LorittaAbstractCommandBase(
         loritta,
         labels,
@@ -41,7 +43,7 @@ abstract class GabrielaImageServerCommandBase(
         val examplesKey = when (imageCount) {
             1 -> Command.SINGLE_IMAGE_EXAMPLES_KEY
             2 -> Command.TWO_IMAGES_EXAMPLES_KEY
-            else -> null
+            else -> if (examplesKey != null) LocaleKeyData(examplesKey) else null
         }
 
         if (examplesKey != null)
