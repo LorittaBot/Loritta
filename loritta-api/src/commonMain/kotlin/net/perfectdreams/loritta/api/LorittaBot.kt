@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.api
 
-import io.ktor.client.HttpClient
+import io.ktor.client.*
 import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandContext
 import net.perfectdreams.loritta.api.commands.CommandMap
@@ -20,5 +20,6 @@ abstract class LorittaBot {
 	abstract val pluginManager: PluginManager
 	abstract val assets: LorittaAssets
 	abstract val http: HttpClient
+	abstract val httpWithoutTimeout: HttpClient
 	abstract val random: Random
 }

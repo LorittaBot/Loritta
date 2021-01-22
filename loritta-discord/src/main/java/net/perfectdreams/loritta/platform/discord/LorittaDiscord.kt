@@ -121,6 +121,23 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
             }
         }
     }
+    override val httpWithoutTimeout = HttpClient(Apache) {
+        this.expectSuccess = false
+
+        engine {
+            this.socketTimeout = 60_000
+            this.connectTimeout = 60_000
+            this.connectionRequestTimeout = 60_000
+
+            customizeClient {
+                // Maximum number of socket connections.
+                this.setMaxConnTotal(100)
+
+                // Maximum number of requests for a specific endpoint route.
+                this.setMaxConnPerRoute(100)
+            }
+        }
+    }
     override val random = Random(System.currentTimeMillis())
     private val logger = KotlinLogging.logger {}
 
