@@ -12,10 +12,13 @@ import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
+import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.ImageFormat
 import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
@@ -28,16 +31,14 @@ import java.io.File
 import java.util.*
 
 class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.FUN) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.fun.ship.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.fun.ship.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.fun.ship.examples")
 
-	override fun getExamples(): List<String> {
-		return listOf("@Loritta @SparklyBot")
-	}
-
-	override fun getUsage(): String {
-		return "<usuário 1> <usuário 2>"
+	override fun getUsage() = arguments {
+		argument(ArgumentType.USER) {}
+		argument(ArgumentType.USER) {
+			optional = true
+		}
 	}
 
 	override fun needsToUploadFiles(): Boolean {

@@ -20,15 +20,12 @@ import net.perfectdreams.loritta.utils.Emotes
 class BanInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("baninfo", "infoban", "checkban"), CommandCategory.ADMIN) {
     override fun command() = create {
         localizedDescription("commands.moderation.baninfo.description")
+        localizedExamples("commands.moderation.baninfo.examples")
 
         arguments {
             argument(ArgumentType.USER) {
                 optional = false
             }
-        }
-
-        examples {
-            + "159985870458322944"
         }
 
         userRequiredPermissions = listOf(Permission.BAN_MEMBERS)

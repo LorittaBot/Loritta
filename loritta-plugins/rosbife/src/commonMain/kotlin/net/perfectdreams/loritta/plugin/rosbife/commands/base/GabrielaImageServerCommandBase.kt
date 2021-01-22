@@ -7,6 +7,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.putJsonArray
 import net.perfectdreams.loritta.api.LorittaBot
+import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.CommandContext
 import net.perfectdreams.loritta.api.commands.LorittaAbstractCommandBase
@@ -36,6 +37,15 @@ abstract class GabrielaImageServerCommandBase(
     override fun command() = create {
         localizedDescription(descriptionKey)
         this.sendTypingStatus = this@GabrielaImageServerCommandBase.sendTypingStatus
+
+        val examplesKey = when (imageCount) {
+            1 -> Command.SINGLE_IMAGE_EXAMPLES_KEY
+            2 -> Command.TWO_IMAGES_EXAMPLES_KEY
+            else -> null
+        }
+
+        if (examplesKey != null)
+            localizedExamples(examplesKey)
 
         executes {
             val imagesData = (0 until imageCount).map {

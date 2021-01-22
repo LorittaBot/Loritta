@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.plugin.rosbife.commands
 
 import net.perfectdreams.loritta.api.commands.ArgumentType
+import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.utils.image.JVMImage
 import net.perfectdreams.loritta.plugin.rosbife.RosbifePlugin
 import net.perfectdreams.loritta.plugin.rosbife.commands.base.ImageAbstractCommandBase
@@ -10,6 +11,7 @@ import java.awt.image.BufferedImage
 class ToBeContinuedCommand(m: RosbifePlugin) : ImageAbstractCommandBase(m.loritta, listOf("tobecontinued")) {
 	override fun command() = create {
 		localizedDescription("commands.images.tobecontinued.description")
+		localizedExamples(Command.SINGLE_IMAGE_EXAMPLES_KEY)
 
 		usage {
 			argument(ArgumentType.TEXT) {}

@@ -13,19 +13,13 @@ class RenameChannelCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase
     }
     override fun command() = create {
         localizedDescription("$LOCALE_PREFIX.renamechannel.description")
+        localizedExamples("$LOCALE_PREFIX.renamechannel.examples")
 
         usage {
             arguments {
                 argument(ArgumentType.TEXT) {}
                 argument(ArgumentType.TEXT) {}
             }
-        }
-
-        examples {
-            + "#lori-é-fofis lori é fofis"
-            + "297732013006389252 bate-papo"
-            + "lorota-pantufa lorota & pantufa"
-            + "bate-papo \uD83D\uDE0E | bate-papo"
         }
 
         canUseInPrivateChannel = false

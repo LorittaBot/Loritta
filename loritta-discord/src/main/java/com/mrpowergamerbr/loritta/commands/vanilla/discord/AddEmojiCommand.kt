@@ -3,10 +3,10 @@ package com.mrpowergamerbr.loritta.commands.vanilla.discord
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Icon
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
@@ -14,9 +14,10 @@ import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji", "createemoji", "criaremoji"), CommandCategory.DISCORD) {
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(): CommandArguments {
 		return arguments {
 			argument(ArgumentType.TEXT) {
 				optional = false
@@ -27,9 +28,7 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji", "cr
 		}
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.discord.addemoji.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.discord.addemoji.description")
 
 	override fun getDiscordPermissions(): List<Permission> {
 		return listOf(Permission.MANAGE_EMOTES)

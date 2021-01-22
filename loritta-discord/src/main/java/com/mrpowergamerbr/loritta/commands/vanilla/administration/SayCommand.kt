@@ -2,27 +2,27 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LorittaPermission
+import com.mrpowergamerbr.loritta.utils.MessageUtils
+import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import com.mrpowergamerbr.loritta.utils.remove
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.TextChannel
+import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import java.util.*
 
 class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.moderation.say.description"]
-	}
-
-	override fun getUsage(): String {
-		return "mensagem"
-	}
-
-	override fun getExamples(): List<String> {
-		return Arrays.asList("Eu sou fofa! :3")
+	override fun getDescriptionKey() = LocaleKeyData("commands.moderation.say.description")
+	override fun getExamplesKey()  = LocaleKeyData("commands.moderation.say.examples")
+	override fun getUsage() = arguments {
+		argument(ArgumentType.TEXT) {}
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {

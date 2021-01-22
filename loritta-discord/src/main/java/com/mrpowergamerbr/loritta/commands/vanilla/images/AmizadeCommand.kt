@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.ImageFormat
 import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
@@ -24,17 +25,11 @@ class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), CommandC
 		val TEMPLATE_OVERLAY by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "amizade_overlay.png")) }
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.images.friendship.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.images.friendship.description")
+	// TODO: Needs to be two users
+	// override fun getExamplesKey() = Command.TWO_IMAGES_EXAMPLES_KEY
 
-	override fun getExamples(): List<String> {
-		return listOf("@Tatsumaki @Loritta")
-	}
-
-	override fun getUsage(): String {
-		return "<usuário 1> <usuário 2>"
-	}
+	// TODO: Fix Usage
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

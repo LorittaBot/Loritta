@@ -3,19 +3,16 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import java.util.*
 
 class RoleIdCommand : AbstractCommand("roleid", listOf("cargoid", "iddocargo"), CommandCategory.ADMIN) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.moderation.roleId.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.moderation.roleId.description")
 
-	override fun getUsage(): String {
-		return "CargoMencionado"
-	}
+	// TODO: Fix getUsage
 
 	override fun getExamples(): List<String> {
 		return Arrays.asList("Moderadores")

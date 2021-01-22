@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -19,12 +20,10 @@ import java.awt.Rectangle
 import java.awt.image.BufferedImage
 import java.io.File
 import java.util.*
-import javax.imageio.ImageIO
 
 class TodoGrupoTemCommand : AbstractCommand("everygrouphas", listOf("todogrupotem"), CommandCategory.IMAGES) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.images.everygrouphas.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.images.everygrouphas.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.images.everygrouphas.examples")
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

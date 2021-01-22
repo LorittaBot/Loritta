@@ -1,6 +1,8 @@
 package net.perfectdreams.loritta.api.commands
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import com.mrpowergamerbr.loritta.utils.locale.LocaleStringData
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.platform.PlatformFeature
 
@@ -32,6 +34,14 @@ open class CommandBuilder<context : CommandContext>(
 	var similarCommands = listOf<String>()
 	var sendTypingStatus = false
 
+	// I don't really like the name of this variable, the reason we purposely prefix this with "builder" is to avoid acessing
+	// "descriptionKey" inside of a command builder block, causing issues.
+	// (Example: You want to access a variable named "descriptionKey" within your builder block... it would get the "MISSING_DESCRIPTION_KEY" key!)
+	//
+	// And yes, this can't be "private" because then classes extending the builder can't access the description key
+	var builderDescriptionKey = Command.MISSING_DESCRIPTION_KEY
+	var builderExamplesKey: LocaleKeyData? = null
+
 	var descriptionCallback: ((BaseLocale) -> (String))? = null
 	var usageCallback: (CommandArgumentsBuilder.() -> Unit)? = null
 	var examplesCallback: ((BaseLocale) -> (List<String>))? = null
@@ -40,12 +50,27 @@ open class CommandBuilder<context : CommandContext>(
 	/**
 	 * Gets the description from the specified [localeKey] with the [arguments] from the [BaseLocale]
 	 *
-	 * This is a helper method for the [description] method
+	 * This does not use the [descriptionCallback]!
+	 *
+	 * This is a helper method for the [localizedDescription] method
 	 *
 	 * @see BaseLocale
-	 * @see description
+	 * @see descriptionKey
 	 */
-	fun localizedDescription(localeKey: String, vararg arguments: Any?) = description { it.get(localeKey, *arguments) }
+	fun localizedDescription(localeKey: String, vararg arguments: Any?)
+			= localizedDescription(LocaleKeyData(localeKey, arguments.map { LocaleStringData(it.toString()) }))
+
+	/**
+	 * Gets the description from the specified [localeKey] with the [arguments] from the [BaseLocale]
+	 *
+	 * This does not use the [descriptionCallback]!
+	 *
+	 * @see BaseLocale
+	 * @see descriptionKey
+	 */
+	fun localizedDescription(localeKey: LocaleKeyData) {
+		builderDescriptionKey = localeKey
+	}
 
 	fun description(callback: (BaseLocale) -> (String)) {
 		this.descriptionCallback = callback
@@ -63,16 +88,11 @@ open class CommandBuilder<context : CommandContext>(
 	 * @see BaseLocale
 	 * @see description
 	 */
-	fun localizedExamples(localeKey: String, vararg arguments: Any?) = examples {
-		examples.addAll(it.getList(localeKey, arguments))
-	}
+	fun localizedExamples(localeKey: String, vararg arguments: Any?)
+			= localizedExamples(LocaleKeyData(localeKey, arguments.map { LocaleStringData(it.toString()) }))
 
-	fun examples(callback: ExamplesWrapper.(BaseLocale) -> (Unit)) {
-		this.examplesCallback = {
-			val examplesWrapper = ExamplesWrapper()
-			callback.invoke(examplesWrapper, it)
-			examplesWrapper.examples
-		}
+	fun localizedExamples(localeKey: LocaleKeyData) {
+		builderExamplesKey = localeKey
 	}
 
 	fun executes(callback: suspend context.() -> (Unit)) {
@@ -89,9 +109,12 @@ open class CommandBuilder<context : CommandContext>(
 				labels = labels,
 				commandName = commandName,
 				category = category,
-				description = descriptionCallback ?: { "???" },
+				descriptionKey = builderDescriptionKey,
+				description = descriptionCallback ?: {
+					it.get(builderDescriptionKey)
+				},
 				usage = usage,
-				examples = examplesCallback,
+				examplesKey = builderExamplesKey,
 				executor = executeCallback!!
 		).apply { build2().invoke(this) }
 	}

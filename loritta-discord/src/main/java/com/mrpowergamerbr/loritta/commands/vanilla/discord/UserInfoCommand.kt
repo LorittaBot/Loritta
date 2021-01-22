@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
@@ -24,9 +25,7 @@ import net.perfectdreams.loritta.platform.discord.utils.UserFlagBadgeEmotes.getB
 import net.perfectdreams.loritta.utils.Emotes
 
 class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), CommandCategory.DISCORD) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.discord.userinfo.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.discord.userinfo.description")
 
 	override fun canUseInPrivateChannel(): Boolean {
 		return false

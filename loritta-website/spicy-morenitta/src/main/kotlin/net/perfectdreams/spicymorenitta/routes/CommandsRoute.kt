@@ -3,8 +3,22 @@ package net.perfectdreams.spicymorenitta.routes
 import io.ktor.client.request.*
 import kotlinx.browser.document
 import kotlinx.browser.window
-import kotlinx.html.*
+import kotlinx.html.code
+import kotlinx.html.div
 import kotlinx.html.dom.append
+import kotlinx.html.h1
+import kotlinx.html.hr
+import kotlinx.html.id
+import kotlinx.html.img
+import kotlinx.html.ins
+import kotlinx.html.p
+import kotlinx.html.script
+import kotlinx.html.style
+import kotlinx.html.table
+import kotlinx.html.td
+import kotlinx.html.th
+import kotlinx.html.thead
+import kotlinx.html.tr
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.JSON
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -28,6 +42,8 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
             val result = http.get<String> {
                 url("${window.location.origin}/api/v1/loritta/commands/${locale.id}")
             }
+
+            val locale = locale
 
             val list = JSON.nonstrict.decodeFromString(ListSerializer(CommandInfo.serializer()), result)
 
@@ -130,12 +146,18 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
                                                     if (usage != null) {
                                                         + " "
                                                         code {
-                                                            + usage
+                                                            + usage.build(locale)
                                                         }
                                                     }
                                                 }
                                                 td {
-                                                    + (command.description ?: "-")
+                                                    val descriptionKey = command.description
+
+                                                    if (descriptionKey != null) {
+                                                        + locale.get(descriptionKey)
+                                                    } else {
+                                                        + "-"
+                                                    }
                                                 }
                                                 td {
                                                     + (command.aliases.joinToString(", "))

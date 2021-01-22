@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.perfectdreams.loritta.api.commands.ArgumentType
@@ -16,19 +17,14 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 
 class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "reputacao"), CommandCategory.SOCIAL) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.social.reputation.description"]
-	}
-
-	override fun getExamples(): List<String> {
-		return listOf("@Loritta", "@MrPowerGamerBR")
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.social.reputation.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.social.reputation.examples")
 
 	override fun canUseInPrivateChannel(): Boolean {
 		return false
 	}
 
-	override fun getUsage(locale: BaseLocale) = arguments {
+	override fun getUsage() = arguments {
 		argument(ArgumentType.USER) {}
 	}
 

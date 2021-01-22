@@ -26,17 +26,12 @@ class FortniteNotifyCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m
 
 	override fun command() = create {
 		localizedDescription("${LOCALE_PREFIX}.description")
+		localizedExamples("commands.fortnite.itemsExamples")
+
 		needsToUploadFiles = true
 
 		usage {
 			argument(ArgumentType.TEXT) {}
-		}
-
-		examples {
-			+ "Skull Trooper"
-			+ "Ghoul Trooper"
-			+ "Tsuki"
-			+ "Savor the W"
 		}
 
 		executesDiscord {

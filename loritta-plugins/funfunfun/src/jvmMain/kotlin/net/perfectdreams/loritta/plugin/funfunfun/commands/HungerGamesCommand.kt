@@ -24,6 +24,7 @@ class HungerGamesCommand(m: FunFunFunPlugin) : DiscordAbstractCommandBase(m.lori
         loritta as Loritta
 
         localizedDescription("$LOCALE_PREFIX.description")
+        localizedExamples("$LOCALE_PREFIX.examples")
 
         usage {
             repeat(24) {

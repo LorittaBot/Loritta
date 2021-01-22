@@ -26,6 +26,7 @@ class CortesFlowCommand(
 ) {
     override fun command() = create {
         localizedDescription("commands.images.cortesflow.description")
+        localizedExamples("commands.images.cortesflow.examples")
 
         needsToUploadFiles = true
 

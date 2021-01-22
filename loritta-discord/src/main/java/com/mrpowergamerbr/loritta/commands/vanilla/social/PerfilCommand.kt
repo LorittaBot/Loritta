@@ -14,10 +14,16 @@ import com.mrpowergamerbr.loritta.gifs.GifSequenceWriter
 import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
 import com.mrpowergamerbr.loritta.tables.DonationConfigs
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.DateUtils
+import com.mrpowergamerbr.loritta.utils.LorittaShards
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import net.dv8tion.jda.api.entities.User
@@ -27,7 +33,11 @@ import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.tables.BotVotes
-import net.perfectdreams.loritta.utils.*
+import net.perfectdreams.loritta.utils.ClusterOfflineException
+import net.perfectdreams.loritta.utils.DiscordUtils
+import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.ImageFormat
+import net.perfectdreams.loritta.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
 import net.perfectdreams.loritta.utils.extensions.readImage
 import org.jetbrains.exposed.sql.and
@@ -187,9 +197,8 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		}
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.social.profile.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.social.profile.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.social.profile.examples")
 
 	override fun canUseInPrivateChannel(): Boolean {
 		return false
@@ -199,7 +208,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		return true
 	}
 
-	override fun getUsage(locale: BaseLocale) = arguments {
+	override fun getUsage() = arguments {
 		argument(ArgumentType.USER) {
 			optional = true
 		}
@@ -337,4 +346,3 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		}
 	}
 }
-

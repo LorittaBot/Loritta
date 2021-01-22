@@ -7,7 +7,10 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Font
@@ -16,19 +19,14 @@ import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
 import java.awt.image.BufferedImage
 import java.io.File
-import javax.imageio.ImageIO
 
 class LavaReversoCommand : AbstractCommand("lavareverse", listOf("lavareverso", "reverselava"), CommandCategory.IMAGES) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.images.reverselava.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.images.reverselava.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.images.reverselavaqq\\.examples")
 
-	override fun getExamples(): List<String> {
-		return listOf("@Loritta servidores brasileiros")
-	}
-
-	override fun getUsage(): String {
-		return "<imagem>"
+	override fun getUsage() = arguments {
+		argument(ArgumentType.IMAGE) {}
+		argument(ArgumentType.TEXT) {}
 	}
 
 	override fun needsToUploadFiles(): Boolean {
