@@ -59,7 +59,7 @@ abstract class GabrielaImageServerCommandBase(
                 }
             }
 
-            val response = loritta.httpWithoutTimeout.post<HttpResponse>("https://gabriela-canary.loritta.website$endpoint") {
+            val response = loritta.httpWithoutTimeout.post<HttpResponse>("https://gabriela.loritta.website$endpoint") {
                 body = buildJsonObject {
                     putJsonArray("images") {
                         for (data in imagesData)
