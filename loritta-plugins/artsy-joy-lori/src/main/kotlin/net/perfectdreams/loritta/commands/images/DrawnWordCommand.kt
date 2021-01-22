@@ -26,15 +26,12 @@ class DrawnWordCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lor
         needsToUploadFiles = true
 
         localizedDescription("$LOCALE_PREFIX.drawnword.description")
+        localizedExamples("$LOCALE_PREFIX.drawnword.examples")
 
         usage {
             arguments {
                 argument(ArgumentType.TEXT) {}
             }
-        }
-
-        examples {
-            localizedExamples("$LOCALE_PREFIX.drawnword.examples")
         }
 
         executesDiscord {

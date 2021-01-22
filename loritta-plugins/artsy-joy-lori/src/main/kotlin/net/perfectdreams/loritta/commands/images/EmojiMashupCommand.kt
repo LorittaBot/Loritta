@@ -1,16 +1,16 @@
 package net.perfectdreams.loritta.commands.images
 
 import com.mrpowergamerbr.loritta.utils.Constants
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.perfectdreams.loritta.api.commands.*
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.api.utils.image.JVMImage
-import net.perfectdreams.loritta.utils.EmojiMasher
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
+import net.perfectdreams.loritta.utils.EmojiMasher
 import java.io.File
 
 open class EmojiMashupCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("emojimashup", "emojismashup", "mashupemoji", "mashupemojis", "mituraremojis", "misturaremoji"), CommandCategory.IMAGES) {
@@ -20,6 +20,7 @@ open class EmojiMashupCommand(loritta: LorittaDiscord) : DiscordAbstractCommandB
 
 	override fun command() = create {
 		localizedDescription("$LOCALE_PREFIX.emojimashup.description")
+		localizedExamples("$LOCALE_PREFIX.emojimashup.examples")
 
 		usage {
 			arguments {
@@ -32,14 +33,6 @@ open class EmojiMashupCommand(loritta: LorittaDiscord) : DiscordAbstractCommandB
 					optional = true
 				}
 			}
-		}
-
-		examples {
-			listOf(
-					"\uD83D\uDE0E \uD83D\uDE02",
-					"\uD83E\uDD20 \uD83D\uDE2D \uD83D\uDE0E",
-					"\uD83D\uDCA9 \uD83E\uDD11 \uD83D\uDE18 \uD83D\uDE05"
-			)
 		}
 
 		executesDiscord {

@@ -17,11 +17,7 @@ class MalAnimeCommand(val m: MalCommandsPlugin) : DiscordAbstractCommandBase(m.l
 
     override fun command() = create {
         localizedDescription("$LOCALE_PREFIX.description")
-
-        examples {
-            + "Nichijou"
-            + "Pop Team Epic"
-        }
+        localizedExamples("$LOCALE_PREFIX.examples")
 
         usage {
             argument(ArgumentType.TEXT) {}

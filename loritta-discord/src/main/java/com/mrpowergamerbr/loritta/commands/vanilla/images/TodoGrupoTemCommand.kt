@@ -23,6 +23,7 @@ import java.util.*
 
 class TodoGrupoTemCommand : AbstractCommand("everygrouphas", listOf("todogrupotem"), CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.images.everygrouphas.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.images.everygrouphas.examples")
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

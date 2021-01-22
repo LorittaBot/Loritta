@@ -12,18 +12,12 @@ import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractComman
 class DashboardCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("dashboard", "painel", "configurar", "config"), CommandCategory.ADMIN) {
     override fun command() = create {
         localizedDescription("commands.moderation.dashboard.description")
+        localizedExamples("commands.moderation.dashboard.examples")
 
         arguments {
             argument(ArgumentType.TEXT) {
                 optional = true
             }
-        }
-
-        examples {
-            listOf(
-                    "",
-                    "\uD83D\uDE45"
-            )
         }
 
         executesDiscord {

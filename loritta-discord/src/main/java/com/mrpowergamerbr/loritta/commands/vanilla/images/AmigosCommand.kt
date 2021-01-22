@@ -9,7 +9,9 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import net.dv8tion.jda.api.entities.Member
+import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.utils.ImageFormat
 import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
 import java.awt.image.BufferedImage
@@ -22,6 +24,15 @@ class AmigosCommand : AbstractCommand("friends", listOf("amigos", "meusamigos", 
 	}
 
 	override fun getDescriptionKey() = LocaleKeyData("commands.images.friends.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.images.lava.examples")
+
+	override fun getUsage() = arguments {
+		repeat(9) {
+			argument(ArgumentType.USER) {
+				optional = true
+			}
+		}
+	}
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

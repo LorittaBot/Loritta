@@ -19,7 +19,8 @@ class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "ico
 		private const val LOCALE_PREFIX = "commands.discord.servericon"
 	}
 
-	override fun getDescriptionKey() = LocaleKeyData("commands.discord.servericon.description")
+	override fun getDescriptionKey() = LocaleKeyData("$LOCALE_PREFIX.description")
+	override fun getExamplesKey() = LocaleKeyData("$LOCALE_PREFIX.examples")
 
 	override fun canUseInPrivateChannel(): Boolean {
 		return false

@@ -23,10 +23,7 @@ class CoinFlipBetStatsCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractC
 ) {
 	override fun command() = create {
 		localizedDescription("commands.economy.flipcoinbetstats.description")
-
-		examples {
-			+ "@MrPowerGamerBR"
-		}
+		localizedExamples("commands.economy.flipcoinbetstats.examples")
 
 		usage {
 			arguments {
