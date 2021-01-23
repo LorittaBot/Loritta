@@ -11,7 +11,6 @@ class HelpingHandsPlugin(name: String, loritta: LorittaDiscord) : LorittaDiscord
 				CoinFlipBetStatsCommand(this),
 				CoinFlipBetCommand(this),
 				RepListCommand(this),
-				// TestCommand(this),
 				GuessNumberCommand(this),
 				EmojiFightCommand(this),
 				EmojiFightBetCommand(this)
