@@ -23,6 +23,7 @@ import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.utils.AccountUtils
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.NumberUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -147,6 +148,8 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 				if (!checkIfSelfAccountIsOldEnough(context))
 					return
 				if (!checkIfOtherAccountIsOldEnough(context, user))
+					return
+				if (!checkIfSelfAccountGotDailyRecently(context))
 					return
 
 				var tellUserLorittaIsGrateful = false
@@ -284,6 +287,22 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 		} else {
 			context.explain()
 		}
+	}
+
+	private suspend fun checkIfSelfAccountGotDailyRecently(context: CommandContext): Boolean {
+		// Check if the user got daily in the last 14 days before allowing a transaction
+		val dailyRewardInTheLastXDays = AccountUtils.getUserDailyRewardInTheLastXDays(context.lorittaUser.profile, 14)
+
+		if (dailyRewardInTheLastXDays == null) {
+			context.reply(
+					LorittaReply(
+							context.locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", context.config.commandPrefix],
+							Constants.ERROR
+					)
+			)
+			return false
+		}
+		return true
 	}
 
 	private suspend fun checkIfSelfAccountIsOldEnough(context: CommandContext): Boolean {

@@ -22,6 +22,7 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.utils.AccountUtils
 import java.util.*
 
 class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lorifa"), CommandCategory.ECONOMY) {
@@ -55,12 +56,12 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 		if (arg0 == "comprar" || arg0 == "buy") {
 			val quantity = Math.max(context.args.getOrNull(1)?.toIntOrNull() ?: 1, 1)
 
-			val (canGetDaily, tomorrow) = context.lorittaUser.profile.canGetDaily()
+			val dailyReward = AccountUtils.getUserTodayDailyReward(context.lorittaUser.profile)
 
-			if (canGetDaily) { // Nós apenas queremos permitir que a pessoa aposte na rifa caso já tenha pegado sonhos alguma vez hoje
+			if (dailyReward == null) { // Nós apenas queremos permitir que a pessoa aposte na rifa caso já tenha pegado sonhos alguma vez hoje
 				context.reply(
                         LorittaReply(
-                                "Parece que você ainda não pegou o seu daily, você só pode apostar na rifa após ter pegado o seu daily de hoje. Pegue agora mesmo! ${loritta.instanceConfig.loritta.website.url}daily",
+                                locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", context.config.commandPrefix],
                                 Constants.ERROR
                         )
 				)

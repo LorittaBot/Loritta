@@ -103,6 +103,10 @@ class CoinFlipBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComman
 			if (number > invitedUserProfile.money || bannedState != null)
 				fail(locale["commands.economy.flipcoinbet.notEnoughMoneyInvited", invitedUser.asMention], Constants.ERROR)
 
+			// Only allow users to participate in a coin flip bet if the user got their daily reward today
+			AccountUtils.getUserTodayDailyReward(lorittaUser.profile)
+					?: fail(locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", serverConfig.commandPrefix], Constants.ERROR)
+
 			val message = reply(
 					LorittaReply(
 						if (hasNoTax)

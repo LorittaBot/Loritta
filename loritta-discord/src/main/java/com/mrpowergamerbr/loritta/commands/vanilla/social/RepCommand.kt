@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.utils.AccountUtils
 import net.perfectdreams.loritta.utils.Emotes
 
 class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "reputacao"), CommandCategory.SOCIAL) {
@@ -55,6 +56,18 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
                                 message = locale["commands.social.reputation.repSelf"],
                                 prefix = Constants.ERROR
                         )
+				)
+				return
+			}
+
+			val dailyReward = AccountUtils.getUserTodayDailyReward(context.lorittaUser.profile)
+
+			if (dailyReward == null) { // Nós apenas queremos permitir que a pessoa aposte na rifa caso já tenha pegado sonhos alguma vez hoje
+				context.reply(
+						LorittaReply(
+								locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", context.config.commandPrefix],
+								Constants.ERROR
+						)
 				)
 				return
 			}
