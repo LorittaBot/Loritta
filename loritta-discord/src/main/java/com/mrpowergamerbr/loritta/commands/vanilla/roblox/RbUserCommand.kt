@@ -10,6 +10,7 @@ import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import io.ktor.client.request.*
 import io.ktor.http.*
@@ -30,13 +31,9 @@ import java.time.Instant
 import java.time.format.DateTimeFormatter
 
 class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCategory.ROBLOX) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.roblox.rbuser.robloxId"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.roblox.rbuser.robloxId")
 
-	override fun getUsage(): String {
-		return "nickname"
-	}
+	// TODO: Fix Usage
 
 	override fun getExamples(): List<String> {
 		return listOf("cazum8", "lol738236")

@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.plugin.rosbife.commands
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import net.perfectdreams.loritta.api.commands.ArgumentType
+import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.utils.extensions.enableFontAntiAliasing
 import net.perfectdreams.loritta.api.utils.image.JVMImage
 import net.perfectdreams.loritta.plugin.rosbife.RosbifePlugin
@@ -16,6 +17,7 @@ import java.io.File
 class MorrePragaCommand(m: RosbifePlugin) : ImageAbstractCommandBase(m.loritta, listOf("dieplague", "morrepraga")) {
 	override fun command() = create {
 		localizedDescription("commands.images.morrepraga.description")
+		localizedExamples(Command.SINGLE_IMAGE_EXAMPLES_KEY)
 
 		usage {
 			argument(ArgumentType.IMAGE) {}

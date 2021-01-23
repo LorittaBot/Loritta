@@ -17,11 +17,7 @@ class EmojiFightBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComm
 ) {
 	override fun command() = create {
 		localizedDescription("commands.economy.emojifightbet.description")
-
-		examples {
-			+ "100"
-			+ "1000"
-		}
+		localizedExamples("commands.economy.emojifightbet.examples")
 
 		usage {
 			arguments {

@@ -1,7 +1,12 @@
 package net.perfectdreams.loritta.api.commands
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleDataType
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import com.mrpowergamerbr.loritta.utils.locale.LocaleStringData
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class CommandArguments(val arguments: List<CommandArgument>) {
 	fun build(locale: BaseLocale): String {
 		val builder = StringBuilder()
@@ -13,12 +18,13 @@ data class CommandArguments(val arguments: List<CommandArgument>) {
 	}
 }
 
+@Serializable
 data class CommandArgument(
 		val type: ArgumentType,
 		val optional: Boolean,
-		val defaultValue: String? = null,
-		val text: String? = null,
-		val explanation: String? = null
+		val defaultValue: LocaleDataType? = null,
+		val text: LocaleDataType? = null,
+		val explanation: LocaleDataType? = null
 ) {
 	fun build(locale: BaseLocale): String {
 		return build(StringBuilder(), locale).toString()
@@ -30,6 +36,18 @@ data class CommandArgument(
 		else
 			builder.append('<')
 		builder.append(this.text ?: this.type.localized(locale))
+		if (defaultValue != null) {
+			builder.append('=')
+			when (defaultValue) {
+				is LocaleKeyData -> {
+					builder.append(locale.get(defaultValue))
+				}
+				is LocaleStringData -> {
+					builder.append(defaultValue.text)
+				}
+				else -> throw IllegalArgumentException("I don't know how to process a $defaultValue!")
+			}
+		}
 		if (this.optional)
 			builder.append(']')
 		else
@@ -38,6 +56,7 @@ data class CommandArgument(
 	}
 }
 
+@Serializable
 enum class ArgumentType {
 	TEXT,
 	NUMBER,
@@ -72,9 +91,9 @@ class CommandArgumentsBuilder {
 
 class CommandArgumentBuilder {
 	var optional = false
-	var defaultValue: String? = null
-	var text: String? = null
-	var explanation: Any? = null
+	var defaultValue: LocaleDataType? = null
+	var text: LocaleDataType? = null
+	var explanation: LocaleDataType? = null
 
-	fun build(type: ArgumentType): CommandArgument = CommandArgument(type, optional, defaultValue, text, explanation?.toString())
+	fun build(type: ArgumentType): CommandArgument = CommandArgument(type, optional, defaultValue, text, explanation)
 }

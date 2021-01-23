@@ -2,17 +2,17 @@ package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.TextChannel
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.utils.Emotes
 
 class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), CommandCategory.ADMIN) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.moderation.lock.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.moderation.lock.description")
 	
 	override fun getDiscordPermissions(): List<Permission> {
 		return listOf(Permission.MANAGE_SERVER)
@@ -37,19 +37,33 @@ class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), Command
 				override.manager
 						.deny(Permission.MESSAGE_WRITE)
 						.queue()
+
+				context.reply(
+					LorittaReply(
+						locale["commands.moderation.lock.denied", context.config.commandPrefix],
+						"\uD83C\uDF89"
+					)
+				)
+			} else {
+				context.reply(
+					LorittaReply(
+						locale["commands.moderation.lock.channelAlreadyIsLocked", context.config.commandPrefix],
+						Emotes.LORI_CRYING
+					)
+				)
 			}
 		} else {
 			channel.createPermissionOverride(publicRole)
 					.setDeny(Permission.MESSAGE_WRITE)
 					.queue()
+
+			context.reply(
+				LorittaReply(
+					locale["commands.moderation.lock.denied", context.config.commandPrefix],
+					"\uD83C\uDF89"
+				)
+			)
 		}
-		
-		context.reply(
-                LorittaReply(
-                        locale["commands.moderation.lock.denied", context.config.commandPrefix],
-                        "\uD83C\uDF89"
-                )
-		)
 	}
 	
 	fun getTextChannel(context: CommandContext, input: String?): TextChannel? {

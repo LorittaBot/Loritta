@@ -12,10 +12,13 @@ import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
+import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.ImageFormat
 import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
@@ -28,16 +31,14 @@ import java.io.File
 import java.util.*
 
 class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.FUN) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.fun.ship.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.fun.ship.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.fun.ship.examples")
 
-	override fun getExamples(): List<String> {
-		return listOf("@Loritta @SparklyBot")
-	}
-
-	override fun getUsage(): String {
-		return "<usuário 1> <usuário 2>"
+	override fun getUsage() = arguments {
+		argument(ArgumentType.USER) {}
+		argument(ArgumentType.USER) {
+			optional = true
+		}
 	}
 
 	override fun needsToUploadFiles(): Boolean {
@@ -195,15 +196,19 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 			graphics.drawImage(resizedEmoji, 142, 10, null)
 			graphics.drawImage(avatar2, 256, 0, null)
 
+			val r = (255.0 * (percentage / 100.0)).toInt()
+			val g = (132.0 * (percentage / 100.0)).toInt()
+			val b = (188.0 * (percentage / 100.0)).toInt()
+
 			val embed = EmbedBuilder()
-			embed.setColor(Color(255, 132, 188))
+			embed.setColor(Color(r,g,b))
 
 			var text = "[`"
 			for (i in 0..100 step 10) {
-				if (percentage >= i) {
-					text += "█"
+				text += if (percentage >= i) {
+					"█"
 				} else {
-					text += "."
+					"."
 				}
 			}
 			text += "`]"

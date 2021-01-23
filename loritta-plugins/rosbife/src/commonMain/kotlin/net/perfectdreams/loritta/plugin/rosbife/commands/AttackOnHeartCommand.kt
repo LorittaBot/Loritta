@@ -9,5 +9,6 @@ class AttackOnHeartCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		1,
 		"commands.images.attackonheart.description",
 		"/api/v1/videos/attack-on-heart",
-		"attack_on_heart.mp4"
+		"attack_on_heart.mp4",
+		sendTypingStatus = true
 )

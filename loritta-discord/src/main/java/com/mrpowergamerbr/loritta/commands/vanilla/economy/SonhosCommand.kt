@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
@@ -15,9 +16,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.math.BigDecimal
 
 class SonhosCommand : AbstractCommand("sonhos", listOf("atm", "bal", "balance"), category = CommandCategory.ECONOMY) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.economy.sonhos.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.economy.sonhos.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.economy.sonhos.examples")
 
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		val retrieveDreamsFromUser = context.getUserAt(0) ?: context.userHandle

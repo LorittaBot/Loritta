@@ -6,6 +6,8 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import com.mrpowergamerbr.loritta.utils.locale.LocaleStringData
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
@@ -19,9 +21,12 @@ import java.awt.Color
 class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak", "lang"), category = CommandCategory.MISC) {
     private val resetPersonalLanguageEmote = "\uD83D\uDE45"
 
-    override fun getDescription(locale: BaseLocale): String {
-        return locale["commands.misc.language.description", "\uD83D\uDE0A"]
-    }
+    override fun getDescriptionKey() = LocaleKeyData(
+            "commands.misc.language.description",
+            listOf(
+                    LocaleStringData("\uD83D\uDE0A")
+            )
+    )
 
     override fun getDiscordPermissions(): List<Permission> {
         return listOf(Permission.MANAGE_SERVER)

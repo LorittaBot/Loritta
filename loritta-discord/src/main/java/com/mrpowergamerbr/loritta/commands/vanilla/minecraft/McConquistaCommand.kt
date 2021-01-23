@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.remove
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.extensions.readImage
@@ -13,17 +14,10 @@ import java.awt.image.BufferedImage
 import java.io.File
 
 class McConquistaCommand : AbstractCommand("mcconquista", listOf("mcprogresso", "mcadvancement", "mcachievement"), CommandCategory.MINECRAFT) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.minecraft.mcadvancement.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.minecraft.mcadvancement.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.minecraft.mcadvancement.examples")
 
-	override fun getExamples(): List<String> {
-		return listOf("@Loritta Ser muito fofa!")
-	}
-
-	override fun getUsage(): String {
-		return "texto"
-	}
+	// TODO: Fix Usage
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

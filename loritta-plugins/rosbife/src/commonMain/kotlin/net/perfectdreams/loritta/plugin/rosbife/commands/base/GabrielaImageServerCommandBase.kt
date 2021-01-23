@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.plugin.rosbife.commands.base
 
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -7,6 +8,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.putJsonArray
 import net.perfectdreams.loritta.api.LorittaBot
+import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.CommandContext
 import net.perfectdreams.loritta.api.commands.LorittaAbstractCommandBase
@@ -27,6 +29,8 @@ abstract class GabrielaImageServerCommandBase(
         val descriptionKey: String,
         val endpoint: String,
         val fileName: String,
+        val sendTypingStatus: Boolean = false,
+        val examplesKey: String? = null,
 ) : LorittaAbstractCommandBase(
         loritta,
         labels,
@@ -34,6 +38,16 @@ abstract class GabrielaImageServerCommandBase(
 ) {
     override fun command() = create {
         localizedDescription(descriptionKey)
+        this.sendTypingStatus = this@GabrielaImageServerCommandBase.sendTypingStatus
+
+        val examplesKey = when (imageCount) {
+            1 -> Command.SINGLE_IMAGE_EXAMPLES_KEY
+            2 -> Command.TWO_IMAGES_EXAMPLES_KEY
+            else -> if (examplesKey != null) LocaleKeyData(examplesKey) else null
+        }
+
+        if (examplesKey != null)
+            localizedExamples(examplesKey)
 
         executes {
             val imagesData = (0 until imageCount).map {
@@ -45,7 +59,7 @@ abstract class GabrielaImageServerCommandBase(
                 }
             }
 
-            val response = loritta.http.post<HttpResponse>("https://gabriela.loritta.website$endpoint") {
+            val response = loritta.httpWithoutTimeout.post<HttpResponse>("https://gabriela.loritta.website$endpoint") {
                 body = buildJsonObject {
                     putJsonArray("images") {
                         for (data in imagesData)

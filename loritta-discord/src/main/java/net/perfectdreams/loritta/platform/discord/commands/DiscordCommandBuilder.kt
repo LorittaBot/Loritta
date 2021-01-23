@@ -75,9 +75,12 @@ class DiscordCommandBuilder(
 				commandName = commandName,
 				category = category,
 				labels = labels,
-				description = descriptionCallback ?: { "???" },
+				descriptionKey = builderDescriptionKey,
+				description = descriptionCallback ?: {
+					it.get(builderDescriptionKey)
+				},
 				usage = usage,
-				examples = examplesCallback,
+				examplesKey = builderExamplesKey,
 				executor = executeCallback!!
 		).apply { build2().invoke(this) }.also {
 			it.userRequiredPermissions = userRequiredPermissions

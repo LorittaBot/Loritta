@@ -52,8 +52,10 @@ class BrokerPortfolioCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComm
 					else -> "⏹️"
 				}
 
+				val changePercentage = ticker["chp"]?.jsonPrimitive?.double!!
+
 				embed.addField(
-						"$emoji `${ticker["short_name"]?.jsonPrimitive?.content}` ($tickerName)",
+						"$emoji `${ticker["short_name"]?.jsonPrimitive?.content}` ($tickerName) | ${"%.2f".format(changePercentage)}%",
 						locale[
 								"commands.economy.brokerPortfolio.youHaveStocksInThisTicker",
 								stockCount,

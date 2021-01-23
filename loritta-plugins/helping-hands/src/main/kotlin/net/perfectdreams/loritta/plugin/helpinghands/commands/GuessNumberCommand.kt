@@ -23,16 +23,12 @@ class GuessNumberCommand(plugin: HelpingHandsPlugin) : DiscordAbstractCommandBas
 
     override fun command() = create {
         localizedDescription("commands.economy.guessnumber.description")
+        localizedExamples("commands.economy.guessnumber.examples")
 
         usage {
             arguments {
                 argument(ArgumentType.NUMBER) {}
             }
-        }
-
-        examples {
-            + "10"
-            + "3"
         }
 
         executesDiscord {
