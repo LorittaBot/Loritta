@@ -221,7 +221,7 @@ class RbUserCommand : AbstractCommand("rbuser", listOf("rbplayer"), CommandCateg
 			val totalFriends = friendsResponse["TotalFriends"].int
 
 			val embed = EmbedBuilder().apply {
-				setTitle("<:roblox_logo:412576693803286528> ${if (isRobloxPremium) (Emotes.ROBLOX_PREMIUM.toString() + " ") else ""}${robloxUserResponse.name}")
+				setTitle("<:roblox_logo:412576693803286528> ${if (isRobloxPremium) (Emotes.ROBLOX_PREMIUM.toString() + " ") else ""}${robloxUserResponse.name}", "https://roblox.com/users/$userId/profile")
 
 				if (robloxUserResponse.description.isNotBlank()) {
 					setDescription(robloxUserResponse.description)
