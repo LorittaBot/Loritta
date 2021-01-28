@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 
-class SobreMimCommand : AbstractCommand("aboutme", listOf("sobremim"), CommandCategory.SOCIAL) {
+class SobreMimCommand : AbstractCommand("aboutme", listOf("sobremim", "bio", "biography"), CommandCategory.SOCIAL) {
     override fun getDescriptionKey() = LocaleKeyData("commands.command.aboutme.description")
     override fun getExamplesKey() = LocaleKeyData("commands.command.aboutme.examples")
 
