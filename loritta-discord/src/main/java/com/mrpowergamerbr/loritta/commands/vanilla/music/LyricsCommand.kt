@@ -34,7 +34,7 @@ import java.io.File
 import java.io.IOException
 import javax.imageio.ImageIO
 
-class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), category = CommandCategory.MUSIC) {
+class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), category = CommandCategory.UTILS) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.music.lyrics.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.music.lyrics.examples")
 

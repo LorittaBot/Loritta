@@ -31,10 +31,11 @@ abstract class GabrielaImageServerCommandBase(
         val fileName: String,
         val sendTypingStatus: Boolean = false,
         val examplesKey: String? = null,
+        category: CommandCategory = CommandCategory.IMAGES
 ) : LorittaAbstractCommandBase(
         loritta,
         labels,
-        CommandCategory.IMAGES
+        category
 ) {
     override fun command() = create {
         localizedDescription(descriptionKey)
