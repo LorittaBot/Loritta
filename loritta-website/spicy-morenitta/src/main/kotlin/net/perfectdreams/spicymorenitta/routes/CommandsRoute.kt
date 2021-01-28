@@ -107,8 +107,10 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
                                             + category.getLocalizedName(locale)
                                         }
                                     }
-                                    p {
-                                        + category.getLocalizedDescription(locale)
+                                    for (entry in category.getLocalizedDescription(locale)) {
+                                        p {
+                                            +entry
+                                        }
                                     }
                                 }
                             }
