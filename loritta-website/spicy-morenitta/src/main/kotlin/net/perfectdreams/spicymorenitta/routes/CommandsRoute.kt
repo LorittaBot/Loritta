@@ -89,7 +89,6 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
                                         CommandCategory.MINECRAFT -> "https://loritta.website/assets/img/loritta_pudim.png"
                                         CommandCategory.FUN -> "https://loritta.website/assets/img/vieirinha.png"
                                         CommandCategory.UTILS -> "https://loritta.website/assets/img/utils.png"
-                                        CommandCategory.MUSIC -> "https://loritta.website/assets/img/loritta_headset.png"
                                         CommandCategory.ANIME -> "https://loritta.website/assets/img/loritta_anime.png"
                                         CommandCategory.ECONOMY -> "https://loritta.website/assets/img/loritta_money_discord.png"
                                         CommandCategory.FORTNITE -> "https://loritta.website/assets/img/loritta_fortnite_icon.png"
