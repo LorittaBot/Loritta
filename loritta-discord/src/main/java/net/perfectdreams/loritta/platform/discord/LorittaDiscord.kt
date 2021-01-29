@@ -32,6 +32,7 @@ import net.perfectdreams.loritta.commands.vanilla.administration.*
 import net.perfectdreams.loritta.commands.vanilla.economy.*
 import net.perfectdreams.loritta.commands.vanilla.magic.*
 import net.perfectdreams.loritta.commands.vanilla.social.*
+import net.perfectdreams.loritta.commands.vanilla.roblox.*
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandMap
 import net.perfectdreams.loritta.platform.discord.plugin.JVMPluginManager
@@ -91,11 +92,16 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
                 // ===[ DISCORD ]===
                 ChannelInfoCommand(this@LorittaDiscord),
+
                 // ===[ FUN ]===
                 GiveawayCommand(this@LorittaDiscord),
                 GiveawayEndCommand(this@LorittaDiscord),
                 GiveawayRerollCommand(this@LorittaDiscord),
-                GiveawaySetupCommand(this@LorittaDiscord)
+                GiveawaySetupCommand(this@LorittaDiscord),
+
+                // ===[ ROBLOX ]===
+                RbUserCommand(this@LorittaDiscord),
+                RbGameCommand(this@LorittaDiscord)
         )
     }
 
