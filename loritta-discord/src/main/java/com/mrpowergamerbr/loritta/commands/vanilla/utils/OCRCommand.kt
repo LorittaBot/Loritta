@@ -10,12 +10,11 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
-import io.ktor.client.call.receive
-import io.ktor.client.request.post
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
-import io.ktor.http.userAgent
+import io.ktor.client.call.*
+import io.ktor.client.request.*
+import io.ktor.http.*
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.io.ByteArrayOutputStream
@@ -23,9 +22,7 @@ import java.util.*
 import javax.imageio.ImageIO
 
 class OCRCommand : AbstractCommand("ocr", listOf("ler", "read"), CommandCategory.UTILS) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.utils.ocr.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.utils.ocr.description")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }

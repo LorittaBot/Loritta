@@ -15,6 +15,21 @@ class BaseLocale(val id: String) {
 	val path: String
 		get() = this["website.localePath"]
 
+	fun get(localeKeyData: LocaleKeyData): String {
+		// The spread operator is used in a .get(...) because it doesn't work inside of a [...], I don't know why
+		return get(
+				localeKeyData.key,
+				*(localeKeyData.arguments?.toTypedArray() ?: arrayOf())
+		)
+	}
+
+	fun getList(localeKeyData: LocaleKeyData): List<String> {
+		return getList(
+				localeKeyData.key,
+				*(localeKeyData.arguments?.toTypedArray() ?: arrayOf())
+		)
+	}
+
 	operator fun get(key: String, vararg arguments: Any?): String {
 		try {
 			return localeStringEntries[key]?.format(*arguments) ?: throw RuntimeException("Key $key doesn't exist in locale $id!")

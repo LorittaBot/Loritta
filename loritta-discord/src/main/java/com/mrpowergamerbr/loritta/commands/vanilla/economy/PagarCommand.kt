@@ -13,6 +13,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAdd
 import com.mrpowergamerbr.loritta.utils.removeAllFunctions
@@ -22,6 +23,7 @@ import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.utils.AccountUtils
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.NumberUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -32,13 +34,10 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 		private val mutex = Mutex()
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.economy.pay.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.economy.pay.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.economy.pay.examples")
 
-	override fun getUsage(): String {
-		return "usuário quantia"
-	}
+	// TODO: Fix Usage
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.rawArgs.size >= 2) {
@@ -149,6 +148,8 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 				if (!checkIfSelfAccountIsOldEnough(context))
 					return
 				if (!checkIfOtherAccountIsOldEnough(context, user))
+					return
+				if (!checkIfSelfAccountGotDailyRecently(context))
 					return
 
 				var tellUserLorittaIsGrateful = false
@@ -286,6 +287,22 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 		} else {
 			context.explain()
 		}
+	}
+
+	private suspend fun checkIfSelfAccountGotDailyRecently(context: CommandContext): Boolean {
+		// Check if the user got daily in the last 14 days before allowing a transaction
+		val dailyRewardInTheLastXDays = AccountUtils.getUserDailyRewardInTheLastXDays(context.lorittaUser.profile, 14)
+
+		if (dailyRewardInTheLastXDays == null) {
+			context.reply(
+					LorittaReply(
+							context.locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", context.config.commandPrefix],
+							Constants.ERROR
+					)
+			)
+			return false
+		}
+		return true
 	}
 
 	private suspend fun checkIfSelfAccountIsOldEnough(context: CommandContext): Boolean {

@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.WebhookUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class FaustaoCommand : AbstractCommand("faustão", listOf("faustao"), CommandCategory.FUN) {
@@ -45,9 +46,7 @@ class FaustaoCommand : AbstractCommand("faustão", listOf("faustao"), CommandCat
 			"http://i.imgur.com/rVmgwZC.png",
 			"http://i.imgur.com/z7Ec5I3.png")
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.fun.faustao.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.fun.faustao.description")
 
 	override fun hasCommandFeedback(): Boolean {
 		return false

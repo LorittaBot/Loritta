@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.ImageFormat
 import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
@@ -17,20 +18,15 @@ import java.awt.Image
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
-import javax.imageio.ImageIO
 
 class UndertaleBoxCommand : AbstractCommand("utbox", listOf("undertalebox"), CommandCategory.UNDERTALE) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.undertale.utbox.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.undertale.utbox.description")
 
 	override fun getExamples(): List<String> {
 		return listOf("@Loritta Legendary being made of every SOUL in the underground.")
 	}
 
-	override fun getUsage(): String {
-		return "usuário (caso queira) mensagem"
-	}
+	// TODO: Fix Usage
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

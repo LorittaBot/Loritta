@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.ArgumentType
@@ -11,23 +12,18 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 
 class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category = CommandCategory.SOCIAL) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.social.editxp.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.social.editxp.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.social.editxp.examples")
 
 	override fun canUseInPrivateChannel(): Boolean {
 		return false
-	}
-
-	override fun getUsage(): String {
-		return "usuário quantidade"
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
 		return listOf(Permission.MANAGE_SERVER)
 	}
 
-	override fun getUsage(locale: BaseLocale) = arguments {
+	override fun getUsage() = arguments {
 		argument(ArgumentType.USER) {}
 		argument(ArgumentType.NUMBER) {}
 	}

@@ -19,7 +19,7 @@ enum class CommandCategory {
 	SOCIAL,
 	ACTION,
 	ECONOMY,
-	MUSIC,
+	VIDEOS,
 	FORTNITE,
 	MAGIC; // Esta categoria é usada para comandos APENAS para o dono do bot
 

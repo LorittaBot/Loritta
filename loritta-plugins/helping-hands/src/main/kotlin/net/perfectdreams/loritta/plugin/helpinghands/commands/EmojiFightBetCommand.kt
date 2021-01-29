@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.plugin.helpinghands.HelpingHandsPlugin
 import net.perfectdreams.loritta.plugin.helpinghands.utils.EmojiFight
+import net.perfectdreams.loritta.utils.AccountUtils
 import net.perfectdreams.loritta.utils.GenericReplies
 import net.perfectdreams.loritta.utils.NumberUtils
 
@@ -17,11 +18,7 @@ class EmojiFightBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComm
 ) {
 	override fun command() = create {
 		localizedDescription("commands.economy.emojifightbet.description")
-
-		examples {
-			+ "100"
-			+ "1000"
-		}
+		localizedExamples("commands.economy.emojifightbet.examples")
 
 		usage {
 			arguments {
@@ -52,6 +49,10 @@ class EmojiFightBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComm
 
 			if (totalEarnings > selfUserProfile.money)
 				fail(locale["commands.economy.flipcoinbet.notEnoughMoneySelf"], Constants.ERROR)
+
+			// Only allow users to participate in a emoji fight bet if the user got their daily reward today
+			AccountUtils.getUserTodayDailyReward(lorittaUser.profile)
+					?: fail(locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", serverConfig.commandPrefix], Constants.ERROR)
 
 			val emojiFight = EmojiFight(
 					plugin,

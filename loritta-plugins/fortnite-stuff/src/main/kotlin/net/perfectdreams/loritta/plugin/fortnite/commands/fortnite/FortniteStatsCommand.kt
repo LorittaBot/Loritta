@@ -18,23 +18,18 @@ import java.awt.geom.Path2D
 import java.awt.image.BufferedImage
 import java.io.File
 import java.util.concurrent.TimeUnit
-import javax.imageio.ImageIO
 
 class FortniteStatsCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.loritta, listOf("fortnitestats", "fnstats", "fortniteprofile", "fnprofile"), CommandCategory.FORTNITE) {
 	private val LOCALE_PREFIX = "commands.fortnite.stats"
 
 	override fun command() = create {
 		localizedDescription("${LOCALE_PREFIX}.description")
+		localizedDescription("${LOCALE_PREFIX}.examples")
+
 		needsToUploadFiles = true
 
 		usage {
 			argument(ArgumentType.TEXT) {}
-		}
-
-		examples {
-			+ "Ninja"
-			+ "SypherPK"
-			+ "MrPowerGamerBR"
 		}
 
 		executesDiscord {

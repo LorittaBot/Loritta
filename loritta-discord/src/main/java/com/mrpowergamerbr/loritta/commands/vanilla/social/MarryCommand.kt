@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.dao.Marriage
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAdd
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -18,9 +19,8 @@ class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.S
 		val MARRIAGE_COST = 15_000
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.social.marry.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.social.marry.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.social.marry.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val proposeTo = context.getUserAt(0)

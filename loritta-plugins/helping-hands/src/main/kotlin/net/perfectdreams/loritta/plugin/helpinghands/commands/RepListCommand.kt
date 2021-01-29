@@ -23,11 +23,7 @@ class RepListCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractCommandBas
 ) {
     override fun command() = create {
         localizedDescription("commands.social.repList.description")
-
-        examples {
-            + "@MrPowerGamerBR"
-            + "@Loritta"
-        }
+        localizedExamples("commands.social.repList.examples")
 
         usage {
             arguments {

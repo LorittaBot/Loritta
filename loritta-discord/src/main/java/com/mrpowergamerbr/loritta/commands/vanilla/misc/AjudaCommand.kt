@@ -4,15 +4,14 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.Emotes
 
 class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "commands"), CommandCategory.MISC) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.misc.help.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.misc.help.description")
 
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		val embed = EmbedBuilder()

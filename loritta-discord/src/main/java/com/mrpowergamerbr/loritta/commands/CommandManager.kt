@@ -135,7 +135,6 @@ class CommandManager(loritta: Loritta) {
 		commandMap.add(DicioCommand())
 		commandMap.add(TempoCommand())
 		commandMap.add(PackageInfoCommand())
-		commandMap.add(KnowYourMemeCommand())
 		commandMap.add(AnagramaCommand())
 		commandMap.add(CalculadoraCommand())
 		commandMap.add(MorseCommand())

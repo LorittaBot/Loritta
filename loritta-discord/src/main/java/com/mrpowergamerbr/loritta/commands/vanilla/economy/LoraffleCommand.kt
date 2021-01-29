@@ -1,15 +1,28 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.economy
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.int
+import com.github.salomonbrys.kotson.jsonObject
+import com.github.salomonbrys.kotson.long
+import com.github.salomonbrys.kotson.nullString
+import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.threads.RaffleThread
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.DateUtils
+import com.mrpowergamerbr.loritta.utils.MiscUtils
+import com.mrpowergamerbr.loritta.utils.gson
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.utils.AccountUtils
 import java.util.*
 
 class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lorifa"), CommandCategory.ECONOMY) {
@@ -17,9 +30,8 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 		const val MAX_TICKETS_BY_USER_PER_ROUND = 100_000
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.economy.raffle.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.economy.raffle.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.economy.raffle.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val arg0 = context.args.getOrNull(0)
@@ -44,12 +56,12 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 		if (arg0 == "comprar" || arg0 == "buy") {
 			val quantity = Math.max(context.args.getOrNull(1)?.toIntOrNull() ?: 1, 1)
 
-			val (canGetDaily, tomorrow) = context.lorittaUser.profile.canGetDaily()
+			val dailyReward = AccountUtils.getUserTodayDailyReward(context.lorittaUser.profile)
 
-			if (canGetDaily) { // Nós apenas queremos permitir que a pessoa aposte na rifa caso já tenha pegado sonhos alguma vez hoje
+			if (dailyReward == null) { // Nós apenas queremos permitir que a pessoa aposte na rifa caso já tenha pegado sonhos alguma vez hoje
 				context.reply(
                         LorittaReply(
-                                "Parece que você ainda não pegou o seu daily, você só pode apostar na rifa após ter pegado o seu daily de hoje. Pegue agora mesmo! ${loritta.instanceConfig.loritta.website.url}daily",
+                                locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", context.config.commandPrefix],
                                 Constants.ERROR
                         )
 				)

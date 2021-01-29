@@ -6,6 +6,8 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.CalculadoraCommand
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import com.mrpowergamerbr.loritta.utils.locale.LocaleStringData
 import com.mrpowergamerbr.loritta.utils.remove
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
@@ -21,23 +23,19 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 		private const val LOCALE_PREFIX = "commands.fun.roll"
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["$LOCALE_PREFIX.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("$LOCALE_PREFIX.description")
 
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(): CommandArguments {
 		return arguments {
 			argument(ArgumentType.NUMBER) {
 				optional = true
-				defaultValue = "6"
-				explanation = locale["$LOCALE_PREFIX.howMuchSides"]
+				defaultValue = LocaleStringData("6")
+				explanation = LocaleKeyData("$LOCALE_PREFIX.howMuchSides")
 			}
 		}
 	}
 
-	override fun getExamples(locale: BaseLocale): List<String> {
-		return listOf("", "12", "24", "2d20", "3d5", "4d10", "5..10", "5..10d10")
-	}
+	override fun getExamplesKey() = LocaleKeyData("commands.fun.roll.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var quantity = 1L

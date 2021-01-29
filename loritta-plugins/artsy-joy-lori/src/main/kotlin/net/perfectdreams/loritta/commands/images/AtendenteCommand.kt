@@ -25,15 +25,12 @@ class AtendenteCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lor
         needsToUploadFiles = true
 
         localizedDescription("$LOCALE_PREFIX.description")
+        localizedExamples("$LOCALE_PREFIX.examples")
 
         usage {
             arguments {
                 argument(ArgumentType.TEXT) {}
             }
-        }
-
-        examples {
-            localizedExamples("$LOCALE_PREFIX.examples")
         }
 
         executesDiscord {

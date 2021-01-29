@@ -12,27 +12,20 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.encodeToUrl
-import com.mrpowergamerbr.loritta.utils.extensions.isValidUrl
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import com.mrpowergamerbr.loritta.utils.extensions.isValidUrl
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import java.util.*
 
 class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCategory.DISCORD) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.discord.inviteinfo.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.discord.inviteinfo.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.discord.inviteinfo.examples")
 
-	override fun getUsage(): String {
-		return "ID do invite"
-	}
-
-	override fun getExamples(): List<String> {
-		return Arrays.asList("V7Kbh4z", "https://discord.gg/ZWt5mKB", "https://discord.gg/JYN6g2s", "https://discord.gg/A7mnkJJ")
-	}
+	// TODO: Fix Usage
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var inviteId = context.args.getOrNull(0)

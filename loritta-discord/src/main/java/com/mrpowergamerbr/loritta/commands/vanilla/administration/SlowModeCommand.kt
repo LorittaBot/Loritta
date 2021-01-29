@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments
@@ -11,11 +12,9 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 
 class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), CommandCategory.ADMIN) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.moderation.slowmode.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.moderation.slowmode.description")
 
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(): CommandArguments {
 		return arguments {
 			argument(ArgumentType.NUMBER) {
 				optional = false
@@ -23,9 +22,7 @@ class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), Command
 		}
 	}
 
-	override fun getExamples(): List<String> {
-		return listOf("5")
-	}
+	override fun getExamplesKey() = LocaleKeyData("commands.moderation.slowmode.examples")
 
 	override fun getDiscordPermissions(): List<Permission> {
 		return listOf(Permission.MESSAGE_MANAGE, Permission.MANAGE_CHANNEL)

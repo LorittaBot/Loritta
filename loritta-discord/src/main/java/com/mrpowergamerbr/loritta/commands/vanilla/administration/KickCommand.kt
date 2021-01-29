@@ -6,39 +6,22 @@ import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNull
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
-import net.perfectdreams.loritta.api.commands.ArgumentType
-import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.PunishmentAction
 
 class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), CommandCategory.ADMIN) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.moderation.kick.description"]
-	}
-
-	override fun getUsage(locale: BaseLocale): CommandArguments {
-		return arguments {
-			argument(ArgumentType.USER) {
-				optional = false
-			}
-			argument(ArgumentType.TEXT) {
-				optional = true
-			}
-		}
-	}
-
-	override fun getExamples(): List<String> {
-		return listOf("159985870458322944", "159985870458322944 Algum motivo bastante aleatório", "159985870458322944 271394014358405121 Raiding")
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.moderation.kick.description")
+	override fun getExamplesKey() = AdminUtils.PUNISHMENT_EXAMPLES_KEY
+	override fun getUsage() = AdminUtils.PUNISHMENT_USAGES
 
 	override fun getDiscordPermissions(): List<Permission> {
 		return listOf(Permission.KICK_MEMBERS)

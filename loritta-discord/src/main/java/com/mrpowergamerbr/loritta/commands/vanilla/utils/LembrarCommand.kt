@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
@@ -21,16 +22,9 @@ import java.util.*
 class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "lembrar", "lembrete", "reminder"), CommandCategory.UTILS) {
 	override fun getBotPermissions() = listOf(Permission.MESSAGE_MANAGE)
 
-	override fun getUsage(): String {
-		return "tempo mensagem"
-	}
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["${LOCALE_PREFIX}.description"]
-	}
-
-	override fun getExamples(locale: BaseLocale): List<String> {
-		return locale.getList("${LOCALE_PREFIX}.examples")
-	}
+	override fun getDescriptionKey() = LocaleKeyData("${LOCALE_PREFIX}.description")
+	override fun getExamplesKey() = LocaleKeyData("${LOCALE_PREFIX}.examples")
+	// TODO: Fix Usage
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (thereIsCommandToProcess(context)) {

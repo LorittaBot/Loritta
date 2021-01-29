@@ -6,20 +6,14 @@ import com.mrpowergamerbr.loritta.gifs.CepoDeMadeiraGIF
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class CepoCommand : AbstractCommand("cepo", category = CommandCategory.IMAGES) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.images.cepo.description"]
-	}
-
-	override fun getExamples(): List<String> {
-		return listOf("@Loritta")
-	}
-
-	override fun getUsage(): String {
-		return "<imagem>"
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.images.cepo.description")
+	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
+	// TODO: Fix Usage
 
 	override fun needsToUploadFiles() = true
 

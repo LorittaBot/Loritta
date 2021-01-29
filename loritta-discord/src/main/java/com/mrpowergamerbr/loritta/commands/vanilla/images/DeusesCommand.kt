@@ -7,7 +7,10 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
 import java.awt.Color
 import java.awt.Font
 import java.awt.image.BufferedImage
@@ -19,16 +22,10 @@ class DeusesCommand : AbstractCommand("deuses", category = CommandCategory.IMAGE
 		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "deuses.png")) }
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.images.gods.description"]
-	}
-
-	override fun getExamples(): List<String> {
-		return listOf("Quando você é nível 4 e vê pessoas de nível 100 jogando")
-	}
-
-	override fun getUsage(): String {
-		return "<texto>"
+	override fun getDescriptionKey() = LocaleKeyData("commands.images.gods.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.images.gods.examples")
+	override fun getUsage() = arguments {
+		argument(ArgumentType.TEXT) {}
 	}
 
 	override fun needsToUploadFiles(): Boolean {

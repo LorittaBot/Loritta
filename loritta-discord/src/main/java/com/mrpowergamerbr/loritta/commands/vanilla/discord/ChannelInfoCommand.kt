@@ -23,12 +23,13 @@ class ChannelInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(l
 			}
 		}
 
-		examples {
+		// TODO: Fix examples
+		/* examples {
 			listOf(
 					"",
 					"297732013006389252"
 			)
-		}
+		} */
 
 		canUseInPrivateChannel = false
 

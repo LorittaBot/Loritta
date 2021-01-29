@@ -18,12 +18,13 @@ class RepTopCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritt
 	override fun command() = create {
 		localizedDescription("commands.social.topreputation.description")
 
-		examples {
+		// TODO: Fix Examples
+		/* examples {
 			+ it["commands.social.topreputation.received"]
 			+ it["commands.social.topreputation.given"]
 			+ "${it["commands.social.topreputation.received"]} 5"
 			+ "${it["commands.social.topreputation.given"]} 5"
-		}
+		} */
 
 		arguments {
 			argument(ArgumentType.TEXT) {}

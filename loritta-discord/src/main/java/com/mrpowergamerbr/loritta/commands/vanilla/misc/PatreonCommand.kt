@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.misc
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -10,9 +11,7 @@ import net.perfectdreams.loritta.utils.Emotes
 import java.awt.Color
 
 class PatreonCommand : AbstractCommand("donator", listOf("donators", "patreons", "patreon", "doadores", "doador", "apoiador", "apoiadores", "contribuidores", "contribuidor", "doar", "donate"), category = CommandCategory.MISC) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.misc.donate.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.misc.donate.description")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val patrons = "Veja todos os doadores em https://loritta.website/donate (tem tantos doadores que não cabe nesta mensagem! ${Emotes.LORI_CRYING})"

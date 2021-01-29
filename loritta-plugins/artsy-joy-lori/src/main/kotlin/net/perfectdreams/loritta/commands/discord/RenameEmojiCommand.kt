@@ -15,20 +15,13 @@ class RenameEmojiCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(l
 
     override fun command() = create {
         localizedDescription("$LOCALE_PREFIX.renameemoji.description")
+        localizedExamples("$LOCALE_PREFIX.renameemoji.examples")
 
         usage {
             arguments {
                 argument(ArgumentType.EMOTE) {}
                 argument(ArgumentType.TEXT) {}
             }
-        }
-
-        examples {
-            listOf(
-                    ":gesso: gessy",
-                    "524938593475756042 sad_gesso",
-                    "gesso_cat sad_gesso"
-            )
         }
 
         canUseInPrivateChannel = false

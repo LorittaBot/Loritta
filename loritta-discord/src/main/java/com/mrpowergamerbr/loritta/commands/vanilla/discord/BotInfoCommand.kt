@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
@@ -23,9 +24,7 @@ import java.util.jar.Attributes
 import java.util.jar.JarFile
 
 class BotInfoCommand(private val buildInfo: BuildInfo) : AbstractCommand("botinfo", category = CommandCategory.DISCORD) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.discord.botinfo.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.discord.botinfo.description")
 
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		val arg0 = context.rawArgs.getOrNull(0)

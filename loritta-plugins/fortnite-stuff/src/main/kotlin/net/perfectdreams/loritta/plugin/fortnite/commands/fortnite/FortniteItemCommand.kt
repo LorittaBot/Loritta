@@ -19,19 +19,12 @@ class FortniteItemCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.l
 
 	override fun command() = create {
 		localizedDescription("${LOCALE_PREFIX}.description")
+		localizedExamples("commands.fortnite.itemsExamples")
+
 		needsToUploadFiles = true
 
 		usage {
 			argument(ArgumentType.TEXT) {}
-		}
-
-		examples {
-			+ "Tsuki"
-			+ "Glow"
-			+ "Savor the W"
-			+ "Jaywalking"
-			+ "Kitsune"
-			+ "CID_693_Athena_Commando_M_BuffCat"
 		}
 
 		executesDiscord {
