@@ -9,5 +9,5 @@ class DrakeCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		2,
 		"commands.images.drake.description",
 		"/api/v1/images/drake",
-		"chico_ata.png",
+		"drake.png",
 )
