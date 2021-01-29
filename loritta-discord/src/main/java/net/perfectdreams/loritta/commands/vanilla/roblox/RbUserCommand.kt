@@ -56,17 +56,14 @@ class RbUserCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta
     }
 
     override fun command() = create {
-        localizedDescription("$LOCALE_PREFIX.robloxId")
+        localizedDescription("$LOCALE_PREFIX.description")
+		
+		localizedExamples("$LOCALE_PREFIX.examples")
 
         usage {
             argument(ArgumentType.TEXT) {
                 optional = false
             }
-        }
-
-        examples {
-            + "cazum8"
-            + "lol738236"
         }
 
         executesDiscord {
