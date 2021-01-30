@@ -74,7 +74,7 @@ class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCO
 
 					val displayName = fancyName ?: user?.name
 
-					embed.appendDescription("\n\n**" + locale["commands.miscellaneous.fanArts.madeBy", displayName] + "**")
+					embed.appendDescription("\n\n**" + locale["commands.misc.fanArts.madeBy", displayName] + "**")
 					// TODO: Readicionar redes sociais depois
 					/* val artist = loritta.fanArtArtists.firstOrNull {
 						it.socialNetworks

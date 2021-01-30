@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
 
 class FanArtsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("fanarts", "fanart"), CommandCategory.MISC) {
     override fun command() = create {
-        localizedDescription("commands.miscellaneous.fanArts.description", "<a:lori_blobheartseyes:393914347706908683>", "<a:lori_blobheartseyes:393914347706908683>")
+        localizedDescription("commands.misc.fanArts.description", "<a:lori_blobheartseyes:393914347706908683>", "<a:lori_blobheartseyes:393914347706908683>")
 
         arguments {
             argument(ArgumentType.NUMBER) {
@@ -64,7 +64,7 @@ class FanArtsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lorit
 
             val displayName = fanArtArtist?.info?.override?.name ?: user?.name ?: fanArtArtist?.info?.name
 
-            setDescription("**" + locale["commands.miscellaneous.fanArts.madeBy", displayName] + "**")
+            setDescription("**" + locale["commands.misc.fanArts.madeBy", displayName] + "**")
 
             // TODO: Corrigir
             /* if (artist != null) {
@@ -77,7 +77,7 @@ class FanArtsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lorit
                 }
             } */
 
-            appendDescription("\n\n${locale["commands.miscellaneous.fanArts.thankYouAll", displayName]}")
+            appendDescription("\n\n${locale["commands.misc.fanArts.thankYouAll", displayName]}")
 
             var footer = "Fan Art ${locale["loritta.xOfX", index, LorittaLauncher.loritta.fanArts.size]}"
 
