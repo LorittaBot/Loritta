@@ -65,7 +65,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 					if (!isSilent) {
 						if (settings.sendPunishmentViaDm && context.guild.isMember(user)) {
 							try {
-								val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, locale["commands.moderation.unwarn.punishAction"], reason)
+								val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, locale["commands.moderation.warn.punishAction"], reason)
 
 								user.openPrivateChannel().queue {
 									it.sendMessage(embed).queue()
