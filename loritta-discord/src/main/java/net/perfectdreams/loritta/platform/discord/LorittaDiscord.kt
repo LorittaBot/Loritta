@@ -338,7 +338,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
                                 transformIntoFlatMap(value as MutableMap<String, Any?>, "${keyPrefix.invoke(it)}$prefix$key.")
                             } else {
                                 if (value is List<*>) {
-                                    locale.localeListEntries[prefix + key] = try {
+                                    locale.localeListEntries[keyPrefix.invoke(it) +prefix + key] = try {
                                         (value as List<String>).map {
                                             it.replace(singleQuotesWithoutSlashPrecedingItRegex, "''") // Escape single quotes
                                                     .replace("\\'", "'") // Replace \' with '
