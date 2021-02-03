@@ -61,7 +61,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak",
                 ),
                 LocaleWrapper(
                         "Español",
-                        loritta.getLocaleById("es-es"),
+                        loritta.getLocaleById("es"),
                         "\uD83C\uDDEA\uD83C\uDDF8",
                         false
                 ),
