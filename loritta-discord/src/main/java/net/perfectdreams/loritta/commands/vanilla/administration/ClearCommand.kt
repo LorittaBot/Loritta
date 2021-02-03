@@ -21,7 +21,7 @@ import net.perfectdreams.loritta.utils.sendStyledReply
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta, listOf("clean", "limpar", "clear"), CommandCategory.ADMIN) {
+class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta, listOf("clean", "limpar", "clear"), CommandCategory.MODERATION) {
 
     override fun command(): Command<CommandContext> = create {
         localizedDescription("commands.command.clear.description")

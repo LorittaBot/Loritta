@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 
-class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), CommandCategory.ADMIN) {
+class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.slowmode.description")
 
 	override fun getUsage(): CommandArguments {

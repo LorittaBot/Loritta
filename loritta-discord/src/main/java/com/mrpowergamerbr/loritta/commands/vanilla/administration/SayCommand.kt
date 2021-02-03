@@ -18,7 +18,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 
-class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN) {
+class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.say.description")
 	override fun getExamplesKey()  = LocaleKeyData("commands.command.say.examples")
 	override fun getUsage() = arguments {

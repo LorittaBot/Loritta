@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 
-class DashboardCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("dashboard", "painel", "configurar", "config"), CommandCategory.ADMIN) {
+class DashboardCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("dashboard", "painel", "configurar", "config"), CommandCategory.MODERATION) {
     override fun command() = create {
         localizedDescription("commands.command.dashboard.description")
         localizedExamples("commands.command.dashboard.examples")

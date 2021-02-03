@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 
-class GuildBannerCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("guildbanner", "serverbanner"), CommandCategory.ADMIN) {
+class GuildBannerCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("guildbanner", "serverbanner"), CommandCategory.MODERATION) {
     override fun command() = create {
         localizedDescription("commands.command.guildbanner.description")
 

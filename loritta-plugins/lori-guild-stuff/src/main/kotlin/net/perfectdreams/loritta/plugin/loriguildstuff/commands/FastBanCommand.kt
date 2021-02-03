@@ -21,7 +21,7 @@ object FastBanCommand {
             "bob" to "Imagine fazer spam dizendo que não é para fazer spam."
     )
 
-    fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("b", "fastban"), CommandCategory.ADMIN) {
+    fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("b", "fastban"), CommandCategory.MODERATION) {
         this.hideInHelp = true
         this.commandCheckFilter {lorittaMessageEvent, _, _, _, _ ->
             lorittaMessageEvent.guild?.idLong == 297732013006389252L

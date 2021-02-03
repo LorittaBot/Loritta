@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 
-class QuickPunishmentCommand : AbstractCommand("quickpunishment", category = CommandCategory.ADMIN) {
+class QuickPunishmentCommand : AbstractCommand("quickpunishment", category = CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.quickpunishment.description")
 
 	override fun canUseInPrivateChannel(): Boolean {

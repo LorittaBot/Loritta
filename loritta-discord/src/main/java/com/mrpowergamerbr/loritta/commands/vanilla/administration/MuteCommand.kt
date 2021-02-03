@@ -28,7 +28,7 @@ import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
-class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), CommandCategory.ADMIN) {
+class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.mute.description")
 	override fun getExamplesKey() = AdminUtils.PUNISHMENT_EXAMPLES_KEY
 	override fun getUsage() = AdminUtils.PUNISHMENT_USAGES

@@ -18,7 +18,7 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.PunishmentAction
 
-class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), CommandCategory.ADMIN) {
+class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.kick.description")
 	override fun getExamplesKey() = AdminUtils.PUNISHMENT_EXAMPLES_KEY
 	override fun getUsage() = AdminUtils.PUNISHMENT_USAGES

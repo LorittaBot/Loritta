@@ -18,7 +18,7 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.and
 
-class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCategory.ADMIN) {
+class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCategory.MODERATION) {
 	companion object {
 		private val LOCALE_PREFIX = "commands.command"
 	}

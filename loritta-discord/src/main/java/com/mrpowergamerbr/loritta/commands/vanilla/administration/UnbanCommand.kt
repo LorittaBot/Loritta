@@ -17,7 +17,7 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.PunishmentAction
 
-class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategory.ADMIN) {
+class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.unban.description")
 	override fun getExamplesKey() = AdminUtils.PUNISHMENT_EXAMPLES_KEY
 	override fun getUsage() = AdminUtils.PUNISHMENT_USAGES

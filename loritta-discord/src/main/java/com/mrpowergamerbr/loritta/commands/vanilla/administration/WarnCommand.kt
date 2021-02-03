@@ -21,7 +21,7 @@ import net.perfectdreams.loritta.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 
-class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADMIN) {
+class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.MODERATION) {
 	companion object {
 		private val LOCALE_PREFIX = "commands.command"
 	}

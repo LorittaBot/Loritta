@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 
-class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), CommandCategory.ADMIN) {
+class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.lock.description")
 	
 	override fun getDiscordPermissions(): List<Permission> {

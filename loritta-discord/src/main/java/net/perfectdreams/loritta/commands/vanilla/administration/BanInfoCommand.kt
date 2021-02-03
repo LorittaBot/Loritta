@@ -17,7 +17,7 @@ import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.utils.Emotes
 
-class BanInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("baninfo", "infoban", "checkban"), CommandCategory.ADMIN) {
+class BanInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("baninfo", "infoban", "checkban"), CommandCategory.MODERATION) {
     override fun command() = create {
         localizedDescription("commands.command.baninfo.description")
         localizedExamples("commands.command.baninfo.examples")
