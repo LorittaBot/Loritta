@@ -9,7 +9,7 @@ import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), CommandCategory.FUN) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.fun.tiodopave.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.tiodopave.description")
 
 	override fun hasCommandFeedback(): Boolean {
 		return false

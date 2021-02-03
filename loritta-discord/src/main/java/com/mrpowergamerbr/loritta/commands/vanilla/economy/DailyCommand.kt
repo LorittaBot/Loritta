@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 
 class DailyCommand : AbstractCommand("daily", listOf("diário", "bolsafamilia", "bolsafamília"), CommandCategory.ECONOMY) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.economy.daily.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.daily.description")
 
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		// 1. Pegue quando o daily foi pego da última vez
@@ -23,11 +23,11 @@ class DailyCommand : AbstractCommand("daily", listOf("diário", "bolsafamilia", 
 		if (!canGetDaily) {
 			context.reply(
                     LorittaReply(
-                            locale["commands.economy.daily.pleaseWait", DateUtils.formatDateDiff(tomorrow, locale)],
+                            locale["commands.command.daily.pleaseWait", DateUtils.formatDateDiff(tomorrow, locale)],
                             Constants.ERROR
                     ),
                     LorittaReply(
-                            locale["commands.economy.daily.pleaseWaitBuySonhos", "<${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/bundles>"],
+                            locale["commands.command.daily.pleaseWaitBuySonhos", "<${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/bundles>"],
                             "\uD83D\uDCB3"
                     )
 			)
@@ -36,11 +36,11 @@ class DailyCommand : AbstractCommand("daily", listOf("diário", "bolsafamilia", 
 
 		context.reply(
                 LorittaReply(
-                        locale["commands.economy.daily.dailyLink", "${loritta.instanceConfig.loritta.website.url}daily"],
+                        locale["commands.command.daily.dailyLink", "${loritta.instanceConfig.loritta.website.url}daily"],
                         Emotes.LORI_RICH
                 ),
                 LorittaReply(
-                        locale["commands.economy.daily.dailyLinkBuySonhos", "<${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/bundles>"],
+                        locale["commands.command.daily.dailyLinkBuySonhos", "<${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/bundles>"],
                         "\uD83D\uDCB3"
                 )
 		)

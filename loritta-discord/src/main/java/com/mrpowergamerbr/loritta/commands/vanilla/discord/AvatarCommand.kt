@@ -19,10 +19,10 @@ import java.util.*
 
 class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCORD) {
 	companion object {
-		const val LOCALE_PREFIX = "commands.discord.avatar"
+		const val LOCALE_PREFIX = "commands.command.avatar"
 	}
 
-	override fun getDescriptionKey() = LocaleKeyData("commands.discord.avatar.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.avatar.description")
 
 	override fun getUsage(): CommandArguments {
 		return arguments {
@@ -32,7 +32,7 @@ class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCO
 		}
 	}
 
-	override fun getExamplesKey() = LocaleKeyData("commands.discord.avatar.examples")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.avatar.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var getAvatar = context.getUserAt(0)
@@ -74,7 +74,7 @@ class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCO
 
 					val displayName = fancyName ?: user?.name
 
-					embed.appendDescription("\n\n**" + locale["commands.misc.fanArts.madeBy", displayName] + "**")
+					embed.appendDescription("\n\n**" + locale["commands.command.fanarts.madeBy", displayName] + "**")
 					// TODO: Readicionar redes sociais depois
 					/* val artist = loritta.fanArtArtists.firstOrNull {
 						it.socialNetworks

@@ -24,7 +24,7 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.DiscordUtils
 
 class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), category = CommandCategory.DISCORD) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.discord.serverinfo.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.serverinfo.description")
 
 	override fun canUseInPrivateChannel(): Boolean {
 		return false
@@ -47,7 +47,7 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 		if (guild == null) {
 			context.reply(
                     LorittaReply(
-                            message = context.locale["commands.discord.serverinfo.unknownGuild", context.args[0]],
+                            message = context.locale["commands.command.serverinfo.unknownGuild", context.args[0]],
                             prefix = Constants.ERROR
                     )
 			)
@@ -78,14 +78,14 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 		embed.setTitle("<:discord:314003252830011395> $name", null) // Nome da Guild
 		embed.addField("💻 ID", id, true) // ID da Guild
 		embed.addField("\uD83D\uDCBB Shard ID", "$shardId — Loritta Cluster ${cluster.id} (`${cluster.name}`)", true)
-		embed.addField("👑 ${if (ownerGender == Gender.MALE) context.locale["commands.discord.serverinfo.owner"] else context.locale["commands.discord.serverinfo.ownerFemale"]}", "`${owner?.name}#${owner?.discriminator}` (${ownerId})", true) // Dono da Guild
-		embed.addField("🌎 ${context.locale["commands.discord.serverinfo.region"]}", region.getName(), true) // Região da Guild
-		embed.addField("\uD83D\uDCAC ${context.locale["commands.discord.serverinfo.channels"]} (${textChannelCount + voiceChannelCount})", "\uD83D\uDCDD **${locale["commands.discord.serverinfo.textChannels"]}:** ${textChannelCount}\n\uD83D\uDDE3 **${locale["commands.discord.serverinfo.voiceChannels"]}:** $voiceChannelCount", true) // Canais da Guild
+		embed.addField("👑 ${if (ownerGender == Gender.MALE) context.locale["commands.command.serverinfo.owner"] else context.locale["commands.command.serverinfo.ownerFemale"]}", "`${owner?.name}#${owner?.discriminator}` (${ownerId})", true) // Dono da Guild
+		embed.addField("🌎 ${context.locale["commands.command.serverinfo.region"]}", region.getName(), true) // Região da Guild
+		embed.addField("\uD83D\uDCAC ${context.locale["commands.command.serverinfo.channels"]} (${textChannelCount + voiceChannelCount})", "\uD83D\uDCDD **${locale["commands.command.serverinfo.textChannels"]}:** ${textChannelCount}\n\uD83D\uDDE3 **${locale["commands.command.serverinfo.voiceChannels"]}:** $voiceChannelCount", true) // Canais da Guild
 		val createdAtDiff = DateUtils.formatDateDiff(timeCreated, locale)
-		embed.addField("\uD83D\uDCC5 ${context.locale["commands.discord.serverinfo.createdAt"]}", "${timeCreated.humanize(locale)} ($createdAtDiff)", true)
+		embed.addField("\uD83D\uDCC5 ${context.locale["commands.command.serverinfo.createdAt"]}", "${timeCreated.humanize(locale)} ($createdAtDiff)", true)
 		val joinedAtDiff = DateUtils.formatDateDiff(timeJoined, locale)
-		embed.addField("\uD83C\uDF1F ${context.locale["commands.discord.serverinfo.joinedAt"]}", "${timeJoined.humanize(locale)} ($joinedAtDiff)", true)
-		embed.addField("👥 ${context.locale["commands.discord.serverinfo.members"]} ($memberCount)", "", true) // Membros da Guild
+		embed.addField("\uD83C\uDF1F ${context.locale["commands.command.serverinfo.joinedAt"]}", "${timeJoined.humanize(locale)} ($joinedAtDiff)", true)
+		embed.addField("👥 ${context.locale["commands.command.serverinfo.members"]} ($memberCount)", "", true) // Membros da Guild
 
 		context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!
 	}

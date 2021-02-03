@@ -16,7 +16,7 @@ import org.jetbrains.exposed.sql.selectAll
 
 class RepTopCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("rep top", "reputation top", "reputacao top", "reputação top"), CommandCategory.SOCIAL) {
 	override fun command() = create {
-		localizedDescription("commands.social.topreputation.description")
+		localizedDescription("commands.command.topreputation.description")
 
 		// TODO: Fix Examples
 		/* examples {
@@ -39,16 +39,16 @@ class RepTopCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritt
 			if (typeName == null) {
 				reply(
 						LorittaReply(
-								"${serverConfig.commandPrefix}${executedCommandLabel} ${locale["commands.social.topreputation.received"]}"
+								"${serverConfig.commandPrefix}${executedCommandLabel} ${locale["commands.command.topreputation.received"]}"
 						),
 						LorittaReply(
-								"${serverConfig.commandPrefix}${executedCommandLabel} ${locale["commands.social.topreputation.given"]}"
+								"${serverConfig.commandPrefix}${executedCommandLabel} ${locale["commands.command.topreputation.given"]}"
 						)
 				)
 				return@executesDiscord
 			}
 
-			val type = if (typeName in loritta.locales.map { locale["commands.social.topreputation.given"].toLowerCase() }.distinct())
+			val type = if (typeName in loritta.locales.map { locale["commands.command.topreputation.given"].toLowerCase() }.distinct())
 				TopOrder.MOST_GIVEN
 			else
 				TopOrder.MOST_RECEIVED
@@ -103,12 +103,12 @@ class RepTopCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritt
 										if (type == TopOrder.MOST_RECEIVED) {
 											RankingGenerator.UserRankInformation(
 													it[receivedBy],
-													locale["commands.social.topreputation.receivedReputations", it[receivedByCount]]
+													locale["commands.command.topreputation.receivedReputations", it[receivedByCount]]
 											)
 										} else {
 											RankingGenerator.UserRankInformation(
 													it[givenBy],
-													locale["commands.social.topreputation.givenReputations", it[givenByCount]]
+													locale["commands.command.topreputation.givenReputations", it[givenByCount]]
 											)
 										}
 									}

@@ -22,8 +22,8 @@ class DeusesCommand : AbstractCommand("deuses", category = CommandCategory.IMAGE
 		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "deuses.png")) }
 	}
 
-	override fun getDescriptionKey() = LocaleKeyData("commands.images.gods.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.images.gods.examples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.gods.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.gods.examples")
 	override fun getUsage() = arguments {
 		argument(ArgumentType.TEXT) {}
 	}

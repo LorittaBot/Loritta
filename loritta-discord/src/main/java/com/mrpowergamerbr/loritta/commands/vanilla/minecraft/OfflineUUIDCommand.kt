@@ -9,8 +9,8 @@ import org.apache.commons.codec.Charsets
 import java.util.*
 
 class OfflineUUIDCommand : AbstractCommand("mcofflineuuid", listOf("offlineuuid"), CommandCategory.MINECRAFT) {
-    override fun getDescriptionKey() = LocaleKeyData("commands.minecraft.mcofflineuuid.description")
-    override fun getExamplesKey() = LocaleKeyData("commands.minecraft.playerNameExamples")
+    override fun getDescriptionKey() = LocaleKeyData("commands.command.mcofflineuuid.description")
+    override fun getExamplesKey() = LocaleKeyData("commands.category.minecraft.playerNameExamples")
 
     // TODO: Fix Usage
 
@@ -18,7 +18,7 @@ class OfflineUUIDCommand : AbstractCommand("mcofflineuuid", listOf("offlineuuid"
         if (context.args.size == 1) {
             val uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + context.args[0]).toByteArray(Charsets.UTF_8))
 
-            context.sendMessage(context.getAsMention(true) + locale["commands.minecraft.mcofflineuuid.result", context.args[0], uuid.toString()])
+            context.sendMessage(context.getAsMention(true) + locale["commands.command.mcofflineuuid.result", context.args[0], uuid.toString()])
         } else {
             context.explain()
         }

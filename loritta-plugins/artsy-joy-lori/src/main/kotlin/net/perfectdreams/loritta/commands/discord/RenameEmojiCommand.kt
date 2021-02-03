@@ -10,7 +10,7 @@ import java.util.regex.Pattern
 
 class RenameEmojiCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("renameemoji", "renomearemoji"), CommandCategory.DISCORD) {
     companion object {
-        private const val LOCALE_PREFIX = "commands.discord"
+        private const val LOCALE_PREFIX = "commands.command"
     }
 
     override fun command() = create {

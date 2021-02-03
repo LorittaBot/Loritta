@@ -13,7 +13,7 @@ import java.awt.Color
 import java.util.*
 
 class PokedexCommand : AbstractCommand("pokedex", listOf("pokédex"), CommandCategory.POKEMON) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.pokemon.pokedex.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.pokedex.description")
 
     override fun getExamples(): List<String> {
         return Arrays.asList("Pikachu")
@@ -61,11 +61,11 @@ class PokedexCommand : AbstractCommand("pokedex", listOf("pokédex"), CommandCat
 			var strAbilities = ""
 	        var strDexTypes = dexTypes.joinToString(separator = ", ", transform = { it.attr("alt") })
 
-	        embed.addField(locale["commands.pokemon.pokedex.types"], strDexTypes, true)
+	        embed.addField(locale["commands.command.pokedex.types"], strDexTypes, true)
 
-	        embed.addField(locale["commands.pokemon.pokedex.addedInGen"], pokeInfoValue[0].getElementsByTag("img")[0].attr("alt"), true)
+	        embed.addField(locale["commands.command.pokedex.addedInGen"], pokeInfoValue[0].getElementsByTag("img")[0].attr("alt"), true)
 
-			embed.addField(locale["commands.pokemon.pokedex.number"], pokeInfoValue[1].text(), true)
+			embed.addField(locale["commands.command.pokedex.number"], pokeInfoValue[1].text(), true)
 
 			for (el in abilities) {
 				// title
@@ -74,15 +74,15 @@ class PokedexCommand : AbstractCommand("pokedex", listOf("pokédex"), CommandCat
 				strAbilities += "**$title** - $description\n"
 			}
 
-			embed.addField(locale["commands.pokemon.pokedex.abilities"], strAbilities, true)
+			embed.addField(locale["commands.command.pokedex.abilities"], strAbilities, true)
 
-	        var strTraining = "**${context.locale["commands.pokemon.pokedex.baseExp"]}:** ${trainingInfoValue[0].text()}" +
-					"\n**${locale["commands.pokemon.pokedex.effortPoints"]}:** ${trainingInfoValue[1].text()}" +
-					"\n**${locale["commands.pokemon.pokedex.captureRate"]}:** ${trainingInfoValue[2].text()}" +
-					"\n**${locale["commands.pokemon.pokedex.baseHappiness"]}:** ${trainingInfoValue[3].text()}" +
-					"\n**${locale["commands.pokemon.pokedex.growthRate"]}:** ${trainingInfoValue[4].text()}"
+	        var strTraining = "**${context.locale["commands.command.pokedex.baseExp"]}:** ${trainingInfoValue[0].text()}" +
+					"\n**${locale["commands.command.pokedex.effortPoints"]}:** ${trainingInfoValue[1].text()}" +
+					"\n**${locale["commands.command.pokedex.captureRate"]}:** ${trainingInfoValue[2].text()}" +
+					"\n**${locale["commands.command.pokedex.baseHappiness"]}:** ${trainingInfoValue[3].text()}" +
+					"\n**${locale["commands.command.pokedex.growthRate"]}:** ${trainingInfoValue[4].text()}"
 
-	        embed.addField("${locale["commands.pokemon.pokedex.training"]}", strTraining, true)
+	        embed.addField("${locale["commands.command.pokedex.training"]}", strTraining, true)
 
 			var strEvolutions = ""
 
@@ -103,7 +103,7 @@ class PokedexCommand : AbstractCommand("pokedex", listOf("pokédex"), CommandCat
 				}
 			}
 
-			embed.addField("${locale["commands.pokemon.pokedex.evolutions"]}", strEvolutions, true)
+			embed.addField("${locale["commands.command.pokedex.evolutions"]}", strEvolutions, true)
 
 			context.sendMessage(embed.build())
 

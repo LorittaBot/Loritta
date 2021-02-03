@@ -16,7 +16,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.PunishmentAction
 
 class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban"), CommandCategory.ADMIN) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.moderation.ban.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.ban.description")
 	override fun getExamplesKey() = AdminUtils.PUNISHMENT_EXAMPLES_KEY
 	override fun getUsage() = AdminUtils.PUNISHMENT_USAGES
 
@@ -83,7 +83,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 	}
 
 	companion object {
-		private val LOCALE_PREFIX = "commands.moderation"
+		private val LOCALE_PREFIX = "commands.command"
 
 		fun ban(settings: AdminUtils.ModerationConfigSettings, guild: Guild, punisher: User, locale: BaseLocale, user: User, reason: String, isSilent: Boolean, delDays: Int) {
 			if (!isSilent) {

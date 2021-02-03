@@ -17,7 +17,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class BomDiaECiaTopLocalCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta, listOf("bomdiaecia top local", "bd&c top local", "bdc top local"), CommandCategory.SOCIAL) {
     companion object {
-        private const val LOCALE_PREFIX = "commands.social.bomdiaeciatoplocal"
+        private const val LOCALE_PREFIX = "commands.command.bomdiaeciatoplocal"
     }
     override fun command() = create {
         localizedDescription("$LOCALE_PREFIX.description")
@@ -70,7 +70,7 @@ class BomDiaECiaTopLocalCommand(loritta: LorittaDiscord): DiscordAbstractCommand
                         userData.map {
                             RankingGenerator.UserRankInformation(
                                 it[userId],
-                                locale["commands.social.bomdiaeciatop.wonMatches", it[userIdCount]]
+                                locale["commands.command.bomdiaeciatop.wonMatches", it[userIdCount]]
                             )
                         }
                     )

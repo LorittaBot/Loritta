@@ -17,7 +17,7 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 
 class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.discord.emoji.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.emoji.description")
 
 	// TODO: Fix Usage
 
@@ -48,7 +48,7 @@ class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD
 				} else {
 					context.reply(
                             LorittaReply(
-                                    locale["commands.discord.emoji.notFoundId", "`$arg0`"],
+                                    locale["commands.command.emoji.notFoundId", "`$arg0`"],
                                     Constants.ERROR
                             )
 					)
@@ -72,7 +72,7 @@ class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD
 					if (HttpRequest.get("https://twemoji.maxcdn.com/2/72x72/$value.png").code() != 200) {
 						context.reply(
                                 LorittaReply(
-                                        context.locale["commands.discord.emoji.errorWhileDownloadingEmoji", Emotes.LORI_SHRUG],
+                                        context.locale["commands.command.emoji.errorWhileDownloadingEmoji", Emotes.LORI_SHRUG],
                                         Constants.ERROR
                                 )
 						)

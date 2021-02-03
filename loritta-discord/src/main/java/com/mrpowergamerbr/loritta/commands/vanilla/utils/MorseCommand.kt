@@ -14,8 +14,8 @@ import java.awt.Color
 class MorseCommand : AbstractCommand("morse", category = CommandCategory.UTILS) {
 	// TODO: Fix Usage
 
-	override fun getDescriptionKey() = LocaleKeyData("commands.utils.morse.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.utils.morse.examples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.morse.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.morse.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
@@ -25,13 +25,13 @@ class MorseCommand : AbstractCommand("morse", category = CommandCategory.UTILS) 
 			val fromMorse = message.fromMorse()
 
 			if (toMorse.trim().isEmpty()) {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["commands.utils.morse.fail"])
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["commands.command.morse.fail"])
 				return
 			}
 
 			val embed = EmbedBuilder()
 
-			embed.setTitle(if (fromMorse.isNotEmpty()) "\uD83D\uDC48\uD83D\uDCFB ${locale["commands.utils.morse.toFrom"]}" else "\uD83D\uDC49\uD83D\uDCFB ${locale["commands.utils.morse.fromTo"]}")
+			embed.setTitle(if (fromMorse.isNotEmpty()) "\uD83D\uDC48\uD83D\uDCFB ${locale["commands.command.morse.toFrom"]}" else "\uD83D\uDC49\uD83D\uDCFB ${locale["commands.command.morse.fromTo"]}")
 			embed.setDescription("*beep* *boop*```${if (fromMorse.isNotEmpty()) fromMorse else toMorse}```")
 			embed.setColor(Color(153, 170, 181))
 

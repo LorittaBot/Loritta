@@ -18,8 +18,8 @@ import net.perfectdreams.loritta.utils.AccountUtils
 import net.perfectdreams.loritta.utils.Emotes
 
 class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "reputacao"), CommandCategory.SOCIAL) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.social.reputation.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.social.reputation.examples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.reputation.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.reputation.examples")
 
 	override fun canUseInPrivateChannel(): Boolean {
 		return false
@@ -44,7 +44,7 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 
 			if (3_600_000 > diff) {
 				val fancy = DateUtils.formatDateDiff(lastReputationGiven.receivedAt + 3.6e+6.toLong(), locale)
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["commands.social.reputation.wait", fancy])
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["commands.command.reputation.wait", fancy])
 				return
 			}
 		}
@@ -53,7 +53,7 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 			if (user == context.userHandle) {
 				context.reply(
                         LorittaReply(
-                                message = locale["commands.social.reputation.repSelf"],
+                                message = locale["commands.command.reputation.repSelf"],
                                 prefix = Constants.ERROR
                         )
 				)
@@ -78,7 +78,7 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 
 			context.reply(
                     LorittaReply(
-                            locale["commands.social.reputation.reputationLink", url],
+                            locale["commands.command.reputation.reputationLink", url],
                             Emotes.LORI_HAPPY
                     )
 			)

@@ -23,7 +23,7 @@ class BrokerBuyStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComma
 	}
 
 	override fun command() = create {
-		localizedDescription("commands.economy.brokerBuy.description")
+		localizedDescription("commands.command.brokerbuy.description")
 
 		arguments {
 			argument(ArgumentType.TEXT) {}
@@ -38,17 +38,17 @@ class BrokerBuyStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComma
 					?: explainAndExit()
 
 			if (!plugin.validStocksCodes.any { it == this.args[0] })
-				fail(locale["commands.economy.broker.invalidTickerId", locale["commands.economy.brokerBuy.baseExample", serverConfig.commandPrefix]])
+				fail(locale["commands.command.broker.invalidTickerId", locale["commands.command.brokerbuy.baseExample", serverConfig.commandPrefix]])
 
 			val ticker = plugin.tradingApi
 					.getOrRetrieveTicker(tickerId, listOf(LoriBrokerPlugin.CURRENT_PRICE_FIELD, "description"))
 
 			if (ticker["current_session"]!!.jsonPrimitive.content != LoriBrokerPlugin.MARKET)
-				fail(locale["commands.economy.broker.outOfSession"])
+				fail(locale["commands.command.broker.outOfSession"])
 
 			val mutex = plugin.mutexes.getOrPut(user.idLong, { Mutex() })
 			if (mutex.isLocked)
-				fail(locale["commands.economy.broker.alreadyExecutingAction"])
+				fail(locale["commands.command.broker.alreadyExecutingAction"])
 
 			val quantity = this.args.getOrNull(1) ?: "1"
 
@@ -56,7 +56,7 @@ class BrokerBuyStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComma
 					?: GenericReplies.invalidNumber(this, quantity)
 
 			if (0 >= number)
-				fail(locale["commands.economy.brokerBuy.zeroValue"], Constants.ERROR)
+				fail(locale["commands.command.brokerbuy.zeroValue"], Constants.ERROR)
 
 			val selfUserProfile = lorittaUser.profile
 
@@ -67,7 +67,7 @@ class BrokerBuyStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComma
 			val howMuchValue = valueOfStock * number
 
 			if (howMuchValue > selfUserProfile.money)
-				fail(locale["commands.economy.brokerBuy.notEnoughMoney"], Constants.ERROR)
+				fail(locale["commands.command.brokerbuy.notEnoughMoney"], Constants.ERROR)
 
 			val user = user
 			val now = System.currentTimeMillis()
@@ -80,7 +80,7 @@ class BrokerBuyStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComma
 					}.count()
 
 					if (number + currentStockCount > LoriBrokerPlugin.MAX_STOCKS)
-						fail(locale["commands.economy.brokerBuy.tooManyStocks", LoriBrokerPlugin.MAX_STOCKS])
+						fail(locale["commands.command.brokerbuy.tooManyStocks", LoriBrokerPlugin.MAX_STOCKS])
 
 					// By using shouldReturnGeneratedValues, the database won't need to synchronize on each insert
 					// this increases insert performance A LOT and, because we don't need the IDs, it is very useful to make
@@ -105,11 +105,11 @@ class BrokerBuyStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComma
 			reply(
 					LorittaReply(
 							locale[
-									"commands.economy.brokerBuy.successfullyBought",
+									"commands.command.brokerbuy.successfullyBought",
 									number,
-									locale["commands.economy.broker.stocks.${if (number == 1L) "one" else "multiple"}"],
+									locale["commands.command.broker.stocks.${if (number == 1L) "one" else "multiple"}"],
 									tickerId,
-									locale["commands.economy.broker.portfolioExample", serverConfig.commandPrefix]
+									locale["commands.command.broker.portfolioExample", serverConfig.commandPrefix]
 							],
 							Emotes.LORI_RICH
 					)

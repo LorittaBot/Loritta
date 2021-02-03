@@ -21,7 +21,7 @@ class ColorInfoCommand : AbstractCommand("colorinfo", listOf("rgb", "hexcolor", 
 	companion object {
 		val COLOR_UTILS = com.mrpowergamerbr.loritta.utils.ColorUtils()
 		const val FACTOR = 0.7
-		private const val LOCALE_PREFIX = "commands.utils.colorinfo"
+		private const val LOCALE_PREFIX = "commands.command.colorinfo"
 	}
 
 	override fun getDescriptionKey() = LocaleKeyData("$LOCALE_PREFIX.description")

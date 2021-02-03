@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 object DebugLocales {
     private val doNotChangeThisKeys = listOf(
             "loritta.inheritsFromLanguageId",
-            "commands.fortnite.shop.localeId",
+            "commands.command.shop.localeId",
             "website.localePath"
     )
 

@@ -11,7 +11,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class BemBoladaCommand : AbstractCommand("bembolada", listOf("kenji"), CommandCategory.FUN) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.fun.bembolada.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.bembolada.description")
 
 	override fun hasCommandFeedback(): Boolean {
 		return false

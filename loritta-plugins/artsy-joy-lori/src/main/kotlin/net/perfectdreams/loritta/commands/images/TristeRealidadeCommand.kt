@@ -24,7 +24,7 @@ import java.awt.image.BufferedImage
 
 class TristeRealidadeCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("sadreality", "tristerealidade"), CommandCategory.IMAGES) {
     companion object {
-        private const val LOCALE_PREFIX = "commands.images"
+        private const val LOCALE_PREFIX = "commands.command"
     }
 
     override fun command() = create {

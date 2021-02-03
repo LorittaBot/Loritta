@@ -11,7 +11,11 @@ import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.MessageEmbed
+import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
@@ -29,7 +33,7 @@ import java.awt.Color
 import java.time.Instant
 
 object AdminUtils {
-	private val LOCALE_PREFIX = "commands.moderation"
+	private val LOCALE_PREFIX = "commands.category.moderation"
 	val PUNISHMENT_EXAMPLES_KEY = LocaleKeyData("$LOCALE_PREFIX.punishmentExamples")
 	val PUNISHMENT_USAGES = arguments {
 		argument(ArgumentType.USER) {
@@ -157,11 +161,11 @@ object AdminUtils {
 
 		if (!context.handle.canInteract(member)) {
 			val reply = buildString {
-				this.append(context.locale["commands.moderation.punisherRoleTooLow"])
+				this.append(context.locale["commands.category.moderation.punisherRoleTooLow"])
 
 				if (context.handle.hasPermission(Permission.MANAGE_ROLES)) {
 					this.append(" ")
-					this.append(context.locale["commands.moderation.punisherRoleTooLowHowToFix"])
+					this.append(context.locale["commands.category.moderation.punisherRoleTooLowHowToFix"])
 				}
 			}
 

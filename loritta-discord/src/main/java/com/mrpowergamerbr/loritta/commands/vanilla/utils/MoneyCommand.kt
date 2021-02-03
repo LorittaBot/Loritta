@@ -47,8 +47,8 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 		}
 	}
 
-	override fun getDescriptionKey() = LocaleKeyData("commands.utils.money.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.utils.money.examples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.money.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.money.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.size >= 2) {
@@ -79,7 +79,7 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 				val euroValueInCurrency = exchangeRates[from] ?: run {
 					context.reply(
                             LorittaReply(
-                                    message = locale["commands.utils.money.invalidCurrency"].msgFormat(from, exchangeRates.keys.joinToString(transform = { "`$it`" })),
+                                    message = locale["commands.command.money.invalidCurrency"].msgFormat(from, exchangeRates.keys.joinToString(transform = { "`$it`" })),
                                     prefix = Constants.ERROR
                             )
 					)
@@ -91,7 +91,7 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 				val endValueInEuros = exchangeRates[to] ?: run {
 					context.reply(
                             LorittaReply(
-                                    message = locale["commands.utils.money.invalidCurrency"].msgFormat(to, exchangeRates.keys.joinToString(transform = { "`$it`" })),
+                                    message = locale["commands.command.money.invalidCurrency"].msgFormat(to, exchangeRates.keys.joinToString(transform = { "`$it`" })),
                                     prefix = Constants.ERROR
                             )
 					)
@@ -106,7 +106,7 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 
 			context.reply(
                     LorittaReply(
-                            message = locale["commands.utils.money.converted", multiply, from, to, df.format(value * multiply)],
+                            message = locale["commands.command.money.converted", multiply, from, to, df.format(value * multiply)],
                             prefix = "\uD83D\uDCB5"
                     )
 			)

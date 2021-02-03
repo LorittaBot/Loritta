@@ -16,8 +16,8 @@ import java.io.File
 
 class McSignCommand(val m: MinecraftStuff) : DiscordAbstractCommandBase(m.loritta, listOf("mcsign", "mcplaca"), CommandCategory.MINECRAFT) {
 	override fun command() = create {
-		localizedDescription("commands.minecraft.mcsign.description")
-		localizedExamples("commands.minecraft.mcsign.examples")
+		localizedDescription("commands.command.mcsign.description")
+		localizedExamples("commands.command.mcsign.examples")
 
 		usage {
 			argument(ArgumentType.TEXT) {}

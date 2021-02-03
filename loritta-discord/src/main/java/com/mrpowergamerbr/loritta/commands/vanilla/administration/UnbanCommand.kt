@@ -18,7 +18,7 @@ import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.PunishmentAction
 
 class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategory.ADMIN) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.moderation.unban.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.unban.description")
 	override fun getExamplesKey() = AdminUtils.PUNISHMENT_EXAMPLES_KEY
 	override fun getUsage() = AdminUtils.PUNISHMENT_USAGES
 
@@ -94,7 +94,7 @@ class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategor
 	}
 
 	companion object {
-		private const val LOCALE_PREFIX = "commands.moderation"
+		private const val LOCALE_PREFIX = "commands.command"
 
 		fun unban(settings: AdminUtils.ModerationConfigSettings, guild: Guild, punisher: User, locale: BaseLocale, user: User, reason: String, isSilent: Boolean) {
 			if (!isSilent) {

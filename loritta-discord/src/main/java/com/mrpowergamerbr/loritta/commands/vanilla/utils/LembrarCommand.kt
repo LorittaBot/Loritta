@@ -192,7 +192,7 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 	}
 
 	private companion object {
-		private const val LOCALE_PREFIX = "commands.utils.remindme"
+		private const val LOCALE_PREFIX = "commands.command.remindme"
 	}
 }
 

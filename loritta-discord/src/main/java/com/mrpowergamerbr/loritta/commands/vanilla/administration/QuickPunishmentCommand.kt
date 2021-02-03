@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 
 class QuickPunishmentCommand : AbstractCommand("quickpunishment", category = CommandCategory.ADMIN) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.moderation.quickpunishment.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.quickpunishment.description")
 
 	override fun canUseInPrivateChannel(): Boolean {
 		return false
@@ -22,10 +22,10 @@ class QuickPunishmentCommand : AbstractCommand("quickpunishment", category = Com
 		if (userData.quickPunishment) {
 			context.reply(
                     LorittaReply(
-                            message = locale["commands.moderation.quickpunishment.disabled"]
+                            message = locale["commands.command.quickpunishment.disabled"]
                     ),
 					LorittaReply(
-						message = locale["commands.moderation.quickpunishment.howEnable"],
+						message = locale["commands.command.quickpunishment.howEnable"],
 						prefix = Emotes.LORI_BAN_HAMMER,
 						mentionUser = false
 					)
@@ -33,10 +33,10 @@ class QuickPunishmentCommand : AbstractCommand("quickpunishment", category = Com
 		} else {
 			context.reply(
                     LorittaReply(
-                            message = locale["commands.moderation.quickpunishment.enabled"]
+                            message = locale["commands.command.quickpunishment.enabled"]
                     ),
 					LorittaReply(
-						message = locale["commands.moderation.quickpunishment.howDisable"],
+						message = locale["commands.command.quickpunishment.howDisable"],
 						prefix = Emotes.LORI_BAN_HAMMER,
 						mentionUser = false
 					)

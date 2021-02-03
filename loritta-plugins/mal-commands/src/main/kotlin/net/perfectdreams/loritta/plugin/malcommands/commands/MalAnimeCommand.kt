@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.plugin.malcommands.util.MalConstants.MAL_COLOR
 import net.perfectdreams.loritta.plugin.malcommands.util.MalUtils
 
 class MalAnimeCommand(val m: MalCommandsPlugin) : DiscordAbstractCommandBase(m.loritta, listOf("malanime", "anime"), CommandCategory.ANIME) {
-    private val LOCALE_PREFIX = "commands.anime.mal.anime"
+    private val LOCALE_PREFIX = "commands.command.mal.anime"
     private val logger = KotlinLogging.logger { }
 
     override fun command() = create {

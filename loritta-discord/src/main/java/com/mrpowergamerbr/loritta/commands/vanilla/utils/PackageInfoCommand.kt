@@ -18,7 +18,7 @@ import java.awt.Color
 import java.util.*
 
 class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ctt"), CommandCategory.UTILS) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.utils.packageinfo.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.packageinfo.description")
 
 	override fun getExamples(): List<String> {
 		return Arrays.asList("correios")
@@ -38,7 +38,7 @@ class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ct
 				if (pair == null) {
 					context.reply(
 							LorittaReply(
-									message = locale["commands.utils.packageinfo.couldntFind", packageId],
+									message = locale["commands.command.packageinfo.couldntFind", packageId],
 									prefix = Constants.ERROR
 							)
 					)
@@ -67,7 +67,7 @@ class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ct
 			} catch (e: Exception) {
 				context.reply(
 						LorittaReply(
-								message = locale["commands.utils.packageinfo.invalid", packageId],
+								message = locale["commands.command.packageinfo.invalid", packageId],
 								prefix = Constants.ERROR
 						)
 				)

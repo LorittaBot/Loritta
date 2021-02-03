@@ -13,7 +13,7 @@ class HighFiveCommand(loritta: LorittaDiscord): ActionCommand(loritta, listOf("h
         color = Color(27, 224, 96)
 
         response { locale, sender, target ->
-            locale["commands.actions.highfive.response", sender.asMention, target.asMention]
+            locale["commands.command.highfive.response", sender.asMention, target.asMention]
         }
     }
 

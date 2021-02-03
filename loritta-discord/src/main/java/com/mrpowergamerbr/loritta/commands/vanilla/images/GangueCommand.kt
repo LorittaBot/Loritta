@@ -20,8 +20,8 @@ class GangueCommand : AbstractCommand("gang", listOf("gangue"), CommandCategory.
 		val TEMPLATE_OVERLAY by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "cocielo/overlay.png")) }
 	}
 
-	override fun getDescriptionKey() = LocaleKeyData("commands.images.gang.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.images.gang.examples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.gang.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.gang.examples")
 
 	// TODO: Fix Usage
 

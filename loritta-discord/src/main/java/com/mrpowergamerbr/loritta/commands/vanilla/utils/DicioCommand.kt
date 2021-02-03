@@ -16,8 +16,8 @@ import java.net.URLEncoder
 class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "dicionario", "definir"), CommandCategory.UTILS) {
 	// TODO: Fix Usage
 
-	override fun getDescriptionKey() = LocaleKeyData("commands.utils.dicio.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.utils.dicio.examples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.dicio.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.dicio.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.size == 1) {

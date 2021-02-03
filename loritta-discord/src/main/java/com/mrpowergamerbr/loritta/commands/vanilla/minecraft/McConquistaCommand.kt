@@ -14,8 +14,8 @@ import java.awt.image.BufferedImage
 import java.io.File
 
 class McConquistaCommand : AbstractCommand("mcconquista", listOf("mcprogresso", "mcadvancement", "mcachievement"), CommandCategory.MINECRAFT) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.minecraft.mcadvancement.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.minecraft.mcadvancement.examples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.mcadvancement.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.mcadvancement.examples")
 
 	// TODO: Fix Usage
 
@@ -39,7 +39,7 @@ class McConquistaCommand : AbstractCommand("mcconquista", listOf("mcprogresso", 
 			graphics.font = minecraftia
 			graphics.color = Color(255, 255, 0)
 
-			graphics.drawString(context.locale["commands.minecraft.mcadvancement.advancementMade"], 90, 41 + 14)
+			graphics.drawString(context.locale["commands.command.mcadvancement.advancementMade"], 90, 41 + 14)
 			graphics.color = Color(255, 255, 255)
 
 			var remadeText = ""

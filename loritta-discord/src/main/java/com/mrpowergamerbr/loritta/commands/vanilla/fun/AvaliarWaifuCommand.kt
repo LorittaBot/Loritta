@@ -12,7 +12,7 @@ import java.util.*
 
 class AvaliarWaifuCommand : AbstractCommand("ratewaifu", listOf("avaliarwaifu", "ratemywaifu", "ratewaifu", "avaliarminhawaifu", "notawaifu"), CommandCategory.FUN) {
 	companion object {
-		private const val LOCALE_PREFIX = "commands.fun.ratewaifu"
+		private const val LOCALE_PREFIX = "commands.command.ratewaifu"
 	}
 
 	override fun getDescriptionKey() = LocaleKeyData("$LOCALE_PREFIX.description")

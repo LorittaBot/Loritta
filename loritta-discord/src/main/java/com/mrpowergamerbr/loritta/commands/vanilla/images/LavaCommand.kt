@@ -19,8 +19,8 @@ import java.awt.image.BufferedImage
 import java.io.File
 
 class LavaCommand : AbstractCommand("lava", category = CommandCategory.IMAGES) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.images.lava.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.images.lava.examples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.lava.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.lava.examples")
 	override fun getUsage() = arguments {
 		argument(ArgumentType.IMAGE) {}
 		argument(ArgumentType.TEXT) {}

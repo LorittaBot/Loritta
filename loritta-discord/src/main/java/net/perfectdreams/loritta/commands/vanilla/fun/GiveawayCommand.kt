@@ -9,7 +9,7 @@ import java.awt.Color
 
 class GiveawayCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("giveaway", "sorteio"), CommandCategory.FUN) {
 	companion object {
-		private const val LOCALE_PREFIX = "commands.fun"
+		private const val LOCALE_PREFIX = "commands.command"
 	}
 
 	override fun command() = create {
@@ -23,9 +23,9 @@ class GiveawayCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lori
 			val context = this
 
 			val embed = EmbedBuilder()
-					.setTitle("\uD83C\uDF89 ${locale["commands.fun.giveawaymenu.categoryTitle"]}")
+					.setTitle("\uD83C\uDF89 ${locale["commands.command.giveawaymenu.categoryTitle"]}")
 					.setThumbnail("https://loritta.website/assets/img/loritta_confetti.png")
-					.setDescription("*${locale["commands.fun.giveawaymenu.categoryDescription"]}*\n\n")
+					.setDescription("*${locale["commands.command.giveawaymenu.categoryDescription"]}*\n\n")
 					.setColor(Color(200, 20, 217))
 
 			val commands = listOf(

@@ -20,7 +20,7 @@ import org.jetbrains.exposed.sql.update
 
 class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCategory.SOCIAL) {
 	companion object {
-		const val LOCALE_PREFIX = "commands.social.divorce"
+		const val LOCALE_PREFIX = "commands.command.divorce"
 		const val DIVORCE_REACTION_EMOJI = "\uD83D\uDC94"
 		const val DIVORCE_EMBED_URI = "https://cdn.discordapp.com/emojis/556524143281963008.png?size=2048"
 	}
@@ -32,7 +32,7 @@ class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCa
 			// If the user doesn't have any profile, then he won't have any marriage anyway
 			context.reply(
 					LorittaReply(
-							locale["commands.social.youAreNotMarried", "`${context.config.commandPrefix}casar`", Emotes.LORI_HUG],
+							locale["commands.category.social.youAreNotMarried", "`${context.config.commandPrefix}casar`", Emotes.LORI_HUG],
 							Constants.ERROR
 					)
 			)
@@ -43,7 +43,7 @@ class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCa
 			// Now that's for when the marriage doesn't exist
 			context.reply(
 					LorittaReply(
-							locale["commands.social.youAreNotMarried", "`${context.config.commandPrefix}casar`", Emotes.LORI_HUG],
+							locale["commands.category.social.youAreNotMarried", "`${context.config.commandPrefix}casar`", Emotes.LORI_HUG],
 							Constants.ERROR
 					)
 			)

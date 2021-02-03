@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.utils.ImageToAsciiConverter
 
 class AsciiCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("ascii", "asciiart", "img2ascii", "img2asciiart", "image2ascii"), CommandCategory.IMAGES) {
     companion object {
-        private const val LOCALE_PREFIX = "commands.images"
+        private const val LOCALE_PREFIX = "commands.command"
     }
 
     override fun command() = create {

@@ -367,7 +367,7 @@ object GiveawayManager {
                     .await()
 
             if (users.size == 1 && users[0].id == loritta.discordConfig.discord.clientId) { // Ninguém participou do giveaway! (Só a Lori, mas ela não conta)
-                message.channel.sendMessageAsync("\uD83C\uDF89 **|** ${locale["commands.fun.giveaway.noWinner"]} ${Emotes.LORI_TEMMIE}")
+                message.channel.sendMessageAsync("\uD83C\uDF89 **|** ${locale["commands.command.giveaway.noWinner"]} ${Emotes.LORI_TEMMIE}")
             } else {
                 val winners = mutableListOf<User>()
                 val reactedUsers = users
@@ -397,10 +397,10 @@ object GiveawayManager {
                     val winner = winners.first()
                     messageBuilder
                         .setAllowedMentions(listOf(Message.MentionType.USER, Message.MentionType.CHANNEL, Message.MentionType.EMOTE))
-                        .setContent("\uD83C\uDF89 **|** ${locale["commands.fun.giveaway.oneWinner", winner.asMention, "**${giveaway.reason}**"]} ${Emotes.LORI_HAPPY}")
+                        .setContent("\uD83C\uDF89 **|** ${locale["commands.command.giveaway.oneWinner", winner.asMention, "**${giveaway.reason}**"]} ${Emotes.LORI_HAPPY}")
                     message.channel.sendMessageAsync(messageBuilder.build())
                 } else { // Mais de um ganhador
-                    val replies = mutableListOf("\uD83C\uDF89 **|** ${locale["commands.fun.giveaway.multipleWinners", "**${giveaway.reason}**"]} ${Emotes.LORI_HAPPY}")
+                    val replies = mutableListOf("\uD83C\uDF89 **|** ${locale["commands.command.giveaway.multipleWinners", "**${giveaway.reason}**"]} ${Emotes.LORI_HAPPY}")
 
                     repeat(giveaway.numberOfWinners) {
                         val user = winners.getOrNull(it)
@@ -450,7 +450,7 @@ object GiveawayManager {
         val embed = EmbedBuilder().apply {
             setTitle("\uD83C\uDF81 ${giveaway.reason}")
             setDescription(giveaway.description)
-            setFooter(locale["commands.fun.giveaway.giveawayEnded"], null)
+            setFooter(locale["commands.command.giveaway.giveawayEnded"], null)
         }
 
         message.editMessage(embed.build()).await()

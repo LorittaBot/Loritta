@@ -13,7 +13,7 @@ class KissCommand(loritta: LorittaDiscord): ActionCommand(loritta, listOf("kiss"
         color = Color(233, 30, 99)
 
         response { locale, sender, target ->
-            locale["commands.actions.kiss.response", sender.asMention, target.asMention]
+            locale["commands.command.kiss.response", sender.asMention, target.asMention]
         }
     }
 

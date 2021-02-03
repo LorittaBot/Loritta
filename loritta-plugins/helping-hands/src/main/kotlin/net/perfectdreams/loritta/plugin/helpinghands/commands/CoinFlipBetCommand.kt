@@ -34,8 +34,8 @@ class CoinFlipBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComman
 	}
 
 	override fun command() = create {
-		localizedDescription("commands.economy.flipcoinbet.description")
-		localizedExamples("commands.economy.flipcoinbet.examples")
+		localizedDescription("commands.command.flipcoinbet.description")
+		localizedExamples("commands.command.flipcoinbet.examples")
 
 		usage {
 			arguments {
@@ -54,7 +54,7 @@ class CoinFlipBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComman
 			val invitedUser = _user.toJDA()
 
 			if (invitedUser == user)
-				fail(locale["commands.economy.flipcoinbet.cantBetSelf"], Constants.ERROR)
+				fail(locale["commands.command.flipcoinbet.cantBetSelf"], Constants.ERROR)
 
 			val selfActiveDonations = loritta.getActiveMoneyFromDonationsAsync(discordMessage.author.idLong)
 			val otherActiveDonations = loritta.getActiveMoneyFromDonationsAsync(invitedUser.idLong)
@@ -87,21 +87,21 @@ class CoinFlipBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComman
 			val money = number - tax
 
 			if (!hasNoTax && tax == 0L)
-				fail(locale["commands.economy.flipcoinbet.youNeedToBetMore"], Constants.ERROR)
+				fail(locale["commands.command.flipcoinbet.youNeedToBetMore"], Constants.ERROR)
 
 			if (0 >= number)
-				fail(locale["commands.economy.flipcoinbet.zeroMoney"], Constants.ERROR)
+				fail(locale["commands.command.flipcoinbet.zeroMoney"], Constants.ERROR)
 
 			val selfUserProfile = lorittaUser.profile
 
 			if (number > selfUserProfile.money)
-				fail(locale["commands.economy.flipcoinbet.notEnoughMoneySelf"], Constants.ERROR)
+				fail(locale["commands.command.flipcoinbet.notEnoughMoneySelf"], Constants.ERROR)
 
 			val invitedUserProfile = loritta.getOrCreateLorittaProfile(invitedUser.id)
 			val bannedState = invitedUserProfile.getBannedState()
 
 			if (number > invitedUserProfile.money || bannedState != null)
-				fail(locale["commands.economy.flipcoinbet.notEnoughMoneyInvited", invitedUser.asMention], Constants.ERROR)
+				fail(locale["commands.command.flipcoinbet.notEnoughMoneyInvited", invitedUser.asMention], Constants.ERROR)
 
 			// Only allow users to participate in a coin flip bet if the user got their daily reward today
 			AccountUtils.getUserTodayDailyReward(lorittaUser.profile)
@@ -111,22 +111,22 @@ class CoinFlipBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComman
 					LorittaReply(
 						if (hasNoTax)
 							locale[
-									"commands.economy.flipcoinbet.startBetNoTax",
+									"commands.command.flipcoinbet.startBetNoTax",
 									invitedUser.asMention,
 									user.asMention,
-									locale["commands.fun.flipcoin.heads"],
+									locale["commands.command.flipcoin.heads"],
 									money,
-									locale["commands.fun.flipcoin.tails"],
+									locale["commands.command.flipcoin.tails"],
 									whoHasTheNoTaxReward?.asMention ?: "???"
 							]
 						else
 							locale[
-									"commands.economy.flipcoinbet.startBet",
+									"commands.command.flipcoinbet.startBet",
 									invitedUser.asMention,
 									user.asMention,
-									locale["commands.fun.flipcoin.heads"],
+									locale["commands.command.flipcoin.heads"],
 									money,
-									locale["commands.fun.flipcoin.tails"],
+									locale["commands.command.flipcoin.tails"],
 									number,
 									tax
 							],
@@ -135,7 +135,7 @@ class CoinFlipBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComman
 					),
 					LorittaReply(
 							locale[
-									"commands.economy.flipcoinbet.clickToAcceptTheBet",
+									"commands.command.flipcoinbet.clickToAcceptTheBet",
 									invitedUser.asMention,
 									"✅"
 							],
@@ -217,7 +217,7 @@ class CoinFlipBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComman
 														mentionUser = false
 												),
 												LorittaReply(
-														locale["commands.economy.flipcoinbet.congratulations", winner.asMention, money, loser.asMention],
+														locale["commands.command.flipcoinbet.congratulations", winner.asMention, money, loser.asMention],
 														Emotes.LORI_RICH,
 														mentionUser = false
 												)

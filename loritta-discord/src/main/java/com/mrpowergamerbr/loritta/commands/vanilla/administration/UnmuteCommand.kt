@@ -22,8 +22,8 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar", "desilenciar"), CommandCategory.ADMIN) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.moderation.unmute.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.moderation.unmute.examples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.unmute.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.unmute.examples")
 	override fun getUsage() = AdminUtils.PUNISHMENT_USAGES
 
 	override fun getDiscordPermissions(): List<Permission> {
@@ -62,7 +62,7 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 
 				context.reply(
                         LorittaReply(
-                                locale["commands.moderation.unmute.successfullyUnmuted"],
+                                locale["commands.command.unmute.successfullyUnmuted"],
                                 "\uD83C\uDF89"
                         )
 				)
@@ -110,9 +110,9 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 								listOf(user, guild),
 								guild,
 								mutableMapOf(
-										"duration" to locale["commands.moderation.mute.forever"]
+										"duration" to locale["commands.command.mute.forever"]
 								) + AdminUtils.getStaffCustomTokens(punisher)
-										+ AdminUtils.getPunishmentCustomTokens(locale, reason, "commands.moderation.unmute")
+										+ AdminUtils.getPunishmentCustomTokens(locale, reason, "commands.command.unmute")
 						)
 
 						message?.let {

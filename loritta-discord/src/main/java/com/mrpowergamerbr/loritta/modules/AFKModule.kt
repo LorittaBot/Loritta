@@ -39,7 +39,7 @@ class AFKModule : MessageReceivedModule {
 				event.channel.sendMessage(
 						LorittaReply(
                                 message = locale["loritta.modules.afk.userIsAfk", "**" + afkMembers[0].first.effectiveName.escapeMentions().stripCodeMarks() + "**"] + if (afkMembers[0].second != null) {
-                                    " **" + locale["commands.moderation.punishmentReason"] + "** » `${afkMembers[0].second}`"
+                                    " **" + locale["commands.category.moderation.punishmentReason"] + "** » `${afkMembers[0].second}`"
                                 } else {
                                     ""
                                 },

@@ -32,7 +32,7 @@ import java.time.format.DateTimeFormatter
 
 class RbUserCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,listOf("rbuser", "rbplayer"), CommandCategory.ROBLOX) {
     companion object {
-        private const val LOCALE_PREFIX = "commands.roblox.rbuser"
+        private const val LOCALE_PREFIX = "commands.command.rbuser"
 
         // Example data: {"description":"####### ######## ####################################################### Brasil!","created":"2013-01-22T11:00:23.88Z","isBanned":false,"id":37271405,"name":"SonicteamPower","displayName":"SonicteamPower"}
         @Serializable

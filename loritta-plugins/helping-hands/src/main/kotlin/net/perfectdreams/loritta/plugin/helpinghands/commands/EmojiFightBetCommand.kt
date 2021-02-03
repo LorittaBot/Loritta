@@ -17,8 +17,8 @@ class EmojiFightBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComm
 		CommandCategory.ECONOMY
 ) {
 	override fun command() = create {
-		localizedDescription("commands.economy.emojifightbet.description")
-		localizedExamples("commands.economy.emojifightbet.examples")
+		localizedDescription("commands.command.emojifightbet.description")
+		localizedExamples("commands.command.emojifightbet.examples")
 
 		usage {
 			arguments {
@@ -43,12 +43,12 @@ class EmojiFightBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComm
 					}
 
 			if (0 >= totalEarnings)
-				fail(locale["commands.economy.flipcoinbet.zeroMoney"], Constants.ERROR)
+				fail(locale["commands.command.flipcoinbet.zeroMoney"], Constants.ERROR)
 
 			val selfUserProfile = lorittaUser.profile
 
 			if (totalEarnings > selfUserProfile.money)
-				fail(locale["commands.economy.flipcoinbet.notEnoughMoneySelf"], Constants.ERROR)
+				fail(locale["commands.command.flipcoinbet.notEnoughMoneySelf"], Constants.ERROR)
 
 			// Only allow users to participate in a emoji fight bet if the user got their daily reward today
 			AccountUtils.getUserTodayDailyReward(lorittaUser.profile)

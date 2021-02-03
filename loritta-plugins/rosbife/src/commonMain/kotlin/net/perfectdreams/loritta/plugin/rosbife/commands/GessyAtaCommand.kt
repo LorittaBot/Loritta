@@ -7,7 +7,7 @@ class GessyAtaCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("gessyata"),
 		1,
-		"commands.images.gessyata.description",
+		"commands.command.gessyata.description",
 		"/api/v1/images/gessy-ata",
 		"gessy_ata.png",
 )

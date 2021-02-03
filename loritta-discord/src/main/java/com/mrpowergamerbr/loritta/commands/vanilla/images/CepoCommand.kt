@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class CepoCommand : AbstractCommand("cepo", category = CommandCategory.IMAGES) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.images.cepo.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.cepo.description")
 	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 	// TODO: Fix Usage
 

@@ -16,14 +16,14 @@ import java.io.File
 import javax.imageio.stream.FileImageOutputStream
 
 class FortniteNewsCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.loritta, listOf("fortnitenews", "fortnitenoticias", "fortnitenotícias", "fnnews", "fnnoticias", "fnnotícias"), CommandCategory.FORTNITE) {
-	private val LOCALE_PREFIX = "commands.fortnite.news"
+	private val LOCALE_PREFIX = "commands.command.news"
 
 	override fun command() = create {
 		localizedDescription("${LOCALE_PREFIX}.description")
 		needsToUploadFiles = true
 
 		executesDiscord {
-			val newsPayload = m.updateStoreItems!!.getNewsData("br", locale["commands.fortnite.shop.localeId"])
+			val newsPayload = m.updateStoreItems!!.getNewsData("br", locale["commands.command.shop.localeId"])
 
 			val data = newsPayload.obj["data"]["motds"].array
 

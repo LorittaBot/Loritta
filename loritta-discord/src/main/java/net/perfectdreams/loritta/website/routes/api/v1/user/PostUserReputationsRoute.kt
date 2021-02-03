@@ -108,7 +108,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 					// Tudo certo? Então vamos enviar!
 					val reply = LorittaReply(
                             locale[
-                                    "commands.social.reputation.success",
+                                    "commands.command.reputation.success",
                                     "<@${giverId}>",
                                     "<@$receiverId>",
                                     reputationCount,

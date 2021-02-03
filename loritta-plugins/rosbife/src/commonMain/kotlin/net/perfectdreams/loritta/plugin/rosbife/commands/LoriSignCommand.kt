@@ -7,7 +7,7 @@ class LoriSignCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("lorisign", "lorittasign", "loriplaca", "lorittaplaca"),
 		1,
-		"commands.images.lorisign.description",
+		"commands.command.lorisign.description",
 		"/api/v1/images/lori-sign",
 		"lori_sign.png",
 )

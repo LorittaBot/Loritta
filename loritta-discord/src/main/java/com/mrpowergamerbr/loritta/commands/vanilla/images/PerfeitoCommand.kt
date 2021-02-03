@@ -13,7 +13,7 @@ import java.io.File
 import javax.imageio.ImageIO
 
 class PerfeitoCommand : AbstractCommand("perfect", listOf("perfeito"), CommandCategory.IMAGES) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.images.perfect.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.perfect.description")
 	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 
 	// TODO: Fix Usage

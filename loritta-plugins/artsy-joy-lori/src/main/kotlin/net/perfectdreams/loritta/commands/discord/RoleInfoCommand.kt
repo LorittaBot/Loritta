@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractComman
 
 class RoleInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("roleinfo", "taginfo"), CommandCategory.DISCORD) {
     companion object {
-        private const val LOCALE_PREFIX = "commands.discord"
+        private const val LOCALE_PREFIX = "commands.command"
     }
 
     override fun command() = create {
@@ -71,7 +71,7 @@ class RoleInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lori
             } else {
                 context.reply(
                         LorittaReply(
-                                locale["commands.discord.roleinfo.roleNotFound"],
+                                locale["commands.command.roleinfo.roleNotFound"],
                                 Constants.ERROR
                         )
                 )

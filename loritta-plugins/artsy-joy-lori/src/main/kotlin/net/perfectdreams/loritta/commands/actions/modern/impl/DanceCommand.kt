@@ -13,7 +13,7 @@ class DanceCommand(loritta: LorittaDiscord): ActionCommand(loritta, listOf("danc
         color = Color(255, 152, 0)
 
         response { locale, sender, target ->
-            locale["commands.actions.dance.response", sender.asMention, target.asMention]
+            locale["commands.command.dance.response", sender.asMention, target.asMention]
         }
     }
 

@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.utils.math.MathUtils
 
 class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calculator", "calcular", "calculate"), CommandCategory.UTILS) {
 	companion object {
-		const val LOCALE_PREFIX = "commands.utils.calc"
+		const val LOCALE_PREFIX = "commands.command.calc"
 	}
 
 	// TODO: Fix Usage

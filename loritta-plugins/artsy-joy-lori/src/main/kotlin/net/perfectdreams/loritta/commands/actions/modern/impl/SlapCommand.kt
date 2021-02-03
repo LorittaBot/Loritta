@@ -15,9 +15,9 @@ class SlapCommand(loritta: LorittaDiscord): ActionCommand(loritta, listOf("slap"
 
         response { locale, sender, target ->
             if (target.id != LorittaLauncher.loritta.discordConfig.discord.clientId) {
-                locale["commands.actions.slap.response", sender.asMention, target.asMention]
+                locale["commands.command.slap.response", sender.asMention, target.asMention]
             } else {
-                locale["commands.actions.slap.responseAntiIdiot", sender.asMention, target.asMention]
+                locale["commands.command.slap.responseAntiIdiot", sender.asMention, target.asMention]
             }
         }
     }

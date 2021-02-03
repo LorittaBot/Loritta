@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractComman
 
 class RenameChannelCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("renamechannel", "renomearcanal"), CommandCategory.ADMIN) {
     companion object {
-        private const val LOCALE_PREFIX = "commands.moderation"
+        private const val LOCALE_PREFIX = "commands.command"
     }
     override fun command() = create {
         localizedDescription("$LOCALE_PREFIX.renamechannel.description")
@@ -84,7 +84,7 @@ class RenameChannelCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase
         } catch (e: Exception) {
                 context.reply(
                         LorittaReply(
-                                locale["commands.moderation.renamechannel.cantRename"],
+                                locale["commands.command.renamechannel.cantRename"],
                                 Constants.ERROR
                         )
                 )

@@ -17,7 +17,7 @@ import org.jetbrains.exposed.sql.and
 
 class GiveawayEndCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("giveaway end", "sorteio end"), CommandCategory.FUN) {
 	companion object {
-		private const val LOCALE_PREFIX = "commands.fun"
+		private const val LOCALE_PREFIX = "commands.command"
 	}
 
 	override fun command() = create {

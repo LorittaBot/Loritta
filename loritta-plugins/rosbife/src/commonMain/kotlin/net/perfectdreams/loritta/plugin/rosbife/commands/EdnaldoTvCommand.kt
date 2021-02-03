@@ -7,7 +7,7 @@ class EdnaldoTvCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("ednaldotv"),
 		1,
-		"commands.images.ednaldotv.description",
+		"commands.command.ednaldotv.description",
 		"/api/v1/images/ednaldo-tv",
 		"ednaldo_tv.png"
 )

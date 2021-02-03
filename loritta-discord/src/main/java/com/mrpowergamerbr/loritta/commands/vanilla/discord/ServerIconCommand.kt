@@ -16,7 +16,7 @@ import net.perfectdreams.loritta.utils.Emotes
 
 class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "iconeserver", "iconeguild", "iconedoserver", "iconedaguild", "íconedoserver", "iconedoservidor", "íconeguild", "íconedoserver", "íconedaguild", "íconedoservidor"), category = CommandCategory.DISCORD) {
 	companion object {
-		private const val LOCALE_PREFIX = "commands.discord.servericon"
+		private const val LOCALE_PREFIX = "commands.command.servericon"
 	}
 
 	override fun getDescriptionKey() = LocaleKeyData("$LOCALE_PREFIX.description")

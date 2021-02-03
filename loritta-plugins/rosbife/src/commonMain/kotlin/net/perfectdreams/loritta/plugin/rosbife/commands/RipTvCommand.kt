@@ -7,7 +7,7 @@ class RipTvCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("riptv"),
 		1,
-		"commands.images.riptv.description",
+		"commands.command.riptv.description",
 		"/api/v1/images/rip-tv",
 		"rip_tv.png",
 )

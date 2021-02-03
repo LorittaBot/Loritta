@@ -15,11 +15,11 @@ import net.perfectdreams.loritta.plugin.fortnite.FortniteStuff
 import net.perfectdreams.loritta.utils.Emotes
 
 class FortniteItemCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.loritta, listOf("fortniteitem", "fnitem"), CommandCategory.FORTNITE) {
-	private val LOCALE_PREFIX = "commands.fortnite.item"
+	private val LOCALE_PREFIX = "commands.command.item"
 
 	override fun command() = create {
 		localizedDescription("${LOCALE_PREFIX}.description")
-		localizedExamples("commands.fortnite.itemsExamples")
+		localizedExamples("commands.category.fortnite.itemsExamples")
 
 		needsToUploadFiles = true
 
