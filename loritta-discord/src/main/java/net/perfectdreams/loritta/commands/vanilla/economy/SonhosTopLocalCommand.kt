@@ -13,7 +13,7 @@ import org.jetbrains.exposed.sql.*
 
 class SonhosTopLocalCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("sonhos top local", "atm top local"), CommandCategory.ECONOMY) {
 	override fun command() = create {
-		localizedDescription("commands.economy.sonhostoplocal.description")
+		localizedDescription("commands.command.sonhostoplocal.description")
 
 		executesDiscord {
 			var page = args.getOrNull(0)?.toLongOrNull()

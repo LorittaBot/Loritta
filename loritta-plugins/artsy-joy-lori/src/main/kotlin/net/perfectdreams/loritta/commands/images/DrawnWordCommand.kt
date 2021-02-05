@@ -19,7 +19,7 @@ import java.io.File
 
 class DrawnWordCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("drawnword"), CommandCategory.IMAGES) {
     companion object {
-        private const val LOCALE_PREFIX = "commands.images"
+        private const val LOCALE_PREFIX = "commands.command"
     }
 
     override fun command() = create {

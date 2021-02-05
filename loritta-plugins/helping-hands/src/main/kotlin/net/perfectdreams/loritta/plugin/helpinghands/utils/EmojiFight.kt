@@ -45,7 +45,7 @@ class EmojiFight(
             val tax = (entryPrice * (1.0 * UserPremiumPlans.Free.totalCoinFlipReward)).toLong()
 
             if (tax == 0L)
-                context.fail(context.locale["commands.economy.flipcoinbet.youNeedToBetMore"], Constants.ERROR)
+                context.fail(context.locale["commands.command.flipcoinbet.youNeedToBetMore"], Constants.ERROR)
         }
 
         addToFightEvent(context.user)
@@ -112,28 +112,28 @@ class EmojiFight(
 
     private fun getEventEmbed(): MessageEmbed {
         val baseEmbed = EmbedBuilder()
-                .setTitle("${Emotes.LORI_BAN_HAMMER} ${context.locale["commands.economy.emojifight.fightTitle"]}")
+                .setTitle("${Emotes.LORI_BAN_HAMMER} ${context.locale["commands.command.emojifight.fightTitle"]}")
                 .setDescription(
                         if (entryPrice != null) {
                             context.locale
                                     .getList(
-                                            "commands.economy.emojifightbet.fightDescription",
+                                            "commands.command.emojifightbet.fightDescription",
                                             entryPrice,
                                             entryPrice * (participatingUsers.size - 1), // Needs to subtract -1 because the winner *won't* pay for his win
                                             "\uD83D\uDC14",
                                             context.user.asMention,
                                             "✅"
-                                    ).joinToString("\n") + "\n\n**" + context.locale["commands.economy.emojifight.participants", participatingUsers.size] + "**\n"
+                                    ).joinToString("\n") + "\n\n**" + context.locale["commands.command.emojifight.participants", participatingUsers.size] + "**\n"
                         } else {
                             context.locale
                                     .getList(
-                                            "commands.economy.emojifight.fightDescription",
+                                            "commands.command.emojifight.fightDescription",
                                             Emotes.LORI_PAT,
                                             context.serverConfig.commandPrefix,
                                             "\uD83D\uDC14",
                                             context.user.asMention,
                                             "✅"
-                                    ).joinToString("\n") + "\n\n**" + context.locale["commands.economy.emojifight.participants", participatingUsers.size] + "**\n"
+                                    ).joinToString("\n") + "\n\n**" + context.locale["commands.command.emojifight.participants", participatingUsers.size] + "**\n"
                         }
                 )
                 .setColor(Constants.ROBLOX_RED)
@@ -255,7 +255,7 @@ class EmojiFight(
         val (winner, losers, realPrize, taxedRealPrize) = result ?: run {
             // Needs to use "reply" because if we use "fail", the exception is triggered on the onReactionAddByAuthor
             context.reply(
-                    context.locale["commands.economy.emojifight.needsMorePlayers"],
+                    context.locale["commands.command.emojifight.needsMorePlayers"],
                     Emotes.LORI_CRYING
             )
             return
@@ -266,9 +266,9 @@ class EmojiFight(
 
             // If the tax == 0, then it means that the user is premium!
             val localeKey = if (tax == 0L)
-                "commands.economy.emojifightbet.wonBet"
+                "commands.command.emojifightbet.wonBet"
             else
-                "commands.economy.emojifightbet.wonBetTaxed"
+                "commands.command.emojifightbet.wonBetTaxed"
 
             context.reply(
                     context.locale[
@@ -286,7 +286,7 @@ class EmojiFight(
         } else {
             context.reply(
                     context.locale[
-                            "commands.economy.emojifight.wonBet",
+                            "commands.command.emojifight.wonBet",
                             winner.value,
                             winner.key.asMention
                     ],

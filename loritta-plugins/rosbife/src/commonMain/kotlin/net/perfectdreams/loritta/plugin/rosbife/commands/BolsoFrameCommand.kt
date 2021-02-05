@@ -7,7 +7,7 @@ class BolsoFrameCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("bolsoframe", "bolsonaroframe", "bolsoquadro", "bolsonaroquadro"),
 		1,
-		"commands.images.bolsoframe.description",
+		"commands.command.bolsoframe.description",
 		"/api/v1/images/bolso-frame",
 		"bolsoframe.png",
 )

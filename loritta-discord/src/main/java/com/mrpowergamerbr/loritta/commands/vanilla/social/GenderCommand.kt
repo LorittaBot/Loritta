@@ -13,12 +13,12 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class GenderCommand : AbstractCommand("gender", listOf("gênero", "genero"), CommandCategory.SOCIAL) {
-    override fun getDescriptionKey() = LocaleKeyData("commands.social.gender.description")
+    override fun getDescriptionKey() = LocaleKeyData("commands.command.gender.description")
 
     override suspend fun run(context: CommandContext, locale: BaseLocale) {
         val embed = EmbedBuilder()
-                .setTitle(locale["commands.social.gender.whatAreYou"])
-                .setDescription(locale["commands.social.gender.whyShouldYouSelect"])
+                .setTitle(locale["commands.command.gender.whatAreYou"])
+                .setDescription(locale["commands.command.gender.whyShouldYouSelect"])
                 .build()
 
 
@@ -38,7 +38,7 @@ class GenderCommand : AbstractCommand("gender", listOf("gênero", "genero"), Com
 
                 context.reply(
 						LorittaReply(
-								locale["commands.social.gender.successfullyChanged"],
+								locale["commands.command.gender.successfullyChanged"],
 								"\uD83C\uDF89"
 						)
 				)
@@ -52,7 +52,7 @@ class GenderCommand : AbstractCommand("gender", listOf("gênero", "genero"), Com
 
                 context.reply(
 						LorittaReply(
-								locale["commands.social.gender.successfullyChanged"],
+								locale["commands.command.gender.successfullyChanged"],
 								"\uD83C\uDF89"
 						)
 				)
@@ -65,7 +65,7 @@ class GenderCommand : AbstractCommand("gender", listOf("gênero", "genero"), Com
 
                 context.reply(
 						LorittaReply(
-								locale["commands.social.gender.successfullyChanged"],
+								locale["commands.command.gender.successfullyChanged"],
 								"\uD83C\uDF89"
 						)
 				)

@@ -26,7 +26,7 @@ class BrokerSellStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComm
 	}
 
 	override fun command() = create {
-		localizedDescription("commands.economy.brokerSell.description")
+		localizedDescription("commands.command.brokersell.description")
 
 		arguments {
 			argument(ArgumentType.TEXT) {}
@@ -41,17 +41,17 @@ class BrokerSellStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComm
 					?: explainAndExit()
 
 			if (!plugin.validStocksCodes.any { it == this.args[0] })
-				fail(locale["commands.economy.broker.invalidTickerId", locale["commands.economy.brokerBuy.baseExample", serverConfig.commandPrefix]])
+				fail(locale["commands.command.broker.invalidTickerId", locale["commands.command.brokerbuy.baseExample", serverConfig.commandPrefix]])
 
 			val ticker = plugin.tradingApi
 					.getOrRetrieveTicker(tickerId, listOf(LoriBrokerPlugin.CURRENT_PRICE_FIELD, "description"))
 
 			if (ticker["current_session"]!!.jsonPrimitive.content != LoriBrokerPlugin.MARKET)
-				fail(locale["commands.economy.broker.outOfSession"])
+				fail(locale["commands.command.broker.outOfSession"])
 
 			val mutex = plugin.mutexes.getOrPut(user.idLong, { Mutex() })
 			if (mutex.isLocked)
-				fail(locale["commands.economy.broker.alreadyExecutingAction"])
+				fail(locale["commands.command.broker.alreadyExecutingAction"])
 
 			var quantity = this.args.getOrNull(1) ?: "1"
 
@@ -69,7 +69,7 @@ class BrokerSellStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComm
 					?: GenericReplies.invalidNumber(this, quantity)
 
 			if (0 >= number)
-				fail(locale["commands.economy.brokerSell.zeroValue"], Constants.ERROR)
+				fail(locale["commands.command.brokersell.zeroValue"], Constants.ERROR)
 
 			mutex.withLock {
 				val selfStocks = loritta.newSuspendedTransaction {
@@ -79,7 +79,7 @@ class BrokerSellStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComm
 				}
 
 				if (number > selfStocks.size)
-					fail(locale["commands.economy.brokerSell.notEnoughStocks", tickerId])
+					fail(locale["commands.command.brokersell.notEnoughStocks", tickerId])
 
 				val stocksThatWillBeSold = selfStocks.take(number.toInt())
 				val howMuchWillBePaidToTheUser = plugin.convertToSellingPrice(
@@ -98,7 +98,7 @@ class BrokerSellStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComm
 					}.count() == selfStocks.size.toLong()
 
 					if (!canBeExecuted)
-						fail(locale["commands.economy.brokerSell.boughtStocksWhileSelling"])
+						fail(locale["commands.command.brokersell.boughtStocksWhileSelling"])
 
 					BoughtStocks.deleteWhere {
 						BoughtStocks.id inList stocksThatWillBeSold.map { it[BoughtStocks.id] }
@@ -117,29 +117,29 @@ class BrokerSellStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComm
 				reply(
 						LorittaReply(
 								locale[
-										"commands.economy.brokerSell.successfullySold",
+										"commands.command.brokersell.successfullySold",
 										stocksThatWillBeSold.size,
-										locale["commands.economy.broker.stocks.${if (stocksThatWillBeSold.size == 1) "one" else "multiple"}"],
+										locale["commands.command.broker.stocks.${if (stocksThatWillBeSold.size == 1) "one" else "multiple"}"],
 										tickerId,
 										when {
 											totalEarnings == 0L -> {
 												locale[
-														"commands.economy.brokerSell.successfullySoldNeutral"
+														"commands.command.brokersell.successfullySoldNeutral"
 												]
 											}
 											totalEarnings > 0L -> {
 												locale[
-														"commands.economy.brokerSell.successfullySoldProfit",
+														"commands.command.brokersell.successfullySoldProfit",
 														abs(howMuchWillBePaidToTheUser),
 														abs(totalEarnings)
 												]
 											}
 											else -> {
 												locale[
-														"commands.economy.brokerSell.successfullySoldLoss",
+														"commands.command.brokersell.successfullySoldLoss",
 														abs(howMuchWillBePaidToTheUser),
 														abs(totalEarnings),
-														locale["commands.economy.broker.portfolioExample", serverConfig.commandPrefix]
+														locale["commands.command.broker.portfolioExample", serverConfig.commandPrefix]
 												]
 											}
 										}

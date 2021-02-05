@@ -22,7 +22,7 @@ import java.awt.image.RGBImageFilter
 import java.io.File
 
 class RazoesCommand : AbstractCommand("reasons", listOf("razões", "razoes"), CommandCategory.IMAGES) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.images.reasons.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.reasons.description")
 	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 
 

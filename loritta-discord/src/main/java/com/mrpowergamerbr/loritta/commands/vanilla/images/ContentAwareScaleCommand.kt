@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 
 class ContentAwareScaleCommand : AbstractCommand("contentawarescale", listOf("cas", "contentaware", "seamcarver"), category = CommandCategory.IMAGES) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.images.contentawarescale.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.contentawarescale.description")
 	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 	override fun getUsage() = arguments {
 		argument(ArgumentType.IMAGE) {}

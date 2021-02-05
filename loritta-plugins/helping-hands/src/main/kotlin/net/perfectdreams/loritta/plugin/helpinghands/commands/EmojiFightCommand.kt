@@ -13,7 +13,7 @@ class EmojiFightCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractCommand
 		CommandCategory.ECONOMY
 ) {
 	override fun command() = create {
-		localizedDescription("commands.economy.emojifight.description")
+		localizedDescription("commands.command.emojifight.description")
 
 		usage {
 			arguments {

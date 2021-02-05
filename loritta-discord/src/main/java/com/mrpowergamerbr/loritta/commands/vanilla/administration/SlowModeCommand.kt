@@ -11,8 +11,8 @@ import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 
-class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), CommandCategory.ADMIN) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.moderation.slowmode.description")
+class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), CommandCategory.MODERATION) {
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.slowmode.description")
 
 	override fun getUsage(): CommandArguments {
 		return arguments {
@@ -22,7 +22,7 @@ class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), Command
 		}
 	}
 
-	override fun getExamplesKey() = LocaleKeyData("commands.moderation.slowmode.examples")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.slowmode.examples")
 
 	override fun getDiscordPermissions(): List<Permission> {
 		return listOf(Permission.MESSAGE_MANAGE, Permission.MANAGE_CHANNEL)
@@ -49,7 +49,7 @@ class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), Command
 				if (context.guild.selfMember.hasPermission(Permission.MANAGE_CHANNEL))
 					context.message.textChannel.manager.setSlowmode(0).queue()
 
-				context.sendMessage("\uD83C\uDFC3 **|** " + context.getAsMention(true) + context.locale["commands.moderation.slowmode.disabledInChannel", context.event.textChannel!!.asMention])
+				context.sendMessage("\uD83C\uDFC3 **|** " + context.getAsMention(true) + context.locale["commands.command.slowmode.disabledInChannel", context.event.textChannel!!.asMention])
 				return
 			}
 
@@ -61,7 +61,7 @@ class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), Command
 				return
 			}
 
-			context.sendMessage("\uD83D\uDC0C **|** " + context.getAsMention(true) + context.locale["commands.moderation.slowmode.enabledInChannel", context.event.textChannel!!.asMention, seconds])
+			context.sendMessage("\uD83D\uDC0C **|** " + context.getAsMention(true) + context.locale["commands.command.slowmode.enabledInChannel", context.event.textChannel!!.asMention, seconds])
 		} else {
 			this.explain(context)
 		}

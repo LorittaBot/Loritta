@@ -20,8 +20,8 @@ open class Command<T : CommandContext>(
 ) {
 	companion object {
 		val MISSING_DESCRIPTION_KEY = LocaleKeyData("commands.missingDescription")
-		val SINGLE_IMAGE_EXAMPLES_KEY = LocaleKeyData("commands.images.singleImageExamples")
-		val TWO_IMAGES_EXAMPLES_KEY = LocaleKeyData("commands.images.twoImagesExamples")
+		val SINGLE_IMAGE_EXAMPLES_KEY = LocaleKeyData("commands.category.images.singleImageExamples")
+		val TWO_IMAGES_EXAMPLES_KEY = LocaleKeyData("commands.category.images.twoImagesExamples")
 	}
 
 	var needsToUploadFiles = false

@@ -12,8 +12,8 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 
 class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball", "eightball"), CommandCategory.FUN) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.fun.vieirinha.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.fun.vieirinha.examples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.vieirinha.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.vieirinha.examples")
 
 	override fun getUsage(): CommandArguments {
 		return arguments {
@@ -37,7 +37,7 @@ class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball
 
 			context.sendMessage(temmie, WebhookMessageBuilder()
 					.setUsername("Vieirinha")
-					.setContent(context.getAsMention(true) + locale.getList("commands.fun.vieirinha.responses").random())
+					.setContent(context.getAsMention(true) + locale.getList("commands.command.vieirinha.responses").random())
 					.setAvatarUrl("http://i.imgur.com/rRtHdti.png")
 					.build())
 		} else {

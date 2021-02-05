@@ -19,7 +19,7 @@ import java.time.format.DateTimeFormatter
 
 class RbGameCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta, listOf("rbgame", "rbjogo", "rbgameinfo"), CommandCategory.ROBLOX) {
     companion object {
-        private const val LOCALE_PREFIX = "commands.roblox.rbgame"
+        private const val LOCALE_PREFIX = "commands.command.rbgame"
     }
 
     override fun command() = create {
@@ -93,12 +93,12 @@ class RbGameCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta
                 val downvotes = voteSection.attr("data-total-down-votes")
 
                 embed.setTitle("<:roblox_logo:412576693803286528> $gameName", gameUrl)
-                embed.addField("\uD83D\uDCBB ${locale["commands.roblox.rbuser.robloxId"]}", placeId, true)
+                embed.addField("\uD83D\uDCBB ${locale["commands.command.rbuser.robloxId"]}", placeId, true)
                 embed.addField("<:starstruck:540988091117076481> ${locale["$LOCALE_PREFIX.favorites"]}", favoriteCount, true)
                 embed.addField("\uD83D\uDC4D ${locale["$LOCALE_PREFIX.likes"]}", upvotes, true)
                 embed.addField("\uD83D\uDC4E ${locale["$LOCALE_PREFIX.dislikes"]}", downvotes, true)
                 embed.addField("\uD83C\uDFAE ${locale["$LOCALE_PREFIX.playing"]}", playing, true)
-                embed.addField("\uD83D\uDC3E ${locale["commands.roblox.rbuser.visits"]}", visits, true)
+                embed.addField("\uD83D\uDC3E ${locale["commands.command.rbuser.visits"]}", visits, true)
                 embed.addField("\uD83C\uDF1F ${locale["$LOCALE_PREFIX.createdAt"]}", created, true)
                 embed.addField("✨ ${locale["$LOCALE_PREFIX.lastUpdated"]}", updated, true)
                 embed.addField("⛔ ${locale["$LOCALE_PREFIX.maxPlayers"]}", maxplayers, true)

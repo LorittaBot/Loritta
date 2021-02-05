@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.utils.Emotes
 
 class XpNotificationsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("xpnotifications"), CommandCategory.SOCIAL) {
 	override fun command() = create {
-		localizedDescription("commands.social.xpnotifications.description")
+		localizedDescription("commands.command.xpnotifications.description")
 
 		arguments {
 			argument(ArgumentType.NUMBER) {
@@ -28,14 +28,14 @@ class XpNotificationsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBa
 			if (newValue) {
 				reply(
 						LorittaReply(
-								locale["commands.social.xpnotifications.disabledNotifications"],
+								locale["commands.command.xpnotifications.disabledNotifications"],
 								Emotes.LORI_SMILE
 						)
 				)
 			} else {
 				reply(
 						LorittaReply(
-								locale["commands.social.xpnotifications.enabledNotifications"],
+								locale["commands.command.xpnotifications.enabledNotifications"],
 								Emotes.LORI_SMILE
 						)
 				)

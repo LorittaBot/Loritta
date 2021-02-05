@@ -15,8 +15,8 @@ import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.FUN) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.fun.vemdezap.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.fun.vemdezap.examples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.vemdezap.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.vemdezap.examples")
 
 	override fun getUsage(): CommandArguments {
 		return arguments {
@@ -356,31 +356,31 @@ class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.F
 
 			val message = context.reply(
                     LorittaReply(
-                            locale["commands.fun.vemdezap.whatIsTheMood"],
+                            locale["commands.command.vemdezap.whatIsTheMood"],
                             "\uD83E\uDD14"
                     ),
                     LorittaReply(
-                            locale["commands.fun.vemdezap.moodHappy"],
+                            locale["commands.command.vemdezap.moodHappy"],
                             "\uD83D\uDE0A",
                             mentionUser = false
                     ),
                     LorittaReply(
-                            locale["commands.fun.vemdezap.moodAngry"],
+                            locale["commands.command.vemdezap.moodAngry"],
                             "\uD83D\uDE21",
                             mentionUser = false
                     ),
                     LorittaReply(
-                            locale["commands.fun.vemdezap.moodSassy"],
+                            locale["commands.command.vemdezap.moodSassy"],
                             "\uD83D\uDE0F",
                             mentionUser = false
                     ),
                     LorittaReply(
-                            locale["commands.fun.vemdezap.moodSad"],
+                            locale["commands.command.vemdezap.moodSad"],
                             "\uD83D\uDE22",
                             mentionUser = false
                     ),
                     LorittaReply(
-                            locale["commands.fun.vemdezap.moodSick"],
+                            locale["commands.command.vemdezap.moodSick"],
                             "\uD83E\uDD12",
                             mentionUser = false
                     )
@@ -400,31 +400,31 @@ class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.F
 
 				val levelMessage = context.reply(
                         LorittaReply(
-                                locale["commands.fun.vemdezap.whatIsTheLevel"],
+                                locale["commands.command.vemdezap.whatIsTheLevel"],
                                 "\uD83E\uDD14"
                         ),
                         LorittaReply(
-                                locale["commands.fun.vemdezap.level1"],
+                                locale["commands.command.vemdezap.level1"],
                                 "1⃣",
                                 mentionUser = false
                         ),
                         LorittaReply(
-                                locale["commands.fun.vemdezap.level2"],
+                                locale["commands.command.vemdezap.level2"],
                                 "2⃣",
                                 mentionUser = false
                         ),
                         LorittaReply(
-                                locale["commands.fun.vemdezap.level3"],
+                                locale["commands.command.vemdezap.level3"],
                                 "3⃣",
                                 mentionUser = false
                         ),
                         LorittaReply(
-                                locale["commands.fun.vemdezap.level4"],
+                                locale["commands.command.vemdezap.level4"],
                                 "4⃣",
                                 mentionUser = false
                         ),
                         LorittaReply(
-                                locale["commands.fun.vemdezap.level5"],
+                                locale["commands.command.vemdezap.level5"],
                                 "5⃣",
                                 mentionUser = false
                         )

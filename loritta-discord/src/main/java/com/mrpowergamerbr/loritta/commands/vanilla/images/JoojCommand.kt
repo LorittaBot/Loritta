@@ -11,7 +11,7 @@ import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
 
 class JoojCommand : AbstractCommand("jooj", category = CommandCategory.IMAGES) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.images.jooj.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.jooj.description")
 	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 
 	// TODO: Fix Detailed Usage

@@ -12,8 +12,8 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), CommandCategory.SOCIAL) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.social.afk.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.social.afk.examples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.afk.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.afk.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var profile = context.lorittaUser.profile
@@ -26,7 +26,7 @@ class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), Command
 
 			context.reply(
                     LorittaReply(
-                            message = context.locale["commands.social.afk.afkOff"],
+                            message = context.locale["commands.command.afk.afkOff"],
                             prefix = "\uD83D\uDC24"
                     )
 			)
@@ -45,7 +45,7 @@ class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), Command
 
 			context.reply(
                     LorittaReply(
-                            message = context.locale["commands.social.afk.afkOn"],
+                            message = context.locale["commands.command.afk.afkOn"],
                             prefix = "\uD83D\uDE34"
                     )
 			)

@@ -11,8 +11,8 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 
-class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), CommandCategory.ADMIN) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.moderation.lock.description")
+class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), CommandCategory.MODERATION) {
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.lock.description")
 	
 	override fun getDiscordPermissions(): List<Permission> {
 		return listOf(Permission.MANAGE_SERVER)
@@ -40,14 +40,14 @@ class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), Command
 
 				context.reply(
 					LorittaReply(
-						locale["commands.moderation.lock.denied", context.config.commandPrefix],
+						locale["commands.command.lock.denied", context.config.commandPrefix],
 						"\uD83C\uDF89"
 					)
 				)
 			} else {
 				context.reply(
 					LorittaReply(
-						locale["commands.moderation.lock.channelAlreadyIsLocked", context.config.commandPrefix],
+						locale["commands.command.lock.channelAlreadyIsLocked", context.config.commandPrefix],
 						Emotes.LORI_CRYING
 					)
 				)
@@ -59,7 +59,7 @@ class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), Command
 
 			context.reply(
 				LorittaReply(
-					locale["commands.moderation.lock.denied", context.config.commandPrefix],
+					locale["commands.command.lock.denied", context.config.commandPrefix],
 					"\uD83C\uDF89"
 				)
 			)

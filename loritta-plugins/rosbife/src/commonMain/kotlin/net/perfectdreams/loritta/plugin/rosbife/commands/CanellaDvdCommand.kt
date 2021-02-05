@@ -7,7 +7,7 @@ class CanellaDvdCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("canelladvd", "matheuscanelladvd", "canellacover", "matheuscanelladvd"),
 		1,
-		"commands.images.canelladvd.description",
+		"commands.command.canelladvd.description",
 		"/api/v1/images/canella-dvd",
 		"canella_dvd.png",
 )

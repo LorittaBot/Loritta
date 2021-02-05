@@ -13,7 +13,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 
 class DeusCommand : AbstractCommand("god", listOf("deus"), CommandCategory.IMAGES) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.images.god.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.god.description")
 	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 
 	// TODO: Fix Usage

@@ -9,8 +9,8 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import java.util.*
 
-class RoleIdCommand : AbstractCommand("roleid", listOf("cargoid", "iddocargo"), CommandCategory.ADMIN) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.moderation.roleId.description")
+class RoleIdCommand : AbstractCommand("roleid", listOf("cargoid", "iddocargo"), CommandCategory.MODERATION) {
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.roleid.description")
 
 	// TODO: Fix getUsage
 
@@ -37,7 +37,7 @@ class RoleIdCommand : AbstractCommand("roleid", listOf("cargoid", "iddocargo"), 
 			if (mentionedRoles.isNotEmpty()) {
 
 				list.add(LorittaReply(
-                        message = locale["commands.moderation.roleId.identifiers", argument],
+                        message = locale["commands.command.roleid.identifiers", argument],
                         prefix = "\uD83D\uDCBC"
                 ))
 
@@ -51,14 +51,14 @@ class RoleIdCommand : AbstractCommand("roleid", listOf("cargoid", "iddocargo"), 
 				val roles = context.guild.roles.filter { it.name.contains(argument, true) }
 
 				list.add(LorittaReply(
-                        message = locale["commands.moderation.roleId.rolesThatContains", argument],
+                        message = locale["commands.command.roleid.rolesThatContains", argument],
                         prefix = "\uD83D\uDCBC"
                 ))
 
 				if (roles.isEmpty()) {
 					list.add(
                             LorittaReply(
-                                    message = "*${locale["commands.moderation.roleId.emptyRoles"]}*",
+                                    message = "*${locale["commands.command.roleid.emptyRoles"]}*",
                                     mentionUser = false,
                                     prefix = "\uD83D\uDE22"
                             )

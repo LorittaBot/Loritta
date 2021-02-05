@@ -7,7 +7,7 @@ class BolsonaroCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("bolsonaro", "bolsonarotv"),
 		1,
-		"commands.images.bolsonaro.description",
+		"commands.command.bolsonaro.description",
 		"/api/v1/images/bolsonaro",
 		"bolsonaro_tv.png",
 )

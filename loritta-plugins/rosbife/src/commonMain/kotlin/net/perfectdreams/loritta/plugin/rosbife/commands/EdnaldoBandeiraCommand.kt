@@ -7,7 +7,7 @@ class EdnaldoBandeiraCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("ednaldobandeira"),
 		1,
-		"commands.images.ednaldobandeira.description",
+		"commands.command.ednaldobandeira.description",
 		"/api/v1/images/ednaldo-bandeira",
 		"ednaldo_bandeira.png"
 )

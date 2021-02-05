@@ -16,7 +16,7 @@ import org.jetbrains.exposed.sql.selectAll
 
 class RankGlobalCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("rank global", "top global", "leaderboard global", "ranking global"), CommandCategory.SOCIAL) {
 	override fun command() = create {
-		localizedDescription("commands.social.rankglobal.description")
+		localizedDescription("commands.command.rankglobal.description")
 
 		arguments {
 			argument(ArgumentType.NUMBER) {

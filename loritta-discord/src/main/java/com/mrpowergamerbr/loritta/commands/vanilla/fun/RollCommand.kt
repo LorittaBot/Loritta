@@ -20,7 +20,7 @@ import net.perfectdreams.loritta.utils.math.MathUtils
 
 class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), CommandCategory.FUN) {
 	companion object {
-		private const val LOCALE_PREFIX = "commands.fun.roll"
+		private const val LOCALE_PREFIX = "commands.command.roll"
 	}
 
 	override fun getDescriptionKey() = LocaleKeyData("$LOCALE_PREFIX.description")
@@ -35,7 +35,7 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 		}
 	}
 
-	override fun getExamplesKey() = LocaleKeyData("commands.fun.roll.examples")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.roll.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var quantity = 1L

@@ -8,7 +8,7 @@ class CarlyAaahCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("carlyaaah"),
 		1,
-		"commands.videos.carlyaaah.description",
+		"commands.command.carlyaaah.description",
 		"/api/v1/videos/carly-aaah",
 		"carly_aaah.mp4",
 		sendTypingStatus = true,

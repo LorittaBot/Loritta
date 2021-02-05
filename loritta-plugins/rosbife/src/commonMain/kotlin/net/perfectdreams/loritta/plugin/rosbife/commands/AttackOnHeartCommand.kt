@@ -8,7 +8,7 @@ class AttackOnHeartCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("attackonheart"),
 		1,
-		"commands.videos.attackonheart.description",
+		"commands.command.attackonheart.description",
 		"/api/v1/videos/attack-on-heart",
 		"attack_on_heart.mp4",
 		sendTypingStatus = true,

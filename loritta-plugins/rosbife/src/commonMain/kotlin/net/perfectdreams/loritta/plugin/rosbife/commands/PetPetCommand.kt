@@ -7,7 +7,7 @@ class PetPetCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("petpet"),
 		1,
-		"commands.images.petpet.description",
+		"commands.command.petpet.description",
 		"/api/v1/images/pet-pet",
 		"petpet.gif"
 )

@@ -16,7 +16,7 @@ import java.util.*
 
 class EncodeCommand : AbstractCommand("encode", listOf("codificar", "encrypt", "criptografar", "hash"), CommandCategory.UTILS) {
 	override fun getDescriptionKey() = LocaleKeyData(
-			"commands.utils.encode.description",
+			"commands.command.encode.description",
 			listOf(
 					LocaleStringData(
 							listOf("md2", "md5", "sha1", "sha256", "sha384", "sha512", "rot13", "uuid", "base64").joinToString(", ", transform = { "`$it`" })
@@ -24,7 +24,7 @@ class EncodeCommand : AbstractCommand("encode", listOf("codificar", "encrypt", "
 			)
 	)
 
-	override fun getExamplesKey() = LocaleKeyData("commands.utils.encode.examples")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.encode.examples")
 
 	// TODO: Fix Detailed Usage
 	override fun getUsage() = arguments {
@@ -67,7 +67,7 @@ class EncodeCommand : AbstractCommand("encode", listOf("codificar", "encrypt", "
 
 		if (encodedText == null) {
 			context.reply(
-					locale["commands.utils.encode.invalidMethod", encodeMode.stripCodeMarks()],
+					locale["commands.command.encode.invalidMethod", encodeMode.stripCodeMarks()],
 					Constants.ERROR
 			)
 			return
@@ -76,12 +76,12 @@ class EncodeCommand : AbstractCommand("encode", listOf("codificar", "encrypt", "
 		context.reply(
 				true,
 				LorittaReply(
-						"**${locale["commands.utils.encode.originalText"]}:** `${text.stripCodeMarks()}`",
+						"**${locale["commands.command.encode.originalText"]}:** `${text.stripCodeMarks()}`",
 						"\uD83D\uDCC4",
 						mentionUser = false
 				),
 				LorittaReply(
-						"**${locale["commands.utils.encode.encodedText"]}:** `${encodedText.stripCodeMarks()}`",
+						"**${locale["commands.command.encode.encodedText"]}:** `${encodedText.stripCodeMarks()}`",
 						"<:blobspy:465979979876794368>",
 						mentionUser = false
 				)

@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 
 class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"), CommandCategory.SOCIAL) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.social.background.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.background.description")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		context.reply(

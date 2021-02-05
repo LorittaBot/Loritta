@@ -37,7 +37,7 @@ abstract class ActionCommand(loritta: LorittaDiscord, labels: List<String>): Dis
     override fun command(): Command<CommandContext> = create {
         create().also {
             localizedDescription(it.description)
-            localizedExamples("commands.actions.examples")
+            localizedExamples("commands.category.action.examples")
 
             usage {
                 argument(ArgumentType.USER) {
@@ -56,7 +56,7 @@ abstract class ActionCommand(loritta: LorittaDiscord, labels: List<String>): Dis
 
 class ActionCommandDSL(val command: ActionCommand) {
 
-    var description: String = "commands.actions.${command.labels.first()}.description"
+    var description: String = "commands.command.${command.labels.first()}.description"
     var folderName: String? = command.labels.first()
 
     lateinit var color: Color
@@ -149,7 +149,7 @@ private suspend fun ActionCommandDSL.handle(context: DiscordCommandContext, send
                     .setImage(context.loritta.instanceConfig.loritta.website.url + "assets/img/actions/$folderName/${randomImage.folderName}/${randomImage.fileName}")
                     .also {
                         if (sender != receiver && !repeat) {
-                            it.setFooter(context.locale["commands.actions.clickToRetribute", "\uD83D\uDD01"], null)
+                            it.setFooter(context.locale["commands.category.anime.clickToRetribute", "\uD83D\uDD01"], null)
                         }
                     }
                     .build()
@@ -177,7 +177,7 @@ private fun DiscordCommandContext.addReactionButton(dsl: ActionCommandDSL, messa
 
 private suspend fun DiscordCommandContext.addIdiotReply() = reply(
         LorittaReply(
-                locale["commands.actions.kiss.responseAntiIdiot"],
+                locale["commands.command.kiss.responseAntiIdiot"],
                 "\uD83D\uDE45"
         )
 )

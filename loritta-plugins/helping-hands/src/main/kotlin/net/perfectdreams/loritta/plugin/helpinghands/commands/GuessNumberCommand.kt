@@ -22,8 +22,8 @@ class GuessNumberCommand(plugin: HelpingHandsPlugin) : DiscordAbstractCommandBas
     }
 
     override fun command() = create {
-        localizedDescription("commands.economy.guessnumber.description")
-        localizedExamples("commands.economy.guessnumber.examples")
+        localizedDescription("commands.command.guessnumber.description")
+        localizedExamples("commands.command.guessnumber.examples")
 
         usage {
             arguments {
@@ -44,12 +44,12 @@ class GuessNumberCommand(plugin: HelpingHandsPlugin) : DiscordAbstractCommandBas
                     }
 
             if (number !in 1..10)
-                fail(locale["commands.economy.guessnumber.numberNotInRange", VICTORY_PRIZE])
+                fail(locale["commands.command.guessnumber.numberNotInRange", VICTORY_PRIZE])
 
             val profile = lorittaUser.profile
 
             if (LOSE_PRIZE > profile.money)
-                fail(locale["commands.economy.guessnumber.notEnoughSonhos"])
+                fail(locale["commands.command.guessnumber.notEnoughSonhos"])
 
             val randomNumber = Loritta.RANDOM.nextInt(1, 11)
             val won = number == randomNumber
@@ -65,7 +65,7 @@ class GuessNumberCommand(plugin: HelpingHandsPlugin) : DiscordAbstractCommandBas
                     )
                 }
 
-                reply(locale["commands.economy.guessnumber.youWin", VICTORY_PRIZE], Emotes.LORI_RICH)
+                reply(locale["commands.command.guessnumber.youWin", VICTORY_PRIZE], Emotes.LORI_RICH)
             } else {
                 loritta.newSuspendedTransaction {
                     profile.takeSonhosNested(LOSE_PRIZE)
@@ -77,7 +77,7 @@ class GuessNumberCommand(plugin: HelpingHandsPlugin) : DiscordAbstractCommandBas
                     )
                 }
 
-                reply(locale.getList("commands.economy.guessnumber.youLose", randomNumber, LOSE_PRIZE).random(), Emotes.LORI_CRYING)
+                reply(locale.getList("commands.command.guessnumber.youLose", randomNumber, LOSE_PRIZE).random(), Emotes.LORI_CRYING)
             }
         }
     }

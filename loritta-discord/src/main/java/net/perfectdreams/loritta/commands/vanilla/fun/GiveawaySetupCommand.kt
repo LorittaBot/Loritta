@@ -20,7 +20,7 @@ import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
 
 class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta, listOf("giveaway setup", "sorteio setup", "giveaway criar", "sorteio criar", "giveaway create", "sorteio create"), CommandCategory.FUN) {
     companion object {
-        private const val LOCALE_PREFIX = "commands.fun"
+        private const val LOCALE_PREFIX = "commands.command"
         val logger = KotlinLogging.logger { }
     }
 
@@ -50,7 +50,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
                 if (message != null) {
                     context.reply(
                             LorittaReply(
-                                    message = locale["commands.fun.giveaway.giveawayValidCustomMessage"],
+                                    message = locale["commands.command.giveaway.giveawayValidCustomMessage"],
                                     prefix = Emotes.LORI_TEMMIE
                             )
                     )
@@ -112,7 +112,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
     suspend fun getGiveawayDuration(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
         val message = context.discordMessage.channel.sendMessage(
                 LorittaReply(
-                        message = locale["commands.fun.giveaway.giveawayDuration"],
+                        message = locale["commands.command.giveaway.giveawayDuration"],
                         prefix = "\uD83E\uDD14"
                 ).build(context.getUserMention(true))
         ).await()
@@ -296,7 +296,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
                     if (roles.isEmpty()) {
                         context.reply(
                                 LorittaReply(
-                                        locale["commands.fun.giveaway.giveawayNoValidRoles"],
+                                        locale["commands.command.giveaway.giveawayNoValidRoles"],
                                         Constants.ERROR
                                 )
                         )
@@ -307,7 +307,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
                         if (!context.guild.selfMember.canInteract(role) || role.isManaged) {
                             context.reply(
                                     LorittaReply(
-                                            locale["commands.fun.giveaway.giveawayCantInteractWithRole", "`${role.name}`"],
+                                            locale["commands.command.giveaway.giveawayCantInteractWithRole", "`${role.name}`"],
                                             Constants.ERROR
                                     )
                             )
@@ -317,7 +317,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
                         if (context.discordMessage.member?.canInteract(role) == false) {
                             context.reply(
                                     LorittaReply(
-                                            locale["commands.fun.giveaway.giveawayCantYouInteractWithRole", "`${role.name}`"],
+                                            locale["commands.command.giveaway.giveawayCantYouInteractWithRole", "`${role.name}`"],
                                             Constants.ERROR
                                     )
                             )
@@ -340,7 +340,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
     suspend fun getGiveawayWinnerCount(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
         val message = context.discordMessage.channel.sendMessage(
                 LorittaReply(
-                        message = locale["commands.fun.giveaway.giveawayWinnerCount"],
+                        message = locale["commands.command.giveaway.giveawayWinnerCount"],
                         prefix = "\uD83E\uDD14"
                 ).build(context.getUserMention(true))
         ).await()
@@ -363,7 +363,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
             if (numberOfWinners !in 1..100) {
                 context.reply(
                         LorittaReply(
-                                locale["commands.fun.giveaway.giveawayWinnerCountNotInRange"],
+                                locale["commands.command.giveaway.giveawayWinnerCountNotInRange"],
                                 Constants.ERROR
                         )
                 )

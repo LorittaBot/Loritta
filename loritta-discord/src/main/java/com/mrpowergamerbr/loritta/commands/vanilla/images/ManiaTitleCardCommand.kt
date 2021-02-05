@@ -15,8 +15,8 @@ import java.io.File
 import javax.imageio.ImageIO
 
 class ManiaTitleCardCommand : AbstractCommand("maniatitlecard", category = CommandCategory.IMAGES) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.images.maniatitlecard.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.images.maniatitlecard.examples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.maniatitlecard.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.maniatitlecard.examples")
 	override fun getUsage() = arguments {
 		argument(ArgumentType.TEXT) {}
 	}

@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractComman
 
 class ChannelInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("channelinfo", "channel"), CommandCategory.DISCORD) {
 	companion object {
-		private const val LOCALE_PREFIX = "commands.discord"
+		private const val LOCALE_PREFIX = "commands.command"
 	}
 
 	override fun command() = create {

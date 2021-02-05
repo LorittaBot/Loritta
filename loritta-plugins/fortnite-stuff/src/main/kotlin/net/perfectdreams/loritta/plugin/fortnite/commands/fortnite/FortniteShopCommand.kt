@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.plugin.fortnite.FortniteStuff
 import net.perfectdreams.loritta.utils.Emotes
 
 class FortniteShopCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.loritta, listOf("fortniteshop", "fortniteloja", "fnshop", "fnloja"), CommandCategory.FORTNITE) {
-	private val LOCALE_PREFIX = "commands.fortnite.shop"
+	private val LOCALE_PREFIX = "commands.command.shop"
 
 	override fun command() = create {
 		localizedDescription("${LOCALE_PREFIX}.description")
@@ -24,7 +24,7 @@ class FortniteShopCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.l
 			if (storeFileName == null) {
 				reply(
 						LorittaReply(
-								locale["commands.fortnite.shop.notLoadedYet"],
+								locale["commands.command.shop.notLoadedYet"],
 								Constants.ERROR
 						)
 				)

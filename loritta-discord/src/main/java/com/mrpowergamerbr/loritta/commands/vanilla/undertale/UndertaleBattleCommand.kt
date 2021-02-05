@@ -17,7 +17,7 @@ import java.io.File
 import java.util.*
 
 class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebattle"), CommandCategory.UNDERTALE) {
-    override fun getDescriptionKey() = LocaleKeyData("commands.undertale.utbattle.description")
+    override fun getDescriptionKey() = LocaleKeyData("commands.command.utbattle.description")
 
     override fun getExamples(): List<String> {
         return Arrays.asList("Asriel Chara, are you there?")

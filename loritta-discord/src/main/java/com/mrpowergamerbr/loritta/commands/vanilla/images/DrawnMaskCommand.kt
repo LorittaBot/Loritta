@@ -21,7 +21,7 @@ class DrawnMaskCommand : AbstractCommand("drawnmasksign", listOf("drawnmaskplaca
 	}
 
 	override fun getDescriptionKey() = LocaleKeyData(
-			"commands.images.drawnmasksign.description",
+			"commands.command.drawnmasksign.description",
 			listOf(
 					LocaleStringData("Drawn Mask")
 			)

@@ -20,7 +20,7 @@ import java.io.File
 import java.io.IOException
 
 class UndertaleBoxCommand : AbstractCommand("utbox", listOf("undertalebox"), CommandCategory.UNDERTALE) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.undertale.utbox.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.utbox.description")
 
 	override fun getExamples(): List<String> {
 		return listOf("@Loritta Legendary being made of every SOUL in the underground.")

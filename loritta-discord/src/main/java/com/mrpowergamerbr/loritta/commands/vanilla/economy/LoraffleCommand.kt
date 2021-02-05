@@ -30,8 +30,8 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 		const val MAX_TICKETS_BY_USER_PER_ROUND = 100_000
 	}
 
-	override fun getDescriptionKey() = LocaleKeyData("commands.economy.raffle.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.economy.raffle.examples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.raffle.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.raffle.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val arg0 = context.args.getOrNull(0)
@@ -121,7 +121,7 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 			if (status == BuyRaffleTicketStatus.NOT_ENOUGH_MONEY) {
 				context.reply(
                         LorittaReply(
-                                context.locale["commands.economy.raffle.notEnoughMoney", json["canOnlyPay"].int, quantity, if (quantity == 1) "" else "s"],
+                                context.locale["commands.command.raffle.notEnoughMoney", json["canOnlyPay"].int, quantity, if (quantity == 1) "" else "s"],
                                 Constants.ERROR
                         )
 				)
@@ -130,11 +130,11 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 
 			context.reply(
                     LorittaReply(
-                            context.locale["commands.economy.raffle.youBoughtAnTicket", quantity, if (quantity == 1) "" else "s", quantity.toLong() * 250],
+                            context.locale["commands.command.raffle.youBoughtAnTicket", quantity, if (quantity == 1) "" else "s", quantity.toLong() * 250],
                             "\uD83C\uDFAB"
                     ),
                     LorittaReply(
-                            context.locale["commands.economy.raffle.wantMoreChances", context.config.commandPrefix],
+                            context.locale["commands.command.raffle.wantMoreChances", context.config.commandPrefix],
                             mentionUser = false
                     )
 			)
@@ -183,32 +183,32 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
                         "<:loritta:331179879582269451>"
                 ),
                 LorittaReply(
-                        context.locale["commands.economy.raffle.currentPrize", (currentTickets * 250).toString()],
+                        context.locale["commands.command.raffle.currentPrize", (currentTickets * 250).toString()],
                         "<:starstruck:540988091117076481>",
                         mentionUser = false
                 ),
                 LorittaReply(
-                        context.locale["commands.economy.raffle.boughtTickets", currentTickets],
+                        context.locale["commands.command.raffle.boughtTickets", currentTickets],
                         "\uD83C\uDFAB",
                         mentionUser = false
                 ),
                 LorittaReply(
-                        context.locale["commands.economy.raffle.usersParticipating", usersParticipating],
+                        context.locale["commands.command.raffle.usersParticipating", usersParticipating],
                         "\uD83D\uDC65",
                         mentionUser = false
                 ),
                 LorittaReply(
-                        context.locale["commands.economy.raffle.lastWinner", "$nameAndDiscriminator (${lastWinner?.id})", lastWinnerPrize],
+                        context.locale["commands.command.raffle.lastWinner", "$nameAndDiscriminator (${lastWinner?.id})", lastWinnerPrize],
                         "\uD83D\uDE0E",
                         mentionUser = false
                 ),
                 LorittaReply(
-                        context.locale["commands.economy.raffle.resultsIn", DateUtils.formatDateDiff(Calendar.getInstance(), cal, locale)],
+                        context.locale["commands.command.raffle.resultsIn", DateUtils.formatDateDiff(Calendar.getInstance(), cal, locale)],
                         prefix = "\uD83D\uDD52",
                         mentionUser = false
                 ),
                 LorittaReply(
-                        context.locale["commands.economy.raffle.buyAnTicketFor", context.config.commandPrefix],
+                        context.locale["commands.command.raffle.buyAnTicketFor", context.config.commandPrefix],
                         prefix = "\uD83D\uDCB5",
                         mentionUser = false
                 )

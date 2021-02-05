@@ -39,7 +39,7 @@ class ScratchCardCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(l
 		private const val GESSY_COMBO = 250
 		private const val TOBIAS_COMBO = 130
 		private val logger = KotlinLogging.logger {}
-		private const val LOCALE_PREFIX = "commands.economy"
+		private const val LOCALE_PREFIX = "commands.command"
 	}
 
 	override fun command() = create {

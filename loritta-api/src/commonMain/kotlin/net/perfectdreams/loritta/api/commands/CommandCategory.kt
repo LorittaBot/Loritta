@@ -14,7 +14,7 @@ enum class CommandCategory {
 	ANIME,
 	DISCORD,
 	MISC,
-	ADMIN,
+	MODERATION,
 	UTILS,
 	SOCIAL,
 	ACTION,

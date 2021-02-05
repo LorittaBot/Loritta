@@ -34,8 +34,8 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 		private val mutex = Mutex()
 	}
 
-	override fun getDescriptionKey() = LocaleKeyData("commands.economy.pay.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.economy.pay.examples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.pay.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.pay.examples")
 
 	// TODO: Fix Usage
 
@@ -135,7 +135,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			if (howMuch.toBigDecimal() > balanceQuantity) {
 				context.reply(
 						LorittaReply(
-								locale["commands.economy.pay.insufficientFunds", if (economySource == "global") locale["economy.currency.name.plural"] else economyConfig?.economyNamePlural],
+								locale["commands.command.pay.insufficientFunds", if (economySource == "global") locale["economy.currency.name.plural"] else economyConfig?.economyNamePlural],
 								Constants.ERROR
 						)
 				)
@@ -171,7 +171,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 						// reject the sonhos
 						context.reply(
 								LorittaReply(
-										context.locale["commands.economy.pay.doYouThinkImPoor"],
+										context.locale["commands.command.pay.doYouThinkImPoor"],
 										Emotes.LORI_BAN_HAMMER
 								)
 						)
@@ -180,23 +180,23 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 				}
 
 				val quirkyMessage = when {
-					howMuch >= 500_000 -> " ${context.locale.getList("commands.economy.pay.randomQuirkyRichMessages").random()}"
-					tellUserLorittaIsGrateful -> " ${context.locale.getList("commands.economy.pay.randomLorittaIsGratefulMessages").random()}"
+					howMuch >= 500_000 -> " ${context.locale.getList("commands.command.pay.randomQuirkyRichMessages").random()}"
+					tellUserLorittaIsGrateful -> " ${context.locale.getList("commands.command.pay.randomLorittaIsGratefulMessages").random()}"
 					else -> ""
 				}
 
 				val message = context.reply(
 						LorittaReply(
-								context.locale["commands.economy.pay.youAreGoingToTransfer", howMuch, user.asMention, quirkyMessage],
+								context.locale["commands.command.pay.youAreGoingToTransfer", howMuch, user.asMention, quirkyMessage],
 								Emotes.LORI_RICH
 						),
 						LorittaReply(
-								context.locale["commands.economy.pay.clickToAcceptTheTransaction", user.asMention, "✅"],
+								context.locale["commands.command.pay.clickToAcceptTheTransaction", user.asMention, "✅"],
 								"🤝",
 								mentionUser = false
 						),
 						LorittaReply(
-								context.locale["commands.economy.pay.sellDisallowedWarning", "${loritta.instanceConfig.loritta.website.url}guidelines"],
+								context.locale["commands.command.pay.sellDisallowedWarning", "${loritta.instanceConfig.loritta.website.url}guidelines"],
 								Emotes.LORI_BAN_HAMMER,
 								mentionUser = false
 						)
@@ -244,7 +244,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 										val finalMoney = result["finalMoney"].double
 										context.reply(
 												LorittaReply(
-														locale["commands.economy.pay.transitionComplete", user.asMention, finalMoney, if (finalMoney == 1.0) {
+														locale["commands.command.pay.transitionComplete", user.asMention, finalMoney, if (finalMoney == 1.0) {
 															locale["economy.currency.name.singular"]
 														} else {
 															locale["economy.currency.name.plural"]
@@ -275,7 +275,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 
 				context.reply(
 						LorittaReply(
-								locale["commands.economy.pay.transitionComplete", user.asMention, howMuch, if (howMuch.toLong() == 1L) {
+								locale["commands.command.pay.transitionComplete", user.asMention, howMuch, if (howMuch.toLong() == 1L) {
 									economyConfig?.economyName
 								} else {
 									economyConfig?.economyNamePlural
@@ -311,7 +311,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 		if (epochMillis + (Constants.ONE_WEEK_IN_MILLISECONDS * 2) > System.currentTimeMillis()) { // 14 dias
 			context.reply(
 					LorittaReply(
-							context.locale["commands.economy.pay.selfAccountIsTooNew", 14] + " ${Emotes.LORI_CRYING}",
+							context.locale["commands.command.pay.selfAccountIsTooNew", 14] + " ${Emotes.LORI_CRYING}",
 							Constants.ERROR
 					)
 			)
@@ -326,7 +326,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 		if (epochMillis + Constants.ONE_WEEK_IN_MILLISECONDS > System.currentTimeMillis()) { // 7 dias
 			context.reply(
 					LorittaReply(
-							context.locale["commands.economy.pay.otherAccountIsTooNew", target.asMention, 7] + " ${Emotes.LORI_CRYING}",
+							context.locale["commands.command.pay.otherAccountIsTooNew", target.asMention, 7] + " ${Emotes.LORI_CRYING}",
 							Constants.ERROR
 					)
 			)

@@ -12,7 +12,7 @@ class SAMCommand(m: RosbifePlugin) : ImageAbstractCommandBase(
 		listOf("sam", "southamericamemes")
 ) {
 	override fun command() = create {
-		localizedDescription("commands.images.sam.description")
+		localizedDescription("commands.command.sam.description")
 		localizedExamples(Command.SINGLE_IMAGE_EXAMPLES_KEY)
 
 		usage {

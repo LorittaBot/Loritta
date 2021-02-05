@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage
 
 class ToBeContinuedCommand(m: RosbifePlugin) : ImageAbstractCommandBase(m.loritta, listOf("tobecontinued")) {
 	override fun command() = create {
-		localizedDescription("commands.images.tobecontinued.description")
+		localizedDescription("commands.command.tobecontinued.description")
 		localizedExamples(Command.SINGLE_IMAGE_EXAMPLES_KEY)
 
 		usage {

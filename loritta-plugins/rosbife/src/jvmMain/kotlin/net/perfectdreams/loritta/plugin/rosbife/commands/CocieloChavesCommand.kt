@@ -28,8 +28,8 @@ class CocieloChavesCommand(m: RosbifePlugin) : DiscordAbstractCommandBase(
 			.asMap()
 
 	override fun command() = create {
-		localizedDescription("commands.videos.cocielochaves.description")
-		localizedExamples("commands.videos.cocielochaves.examples")
+		localizedDescription("commands.command.cocielochaves.description")
+		localizedExamples("commands.command.cocielochaves.examples")
 
 		sendTypingStatus = true
 

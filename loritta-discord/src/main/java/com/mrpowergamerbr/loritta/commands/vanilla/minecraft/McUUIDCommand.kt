@@ -12,8 +12,8 @@ import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class McUUIDCommand : AbstractCommand("mcuuid", category = CommandCategory.MINECRAFT) {
-    override fun getDescriptionKey() = LocaleKeyData("commands.minecraft.mcuuid.description")
-    override fun getExamplesKey() = LocaleKeyData("commands.minecraft.playerNameExamples")
+    override fun getDescriptionKey() = LocaleKeyData("commands.command.mcuuid.description")
+    override fun getExamplesKey() = LocaleKeyData("commands.category.minecraft.playerNameExamples")
 
     // TODO: Fix Usage
 
@@ -26,9 +26,9 @@ class McUUIDCommand : AbstractCommand("mcuuid", category = CommandCategory.MINEC
 	        try {
                 val json = JsonParser.parseString(data).asJsonObject
 
-	            context.sendMessage(context.getAsMention(true) + context.locale["commands.minecraft.mcuuid.result", player, LorittaUtils.getUUID(json["id"].string)])
+	            context.sendMessage(context.getAsMention(true) + context.locale["commands.command.mcuuid.result", player, LorittaUtils.getUUID(json["id"].string)])
             } catch (e: IllegalStateException) {
-                context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["commands.minecraft.mcuuid.invalid", player])
+                context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["commands.command.mcuuid.invalid", player])
             }
         } else {
             this.explain(context)

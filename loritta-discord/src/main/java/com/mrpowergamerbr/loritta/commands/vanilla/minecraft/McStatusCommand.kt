@@ -14,13 +14,13 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.Color
 
 class McStatusCommand : AbstractCommand("mcstatus", category = CommandCategory.MINECRAFT) {
-    override fun getDescriptionKey() = LocaleKeyData("commands.minecraft.mcstatus.description")
+    override fun getDescriptionKey() = LocaleKeyData("commands.command.mcstatus.description")
 
     override suspend fun run(context: CommandContext, locale: BaseLocale) {
         val body = HttpRequest.get("https://status.mojang.com/check").body()
 
         val builder = EmbedBuilder()
-                .setTitle("📡 ${locale["commands.minecraft.mcstatus.mojangStatus"]}", "https://help.mojang.com/")
+                .setTitle("📡 ${locale["commands.command.mcstatus.mojangStatus"]}", "https://help.mojang.com/")
                 .setColor(Color.GREEN)
 
         val json = JsonParser.parseString(body)

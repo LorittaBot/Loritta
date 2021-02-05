@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.utils.Emotes
 
 class AnagramaCommand : AbstractCommand("anagram", listOf("anagrama"), CommandCategory.UTILS) {
 	companion object {
-		private const val LOCALE_PREFIX = "commands.utils.anagram"
+		private const val LOCALE_PREFIX = "commands.command.anagram"
 	}
 
 	override fun getUsage() = arguments {

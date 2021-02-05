@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class SwingCommand : AbstractCommand("swing", category = CommandCategory.IMAGES) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.images.swing.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.swing.description")
 	override fun getExamplesKey() = Command.TWO_IMAGES_EXAMPLES_KEY
 
 	// TODO: Fix Usage

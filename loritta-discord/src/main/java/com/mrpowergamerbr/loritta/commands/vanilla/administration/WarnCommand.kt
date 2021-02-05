@@ -21,12 +21,12 @@ import net.perfectdreams.loritta.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 
-class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADMIN) {
+class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.MODERATION) {
 	companion object {
-		private val LOCALE_PREFIX = "commands.moderation"
+		private val LOCALE_PREFIX = "commands.command"
 	}
 
-	override fun getDescriptionKey() = LocaleKeyData("commands.moderation.warn.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.warn.description")
 	override fun getExamplesKey() = AdminUtils.PUNISHMENT_EXAMPLES_KEY
 	override fun getUsage() = AdminUtils.PUNISHMENT_USAGES
 
@@ -65,7 +65,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.ADM
 					if (!isSilent) {
 						if (settings.sendPunishmentViaDm && context.guild.isMember(user)) {
 							try {
-								val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, locale["commands.moderation.warn.punishAction"], reason)
+								val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, locale["commands.command.warn.punishAction"], reason)
 
 								user.openPrivateChannel().queue {
 									it.sendMessage(embed).queue()

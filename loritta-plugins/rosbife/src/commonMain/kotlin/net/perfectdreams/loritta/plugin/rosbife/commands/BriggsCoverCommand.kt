@@ -7,7 +7,7 @@ class BriggsCoverCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("briggscover", "coverbriggs", "capabriggs", "briggscapa"),
 		1,
-		"commands.images.briggscover.description",
+		"commands.command.briggscover.description",
 		"/api/v1/images/briggs-cover",
 		"briggs_capa.png",
 )
