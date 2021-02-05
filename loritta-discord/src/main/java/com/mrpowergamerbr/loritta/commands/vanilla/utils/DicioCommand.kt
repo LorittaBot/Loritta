@@ -78,6 +78,7 @@ class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "dicionario"
 			val description = jsoup.select("p[itemprop = description]")[0]
 
 			val type = description.getElementsByTag("span")[0]
+			val word = jsoup.select("h1[itemprop = name]")
 			val what = description.getElementsByTag("span").getOrNull(1)
 			val etim = if (description.getElementsByClass("etim").size > 0) description.getElementsByClass("etim").text() else ""
 			val frase = if (jsoup.getElementsByClass("frase").isNotEmpty()) {
@@ -90,7 +91,7 @@ class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "dicionario"
 			embed.setColor(Color(25, 89, 132))
 			embed.setFooter(etim, null)
 
-			embed.setTitle("📙 Significado de ${context.args[0]}")
+			embed.setTitle("📙 Significado de ${word.text()}")
 			embed.setDescription("*${type.text()}*")
 			if (what != null)
 				embed.appendDescription("\n\n**${what.text()}**")
