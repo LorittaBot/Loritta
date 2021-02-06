@@ -24,7 +24,7 @@ class FortniteStatsCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.
 
 	override fun command() = create {
 		localizedDescription("${LOCALE_PREFIX}.description")
-		localizedDescription("${LOCALE_PREFIX}.examples")
+		localizedExamples("${LOCALE_PREFIX}.examples")
 
 		needsToUploadFiles = true
 
