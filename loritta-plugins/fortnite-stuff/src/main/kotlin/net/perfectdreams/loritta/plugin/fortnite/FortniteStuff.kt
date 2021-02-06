@@ -69,7 +69,7 @@ class FortniteStuff(name: String, loritta: LorittaDiscord) : LorittaDiscordPlugi
                 }
             }.distinctBy { it["id"].string }
 
-            val fortniteItemsInCurrentLocale = m.itemsInfo[locale["commands.command.shop.localeId"]]!!
+            val fortniteItemsInCurrentLocale = m.itemsInfo[locale["commands.command.fnshop.localeId"]]!!
 
             val embed = EmbedBuilder()
 
@@ -86,7 +86,7 @@ class FortniteStuff(name: String, loritta: LorittaDiscord) : LorittaDiscordPlugi
                         val item = items[i].obj
                         val fortniteItemInCurrentLocale = fortniteItemsInCurrentLocale.first { item["id"].string == it["id"].string }.obj
 
-                        embed.setTitle("${Emotes.LORI_HM} ${locale["commands.command.item.multipleItems"]}")
+                        embed.setTitle("${Emotes.LORI_HM} ${locale["commands.command.fnitem.multipleItems"]}")
                         embed.setColor(Color(0, 125, 187))
                         embed.appendDescription("${Constants.INDEXES[i]} ${fortniteItemInCurrentLocale["name"].nullString} (${fortniteItemInCurrentLocale["type"]["value"].nullString})\n")
                     }

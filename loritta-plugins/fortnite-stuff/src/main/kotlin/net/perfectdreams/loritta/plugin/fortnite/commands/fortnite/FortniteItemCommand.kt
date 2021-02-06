@@ -1,6 +1,10 @@
 package net.perfectdreams.loritta.plugin.fortnite.commands.fortnite
 
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.nullArray
+import com.github.salomonbrys.kotson.nullString
+import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonElement
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.edit
@@ -15,7 +19,7 @@ import net.perfectdreams.loritta.plugin.fortnite.FortniteStuff
 import net.perfectdreams.loritta.utils.Emotes
 
 class FortniteItemCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.loritta, listOf("fortniteitem", "fnitem"), CommandCategory.FORTNITE) {
-	private val LOCALE_PREFIX = "commands.command.item"
+	private val LOCALE_PREFIX = "commands.command.fnitem"
 
 	override fun command() = create {
 		localizedDescription("${LOCALE_PREFIX}.description")

@@ -106,11 +106,11 @@ class FortniteShopGenerator(val parse: JsonObject, val creatorCode: String) {
         graphics.color = Color(203, 210, 220)
         graphics.font = Constants.BURBANK_BIG_CONDENSED_BLACK.deriveFont(27f)
 
-        val subHeaderApplyPath = makeFortniteHeader(graphics.fontMetrics, locale["commands.command.shop.featuredItems"])
+        val subHeaderApplyPath = makeFortniteHeader(graphics.fontMetrics, locale["commands.command.fnshop.featuredItems"])
 
         graphics.drawImage(subHeaderApplyPath, PADDING, 0 + PADDING, null)
 
-        val subHeaderApplyPathItems = makeFortniteHeader(graphics.fontMetrics, locale["commands.command.shop.dailyItems"])
+        val subHeaderApplyPathItems = makeFortniteHeader(graphics.fontMetrics, locale["commands.command.fnshop.dailyItems"])
         graphics.drawImage(subHeaderApplyPathItems, 512 + PADDING + PADDING_BETWEEN_SECTIONS + PADDING, 0 + PADDING, null)
 
         run {
@@ -170,7 +170,7 @@ class FortniteShopGenerator(val parse: JsonObject, val creatorCode: String) {
         graphics.font = Constants.BURBANK_BIG_CONDENSED_BOLD.deriveFont(27f)
         graphics.color = Color(255, 255, 255, 120)
 
-        val creatorCodeText = locale["commands.command.shop.creatorCode", creatorCode]
+        val creatorCodeText = locale["commands.command.fnshop.creatorCode", creatorCode]
         graphics.drawString(
                 creatorCodeText,
                 bufImage.width - graphics.fontMetrics.stringWidth(creatorCodeText) - 15,

@@ -1,6 +1,10 @@
 package net.perfectdreams.loritta.plugin.fortnite.commands.fortnite
 
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.array
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.nullString
+import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.string
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.gifs.GifSequenceWriter
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
@@ -16,14 +20,14 @@ import java.io.File
 import javax.imageio.stream.FileImageOutputStream
 
 class FortniteNewsCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.loritta, listOf("fortnitenews", "fortnitenoticias", "fortnitenotícias", "fnnews", "fnnoticias", "fnnotícias"), CommandCategory.FORTNITE) {
-	private val LOCALE_PREFIX = "commands.command.news"
+	private val LOCALE_PREFIX = "commands.command.fnnews"
 
 	override fun command() = create {
 		localizedDescription("${LOCALE_PREFIX}.description")
 		needsToUploadFiles = true
 
 		executesDiscord {
-			val newsPayload = m.updateStoreItems!!.getNewsData("br", locale["commands.command.shop.localeId"])
+			val newsPayload = m.updateStoreItems!!.getNewsData("br", locale["commands.command.fnshop.localeId"])
 
 			val data = newsPayload.obj["data"]["motds"].array
 
