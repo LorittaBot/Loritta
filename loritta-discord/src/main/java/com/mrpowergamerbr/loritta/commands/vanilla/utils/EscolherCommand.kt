@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.commands.vanilla.misc
+package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 
-class EscolherCommand : AbstractCommand("choose", listOf("escolher"), category = CommandCategory.MISC) {
+class EscolherCommand : AbstractCommand("choose", listOf("escolher"), category = CommandCategory.UTILS) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.choose.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.choose.examples")
 

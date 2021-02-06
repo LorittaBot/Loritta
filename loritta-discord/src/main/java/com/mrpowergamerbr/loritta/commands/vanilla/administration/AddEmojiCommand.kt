@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.commands.vanilla.discord
+package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -16,7 +16,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 
-class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji", "createemoji", "criaremoji"), CommandCategory.DISCORD) {
+class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji", "createemoji", "criaremoji"), CommandCategory.MODERATION) {
 	override fun getUsage(): CommandArguments {
 		return arguments {
 			argument(ArgumentType.TEXT) {

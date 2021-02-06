@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.commands.discord
+package net.perfectdreams.loritta.commands.administration
 
 import com.mrpowergamerbr.loritta.utils.Constants
 import net.dv8tion.jda.api.Permission
@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import java.util.regex.Pattern
 
-class RenameEmojiCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("renameemoji", "renomearemoji"), CommandCategory.DISCORD) {
+class RenameEmojiCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("renameemoji", "renomearemoji"), CommandCategory.MODERATION) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command"
     }
