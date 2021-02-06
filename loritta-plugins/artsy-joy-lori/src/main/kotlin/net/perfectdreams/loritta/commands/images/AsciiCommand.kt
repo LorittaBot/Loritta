@@ -18,7 +18,7 @@ class AsciiCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta
         needsToUploadFiles = true
 
         localizedDescription("$LOCALE_PREFIX.ascii.description")
-        localizedDescription("$LOCALE_PREFIX.ascii.examples")
+        localizedExamples("$LOCALE_PREFIX.ascii.examples")
 
         usage {
             arguments {
