@@ -250,7 +250,7 @@ abstract class NavbarView(
                                     +locale["website.navbar.support"]
                                 }
                                 a(href = "$base/commands") {
-                                    attributes["data-enable-link-preload"] = "true"
+                                    // attributes["data-enable-link-preload"] = "true"
                                     +locale["modules.sectionNames.commands"]
                                 }
                                 a(href = "$base/donate") {
