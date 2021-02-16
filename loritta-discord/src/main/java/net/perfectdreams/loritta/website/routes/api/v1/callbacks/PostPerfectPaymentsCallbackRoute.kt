@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import io.ktor.application.*
 import io.ktor.http.*
@@ -18,16 +19,20 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
+import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.tables.SonhosBundles
+import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.sequins.ktor.BaseRoute
 import org.jetbrains.exposed.sql.*
+import java.awt.Color
+import java.time.Instant
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
@@ -35,6 +40,53 @@ import java.util.concurrent.atomic.AtomicLong
 class PostPerfectPaymentsCallbackRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/callbacks/perfect-payments") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
+
+		suspend fun sendPaymentApprovedDirectMessage(userId: Long, locale: BaseLocale, supportUrl: String) {
+			val user = lorittaShards.retrieveUserById(userId)
+			user?.openPrivateChannel()?.queue {
+				val embed = EmbedBuilder()
+						.setTitle("${locale["economy.paymentApprovedNotification.title"]} ${Emotes.LORI_RICH}")
+						.setDescription(
+								locale.getList(
+										"economy.paymentApprovedNotification.description",
+										supportUrl,
+										"${Emotes.LORI_HEART1}${Emotes.LORI_HEART2}",
+										Emotes.LORI_NICE,
+										Emotes.LORI_SMILE
+								).joinToString("\n")
+						)
+						.setImage("https://cdn.discordapp.com/attachments/513405772911345664/811320940335071263/economy_original.png")
+						.setColor(Color(47, 182, 92))
+						.setTimestamp(Instant.now())
+						.build()
+
+				it.sendMessage(embed).queue()
+			}
+		}
+
+		private suspend fun retrieveSonhosBundleFromMetadata(loritta: LorittaDiscord, metadata: JsonObject): ResultRow? {
+			val metadataAsObj = metadata.obj
+
+			val bundleType = metadataAsObj["bundleType"].nullString
+
+			if (bundleType == "dreams") {
+				// LORI-BUNDLE-InternalTransactionId
+				val bundleId = metadataAsObj["bundleId"].long
+
+				val bundle = loritta.newSuspendedTransaction {
+					SonhosBundles.select {
+						// Before we checked if the bundle was active, but what if we want to add new bundles while taking out old bundles?
+						// If someone bought and the bundle was deactivated, when the payment was approved, the user wouldn't receive the bundle!
+						// So we don't care if the bundle is not active anymore.
+						SonhosBundles.id eq bundleId
+					}.firstOrNull()
+				} ?: return null
+
+				return bundle
+			}
+
+			return null
+		}
 	}
 
 	/**
@@ -92,7 +144,7 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaDiscord) : BaseRoute(
 
 					if (bundleType == "dreams") {
 						// LORI-BUNDLE-InternalTransactionId
-						val bundle = retrieveSonhosBundleFromMetadata(metadataAsObj)
+						val bundle = retrieveSonhosBundleFromMetadata(loritta, metadataAsObj)
 
 						if (bundle != null) {
 							// If it is a sonhos bundle, we need to remove all the sonhos from the bundle to the user
@@ -170,7 +222,7 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaDiscord) : BaseRoute(
 
 				if (bundleType == "dreams") {
 					// LORI-BUNDLE-InternalTransactionId
-					val bundle = retrieveSonhosBundleFromMetadata(metadataAsObj)
+					val bundle = retrieveSonhosBundleFromMetadata(loritta, metadataAsObj)
 
 					if (bundle == null) {
 						logger.warn { "PerfectPayments Payment with Reference ID: $referenceId ($internalTransactionId) does not have a valid bundle!" }
@@ -186,10 +238,7 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaDiscord) : BaseRoute(
 						}
 					}
 
-					val user = lorittaShards.retrieveUserById(internalPayment.userId)
-					user?.openPrivateChannel()?.queue {
-						it.sendMessage("Seu pagamento foi aprovado com sucesso!").queue()
-					}
+					sendPaymentApprovedDirectMessage(internalPayment.userId, loritta.getLocaleById("default"), "${com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url}support")
 
 					call.respondJson(jsonObject())
 					return
@@ -231,36 +280,9 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaDiscord) : BaseRoute(
 				}
 			}
 
-			val user = lorittaShards.retrieveUserById(internalPayment.userId)
-			user?.openPrivateChannel()?.queue {
-				it.sendMessage("Seu pagamento foi aprovado com sucesso!").queue()
-			}
+			sendPaymentApprovedDirectMessage(internalPayment.userId, loritta.getLocaleById("default"), "${com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url}support")
 		}
 
 		call.respondJson(jsonObject())
-	}
-
-	private suspend fun retrieveSonhosBundleFromMetadata(metadata: JsonObject): ResultRow? {
-		val metadataAsObj = metadata.obj
-
-		val bundleType = metadataAsObj["bundleType"].nullString
-
-		if (bundleType == "dreams") {
-			// LORI-BUNDLE-InternalTransactionId
-			val bundleId = metadataAsObj["bundleId"].long
-
-			val bundle = loritta.newSuspendedTransaction {
-				SonhosBundles.select {
-					// Before we checked if the bundle was active, but what if we want to add new bundles while taking out old bundles?
-					// If someone bought and the bundle was deactivated, when the payment was approved, the user wouldn't receive the bundle!
-					// So we don't care if the bundle is not active anymore.
-					SonhosBundles.id eq bundleId
-				}.firstOrNull()
-			} ?: return null
-
-			return bundle
-		}
-
-		return null
 	}
 }
