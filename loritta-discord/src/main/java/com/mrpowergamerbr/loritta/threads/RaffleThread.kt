@@ -5,17 +5,18 @@ import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
+import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.utils.UserPremiumPlans
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.awt.Color
 import java.io.File
 import java.time.Instant
 import java.util.concurrent.CopyOnWriteArrayList
@@ -102,6 +103,10 @@ class RaffleThread : Thread("Raffle Thread") {
 				)
 			}
 
+			val totalTicketsBoughtByTheUser = userIds.count { it.first == winnerId }
+			val totalTickets = userIds.size
+			val totalUsersInTheRaffle = userIds.map { it.first }.distinct().size
+
 			userIds.clear()
 
 			val locale = loritta.getLocaleById(winner.second)
@@ -111,9 +116,21 @@ class RaffleThread : Thread("Raffle Thread") {
 				try {
 					val embed = EmbedBuilder()
 					embed.setThumbnail("attachment://loritta_money.png")
-					embed.setColor(Constants.LORITTA_AQUA)
-					embed.setTitle("\uD83C\uDF89 ${locale["commands.command.raffle.congratulations"]}!")
-					embed.setDescription("${locale["commands.command.raffle.youEarned", lastWinnerPrize]} \uD83E\uDD11")
+					embed.setColor(Color(47, 182, 92))
+					embed.setTitle("\uD83C\uDF89 ${locale["commands.command.raffle.victory.title"]}!")
+					embed.setDescription(
+							locale.getList(
+									"commands.command.raffle.victory.description",
+									totalTicketsBoughtByTheUser,
+									lastWinnerPrize,
+									totalUsersInTheRaffle,
+									totalTickets,
+									totalTicketsBoughtByTheUser / totalTickets.toDouble(),
+									Emotes.LORI_RICH,
+									Emotes.LORI_NICE
+							).joinToString("\n")
+					)
+
 					embed.setTimestamp(Instant.now())
 					val message = MessageBuilder().setContent(" ").setEmbed(embed.build()).build()
 					user.openPrivateChannel().queue {

@@ -45,7 +45,7 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaDiscord) : BaseRoute(
 			val user = lorittaShards.retrieveUserById(userId)
 			user?.openPrivateChannel()?.queue {
 				val embed = EmbedBuilder()
-						.setTitle("${locale["economy.paymentApprovedNotification.title"]} ${Emotes.LORI_RICH}")
+						.setTitle("${Emotes.LORI_RICH} ${locale["economy.paymentApprovedNotification.title"]}")
 						.setDescription(
 								locale.getList(
 										"economy.paymentApprovedNotification.description",
