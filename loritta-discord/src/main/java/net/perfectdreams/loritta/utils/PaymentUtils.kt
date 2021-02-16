@@ -184,52 +184,58 @@ object PaymentUtils {
         // We need to remove the sonhos already checked, because we aren't removing sonhos yet, we could charging users more than they have!
         val userMoney = (userProfile.money - quantityToBeRemovedFromUsers[userId].totalQuantity)
 
-        logger.info { "Charging back $userId, currently they have $userMoney sonhos and we need to remove $stillNeedsToBeRemovedSonhos" }
+        logger.info { "Charging back $userId, currently they have $userMoney sonhos and we need to remove $stillNeedsToBeRemovedSonhos. Users that triggered the check: $usersThatTriggeredTheCheck" }
 
         val userSonhosEndResult = userMoney - stillNeedsToBeRemovedSonhos
 
-        if (0 > userSonhosEndResult) {
-            // Oh no... we still have a looooong way to go because the user didn't have enough sonhos... sad
-            // We know that the user paid his entire bank account, so we are going to subtract the "userMoney" variable
-            quantityToBeRemovedFromUsers[userId] = (quantityToBeRemovedFromUsers[userId] ?: mutableListOf())
-                    .also {
-                        it.add(
-                                SonhosRemovalData(
-                                        additionalContext,
-                                        usersThatTriggeredTheCheck,
-                                        userMoney
-                                )
-                        )
-                    }
+        if (userMoney > 0) {
+            if (0 > userSonhosEndResult) {
+                // Oh no... we still have a looooong way to go because the user didn't have enough sonhos... sad
+                // We know that the user paid his entire bank account, so we are going to subtract the "userMoney" variable
+                quantityToBeRemovedFromUsers[userId] = (quantityToBeRemovedFromUsers[userId] ?: mutableListOf())
+                        .also {
+                            it.add(
+                                    SonhosRemovalData(
+                                            additionalContext,
+                                            usersThatTriggeredTheCheck,
+                                            userMoney
+                                    )
+                            )
+                        }
 
-            stillNeedsToBeRemovedSonhos -= userMoney
+                stillNeedsToBeRemovedSonhos -= userMoney
 
-            logger.warn { "Charged back $userId but we are still in debt! We still need to remove $stillNeedsToBeRemovedSonhos sonhos" }
+                logger.warn { "Charged back $userId but we are still in debt! We still need to remove $stillNeedsToBeRemovedSonhos sonhos. Users that triggered the check: $usersThatTriggeredTheCheck" }
+            } else {
+                quantityToBeRemovedFromUsers[userId] = (quantityToBeRemovedFromUsers[userId] ?: mutableListOf())
+                        .also {
+                            it.add(
+                                    SonhosRemovalData(
+                                            additionalContext,
+                                            usersThatTriggeredTheCheck,
+                                            stillNeedsToBeRemovedSonhos
+                                    )
+                            )
+                        }
+
+                // The user that bought the sonhos had everything fine and ok! :3
+                stillNeedsToBeRemovedSonhos = 0
+
+                logger.info { "Charged back $userId and we were able to cover all the debt from them, yay! Users that triggered the check: $usersThatTriggeredTheCheck" }
+            }
         } else {
-            quantityToBeRemovedFromUsers[userId] = (quantityToBeRemovedFromUsers[userId] ?: mutableListOf())
-                    .also {
-                        it.add(
-                                SonhosRemovalData(
-                                        additionalContext,
-                                        usersThatTriggeredTheCheck,
-                                        stillNeedsToBeRemovedSonhos
-                                )
-                        )
-                    }
-
-            // The user that bought the sonhos had everything fine and ok! :3
-            stillNeedsToBeRemovedSonhos = 0
-
-            logger.info { "Charged back $userId and we were able to cover all the debt from them, yay!" }
+            logger.warn { "Tried charging back $userId but they don't have any sonhos! That's not good... Users that triggered the check: $usersThatTriggeredTheCheck" }
         }
 
         if (stillNeedsToBeRemovedSonhos > 0) {
-            logger.warn { "We still need to cover $userId's debt of $stillNeedsToBeRemovedSonhos sonhos, we will start pestering other users to get the debt from them!" }
+            logger.warn { "We still need to cover $userId's debt of $stillNeedsToBeRemovedSonhos sonhos, we will start pestering other users to get the debt from them! Users that triggered the check: $usersThatTriggeredTheCheck" }
 
             // frick, we still have more money to be taken care of, so we need to pull the money from external sonhos transactions
             val transactions = loritta.newSuspendedTransaction {
                 SonhosTransaction.select {
-                    SonhosTransaction.givenBy eq userId and (SonhosTransaction.receivedBy.isNotNull())
+                    // We can't add the user that triggered the checks in our list, because if we did... We would get stuck in a infinite loop of "I want to get the debt, so let's check from this user" and then the reverse, and stuff would go on and on and on...
+                    // It wouldn't work!
+                    SonhosTransaction.givenBy eq userId and (SonhosTransaction.receivedBy notInList usersThatTriggeredTheCheck) and (SonhosTransaction.receivedBy.isNotNull())
                 }.orderBy(SonhosTransaction.id, SortOrder.DESC)
                         .toList()
             }
@@ -259,11 +265,10 @@ object PaymentUtils {
                 )
 
                 stillNeedsToBeRemovedSonhos -= (receivedQuantity - howMuchWeWereAbleToGet)
-                logger.info { "We were able to get $howMuchWeWereAbleToGet sonhos from $receivedBy! We still need to remove $stillNeedsToBeRemovedSonhos" }
+                logger.info { "We were able to get $howMuchWeWereAbleToGet sonhos from $receivedBy! We still need to remove $stillNeedsToBeRemovedSonhos. Users that triggered the check: $usersThatTriggeredTheCheck" }
             }
         }
 
-        println("Result: ${quantityToBeRemovedFromUsers}")
         return stillNeedsToBeRemovedSonhos
     }
 
