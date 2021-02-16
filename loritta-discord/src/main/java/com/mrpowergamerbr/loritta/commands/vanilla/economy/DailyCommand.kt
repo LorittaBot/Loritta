@@ -39,9 +39,15 @@ class DailyCommand : AbstractCommand("daily", listOf("diário", "bolsafamilia", 
                         locale["commands.command.daily.dailyLink", "${loritta.instanceConfig.loritta.website.url}daily"],
                         Emotes.LORI_RICH
                 ),
+				LorittaReply(
+						context.locale["commands.command.daily.dailyWarning", "${loritta.instanceConfig.loritta.website.url}guidelines"],
+						Emotes.LORI_BAN_HAMMER,
+						mentionUser = false
+				),
                 LorittaReply(
                         locale["commands.command.daily.dailyLinkBuySonhos", "<${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/bundles>"],
-                        "\uD83D\uDCB3"
+                        "\uD83D\uDCB3",
+						mentionUser = false
                 )
 		)
 	}
