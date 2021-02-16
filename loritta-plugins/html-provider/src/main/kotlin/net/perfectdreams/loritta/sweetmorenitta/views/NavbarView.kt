@@ -70,8 +70,8 @@ abstract class NavbarView(
 
                         div(classes = "entry") {
                             a(classes = "support", href = "$base/commands") {
-                                attributes["data-enable-link-preload"] = "true"
-                                attributes["data-sweet-page"] = "commands"
+                                // attributes["data-enable-link-preload"] = "true"
+                                // attributes["data-sweet-page"] = "commands"
 
                                 i(classes = "fas fa-terminal") {}
 
