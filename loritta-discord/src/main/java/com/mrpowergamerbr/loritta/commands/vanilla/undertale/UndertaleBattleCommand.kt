@@ -79,7 +79,7 @@ class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebatt
                 context.sendFile(blackWhite, "undertale_battle.png", context.getAsMention(true)) // E agora envie o arquivo
             } else {
                 // Não, não é válido!
-                context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["commands.undertail.utbattle.invalid", monster, validMonsterList.joinToString(", ")])
+                context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["commands.undertale.utbattle.invalid", monster, validMonsterList.joinToString(", ")])
             }
         } else {
             this.explain(context)
