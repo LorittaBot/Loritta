@@ -86,7 +86,7 @@ object PaymentUtils {
 
                     val profile = loritta.getOrCreateLorittaProfile(entry.key)
                     loritta.newSuspendedTransaction {
-                        logger.info { "Taking $quantity sonhos from ${entry.key} due to chargeback" }
+                        logger.info { "Taking $totalQuantity sonhos from ${entry.key} due to chargeback" }
                         // Take the sonhos
                         profile.takeSonhosNested(
                                 totalQuantity,
