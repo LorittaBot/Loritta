@@ -71,7 +71,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 
 			val setHour = context.reply(
                     LorittaReply(
-                            context.locale["$LOCALE_PREFIX.setPunishmentTime"],
+                            context.locale["commands.category.moderation.setPunishmentTime"],
                             "⏰"
                     )
 			)
@@ -111,7 +111,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 
 						context.reply(
                                 LorittaReply(
-                                        locale["${LOCALE_PREFIX}.successfullyPunished"] + " ${Emotes.LORI_RAGE}",
+                                        locale["commands.category.moderation.successfullyPunished"] + " ${Emotes.LORI_RAGE}",
                                         "\uD83C\uDF89"
                                 )
 						)

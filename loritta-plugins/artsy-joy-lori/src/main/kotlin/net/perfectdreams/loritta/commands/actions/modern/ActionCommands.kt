@@ -149,7 +149,7 @@ private suspend fun ActionCommandDSL.handle(context: DiscordCommandContext, send
                     .setImage(context.loritta.instanceConfig.loritta.website.url + "assets/img/actions/$folderName/${randomImage.folderName}/${randomImage.fileName}")
                     .also {
                         if (sender != receiver && !repeat) {
-                            it.setFooter(context.locale["commands.category.anime.clickToRetribute", "\uD83D\uDD01"], null)
+                            it.setFooter(context.locale["commands.category.action.clickToRetribute", "\uD83D\uDD01"], null)
                         }
                     }
                     .build()
