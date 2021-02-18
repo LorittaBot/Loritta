@@ -23,6 +23,9 @@ class EmojiFightBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComm
 		usage {
 			arguments {
 				argument(ArgumentType.NUMBER) {}
+				argument(ArgumentType.NUMBER) {
+					optional = true
+				}
 			}
 		}
 
@@ -54,10 +57,16 @@ class EmojiFightBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComm
 			AccountUtils.getUserTodayDailyReward(lorittaUser.profile)
 					?: fail(locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", serverConfig.commandPrefix], Constants.ERROR)
 
+			val maxPlayersInEvent = (
+					(this.args.getOrNull(1) ?.toIntOrNull() ?: EmojiFight.DEFAULT_MAX_PLAYER_COUNT)
+							.coerceIn(2, EmojiFight.DEFAULT_MAX_PLAYER_COUNT)
+					)
+
 			val emojiFight = EmojiFight(
 					plugin,
 					this,
-					totalEarnings
+					totalEarnings,
+					maxPlayersInEvent
 			)
 
 			emojiFight.start()

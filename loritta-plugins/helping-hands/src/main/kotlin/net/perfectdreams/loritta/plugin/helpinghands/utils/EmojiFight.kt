@@ -27,7 +27,8 @@ import java.util.concurrent.ConcurrentHashMap
 class EmojiFight(
         val plugin: HelpingHandsPlugin,
         private val context: DiscordCommandContext,
-        private val entryPrice: Long? // null = only for fun emoji fight
+        private val entryPrice: Long?, // null = only for fun emoji fight
+        private val maxPlayers: Int = DEFAULT_MAX_PLAYER_COUNT
 ) {
     val loritta = context.loritta
     private val availableEmotes = emojis.toMutableList()
@@ -69,10 +70,13 @@ class EmojiFight(
                 if (!eventFinished) {
                     message.removeAllFunctions()
                     finishEvent()
+                    updateEventMessage(message, true)
                 }
             }
         }
 
+        // We update the event message after the event is finished because we hold a lock for 3s, and sometimes we want to update the message after the event has finished
+        // but sometimes the event may finish during that 3s cooldown! That's why there is a boolean to bypass the lock
         message.onReactionAdd(context) {
             val reactedUser = it.user ?: return@onReactionAdd
 
@@ -81,10 +85,11 @@ class EmojiFight(
                     updateEventMessage(message)
 
                     finishingEventMutex.withLock {
-                        if (!eventFinished && participatingUsers.size >= 30) {
+                        if (!eventFinished && participatingUsers.size >= maxPlayers) {
                             message.removeAllFunctions()
 
                             finishEvent()
+                            updateEventMessage(message, true)
                         }
                     }
                 }
@@ -98,6 +103,7 @@ class EmojiFight(
                         message.removeAllFunctions()
 
                         finishEvent()
+                        updateEventMessage(message, true)
                     }
                 }
             }
@@ -122,7 +128,8 @@ class EmojiFight(
                                             entryPrice * (participatingUsers.size - 1), // Needs to subtract -1 because the winner *won't* pay for his win
                                             "\uD83D\uDC14",
                                             context.user.asMention,
-                                            "✅"
+                                            "✅",
+                                            maxPlayers
                                     ).joinToString("\n") + "\n\n**" + context.locale["commands.command.emojifight.participants", participatingUsers.size] + "**\n"
                         } else {
                             context.locale
@@ -132,7 +139,8 @@ class EmojiFight(
                                             context.serverConfig.commandPrefix,
                                             "\uD83D\uDC14",
                                             context.user.asMention,
-                                            "✅"
+                                            "✅",
+                                            maxPlayers
                                     ).joinToString("\n") + "\n\n**" + context.locale["commands.command.emojifight.participants", participatingUsers.size] + "**\n"
                         }
                 )
@@ -145,8 +153,8 @@ class EmojiFight(
         return baseEmbed.build()
     }
 
-    private suspend fun updateEventMessage(message: Message) {
-        if (updatingMessageMutex.isLocked) // If it is already locked, no need to update it again
+    private suspend fun updateEventMessage(message: Message, bypassLock: Boolean = false) {
+        if (!bypassLock && updatingMessageMutex.isLocked) // If it is already locked, no need to update it again
             return
 
         val shouldUpdateAgain = updatingMessageMutex.withLock {
@@ -304,6 +312,8 @@ class EmojiFight(
     )
 
     companion object {
+        val DEFAULT_MAX_PLAYER_COUNT = 30
+
         val emojis = mutableListOf(
                 "🙈",
                 "🙉",
