@@ -153,6 +153,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 					return
 
 				var tellUserLorittaIsGrateful = false
+				val userProfile = loritta.getOrCreateLorittaProfile(user.idLong)
 
 				if (user.idLong == loritta.discordConfig.discord.clientId.toLong()) {
 					// If it is Loritta, she doesn't want to *feel* that she is poor if she is rich
@@ -160,10 +161,9 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 					// If she has 1_000_000 sonhos, she will want *at least* 100_000 sonhos
 					//
 					// To do that is *easy*, just multiply how much sonhos she has by 0.1 and, if the value is below the threshold, deny the sonhos.
-					val lorittaProfile = loritta.getOrCreateLorittaProfile(user.idLong)
-					val threshold = lorittaProfile.money * 0.1
+					val threshold = userProfile.money * 0.1
 
-					if (25_000 >= lorittaProfile.money) {
+					if (25_000 >= userProfile.money) {
 						// If Loritta has almost no sonhos (less than 25k), Loritta will tell the user that she is very grateful for the donation!
 						tellUserLorittaIsGrateful = true
 					} else if (threshold > howMuch) {
@@ -177,6 +177,9 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 						)
 						return
 					}
+				} else {
+					if (AccountUtils.checkAndSendMessageIfUserIsBanned(context, userProfile))
+						return
 				}
 
 				val quirkyMessage = when {

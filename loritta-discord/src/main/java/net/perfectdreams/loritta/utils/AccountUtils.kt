@@ -1,9 +1,14 @@
 package net.perfectdreams.loritta.utils
 
+import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Daily
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.tables.Dailies
+import com.mrpowergamerbr.loritta.utils.DateUtils
+import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.loritta
+import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.tables.BannedUsers
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
@@ -59,5 +64,44 @@ object AccountUtils {
                 .toEpochMilli()
 
         return getUserLastDailyRewardReceived(profile, dayAtMidnight)
+    }
+
+    suspend fun checkAndSendMessageIfUserIsBanned(context: CommandContext, userProfile: Profile): Boolean {
+        val bannedState = userProfile.getBannedState()
+        val locale = context.locale
+
+        if (bannedState != null) {
+            val bannedAt = bannedState[BannedUsers.bannedAt]
+            val bannedAtDiff = DateUtils.formatDateDiff(bannedAt, locale)
+            val banExpiresAt = bannedState[BannedUsers.expiresAt]
+            val responses = mutableListOf(
+                    LorittaReply(
+                            "<@${userProfile.userId}> está **banido**",
+                            "\uD83D\uDE45"
+                    ),
+                    LorittaReply(
+                            "**Motivo:** `${bannedState[BannedUsers.reason]}`",
+                            "✍"
+                    ),
+                    LorittaReply(
+                            "**Data do Banimento:** `${bannedAt.humanize(locale)} ($bannedAtDiff)`",
+                            "⏰"
+                    )
+            )
+
+            if (banExpiresAt != null) {
+                val banDurationDiff = DateUtils.formatDateDiff(banExpiresAt, locale)
+                responses.add(
+                        LorittaReply(
+                                "**Duração do banimento:** `$banDurationDiff`",
+                                "⏳"
+                        )
+                )
+            }
+
+            context.reply(*responses.toTypedArray())
+            return true
+        }
+        return false
     }
 }

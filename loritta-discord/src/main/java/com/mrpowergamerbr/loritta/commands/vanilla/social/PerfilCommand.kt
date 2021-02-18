@@ -15,11 +15,9 @@ import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
 import com.mrpowergamerbr.loritta.tables.DonationConfigs
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.LorittaShards
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.MiscUtils
-import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -31,8 +29,8 @@ import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.tables.BotVotes
+import net.perfectdreams.loritta.utils.AccountUtils
 import net.perfectdreams.loritta.utils.ClusterOfflineException
 import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.utils.Emotes
@@ -224,41 +222,11 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			userProfile = loritta.getOrCreateLorittaProfile(contextUser.id)
 		}
 
-		val settings = loritta.newSuspendedTransaction { userProfile.settings }
-		val bannedState = userProfile.getBannedState()
-
-		if (contextUser != null && bannedState != null) {
-			val bannedAt = bannedState[BannedUsers.bannedAt]
-			val bannedAtDiff = DateUtils.formatDateDiff(bannedAt, locale)
-			val banExpiresAt = bannedState[BannedUsers.expiresAt]
-			val responses = mutableListOf(
-				LorittaReply(
-					"${contextUser.asMention} está **banido**",
-					"\uD83D\uDE45"
-				),
-				LorittaReply(
-					"**Motivo:** `${bannedState[BannedUsers.reason]}`",
-					"✍"
-				),
-				LorittaReply(
-					"**Data do Banimento:** `${bannedAt.humanize(locale)} ($bannedAtDiff)`",
-					"⏰"
-				)
-			)
-
-			if (banExpiresAt != null) {
-				val banDurationDiff = DateUtils.formatDateDiff(banExpiresAt, locale)
-				responses.add(
-					LorittaReply(
-						"**Duração do banimento:** `$banDurationDiff`",
-						"⏳"
-					)
-				)
-			}
-
-			context.reply(*responses.toTypedArray())
+		if (AccountUtils.checkAndSendMessageIfUserIsBanned(context, userProfile))
 			return
-		}
+
+		val settings = loritta.newSuspendedTransaction { userProfile.settings }
+
 		if (contextUser == null && context.args.isNotEmpty() && (context.args.first() == "shop" || context.args.first() == "loja")) {
 			context.reply(LorittaReply(context.locale["commands.command.profile.profileshop", "${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/profiles"], Emotes.LORI_OWO))
 			return
