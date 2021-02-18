@@ -22,7 +22,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 
 class FortniteNotifyCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.loritta, listOf("fnnotify", "fortnitenotify", "fnnotificar", "fortnitenotificar"), CommandCategory.FORTNITE) {
-	private val LOCALE_PREFIX = "commands.command.fnnotify"
+	private val LOCALE_PREFIX = "commands.command.fnitem"
 
 	override fun command() = create {
 		localizedDescription("${LOCALE_PREFIX}.description")

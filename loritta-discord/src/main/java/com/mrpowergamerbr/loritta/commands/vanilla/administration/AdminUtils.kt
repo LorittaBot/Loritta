@@ -35,6 +35,10 @@ import java.time.Instant
 object AdminUtils {
 	private val LOCALE_PREFIX = "commands.category.moderation"
 	val PUNISHMENT_EXAMPLES_KEY = LocaleKeyData("$LOCALE_PREFIX.punishmentExamples")
+	val ROLE_TOO_LOW_KEY = LocaleKeyData("$LOCALE_PREFIX.roleTooLow")
+	val ROLE_TOO_LOW_HOW_TO_FIX_KEY = LocaleKeyData("$LOCALE_PREFIX.roleTooLowHowToFix")
+	val PUNISHER_ROLE_TOO_LOW_HOW_TO_FIX_KEY = LocaleKeyData("$LOCALE_PREFIX.punisherRoleTooLowHowToFix")
+
 	val PUNISHMENT_USAGES = arguments {
 		argument(ArgumentType.USER) {
 			optional = false
@@ -142,11 +146,11 @@ object AdminUtils {
 	suspend fun checkForPermissions(context: CommandContext, member: Member): Boolean {
 		if (!context.guild.selfMember.canInteract(member)) {
 			val reply = buildString {
-				this.append(context.locale["${LOCALE_PREFIX}.roleTooLow"])
+				this.append(context.locale[ROLE_TOO_LOW_KEY])
 
 				if (context.handle.hasPermission(Permission.MANAGE_ROLES)) {
 					this.append(" ")
-					this.append(context.locale["${LOCALE_PREFIX}.roleTooLowHowToFix"])
+					this.append(context.locale[ROLE_TOO_LOW_HOW_TO_FIX_KEY])
 				}
 			}
 
@@ -161,11 +165,11 @@ object AdminUtils {
 
 		if (!context.handle.canInteract(member)) {
 			val reply = buildString {
-				this.append(context.locale["commands.category.moderation.punisherRoleTooLow"])
+				this.append(context.locale[ROLE_TOO_LOW_KEY])
 
 				if (context.handle.hasPermission(Permission.MANAGE_ROLES)) {
 					this.append(" ")
-					this.append(context.locale["commands.category.moderation.punisherRoleTooLowHowToFix"])
+					this.append(context.locale[PUNISHER_ROLE_TOO_LOW_HOW_TO_FIX_KEY])
 				}
 			}
 

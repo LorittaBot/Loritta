@@ -347,11 +347,11 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 				}
 			} catch (e: HierarchyException) {
 				val reply = buildString {
-					this.append(context.locale["${LOCALE_PREFIX}.roleTooLow"])
+					this.append(context.locale[AdminUtils.ROLE_TOO_LOW_KEY])
 
 					if (context.handle.hasPermission(Permission.MANAGE_ROLES)) {
 						this.append(" ")
-						this.append(context.locale["${LOCALE_PREFIX}.roleTooLowHowToFix"])
+						this.append(context.locale[AdminUtils.ROLE_TOO_LOW_HOW_TO_FIX_KEY])
 					}
 				}
 

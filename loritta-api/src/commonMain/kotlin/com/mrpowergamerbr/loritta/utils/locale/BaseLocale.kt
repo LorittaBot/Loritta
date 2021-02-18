@@ -15,7 +15,7 @@ class BaseLocale(val id: String) {
 	val path: String
 		get() = this["website.localePath"]
 
-	fun get(localeKeyData: LocaleKeyData): String {
+	operator fun get(localeKeyData: LocaleKeyData): String {
 		// The spread operator is used in a .get(...) because it doesn't work inside of a [...], I don't know why
 		val arguments = localeKeyData.arguments?.map {
 			when (it) {

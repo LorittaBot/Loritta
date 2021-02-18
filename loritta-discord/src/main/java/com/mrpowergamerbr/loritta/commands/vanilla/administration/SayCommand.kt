@@ -85,7 +85,7 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MODER
 				if (!channel.canTalk()) {
 					context.reply(
 							LorittaReply(
-									context.locale["commans.moderation.say.iDontHavePermissionToTalkIn", channel.asMention],
+									context.locale["commands.command.say.iDontHavePermissionToTalkIn", channel.asMention],
 									Constants.ERROR
 							)
 					)
@@ -94,7 +94,7 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MODER
 				if (!channel.canTalk(context.handle)) {
 					context.reply(
 							LorittaReply(
-									context.locale["commans.moderation.say.youDontHavePermissionToTalkIn", channel.asMention],
+									context.locale["commands.command.say.youDontHavePermissionToTalkIn", channel.asMention],
 									Constants.ERROR
 							)
 					)
@@ -103,7 +103,7 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MODER
 				if (context.config.blacklistedChannels.contains(channel.idLong) && !context.lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
 					context.reply(
 							LorittaReply(
-									context.locale["commans.moderation.say.cannotBeUsedIn", channel.asMention],
+									context.locale["commands.command.say.cannotBeUsedIn", channel.asMention],
 									Constants.ERROR
 							)
 					)
