@@ -73,6 +73,8 @@ class MathParser(val input: String) {
             x = parseFactor()
             if (func == "sqrt")
                 x = Math.sqrt(x)
+            else if (func == "cbrt")
+                x = Math.cbrt(x)
             else if (func == "sin")
                 x = Math.sin(Math.toRadians(x))
             else if (func == "cos")
