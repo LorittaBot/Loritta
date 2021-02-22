@@ -2,10 +2,12 @@ package net.perfectdreams.loritta.plugin.loriguildstuff.commands
 
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.AdminUtils
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.BanCommand
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.discordCommand
+import net.perfectdreams.loritta.utils.Emotes
 
 object FastBanCommand {
 
@@ -30,6 +32,7 @@ object FastBanCommand {
         executesDiscord {
             val author = this.member!!
             val staffRole = guild.getRoleById(351473717194522647L)!!
+            val supportRole = guild.getRoleById(399301696892829706L)!!
             if (!author.roles.contains(staffRole)) {
                 fail("Você não pode usar o meu super comandinho de banir as pessoas com motivos bonitinhos ;w;")
             }
@@ -38,6 +41,30 @@ object FastBanCommand {
             val reason = this.args.getOrNull(1)?.toLowerCase() ?: fail("Motivos disponíveis: `${punishmentReasons.keys.joinToString(", ")}`!")
             val proof = this.args.getOrNull(2)
             var fancyReason = punishmentReasons.getOrDefault(reason, null) ?: fail("Motivo inválido. Motivos disponíveis: `${punishmentReasons.keys.joinToString(", ")}`!")
+
+            if (userToBePunished == this.user) {
+                reply(
+                    LorittaReply(
+                        "Você quer mesmo se banir? Você não iria ser mais meu guarda-costas....",
+                        Emotes.LORI_RAGE
+                    )
+                )
+                return@executesDiscord
+            }
+
+            try {
+                val member = guild.retrieveMember(userToBePunished).await()
+
+                if (member.roles.contains(staffRole) || member.roles.contains(supportRole)) {
+                    reply(
+                        LorittaReply(
+                            "Você não pode realizar um golpe de estado!",
+                            Emotes.LORI_CRYING
+                        )
+                    )
+                    return@executesDiscord
+                }
+            } catch(e: Exception) { }
 
             val settings = AdminUtils.retrieveModerationInfo(serverConfig)
 
