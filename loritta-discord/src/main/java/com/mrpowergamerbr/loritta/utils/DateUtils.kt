@@ -1,11 +1,44 @@
 package com.mrpowergamerbr.loritta.utils
 
+import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import java.time.Instant
+import java.time.OffsetDateTime
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 object DateUtils {
 	private val maxYears = 100000
+
+	/**
+	 * Formats a [epochMilli] date into humanized string of "$absoluteTime ($relativeTime)"
+	 *
+	 * @param time    the offset date time
+	 * @param locale  the locale that the data should be humanized in
+	 * @return the humanized string
+	 */
+	fun formatDateWithRelativeFromNowAndAbsoluteDifference(time: OffsetDateTime, locale: BaseLocale) = formatDateWithRelativeFromNowAndAbsoluteDifference(time.toInstant(), locale)
+
+	/**
+	 * Formats a [epochMilli] date into humanized string of "$absoluteTime ($relativeTime)"
+	 *
+	 * @param instant the current instant
+	 * @param locale  the locale that the data should be humanized in
+	 * @return the humanized string
+	 */
+	fun formatDateWithRelativeFromNowAndAbsoluteDifference(instant: Instant, locale: BaseLocale) = formatDateWithRelativeFromNowAndAbsoluteDifference(instant.toEpochMilli(), locale)
+
+	/**
+	 * Formats a [epochMilli] date into humanized string of "$absoluteTime ($relativeTime)"
+	 *
+	 * @param epochMilli the time in milliseconds
+	 * @param locale     the locale that the data should be humanized in
+	 * @return the humanized string
+	 */
+	fun formatDateWithRelativeFromNowAndAbsoluteDifference(epochMilli: Long, locale: BaseLocale): String {
+		val timeDifference = formatDateDiff(epochMilli, locale)
+		return "${epochMilli.humanize(locale)} ($timeDifference)"
+	}
 
 	fun dateDiff(type: Int, fromDate: Calendar, toDate: Calendar, future: Boolean): Int {
 		val year = Calendar.YEAR

@@ -11,7 +11,6 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.DateUtils
-import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.Gender
@@ -81,10 +80,8 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 		embed.addField("👑 ${if (ownerGender == Gender.MALE) context.locale["commands.command.serverinfo.owner"] else context.locale["commands.command.serverinfo.ownerFemale"]}", "`${owner?.name}#${owner?.discriminator}` (${ownerId})", true) // Dono da Guild
 		embed.addField("🌎 ${context.locale["commands.command.serverinfo.region"]}", region.getName(), true) // Região da Guild
 		embed.addField("\uD83D\uDCAC ${context.locale["commands.command.serverinfo.channels"]} (${textChannelCount + voiceChannelCount})", "\uD83D\uDCDD **${locale["commands.command.serverinfo.textChannels"]}:** ${textChannelCount}\n\uD83D\uDDE3 **${locale["commands.command.serverinfo.voiceChannels"]}:** $voiceChannelCount", true) // Canais da Guild
-		val createdAtDiff = DateUtils.formatDateDiff(timeCreated, locale)
-		embed.addField("\uD83D\uDCC5 ${context.locale["commands.command.serverinfo.createdAt"]}", "${timeCreated.humanize(locale)} ($createdAtDiff)", true)
-		val joinedAtDiff = DateUtils.formatDateDiff(timeJoined, locale)
-		embed.addField("\uD83C\uDF1F ${context.locale["commands.command.serverinfo.joinedAt"]}", "${timeJoined.humanize(locale)} ($joinedAtDiff)", true)
+		embed.addField("\uD83D\uDCC5 ${context.locale["commands.command.serverinfo.createdAt"]}", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(timeCreated, locale), true)
+		embed.addField("\uD83C\uDF1F ${context.locale["commands.command.serverinfo.joinedAt"]}", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(timeJoined, locale), true)
 		embed.addField("👥 ${context.locale["commands.command.serverinfo.members"]} ($memberCount)", "", true) // Membros da Guild
 
 		context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!

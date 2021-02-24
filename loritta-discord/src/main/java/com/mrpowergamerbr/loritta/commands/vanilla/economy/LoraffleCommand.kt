@@ -23,7 +23,6 @@ import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.AccountUtils
-import java.util.*
 
 class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lorifa"), CommandCategory.ECONOMY) {
 	companion object {
@@ -157,9 +156,6 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 		val started = json["started"].long
 		val lastWinnerPrize = json["lastWinnerPrize"].long
 
-		val cal = Calendar.getInstance()
-		cal.timeInMillis = started + 3600000
-
 		val lastWinner = if (lastWinnerId != null) {
 			lorittaShards.retrieveUserInfoById(lastWinnerId.toLong())
 		} else {
@@ -203,7 +199,7 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
                         mentionUser = false
                 ),
                 LorittaReply(
-                        context.locale["commands.command.raffle.resultsIn", DateUtils.formatDateDiff(Calendar.getInstance(), cal, locale)],
+                        context.locale["commands.command.raffle.resultsIn", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(started + 3600000, locale)],
                         prefix = "\uD83D\uDD52",
                         mentionUser = false
                 ),

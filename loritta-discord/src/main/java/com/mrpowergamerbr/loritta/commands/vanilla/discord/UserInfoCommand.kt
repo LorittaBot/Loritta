@@ -107,16 +107,13 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			addField("\uD83D\uDD16 ${context.locale["commands.command.userinfo.discordTag"]}", "`${user.name}#${user.discriminator}`", true)
 			addField("\uD83D\uDCBB ${context.locale["commands.command.userinfo.discordId"]}", "`${user.id}`", true)
 
-			val accountCreatedDiff = DateUtils.formatDateDiff(user.timeCreated.toInstant().toEpochMilli(), context.locale)
-			addField("\uD83D\uDCC5 ${context.locale["commands.command.userinfo.accountCreated"]}", accountCreatedDiff, true)
+			addField("\uD83D\uDCC5 ${context.locale["commands.command.userinfo.accountCreated"]}", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(user.timeCreated, context.locale), true)
 			if (member != null) {
-				val accountJoinedDiff = DateUtils.formatDateDiff(member.timeJoined.toInstant().toEpochMilli(), context.locale)
-				addField("\uD83C\uDF1F ${context.locale["commands.command.userinfo.accountJoined"]}", accountJoinedDiff, true)
+				addField("\uD83C\uDF1F ${context.locale["commands.command.userinfo.accountJoined"]}", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(member.timeJoined, context.locale), true)
 
-				if (member.timeBoosted != null) {
-					val timeBoosted = DateUtils.formatDateDiff(member.timeBoosted!!.toInstant().toEpochMilli(), context.locale)
-					addField("${Emotes.LORI_NITRO_BOOST} ${context.locale["commands.command.userinfo.boostingSince"]}", timeBoosted, true)
-				}
+				val timeBoosted = member.timeBoosted
+				if (timeBoosted != null)
+					addField("${Emotes.LORI_NITRO_BOOST} ${context.locale["commands.command.userinfo.boostingSince"]}", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(timeBoosted, context.locale), true)
 			}
 
 			if (context.message.channel.idLong == 358774895850815488L || context.message.channel.idLong == 547119872568459284L) {

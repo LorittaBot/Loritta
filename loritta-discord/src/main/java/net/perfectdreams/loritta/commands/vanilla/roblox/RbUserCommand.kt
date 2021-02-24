@@ -6,7 +6,6 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.GlobalScope
@@ -231,8 +230,6 @@ class RbUserCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta
                 // Roblox's dates are in ISO format: "2013-01-22T11:00:23.88Z"
                 val joinDateAsInstant = Instant.from(DateTimeFormatter.ISO_INSTANT.parse(robloxUserResponse.created))
                 val joinDateAsEpochMilli = joinDateAsInstant.toEpochMilli()
-                val joinDateDiff = DateUtils.formatDateDiff(joinDateAsEpochMilli, locale)
-                val joinDate = joinDateAsEpochMilli.humanize(locale)
 
                 // SEGUINDO
                 val followingResponse = JsonParser.parseString(followingBodyTask.await())
@@ -257,7 +254,7 @@ class RbUserCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta
                     }
                     setColor(Constants.ROBLOX_RED)
                     addField("\uD83D\uDCBB ${locale["$LOCALE_PREFIX.robloxId"]}", userId.toString(), true)
-                    addField("\uD83D\uDCC5 ${locale["$LOCALE_PREFIX.joinDate"]}", "$joinDate ($joinDateDiff)", true)
+                    addField("\uD83D\uDCC5 ${locale["$LOCALE_PREFIX.joinDate"]}", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(joinDateAsEpochMilli, locale), true)
                     // addField("\uD83D\uDC40 ${locale["$LOCALE_PREFIX.placeVisits"]}", placeVisits, true)
                     addField("\uD83D\uDE4B ${locale["$LOCALE_PREFIX.social"]}", "**\uD83D\uDC3E ${locale["$LOCALE_PREFIX.following"]}**: $totalFollowing\n**<:starstruck:540988091117076481> ${locale["$LOCALE_PREFIX.followers"]}**: $totalFollowers\n**\uD83D\uDE0E ${locale["$LOCALE_PREFIX.friends"]}**: $totalFriends\n", true)
 

@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.dao.Daily
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.tables.Dailies
 import com.mrpowergamerbr.loritta.utils.DateUtils
-import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.tables.BannedUsers
@@ -72,7 +71,7 @@ object AccountUtils {
 
         if (bannedState != null) {
             val bannedAt = bannedState[BannedUsers.bannedAt]
-            val bannedAtDiff = DateUtils.formatDateDiff(bannedAt, locale)
+            val bannedAtDiff = DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(bannedAt, locale)
             val banExpiresAt = bannedState[BannedUsers.expiresAt]
             val responses = mutableListOf(
                     LorittaReply(
@@ -84,13 +83,13 @@ object AccountUtils {
                             "✍"
                     ),
                     LorittaReply(
-                            "**Data do Banimento:** `${bannedAt.humanize(locale)} ($bannedAtDiff)`",
+                            "**Data do Banimento:** `$bannedAtDiff`",
                             "⏰"
                     )
             )
 
             if (banExpiresAt != null) {
-                val banDurationDiff = DateUtils.formatDateDiff(banExpiresAt, locale)
+                val banDurationDiff = DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(banExpiresAt, locale)
                 responses.add(
                         LorittaReply(
                                 "**Duração do banimento:** `$banDurationDiff`",
