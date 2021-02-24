@@ -27,8 +27,8 @@ object AccountUtils {
             val dailyResult = Dailies.select {
                 Dailies.receivedById eq profile.id.value and (Dailies.receivedAt greaterEq afterTime)
             }
-                    .orderBy(Dailies.receivedAt, SortOrder.DESC)
-                    .firstOrNull()
+                .orderBy(Dailies.receivedAt, SortOrder.DESC)
+                .firstOrNull()
 
             if (dailyResult != null)
                 Daily.wrapRow(dailyResult)
@@ -53,14 +53,14 @@ object AccountUtils {
      */
     suspend fun getUserDailyRewardInTheLastXDays(profile: Profile, dailyInThePreviousDays: Long): Daily? {
         val dayAtMidnight = Instant.now()
-                .atZone(ZoneId.of("America/Sao_Paulo"))
-                .toOffsetDateTime()
-                .minusDays(dailyInThePreviousDays)
-                .withHour(0)
-                .withMinute(0)
-                .withSecond(0)
-                .toInstant()
-                .toEpochMilli()
+            .atZone(ZoneId.of("America/Sao_Paulo"))
+            .toOffsetDateTime()
+            .minusDays(dailyInThePreviousDays)
+            .withHour(0)
+            .withMinute(0)
+            .withSecond(0)
+            .toInstant()
+            .toEpochMilli()
 
         return getUserLastDailyRewardReceived(profile, dayAtMidnight)
     }
@@ -74,27 +74,30 @@ object AccountUtils {
             val bannedAtDiff = DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(bannedAt, locale)
             val banExpiresAt = bannedState[BannedUsers.expiresAt]
             val responses = mutableListOf(
-                    LorittaReply(
-                            "<@${userProfile.userId}> está **banido**",
-                            "\uD83D\uDE45"
-                    ),
-                    LorittaReply(
-                            "**Motivo:** `${bannedState[BannedUsers.reason]}`",
-                            "✍"
-                    ),
-                    LorittaReply(
-                            "**Data do Banimento:** `$bannedAtDiff`",
-                            "⏰"
-                    )
+                LorittaReply(
+                    "<@${userProfile.userId}> está **banido**",
+                    "\uD83D\uDE45"
+                ),
+                LorittaReply(
+                    "**Motivo:** `${bannedState[BannedUsers.reason]}`",
+                    "✍",
+                    mentionUser = false
+                ),
+                LorittaReply(
+                    "**Data do Banimento:** `$bannedAtDiff`",
+                    "⏰",
+                    mentionUser = false
+                )
             )
 
             if (banExpiresAt != null) {
                 val banDurationDiff = DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(banExpiresAt, locale)
                 responses.add(
-                        LorittaReply(
-                                "**Duração do banimento:** `$banDurationDiff`",
-                                "⏳"
-                        )
+                    LorittaReply(
+                        "**Duração do banimento:** `$banDurationDiff`",
+                        "⏳",
+                        mentionUser = false
+                    )
                 )
             }
 
