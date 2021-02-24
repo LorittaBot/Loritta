@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
 import net.perfectdreams.loritta.plugin.helpinghands.HelpingHandsPlugin
+import net.perfectdreams.loritta.utils.AccountUtils
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
@@ -183,6 +184,10 @@ class EmojiFight(
                 val profile = loritta.getLorittaProfile(user.idLong) ?: return false
 
                 if (entryPrice > profile.money || profile.getBannedState() != null)
+                    return false
+
+                // If the user didn't get daily today, they can't participate in the event
+                if (AccountUtils.getUserTodayDailyReward(profile) == null)
                     return false
             }
 
