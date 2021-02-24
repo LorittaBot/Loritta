@@ -8,7 +8,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 object DateUtils {
-	private val maxYears = 100000
+	private const val maxYears = 100000
 
 	/**
 	 * Formats a [epochMilli] date into humanized string of "$absoluteTime ($relativeTime)"
