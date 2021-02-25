@@ -16,7 +16,7 @@ class SonhosTopCommand(
 ) : DiscordAbstractCommandBase(loritta, listOf("sonhos top", "atm top"), CommandCategory.ECONOMY) {
 
 	override fun command() = create {
-		localizedDescription("commands.economy.sonhostop.description")
+		localizedDescription("commands.command.sonhostop.description")
 
 		executesDiscord {
 			val pageIndex = when (val value = args.getOrNull(0)?.toLongOrNull()?.coerceAtLeast(0)) {

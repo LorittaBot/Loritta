@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.Color
 
 class InverterCommand : AbstractCommand("invert", listOf("inverter"), category = CommandCategory.IMAGES) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.images.invert.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.invert.description")
 	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 
 	// TODO: Fix Detailed Usage

@@ -34,9 +34,9 @@ import java.io.File
 import java.io.IOException
 import javax.imageio.ImageIO
 
-class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), category = CommandCategory.MUSIC) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.music.lyrics.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.music.lyrics.examples")
+class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), category = CommandCategory.UTILS) {
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.lyrics.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.lyrics.examples")
 
 	// TODO: Fix Usage
 
@@ -60,7 +60,7 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 			if (songInfo == null) {
 				context.reply(
                         LorittaReply(
-                                "${locale["commands.music.lyrics.couldntFind"]} ${locale["commands.music.lyrics.sorryForTheInconvenience"]} \uD83D\uDE2D",
+                                "${locale["commands.command.lyrics.couldntFind"]} ${locale["commands.command.lyrics.sorryForTheInconvenience"]} \uD83D\uDE2D",
                                 Constants.ERROR
                         )
 				)

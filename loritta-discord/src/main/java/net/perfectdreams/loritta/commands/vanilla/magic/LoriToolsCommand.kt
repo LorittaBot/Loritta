@@ -33,7 +33,8 @@ class LoriToolsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lor
 					PriceCorrectionExecutor,
 					LoriBanIpExecutor,
 					LoriUnbanIpExecutor,
-					DeleteAccountDataExecutor
+					DeleteAccountDataExecutor,
+					ChargebackRunExecutor
 			) + validPlugins.flatMap { it.loriToolsExecutors }
 
 			allExecutors.forEach {

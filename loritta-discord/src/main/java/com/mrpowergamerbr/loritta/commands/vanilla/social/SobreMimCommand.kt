@@ -10,8 +10,8 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 
 class SobreMimCommand : AbstractCommand("aboutme", listOf("sobremim"), CommandCategory.SOCIAL) {
-    override fun getDescriptionKey() = LocaleKeyData("commands.social.aboutme.description")
-    override fun getExamplesKey() = LocaleKeyData("commands.social.aboutme.examples")
+    override fun getDescriptionKey() = LocaleKeyData("commands.command.aboutme.description")
+    override fun getExamplesKey() = LocaleKeyData("commands.command.aboutme.examples")
 
     override fun getUsage() = arguments {
         argument(ArgumentType.TEXT) {}
@@ -24,7 +24,7 @@ class SobreMimCommand : AbstractCommand("aboutme", listOf("sobremim"), CommandCa
 	            settings.aboutMe = context.args.joinToString(" ")
             }
 
-            context.sendMessage(context.getAsMention(true) + context.locale["commands.social.aboutme.changed", settings.aboutMe])
+            context.sendMessage(context.getAsMention(true) + context.locale["commands.command.aboutme.changed", settings.aboutMe])
         } else {
             this.explain(context)
         }

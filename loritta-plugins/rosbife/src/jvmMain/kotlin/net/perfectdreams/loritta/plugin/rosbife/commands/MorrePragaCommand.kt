@@ -16,7 +16,7 @@ import java.io.File
 
 class MorrePragaCommand(m: RosbifePlugin) : ImageAbstractCommandBase(m.loritta, listOf("dieplague", "morrepraga")) {
 	override fun command() = create {
-		localizedDescription("commands.images.morrepraga.description")
+		localizedDescription("commands.command.morrepraga.description")
 		localizedExamples(Command.SINGLE_IMAGE_EXAMPLES_KEY)
 
 		usage {
@@ -45,14 +45,14 @@ class MorrePragaCommand(m: RosbifePlugin) : ImageAbstractCommandBase(m.loritta, 
 
 			ImageUtils.drawCenteredString(
 				graphics,
-				locale["commands.images.morrepraga.topText"],
+				locale["commands.command.morrepraga.topText"],
 				Rectangle(25, 38, 502, 132),
 				graphics.font
 			)
 
 			ImageUtils.drawCenteredString(
 				graphics,
-				locale["commands.images.morrepraga.bottomText"],
+				locale["commands.command.morrepraga.bottomText"],
 				Rectangle(43, 480, 468, 139),
 				graphics.font
 			)

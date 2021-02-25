@@ -17,7 +17,7 @@ import java.io.File
 import javax.imageio.stream.FileImageOutputStream
 
 class TriggeredCommand : AbstractCommand("triggered", category = CommandCategory.IMAGES) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.images.triggered.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.triggered.description")
 	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 
 	// TODO: Fix Usage

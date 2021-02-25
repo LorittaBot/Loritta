@@ -7,7 +7,7 @@ class AtaCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("ata", "monicaata", "mônicaata"),
 		1,
-		"commands.images.ata.description",
+		"commands.command.ata.description",
 		"/api/v1/images/monica-ata",
 		"ata.png"
 )

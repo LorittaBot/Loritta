@@ -7,7 +7,7 @@ class BuckShirtCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("buckshirt", "buckcamisa"),
 		1,
-		"commands.images.buckshirt.description",
+		"commands.command.buckshirt.description",
 		"/api/v1/images/buck-shirt",
 		"buck_shirt.png",
 )

@@ -123,8 +123,11 @@ object MiscUtils {
 		}
 
 		// HOSTNAME BLOCC:tm:
-		val addr = withContext(Dispatchers.IO) { InetAddress.getByName(ip) }
-		val host = addr.hostName.toLowerCase()
+		val host = withContext(Dispatchers.IO) {
+			val addr = InetAddress.getByName(ip)
+			// Don't be fooled: getHostName() is also blocking! That's why it needs to be within the Dispatchers.IO context ;)
+			addr.hostName.toLowerCase()
+		}
 
 		val hostnames = listOf(
 				"anchorfree", // Hotspot Shield

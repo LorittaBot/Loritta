@@ -130,10 +130,4 @@ open class CommandBuilder<context : CommandContext>(
 			this.sendTypingStatus = this@CommandBuilder.sendTypingStatus
 		}
 	}
-
-	class ExamplesWrapper {
-		internal val examples = mutableListOf<String>()
-
-		operator fun String.unaryPlus() = examples.add(this)
-	}
 }

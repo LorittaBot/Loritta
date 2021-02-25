@@ -11,7 +11,7 @@ import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
 
 class OjjoCommand : AbstractCommand("ojjo", category = CommandCategory.IMAGES) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.images.ojjo.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.ojjo.description")
 	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 
 	// TODO: Fix Detailed Usage

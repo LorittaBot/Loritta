@@ -16,8 +16,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.math.BigDecimal
 
 class SonhosCommand : AbstractCommand("sonhos", listOf("atm", "bal", "balance"), category = CommandCategory.ECONOMY) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.economy.sonhos.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.economy.sonhos.examples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.sonhos.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.sonhos.examples")
 
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		val retrieveDreamsFromUser = context.getUserAt(0) ?: context.userHandle
@@ -45,10 +45,10 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm", "bal", "balance"),
 
 			val youHaveReply = LorittaReply(
                     context.locale[
-                            "commands.economy.sonhos.youHaveSonhos",
+                            "commands.command.sonhos.youHaveSonhos",
                             userSonhos,
                             context.locale[
-                                    "commands.economy.sonhos.sonhos.${if (userSonhos == 1L) "one" else "multiple"}"
+                                    "commands.command.sonhos.sonhos.${if (userSonhos == 1L) "one" else "multiple"}"
                             ],
                             if (userSonhos > 0) {
                                 val globalEconomyPosition = loritta.newSuspendedTransaction {
@@ -56,10 +56,10 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm", "bal", "balance"),
                                 }
 
                                 context.locale[
-                                        "commands.economy.sonhos.currentRankPosition",
+                                        "commands.command.sonhos.currentRankPosition",
                                         globalEconomyPosition,
                                         context.locale[
-                                                "commands.economy.sonhos.sonhosRankingCommand",
+                                                "commands.command.sonhos.sonhosRankingCommand",
                                                 context.config.commandPrefix
                                         ]
                                 ]
@@ -76,7 +76,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm", "bal", "balance"),
 						false,
 						youHaveReply,
                         LorittaReply(
-                                locale["commands.economy.sonhos.youHaveSonhos", localProfile.money, if (localProfile.money == BigDecimal.ONE) {
+                                locale["commands.command.sonhos.youHaveSonhos", localProfile.money, if (localProfile.money == BigDecimal.ONE) {
                                     economyConfig.economyName
                                 } else {
                                     economyConfig.economyNamePlural
@@ -96,22 +96,22 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm", "bal", "balance"),
 
 			val someoneHasReply = LorittaReply(
                     context.locale[
-                            "commands.economy.sonhos.userHasSonhos",
+                            "commands.command.sonhos.userHasSonhos",
                             retrieveDreamsFromUser.asMention,
                             userSonhos,
                             context.locale[
-                                    "commands.economy.sonhos.sonhos.${if (userSonhos == 1L) "one" else "multiple"}"
+                                    "commands.command.sonhos.sonhos.${if (userSonhos == 1L) "one" else "multiple"}"
                             ],
                             if (userSonhos > 0) {
                                 val globalEconomyPosition = loritta.newSuspendedTransaction {
                                     Profiles.select { Profiles.money greaterEq userSonhos }.count()
                                 }
                                 context.locale[
-                                        "commands.economy.sonhos.userCurrentRankPosition",
+                                        "commands.command.sonhos.userCurrentRankPosition",
                                         retrieveDreamsFromUser.asMention,
                                         globalEconomyPosition,
                                         context.locale[
-                                                "commands.economy.sonhos.sonhosRankingCommand",
+                                                "commands.command.sonhos.sonhosRankingCommand",
                                                 context.config.commandPrefix
                                         ]
                                 ]
@@ -128,7 +128,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm", "bal", "balance"),
 						false,
 						someoneHasReply,
                         LorittaReply(
-                                locale["commands.economy.sonhos.userHasSonhos", retrieveDreamsFromUser.asMention, localProfile.money, if (localProfile.money == BigDecimal.ONE) {
+                                locale["commands.command.sonhos.userHasSonhos", retrieveDreamsFromUser.asMention, localProfile.money, if (localProfile.money == BigDecimal.ONE) {
                                     economyConfig.economyName
                                 } else {
                                     economyConfig.economyNamePlural

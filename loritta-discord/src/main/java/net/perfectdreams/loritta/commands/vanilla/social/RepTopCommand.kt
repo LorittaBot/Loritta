@@ -20,7 +20,7 @@ class RepTopCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 	CommandCategory.SOCIAL
 ) {
 	override fun command() = create {
-		localizedDescription("commands.social.topreputation.description")
+		localizedDescription("commands.command.topreputation.description")
 
 		// TODO: Fix Examples
 		/* examples {
@@ -42,12 +42,12 @@ class RepTopCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 
 			if (typeName == null) {
 				reply(
-					LorittaReply(
-						"${serverConfig.commandPrefix}${executedCommandLabel} ${locale["commands.social.topreputation.received"]}"
-					),
-					LorittaReply(
-						"${serverConfig.commandPrefix}${executedCommandLabel} ${locale["commands.social.topreputation.given"]}"
-					)
+						LorittaReply(
+								"${serverConfig.commandPrefix}${executedCommandLabel} ${locale["commands.command.topreputation.received"]}"
+						),
+						LorittaReply(
+								"${serverConfig.commandPrefix}${executedCommandLabel} ${locale["commands.command.topreputation.given"]}"
+						)
 				)
 				return@executesDiscord
 			}
@@ -92,27 +92,27 @@ class RepTopCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 			}
 
 			sendImage(
-				JVMImage(
-					RankingGenerator.generateRanking(
-						"Ranking Global",
-						null,
-						userData.map {
-							if (type == TopOrder.MOST_RECEIVED) {
-								RankingGenerator.UserRankInformation(
-									it[receivedBy],
-									locale["commands.social.topreputation.receivedReputations", it[receivedByCount]]
-								)
-							} else {
-								RankingGenerator.UserRankInformation(
-									it[givenBy],
-									locale["commands.social.topreputation.givenReputations", it[givenByCount]]
-								)
-							}
-						}
-					)
-				),
-				"rank.png",
-				getUserMention(true)
+					JVMImage(
+							RankingGenerator.generateRanking(
+									"Ranking Global",
+									null,
+									userData.map {
+										if (type == TopOrder.MOST_RECEIVED) {
+											RankingGenerator.UserRankInformation(
+													it[receivedBy],
+													locale["commands.command.topreputation.receivedReputations", it[receivedByCount]]
+											)
+										} else {
+											RankingGenerator.UserRankInformation(
+													it[givenBy],
+													locale["commands.command.topreputation.givenReputations", it[givenByCount]]
+											)
+										}
+									}
+							)
+					),
+					"rank.png",
+					getUserMention(true)
 			)
 		}
 	}

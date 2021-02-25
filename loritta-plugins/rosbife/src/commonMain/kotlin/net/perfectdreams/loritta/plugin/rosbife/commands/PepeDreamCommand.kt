@@ -7,7 +7,7 @@ class PepeDreamCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("pepedream", "sonhopepe", "pepesonho"),
 		1,
-		"commands.images.pepedream.description",
+		"commands.command.pepedream.description",
 		"/api/v1/images/pepe-dream",
 		"pepe_dream.png",
 )

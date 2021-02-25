@@ -18,8 +18,8 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.PunishmentAction
 
-class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), CommandCategory.ADMIN) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.moderation.kick.description")
+class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), CommandCategory.MODERATION) {
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.kick.description")
 	override fun getExamplesKey() = AdminUtils.PUNISHMENT_EXAMPLES_KEY
 	override fun getUsage() = AdminUtils.PUNISHMENT_USAGES
 
@@ -96,13 +96,13 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 	}
 
 	companion object {
-		private val LOCALE_PREFIX = "commands.moderation"
+		private val LOCALE_PREFIX = "commands.command"
 
 		fun kick(context: CommandContext, settings: AdminUtils.ModerationConfigSettings, locale: BaseLocale, member: Member, user: User, reason: String, isSilent: Boolean) {
 			if (!isSilent) {
 				if (settings.sendPunishmentViaDm && context.guild.isMember(user)) {
 					try {
-						val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, locale["commands.moderation.kick.punishAction"], reason)
+						val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, locale["commands.command.kick.punishAction"], reason)
 
 						user.openPrivateChannel().queue {
 							it.sendMessage(embed).queue()
@@ -127,7 +127,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), Comman
 								listOf(user, context.guild),
 								context.guild,
 								mutableMapOf(
-										"duration" to locale["commands.moderation.mute.forever"]
+										"duration" to locale["commands.command.mute.forever"]
 								) + AdminUtils.getStaffCustomTokens(context.userHandle)
 										+ AdminUtils.getPunishmentCustomTokens(locale, reason, "${LOCALE_PREFIX}.kick")
 						)

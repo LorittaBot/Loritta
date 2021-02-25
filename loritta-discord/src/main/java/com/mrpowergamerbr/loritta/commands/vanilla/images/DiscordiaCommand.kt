@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class DiscordiaCommand : AbstractCommand("mentions", listOf("discórdia", "discord", "discordia"), CommandCategory.IMAGES) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.images.discordping.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.discordping.description")
 	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 
 	// TODO: Fix Usage

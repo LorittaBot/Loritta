@@ -11,8 +11,8 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class McSkinCommand : AbstractCommand("mcskin", listOf("skinsteal", "skinstealer"), CommandCategory.MINECRAFT) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.minecraft.mcskin.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.minecraft.skinPlayerNameExamples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.mcskin.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.category.minecraft.skinPlayerNameExamples")
 
 	// TODO: Fix Usage
 
@@ -29,7 +29,7 @@ class McSkinCommand : AbstractCommand("mcskin", listOf("skinsteal", "skinstealer
 			if (profile == null) {
 				context.reply(
                         LorittaReply(
-								locale["commands.minecraft.unknownPlayer", context.args.getOrNull(0)],
+								locale["commands.category.minecraft.unknownPlayer", context.args.getOrNull(0)],
                                 Constants.ERROR
                         )
 				)

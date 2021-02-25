@@ -6,7 +6,6 @@ import com.mrpowergamerbr.loritta.threads.BomDiaECiaThread
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.extensions.queueAfterWithMessagePerSecondTarget
 import com.mrpowergamerbr.loritta.utils.extensions.stripLinks
-import com.mrpowergamerbr.loritta.utils.locale.Gender
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -209,7 +208,7 @@ class BomDiaECia {
 		val messageForLocales = mutableMapOf<String, Message>()
 
 		loritta.legacyLocales.forEach { localeId, locale ->
-			val message = MessageBuilder().append("<:yudi:446394608256024597> **|** Parabéns `${user.name.stripCodeMarks().stripLinks()}#${user.discriminator}` por ter ligado primeiro em `${guild.name.stripCodeMarks().stripLinks()}`!")
+			val message = MessageBuilder().append("<:yudi:446394608256024597> **|** Parabéns `${user.name.stripCodeMarks().stripLinks()}#${user.discriminator}` (`${user.id}`) por ter ligado primeiro em `${guild.name.stripCodeMarks().stripLinks()}` (`${guild.id}`)!")
 
 			messageForLocales[localeId] = message.build()
 		}

@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractComman
 
 class RoleInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("roleinfo", "taginfo"), CommandCategory.DISCORD) {
     companion object {
-        private const val LOCALE_PREFIX = "commands.discord"
+        private const val LOCALE_PREFIX = "commands.command"
     }
 
     override fun command() = create {
@@ -57,7 +57,7 @@ class RoleInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lori
                 if (role.color != null)
                     builder.setColor(role.color)
                 builder.addField("\uD83D\uDC40 ${locale["$LOCALE_PREFIX.roleinfo.roleMention"]}", "`${role.asMention}`", true)
-                builder.addField("\uD83D\uDCC5 ${locale["$LOCALE_PREFIX.roleinfo.roleCreated"]}", DateUtils.formatDateDiff(role.timeCreated.toInstant().toEpochMilli(), locale), true)
+                builder.addField("\uD83D\uDCC5 ${locale["$LOCALE_PREFIX.roleinfo.roleCreated"]}", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(role.timeCreated, locale), true)
                 builder.addField("\uD83D\uDCBB ${locale["$LOCALE_PREFIX.roleinfo.roleID"]}", "`${role.id}`", true)
                 builder.addField(locale["$LOCALE_PREFIX.roleinfo.roleHoisted"], isHoisted, true)
                 builder.addField("<:bot:516314838541008906> ${locale["$LOCALE_PREFIX.roleinfo.roleIntegration"]}", isIntegrationBot, true)
@@ -71,7 +71,7 @@ class RoleInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lori
             } else {
                 context.reply(
                         LorittaReply(
-                                locale["commands.discord.roleinfo.roleNotFound"],
+                                locale["commands.command.roleinfo.roleNotFound"],
                                 Constants.ERROR
                         )
                 )

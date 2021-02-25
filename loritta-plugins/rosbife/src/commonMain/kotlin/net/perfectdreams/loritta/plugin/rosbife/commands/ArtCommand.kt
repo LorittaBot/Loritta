@@ -7,7 +7,7 @@ class ArtCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("art", "arte"),
 		1,
-		"commands.images.art.description",
+		"commands.command.art.description",
 		"/api/v1/images/art",
 		"art.png"
 )

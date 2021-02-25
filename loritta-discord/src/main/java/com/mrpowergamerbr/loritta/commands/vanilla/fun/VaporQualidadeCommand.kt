@@ -10,8 +10,8 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class VaporQualidadeCommand : AbstractCommand("vaporqualidade", category = CommandCategory.FUN) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.fun.vaporquality.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.fun.vaporquality.examples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.vaporquality.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.vaporquality.examples")
 
 	// TODO: Fix Usage
 	// TODO: Fix Detailed Usage

@@ -17,7 +17,7 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update
 
 class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "ranking"), CommandCategory.SOCIAL) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.social.rank.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.rank.description")
 
 	override fun canUseInPrivateChannel(): Boolean {
 		return false

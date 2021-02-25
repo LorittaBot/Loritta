@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit
 class CocieloChavesCommand(m: RosbifePlugin) : DiscordAbstractCommandBase(
 		m.loritta as LorittaDiscord,
 		listOf("cocielochaves"),
-		CommandCategory.IMAGES
+		CommandCategory.VIDEOS
 ) {
 	val heavyGenerationMutexMap = Caffeine.newBuilder()
 			.expireAfterAccess(1L, TimeUnit.MINUTES)
@@ -28,8 +28,8 @@ class CocieloChavesCommand(m: RosbifePlugin) : DiscordAbstractCommandBase(
 			.asMap()
 
 	override fun command() = create {
-		localizedDescription("commands.images.cocielochaves.description")
-		localizedExamples("commands.images.cocielochaves.examples")
+		localizedDescription("commands.command.cocielochaves.description")
+		localizedExamples("commands.command.cocielochaves.examples")
 
 		sendTypingStatus = true
 

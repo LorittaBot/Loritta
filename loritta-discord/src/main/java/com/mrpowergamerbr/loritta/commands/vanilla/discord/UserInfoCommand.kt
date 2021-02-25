@@ -25,7 +25,7 @@ import net.perfectdreams.loritta.platform.discord.utils.UserFlagBadgeEmotes.getB
 import net.perfectdreams.loritta.utils.Emotes
 
 class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), CommandCategory.DISCORD) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.discord.userinfo.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.userinfo.description")
 
 	override fun canUseInPrivateChannel(): Boolean {
 		return false
@@ -38,7 +38,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			if (context.args.getOrNull(0) != null) {
 				context.reply(
                         LorittaReply(
-                                locale["commands.discord.userinfo.unknownUser", context.args[0].stripCodeMarks()],
+                                locale["commands.command.userinfo.unknownUser", context.args[0].stripCodeMarks()],
                                 Constants.ERROR
                         )
 				)
@@ -85,7 +85,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 			}
 
 			if (addBadgesToField)
-				addField("\uD83D\uDCDB ${context.locale["commands.discord.userinfo.badges"]}", getBadges(user).joinToString(""), true)
+				addField("\uD83D\uDCDB ${context.locale["commands.command.userinfo.badges"]}", getBadges(user).joinToString(""), true)
 
 			setTitle(title)
 
@@ -104,23 +104,20 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 		val embed = getEmbedBase(context, user, member)
 
 		embed.apply {
-			addField("\uD83D\uDD16 ${context.locale["commands.discord.userinfo.discordTag"]}", "`${user.name}#${user.discriminator}`", true)
-			addField("\uD83D\uDCBB ${context.locale["commands.discord.userinfo.discordId"]}", "`${user.id}`", true)
+			addField("\uD83D\uDD16 ${context.locale["commands.command.userinfo.discordTag"]}", "`${user.name}#${user.discriminator}`", true)
+			addField("\uD83D\uDCBB ${context.locale["commands.command.userinfo.discordId"]}", "`${user.id}`", true)
 
-			val accountCreatedDiff = DateUtils.formatDateDiff(user.timeCreated.toInstant().toEpochMilli(), context.locale)
-			addField("\uD83D\uDCC5 ${context.locale["commands.discord.userinfo.accountCreated"]}", accountCreatedDiff, true)
+			addField("\uD83D\uDCC5 ${context.locale["commands.command.userinfo.accountCreated"]}", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(user.timeCreated, context.locale), true)
 			if (member != null) {
-				val accountJoinedDiff = DateUtils.formatDateDiff(member.timeJoined.toInstant().toEpochMilli(), context.locale)
-				addField("\uD83C\uDF1F ${context.locale["commands.discord.userinfo.accountJoined"]}", accountJoinedDiff, true)
+				addField("\uD83C\uDF1F ${context.locale["commands.command.userinfo.accountJoined"]}", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(member.timeJoined, context.locale), true)
 
-				if (member.timeBoosted != null) {
-					val timeBoosted = DateUtils.formatDateDiff(member.timeBoosted!!.toInstant().toEpochMilli(), context.locale)
-					addField("${Emotes.LORI_NITRO_BOOST} ${context.locale["commands.discord.userinfo.boostingSince"]}", timeBoosted, true)
-				}
+				val timeBoosted = member.timeBoosted
+				if (timeBoosted != null)
+					addField("${Emotes.LORI_NITRO_BOOST} ${context.locale["commands.command.userinfo.boostingSince"]}", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(timeBoosted, context.locale), true)
 			}
 
 			if (context.message.channel.idLong == 358774895850815488L || context.message.channel.idLong == 547119872568459284L) {
-				var sharedServersFieldTitle = context.locale["commands.discord.userinfo.sharedServers"]
+				var sharedServersFieldTitle = context.locale["commands.command.userinfo.sharedServers"]
 				var servers: String?
 
 				val sharedServersResults = lorittaShards.queryMutualGuildsInAllLorittaClusters(user.id)
@@ -156,7 +153,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), Comman
 		embed.apply {
 			if (member != null) {
 				val roles = member.roles.joinToString(separator = ", ", transform = { "`${it.name}`" })
-				addField("\uD83D\uDCBC " + context.locale["commands.discord.userinfo.roles"] + " (${member.roles.size})", if (roles.isNotEmpty()) roles.substringIfNeeded(0 until 1024) else context.locale["commands.discord.userinfo.noRoles"] + " \uD83D\uDE2D", true)
+				addField("\uD83D\uDCBC " + context.locale["commands.command.userinfo.roles"] + " (${member.roles.size})", if (roles.isNotEmpty()) roles.substringIfNeeded(0 until 1024) else context.locale["commands.command.userinfo.noRoles"] + " \uD83D\uDE2D", true)
 
 				val permissions = member.getPermissions(context.message.textChannel).joinToString(", ", transform = { "`${it.localized(context.locale)}`" })
 				addField("\uD83D\uDEE1 Permissões", permissions, false)

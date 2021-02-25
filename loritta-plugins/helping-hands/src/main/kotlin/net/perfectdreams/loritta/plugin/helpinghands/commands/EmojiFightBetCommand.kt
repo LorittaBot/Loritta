@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.plugin.helpinghands.HelpingHandsPlugin
 import net.perfectdreams.loritta.plugin.helpinghands.utils.EmojiFight
+import net.perfectdreams.loritta.utils.AccountUtils
 import net.perfectdreams.loritta.utils.GenericReplies
 import net.perfectdreams.loritta.utils.NumberUtils
 
@@ -16,12 +17,15 @@ class EmojiFightBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComm
 		CommandCategory.ECONOMY
 ) {
 	override fun command() = create {
-		localizedDescription("commands.economy.emojifightbet.description")
-		localizedExamples("commands.economy.emojifightbet.examples")
+		localizedDescription("commands.command.emojifightbet.description")
+		localizedExamples("commands.command.emojifightbet.examples")
 
 		usage {
 			arguments {
 				argument(ArgumentType.NUMBER) {}
+				argument(ArgumentType.NUMBER) {
+					optional = true
+				}
 			}
 		}
 
@@ -42,17 +46,27 @@ class EmojiFightBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComm
 					}
 
 			if (0 >= totalEarnings)
-				fail(locale["commands.economy.flipcoinbet.zeroMoney"], Constants.ERROR)
+				fail(locale["commands.command.flipcoinbet.zeroMoney"], Constants.ERROR)
 
 			val selfUserProfile = lorittaUser.profile
 
 			if (totalEarnings > selfUserProfile.money)
-				fail(locale["commands.economy.flipcoinbet.notEnoughMoneySelf"], Constants.ERROR)
+				fail(locale["commands.command.flipcoinbet.notEnoughMoneySelf"], Constants.ERROR)
+
+			// Only allow users to participate in a emoji fight bet if the user got their daily reward today
+			AccountUtils.getUserTodayDailyReward(lorittaUser.profile)
+					?: fail(locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", serverConfig.commandPrefix], Constants.ERROR)
+
+			val maxPlayersInEvent = (
+					(this.args.getOrNull(1) ?.toIntOrNull() ?: EmojiFight.DEFAULT_MAX_PLAYER_COUNT)
+							.coerceIn(2, EmojiFight.DEFAULT_MAX_PLAYER_COUNT)
+					)
 
 			val emojiFight = EmojiFight(
 					plugin,
 					this,
-					totalEarnings
+					totalEarnings,
+					maxPlayersInEvent
 			)
 
 			emojiFight.start()

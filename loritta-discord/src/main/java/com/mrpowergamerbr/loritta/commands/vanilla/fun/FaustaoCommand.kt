@@ -46,7 +46,7 @@ class FaustaoCommand : AbstractCommand("faustão", listOf("faustao"), CommandCat
 			"http://i.imgur.com/rVmgwZC.png",
 			"http://i.imgur.com/z7Ec5I3.png")
 
-	override fun getDescriptionKey() = LocaleKeyData("commands.fun.faustao.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.faustao.description")
 
 	override fun hasCommandFeedback(): Boolean {
 		return false

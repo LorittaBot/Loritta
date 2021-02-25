@@ -10,8 +10,8 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class TretaNewsCommand : AbstractCommand("tretanews", category = CommandCategory.FUN) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.images.tretanews.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.images.tretanews.examples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.tretanews.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.tretanews.examples")
 
 	// TODO: Fix Usage
 	// TODO: Fix Detailed Usage
@@ -36,7 +36,7 @@ class TretaNewsCommand : AbstractCommand("tretanews", category = CommandCategory
                         mentionUser = false
                 ),
                 LorittaReply(
-                        message = "\uD83D\uDCFA `${base.views}` **${context.locale["commands.fun.twitch.views"]}**, \uD83D\uDE0D `${base.likes}` **${context.locale["commands.images.tretanews.likes"]}**, \uD83D\uDE20 `${base.dislikes}` **${context.locale["commands.images.tretanews.dislikes"]}**",
+                        message = "\uD83D\uDCFA `${base.views}` **${context.locale["commands.command.twitch.views"]}**, \uD83D\uDE0D `${base.likes}` **${context.locale["commands.command.tretanews.likes"]}**, \uD83D\uDE20 `${base.dislikes}` **${context.locale["commands.command.tretanews.dislikes"]}**",
                         prefix = "\uD83D\uDCC8",
                         mentionUser = false
                 )

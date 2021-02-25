@@ -30,7 +30,7 @@ import java.util.*
 class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.MINECRAFT) {
 	override fun getBotPermissions() = listOf(Permission.MESSAGE_MANAGE)
 
-	override fun getDescriptionKey() = LocaleKeyData("commands.minecraft.spigotmc.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.spigotmc.description")
 
 	// TODO: Fix Usage
 
@@ -54,7 +54,7 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 
 			if (json.isJsonObject) {
 				// Erro!
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["commands.minecraft.spigotmc.couldntFind", query])
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["commands.command.spigotmc.couldntFind", query])
 				return
 			} else {
 				val array = json.array
@@ -73,7 +73,7 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 						context.metadata.put(i.toString(), item["id"].string)
 					}
 					embed.setDescription(format)
-					embed.setTitle("<:spigotmc:375314413357629440> ${context.locale["commands.minecraft.spigotmc.results", query]}")
+					embed.setTitle("<:spigotmc:375314413357629440> ${context.locale["commands.command.spigotmc.results", query]}")
 					val mensagem = context.sendMessage(context.getAsMention(true), embed.build())
 
 					mensagem.onReactionAddByAuthor(context) {
@@ -116,9 +116,9 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 		embed.setTitle("<:spigotmc:375314413357629440> ${resource.name}", "https://www.spigotmc.org/resources/$resourceId/")
 		embed.setDescription(resource.tag.replace("*", "\\*").replace("_", "\\_").replace("~", "\\~"))
 		embed.setThumbnail("https://www.spigotmc.org/${resource.icon}")
-		if (resource.contributors.isNotEmpty()) embed.addField(context.locale["commands.minecraft.spigotmc.contributors"], resource.contributors, true)
-		embed.addField(context.locale["commands.minecraft.spigotmc.downloads"], resource.downloads.toString(), true)
-		if (resource.testedVersions.isNotEmpty()) embed.addField(context.locale["commands.minecraft.spigotmc.testedVersions"], resource.testedVersions.joinToString(separator = ", "), true)
+		if (resource.contributors.isNotEmpty()) embed.addField(context.locale["commands.command.spigotmc.contributors"], resource.contributors, true)
+		embed.addField(context.locale["commands.command.spigotmc.downloads"], resource.downloads.toString(), true)
+		if (resource.testedVersions.isNotEmpty()) embed.addField(context.locale["commands.command.spigotmc.testedVersions"], resource.testedVersions.joinToString(separator = ", "), true)
 
 		val releaseEpoch = resource.releaseDate.toLong()
 		val releaseInstant = Instant.ofEpochSecond(releaseEpoch)
@@ -128,10 +128,10 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = CommandCategory.M
 		val updateInstant = Instant.ofEpochSecond(updateEpoch)
 		ZonedDateTime.ofInstant(updateInstant, ZoneOffset.UTC)
 
-		embed.addField(context.locale["commands.minecraft.spigotmc.released"], releaseInstant.atOffset(ZoneOffset.UTC).humanize(locale), true)
-		embed.addField(context.locale["commands.minecraft.spigotmc.lastUpdated"], updateInstant.atOffset(ZoneOffset.UTC).humanize(locale), true)
+		embed.addField(context.locale["commands.command.spigotmc.released"], releaseInstant.atOffset(ZoneOffset.UTC).humanize(locale), true)
+		embed.addField(context.locale["commands.command.spigotmc.lastUpdated"], updateInstant.atOffset(ZoneOffset.UTC).humanize(locale), true)
 
-		embed.addField(context.locale["commands.minecraft.spigotmc.download"], "https://www.spigotmc.org/${resource.downloadLink}", true)
+		embed.addField(context.locale["commands.command.spigotmc.download"], "https://www.spigotmc.org/${resource.downloadLink}", true)
 
 		return embed
 	}

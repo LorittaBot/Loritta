@@ -14,7 +14,7 @@ import java.awt.Font
 import java.io.File
 
 class LaranjoCommand : AbstractCommand("laranjo", category = CommandCategory.IMAGES) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.images.laranjo.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.laranjo.description")
 
 	override fun getExamples(): List<String> {
 		return listOf("ei ademin bane o cara ai pfv")

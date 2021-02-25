@@ -22,7 +22,7 @@ import java.util.*
 import javax.imageio.ImageIO
 
 class OCRCommand : AbstractCommand("ocr", listOf("ler", "read"), CommandCategory.UTILS) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.utils.ocr.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.ocr.description")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
@@ -63,7 +63,7 @@ class OCRCommand : AbstractCommand("ocr", listOf("ler", "read"), CommandCategory
 			try {
 				builder.setDescription("```${parsedResponse["responses"][0]["textAnnotations"][0]["description"].string}```")
 			} catch (e: Exception) {
-				builder.setDescription("**${locale["commands.utils.ocr.couldntFind"]}**")
+				builder.setDescription("**${locale["commands.command.ocr.couldntFind"]}**")
 			}
 			context.sendMessage(context.getAsMention(true), builder.build())
 		}

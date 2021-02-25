@@ -22,7 +22,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak",
     private val resetPersonalLanguageEmote = "\uD83D\uDE45"
 
     override fun getDescriptionKey() = LocaleKeyData(
-            "commands.misc.language.description",
+            "commands.command.language.description",
             listOf(
                     LocaleStringData("\uD83D\uDE0A")
             )
@@ -61,7 +61,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak",
                 ),
                 LocaleWrapper(
                         "Español",
-                        loritta.getLocaleById("es-es"),
+                        loritta.getLocaleById("es"),
                         "\uD83C\uDDEA\uD83C\uDDF8",
                         false
                 ),
@@ -150,7 +150,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak",
                 }
                 context.reply(
                         LorittaReply(
-                                locale["commands.misc.language.removedPersonalLanguage"]
+                                locale["commands.command.language.removedPersonalLanguage"]
                         )
                 )
                 return@onReactionAddByAuthor
@@ -195,37 +195,37 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak",
         }
 
         if (isPrivateChannel)
-            context.reply(newLocale["commands.misc.language.languageChanged", "`${localeId}`"], "\uD83C\uDFA4")
+            context.reply(newLocale["commands.command.language.languageChanged", "`${localeId}`"], "\uD83C\uDFA4")
         else
-            context.reply(newLocale["commands.misc.language.serverLanguageChanged", "`${localeId}`"], "\uD83C\uDFA4")
+            context.reply(newLocale["commands.command.language.serverLanguageChanged", "`${localeId}`"], "\uD83C\uDFA4")
     }
 
     private suspend fun buildLanguageEmbed(locale: BaseLocale, languages: List<LocaleWrapper>, isPrivateChannel: Boolean, hasPersonalLanguage: Boolean): MessageEmbed {
         val embed = EmbedBuilder()
         embed.setColor(Color(0, 193, 223))
-        embed.setTitle("\uD83C\uDF0E " + locale["commands.misc.language.pleaseSelectYourLanguage"])
+        embed.setTitle("\uD83C\uDF0E " + locale["commands.command.language.pleaseSelectYourLanguage"])
 
         if (isPrivateChannel) {
-            embed.setDescription(locale["commands.misc.language.changeLanguageDescription"])
+            embed.setDescription(locale["commands.command.language.changeLanguageDescription"])
         } else {
-            embed.setDescription(locale["commands.misc.language.changeServerLanguageDescription"])
-            embed.setFooter(locale["commands.misc.language.personalLanguageTip"])
+            embed.setDescription(locale["commands.command.language.changeServerLanguageDescription"])
+            embed.setFooter(locale["commands.command.language.personalLanguageTip"])
         }
 
         if (hasPersonalLanguage)
-            embed.setFooter(locale["commands.misc.language.personalLanguageRemovalTip", resetPersonalLanguageEmote])
+            embed.setFooter(locale["commands.command.language.personalLanguageRemovalTip", resetPersonalLanguageEmote])
 
         for (wrapper in languages) {
             val translators = wrapper.locale.getList("loritta.translationAuthors").mapNotNull { lorittaShards.retrieveUserInfoById(it.toLong()) }
 
             embed.addField(
                     wrapper.emoteName + " " + wrapper.name,
-                    "**${locale["commands.misc.language.translatedBy"]}:** ${translators.joinToString(transform = { "`${it.name}`" })}",
+                    "**${locale["commands.command.language.translatedBy"]}:** ${translators.joinToString(transform = { "`${it.name}`" })}",
                     true
             )
         }
         embed.addField(
-                locale["commands.misc.language.helpUsTranslate"],
+                locale["commands.command.language.helpUsTranslate"],
                 loritta.config.crowdin.url,
                 false
         )

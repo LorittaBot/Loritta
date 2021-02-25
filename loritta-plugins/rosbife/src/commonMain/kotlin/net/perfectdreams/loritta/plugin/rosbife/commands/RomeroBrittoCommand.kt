@@ -7,7 +7,7 @@ class RomeroBrittoCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("romerobritto", "pintura", "painting"),
 		1,
-		"commands.images.romerobritto.description",
+		"commands.command.romerobritto.description",
 		"/api/v1/images/romero-britto",
 		"romero_britto.png",
 )

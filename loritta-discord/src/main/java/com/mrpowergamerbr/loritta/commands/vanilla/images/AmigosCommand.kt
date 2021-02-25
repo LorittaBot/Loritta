@@ -23,8 +23,8 @@ class AmigosCommand : AbstractCommand("friends", listOf("amigos", "meusamigos", 
 		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "thx.png")) }
 	}
 
-	override fun getDescriptionKey() = LocaleKeyData("commands.images.friends.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.images.lava.examples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.friends.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.lava.examples")
 
 	override fun getUsage() = arguments {
 		repeat(9) {

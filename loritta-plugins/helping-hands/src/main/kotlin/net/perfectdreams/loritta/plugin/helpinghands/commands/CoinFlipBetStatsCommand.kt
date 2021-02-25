@@ -22,8 +22,8 @@ class CoinFlipBetStatsCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractC
 		CommandCategory.ECONOMY
 ) {
 	override fun command() = create {
-		localizedDescription("commands.economy.flipcoinbetstats.description")
-		localizedExamples("commands.economy.flipcoinbetstats.examples")
+		localizedDescription("commands.command.flipcoinbetstats.description")
+		localizedExamples("commands.command.flipcoinbetstats.examples")
 
 		usage {
 			arguments {
@@ -62,7 +62,7 @@ class CoinFlipBetStatsCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractC
 
 			if (playedCount == 0L)
 			// Never played!
-				fail(locale["commands.economy.flipcoinbetstats.playerHasNeverPlayed"])
+				fail(locale["commands.command.flipcoinbetstats.playerHasNeverPlayed"])
 
 			val sumField = SonhosTransaction.quantity.sum()
 			val winSum = loritta.newSuspendedTransaction {
@@ -85,43 +85,43 @@ class CoinFlipBetStatsCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractC
 			reply(
 					LorittaReply(
 							if (checkingYourself)
-								locale["commands.economy.flipcoinbetstats.yourStats"]
+								locale["commands.command.flipcoinbetstats.yourStats"]
 							else
-								locale["commands.economy.flipcoinbetstats.statsOfUser", checkStatsOfUser.asMention]
+								locale["commands.command.flipcoinbetstats.statsOfUser", checkStatsOfUser.asMention]
 							,
 							Emotes.LORI_RICH
 					),
 					LorittaReply(
-							locale["commands.economy.flipcoinbetstats.playedMatches", playedCount],
+							locale["commands.command.flipcoinbetstats.playedMatches", playedCount],
 							mentionUser = false
 					),
 					LorittaReply(
-							locale["commands.economy.flipcoinbetstats.wonMatches", winPercentage, winCount],
+							locale["commands.command.flipcoinbetstats.wonMatches", winPercentage, winCount],
 							mentionUser = false
 					),
 					LorittaReply(
-							locale["commands.economy.flipcoinbetstats.lostMatches", losePercentage, loseCount],
+							locale["commands.command.flipcoinbetstats.lostMatches", losePercentage, loseCount],
 							mentionUser = false
 					),
 					LorittaReply(
-							locale["commands.economy.flipcoinbetstats.wonSonhos", winSum],
+							locale["commands.command.flipcoinbetstats.wonSonhos", winSum],
 							mentionUser = false
 					),
 					LorittaReply(
-							locale["commands.economy.flipcoinbetstats.lostSonhos", loseSum],
+							locale["commands.command.flipcoinbetstats.lostSonhos", loseSum],
 							mentionUser = false
 					),
 					LorittaReply(
-							locale["commands.economy.flipcoinbetstats.totalSonhos", winSum - loseSum],
+							locale["commands.command.flipcoinbetstats.totalSonhos", winSum - loseSum],
 							mentionUser = false
 					),
 					LorittaReply(
-							locale["commands.economy.flipcoinbetstats.probabilityExplanation"],
+							locale["commands.command.flipcoinbetstats.probabilityExplanation"],
 							Emotes.LORI_COFFEE,
 							mentionUser = false
 					),
 					LorittaReply(
-							locale["commands.economy.flipcoinbetstats.bugsDoesntExist"],
+							locale["commands.command.flipcoinbetstats.bugsDoesntExist"],
 							Emotes.LORI_BAN_HAMMER,
 							mentionUser = false
 					)

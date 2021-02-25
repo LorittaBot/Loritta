@@ -17,7 +17,7 @@ import java.io.File
 import java.util.*
 
 class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebattle"), CommandCategory.UNDERTALE) {
-    override fun getDescriptionKey() = LocaleKeyData("commands.undertale.utbattle.description")
+    override fun getDescriptionKey() = LocaleKeyData("commands.command.utbattle.description")
 
     override fun getExamples(): List<String> {
         return Arrays.asList("Asriel Chara, are you there?")
@@ -79,7 +79,7 @@ class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebatt
                 context.sendFile(blackWhite, "undertale_battle.png", context.getAsMention(true)) // E agora envie o arquivo
             } else {
                 // Não, não é válido!
-                context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["commands.undertail.utbattle.invalid", monster, validMonsterList.joinToString(", ")])
+                context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["commands.command.utbattle.invalid", monster, validMonsterList.joinToString(", ")])
             }
         } else {
             this.explain(context)

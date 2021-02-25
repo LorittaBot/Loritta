@@ -10,10 +10,10 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class CaraCoroaCommand : AbstractCommand("coinflip", listOf("girarmoeda", "flipcoin", "caracoroa"), CommandCategory.FUN) {
 	companion object {
-		const val LOCALE_PREFIX = "commands.fun.flipcoin"
+		const val LOCALE_PREFIX = "commands.command.flipcoin"
 	}
 
-	override fun getDescriptionKey() = LocaleKeyData("commands.fun.flipcoin.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.flipcoin.description")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val isTails = Loritta.RANDOM.nextBoolean()

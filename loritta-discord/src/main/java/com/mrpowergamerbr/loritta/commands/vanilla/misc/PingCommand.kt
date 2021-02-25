@@ -29,7 +29,7 @@ import net.perfectdreams.loritta.utils.extensions.build
 import java.util.concurrent.TimeUnit
 
 class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.misc.ping.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.ping.description")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val arg0 = context.args.getOrNull(0)

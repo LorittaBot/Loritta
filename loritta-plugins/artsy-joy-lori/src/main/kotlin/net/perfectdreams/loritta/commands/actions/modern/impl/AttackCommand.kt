@@ -15,9 +15,9 @@ class AttackCommand(loritta: LorittaDiscord): ActionCommand(loritta, listOf("att
 
         response { locale, sender, target ->
             if (target.id != LorittaLauncher.loritta.discordConfig.discord.clientId) {
-                locale["commands.actions.attack.response", sender.asMention, target.asMention]
+                locale["commands.command.attack.response", sender.asMention, target.asMention]
             } else {
-                locale["commands.actions.attack.responseAntiIdiot", sender.asMention, target.asMention]
+                locale["commands.command.attack.responseAntiIdiot", sender.asMention, target.asMention]
             }
         }
     }

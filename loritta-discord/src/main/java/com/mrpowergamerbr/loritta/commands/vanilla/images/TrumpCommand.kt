@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class TrumpCommand : AbstractCommand("trump", category = CommandCategory.IMAGES) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.images.trump.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.trump.description")
 	override fun getExamplesKey() = Command.TWO_IMAGES_EXAMPLES_KEY
 
 	// TODO: Fix Usage

@@ -21,7 +21,7 @@ class RankGlobalCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 ) {
 
 	override fun command() = create {
-		localizedDescription("commands.social.rankglobal.description")
+		localizedDescription("commands.command.rankglobal.description")
 
 		arguments {
 			argument(ArgumentType.NUMBER) {

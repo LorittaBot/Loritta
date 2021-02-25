@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class GetOverHereCommand : AbstractCommand("getoverhere", category = CommandCategory.IMAGES) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.images.getoverhere.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.getoverhere.description")
 	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 
 	// TODO: Fix Usage

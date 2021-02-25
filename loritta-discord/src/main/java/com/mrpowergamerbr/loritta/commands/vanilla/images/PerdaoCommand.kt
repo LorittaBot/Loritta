@@ -16,7 +16,7 @@ class PerdaoCommand : AbstractCommand("perdao", listOf("perdão"), CommandCatego
 		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "perdao.png")) }
 	}
 
-	override fun getDescriptionKey() = LocaleKeyData("commands.images.forgive.description")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.forgive.description")
 	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 
 	// TODO: Fix Usage

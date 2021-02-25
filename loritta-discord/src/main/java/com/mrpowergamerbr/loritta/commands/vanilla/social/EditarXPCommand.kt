@@ -12,8 +12,8 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 
 class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category = CommandCategory.SOCIAL) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.social.editxp.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.social.editxp.examples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.editxp.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.editxp.examples")
 
 	override fun canUseInPrivateChannel(): Boolean {
 		return false
@@ -39,7 +39,7 @@ class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category =
 			}
 
 			if (0 > newXp) {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["commands.social.editxp.moreThanZero"])
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["commands.command.editxp.moreThanZero"])
 				return
 			}
 
@@ -49,7 +49,7 @@ class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category =
 				userData.xp = newXp
 			}
 
-			context.sendMessage(context.getAsMention(true) + context.locale["commands.social.editxp.success", user.asMention])
+			context.sendMessage(context.getAsMention(true) + context.locale["commands.command.editxp.success", user.asMention])
 		} else {
 			context.explain()
 		}

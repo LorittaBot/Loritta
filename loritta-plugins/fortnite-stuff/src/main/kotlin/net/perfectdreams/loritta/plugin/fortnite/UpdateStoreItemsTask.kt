@@ -61,7 +61,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 							lastItemListPostUpdate = System.currentTimeMillis()
 							logger.info { "Updating Fortnite Items..." }
 							val distinctApiIds = loritta.locales.values.map {
-								it["commands.fortnite.shop.localeId"]
+								it["commands.command.fnshop.localeId"]
 							}.distinct()
 
 							for (apiId in distinctApiIds) {
@@ -105,7 +105,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 		logger.info { "Updating Fortnite Shop..." }
 
 		val distinctApiIds = loritta.locales.values.map {
-			it["commands.fortnite.shop.localeId"]
+			it["commands.command.fnshop.localeId"]
 		}.distinct()
 
 		logger.info { "There are ${distinctApiIds.size} distinct API IDs: $distinctApiIds" }
@@ -121,7 +121,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 		var alreadyNotifiedUsers = false
 
 		for (locale in loritta.locales.values) {
-			val apiLocaleId = locale["commands.fortnite.shop.localeId"]
+			val apiLocaleId = locale["commands.command.fnshop.localeId"]
 			logger.info { "Updating shop for ${locale.id}... API Locale ID is $apiLocaleId, Shop Data is ${shopsData[apiLocaleId]}" }
 
 			val shopData = try { shopsData[apiLocaleId]?.await() } catch (e: Exception) { continue } ?: continue
@@ -229,8 +229,8 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 										.setTitle("${Emotes.DEFAULT_DANCE} ${storeItem["name"].string} voltou para a loja!")
 										.setThumbnail(storeItem["images"]["smallIcon"].string)
 										.setDescription("O item que você pediu para ser notificado voltou para a loja! Espero que você tenha economizado os V-Bucks para comprar. ${Emotes.LORI_HAPPY}\n\nPor favor use o código de criador `MrPowerGamerBR` na loja de itens antes de comprar! Assim você me ajuda a ficar online, para que eu possa continuar a te notificar novos itens! ${Emotes.LORI_OWO}")
-										.addField("\uD83D\uDD16 ${locale["commands.fortnite.item.type"]}", storeItem["type"]["displayValue"].nullString, true)
-										.addField("⭐ ${locale["commands.fortnite.item.rarity"]}", storeItem["rarity"]["displayValue"].nullString, true)
+										.addField("\uD83D\uDD16 ${locale["commands.command.fnitem.type"]}", storeItem["type"]["displayValue"].nullString, true)
+										.addField("⭐ ${locale["commands.command.fnitem.rarity"]}", storeItem["rarity"]["displayValue"].nullString, true)
 										.setColor(FortniteStuff.convertRarityToColor(storeItem["rarity"]["value"].nullString
 												?: "???"))
 										.build()

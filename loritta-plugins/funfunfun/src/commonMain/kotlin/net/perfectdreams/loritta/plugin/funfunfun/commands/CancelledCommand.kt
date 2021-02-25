@@ -9,8 +9,8 @@ import net.perfectdreams.loritta.utils.Emotes
 
 class CancelledCommand(val m: FunFunFunPlugin) : LorittaAbstractCommandBase(m.loritta, listOf("cancelled", "cancelado", "cancel", "cancelar"), CommandCategory.FUN) {
 	override fun command() = create {
-		localizedDescription("commands.fun.cancelled.description")
-		localizedExamples("commands.fun.cancelled.examples")
+		localizedDescription("commands.command.cancelled.description")
+		localizedExamples("commands.command.cancelled.examples")
 
 		usage {
 			argument(ArgumentType.USER) {}
@@ -21,7 +21,7 @@ class CancelledCommand(val m: FunFunFunPlugin) : LorittaAbstractCommandBase(m.lo
 
 			reply(
 					LorittaReply(
-							locale["commands.fun.cancelled.wasCancelled", user.asMention, locale.getList("commands.fun.cancelled.reasons").random()],
+							locale["commands.command.cancelled.wasCancelled", user.asMention, locale.getList("commands.command.cancelled.reasons").random()],
 							Emotes.LORI_HMPF
 					)
 			)

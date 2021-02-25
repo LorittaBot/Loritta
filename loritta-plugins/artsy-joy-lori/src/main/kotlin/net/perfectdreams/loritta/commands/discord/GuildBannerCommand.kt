@@ -8,9 +8,9 @@ import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 
-class GuildBannerCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("guildbanner", "serverbanner"), CommandCategory.ADMIN) {
+class GuildBannerCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("guildbanner", "serverbanner"), CommandCategory.MODERATION) {
     override fun command() = create {
-        localizedDescription("commands.discord.guildbanner.description")
+        localizedDescription("commands.command.guildbanner.description")
 
         arguments {
             argument(ArgumentType.TEXT) {
@@ -24,7 +24,7 @@ class GuildBannerCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(l
             val discordGuild = guild
 
             // Verificar se a guild tem banner
-            val guildBanner = discordGuild.bannerUrl ?: fail(locale["commands.discord.guildbanner.noBanner"])
+            val guildBanner = discordGuild.bannerUrl ?: fail(locale["commands.command.guildbanner.noBanner"])
 
             val embed = EmbedBuilder()
 

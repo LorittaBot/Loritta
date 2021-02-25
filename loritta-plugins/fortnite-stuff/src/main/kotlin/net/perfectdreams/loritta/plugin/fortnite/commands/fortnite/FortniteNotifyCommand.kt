@@ -22,11 +22,11 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 
 class FortniteNotifyCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.loritta, listOf("fnnotify", "fortnitenotify", "fnnotificar", "fortnitenotificar"), CommandCategory.FORTNITE) {
-	private val LOCALE_PREFIX = "commands.fortnite.notify"
+	private val LOCALE_PREFIX = "commands.command.fnnotify"
 
 	override fun command() = create {
 		localizedDescription("${LOCALE_PREFIX}.description")
-		localizedExamples("commands.fortnite.itemsExamples")
+		localizedExamples("commands.category.fortnite.itemsExamples")
 
 		needsToUploadFiles = true
 
@@ -35,7 +35,7 @@ class FortniteNotifyCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m
 		}
 
 		executesDiscord {
-			val fortniteItemsInCurrentLocale = m.itemsInfo[locale["commands.fortnite.shop.localeId"]]!!
+			val fortniteItemsInCurrentLocale = m.itemsInfo[locale["commands.command.fnshop.localeId"]]!!
 
 			if (args.isEmpty()) {
 				val alreadyTracking = transaction(Databases.loritta) {
@@ -78,7 +78,7 @@ class FortniteNotifyCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m
 					onFailure = {
 						reply(
 								LorittaReply(
-										locale["$LOCALE_PREFIX.unknownItem", "`${name.stripCodeMarks()}`"],
+										locale["commands.command.fnitem.unknownItem", "`${name.stripCodeMarks()}`"],
 										Constants.ERROR
 								)
 						)

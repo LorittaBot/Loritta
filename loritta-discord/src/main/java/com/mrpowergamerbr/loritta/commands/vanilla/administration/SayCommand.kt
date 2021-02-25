@@ -18,9 +18,9 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 
-class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.moderation.say.description")
-	override fun getExamplesKey()  = LocaleKeyData("commands.moderation.say.examples")
+class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MODERATION) {
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.say.description")
+	override fun getExamplesKey()  = LocaleKeyData("commands.command.say.examples")
 	override fun getUsage() = arguments {
 		argument(ArgumentType.TEXT) {}
 	}
@@ -85,7 +85,7 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN
 				if (!channel.canTalk()) {
 					context.reply(
 							LorittaReply(
-									context.locale["commans.moderation.say.iDontHavePermissionToTalkIn", channel.asMention],
+									context.locale["commands.command.say.iDontHavePermissionToTalkIn", channel.asMention],
 									Constants.ERROR
 							)
 					)
@@ -94,7 +94,7 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN
 				if (!channel.canTalk(context.handle)) {
 					context.reply(
 							LorittaReply(
-									context.locale["commans.moderation.say.youDontHavePermissionToTalkIn", channel.asMention],
+									context.locale["commands.command.say.youDontHavePermissionToTalkIn", channel.asMention],
 									Constants.ERROR
 							)
 					)
@@ -103,7 +103,7 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN
 				if (context.config.blacklistedChannels.contains(channel.idLong) && !context.lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
 					context.reply(
 							LorittaReply(
-									context.locale["commans.moderation.say.cannotBeUsedIn", channel.asMention],
+									context.locale["commands.command.say.cannotBeUsedIn", channel.asMention],
 									Constants.ERROR
 							)
 					)
@@ -121,7 +121,7 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN
 			val watermarkedMessage = MessageUtils.watermarkMessage(
 					message,
 					context.userHandle,
-					context.locale["commands.discord.say.messageSentBy"]
+					context.locale["commands.command.say.messageSentBy"]
 			)
 
 			val discordMessage = try {
@@ -159,7 +159,7 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.ADMIN
 			if (context.event.channel != channel && channel is TextChannel)
 				context.reply(
 						LorittaReply(
-								context.locale["commands.moderation.say.messageSuccessfullySent", channel.asMention],
+								context.locale["commands.command.say.messageSuccessfullySent", channel.asMention],
 								"\uD83C\uDF89"
 						)
 				)

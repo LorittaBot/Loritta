@@ -223,8 +223,8 @@ class SpicyMorenitta : Logging {
 				if (currentRoute.requiresLocales) {
 					deferred[0].await()
 
-					debug("Locale test: ${locale["commands.images.drawnword.description"]}")
-					debug("Locale test: ${locale["commands.fun.ship.bribeLove", ":3"]}")
+					debug("Locale test: ${locale["commands.command.drawnword.description"]}")
+					debug("Locale test: ${locale["commands.command.ship.bribeLove", ":3"]}")
 				}
 				if (currentRoute.requiresUserIdentification)
 					deferred[1].await()

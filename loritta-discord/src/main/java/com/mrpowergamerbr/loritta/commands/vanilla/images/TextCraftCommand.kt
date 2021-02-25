@@ -18,7 +18,7 @@ import javax.imageio.ImageIO
 
 class TextCraftCommand : AbstractCommand("textcraft", category = CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData(
-			"commands.images.textcraft.description",
+			"commands.command.textcraft.description",
 			listOf(
 					LocaleStringData(TextCraftFont.values().joinToString(", ", transform = { it.internalName }))
 			)

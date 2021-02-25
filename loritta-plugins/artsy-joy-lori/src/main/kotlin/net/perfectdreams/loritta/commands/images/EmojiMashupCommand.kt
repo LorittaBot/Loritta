@@ -13,9 +13,9 @@ import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
 import net.perfectdreams.loritta.utils.EmojiMasher
 import java.io.File
 
-open class EmojiMashupCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("emojimashup", "emojismashup", "mashupemoji", "mashupemojis", "mituraremojis", "misturaremoji"), CommandCategory.IMAGES) {
+open class EmojiMashupCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("emojimashup", "emojismashup", "mashupemoji", "mashupemojis", "misturaremojis", "misturaremoji"), CommandCategory.IMAGES) {
 	companion object {
-		private const val LOCALE_PREFIX = "commands.images"
+		private const val LOCALE_PREFIX = "commands.command"
 	}
 
 	override fun command() = create {

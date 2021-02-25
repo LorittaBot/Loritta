@@ -1,12 +1,12 @@
 package net.perfectdreams.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.utils.Constants
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.dao.servers.Giveaway
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
@@ -17,7 +17,7 @@ import org.jetbrains.exposed.sql.and
 
 class GiveawayRerollCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("giveaway reroll", "sorteio reroll"), CommandCategory.FUN) {
 	companion object {
-		private const val LOCALE_PREFIX = "commands.fun"
+		private const val LOCALE_PREFIX = "commands.command"
 	}
 
 	override fun command() = create {
@@ -52,7 +52,7 @@ class GiveawayRerollCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBas
 			if (messageId == null) {
 				context.reply(
 						LorittaReply(
-								locale["$LOCALE_PREFIX.giveawayreroll.giveawayInvalidArguments", "`https://canary.discordapp.com/channels/297732013006389252/297732013006389252/594270558238146603`"],
+								locale["$LOCALE_PREFIX.giveawayend.giveawayInvalidArguments", "`https://canary.discordapp.com/channels/297732013006389252/297732013006389252/594270558238146603`"],
 								Constants.ERROR
 						)
 				)
@@ -74,7 +74,7 @@ class GiveawayRerollCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBas
 			if (giveaway == null) {
 				context.reply(
 						LorittaReply(
-								locale["$LOCALE_PREFIX.giveawayreroll.giveawayDoesNotExist"],
+								locale["$LOCALE_PREFIX.giveawayend.giveawayDoesNotExist"],
 								Emotes.LORI_HM
 						)
 				)
@@ -99,7 +99,7 @@ class GiveawayRerollCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBas
 			if (textChannel == null) {
 				context.reply(
 						LorittaReply(
-								locale["$LOCALE_PREFIX.giveawayreroll.channelDoesNotExist"],
+								locale["$LOCALE_PREFIX.giveawayend.channelDoesNotExist"],
 								Constants.ERROR
 						)
 				)
@@ -110,7 +110,7 @@ class GiveawayRerollCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBas
 			if (message == null) {
 				context.reply(
 						LorittaReply(
-								locale["$LOCALE_PREFIX.giveawayreroll.messageDoesNotExist"],
+								locale["$LOCALE_PREFIX.giveawayend.messageDoesNotExist"],
 								Constants.ERROR
 						)
 				)

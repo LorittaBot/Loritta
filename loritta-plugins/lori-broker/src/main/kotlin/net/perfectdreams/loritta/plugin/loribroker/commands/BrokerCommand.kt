@@ -14,7 +14,7 @@ import org.jetbrains.exposed.sql.selectAll
 
 class BrokerCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractCommandBase(plugin.loritta, plugin.aliases, CommandCategory.ECONOMY) {
 	override fun command() = create {
-		localizedDescription("commands.economy.broker.description")
+		localizedDescription("commands.command.broker.description")
 
 		executesDiscord {
 			if (this.args.getOrNull(0) == "sell_all" && this.user.idLong == 123170274651668480L) {
@@ -62,18 +62,18 @@ class BrokerCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractCommandBase(p
 			}
 
 			val embed = plugin.getBaseEmbed()
-					.setTitle("${Emotes.LORI_STONKS} ${locale["commands.economy.broker.title"]}")
+					.setTitle("${Emotes.LORI_STONKS} ${locale["commands.command.broker.title"]}")
 					.setDescription(
 							locale.getList(
-									"commands.economy.broker.explanation",
-									locale["commands.economy.broker.buyExample", serverConfig.commandPrefix],
-									locale["commands.economy.broker.sellExample", serverConfig.commandPrefix],
-									locale["commands.economy.broker.portfolioExample", serverConfig.commandPrefix],
+									"commands.command.broker.explanation",
+									locale["commands.command.broker.buyExample", serverConfig.commandPrefix],
+									locale["commands.command.broker.sellExample", serverConfig.commandPrefix],
+									locale["commands.command.broker.portfolioExample", serverConfig.commandPrefix],
 									Emotes.DO_NOT_DISTURB,
 									Emotes.LORI_CRYING
 							).joinToString("\n")
 					)
-					.setFooter(locale["commands.economy.broker.footer"])
+					.setFooter(locale["commands.command.broker.footer"])
 
 			// Sorted by the ticker name
 			for (stock in stocks.sortedBy { it["short_name"]!!.jsonPrimitive.content }) {
@@ -88,14 +88,14 @@ class BrokerCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractCommandBase(p
 				if (stock["current_session"]!!.jsonPrimitive.content != LoriBrokerPlugin.MARKET)
 					embed.addField(
 							"${Emotes.DO_NOT_DISTURB} `${stock["short_name"]?.jsonPrimitive?.content}` ($tickerName) | ${"%.2f".format(changePercentage)}%",
-							locale["commands.economy.broker.priceBeforeMarketClose", plugin.convertReaisToSonhos(stock[LoriBrokerPlugin.CURRENT_PRICE_FIELD]?.jsonPrimitive?.double!!)],
+							locale["commands.command.broker.priceBeforeMarketClose", plugin.convertReaisToSonhos(stock[LoriBrokerPlugin.CURRENT_PRICE_FIELD]?.jsonPrimitive?.double!!)],
 							true
 					)
 				else
 					embed.addField(
 							"${Emotes.ONLINE} `${stock["short_name"]?.jsonPrimitive?.content}` ($tickerName) | ${"%.2f".format(changePercentage)}%",
-							"""${locale["commands.economy.broker.buyPrice", buyingPrice]}
-							  |${locale["commands.economy.broker.sellPrice", sellingPrice]}
+							"""${locale["commands.command.broker.buyPrice", buyingPrice]}
+							  |${locale["commands.command.broker.sellPrice", sellingPrice]}
 							""".trimMargin(),
 							true
 					)

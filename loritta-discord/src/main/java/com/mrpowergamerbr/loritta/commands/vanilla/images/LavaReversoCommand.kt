@@ -21,8 +21,8 @@ import java.awt.image.BufferedImage
 import java.io.File
 
 class LavaReversoCommand : AbstractCommand("lavareverse", listOf("lavareverso", "reverselava"), CommandCategory.IMAGES) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.images.reverselava.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.images.reverselavaqq\\.examples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.reverselava.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.reverselava.examples")
 
 	override fun getUsage() = arguments {
 		argument(ArgumentType.IMAGE) {}

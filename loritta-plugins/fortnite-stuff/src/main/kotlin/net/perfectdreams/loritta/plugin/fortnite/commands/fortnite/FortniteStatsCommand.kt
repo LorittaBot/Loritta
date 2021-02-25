@@ -20,11 +20,11 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 
 class FortniteStatsCommand(val m: FortniteStuff) : DiscordAbstractCommandBase(m.loritta, listOf("fortnitestats", "fnstats", "fortniteprofile", "fnprofile"), CommandCategory.FORTNITE) {
-	private val LOCALE_PREFIX = "commands.fortnite.stats"
+	private val LOCALE_PREFIX = "commands.command.fnstats"
 
 	override fun command() = create {
 		localizedDescription("${LOCALE_PREFIX}.description")
-		localizedDescription("${LOCALE_PREFIX}.examples")
+		localizedExamples("${LOCALE_PREFIX}.examples")
 
 		needsToUploadFiles = true
 

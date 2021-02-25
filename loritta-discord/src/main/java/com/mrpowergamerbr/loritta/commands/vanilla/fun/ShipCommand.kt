@@ -14,8 +14,10 @@ import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
+import net.dv8tion.jda.api.entities.Message
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
@@ -31,8 +33,8 @@ import java.io.File
 import java.util.*
 
 class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.FUN) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.fun.ship.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.fun.ship.examples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.ship.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.ship.examples")
 
 	override fun getUsage() = arguments {
 		argument(ArgumentType.USER) {}
@@ -72,13 +74,13 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 		}
 
 		if (user1Name != null && user2Name != null && user1Name.isNotEmpty() && user2Name.isNotEmpty()) {
-			var texto = context.getAsMention(true) + "\n💖 **${context.locale["commands.fun.ship.newCouple"]}** 💖\n"
+			var texto = context.getAsMention(true) + "\n💖 **${context.locale["commands.command.ship.newCouple"]}** 💖\n"
 
-			texto += "`${user1Name}`\n`${user2Name}`\n"
+			texto += "`${user1Name.stripCodeMarks()}`\n`${user2Name.stripCodeMarks()}`\n"
 
 			var name1 = user1Name.substring(0..(user1Name.length / 2))
 			var name2 = user2Name.substring(user2Name.length / 2..user2Name.length - 1)
-			val shipName = name1 + name2
+			val shipName = (name1 + name2).stripCodeMarks()
 
 			// Para motivos de cálculos, nós iremos criar um "real ship name"
 			// Que é só o nome do ship... mas em ordem alfabética!
@@ -130,7 +132,7 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 			if (Loritta.RANDOM.nextInt(0, 50) == 9 && context.lorittaUser.profile.money >= 3000) {
 				context.reply(
 						LorittaReply(
-								context.locale["commands.fun.ship.bribeLove", "${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/ship-effects"]
+								context.locale["commands.command.ship.bribeLove", "${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/ship-effects"]
 						)
 				)
 			}
@@ -142,16 +144,16 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 			}
 
 			val messages: List<String> = when {
-				percentage >= 90 -> context.locale.getList("commands.fun.ship.value90")
-				percentage >= 80 -> context.locale.getList("commands.fun.ship.value80")
-				percentage >= 70 -> context.locale.getList("commands.fun.ship.value70")
-				percentage >= 60 -> context.locale.getList("commands.fun.ship.value60")
-				percentage >= 50 -> context.locale.getList("commands.fun.ship.value50")
-				percentage >= 40 -> context.locale.getList("commands.fun.ship.value40")
-				percentage >= 30 -> context.locale.getList("commands.fun.ship.value30")
-				percentage >= 20 -> context.locale.getList("commands.fun.ship.value20")
-				percentage >= 10 -> context.locale.getList("commands.fun.ship.value10")
-				percentage >= 0  -> context.locale.getList("commands.fun.ship.value0")
+				percentage >= 90 -> context.locale.getList("commands.command.ship.value90")
+				percentage >= 80 -> context.locale.getList("commands.command.ship.value80")
+				percentage >= 70 -> context.locale.getList("commands.command.ship.value70")
+				percentage >= 60 -> context.locale.getList("commands.command.ship.value60")
+				percentage >= 50 -> context.locale.getList("commands.command.ship.value50")
+				percentage >= 40 -> context.locale.getList("commands.command.ship.value40")
+				percentage >= 30 -> context.locale.getList("commands.command.ship.value30")
+				percentage >= 20 -> context.locale.getList("commands.command.ship.value20")
+				percentage >= 10 -> context.locale.getList("commands.command.ship.value10")
+				percentage >= 0  -> context.locale.getList("commands.command.ship.value0")
 				else -> {
 					throw RuntimeException("Can't find ship value for percentage $percentage")
 				}
@@ -214,7 +216,12 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 			text += "`]"
 			embed.setDescription("**$percentage%** $text")
 			embed.setImage("attachment://ships.png")
-			val msgBuilder = MessageBuilder().append(texto)
+			val msgBuilder = MessageBuilder()
+					.append(texto)
+					.denyMentions(
+							Message.MentionType.EVERYONE,
+							Message.MentionType.HERE
+					)
 			msgBuilder.setEmbed(embed.build())
 			context.sendFile(image, "ships.png", msgBuilder.build())
 		} else {

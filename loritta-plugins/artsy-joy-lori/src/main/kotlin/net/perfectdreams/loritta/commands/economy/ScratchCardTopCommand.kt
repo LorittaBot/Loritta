@@ -17,7 +17,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class ScratchCardTopCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("scratchcard top", "raspadinha top"), CommandCategory.ECONOMY) {
 	companion object {
-		private const val LOCALE_PREFIX = "commands.economy"
+		private const val LOCALE_PREFIX = "commands.command"
 	}
 
 	override fun command() = create {

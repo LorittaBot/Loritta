@@ -27,8 +27,8 @@ class NyanCatCommand : AbstractCommand("nyan", category = CommandCategory.IMAGES
 		val DOG_EARS by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "dog_ears.png")) }
 	}
 
-	override fun getDescriptionKey() = LocaleKeyData("commands.images.nyancat.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.images.nyancat.examples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.nyancat.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.nyancat.examples")
 // TODO: Fix Usage
 
 	override fun needsToUploadFiles(): Boolean {

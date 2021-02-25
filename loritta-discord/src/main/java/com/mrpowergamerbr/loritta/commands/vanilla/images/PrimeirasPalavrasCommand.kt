@@ -14,8 +14,8 @@ import java.awt.Font
 import java.io.File
 
 class PrimeirasPalavrasCommand : AbstractCommand("firstwords", listOf("primeiraspalavras"), CommandCategory.IMAGES) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.images.firstwords.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.images.firstwords.examples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.firstwords.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.firstwords.examples")
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

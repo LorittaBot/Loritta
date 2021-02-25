@@ -23,6 +23,7 @@ import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.utils.AccountUtils
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.NumberUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -33,8 +34,8 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 		private val mutex = Mutex()
 	}
 
-	override fun getDescriptionKey() = LocaleKeyData("commands.economy.pay.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.economy.pay.examples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.pay.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.pay.examples")
 
 	// TODO: Fix Usage
 
@@ -134,7 +135,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 			if (howMuch.toBigDecimal() > balanceQuantity) {
 				context.reply(
 						LorittaReply(
-								locale["commands.economy.pay.insufficientFunds", if (economySource == "global") locale["economy.currency.name.plural"] else economyConfig?.economyNamePlural],
+								locale["commands.command.pay.insufficientFunds", if (economySource == "global") locale["economy.currency.name.plural"] else economyConfig?.economyNamePlural],
 								Constants.ERROR
 						)
 				)
@@ -148,8 +149,11 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 					return
 				if (!checkIfOtherAccountIsOldEnough(context, user))
 					return
+				if (!checkIfSelfAccountGotDailyRecently(context))
+					return
 
 				var tellUserLorittaIsGrateful = false
+				val userProfile = loritta.getOrCreateLorittaProfile(user.idLong)
 
 				if (user.idLong == loritta.discordConfig.discord.clientId.toLong()) {
 					// If it is Loritta, she doesn't want to *feel* that she is poor if she is rich
@@ -157,10 +161,9 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 					// If she has 1_000_000 sonhos, she will want *at least* 100_000 sonhos
 					//
 					// To do that is *easy*, just multiply how much sonhos she has by 0.1 and, if the value is below the threshold, deny the sonhos.
-					val lorittaProfile = loritta.getOrCreateLorittaProfile(user.idLong)
-					val threshold = lorittaProfile.money * 0.1
+					val threshold = userProfile.money * 0.1
 
-					if (25_000 >= lorittaProfile.money) {
+					if (25_000 >= userProfile.money) {
 						// If Loritta has almost no sonhos (less than 25k), Loritta will tell the user that she is very grateful for the donation!
 						tellUserLorittaIsGrateful = true
 					} else if (threshold > howMuch) {
@@ -168,32 +171,35 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 						// reject the sonhos
 						context.reply(
 								LorittaReply(
-										context.locale["commands.economy.pay.doYouThinkImPoor"],
+										context.locale["commands.command.pay.doYouThinkImPoor"],
 										Emotes.LORI_BAN_HAMMER
 								)
 						)
 						return
 					}
+				} else {
+					if (AccountUtils.checkAndSendMessageIfUserIsBanned(context, userProfile))
+						return
 				}
 
 				val quirkyMessage = when {
-					howMuch >= 500_000 -> " ${context.locale.getList("commands.economy.pay.randomQuirkyRichMessages").random()}"
-					tellUserLorittaIsGrateful -> " ${context.locale.getList("commands.economy.pay.randomLorittaIsGratefulMessages").random()}"
+					howMuch >= 500_000 -> " ${context.locale.getList("commands.command.pay.randomQuirkyRichMessages").random()}"
+					tellUserLorittaIsGrateful -> " ${context.locale.getList("commands.command.pay.randomLorittaIsGratefulMessages").random()}"
 					else -> ""
 				}
 
 				val message = context.reply(
 						LorittaReply(
-								context.locale["commands.economy.pay.youAreGoingToTransfer", howMuch, user.asMention, quirkyMessage],
+								context.locale["commands.command.pay.youAreGoingToTransfer", howMuch, user.asMention, quirkyMessage],
 								Emotes.LORI_RICH
 						),
 						LorittaReply(
-								context.locale["commands.economy.pay.clickToAcceptTheTransaction", user.asMention, "✅"],
+								context.locale["commands.command.pay.clickToAcceptTheTransaction", user.asMention, "✅"],
 								"🤝",
 								mentionUser = false
 						),
 						LorittaReply(
-								context.locale["commands.economy.pay.sellDisallowedWarning", "${loritta.instanceConfig.loritta.website.url}guidelines"],
+								context.locale["commands.command.pay.sellDisallowedWarning", "${loritta.instanceConfig.loritta.website.url}guidelines"],
 								Emotes.LORI_BAN_HAMMER,
 								mentionUser = false
 						)
@@ -241,7 +247,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 										val finalMoney = result["finalMoney"].double
 										context.reply(
 												LorittaReply(
-														locale["commands.economy.pay.transitionComplete", user.asMention, finalMoney, if (finalMoney == 1.0) {
+														locale["commands.command.pay.transitionComplete", user.asMention, finalMoney, if (finalMoney == 1.0) {
 															locale["economy.currency.name.singular"]
 														} else {
 															locale["economy.currency.name.plural"]
@@ -272,7 +278,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 
 				context.reply(
 						LorittaReply(
-								locale["commands.economy.pay.transitionComplete", user.asMention, howMuch, if (howMuch.toLong() == 1L) {
+								locale["commands.command.pay.transitionComplete", user.asMention, howMuch, if (howMuch.toLong() == 1L) {
 									economyConfig?.economyName
 								} else {
 									economyConfig?.economyNamePlural
@@ -286,13 +292,29 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 		}
 	}
 
+	private suspend fun checkIfSelfAccountGotDailyRecently(context: CommandContext): Boolean {
+		// Check if the user got daily in the last 14 days before allowing a transaction
+		val dailyRewardInTheLastXDays = AccountUtils.getUserDailyRewardInTheLastXDays(context.lorittaUser.profile, 14)
+
+		if (dailyRewardInTheLastXDays == null) {
+			context.reply(
+					LorittaReply(
+							context.locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", context.config.commandPrefix],
+							Constants.ERROR
+					)
+			)
+			return false
+		}
+		return true
+	}
+
 	private suspend fun checkIfSelfAccountIsOldEnough(context: CommandContext): Boolean {
 		val epochMillis = context.userHandle.timeCreated.toEpochSecond() * 1000
 
 		if (epochMillis + (Constants.ONE_WEEK_IN_MILLISECONDS * 2) > System.currentTimeMillis()) { // 14 dias
 			context.reply(
 					LorittaReply(
-							context.locale["commands.economy.pay.selfAccountIsTooNew", 14] + " ${Emotes.LORI_CRYING}",
+							context.locale["commands.command.pay.selfAccountIsTooNew", 14] + " ${Emotes.LORI_CRYING}",
 							Constants.ERROR
 					)
 			)
@@ -307,7 +329,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 		if (epochMillis + Constants.ONE_WEEK_IN_MILLISECONDS > System.currentTimeMillis()) { // 7 dias
 			context.reply(
 					LorittaReply(
-							context.locale["commands.economy.pay.otherAccountIsTooNew", target.asMention, 7] + " ${Emotes.LORI_CRYING}",
+							context.locale["commands.command.pay.otherAccountIsTooNew", target.asMention, 7] + " ${Emotes.LORI_CRYING}",
 							Constants.ERROR
 					)
 			)

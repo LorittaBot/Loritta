@@ -14,12 +14,12 @@ enum class CommandCategory {
 	ANIME,
 	DISCORD,
 	MISC,
-	ADMIN,
+	MODERATION,
 	UTILS,
 	SOCIAL,
 	ACTION,
 	ECONOMY,
-	MUSIC,
+	VIDEOS,
 	FORTNITE,
 	MAGIC; // Esta categoria é usada para comandos APENAS para o dono do bot
 
@@ -27,7 +27,7 @@ enum class CommandCategory {
 		return locale["commands.category.${this.name.toLowerCase()}.name"]
 	}
 
-	fun getLocalizedDescription(locale: BaseLocale): String {
-		return locale["commands.category.${this.name.toLowerCase()}.description"]
+	fun getLocalizedDescription(locale: BaseLocale): List<String> {
+		return locale.getList("commands.category.${this.name.toLowerCase()}.description")
 	}
 }

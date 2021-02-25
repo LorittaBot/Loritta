@@ -22,8 +22,8 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCategory.DISCORD) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.discord.inviteinfo.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.discord.inviteinfo.examples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.inviteinfo.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.inviteinfo.examples")
 
 	// TODO: Fix Usage
 
@@ -55,7 +55,7 @@ class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCatego
 				// Invite não existe!
 				context.reply(
 						LorittaReply(
-								context.locale["commands.discord.inviteinfo.doesntExists", inviteId.stripCodeMarks()],
+								context.locale["commands.command.inviteinfo.doesntExists", inviteId.stripCodeMarks()],
 								Constants.ERROR
 						)
 				)
@@ -78,13 +78,13 @@ class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCatego
 				embed.setTitle("<:discord:314003252830011395> $name", null) // Nome da Guild
 
 				embed.addField("💻 ID", id, true) // ID da Guild
-				embed.addField("\uD83D\uDC6E ${locale["commands.discord.serverinfo.verificationLevel"]}", verificationLevel.toString(), true) // ID da Guild
-				embed.addField("\uD83D\uDC65 ${locale["commands.discord.serverinfo.members"]}", "\uD83D\uDC81 **${locale["commands.discord.inviteinfo.active"]}:** ${approxPresenceCount}\n\uD83D\uDE34 **Offline:** $approxMemberCount", true)
+				embed.addField("\uD83D\uDC6E ${locale["commands.command.serverinfo.verificationLevel"]}", verificationLevel.toString(), true) // ID da Guild
+				embed.addField("\uD83D\uDC65 ${locale["commands.command.serverinfo.members"]}", "\uD83D\uDC81 **${locale["commands.command.inviteinfo.active"]}:** ${approxPresenceCount}\n\uD83D\uDE34 **Offline:** $approxMemberCount", true)
 
 				if (features.size() == 0) {
-					embed.addField("✨ ${locale["commands.discord.serverinfo.features"]}", locale["commands.discord.inviteinfo.none"], true) // ID da Guild
+					embed.addField("✨ ${locale["commands.command.serverinfo.features"]}", locale["commands.command.inviteinfo.none"], true) // ID da Guild
 				} else {
-					embed.addField("✨ ${locale["commands.discord.serverinfo.features"]}", features.joinToString(", ", transform = { it.string }), true) // ID da Guild
+					embed.addField("✨ ${locale["commands.command.serverinfo.features"]}", features.joinToString(", ", transform = { it.string }), true) // ID da Guild
 				}
 
 				if (icon != null) {
@@ -95,22 +95,22 @@ class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCatego
 					embed.setImage("https://cdn.discordapp.com/splashes/$id/$splash.png?size=1024")
 				}
 
-				embed.addField("\uD83D\uDDE3 ${locale["commands.discord.inviteinfo.channelInvite"]}", "`#${channel["name"].string}` (${channel["id"].string})", true)
+				embed.addField("\uD83D\uDDE3 ${locale["commands.command.inviteinfo.channelInvite"]}", "`#${channel["name"].string}` (${channel["id"].string})", true)
 
 				if (inviter != null) {
 					val username = inviter["username"].string
 					val discriminator = inviter["discriminator"].string
 					val id = inviter["id"].string
 
-					embed.addField("\uD83D\uDC4B ${locale["commands.discord.inviteinfo.whoInvited"]}", "`$username#$discriminator` ($id)", true)
+					embed.addField("\uD83D\uDC4B ${locale["commands.command.inviteinfo.whoInvited"]}", "`$username#$discriminator` ($id)", true)
 				}
 
 				val discordGuild = lorittaShards.queryGuildById(id)
 
 				if (discordGuild != null) {
-					embed.setFooter("\uD83D\uDE0A ${context.locale["commands.discord.inviteinfo.inThisServer"]}")
+					embed.setFooter("\uD83D\uDE0A ${context.locale["commands.command.inviteinfo.inThisServer"]}")
 				} else {
-					embed.setFooter("\uD83D\uDE2D ${context.locale["commands.discord.inviteinfo.notOnTheServer"]}")
+					embed.setFooter("\uD83D\uDE2D ${context.locale["commands.command.inviteinfo.notOnTheServer"]}")
 				}
 
 				context.sendMessage(context.getAsMention(true), embed.build()) // phew, agora finalmente poderemos enviar o embed!

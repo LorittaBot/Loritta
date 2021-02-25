@@ -18,13 +18,13 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.and
 
-class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCategory.ADMIN) {
+class UnwarnCommand : AbstractCommand("unwarn", listOf("desavisar"), CommandCategory.MODERATION) {
 	companion object {
-		private val LOCALE_PREFIX = "commands.moderation"
+		private val LOCALE_PREFIX = "commands.command"
 	}
 
-	override fun getDescriptionKey() = LocaleKeyData("commands.moderation.unwarn.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.moderation.unwarn.examples")
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.unwarn.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.unwarn.examples")
 
 	override fun getUsage(): CommandArguments {
 		return arguments {

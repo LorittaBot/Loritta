@@ -17,7 +17,7 @@ import org.jetbrains.exposed.sql.selectAll
 class BomDiaECiaTopCommand(loritta: LorittaDiscord) :
 	DiscordAbstractCommandBase(loritta, listOf("bomdiaecia top", "bd&c top", "bdc top"), CommandCategory.SOCIAL) {
 	override fun command() = create {
-		localizedDescription("commands.social.bomdiaeciatop.description")
+		localizedDescription("commands.command.bomdiaeciatop.description")
 
 		arguments {
 			argument(ArgumentType.NUMBER) {
@@ -50,14 +50,16 @@ class BomDiaECiaTopCommand(loritta: LorittaDiscord) :
 			}
 
 			sendImage(
-				JVMImage(
-					RankingGenerator.generateRanking(
-						"Ranking Global",
-						null,
-						userData.map {
-							RankingGenerator.UserRankInformation(
-								it[userId],
-								locale["commands.social.bomdiaeciatop.wonMatches", it[userIdCount]]
+					JVMImage(
+							RankingGenerator.generateRanking(
+									"Ranking Global",
+									null,
+									userData.map {
+										RankingGenerator.UserRankInformation(
+												it[userId],
+												locale["commands.command.bomdiaeciatop.wonMatches", it[userIdCount]]
+										)
+									}
 							)
 						}
 					)

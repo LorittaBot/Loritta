@@ -11,7 +11,11 @@ import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.MessageEmbed
+import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
@@ -29,8 +33,12 @@ import java.awt.Color
 import java.time.Instant
 
 object AdminUtils {
-	private val LOCALE_PREFIX = "commands.moderation"
+	private val LOCALE_PREFIX = "commands.category.moderation"
 	val PUNISHMENT_EXAMPLES_KEY = LocaleKeyData("$LOCALE_PREFIX.punishmentExamples")
+	val ROLE_TOO_LOW_KEY = LocaleKeyData("$LOCALE_PREFIX.roleTooLow")
+	val ROLE_TOO_LOW_HOW_TO_FIX_KEY = LocaleKeyData("$LOCALE_PREFIX.roleTooLowHowToFix")
+	val PUNISHER_ROLE_TOO_LOW_HOW_TO_FIX_KEY = LocaleKeyData("$LOCALE_PREFIX.punisherRoleTooLowHowToFix")
+
 	val PUNISHMENT_USAGES = arguments {
 		argument(ArgumentType.USER) {
 			optional = false
@@ -138,11 +146,11 @@ object AdminUtils {
 	suspend fun checkForPermissions(context: CommandContext, member: Member): Boolean {
 		if (!context.guild.selfMember.canInteract(member)) {
 			val reply = buildString {
-				this.append(context.locale["${LOCALE_PREFIX}.roleTooLow"])
+				this.append(context.locale[ROLE_TOO_LOW_KEY])
 
 				if (context.handle.hasPermission(Permission.MANAGE_ROLES)) {
 					this.append(" ")
-					this.append(context.locale["${LOCALE_PREFIX}.roleTooLowHowToFix"])
+					this.append(context.locale[ROLE_TOO_LOW_HOW_TO_FIX_KEY])
 				}
 			}
 
@@ -157,11 +165,11 @@ object AdminUtils {
 
 		if (!context.handle.canInteract(member)) {
 			val reply = buildString {
-				this.append(context.locale["commands.moderation.punisherRoleTooLow"])
+				this.append(context.locale[ROLE_TOO_LOW_KEY])
 
 				if (context.handle.hasPermission(Permission.MANAGE_ROLES)) {
 					this.append(" ")
-					this.append(context.locale["commands.moderation.punisherRoleTooLowHowToFix"])
+					this.append(context.locale[PUNISHER_ROLE_TOO_LOW_HOW_TO_FIX_KEY])
 				}
 			}
 
@@ -177,7 +185,7 @@ object AdminUtils {
 	}
 
 	suspend fun sendConfirmationMessage(context: CommandContext, users: List<User>, hasSilent: Boolean, type: String): Message {
-		val str = context.locale["${LOCALE_PREFIX}.readyToPunish", context.locale["${LOCALE_PREFIX}.$type.punishName"], users.joinToString { it.asMention }, users.joinToString { it.asTag }, users.joinToString { it.id }]
+		val str = context.locale["${LOCALE_PREFIX}.readyToPunish", context.locale["commands.command.$type.punishName"], users.joinToString { it.asMention }, users.joinToString { it.asTag }, users.joinToString { it.id }]
 
 		val replies = mutableListOf(
                 LorittaReply(

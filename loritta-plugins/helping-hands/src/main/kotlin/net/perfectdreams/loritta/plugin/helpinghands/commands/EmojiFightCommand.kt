@@ -13,11 +13,13 @@ class EmojiFightCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractCommand
 		CommandCategory.ECONOMY
 ) {
 	override fun command() = create {
-		localizedDescription("commands.economy.emojifight.description")
+		localizedDescription("commands.command.emojifight.description")
 
 		usage {
 			arguments {
-				argument(ArgumentType.NUMBER) {}
+				argument(ArgumentType.NUMBER) {
+					optional = true
+				}
 			}
 		}
 
@@ -25,10 +27,16 @@ class EmojiFightCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractCommand
 		this.canUseInPrivateChannel = false
 
 		executesDiscord {
+			val maxPlayersInEvent = (
+					(this.args.getOrNull(0) ?.toIntOrNull() ?: EmojiFight.DEFAULT_MAX_PLAYER_COUNT)
+							.coerceIn(2, EmojiFight.DEFAULT_MAX_PLAYER_COUNT)
+			)
+
 			val emojiFight = EmojiFight(
 					plugin,
 					this,
-					null
+					null,
+					maxPlayersInEvent
 			)
 
 			emojiFight.start()
