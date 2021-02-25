@@ -44,18 +44,18 @@ class BomDiaECia {
 			}
 
 			val ilove = listOf(
-					"o yudi",
-					"a priscilla",
-					"o yudi tamashiro",
-					"a priscilla alcântara",
-					"o sbt",
-					"o bom dia & cia",
-					"o bom dia e cia",
-					"o bom dia & companhia",
-					"o yudi e a priscilla",
-					"o yudi tamashiro e a priscilla",
-					"o yudi e a priscilla alcântara",
-					"o yudi tamashiro e a priscilla alcântara"
+				"o yudi",
+				"a priscilla",
+				"o yudi tamashiro",
+				"a priscilla alcantara",
+				"o sbt",
+				"o bom dia & cia",
+				"o bom dia e cia",
+				"o bom dia & companhia",
+				"o yudi e a priscilla",
+				"o yudi tamashiro e a priscilla",
+				"o yudi e a priscilla alcantara",
+				"o yudi tamashiro e a priscilla alcantara"
 			)
 
 			for (person in ilove) {
@@ -71,37 +71,67 @@ class BomDiaECia {
 			}
 
 			val playstations = listOf(
-					"playstation",
-					"preisteicho",
-					"preisteixo",
-					"prêiesteicho",
-					"prêisteixo",
-					"playesteicho",
-					"preíesteichu"
+				"playstation",
+				"preisteicho",
+				"preisteixo",
+				"prêiesteicho",
+				"prêisteixo",
+				"playesteicho",
+				"preíesteichu"
 			)
 
 			val numbers = listOf(
-					"1",
-					"2",
-					"3",
-					"4",
-					"um",
-					"dois",
-					"três",
-					"treis",
-					"quatro"
+				"1",
+				"2",
+				"3",
+				"4",
+				"5",
+				"um",
+				"one",
+				"dois",
+				"doís",
+				"two",
+				"três",
+				"treis",
+				"three",
+				"quatro",
+				"quatru",
+				"four",
+				"cinco",
+				"cincu",
+				"five"
+			)
+
+			val otherStuff = listOf(
+				"jogo da vida",
+				"banco imobiliário",
+				"tablet",
+				"notebook",
+				"laptop",
+				"celular",
+				"skate",
+				"mp4",
+				"mp3",
+				"patins"
 			)
 
 			for (playstation in playstations) {
-				addWithVariations(playstation)
 				addWithVariations("quero ganhar 1 $playstation")
 				addWithVariations("quero ganhar um $playstation")
 				addWithVariations("eu quero ganhar um $playstation")
 				addWithVariations("eu quero ganhar 1 $playstation")
-				addWithVariations("não quero ganhar um jogo da vida, quero ganhar 1 $playstation")
-				addWithVariations("não quero ganhar um jogo da vida, quero ganhar um $playstation")
-				addWithVariations("não quero ganhar um jogo da vida, eu quero ganhar um $playstation")
-				addWithVariations("não quero ganhar um jogo da vida, eu quero ganhar 1 $playstation")
+				addWithVariations(playstation)
+
+				for (game in otherStuff) {
+					addWithVariations("não quero ganhar um $game, quero ganhar 1 $playstation")
+					addWithVariations("não quero ganhar 1 $game, quero ganhar 1 $playstation")
+					addWithVariations("não quero ganhar um $game, quero ganhar um $playstation")
+					addWithVariations("não quero ganhar 1 $game, quero ganhar um $playstation")
+					addWithVariations("não quero ganhar um $game, eu quero ganhar um $playstation")
+					addWithVariations("não quero ganhar 1 $game, eu quero ganhar um $playstation")
+					addWithVariations("não quero ganhar um $game, eu quero ganhar 1 $playstation")
+					addWithVariations("não quero ganhar 1 $game, eu quero ganhar 1 $playstation")
+				}
 
 				for (number in numbers) {
 					addWithVariations("$playstation $number")
@@ -110,10 +140,16 @@ class BomDiaECia {
 					addWithVariations("eu quero ganhar um $playstation $number")
 					addWithVariations("eu quero ganhar 1 $playstation $number")
 
-					addWithVariations("não quero ganhar um jogo da vida, quero ganhar 1 $playstation $number")
-					addWithVariations("não quero ganhar um jogo da vida, quero ganhar um $playstation $number")
-					addWithVariations("não quero ganhar um jogo da vida, eu quero ganhar um $playstation $number")
-					addWithVariations("não quero ganhar um jogo da vida, eu quero ganhar 1 $playstation $number")
+					for (game in otherStuff) {
+						addWithVariations("não quero ganhar um $game, quero ganhar 1 $playstation $number")
+						addWithVariations("não quero ganhar 1 $game, quero ganhar 1 $playstation $number")
+						addWithVariations("não quero ganhar um $game, quero ganhar um $playstation $number")
+						addWithVariations("não quero ganhar 1 $game, quero ganhar um $playstation $number")
+						addWithVariations("não quero ganhar um $game, eu quero ganhar um $playstation $number")
+						addWithVariations("não quero ganhar 1 $game, eu quero ganhar um $playstation $number")
+						addWithVariations("não quero ganhar um $game, eu quero ganhar 1 $playstation $number")
+						addWithVariations("não quero ganhar 1 $game, eu quero ganhar 1 $playstation $number")
+					}
 
 					addWithVariations("4002-8922 é o funk do yudi que vai dar $playstation $number")
 					addWithVariations("4002-8922 é o funk do japonês que vai te dar $playstation $number")
@@ -121,14 +157,15 @@ class BomDiaECia {
 			}
 
 			this.add("bts? eu só conheço o sbt!")
+			this.add("bts? eu só conheço o sbt do Silvio Santos!")
 		}
 
 		val randomImages by lazy {
 			listOf(
-					"${loritta.instanceConfig.loritta.website.url}assets/img/bom-dia-cia.jpg",
-					"${loritta.instanceConfig.loritta.website.url}assets/img/bom-dia-cia-2.jpg",
-					"${loritta.instanceConfig.loritta.website.url}assets/img/bom-dia-cia-3.jpg",
-					"${loritta.instanceConfig.loritta.website.url}assets/img/bom-dia-cia-4.jpg"
+				"${loritta.instanceConfig.loritta.website.url}assets/img/bom-dia-cia.jpg",
+				"${loritta.instanceConfig.loritta.website.url}assets/img/bom-dia-cia-2.jpg",
+				"${loritta.instanceConfig.loritta.website.url}assets/img/bom-dia-cia-3.jpg",
+				"${loritta.instanceConfig.loritta.website.url}assets/img/bom-dia-cia-4.jpg"
 			)
 		}
 	}
@@ -168,16 +205,16 @@ class BomDiaECia {
 		lastBomDiaECia = System.currentTimeMillis()
 
 		val obfuscatedText = currentText.toCharArray()
-				.joinToString("", transform = {
-					val obfIdx = RANDOM.nextInt(3)
+			.joinToString("", transform = {
+				val obfIdx = RANDOM.nextInt(3)
 
-					if (obfIdx == 2)
-						"\u200B$it"
-					else if (obfIdx == 1)
-						"\u200D$it"
-					else
-						"\u200C$it"
-				})
+				if (obfIdx == 2)
+					"\u200B$it"
+				else if (obfIdx == 1)
+					"\u200D$it"
+				else
+					"\u200C$it"
+			})
 
 		validTextChannels.forEach { textChannel ->
 			// TODO: Localization!
@@ -201,9 +238,9 @@ class BomDiaECia {
 	@Synchronized
 	fun announceWinner(channel: TextChannel, guild: Guild, user: User) {
 		activeTextChannels.clear()
-		
+
 		val validTextChannels = this.validTextChannels
-				?: return // If there isn't any valid active channels, we don't need to announce the winner
+			?: return // If there isn't any valid active channels, we don't need to announce the winner
 
 		val messageForLocales = mutableMapOf<String, Message>()
 
@@ -216,7 +253,7 @@ class BomDiaECia {
 		validTextChannels.forEachIndexed { index, textChannel ->
 			// TODO: Localization!
 			textChannel.sendMessage(messageForLocales["default"]!!)
-					.queueAfterWithMessagePerSecondTarget(index)
+				.queueAfterWithMessagePerSecondTarget(index)
 		}
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
