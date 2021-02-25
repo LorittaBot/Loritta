@@ -1,15 +1,14 @@
 package net.perfectdreams.loritta.website.routes.api.v1.loritta
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kotson.bool
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.website.LorittaWebsite
-import io.ktor.application.ApplicationCall
-import io.ktor.request.receiveText
+import io.ktor.application.*
+import io.ktor.request.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthenticationRoute
@@ -20,7 +19,7 @@ import kotlin.concurrent.thread
 
 class PostLorittaActionRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/action/{actionType}") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
-		val body = call.receiveText()
+		val body = withContext(Dispatchers.IO) { call.receiveText() }
 		val actionType = call.parameters["actionType"]
 
 		val json = JsonParser.parseString(body)

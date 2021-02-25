@@ -7,7 +7,7 @@ class SustoCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("scared", "fright", "susto"),
 		1,
-		"commands.images.susto.description",
+		"commands.command.susto.description",
 		"/api/v1/images/lori-scared",
 		"loritta_susto.png",
 )

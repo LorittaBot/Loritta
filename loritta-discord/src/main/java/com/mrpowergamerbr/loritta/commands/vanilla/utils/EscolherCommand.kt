@@ -1,21 +1,17 @@
-package com.mrpowergamerbr.loritta.commands.vanilla.misc
+package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 
-class EscolherCommand : AbstractCommand("choose", listOf("escolher"), category = CommandCategory.MISC) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.misc.choose.description"]
-	}
-
-	override fun getExamples(): List<String> {
-		return listOf("Sonic, Tails, Knuckles", "Asriel Dreemurr, Chara Dreemurr", "Shantae, Risky Boots")
-	}
+class EscolherCommand : AbstractCommand("choose", listOf("escolher"), category = CommandCategory.UTILS) {
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.choose.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.choose.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
@@ -26,7 +22,7 @@ class EscolherCommand : AbstractCommand("choose", listOf("escolher"), category =
 			val chosen = split[Loritta.RANDOM.nextInt(split.size)]
 			context.reply(
                     LorittaReply(
-                            message = context.locale["commands.misc.choose.result", chosen],
+                            message = context.locale["commands.command.choose.result", chosen],
                             prefix = Emotes.LORI_HM
                     )
 			)

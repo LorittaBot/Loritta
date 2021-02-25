@@ -3,18 +3,17 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class CaraCoroaCommand : AbstractCommand("coinflip", listOf("girarmoeda", "flipcoin", "caracoroa"), CommandCategory.FUN) {
 	companion object {
-		const val LOCALE_PREFIX = "commands.fun.flipcoin"
+		const val LOCALE_PREFIX = "commands.command.flipcoin"
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.fun.flipcoin.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.flipcoin.description")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val isTails = Loritta.RANDOM.nextBoolean()

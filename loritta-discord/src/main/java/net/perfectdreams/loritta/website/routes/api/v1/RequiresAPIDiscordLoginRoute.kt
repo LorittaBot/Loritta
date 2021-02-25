@@ -1,18 +1,18 @@
 package net.perfectdreams.loritta.website.routes.api.v1
 
-import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
-import io.ktor.application.ApplicationCall
-import io.ktor.http.HttpStatusCode
+import io.ktor.application.*
+import io.ktor.http.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.website.routes.BaseRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.website.utils.extensions.lorittaSession
+import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
-abstract class RequiresAPIDiscordLoginRoute(loritta: LorittaDiscord, path: String) : BaseRoute(loritta, path) {
+abstract class RequiresAPIDiscordLoginRoute(val loritta: LorittaDiscord, path: String) : BaseRoute(path) {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}

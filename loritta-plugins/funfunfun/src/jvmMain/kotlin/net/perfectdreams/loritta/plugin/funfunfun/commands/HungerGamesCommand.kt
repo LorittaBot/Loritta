@@ -17,13 +17,14 @@ import net.perfectdreams.loritta.utils.extensions.toJDA
 import org.jsoup.Jsoup
 
 class HungerGamesCommand(m: FunFunFunPlugin) : DiscordAbstractCommandBase(m.loritta as LorittaDiscord, listOf("hungergames", "jogosvorazes", "hg"), CommandCategory.FUN) {
-    private val LOCALE_PREFIX = "commands.fun.hungergames"
+    private val LOCALE_PREFIX = "commands.command.hungergames"
     private val WEBSITE_URL = "https://brantsteele.net"
 
     override fun command() = create {
         loritta as Loritta
 
         localizedDescription("$LOCALE_PREFIX.description")
+        localizedExamples("$LOCALE_PREFIX.examples")
 
         usage {
             repeat(24) {

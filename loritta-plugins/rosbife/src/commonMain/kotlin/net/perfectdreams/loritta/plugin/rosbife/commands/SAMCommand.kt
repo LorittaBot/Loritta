@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.plugin.rosbife.commands
 
 import net.perfectdreams.loritta.api.commands.ArgumentType
+import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.utils.image.Image
 import net.perfectdreams.loritta.plugin.rosbife.RosbifePlugin
 import net.perfectdreams.loritta.plugin.rosbife.commands.base.ImageAbstractCommandBase
@@ -11,11 +12,8 @@ class SAMCommand(m: RosbifePlugin) : ImageAbstractCommandBase(
 		listOf("sam", "southamericamemes")
 ) {
 	override fun command() = create {
-		localizedDescription("commands.images.sam.description")
-
-		examples {
-			+"@MrPowerGamerBR"
-		}
+		localizedDescription("commands.command.sam.description")
+		localizedExamples(Command.SINGLE_IMAGE_EXAMPLES_KEY)
 
 		usage {
 			argument(ArgumentType.IMAGE) {}

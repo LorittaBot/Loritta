@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
@@ -19,21 +20,19 @@ import org.jetbrains.exposed.sql.update
 
 class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCategory.SOCIAL) {
 	companion object {
-		const val LOCALE_PREFIX = "commands.social.divorce"
+		const val LOCALE_PREFIX = "commands.command.divorce"
 		const val DIVORCE_REACTION_EMOJI = "\uD83D\uDC94"
 		const val DIVORCE_EMBED_URI = "https://cdn.discordapp.com/emojis/556524143281963008.png?size=2048"
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["$LOCALE_PREFIX.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("$LOCALE_PREFIX.description")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val userProfile = context.lorittaUser._profile ?: run {
 			// If the user doesn't have any profile, then he won't have any marriage anyway
 			context.reply(
 					LorittaReply(
-							locale["commands.social.youAreNotMarried", "`${context.config.commandPrefix}casar`", Emotes.LORI_HUG],
+							locale["commands.category.social.youAreNotMarried", "`${context.config.commandPrefix}casar`", Emotes.LORI_HUG],
 							Constants.ERROR
 					)
 			)
@@ -44,7 +43,7 @@ class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCa
 			// Now that's for when the marriage doesn't exist
 			context.reply(
 					LorittaReply(
-							locale["commands.social.youAreNotMarried", "`${context.config.commandPrefix}casar`", Emotes.LORI_HUG],
+							locale["commands.category.social.youAreNotMarried", "`${context.config.commandPrefix}casar`", Emotes.LORI_HUG],
 							Constants.ERROR
 					)
 			)

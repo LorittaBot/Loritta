@@ -11,19 +11,21 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.request.header
 import io.ktor.request.receiveText
 import io.ktor.response.respondText
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.WebsiteVoteSource
 import net.perfectdreams.loritta.utils.WebsiteVoteUtils
-import net.perfectdreams.loritta.website.routes.BaseRoute
+import net.perfectdreams.sequins.ktor.BaseRoute
 
-class PostDiscordBotsCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/callbacks/discord-bots") {
+class PostDiscordBotsCallbackRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/callbacks/discord-bots") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}
 
 	override suspend fun onRequest(call: ApplicationCall) {
-		val response = call.receiveText()
+		val response = withContext(Dispatchers.IO) { call.receiveText() }
 
 		logger.info("Recebi payload do Discord Bots!")
 		logger.trace { response }
@@ -38,7 +40,7 @@ class PostDiscordBotsCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta,
 			)
 		}
 
-		if (authorizationHeader != com.mrpowergamerbr.loritta.utils.loritta.config.mixer.webhookSecret) {
+		if (authorizationHeader != com.mrpowergamerbr.loritta.utils.loritta.config.generalWebhook.webhookSecret) {
 			logger.error { "Header de Autorização do request não é igual ao nosso!" }
 
 			throw WebsiteAPIException(

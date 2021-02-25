@@ -2,39 +2,23 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import net.perfectdreams.loritta.api.messages.LorittaReply
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.math.MathUtils
 
 class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calculator", "calcular", "calculate"), CommandCategory.UTILS) {
 	companion object {
-		const val LOCALE_PREFIX = "commands.utils.calc"
+		const val LOCALE_PREFIX = "commands.command.calc"
 	}
 
-	override fun getUsage(): String {
-		return "conta"
-	}
+	// TODO: Fix Usage
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["$LOCALE_PREFIX.description"]
-	}
-
-	override fun getExamples(): List<String> {
-		return listOf(
-				"2 + 2",
-				"40 - 10",
-				"5 * 5",
-				"100 / 5",
-				"(sqrt(10) * 4) / 12",
-				"cos(0)",
-				"sin(90)",
-				"tan(45)",
-				"10 % 2"
-		)
-	}
+	override fun getDescriptionKey() = LocaleKeyData("$LOCALE_PREFIX.description")
+	override fun getExamplesKey() = LocaleKeyData("$LOCALE_PREFIX.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
@@ -53,9 +37,9 @@ class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calcul
 					val number2 = secondSide[0].trim()
 					val number3 = secondSide[1].trim()
 
-					val resultNumber0 = LorittaUtils.evalMath(number0)
-					val resultNumber1 = LorittaUtils.evalMath(number1)
-					val resultNumber2 = LorittaUtils.evalMath(number2)
+					val resultNumber0 = MathUtils.evaluate(number0)
+					val resultNumber1 = MathUtils.evaluate(number1)
+					val resultNumber2 = MathUtils.evaluate(number2)
 
 					// resultNumber0 --- resultNumber1
 					// resultNumber2 --- x
@@ -67,7 +51,7 @@ class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calcul
 					return
 				}
 
-				val result = LorittaUtils.evalMath(expression)
+				val result = MathUtils.evaluate(expression)
 
 				context.reply(
                         LorittaReply(

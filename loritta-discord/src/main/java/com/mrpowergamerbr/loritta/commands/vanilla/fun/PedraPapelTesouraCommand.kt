@@ -5,26 +5,17 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Jankenpon
 import com.mrpowergamerbr.loritta.utils.Jankenpon.JankenponStatus
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class PedraPapelTesouraCommand : AbstractCommand("jankenpon", listOf("pedrapapeltesoura", "ppt"), CommandCategory.FUN) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.fun.rockpaperscissors.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.rockpaperscissors.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.rockpaperscissors.examples")
 
-	override fun getUsage(): String {
-		return "sua escolha"
-	}
-
-	override fun getExamples(): List<String> {
-		return listOf("pedra", "papel", "tesoura")
-	}
-
-	override fun getDetailedUsage(): Map<String, String> {
-		return mapOf("sua escolha" to "Pedra, Papel ou Tesoura")
-	}
+	// TODO: Fix Usage
+	// TODO: Fix Detailed Usage
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
@@ -39,13 +30,13 @@ class PedraPapelTesouraCommand : AbstractCommand("jankenpon", listOf("pedrapapel
 
 				var fancy: String? = null
 				if (status == JankenponStatus.WIN) {
-					fancy = "**${context.locale["commands.fun.rockpaperscissors.win"]} \uD83D\uDE0A**"
+					fancy = "**${context.locale["commands.command.rockpaperscissors.win"]} \uD83D\uDE0A**"
 				}
 				if (status == JankenponStatus.LOSE) {
-					fancy = "**${context.locale["commands.fun.rockpaperscissors.lose"]} \uD83D\uDE42**"
+					fancy = "**${context.locale["commands.command.rockpaperscissors.lose"]} \uD83D\uDE42**"
 				}
 				if (status == JankenponStatus.DRAW) {
-					fancy = "**${context.locale["commands.fun.rockpaperscissors.draw"]} \uD83D\uDE0A**"
+					fancy = "**${context.locale["commands.command.rockpaperscissors.draw"]} \uD83D\uDE0A**"
 				}
 				if (fancy == null) {
 					return
@@ -56,22 +47,22 @@ class PedraPapelTesouraCommand : AbstractCommand("jankenpon", listOf("pedrapapel
 					JankenponStatus.LOSE -> "\uD83C\uDFF4"
 				}
 				context.reply(
-                        LorittaReply(message = context.locale["commands.fun.rockpaperscissors.chosen", janken.emoji, opponent.emoji], prefix = prefix),
+                        LorittaReply(message = context.locale["commands.command.rockpaperscissors.chosen", janken.emoji, opponent.emoji], prefix = prefix),
                         LorittaReply(message = fancy, mentionUser = false)
 				)
 			} else {
 				if (playerValue.equals("jesus", ignoreCase = true)) {
-					val fancy = "**${context.locale["commands.fun.rockpaperscissors.maybeDraw"]} 🤔 🤷**"
-					val jesus = "🙇 *${context.locale["commands.fun.rockpaperscissors.jesusChrist"]}* 🙇"
+					val fancy = "**${context.locale["commands.command.rockpaperscissors.maybeDraw"]} 🤔 🤷**"
+					val jesus = "🙇 *${context.locale["commands.command.rockpaperscissors.jesusChrist"]}* 🙇"
 					context.reply(
-                            LorittaReply(message = context.locale["commands.fun.rockpaperscissors.chosen", jesus, jesus], prefix = "\uD83C\uDFF3"),
+                            LorittaReply(message = context.locale["commands.command.rockpaperscissors.chosen", jesus, jesus], prefix = "\uD83C\uDFF3"),
                             LorittaReply(message = fancy, mentionUser = false)
 					)
 				} else {
-					val fancy = "**${context.locale["commands.fun.rockpaperscissors.invalidChoice"]} \uD83D\uDE09**"
-					val jesus = "🙇 *${context.locale["commands.fun.rockpaperscissors.jesusChrist"]}* 🙇"
+					val fancy = "**${context.locale["commands.command.rockpaperscissors.invalidChoice"]} \uD83D\uDE09**"
+					val jesus = "🙇 *${context.locale["commands.command.rockpaperscissors.jesusChrist"]}* 🙇"
 					context.reply(
-                            LorittaReply(message = context.locale["commands.fun.rockpaperscissors.chosen", "\uD83D\uDCA9", jesus], prefix = "\uD83C\uDFF4"),
+                            LorittaReply(message = context.locale["commands.command.rockpaperscissors.chosen", "\uD83D\uDCA9", jesus], prefix = "\uD83C\uDFF4"),
                             LorittaReply(message = fancy, mentionUser = false)
 					)
 				}

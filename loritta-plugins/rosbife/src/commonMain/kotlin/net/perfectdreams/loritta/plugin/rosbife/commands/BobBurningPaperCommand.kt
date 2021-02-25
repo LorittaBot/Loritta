@@ -7,7 +7,7 @@ class BobBurningPaperCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("bobburningpaper", "bobpaperfire", "bobfire", "bobpapelfogo", "bobfogo"),
 		1,
-		"commands.images.bobfire.description",
+		"commands.command.bobfire.description",
 		"/api/v1/images/bob-burning-paper",
 		"bobfire.png",
 )

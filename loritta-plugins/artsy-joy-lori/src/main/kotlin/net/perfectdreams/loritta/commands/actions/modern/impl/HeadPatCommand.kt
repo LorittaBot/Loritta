@@ -14,7 +14,7 @@ class HeadPatCommand(loritta: LorittaDiscord): ActionCommand(loritta, listOf("he
         color = Color(156, 39, 176)
 
         response { locale, sender, target ->
-            locale["commands.actions.headpat.response", sender.asMention, target.asMention]
+            locale["commands.command.headpat.response", sender.asMention, target.asMention]
         }
     }
 

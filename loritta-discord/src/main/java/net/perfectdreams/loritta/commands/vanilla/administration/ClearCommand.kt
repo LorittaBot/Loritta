@@ -21,11 +21,11 @@ import net.perfectdreams.loritta.utils.sendStyledReply
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta, listOf("clean", "limpar", "clear"), CommandCategory.ADMIN) {
+class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta, listOf("clean", "limpar", "clear"), CommandCategory.MODERATION) {
 
     override fun command(): Command<CommandContext> = create {
-        localizedDescription("commands.moderation.clear.description")
-        localizedExamples("commands.moderation.clear.examples")
+        localizedDescription("commands.command.clear.description")
+        localizedExamples("commands.command.clear.examples")
 
         userRequiredPermissions = listOf(Permission.MESSAGE_MANAGE)
         botRequiredPermissions = listOf(Permission.MESSAGE_MANAGE, Permission.MESSAGE_HISTORY)
@@ -47,27 +47,19 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
 
             // The message count can't be null or be higher than 500 and lower than 2
             if (count == null || count !in 2..MAX_RANGE)
-                fail(locale["commands.moderation.clear.invalidClearRange"], Constants.ERROR)
+                fail(locale["commands.command.clear.invalidClearRange"], Constants.ERROR)
 
             // If the guild already have a clear operation queued, we'll prevent them from creating another one
             if (unavailableGuilds.contains(guild.idLong))
-                fail(locale["commands.moderation.clear.operationQueued"], Constants.ERROR)
+                fail(locale["commands.command.clear.operationQueued"], Constants.ERROR)
 
             // The filter text and target user, null if not available
             val (targets, text, textInserted) = getOptions()
 
             if (targets.filterNotNull().isEmpty() && targets.isNotEmpty())
-                fail(locale["commands.moderation.clear.invalidUserFilter"], Constants.ERROR)
+                fail(locale["commands.command.clear.invalidUserFilter"], Constants.ERROR)
             if (text == null && textInserted)
-                fail(locale["commands.moderation.clear.invalidTextFilter"], Constants.ERROR)
-
-            val messages = channel.iterableHistory.takeAsync(count).await()
-
-            val allowedMessages = messages.applyAvailabilityFilterToCollection(text, targets.filterNotNull().toSet()).minus(discordMessage)
-            val disallowedMessages = messages.minus(allowedMessages)
-
-            if (allowedMessages.isEmpty()) // If there are no allowed messages, we'll cancel the execution
-                fail(locale["commands.moderation.clear.couldNotFindMessages"], Constants.ERROR)
+                fail(locale["commands.command.clear.invalidTextFilter"], Constants.ERROR)
 
             // Deleting the user's message (the command one, +clear)
             runCatching {
@@ -76,18 +68,26 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
                         .await()
             }
 
+            val messages = channel.iterableHistory.takeAsync(count).await()
+
+            val allowedMessages = messages.applyAvailabilityFilterToCollection(text, targets.filterNotNull().toSet()).minus(discordMessage)
+            val disallowedMessages = messages.minus(allowedMessages)
+
+            if (allowedMessages.isEmpty()) // If there are no allowed messages, we'll cancel the execution
+                fail(locale["commands.command.clear.couldNotFindMessages"], Constants.ERROR)
+
             // Clear the messages after deleting the command's one3
             clear(allowedMessages)
 
             sendStyledReply {
                 append {
                     prefix = "\uD83C\uDF89"
-                    message = locale["commands.moderation.clear.success", allowedMessages.size, user.asMention]
+                    message = locale["commands.command.clear.success", allowedMessages.size, user.asMention]
                 }
 
                 appendIf(disallowedMessages.isNotEmpty()) {
                     prefix = "\uD83D\uDD37"
-                    message = locale["commands.moderation.clear.successButIgnoredMessages", disallowedMessages.size]
+                    message = locale["commands.command.clear.successButIgnoredMessages", disallowedMessages.size]
                 }
             }
         }
@@ -118,7 +118,7 @@ class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,
      * @return Command options
      */
     private suspend fun DiscordCommandContext.getOptions(): CommandOptions {
-        val optionName = locale["commands.moderation.clear.targetOption"]
+        val optionName = locale["commands.command.clear.targetOption"]
         val options = args.drop(1).joinToString(" ").trim().split("$optionName:")
 
         var text: String? = options.firstOrNull()

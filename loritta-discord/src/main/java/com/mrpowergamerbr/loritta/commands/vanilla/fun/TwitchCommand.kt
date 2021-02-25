@@ -4,21 +4,16 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import java.awt.Color
-import java.util.*
 
 class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.fun.twitch.description"]
-	}
-
-	override fun getExamples(): List<String> {
-		return Arrays.asList("mrpowergamerbr", "velberan", "coredasantigas")
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.twitch.description")
+	override fun getExamplesKey()  = LocaleKeyData("commands.command.twitch.examples")
 
 	override fun canUseInPrivateChannel(): Boolean {
 		return false
@@ -31,7 +26,7 @@ class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) 
 			if (!Constants.TWITCH_USERNAME_PATTERN.matcher(query).matches()) {
 				context.reply(
                         LorittaReply(
-                                context.locale["commands.fun.twitch.couldntFind", query],
+                                context.locale["commands.command.twitch.couldntFind", query],
                                 Constants.ERROR
                         )
 				)
@@ -43,7 +38,7 @@ class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) 
 			if (payload == null) {
 				context.reply(
                         LorittaReply(
-								context.locale["commands.fun.twitch.couldntFind", query],
+								context.locale["commands.command.twitch.couldntFind", query],
                                 Constants.ERROR
                         )
 				)
@@ -67,7 +62,7 @@ class TwitchCommand : AbstractCommand("twitch", category = CommandCategory.FUN) 
 				if (offlineImageUrl.isNotEmpty()) {
 					setImage(offlineImageUrl)
 				}
-				addField("\uD83D\uDCFA ${context.locale["commands.fun.twitch.views"]}", viewCount.toString(), true)
+				addField("\uD83D\uDCFA ${context.locale["commands.command.twitch.views"]}", viewCount.toString(), true)
 			}
 
 			context.sendMessage(context.getAsMention(true), embed.build())

@@ -7,13 +7,13 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import io.ktor.application.*
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.website.routes.BaseRoute
+import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import java.lang.management.ManagementFactory
 import java.util.jar.Attributes
 import java.util.jar.JarFile
 
-class GetStatusRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/loritta/status") {
+class GetStatusRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/loritta/status") {
 	override suspend fun onRequest(call: ApplicationCall) {
 		loritta as Loritta
 		val currentShard = loritta.lorittaCluster

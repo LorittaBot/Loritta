@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractComman
 
 class ChannelInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("channelinfo", "channel"), CommandCategory.DISCORD) {
 	companion object {
-		private const val LOCALE_PREFIX = "commands.discord"
+		private const val LOCALE_PREFIX = "commands.command"
 	}
 
 	override fun command() = create {
@@ -23,12 +23,13 @@ class ChannelInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(l
 			}
 		}
 
-		examples {
+		// TODO: Fix examples
+		/* examples {
 			listOf(
 					"",
 					"297732013006389252"
 			)
-		}
+		} */
 
 		canUseInPrivateChannel = false
 
@@ -39,8 +40,6 @@ class ChannelInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(l
 					?.replace(">", "")
 					?: context.discordMessage.channel.id
 			val channel = context.guild.getTextChannelById(channelId)!!
-
-			val channelCreatedDiff = DateUtils.formatDateDiff(channel.timeCreated.toInstant().toEpochMilli(), locale)
 
 			val builder = EmbedBuilder()
 
@@ -56,7 +55,7 @@ class ChannelInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(l
 			builder.addField("\uD83D\uDD39 ${context.locale["$LOCALE_PREFIX.channelinfo.channelMention"]}", "`${channel.asMention}`", true)
 			builder.addField("\uD83D\uDCBB ${context.locale["$LOCALE_PREFIX.userinfo.discordId"]}", "`${channel.id}`", true)
 			builder.addField("\uD83D\uDD1E NSFW", if (channel.isNSFW) context.locale["loritta.fancyBoolean.true"] else context.locale["loritta.fancyBoolean.false"], true)
-			builder.addField("\uD83D\uDCC5 ${context.locale["$LOCALE_PREFIX.channelinfo.channelCreated"]}", channelCreatedDiff, true)
+			builder.addField("\uD83D\uDCC5 ${context.locale["$LOCALE_PREFIX.channelinfo.channelCreated"]}", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(channel.timeCreated, context.locale), true)
 			builder.addField("\uD83D\uDD39 Guild", "`${channel.guild.name}`", true)
 			context.sendMessage(context.user.asMention, builder.build())
 		}

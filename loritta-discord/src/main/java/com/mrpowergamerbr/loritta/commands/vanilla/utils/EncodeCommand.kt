@@ -3,32 +3,36 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import com.mrpowergamerbr.loritta.utils.locale.LocaleStringData
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
+import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import org.apache.commons.codec.digest.DigestUtils
 import java.util.*
 
 class EncodeCommand : AbstractCommand("encode", listOf("codificar", "encrypt", "criptografar", "hash"), CommandCategory.UTILS) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.utils.encode.description", listOf("md2", "md5", "sha1", "sha256", "sha384", "sha512", "rot13", "uuid", "base64").joinToString(", ", transform = { "`$it`" })]
+	override fun getDescriptionKey() = LocaleKeyData(
+			"commands.command.encode.description",
+			listOf(
+					LocaleStringData(
+							listOf("md2", "md5", "sha1", "sha256", "sha384", "sha512", "rot13", "uuid", "base64").joinToString(", ", transform = { "`$it`" })
+					)
+			)
+	)
+
+	override fun getExamplesKey() = LocaleKeyData("commands.command.encode.examples")
+
+	// TODO: Fix Detailed Usage
+	override fun getUsage() = arguments {
+		argument(ArgumentType.TEXT) {}
+		argument(ArgumentType.TEXT) {}
 	}
 
-	override fun getDetailedUsage(): Map<String, String> {
-		return mapOf(
-				"tipo de codificação" to "Tipo de codificação que será utilizado",
-				"texto" to "Texto que você quer que seja criptografado"
-		)
-	}
-
-	override fun getExtendedExamples(): Map<String, String> {
-		return mapOf(
-				"sha256 Loritta é muito fofa!" to "Criptografa \"Loritta é muito fofa!\" em SHA256"
-		)
-	}
-
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		val args = context.rawArgs.toMutableList()
 		val encodeMode = context.rawArgs.getOrNull(0)?.toLowerCase()
 
@@ -63,7 +67,7 @@ class EncodeCommand : AbstractCommand("encode", listOf("codificar", "encrypt", "
 
 		if (encodedText == null) {
 			context.reply(
-					locale["commands.utils.encode.invalidMethod", encodeMode.stripCodeMarks()],
+					locale["commands.command.encode.invalidMethod", encodeMode.stripCodeMarks()],
 					Constants.ERROR
 			)
 			return
@@ -71,16 +75,16 @@ class EncodeCommand : AbstractCommand("encode", listOf("codificar", "encrypt", "
 
 		context.reply(
 				true,
-                LorittaReply(
-                        "**${locale["commands.utils.encode.originalText"]}:** `${text.stripCodeMarks()}`",
-                        "\uD83D\uDCC4",
-                        mentionUser = false
-                ),
-                LorittaReply(
-                        "**${locale["commands.utils.encode.encodedText"]}:** `${encodedText.stripCodeMarks()}`",
-                        "<:blobspy:465979979876794368>",
-                        mentionUser = false
-                )
+				LorittaReply(
+						"**${locale["commands.command.encode.originalText"]}:** `${text.stripCodeMarks()}`",
+						"\uD83D\uDCC4",
+						mentionUser = false
+				),
+				LorittaReply(
+						"**${locale["commands.command.encode.encodedText"]}:** `${encodedText.stripCodeMarks()}`",
+						"<:blobspy:465979979876794368>",
+						mentionUser = false
+				)
 		)
 	}
 

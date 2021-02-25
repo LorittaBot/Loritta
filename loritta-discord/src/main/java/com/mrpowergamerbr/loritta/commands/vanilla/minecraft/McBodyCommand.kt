@@ -3,24 +3,18 @@ package com.mrpowergamerbr.loritta.commands.vanilla.minecraft
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.minecraft.MCUtils
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 
 class McBodyCommand : AbstractCommand("mcbody", listOf("mcstatue"), CommandCategory.MINECRAFT) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.minecraft.mcbody.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.mcbody.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.category.minecraft.skinPlayerNameExamples")
 
-	override fun getUsage(): String {
-		return "nickname"
-	}
-
-	override fun getExamples(): List<String> {
-		return listOf("Monerk")
-	}
+	// TODO: Fix Usage
 
 	override fun needsToUploadFiles(): Boolean {
 		return true
@@ -35,7 +29,7 @@ class McBodyCommand : AbstractCommand("mcbody", listOf("mcstatue"), CommandCateg
 			if (uuid == null) {
 				context.reply(
                         LorittaReply(
-                                locale["commands.minecraft.unknownPlayer", context.args.getOrNull(0)],
+                                locale["commands.category.minecraft.unknownPlayer", context.args.getOrNull(0)],
                                 Constants.ERROR
                         )
 				)

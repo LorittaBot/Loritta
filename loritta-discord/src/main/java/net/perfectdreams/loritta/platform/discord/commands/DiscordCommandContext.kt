@@ -8,6 +8,8 @@ import com.mrpowergamerbr.loritta.utils.extensions.awaitCheckForReplyErrors
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.extensions.referenceIfPossible
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import com.mrpowergamerbr.loritta.utils.locale.LocaleStringData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.EmbedBuilder
@@ -48,11 +50,27 @@ class DiscordCommandContext(
 	val member = discordMessage.member
 
 	suspend fun sendMessage(message: String, embed: MessageEmbed): Message {
-		return sendMessage(MessageBuilder().setEmbed(embed).append(if (message.isEmpty()) " " else message).build())
+		return sendMessage(MessageBuilder()
+				.denyMentions(
+						Message.MentionType.EVERYONE,
+						Message.MentionType.HERE
+				)
+				.setEmbed(embed)
+				.append(if (message.isEmpty()) " " else message)
+				.build()
+		)
 	}
 
 	suspend fun sendMessage(embed: MessageEmbed): Message {
-		return sendMessage(MessageBuilder().append(getUserMention(true)).setEmbed(embed).build())
+		return sendMessage(MessageBuilder()
+				.denyMentions(
+						Message.MentionType.EVERYONE,
+						Message.MentionType.HERE
+				)
+				.append(getUserMention(true))
+				.setEmbed(embed)
+				.build()
+		)
 	}
 
 	suspend fun sendMessage(message: Message): Message {
@@ -84,21 +102,30 @@ class DiscordCommandContext(
 	}
 
 	suspend fun sendFile(file: File, fileName: String, content: String = this.getUserMention(true), embed: MessageEmbed? = null): DiscordMessage {
-		return DiscordMessage(discordMessage.channel.sendMessage(
-				MessageBuilder()
-						.append(content)
-						.setEmbed(embed)
-						.build()
-		)
-				.addFile(file, fileName)
-				.referenceIfPossible(discordMessage, serverConfig, true)
-				.await()
+		return DiscordMessage(
+				discordMessage.channel.sendMessage(
+						MessageBuilder()
+								.denyMentions(
+										Message.MentionType.EVERYONE,
+										Message.MentionType.HERE
+								)
+								.append(content)
+								.setEmbed(embed)
+								.build()
+				)
+						.addFile(file, fileName)
+						.referenceIfPossible(discordMessage, serverConfig, true)
+						.await()
 		)
 	}
 
 	suspend fun sendFile(inputStream: InputStream, fileName: String, content: String = this.getUserMention(true), embed: MessageEmbed? = null): DiscordMessage {
 		return DiscordMessage(discordMessage.channel.sendMessage(
 				MessageBuilder()
+						.denyMentions(
+								Message.MentionType.EVERYONE,
+								Message.MentionType.HERE
+						)
 						.append(content)
 						.setEmbed(embed)
 						.build()
@@ -320,6 +347,10 @@ class DiscordCommandContext(
 	 * @param context the context of the command
 	 */
 	override suspend fun explain() {
+		val commandDescription = command.description.invoke(locale)
+		val commandLabel = command.labels.first()
+		val commandLabelWithPrefix = "${serverConfig.commandPrefix}$commandLabel"
+
 		val embed = EmbedBuilder()
 				.setColor(Constants.LORITTA_AQUA)
 				.setAuthor(locale["commands.explain.clickHereToSeeAllMyCommands"], "${loritta.instanceConfig.loritta.website.url}commands", discordMessage.jda.selfUser.effectiveAvatarUrl)
@@ -328,35 +359,93 @@ class DiscordCommandContext(
 				.setTimestamp(Instant.now())
 
 		val description = buildString {
-			this.append(command.description.invoke(locale))
+			// Builds the "How to Use" string
+			this.append(commandDescription)
 			this.append('\n')
 			this.append('\n')
-			this.append("${Emotes.LORI_SMILE} **${locale["commands.explain.howToUse"]}** ")
+			this.append("${Emotes.LORI_SMILE} **${locale["commands.explain.howToUse"]}**")
+			this.append(" `")
+			this.append(commandLabelWithPrefix)
 			this.append('`')
-			this.append(serverConfig.commandPrefix)
-			this.append(command.labels.first())
-			this.append('`')
-			this.append(' ')
-			for ((index, argument) in command.usage.arguments.withIndex()) {
-				// <argumento> - Argumento obrigatório
-				// [argumento] - Argumento opcional
+
+			// Only add the arguments if the list is not empty (to avoid adding a empty "` `")
+			if (command.usage.arguments.isNotEmpty()) {
 				this.append("**")
 				this.append('`')
-				argument.build(this, locale)
+				this.append(' ')
+				for ((index, argument) in command.usage.arguments.withIndex()) {
+					argument.build(this, locale)
+
+					if (index != command.usage.arguments.size - 1)
+						this.append(' ')
+				}
 				this.append('`')
 				this.append("**")
-				if (index != command.usage.arguments.size - 1)
-					this.append(' ')
+
+				// If we have arguments with explanations, let's show them!
+				val argumentsWithExplanations = command.usage.arguments.filter { it.explanation != null }
+
+				if (argumentsWithExplanations.isNotEmpty()) {
+					this.append('\n')
+					// Same thing again, but with a *twist*!
+					for ((index, argument) in argumentsWithExplanations.withIndex()) {
+						this.append("**")
+						this.append('`')
+						argument.build(this, locale)
+						this.append('`')
+						this.append("**")
+						this.append(' ')
+
+						when (val explanation = argument.explanation) {
+							is LocaleKeyData -> {
+								this.append(locale.get(explanation))
+							}
+							is LocaleStringData -> {
+								this.append(explanation.text)
+							}
+							else -> throw IllegalArgumentException("I don't know how to process a $argument!")
+						}
+
+						this.append('\n')
+					}
+				}
 			}
 		}
 
 		embed.setDescription(description)
-		val examples = command.examples?.invoke(locale)
 
-		if (examples != null) {
+		// Create example list
+		val examplesKey = command.examplesKey
+		val examples = ArrayList<String>()
+
+		if (examplesKey != null) {
+			val examplesAsString = locale.getList(examplesKey)
+
+			for (example in examplesAsString) {
+				val split = example.split("|-|")
+						.map { it.trim() }
+
+				if (split.size == 2) {
+					// If the command has a extended description
+					// "12 |-| Gira um dado de 12 lados"
+					// A extended description can also contain "nothing", but contains a extended description
+					// "|-| Gira um dado de 6 lados"
+					val (commandExample, explanation) = split
+
+					examples.add("\uD83D\uDD39 **$explanation**")
+					examples.add("`" + commandLabelWithPrefix + "`" + (if (commandExample.isEmpty()) "" else "**` $commandExample`**"))
+				} else {
+					val commandExample = split[0]
+
+					examples.add("`" + commandLabelWithPrefix + "`" + if (commandExample.isEmpty()) "" else "**` $commandExample`**")
+				}
+			}
+		}
+
+		if (examples.isNotEmpty()) {
 			embed.addField(
 					"\uD83D\uDCD6 ${locale["commands.explain.examples"]}",
-					examples.joinToString("\n", transform = { "`${serverConfig.commandPrefix}${executedCommandLabel}` **`${it}`**" }),
+					examples.joinToString("\n", transform = { it }),
 					false
 			)
 		}
@@ -401,6 +490,10 @@ class DiscordCommandContext(
 		}
 
 		val messageBuilder = MessageBuilder()
+				.denyMentions(
+						Message.MentionType.EVERYONE,
+						Message.MentionType.HERE
+				)
 				.append(getUserMention(true))
 				.setEmbed(embed.build())
 

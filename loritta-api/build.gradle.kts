@@ -2,7 +2,7 @@ val ktorVersion by lazy { ext["ktor-version"] as String }
 
 plugins {
     kotlin("multiplatform") apply true
-    kotlin("plugin.serialization") version "1.4.10"
+    kotlin("plugin.serialization") version "1.4.30"
 }
 
 kotlin {
@@ -26,6 +26,7 @@ kotlin {
                 api("io.github.microutils:kotlin-logging-common:1.7.8")
                 api("io.ktor:ktor-client-core:$ktorVersion")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0")
+                api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
             }
         }
 

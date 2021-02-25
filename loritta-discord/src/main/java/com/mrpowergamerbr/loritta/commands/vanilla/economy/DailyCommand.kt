@@ -4,16 +4,15 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.DateUtils
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 
 class DailyCommand : AbstractCommand("daily", listOf("diário", "bolsafamilia", "bolsafamília"), CommandCategory.ECONOMY) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.economy.daily.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.daily.description")
 
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		// 1. Pegue quando o daily foi pego da última vez
@@ -24,11 +23,11 @@ class DailyCommand : AbstractCommand("daily", listOf("diário", "bolsafamilia", 
 		if (!canGetDaily) {
 			context.reply(
                     LorittaReply(
-                            locale["commands.economy.daily.pleaseWait", DateUtils.formatDateDiff(tomorrow, locale)],
+                            locale["commands.command.daily.pleaseWait", DateUtils.formatDateDiff(tomorrow, locale)],
                             Constants.ERROR
                     ),
                     LorittaReply(
-                            locale["commands.economy.daily.pleaseWaitBuySonhos", "<${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/bundles>"],
+                            locale["commands.command.daily.pleaseWaitBuySonhos", "<${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/bundles>"],
                             "\uD83D\uDCB3"
                     )
 			)
@@ -37,12 +36,18 @@ class DailyCommand : AbstractCommand("daily", listOf("diário", "bolsafamilia", 
 
 		context.reply(
                 LorittaReply(
-                        locale["commands.economy.daily.dailyLink", "${loritta.instanceConfig.loritta.website.url}daily"],
+                        locale["commands.command.daily.dailyLink", "${loritta.instanceConfig.loritta.website.url}daily"],
                         Emotes.LORI_RICH
                 ),
+				LorittaReply(
+						context.locale["commands.command.daily.dailyWarning", "${loritta.instanceConfig.loritta.website.url}guidelines"],
+						Emotes.LORI_BAN_HAMMER,
+						mentionUser = false
+				),
                 LorittaReply(
-                        locale["commands.economy.daily.dailyLinkBuySonhos", "<${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/bundles>"],
-                        "\uD83D\uDCB3"
+                        locale["commands.command.daily.dailyLinkBuySonhos", "<${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/bundles>"],
+                        "\uD83D\uDCB3",
+						mentionUser = false
                 )
 		)
 	}

@@ -1,16 +1,16 @@
 package net.perfectdreams.loritta.website.routes.api.v1.callbacks
 
-import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
-import io.ktor.application.ApplicationCall
-import io.ktor.http.HttpStatusCode
-import io.ktor.response.respondText
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.response.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.website.routes.BaseRoute
+import net.perfectdreams.loritta.website.utils.WebsiteUtils
+import net.perfectdreams.sequins.ktor.BaseRoute
 
-class GetPubSubHubbubCallbackRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/callbacks/pubsubhubbub") {
+class GetPubSubHubbubCallbackRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/callbacks/pubsubhubbub") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}

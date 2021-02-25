@@ -140,7 +140,7 @@ object LorittaUtilsKotlin {
 					if (it != null)
 						DateUtils.formatMillis(it - System.currentTimeMillis(), locale)
 					else
-						locale["commands.moderation.mute.forever"]
+						locale["commands.command.mute.forever"]
 				},
 				loritta.instanceConfig.loritta.website.url + "support",
 				loritta.instanceConfig.loritta.website.url + "guidelines",

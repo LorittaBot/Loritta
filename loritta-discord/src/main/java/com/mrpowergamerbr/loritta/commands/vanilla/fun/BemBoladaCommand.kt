@@ -6,13 +6,12 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.WebhookUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class BemBoladaCommand : AbstractCommand("bembolada", listOf("kenji"), CommandCategory.FUN) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.fun.bembolada.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.bembolada.description")
 
 	override fun hasCommandFeedback(): Boolean {
 		return false

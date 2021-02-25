@@ -7,7 +7,7 @@ class PassingPaperCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("passingpaper", "bilhete", "quizkid"),
 		1,
-		"commands.images.passingpaper.description",
+		"commands.command.passingpaper.description",
 		"/api/v1/images/passing-paper",
 		"passing_paper.png",
 )

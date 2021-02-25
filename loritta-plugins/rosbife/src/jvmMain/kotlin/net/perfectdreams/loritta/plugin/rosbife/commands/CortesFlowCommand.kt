@@ -25,7 +25,8 @@ class CortesFlowCommand(
         CommandCategory.IMAGES
 ) {
     override fun command() = create {
-        localizedDescription("commands.images.cortesflow.description")
+        localizedDescription("commands.command.cortesflow.description")
+        localizedExamples("commands.command.cortesflow.examples")
 
         needsToUploadFiles = true
 
@@ -45,15 +46,15 @@ class CortesFlowCommand(
                         .entries
                         .sortedByDescending { it.value.size }
                 val embed = EmbedBuilder()
-                        .setTitle("${Emotes.FLOW_PODCAST} ${locale["commands.images.cortesflow.embedTitle"]}")
+                        .setTitle("${Emotes.FLOW_PODCAST} ${locale["commands.command.cortesflow.embedTitle"]}")
                         .setDescription(
                                 locale.getList(
-                                        "commands.images.cortesflow.embedDescription",
-                                        locale["commands.images.cortesflow.howToUseExample", serverConfig.commandPrefix],
-                                        locale["commands.images.cortesflow.commandExample", serverConfig.commandPrefix]
+                                        "commands.command.cortesflow.embedDescription",
+                                        locale["commands.command.cortesflow.howToUseExample", serverConfig.commandPrefix],
+                                        locale["commands.command.cortesflow.commandExample", serverConfig.commandPrefix]
                                 ).joinToString("\n")
                         )
-                        .setFooter(locale["commands.images.cortesflow.findOutThumbnailSource"], "https://yt3.ggpht.com/a/AATXAJwhhX5JXoYvdDwDI56fQfTDinfs21vzivC-DBW6=s88-c-k-c0x00ffffff-no-rj")
+                        .setFooter(locale["commands.command.cortesflow.findOutThumbnailSource"], "https://yt3.ggpht.com/a/AATXAJwhhX5JXoYvdDwDI56fQfTDinfs21vzivC-DBW6=s88-c-k-c0x00ffffff-no-rj")
                         .setColor(Color.BLACK)
 
                 for ((_, value) in availableGroupedBy) {
@@ -61,7 +62,7 @@ class CortesFlowCommand(
                             value.first().jsonObject["participantDisplayName"]!!.jsonPrimitive.content,
                             value.joinToString {
                                 locale[
-                                        "commands.images.cortesflow.thumbnailSelection",
+                                        "commands.command.cortesflow.thumbnailSelection",
                                         it.jsonObject["path"]!!.jsonPrimitive.content.removePrefix("/api/v1/images/cortes-flow/"),
                                         it.jsonObject["source"]!!.jsonPrimitive.content
                                 ]
@@ -77,7 +78,7 @@ class CortesFlowCommand(
             }
 
             if (args.size == 1)
-                fail(locale["commands.images.cortesflow.youNeedToAddText"])
+                fail(locale["commands.command.cortesflow.youNeedToAddText"])
 
             val type = args.getOrNull(0)
             val string = args
@@ -95,7 +96,7 @@ class CortesFlowCommand(
             }
 
             if (response.status == HttpStatusCode.NotFound)
-                fail(locale["commands.images.cortesflow.unknownType", serverConfig.commandPrefix])
+                fail(locale["commands.command.cortesflow.unknownType", serverConfig.commandPrefix])
 
             sendFile(response.receive<ByteArray>(), "cortes_flow.jpg")
         }

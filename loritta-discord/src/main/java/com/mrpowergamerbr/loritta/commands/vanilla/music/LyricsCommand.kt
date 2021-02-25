@@ -1,46 +1,44 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.music
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.array
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.int
+import com.github.salomonbrys.kotson.nullArray
+import com.github.salomonbrys.kotson.nullString
+import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.encodeToUrl
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.safety.Whitelist
-import java.awt.*
+import java.awt.Canvas
+import java.awt.Color
+import java.awt.Font
+import java.awt.FontMetrics
+import java.awt.Graphics
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
 import javax.imageio.ImageIO
 
-class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), category = CommandCategory.MUSIC) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.music.lyrics.description"]
-	}
+class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), category = CommandCategory.UTILS) {
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.lyrics.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.lyrics.examples")
 
-	override fun getUsage(): String {
-		return "artista - nome da música"
-	}
-
-	override fun getExamples(): List<String> {
-		return listOf(
-				"she - Atomic",
-				"she - Chiptune Memories",
-				"C418 - tsuki no koibumi",
-				"MC Hariel - Tá Fácil Dizer Que Me Ama",
-				"Jack Ü - Jungle Bae",
-				"Pusher - Clear",
-				"Sega - Sonic Boom",
-				"Macklemore & Ryan Lewis - White Walls"
-		)
-	}
+	// TODO: Fix Usage
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val args = context.rawArgs
@@ -62,7 +60,7 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 			if (songInfo == null) {
 				context.reply(
                         LorittaReply(
-                                "${locale["commands.music.lyrics.couldntFind"]} ${locale["commands.music.lyrics.sorryForTheInconvenience"]} \uD83D\uDE2D",
+                                "${locale["commands.command.lyrics.couldntFind"]} ${locale["commands.command.lyrics.sorryForTheInconvenience"]} \uD83D\uDE2D",
                                 Constants.ERROR
                         )
 				)

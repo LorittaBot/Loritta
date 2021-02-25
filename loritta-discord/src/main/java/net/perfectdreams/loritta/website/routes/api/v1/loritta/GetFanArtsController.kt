@@ -10,10 +10,10 @@ import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.config.FanArtArtist
 import net.perfectdreams.loritta.utils.extensions.objectNode
 import net.perfectdreams.loritta.utils.extensions.set
-import net.perfectdreams.loritta.website.routes.BaseRoute
+import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 
-class GetFanArtsController(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/loritta/fan-arts") {
+class GetFanArtsController(val loritta: LorittaDiscord) : BaseRoute("/api/v1/loritta/fan-arts") {
 	override suspend fun onRequest(call: ApplicationCall) {
 		loritta as Loritta
 

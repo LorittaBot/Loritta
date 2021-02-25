@@ -13,7 +13,7 @@ class HugCommand(loritta: LorittaDiscord): ActionCommand(loritta, listOf("hug", 
         color = Color(255, 235, 59)
 
         response { locale, sender, target ->
-            locale["commands.actions.hug.response", sender.asMention, target.asMention]
+            locale["commands.command.hug.response", sender.asMention, target.asMention]
         }
     }
 

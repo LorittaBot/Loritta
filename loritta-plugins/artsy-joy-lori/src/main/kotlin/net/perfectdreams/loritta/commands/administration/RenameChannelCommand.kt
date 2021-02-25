@@ -1,17 +1,19 @@
 package net.perfectdreams.loritta.commands.administration
 
 import com.mrpowergamerbr.loritta.utils.Constants
-import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.*
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 
-class RenameChannelCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("renamechannel", "renomearcanal"), CommandCategory.ADMIN) {
+class RenameChannelCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("renamechannel", "renomearcanal"), CommandCategory.MODERATION) {
     companion object {
-        private const val LOCALE_PREFIX = "commands.moderation"
+        private const val LOCALE_PREFIX = "commands.command"
     }
     override fun command() = create {
         localizedDescription("$LOCALE_PREFIX.renamechannel.description")
+        localizedExamples("$LOCALE_PREFIX.renamechannel.examples")
 
         usage {
             arguments {
@@ -20,16 +22,10 @@ class RenameChannelCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase
             }
         }
 
-        examples {
-            listOf(
-                    "#lori-é-fofis lori é fofis",
-                    "297732013006389252 bate-papo",
-                    "lorota-pantufa lorota & pantufa",
-                    "bate-papo \uD83D\uDE0E | bate-papo"
-            )
-        }
-
         canUseInPrivateChannel = false
+
+        botRequiredPermissions = listOf(Permission.MANAGE_CHANNEL)
+        userRequiredPermissions = listOf(Permission.MANAGE_CHANNEL)
 
         executesDiscord {
             val context = this
@@ -88,7 +84,7 @@ class RenameChannelCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase
         } catch (e: Exception) {
                 context.reply(
                         LorittaReply(
-                                locale["commands.moderation.renamechannel.cantRename"],
+                                locale["commands.command.renamechannel.cantRename"],
                                 Constants.ERROR
                         )
                 )

@@ -2,8 +2,13 @@ package com.mrpowergamerbr.loritta.commands.vanilla.discord
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.DateUtils
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Emote
 import net.dv8tion.jda.api.entities.MessageEmbed
@@ -15,11 +20,9 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import kotlin.streams.toList
 
 class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory.DISCORD) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.discord.emojiInfo.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.emojiinfo.description")
 
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(): CommandArguments {
 		return arguments {
 			argument(ArgumentType.EMOTE) {}
 		}
@@ -44,7 +47,7 @@ class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory
 				} else {
 					context.reply(
                             LorittaReply(
-                                    locale["commands.discord.emoji.notFoundId", "`$arg0`"],
+                                    locale["commands.command.emoji.notFoundId", "`$arg0`"],
                                     Constants.ERROR
                             )
 					)
@@ -70,7 +73,7 @@ class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory
 
 				val embed = EmbedBuilder()
 				embed.setColor(Constants.DISCORD_BLURPLE)
-				embed.setTitle("$arg0 ${context.locale["commands.discord.emojiInfo.aboutEmoji"]}")
+				embed.setTitle("$arg0 ${context.locale["commands.command.emojiinfo.aboutEmoji"]}")
 				embed.setThumbnail(emojiUrl)
 
 				val names = mutableListOf<String>()
@@ -81,9 +84,9 @@ class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory
 				}
 
 				if (names.isNotEmpty())
-					embed.addField("\uD83D\uDD16 ${context.locale["commands.discord.emojiInfo.emojiName"]}", "`${names.joinToString(" + ")}`", true)
+					embed.addField("\uD83D\uDD16 ${context.locale["commands.command.emojiinfo.emojiName"]}", "`${names.joinToString(" + ")}`", true)
 
-				embed.addField("\uD83D\uDC40 ${context.locale["commands.discord.emojiInfo.mention"]}", "`$arg0`", true)
+				embed.addField("\uD83D\uDC40 ${context.locale["commands.command.emojiinfo.mention"]}", "`$arg0`", true)
 				embed.addField("\uD83D\uDCBB Unicode", "`${codePoints.map { "\\$it" }.joinToString("")}`", true)
 				embed.addField("⛓ Link", emojiUrl, true)
 
@@ -115,14 +118,14 @@ class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory
 				"✨"
 			val embed = EmbedBuilder()
 			embed.setColor(Constants.DISCORD_BLURPLE)
-			embed.setTitle("$emoteTitle ${context.locale["commands.discord.emojiInfo.aboutEmoji"]}")
+			embed.setTitle("$emoteTitle ${context.locale["commands.command.emojiinfo.aboutEmoji"]}")
 			embed.setThumbnail(emote.imageUrl)
-			embed.addField("\uD83D\uDD16 ${context.locale["commands.discord.emojiInfo.emojiName"]}", "`${emote.name}`", true)
-			embed.addField("\uD83D\uDCBB ${context.locale["commands.discord.emojiInfo.emojiId"]}", "`${emote.id}`", true)
-			embed.addField("\uD83D\uDC40 ${context.locale["commands.discord.emojiInfo.mention"]}", "`${emote.asMention}`", true)
-			embed.addField("\uD83D\uDCC5 ${context.locale["commands.discord.emojiInfo.emojiCreated"]}", DateUtils.formatDateDiff(emote.timeCreated.toInstant().toEpochMilli(), context.locale), true)
+			embed.addField("\uD83D\uDD16 ${context.locale["commands.command.emojiinfo.emojiName"]}", "`${emote.name}`", true)
+			embed.addField("\uD83D\uDCBB ${context.locale["commands.command.emojiinfo.emojiId"]}", "`${emote.id}`", true)
+			embed.addField("\uD83D\uDC40 ${context.locale["commands.command.emojiinfo.mention"]}", "`${emote.asMention}`", true)
+			embed.addField("\uD83D\uDCC5 ${context.locale["commands.command.emojiinfo.emojiCreated"]}", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(emote.timeCreated, context.locale), true)
 			if (sourceGuild != null)
-				embed.addField("\uD83D\uDD0E ${context.locale["commands.discord.emojiInfo.seenAt"]}", "`${sourceGuild.name}`", true)
+				embed.addField("\uD83D\uDD0E ${context.locale["commands.command.emojiinfo.seenAt"]}", "`${sourceGuild.name}`", true)
 			embed.addField("⛓ Link", emote.imageUrl + "?size=2048", true)
 			return embed.build()
 		}

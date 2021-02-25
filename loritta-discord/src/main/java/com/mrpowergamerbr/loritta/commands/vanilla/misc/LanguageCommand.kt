@@ -6,6 +6,8 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import com.mrpowergamerbr.loritta.utils.locale.LocaleStringData
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
@@ -19,9 +21,12 @@ import java.awt.Color
 class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak", "lang"), category = CommandCategory.MISC) {
     private val resetPersonalLanguageEmote = "\uD83D\uDE45"
 
-    override fun getDescription(locale: BaseLocale): String {
-        return locale["commands.misc.language.description", "\uD83D\uDE0A"]
-    }
+    override fun getDescriptionKey() = LocaleKeyData(
+            "commands.command.language.description",
+            listOf(
+                    LocaleStringData("\uD83D\uDE0A")
+            )
+    )
 
     override fun getDiscordPermissions(): List<Permission> {
         return listOf(Permission.MANAGE_SERVER)
@@ -56,7 +61,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak",
                 ),
                 LocaleWrapper(
                         "Español",
-                        loritta.getLocaleById("es-es"),
+                        loritta.getLocaleById("es"),
                         "\uD83C\uDDEA\uD83C\uDDF8",
                         false
                 ),
@@ -131,7 +136,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak",
                         true
                 )
 
-                for (wrapper in validLanguages.subList(2, validLanguages.size)) {
+                for (wrapper in validLanguages.filter { it.isSecret }) {
                     // O "replace" é necessário já que a gente usa emojis personalizados para algumas linguagens
                     message.addReaction(wrapper.emoteName.replace("<", "").replace(">", "")).queue()
                 }
@@ -145,7 +150,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak",
                 }
                 context.reply(
                         LorittaReply(
-                                locale["commands.misc.language.removedPersonalLanguage"]
+                                locale["commands.command.language.removedPersonalLanguage"]
                         )
                 )
                 return@onReactionAddByAuthor
@@ -164,7 +169,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak",
                     ?: validLanguages.first { it.locale.id == "default" }, context.isPrivateChannel)
         }
 
-        for (wrapper in validLanguages.subList(0, 2)) {
+        for (wrapper in validLanguages.filter { !it.isSecret }) {
             // O "replace" é necessário já que a gente usa emojis personalizados para algumas linguagens
             message.addReaction(wrapper.emoteName.replace("<", "").replace(">", "")).queue()
         }
@@ -190,37 +195,37 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak",
         }
 
         if (isPrivateChannel)
-            context.reply(newLocale["commands.misc.language.languageChanged", "`${localeId}`"], "\uD83C\uDFA4")
+            context.reply(newLocale["commands.command.language.languageChanged", "`${localeId}`"], "\uD83C\uDFA4")
         else
-            context.reply(newLocale["commands.misc.language.serverLanguageChanged", "`${localeId}`"], "\uD83C\uDFA4")
+            context.reply(newLocale["commands.command.language.serverLanguageChanged", "`${localeId}`"], "\uD83C\uDFA4")
     }
 
     private suspend fun buildLanguageEmbed(locale: BaseLocale, languages: List<LocaleWrapper>, isPrivateChannel: Boolean, hasPersonalLanguage: Boolean): MessageEmbed {
         val embed = EmbedBuilder()
         embed.setColor(Color(0, 193, 223))
-        embed.setTitle("\uD83C\uDF0E " + locale["commands.misc.language.pleaseSelectYourLanguage"])
+        embed.setTitle("\uD83C\uDF0E " + locale["commands.command.language.pleaseSelectYourLanguage"])
 
         if (isPrivateChannel) {
-            embed.setDescription(locale["commands.misc.language.changeLanguageDescription"])
+            embed.setDescription(locale["commands.command.language.changeLanguageDescription"])
         } else {
-            embed.setDescription(locale["commands.misc.language.changeServerLanguageDescription"])
-            embed.setFooter(locale["commands.misc.language.personalLanguageTip"])
+            embed.setDescription(locale["commands.command.language.changeServerLanguageDescription"])
+            embed.setFooter(locale["commands.command.language.personalLanguageTip"])
         }
 
         if (hasPersonalLanguage)
-            embed.setFooter(locale["commands.misc.language.personalLanguageRemovalTip", resetPersonalLanguageEmote])
+            embed.setFooter(locale["commands.command.language.personalLanguageRemovalTip", resetPersonalLanguageEmote])
 
         for (wrapper in languages) {
             val translators = wrapper.locale.getList("loritta.translationAuthors").mapNotNull { lorittaShards.retrieveUserInfoById(it.toLong()) }
 
             embed.addField(
                     wrapper.emoteName + " " + wrapper.name,
-                    "**${locale["commands.misc.language.translatedBy"]}:** ${translators.joinToString(transform = { "`${it.name}`" })}",
+                    "**${locale["commands.command.language.translatedBy"]}:** ${translators.joinToString(transform = { "`${it.name}`" })}",
                     true
             )
         }
         embed.addField(
-                locale["commands.misc.language.helpUsTranslate"],
+                locale["commands.command.language.helpUsTranslate"],
                 loritta.config.crowdin.url,
                 false
         )

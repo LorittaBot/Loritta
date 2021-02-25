@@ -3,20 +3,22 @@ package net.perfectdreams.loritta.website.routes.api.v1.twitter
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.JsonObject
-import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
-import io.ktor.application.ApplicationCall
-import io.ktor.http.HttpStatusCode
+import io.ktor.application.*
+import io.ktor.http.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.website.routes.BaseRoute
+import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
+import net.perfectdreams.sequins.ktor.BaseRoute
 import twitter4j.TwitterFactory
+import twitter4j.conf.Configuration
+import twitter4j.conf.ConfigurationBuilder
 import java.util.concurrent.TimeUnit
 import kotlin.collections.set
 
-class GetShowTwitterUserRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/twitter/users/show") {
+class GetShowTwitterUserRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/twitter/users/show") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}
@@ -25,7 +27,7 @@ class GetShowTwitterUserRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/ap
 	val cachedUsersByScreenName = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).maximumSize(10_000).build<String, JsonObject>().asMap()
 
 	override suspend fun onRequest(call: ApplicationCall) {
-		val tf = TwitterFactory(com.mrpowergamerbr.loritta.utils.loritta.tweetTracker.buildTwitterConfig())
+		val tf = TwitterFactory(buildTwitterConfig())
 		val twitter = tf.instance
 
 		val screenName = call.parameters["screenName"]
@@ -88,5 +90,16 @@ class GetShowTwitterUserRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/ap
 
 			call.respondJson(payload)
 		}
+	}
+
+	fun buildTwitterConfig(): Configuration {
+		val cb = ConfigurationBuilder()
+		cb.setDebugEnabled(true)
+				.setOAuthConsumerKey(loritta.config.twitter.oAuthConsumerKey)
+				.setOAuthConsumerSecret(loritta.config.twitter.oAuthConsumerSecret)
+				.setOAuthAccessToken(loritta.config.twitter.oAuthAccessToken)
+				.setOAuthAccessTokenSecret(loritta.config.twitter.oAuthAccessTokenSecret)
+
+		return cb.build()
 	}
 }

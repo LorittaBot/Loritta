@@ -22,12 +22,8 @@ class RepListCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractCommandBas
         CommandCategory.SOCIAL
 ) {
     override fun command() = create {
-        localizedDescription("commands.social.repList.description")
-
-        examples {
-            + "@MrPowerGamerBR"
-            + "@Loritta"
-        }
+        localizedDescription("commands.command.replist.description")
+        localizedExamples("commands.command.replist.examples")
 
         usage {
             arguments {
@@ -62,9 +58,9 @@ class RepListCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractCommandBas
 
             val description = buildString {
                 if (reputations.size == 0) {
-                    this.append(locale["commands.social.repList.noReps"])
+                    this.append(locale["commands.command.replist.noReps"])
                 } else {
-                    this.append(locale["commands.social.repList.reputationsTotalDescription", totalReputationReceived, totalReputationGiven])
+                    this.append(locale["commands.command.replist.reputationsTotalDescription", totalReputationReceived, totalReputationGiven])
                     this.append("\n")
                     this.append("\n")
 
@@ -105,19 +101,19 @@ class RepListCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractCommandBas
 
                         val receivedByLoritta = reputation[Reputations.givenById] == com.mrpowergamerbr.loritta.utils.loritta.discordConfig.discord.clientId.toLong()
                         if (receivedByLoritta) {
-                            str.append(locale["commands.social.repList.receivedReputationByLoritta", "`${user.name + "#" + user.discriminator}`"])
+                            str.append(locale["commands.command.replist.receivedReputationByLoritta", "`${user.name + "#" + user.discriminator}`"])
                         } else {
                             if (receivedReputation) {
                                 if (content.isNullOrBlank()) {
-                                    str.append(locale["commands.social.repList.receivedReputation", "`${name}`"])
+                                    str.append(locale["commands.command.replist.receivedReputation", "`${name}`"])
                                 } else {
-                                    str.append(locale["commands.social.repList.receivedReputationWithContent", "`${name}`", "`$content`"])
+                                    str.append(locale["commands.command.replist.receivedReputationWithContent", "`${name}`", "`$content`"])
                                 }
                             } else {
                                 if (content.isNullOrBlank()) {
-                                    str.append(locale["commands.social.repList.sentReputation", "`${name}`"])
+                                    str.append(locale["commands.command.replist.sentReputation", "`${name}`"])
                                 } else {
-                                    str.append(locale["commands.social.repList.sentReputationWithContent", "`${name}`", "`$content`"])
+                                    str.append(locale["commands.command.replist.sentReputationWithContent", "`${name}`", "`$content`"])
                                 }
                             }
                         }
@@ -138,9 +134,9 @@ class RepListCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractCommandBas
                     .setTitle(
                             "${Emotes.LORI_RICH} " +
                                     if (user != user)
-                                        locale["commands.social.repList.otherUserRepList", user.asTag]
+                                        locale["commands.command.replist.otherUserRepList", user.asTag]
                                     else
-                                        locale["commands.social.repList.title"]
+                                        locale["commands.command.replist.title"]
                     )
                     .setColor(Constants.LORITTA_AQUA)
                     .setDescription(description)

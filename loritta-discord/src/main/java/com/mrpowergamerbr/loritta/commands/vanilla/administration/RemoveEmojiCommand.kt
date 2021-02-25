@@ -1,21 +1,17 @@
-package com.mrpowergamerbr.loritta.commands.vanilla.discord
+package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.utils.Constants
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 
-class RemoveEmojiCommand : AbstractCommand("removeemoji", listOf("deleteemoji", "deletaremoji", "removeremoji"), CommandCategory.DISCORD) {
-	override fun getUsage(): String {
-		return ":emoji1: :emoji2:"
-	}
+class RemoveEmojiCommand : AbstractCommand("removeemoji", listOf("deleteemoji", "deletaremoji", "removeremoji", "delemoji"), CommandCategory.MODERATION) {
+	// TODO: Fix Usage
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.discord.removeemoji.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.removeemoji.description")
 
 	override fun getDiscordPermissions(): List<Permission> {
 		return listOf(Permission.MANAGE_EMOTES)
@@ -38,17 +34,12 @@ class RemoveEmojiCommand : AbstractCommand("removeemoji", listOf("deleteemoji", 
 		if (deletedEmotes != 0) {
 			context.reply(
                     LorittaReply(
-                            locale["commands.discord.removeemoji.success", deletedEmotes, if (deletedEmotes == 1) "emoji" else "emojis"],
+                            locale["commands.command.removeemoji.success", deletedEmotes, if (deletedEmotes == 1) "emoji" else "emojis"],
                             "\uD83D\uDDD1"
                     )
 			)
 		} else {
-			context.reply(
-                    LorittaReply(
-                            locale["commands.discord.removeemoji.noEmojiRemoved"],
-                            Constants.ERROR
-                    )
-			)
+			context.explain()
 		}
 	}
 }

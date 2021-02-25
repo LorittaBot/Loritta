@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.api.EmbedBuilder
@@ -18,24 +19,20 @@ import java.util.*
 
 class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCORD) {
 	companion object {
-		const val LOCALE_PREFIX = "commands.discord.avatar"
+		const val LOCALE_PREFIX = "commands.command.avatar"
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.discord.avatar.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.avatar.description")
 
-	override fun getUsage(locale: BaseLocale): CommandArguments {
+	override fun getUsage(): CommandArguments {
 		return arguments {
 			argument(ArgumentType.USER) {
-				optional = false
+				optional = true
 			}
 		}
 	}
 
-	override fun getExamples(): List<String> {
-		return Arrays.asList("@Loritta")
-	}
+	override fun getExamplesKey() = LocaleKeyData("commands.command.avatar.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var getAvatar = context.getUserAt(0)
@@ -77,7 +74,7 @@ class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCO
 
 					val displayName = fancyName ?: user?.name
 
-					embed.appendDescription("\n\n**" + locale["commands.miscellaneous.fanArts.madeBy", displayName] + "**")
+					embed.appendDescription("\n\n**" + locale["commands.command.fanarts.madeBy", displayName] + "**")
 					// TODO: Readicionar redes sociais depois
 					/* val artist = loritta.fanArtArtists.firstOrNull {
 						it.socialNetworks

@@ -11,7 +11,7 @@ import org.jetbrains.exposed.sql.select
 
 class BrokerPortfolioCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractCommandBase(plugin.loritta, plugin.aliases.flatMap { listOf("$it portfolio", "$it portfólio", "$it p") }, CommandCategory.ECONOMY) {
 	override fun command() = create {
-		localizedDescription("commands.economy.brokerPortfolio.description")
+		localizedDescription("commands.command.brokerportfolio.description")
 
 		executesDiscord {
 			// This may seem extremely dumb
@@ -31,7 +31,7 @@ class BrokerPortfolioCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComm
 			}
 
 			val embed = plugin.getBaseEmbed()
-					.setTitle("${Emotes.LORI_STONKS} ${locale["commands.economy.brokerPortfolio.title"]}")
+					.setTitle("${Emotes.LORI_STONKS} ${locale["commands.command.brokerportfolio.title"]}")
 
 			for ((tickerId, totalSpent) in totalStockExpensesById) {
 				val ticker = plugin.tradingApi
@@ -52,12 +52,14 @@ class BrokerPortfolioCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComm
 					else -> "⏹️"
 				}
 
+				val changePercentage = ticker["chp"]?.jsonPrimitive?.double!!
+
 				embed.addField(
-						"$emoji `${ticker["short_name"]?.jsonPrimitive?.content}` ($tickerName)",
+						"$emoji `${ticker["short_name"]?.jsonPrimitive?.content}` ($tickerName) | ${"%.2f".format(changePercentage)}%",
 						locale[
-								"commands.economy.brokerPortfolio.youHaveStocksInThisTicker",
+								"commands.command.brokerportfolio.youHaveStocksInThisTicker",
 								stockCount,
-								locale["commands.economy.broker.stocks.${if (stockCount == 1L) "one" else "multiple"}"],
+								locale["commands.command.broker.stocks.${if (stockCount == 1L) "one" else "multiple"}"],
 								totalSpent,
 								totalGainsIfSoldNow,
 								diff.let { if (it > 0) "+$it" else it.toString() }

@@ -14,7 +14,7 @@ tasks.withType<KotlinCompile> {
 plugins {
     java
     kotlin("jvm")
-    kotlin("plugin.serialization") version "1.4.10"
+    kotlin("plugin.serialization") version "1.4.30"
     `maven-publish`
 }
 
@@ -62,7 +62,6 @@ dependencies {
 
     api("org.jetbrains.kotlinx:kotlinx-html-jvm:0.6.12")
     api("org.twitter4j:twitter4j-core:[4.0,)")
-    api("org.twitter4j:twitter4j-stream:[4.0,)")
     api("com.github.ben-manes.caffeine:caffeine:2.8.6")
 
     // Discord
@@ -116,6 +115,10 @@ dependencies {
     api("io.prometheus:simpleclient:0.9.0")
     api("io.prometheus:simpleclient_hotspot:0.9.0")
     api("io.prometheus:simpleclient_common:0.9.0")
+
+    // Sequins
+    api("net.perfectdreams.sequins.text:text-utils:1.0.1")
+    api("net.perfectdreams.sequins.ktor:base-route:1.0.2")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.0-M1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.0-M1")

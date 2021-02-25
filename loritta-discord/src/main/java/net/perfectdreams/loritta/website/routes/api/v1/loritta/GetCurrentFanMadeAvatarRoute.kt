@@ -4,10 +4,10 @@ import com.github.salomonbrys.kotson.jsonObject
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import io.ktor.application.ApplicationCall
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.website.routes.BaseRoute
+import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 
-class GetCurrentFanMadeAvatarRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/loritta/current-fan-art-avatar") {
+class GetCurrentFanMadeAvatarRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/loritta/current-fan-art-avatar") {
 	override suspend fun onRequest(call: ApplicationCall) {
 		val currentFanArt = UpdateStatusThread.currentFanArt
 

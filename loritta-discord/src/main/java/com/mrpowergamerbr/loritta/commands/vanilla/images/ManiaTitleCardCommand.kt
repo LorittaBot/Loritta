@@ -4,24 +4,21 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
+import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.arguments
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
 class ManiaTitleCardCommand : AbstractCommand("maniatitlecard", category = CommandCategory.IMAGES) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.images.maniatitlecard.description"]
-	}
-
-	override fun getExamples(): List<String> {
-		return listOf("@Loritta")
-	}
-
-	override fun getUsage(): String {
-		return "<texto>"
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.maniatitlecard.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.maniatitlecard.examples")
+	override fun getUsage() = arguments {
+		argument(ArgumentType.TEXT) {}
 	}
 
 	override fun needsToUploadFiles(): Boolean {

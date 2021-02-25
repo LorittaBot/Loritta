@@ -1,10 +1,18 @@
 package net.perfectdreams.loritta.website.routes.api.v1.user
 
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.jsonObject
+import com.github.salomonbrys.kotson.nullBool
+import com.github.salomonbrys.kotson.nullInt
+import com.github.salomonbrys.kotson.nullString
+import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.string
+import com.github.salomonbrys.kotson.toJsonArray
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.utils.lorittaShards
-import io.ktor.application.ApplicationCall
-import io.ktor.request.receiveText
+import io.ktor.application.*
+import io.ktor.request.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthenticationRoute
@@ -12,7 +20,7 @@ import net.perfectdreams.loritta.website.utils.extensions.respondJson
 
 class PostSearchUsersRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/users/search") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
-		val json = JsonParser.parseString(call.receiveText()).obj
+		val json = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()).obj }
 		val isRegexPattern = json["isRegExPattern"].nullBool ?: false
 		val limit = json["limit"].nullInt
 

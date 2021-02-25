@@ -7,7 +7,7 @@ class StudiopolisTvCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("studiopolistv", "studiopolis"),
 		1,
-		"commands.images.studiopolistv.description",
+		"commands.command.studiopolistv.description",
 		"/api/v1/images/studiopolis-tv",
 		"studiopolis_tv.png",
 )

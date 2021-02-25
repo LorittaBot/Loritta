@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.api.commands
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.platform.PlatformFeature
 
@@ -9,11 +10,20 @@ open class Command<T : CommandContext>(
 		val labels: List<String>,
 		val commandName: String,
 		val category: CommandCategory,
-		val description: ((BaseLocale) -> (String)),
+		val descriptionKey: LocaleKeyData = MISSING_DESCRIPTION_KEY,
+		val description: ((BaseLocale) -> (String)) = {
+			it.get(descriptionKey)
+		},
 		val usage: CommandArguments,
-		val examples: ((BaseLocale) -> (List<String>))? = null,
+		val examplesKey: LocaleKeyData?,
 		val executor: (suspend T.() -> (Unit))
 ) {
+	companion object {
+		val MISSING_DESCRIPTION_KEY = LocaleKeyData("commands.missingDescription")
+		val SINGLE_IMAGE_EXAMPLES_KEY = LocaleKeyData("commands.category.images.singleImageExamples")
+		val TWO_IMAGES_EXAMPLES_KEY = LocaleKeyData("commands.category.images.twoImagesExamples")
+	}
+
 	var needsToUploadFiles = false
 	var hideInHelp = false
 	var hasCommandFeedback = true

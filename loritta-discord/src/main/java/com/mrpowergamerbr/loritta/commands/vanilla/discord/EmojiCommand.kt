@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Emote
@@ -16,13 +17,9 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 
 class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.discord.emoji.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.emoji.description")
 
-	override fun getUsage(): String {
-		return "emoji"
-	}
+	// TODO: Fix Usage
 
 	override fun getExamples(): List<String> {
 		return listOf("😏")
@@ -51,7 +48,7 @@ class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD
 				} else {
 					context.reply(
                             LorittaReply(
-                                    locale["commands.discord.emoji.notFoundId", "`$arg0`"],
+                                    locale["commands.command.emoji.notFoundId", "`$arg0`"],
                                     Constants.ERROR
                             )
 					)
@@ -75,7 +72,7 @@ class EmojiCommand : AbstractCommand("emoji", category = CommandCategory.DISCORD
 					if (HttpRequest.get("https://twemoji.maxcdn.com/2/72x72/$value.png").code() != 200) {
 						context.reply(
                                 LorittaReply(
-                                        context.locale["commands.discord.emoji.errorWhileDownloadingEmoji", Emotes.LORI_SHRUG],
+                                        context.locale["commands.command.emoji.errorWhileDownloadingEmoji", Emotes.LORI_SHRUG],
                                         Constants.ERROR
                                 )
 						)

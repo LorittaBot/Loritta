@@ -5,7 +5,10 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaImage
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import com.mrpowergamerbr.loritta.utils.locale.LocaleStringData
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
+import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.geom.Path2D
 import java.awt.image.BufferedImage
@@ -17,17 +20,15 @@ class DrawnMaskCommand : AbstractCommand("drawnmasksign", listOf("drawnmaskplaca
 		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "drawn_mask_placa.png")) }
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.images.drawnmasksign.description", "Drawn Mask"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData(
+			"commands.command.drawnmasksign.description",
+			listOf(
+					LocaleStringData("Drawn Mask")
+			)
+	)
+	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 
-	override fun getExamples(): List<String> {
-		return listOf("@Loritta")
-	}
-
-	override fun getUsage(): String {
-		return "<imagem>"
-	}
+	// TODO: Fix Usage
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

@@ -9,10 +9,10 @@ import io.ktor.application.ApplicationCall
 import io.ktor.http.HttpStatusCode
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.website.routes.BaseRoute
+import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 
-class GetTwitchInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/twitch/channel") {
+class GetTwitchInfoRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/twitch/channel") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}

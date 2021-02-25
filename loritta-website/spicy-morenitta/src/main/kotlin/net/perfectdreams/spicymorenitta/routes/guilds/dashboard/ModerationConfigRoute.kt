@@ -108,7 +108,7 @@ class ModerationConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender(
 					for (entry in ServerConfig.PunishmentAction.values()) {
 						option {
 							value = entry.name
-							+locale["commands.moderation.${entry.name.toLowerCase()}.punishAction"]
+							+locale["commands.command.${entry.name.toLowerCase()}.punishAction"]
 						}
 					}
 				}
@@ -154,7 +154,7 @@ class ModerationConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender(
 					locale.buildAsHtml(locale["modules.moderation.specificMessagesForPunishment.messageThatWillBeShown"], { num ->
 						if (num == 0)
 							span {
-								+locale["commands.moderation.${action.name.toLowerCase()}.punishAction"]
+								+locale["commands.command.${action.name.toLowerCase()}.punishAction"]
 							}
 					}) { str ->
 						+ str

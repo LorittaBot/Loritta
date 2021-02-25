@@ -8,16 +8,19 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.TextChannel
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.entities.LorittaEmote
+import net.perfectdreams.loritta.api.entities.UnicodeEmote
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
+import net.perfectdreams.loritta.platform.discord.entities.DiscordEmote
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
 
 class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta, listOf("giveaway setup", "sorteio setup", "giveaway criar", "sorteio criar", "giveaway create", "sorteio create"), CommandCategory.FUN) {
     companion object {
-        private const val LOCALE_PREFIX = "commands.fun"
+        private const val LOCALE_PREFIX = "commands.command"
         val logger = KotlinLogging.logger { }
     }
 
@@ -47,7 +50,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
                 if (message != null) {
                     context.reply(
                             LorittaReply(
-                                    message = locale["commands.fun.giveaway.giveawayValidCustomMessage"],
+                                    message = locale["commands.command.giveaway.giveawayValidCustomMessage"],
                                     prefix = Emotes.LORI_TEMMIE
                             )
                     )
@@ -74,10 +77,10 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
 
     suspend fun getGiveawayName(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
         val message = context.discordMessage.channel.sendMessage(
-                    LorittaReply(
-                            message = locale["$LOCALE_PREFIX.giveaway.giveawayName"],
-                            prefix = "\uD83E\uDD14"
-                    ).build(context.getUserMention(true))
+                LorittaReply(
+                        message = locale["$LOCALE_PREFIX.giveaway.giveawayName"],
+                        prefix = "\uD83E\uDD14"
+                ).build(context.getUserMention(true))
         ).await()
 
         addCancelOption(context, message)
@@ -109,7 +112,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
     suspend fun getGiveawayDuration(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
         val message = context.discordMessage.channel.sendMessage(
                 LorittaReply(
-                        message = locale["commands.fun.giveaway.giveawayDuration"],
+                        message = locale["commands.command.giveaway.giveawayDuration"],
                         prefix = "\uD83E\uDD14"
                 ).build(context.getUserMention(true))
         ).await()
@@ -134,7 +137,17 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
         addCancelOption(context, message)
 
         message.onResponseByAuthor(context) {
-            builder.reaction = it.message.contentRaw
+            // If the message contains a emote, we are going to use it on the giveaway
+            // This way we can use any emote as long as the user has Nitro and Loritta shares a server.
+            //
+            // Before we were extracting using a RegEx pattern,
+            val emoteInTheMessage = it.message.emotes.firstOrNull()
+
+            builder.reaction = if (emoteInTheMessage != null)
+                DiscordEmote.DiscordEmoteBackedByJdaEmote(emoteInTheMessage)
+            else
+                UnicodeEmote(it.message.contentRaw)
+
             message.delete().await()
             getGiveawayChannel(context, locale, builder)
         }
@@ -283,7 +296,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
                     if (roles.isEmpty()) {
                         context.reply(
                                 LorittaReply(
-                                        locale["commands.fun.giveaway.giveawayNoValidRoles"],
+                                        locale["commands.command.giveaway.giveawayNoValidRoles"],
                                         Constants.ERROR
                                 )
                         )
@@ -294,7 +307,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
                         if (!context.guild.selfMember.canInteract(role) || role.isManaged) {
                             context.reply(
                                     LorittaReply(
-                                            locale["commands.fun.giveaway.giveawayCantInteractWithRole", "`${role.name}`"],
+                                            locale["commands.command.giveaway.giveawayCantInteractWithRole", "`${role.name}`"],
                                             Constants.ERROR
                                     )
                             )
@@ -304,7 +317,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
                         if (context.discordMessage.member?.canInteract(role) == false) {
                             context.reply(
                                     LorittaReply(
-                                            locale["commands.fun.giveaway.giveawayCantYouInteractWithRole", "`${role.name}`"],
+                                            locale["commands.command.giveaway.giveawayCantYouInteractWithRole", "`${role.name}`"],
                                             Constants.ERROR
                                     )
                             )
@@ -327,7 +340,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
     suspend fun getGiveawayWinnerCount(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
         val message = context.discordMessage.channel.sendMessage(
                 LorittaReply(
-                        message = locale["commands.fun.giveaway.giveawayWinnerCount"],
+                        message = locale["commands.command.giveaway.giveawayWinnerCount"],
                         prefix = "\uD83E\uDD14"
                 ).build(context.getUserMention(true))
         ).await()
@@ -347,10 +360,10 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
                 return@onResponseByAuthor
             }
 
-            if (numberOfWinners !in 1..20) {
+            if (numberOfWinners !in 1..100) {
                 context.reply(
                         LorittaReply(
-                                "Precisa ter, no mínimo, um ganhador e, no máximo, vinte ganhadores!",
+                                locale["commands.command.giveaway.giveawayWinnerCountNotInRange"],
                                 Constants.ERROR
                         )
                 )
@@ -366,45 +379,9 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
     }
 
     suspend fun buildGiveaway(message: net.dv8tion.jda.api.entities.Message, context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
-        val (reason, description, time, _reaction, channel, numberOfWinners, roleIds) = builder
-        var reaction = _reaction
+        val (reason, description, time, reaction, channel, numberOfWinners, roleIds) = builder
 
         val epoch = TimeUtils.convertToMillisRelativeToNow(time)
-
-        try {
-            // Testar se é possível usar o emoticon atual
-            val emoteMatcher = Constants.DISCORD_EMOTE_PATTERN.matcher(reaction)
-
-            if (emoteMatcher.find()) {
-                val emoteId = emoteMatcher.group(2).toLongOrNull()
-
-                if (emoteId != null) {
-                    val emote = lorittaShards.getEmoteById(emoteId.toString())
-
-                    // TODO: Isso está feio e confuso, dá para ser melhor.
-                    reaction = if (emote == null) { // Emoji NÃO existe
-                        "\uD83C\uDF89"
-                    } else {
-                        val emoteGuild = emote.guild
-                        if (emoteGuild == null) { // Guild do emote NÃO existe (Então a Lori não conhece o emoji)
-                            "\uD83C\uDF89"
-                        } else {
-                            if (!emote.canInteract(emoteGuild.selfMember)) { // Lori não consegue interagir com o emoji
-                                "\uD83C\uDF89"
-                            } else {
-                                message.addReaction(emote).await()
-                                emote.id
-                            }
-                        }
-                    }
-                }
-            } else {
-                message.addReaction(reaction).await()
-            }
-        } catch (e: Exception) {
-            logger.trace(e) { "Exception while adding $reaction to $message, resetting emote to default..."}
-            reaction = "\uD83C\uDF89"
-        }
 
         builder.numberOfWinners = numberOfWinners
 
@@ -415,7 +392,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
                 channel,
                 reason,
                 description,
-                reaction,
+                reaction.code,
                 epoch,
                 numberOfWinners,
                 builder.customGiveawayMessage,
@@ -443,7 +420,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
         var name: String? = null
         var description: String? = null
         var duration: String? = null
-        var reaction: String? = null
+        var reaction: LorittaEmote? = null
         var channel: TextChannel? = null
         var numberOfWinners: Int? = null
         var roleIds: List<String>? = null
@@ -460,7 +437,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
             return duration!!
         }
 
-        operator fun component4(): String {
+        operator fun component4(): LorittaEmote {
             return reaction!!
         }
 

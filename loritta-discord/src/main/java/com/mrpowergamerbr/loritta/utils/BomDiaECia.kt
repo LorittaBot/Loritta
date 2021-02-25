@@ -208,7 +208,7 @@ class BomDiaECia {
 		val messageForLocales = mutableMapOf<String, Message>()
 
 		loritta.legacyLocales.forEach { localeId, locale ->
-			val message = MessageBuilder().append("<:yudi:446394608256024597> **|** Parabéns `${user.name.stripCodeMarks().stripLinks()}#${user.discriminator}` por ter ligado primeiro no `${guild.name.stripCodeMarks().stripLinks()}`!")
+			val message = MessageBuilder().append("<:yudi:446394608256024597> **|** Parabéns `${user.name.stripCodeMarks().stripLinks()}#${user.discriminator}` (`${user.id}`) por ter ligado primeiro em `${guild.name.stripCodeMarks().stripLinks()}` (`${guild.id}`)!")
 
 			messageForLocales[localeId] = message.build()
 		}
@@ -222,7 +222,12 @@ class BomDiaECia {
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			delay(30000)
 			if (triedToCall.isNotEmpty()) {
-				channel.sendMessage("<:yudi:446394608256024597> **|** Sabia que o ${user.asMention} foi o primeiro de **${triedToCall.size} usuários** a conseguir ligar primeiro no Bom Dia & Cia? ${Emotes.LORI_OWO}").queue { message ->
+
+				val pronoun = loritta.newSuspendedTransaction {
+					loritta.getOrCreateLorittaProfile(user.idLong).settings.gender.getPronoun(loritta.getLocaleById("default"))
+				}
+
+				channel.sendMessage("<:yudi:446394608256024597> **|** Sabia que ${user.asMention} foi $pronoun primeir$pronoun de **${triedToCall.size} usuários** a conseguir ligar no Bom Dia & Cia? ${Emotes.LORI_OWO}").queue { message ->
 					if (message.guild.selfMember.hasPermission(Permission.MESSAGE_ADD_REACTION)) {
 						message.onReactionAddByAuthor(user.idLong) {
 							if (it.reactionEmote.isEmote("⁉")) {

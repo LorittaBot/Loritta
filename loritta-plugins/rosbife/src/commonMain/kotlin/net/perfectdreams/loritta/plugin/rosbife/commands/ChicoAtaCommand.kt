@@ -7,7 +7,7 @@ class ChicoAtaCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("chicoata"),
 		1,
-		"commands.images.chicoata.description",
+		"commands.command.chicoata.description",
 		"/api/v1/images/chico-ata",
 		"chico_ata.png",
 )

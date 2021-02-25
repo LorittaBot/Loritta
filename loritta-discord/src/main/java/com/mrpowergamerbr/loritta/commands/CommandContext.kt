@@ -109,15 +109,41 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 	}
 
 	suspend fun sendMessage(message: String, addInlineReply: Boolean = true): Message {
-		return sendMessage(MessageBuilder().append(if (message.isEmpty()) " " else message).build(), addInlineReply = addInlineReply)
+		return sendMessage(MessageBuilder()
+				.denyMentions(
+						Message.MentionType.EVERYONE,
+						Message.MentionType.HERE
+				)
+				.append(if (message.isEmpty()) " " else message)
+				.build(),
+				addInlineReply = addInlineReply
+		)
 	}
 
 	suspend fun sendMessage(message: String, embed: MessageEmbed, addInlineReply: Boolean = true): Message {
-		return sendMessage(MessageBuilder().setEmbed(embed).append(if (message.isEmpty()) " " else message).build(), addInlineReply = addInlineReply)
+		return sendMessage(MessageBuilder()
+				.denyMentions(
+						Message.MentionType.EVERYONE,
+						Message.MentionType.HERE
+				)
+				.setEmbed(embed)
+				.append(if (message.isEmpty()) " " else message)
+				.build(),
+				addInlineReply = addInlineReply
+		)
 	}
 
 	suspend fun sendMessage(embed: MessageEmbed, addInlineReply: Boolean = true): Message {
-		return sendMessage(MessageBuilder().append(getAsMention(true)).setEmbed(embed).build(), addInlineReply = addInlineReply)
+		return sendMessage(
+				MessageBuilder()
+						.denyMentions(
+								Message.MentionType.EVERYONE,
+								Message.MentionType.HERE
+						)
+						.append(getAsMention(true))
+						.setEmbed(embed)
+						.build(),
+				addInlineReply = addInlineReply)
 	}
 
 	suspend fun sendMessage(message: Message, addInlineReply: Boolean = true): Message {
@@ -146,6 +172,10 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 	suspend fun sendFile(file: File, name: String, message: String, embed: MessageEmbed? = null): Message {
 		// Corrigir erro ao construir uma mensagem vazia
 		val builder = MessageBuilder()
+				.denyMentions(
+						Message.MentionType.EVERYONE,
+						Message.MentionType.HERE
+				)
 		builder.append(if (message.isEmpty()) " " else message)
 		if (embed != null)
 			builder.setEmbed(embed)
@@ -194,6 +224,10 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 	suspend fun sendFile(inputStream: InputStream, name: String, message: String, embed: MessageEmbed? = null): Message {
 		// Corrigir erro ao construir uma mensagem vazia
 		val builder = MessageBuilder()
+				.denyMentions(
+						Message.MentionType.EVERYONE,
+						Message.MentionType.HERE
+				)
 		builder.append(if (message.isEmpty()) " " else message)
 		if (embed != null)
 			builder.setEmbed(embed)

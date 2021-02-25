@@ -9,6 +9,7 @@ import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.await
 import mu.KotlinLogging
@@ -18,8 +19,10 @@ import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import net.perfectdreams.loritta.dao.servers.Giveaway
+import net.perfectdreams.loritta.platform.discord.entities.DiscordEmote
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.FeatureFlags
+import net.perfectdreams.sequins.text.StringUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
@@ -29,8 +32,13 @@ object GiveawayManager {
     private val logger = KotlinLogging.logger {}
 
     fun getReactionMention(reaction: String): String {
+        if (reaction.startsWith("discord:"))
+            return DiscordEmote(reaction).asMention
+
         val emoteId = reaction.toLongOrNull()
 
+        // Old giveaways still has the emote ID stored in the database, so we need to handle that.
+        // This can be removed in the future, or maybe handled in a different way?
         if (emoteId != null) {
             val mention = lorittaShards.getEmoteById(emoteId.toString())?.asMention
             if (mention != null)
@@ -76,7 +84,7 @@ object GiveawayManager {
         else
             builder.setEmbed(
                     EmbedBuilder().apply {
-                        setTitle("\uD83C\uDF81 $reason")
+                        setTitle("\uD83C\uDF81 ${reason.substringIfNeeded(0 until 200)}")
                         setDescription("$description\n\nUse ${getReactionMention(reaction)} para entrar!")
                         // addField("⏰ Tempo restante", message, true)
                         setColor(Constants.DISCORD_BLURPLE)
@@ -95,25 +103,24 @@ object GiveawayManager {
 
         val message = channel.sendMessage(giveawayMessage).await()
         val messageId = message.idLong
-
-        val emoteId = reaction.toLongOrNull()
         var validReaction = reaction
 
-        logger.trace { "Can I use emote $emoteId in $channel?"}
+        logger.trace { "Can I use emote $validReaction in $channel?" }
 
         try {
-            if (emoteId != null) {
-                val mention = lorittaShards.getEmoteById(emoteId.toString())
-                logger.trace { "Mention is $mention in $channel" }
+            if (reaction.startsWith("discord:")) {
+                // If it starts with "discord:", then it means it is a Discord emote, so we are going to wrap it in our object
+                val discordEmote = DiscordEmote(reaction)
 
-                if (mention != null)
-                    message.addReaction(mention).await()
+                // Then use the "reactionEmote" field from our object!
+                // Also, it seems that we don't need to add "a:" to reactions, even if the emote is animated!
+                message.addReaction(discordEmote.reactionCode).await()
             } else {
-                logger.trace { "Emote $emoteId doesn't look like a valid snowflake..."}
+                logger.trace { "Emote $validReaction doesn't look like a valid snowflake..."}
                 message.addReaction(reaction).await()
             }
         } catch (e: IllegalArgumentException) {
-            logger.debug(e) { "Looks like the emote $emoteId doesn't exist, falling back to the default emote (if possible)"}
+            logger.debug(e) { "Looks like the emote $validReaction doesn't exist, falling back to the default emote (if possible)"}
             message.addReaction("\uD83C\uDF89").await()
             validReaction = "\uD83C\uDF89"
         }catch (e: InsufficientPermissionException) {
@@ -321,14 +328,29 @@ object GiveawayManager {
     }
 
     suspend fun rollWinners(message: Message, giveaway: Giveaway) {
-        val emoteId = giveaway.reaction.toLongOrNull()
+        val reaction = giveaway.reaction
 
         val messageReaction: MessageReaction?
 
-        if (emoteId != null) {
-            messageReaction = message.reactions.firstOrNull { it.reactionEmote.isEmote && it.reactionEmote.emote.idLong == emoteId }
+        var isDiscordEmote = false
+        val reactionId = if (reaction.startsWith("discord:")) {
+            isDiscordEmote = true
+            DiscordEmote(reaction).id
         } else {
-            messageReaction = message.reactions.firstOrNull { it.reactionEmote.name == giveaway.reaction }
+            // Workaround: Do not break old giveaways before the emote change by checking if the reaction is a valid snowflake
+            val emoteId = reaction.toLongOrNull()
+            if (emoteId != null) {
+                isDiscordEmote = true
+                emoteId.toString()
+            } else {
+                reaction
+            }
+        }
+
+        messageReaction = if (isDiscordEmote) {
+            message.reactions.firstOrNull { it.reactionEmote.isEmote && it.reactionEmote.emote.id == reactionId }
+        } else {
+            message.reactions.firstOrNull { it.reactionEmote.name == giveaway.reaction }
         }
 
         val serverConfig = loritta.getOrCreateServerConfig(message.guild.idLong)
@@ -345,7 +367,7 @@ object GiveawayManager {
                     .await()
 
             if (users.size == 1 && users[0].id == loritta.discordConfig.discord.clientId) { // Ninguém participou do giveaway! (Só a Lori, mas ela não conta)
-                message.channel.sendMessageAsync("\uD83C\uDF89 **|** ${locale["commands.fun.giveaway.noWinner"]} ${Emotes.LORI_TEMMIE}")
+                message.channel.sendMessageAsync("\uD83C\uDF89 **|** ${locale["commands.command.giveaway.noWinner"]} ${Emotes.LORI_TEMMIE}")
             } else {
                 val winners = mutableListOf<User>()
                 val reactedUsers = users
@@ -368,12 +390,17 @@ object GiveawayManager {
 
                     reactedUsers.remove(user)
                 }
+                
+                val messageBuilder = MessageBuilder()
 
                 if (winners.size == 1) { // Apenas um ganhador
                     val winner = winners.first()
-                    message.channel.sendMessageAsync("\uD83C\uDF89 **|** ${locale["commands.fun.giveaway.oneWinner", winner.asMention, "**${giveaway.reason}**"]} ${Emotes.LORI_HAPPY}")
+                    messageBuilder
+                        .setAllowedMentions(listOf(Message.MentionType.USER, Message.MentionType.CHANNEL, Message.MentionType.EMOTE))
+                        .setContent("\uD83C\uDF89 **|** ${locale["commands.command.giveaway.oneWinner", winner.asMention, "**${giveaway.reason}**"]} ${Emotes.LORI_HAPPY}")
+                    message.channel.sendMessageAsync(messageBuilder.build())
                 } else { // Mais de um ganhador
-                    val replies = mutableListOf("\uD83C\uDF89 **|** ${locale["commands.fun.giveaway.multipleWinners", "**${giveaway.reason}**"]} ${Emotes.LORI_HAPPY}")
+                    val replies = mutableListOf("\uD83C\uDF89 **|** ${locale["commands.command.giveaway.multipleWinners", "**${giveaway.reason}**"]} ${Emotes.LORI_HAPPY}")
 
                     repeat(giveaway.numberOfWinners) {
                         val user = winners.getOrNull(it)
@@ -384,7 +411,22 @@ object GiveawayManager {
                             replies.add("⭐ **|** ¯\\_(ツ)_/¯")
                         }
                     }
-                    message.channel.sendMessageAsync(replies.joinToString("\n"))
+
+                    val fullString = replies.joinToString("\n")
+
+                    // Okay, it seems very dumb to split by 1000 chars, but the reason this happens is because Discord's message renderer sucks and
+                    // the last entries are hidden for no reason.
+                    //
+                    // This can be increased to 2000 when the bug is fixed, to check if it is fixed, copy this message and copy into chat and see if the last
+                    // entries era displayed correctly.
+                    // https://gist.github.com/MrPowerGamerBR/078a4f3ad44c8541e3b5241c9823335e
+                    val chunkedResponse = StringUtils.chunkedLines(fullString, 1_000, forceSplit = true, forceSplitOnSpaces = true)
+                    chunkedResponse.forEach {
+                        messageBuilder
+                                .setAllowedMentions(listOf(Message.MentionType.USER, Message.MentionType.CHANNEL, Message.MentionType.EMOTE))
+                                .setContent(it)
+                        message.channel.sendMessageAsync(messageBuilder.build())
+                    }
                 }
 
                 if (giveaway.roleIds != null) { // Dar o prêmio para quem ganhou (yay!)
@@ -408,7 +450,7 @@ object GiveawayManager {
         val embed = EmbedBuilder().apply {
             setTitle("\uD83C\uDF81 ${giveaway.reason}")
             setDescription(giveaway.description)
-            setFooter(locale["commands.fun.giveaway.giveawayEnded"], null)
+            setFooter(locale["commands.command.giveaway.giveawayEnded"], null)
         }
 
         message.editMessage(embed.build()).await()
@@ -419,7 +461,7 @@ object GiveawayManager {
 
         rollWinners(message, giveaway)
 
-        loritta.suspendedTransactionAsync {
+        loritta.newSuspendedTransaction {
             giveaway.finished = true
         }
 

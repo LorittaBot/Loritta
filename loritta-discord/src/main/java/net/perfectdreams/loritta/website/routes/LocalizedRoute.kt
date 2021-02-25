@@ -1,12 +1,13 @@
 package net.perfectdreams.loritta.website.routes
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import io.ktor.application.ApplicationCall
-import io.ktor.request.path
+import io.ktor.application.*
+import io.ktor.request.*
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.utils.extensions.redirect
+import net.perfectdreams.sequins.ktor.BaseRoute
 
-abstract class LocalizedRoute(loritta: LorittaDiscord, val originalPath: String) : BaseRoute(loritta, "/{localeId}$originalPath") {
+abstract class LocalizedRoute(val loritta: LorittaDiscord, val originalPath: String) : BaseRoute("/{localeId}$originalPath") {
 	open val isMainClusterOnlyRoute = false
 
 	override suspend fun onRequest(call: ApplicationCall) {

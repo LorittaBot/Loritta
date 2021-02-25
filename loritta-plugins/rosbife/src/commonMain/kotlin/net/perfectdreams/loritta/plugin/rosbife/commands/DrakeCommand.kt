@@ -7,7 +7,7 @@ class DrakeCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("drake"),
 		2,
-		"commands.images.drake.description",
+		"commands.command.drake.description",
 		"/api/v1/images/drake",
-		"chico_ata.png",
+		"drake.png",
 )

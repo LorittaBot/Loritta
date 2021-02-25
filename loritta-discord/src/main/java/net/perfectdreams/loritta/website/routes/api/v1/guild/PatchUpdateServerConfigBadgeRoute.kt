@@ -6,8 +6,10 @@ import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
-import io.ktor.application.ApplicationCall
-import io.ktor.request.receiveText
+import io.ktor.application.*
+import io.ktor.request.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.extensions.readImage
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthenticationRoute
@@ -20,7 +22,7 @@ import javax.imageio.ImageIO
 
 class PatchUpdateServerConfigBadgeRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/guilds/{guildId}/badge") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
-		val payload = JsonParser.parseString(call.receiveText())
+		val payload = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()) }
 		val data = payload["badge"].string
 
 		val base64Image = data.split(",")[1]

@@ -7,7 +7,7 @@ class BolsoDrakeCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 		m.loritta,
 		listOf("bolsodrake"),
 		2,
-		"commands.images.bolsodrake.description",
+		"commands.command.bolsodrake.description",
 		"/api/v1/images/bolso-drake",
 		"bolsodrake.png",
 )

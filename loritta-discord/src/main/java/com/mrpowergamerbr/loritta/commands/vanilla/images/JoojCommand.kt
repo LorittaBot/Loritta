@@ -1,29 +1,20 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.images
 
-import com.google.common.collect.ImmutableMap
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
-import java.util.*
 
 class JoojCommand : AbstractCommand("jooj", category = CommandCategory.IMAGES) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.images.jooj.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.jooj.description")
+	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 
-	override fun getExamples(): List<String> {
-		return Arrays.asList("@Loritta")
-	}
-
-	override fun getDetailedUsage(): Map<String, String> {
-		return ImmutableMap.builder<String, String>()
-				.put("imagem", "imagem")
-				.build()
-	}
+	// TODO: Fix Detailed Usage
 
 	override fun needsToUploadFiles(): Boolean {
 		return true

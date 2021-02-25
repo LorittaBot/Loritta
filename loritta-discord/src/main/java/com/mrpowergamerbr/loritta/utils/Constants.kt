@@ -1,6 +1,11 @@
 package com.mrpowergamerbr.loritta.utils
 
-import com.fasterxml.jackson.databind.*
+import com.fasterxml.jackson.databind.BeanDescription
+import com.fasterxml.jackson.databind.DeserializationConfig
+import com.fasterxml.jackson.databind.JsonDeserializer
+import com.fasterxml.jackson.databind.MapperFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.type.MapType
@@ -116,7 +121,7 @@ object Constants {
 
 	// ===[ COLORS ]===
 	val DISCORD_BLURPLE = Color(114, 137, 218)
-	val LORITTA_AQUA = Color(0, 193, 223)
+	val LORITTA_AQUA = Color(26, 160, 254)
 	val ROBLOX_RED = Color(226, 35, 26)
 	val IMAGE_FALLBACK by lazy { ImageIO.read(File(Loritta.ASSETS, "avatar0.png")) }
 	val URL_PATTERN = Pattern.compile("[-a-zA-Z0-9@:%._+~#=]{2,256}\\.[A-z]{2,7}\\b([-a-zA-Z0-9@:%_+.~#?&/=]*)")
@@ -171,7 +176,10 @@ object Constants {
 			"pepeca",
 			"pepeka",
 			"ppk",
-			"escrava sexual"
+			"escrava sexual",
+			"xota",
+			"xoxota",
+			"xoxotinha"
 	)
 
 	// Canais de textos utilizados na Loritta

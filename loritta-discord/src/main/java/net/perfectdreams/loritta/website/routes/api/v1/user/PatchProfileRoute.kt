@@ -12,6 +12,8 @@ import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.ApplicationCall
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receiveText
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.BackgroundPayments
 import net.perfectdreams.loritta.tables.ProfileDesigns
@@ -38,7 +40,7 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
 		loritta as Loritta
 		val profile = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(userIdentification.id)
-		val payload = JsonParser.parseString(call.receiveText()).obj
+		val payload = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()).obj }
 
 		val config = payload["config"].obj
 
@@ -91,7 +93,7 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 				profile.takeSonhosNested(3000)
 				PaymentUtils.addToTransactionLogNested(
 						3000,
-						SonhosPaymentReason.PROFILE,
+						SonhosPaymentReason.SHIP_EFFECT,
 						givenBy = profile.id.value
 				)
 			}

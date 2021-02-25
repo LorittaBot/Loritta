@@ -3,12 +3,20 @@ package com.mrpowergamerbr.loritta.threads
 import com.mrpowergamerbr.loritta.dao.Reminder
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Reminders
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.TimeUtils
+import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
+import com.mrpowergamerbr.loritta.utils.onResponseByAuthor
+import com.mrpowergamerbr.loritta.utils.stripCodeMarks
+import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import mu.KotlinLogging
+import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.utils.MarkdownUtil
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
@@ -32,7 +40,7 @@ class RemindersThread : Thread("Reminders Thread") {
 			try {
 				checkReminders()
 			} catch (e: Exception) {
-				logger.warn(e) {"Something went wrong while checking reminders!"}
+				logger.warn(e) { "Something went wrong while checking reminders!"}
 			}
 			sleep(5000)
 		}
@@ -50,11 +58,15 @@ class RemindersThread : Thread("Reminders Thread") {
 			try {
 				val channel = lorittaShards.getTextChannelById(reminder.channelId.toString())
 
-				val reminderText = "<a:lori_notification:394165039227207710> **|** <@${reminder.userId}> Reminder! `${reminder.content.substringIfNeeded(0..1000)}`\n" +
+				val reminderText = "<a:lori_notification:394165039227207710> **|** <@${reminder.userId}> Reminder! `${reminder.content.stripCodeMarks().escapeMentions().substringIfNeeded(0..1000)}`\n" +
 						"🔹 **|** Click $SNOOZE_EMOTE to snooze for $DEFAULT_SNOOZE_MINUTES minutes, or click $SCHEDULE_EMOTE to choose how long to snooze."
 
 				if (channel != null && channel.canTalk()) {
-					channel.sendMessage(reminderText).queue {
+					channel.sendMessage(
+							MessageBuilder(reminderText)
+									.allowMentions(Message.MentionType.USER, Message.MentionType.EMOTE)
+									.build()
+					).queue {
 						addSnoozeListener(it, reminder)
 					}
 
@@ -76,19 +88,29 @@ class RemindersThread : Thread("Reminders Thread") {
 			return
 
 		message.onReactionAddByAuthor(reminder.userId) {
-
 			if (it.reactionEmote.isEmote(SNOOZE_EMOTE)) {
 				loritta.messageInteractionCache.remove(message.idLong)
+
+				val newReminderTime = Calendar.getInstance().timeInMillis + (Constants.ONE_MINUTE_IN_MILLISECONDS * DEFAULT_SNOOZE_MINUTES)
 				loritta.newSuspendedTransaction {
 					Reminder.new {
 						userId = reminder.userId
 						channelId = reminder.channelId
-						remindAt = Calendar.getInstance().timeInMillis + Constants.ONE_MINUTE_IN_MILLISECONDS * DEFAULT_SNOOZE_MINUTES
+						remindAt = newReminderTime
 						content = reminder.content
 					}
 				}
 
-				message.editMessage("<@${reminder.userId}> I will remind you again in **$DEFAULT_SNOOZE_MINUTES minutes**!").queue()
+				val calendar = Calendar.getInstance()
+				calendar.timeInMillis = newReminderTime
+
+				val dayOfMonth = String.format("%02d", calendar[Calendar.DAY_OF_MONTH])
+				val month = String.format("%02d", calendar[Calendar.MONTH] + 1)
+				val hours = String.format("%02d", calendar[Calendar.HOUR_OF_DAY])
+				val minutes = String.format("%02d", calendar[Calendar.MINUTE])
+				val messageContent = loritta.getLocaleById("default")["commands.command.remindme.success", dayOfMonth, month, calendar[Calendar.YEAR], hours, minutes]
+
+				message.editMessage("<@${reminder.userId}> $messageContent").queue()
 				message.clearReactions().queue()
 			}
 
@@ -104,7 +126,6 @@ class RemindersThread : Thread("Reminders Thread") {
 		}
 		message.addReaction(SNOOZE_EMOTE).queue()
 		message.addReaction(SCHEDULE_EMOTE).queue()
-
 	}
 
 	private fun awaitSchedule(reply: Message, originalMessage: Message, reminder: Reminder) {
@@ -123,8 +144,17 @@ class RemindersThread : Thread("Reminders Thread") {
 					content = reminder.content
 				}
 			}
-			val remindIn = MarkdownUtil.bold(MarkdownUtil.monospace(it.message.contentDisplay))
-			reply.channel.sendMessage("<@${reminder.userId}> I will remind you again in $remindIn!").queue()
+
+			val calendar = Calendar.getInstance()
+			calendar.timeInMillis = inMillis
+
+			val dayOfMonth = String.format("%02d", calendar[Calendar.DAY_OF_MONTH])
+			val month = String.format("%02d", calendar[Calendar.MONTH] + 1)
+			val hours = String.format("%02d", calendar[Calendar.HOUR_OF_DAY])
+			val minutes = String.format("%02d", calendar[Calendar.MINUTE])
+			val messageContent = loritta.getLocaleById("default")["commands.command.remindme.success", dayOfMonth, month, calendar[Calendar.YEAR], hours, minutes]
+
+			reply.channel.sendMessage("<@${reminder.userId}> $messageContent").queue()
 		}
 
 		reply.onReactionAddByAuthor(reminder.userId) {

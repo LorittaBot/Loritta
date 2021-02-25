@@ -8,21 +8,14 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import java.util.*
 
 class McUUIDCommand : AbstractCommand("mcuuid", category = CommandCategory.MINECRAFT) {
-    override fun getDescription(locale: BaseLocale): String {
-        return locale["commands.minecraft.mcuuid.description"]
-    }
+    override fun getDescriptionKey() = LocaleKeyData("commands.command.mcuuid.description")
+    override fun getExamplesKey() = LocaleKeyData("commands.category.minecraft.playerNameExamples")
 
-    override fun getUsage(): String {
-        return "nickname"
-    }
-
-    override fun getExamples(): List<String> {
-        return Arrays.asList("Monerk")
-    }
+    // TODO: Fix Usage
 
     override suspend fun run(context: CommandContext,locale: BaseLocale) {
         if (context.args.size > 0) {
@@ -33,9 +26,9 @@ class McUUIDCommand : AbstractCommand("mcuuid", category = CommandCategory.MINEC
 	        try {
                 val json = JsonParser.parseString(data).asJsonObject
 
-	            context.sendMessage(context.getAsMention(true) + context.locale["commands.minecraft.mcuuid.result", player, LorittaUtils.getUUID(json["id"].string)])
+	            context.sendMessage(context.getAsMention(true) + context.locale["commands.command.mcuuid.result", player, LorittaUtils.getUUID(json["id"].string)])
             } catch (e: IllegalStateException) {
-                context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["commands.minecraft.mcuuid.invalid", player])
+                context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["commands.command.mcuuid.invalid", player])
             }
         } else {
             this.explain(context)

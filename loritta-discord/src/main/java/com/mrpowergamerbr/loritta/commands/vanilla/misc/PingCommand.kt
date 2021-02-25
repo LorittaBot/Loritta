@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.LorittaShards
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import io.ktor.client.request.get
@@ -28,9 +29,7 @@ import net.perfectdreams.loritta.utils.extensions.build
 import java.util.concurrent.TimeUnit
 
 class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.misc.ping.description"]
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.ping.description")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val arg0 = context.args.getOrNull(0)

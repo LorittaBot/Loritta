@@ -14,6 +14,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
+import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent
@@ -159,7 +160,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 						if (ignoringCommandsRole == event.guild.publicRole)
 							response = locale["commands.mention.responseEveryoneBlocked", event.message.author.asMention, serverConfig.commandPrefix]
 						else
-							response = locale["commands.mention.responseRoleBlocked", event.message.author.asMention, serverConfig.commandPrefix, ignoringCommandsRole?.asMention]
+							response = locale["commands.mention.responseRoleBlocked", event.message.author.asMention, serverConfig.commandPrefix, "`${ignoringCommandsRole?.name}`"]
 					} else {
 						if (serverConfig.blacklistedChannels.contains(event.channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
 							// Vamos pegar um canal que seja possível usar comandos
@@ -174,11 +175,16 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 							}
 						}
 					}
+
+					val responseBuilder = MessageBuilder()
+						.setAllowedMentions(listOf(Message.MentionType.USER, Message.MentionType.CHANNEL))
+						.setContent("<:loritta:331179879582269451> **|** $response")
+
 					if (event.channel.canTalk()) {
-						event.channel.sendMessage("<:loritta:331179879582269451> **|** $response").queue()
+						event.channel.sendMessage(responseBuilder.build()).queue()
 					} else {
 						event.author.openPrivateChannel().queue {
-							it.sendMessage("<:loritta:331179879582269451> **|** $response").queue()
+							it.sendMessage(responseBuilder.build()).queue()
 						}
 					}
 				}

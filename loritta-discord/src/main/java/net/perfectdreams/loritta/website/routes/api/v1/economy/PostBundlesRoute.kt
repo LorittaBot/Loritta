@@ -9,6 +9,8 @@ import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.SonhosBundles
@@ -34,7 +36,7 @@ class PostBundlesRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(l
 		if (!net.perfectdreams.loritta.website.utils.WebsiteUtils.checkIfAccountHasMFAEnabled(refreshedUserIdentification))
 			return
 
-		val payload = JsonParser.parseString(call.receiveText()).obj
+		val payload = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()).obj }
 
 		val bundleId = payload["id"].long
 

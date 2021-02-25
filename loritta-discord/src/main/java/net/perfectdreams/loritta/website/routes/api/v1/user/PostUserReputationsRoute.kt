@@ -18,11 +18,13 @@ import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.ApplicationCall
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receiveText
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import mu.KotlinLogging
@@ -106,7 +108,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 					// Tudo certo? Então vamos enviar!
 					val reply = LorittaReply(
                             locale[
-                                    "commands.social.reputation.success",
+                                    "commands.command.reputation.success",
                                     "<@${giverId}>",
                                     "<@$receiverId>",
                                     reputationCount,
@@ -136,7 +138,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 			)
 		}
 
-		val json = JsonParser.parseString(call.receiveText())
+		val json = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()) }
 		val content = json["content"].string
 		val token = json["token"].string
 		val guildId = json["guildId"].nullString

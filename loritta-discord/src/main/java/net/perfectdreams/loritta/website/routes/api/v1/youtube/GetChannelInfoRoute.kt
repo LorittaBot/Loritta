@@ -15,7 +15,7 @@ import io.ktor.http.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.CachedYouTubeChannelIds
-import net.perfectdreams.loritta.website.routes.BaseRoute
+import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
@@ -24,7 +24,7 @@ import org.jetbrains.exposed.sql.select
 import org.jsoup.Jsoup
 import java.net.URL
 
-class GetChannelInfoRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/youtube/channel") {
+class GetChannelInfoRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/youtube/channel") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}

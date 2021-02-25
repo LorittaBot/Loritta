@@ -5,6 +5,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import org.jsoup.Jsoup
@@ -13,17 +14,10 @@ import java.net.URLEncoder
 
 
 class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "dicionario", "definir"), CommandCategory.UTILS) {
-	override fun getUsage(): String {
-		return "palavra"
-	}
+	// TODO: Fix Usage
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.utils.dicio.description"]
-	}
-
-	override fun getExamples(): List<String> {
-		return listOf("sonho")
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.dicio.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.dicio.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.size == 1) {
@@ -84,6 +78,7 @@ class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "dicionario"
 			val description = jsoup.select("p[itemprop = description]")[0]
 
 			val type = description.getElementsByTag("span")[0]
+			val word = jsoup.select("h1[itemprop = name]")
 			val what = description.getElementsByTag("span").getOrNull(1)
 			val etim = if (description.getElementsByClass("etim").size > 0) description.getElementsByClass("etim").text() else ""
 			val frase = if (jsoup.getElementsByClass("frase").isNotEmpty()) {
@@ -96,7 +91,7 @@ class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "dicionario"
 			embed.setColor(Color(25, 89, 132))
 			embed.setFooter(etim, null)
 
-			embed.setTitle("📙 Significado de ${context.args[0]}")
+			embed.setTitle("📙 Significado de ${word.text()}")
 			embed.setDescription("*${type.text()}*")
 			if (what != null)
 				embed.appendDescription("\n\n**${what.text()}**")

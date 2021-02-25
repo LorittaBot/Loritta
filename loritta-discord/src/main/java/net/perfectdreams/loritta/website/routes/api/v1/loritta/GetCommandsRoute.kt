@@ -4,11 +4,12 @@ import io.ktor.application.*
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.platform.discord.commands.DiscordCommand
 import net.perfectdreams.loritta.serializable.CommandInfo
-import net.perfectdreams.loritta.website.routes.BaseRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
+import net.perfectdreams.sequins.ktor.BaseRoute
 
-class GetCommandsRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/loritta/commands/{localeId}") {
+class GetCommandsRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/loritta/commands/{localeId}") {
 	override suspend fun onRequest(call: ApplicationCall) {
 		val localeId = call.parameters["localeId"] ?: return
 
@@ -20,17 +21,41 @@ class GetCommandsRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/lo
 					it.label,
 					it.aliases,
 					it.category,
-					it.getDescription(locale),
-					it.getUsage(locale).build(locale)
+					it.getDescriptionKey(),
+					it.getUsage(),
+					it.getExamplesKey(),
+					it.cooldown,
+					it.canUseInPrivateChannel(),
+					it.getDiscordPermissions().map { it.name },
+					it.lorittaPermissions.map { it.name },
+					it.getBotPermissions().map { it.name },
+					listOf() // Old API doesn't has SimilarCommands
 			)
 		} + com.mrpowergamerbr.loritta.utils.loritta.commandMap.commands.filter { !it.hideInHelp }.map {
+			var botRequiredPermissions = listOf<String>()
+			var userRequiredPermissions = listOf<String>()
+			var userRequiredLorittaPermissions = listOf<String>()
+
+			if (it is DiscordCommand) {
+				botRequiredPermissions = it.botRequiredPermissions.map { it.name }
+				userRequiredPermissions = it.userRequiredPermissions.map { it.name }
+				userRequiredLorittaPermissions = it.userRequiredLorittaPermissions.map { it.name }
+			}
+
 			CommandInfo(
 					it.commandName,
 					it.labels.first(),
 					it.labels.drop(1).toList(),
 					it.category,
-					it.description.invoke(locale),
-					it.usage.build(locale)
+					it.descriptionKey,
+					it.usage,
+					it.examplesKey,
+					it.cooldown,
+					it.canUseInPrivateChannel,
+					userRequiredPermissions,
+					userRequiredLorittaPermissions,
+					botRequiredPermissions,
+					it.similarCommands
 			)
 		}
 

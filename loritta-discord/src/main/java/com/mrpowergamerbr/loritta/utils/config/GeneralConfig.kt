@@ -19,7 +19,6 @@ class GeneralConfig @JsonCreator constructor(
 		val googleVision: GoogleVisionKey,
 		val googleRecaptcha: GoogleRecaptcha,
 		val crowdin: CrowdinConfig,
-		val github: GitHubConfig,
 		val twitter: TwitterConfig,
 		val twitch: TwitchConfig,
 		val twitch2: TwitchConfig,
@@ -29,7 +28,7 @@ class GeneralConfig @JsonCreator constructor(
 		val twitch6: TwitchConfig,
 		val twitch7: TwitchConfig,
 		val twitch8: TwitchConfig,
-		val mixer: MixerConfig,
+		val generalWebhook: GeneralWebhookConfig,
 		val fortniteApi: FortniteApiConfig,
 		val caches: CacheConfig
 ) {

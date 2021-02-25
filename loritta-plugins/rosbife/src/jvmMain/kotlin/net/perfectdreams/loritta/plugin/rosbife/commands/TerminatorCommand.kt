@@ -17,8 +17,8 @@ class TerminatorCommand(m: RosbifePlugin) : ImageAbstractCommandBase(
 		listOf("terminator", "animeterminator", "terminatoranime")
 ) {
 	override fun command() = create {
-		localizedDescription("commands.images.terminator.description")
-		localizedExamples("commands.images.terminator.examples")
+		localizedDescription("commands.command.terminator.description")
+		localizedExamples("commands.command.terminator.examples")
 
 		usage {
 			argument(ArgumentType.TEXT) {}

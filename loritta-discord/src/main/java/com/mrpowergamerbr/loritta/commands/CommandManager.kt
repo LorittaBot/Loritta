@@ -12,8 +12,6 @@ import com.mrpowergamerbr.loritta.commands.vanilla.minecraft.*
 import com.mrpowergamerbr.loritta.commands.vanilla.misc.*
 import com.mrpowergamerbr.loritta.commands.vanilla.music.LyricsCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.pokemon.PokedexCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbGameCommand
-import com.mrpowergamerbr.loritta.commands.vanilla.roblox.RbUserCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.social.*
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBattleCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.undertale.UndertaleBoxCommand
@@ -86,7 +84,6 @@ class CommandManager(loritta: Loritta) {
 		commandMap.add(RipVidaCommand())
 		commandMap.add(JoojCommand())
 		commandMap.add(OjjoCommand())
-		commandMap.add(GameJoltCommand())
 		commandMap.add(TwitchCommand())
 
 		// =======[ IMAGENS ]======
@@ -138,7 +135,6 @@ class CommandManager(loritta: Loritta) {
 		commandMap.add(DicioCommand())
 		commandMap.add(TempoCommand())
 		commandMap.add(PackageInfoCommand())
-		commandMap.add(KnowYourMemeCommand())
 		commandMap.add(AnagramaCommand())
 		commandMap.add(CalculadoraCommand())
 		commandMap.add(MorseCommand())
@@ -170,10 +166,6 @@ class CommandManager(loritta: Loritta) {
 		commandMap.add(McConquistaCommand())
 		commandMap.add(McSkinCommand())
 		commandMap.add(McMoletomCommand())
-
-		// =======[ ROBLOX ]========
-		commandMap.add(RbUserCommand())
-		commandMap.add(RbGameCommand())
 
 		// =======[ UNDERTALE ]========
 		commandMap.add(UndertaleBoxCommand())

@@ -3,14 +3,15 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import org.jsoup.Jsoup
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -46,13 +47,8 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 		}
 	}
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.utils.money.description"]
-	}
-
-	override fun getExamples(): List<String> {
-		return listOf("USD BRL", "USD BRL 5", "USD BRL 19.99")
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.money.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.money.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.size >= 2) {
@@ -83,7 +79,7 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 				val euroValueInCurrency = exchangeRates[from] ?: run {
 					context.reply(
                             LorittaReply(
-                                    message = locale["commands.utils.money.invalidCurrency"].msgFormat(from, exchangeRates.keys.joinToString(transform = { "`$it`" })),
+                                    message = locale["commands.command.money.invalidCurrency"].msgFormat(from, exchangeRates.keys.joinToString(transform = { "`$it`" })),
                                     prefix = Constants.ERROR
                             )
 					)
@@ -95,7 +91,7 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 				val endValueInEuros = exchangeRates[to] ?: run {
 					context.reply(
                             LorittaReply(
-                                    message = locale["commands.utils.money.invalidCurrency"].msgFormat(to, exchangeRates.keys.joinToString(transform = { "`$it`" })),
+                                    message = locale["commands.command.money.invalidCurrency"].msgFormat(to, exchangeRates.keys.joinToString(transform = { "`$it`" })),
                                     prefix = Constants.ERROR
                             )
 					)
@@ -110,7 +106,7 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 
 			context.reply(
                     LorittaReply(
-                            message = locale["commands.utils.money.converted", multiply, from, to, df.format(value * multiply)],
+                            message = locale["commands.command.money.converted", multiply, from, to, df.format(value * multiply)],
                             prefix = "\uD83D\uDCB5"
                     )
 			)

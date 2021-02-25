@@ -322,7 +322,7 @@ fun Permission.localized(locale: BaseLocale): String {
 		VIEW_CHANNEL -> locale["discord.permissions.viewChannel"]
 		MESSAGE_READ -> locale["discord.permissions.messageRead"]
 		MESSAGE_WRITE -> locale["discord.permissions.messageWrite"]
-		MESSAGE_TTS -> locale["discord.permissions.attachFiles"]
+		MESSAGE_TTS -> locale["discord.permissions.messageTTS"]
 		MESSAGE_MANAGE -> locale["discord.permissions.messageManage"]
 		MESSAGE_EMBED_LINKS -> locale["discord.permissions.messageEmbedLinks"]
 		MESSAGE_ATTACH_FILES -> locale["discord.permissions.attachFiles"]

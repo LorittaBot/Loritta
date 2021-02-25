@@ -22,7 +22,7 @@ object RegisterTwitchChannelExecutor : LoriToolsCommand.LoriToolsExecutor {
 						"hub.callback" to "${com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url}api/v1/callbacks/pubsubhubbub?type=twitch&userid=${args.getOrNull(3)}",
 						"hub.lease_seconds" to "864000",
 						"hub.mode" to "subscribe",
-						"hub.secret" to com.mrpowergamerbr.loritta.utils.loritta.config.mixer.webhookSecret,
+						"hub.secret" to com.mrpowergamerbr.loritta.utils.loritta.config.generalWebhook.webhookSecret,
 						"hub.topic" to "https://api.twitch.tv/helix/streams?user_id=${args.getOrNull(3)}"
 				))
 				.status

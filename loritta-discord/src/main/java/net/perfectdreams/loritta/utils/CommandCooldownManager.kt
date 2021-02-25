@@ -133,6 +133,8 @@ class CommandCooldownManager(val loritta: LorittaDiscord) {
         )
     }
 
+    fun removeUserCooldown(user: User) = growingRatelimitUsers.remove(user.idLong)
+
     private fun getUserCommandCooldown(user: User, commandCooldown: Int) = getUserCommandCooldown(user.idLong, commandCooldown)
 
     private fun getUserCommandCooldown(userId: Long, commandCooldown: Int) = commandCooldown *

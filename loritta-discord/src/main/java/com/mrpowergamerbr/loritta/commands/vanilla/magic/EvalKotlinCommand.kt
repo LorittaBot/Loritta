@@ -33,8 +33,15 @@ class EvalKotlinCommand : AbstractCommand("eval", listOf("evalkt", "evalkotlin",
 			import com.mrpowergamerbr.loritta.tables.*
 			import com.mrpowergamerbr.loritta.network.*
 			import com.mrpowergamerbr.loritta.utils.extensions.*
+			import net.perfectdreams.loritta.tables.*
+			import net.perfectdreams.loritta.tables.servers.*
+			import net.perfectdreams.loritta.tables.servers.moduleconfigs.*
+			import net.perfectdreams.loritta.dao.*
+			import net.perfectdreams.loritta.dao.servers.*
+			import net.perfectdreams.loritta.dao.servers.moduleconfigs.*
 			import com.github.salomonbrys.kotson.*
 			import org.jetbrains.exposed.sql.transactions.*
+			import org.jetbrains.exposed.sql.*
 			import java.awt.image.BufferedImage
 			import java.io.File
 			import javax.imageio.ImageIO

@@ -1,6 +1,13 @@
 package com.mrpowergamerbr.loritta.utils
 
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.array
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.int
+import com.github.salomonbrys.kotson.jsonObject
+import com.github.salomonbrys.kotson.long
+import com.github.salomonbrys.kotson.nullString
+import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.string
 import com.google.common.cache.CacheBuilder
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
@@ -24,6 +31,7 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.sharding.ShardManager
 import net.perfectdreams.loritta.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.utils.CachedUserInfo
+import net.perfectdreams.loritta.utils.ClusterNotReadyException
 import net.perfectdreams.loritta.utils.ClusterOfflineException
 import net.perfectdreams.loritta.utils.DiscordUtils
 import org.jetbrains.exposed.dao.id.EntityID
@@ -441,6 +449,35 @@ class LorittaShards {
 
 				guildCount += json["shards"].array.sumBy { it["guildCount"].int }
 			} catch (e: Exception) {}
+		}
+		return guildCount
+	}
+
+	/**
+	 * Queries the current guild count but, if any of the clusters are not ready (offline or not CONNECTED), an exception will be thrown.
+	 *
+	 * @return the guild count
+	 * @throws ClusterOfflineException if a cluster is offline
+	 * @throws ClusterNotReadyException if a cluster is not ready (not all shards are CONNECTED)
+	 */
+	suspend fun queryGuildCountOrThrowExceptionIfAnyClusterIsNotReady(): Int {
+		var guildCount = 0
+
+		val results = lorittaShards.queryAllLorittaClusters("/api/v1/loritta/status")
+		results.forEach {
+			try {
+				val json = it.await()
+
+				val shardsArray = json["shards"].array
+				val anyNotReady = shardsArray.any { it["status"].string != "CONNECTED" }
+
+				if (anyNotReady)
+					throw ClusterNotReadyException(json["id"].long, json["name"].string)
+
+				guildCount += json["shards"].array.sumBy { it["guildCount"].int }
+			} catch (e: Exception) {
+				throw e
+			}
 		}
 		return guildCount
 	}

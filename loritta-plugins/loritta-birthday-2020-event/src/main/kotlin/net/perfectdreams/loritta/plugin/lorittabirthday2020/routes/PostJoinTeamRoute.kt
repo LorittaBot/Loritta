@@ -9,6 +9,8 @@ import com.mrpowergamerbr.loritta.network.Databases
 import io.ktor.application.ApplicationCall
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receiveText
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.LorittaBirthday2020Event
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.tables.Birthday2020Players
@@ -35,7 +37,7 @@ class PostJoinTeamRoute(val m: LorittaBirthday2020Event, loritta: LorittaDiscord
 			return
 		}
 
-		val payload = JsonParser.parseString(call.receiveText())
+		val payload = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()) }
 
 		val idLong = userIdentification.id
 		val profile = loritta.getOrCreateLorittaProfile(idLong)

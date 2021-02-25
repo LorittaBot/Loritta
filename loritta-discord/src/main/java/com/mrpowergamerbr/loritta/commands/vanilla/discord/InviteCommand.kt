@@ -4,18 +4,17 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class InviteCommand : AbstractCommand("invite", listOf("convidar", "convidarbot", "invitebot", "convite"), CommandCategory.DISCORD) {
-    override fun getDescription(locale: BaseLocale): String {
-        return locale["commands.discord.invite.info"]
-    }
+    override fun getDescriptionKey() = LocaleKeyData("commands.command.invite.info")
 
     override suspend fun run(context: CommandContext,locale: BaseLocale) {
         var embed = EmbedBuilder()
-                .setDescription(context.locale.getList("commands.discord.invite.inviteInfo", loritta.discordInstanceConfig.discord.addBotUrl, "${loritta.instanceConfig.loritta.website.url}dashboard", "${loritta.instanceConfig.loritta.website.url}support").joinToString("\n"))
+                .setDescription(context.locale.getList("commands.command.invite.inviteInfo", loritta.discordInstanceConfig.discord.addBotUrl, "${loritta.instanceConfig.loritta.website.url}dashboard", "${loritta.instanceConfig.loritta.website.url}support").joinToString("\n"))
                 .setThumbnail("${loritta.instanceConfig.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
                 .setColor(Constants.LORITTA_AQUA)
                 .build()

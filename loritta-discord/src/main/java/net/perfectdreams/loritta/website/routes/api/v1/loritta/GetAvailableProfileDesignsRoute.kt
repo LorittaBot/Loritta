@@ -6,11 +6,11 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.ProfileDesigns
-import net.perfectdreams.loritta.website.routes.BaseRoute
+import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 
-class GetAvailableProfileDesignsRoute(loritta: LorittaDiscord) : BaseRoute(loritta, "/api/v1/loritta/profile-designs") {
+class GetAvailableProfileDesignsRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/loritta/profile-designs") {
 	override suspend fun onRequest(call: ApplicationCall) {
 		val array = loritta.newSuspendedTransaction {
 			ProfileDesign.find {

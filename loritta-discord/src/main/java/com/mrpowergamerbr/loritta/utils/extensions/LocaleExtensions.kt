@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import java.util.*
 
 /**
- * Returns the Java Locale (used for dates, etc) for the specified [lcoale]
+ * Returns the Java Locale (used for dates, etc) for the specified [BaseLocale]
  */
 fun BaseLocale.toJavaLocale(): Locale {
     val localeId = this.id

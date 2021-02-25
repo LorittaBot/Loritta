@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
@@ -14,17 +15,10 @@ import java.awt.Color
 import java.net.URLEncoder
 
 class TempoCommand : AbstractCommand("weather", listOf("tempo", "previsão", "previsao"), CommandCategory.UTILS) {
-	override fun getUsage(): String {
-		return "cidade"
-	}
+	// TODO: Fix Usage
 
-	override fun getDescription(locale: BaseLocale): String {
-		return locale["commands.utils.weather.description"]
-	}
-
-	override fun getExamples(): List<String> {
-		return listOf("São Paulo")
-	}
+	override fun getDescriptionKey() = LocaleKeyData("commands.command.weather.description")
+	override fun getExamplesKey() = LocaleKeyData("commands.command.weather.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
@@ -79,18 +73,18 @@ class TempoCommand : AbstractCommand("weather", listOf("tempo", "previsão", "pr
 					icon = "\uD83C\uDF2B "
 				}
 
-				embed.setTitle(locale["commands.utils.weather.forecastFor", realCityName, countryShort])
+				embed.setTitle(locale["commands.command.weather.forecastFor", realCityName, countryShort])
 				embed.setDescription(icon + description)
 				embed.setColor(Color(0, 210, 255))
-				embed.addField("🌡 ${context.locale["commands.utils.weather.temperature"]}", "**${context.locale["commands.utils.weather.current"]}: **$now ºC\n**${context.locale["commands.utils.weather.max"]}: **$max ºC\n**${context.locale["commands.utils.weather.min"]}: **$min ºC", true)
-				embed.addField("💦 ${context.locale["commands.utils.weather.humidity"]}", "$humidity%", true)
-				embed.addField("🌬 ${context.locale["commands.utils.weather.windSpeed"]}", "$windSpeed km/h", true)
-				embed.addField("🏋 ${context.locale["commands.utils.weather.airPressure"]}", "$pressure kPA", true)
+				embed.addField("🌡 ${context.locale["commands.command.weather.temperature"]}", "**${context.locale["commands.command.weather.current"]}: **$now ºC\n**${context.locale["commands.command.weather.max"]}: **$max ºC\n**${context.locale["commands.command.weather.min"]}: **$min ºC", true)
+				embed.addField("💦 ${context.locale["commands.command.weather.humidity"]}", "$humidity%", true)
+				embed.addField("🌬 ${context.locale["commands.command.weather.windSpeed"]}", "$windSpeed km/h", true)
+				embed.addField("🏋 ${context.locale["commands.command.weather.airPressure"]}", "$pressure kPA", true)
 
 				context.sendMessage(embed.build())
 			} else {
 				// Cidade inexistente!
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["commands.utils.weather.couldntFind", cidade])
+				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["commands.command.weather.couldntFind", cidade])
 			}
 		} else {
 			this.explain(context)
