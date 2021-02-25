@@ -158,20 +158,30 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 
 			message.clearReactions().queue()
 			message.editMessage(embedBuilder.build()).queue()
+			message.addReaction("⬅️").queue()
 
 			message.onReactionAddByAuthor(context) {
+
+				if (it.reactionEmote.isEmote("⬅️")) {
+
+					message.delete().queue()
+					handleReminderList(context, page, locale)
+					return@onReactionAddByAuthor
+
+				}
+
 				message.delete().queue()
 				reminders.remove(reminder)
 				loritta.newSuspendedTransaction {
 					Reminders.deleteWhere { Reminders.id eq reminder.id }
 				}
-				
-				val message = context.sendMessage(locale["${LOCALE_PREFIX}.reminderRemoved"])
-				message.onReactionAddByAuthor(context) {
-					message.delete().queue()
+
+				val successMessage = context.sendMessage(locale["${LOCALE_PREFIX}.reminderRemoved"])
+				successMessage.onReactionAddByAuthor(context) {
+					successMessage.delete().queue()
 					handleReminderList(context, page, locale)
 				}
-				message.addReaction("⬅️").queue()
+				successMessage.addReaction("⬅️").queue()
 				return@onReactionAddByAuthor
 			}
 
