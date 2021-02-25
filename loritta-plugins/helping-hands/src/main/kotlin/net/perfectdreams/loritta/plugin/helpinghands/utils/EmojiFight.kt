@@ -177,6 +177,11 @@ class EmojiFight(
      */
     private suspend fun addToFightEvent(user: User): Boolean {
         addingUserToEventMutex.withLock {
+            // Event is already finished (probably the user clicked to enter while the mutex was locked)
+            // So, just ignore the request!
+            if (eventFinished)
+                return false
+
             if (user.isBot)
                 return false
 
