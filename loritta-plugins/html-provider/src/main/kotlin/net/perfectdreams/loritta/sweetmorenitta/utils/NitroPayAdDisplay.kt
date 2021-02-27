@@ -4,5 +4,5 @@ enum class NitroPayAdDisplay {
     RESPONSIVE,
     DESKTOP,
     PHONE,
-    TABLET
+    TABLET;
 }

@@ -1,12 +1,32 @@
 package net.perfectdreams.loritta.sweetmorenitta.views
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import kotlinx.html.*
-import net.perfectdreams.loritta.sweetmorenitta.utils.NitroPayAdDisplay
+import kotlinx.html.DIV
+import kotlinx.html.a
+import kotlinx.html.classes
+import kotlinx.html.div
+import kotlinx.html.h1
+import kotlinx.html.i
+import kotlinx.html.id
+import kotlinx.html.img
+import kotlinx.html.p
+import kotlinx.html.span
+import kotlinx.html.style
+import net.perfectdreams.loritta.sweetmorenitta.utils.NitroPayAdGenerator
+import net.perfectdreams.loritta.sweetmorenitta.utils.adWrapper
 import net.perfectdreams.loritta.sweetmorenitta.utils.generateHowToSponsorButton
 import net.perfectdreams.loritta.sweetmorenitta.utils.generateNitroPayAdOrSponsor
 import net.perfectdreams.loritta.sweetmorenitta.utils.imgSrcSet
-import net.perfectdreams.loritta.sweetmorenitta.views.home.*
+import net.perfectdreams.loritta.sweetmorenitta.views.home.chitChat
+import net.perfectdreams.loritta.sweetmorenitta.views.home.community
+import net.perfectdreams.loritta.sweetmorenitta.views.home.customization
+import net.perfectdreams.loritta.sweetmorenitta.views.home.funnyCommands
+import net.perfectdreams.loritta.sweetmorenitta.views.home.makeItAwesome
+import net.perfectdreams.loritta.sweetmorenitta.views.home.moderation
+import net.perfectdreams.loritta.sweetmorenitta.views.home.muchMore
+import net.perfectdreams.loritta.sweetmorenitta.views.home.notify
+import net.perfectdreams.loritta.sweetmorenitta.views.home.thankYou
+import net.perfectdreams.loritta.sweetmorenitta.views.home.trust
 
 class HomeView(
         locale: BaseLocale,
@@ -107,8 +127,10 @@ class HomeView(
 
         div { id = "about-me" }
         div(classes = "odd-wrapper") {
-            generateNitroPayAdOrSponsor(0, "home-below-header1", "Loritta v2 Below Header") { true }
-            generateNitroPayAdOrSponsor(1, "home-below-header2", "Loritta v2 Below Header") { it != NitroPayAdDisplay.PHONE }
+            adWrapper {
+                generateNitroPayAdOrSponsor(0, "home-below-header1", NitroPayAdGenerator.ALL_SIZES)
+                generateNitroPayAdOrSponsor(1, "home-below-header2", NitroPayAdGenerator.ALL_SIZES)
+            }
 
             generateHowToSponsorButton(locale)
 

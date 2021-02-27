@@ -13,16 +13,17 @@ import kotlinx.html.p
 import kotlinx.html.script
 import kotlinx.html.style
 import kotlinx.html.unsafe
-import net.perfectdreams.loritta.sweetmorenitta.utils.NitroPayAdDisplay
+import net.perfectdreams.loritta.sweetmorenitta.utils.NitroPayAdGenerator
+import net.perfectdreams.loritta.sweetmorenitta.utils.adWrapper
 import net.perfectdreams.loritta.sweetmorenitta.utils.generateNitroPayAdOrSponsor
 import net.perfectdreams.loritta.sweetmorenitta.utils.generateNitroPayVideoAd
 
 class DailyView(
-        locale: BaseLocale,
-        path: String
+    locale: BaseLocale,
+    path: String
 ) : NavbarView(
-        locale,
-        path
+    locale,
+    path
 ) {
     override fun getTitle() = "Daily"
 
@@ -106,8 +107,18 @@ class DailyView(
         div(classes = "odd-wrapper") {
             style = "text-align: center;"
 
-            generateNitroPayAdOrSponsor(0, "daily-top1", "Loritta Daily Reward") { true }
-            generateNitroPayAdOrSponsor(1, "daily-top2", "Loritta Daily Reward") { it != NitroPayAdDisplay.PHONE }
+            adWrapper {
+                generateNitroPayAdOrSponsor(
+                    0,
+                    "daily-top1",
+                    NitroPayAdGenerator.ALL_SIZES
+                )
+                generateNitroPayAdOrSponsor(
+                    1,
+                    "daily-top2",
+                    NitroPayAdGenerator.ALL_SIZES_EXCEPT_PHONES
+                )
+            }
 
             div(classes = "media") {
                 div(classes = "media-body") {
@@ -215,8 +226,19 @@ class DailyView(
                 }
             }
 
-            generateNitroPayAdOrSponsor(2, "daily-bottom1", "Loritta Daily Reward") { true }
-            generateNitroPayAdOrSponsor(3, "daily-bottom2", "Loritta Daily Reward") { it != NitroPayAdDisplay.PHONE }
+            adWrapper {
+                generateNitroPayAdOrSponsor(
+                    2,
+                    "daily-bottom1",
+                    NitroPayAdGenerator.ALL_SIZES
+                )
+                generateNitroPayAdOrSponsor(
+                    3,
+                    "daily-bottom2",
+                    NitroPayAdGenerator.ALL_SIZES_EXCEPT_PHONES
+                )
+            }
+
             generateNitroPayVideoAd("daily-bottom3-video", "Loritta Daily Reward")
         }
 

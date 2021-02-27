@@ -1,10 +1,14 @@
 package net.perfectdreams.loritta.sweetmorenitta.views.home
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import kotlinx.html.*
-import net.perfectdreams.loritta.sweetmorenitta.utils.NitroPayAdDisplay
+import kotlinx.html.DIV
+import kotlinx.html.div
+import kotlinx.html.h1
+import kotlinx.html.p
+import kotlinx.html.style
+import net.perfectdreams.loritta.sweetmorenitta.utils.NitroPayAdGenerator
+import net.perfectdreams.loritta.sweetmorenitta.utils.adWrapper
 import net.perfectdreams.loritta.sweetmorenitta.utils.generateNitroPayAd
-import net.perfectdreams.loritta.sweetmorenitta.utils.generateNitroPayAdOrSponsor
 import net.perfectdreams.loritta.sweetmorenitta.utils.imgSrcSet
 import net.perfectdreams.loritta.sweetmorenitta.views.BaseView
 
@@ -12,9 +16,10 @@ fun DIV.community(locale: BaseLocale) {
     div(classes = "even-wrapper wobbly-bg") {
         style = "text-align: center;"
 
-        generateNitroPayAdOrSponsor(0, "home-community", "Loritta v2 Community") { true }
+        adWrapper {
+            generateNitroPayAd("home-community", NitroPayAdGenerator.ALL_SIZES)
+        }
 
-        generateNitroPayAd("home-community", "Loritta v2 Community")
         // generateAd("8109140955", "Loritta v2 Community", true)
         // generateAd("8109140955", "Loritta v2 Community", false)
 

@@ -2,8 +2,43 @@ package net.perfectdreams.loritta.sweetmorenitta.utils
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
-import kotlinx.html.*
+import kotlinx.html.DIV
+import kotlinx.html.IMG
+import kotlinx.html.ScriptType
+import kotlinx.html.a
+import kotlinx.html.div
+import kotlinx.html.fieldSet
+import kotlinx.html.i
+import kotlinx.html.img
+import kotlinx.html.ins
+import kotlinx.html.legend
+import kotlinx.html.script
+import kotlinx.html.span
+import kotlinx.html.style
+import kotlinx.html.unsafe
 import net.perfectdreams.loritta.utils.Sponsor
+
+fun DIV.adWrapper(callback: DIV.() -> Unit) {
+    // Wraps the div in a nice wrapper
+    div {
+        style = "text-align: center;"
+        fieldSet {
+            style = "display: inline;\n" +
+                    "border: 2px solid rgba(0,0,0,.05);\n" +
+                    "border-radius: 7px;\n" +
+                    "color: rgba(0,0,0,.3);"
+
+            legend {
+                style = "margin-left: auto;"
+                i("fas fa-ad")
+            }
+
+            div {
+                callback.invoke(this)
+            }
+        }
+    }
+}
 
 fun DIV.imgSrcSet(path: String, fileName: String, sizes: String, max: Int, min: Int, stepInt: Int, block : IMG.() -> Unit = {}) {
     val srcsets = mutableListOf<String>()
@@ -18,10 +53,10 @@ fun DIV.imgSrcSet(path: String, fileName: String, sizes: String, max: Int, min: 
     srcsets.add("$path$fileName ${max}w")
 
     imgSrcSet(
-            "$path$fileName",
-            sizes,
-            srcsets.joinToString(", "),
-            block
+        "$path$fileName",
+        sizes,
+        srcsets.joinToString(", "),
+        block
     )
 }
 
@@ -35,35 +70,87 @@ fun DIV.imgSrcSet(filePath: String, sizes: String, srcset: String, block : IMG.(
     }
 }
 
-fun DIV.generateNitroPayAdOrSponsor(sponsorId: Int, adSlot: String, adName: String? = null, callback: (NitroPayAdDisplay) -> (Boolean)) {
+fun DIV.generateNitroPayAdOrSponsor(
+    sponsorId: Int,
+    adSlot: String,
+    displayTypes: List<NitroPayAdDisplay>
+) {
     val sponsors = loritta.sponsors
     val sponsor = sponsors.getOrNull(sponsorId)
 
     if (sponsor != null) {
         generateSponsor(sponsor)
     } else {
-        generateNitroPayAdOrSponsor(sponsorId, "$adSlot-desktop", NitroPayAdDisplay.DESKTOP, "Loritta Daily Reward", callback.invoke(NitroPayAdDisplay.DESKTOP))
-        generateNitroPayAdOrSponsor(sponsorId, "$adSlot-phone", NitroPayAdDisplay.PHONE, "Loritta Daily Reward", callback.invoke(NitroPayAdDisplay.PHONE))
-        generateNitroPayAdOrSponsor(sponsorId, "$adSlot-tablet", NitroPayAdDisplay.TABLET, "Loritta Daily Reward", callback.invoke(NitroPayAdDisplay.TABLET))
+        generateNitroPayAd(adSlot, displayTypes)
     }
 }
 
-fun DIV.generateNitroPayAd(adSlot: String, adName: String? = null) {
-    generateNitroPayAd("$adSlot-desktop", NitroPayAdDisplay.DESKTOP, "Loritta Daily Reward")
-    generateNitroPayAd("$adSlot-phone", NitroPayAdDisplay.PHONE, "Loritta Daily Reward")
-    generateNitroPayAd("$adSlot-tablet", NitroPayAdDisplay.TABLET, "Loritta Daily Reward")
-}
+fun DIV.generateNitroPayAd(adSlot: String, displayTypes: List<NitroPayAdDisplay>) {
+    if (NitroPayAdDisplay.DESKTOP in displayTypes) {
+        generateNitroPayAd(
+            "$adSlot-desktop",
+            listOf(
+                NitroPayAdSize(
+                    728,
+                    90
+                ),
+                NitroPayAdSize(
+                    970,
+                    90
+                ),
+                NitroPayAdSize(
+                    970,
+                    250
+                )
+            ),
+            NitroPayAdGenerator.FULL_WIDTH_CONTENT_DESKTOP_MEDIA_QUERY
+        )
+    }
 
-fun DIV.generateNitroPayAdOrSponsor(sponsorId: Int, adSlot: String, displayType: NitroPayAdDisplay, adName: String? = null, showIfSponsorIsMissing: Boolean = true, showOnMobile: Boolean = true)
-        = generateNitroPayAdOrSponsor(loritta.sponsors, sponsorId, adSlot, displayType, adName, showIfSponsorIsMissing)
+    if (NitroPayAdDisplay.PHONE in displayTypes) {
+        generateNitroPayAd(
+            "$adSlot-phone",
+            listOf(
+                NitroPayAdSize(
+                    300,
+                    250
+                ),
+                NitroPayAdSize(
+                    320,
+                    50
+                )
+            ),
+            NitroPayAdGenerator.FULL_WIDTH_CONTENT_PHONE_MEDIA_QUERY
+        )
+    }
 
-fun DIV.generateNitroPayAdOrSponsor(sponsors: List<Sponsor>, sponsorId: Int, adSlot: String, displayType: NitroPayAdDisplay, adName: String? = null, showIfSponsorIsMissing: Boolean = true, showOnMobile: Boolean = true) {
-    val sponsor = sponsors.getOrNull(sponsorId)
-
-    if (sponsor != null) {
-        generateSponsor(sponsor)
-    } else if (showIfSponsorIsMissing) {
-        generateNitroPayAd(adSlot, displayType, adName)
+    if (NitroPayAdDisplay.TABLET in displayTypes) {
+        generateNitroPayAd(
+            "$adSlot-tablet",
+            listOf(
+                NitroPayAdSize(
+                    728,
+                    90
+                ),
+                NitroPayAdSize(
+                    970,
+                    90
+                ),
+                NitroPayAdSize(
+                    970,
+                    250
+                ),
+                NitroPayAdSize(
+                    300,
+                    250
+                ),
+                NitroPayAdSize(
+                    320,
+                    50
+                )
+            ),
+            NitroPayAdGenerator.FULL_WIDTH_CONTENT_TABLET_MEDIA_QUERY
+        )
     }
 }
 
@@ -159,24 +246,13 @@ fun DIV.generateAd(adSlot: String, adName: String? = null, showOnMobile: Boolean
     }
 }
 
-fun DIV.generateNitroPayAd(adId: String, displayType: NitroPayAdDisplay, adName: String? = null) {
-    // O "adName" não é utilizado para nada, só está aí para que fique mais fácil de analisar aonde está cada ad (caso seja necessário)
-    div(classes = "centralized-ad") {
-        div(classes = "nitropay-ad") {
-            id = adId
-            attributes["data-nitropay-ad-type"] = NitroPayAdType.STANDARD_BANNER.name.toLowerCase()
-            attributes["data-nitropay-ad-display"] = displayType.name.toLowerCase()
-        }
-    }
-}
-
 fun DIV.generateNitroPayVideoAd(adId: String, adName: String? = null) {
     // O "adName" não é utilizado para nada, só está aí para que fique mais fácil de analisar aonde está cada ad (caso seja necessário)
-    div(classes = "centralized-ad") {
+    /* div(classes = "centralized-ad") {
         div(classes = "nitropay-ad") {
             id = adId
             attributes["data-nitropay-ad-type"] = NitroPayAdType.VIDEO_PLAYER.name.toLowerCase()
             attributes["data-nitropay-ad-display"] = NitroPayAdDisplay.RESPONSIVE.name.toLowerCase()
         }
-    }
+    } */
 }

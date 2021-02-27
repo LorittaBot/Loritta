@@ -9,10 +9,10 @@ object NitroPay : Logging {
 	@JsName("renderAds")
 	fun renderAds() {
 		if (window["nitroAds"] != undefined && window["nitroAds"].loaded == true) {
-			info("NitroPay is loaded!")
+			println("NitroPay is loaded!")
 			renderNitroPayAds()
 		} else {
-			info("NitroPay is not loaded yet! We are going to wait until the event is triggered to render the ads...")
+			println("NitroPay is not loaded yet! We are going to wait until the event is triggered to render the ads...")
 			document.addEventListener("nitroAds.loaded", {
 				// nitroAds just loaded
 				renderNitroPayAds()
@@ -23,7 +23,7 @@ object NitroPay : Logging {
 	private fun renderNitroPayAds() {
 		val ads = document.selectAll<HTMLModElement>(".nitropay-ad")
 
-		debug("There are ${ads.size} NitroPay ads in the page...")
+		println("There are ${ads.size} NitroPay ads in the page...")
 
 		ads.forEach {
 			if (!it.hasAttribute("data-request-id")) {
@@ -34,6 +34,10 @@ object NitroPay : Logging {
 
 					val dynamic = object {}.asDynamic()
 
+					// Enable demo mode if we aren't running it in a real website
+					if (!window.location.hostname.contains("loritta.website"))
+						dynamic.demo = true
+
 					if (adType == "video_player") {
 						dynamic.format = "video-ac"
 					} else {
@@ -42,76 +46,35 @@ object NitroPay : Logging {
 						// Lazy loading
 						dynamic.renderVisibleOnly = false
 						dynamic.refreshVisibleOnly = true
-						val adDisplay = it.getAttribute("data-nitropay-ad-display")
 
-						if (adDisplay == "desktop") {
-							dynamic.mediaQuery = "(min-width: 1025px)"
-							dynamic.sizes = arrayOf<Array<String>>(
-									arrayOf(
-											"728",
-											"90"
-									),
-									arrayOf(
-											"970",
-											"90"
-									),
-									arrayOf(
-											"970",
-											"250"
-									)
-							)
-						} else if (adDisplay == "phone") {
-							dynamic.mediaQuery = "(min-width: 320px) and (max-width: 767px)"
-							dynamic.sizes = arrayOf<Array<String>>(
-									arrayOf(
-											"300",
-											"250"
-									),
-									arrayOf(
-											"320",
-											"50"
-									)
-							)
-						} else if (adDisplay == "tablet") {
-							dynamic.mediaQuery = "(min-width: 768px) and (max-width: 1024px)"
-							dynamic.sizes = arrayOf<Array<String>>(
-									arrayOf(
-											"728",
-											"90"
-									),
-									arrayOf(
-											"970",
-											"90"
-									),
-									arrayOf(
-											"970",
-											"250"
-									),
-									arrayOf(
-											"300",
-											"250"
-									),
-									arrayOf(
-											"320",
-											"50"
-									)
-							)
-						} else {
-							dynamic.sizes = arrayOf<Any?>()
-						}
+						val mediaQuery = it.getAttribute("data-nitropay-media-query")
 
-						val report = object {}.asDynamic()
-						report.enabled = true
-						report.wording = "Report Ad"
-						report.position = "top-right"
-						dynamic.report = report
+						if (mediaQuery != null)
+							dynamic.mediaQuery = mediaQuery
+
+						val adSizes = it.getAttribute("data-nitropay-ad-sizes")!!.split(", ")
+
+						dynamic.sizes = adSizes.map {
+							val (width, height) = it.split("x")
+							arrayOf(
+								width,
+								height
+							)
+						}.toTypedArray()
+
+						// While the report button is cool, it affects our ad container wrapper :(
+						// val report = object {}.asDynamic()
+						// report.enabled = true
+						// report.wording = "Report Ad"
+						// report.position = "top-right"
+						// dynamic.report = report
 
 						console.log(dynamic)
 					}
 
 					window["nitroAds"].createAd(it.id, dynamic)
 
-					debug("Yay!")
+					println("Yay!")
 				} catch (e: Throwable) {
 					console.log(e)
 				}
