@@ -19,10 +19,8 @@ class LorittaBirthday2020Event(name: String, loritta: LorittaDiscord) : LorittaD
 
 	override fun onEnable() {
 		loritta as LorittaDiscord
-		// this.routes.add(ChooseTeamRoute(loritta))
 		// this.routes.add(ReceiveStatsRoute(this, loritta))
 		// this.routes.add(SyncPointsRoute(this, loritta))
-		// this.routes.add(ViewCurrentStatsRoute(loritta))
 		// this.routes.add(GetCurrentTeamRoute(this, loritta))
 		// this.routes.add(PostJoinTeamRoute(this, loritta))
 

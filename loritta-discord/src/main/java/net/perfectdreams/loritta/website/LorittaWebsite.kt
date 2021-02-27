@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.website
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
@@ -25,7 +24,7 @@ import net.perfectdreams.loritta.website.blog.Blog
 import net.perfectdreams.loritta.website.routes.LocalizedRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.LorittaHtmlProvider
-import net.perfectdreams.loritta.website.utils.ScriptingUtils
+import net.perfectdreams.loritta.website.utils.RouteKey
 import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.website.utils.extensions.*
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
@@ -34,7 +33,6 @@ import java.io.File
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
-import kotlin.reflect.full.createType
 
 /**
  * Clone of the original "LorittaWebsite" from the "sweet-morenitta" module
@@ -98,18 +96,15 @@ class LorittaWebsite(val loritta: Loritta) {
 					if (call.alreadyHandledStatus)
 						return@status
 
-					val html = ScriptingUtils.evaluateWebPageFromTemplate(
-							File(
-									"${INSTANCE.config.websiteFolder}/views/error_404.kts"
-							),
-							mapOf(
-									"path" to call.request.path().split("/").drop(2).joinToString("/"),
-									"websiteUrl" to INSTANCE.config.websiteUrl,
-									"locale" to ScriptingUtils.WebsiteArgumentType(BaseLocale::class.createType(nullable = false), loritta.locales["default"]!!)
+					call.respondHtml(
+						INSTANCE.pageProvider.render(
+							RouteKey.ERROR_404,
+							listOf(
+								call.request.path().split("/").drop(2).joinToString("/"),
+								loritta.locales["default"]!! // TODO: Localization
 							)
+						)
 					)
-
-					call.respondHtml(html, HttpStatusCode.NotFound)
 				}
 
 				exception<TemmieDiscordAuth.TokenUnauthorizedException> { cause ->
