@@ -99,11 +99,20 @@ class CommandCooldownManager(val loritta: LorittaDiscord) {
 
                 // Send message after increasing it X times, this allows the stupid user to see what they are doing
                 if (newValue % mod == 0)
-                    return CooldownResponse(
+                    if (newValue >= 3) {
+                        return CooldownResponse(
+                            CooldownStatus.RATE_LIMITED_SEND_MESSAGE_REPEATED,
+                            cooldownTriggeredAt,
+                            correctedCooldownMultiplied
+                        )
+                    } else {
+                        return CooldownResponse(
                             CooldownStatus.RATE_LIMITED_SEND_MESSAGE,
                             cooldownTriggeredAt,
                             correctedCooldownMultiplied
-                    )
+                        )
+                    }
+
 
                 return CooldownResponse(
                         CooldownStatus.RATE_LIMITED_MESSAGE_ALREADY_SENT,
@@ -153,9 +162,10 @@ class CommandCooldownManager(val loritta: LorittaDiscord) {
             val commandCooldown: Int
     )
 
-    enum class CooldownStatus {
-        OK,
-        RATE_LIMITED_SEND_MESSAGE,
-        RATE_LIMITED_MESSAGE_ALREADY_SENT
+    enum class CooldownStatus(val sendMessage: Boolean) {
+        OK(false),
+        RATE_LIMITED_SEND_MESSAGE(true),
+        RATE_LIMITED_SEND_MESSAGE_REPEATED(true),
+        RATE_LIMITED_MESSAGE_ALREADY_SENT(false)
     }
 }
