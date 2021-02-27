@@ -20,7 +20,7 @@ fun DIV.notify(locale: BaseLocale) {
         adWrapper {
             generateNitroPayAd("home-digital-influencers", NitroPayAdGenerator.ALL_SIZES)
         }
-        
+
         div(classes = "media") {
             div(classes = "media-figure") {
                 div {
