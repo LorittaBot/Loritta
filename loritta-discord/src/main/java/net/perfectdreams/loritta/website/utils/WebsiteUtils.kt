@@ -23,8 +23,13 @@ import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.util.*
-import kotlinx.html.*
+import kotlinx.html.body
+import kotlinx.html.head
+import kotlinx.html.html
+import kotlinx.html.meta
+import kotlinx.html.p
 import kotlinx.html.stream.createHTML
+import kotlinx.html.title
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.ReactionOption
@@ -104,15 +109,6 @@ object WebsiteUtils {
 				"id" to profile.id.value,
 				"money" to profile.money
 		)
-	}
-
-	fun transformProfileToJson(profile: Profile): JsonObject {
-		// TODO: É necessário alterar o frontend para usar os novos valores
-		val jsonObject = JsonObject()
-		jsonObject["userId"] = profile.id.value
-		jsonObject["money"] = profile.money
-		jsonObject["dreams"] = profile.money // Deprecated
-		return jsonObject
 	}
 
 	fun getDiscordCrawlerAuthenticationPage(): String {

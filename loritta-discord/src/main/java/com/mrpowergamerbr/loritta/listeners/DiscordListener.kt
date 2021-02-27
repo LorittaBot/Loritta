@@ -68,17 +68,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				.asMap()
 
 		/**
-		 * Stores the member counter update mutexes, if the member counter already has a executing update (but is not executed yet due to Discord rate limits)
-		 * this mutex will be used to lock.
-		 *
-		 * If another update comes and the mutex from this map is active, then the request is simply ignored.
-		 */
-		val memberCounterPendingForUpdatesMutexes = Caffeine.newBuilder()
-				.expireAfterWrite(15L, TimeUnit.MINUTES)
-				.build<Long, Job>()
-				.asMap()
-
-		/**
 		 * Stores the member counter executing update mutexes, used when a topic update is being executed.
 		 */
 		val memberCounterExecutingUpdatesMutexes = Caffeine.newBuilder()

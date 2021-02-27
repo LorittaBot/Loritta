@@ -1,11 +1,8 @@
 package com.mrpowergamerbr.loritta.utils.counter
 
 object CounterUtils {
-	fun generatePrettyCounter(count: Int, theme: CounterThemes, padding: Int): String {
-		return generatePrettyCounter(count, getEmojis(theme), padding)
-	}
 
-	fun generatePrettyCounter(count: Int, list: List<String>, padding: Int): String {
+    fun generatePrettyCounter(count: Int, list: List<String>, padding: Int): String {
 		var counter = ""
 
 		for (char in count.toString()) {

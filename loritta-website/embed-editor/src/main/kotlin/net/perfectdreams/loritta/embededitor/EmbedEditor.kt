@@ -229,14 +229,15 @@ class EmbedEditor {
 
         if (parsePlaceholders) {
             for (placeholder in placeholders) {
-                output = when (placeholder.renderType) {
-                    RenderType.TEXT -> output.replace(placeholder.name, placeholder.replaceWith)
-                    RenderType.MENTION -> output.replace(
+                 when (placeholder.renderType) {
+                    RenderType.TEXT -> output = output.replace(placeholder.name, placeholder.replaceWith)
+                    RenderType.MENTION -> output = output.replace(
                             placeholder.name,
                             createHTML().span(classes = "mention wrapper-3WhCwL mention interactive") {
                                 + placeholder.replaceWith
                             }
                     )
+                    else -> {}
                 }
             }
         }

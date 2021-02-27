@@ -5,11 +5,8 @@ import kotlinx.html.img
 import kotlinx.html.stream.appendHTML
 
 object CounterUtils {
-	fun generatePrettyCounter(count: Int, theme: CounterThemes, padding: Int = 5): String {
-		return generatePrettyCounter(count, getEmojis(theme), padding)
-	}
 
-	fun generatePrettyCounter(count: Int, list: List<String>, padding: Int = 5): String {
+    fun generatePrettyCounter(count: Int, list: List<String>, padding: Int = 5): String {
 		var counter = ""
 
 		for (char in count.toString()) {

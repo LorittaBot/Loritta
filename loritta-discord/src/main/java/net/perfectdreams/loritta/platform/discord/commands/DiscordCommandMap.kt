@@ -35,9 +35,6 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 	}
 
 	val commands = mutableListOf<Command<CommandContext>>()
-	private val userCooldown = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS)
-			.maximumSize(100)
-			.build<Long, Long>().asMap()
 
 	override fun register(command: Command<CommandContext>) {
 		logger.info { "Registering $command with ${command.labels}" }

@@ -212,8 +212,6 @@ object AdminUtils {
 		return context.reply(*replies.toTypedArray())
 	}
 
-	suspend fun sendConfirmationMessage(context: CommandContext, user: User, hasSilent: Boolean, type: String) = sendConfirmationMessage(context, listOf(user), hasSilent, type)
-
 	suspend fun sendSuccessfullyPunishedMessage(context: CommandContext, reason: String, sendDiscordReportAdvise: Boolean) {
 		val replies = mutableListOf(
                 LorittaReply(
