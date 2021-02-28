@@ -239,7 +239,7 @@ class DailyView(
                 )
             }
 
-            generateNitroPayVideoAd("daily-bottom3-video", "Loritta Daily Reward")
+            generateNitroPayVideoAd("daily-bottom3-video")
         }
 
         div(classes = "even-wrapper wobbly-bg") {
