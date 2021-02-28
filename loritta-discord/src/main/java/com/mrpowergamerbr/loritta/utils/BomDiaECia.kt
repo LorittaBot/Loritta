@@ -131,6 +131,15 @@ class BomDiaECia {
 					addWithVariations("não quero ganhar 1 $game, eu quero ganhar um $playstation")
 					addWithVariations("não quero ganhar um $game, eu quero ganhar 1 $playstation")
 					addWithVariations("não quero ganhar 1 $game, eu quero ganhar 1 $playstation")
+
+					addWithVariations("quero ganhar 1 $playstation, e não quero ganhar um $game")
+					addWithVariations("quero ganhar 1 $playstation, e não quero ganhar 1 $game")
+					addWithVariations("quero ganhar um $playstation, e não quero ganhar um $game")
+					addWithVariations("quero ganhar um $playstation, e não quero ganhar 1 $game")
+					addWithVariations("eu quero ganhar um $playstation, e não quero ganhar um $game")
+					addWithVariations("eu quero ganhar um $playstation, e não quero ganhar 1 $game")
+					addWithVariations("eu quero ganhar 1 $playstation, não quero ganhar um $game")
+					addWithVariations("eu quero ganhar 1 $playstation, não quero ganhar 1 $game")
 				}
 
 				for (number in numbers) {
