@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 
-class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp"), category = CommandCategory.SOCIAL) {
+class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp", "setxp"), category = CommandCategory.SOCIAL) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.editxp.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.editxp.examples")
 
