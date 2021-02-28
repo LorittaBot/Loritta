@@ -9,6 +9,7 @@ import kotlinx.html.a
 import kotlinx.html.div
 import kotlinx.html.fieldSet
 import kotlinx.html.i
+import kotlinx.html.id
 import kotlinx.html.img
 import kotlinx.html.ins
 import kotlinx.html.legend
@@ -163,7 +164,7 @@ fun DIV.generateNitroPayVideoAdOrSponsor(sponsors: List<Sponsor>, sponsorId: Int
     if (sponsor != null) {
         generateSponsor(sponsor)
     } else if (showIfSponsorIsMissing) {
-        generateNitroPayVideoAd(adSlot, adName)
+        generateNitroPayVideoAd(adSlot)
     }
 }
 
@@ -246,13 +247,11 @@ fun DIV.generateAd(adSlot: String, adName: String? = null, showOnMobile: Boolean
     }
 }
 
-fun DIV.generateNitroPayVideoAd(adId: String, adName: String? = null) {
-    // O "adName" não é utilizado para nada, só está aí para que fique mais fácil de analisar aonde está cada ad (caso seja necessário)
-    /* div(classes = "centralized-ad") {
+fun DIV.generateNitroPayVideoAd(adId: String) {
+    div(classes = "centralized-ad") {
         div(classes = "nitropay-ad") {
             id = adId
             attributes["data-nitropay-ad-type"] = NitroPayAdType.VIDEO_PLAYER.name.toLowerCase()
-            attributes["data-nitropay-ad-display"] = NitroPayAdDisplay.RESPONSIVE.name.toLowerCase()
         }
-    } */
+    }
 }
