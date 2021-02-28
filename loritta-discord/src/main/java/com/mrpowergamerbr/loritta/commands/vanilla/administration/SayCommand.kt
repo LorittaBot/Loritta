@@ -118,7 +118,7 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MODER
 
 			// Watermarks the message to "deanonymise" the message, to avoid users reporting Loritta for ToS breaking stuff, even tho it was
 			// a malicious user sending the messages.
-			val watermarkedMessage = MessageUtils.watermarkMessage(
+			val watermarkedMessage = MessageUtils.watermarkSayMessage(
 					message,
 					context.userHandle,
 					context.locale["commands.command.say.messageSentBy"]

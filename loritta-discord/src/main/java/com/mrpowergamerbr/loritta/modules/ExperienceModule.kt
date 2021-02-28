@@ -6,10 +6,14 @@ import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LorittaUser
+import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.filterOnlyGiveableRoles
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
@@ -39,9 +43,9 @@ class ExperienceModule : MessageReceivedModule {
 	// Como um usuário normalmente só está falando em um servidor ao mesmo tempo, a gente pode sincronizar baseado no User ID dele
 	// User ID -> Mutex
 	private val mutexes = Caffeine.newBuilder()
-			.expireAfterAccess(60, TimeUnit.SECONDS)
-			.build<Long, Mutex>()
-			.asMap()
+		.expireAfterAccess(60, TimeUnit.SECONDS)
+		.build<Long, Mutex>()
+		.asMap()
 
 	override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
 		return true
@@ -147,7 +151,7 @@ class ExperienceModule : MessageReceivedModule {
 				ExperienceRoleRates.guildId eq event.guild.idLong and
 						(ExperienceRoleRates.role inList memberRolesIds)
 			}.orderBy(ExperienceRoleRates.rate, SortOrder.DESC)
-					.firstOrNull()
+				.firstOrNull()
 		}
 
 		val rate = customRoleRates?.getOrNull(ExperienceRoleRates.rate) ?: 1.0
@@ -171,14 +175,14 @@ class ExperienceModule : MessageReceivedModule {
 			}
 
 			val matched = configs.filter { guildProfile.xp >= it[RolesByExperience.requiredExperience] }
-					.sortedByDescending { it[RolesByExperience.requiredExperience] }
+				.sortedByDescending { it[RolesByExperience.requiredExperience] }
 
 			if (matched.isNotEmpty()) {
 				val guildRoles = matched.flatMap { it[RolesByExperience.roles]
-						.mapNotNull { guild.getRoleById(it) } }
-						.distinct()
-						.filterOnlyGiveableRoles()
-						.toList()
+					.mapNotNull { guild.getRoleById(it) } }
+					.distinct()
+					.filterOnlyGiveableRoles()
+					.toList()
 
 				if (guildRoles.isNotEmpty()) {
 					if (levelConfig?.roleGiveType == RoleGiveType.REMOVE) {
@@ -194,7 +198,7 @@ class ExperienceModule : MessageReceivedModule {
 								receivedNewRoles = true
 								givenNewRoles.add(topRole)
 								guild.modifyMemberRoles(member, memberNewRoleList)
-										.queue()
+									.queue()
 							}
 						}
 					} else {
@@ -205,7 +209,7 @@ class ExperienceModule : MessageReceivedModule {
 							receivedNewRoles = true
 							givenNewRoles.addAll(missingRoles)
 							guild.modifyMemberRoles(member, member.roles.toMutableList().apply { this.addAll(missingRoles) })
-									.queue()
+								.queue()
 						}
 					}
 				}
@@ -231,25 +235,35 @@ class ExperienceModule : MessageReceivedModule {
 					continue
 
 				val message = MessageUtils.generateMessage(
-						announcement[LevelAnnouncementConfigs.message],
-						listOf(
-								member,
-								guild,
-								event.channel
-						),
+					// Watermark direct message if it is for a direct message
+					if (type == LevelUpAnnouncementType.DIRECT_MESSAGE) {
+						MessageUtils.watermarkModuleMessage(
+							announcement[LevelAnnouncementConfigs.message],
+							locale,
+							guild,
+							locale["modules.levelUp.moduleDirectMessageLevelUpType"]
+						)
+					} else {
+						announcement[LevelAnnouncementConfigs.message]
+					},
+					listOf(
+						member,
 						guild,
-						mutableMapOf(
-								"previous-level" to previousLevel.toString(),
-								"previous-xp" to previousXp.toString(),
-								"new-roles" to givenNewRoles.joinToString(transform = { it.asMention })
-						).apply {
-							putAll(
-									ExperienceUtils.getExperienceCustomTokens(
-											serverConfig,
-											event.member
-									)
+						event.channel
+					),
+					guild,
+					mutableMapOf(
+						"previous-level" to previousLevel.toString(),
+						"previous-xp" to previousXp.toString(),
+						"new-roles" to givenNewRoles.joinToString(transform = { it.asMention })
+					).apply {
+						putAll(
+							ExperienceUtils.getExperienceCustomTokens(
+								serverConfig,
+								event.member
 							)
-						}
+						)
+					}
 				)
 
 				logger.info { "Message for notif is $message" }
@@ -260,7 +274,7 @@ class ExperienceModule : MessageReceivedModule {
 							logger.info { "Same channel, sending msg" }
 							if (event.textChannel!!.canTalk()) {
 								event.textChannel.sendMessage(
-										message
+									message
 								).queue()
 							}
 						}
@@ -294,7 +308,7 @@ class ExperienceModule : MessageReceivedModule {
 								val channel = guild.getTextChannelById(channelId)
 
 								channel?.sendMessage(
-										message
+									message
 								)?.queue()
 							}
 						}

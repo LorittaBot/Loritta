@@ -172,8 +172,22 @@ object WelcomeModule {
 			logger.debug { "Member = ${event.member}, sending join message (private channel) \"$msg\" at ${event.guild}"}
 
 			if (!msg.isNullOrEmpty()) {
+				val locale = loritta.getLocaleById(serverConfig.localeId)
+
 				event.user.openPrivateChannel().queue {
-					it.sendMessage(MessageUtils.generateMessage(msg, listOf(event.guild, event.member), event.guild, tokens)!!).queue() // Pronto!
+					it.sendMessage(
+						MessageUtils.generateMessage(
+							MessageUtils.watermarkModuleMessage(
+								msg,
+								locale,
+								event.guild,
+								locale["modules.welcomer.moduleDirectMessageJoinType"]
+							),
+							listOf(event.guild, event.member),
+							event.guild,
+							tokens
+						)!!
+					).queue() // Pronto!
 				}
 			}
 		}

@@ -39,7 +39,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
             if (args.isNotEmpty()) {
                 val customMessage = args.joinToString(" ")
 
-                val watermarkedMessage = MessageUtils.watermarkMessage(
+                val watermarkedMessage = MessageUtils.watermarkSayMessage(
                         customMessage,
                         context.user,
                         context.locale["$LOCALE_PREFIX.giveaway.giveawayCreatedBy"]
