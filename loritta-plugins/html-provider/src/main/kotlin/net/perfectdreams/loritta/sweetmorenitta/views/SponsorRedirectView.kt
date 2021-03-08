@@ -17,6 +17,9 @@ class SponsorRedirectView(locale: BaseLocale, path: String, val sponsor: Sponsor
     override fun HTML.generateBody() {
         body {
             div {
+                id = "content"
+                style = "text-align: center;"
+
                 style {
                     unsafe {
                         raw(
@@ -35,9 +38,6 @@ body { background-color: #29a6fe; }
                         )
                     }
                 }
-
-                id = "content"
-                style = "text-align: center;"
 
                 div(classes = "redirect-center") {
                     img(src = "https://loritta.website/assets/img/fanarts/Loritta_9_-_Allouette.png") {
