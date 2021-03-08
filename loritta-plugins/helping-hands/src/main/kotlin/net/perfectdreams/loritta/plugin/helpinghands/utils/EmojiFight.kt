@@ -185,6 +185,10 @@ class EmojiFight(
             if (user.isBot)
                 return false
 
+            // If there is already way too much users here, just ignore the add request
+            if (participatingUsers.size >= maxPlayers)
+                return false
+
             if (entryPrice != null) {
                 val profile = loritta.getLorittaProfile(user.idLong) ?: return false
 
