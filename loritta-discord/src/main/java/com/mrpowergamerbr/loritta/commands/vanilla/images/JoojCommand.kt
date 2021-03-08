@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
+import java.awt.image.BufferedImage
 
 class JoojCommand : AbstractCommand("jooj", category = CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.jooj.description")
@@ -23,6 +24,9 @@ class JoojCommand : AbstractCommand("jooj", category = CommandCategory.IMAGES) {
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val image = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
+		// We need to create a empty "base" to avoid issues with transparent images
+		val baseImage = BufferedImage(image.width, image.height, BufferedImage.TYPE_INT_ARGB)
+
 		val leftSide = image.getSubimage(0, 0, image.width / 2, image.height)
 
 		// Girar a imagem horizontalmente
@@ -31,8 +35,9 @@ class JoojCommand : AbstractCommand("jooj", category = CommandCategory.IMAGES) {
 		val op = AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR)
 		val leftSideFlipped = op.filter(leftSide, null)
 
-		image.graphics.drawImage(leftSideFlipped, image.width / 2, 0, null)
+		baseImage.graphics.drawImage(leftSide, 0, 0, null)
+		baseImage.graphics.drawImage(leftSideFlipped, baseImage.width / 2, 0, null)
 
-		context.sendFile(image, "jooj.png", context.getAsMention(true))
+		context.sendFile(baseImage, "jooj.png", context.getAsMention(true))
 	}
 }
