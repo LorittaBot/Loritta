@@ -343,6 +343,7 @@ fun Permission.localized(locale: BaseLocale): String {
 		MANAGE_EMOTES -> locale["discord.permissions.manageEmotes"]
 		VOICE_STREAM -> locale["discord.permissions.voiceStream"]
 		VIEW_GUILD_INSIGHTS -> locale["discord.permissions.viewGuildInsights"]
+		USE_SLASH_COMMANDS -> locale["discord.permissions.useSlashCommands"]
 		UNKNOWN -> "This should never, ever happen!"
 	}
 }
