@@ -50,9 +50,6 @@ include(":loritta-website:embed-renderer")
 include(":loritta-website:embed-editor-crosswindow")
 include(":loritta-website:embed-editor")
 
-// Watchdoggo
-include(":loritta-watchdog-bot")
-
 // Misc
 include(":temmie-discord-auth")
 include(":shard-controller")
