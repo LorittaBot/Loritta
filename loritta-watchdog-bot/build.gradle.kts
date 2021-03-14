@@ -1,10 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val loriVersion by lazy { ext["lori-version"] as String }
-val kotlinVersion by lazy { ext["kotlin-version"] as String }
-val ktorVersion by lazy { ext["ktor-version"] as String }
-val jdaVersion by lazy { ext["jda-version"] as String }
-
 tasks.withType<KotlinCompile> {
 	kotlinOptions.jvmTarget = "1.8"
 }
@@ -53,7 +48,7 @@ dependencies {
 	api("ch.qos.logback:logback-classic:1.2.3")
 	api("net.perfectdreams.commands:command-framework-core:0.0.8")
 	api("com.github.ben-manes.caffeine:caffeine:2.7.0")
-	api("net.dv8tion:JDA:$jdaVersion")
+	api("net.dv8tion:JDA:${Versions.JDA}")
 	api("org.mongodb:mongodb-driver:3.10.2")
 	api("org.postgresql:postgresql:42.2.5")
 	api("com.zaxxer:HikariCP:3.3.1")
@@ -67,11 +62,11 @@ dependencies {
 	api("org.honton.chas.hocon:jackson-dataformat-hocon:1.1.1")
 	api("com.typesafe:config:1.3.4")
 	api("com.github.salomonbrys.kotson:kotson:2.5.0")
-	api("io.ktor:ktor-server-core:$ktorVersion")
-	api("io.ktor:ktor-server-netty:$ktorVersion")
-	api("io.ktor:ktor-websockets:$ktorVersion")
-	api("io.ktor:ktor-client-core:$ktorVersion")
-	api("io.ktor:ktor-client-cio:$ktorVersion")
+	api("io.ktor:ktor-server-core:${Versions.KTOR}")
+	api("io.ktor:ktor-server-netty:${Versions.KTOR}")
+	api("io.ktor:ktor-websockets:${Versions.KTOR}")
+	api("io.ktor:ktor-client-core:${Versions.KTOR}")
+	api("io.ktor:ktor-client-cio:${Versions.KTOR}")
 	api("com.rometools:rome:1.12.2")
 	api("org.jsoup:jsoup:1.12.1")
 	testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.0-M1")
@@ -83,7 +78,7 @@ dependencies {
 val fatJar = (extra["fat-jar-stuff"] as (String, Map<String, String>) -> (Task)).invoke(
 		"net.perfectdreams.loritta.watchdog.WatchdogBotLauncher",
 		mapOf(
-				"JDA-Version" to jdaVersion
+				"JDA-Version" to Versions.JDA
 		)
 )
 

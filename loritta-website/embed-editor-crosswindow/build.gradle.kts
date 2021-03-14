@@ -1,5 +1,3 @@
-val kotlinSerialization by lazy { ext["kotlin-serialization"] as String }
-
 plugins {
 	kotlin("js")
 	kotlin("plugin.serialization") version "1.4.10"

@@ -1,8 +1,6 @@
-val kotlinSerialization by lazy { ext["kotlin-serialization"] as String }
-
 plugins {
 	kotlin("js")
-	kotlin("plugin.serialization") version "1.4.10"
+	kotlin("plugin.serialization") version Versions.KOTLIN
 }
 
 kotlin {
@@ -21,7 +19,7 @@ kotlin {
 		implementation(project(":loritta-website:embed-editor-crosswindow"))
 		implementation("org.jetbrains.kotlinx:kotlinx-html-js:0.6.11")
 		implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.3.9")
-		api("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerialization")
+		api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLIN_SERIALIZATION}")
 		implementation("io.ktor:ktor-client-js:1.4.1")
 	}
 }

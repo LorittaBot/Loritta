@@ -1,10 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val loriVersion by lazy { ext["lori-version"] as String }
-val kotlinVersion by lazy { ext["kotlin-version"] as String }
-val ktorVersion by lazy { ext["ktor-version"] as String }
-val jdaVersion by lazy { ext["jda-version"] as String }
-
 tasks.withType<KotlinCompile> {
 	kotlinOptions.jvmTarget = "1.8"
 }
@@ -46,8 +41,8 @@ dependencies {
 	api("io.github.microutils:kotlin-logging:1.6.26")
 	api("com.google.code.gson:gson:2.8.6")
 	api("com.github.salomonbrys.kotson:kotson:2.5.0")
-	api("io.ktor:ktor-client-core:$ktorVersion")
-	api("io.ktor:ktor-client-cio:$ktorVersion")
+	api("io.ktor:ktor-client-core:${Versions.KTOR}")
+	api("io.ktor:ktor-client-cio:${Versions.KTOR}")
 	testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.0-M1")
 	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.0-M1")
 	testImplementation("io.mockk:mockk:1.9.3")
