@@ -282,8 +282,10 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
                                             DailyGuildMissingRequirement.REQUIRES_MORE_XP -> {
                                                 +"sendo mais ativo em "
                                             }
+                                            DailyGuildMissingRequirement.USER_NOT_MEMBER -> {
+                                                +"ou entrando novamente em "
+                                            }
                                         }
-
                                         +failedGuild.guild.name
                                         +"!"
                                     }

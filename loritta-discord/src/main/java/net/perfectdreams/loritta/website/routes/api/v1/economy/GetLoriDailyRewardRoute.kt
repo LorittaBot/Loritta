@@ -309,6 +309,24 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 							?: continue
 					val id = guild.id.toLong()
 
+					val jdaUser = lorittaShards.getUserById(userIdentification.id.toLong())
+					val jdaGuild = lorittaShards.getGuildById(id)
+
+					if (jdaUser?.let { jdaGuild?.isMember(it) } == false) {
+						failedDailyServersInfo.add(
+								jsonObject(
+										"guild" to jsonObject(
+												"name" to guild.name,
+												"iconUrl" to guild.icon,
+												"id" to guild.id
+										),
+										"type" to DailyGuildMissingRequirement.USER_NOT_MEMBER.toString(),
+										"multiplier" to getDailyMultiplier(donationValue)
+								)
+						)
+						continue
+					}
+
 					val xp = GuildProfile.find { (GuildProfiles.guildId eq id) and (GuildProfiles.userId eq userIdentification.id.toLong()) }.firstOrNull()?.xp
 							?: 0L
 
@@ -320,8 +338,8 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 												"iconUrl" to guild.icon,
 												"id" to guild.id
 										),
-										"type" to DailyGuildMissingRequirement.REQUIRES_MORE_XP.toString(),
 										"data" to 500 - xp,
+										"type" to DailyGuildMissingRequirement.REQUIRES_MORE_XP.toString(),
 										"multiplier" to getDailyMultiplier(donationValue)
 								)
 						)

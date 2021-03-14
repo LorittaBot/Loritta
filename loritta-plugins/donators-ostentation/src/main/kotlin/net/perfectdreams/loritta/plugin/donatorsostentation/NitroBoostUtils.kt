@@ -57,9 +57,9 @@ object NitroBoostUtils {
 					logger.info { "Guild $guild has donation features enabled! Giving sonhos to $boosters" }
 
 					loritta.newSuspendedTransaction {
-						Profiles.update({ Profiles.id inList boosters.map { it.user.idLong } }) {
+						Profiles.update({ Profiles.id inList boosters.filter { guild.isMember(it.user) }.map { it.user.idLong } }) {
 							with(SqlExpressionBuilder) {
-								it.update(money, money + 2)
+								it.update(money, money + 4)
 							}
 						}
 					}
