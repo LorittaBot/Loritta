@@ -20,8 +20,6 @@ rootProject.name = "loritta-parent"
 include(":loritta-api")
 include(":loritta-serializable-commons")
 include(":loritta-discord")
-// include(":loritta-eris")
-// include(":loritta-twitter")
 
 // Plugins
 include(":loritta-plugins")
@@ -48,20 +46,13 @@ include(":loritta-plugins:api-only-test")
 // Website
 include(":loritta-website")
 include(":loritta-website:spicy-morenitta")
-// include(":loritta-website:lotrunfo-server")
 include(":loritta-website:embed-renderer")
 include(":loritta-website:embed-editor-crosswindow")
 include(":loritta-website:embed-editor")
-
-// Parallax Code Server
-// include(":parallax-kotlin:parallax-code-api")
-// include(":parallax-kotlin:parallax-code-server")
-// include(":parallax-kotlin:parallax-code-executor")
 
 // Watchdoggo
 include(":loritta-watchdog-bot")
 
 // Misc
 include(":temmie-discord-auth")
-// include(":loritta-premium")
 include(":shard-controller")
