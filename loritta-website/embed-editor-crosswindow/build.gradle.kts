@@ -15,16 +15,4 @@ kotlin {
 			}
 		}
 	}
-	/* js {
-		browser()
-	} */
-
-	/* sourceSets {
-		js().compilations["main"].defaultSourceSet {
-			dependencies {
-				api(":loritta-website:embed-renderer")
-				api("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerialization")
-			}
-		}
-	} */
 }
