@@ -39,12 +39,14 @@ val sourcesJar by tasks.registering(Jar::class) {
     from(sourceSets.main.get().allSource)
 }
 
-val fatJar = (extra["fat-jar-stuff"] as (String, Map<String, String>) -> (Task)).invoke(
+tasks {
+    val fatJar = fatJarTask(
+        configurations.runtimeClasspath.get(),
+        jar.get(),
         "net.perfectdreams.loritta.shardcontroller.ShardControllerServerLauncher",
         mapOf()
-)
+    )
 
-tasks {
     "build" {
         dependsOn(fatJar)
     }

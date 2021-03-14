@@ -123,14 +123,16 @@ tasks.test {
     useJUnitPlatform()
 }
 
-val fatJar = (extra["fat-jar-stuff"] as (String, Map<String, String>) -> (Task)).invoke(
+tasks {
+    val fatJar = fatJarTask(
+        configurations.runtimeClasspath.get(),
+        jar.get(),
         "com.mrpowergamerbr.loritta.LorittaLauncher",
         mapOf(
-                "JDA-Version" to Versions.JDA
+            "JDA-Version" to Versions.JDA
         )
-)
+    )
 
-tasks {
     "build" {
         dependsOn(fatJar)
     }
