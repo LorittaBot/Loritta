@@ -14,8 +14,13 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.tables.*
-import net.perfectdreams.loritta.utils.PaymentUtils
+import net.perfectdreams.loritta.tables.BackgroundPayments
+import net.perfectdreams.loritta.tables.Backgrounds
+import net.perfectdreams.loritta.tables.DailyProfileShopItems
+import net.perfectdreams.loritta.tables.DailyShopItems
+import net.perfectdreams.loritta.tables.DailyShops
+import net.perfectdreams.loritta.tables.ProfileDesigns
+import net.perfectdreams.loritta.tables.ProfileDesignsPayments
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.utils.config.FanArtArtist
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
@@ -23,7 +28,11 @@ import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
 import java.util.concurrent.TimeUnit
 
@@ -86,11 +95,9 @@ class PostBuyDailyShopItemRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLog
 								)
 						)
 
-					profile.takeSonhosNested(cost.toLong())
-					PaymentUtils.addToTransactionLogNested(
-							cost.toLong(),
-							SonhosPaymentReason.BACKGROUND,
-							givenBy = profile.id.value
+					profile.takeSonhosAndAddToTransactionLogNested(
+						cost.toLong(),
+						SonhosPaymentReason.BACKGROUND
 					)
 
 					BackgroundPayments.insert {
@@ -110,11 +117,9 @@ class PostBuyDailyShopItemRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLog
 
 						val creator = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(discordId)
 
-						creator.addSonhosNested(creatorReceived)
-						PaymentUtils.addToTransactionLogNested(
-								creatorReceived,
-								SonhosPaymentReason.BACKGROUND,
-								receivedBy = creator.id.value
+						creator.addSonhosAndAddToTransactionLogNested(
+							creatorReceived,
+							SonhosPaymentReason.BACKGROUND
 						)
 					}
 				} else if (type == "profile-design") {
@@ -156,11 +161,9 @@ class PostBuyDailyShopItemRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLog
 								)
 						)
 
-					profile.takeSonhosNested(cost.toLong())
-					PaymentUtils.addToTransactionLogNested(
+					profile.takeSonhosAndAddToTransactionLogNested(
 							cost.toLong(),
-							SonhosPaymentReason.PROFILE,
-							givenBy = profile.id.value
+							SonhosPaymentReason.PROFILE
 					)
 
 					ProfileDesignsPayments.insert {
@@ -180,11 +183,9 @@ class PostBuyDailyShopItemRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLog
 
 						val creator = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateLorittaProfile(discordId)
 
-						creator.addSonhosNested(creatorReceived)
-						PaymentUtils.addToTransactionLogNested(
-								creatorReceived,
-								SonhosPaymentReason.PROFILE,
-								receivedBy = creator.id.value
+						creator.addSonhosAndAddToTransactionLogNested(
+							creatorReceived,
+							SonhosPaymentReason.PROFILE
 						)
 					}
 				}

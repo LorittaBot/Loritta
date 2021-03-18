@@ -12,7 +12,6 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
 import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.utils.UserPremiumPlans
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -94,12 +93,10 @@ class RaffleThread : Thread("Raffle Thread") {
 			val lorittaProfile = loritta.getOrCreateLorittaProfile(winnerId)
 			logger.info("$lastWinnerId ganhou $lastWinnerPrize sonhos ($moneyWithoutTaxes without taxes; antes ele possuia ${lorittaProfile.money} sonhos) na Rifa!")
 
-			transaction(Databases.loritta){
-				lorittaProfile.addSonhosNested(money.toLong())
-				PaymentUtils.addToTransactionLogNested(
-						money.toLong(),
-						SonhosPaymentReason.RAFFLE,
-						receivedBy = winnerId.toLongOrNull()
+			transaction(Databases.loritta) {
+				lorittaProfile.addSonhosAndAddToTransactionLogNested(
+					money.toLong(),
+					SonhosPaymentReason.RAFFLE
 				)
 			}
 

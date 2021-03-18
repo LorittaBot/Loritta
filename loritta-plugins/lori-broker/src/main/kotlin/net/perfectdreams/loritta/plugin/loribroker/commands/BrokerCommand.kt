@@ -8,7 +8,6 @@ import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractComman
 import net.perfectdreams.loritta.plugin.loribroker.LoriBrokerPlugin
 import net.perfectdreams.loritta.plugin.loribroker.tables.BoughtStocks
 import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import org.jetbrains.exposed.sql.selectAll
 
@@ -32,17 +31,10 @@ class BrokerCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractCommandBase(p
 					loritta.newSuspendedTransaction {
 						val profile = LorittaLauncher.loritta._getLorittaProfile(user)
 
-						if (profile != null) {
-							profile.addSonhosNested(
-									track
-							)
-
-							PaymentUtils.addToTransactionLogNested(
-									track,
-									SonhosPaymentReason.STOCKS,
-									receivedBy = user
-							)
-						}
+						profile?.addSonhosAndAddToTransactionLogNested(
+							track,
+							SonhosPaymentReason.STOCKS
+						)
 					}
 				}
 

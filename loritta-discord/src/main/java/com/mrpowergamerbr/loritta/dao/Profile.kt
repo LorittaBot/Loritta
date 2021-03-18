@@ -6,6 +6,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import mu.KotlinLogging
 import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.utils.PaymentUtils
+import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.utils.TakingMoreSonhosThanAllowedException
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
@@ -149,6 +150,62 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 		// If everything went well, refresh the current DAO
 		if (refreshOnSuccess)
 			this@Profile.refresh()
+	}
+
+	/**
+	 * Add sonhos and adds to the transaction log
+	 */
+	fun addSonhosAndAddToTransactionLogNested(
+		quantity: Long,
+		reason: SonhosPaymentReason,
+		givenAtMillis: Long = System.currentTimeMillis(),
+		refreshBeforeAction: Boolean = true,
+		checksBeforeAction: ((Profile) -> (Boolean))? = null,
+		refreshOnSuccess: Boolean = true
+	) {
+		addSonhosNested(
+			quantity,
+			refreshBeforeAction,
+			checksBeforeAction,
+			refreshOnSuccess
+		)
+
+		PaymentUtils.addToTransactionLogNested(
+			quantity,
+			reason,
+			id.value,
+			null,
+			givenAtMillis
+		)
+	}
+
+	/**
+	 * Takes sonhos and adds to the transaction log
+	 */
+	fun takeSonhosAndAddToTransactionLogNested(
+		quantity: Long,
+		reason: SonhosPaymentReason,
+		givenAtMillis: Long = System.currentTimeMillis(),
+		refreshBeforeAction: Boolean = true,
+		failIfQuantityIsSmallerThanWhatUserHas: Boolean = true,
+		checksBeforeAction: ((Profile) -> (Boolean))? = null,
+		refreshOnSuccess: Boolean = true
+	) {
+		takeSonhosNested(
+			quantity,
+			refreshBeforeAction,
+			failIfQuantityIsSmallerThanWhatUserHas,
+			checksBeforeAction,
+			refreshOnSuccess
+		)
+
+		PaymentUtils.addToTransactionLogNested(
+			quantity,
+			reason,
+			null,
+			id.value,
+			givenAtMillis
+		)
 	}
 
 	suspend fun getProfileBackground() = loritta.getUserProfileBackground(userId)

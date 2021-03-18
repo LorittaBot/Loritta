@@ -13,7 +13,10 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.plugin.loribroker.LoriBrokerPlugin
 import net.perfectdreams.loritta.plugin.loribroker.tables.BoughtStocks
-import net.perfectdreams.loritta.utils.*
+import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.GenericReplies
+import net.perfectdreams.loritta.utils.NumberUtils
+import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.select
 
@@ -92,11 +95,9 @@ class BrokerBuyStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComma
 						this[BoughtStocks.boughtAt] = now
 					}
 
-					lorittaUser.profile.takeSonhosNested(howMuchValue)
-					PaymentUtils.addToTransactionLogNested(
-							howMuchValue,
-							SonhosPaymentReason.STOCKS,
-							givenBy = user.idLong
+					lorittaUser.profile.takeSonhosAndAddToTransactionLogNested(
+						howMuchValue,
+						SonhosPaymentReason.STOCKS
 					)
 				}
 				logger.info { "User ${this.user.idLong} bought $number $tickerId for $howMuchValue" }

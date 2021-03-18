@@ -24,7 +24,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.utils.UserPremiumPlans
@@ -392,11 +391,9 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 					it[Dailies.email] = email
 				}
 
-				lorittaProfile.addSonhosNested(dailyPayout.toLong())
-				PaymentUtils.addToTransactionLogNested(
-						dailyPayout.toLong(),
-						SonhosPaymentReason.DAILY,
-						receivedBy = lorittaProfile.id.value
+				lorittaProfile.addSonhosAndAddToTransactionLogNested(
+					dailyPayout.toLong(),
+					SonhosPaymentReason.DAILY
 				)
 			}
 
