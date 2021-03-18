@@ -60,7 +60,7 @@ class PostRaffleStatusRoute(loritta: LorittaDiscord) : RequiresAPIAuthentication
 
 			if (lorittaProfile.money >= requiredCount) {
 				loritta.newSuspendedTransaction {
-					lorittaProfile.addSonhosAndAddToTransactionLogNested(
+					lorittaProfile.takeSonhosAndAddToTransactionLogNested(
 						requiredCount,
 						SonhosPaymentReason.RAFFLE
 					)
