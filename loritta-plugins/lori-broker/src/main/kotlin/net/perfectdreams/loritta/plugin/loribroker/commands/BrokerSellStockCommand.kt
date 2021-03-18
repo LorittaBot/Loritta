@@ -13,7 +13,10 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.plugin.loribroker.LoriBrokerPlugin
 import net.perfectdreams.loritta.plugin.loribroker.tables.BoughtStocks
-import net.perfectdreams.loritta.utils.*
+import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.GenericReplies
+import net.perfectdreams.loritta.utils.NumberUtils
+import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.select
@@ -104,11 +107,9 @@ class BrokerSellStockCommand(val plugin: LoriBrokerPlugin) : DiscordAbstractComm
 						BoughtStocks.id inList stocksThatWillBeSold.map { it[BoughtStocks.id] }
 					}
 
-					lorittaUser.profile.addSonhosNested(howMuchWillBePaidToTheUser)
-					PaymentUtils.addToTransactionLogNested(
-							howMuchWillBePaidToTheUser,
-							SonhosPaymentReason.STOCKS,
-							receivedBy = user.idLong
+					lorittaUser.profile.addSonhosAndAddToTransactionLogNested(
+						howMuchWillBePaidToTheUser,
+						SonhosPaymentReason.STOCKS
 					)
 				}
 

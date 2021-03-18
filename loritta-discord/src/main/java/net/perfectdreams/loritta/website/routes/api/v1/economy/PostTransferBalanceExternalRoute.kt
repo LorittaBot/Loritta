@@ -1,14 +1,17 @@
 package net.perfectdreams.loritta.website.routes.api.v1.economy
 
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.double
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.jsonObject
+import com.github.salomonbrys.kotson.long
+import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
-import io.ktor.application.ApplicationCall
-import io.ktor.request.receiveText
+import io.ktor.application.*
+import io.ktor.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
@@ -31,11 +34,9 @@ class PostTransferBalanceExternalRoute(loritta: LorittaDiscord) : RequiresAPIAut
 		val finalMoney = (garticos * transferRate)
 
 		loritta.newSuspendedTransaction {
-			profile.addSonhosNested(finalMoney.toLong())
-			PaymentUtils.addToTransactionLogNested(
-					finalMoney.toLong(),
-					SonhosPaymentReason.GARTICOS_TRANSFER,
-					receivedBy = profile.id.value
+			profile.addSonhosAndAddToTransactionLogNested(
+				finalMoney.toLong(),
+				SonhosPaymentReason.GARTICOS_TRANSFER
 			)
 		}
 

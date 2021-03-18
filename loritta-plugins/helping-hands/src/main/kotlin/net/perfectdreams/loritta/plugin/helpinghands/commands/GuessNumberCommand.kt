@@ -8,7 +8,6 @@ import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractComman
 import net.perfectdreams.loritta.plugin.helpinghands.HelpingHandsPlugin
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.GenericReplies
-import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 
 class GuessNumberCommand(plugin: HelpingHandsPlugin) : DiscordAbstractCommandBase(
@@ -56,24 +55,18 @@ class GuessNumberCommand(plugin: HelpingHandsPlugin) : DiscordAbstractCommandBas
 
             if (won) {
                 loritta.newSuspendedTransaction {
-                    profile.addSonhosNested(VICTORY_PRIZE)
-
-                    PaymentUtils.addToTransactionLogNested(
-                            VICTORY_PRIZE,
-                            SonhosPaymentReason.GUESS_NUMBER,
-                            receivedBy = user.idLong
+                    profile.addSonhosAndAddToTransactionLogNested(
+                        VICTORY_PRIZE,
+                        SonhosPaymentReason.GUESS_NUMBER,
                     )
                 }
 
                 reply(locale["commands.command.guessnumber.youWin", VICTORY_PRIZE], Emotes.LORI_RICH)
             } else {
                 loritta.newSuspendedTransaction {
-                    profile.takeSonhosNested(LOSE_PRIZE)
-
-                    PaymentUtils.addToTransactionLogNested(
-                            LOSE_PRIZE,
-                            SonhosPaymentReason.GUESS_NUMBER,
-                            givenBy = user.idLong
+                    profile.takeSonhosAndAddToTransactionLogNested(
+                        LOSE_PRIZE,
+                        SonhosPaymentReason.GUESS_NUMBER,
                     )
                 }
 

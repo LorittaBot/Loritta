@@ -4,13 +4,13 @@ import com.mrpowergamerbr.loritta.Loritta.Companion.RANDOM
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.tables.BomDiaECiaWinners
 import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
@@ -47,11 +47,9 @@ class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY
 				}
 
 				loritta.newSuspendedTransaction {
-					profile.takeSonhosNested(75)
-					PaymentUtils.addToTransactionLogNested(
-							75,
-							SonhosPaymentReason.BOM_DIA_E_CIA,
-							givenBy = context.userHandle.idLong
+					profile.takeSonhosAndAddToTransactionLogNested(
+						75,
+						SonhosPaymentReason.BOM_DIA_E_CIA
 					)
 				}
 
