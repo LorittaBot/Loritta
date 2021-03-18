@@ -26,10 +26,10 @@ import java.util.concurrent.ConcurrentHashMap
  * Creates a Emoji Fight
  */
 class EmojiFight(
-        val plugin: HelpingHandsPlugin,
-        private val context: DiscordCommandContext,
-        private val entryPrice: Long?, // null = only for fun emoji fight
-        private val maxPlayers: Int = DEFAULT_MAX_PLAYER_COUNT
+    val plugin: HelpingHandsPlugin,
+    private val context: DiscordCommandContext,
+    private val entryPrice: Long?, // null = only for fun emoji fight
+    private val maxPlayers: Int = DEFAULT_MAX_PLAYER_COUNT
 ) {
     val loritta = context.loritta
     private val availableEmotes = emojis.toMutableList()
@@ -111,41 +111,41 @@ class EmojiFight(
         }
 
         message.addReaction("✅")
-                .queue()
+            .queue()
 
         message.addReaction("\uD83D\uDC14")
-                .queue()
+            .queue()
     }
 
     private fun getEventEmbed(): MessageEmbed {
         val baseEmbed = EmbedBuilder()
-                .setTitle("${Emotes.LORI_BAN_HAMMER} ${context.locale["commands.command.emojifight.fightTitle"]}")
-                .setDescription(
-                        if (entryPrice != null) {
-                            context.locale
-                                    .getList(
-                                            "commands.command.emojifightbet.fightDescription",
-                                            entryPrice,
-                                            entryPrice * (participatingUsers.size - 1), // Needs to subtract -1 because the winner *won't* pay for his win
-                                            "\uD83D\uDC14",
-                                            context.user.asMention,
-                                            "✅",
-                                            maxPlayers
-                                    ).joinToString("\n") + "\n\n**" + context.locale["commands.command.emojifight.participants", participatingUsers.size] + "**\n"
-                        } else {
-                            context.locale
-                                    .getList(
-                                            "commands.command.emojifight.fightDescription",
-                                            Emotes.LORI_PAT,
-                                            context.serverConfig.commandPrefix,
-                                            "\uD83D\uDC14",
-                                            context.user.asMention,
-                                            "✅",
-                                            maxPlayers
-                                    ).joinToString("\n") + "\n\n**" + context.locale["commands.command.emojifight.participants", participatingUsers.size] + "**\n"
-                        }
-                )
-                .setColor(Constants.ROBLOX_RED)
+            .setTitle("${Emotes.LORI_BAN_HAMMER} ${context.locale["commands.command.emojifight.fightTitle"]}")
+            .setDescription(
+                if (entryPrice != null) {
+                    context.locale
+                        .getList(
+                            "commands.command.emojifightbet.fightDescription",
+                            entryPrice,
+                            entryPrice * (participatingUsers.size - 1), // Needs to subtract -1 because the winner *won't* pay for his win
+                            "\uD83D\uDC14",
+                            context.user.asMention,
+                            "✅",
+                            maxPlayers
+                        ).joinToString("\n") + "\n\n**" + context.locale["commands.command.emojifight.participants", participatingUsers.size] + "**\n"
+                } else {
+                    context.locale
+                        .getList(
+                            "commands.command.emojifight.fightDescription",
+                            Emotes.LORI_PAT,
+                            context.serverConfig.commandPrefix,
+                            "\uD83D\uDC14",
+                            context.user.asMention,
+                            "✅",
+                            maxPlayers
+                        ).joinToString("\n") + "\n\n**" + context.locale["commands.command.emojifight.participants", participatingUsers.size] + "**\n"
+                }
+            )
+            .setColor(Constants.ROBLOX_RED)
 
         participatingUsers.entries.forEach {
             baseEmbed.appendDescription("${it.value}: ${it.key.asMention}\n")
@@ -253,18 +253,18 @@ class EmojiFight(
 
                 winnerProfile.addSonhosNested(taxedRealPrize)
                 PaymentUtils.addToTransactionLogNested(
-                        taxedRealPrize,
-                        SonhosPaymentReason.EMOJI_FIGHT,
-                        receivedBy = winnerProfile.id.value
+                    taxedRealPrize,
+                    SonhosPaymentReason.EMOJI_FIGHT,
+                    receivedBy = winnerProfile.id.value
                 )
 
                 for (loser in losers) {
                     val loserProfile = userProfiles[loser.key]!!
                     loserProfile.takeSonhosNested(entryPrice)
                     PaymentUtils.addToTransactionLogNested(
-                            entryPrice,
-                            SonhosPaymentReason.EMOJI_FIGHT,
-                            givenBy = loserProfile.id.value
+                        entryPrice,
+                        SonhosPaymentReason.EMOJI_FIGHT,
+                        givenBy = loserProfile.id.value
                     )
                 }
 
@@ -277,8 +277,8 @@ class EmojiFight(
         val (winner, losers, realPrize, taxedRealPrize) = result ?: run {
             // Needs to use "reply" because if we use "fail", the exception is triggered on the onReactionAddByAuthor
             context.reply(
-                    context.locale["commands.command.emojifight.needsMorePlayers"],
-                    Emotes.LORI_CRYING
+                context.locale["commands.command.emojifight.needsMorePlayers"],
+                Emotes.LORI_CRYING
             )
             return
         }
@@ -293,151 +293,153 @@ class EmojiFight(
                 "commands.command.emojifightbet.wonBetTaxed"
 
             context.reply(
-                    context.locale[
-                            localeKey,
-                            winner.value,
-                            winner.key.asMention,
-                            taxedRealPrize,
-                            tax,
-                            losers.size,
-                            entryPrice
-                    ],
-                    Emotes.LORI_RICH,
-                    mentionUser = false
+                context.locale[
+                        localeKey,
+                        winner.value,
+                        winner.key.asMention,
+                        taxedRealPrize,
+                        tax,
+                        losers.size,
+                        entryPrice,
+                        context.user.asMention
+                ],
+                Emotes.LORI_RICH,
+                mentionUser = false
             )
         } else {
             context.reply(
-                    context.locale[
-                            "commands.command.emojifight.wonBet",
-                            winner.value,
-                            winner.key.asMention
-                    ],
-                    Emotes.LORI_SMILE,
-                    mentionUser = false
+                context.locale[
+                        "commands.command.emojifight.wonBet",
+                        winner.value,
+                        winner.key.asMention,
+                        context.user.asMention
+                ],
+                Emotes.LORI_SMILE,
+                mentionUser = false
             )
         }
     }
 
     private data class DbResponse(
-            val winner: MutableMap.MutableEntry<User, String>,
-            val losers: MutableSet<MutableMap.MutableEntry<User, String>>,
-            val realPrize: Long,
-            val taxedPrize: Long
+        val winner: MutableMap.MutableEntry<User, String>,
+        val losers: MutableSet<MutableMap.MutableEntry<User, String>>,
+        val realPrize: Long,
+        val taxedPrize: Long
     )
 
     companion object {
         val DEFAULT_MAX_PLAYER_COUNT = 30
 
         val emojis = mutableListOf(
-                "🙈",
-                "🙉",
-                "🙊",
-                "🐵",
-                "🐒",
-                "🦍",
-                "🦧",
-                "🐶",
-                "🐕",
-                "🦮",
-                "🐕‍🦺",
-                "🐩",
-                "🐺",
-                "🦊",
-                "🦝",
-                "🐱",
-                "🐈",
-                "🦁",
-                "🐯",
-                "🐅",
-                "🐆",
-                "🐴",
-                "🐎",
-                "🦄",
-                "🦓",
-                "🦌",
-                "🐮",
-                "🐂",
-                "🐃",
-                "🐄",
-                "🐷",
-                "🐖",
-                "🐗",
-                "🐏",
-                "🐑",
-                "🐐",
-                "🐪",
-                "🐫",
-                "🦙",
-                "🦒",
-                "🐘",
-                "🦏",
-                "🦛",
-                "🐭",
-                "🐁",
-                "🐀",
-                "🐹",
-                "🐰",
-                "🐇",
-                "🐿",
-                "🦔",
-                "🦇",
-                "🐻",
-                "🐨",
-                "🐼",
-                "🦥",
-                "🦦",
-                "🦨",
-                "🦘",
-                "🦡",
-                "🦃",
-                "🐔",
-                "🐓",
-                "🐣",
-                "🐤",
-                "🐥",
-                "🐦",
-                "🐧",
-                "🕊",
-                "🦅",
-                "🦆",
-                "🦢",
-                "🦉",
-                "🦩",
-                "🦚",
-                "🦜",
-                "🐸",
-                "🐊",
-                "🐢",
-                "🦎",
-                "🐍",
-                "🐲",
-                "🐉",
-                "🦕",
-                "🦖",
-                "🐳",
-                "🐋",
-                "🐬",
-                "🐟",
-                "🐠",
-                "🐡",
-                "🦈",
-                "🐙",
-                "🐚",
-                "🐌",
-                "🦋",
-                "🐛",
-                "🐜",
-                "🐝",
-                "🐞",
-                "🦗",
-                "🕷",
-                "🦂",
-                "🦟",
-                "🦠",
-                "\uD83E\uDD80",
-                "\uD83E\uDD9E",
-                "\uD83E\uDD90",
-                "\uD83E\uDD91"
+            "🙈",
+            "🙉",
+            "🙊",
+            "🐵",
+            "🐒",
+            "🦍",
+            "🦧",
+            "🐶",
+            "🐕",
+            "🦮",
+            "🐕‍🦺",
+            "🐩",
+            "🐺",
+            "🦊",
+            "🦝",
+            "🐱",
+            "🐈",
+            "🦁",
+            "🐯",
+            "🐅",
+            "🐆",
+            "🐴",
+            "🐎",
+            "🦄",
+            "🦓",
+            "🦌",
+            "🐮",
+            "🐂",
+            "🐃",
+            "🐄",
+            "🐷",
+            "🐖",
+            "🐗",
+            "🐏",
+            "🐑",
+            "🐐",
+            "🐪",
+            "🐫",
+            "🦙",
+            "🦒",
+            "🐘",
+            "🦏",
+            "🦛",
+            "🐭",
+            "🐁",
+            "🐀",
+            "🐹",
+            "🐰",
+            "🐇",
+            "🐿",
+            "🦔",
+            "🦇",
+            "🐻",
+            "🐨",
+            "🐼",
+            "🦥",
+            "🦦",
+            "🦨",
+            "🦘",
+            "🦡",
+            "🦃",
+            "🐔",
+            "🐓",
+            "🐣",
+            "🐤",
+            "🐥",
+            "🐦",
+            "🐧",
+            "🕊",
+            "🦅",
+            "🦆",
+            "🦢",
+            "🦉",
+            "🦩",
+            "🦚",
+            "🦜",
+            "🐸",
+            "🐊",
+            "🐢",
+            "🦎",
+            "🐍",
+            "🐲",
+            "🐉",
+            "🦕",
+            "🦖",
+            "🐳",
+            "🐋",
+            "🐬",
+            "🐟",
+            "🐠",
+            "🐡",
+            "🦈",
+            "🐙",
+            "🐚",
+            "🐌",
+            "🦋",
+            "🐛",
+            "🐜",
+            "🐝",
+            "🐞",
+            "🦗",
+            "🕷",
+            "🦂",
+            "🦟",
+            "🦠",
+            "\uD83E\uDD80",
+            "\uD83E\uDD9E",
+            "\uD83E\uDD90",
+            "\uD83E\uDD91"
         )
     }
 }
