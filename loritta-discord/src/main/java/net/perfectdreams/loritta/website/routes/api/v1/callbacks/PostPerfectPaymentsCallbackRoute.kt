@@ -5,7 +5,6 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.DonationKey
-import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -27,6 +26,7 @@ import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.tables.SonhosBundles
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.PaymentUtils
+import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.sequins.ktor.BaseRoute
@@ -230,12 +230,14 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaDiscord) : BaseRoute(
 						return
 					}
 
+					// TODO: Why not have a getOrCreateLorittaProfileAsync smh
+					val profile = loritta.getLorittaProfileAsync(internalPayment.userId) ?: loritta.getOrCreateLorittaProfile(internalPayment.userId)
+
 					loritta.newSuspendedTransaction {
-						Profiles.update({ Profiles.id eq internalPayment.userId }) {
-							with(SqlExpressionBuilder) {
-								it.update(money, money + bundle[SonhosBundles.sonhos])
-							}
-						}
+						profile.addSonhosAndAddToTransactionLogNested(
+							bundle[SonhosBundles.sonhos],
+							SonhosPaymentReason.BUNDLE_PURCHASE
+						)
 					}
 
 					sendPaymentApprovedDirectMessage(internalPayment.userId, loritta.getLocaleById("default"), "${com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url}support")
