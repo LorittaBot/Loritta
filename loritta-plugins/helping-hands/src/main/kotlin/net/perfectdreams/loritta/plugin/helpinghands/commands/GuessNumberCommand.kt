@@ -65,7 +65,7 @@ class GuessNumberCommand(plugin: HelpingHandsPlugin) : DiscordAbstractCommandBas
             } else {
                 loritta.newSuspendedTransaction {
                     profile.takeSonhosAndAddToTransactionLogNested(
-                        VICTORY_PRIZE,
+                        LOSE_PRIZE,
                         SonhosPaymentReason.GUESS_NUMBER,
                     )
                 }
