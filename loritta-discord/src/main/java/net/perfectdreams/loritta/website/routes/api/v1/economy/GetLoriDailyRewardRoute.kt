@@ -20,6 +20,7 @@ import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.*
 import io.ktor.http.*
+import io.ktor.request.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
@@ -389,6 +390,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 					it[Dailies.receivedAt] = receivedDailyAt
 					it[Dailies.ip] = ip
 					it[Dailies.email] = email
+					it[Dailies.userAgent] = call.request.userAgent()
 				}
 
 				lorittaProfile.addSonhosAndAddToTransactionLogNested(

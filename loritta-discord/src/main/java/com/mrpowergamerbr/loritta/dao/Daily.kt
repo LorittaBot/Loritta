@@ -12,4 +12,5 @@ class Daily(id: EntityID<Long>) : LongEntity(id) {
 	var receivedAt by Dailies.receivedAt
 	var ip by Dailies.ip
 	var email by Dailies.email
+	var userAgent by Dailies.userAgent
 }
