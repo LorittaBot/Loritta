@@ -3,20 +3,21 @@ package net.perfectdreams.loritta.website.routes.api.v1.callbacks
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
-import io.ktor.application.ApplicationCall
-import io.ktor.http.HttpStatusCode
-import io.ktor.request.header
-import io.ktor.request.receiveText
-import io.ktor.response.respondText
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.request.*
+import io.ktor.response.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.WebsiteVoteSource
 import net.perfectdreams.loritta.utils.WebsiteVoteUtils
+import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import net.perfectdreams.sequins.ktor.BaseRoute
 
 class PostDiscordBotsCallbackRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/callbacks/discord-bots") {
@@ -55,10 +56,13 @@ class PostDiscordBotsCallbackRoute(val loritta: LorittaDiscord) : BaseRoute("/ap
 		val type = payload["type"].string
 
 		if (type == "upvote" || (type == "test" && com.mrpowergamerbr.loritta.utils.loritta.config.isOwner(userId))) {
-			WebsiteVoteUtils.addVote(
+			// We need to run this in a separate thread to avoid top.gg timing out and repeating the request multiple times
+			GlobalScope.launch(loritta.coroutineDispatcher) {
+				WebsiteVoteUtils.addVote(
 					userId,
 					WebsiteVoteSource.DISCORD_BOTS
-			)
+				)
+			}
 		}
 
 		call.respondText(status = HttpStatusCode.NoContent) { "" }
