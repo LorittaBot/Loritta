@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.Emotes
 
-class DiscordBotListCommand : AbstractCommand("discordbotlist", listOf("dbl", "upvote"), category = CommandCategory.MISC) {
+class DiscordBotListCommand : AbstractCommand("discordbotlist", listOf("dbl", "upvote", "vote"), category = CommandCategory.MISC) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.dbl.description")
 
     override suspend fun run(context: CommandContext,locale: BaseLocale) {
