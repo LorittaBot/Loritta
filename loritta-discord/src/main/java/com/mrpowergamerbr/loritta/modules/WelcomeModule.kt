@@ -48,7 +48,7 @@ object WelcomeModule {
 
 								if (textChannel != null) {
 									if (textChannel.canTalk()) {
-										if (guild.selfMember.hasPermission(Permission.MESSAGE_ATTACH_FILES)) {
+										if (guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_ATTACH_FILES)) {
 											val lines = mutableListOf<String>()
 											for (user in v1) {
 												lines.add("${user.name}#${user.discriminator} - (${user.id})")
@@ -91,7 +91,7 @@ object WelcomeModule {
 
 								if (textChannel != null) {
 									if (textChannel.canTalk()) {
-										if (guild.selfMember.hasPermission(Permission.MESSAGE_ATTACH_FILES)) {
+										if (guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_ATTACH_FILES)) {
 											val lines = mutableListOf<String>()
 											for (user in v1) {
 												lines.add("${user.name}#${user.discriminator} - (${user.id})")
@@ -149,7 +149,7 @@ object WelcomeModule {
 					val msg = joinLeaveConfig.joinMessage
 					logger.trace { "Member = ${event.member}, Join message is $msg for $guild, it will be sent at $textChannel"}
 
-					if (!msg.isNullOrEmpty() && event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+					if (!msg.isNullOrEmpty() && event.guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_EMBED_LINKS)) {
 						val deleteJoinMessagesAfter = welcomerConfig.deleteJoinMessagesAfter
 						logger.debug { "Member = ${event.member}, Sending join message \"$msg\" in $textChannel at $guild"}
 
@@ -239,7 +239,7 @@ object WelcomeModule {
 					// Invalidar, já que a Loritta faz cache mesmo que o servidor não use a função
 					EventLogListener.bannedUsers.invalidate(bannedUserKey)
 
-					if (!msg.isNullOrEmpty()) {
+					if (!msg.isNullOrEmpty() && event.guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_EMBED_LINKS)) {
 						val deleteRemoveMessagesAfter = welcomerConfig.deleteRemoveMessagesAfter
 						logger.debug { "User = ${event.user}, Member = ${event.member}, Sending quit message \"$msg\" in $textChannel at $guild"}
 
