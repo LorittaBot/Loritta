@@ -31,6 +31,7 @@ import net.perfectdreams.loritta.commands.vanilla.`fun`.*
 import net.perfectdreams.loritta.commands.vanilla.administration.*
 import net.perfectdreams.loritta.commands.vanilla.economy.*
 import net.perfectdreams.loritta.commands.vanilla.magic.*
+import net.perfectdreams.loritta.commands.vanilla.misc.*
 import net.perfectdreams.loritta.commands.vanilla.roblox.*
 import net.perfectdreams.loritta.commands.vanilla.social.*
 import net.perfectdreams.loritta.dao.Payment
@@ -90,6 +91,8 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
                 // ===[ MISC ]===
                 FanArtsCommand(this@LorittaDiscord),
+                DiscordBotListCommand(this@LorittaDiscord),
+                DiscordBotListStatusCommand(this@LorittaDiscord),
 
                 // ===[ DISCORD ]===
                 ChannelInfoCommand(this@LorittaDiscord),
