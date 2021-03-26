@@ -114,7 +114,6 @@ class CommandManager(loritta: Loritta) {
 		commandMap.add(EscolherCommand())
 		commandMap.add(LanguageCommand())
 		commandMap.add(PatreonCommand())
-		commandMap.add(DiscordBotListCommand())
 
 		// =======[ SOCIAL ]======
 		commandMap.add(PerfilCommand())
