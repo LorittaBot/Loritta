@@ -36,6 +36,9 @@ kotlin {
                 api("com.fasterxml.jackson.core:jackson-databind:2.9.8")
                 api("com.github.salomonbrys.kotson:kotson:2.5.0")
                 api("io.ktor:ktor-client-apache:${Versions.KTOR}")
+
+                // Used for the LocaleManager
+                implementation("org.yaml:snakeyaml:1.28")
             }
         }
 

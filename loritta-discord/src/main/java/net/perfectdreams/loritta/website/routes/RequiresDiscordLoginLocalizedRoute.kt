@@ -165,7 +165,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 							val serverConfig = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateServerConfig(guild.idLong)
 
 							// Agora nós iremos pegar o locale do servidor
-							val locale = com.mrpowergamerbr.loritta.utils.loritta.getLocaleById(serverConfig.localeId)
+							val locale = com.mrpowergamerbr.loritta.utils.loritta.localeManager.getLocaleById(serverConfig.localeId)
 
 							val userId = userIdentification.id
 

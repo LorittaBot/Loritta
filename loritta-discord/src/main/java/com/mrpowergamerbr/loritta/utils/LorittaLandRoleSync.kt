@@ -63,7 +63,7 @@ class LorittaLandRoleSync : Runnable {
 		val translatorRole = originalGuild.getRoleById("385579854336360449")
 
 		logger.info("Processing translators roles...")
-		val translators = loritta.locales.flatMap { it.value.getList("loritta.translationAuthors") }.distinct()
+		val translators = loritta.localeManager.locales.flatMap { it.value.getList("loritta.translationAuthors") }.distinct()
 
 		val validTranslators = translators.mapNotNull {
 			runBlocking { originalGuild.retrieveMemberOrNullById(it) }

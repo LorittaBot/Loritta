@@ -233,7 +233,7 @@ object GiveawayManager {
 
                     val diff = giveaway.finishAt - System.currentTimeMillis()
 
-                    val locale = loritta.getLocaleById(giveaway.locale)
+                    val locale = loritta.localeManager.getLocaleById(giveaway.locale)
 
                     val giveawayMessage = createGiveawayMessage(
                             locale,
@@ -354,7 +354,7 @@ object GiveawayManager {
         }
 
         val serverConfig = loritta.getOrCreateServerConfig(message.guild.idLong)
-        val locale = loritta.getLocaleById(serverConfig.localeId)
+        val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 
         if (messageReaction != null) {
             logger.info { "Retrieving reactions for the giveaway ${giveaway.id.value}, using ${messageReaction.count} (total reaction count) for the takeAsync(...)" }

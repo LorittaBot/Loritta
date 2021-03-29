@@ -158,7 +158,7 @@ object EventLog {
 
 			if (eventLogConfig.enabled && eventLogConfig.voiceChannelJoins) {
 				val textChannel = member.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return
-				val locale = loritta.getLocaleById(serverConfig.localeId)
+				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 
 				if (!textChannel.canTalk())
 					return
@@ -199,7 +199,7 @@ object EventLog {
 
 			if (eventLogConfig.enabled && eventLogConfig.voiceChannelLeaves) {
 				val textChannel = member.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return
-				val locale = loritta.getLocaleById(serverConfig.localeId)
+				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 				if (!textChannel.canTalk())
 					return
 				if (!member.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))

@@ -55,7 +55,7 @@ object WelcomeModule {
 											}
 											val targetStream = IOUtils.toInputStream(lines.joinToString("\n"), Charset.defaultCharset())
 
-											val locale = loritta.getLocaleById(serverConfig.localeId)
+											val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 
 											textChannel.sendMessage(MessageBuilder().setContent(locale["modules.welcomer.tooManyUsersJoining", Emotes.LORI_OWO]).build()).addFile(targetStream, "join-users.log").queue()
 											logger.info("Enviado arquivo de texto em $k1 com todas as pessoas que entraram, yay!")
@@ -98,7 +98,7 @@ object WelcomeModule {
 											}
 											val targetStream = IOUtils.toInputStream(lines.joinToString("\n"), Charset.defaultCharset())
 
-											val locale = loritta.getLocaleById(serverConfig.localeId)
+											val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 
 											textChannel.sendMessage(MessageBuilder().setContent(locale["modules.welcomer.tooManyUsersLeaving", Emotes.LORI_OWO]).build()).addFile(targetStream, "left-users.log").queue()
 											logger.info("Enviado arquivo de texto em $k1 com todas as pessoas que sairam, yay!")
@@ -115,7 +115,7 @@ object WelcomeModule {
 	suspend fun handleJoin(event: GuildMemberJoinEvent, serverConfig: ServerConfig, welcomerConfig: WelcomerConfig) {
 		val joinLeaveConfig = welcomerConfig
 		val tokens = mapOf(
-				"humanized-date" to event.member.timeJoined.humanize(loritta.getLocaleById(serverConfig.localeId))
+				"humanized-date" to event.member.timeJoined.humanize(loritta.localeManager.getLocaleById(serverConfig.localeId))
 		)
 
 		logger.trace { "Member = ${event.member}, Guild ${event.guild} has tellOnJoin = ${joinLeaveConfig.tellOnJoin} and the joinMessage is ${joinLeaveConfig.joinMessage}, canalJoinId = ${joinLeaveConfig.channelJoinId}" }
@@ -172,7 +172,7 @@ object WelcomeModule {
 			logger.debug { "Member = ${event.member}, sending join message (private channel) \"$msg\" at ${event.guild}"}
 
 			if (!msg.isNullOrEmpty()) {
-				val locale = loritta.getLocaleById(serverConfig.localeId)
+				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 
 				event.user.openPrivateChannel().queue {
 					it.sendMessage(

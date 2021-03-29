@@ -22,7 +22,7 @@ object DonateUtils {
 		if (willRestartAt != null) {
 			val instant = Instant.ofEpochMilli(willRestartAt).atZone(ZoneId.systemDefault())
 			val estimatedTime = lorittaShards.shardManager.shards.size * 8_000L
-			val fancyFormatted = com.mrpowergamerbr.loritta.utils.DateUtils.formatMillis(estimatedTime, loritta.getLocaleById(locale.id))
+			val fancyFormatted = com.mrpowergamerbr.loritta.utils.DateUtils.formatMillis(estimatedTime, loritta.localeManager.getLocaleById(locale.id))
 
 			return LorittaReply(
                     locale[

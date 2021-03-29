@@ -101,7 +101,7 @@ class LorittaWebsite(val loritta: Loritta) {
 							RouteKey.ERROR_404,
 							listOf(
 								call.request.path().split("/").drop(2).joinToString("/"),
-								loritta.locales["default"]!! // TODO: Localization
+								loritta.localeManager.locales["default"]!! // TODO: Localization
 							)
 						)
 					)
@@ -225,7 +225,7 @@ class LorittaWebsite(val loritta: Loritta) {
 									}
 								}
 
-								val locale = loritta.getLocaleById(localeId)
+								val locale = loritta.localeManager.getLocaleById(localeId)
 
 								redirect("/${locale.path}${call.request.uri}")
 							}
@@ -245,7 +245,7 @@ class LorittaWebsite(val loritta: Loritta) {
 								}
 							}
 
-							val locale = loritta.getLocaleById(localeId)
+							val locale = loritta.localeManager.getLocaleById(localeId)
 
 							redirect("/${locale.path}${call.request.uri}")
 						}

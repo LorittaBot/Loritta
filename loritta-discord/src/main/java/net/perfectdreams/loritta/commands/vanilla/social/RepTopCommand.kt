@@ -48,7 +48,7 @@ class RepTopCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritt
 				return@executesDiscord
 			}
 
-			val type = if (typeName in loritta.locales.map { locale["commands.command.topreputation.given"].toLowerCase() }.distinct())
+			val type = if (typeName in loritta.localeManager.locales.map { locale["commands.command.topreputation.given"].toLowerCase() }.distinct())
 				TopOrder.MOST_GIVEN
 			else
 				TopOrder.MOST_RECEIVED

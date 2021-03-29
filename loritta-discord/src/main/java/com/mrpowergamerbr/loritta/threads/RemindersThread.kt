@@ -108,7 +108,7 @@ class RemindersThread : Thread("Reminders Thread") {
 				val month = String.format("%02d", calendar[Calendar.MONTH] + 1)
 				val hours = String.format("%02d", calendar[Calendar.HOUR_OF_DAY])
 				val minutes = String.format("%02d", calendar[Calendar.MINUTE])
-				val messageContent = loritta.getLocaleById("default")["commands.command.remindme.success", dayOfMonth, month, calendar[Calendar.YEAR], hours, minutes]
+				val messageContent = loritta.localeManager.getLocaleById("default")["commands.command.remindme.success", dayOfMonth, month, calendar[Calendar.YEAR], hours, minutes]
 
 				message.editMessage("<@${reminder.userId}> $messageContent").queue()
 				message.clearReactions().queue()
@@ -152,7 +152,7 @@ class RemindersThread : Thread("Reminders Thread") {
 			val month = String.format("%02d", calendar[Calendar.MONTH] + 1)
 			val hours = String.format("%02d", calendar[Calendar.HOUR_OF_DAY])
 			val minutes = String.format("%02d", calendar[Calendar.MINUTE])
-			val messageContent = loritta.getLocaleById("default")["commands.command.remindme.success", dayOfMonth, month, calendar[Calendar.YEAR], hours, minutes]
+			val messageContent = loritta.localeManager.getLocaleById("default")["commands.command.remindme.success", dayOfMonth, month, calendar[Calendar.YEAR], hours, minutes]
 
 			reply.channel.sendMessage("<@${reminder.userId}> $messageContent").queue()
 		}

@@ -38,7 +38,7 @@ class PutGuildBanRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationRoute
 				moderationInfo,
 				guild,
 				punisher,
-				com.mrpowergamerbr.loritta.utils.loritta.getLocaleById(serverConfig.localeId),
+				com.mrpowergamerbr.loritta.utils.loritta.localeManager.getLocaleById(serverConfig.localeId),
 				user,
 				options["reason"].nullString ?: "",
 				options["isSilent"].nullBool ?: false,

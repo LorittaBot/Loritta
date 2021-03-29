@@ -106,7 +106,7 @@ class RaffleThread : Thread("Raffle Thread") {
 
 			userIds.clear()
 
-			val locale = loritta.getLocaleById(winner.second)
+			val locale = loritta.localeManager.getLocaleById(winner.second)
 			val user = runBlocking { lorittaShards.retrieveUserById(lastWinnerId!!) }
 
 			if (user != null && !user.isBot) {

@@ -240,7 +240,7 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaDiscord) : BaseRoute(
 						)
 					}
 
-					sendPaymentApprovedDirectMessage(internalPayment.userId, loritta.getLocaleById("default"), "${com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url}support")
+					sendPaymentApprovedDirectMessage(internalPayment.userId, loritta.localeManager.getLocaleById("default"), "${com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url}support")
 
 					call.respondJson(jsonObject())
 					return
@@ -282,7 +282,7 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaDiscord) : BaseRoute(
 				}
 			}
 
-			sendPaymentApprovedDirectMessage(internalPayment.userId, loritta.getLocaleById("default"), "${com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url}support")
+			sendPaymentApprovedDirectMessage(internalPayment.userId, loritta.localeManager.getLocaleById("default"), "${com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url}support")
 		}
 
 		call.respondJson(jsonObject())

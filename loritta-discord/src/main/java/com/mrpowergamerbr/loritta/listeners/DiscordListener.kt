@@ -158,7 +158,7 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		private suspend fun updateTextChannelTopic(guild: Guild, serverConfig: ServerConfig, textChannel: TextChannel, memberCounterConfig: MemberCounterChannelConfig) {
 			val formattedTopic = memberCounterConfig.getFormattedTopic(guild)
 
-			val locale = loritta.getLocaleById(serverConfig.localeId)
+			val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 			logger.info  { "Updating text channel $textChannel topic in $guild!" }
 			logger.trace { "Member Counter Theme = ${memberCounterConfig.theme}"}
 			logger.trace { "Member Counter Padding = ${memberCounterConfig.padding}"}
@@ -462,8 +462,8 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				if (mute != null) {
 					logger.debug { "${event.member} in guild ${event.guild} has a mute! Readding roles and recreating role removal task!" }
-					val locale = loritta.getLocaleById(serverConfig.localeId)
-					val muteRole = MuteCommand.getMutedRole(event.guild, loritta.getLocaleById(serverConfig.localeId)) ?: return@launch
+					val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
+					val muteRole = MuteCommand.getMutedRole(event.guild, loritta.localeManager.getLocaleById(serverConfig.localeId)) ?: return@launch
 
 					event.guild.addRoleToMember(event.member, muteRole).await()
 

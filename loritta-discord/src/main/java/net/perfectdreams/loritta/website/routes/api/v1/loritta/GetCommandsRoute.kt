@@ -13,7 +13,7 @@ class GetCommandsRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/loritta
 	override suspend fun onRequest(call: ApplicationCall) {
 		val localeId = call.parameters["localeId"] ?: return
 
-		val locale = loritta.getLocaleById(localeId)
+		val locale = loritta.localeManager.getLocaleById(localeId)
 
 		val commands = com.mrpowergamerbr.loritta.utils.loritta.legacyCommandManager.commandMap.map {
 			CommandInfo(
