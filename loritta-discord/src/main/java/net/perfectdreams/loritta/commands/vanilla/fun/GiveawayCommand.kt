@@ -43,7 +43,7 @@ class GiveawayCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lori
 						""
 					}
 
-					"**${context.serverConfig.commandPrefix}${cmd.labels.firstOrNull()}** $usageWithinCodeBlocks» ${cmd.command().description(com.mrpowergamerbr.loritta.utils.loritta.getLocaleById(context.serverConfig.localeId))}\n"
+					"**${context.serverConfig.commandPrefix}${cmd.labels.firstOrNull()}** $usageWithinCodeBlocks» ${cmd.command().description(com.mrpowergamerbr.loritta.utils.loritta.localeManager.getLocaleById(context.serverConfig.localeId))}\n"
 				}
 
 				embed.appendDescription(toBeAdded)

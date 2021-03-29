@@ -34,7 +34,7 @@ class GetSelfUserProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 			it.internalName == internalTypeName
 		}
 
-		val locale = loritta.getLocaleById("default")
+		val locale = loritta.localeManager.getLocaleById("default")
 
 		val userId = userIdentification.id.toLong()
 		// Disabled because Loritta loads the avatar URL from the user identification cache

@@ -196,7 +196,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 
 		logger.info { "Success! Loading locales..." }
 
-		loadLocales()
+		localeManager.loadLocales()
 		loadLegacyLocales()
 
 		logger.info { "Success! Loading fan arts..." }

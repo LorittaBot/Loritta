@@ -122,7 +122,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 							val guildId = it[ServerConfigs.id].value
 							val eventLogChannelId = it[EventLogConfigs.eventLogChannelId]
 
-							val locale = loritta.getLocaleById(it[ServerConfigs.localeId])
+							val locale = loritta.localeManager.getLocaleById(it[ServerConfigs.localeId])
 
 							val guild = guilds.first { it.idLong == guildId }
 
@@ -166,7 +166,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
-			val locale = loritta.getLocaleById(serverConfig.localeId)
+			val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(com.mrpowergamerbr.loritta.utils.loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.messageDeleted) {
@@ -231,7 +231,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
-			val locale = loritta.getLocaleById(serverConfig.localeId)
+			val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(com.mrpowergamerbr.loritta.utils.loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.messageDeleted) {
@@ -327,7 +327,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			if (eventLogConfig.enabled && eventLogConfig.memberBanned) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
-				val locale = loritta.getLocaleById(serverConfig.localeId)
+				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 
 				if (!textChannel.canTalk())
 					return@launch
@@ -388,7 +388,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 			if (eventLogConfig.enabled && eventLogConfig.memberUnbanned) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
-				val locale = loritta.getLocaleById(serverConfig.localeId)
+				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 				if (!textChannel.canTalk())
 					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
@@ -435,7 +435,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(com.mrpowergamerbr.loritta.utils.loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.nicknameChanges) {
-				val locale = loritta.getLocaleById(serverConfig.localeId)
+				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 				val embed = WebhookEmbedBuilder()
 				embed.setColor(Color(35, 209, 96).rgb)
 				embed.setTimestamp(Instant.now())

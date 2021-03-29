@@ -99,7 +99,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				val currentLocale = loritta.newSuspendedTransaction {
 					(lorittaProfile?.settings?.language ?: serverConfig.localeId)
 				}
-				val locale = loritta.getLocaleById(currentLocale)
+				val locale = loritta.localeManager.getLocaleById(currentLocale)
 				logIfEnabled(enableProfiling) { "Loading ${locale.id} locale took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
@@ -331,7 +331,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			val currentLocale = loritta.newSuspendedTransaction {
 				profile.settings.language ?: "default"
 			}
-			val locale = loritta.getLocaleById(currentLocale)
+			val locale = loritta.localeManager.getLocaleById(currentLocale)
 
 			if (isMentioningOnlyMe(event.message.contentRaw)) {
 				event.channel.sendMessage(locale["commands.commandsInDirectMessage", event.message.author.asMention, locale["commands.helpCommandName"]]).queue()
@@ -386,7 +386,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong, true)
 				val lorittaProfile = loritta.getOrCreateLorittaProfile(event.author.idLong)
-				val locale = loritta.getLocaleById(serverConfig.localeId)
+				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 				val lorittaUser = GuildLorittaUser(
 						member,
 						LorittaUser.convertRolePermissionsMapToMemberPermissionList(

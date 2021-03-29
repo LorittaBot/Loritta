@@ -125,7 +125,7 @@ object PaymentUtils {
 
                         user.openPrivateChannel().await()
                                 .sendMessage(
-                                        loritta.getLocaleById("default")
+                                        loritta.localeManager.getLocaleById("default")
                                                 .getList(
                                                         "commands.receivedSonhosFromAChargedbackUser",
                                                         Emotes.LORI_CRYING,

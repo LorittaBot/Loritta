@@ -20,7 +20,7 @@ class GetLorittaActionRoute(loritta: LorittaDiscord) : RequiresAPIAuthentication
 				Emotes.emoteManager?.loadEmotes()
 			}
 			"locales" -> {
-				com.mrpowergamerbr.loritta.utils.loritta.loadLocales()
+				com.mrpowergamerbr.loritta.utils.loritta.localeManager.loadLocales()
 				com.mrpowergamerbr.loritta.utils.loritta.loadLegacyLocales()
 			}
 			"website" -> {

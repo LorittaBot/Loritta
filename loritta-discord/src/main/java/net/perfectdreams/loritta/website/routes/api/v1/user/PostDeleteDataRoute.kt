@@ -147,7 +147,7 @@ class PostDeleteDataRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRout
 				it[bannedBy] = null
 				it[valid] = true
 				it[expiresAt] = System.currentTimeMillis() + (Constants.ONE_DAY_IN_MILLISECONDS * 3)
-				it[BannedUsers.reason] = loritta.getLocaleById("default")["website.dashboard.profile.deleteAccount.bannedAccountDueToDeletion"]
+				it[BannedUsers.reason] = loritta.localeManager.getLocaleById("default")["website.dashboard.profile.deleteAccount.bannedAccountDueToDeletion"]
 			}
 		}
 

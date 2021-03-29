@@ -103,7 +103,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 					if (serverConfig.blacklistedChannels.contains(channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) // O usuário não pode enviar comandos no canal
 						return
 
-					val locale = loritta.getLocaleById(serverConfig.localeId)
+					val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 
 					// Tudo certo? Então vamos enviar!
 					val reply = LorittaReply(

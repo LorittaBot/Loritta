@@ -43,43 +43,43 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak",
         val validLanguages = listOf(
                 LocaleWrapper(
                         "Português-Brasil",
-                        loritta.getLocaleById("default"),
+                        loritta.localeManager.getLocaleById("default"),
                         "\uD83C\uDDE7\uD83C\uDDF7",
                         false
                 ),
                 /* LocaleWrapper(
                         "Português-Portugal",
-                        loritta.getLocaleById("pt-pt"),
+                        loritta.localeManager.getLocaleById("pt-pt"),
                         loritta.getLegacyLocaleById("pt-pt"),
                         "\uD83C\uDDF5\uD83C\uDDF9"
                 ), */
                 LocaleWrapper(
                         "English (United States)",
-                        loritta.getLocaleById("en-us"),
+                        loritta.localeManager.getLocaleById("en-us"),
                         "\uD83C\uDDFA\uD83C\uDDF8",
                         false
                 ),
                 LocaleWrapper(
                         "Español",
-                        loritta.getLocaleById("es"),
+                        loritta.localeManager.getLocaleById("es"),
                         "\uD83C\uDDEA\uD83C\uDDF8",
                         false
                 ),
                 LocaleWrapper(
                         "Português-Funk",
-                        loritta.getLocaleById("pt-funk"),
+                        loritta.localeManager.getLocaleById("pt-funk"),
                         "<:loritta_quebrada:338679008210190336>",
                         true
                 ),
                 LocaleWrapper(
                         "Português-Furry",
-                        loritta.getLocaleById("pt-furry"),
+                        loritta.localeManager.getLocaleById("pt-furry"),
                         "\uD83D\uDC3E",
                         true
                 ),
                 LocaleWrapper(
                         "English-Furry",
-                        loritta.getLocaleById("en-furry"),
+                        loritta.localeManager.getLocaleById("en-furry"),
                         "\uD83D\uDC31",
                         true
                 )
@@ -91,7 +91,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak",
                     profile,
                     LocaleWrapper(
                             "Auto-PT-BR-Debug",
-                            loritta.getLocaleById("br-debug"),
+                            loritta.localeManager.getLocaleById("br-debug"),
                             "\uD83D\uDC31",
                             true
                     )
@@ -105,7 +105,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak",
                     profile,
                     LocaleWrapper(
                             "Auto-EN-Debug",
-                            loritta.getLocaleById("en-debug"),
+                            loritta.localeManager.getLocaleById("en-debug"),
                             "\uD83D\uDC31",
                             true
                     )
@@ -189,7 +189,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak",
                 context.config.localeId = localeId
         }
 
-        val newLocale = loritta.getLocaleById(localeId)
+        val newLocale = loritta.localeManager.getLocaleById(localeId)
         if (localeId == "default") {
             localeId = "pt-br" // Já que nós já salvamos, vamos trocar o localeId para algo mais "decente"
         }

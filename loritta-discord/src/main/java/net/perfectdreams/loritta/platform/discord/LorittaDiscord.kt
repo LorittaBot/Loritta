@@ -26,7 +26,6 @@ import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent
 import net.perfectdreams.loritta.api.LorittaBot
-import net.perfectdreams.loritta.api.utils.format
 import net.perfectdreams.loritta.commands.vanilla.`fun`.*
 import net.perfectdreams.loritta.commands.vanilla.administration.*
 import net.perfectdreams.loritta.commands.vanilla.economy.*
@@ -42,18 +41,16 @@ import net.perfectdreams.loritta.tables.*
 import net.perfectdreams.loritta.utils.*
 import net.perfectdreams.loritta.utils.config.*
 import net.perfectdreams.loritta.utils.extensions.readImage
-import net.perfectdreams.loritta.utils.locale.DebugLocales
+import net.perfectdreams.loritta.utils.locale.LocaleManager
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.image.BufferedImage
 import java.io.*
 import java.lang.reflect.Modifier
-import java.net.URL
 import java.sql.Connection
 import java.util.*
 import java.util.concurrent.*
-import java.util.zip.ZipInputStream
 import kotlin.collections.*
 import kotlin.collections.set
 import kotlin.random.Random
@@ -111,7 +108,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
     override val pluginManager = JVMPluginManager(this)
     override val assets = JVMLorittaAssets(this)
-    var locales = mapOf<String, BaseLocale>()
+    val localeManager = LocaleManager(File(instanceConfig.loritta.folders.locales))
     var legacyLocales = mapOf<String, LegacyBaseLocale>()
     override val http = HttpClient(Apache) {
         this.expectSuccess = false
@@ -309,211 +306,6 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
     fun getFanArtArtistByFanArt(fanArt: FanArt) = fanArtArtists.firstOrNull { fanArt in it.fanArts }
 
     /**
-     * Initializes the [id] locale and adds missing translation strings to non-default languages
-     *
-     * @see BaseLocale
-     */
-    fun loadLocale(id: String, defaultLocale: BaseLocale?): BaseLocale {
-        val locale = BaseLocale(id)
-        if (defaultLocale != null) {
-            // Colocar todos os valores padrões
-            locale.localeStringEntries.putAll(defaultLocale.localeStringEntries)
-            locale.localeListEntries.putAll(defaultLocale.localeListEntries)
-        }
-
-        val localeFolder = File(instanceConfig.loritta.folders.locales, id)
-
-        // Does exactly what the variable says: Only matches single quotes (') that do not have a slash (\) preceding it
-        // Example: It's me, Mario!
-        // But if there is a slash preceding it...
-        // Example: \'{@user}\'
-        // It won't match!
-        val singleQuotesWithoutSlashPrecedingItRegex = Regex("(?<!(?:\\\\))'")
-
-        if (localeFolder.exists()) {
-            fun loadFromFolder(folder: File, keyPrefix: (File) -> (String) = { "" }) {
-                folder.listFiles().filter { it.extension == "yml" || it.extension == "json" }.forEach {
-                    val entries = Constants.YAML.load<MutableMap<String, Any?>>(it.readText())
-
-                    fun transformIntoFlatMap(map: MutableMap<String, Any?>, prefix: String) {
-                        map.forEach { (key, value) ->
-                            if (value is Map<*, *>) {
-                                transformIntoFlatMap(value as MutableMap<String, Any?>, "$prefix$key.")
-                            } else {
-                                if (value is List<*>) {
-                                    locale.localeListEntries[keyPrefix.invoke(it) + prefix + key] = try {
-                                        (value as List<String>).map {
-                                            it.replace(singleQuotesWithoutSlashPrecedingItRegex, "''") // Escape single quotes
-                                                    .replace("\\'", "'") // Replace \' with '
-                                        }
-                                    } catch (e: ClassCastException) {
-                                        // A LinkedHashMap does match the "is List<*>" check, but it fails when we cast the subtype to String
-                                        // If that happens, we will just ignore the exception and use the raw "value" list.
-                                        (value as List<String>)
-                                    }
-                                } else if (value is String) {
-                                    locale.localeStringEntries[keyPrefix.invoke(it) + prefix + key] = value.replace(singleQuotesWithoutSlashPrecedingItRegex, "''") // Escape single quotes
-                                            .replace("\\'", "'") // Replace \' with '
-                                } else throw IllegalArgumentException("Invalid object type detected in YAML! $value")
-                            }
-                        }
-                    }
-
-                    transformIntoFlatMap(entries, "")
-                }
-            }
-
-            loadFromFolder(localeFolder)
-
-            // Before, all commands locales were split up into different files, based on the category, example:
-            // commands-discord.yml
-            // commands:
-            //   discord:
-            //     userinfo:
-            //       description: "owo"
-            //
-            // However, this had a issue that, if we wanted to move commands from a category to another, we would need to move the locales from
-            // the file AND change the locale key, so, if we wanted to change a command category, that would also need to change all locale keys
-            // to match. I think that was not a great thing to have.
-            //
-            // I thought that maybe we could remove the category from the command itself and keep it as "command:" or something, like this:
-            // commands-discord.yml
-            // commands:
-            //   command:
-            //     userinfo:
-            //       description: "owo"
-            //
-            // This avoids the issue of needing to change the locale keys in the source code, but we still need to move stuff around if a category changes!
-            // (due to the file name)
-            // This also has a issue that Crowdin "forgets" who did the translation because the file changed, which is very undesirable.
-            //
-            // I thought that all the command keys could be in the same file and, while that would work, it would become a mess.
-            //
-            // So I decided to spice things up and split every command locale into different files, so, as an example:
-            // userinfo.yml
-            // commands:
-            //   discord:
-            //     userinfo:
-            //       description: "owo"
-            //
-            // But that's boring, let's spice it up even more!
-            // userinfo.yml
-            // description: "owo"
-            //
-            // And, when loading the file, the prefix "commands.command.FileNameHere." is automatically appended to the key!
-            // This fixes our previous issues:
-            // * No need to change the source code on category changes, because the locale key doesn't has any category related stuff
-            // * No need to change locales to other files due to category changes
-            // * More tidy
-            // * If a command is removed from Loritta, removing the locales is a breeze because you just need to delete the locale key related to the command!
-            //
-            // Very nice :3
-            //
-            // So, first, we will check if the commands folder exist and, if it is, we are going to load all the files within the folder and apply a
-            // auto prefix to it.
-            val commandsLocaleFolder = File(localeFolder, "commands")
-            if (commandsLocaleFolder.exists())
-                loadFromFolder(commandsLocaleFolder) { "commands.command.${it.nameWithoutExtension}." }
-        }
-
-        // Before we say "okay everything is OK! Let's go!!" we are going to format every single string on the locale
-        // to check if everything is really OK
-        for ((key, string) in locale.localeStringEntries) {
-            try {
-                string?.format()
-            } catch (e: IllegalArgumentException) {
-                logger.error("String \"$string\" stored in \"$key\" from $id can't be formatted! If you are using {...} formatted placeholders, do not forget to add \\' before and after the placeholder!")
-                throw e
-            }
-        }
-
-        return locale
-    }
-
-    /**
-     * Initializes the available locales and adds missing translation strings to non-default languages
-     *
-     * @see BaseLocale
-     */
-    fun loadLocales() {
-        val locales = mutableMapOf<String, BaseLocale>()
-
-        val localeFolder = File(instanceConfig.loritta.folders.locales)
-
-        if (!File(localeFolder, "default").exists()) {
-            logger.info { "Since you don't have any locales downloaded, I'll download them for you!" }
-            logger.info { "For future reference, you can check out and update your locally downloaded locales by cloning the LorittaLocales repository" }
-            logger.info { "Repository URL: https://github.com/LorittaBot/LorittaLocales" }
-
-            var success: Int = 0
-            var failed: Int = 0
-            val localesInputStream = URL("https://github.com/LorittaBot/LorittaLocales/archive/master.zip").openStream();
-
-            val localesZip = ZipInputStream(localesInputStream)
-            val fileMap = mutableMapOf<String, ByteArray>()
-
-            while (true) {
-                val next = localesZip.nextEntry ?: break
-                if (next.isDirectory)
-                    continue
-
-                val fileAsByteArray = localesZip.readAllBytes()
-
-                fileMap[next.name] = fileAsByteArray
-            }
-
-            fileMap.forEach { file ->
-                var fileName = file.key
-
-                fileName = fileName.substring(fileName.indexOf("/") + 1)
-
-                val fileObj = File(localeFolder, fileName)
-                val dir = if (fileName.endsWith("/")) fileObj else fileObj.getParentFile()
-
-                if (!dir.isDirectory && !dir.mkdirs()) {
-                    failed++
-                    logger.error(FileNotFoundException("Invalid path: " + dir.getAbsolutePath())) { "An error has occurred" }
-                }
-
-                val fout = FileOutputStream(fileObj)
-
-                fout.write(file.value)
-
-                fout.close()
-                success++
-            }
-
-            if (failed > 0)
-                logger.warn { "$success locales downloaded successfully, $failed failed." }
-            else
-                logger.info { "$success locales downloaded successfully." }
-        }
-
-        val defaultLocale = loadLocale(Constants.DEFAULT_LOCALE_ID, null)
-        locales[Constants.DEFAULT_LOCALE_ID] = defaultLocale
-
-        localeFolder.listFiles().filter { it.isDirectory && it.name != Constants.DEFAULT_LOCALE_ID && !it.name.startsWith(".") /* ignorar .git */ && it.name != "legacy" /* Do not try to load legacy locales */ }.forEach {
-            locales[it.name] = loadLocale(it.name, defaultLocale)
-        }
-
-        for ((localeId, locale) in locales) {
-            val languageInheritsFromLanguageId = locale["loritta.inheritsFromLanguageId"]
-
-            if (languageInheritsFromLanguageId != Constants.DEFAULT_LOCALE_ID) {
-                // Caso a linguagem seja filha de outra linguagem que não seja a default, nós iremos recarregar a linguagem usando o pai correto
-                // Isso é útil já que linguagens internacionais seriam melhor que dependa de "en-us" em vez de "default".
-                // Também seria possível implementar "linguagens auto geradas" com overrides específicos, por exemplo: "auto-en-us" -> "en-us"
-                locales[localeId] = loadLocale(localeId, locales[languageInheritsFromLanguageId])
-            }
-        }
-
-        val brDebug = DebugLocales.createPseudoLocaleOf(defaultLocale, "br-debug", "br-debug")
-        locales["br-debug"] = brDebug
-
-        this.locales = locales
-    }
-
-    /**
      * Initializes the available locales and adds missing translation strings to non-default languages
      *
      * @see LegacyBaseLocale
@@ -609,17 +401,6 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         }
 
         this.legacyLocales = locales
-    }
-
-    /**
-     * Gets the BaseLocale from the ID, if the locale doesn't exist, the default locale ("default") will be retrieved
-     *
-     * @param localeId the ID of the locale
-     * @return         the locale on BaseLocale format or, if the locale doesn't exist, the default locale will be loaded
-     * @see            LegacyBaseLocale
-     */
-    fun getLocaleById(localeId: String): BaseLocale {
-        return locales.getOrDefault(localeId, locales[Constants.DEFAULT_LOCALE_ID]!!)
     }
 
     /**

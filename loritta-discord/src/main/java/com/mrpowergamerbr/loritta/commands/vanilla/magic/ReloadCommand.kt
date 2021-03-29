@@ -8,8 +8,11 @@ import com.mrpowergamerbr.loritta.modules.register.RegisterHolder
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.RegisterConfigs
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LorittaTasks
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
@@ -100,7 +103,7 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 			return
 		}
 		if (arg0 == "locales") {
-			loritta.loadLocales()
+			loritta.localeManager.loadLocales()
 			loritta.loadLegacyLocales()
 			context.reply(
                     LorittaReply(

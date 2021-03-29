@@ -388,7 +388,7 @@ class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(
         message.delete().await()
 
         GiveawayManager.spawnGiveaway(
-                loritta.getLocaleById(context.serverConfig.localeId),
+                loritta.localeManager.getLocaleById(context.serverConfig.localeId),
                 channel,
                 reason,
                 description,

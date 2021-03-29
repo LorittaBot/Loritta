@@ -288,11 +288,11 @@ class CommandManager(loritta: Loritta) {
 			var reparsedLegacyLocale = locale
 			if (!isPrivateChannel) { // TODO: Migrar isto para que seja customizável
 				when (ev.channel.id) {
-					"414839559721975818" -> reparsedLegacyLocale = loritta.getLocaleById("default") // português (default)
-					"404713176995987466" -> reparsedLegacyLocale = loritta.getLocaleById("en-us") // inglês
-					"414847180285935622" -> reparsedLegacyLocale = loritta.getLocaleById("es-es") // espanhol
-					"414847291669872661" -> reparsedLegacyLocale = loritta.getLocaleById("pt-pt") // português de portugal
-					"414847379670564874" -> reparsedLegacyLocale = loritta.getLocaleById("pt-funk") // português funk
+					"414839559721975818" -> reparsedLegacyLocale = loritta.localeManager.getLocaleById("default") // português (default)
+					"404713176995987466" -> reparsedLegacyLocale = loritta.localeManager.getLocaleById("en-us") // inglês
+					"414847180285935622" -> reparsedLegacyLocale = loritta.localeManager.getLocaleById("es-es") // espanhol
+					"414847291669872661" -> reparsedLegacyLocale = loritta.localeManager.getLocaleById("pt-pt") // português de portugal
+					"414847379670564874" -> reparsedLegacyLocale = loritta.localeManager.getLocaleById("pt-funk") // português funk
 				}
 			}
 

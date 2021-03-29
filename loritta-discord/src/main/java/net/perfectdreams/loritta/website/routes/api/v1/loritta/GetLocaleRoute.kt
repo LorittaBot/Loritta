@@ -11,7 +11,7 @@ class GetLocaleRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/loritta/l
 	override suspend fun onRequest(call: ApplicationCall) {
 		val localeId = call.parameters["localeId"]
 
-		val locale = loritta.locales[localeId] ?: loritta.locales["default"]!!
+		val locale = loritta.localeManager.locales[localeId] ?: loritta.localeManager.locales["default"]!!
 
 		call.respondText(ContentType.Application.Json) { gson.toJson(locale) }
 	}

@@ -60,7 +60,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 						if (System.currentTimeMillis() - lastItemListPostUpdate >= 900_000) {
 							lastItemListPostUpdate = System.currentTimeMillis()
 							logger.info { "Updating Fortnite Items..." }
-							val distinctApiIds = loritta.locales.values.map {
+							val distinctApiIds = loritta.localeManager.locales.values.map {
 								it["commands.command.fnshop.localeId"]
 							}.distinct()
 
@@ -104,7 +104,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 	private suspend fun updateFortniteShop() {
 		logger.info { "Updating Fortnite Shop..." }
 
-		val distinctApiIds = loritta.locales.values.map {
+		val distinctApiIds = loritta.localeManager.locales.values.map {
 			it["commands.command.fnshop.localeId"]
 		}.distinct()
 
@@ -120,7 +120,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 
 		var alreadyNotifiedUsers = false
 
-		for (locale in loritta.locales.values) {
+		for (locale in loritta.localeManager.locales.values) {
 			val apiLocaleId = locale["commands.command.fnshop.localeId"]
 			logger.info { "Updating shop for ${locale.id}... API Locale ID is $apiLocaleId, Shop Data is ${shopsData[apiLocaleId]}" }
 
@@ -221,7 +221,7 @@ class UpdateStoreItemsTask(val m: FortniteStuff) {
 					logger.info { "Sending DM to ${user[Profiles.id].value}..." }
 					val theUser = lorittaShards.retrieveUserById(user[Profiles.id].value)
 
-					val locale = loritta.getLocaleById("default")
+					val locale = loritta.localeManager.getLocaleById("default")
 
 					try {
 						theUser?.openPrivateChannel()?.await()?.sendMessage(
