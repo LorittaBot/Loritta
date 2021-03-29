@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.interactions
 import dev.kord.common.entity.Snowflake
 import kotlinx.coroutines.runBlocking
 import net.perfectdreams.discordinteraktions.InteractionsServer
+import net.perfectdreams.loritta.interactions.commands.vanilla.AnagramCommand
 import net.perfectdreams.loritta.interactions.commands.vanilla.PingCommand
 import net.perfectdreams.loritta.interactions.utils.config.DiscordConfig
 
@@ -16,7 +17,8 @@ class LorittaInteractions(val discordConfig: DiscordConfig) {
     fun start() {
         runBlocking {
             server.commandManager.registerAll(
-                PingCommand()
+                PingCommand(),
+                AnagramCommand()
             )
 
             server.commandManager.updateAllCommandsInGuild(

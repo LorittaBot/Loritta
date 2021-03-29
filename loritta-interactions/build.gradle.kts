@@ -20,6 +20,9 @@ dependencies {
     // Discord InteraKTions
     api("net.perfectdreams.discordinteraktions:core:0.0.3-SNAPSHOT")
 
+    // Utils
+    api("com.google.guava:guava:30.0-jre")
+
     // Kotlin Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-hocon:1.1.0")
