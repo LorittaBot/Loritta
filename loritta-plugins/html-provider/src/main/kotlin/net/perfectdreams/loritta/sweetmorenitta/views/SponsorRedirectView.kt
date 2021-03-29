@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.sweetmorenitta.views
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import kotlinx.html.HTML
 import kotlinx.html.body
 import kotlinx.html.div

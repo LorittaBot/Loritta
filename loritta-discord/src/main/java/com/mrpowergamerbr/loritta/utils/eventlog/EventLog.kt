@@ -9,7 +9,7 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.dao.StoredMessage
 import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission

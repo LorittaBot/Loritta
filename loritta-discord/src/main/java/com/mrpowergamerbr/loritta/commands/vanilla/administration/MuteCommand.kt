@@ -10,8 +10,8 @@ import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNull
 import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNullById
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.LocaleKeyData
 import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission

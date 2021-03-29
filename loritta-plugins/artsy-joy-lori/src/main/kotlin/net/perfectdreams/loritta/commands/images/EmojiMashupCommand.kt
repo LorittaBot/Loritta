@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.commands.images
 
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.perfectdreams.loritta.api.commands.*
 import net.perfectdreams.loritta.api.messages.LorittaReply

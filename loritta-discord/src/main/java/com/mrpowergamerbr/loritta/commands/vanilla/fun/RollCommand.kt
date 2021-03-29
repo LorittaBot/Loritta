@@ -5,9 +5,9 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.commands.vanilla.utils.CalculadoraCommand
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
-import com.mrpowergamerbr.loritta.utils.locale.LocaleStringData
+import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.LocaleKeyData
+import net.perfectdreams.loritta.utils.locale.LocaleStringData
 import com.mrpowergamerbr.loritta.utils.remove
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.CommandArguments

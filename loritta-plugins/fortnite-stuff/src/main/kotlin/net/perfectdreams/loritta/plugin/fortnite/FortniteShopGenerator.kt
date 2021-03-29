@@ -10,7 +10,7 @@ import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import mu.KotlinLogging
 import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color

@@ -1,6 +1,6 @@
 package net.perfectdreams.spicymorenitta
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import io.ktor.client.*
 import io.ktor.client.engine.js.*
 import io.ktor.client.request.*

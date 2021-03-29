@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.sweetmorenitta.views
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import kotlinx.html.DIV
 import kotlinx.html.a
 import kotlinx.html.classes
@@ -29,8 +29,8 @@ import net.perfectdreams.loritta.sweetmorenitta.views.home.thankYou
 import net.perfectdreams.loritta.sweetmorenitta.views.home.trust
 
 class HomeView(
-        locale: BaseLocale,
-        path: String
+    locale: BaseLocale,
+    path: String
 ) : NavbarView(
         locale,
         path

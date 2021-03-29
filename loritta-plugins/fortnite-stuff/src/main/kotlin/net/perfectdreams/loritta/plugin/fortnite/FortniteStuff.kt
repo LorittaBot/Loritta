@@ -9,7 +9,7 @@ import com.google.gson.JsonElement
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
@@ -56,12 +56,12 @@ class FortniteStuff(name: String, loritta: LorittaDiscord) : LorittaDiscordPlugi
          * @param onFailure when no item matched the [name]
          */
         suspend fun getFortniteItemByName(
-                m: FortniteStuff,
-                locale: BaseLocale,
-                context: DiscordCommandContext,
-                name: String,
-                onSuccess: suspend (JsonElement, Message?) -> (Unit),
-                onFailure: suspend () -> (Unit)
+            m: FortniteStuff,
+            locale: BaseLocale,
+            context: DiscordCommandContext,
+            name: String,
+            onSuccess: suspend (JsonElement, Message?) -> (Unit),
+            onFailure: suspend () -> (Unit)
         ) {
             val items = m.itemsInfo.values.flatMap {
                 it.filter {

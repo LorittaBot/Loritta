@@ -6,7 +6,7 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Reputations
 import com.mrpowergamerbr.loritta.utils.*
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.profile.ProfileUtils
 import net.perfectdreams.loritta.utils.extensions.readImage

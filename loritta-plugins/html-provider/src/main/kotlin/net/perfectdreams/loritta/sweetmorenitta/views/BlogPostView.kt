@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.sweetmorenitta.views
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import kotlinx.html.DIV
 import kotlinx.html.HEAD
 import kotlinx.html.a
@@ -14,9 +14,9 @@ import kotlinx.html.unsafe
 import net.perfectdreams.loritta.website.blog.Post
 
 class BlogPostView(
-        locale: BaseLocale,
-        path: String,
-        val post: Post
+    locale: BaseLocale,
+    path: String,
+    val post: Post
 ) : NavbarView(
         locale,
         path

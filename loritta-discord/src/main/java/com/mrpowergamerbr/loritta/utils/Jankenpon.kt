@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.utils
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 
 enum class Jankenpon(var lang: String, var emoji: String, var wins: String, var loses: String) {
 	// Os wins e os loses precisam ser uma string já que os enums ainda não foram inicializados

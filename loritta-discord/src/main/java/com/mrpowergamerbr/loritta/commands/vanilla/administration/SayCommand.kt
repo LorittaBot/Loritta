@@ -7,8 +7,8 @@ import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.escapeMentions
 import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.remove
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message

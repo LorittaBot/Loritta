@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.sweetmorenitta.views.home
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import kotlinx.html.*
 
 var icons = listOf(

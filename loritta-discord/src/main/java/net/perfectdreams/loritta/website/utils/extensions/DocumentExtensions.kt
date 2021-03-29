@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.google.gson.JsonElement
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.gson
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import io.ktor.application.ApplicationCall
 import io.ktor.http.ContentType

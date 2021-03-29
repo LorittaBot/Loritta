@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.CommandBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory

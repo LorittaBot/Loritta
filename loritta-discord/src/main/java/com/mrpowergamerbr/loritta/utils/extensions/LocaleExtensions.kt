@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.utils.extensions
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import java.util.*
 
 /**

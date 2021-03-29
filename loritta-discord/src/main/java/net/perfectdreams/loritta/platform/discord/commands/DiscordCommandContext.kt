@@ -7,9 +7,9 @@ import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.awaitCheckForReplyErrors
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.extensions.referenceIfPossible
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
-import com.mrpowergamerbr.loritta.utils.locale.LocaleStringData
+import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.LocaleKeyData
+import net.perfectdreams.loritta.utils.locale.LocaleStringData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.EmbedBuilder
@@ -34,14 +34,14 @@ import java.io.InputStream
 import java.time.Instant
 
 class DiscordCommandContext(
-		override val loritta: LorittaDiscord,
-		command: Command<CommandContext>,
-		args: List<String>,
-		val discordMessage: Message,
-		locale: BaseLocale,
-		val serverConfig: ServerConfig,
-		val lorittaUser: LorittaUser,
-		val executedCommandLabel: String
+    override val loritta: LorittaDiscord,
+    command: Command<CommandContext>,
+    args: List<String>,
+    val discordMessage: Message,
+    locale: BaseLocale,
+    val serverConfig: ServerConfig,
+    val lorittaUser: LorittaUser,
+    val executedCommandLabel: String
 ) : CommandContext(loritta, command, args, DiscordMessage(discordMessage), locale) {
 	val isPrivateChannel = discordMessage.channelType == ChannelType.PRIVATE
 	val guild: Guild

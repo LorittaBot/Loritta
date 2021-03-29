@@ -1,6 +1,6 @@
 package net.perfectdreams.spicymorenitta.utils
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import io.ktor.client.request.*
 import kotlinx.browser.document
 import kotlinx.browser.window

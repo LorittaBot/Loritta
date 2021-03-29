@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaImage
 import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Font

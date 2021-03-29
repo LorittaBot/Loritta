@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.profile
 
 import com.mrpowergamerbr.loritta.dao.Profile
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.entities.Guild
 import java.awt.image.BufferedImage
 

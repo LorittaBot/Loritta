@@ -6,8 +6,8 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.isValidSnowflake
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
+import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Emote

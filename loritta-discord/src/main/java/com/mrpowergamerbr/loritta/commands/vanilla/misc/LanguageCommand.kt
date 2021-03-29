@@ -5,9 +5,9 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.utils.extensions.edit
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
-import com.mrpowergamerbr.loritta.utils.locale.LocaleStringData
+import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.LocaleKeyData
+import net.perfectdreams.loritta.utils.locale.LocaleStringData
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
@@ -233,9 +233,9 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak",
     }
 
     private class LocaleWrapper(
-            val name: String,
-            val locale: BaseLocale,
-            val emoteName: String,
-            val isSecret: Boolean
+        val name: String,
+        val locale: BaseLocale,
+        val emoteName: String,
+        val isSecret: Boolean
     )
 }

@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.website.routes.user.dashboard
 
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.website.evaluate
 import io.ktor.application.ApplicationCall
 import io.ktor.request.header

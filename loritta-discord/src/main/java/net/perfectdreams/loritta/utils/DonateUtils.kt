@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.utils
 
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import net.perfectdreams.loritta.api.messages.LorittaReply

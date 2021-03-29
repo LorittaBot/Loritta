@@ -4,7 +4,7 @@ import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.JsonArray
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.ServerConfig
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.website.evaluate
 import io.ktor.application.ApplicationCall
 import net.dv8tion.jda.api.entities.Guild
