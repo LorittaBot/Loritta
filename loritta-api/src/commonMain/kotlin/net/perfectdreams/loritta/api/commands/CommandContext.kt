@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.api.commands
 
-import net.perfectdreams.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.entities.LorittaEmote
 import net.perfectdreams.loritta.api.entities.Message
@@ -9,18 +8,18 @@ import net.perfectdreams.loritta.api.messages.LorittaMessage
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.api.utils.image.Image
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 
 abstract class CommandContext(
 		// Nifty trick: By keeping it "open", implementations can override this variable.
 		// By doing this, classes can use their own platform implementation (example: LorittaDiscord instead of LorittaBot)
 		// If you don't keep it "open", the type will always be "LorittaBot", which sucks.
 		open val loritta: LorittaBot,
-		val command: Command<CommandContext>,
-		val args: List<String>,
+		val command: LorittaCommand<CommandContext>,
 		val message: Message,
 		val locale: BaseLocale
 ) {
-	val sender = message.author
+	// val sender = message.author
 
 	open suspend fun sendMessage(content: String) = message.channel.sendMessage(content)
 	open suspend fun sendMessage(lorittaMessage: LorittaMessage) = message.channel.sendMessage(lorittaMessage)
@@ -28,10 +27,12 @@ abstract class CommandContext(
 	open suspend fun sendFile(byteArray: ByteArray, fileName: String, content: String = getUserMention(true)) = message.channel.sendFile(byteArray, fileName, content)
 
 	abstract suspend fun user(argument: Int): User?
-	suspend fun userOrFail(argument: Int) = validate(user(argument), argument)
+	// TODO: Fix
+	// suspend fun userOrFail(argument: Int) = validate(user(argument), argument)
 	abstract suspend fun imageUrl(argument: Int, searchPreviousMessages: Int = 25): String?
 	abstract suspend fun image(argument: Int, searchPreviousMessages: Int = 25, createTextAsImageIfNotFound: Boolean = true): Image?
-	suspend fun imageOrFail(argument: Int) = validate(image(argument))
+	// TODO: Fix
+	// suspend fun imageOrFail(argument: Int) = validate(image(argument))
 
 	suspend fun reply(vararg replies: LorittaReply) = reply(replies.toList())
 	suspend fun reply(replies: List<LorittaReply>): Message {
@@ -131,7 +132,8 @@ abstract class CommandContext(
 		return source
 	}
 
-	suspend fun validate(image: Image?): Image {
+	// TODO: Fix
+	/* suspend fun validate(image: Image?): Image {
 		if (image == null) {
 			if (args.isEmpty())
 				explainAndExit()
@@ -151,7 +153,7 @@ abstract class CommandContext(
 		}
 
 		return user
-	}
+	} */
 
 	/**
 	 * Sends the command help to the current channel

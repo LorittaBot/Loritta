@@ -4,7 +4,6 @@ import io.ktor.application.*
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.commands.DiscordCommand
 import net.perfectdreams.loritta.serializable.CommandInfo
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.sequins.ktor.BaseRoute
@@ -15,6 +14,7 @@ class GetCommandsRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/loritta
 
 		val locale = loritta.localeManager.getLocaleById(localeId)
 
+		// TODO: Fix
 		val commands = com.mrpowergamerbr.loritta.utils.loritta.legacyCommandManager.commandMap.map {
 			CommandInfo(
 					it::class.java.simpleName,
@@ -31,7 +31,7 @@ class GetCommandsRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/loritta
 					it.getBotPermissions().map { it.name },
 					listOf() // Old API doesn't has SimilarCommands
 			)
-		} + com.mrpowergamerbr.loritta.utils.loritta.commandMap.commands.filter { !it.hideInHelp }.map {
+		}/* + com.mrpowergamerbr.loritta.utils.loritta.commandMap.commands.filter { !it.hideInHelp }.map {
 			var botRequiredPermissions = listOf<String>()
 			var userRequiredPermissions = listOf<String>()
 			var userRequiredLorittaPermissions = listOf<String>()
@@ -57,7 +57,7 @@ class GetCommandsRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/loritta
 					botRequiredPermissions,
 					it.similarCommands
 			)
-		}
+		} */
 
 		call.respondJson(Json.encodeToString(ListSerializer(CommandInfo.serializer()), commands))
 	}

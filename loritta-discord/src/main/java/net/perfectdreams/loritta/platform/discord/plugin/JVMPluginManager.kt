@@ -52,7 +52,8 @@ class JVMPluginManager(val loritta: LorittaDiscord) : PluginManager {
 		}
 
 		logger.info { "Unregistering ${plugin.registeredCommands} commands..." }
-		loritta.commandMap.unregisterAll(*plugin.registeredCommands.toTypedArray())
+		// TODO: Fix
+		// loritta.commandMap.unregisterAll(*plugin.registeredCommands.toTypedArray())
 		plugin.registeredCommands.clear()
 		if (plugin is LorittaDiscordPlugin) {
 			plugin.eventListeners.clear()

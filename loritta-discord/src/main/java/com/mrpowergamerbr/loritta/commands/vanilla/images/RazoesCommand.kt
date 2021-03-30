@@ -9,7 +9,7 @@ import com.mrpowergamerbr.loritta.utils.LorittaImage
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import net.perfectdreams.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.utils.locale.LocaleKeyData
-import net.perfectdreams.loritta.api.commands.Command
+import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.ImageFormat
 import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
@@ -23,7 +23,7 @@ import java.io.File
 
 class RazoesCommand : AbstractCommand("reasons", listOf("razões", "razoes"), CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.reasons.description")
-	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
+	override fun getExamplesKey() = LorittaCommand.SINGLE_IMAGE_EXAMPLES_KEY
 
 
 	override fun needsToUploadFiles() = true

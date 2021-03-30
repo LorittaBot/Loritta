@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MiscUtils
 import net.perfectdreams.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.utils.locale.LocaleKeyData
-import net.perfectdreams.loritta.api.commands.Command
+import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
@@ -18,7 +18,7 @@ import javax.imageio.stream.FileImageOutputStream
 
 class TriggeredCommand : AbstractCommand("triggered", category = CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.triggered.description")
-	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
+	override fun getExamplesKey() = LorittaCommand.SINGLE_IMAGE_EXAMPLES_KEY
 
 	// TODO: Fix Usage
 

@@ -27,7 +27,7 @@ class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), CommandC
 
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.friendship.description")
 	// TODO: Needs to be two users
-	// override fun getExamplesKey() = Command.TWO_IMAGES_EXAMPLES_KEY
+	// override fun getExamplesKey() = LorittaCommand.TWO_IMAGES_EXAMPLES_KEY
 
 	// TODO: Fix Usage
 

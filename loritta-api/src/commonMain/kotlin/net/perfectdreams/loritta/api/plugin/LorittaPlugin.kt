@@ -5,9 +5,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import net.perfectdreams.loritta.api.LorittaBot
-import net.perfectdreams.loritta.api.commands.AbstractCommandBase
-import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandContext
+import net.perfectdreams.loritta.api.commands.LorittaCommand
 
 abstract class LorittaPlugin(
 		val name: String,
@@ -16,28 +15,18 @@ abstract class LorittaPlugin(
 		// If you don't keep it "open", the type will always be "LorittaBot", which sucks.
 		open val loritta: LorittaBot
 ) {
-	val registeredCommands = mutableListOf<Command<CommandContext>>()
+	val registeredCommands = mutableListOf<LorittaCommand<CommandContext>>()
 	val pluginTasks = mutableListOf<Job>()
 
 	open fun onEnable() {}
 	open fun onDisable() {}
 
-	fun registerCommands(vararg commands: Command<CommandContext>) {
+	fun registerCommands(vararg commands: LorittaCommand<CommandContext>) {
 		commands.forEach { registerCommand(it) }
 	}
 
-	fun registerCommand(command: Command<CommandContext>) {
-		loritta.commandMap.register(command)
-		registeredCommands.add(command)
-	}
-
-	fun registerCommands(vararg commands: AbstractCommandBase<*, *>) {
-		commands.forEach { registerCommand(it) }
-	}
-
-	fun registerCommand(commandBase: AbstractCommandBase<*, *>) {
-		val command = commandBase.command()
-		loritta.commandMap.register(command as Command<CommandContext>)
+	fun registerCommand(command: LorittaCommand<CommandContext>) {
+		loritta.commandManager.register(command)
 		registeredCommands.add(command)
 	}
 

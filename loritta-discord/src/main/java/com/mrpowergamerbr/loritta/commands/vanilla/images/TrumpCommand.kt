@@ -7,12 +7,12 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MiscUtils
 import net.perfectdreams.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.utils.locale.LocaleKeyData
-import net.perfectdreams.loritta.api.commands.Command
+import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class TrumpCommand : AbstractCommand("trump", category = CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.trump.description")
-	override fun getExamplesKey() = Command.TWO_IMAGES_EXAMPLES_KEY
+	override fun getExamplesKey() = LorittaCommand.TWO_IMAGES_EXAMPLES_KEY
 
 	// TODO: Fix Usage
 

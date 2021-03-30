@@ -5,8 +5,6 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
-import net.perfectdreams.loritta.utils.locale.BaseLocale
-import net.perfectdreams.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
@@ -16,6 +14,8 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.LocaleKeyData
 import org.jetbrains.exposed.sql.select
 import java.awt.Color
 import java.lang.management.ManagementFactory
@@ -71,7 +71,8 @@ class BotInfoCommand(private val buildInfo: BuildInfo) : AbstractCommand("botinf
 						"commands.command.botinfo.embedDescription",
 						guildCount,
 						sb.toString(),
-						LorittaLauncher.loritta.legacyCommandManager.commandMap.size + loritta.commandMap.commands.size,
+						// TODO: Fix
+						LorittaLauncher.loritta.legacyCommandManager.commandMap.size,
 						commandsExecutedInTheLast24Hours,
 						Emotes.KOTLIN,
 						Emotes.JDA,

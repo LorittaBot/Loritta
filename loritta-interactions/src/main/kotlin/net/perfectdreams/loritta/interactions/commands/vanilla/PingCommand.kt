@@ -1,18 +1,17 @@
 package net.perfectdreams.loritta.interactions.commands.vanilla
 
-import net.perfectdreams.discordinteraktions.commands.SlashCommand
-import net.perfectdreams.discordinteraktions.context.SlashCommandContext
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclaration
+import net.perfectdreams.loritta.api.commands.CommandContext
+import net.perfectdreams.loritta.api.commands.LorittaCommand
+import net.perfectdreams.loritta.api.commands.declarations.CommandDeclaration
+import net.perfectdreams.loritta.utils.locale.LocaleKeyData
 
-class PingCommand : SlashCommand(this) {
-    companion object : SlashCommandDeclaration(
+class PingCommand : LorittaCommand<CommandContext>(this) {
+    companion object : CommandDeclaration(
         name = "ping",
-        description = "Pong!"
+        description = LocaleKeyData("commands.missingDescription")
     )
 
-    override suspend fun executes(context: SlashCommandContext) {
-        context.sendMessage {
-            content = "Pong!"
-        }
+    override suspend fun executes(context: CommandContext) {
+        context.sendMessage("Pong!")
     }
 }

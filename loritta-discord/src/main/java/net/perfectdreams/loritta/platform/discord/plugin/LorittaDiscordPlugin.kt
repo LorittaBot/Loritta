@@ -9,11 +9,10 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.api.plugin.LorittaPlugin
-import net.perfectdreams.loritta.commands.vanilla.magic.LoriToolsCommand
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.loritta.website.utils.LorittaHtmlProvider
 import net.perfectdreams.loritta.website.utils.config.types.ConfigTransformer
+import net.perfectdreams.sequins.ktor.BaseRoute
 import java.io.File
 
 open class LorittaDiscordPlugin(name: String, override val loritta: LorittaDiscord) : LorittaPlugin(name, loritta) {
@@ -21,7 +20,6 @@ open class LorittaDiscordPlugin(name: String, override val loritta: LorittaDisco
 	val configTransformers = mutableListOf<ConfigTransformer>()
 	val dataFolder by lazy { File(Loritta.FOLDER, "plugins/$name") }
 	val eventListeners = mutableListOf<ListenerAdapter>()
-	val loriToolsExecutors = mutableListOf<LoriToolsCommand.LoriToolsExecutor>()
 	val messageReceivedModules = mutableListOf<MessageReceivedModule>()
 	val messageEditedModules = mutableListOf<MessageReceivedModule>()
 	var htmlProvider: LorittaHtmlProvider? = null

@@ -5,14 +5,14 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.gifs.DemonGIF
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MiscUtils
+import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.utils.locale.LocaleKeyData
-import net.perfectdreams.loritta.api.commands.Command
-import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class DemonCommand : AbstractCommand("demon", listOf("demônio", "demonio", "demónio"), category = CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.demon.description")
-	override fun getExamplesKey() = Command.TWO_IMAGES_EXAMPLES_KEY
+	override fun getExamplesKey() = LorittaCommand.TWO_IMAGES_EXAMPLES_KEY
 
 	// TODO: Fix Usage
 

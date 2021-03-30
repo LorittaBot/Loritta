@@ -9,7 +9,6 @@ import com.mrpowergamerbr.loritta.modules.Modules
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.EventLog
-import net.perfectdreams.loritta.utils.locale.BaseLocale
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -28,6 +27,7 @@ import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import org.apache.commons.text.similarity.LevenshteinDistance
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -264,10 +264,11 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 						val allCommandLabels = mutableListOf<String>()
 
-						loritta.commandMap.commands.forEach {
+						// TODO: Fix
+						/* loritta.commandMap.commands.forEach {
 							if (!it.onlyOwner && !serverConfig.disabledCommands.contains(it.javaClass.simpleName) && !it.hideInHelp)
 								allCommandLabels.addAll(it.labels)
-						}
+						} */
 
 						loritta.legacyCommandManager.commandMap.forEach {
 							if (!it.onlyOwner && !serverConfig.disabledCommands.contains(it.javaClass.simpleName)) {
@@ -467,10 +468,11 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 			}
 
 			// Executar comandos
+			// TODO: Fix
 			var start = System.nanoTime()
-			if (loritta.commandMap.dispatch(lorittaMessageEvent, rawArguments, serverConfig, locale, lorittaUser))
+			/* if (loritta.commandMap.dispatch(lorittaMessageEvent, rawArguments, serverConfig, locale, lorittaUser))
 				return true
-			logIfEnabled(enableProfiling) { "Checking for command map commands took ${System.nanoTime() - start}ns for ${author.idLong}" }
+			logIfEnabled(enableProfiling) { "Checking for command map commands took ${System.nanoTime() - start}ns for ${author.idLong}" } */
 
 			start = System.nanoTime()
 			if (loritta.legacyCommandManager.matches(lorittaMessageEvent, rawArguments, serverConfig, locale, lorittaUser))

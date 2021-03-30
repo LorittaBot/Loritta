@@ -4,19 +4,19 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.extensions.localized
-import net.perfectdreams.loritta.utils.locale.BaseLocale
-import net.perfectdreams.loritta.utils.locale.LocaleKeyData
-import net.perfectdreams.loritta.utils.locale.LocaleStringData
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
-import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.LocaleKeyData
+import net.perfectdreams.loritta.utils.locale.LocaleStringData
 import java.awt.Color
 import java.time.Instant
 
@@ -42,7 +42,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 			return cooldown > loritta.config.loritta.commands.imageCooldown
 		}
 
-	open fun getDescriptionKey() = Command.MISSING_DESCRIPTION_KEY
+	open fun getDescriptionKey() = LorittaCommand.MISSING_DESCRIPTION_KEY
 
 	open fun getDescription(locale: BaseLocale) = locale.get(getDescriptionKey())
 

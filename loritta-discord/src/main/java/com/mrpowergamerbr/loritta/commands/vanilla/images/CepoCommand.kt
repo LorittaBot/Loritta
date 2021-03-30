@@ -7,12 +7,12 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MiscUtils
 import net.perfectdreams.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.utils.locale.LocaleKeyData
-import net.perfectdreams.loritta.api.commands.Command
+import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class CepoCommand : AbstractCommand("cepo", category = CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.cepo.description")
-	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
+	override fun getExamplesKey() = LorittaCommand.SINGLE_IMAGE_EXAMPLES_KEY
 	// TODO: Fix Usage
 
 	override fun needsToUploadFiles() = true

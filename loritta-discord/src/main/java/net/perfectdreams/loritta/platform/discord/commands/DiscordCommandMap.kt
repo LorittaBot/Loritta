@@ -1,66 +1,31 @@
 package net.perfectdreams.loritta.platform.discord.commands
 
-import com.mrpowergamerbr.loritta.commands.CommandManager
-import com.mrpowergamerbr.loritta.dao.ServerConfig
-import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
-import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.DateUtils
-import com.mrpowergamerbr.loritta.utils.LorittaPermission
-import com.mrpowergamerbr.loritta.utils.LorittaUser
-import com.mrpowergamerbr.loritta.utils.LorittaUtils
-import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
-import com.mrpowergamerbr.loritta.utils.MessageUtils
-import com.mrpowergamerbr.loritta.utils.escapeMentions
-import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.loritta.utils.extensions.awaitCheckForReplyErrors
-import com.mrpowergamerbr.loritta.utils.extensions.localized
-import com.mrpowergamerbr.loritta.utils.extensions.referenceIfPossible
-import net.perfectdreams.loritta.utils.locale.BaseLocale
-import net.perfectdreams.loritta.utils.locale.LocaleKeyData
-import net.perfectdreams.loritta.utils.locale.LocaleStringData
-import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
-import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import mu.KotlinLogging
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.ChannelType
-import net.dv8tion.jda.api.exceptions.ErrorResponseException
-import net.dv8tion.jda.api.utils.MarkdownSanitizer
-import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandContext
-import net.perfectdreams.loritta.api.commands.CommandException
-import net.perfectdreams.loritta.api.commands.CommandMap
-import net.perfectdreams.loritta.api.commands.SilentCommandException
-import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.api.commands.CommandManager
+import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.tables.ExecutedCommandsLog
-import net.perfectdreams.loritta.utils.CommandCooldownManager
-import net.perfectdreams.loritta.utils.CommandUtils
-import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.UserPremiumPlans
-import net.perfectdreams.loritta.utils.metrics.Prometheus
-import org.jetbrains.exposed.sql.insert
-import java.sql.Connection
-import java.util.concurrent.CancellationException
 
-class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command<CommandContext>> {
+class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandManager<LorittaCommand<CommandContext>> {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}
 
-	val commands = mutableListOf<Command<CommandContext>>()
+	val commands = mutableListOf<LorittaCommand<CommandContext>>()
 
-	override fun register(command: Command<CommandContext>) {
-		logger.info { "Registering $command with ${command.labels}" }
+	override fun register(command: LorittaCommand<CommandContext>) {
+		// TODO: Fix
+		// logger.info { "Registering $command with ${command.labels}" }
 		commands.add(command)
 	}
 
-	override fun unregister(command: Command<CommandContext>) {
+	override fun unregister(command: LorittaCommand<CommandContext>) {
 		logger.info { "Unregistering $command..." }
 		commands.remove(command)
 	}
 
-	suspend fun dispatch(ev: LorittaMessageEvent, rawArguments: List<String>, serverConfig: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
+	// TODO: Fix
+	/* suspend fun dispatch(ev: LorittaMessageEvent, rawArguments: List<String>, serverConfig: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
 		// We order by more spaces in the first label -> less spaces, to avoid other commands taking precedence over other commands
 		// I don't like how this works, we should create a command tree instead of doing this
 		for (command in commands.sortedByDescending { it.labels.first().count { it.isWhitespace() }}) {
@@ -438,5 +403,5 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 			}
 		}
 		return false
-	}
+	} */
 }

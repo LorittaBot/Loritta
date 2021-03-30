@@ -8,7 +8,6 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.parallax.wrappers.ParallaxEmbed
-import net.perfectdreams.loritta.utils.locale.BaseLocale
 import mu.KotlinLogging
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.ChannelType
@@ -24,6 +23,7 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent
 import net.perfectdreams.loritta.api.utils.format
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.Placeholders
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -282,22 +282,6 @@ fun Message.onReactionAdd(context: CommandContext, function: suspend (MessageRea
 }
 
 /**
- * When an user adds a reaction to this message
- *
- * @param context  the context of the message
- * @param function the callback that should be invoked
- * @return         the message object for chaining
- */
-fun Message.onReactionAdd(context: net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext, function: suspend (MessageReactionAddEvent) -> Unit): Message {
-	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
-	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
-
-	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.user.idLong) }
-	functions.onReactionAdd = function
-	return this
-}
-
-/**
  * When an user removes a reaction to this message
  *
  * @param context  the context of the message
@@ -412,19 +396,6 @@ fun Message.onMessageReceived(context: CommandContext, function: suspend (Loritt
 /**
  * When the command executor adds a reaction to this message
  *
- * @param context  the context of the message
- * @param function the callback that should be invoked
- * @return         the message object for chaining
- */
-fun Message.onReactionAddByAuthor(context: net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext, function: suspend (MessageReactionAddEvent) -> Unit): Message {
-	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
-	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
-	return onReactionAddByAuthor(context.user.idLong, guildId, channelId, function)
-}
-
-/**
- * When the command executor adds a reaction to this message
- *
  * @param userId    the user's ID
  * @param guildId   the guild's ID, may be null
  * @param channelId the channel's ID, may be null
@@ -433,21 +404,6 @@ fun Message.onReactionAddByAuthor(context: net.perfectdreams.loritta.platform.di
 fun Message.onReactionAddByAuthor(userId: Long, guildId: Long?, channelId: Long?, function: suspend (MessageReactionAddEvent) -> Unit): Message {
 	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, userId) }
 	functions.onReactionAddByAuthor = function
-	return this
-}
-
-/**
- * When the command executor adds or removes a reaction to this message
- *
- * @param context  the context of the message
- * @param function the callback that should be invoked
- * @return         the message object for chaining
- */
-fun Message.onReactionByAuthor(context: net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext, function: suspend (GenericMessageReactionEvent) -> Unit): Message {
-	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
-	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
-
-	onReactionByAuthor(context.user.idLong, guildId, channelId, function)
 	return this
 }
 
@@ -477,22 +433,6 @@ fun Message.onReactionByAuthor(userId: Long, guildId: Long?, channelId: Long?, f
  */
 fun Message.onResponseByAuthor(userId: Long, guildId: Long?, channelId: Long?, function: suspend (LorittaMessageEvent) -> Unit): Message {
 	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, userId) }
-	functions.onResponseByAuthor = function
-	return this
-}
-
-/**
- * When the command executor sends a message on the same text channel as the executed command
- *
- * @param context  the context of the message
- * @param function the callback that should be invoked
- * @return         the message object for chaining
- */
-fun Message.onResponseByAuthor(context: net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext, function: suspend (LorittaMessageEvent) -> Unit): Message {
-	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
-	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
-
-	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.user.idLong) }
 	functions.onResponseByAuthor = function
 	return this
 }

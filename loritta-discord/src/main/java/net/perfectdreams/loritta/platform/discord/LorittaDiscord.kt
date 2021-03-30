@@ -6,7 +6,6 @@ import com.github.salomonbrys.kotson.*
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.*
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.vanilla.discord.ChannelInfoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.*
 import com.mrpowergamerbr.loritta.dao.*
 import com.mrpowergamerbr.loritta.network.Databases
@@ -26,13 +25,6 @@ import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent
 import net.perfectdreams.loritta.api.LorittaBot
-import net.perfectdreams.loritta.commands.vanilla.`fun`.*
-import net.perfectdreams.loritta.commands.vanilla.administration.*
-import net.perfectdreams.loritta.commands.vanilla.economy.*
-import net.perfectdreams.loritta.commands.vanilla.magic.*
-import net.perfectdreams.loritta.commands.vanilla.misc.*
-import net.perfectdreams.loritta.commands.vanilla.roblox.*
-import net.perfectdreams.loritta.commands.vanilla.social.*
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandMap
 import net.perfectdreams.loritta.platform.discord.plugin.JVMPluginManager
@@ -64,48 +56,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         val MESSAGE_EXECUTOR_THREADS = Runtime.getRuntime().availableProcessors() * 8
     }
 
-    override val commandMap = DiscordCommandMap(this).apply {
-        registerAll(
-                // ===[ MAGIC ]===
-                LoriToolsCommand(this@LorittaDiscord),
-                PluginsCommand(this@LorittaDiscord),
-
-                // ===[ ECONOMY ]===
-                SonhosTopCommand(this@LorittaDiscord),
-                SonhosTopLocalCommand(this@LorittaDiscord),
-                TransactionsCommand(this@LorittaDiscord),
-
-                // ===[ SOCIAL ]===
-                BomDiaECiaTopCommand(this@LorittaDiscord),
-                BomDiaECiaTopLocalCommand(this@LorittaDiscord),
-                RankGlobalCommand(this@LorittaDiscord),
-                RepTopCommand(this@LorittaDiscord),
-                XpNotificationsCommand(this@LorittaDiscord),
-
-                // ===[ ADMIN ]===
-                BanInfoCommand(this@LorittaDiscord),
-                ClearCommand(this@LorittaDiscord),
-
-                // ===[ MISC ]===
-                FanArtsCommand(this@LorittaDiscord),
-                DiscordBotListCommand(this@LorittaDiscord),
-                DiscordBotListStatusCommand(this@LorittaDiscord),
-
-                // ===[ DISCORD ]===
-                ChannelInfoCommand(this@LorittaDiscord),
-
-                // ===[ FUN ]===
-                GiveawayCommand(this@LorittaDiscord),
-                GiveawayEndCommand(this@LorittaDiscord),
-                GiveawayRerollCommand(this@LorittaDiscord),
-                GiveawaySetupCommand(this@LorittaDiscord),
-
-                // ===[ ROBLOX ]===
-                RbUserCommand(this@LorittaDiscord),
-                RbGameCommand(this@LorittaDiscord)
-        )
-    }
-
+    override val commandManager = DiscordCommandMap(this)
     override val pluginManager = JVMPluginManager(this)
     override val assets = JVMLorittaAssets(this)
     val localeManager = LocaleManager(File(instanceConfig.loritta.folders.locales))

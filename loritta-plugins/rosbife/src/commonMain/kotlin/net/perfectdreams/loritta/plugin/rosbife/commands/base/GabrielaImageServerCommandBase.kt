@@ -8,10 +8,8 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.putJsonArray
 import net.perfectdreams.loritta.api.LorittaBot
-import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.CommandContext
-import net.perfectdreams.loritta.api.commands.LorittaAbstractCommandBase
 import net.perfectdreams.loritta.utils.Emotes
 
 /**
@@ -42,8 +40,8 @@ abstract class GabrielaImageServerCommandBase(
         this.sendTypingStatus = this@GabrielaImageServerCommandBase.sendTypingStatus
 
         val examplesKey = when (imageCount) {
-            1 -> Command.SINGLE_IMAGE_EXAMPLES_KEY
-            2 -> Command.TWO_IMAGES_EXAMPLES_KEY
+            1 -> LorittaCommand.SINGLE_IMAGE_EXAMPLES_KEY
+            2 -> LorittaCommand.TWO_IMAGES_EXAMPLES_KEY
             else -> if (examplesKey != null) LocaleKeyData(examplesKey) else null
         }
 

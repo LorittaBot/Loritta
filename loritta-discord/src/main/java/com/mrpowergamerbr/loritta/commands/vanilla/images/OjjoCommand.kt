@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import net.perfectdreams.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.utils.locale.LocaleKeyData
-import net.perfectdreams.loritta.api.commands.Command
+import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
@@ -13,7 +13,7 @@ import java.awt.image.BufferedImage
 
 class OjjoCommand : AbstractCommand("ojjo", category = CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.ojjo.description")
-	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
+	override fun getExamplesKey() = LorittaCommand.SINGLE_IMAGE_EXAMPLES_KEY
 
 	// TODO: Fix Detailed Usage
 
