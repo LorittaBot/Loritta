@@ -27,6 +27,9 @@ object PingCommandDeclaration : CommandDeclaration(
             val text = string("text", LocaleKeyData("owo"))
                 .required()
                 .register()
+
+            val repeat = integer("repeat", LocaleKeyData("repeat"))
+                .register()
         }
     }
 

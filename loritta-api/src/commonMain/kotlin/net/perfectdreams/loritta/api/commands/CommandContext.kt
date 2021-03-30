@@ -15,6 +15,7 @@ abstract class CommandContext(
 		// If you don't keep it "open", the type will always be "LorittaBot", which sucks.
 		open val loritta: LorittaBot,
 		val command: LorittaCommand<CommandContext>,
+		open val optionsManager: OptionsManager,
 		val message: Message,
 		val locale: BaseLocale
 ) {
@@ -124,7 +125,8 @@ abstract class CommandContext(
 	fun fail(reply: LorittaReply): Nothing = throw CommandException(reply)
 
 	fun getUserMention(addSpace: Boolean): String {
-		return message.author.asMention + (if (addSpace) " " else "")
+		// TODO: Fix
+		return /* message.author.asMention + */ (if (addSpace) " " else "")
 	}
 
 	inline fun <reified T> checkType(source: CommandContext): T {

@@ -9,7 +9,7 @@ repositories {
 }
 
 dependencies {
-    api(project(":loritta-api"))
+    api(project(":common"))
     api(kotlin("stdlib-jdk8"))
 
     // Logging

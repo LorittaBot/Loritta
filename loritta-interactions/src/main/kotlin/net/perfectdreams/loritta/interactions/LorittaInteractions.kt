@@ -7,6 +7,15 @@ import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.platform.PlatformFeature
 import net.perfectdreams.loritta.api.plugin.PluginManager
 import net.perfectdreams.loritta.api.utils.LorittaAssets
+import net.perfectdreams.loritta.commands.vanilla.`fun`.ChooseCommand
+import net.perfectdreams.loritta.commands.vanilla.`fun`.CoinFlipCommand
+import net.perfectdreams.loritta.commands.vanilla.`fun`.MagicBallCommand
+import net.perfectdreams.loritta.commands.vanilla.`fun`.QualityCommand
+import net.perfectdreams.loritta.commands.vanilla.`fun`.RateWaifuCommand
+import net.perfectdreams.loritta.commands.vanilla.`fun`.VaporQualityCommand
+import net.perfectdreams.loritta.commands.vanilla.`fun`.VaporwaveCommand
+import net.perfectdreams.loritta.commands.vanilla.utils.AnagramCommand
+import net.perfectdreams.loritta.commands.vanilla.utils.CalculatorCommand
 import net.perfectdreams.loritta.interactions.commands.vanilla.InteractionsCommandManager
 import net.perfectdreams.loritta.interactions.commands.vanilla.PingAnotherThingCommand
 import net.perfectdreams.loritta.interactions.commands.vanilla.PingSomethingCommand
@@ -34,8 +43,7 @@ class LorittaInteractions(val discordConfig: DiscordConfig) : LorittaBot() {
         get() = TODO("Not yet implemented")
     override val httpWithoutTimeout: HttpClient
         get() = TODO("Not yet implemented")
-    override val random: Random
-        get() = TODO("Not yet implemented")
+    override val random = Random(System.currentTimeMillis())
 
     fun start() {
         localeManager.loadLocales()
@@ -43,7 +51,16 @@ class LorittaInteractions(val discordConfig: DiscordConfig) : LorittaBot() {
         runBlocking {
             commandManager.registerAll(
                 PingSomethingCommand(),
-                PingAnotherThingCommand()
+                PingAnotherThingCommand(),
+                CalculatorCommand(),
+                CoinFlipCommand(this@LorittaInteractions),
+                RateWaifuCommand(this@LorittaInteractions),
+                MagicBallCommand(this@LorittaInteractions),
+                VaporwaveCommand(this@LorittaInteractions),
+                QualityCommand(this@LorittaInteractions),
+                VaporQualityCommand(this@LorittaInteractions),
+                ChooseCommand(this@LorittaInteractions),
+                AnagramCommand(this@LorittaInteractions)
             )
 
             commandManager.registerDiscord()

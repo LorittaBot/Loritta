@@ -18,6 +18,7 @@ pluginManagement {
 
 rootProject.name = "loritta-parent"
 include(":loritta-api")
+include(":common")
 include(":loritta-serializable-commons")
 include(":loritta-discord")
 

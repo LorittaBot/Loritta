@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.interactions.LorittaInteractions
 import net.perfectdreams.loritta.interactions.internal.commands.DummyMessage
 import net.perfectdreams.loritta.interactions.internal.commands.InteraKTionsChannel
 import net.perfectdreams.loritta.interactions.internal.commands.InteractionsCommandContext
+import net.perfectdreams.loritta.interactions.internal.commands.InteractionsOptionsManager
 import net.perfectdreams.loritta.utils.locale.BaseLocale
 
 class InteractionsCommandManager(val m: LorittaInteractions) : CommandManager<LorittaCommand<CommandContext>> {
@@ -122,8 +123,10 @@ class InteractionsCommandManager(val m: LorittaInteractions) : CommandManager<Lo
         override suspend fun executes(context: SlashCommandContext) {
             command.executes(
                 InteractionsCommandContext(
+                    context,
                     m,
                     command,
+                    InteractionsOptionsManager(context),
                     DummyMessage(
                         InteraKTionsChannel(
                             context
