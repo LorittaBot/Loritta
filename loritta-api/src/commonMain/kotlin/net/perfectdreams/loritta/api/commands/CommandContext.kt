@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.api.commands
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.entities.LorittaEmote
 import net.perfectdreams.loritta.api.entities.Message
-import net.perfectdreams.loritta.api.entities.User
 import net.perfectdreams.loritta.api.messages.LorittaMessage
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.api.utils.image.Image
@@ -26,11 +25,14 @@ abstract class CommandContext(
 	open suspend fun sendImage(image: Image, fileName: String = "image.png", content: String = getUserMention(true)) = message.channel.sendFile(image.toByteArray(), fileName, content)
 	open suspend fun sendFile(byteArray: ByteArray, fileName: String, content: String = getUserMention(true)) = message.channel.sendFile(byteArray, fileName, content)
 
-	abstract suspend fun user(argument: Int): User?
+	// TODO: Fix
+	// abstract suspend fun user(argument: Int): User?
 	// TODO: Fix
 	// suspend fun userOrFail(argument: Int) = validate(user(argument), argument)
-	abstract suspend fun imageUrl(argument: Int, searchPreviousMessages: Int = 25): String?
-	abstract suspend fun image(argument: Int, searchPreviousMessages: Int = 25, createTextAsImageIfNotFound: Boolean = true): Image?
+	// TODO: Fix
+	// abstract suspend fun imageUrl(argument: Int, searchPreviousMessages: Int = 25): String?
+	// TODO: Fix
+	// abstract suspend fun image(argument: Int, searchPreviousMessages: Int = 25, createTextAsImageIfNotFound: Boolean = true): Image?
 	// TODO: Fix
 	// suspend fun imageOrFail(argument: Int) = validate(image(argument))
 
@@ -158,15 +160,17 @@ abstract class CommandContext(
 	/**
 	 * Sends the command help to the current channel
 	 */
-	abstract suspend fun explain()
+	// TODO: Fix
+	// abstract suspend fun explain()
 
 	/**
 	 * Sends the command help to the current channel and halts the command flow
 	 *
 	 * @see explain
 	 */
-	suspend fun explainAndExit(): Nothing {
+	// TODO: Fix
+	/* suspend fun explainAndExit(): Nothing {
 		explain()
 		throw SilentCommandException()
-	}
+	} */
 }

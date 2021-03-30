@@ -3,14 +3,18 @@ package net.perfectdreams.loritta.interactions.commands.vanilla
 import dev.kord.common.entity.Snowflake
 import net.perfectdreams.discordinteraktions.commands.SlashCommand
 import net.perfectdreams.discordinteraktions.context.SlashCommandContext
+import net.perfectdreams.discordinteraktions.declarations.slash.CommandOption
 import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclaration
+import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandGroupDeclaration
 import net.perfectdreams.loritta.api.commands.CommandContext
 import net.perfectdreams.loritta.api.commands.CommandManager
 import net.perfectdreams.loritta.api.commands.LorittaCommand
+import net.perfectdreams.loritta.api.commands.declarations.CommandDeclaration
 import net.perfectdreams.loritta.interactions.LorittaInteractions
 import net.perfectdreams.loritta.interactions.internal.commands.DummyMessage
 import net.perfectdreams.loritta.interactions.internal.commands.InteraKTionsChannel
 import net.perfectdreams.loritta.interactions.internal.commands.InteractionsCommandContext
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 
 class InteractionsCommandManager(val m: LorittaInteractions) : CommandManager<LorittaCommand<CommandContext>> {
     val commands = mutableListOf<LorittaCommand<CommandContext>>()
@@ -23,19 +27,83 @@ class InteractionsCommandManager(val m: LorittaInteractions) : CommandManager<Lo
         commands.remove(command)
     }
 
+    private fun convertDeclarationToInteraKTionsDeclaration(
+        locale: BaseLocale,
+        lorittaDeclaration: CommandDeclaration,
+        declarations: MutableMap<CommandDeclaration, SlashCommandDeclaration>
+    ): SlashCommandDeclaration {
+        if (declarations.containsKey(lorittaDeclaration))
+            return declarations.get(lorittaDeclaration)!!
+
+        val options = object: SlashCommandDeclaration.Options() {}
+
+        for (lorittaGroup in lorittaDeclaration.options.subcommandGroups) {
+            val group = object: SlashCommandGroupDeclaration(
+                lorittaGroup.name,
+                locale[lorittaGroup.description]
+            ) {}
+
+            lorittaGroup.subcommands.forEach {
+                group.subcommands.add(
+                    convertDeclarationToInteraKTionsDeclaration(
+                        locale,
+                        it,
+                        declarations
+                    )
+                )
+            }
+
+            options.subcommandGroups.add(group)
+        }
+
+        for (subcommand in lorittaDeclaration.options.subcommands) {
+            options.subcommands.add(
+                convertDeclarationToInteraKTionsDeclaration(
+                    locale,
+                    subcommand,
+                    declarations
+                )
+            )
+        }
+
+        for (option in lorittaDeclaration.options.arguments) {
+            options.arguments.add(
+                CommandOption<Any>(
+                    option.type,
+                    option.name,
+                    locale[option.description],
+                    option.required,
+                    emptyList()
+                )
+            )
+        }
+
+        // Convert Loritta Command Type to Discord InteraKTions Command Type
+        val declaration = object: SlashCommandDeclaration(
+            lorittaDeclaration.name,
+            // There is a 100 chars limit for the description
+            locale[lorittaDeclaration.description].take(100)
+        ) {
+            override val options = options
+        }
+
+        declarations[lorittaDeclaration] = declaration
+
+        return declaration
+    }
+
     suspend fun registerDiscord() {
         val locale = m.localeManager.getLocaleById("default")
 
-        val interaktionsCommands = commands.map {
-            // Convert Loritta Command Type to Discord InteraKTions Command Type
-            val declaration = object: SlashCommandDeclaration(
-                it.rootDeclaration.name,
-                locale.get(it.rootDeclaration.description).substring(0 until 100)
-            ) {}
+        // This is to avoid having multiple declarations created, which causes issues with the same declaration having multiple objects
+        val declarations = mutableMapOf<CommandDeclaration, SlashCommandDeclaration>()
 
+        val interaktionsCommands = commands.map {
+            // Now we need to get the child declaration from here...
             SlashCommandWrapper(
                 it,
-                declaration
+                convertDeclarationToInteraKTionsDeclaration(locale, it.declaration, declarations),
+                convertDeclarationToInteraKTionsDeclaration(locale, it.rootDeclaration, declarations)
             )
         }
 
@@ -50,7 +118,7 @@ class InteractionsCommandManager(val m: LorittaInteractions) : CommandManager<Lo
         )
     }
 
-    inner class SlashCommandWrapper(val command: LorittaCommand<CommandContext>, declaration: SlashCommandDeclaration) : SlashCommand(declaration) {
+    inner class SlashCommandWrapper(val command: LorittaCommand<CommandContext>, declaration: SlashCommandDeclaration, rootDeclaration: SlashCommandDeclaration) : SlashCommand(declaration, rootDeclaration) {
         override suspend fun executes(context: SlashCommandContext) {
             command.executes(
                 InteractionsCommandContext(

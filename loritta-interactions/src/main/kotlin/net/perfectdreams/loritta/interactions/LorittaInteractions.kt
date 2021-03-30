@@ -8,7 +8,8 @@ import net.perfectdreams.loritta.api.platform.PlatformFeature
 import net.perfectdreams.loritta.api.plugin.PluginManager
 import net.perfectdreams.loritta.api.utils.LorittaAssets
 import net.perfectdreams.loritta.interactions.commands.vanilla.InteractionsCommandManager
-import net.perfectdreams.loritta.interactions.commands.vanilla.PingCommand
+import net.perfectdreams.loritta.interactions.commands.vanilla.PingAnotherThingCommand
+import net.perfectdreams.loritta.interactions.commands.vanilla.PingSomethingCommand
 import net.perfectdreams.loritta.interactions.utils.config.DiscordConfig
 import net.perfectdreams.loritta.utils.locale.LocaleManager
 import java.io.File
@@ -41,7 +42,8 @@ class LorittaInteractions(val discordConfig: DiscordConfig) : LorittaBot() {
 
         runBlocking {
             commandManager.registerAll(
-                PingCommand(),
+                PingSomethingCommand(),
+                PingAnotherThingCommand()
             )
 
             commandManager.registerDiscord()
