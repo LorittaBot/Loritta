@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.utils.locale
 
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.loritta
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 
 enum class Gender {
 	MALE,

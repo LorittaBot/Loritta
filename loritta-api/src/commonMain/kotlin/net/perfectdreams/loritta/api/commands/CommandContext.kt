@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.api.commands
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.api.entities.LorittaEmote
 import net.perfectdreams.loritta.api.entities.Message

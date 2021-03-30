@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.utils.locale
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import mu.KotlinLogging
 import net.perfectdreams.loritta.api.utils.format
 import org.yaml.snakeyaml.Yaml

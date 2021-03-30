@@ -1,16 +1,16 @@
 package net.perfectdreams.loritta.sweetmorenitta.views
 
 import com.google.gson.JsonArray
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import kotlinx.html.*
 import net.perfectdreams.loritta.sweetmorenitta.utils.imgSrcSet
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 
 class DonateView(
-        locale: BaseLocale,
-        path: String,
-        val userIdentification: LorittaJsonWebSession.UserIdentification?,
-        val keys: JsonArray
+    locale: BaseLocale,
+    path: String,
+    val userIdentification: LorittaJsonWebSession.UserIdentification?,
+    val keys: JsonArray
 ) : NavbarView(
         locale,
         path

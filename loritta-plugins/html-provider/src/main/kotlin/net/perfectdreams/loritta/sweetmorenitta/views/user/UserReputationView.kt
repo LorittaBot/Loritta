@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.sweetmorenitta.views.user
 import com.github.salomonbrys.kotson.jsonObject
 import com.mrpowergamerbr.loritta.dao.Reputation
 import com.mrpowergamerbr.loritta.utils.encodeToUrl
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.html.*
 import net.dv8tion.jda.api.entities.User
@@ -11,15 +11,15 @@ import net.perfectdreams.loritta.sweetmorenitta.views.BaseView
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 
 class UserReputationView(
-        locale: BaseLocale,
-        path: String,
-        val userIdentification: LorittaJsonWebSession.UserIdentification?,
-        val user: User?,
-        val lastReputationGiven: Reputation?,
-        val reputations: List<Reputation>,
-        val guildId: Long?,
-        val channelId: Long?,
-        val backgroundUrl: String
+    locale: BaseLocale,
+    path: String,
+    val userIdentification: LorittaJsonWebSession.UserIdentification?,
+    val user: User?,
+    val lastReputationGiven: Reputation?,
+    val reputations: List<Reputation>,
+    val guildId: Long?,
+    val channelId: Long?,
+    val backgroundUrl: String
 ) : BaseView(
         locale,
         path

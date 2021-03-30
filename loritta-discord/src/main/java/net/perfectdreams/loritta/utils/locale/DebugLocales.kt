@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.utils.locale
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 
 object DebugLocales {
     private val doNotChangeThisKeys = listOf(

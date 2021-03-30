@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.sweetmorenitta.views
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import kotlinx.html.HEAD
 import kotlinx.html.HTML
 import kotlinx.html.ScriptType
@@ -17,8 +17,8 @@ import net.perfectdreams.loritta.website.LorittaWebsite
 import net.perfectdreams.loritta.website.utils.WebsiteAssetsHashes
 
 abstract class BaseView(
-        val locale: BaseLocale,
-        val path: String
+    val locale: BaseLocale,
+    val path: String
 ) {
     companion object {
         val versionPrefix = "/v2"

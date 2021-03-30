@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.sweetmorenitta.views
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import kotlinx.html.DIV
 import kotlinx.html.div
 import kotlinx.html.h1
@@ -9,8 +9,8 @@ import kotlinx.html.p
 import kotlinx.html.style
 
 class Error404View(
-        locale: BaseLocale,
-        path: String
+    locale: BaseLocale,
+    path: String
 ) : NavbarView(
         locale,
         path

@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.plugin.htmlprovider
 import com.google.gson.JsonArray
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.Reputation
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.sweetmorenitta.views.BlogPostView

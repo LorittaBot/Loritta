@@ -1,12 +1,12 @@
 package net.perfectdreams.loritta.sweetmorenitta.views
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import kotlinx.html.*
 import net.perfectdreams.loritta.sweetmorenitta.utils.imgSrcSet
 
 class SupportView(
-        locale: BaseLocale,
-        path: String
+    locale: BaseLocale,
+    path: String
 ) : NavbarView(
         locale,
         path

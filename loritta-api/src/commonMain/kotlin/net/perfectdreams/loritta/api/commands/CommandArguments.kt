@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.api.commands
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import com.mrpowergamerbr.loritta.utils.locale.LocaleDataType
-import com.mrpowergamerbr.loritta.utils.locale.LocaleKeyData
-import com.mrpowergamerbr.loritta.utils.locale.LocaleStringData
+import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.LocaleDataType
+import net.perfectdreams.loritta.utils.locale.LocaleKeyData
+import net.perfectdreams.loritta.utils.locale.LocaleStringData
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -20,11 +20,11 @@ data class CommandArguments(val arguments: List<CommandArgument>) {
 
 @Serializable
 data class CommandArgument(
-		val type: ArgumentType,
-		val optional: Boolean,
-		val defaultValue: LocaleDataType? = null,
-		val text: LocaleDataType? = null,
-		val explanation: LocaleDataType? = null
+	val type: ArgumentType,
+	val optional: Boolean,
+	val defaultValue: LocaleDataType? = null,
+	val text: LocaleDataType? = null,
+	val explanation: LocaleDataType? = null
 ) {
 	fun build(locale: BaseLocale): String {
 		return build(StringBuilder(), locale).toString()

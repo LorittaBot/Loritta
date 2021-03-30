@@ -6,7 +6,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.tables.BannedUsers
 import org.jetbrains.exposed.sql.deleteWhere

@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.loritta.utils.locale
+package net.perfectdreams.loritta.utils.locale
 
 import kotlinx.serialization.Serializable
 

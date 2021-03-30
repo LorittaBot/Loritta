@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.dao.ShipEffect
 import com.mrpowergamerbr.loritta.tables.ShipEffects
 import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.gson
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.evaluate
 import io.ktor.application.ApplicationCall
