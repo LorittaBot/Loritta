@@ -47,7 +47,7 @@ public abstract class CommandBase {
 	}
 	
 	public boolean handle(MessageReceivedEvent ev, ServerConfig conf) {
-		String message = ev.getMessage().getContent();
+		String message = ev.getMessage().getContentDisplay();
 		if (message.startsWith(conf.commandPrefix() + getLabel())) {
 			if (hasCommandFeedback()) {
 				if (!ev.getTextChannel().canTalk()) { // Se a Loritta não pode falar no canal de texto, avise para o dono do servidor para dar a permissão para ela

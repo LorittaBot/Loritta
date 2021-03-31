@@ -155,11 +155,7 @@ public class CommandContext {
 		}
 		if (privateReply) {
 			getLorittaUser().getMember().getUser().openPrivateChannel().queue((t) -> {
-				try {
-					t.sendFile(file, name, message).complete();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				t.sendFile(file, name, message).complete();
 			});
 		} else {
 			if (event.getTextChannel().canTalk()) {

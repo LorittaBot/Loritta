@@ -49,7 +49,7 @@ public class FraseToscaCommand extends CommandBase {
 		TemmieWebhook webhook = Loritta.getOrCreateWebhook(context.getEvent().getTextChannel(), "Frase Tosca");
 		webhook.sendMessage(DiscordMessage.builder()
 				.username("Gabriela, a amiga da Loritta")
-				.content(context.getAsMention(true) + text)
+				.content(context.getAsMention(true) + text.replace("@", ""))
 				.avatarUrl("http://i.imgur.com/aATogAg.png")
 				.build());
 	}

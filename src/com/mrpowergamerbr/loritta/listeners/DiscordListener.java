@@ -43,36 +43,38 @@ public class DiscordListener extends ListenerAdapter {
 					// cache.put(event.getMessage().getId(), event.getMessage());
 					ServerConfig conf = loritta.getServerConfigForGuild(event.getGuild().getId());
 
-					if (!event.getMessage().getContent().startsWith(conf.commandPrefix())) { // TODO: Filtrar links
-						loritta.getHal().add(event.getMessage().getContent().toLowerCase());
+					if (!event.getMessage().getContentDisplay().startsWith(conf.commandPrefix())) { // TODO: Filtrar links
+						loritta.getHal().add(event.getMessage().getContentDisplay().toLowerCase());
 					}
 
 					for (Whistler whistler : conf.whistlers()) {
 						processCode(conf, event.getMessage(), whistler.codes);
 					}
 
-					// Primeiro os comandos customizados da Loritta(tm)
-					for (CommandBase cmd : loritta.getCommandManager().getCommandMap()) {
-						if (conf.debugOptions().enableAllModules() || conf.modules().contains(cmd.getClass().getSimpleName())) {
+					if (event.getTextChannel().getIdLong() == 826650286457487370L) {
+						// Primeiro os comandos customizados da Loritta(tm)
+						for (CommandBase cmd : loritta.getCommandManager().getCommandMap()) {
+							if (conf.debugOptions().enableAllModules() || conf.modules().contains(cmd.getClass().getSimpleName())) {
+								if (cmd.handle(event, conf)) {
+									// event.getChannel().sendTyping().queue();
+									CommandOptions cmdOpti = conf.getCommandOptionsFor(cmd);
+									if (conf.deleteMessageAfterCommand() || cmdOpti.deleteMessageAfterCommand()) {
+										event.getMessage().delete().complete();
+									}
+									return;
+								}
+							}
+						}
+
+						// E agora os comandos do servidor
+						for (CustomCommand cmd : conf.customCommands()) {
 							if (cmd.handle(event, conf)) {
-								// event.getChannel().sendTyping().queue();
-								CommandOptions cmdOpti = conf.getCommandOptionsFor(cmd);
-								if (conf.deleteMessageAfterCommand() || cmdOpti.deleteMessageAfterCommand()) {
+								if (conf.deleteMessageAfterCommand()) {
 									event.getMessage().delete().complete();
 								}
-								return;
 							}
+							return;
 						}
-					}
-
-					// E agora os comandos do servidor
-					for (CustomCommand cmd : conf.customCommands()) {
-						if (cmd.handle(event, conf)) {
-							if (conf.deleteMessageAfterCommand()) {
-								event.getMessage().delete().complete();
-							}
-						}
-						return;
 					}
 				} catch (Exception e) {
 					e.printStackTrace();

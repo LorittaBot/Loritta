@@ -29,7 +29,7 @@ public class CustomCommand {
 	private String commandName;
 	
 	public boolean handle(MessageReceivedEvent ev, ServerConfig conf) {
-		String message = ev.getMessage().getContent();
+		String message = ev.getMessage().getContentDisplay();
 		if (message.startsWith(conf.commandPrefix() + commandName)) {
 			ev.getChannel().sendTyping().complete();
 			DiscordListener.processCode(conf, ev.getMessage(), codes);

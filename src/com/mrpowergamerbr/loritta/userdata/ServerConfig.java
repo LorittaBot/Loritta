@@ -28,7 +28,7 @@ public class ServerConfig {
 	@Id
 	@Indexed(options = @IndexOptions(unique = true))
 	String guildId; // Guild ID
-	String commandPrefix = "+"; // Command Prefix (example: +help or .help or etc)
+	String commandPrefix = "="; // Command Prefix (example: +help or .help or etc)
 	ArrayList<String> modules = new ArrayList<String>();
 	DebugOptions debugOptions = new DebugOptions();
 	boolean deleteMessageAfterCommand; // Deletar mensagem do comando após executar ele?

@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import javax.security.auth.login.LoginException;
 
+import net.dv8tion.jda.core.entities.Game;
 import org.bson.Document;
 import org.jibble.jmegahal.JMegaHal;
 import org.mongodb.morphia.Datastore;
@@ -37,7 +38,6 @@ import net.dv8tion.jda.core.entities.Game.GameType;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.impl.GameImpl;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
 @Getter
@@ -58,7 +58,7 @@ public class Loritta {
 	public static final SplittableRandom random = new SplittableRandom(); // Um splittable random global, para não precisar ficar criando vários (menos GC)
 	private JMegaHal hal = new JMegaHal(); // JMegaHal, usado nos comandos de frase tosca
 	private static String playingGame = "loritta.website | Shantae: Half-Genie Hero";
-	public static final String FOLDER = "/home/servers/loritta/assets/"; // Pasta usada na Loritta
+	public static final String FOLDER = "/home/loritta/assets/"; // Pasta usada na Loritta
 	@Getter
 	private static final Gson gson = new Gson(); // Gson
 	@Getter
@@ -104,7 +104,7 @@ public class Loritta {
 		System.out.println("Success! Starting Loritta (Discord Bot)..."); // Agora iremos iniciar o bot
 		try {
 			jda = new JDABuilder(AccountType.BOT).setToken(clientToken).buildBlocking();
-		} catch (LoginException | IllegalArgumentException | InterruptedException | RateLimitedException e) {
+		} catch (LoginException | IllegalArgumentException | InterruptedException e) {
 			e.printStackTrace();
 			System.exit(1); // Caso dê login exception, vamos fechar o app :(
 			return;
@@ -113,12 +113,12 @@ public class Loritta {
 		System.out.println("Loritta (Discord Bot) started!"); // Yay!
 
 		System.out.println("Success! Starting Loritta (Website)..."); // E agora iremos iniciar o frontend (website)
-		Runnable website = () -> { LorittaWebsite.init(config.getWebsiteUrl(), config.getFrontendFolder()); };
-		new Thread(website, "Website Thread").start(); // ...não foi tão difícil fazer isso :P
+		/* Runnable website = () -> { LorittaWebsite.init(config.getWebsiteUrl(), config.getFrontendFolder()); };
+		new Thread(website, "Website Thread").start(); // ...não foi tão difícil fazer isso :P */
 
 		Runnable presenceUpdater = () -> {  // Agora iremos iniciar o presence updater
 			while (true) {
-				jda.getPresence().setGame(new GameImpl(Loritta.playingGame, "http://sparklypower.net/", GameType.DEFAULT));
+				jda.getPresence().setGame(Game.playing(Loritta.playingGame));
 				try {
 					Thread.sleep(5000);
 				} catch (InterruptedException e) {
@@ -280,7 +280,7 @@ public class Loritta {
 		Webhook webhook = null;
 
 		if (webhooks.isEmpty()) {
-			webhook = textChannel.getGuild().getController().createWebhook(textChannel, name).complete();
+			webhook = textChannel.createWebhook(name).complete();
 		} else {
 			webhook = webhooks.get(0);
 		}

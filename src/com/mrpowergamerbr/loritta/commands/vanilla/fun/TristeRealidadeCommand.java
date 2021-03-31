@@ -127,7 +127,7 @@ public class TristeRealidadeCommand extends CommandBase {
 
 			baseGraph.drawImage(bi, 0, 0, null);
 
-			if (context.getMessage().getContent().contains("Mas capricha, vou colocar no grupo do SAM!") || Loritta.getRandom().nextInt(0, 200) == 199) { // Easter Egg: Colocar o selo do South America Memes
+			if (context.getMessage().getContentDisplay().contains("Mas capricha, vou colocar no grupo do SAM!") || Loritta.getRandom().nextInt(0, 200) == 199) { // Easter Egg: Colocar o selo do South America Memes
 				baseGraph.drawImage(seloSouthAmericaMemes, (384 / 2) - (seloSouthAmericaMemes.getWidth(null) / 2), (256 / 2) - (seloSouthAmericaMemes.getHeight(null) / 2), null);
 			}
 			

@@ -59,7 +59,7 @@ public class QuoteCommand extends CommandBase {
 					.builder()
 					.author(new AuthorEmbed(msg.getAuthor().getName() + " disse...", null, msg.getAuthor().getEffectiveAvatarUrl(), null))
 					.color(123)
-					.description(msg.getRawContent())
+					.description(msg.getContentRaw())
 					.title("Wow!")
 					.build();
 			
@@ -67,7 +67,7 @@ public class QuoteCommand extends CommandBase {
 					.builder()
 					.avatarUrl(context.getMessage().getAuthor().getEffectiveAvatarUrl())
 					.username(context.getMessage().getAuthor().getName())
-					.content(context.getEvent().getMessage().getRawContent().replace(context.getConfig().commandPrefix() + "mencionar " + context.getArgs()[0], "").trim())
+					.content(context.getEvent().getMessage().getContentRaw().replace(context.getConfig().commandPrefix() + "mencionar " + context.getArgs()[0], "").trim())
 					.embed(embed)
 					.build();
 			

@@ -14,7 +14,7 @@ public class ContainsPrecondition implements IPrecondition {
 	
 	@Override
 	public boolean isValid(ServerConfig conf, Message message) {
-		String msg = (ignoreCase ? message.getContent().toLowerCase() : message.getContent());
+		String msg = (ignoreCase ? message.getContentDisplay().toLowerCase() : message.getContentDisplay());
 		return (msg.contains(ignoreCase ? contains.toLowerCase() : contains));
 	}
 
