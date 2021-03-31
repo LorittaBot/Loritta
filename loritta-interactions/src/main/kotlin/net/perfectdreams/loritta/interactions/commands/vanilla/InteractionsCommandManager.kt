@@ -1,6 +1,9 @@
 package net.perfectdreams.loritta.interactions.commands.vanilla
 
 import dev.kord.common.entity.Snowflake
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import net.perfectdreams.discordinteraktions.commands.SlashCommand
 import net.perfectdreams.discordinteraktions.context.SlashCommandContext
 import net.perfectdreams.discordinteraktions.declarations.slash.CommandOption
@@ -10,6 +13,8 @@ import net.perfectdreams.loritta.api.commands.CommandContext
 import net.perfectdreams.loritta.api.commands.CommandManager
 import net.perfectdreams.loritta.api.commands.LorittaCommand
 import net.perfectdreams.loritta.api.commands.declarations.CommandDeclaration
+import net.perfectdreams.loritta.api.commands.declarations.IntegerCommandChoice
+import net.perfectdreams.loritta.api.commands.declarations.StringCommandChoice
 import net.perfectdreams.loritta.interactions.LorittaInteractions
 import net.perfectdreams.loritta.interactions.internal.commands.DummyMessage
 import net.perfectdreams.loritta.interactions.internal.commands.InteraKTionsChannel
@@ -74,7 +79,19 @@ class InteractionsCommandManager(val m: LorittaInteractions) : CommandManager<Lo
                     option.name,
                     locale[option.description],
                     option.required,
-                    emptyList()
+                    option.choices.map {
+                        if (it is StringCommandChoice) {
+                            net.perfectdreams.discordinteraktions.declarations.slash.StringCommandChoice(
+                                it.name,
+                                it.value
+                            )
+                        } else if (it is IntegerCommandChoice) {
+                            net.perfectdreams.discordinteraktions.declarations.slash.IntegerCommandChoice(
+                                it.name,
+                                it.value
+                            )
+                        } else throw RuntimeException()
+                    }
                 )
             )
         }
@@ -121,6 +138,15 @@ class InteractionsCommandManager(val m: LorittaInteractions) : CommandManager<Lo
 
     inner class SlashCommandWrapper(val command: LorittaCommand<CommandContext>, declaration: SlashCommandDeclaration, rootDeclaration: SlashCommandDeclaration) : SlashCommand(declaration, rootDeclaration) {
         override suspend fun executes(context: SlashCommandContext) {
+            GlobalScope.launch {
+                // Weird workaround:tm:, automatic defer
+                delay(2_000)
+                if (!context.isDeferred) {
+                    println("Command $command took too long to defer! Deferring automatically...")
+                    context.defer()
+                }
+            }
+
             command.executes(
                 InteractionsCommandContext(
                     context,

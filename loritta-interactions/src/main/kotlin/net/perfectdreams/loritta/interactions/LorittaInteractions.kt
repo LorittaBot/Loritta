@@ -14,8 +14,15 @@ import net.perfectdreams.loritta.commands.vanilla.`fun`.QualityCommand
 import net.perfectdreams.loritta.commands.vanilla.`fun`.RateWaifuCommand
 import net.perfectdreams.loritta.commands.vanilla.`fun`.VaporQualityCommand
 import net.perfectdreams.loritta.commands.vanilla.`fun`.VaporwaveCommand
+import net.perfectdreams.loritta.commands.vanilla.minecraft.McAvatarCommand
+import net.perfectdreams.loritta.commands.vanilla.minecraft.McBodyCommand
+import net.perfectdreams.loritta.commands.vanilla.minecraft.McHeadCommand
+import net.perfectdreams.loritta.commands.vanilla.minecraft.McOfflineUUIDCommand
+import net.perfectdreams.loritta.commands.vanilla.minecraft.McSkinCommand
+import net.perfectdreams.loritta.commands.vanilla.minecraft.McUUIDCommand
 import net.perfectdreams.loritta.commands.vanilla.utils.AnagramCommand
 import net.perfectdreams.loritta.commands.vanilla.utils.CalculatorCommand
+import net.perfectdreams.loritta.commands.vanilla.utils.MoneyCommand
 import net.perfectdreams.loritta.interactions.commands.vanilla.InteractionsCommandManager
 import net.perfectdreams.loritta.interactions.commands.vanilla.PingAnotherThingCommand
 import net.perfectdreams.loritta.interactions.commands.vanilla.PingSomethingCommand
@@ -60,7 +67,15 @@ class LorittaInteractions(val discordConfig: DiscordConfig) : LorittaBot() {
                 QualityCommand(this@LorittaInteractions),
                 VaporQualityCommand(this@LorittaInteractions),
                 ChooseCommand(this@LorittaInteractions),
-                AnagramCommand(this@LorittaInteractions)
+                AnagramCommand(this@LorittaInteractions),
+                MoneyCommand(this@LorittaInteractions),
+
+                McAvatarCommand(this@LorittaInteractions),
+                McBodyCommand(this@LorittaInteractions),
+                McHeadCommand(this@LorittaInteractions),
+                McOfflineUUIDCommand(this@LorittaInteractions),
+                McSkinCommand(this@LorittaInteractions),
+                McUUIDCommand(this@LorittaInteractions),
             )
 
             commandManager.registerDiscord()

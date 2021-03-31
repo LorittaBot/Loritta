@@ -5,7 +5,7 @@ import net.perfectdreams.loritta.api.commands.declarations.required
 import net.perfectdreams.loritta.utils.locale.LocaleKeyData
 
 object PingCommandDeclaration : CommandDeclaration(
-    name = "ping",
+    name = "ping_with_underscores",
     description = LocaleKeyData("commands.command.ping.description")
 ) {
     override val options = Options

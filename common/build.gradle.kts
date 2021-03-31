@@ -21,7 +21,9 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(project(":loritta-api"))
+                // Used for the "+anagram" command
                 api("com.ionspin.kotlin:bignum:0.3.0-SNAPSHOT")
+                api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0")
             }
         }
 
@@ -30,6 +32,8 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib-jdk8"))
                 api(project(":loritta-api"))
+                api("org.jsoup:jsoup:1.13.1")
+                api("com.github.ben-manes.caffeine:caffeine:3.0.1")
             }
         }
 

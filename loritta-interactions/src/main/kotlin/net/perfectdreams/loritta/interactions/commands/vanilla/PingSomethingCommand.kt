@@ -6,7 +6,9 @@ import net.perfectdreams.loritta.api.commands.LorittaCommand
 class PingSomethingCommand : LorittaCommand<CommandContext>(PingCommandDeclaration.Something, PingCommandDeclaration) {
     override suspend fun executes(context: CommandContext) {
         with(PingCommandDeclaration.Something.options) {
-            context.sendMessage("Pong! You wrote: `${context.optionsManager.getString(text)}` owo soooo cutee!")
+            repeat(5) {
+                context.sendMessage("$it Pong! You wrote: `${context.optionsManager.getString(text)}` owo soooo cutee!")
+            }
         }
     }
 }
