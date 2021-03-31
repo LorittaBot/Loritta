@@ -32,12 +32,12 @@ class ServerListPayload : ConfigPayloadType("server_list") {
 
 		if (data != null) {
 			val base64Image = data.split(",")[1]
-			val imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64Image)
+			/* val imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64Image)
 			val img = ImageIO.read(ByteArrayInputStream(imageBytes))
 
 			if (img != null) {
 				ImageIO.write(img, "png", File(Loritta.FRONTEND, "static/assets/img/servers/backgrounds/${guild.id}.png"))
-			}
+			} */
 		}
 	}
 }

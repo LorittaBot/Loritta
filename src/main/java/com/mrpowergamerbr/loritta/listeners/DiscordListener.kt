@@ -35,6 +35,10 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 		}
 		if (DebugLog.cancelAllEvents)
 			return
+
+		if (event.channel.idLong != 826815151113240577L)
+			return
+
 		if (event.isFromType(ChannelType.TEXT)) { // Mensagens em canais de texto
 			loritta.messageExecutors.execute {
 				try {
@@ -148,9 +152,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					if (serverConfig.aminoConfig.isEnabled && serverConfig.aminoConfig.fixAminoImages)
 						AminoConverterModule.convertToImage(event)
 
-					for (eventHandler in serverConfig.nashornEventHandlers) {
+					/* for (eventHandler in serverConfig.nashornEventHandlers) {
 						eventHandler.handleMessageReceived(event)
-					}
+					} */
 
 					// emotes favoritos
 					event.message.emotes.forEach {
@@ -182,11 +186,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 					}
 
 					// E depois os comandos usando JavaScript (Nashorn)
-					serverConfig.nashornCommands.forEach { cmd ->
+					/* serverConfig.nashornCommands.forEach { cmd ->
 						if (cmd.handle(lorittaMessageEvent, serverConfig, locale, lorittaUser)) {
 							return@execute
 						}
-					}
+					} */
 
 					loritta.messageInteractionCache.values.forEach {
 						if (it.onMessageReceived != null)
@@ -288,11 +292,11 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 
 				// E depois os comandos usando JavaScript (Nashorn)
-				serverConfig.nashornCommands.forEach { cmd ->
+				/* serverConfig.nashornCommands.forEach { cmd ->
 					if (cmd.handle(lorittaMessageEvent, serverConfig, locale, lorittaUser)) {
 						return@execute
 					}
-				}
+				} */
 			}
 		}
 	}
@@ -443,9 +447,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			try {
 				val conf = loritta.getServerConfigForGuild(event.guild.id)
 
-				for (eventHandler in conf.nashornEventHandlers) {
+				/* for (eventHandler in conf.nashornEventHandlers) {
 					eventHandler.handleMemberJoin(event)
-				}
+				} */
 
 				if (conf.autoroleConfig.isEnabled && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) { // Está ativado?
 					AutoroleModule.giveRoles(event, conf.autoroleConfig)
@@ -492,9 +496,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 				val conf = loritta.getServerConfigForGuild(event.guild.id)
 
-				for (eventHandler in conf.nashornEventHandlers) {
+				/* for (eventHandler in conf.nashornEventHandlers) {
 					eventHandler.handleMemberLeave(event)
-				}
+				} */
 
 				if (conf.joinLeaveConfig.isEnabled) {
 					WelcomeModule.handleLeave(event, conf)

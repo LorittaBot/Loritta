@@ -548,7 +548,7 @@ object LorittaUtilsKotlin {
 					} else if (jsoup.select("feed entry updated").isNotEmpty()) {
 						dateRss = jsoup.select("feed entry updated").first().text();
 					}
-					rssCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(dateRss);
+					// rssCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(dateRss);
 					// Enquanto a maioria das feeds RSS colocam title e link... a maioria não coloca a descrição corretamente
 					// Então vamos verificar de duas maneiras
 					if (jsoup.select("feed entry description").isNotEmpty()) {
@@ -601,7 +601,8 @@ object LorittaUtilsKotlin {
 					description = Jsoup.clean(description, "", Whitelist.simpleText(), Document.OutputSettings().escapeMode(Entities.EscapeMode.xhtml))
 				}
 
-				return FeedEntry(title, link, rssCalendar, description, entryItem)
+				return null
+				// return FeedEntry(title, link, rssCalendar, description, entryItem)
 			} catch (urlEx: HttpRequest.HttpRequestException) {
 				return null
 			} // Ignorar silenciosamente...

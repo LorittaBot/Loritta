@@ -54,7 +54,7 @@ class AminoCommand : AbstractCommand("amino", category = CommandCategory.UTILS) 
 						embed.addField("\uD83D\uDC65 ${context.locale["AMINO_MEMBERS"]}", community.membersCount.toString(), true);
 						embed.addField("\uD83C\uDF0E ${context.locale["AMINO_LANGUAGE"]}", community.primaryLanguage, true);
 						embed.addField("\uD83D\uDD25 ${context.locale["AMINO_COMMUNITY_HEAT"]}", community.communityHeat, true);
-						embed.addField("\uD83D\uDCC5 ${context.locale["AMINO_CREATED_IN"]}", javax.xml.bind.DatatypeConverter.parseDateTime(community.createdTime).toInstant().atOffset(ZoneOffset.UTC).humanize(), true);
+						// embed.addField("\uD83D\uDCC5 ${context.locale["AMINO_CREATED_IN"]}", javax.xml.bind.DatatypeConverter.parseDateTime(community.createdTime).toInstant().atOffset(ZoneOffset.UTC).humanize(), true);
 						embed.setColor(Color(255, 112, 125));
 						embed.setThumbnail(community.icon)
 

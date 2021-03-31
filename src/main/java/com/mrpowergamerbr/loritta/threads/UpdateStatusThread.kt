@@ -22,11 +22,11 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 	}
 
 	var lastUpdate: Long = System.currentTimeMillis()
-	var fanArtMinutes = -1
+	// var fanArtMinutes = -1
 	var currentIndex = 0 // Index atual
-	var currentFanArt: LorittaConfig.LorittaAvatarFanArt = Loritta.config.fanArts[0]
-	var currentDay = -1
-	var revertedAvatar = false
+	// var currentFanArt: LorittaConfig.LorittaAvatarFanArt = Loritta.config.fanArts[0]
+	// var currentDay = -1
+	// var revertedAvatar = false
 
 	override fun run() {
 		super.run()
@@ -46,91 +46,46 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 			currentIndex = skipToIndex
 			skipToIndex = -1
 		}
-		val calendar = Calendar.getInstance()
-		currentDay = calendar.get(Calendar.DAY_OF_WEEK)
-		val firstInstance = loritta.lorittaShards.shards.firstOrNull { it.status == JDA.Status.CONNECTED }
 
-		if (currentDay != Calendar.SUNDAY && !revertedAvatar) {
-			if (firstInstance != null) {
-				revertedAvatar = true
-				firstInstance.selfUser.manager.setAvatar(Icon.from(File(Loritta.ASSETS, "avatar_fanarts/original.png"))).complete()
-			}
-		}
+		val diff = System.currentTimeMillis() - lastUpdate
 
-		if (Loritta.config.fanArtExtravaganza && currentDay == Calendar.SUNDAY) {
-			revertedAvatar = false
-			if (currentIndex > Loritta.config.fanArts.size - 1) {
+		if (diff >= 25000) {
+			if (currentIndex > Loritta.config.currentlyPlaying.size - 1) {
 				currentIndex = 0
 			}
+			var jvmUpTime = ManagementFactory.getRuntimeMXBean().uptime
+			val days = TimeUnit.MILLISECONDS.toDays(jvmUpTime)
+			jvmUpTime -= TimeUnit.DAYS.toMillis(days)
+			val hours = TimeUnit.MILLISECONDS.toHours(jvmUpTime)
+			jvmUpTime -= TimeUnit.HOURS.toMillis(hours)
+			val minutes = TimeUnit.MILLISECONDS.toMinutes(jvmUpTime)
+			jvmUpTime -= TimeUnit.MINUTES.toMillis(minutes)
+			val seconds = TimeUnit.MILLISECONDS.toSeconds(jvmUpTime)
 
-			var minutes = calendar.get(Calendar.MINUTE) / 10
-			val diff = System.currentTimeMillis() - lastUpdate
+			val sb = StringBuilder(64)
+			sb.append(days)
+			sb.append("d ")
+			sb.append(hours)
+			sb.append("h ")
+			sb.append(minutes)
+			sb.append("m ")
+			sb.append(seconds)
+			sb.append("s")
 
-			if (diff >= 25000 && firstInstance != null) {
-				val fanArt = currentFanArt
-				loritta.lorittaShards.setGame(EntityBuilder(firstInstance).createGame("\uD83D\uDCF7 Fan Art by ${fanArt.artist} \uD83C\uDFA8 — \uD83D\uDC81 @Loritta fanarts", "https://www.twitch.tv/mrpowergamerbr", Game.GameType.WATCHING))
-				lastUpdate = System.currentTimeMillis()
-			}
+			val game = Loritta.config.currentlyPlaying[currentIndex]
 
-			if (fanArtMinutes != minutes) { // Diferente!
-				fanArtMinutes = minutes
-				if (currentIndex > Loritta.config.fanArts.size - 1) {
-					currentIndex = 0
-				}
+			var str = game.name
+			str = str.replace("{guilds}", loritta.lorittaShards.getGuildCount().toString())
+			str = str.replace("{users}", loritta.lorittaShards.getUserCount().toString())
+			str = str.replace("{uptime}", sb.toString())
 
-				val fanArt = Loritta.config.fanArts[currentIndex]
+			val shard = lorittaShards.shards.firstOrNull() ?: return
+			loritta.lorittaShards.setGame(EntityBuilder(shard).createGame(str, "https://www.twitch.tv/mrpowergamerbr", Game.GameType.valueOf(game.type)))
+			currentIndex++
+			lastUpdate = System.currentTimeMillis()
 
-				if (firstInstance != null) {
-					firstInstance.selfUser.manager.setAvatar(Icon.from(File(Loritta.ASSETS, "avatar_fanarts/${fanArt.fileName}"))).complete()
-					loritta.lorittaShards.setGame(EntityBuilder(firstInstance).createGame("\uD83D\uDCF7 Fan Art by ${fanArt.artist} \uD83C\uDFA8 — \uD83D\uDC81 @Loritta fanarts", "https://www.twitch.tv/mrpowergamerbr", Game.GameType.WATCHING))
-
-					currentFanArt = fanArt
-					currentIndex++
-				}
-			}
-
-			fanArtMinutes = minutes
-		} else {
-			val diff = System.currentTimeMillis() - lastUpdate
-
-			if (diff >= 25000) {
-				if (currentIndex > Loritta.config.currentlyPlaying.size - 1) {
-					currentIndex = 0
-				}
-				var jvmUpTime = ManagementFactory.getRuntimeMXBean().uptime
-				val days = TimeUnit.MILLISECONDS.toDays(jvmUpTime)
-				jvmUpTime -= TimeUnit.DAYS.toMillis(days)
-				val hours = TimeUnit.MILLISECONDS.toHours(jvmUpTime)
-				jvmUpTime -= TimeUnit.HOURS.toMillis(hours)
-				val minutes = TimeUnit.MILLISECONDS.toMinutes(jvmUpTime)
-				jvmUpTime -= TimeUnit.MINUTES.toMillis(minutes)
-				val seconds = TimeUnit.MILLISECONDS.toSeconds(jvmUpTime)
-
-				val sb = StringBuilder(64)
-				sb.append(days)
-				sb.append("d ")
-				sb.append(hours)
-				sb.append("h ")
-				sb.append(minutes)
-				sb.append("m ")
-				sb.append(seconds)
-				sb.append("s")
-
-				val game = Loritta.config.currentlyPlaying[currentIndex]
-
-				var str = game.name
-				str = str.replace("{guilds}", loritta.lorittaShards.getGuildCount().toString())
-				str = str.replace("{users}", loritta.lorittaShards.getUserCount().toString())
-				str = str.replace("{uptime}", sb.toString())
-
-				val shard = lorittaShards.shards.firstOrNull() ?: return
-				loritta.lorittaShards.setGame(EntityBuilder(shard).createGame(str, "https://www.twitch.tv/mrpowergamerbr", Game.GameType.valueOf(game.type)))
-				currentIndex++
-				lastUpdate = System.currentTimeMillis()
-
-				if (currentIndex > Loritta.config.currentlyPlaying.size - 1) {
-					currentIndex = 0
-				}
+			if (currentIndex > Loritta.config.currentlyPlaying.size - 1) {
+				currentIndex = 0
 			}
 		}
 	}

@@ -64,7 +64,7 @@ class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 												val lastDate = checkedRssFeeds.checked[feedUrl];
 
 												// Data do último item na RSS Feed
-												val lastCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(lastDate);
+												/* val lastCalendar = javax.xml.bind.DatatypeConverter.parseDateTime(lastDate);
 
 												if (feedEntry.date.before(lastCalendar) || feedEntry.date.equals(lastCalendar)) {
 													continue; // Na verdade o vídeo atual é mais velho! Ignore então! :)
@@ -104,7 +104,7 @@ class NewRssFeedThread : Thread("RSS Feed Query Thread") {
 
 												val generatedMessage = MessageUtils.generateMessage(message, null, guild, customTokens) ?: continue
 
-												textChannel.sendMessage(generatedMessage).complete() // Envie a mensagem
+												textChannel.sendMessage(generatedMessage).complete() // Envie a mensagem */
 											} else {
 												// Se nunca verificamos esta feed, vamos só salvar a data atual
 												val tz = TimeZone.getTimeZone("UTC")

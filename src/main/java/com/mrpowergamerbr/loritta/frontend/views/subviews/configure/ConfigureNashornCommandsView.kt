@@ -19,10 +19,10 @@ class ConfigureNashornCommandsView : ConfigureView() {
 		variables["saveType"] = "nashorn_commands"
 
 		val feeds = JsonArray()
-		serverConfig.nashornCommands.forEach {
+		/* serverConfig.nashornCommands.forEach {
 			val json = Loritta.GSON.toJsonTree(it)
 			feeds.add(json)
-		}
+		} */
 
 		variables["commands"] = feeds.toString()
 

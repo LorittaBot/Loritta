@@ -228,19 +228,19 @@ class Loritta {
 			socket.start()
 		}
 
-		AminoRepostThread().start() // Iniciar Amino Repost Thread
+		// AminoRepostThread().start() // Iniciar Amino Repost Thread
 
-		NewYouTubeVideosThread().start() // Iniciar New YouTube Videos Thread
+		// NewYouTubeVideosThread().start() // Iniciar New YouTube Videos Thread
 
-		NewLivestreamThread().start() // Iniciar New Livestream Thread
+		// NewLivestreamThread().start() // Iniciar New Livestream Thread
 
-		NewRssFeedThread().start() // Iniciar Feed Rss
+		// NewRssFeedThread().start() // Iniciar Feed Rss
 
 		UpdateStatusThread().start() // Iniciar thread para atualizar o status da Loritta
 
-		DiscordBotsInfoThread().start() // Iniciar thread para atualizar os servidores no Discord Bots
+		// DiscordBotsInfoThread().start() // Iniciar thread para atualizar os servidores no Discord Bots
 
-		FetchFacebookPostsThread().start() // Iniciar thread para pegar posts do Facebook
+		// FetchFacebookPostsThread().start() // Iniciar thread para pegar posts do Facebook
 
 		RemindersThread().start()
 

@@ -19,10 +19,10 @@ class ConfigureEventHandlersView : ConfigureView() {
 		variables["saveType"] = "event_handlers"
 
 		val feeds = JsonArray()
-		serverConfig.nashornEventHandlers.forEach {
+		/* serverConfig.nashornEventHandlers.forEach {
 			val json = Loritta.GSON.toJsonTree(it)
 			feeds.add(json)
-		}
+		} */
 
 		variables["eventHandlers"] = feeds.toString()
 

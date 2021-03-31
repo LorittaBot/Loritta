@@ -2,8 +2,6 @@ package com.mrpowergamerbr.loritta.userdata
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandOptions
-import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
-import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler
 import com.mrpowergamerbr.loritta.utils.loritta
 import org.bson.codecs.pojo.annotations.BsonCreator
 import org.bson.codecs.pojo.annotations.BsonProperty
@@ -34,9 +32,9 @@ class ServerConfig @BsonCreator constructor(
 	var blacklistedChannels = ArrayList<String>() // Canais em que os comandos são bloqueados
 	var warnIfBlacklisted = false
 	var blacklistWarning = "{@user} Você não pode usar comandos no {@channel}, bobinho(a)! <:blobBlush:357977010771066890>"
-	var nashornCommands = ArrayList<NashornCommand>() // Comandos customizados
+	// var nashornCommands = ArrayList<NashornCommand>() // Comandos customizados
 
-	var nashornEventHandlers = ArrayList<NashornEventHandler>()
+	// var nashornEventHandlers = ArrayList<NashornEventHandler>()
 
 	var joinLeaveConfig = JoinLeaveConfig()
 	var musicConfig = MusicConfig()
@@ -84,10 +82,10 @@ class ServerConfig @BsonCreator constructor(
 	// var giveaways = ArrayList<Giveaway>()
 
 	fun getCommandOptionsFor(cmd: AbstractCommand): CommandOptions {
-		if (cmd is NashornCommand) { // Se é um comando feito em Nashorn...
+		/* if (cmd is NashornCommand) { // Se é um comando feito em Nashorn...
 			// Vamos retornar uma configuração padrão!
 			return CommandOptions()
-		}
+		} */
 
 		if (commandOptions.containsKey(cmd.javaClass.simpleName)) {
 			return commandOptions[cmd.javaClass.simpleName]!!

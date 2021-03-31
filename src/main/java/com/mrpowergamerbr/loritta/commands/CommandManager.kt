@@ -162,7 +162,7 @@ class CommandManager {
 		commandMap.add(McSignCommand())
 		commandMap.add(SpigotMcCommand())
 		commandMap.add(McConquistaCommand())
-		commandMap.add(PeQueryCommand())
+		// commandMap.add(PeQueryCommand())
 		commandMap.add(McSkinCommand())
 		commandMap.add(McMoletomCommand())
 
@@ -197,7 +197,7 @@ class CommandManager {
 		// =======[ MAGIC ]========
 		commandMap.add(ReloadCommand())
 		commandMap.add(EvalCommand())
-		commandMap.add(NashornTestCommand())
+		// commandMap.add(NashornTestCommand())
 		commandMap.add(ServerInvitesCommand())
 		commandMap.add(LorittaBanCommand())
 		commandMap.add(LorittaUnbanCommand())

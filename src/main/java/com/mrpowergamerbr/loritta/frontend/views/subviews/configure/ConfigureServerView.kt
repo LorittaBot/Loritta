@@ -4,10 +4,8 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.Loritta.Companion.GSON
-import com.mrpowergamerbr.loritta.commands.nashorn.NashornCommand
 import com.mrpowergamerbr.loritta.frontend.evaluate
 import com.mrpowergamerbr.loritta.frontend.views.LoriWebCodes
-import com.mrpowergamerbr.loritta.listeners.nashorn.NashornEventHandler
 import com.mrpowergamerbr.loritta.userdata.*
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.oauth2.TemmieDiscordAuth
@@ -47,8 +45,8 @@ class ConfigureServerView : ConfigureView() {
 					"youtube" -> serverConfig.youTubeConfig
 					"livestream" -> serverConfig.livestreamConfig
 					"feeds" -> serverConfig.rssFeedConfig
-					"nashorn_commands" -> serverConfig.nashornCommands
-					"event_handlers" -> serverConfig.nashornEventHandlers
+					// "nashorn_commands" -> serverConfig.nashornCommands
+					// "event_handlers" -> serverConfig.nashornEventHandlers
 					"vanilla_commands" -> serverConfig.disabledCommands
 					"text_channels" -> serverConfig.textChannelConfigs
 					"moderation" -> serverConfig.moderationConfig
@@ -281,10 +279,10 @@ class ConfigureServerView : ConfigureView() {
 	}
 
 	fun handleNashornCommands(config: ServerConfig, receivedPayload: JsonObject): String {
-		config.nashornCommands.clear()
+		// config.nashornCommands.clear()
 		val entries = receivedPayload["entries"].array
 
-		for (entry in entries) {
+		/* for (entry in entries) {
 			val label = entry["jsLabel"].string
 			val code = entry["javaScript"].string
 
@@ -295,23 +293,23 @@ class ConfigureServerView : ConfigureView() {
 			}
 
 			config.nashornCommands.add(command)
-		}
+		} */
 
 		return "nice"
 	}
 
 	fun handleEventHandlers(config: ServerConfig, receivedPayload: JsonObject): String {
-		config.nashornEventHandlers.clear()
+		// config.nashornEventHandlers.clear()
 		val entries = receivedPayload["entries"].array
 
 		for (entry in entries) {
 			val code = entry["javaScript"].string
 
-			val command = NashornEventHandler().apply {
+			/* val command = NashornEventHandler().apply {
 				this.javaScript = code
-			}
+			} */
 
-			config.nashornEventHandlers.add(command)
+			// config.nashornEventHandlers.add(command)
 		}
 
 		return "nice"
@@ -365,12 +363,12 @@ class ConfigureServerView : ConfigureView() {
 
 		if (data != null) {
 			val base64Image = data.split(",")[1]
-			val imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64Image)
+			/* val imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64Image)
 			val img = ImageIO.read(ByteArrayInputStream(imageBytes))
 
 			if (img != null) {
 				ImageIO.write(img, "png", File(Loritta.FRONTEND, "static/assets/img/servers/backgrounds/${config.guildId}.png"))
-			}
+			} */
 		}
 
 		return GSON.toJson(mapOf("api:code" to LoriWebCodes.SUCCESS))
