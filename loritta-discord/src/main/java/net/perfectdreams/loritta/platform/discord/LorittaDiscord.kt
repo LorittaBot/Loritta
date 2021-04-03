@@ -53,6 +53,7 @@ import java.util.*
 import java.util.concurrent.*
 import kotlin.collections.*
 import kotlin.collections.set
+import kotlin.math.ceil
 import kotlin.random.Random
 
 /**
@@ -565,7 +566,10 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
             (Payments.expiresAt greaterEq System.currentTimeMillis()) and
                     (Payments.reason eq PaymentReason.DONATION) and
                     (Payments.userId eq userId)
-        }.sumByDouble { it.money.toDouble() }
+        }.sumByDouble {
+            // This is a weird workaround that fixes users complaining that 19.99 + 19.99 != 40 (it equals to 39.38()
+            ceil(it.money.toDouble())
+        }
     }
 
     fun launchMessageJob(event: Event, block: suspend CoroutineScope.() -> Unit) {
