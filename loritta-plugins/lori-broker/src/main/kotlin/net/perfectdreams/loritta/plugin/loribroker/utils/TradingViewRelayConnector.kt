@@ -182,7 +182,7 @@ class TradingViewRelayConnector(
     /**
      * Checks if the stock market *should* be open at this moment.
      *
-     * Brazil's Stock Market is open from 10am to 6pm, not open on the end of week and not open during holidays.
+     * Brazil's Stock Market is open from 10am to 5pm, not open on the end of week and not open during holidays.
      *
      * **Attention:** This does not check for holidays and stuff!
      *
@@ -192,7 +192,7 @@ class TradingViewRelayConnector(
         val now = Instant.now()
                 .atZone(ZoneId.of("America/Sao_Paulo"))
 
-        return (now.hour in 10..18 && !(now.dayOfWeek == DayOfWeek.SATURDAY || now.dayOfWeek == DayOfWeek.SUNDAY))
+        return (now.hour in 10..17 && !(now.dayOfWeek == DayOfWeek.SATURDAY || now.dayOfWeek == DayOfWeek.SUNDAY))
     }
 
     /**
