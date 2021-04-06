@@ -23,7 +23,6 @@ import net.perfectdreams.loritta.website.routes.api.v1.economy.GetBundlesRoute
 import net.perfectdreams.loritta.website.routes.api.v1.economy.GetDailyShopRoute
 import net.perfectdreams.loritta.website.routes.api.v1.economy.GetLoriDailyRewardRoute
 import net.perfectdreams.loritta.website.routes.api.v1.economy.GetLoriDailyRewardStatusRoute
-import net.perfectdreams.loritta.website.routes.api.v1.economy.GetPaymentsLeaderboardRoute
 import net.perfectdreams.loritta.website.routes.api.v1.economy.PostBundlesRoute
 import net.perfectdreams.loritta.website.routes.api.v1.economy.PostBuyDailyShopItemRoute
 import net.perfectdreams.loritta.website.routes.api.v1.economy.PostTransferBalanceExternalRoute
@@ -179,7 +178,6 @@ object DefaultRoutes {
 			PostBundlesRoute(loritta),
 			GetDailyShopRoute(loritta),
 			PostBuyDailyShopItemRoute(loritta),
-			GetPaymentsLeaderboardRoute(loritta),
 
 			// Guild
 			GetGuildInfoRoute(loritta),
