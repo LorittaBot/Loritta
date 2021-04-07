@@ -9,7 +9,6 @@ import com.mrpowergamerbr.loritta.modules.Modules
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.EventLog
-import net.perfectdreams.loritta.utils.locale.BaseLocale
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -17,6 +16,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent
@@ -28,6 +28,7 @@ import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import org.apache.commons.text.similarity.LevenshteinDistance
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -423,6 +424,14 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 	override fun onMessageDelete(event: MessageDeleteEvent) {
 		loritta.messageInteractionCache.remove(event.messageIdLong)
+	}
+
+	override fun onMessageBulkDelete(event: MessageBulkDeleteEvent) {
+		// If the messages are bulk deleted, we also need to remove them from the message interaction cache too!
+		//
+		// If not, this can cause interactions to be persisted, causing issues related to "Loritta never stops replying to this message"
+		// because the "source" message was deleted.
+		event.messageIds.forEach { loritta.messageInteractionCache.remove(it.toLong()) }
 	}
 
 	/**
