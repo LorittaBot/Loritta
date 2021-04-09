@@ -14,7 +14,6 @@ import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.SonhosBundles
-import net.perfectdreams.loritta.utils.PerfectPaymentsClient
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
@@ -52,7 +51,7 @@ class PostBundlesRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(l
 			val grana = bundle[SonhosBundles.price]
 			val sonhos = bundle[SonhosBundles.sonhos]
 
-			val paymentUrl = PerfectPaymentsClient.createPayment(
+			val paymentUrl = loritta.perfectPaymentsClient.createPayment(
 					loritta,
 					userIdentification.id.toLong(),
 					"$sonhos sonhos - $whoDonated",

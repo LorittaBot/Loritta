@@ -65,6 +65,8 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         val MESSAGE_EXECUTOR_THREADS = Runtime.getRuntime().availableProcessors() * 8
     }
 
+    val perfectPaymentsClient = PerfectPaymentsClient(config.perfectPayments.url)
+
     override val commandMap = DiscordCommandMap(this).apply {
         registerAll(
                 // ===[ MAGIC ]===
