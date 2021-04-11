@@ -1,6 +1,8 @@
 package net.perfectdreams.loritta.platform.discord.commands
 
 import com.mrpowergamerbr.loritta.commands.CommandManager
+import com.mrpowergamerbr.loritta.commands.vanilla.discord.ChannelInfoCommand
+import com.mrpowergamerbr.loritta.commands.vanilla.magic.PluginsCommand
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -15,9 +17,6 @@ import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.awaitCheckForReplyErrors
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.extensions.referenceIfPossible
-import net.perfectdreams.loritta.utils.locale.BaseLocale
-import net.perfectdreams.loritta.utils.locale.LocaleKeyData
-import net.perfectdreams.loritta.utils.locale.LocaleStringData
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
@@ -32,12 +31,35 @@ import net.perfectdreams.loritta.api.commands.CommandException
 import net.perfectdreams.loritta.api.commands.CommandMap
 import net.perfectdreams.loritta.api.commands.SilentCommandException
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.commands.vanilla.`fun`.FanArtsCommand
+import net.perfectdreams.loritta.commands.vanilla.`fun`.GiveawayCommand
+import net.perfectdreams.loritta.commands.vanilla.`fun`.GiveawayEndCommand
+import net.perfectdreams.loritta.commands.vanilla.`fun`.GiveawayRerollCommand
+import net.perfectdreams.loritta.commands.vanilla.`fun`.GiveawaySetupCommand
+import net.perfectdreams.loritta.commands.vanilla.administration.BanInfoCommand
+import net.perfectdreams.loritta.commands.vanilla.administration.ClearCommand
+import net.perfectdreams.loritta.commands.vanilla.economy.SonhosTopCommand
+import net.perfectdreams.loritta.commands.vanilla.economy.SonhosTopLocalCommand
+import net.perfectdreams.loritta.commands.vanilla.economy.TransactionsCommand
+import net.perfectdreams.loritta.commands.vanilla.magic.LoriToolsCommand
+import net.perfectdreams.loritta.commands.vanilla.misc.DiscordBotListCommand
+import net.perfectdreams.loritta.commands.vanilla.misc.DiscordBotListStatusCommand
+import net.perfectdreams.loritta.commands.vanilla.roblox.RbGameCommand
+import net.perfectdreams.loritta.commands.vanilla.roblox.RbUserCommand
+import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaTopCommand
+import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaTopLocalCommand
+import net.perfectdreams.loritta.commands.vanilla.social.RankGlobalCommand
+import net.perfectdreams.loritta.commands.vanilla.social.RepTopCommand
+import net.perfectdreams.loritta.commands.vanilla.social.XpNotificationsCommand
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.utils.CommandCooldownManager
 import net.perfectdreams.loritta.utils.CommandUtils
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.UserPremiumPlans
+import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.LocaleKeyData
+import net.perfectdreams.loritta.utils.locale.LocaleStringData
 import net.perfectdreams.loritta.utils.metrics.Prometheus
 import org.jetbrains.exposed.sql.insert
 import java.sql.Connection
@@ -50,6 +72,48 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 
 	val commands = mutableListOf<Command<CommandContext>>()
 
+	init {
+		registerAll(
+			// ===[ MAGIC ]===
+			LoriToolsCommand(discordLoritta),
+			PluginsCommand(discordLoritta),
+
+			// ===[ ECONOMY ]===
+			SonhosTopCommand(discordLoritta),
+			SonhosTopLocalCommand(discordLoritta),
+			TransactionsCommand(discordLoritta),
+
+			// ===[ SOCIAL ]===
+			BomDiaECiaTopCommand(discordLoritta),
+			BomDiaECiaTopLocalCommand(discordLoritta),
+			RankGlobalCommand(discordLoritta),
+			RepTopCommand(discordLoritta),
+			XpNotificationsCommand(discordLoritta),
+
+			// ===[ ADMIN ]===
+			BanInfoCommand(discordLoritta),
+			ClearCommand(discordLoritta),
+
+			// ===[ MISC ]===
+			FanArtsCommand(discordLoritta),
+			DiscordBotListCommand(discordLoritta),
+			DiscordBotListStatusCommand(discordLoritta),
+
+			// ===[ DISCORD ]===
+			ChannelInfoCommand(discordLoritta),
+
+			// ===[ FUN ]===
+			GiveawayCommand(discordLoritta),
+			GiveawayEndCommand(discordLoritta),
+			GiveawayRerollCommand(discordLoritta),
+			GiveawaySetupCommand(discordLoritta),
+
+			// ===[ ROBLOX ]===
+			RbUserCommand(discordLoritta),
+			RbGameCommand(discordLoritta)
+		)
+	}
+	
 	override fun register(command: Command<CommandContext>) {
 		logger.info { "Registering $command with ${command.labels}" }
 		commands.add(command)

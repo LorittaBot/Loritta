@@ -6,7 +6,6 @@ import com.github.salomonbrys.kotson.*
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.*
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.commands.vanilla.discord.ChannelInfoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.*
 import com.mrpowergamerbr.loritta.dao.*
 import com.mrpowergamerbr.loritta.network.Databases
@@ -67,48 +66,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
     val perfectPaymentsClient = PerfectPaymentsClient(config.perfectPayments.url)
 
-    override val commandMap = DiscordCommandMap(this).apply {
-        registerAll(
-                // ===[ MAGIC ]===
-                LoriToolsCommand(this@LorittaDiscord),
-                PluginsCommand(this@LorittaDiscord),
-
-                // ===[ ECONOMY ]===
-                SonhosTopCommand(this@LorittaDiscord),
-                SonhosTopLocalCommand(this@LorittaDiscord),
-                TransactionsCommand(this@LorittaDiscord),
-
-                // ===[ SOCIAL ]===
-                BomDiaECiaTopCommand(this@LorittaDiscord),
-                BomDiaECiaTopLocalCommand(this@LorittaDiscord),
-                RankGlobalCommand(this@LorittaDiscord),
-                RepTopCommand(this@LorittaDiscord),
-                XpNotificationsCommand(this@LorittaDiscord),
-
-                // ===[ ADMIN ]===
-                BanInfoCommand(this@LorittaDiscord),
-                ClearCommand(this@LorittaDiscord),
-
-                // ===[ MISC ]===
-                FanArtsCommand(this@LorittaDiscord),
-                DiscordBotListCommand(this@LorittaDiscord),
-                DiscordBotListStatusCommand(this@LorittaDiscord),
-
-                // ===[ DISCORD ]===
-                ChannelInfoCommand(this@LorittaDiscord),
-
-                // ===[ FUN ]===
-                GiveawayCommand(this@LorittaDiscord),
-                GiveawayEndCommand(this@LorittaDiscord),
-                GiveawayRerollCommand(this@LorittaDiscord),
-                GiveawaySetupCommand(this@LorittaDiscord),
-
-                // ===[ ROBLOX ]===
-                RbUserCommand(this@LorittaDiscord),
-                RbGameCommand(this@LorittaDiscord)
-        )
-    }
-
+    override val commandMap = DiscordCommandMap(this)
     override val pluginManager = JVMPluginManager(this)
     override val assets = JVMLorittaAssets(this)
     val localeManager = LocaleManager(File(instanceConfig.loritta.folders.locales))
