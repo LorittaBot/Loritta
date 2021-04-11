@@ -45,6 +45,7 @@ import java.util.*
 import java.util.concurrent.*
 import kotlin.collections.*
 import kotlin.collections.set
+import kotlin.math.ceil
 import kotlin.random.Random
 
 /**
@@ -55,6 +56,8 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         // We multiply by 8 because... uuuh, sometimes threads get stuck due to dumb stuff that we need to fix.
         val MESSAGE_EXECUTOR_THREADS = Runtime.getRuntime().availableProcessors() * 8
     }
+
+    val perfectPaymentsClient = PerfectPaymentsClient(config.perfectPayments.url)
 
     override val commandManager = DiscordCommandMap(this)
     override val pluginManager = JVMPluginManager(this)
@@ -516,7 +519,10 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
             (Payments.expiresAt greaterEq System.currentTimeMillis()) and
                     (Payments.reason eq PaymentReason.DONATION) and
                     (Payments.userId eq userId)
-        }.sumByDouble { it.money.toDouble() }
+        }.sumByDouble {
+            // This is a weird workaround that fixes users complaining that 19.99 + 19.99 != 40 (it equals to 39.38()
+            ceil(it.money.toDouble())
+        }
     }
 
     fun launchMessageJob(event: Event, block: suspend CoroutineScope.() -> Unit) {

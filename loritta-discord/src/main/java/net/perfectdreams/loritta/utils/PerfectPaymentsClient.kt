@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import java.util.*
 
-object PerfectPaymentsClient {
+class PerfectPaymentsClient(val url: String) {
     private val logger = KotlinLogging.logger {}
 
     /**
@@ -35,7 +35,7 @@ object PerfectPaymentsClient {
             metadata: JsonObject? = null
     ): String {
         logger.info { "Requesting PerfectPayments payment URL for $userId" }
-        val payments = loritta.http.post<String>("https://payments.perfectdreams.net/api/v1/payments") {
+        val payments = loritta.http.post<String>("${url}api/v1/payments") {
             header("Authorization", loritta.config.perfectPayments.token)
 
             body = jsonObject(
