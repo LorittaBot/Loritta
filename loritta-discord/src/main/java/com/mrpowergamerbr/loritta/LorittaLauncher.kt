@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta
 
-import com.mrpowergamerbr.loritta.utils.MigrationTool
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordInstanceConfig
@@ -56,18 +55,11 @@ object LorittaLauncher {
 		val instanceConfig = readConfigurationFromFile<GeneralInstanceConfig>(configurationInstanceFile)
 		val discordInstanceConfig = readConfigurationFromFile<GeneralDiscordInstanceConfig>(discordInstanceConfigurationFile)
 
+		// Used for Logback
 		System.setProperty("cluster.name", config.clusters.first { it.id == instanceConfig.loritta.currentClusterId }.getUserAgent(config.loritta.environment))
 
 		val arg0 = args.getOrNull(0)
 		val arg1 = args.getOrNull(1)
-
-		if (arg0 != null && arg0 == "migrate" && arg1 != null) {
-			val tool = MigrationTool(discordConfig, discordInstanceConfig, config, instanceConfig)
-
-			when (arg1) {
-			}
-			return
-		}
 
 		// Iniciar instância da Loritta
 		loritta = Loritta(discordConfig, discordInstanceConfig, config, instanceConfig)

@@ -3,12 +3,11 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.fromMorse
-import net.perfectdreams.loritta.utils.locale.BaseLocale
-import net.perfectdreams.loritta.utils.locale.LocaleKeyData
-import com.mrpowergamerbr.loritta.utils.toMorse
+import com.mrpowergamerbr.loritta.utils.MorseUtils
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.LocaleKeyData
 import java.awt.Color
 
 class MorseCommand : AbstractCommand("morse", category = CommandCategory.UTILS) {
@@ -21,8 +20,8 @@ class MorseCommand : AbstractCommand("morse", category = CommandCategory.UTILS) 
 		if (context.args.isNotEmpty()) {
 			val message = context.args.joinToString(" ")
 
-			val toMorse = message.toUpperCase().toMorse()
-			val fromMorse = message.fromMorse()
+			val toMorse = MorseUtils.toMorse(message.toUpperCase())
+			val fromMorse = MorseUtils.fromMorse(message)
 
 			if (toMorse.trim().isEmpty()) {
 				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["commands.command.morse.fail"])
