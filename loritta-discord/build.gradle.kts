@@ -66,9 +66,9 @@ dependencies {
     api("com.impossibl.pgjdbc-ng:pgjdbc-ng:0.8.6")
     api("org.xerial:sqlite-jdbc:3.32.3.2")
     api("com.zaxxer:HikariCP:3.4.5")
-    api("org.jetbrains.exposed:exposed-core:0.28.1")
-    api("org.jetbrains.exposed:exposed-dao:0.28.1")
-    api("org.jetbrains.exposed:exposed-jdbc:0.28.1")
+    api("org.jetbrains.exposed:exposed-core:${Versions.EXPOSED}")
+    api("org.jetbrains.exposed:exposed-dao:${Versions.EXPOSED}")
+    api("org.jetbrains.exposed:exposed-jdbc:${Versions.EXPOSED}")
 
     api("org.apache.commons:commons-lang3:3.11")
     api("commons-codec:commons-codec:1.15")

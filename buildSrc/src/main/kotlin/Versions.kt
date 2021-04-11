@@ -5,4 +5,5 @@ object Versions {
     const val JDA = "4.2.0_241"
     const val KOTLIN_SERIALIZATION = "1.0.1"
     const val KOTLIN_COROUTINES = "1.4.1"
+    const val EXPOSED = "0.28.1"
 }
