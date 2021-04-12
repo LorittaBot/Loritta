@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.common.utils.extensions.format
 @Serializable
 class BaseLocale(
     val id: String,
+    // We use separate entries for strings and lists, to be easier for kotlinx.serialization to serialize/deserialize them
     val localeStringEntries: Map<String, String?>,
     val localeListEntries: Map<String, List<String>?>
 ) {
