@@ -18,23 +18,35 @@ kotlin {
     }
 
     sourceSets {
-        val commonMain by getting {
+        commonMain {
             dependencies {
-                implementation(kotlin("stdlib-common"))
+                // API = We want to allow dependencies to access those classes
+                api(kotlin("stdlib-common"))
+                api("io.github.microutils:kotlin-logging:2.0.6")
+                api("org.jetbrains.kotlinx:kotlinx-serialization-core:1.1.0")
             }
         }
 
-        // Default source set for JVM-specific sources and dependencies:
+        // jvmMain and jsMain *should* work but for some reason they don't
         jvm().compilations["main"].defaultSourceSet {
             dependencies {
-                implementation(kotlin("stdlib-jdk8"))
+                api(kotlin("stdlib-jdk8"))
             }
         }
 
-        // Default source set for JS-specific sources and dependencies:
+        jvm().compilations["test"].defaultSourceSet {
+            dependencies {
+                // Required for tests, if this is missing then Gradle will throw
+                // "No tests found for given includes: [***Test](filter.includeTestsMatching)"
+                implementation(kotlin("test"))
+                implementation(kotlin("test-junit"))
+                implementation("org.junit.jupiter:junit-jupiter:5.4.2")
+            }
+        }
+
         js().compilations["main"].defaultSourceSet {
             dependencies {
-                implementation(kotlin("stdlib-js"))
+                api(kotlin("stdlib-js"))
             }
         }
     }
