@@ -27,14 +27,9 @@ class LorittaKord : LorittaBot() {
 
         val argsResults = mutableMapOf<CommandOption<*>, Any?>()
 
-        println("From Command Args: $args")
-
         matchedArgs.forEach {
             val name = it.groupValues[1]
             val value = it.groupValues[2]
-
-            println("Name: $name")
-            println("Value: $value")
 
             val result = args.firstOrNull { it.name == name } ?: return@forEach
 
@@ -47,8 +42,6 @@ class LorittaKord : LorittaBot() {
             argsResults[result] = convertedArgument
         }
 
-        println(argsResults)
-
         return argsResults
     }
 
@@ -56,8 +49,6 @@ class LorittaKord : LorittaBot() {
         val split = content.split(" ")
 
         val label = declaration.labels.first()
-
-        println("is $label == ${split[0]}")
 
         if (label == split[0]) {
             for (subcommand in declaration.subcommands) {
