@@ -32,7 +32,7 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
     }
 
     suspend fun convertToInteraKTions(locale: BaseLocale) {
-        var commandSignatureIndex = AtomicInteger()
+        val commandSignatureIndex = AtomicInteger()
 
         for (declaration in declarations) {
             val declarationExecutor = declaration.executor
@@ -117,32 +117,32 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
                     val arg = when (it.type) {
                         is CommandOptionType.String -> string(
                             it.name,
-                            locale[it.description]
+                            locale[it.description].shortenWithEllipsis()
                         )
 
                         is CommandOptionType.NullableString -> optionalString(
                             it.name,
-                            locale[it.description]
+                            locale[it.description].shortenWithEllipsis()
                         )
 
                         is CommandOptionType.Integer -> integer(
                             it.name,
-                            locale[it.description]
+                            locale[it.description].shortenWithEllipsis()
                         )
 
                         is CommandOptionType.NullableInteger -> optionalInteger(
                             it.name,
-                            locale[it.description]
+                            locale[it.description].shortenWithEllipsis()
                         )
 
                         is CommandOptionType.Bool -> boolean(
                             it.name,
-                            locale[it.description]
+                            locale[it.description].shortenWithEllipsis()
                         )
 
                         is CommandOptionType.NullableBool -> optionalBoolean(
                             it.name,
-                            locale[it.description]
+                            locale[it.description].shortenWithEllipsis()
                         )
 
                         else -> throw UnsupportedOperationException("Unsupported option type ${it.type}")
@@ -160,7 +160,7 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
         createdExecutors.add(interaKTionsExecutor)
 
         return slashCommand(declaration.labels.first()) {
-            description = locale[declaration.description!!]
+            description = locale[declaration.description!!].shortenWithEllipsis()
             this.executor = interaKTionsExecutorDeclaration
 
             for (subcommand in declaration.subcommands) {
@@ -175,5 +175,11 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
                 )
             }
         }
+    }
+
+    fun String.shortenWithEllipsis(): String {
+        if (this.length >= 100)
+            return this.take(97) + "..."
+        return this
     }
 }

@@ -85,7 +85,7 @@ class LorittaKord : LorittaBot() {
         commandManager.register(
             PingCommand,
             PingExecutor(),
-            PingAyayaExecutor()
+            PingAyayaExecutor(emotes)
         )
 
         commandManager.register(
@@ -95,7 +95,7 @@ class LorittaKord : LorittaBot() {
 
         commandManager.register(
             RateWaifuCommand,
-            RateWaifuExecutor()
+            RateWaifuExecutor(emotes)
         )
 
         runBlocking {

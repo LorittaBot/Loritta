@@ -10,7 +10,10 @@ import net.perfectdreams.loritta.commands.misc.PingAyayaExecutor
 import net.perfectdreams.loritta.commands.misc.PingExecutor
 import net.perfectdreams.loritta.commands.misc.declarations.PingCommand
 import net.perfectdreams.loritta.common.LorittaBot
+import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleManager
+import net.perfectdreams.loritta.platform.interaktions.emotes.DiscordEmoteManager
 import java.io.File
 
 class LorittaInteraKTions : LorittaBot() {
@@ -21,12 +24,22 @@ class LorittaInteraKTions : LorittaBot() {
         token = config[0]
     )
     val commandManager = CommandManager(this, interactions.commandManager)
+    override val emotes = Emotes(
+        DiscordEmoteManager(
+            mapOf("chino_ayaya" to "discord:a:chino_AYAYA:696984642594537503")
+        )
+    )
+    val localeManager = LocaleManager(
+        File("L:\\RandomProjects\\LorittaInteractions\\locales")
+    )
 
     fun start() {
+        localeManager.loadLocales()
+
         commandManager.register(
             PingCommand,
             PingExecutor(),
-            PingAyayaExecutor()
+            PingAyayaExecutor(emotes)
         )
 
         commandManager.register(
@@ -36,11 +49,13 @@ class LorittaInteraKTions : LorittaBot() {
 
         commandManager.register(
             RateWaifuCommand,
-            RateWaifuExecutor()
+            RateWaifuExecutor(emotes)
         )
 
         runBlocking {
-            commandManager.convertToInteraKTions(BaseLocale("default", mapOf(), mapOf()))
+            commandManager.convertToInteraKTions(
+                localeManager.getLocaleById("default")
+            )
         }
 
         interactions.start()
