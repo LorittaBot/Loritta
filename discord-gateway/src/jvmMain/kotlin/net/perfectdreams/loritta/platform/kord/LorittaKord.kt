@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.common.commands.options.CommandOptionType
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
 import net.perfectdreams.loritta.common.commands.options.CommandOption
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.platform.kord.commands.KordCommandContext
 import net.perfectdreams.loritta.platform.kord.entities.KordMessageChannel
 import java.io.File
 
@@ -65,7 +66,7 @@ class LorittaKord : LorittaBot() {
             val args = parseArgs(split.drop(1).joinToString(" "), declaration.executor?.options?.arguments ?: listOf())
 
             executor.execute(
-                CommandContext(
+                KordCommandContext(
                     this,
                     BaseLocale("default", mapOf(), mapOf()),
                     KordMessageChannel(event.message.getChannel())

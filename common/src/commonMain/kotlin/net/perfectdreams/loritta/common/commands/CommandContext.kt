@@ -6,7 +6,7 @@ import net.perfectdreams.loritta.common.builder.LorittaReplyBuilder
 import net.perfectdreams.loritta.common.entities.MessageChannel
 import net.perfectdreams.loritta.common.locale.BaseLocale
 
-open class CommandContext(
+abstract class CommandContext(
     // Nifty trick: By keeping it "open", implementations can override this variable.
     // By doing this, classes can use their own platform implementation (example: LorittaDiscord instead of LorittaBot)
     // If you don't keep it "open", the type will always be "LorittaBot", which sucks.
@@ -14,11 +14,8 @@ open class CommandContext(
     val locale: BaseLocale,
     val channel: MessageChannel
 ) {
-    suspend fun sendReply(block: LorittaReplyBuilder.() -> (Unit))
-            = sendMessage(loritta.builderFactory.createReplyBuilder().apply(block).build())
-
-    suspend fun sendMultiReply(block: LorittaMultiReplyBuilder.() -> (Unit))
-            = sendMessage(loritta.builderFactory.createMultiReplyBuilder().apply(block).build())
+    abstract suspend fun sendReply(block: LorittaReplyBuilder.() -> (Unit))
+    abstract suspend fun sendMultiReply(block: LorittaMultiReplyBuilder.() -> (Unit))
 
     suspend fun sendMessage(message: String) {
         channel.sendMessage(message)

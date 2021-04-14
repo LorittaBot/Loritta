@@ -1,11 +1,9 @@
 package net.perfectdreams.loritta.common.builder
 
-class LorittaMultiReplyBuilder(private val builderFactory: BuilderFactory) {
+class LorittaMultiReplyBuilder {
     val replies = mutableListOf<LorittaReplyBuilder>()
 
     fun append(block: LorittaReplyBuilder.() -> (Unit)) {
-        replies.add(builderFactory.createReplyBuilder().apply(block))
+        replies.add(LorittaReplyBuilder().apply(block))
     }
-
-    fun build() = replies.joinToString("\n") { it.build() }
 }
