@@ -2,25 +2,28 @@ package net.perfectdreams.loritta.platform.cli
 
 import net.perfectdreams.loritta.commands.`fun`.CoinFlipExecutor
 import net.perfectdreams.loritta.commands.`fun`.declarations.CoinFlipCommand
+import net.perfectdreams.loritta.commands.misc.PingAyayaExecutor
+import net.perfectdreams.loritta.commands.misc.PingExecutor
+import net.perfectdreams.loritta.commands.misc.declarations.PingCommand
+import net.perfectdreams.loritta.common.LorittaBot
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandContext
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
 import net.perfectdreams.loritta.common.commands.options.CommandOption
 import net.perfectdreams.loritta.common.commands.options.CommandOptionType
-import net.perfectdreams.loritta.common.commands.vanilla.PingAyayaCommandExecutor
-import net.perfectdreams.loritta.common.commands.vanilla.PingCommandExecutor
-import net.perfectdreams.loritta.common.commands.vanilla.declarations.PingCommandDeclaration
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.platform.cli.builder.CLIBuilderFactory
 import net.perfectdreams.loritta.platform.cli.entities.CLIMessageChannel
 
-class LorittaCLI(val args: Array<String>) {
+class LorittaCLI(val args: Array<String>) : LorittaBot() {
+    override val builderFactory = CLIBuilderFactory
     val commandManager = CommandManager()
 
     suspend fun start() {
         commandManager.register(
-            PingCommandDeclaration,
-            PingCommandExecutor(),
-            PingAyayaCommandExecutor()
+            PingCommand,
+            PingExecutor(),
+            PingAyayaExecutor()
         )
 
         commandManager.register(
@@ -78,7 +81,11 @@ class LorittaCLI(val args: Array<String>) {
             val args = parseArgs(split.drop(1).joinToString(" "), declaration.executor?.options?.arguments ?: listOf())
 
             executor.execute(
-                CommandContext(BaseLocale("default", mapOf(), mapOf()), CLIMessageChannel()),
+                CommandContext(
+                    this,
+                    BaseLocale("default", mapOf(), mapOf()),
+                    CLIMessageChannel()
+                ),
                 CommandArguments(args)
             )
             return true

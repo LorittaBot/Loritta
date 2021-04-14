@@ -9,6 +9,16 @@ class PingExecutor : CommandExecutor() {
     companion object : CommandExecutorDeclaration(PingExecutor::class)
 
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
-        context.sendMessage("Pong!")
+        context.sendMultiReply {
+            append {
+                content = "Pong!"
+                prefix = "\uD83C\uDFD3"
+            }
+
+            append {
+                content = "OwO!"
+                prefix = "\uD83D\uDD37"
+            }
+        }
     }
 }
