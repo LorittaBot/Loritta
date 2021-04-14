@@ -12,6 +12,8 @@ object PingCommand : CommandDeclaration {
         executor = PingExecutor
 
         subcommand(listOf("ayaya")) {
+            description = LocaleKeyData("commands.command.ping.description")
+
             executor = PingAyayaExecutor
         }
     }

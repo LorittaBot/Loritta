@@ -13,8 +13,7 @@ class PingAyayaExecutor : CommandExecutor() {
             val ayayaCount = integer("ayaya_count", LocaleKeyData("commands.command.ping.ayaya.count"))
                 .register()
 
-            val boldAyayaCount = integer("bold_ayaya_count", LocaleKeyData("commands.command.ping.ayaya.count"))
-                .optional()
+            val boldAyayaCount = optionalInteger("bold_ayaya_count", LocaleKeyData("commands.command.ping.ayaya.count"))
                 .register()
         }
 
