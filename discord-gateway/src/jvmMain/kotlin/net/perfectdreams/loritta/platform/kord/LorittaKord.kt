@@ -4,6 +4,8 @@ import dev.kord.core.Kord
 import dev.kord.core.event.message.MessageCreateEvent
 import dev.kord.core.on
 import kotlinx.coroutines.runBlocking
+import net.perfectdreams.loritta.commands.`fun`.CoinFlipExecutor
+import net.perfectdreams.loritta.commands.`fun`.declarations.CoinFlipCommand
 import net.perfectdreams.loritta.common.LorittaBot
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandContext
@@ -14,6 +16,7 @@ import net.perfectdreams.loritta.common.commands.vanilla.declarations.PingComman
 import net.perfectdreams.loritta.common.commands.vanilla.PingCommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
 import net.perfectdreams.loritta.common.commands.options.CommandOption
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.platform.kord.entities.KordMessageChannel
 import java.io.File
 
@@ -64,6 +67,7 @@ class LorittaKord : LorittaBot() {
 
             executor.execute(
                 CommandContext(
+                    BaseLocale("default", mapOf(), mapOf()),
                     KordMessageChannel(event.message.getChannel())
                 ),
                 CommandArguments(args)
@@ -79,6 +83,11 @@ class LorittaKord : LorittaBot() {
             PingCommandDeclaration,
             PingCommandExecutor(),
             PingAyayaCommandExecutor()
+        )
+
+        commandManager.register(
+            CoinFlipCommand,
+            CoinFlipExecutor()
         )
 
         runBlocking {
