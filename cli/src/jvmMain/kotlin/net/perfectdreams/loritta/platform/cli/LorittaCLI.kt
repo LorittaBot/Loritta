@@ -9,7 +9,6 @@ import net.perfectdreams.loritta.commands.misc.PingExecutor
 import net.perfectdreams.loritta.commands.misc.declarations.PingCommand
 import net.perfectdreams.loritta.common.LorittaBot
 import net.perfectdreams.loritta.common.commands.CommandArguments
-import net.perfectdreams.loritta.common.commands.CommandContext
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
 import net.perfectdreams.loritta.common.commands.options.CommandOption
 import net.perfectdreams.loritta.common.commands.options.CommandOptionType

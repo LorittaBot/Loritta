@@ -5,13 +5,14 @@ import dev.kord.core.event.message.MessageCreateEvent
 import dev.kord.core.on
 import kotlinx.coroutines.runBlocking
 import net.perfectdreams.loritta.commands.`fun`.CoinFlipExecutor
+import net.perfectdreams.loritta.commands.`fun`.RateWaifuExecutor
 import net.perfectdreams.loritta.commands.`fun`.declarations.CoinFlipCommand
+import net.perfectdreams.loritta.commands.`fun`.declarations.RateWaifuCommand
 import net.perfectdreams.loritta.commands.misc.PingAyayaExecutor
 import net.perfectdreams.loritta.commands.misc.PingExecutor
 import net.perfectdreams.loritta.commands.misc.declarations.PingCommand
 import net.perfectdreams.loritta.common.LorittaBot
 import net.perfectdreams.loritta.common.commands.CommandArguments
-import net.perfectdreams.loritta.common.commands.CommandContext
 import net.perfectdreams.loritta.common.commands.options.CommandOptionType
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
 import net.perfectdreams.loritta.common.commands.options.CommandOption
@@ -90,6 +91,11 @@ class LorittaKord : LorittaBot() {
         commandManager.register(
             CoinFlipCommand,
             CoinFlipExecutor(random)
+        )
+
+        commandManager.register(
+            RateWaifuCommand,
+            RateWaifuExecutor()
         )
 
         runBlocking {
