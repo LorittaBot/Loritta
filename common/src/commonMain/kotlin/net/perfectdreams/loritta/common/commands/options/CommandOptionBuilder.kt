@@ -2,20 +2,21 @@ package net.perfectdreams.loritta.common.commands.options
 
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 
-class CommandOptionBuilder<T>(
+open class CommandOptionBuilder<T>(
     // We need to store the command option type due to type erasure
     val type: CommandOptionType,
     val name: String,
-    val description: LocaleKeyData
+    val description: LocaleKeyData,
+    val choices: MutableList<CommandChoice<T>>
 ) {
-    fun optional(): CommandOptionBuilder<T?> {
-        if (type !is CommandOptionType.ToNullable)
-            throw IllegalArgumentException("$type cannot be optional!")
-
-        return CommandOptionBuilder(
-            type.toNullable(),
-            name,
-            description
+    fun choice(value: T, name: LocaleKeyData): CommandOptionBuilder<T> {
+        choices.add(
+            CommandChoice(
+                type,
+                name,
+                value
+            )
         )
+        return this
     }
 }

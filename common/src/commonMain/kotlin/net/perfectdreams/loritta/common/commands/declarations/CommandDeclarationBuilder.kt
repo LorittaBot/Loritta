@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.common.commands.declarations
 
-import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 
 fun command(labels: List<String>, block: CommandDeclarationBuilder.() -> (Unit)): CommandDeclarationBuilder {
