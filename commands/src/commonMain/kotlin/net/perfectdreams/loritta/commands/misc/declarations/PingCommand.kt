@@ -6,7 +6,7 @@ import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
 import net.perfectdreams.loritta.common.commands.declarations.command
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 
-class PingCommand : CommandDeclaration {
+object PingCommand : CommandDeclaration {
     override fun declaration() = command(listOf("ping")) {
         description = LocaleKeyData("commands.command.ping.description")
         executor = PingExecutor
