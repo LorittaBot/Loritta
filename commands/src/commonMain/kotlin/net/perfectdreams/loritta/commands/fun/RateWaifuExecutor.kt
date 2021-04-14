@@ -14,7 +14,7 @@ import kotlin.random.Random
 class RateWaifuExecutor : CommandExecutor() {
     companion object : CommandExecutorDeclaration(RateWaifuExecutor::class) {
         object Options : CommandOptions() {
-            val waifu = string("rate_waifu", LocaleKeyData("TODO_FIX_THIS"))
+            val waifu = string("waifu", LocaleKeyData("TODO_FIX_THIS"))
                 .register()
         }
 
