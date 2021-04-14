@@ -7,11 +7,11 @@ import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import kotlin.random.Random
 
-class CoinFlipExecutor : CommandExecutor() {
+class CoinFlipExecutor(val random: Random) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(CoinFlipExecutor::class)
 
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
-        val isTails = Random(0).nextBoolean()
+        val isTails = random.nextBoolean()
         val prefix: String
         val message: String
 
@@ -23,6 +23,9 @@ class CoinFlipExecutor : CommandExecutor() {
             message = context.locale["${CoinFlipCommand.LOCALE_PREFIX}.heads"]
         }
 
-        context.sendMessage("**$message!**")
+        context.sendReply {
+            this.content = "**$message!**"
+            this.prefix = prefix
+        }
     }
 }

@@ -1,7 +1,9 @@
 package net.perfectdreams.loritta.platform.cli
 
 import net.perfectdreams.loritta.commands.`fun`.CoinFlipExecutor
+import net.perfectdreams.loritta.commands.`fun`.RateWaifuExecutor
 import net.perfectdreams.loritta.commands.`fun`.declarations.CoinFlipCommand
+import net.perfectdreams.loritta.commands.`fun`.declarations.RateWaifuCommand
 import net.perfectdreams.loritta.commands.misc.PingAyayaExecutor
 import net.perfectdreams.loritta.commands.misc.PingExecutor
 import net.perfectdreams.loritta.commands.misc.declarations.PingCommand
@@ -27,7 +29,12 @@ class LorittaCLI(val args: Array<String>) : LorittaBot() {
 
         commandManager.register(
             CoinFlipCommand,
-            CoinFlipExecutor()
+            CoinFlipExecutor(random)
+        )
+
+        commandManager.register(
+            RateWaifuCommand,
+            RateWaifuExecutor()
         )
 
         for (declaration in commandManager.declarations) {
@@ -51,6 +58,7 @@ class LorittaCLI(val args: Array<String>) : LorittaBot() {
             val result = args.firstOrNull { it.name == name } ?: return@forEach
 
             val convertedArgument = when (result.type) {
+                is CommandOptionType.String, CommandOptionType.NullableString -> value
                 is CommandOptionType.Integer -> value.toInt()
                 is CommandOptionType.NullableInteger -> value.toIntOrNull()
                 else -> throw UnsupportedOperationException("I don't know how to convert ${result.type}!")

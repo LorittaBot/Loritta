@@ -37,6 +37,7 @@ class LorittaKord : LorittaBot() {
             val result = args.firstOrNull { it.name == name } ?: return@forEach
 
             val convertedArgument = when (result.type) {
+                is CommandOptionType.String, CommandOptionType.NullableString -> value
                 is CommandOptionType.Integer -> value.toInt()
                 is CommandOptionType.NullableInteger -> value.toIntOrNull()
                 else -> throw UnsupportedOperationException("I don't know how to convert ${result.type}!")
@@ -88,7 +89,7 @@ class LorittaKord : LorittaBot() {
 
         commandManager.register(
             CoinFlipCommand,
-            CoinFlipExecutor()
+            CoinFlipExecutor(random)
         )
 
         runBlocking {

@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.platform.kord
 
 import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
-import net.perfectdreams.loritta.common.commands.vanilla.declarations.PingCommandDeclaration
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
 
 class CommandManager {
