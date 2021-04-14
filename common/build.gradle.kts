@@ -35,6 +35,9 @@ kotlin {
                 // Async Appender is broken in alpha5
                 // https://stackoverflow.com/questions/58742485/logback-error-no-attached-appenders-found
                 api("ch.qos.logback:logback-classic:1.3.0-alpha4")
+
+                // Used for the LocaleManager
+                implementation("org.yaml:snakeyaml:1.28")
             }
         }
 

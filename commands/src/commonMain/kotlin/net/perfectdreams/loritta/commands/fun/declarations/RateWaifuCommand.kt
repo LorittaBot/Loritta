@@ -10,7 +10,7 @@ object RateWaifuCommand : CommandDeclaration {
     const val LOCALE_PREFIX = "commands.command.ratewaifu"
 
     override fun declaration() = command(listOf("ratewaifu", "avaliarwaifu", "ratemywaifu", "avaliarminhawaifu", "notawaifu")) {
-        description = LocaleKeyData("${LOCALE_PREFIX}.ratewaifu.description")
+        description = LocaleKeyData("${LOCALE_PREFIX}.description")
         executor = RateWaifuExecutor
     }
 }

@@ -9,7 +9,7 @@ object CoinFlipCommand : CommandDeclaration {
     const val LOCALE_PREFIX = "commands.command.flipcoin"
 
     override fun declaration() = command(listOf("coinflip", "girarmoeda", "flipcoin", "caracoroa")) {
-        description = LocaleKeyData("${LOCALE_PREFIX}.coinflip.description")
+        description = LocaleKeyData("${LOCALE_PREFIX}.description")
         executor = CoinFlipExecutor
     }
 }

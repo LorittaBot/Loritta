@@ -1,17 +1,16 @@
 package net.perfectdreams.loritta.commands.`fun`
 
 import net.perfectdreams.loritta.commands.`fun`.declarations.RateWaifuCommand
-import net.perfectdreams.loritta.commands.misc.PingAyayaExecutor
-import net.perfectdreams.loritta.commands.misc.PingAyayaExecutor.Companion.Options.register
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandContext
 import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
+import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import kotlin.random.Random
 
-class RateWaifuExecutor : CommandExecutor() {
+class RateWaifuExecutor(val emotes: Emotes) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(RateWaifuExecutor::class) {
         object Options : CommandOptions() {
             val waifu = string("waifu", LocaleKeyData("TODO_FIX_THIS"))
@@ -32,25 +31,25 @@ class RateWaifuExecutor : CommandExecutor() {
         var reason = context.locale.getList("${RateWaifuCommand.LOCALE_PREFIX}.note${nota}").random()
 
         if (nota == 10)
-            reason = "$reason ${/* Emotes.LORI_WOW */ ""}"
+            reason = "$reason ${emotes.loriWow}"
         if (nota == 9)
-            reason = "$reason ${/* Emotes.LORI_HEART */ ""}"
+            reason = "$reason ${emotes.loriHeart}"
         if (nota == 8)
-            reason = "$reason ${/* Emotes.LORI_PAT */ ""}"
+            reason = "$reason ${emotes.loriPat}"
         if (nota == 7)
-            reason = "$reason ${/* Emotes.LORI_SMILE */ ""}"
+            reason = "$reason ${emotes.loriSmile}"
 
         if (nota == 3)
-            reason = "\uD83E\uDD26 ${/* Emotes.LORI_SHRUG */ ""}"
+            reason = "\uD83E\uDD26 ${emotes.loriShrug}"
         if (nota == 2)
-            reason = "\uD83E\uDD26 ${/* Emotes.LORI_HMPF */ ""}"
+            reason = "\uD83E\uDD26 ${emotes.loriHmpf}"
         if (nota == 1)
-            reason = "$reason ${/* Emotes.LORI_RAGE */ ""}"
+            reason = "$reason ${emotes.loriRage}"
 
         var strNota = nota.toString()
-        if (waifuLowerCase == "loritta") {
+        if (waifuLowerCase == "loritta" || waifuLowerCase == "lori") {
             strNota = "∞"
-            reason = "${context.locale.getList("${RateWaifuCommand.LOCALE_PREFIX}.noteLoritta").random()} ${/* Emotes.LORI_YAY */ ""}"
+            reason = "${context.locale.getList("${RateWaifuCommand.LOCALE_PREFIX}.noteLoritta").random()} ${emotes.loriYay}"
         }
         if (waifuLowerCase == "pollux") {
             strNota = "10"
@@ -58,7 +57,7 @@ class RateWaifuExecutor : CommandExecutor() {
         }
         if (waifuLowerCase == "pantufa") {
             strNota = "10"
-            reason = context.locale.getList("${RateWaifuCommand.LOCALE_PREFIX}.notePantufa").random() + " ${/* Emotes.LORI_HEART */ ""}"
+            reason = context.locale.getList("${RateWaifuCommand.LOCALE_PREFIX}.notePantufa").random() + " ${emotes.loriHeart}"
         }
         if (waifuLowerCase == "tatsumaki") {
             strNota = "10"
@@ -98,7 +97,7 @@ class RateWaifuExecutor : CommandExecutor() {
         }
         if (waifuLowerCase == "lorita" || waifuLowerCase == "lorrita") {
             strNota = "-∞"
-            reason = "${context.locale.getList("${RateWaifuCommand.LOCALE_PREFIX}.noteLorrita").random()} ${/* Emotes.LORI_HMPF */ ""}"
+            reason = "${context.locale.getList("${RateWaifuCommand.LOCALE_PREFIX}.noteLorrita").random()} ${emotes.loriHmpf}"
         }
 
         // TODO: Fix stripCodeMarks, maybe implement a safer way to sanitize user input?

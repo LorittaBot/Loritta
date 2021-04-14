@@ -1,5 +1,7 @@
 package net.perfectdreams.loritta.common
 
+import net.perfectdreams.loritta.common.emotes.EmoteManager
+import net.perfectdreams.loritta.common.emotes.Emotes
 import kotlin.random.Random
 
 /**
@@ -10,4 +12,6 @@ import kotlin.random.Random
 abstract class LorittaBot {
     // TODO: *Really* set a random seed
     val random = Random(0)
+
+    open val emotes: Emotes = Emotes(EmoteManager.DefaultEmoteManager())
 }
