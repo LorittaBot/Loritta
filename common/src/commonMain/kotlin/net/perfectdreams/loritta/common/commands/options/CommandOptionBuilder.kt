@@ -12,7 +12,7 @@ class CommandOptionBuilder<T>(
         if (type !is CommandOptionType.ToNullable)
             throw IllegalArgumentException("$type cannot be optional!")
 
-        return CommandOptionBuilder<T?>(
+        return CommandOptionBuilder(
             type.toNullable(),
             name,
             description

@@ -9,6 +9,12 @@ open class CommandOptions {
 
     val arguments = mutableListOf<CommandOption<*>>()
 
+    fun string(name: String, description: LocaleKeyData) = CommandOptionBuilder<String>(
+        CommandOptionType.String,
+        name,
+        description
+    )
+
     fun integer(name: String, description: LocaleKeyData) = CommandOptionBuilder<Int>(
         CommandOptionType.Integer,
         name,
@@ -24,6 +30,7 @@ open class CommandOptions {
             this.name,
             this.description
         )
+
         arguments.add(option)
         return option
     }
