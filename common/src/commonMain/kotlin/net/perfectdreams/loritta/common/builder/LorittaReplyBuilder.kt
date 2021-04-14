@@ -10,6 +10,4 @@ package net.perfectdreams.loritta.common.builder
 open class LorittaReplyBuilder {
     var content: String? = null
     var prefix: String? = null
-
-    open fun build() = "$prefix **|** $content"
 }

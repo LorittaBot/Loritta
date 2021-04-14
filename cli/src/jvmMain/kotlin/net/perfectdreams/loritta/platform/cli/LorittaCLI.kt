@@ -12,11 +12,10 @@ import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOption
 import net.perfectdreams.loritta.common.commands.options.CommandOptionType
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.platform.cli.builder.CLIBuilderFactory
+import net.perfectdreams.loritta.platform.cli.commands.CLICommandContext
 import net.perfectdreams.loritta.platform.cli.entities.CLIMessageChannel
 
 class LorittaCLI(val args: Array<String>) : LorittaBot() {
-    override val builderFactory = CLIBuilderFactory
     val commandManager = CommandManager()
 
     suspend fun start() {
@@ -81,7 +80,7 @@ class LorittaCLI(val args: Array<String>) : LorittaBot() {
             val args = parseArgs(split.drop(1).joinToString(" "), declaration.executor?.options?.arguments ?: listOf())
 
             executor.execute(
-                CommandContext(
+                CLICommandContext(
                     this,
                     BaseLocale("default", mapOf(), mapOf()),
                     CLIMessageChannel()
