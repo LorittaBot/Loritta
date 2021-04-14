@@ -18,6 +18,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(project(":common"))
+                implementation(project(":commands"))
                 implementation("dev.kord:kord-core:0.7.x-SNAPSHOT")
             }
         }

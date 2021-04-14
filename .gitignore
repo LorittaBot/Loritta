@@ -11,6 +11,7 @@ local.properties
 .recommenders
 
 config.json
+token.txt
 lib/
 
 # External tool builders

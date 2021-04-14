@@ -1,14 +1,14 @@
-package net.perfectdreams.loritta.common.commands.vanilla
+package net.perfectdreams.loritta.commands.misc
 
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandContext
 import net.perfectdreams.loritta.common.commands.CommandExecutor
-import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 
-class PingAyayaCommandExecutor : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(PingAyayaCommandExecutor::class) {
+class PingAyayaExecutor : CommandExecutor() {
+    companion object : CommandExecutorDeclaration(PingAyayaExecutor::class) {
         object Options : CommandOptions() {
             val ayayaCount = integer("ayaya_count", LocaleKeyData("commands.command.ping.ayaya.count"))
                 .register()
