@@ -60,7 +60,7 @@ class EmbedBuilder {
     fun build(): LorittaEmbed {
         return LorittaEmbed(
             title = body?.title,
-            description = body?.title,
+            description = body?.description,
             image = images?.image,
             thumbnail = images?.thumbnail,
             color = body?.color,

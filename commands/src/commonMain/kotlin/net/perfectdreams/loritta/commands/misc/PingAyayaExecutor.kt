@@ -26,6 +26,14 @@ class PingAyayaExecutor(val emotes: Emotes) : CommandExecutor() {
         val ayayaCount = args[options.ayayaCount]
         val boldAyayaCount = args[options.boldAyayaCount] ?: 1
 
-        context.sendMessage("", LorittaEmbed("Ayaya!", "${emotes.chinoAyaya} ${(0 until ayayaCount).map { "ayaya" }.joinToString(" ")}! **${(0 until boldAyayaCount).map { "ayaya" }.joinToString(" ")}!**", image = "https://media.tenor.com/images/e36cab14cbe800ad261f77df5a68a66d/tenor.gif"))
+        context.sendEmbed {
+            body {
+                title = "Ayaya!"
+                description = "${emotes.chinoAyaya} ${(0 until ayayaCount).joinToString(" ") { "ayaya" }}! **${(0 until boldAyayaCount).joinToString(" ") { "ayaya" }}!**"
+            }
+            images {
+                image = "https://media.tenor.com/images/e36cab14cbe800ad261f77df5a68a66d/tenor.gif"
+            }
+        }
     }
 }
