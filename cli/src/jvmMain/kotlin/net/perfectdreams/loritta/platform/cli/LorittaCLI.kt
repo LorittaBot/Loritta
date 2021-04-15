@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.platform.cli
 
 import net.perfectdreams.loritta.commands.`fun`.CoinFlipExecutor
 import net.perfectdreams.loritta.commands.`fun`.RateWaifuExecutor
-import net.perfectdreams.loritta.commands.`fun`.VemDeZapExecutor
+import net.perfectdreams.loritta.commands.`fun`.TextVemDeZapExecutor
 import net.perfectdreams.loritta.commands.`fun`.declarations.CoinFlipCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.RateWaifuCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.VemDeZapCommand
@@ -23,7 +23,6 @@ import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
 import net.perfectdreams.loritta.common.commands.options.CommandOption
 import net.perfectdreams.loritta.common.commands.options.CommandOptionType
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.platform.cli.commands.CLICommandContext
 import net.perfectdreams.loritta.platform.cli.entities.CLIMessageChannel
@@ -76,7 +75,7 @@ class LorittaCLI : LorittaBot() {
 
         commandManager.register(
             VemDeZapCommand,
-            VemDeZapExecutor(emotes, random)
+            TextVemDeZapExecutor(emotes, random)
         )
     }
 
