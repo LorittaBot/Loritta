@@ -3,6 +3,8 @@ package net.perfectdreams.loritta.common.commands
 import net.perfectdreams.loritta.common.LorittaBot
 import net.perfectdreams.loritta.common.builder.LorittaMultiReplyBuilder
 import net.perfectdreams.loritta.common.builder.LorittaReplyBuilder
+import net.perfectdreams.loritta.common.entities.LorittaEmbed
+import net.perfectdreams.loritta.common.entities.LorittaMessage
 import net.perfectdreams.loritta.common.entities.MessageChannel
 import net.perfectdreams.loritta.common.locale.BaseLocale
 
@@ -17,7 +19,7 @@ abstract class CommandContext(
     abstract suspend fun sendReply(block: LorittaReplyBuilder.() -> (Unit))
     abstract suspend fun sendMultiReply(block: LorittaMultiReplyBuilder.() -> (Unit))
 
-    suspend fun sendMessage(message: String) {
-        channel.sendMessage(message)
+    suspend fun sendMessage(message: String, embed: LorittaEmbed? = null) {
+        channel.sendMessage(LorittaMessage(message, embed))
     }
 }
