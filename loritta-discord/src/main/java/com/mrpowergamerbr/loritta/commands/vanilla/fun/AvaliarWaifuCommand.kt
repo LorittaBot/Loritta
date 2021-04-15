@@ -36,13 +36,13 @@ class AvaliarWaifuCommand : AbstractCommand("ratewaifu", listOf("avaliarwaifu", 
 			val scoreReason = context.locale.getList("${RateWaifuCommand.LOCALE_PREFIX}.note${nota}").random()
 
 			var reason = when (nota) {
-				10 -> "$scoreReason ${emotes.loriWow}"
-				9 -> "$scoreReason ${emotes.loriHeart}"
-				8 -> "$scoreReason ${emotes.loriPat}"
-				7 -> "$scoreReason ${emotes.loriSmile}"
-				3 -> "$scoreReason ${emotes.loriShrug}"
-				2 -> "$scoreReason ${emotes.loriHmpf}"
-				1 -> "$scoreReason ${emotes.loriRage}"
+				10 -> "$scoreReason ${Emotes.LORI_WOW}"
+				9 -> "$scoreReason ${Emotes.LORI_HEART}"
+				8 -> "$scoreReason ${Emotes.LORI_PAT}"
+				7 -> "$scoreReason ${Emotes.LORI_SMILE}"
+				3 -> "$scoreReason ${Emotes.LORI_SHRUG}"
+				2 -> "$scoreReason ${Emotes.LORI_HMPF}"
+				1 -> "$scoreReason ${Emotes.LORI_RAGE}"
 				else -> scoreReason
 			}
 
