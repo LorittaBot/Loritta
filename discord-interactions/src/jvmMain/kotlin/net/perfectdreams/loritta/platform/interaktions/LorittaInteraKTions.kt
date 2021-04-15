@@ -4,12 +4,23 @@ import kotlinx.coroutines.runBlocking
 import net.perfectdreams.discordinteraktions.InteractionsServer
 import net.perfectdreams.loritta.commands.`fun`.CoinFlipExecutor
 import net.perfectdreams.loritta.commands.`fun`.RateWaifuExecutor
+import net.perfectdreams.loritta.commands.`fun`.TextQualityExecutor
+import net.perfectdreams.loritta.commands.`fun`.TextVaporQualityExecutor
+import net.perfectdreams.loritta.commands.`fun`.TextVaporwaveExecutor
 import net.perfectdreams.loritta.commands.`fun`.VemDeZapExecutor
 import net.perfectdreams.loritta.commands.`fun`.declarations.CoinFlipCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.RateWaifuCommand
+import net.perfectdreams.loritta.commands.`fun`.declarations.TextTransformDeclaration
 import net.perfectdreams.loritta.commands.`fun`.declarations.VemDeZapCommand
+import net.perfectdreams.loritta.commands.minecraft.McAvatarExecutor
+import net.perfectdreams.loritta.commands.minecraft.McBodyExecutor
+import net.perfectdreams.loritta.commands.minecraft.McHeadExecutor
+import net.perfectdreams.loritta.commands.minecraft.McSkinExecutor
+import net.perfectdreams.loritta.commands.minecraft.declarations.MinecraftPlayerCommand
+import net.perfectdreams.loritta.commands.misc.KkEaeMenExecutor
 import net.perfectdreams.loritta.commands.misc.PingAyayaExecutor
 import net.perfectdreams.loritta.commands.misc.PingExecutor
+import net.perfectdreams.loritta.commands.misc.declarations.KkEaeMenCommand
 import net.perfectdreams.loritta.commands.misc.declarations.PingCommand
 import net.perfectdreams.loritta.commands.utils.AnagramExecutor
 import net.perfectdreams.loritta.commands.utils.CalculatorExecutor
@@ -21,9 +32,11 @@ import net.perfectdreams.loritta.commands.utils.declarations.CalculatorCommand
 import net.perfectdreams.loritta.commands.utils.declarations.ChooseCommand
 import net.perfectdreams.loritta.commands.utils.declarations.MoneyCommand
 import net.perfectdreams.loritta.common.LorittaBot
+import net.perfectdreams.loritta.common.commands.declarations.command
 import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleManager
+import net.perfectdreams.loritta.common.utils.minecraft.MinecraftMojangAPI
 import net.perfectdreams.loritta.platform.interaktions.emotes.DiscordEmoteManager
 import java.io.File
 
@@ -43,6 +56,7 @@ class LorittaInteraKTions : LorittaBot() {
     val localeManager = LocaleManager(
         File("L:\\RandomProjects\\LorittaInteractions\\locales")
     )
+    val mojangApi = MinecraftMojangAPI()
 
     fun start() {
         localeManager.loadLocales()
@@ -86,6 +100,26 @@ class LorittaInteraKTions : LorittaBot() {
         commandManager.register(
             VemDeZapCommand,
             VemDeZapExecutor(emotes, random)
+        )
+
+        commandManager.register(
+            MinecraftPlayerCommand,
+            McSkinExecutor(emotes, mojangApi),
+            McAvatarExecutor(emotes, mojangApi),
+            McHeadExecutor(emotes, mojangApi),
+            McBodyExecutor(emotes, mojangApi)
+        )
+
+        commandManager.register(
+            TextTransformDeclaration,
+            TextVaporwaveExecutor(emotes),
+            TextQualityExecutor(emotes),
+            TextVaporQualityExecutor(emotes)
+        )
+
+        commandManager.register(
+            KkEaeMenCommand,
+            KkEaeMenExecutor(emotes)
         )
 
         runBlocking {

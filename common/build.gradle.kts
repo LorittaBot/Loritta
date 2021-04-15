@@ -25,6 +25,8 @@ kotlin {
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
                 api("io.github.microutils:kotlin-logging:2.0.6")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-core:1.1.0")
+                api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
+                api("io.ktor:ktor-client-core:1.5.3")
 
                 // Used for Math stuff
                 api("com.ionspin.kotlin:bignum:0.3.0-SNAPSHOT")
@@ -39,6 +41,9 @@ kotlin {
                 // Async Appender is broken in alpha5
                 // https://stackoverflow.com/questions/58742485/logback-error-no-attached-appenders-found
                 api("ch.qos.logback:logback-classic:1.3.0-alpha4")
+
+                // Used for caching
+                api("com.github.ben-manes.caffeine:caffeine:3.0.1")
 
                 // Used for the LocaleManager
                 implementation("org.yaml:snakeyaml:1.28")
