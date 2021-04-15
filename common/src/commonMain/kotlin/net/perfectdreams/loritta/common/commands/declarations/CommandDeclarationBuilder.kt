@@ -10,12 +10,13 @@ class CommandDeclarationBuilder(val labels: List<String>) {
     var description: LocaleKeyData? = null
     var executor: CommandExecutorDeclaration? = null
     val subcommands = mutableListOf<CommandDeclarationBuilder>()
+    val subcommandGroups = mutableListOf<CommandDeclarationBuilder>()
 
     fun subcommand(labels: List<String>, block: CommandDeclarationBuilder.() -> (Unit)) {
         subcommands += CommandDeclarationBuilder(labels).apply(block)
     }
 
     fun subcommandGroup(labels: List<String>, block: CommandDeclarationBuilder.() -> (Unit)) {
-        CommandDeclarationBuilder(labels).apply(block)
+        subcommandGroups += CommandDeclarationBuilder(labels).apply(block)
     }
 }

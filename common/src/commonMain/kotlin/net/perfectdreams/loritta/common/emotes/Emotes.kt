@@ -20,6 +20,8 @@ class Emotes(manager: EmoteManager) {
 
     val error = manager.getEmoteByName("error")
 
+    val vinDiesel = manager.getEmoteByName("vin_diesel")
+
     val coinHeads = manager.getEmoteByName("coin_heads")
     val coinTails = manager.getEmoteByName("coin_tails")
 
