@@ -2,40 +2,85 @@ package net.perfectdreams.loritta.platform.cli
 
 import net.perfectdreams.loritta.commands.`fun`.CoinFlipExecutor
 import net.perfectdreams.loritta.commands.`fun`.RateWaifuExecutor
+import net.perfectdreams.loritta.commands.`fun`.VemDeZapExecutor
 import net.perfectdreams.loritta.commands.`fun`.declarations.CoinFlipCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.RateWaifuCommand
+import net.perfectdreams.loritta.commands.`fun`.declarations.VemDeZapCommand
 import net.perfectdreams.loritta.commands.misc.PingAyayaExecutor
 import net.perfectdreams.loritta.commands.misc.PingExecutor
 import net.perfectdreams.loritta.commands.misc.declarations.PingCommand
+import net.perfectdreams.loritta.commands.utils.AnagramExecutor
+import net.perfectdreams.loritta.commands.utils.CalculatorExecutor
+import net.perfectdreams.loritta.commands.utils.ChooseExecutor
+import net.perfectdreams.loritta.commands.utils.ECBManager
+import net.perfectdreams.loritta.commands.utils.MoneyExecutor
+import net.perfectdreams.loritta.commands.utils.declarations.AnagramCommand
+import net.perfectdreams.loritta.commands.utils.declarations.CalculatorCommand
+import net.perfectdreams.loritta.commands.utils.declarations.ChooseCommand
+import net.perfectdreams.loritta.commands.utils.declarations.MoneyCommand
 import net.perfectdreams.loritta.common.LorittaBot
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
 import net.perfectdreams.loritta.common.commands.options.CommandOption
 import net.perfectdreams.loritta.common.commands.options.CommandOptionType
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.platform.cli.commands.CLICommandContext
 import net.perfectdreams.loritta.platform.cli.entities.CLIMessageChannel
+import java.io.File
 
-class LorittaCLI(val args: Array<String>) : LorittaBot() {
+class LorittaCLI : LorittaBot() {
     val commandManager = CommandManager()
+    val localeManager = LocaleManager(
+        File("L:\\RandomProjects\\LorittaInteractions\\locales")
+    )
 
-    suspend fun start() {
+    fun start() {
+        localeManager.loadLocales()
+
         commandManager.register(
             PingCommand,
             PingExecutor(),
-            PingAyayaExecutor()
+            PingAyayaExecutor(emotes)
         )
 
         commandManager.register(
             CoinFlipCommand,
-            CoinFlipExecutor(random)
+            CoinFlipExecutor(emotes, random)
         )
 
         commandManager.register(
             RateWaifuCommand,
-            RateWaifuExecutor()
+            RateWaifuExecutor(emotes)
         )
 
+        commandManager.register(
+            CalculatorCommand,
+            CalculatorExecutor(emotes)
+        )
+
+        commandManager.register(
+            AnagramCommand,
+            AnagramExecutor(emotes)
+        )
+
+        commandManager.register(
+            MoneyCommand,
+            MoneyExecutor(emotes, ECBManager())
+        )
+
+        commandManager.register(
+            ChooseCommand,
+            ChooseExecutor(emotes)
+        )
+
+        commandManager.register(
+            VemDeZapCommand,
+            VemDeZapExecutor(emotes, random)
+        )
+    }
+
+    suspend fun runArgs(args: Array<String>) {
         for (declaration in commandManager.declarations) {
             if (executeCommand(args.joinToString(" "), declaration))
                 return
@@ -89,7 +134,7 @@ class LorittaCLI(val args: Array<String>) : LorittaBot() {
             executor.execute(
                 CLICommandContext(
                     this,
-                    BaseLocale("default", mapOf(), mapOf()),
+                    localeManager.getLocaleById("default"),
                     CLIMessageChannel()
                 ),
                 CommandArguments(args)

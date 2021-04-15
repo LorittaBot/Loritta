@@ -22,8 +22,12 @@ kotlin {
             dependencies {
                 // API = We want to allow dependencies to access those classes
                 api(kotlin("stdlib-common"))
+                api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
                 api("io.github.microutils:kotlin-logging:2.0.6")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-core:1.1.0")
+
+                // Used for Math stuff
+                api("com.ionspin.kotlin:bignum:0.3.0-SNAPSHOT")
             }
         }
 
@@ -48,6 +52,7 @@ kotlin {
                 implementation(kotlin("test"))
                 implementation(kotlin("test-junit"))
                 implementation("org.junit.jupiter:junit-jupiter:5.4.2")
+                implementation("org.assertj:assertj-core:3.19.0")
             }
         }
 
