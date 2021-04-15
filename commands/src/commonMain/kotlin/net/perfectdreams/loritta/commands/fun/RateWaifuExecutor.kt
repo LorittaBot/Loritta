@@ -28,23 +28,18 @@ class RateWaifuExecutor(val emotes: Emotes) : CommandExecutor() {
         val random = Random(waifuLowerCase.hashCode().toLong()) // Usar um RANDOM sempre com a mesma seed
         val nota = random.nextInt(0, 11)
 
-        var reason = context.locale.getList("${RateWaifuCommand.LOCALE_PREFIX}.note${nota}").random()
+        val scoreReason = context.locale.getList("${RateWaifuCommand.LOCALE_PREFIX}.note${nota}").random()
 
-        if (nota == 10)
-            reason = "$reason ${emotes.loriWow}"
-        if (nota == 9)
-            reason = "$reason ${emotes.loriHeart}"
-        if (nota == 8)
-            reason = "$reason ${emotes.loriPat}"
-        if (nota == 7)
-            reason = "$reason ${emotes.loriSmile}"
-
-        if (nota == 3)
-            reason = "\uD83E\uDD26 ${emotes.loriShrug}"
-        if (nota == 2)
-            reason = "\uD83E\uDD26 ${emotes.loriHmpf}"
-        if (nota == 1)
-            reason = "$reason ${emotes.loriRage}"
+        var reason = when (nota) {
+            10 -> "$scoreReason ${emotes.loriWow}"
+            9 -> "$scoreReason ${emotes.loriHeart}"
+            8 -> "$scoreReason ${emotes.loriPat}"
+            7 -> "$scoreReason ${emotes.loriSmile}"
+            3 -> "$scoreReason ${emotes.loriShrug}"
+            2 -> "$scoreReason ${emotes.loriHmpf}"
+            1 -> "$scoreReason ${emotes.loriRage}"
+            else -> scoreReason
+        }
 
         var strNota = nota.toString()
         if (waifuLowerCase == "loritta" || waifuLowerCase == "lori") {

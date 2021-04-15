@@ -73,4 +73,9 @@ interface CommandOptionType {
     object StringList : CommandOptionType {
         override val isNullable = false
     }
+
+    // ImageReference
+    object ImageReference : CommandOptionType {
+        override val isNullable = false
+    }
 }

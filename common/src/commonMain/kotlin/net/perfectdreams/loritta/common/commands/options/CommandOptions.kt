@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.common.commands.options
 
 import net.perfectdreams.loritta.common.entities.User
+import net.perfectdreams.loritta.common.images.ImageReference
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 
 open class CommandOptions {
@@ -64,6 +65,12 @@ open class CommandOptions {
         description,
         minimum,
         maximum
+    )
+
+    fun imageReference(name: String, description: LocaleKeyData) = argument<ImageReference>(
+        CommandOptionType.ImageReference,
+        name,
+        description
     )
 
     private fun <T> argument(type: CommandOptionType, name: String, description: LocaleKeyData) = CommandOptionBuilder<T>(
