@@ -7,11 +7,10 @@ import net.perfectdreams.loritta.commands.`fun`.RateWaifuExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextQualityExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextVaporQualityExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextVaporwaveExecutor
-import net.perfectdreams.loritta.commands.`fun`.VemDeZapExecutor
+import net.perfectdreams.loritta.commands.`fun`.TextVemDeZapExecutor
 import net.perfectdreams.loritta.commands.`fun`.declarations.CoinFlipCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.RateWaifuCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.TextTransformDeclaration
-import net.perfectdreams.loritta.commands.`fun`.declarations.VemDeZapCommand
 import net.perfectdreams.loritta.commands.minecraft.McAvatarExecutor
 import net.perfectdreams.loritta.commands.minecraft.McBodyExecutor
 import net.perfectdreams.loritta.commands.minecraft.McHeadExecutor
@@ -32,9 +31,7 @@ import net.perfectdreams.loritta.commands.utils.declarations.CalculatorCommand
 import net.perfectdreams.loritta.commands.utils.declarations.ChooseCommand
 import net.perfectdreams.loritta.commands.utils.declarations.MoneyCommand
 import net.perfectdreams.loritta.common.LorittaBot
-import net.perfectdreams.loritta.common.commands.declarations.command
 import net.perfectdreams.loritta.common.emotes.Emotes
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.utils.minecraft.MinecraftMojangAPI
 import net.perfectdreams.loritta.platform.interaktions.emotes.DiscordEmoteManager
@@ -98,11 +95,6 @@ class LorittaInteraKTions : LorittaBot() {
         )
 
         commandManager.register(
-            VemDeZapCommand,
-            VemDeZapExecutor(emotes, random)
-        )
-
-        commandManager.register(
             MinecraftPlayerCommand,
             McSkinExecutor(emotes, mojangApi),
             McAvatarExecutor(emotes, mojangApi),
@@ -114,7 +106,8 @@ class LorittaInteraKTions : LorittaBot() {
             TextTransformDeclaration,
             TextVaporwaveExecutor(emotes),
             TextQualityExecutor(emotes),
-            TextVaporQualityExecutor(emotes)
+            TextVaporQualityExecutor(emotes),
+            TextVemDeZapExecutor(emotes, random)
         )
 
         commandManager.register(

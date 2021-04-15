@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.commands.`fun`
 
-import net.perfectdreams.loritta.commands.`fun`.declarations.VemDeZapCommand
+import net.perfectdreams.loritta.commands.`fun`.declarations.TextTransformDeclaration
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandContext
 import net.perfectdreams.loritta.common.commands.CommandExecutor
@@ -10,8 +10,8 @@ import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import kotlin.random.Random
 
-class VemDeZapExecutor(val emotes: Emotes, val random: Random) : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(VemDeZapExecutor::class) {
+class TextVemDeZapExecutor(val emotes: Emotes, val random: Random) : CommandExecutor() {
+    companion object : CommandExecutorDeclaration(TextVemDeZapExecutor::class) {
         object Options : CommandOptions() {
             val mood = string("mood", LocaleKeyData("commands.command.vemdezap.whatIsTheMood"))
                 .choice("happy", LocaleKeyData("commands.command.vemdezap.moodHappy"))
@@ -48,21 +48,21 @@ class VemDeZapExecutor(val emotes: Emotes, val random: Random) : CommandExecutor
             output += "$word "
             var addedEmoji = false
 
-            for ((match, emojis) in VemDeZapCommand.fullMatch) {
+            for ((match, emojis) in TextTransformDeclaration.fullMatch) {
                 if (lowerCaseWord == match) {
                     output += "${emojis.random()} "
                     addedEmoji = true
                 }
             }
 
-            for ((match, emojis) in VemDeZapCommand.partialMatchAny) {
+            for ((match, emojis) in TextTransformDeclaration.partialMatchAny) {
                 if (lowerCaseWord.contains(match, true)) {
                     output += "${emojis.random()} "
                     addedEmoji = true
                 }
             }
 
-            for ((match, emojis) in VemDeZapCommand.partialMatchPrefix) {
+            for ((match, emojis) in TextTransformDeclaration.partialMatchPrefix) {
                 if (lowerCaseWord.startsWith(match, true)) {
                     output += "${emojis.random()} "
                     addedEmoji = true
@@ -76,11 +76,11 @@ class VemDeZapExecutor(val emotes: Emotes, val random: Random) : CommandExecutor
 
                 if (randomInteger == 0) {
                     val moodEmojis = when (mood) {
-                        ZapZapMood.HAPPY -> VemDeZapCommand.happyEmojis
-                        ZapZapMood.ANGRY -> VemDeZapCommand.angryEmojis
-                        ZapZapMood.SASSY -> VemDeZapCommand.sassyEmojis
-                        ZapZapMood.SAD -> VemDeZapCommand.sadEmojis
-                        ZapZapMood.SICK -> VemDeZapCommand.sickEmojis
+                        ZapZapMood.HAPPY -> TextTransformDeclaration.happyEmojis
+                        ZapZapMood.ANGRY -> TextTransformDeclaration.angryEmojis
+                        ZapZapMood.SASSY -> TextTransformDeclaration.sassyEmojis
+                        ZapZapMood.SAD -> TextTransformDeclaration.sadEmojis
+                        ZapZapMood.SICK -> TextTransformDeclaration.sickEmojis
                     }
 
                     // E quanto maior o nível, maiores as chances de aparecer mais emojis do lado da palavra
