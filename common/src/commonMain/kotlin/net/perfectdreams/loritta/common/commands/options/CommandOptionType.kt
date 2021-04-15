@@ -66,4 +66,11 @@ interface CommandOptionType {
     }
 
     object NullableRole : Nullable()
+
+    // Stuff that isn't present in Discord Slash Commands yet
+    // (After all, this CommandOptionType is based of Discord InteraKTions implementation! :3)
+    // StringList
+    object StringList : CommandOptionType {
+        override val isNullable = false
+    }
 }

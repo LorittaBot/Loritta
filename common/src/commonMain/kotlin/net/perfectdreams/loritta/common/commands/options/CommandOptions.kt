@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.common.commands.options
 
+import net.perfectdreams.loritta.common.entities.User
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 
 open class CommandOptions {
@@ -45,6 +46,26 @@ open class CommandOptions {
         description
     )
 
+    fun user(name: String, description: LocaleKeyData) = argument<User>(
+        CommandOptionType.User,
+        name,
+        description
+    )
+
+    fun optionalUser(name: String, description: LocaleKeyData) = argument<User?>(
+        CommandOptionType.NullableUser,
+        name,
+        description
+    )
+
+    fun stringList(name: String, description: LocaleKeyData, minimum: Int? = null, maximum: Int? = null) = ListCommandOptionBuilder<List<String>>(
+        CommandOptionType.StringList,
+        name,
+        description,
+        minimum,
+        maximum
+    )
+
     private fun <T> argument(type: CommandOptionType, name: String, description: LocaleKeyData) = CommandOptionBuilder<T>(
         type,
         name,
@@ -61,6 +82,22 @@ open class CommandOptions {
             this.name,
             this.description,
             this.choices
+        )
+
+        arguments.add(option)
+        return option
+    }
+
+    fun <T> ListCommandOptionBuilder<T>.register(): ListCommandOption<T> {
+        if (arguments.any { it.name == this.name })
+            throw IllegalArgumentException("Duplicate argument!")
+
+        val option = ListCommandOption<T>(
+            this.type,
+            this.name,
+            this.description,
+            this.minimum,
+            this.maximum
         )
 
         arguments.add(option)

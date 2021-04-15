@@ -5,9 +5,10 @@ import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandContext
 import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.common.emotes.Emotes
 import kotlin.random.Random
 
-class CoinFlipExecutor(val random: Random) : CommandExecutor() {
+class CoinFlipExecutor(val emotes: Emotes, val random: Random) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(CoinFlipExecutor::class)
 
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
@@ -16,10 +17,10 @@ class CoinFlipExecutor(val random: Random) : CommandExecutor() {
         val message: String
 
         if (isTails) {
-            prefix = "<:coroa:412586257114464259>"
+            prefix = emotes.coinTails.toString()
             message = context.locale["${CoinFlipCommand.LOCALE_PREFIX}.tails"]
         } else {
-            prefix = "<:cara:412586256409559041>"
+            prefix = emotes.coinHeads.toString()
             message = context.locale["${CoinFlipCommand.LOCALE_PREFIX}.heads"]
         }
 

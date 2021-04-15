@@ -25,7 +25,11 @@ kotlin {
         }
 
         // jvmMain and jsMain *should* work but for some reason they don't
-        jvm().compilations["main"].defaultSourceSet {}
+        jvm().compilations["main"].defaultSourceSet {
+            dependencies {
+                implementation("org.jsoup:jsoup:1.13.1")
+            }
+        }
         js().compilations["main"].defaultSourceSet {}
     }
 }
