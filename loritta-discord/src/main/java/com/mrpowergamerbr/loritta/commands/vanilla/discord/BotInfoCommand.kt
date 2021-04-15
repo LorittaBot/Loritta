@@ -46,16 +46,8 @@ class BotInfoCommand(private val buildInfo: BuildInfo) : AbstractCommand("botinf
 		val minutes = TimeUnit.MILLISECONDS.toMinutes(jvmUpTime)
 		jvmUpTime -= TimeUnit.MINUTES.toMillis(minutes)
 		val seconds = TimeUnit.MILLISECONDS.toSeconds(jvmUpTime)
-
-		val sb = StringBuilder(64)
-		sb.append(days)
-		sb.append("d ")
-		sb.append(hours)
-		sb.append("h ")
-		sb.append(minutes)
-		sb.append("m ")
-		sb.append(seconds)
-		sb.append("s")
+		
+		val uptime = "${days}d ${hours}h ${minutes}m ${seconds}s"
 
 		val commandsExecutedInTheLast24Hours = loritta.newSuspendedTransaction {
 			ExecutedCommandsLog.select {
@@ -70,7 +62,7 @@ class BotInfoCommand(private val buildInfo: BuildInfo) : AbstractCommand("botinf
 				context.locale.getList(
 						"commands.command.botinfo.embedDescription",
 						guildCount,
-						sb.toString(),
+						uptime,
 						LorittaLauncher.loritta.legacyCommandManager.commandMap.size + loritta.commandMap.commands.size,
 						commandsExecutedInTheLast24Hours,
 						Emotes.KOTLIN,
