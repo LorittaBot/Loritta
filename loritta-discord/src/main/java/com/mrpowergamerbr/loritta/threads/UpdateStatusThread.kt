@@ -135,21 +135,13 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 				jvmUpTime -= TimeUnit.MINUTES.toMillis(minutes)
 				val seconds = TimeUnit.MILLISECONDS.toSeconds(jvmUpTime)
 
-				val sb = StringBuilder(64)
-				sb.append(days)
-				sb.append("d ")
-				sb.append(hours)
-				sb.append("h ")
-				sb.append(minutes)
-				sb.append("m ")
-				sb.append(seconds)
-				sb.append("s")
-
+				
+				val uptime = "${days}d ${hours}h ${minutes}m ${seconds}s"
 				val game = loritta.discordConfig.discord.activities[currentIndex]
 
 				var str = game.name
 				str = str.replace("{guilds}", runBlocking { lorittaShards.queryGuildCount() }.toString())
-				str = str.replace("{uptime}", sb.toString())
+				str = str.replace("{uptime}", uptime)
 
 				val willRestartAt = loritta.patchData.willRestartAt
 				if (willRestartAt != null) {
