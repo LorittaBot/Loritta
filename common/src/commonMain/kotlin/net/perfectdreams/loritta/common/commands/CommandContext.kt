@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.common.entities.LorittaEmbed
 import net.perfectdreams.loritta.common.entities.LorittaMessage
 import net.perfectdreams.loritta.common.entities.MessageChannel
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.utils.embed.EmbedBuilder
 
 abstract class CommandContext(
     // Nifty trick: By keeping it "open", implementations can override this variable.
@@ -21,5 +22,9 @@ abstract class CommandContext(
 
     suspend fun sendMessage(message: String, embed: LorittaEmbed? = null) {
         channel.sendMessage(LorittaMessage(message, embed))
+    }
+
+    suspend fun sendEmbed(message: String = "", embed: EmbedBuilder.() -> Unit) {
+        sendMessage(message, EmbedBuilder().apply(embed).build())
     }
 }

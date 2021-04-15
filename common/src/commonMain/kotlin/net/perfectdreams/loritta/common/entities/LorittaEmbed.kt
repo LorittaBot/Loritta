@@ -15,8 +15,8 @@ class LorittaEmbed(
 ) {
     class Author(
         val name: String,
-        val url: String,
-        val icon: String
+        val url: String?,
+        val icon: String?
     )
     class Field(
         val name: String,
