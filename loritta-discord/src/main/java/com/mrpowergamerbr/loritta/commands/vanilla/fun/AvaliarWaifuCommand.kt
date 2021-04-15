@@ -20,7 +20,7 @@ class AvaliarWaifuCommand : AbstractCommand("ratewaifu", listOf("avaliarwaifu", 
 
 	// TODO: Fix Usage
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			var waifu = context.args.joinToString(separator = " ") // Vamos juntar tudo em uma string
 
@@ -33,7 +33,7 @@ class AvaliarWaifuCommand : AbstractCommand("ratewaifu", listOf("avaliarwaifu", 
 			val random = SplittableRandom(Calendar.getInstance().get(Calendar.DAY_OF_YEAR) + waifuLowerCase.hashCode().toLong()) // Usar um RANDOM sempre com a mesma seed
 			val nota = random.nextInt(0, 11)
 
-			val scoreReason = context.locale.getList("${RateWaifuCommand.LOCALE_PREFIX}.note${nota}").random()
+			val scoreReason = context.locale.getList("$LOCALE_PREFIX.note${nota}").random()
 
 			var reason = when (nota) {
 				10 -> "$scoreReason ${Emotes.LORI_WOW}"
