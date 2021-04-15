@@ -8,6 +8,10 @@ class InteraKTionsMessageChannel(val context: SlashCommandContext) : MessageChan
     override suspend fun sendMessage(message: LorittaMessage) {
         context.sendMessage {
             content = message.content
+
+            for (file in message.files) {
+                addFile(file.key, file.value.inputStream())
+            }
         }
     }
 }

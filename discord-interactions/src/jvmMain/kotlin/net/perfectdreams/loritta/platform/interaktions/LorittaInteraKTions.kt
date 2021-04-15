@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.platform.interaktions
 
+import io.ktor.client.*
 import kotlinx.coroutines.runBlocking
 import net.perfectdreams.discordinteraktions.InteractionsServer
 import net.perfectdreams.loritta.commands.`fun`.CoinFlipExecutor
@@ -11,6 +12,8 @@ import net.perfectdreams.loritta.commands.`fun`.TextVemDeZapExecutor
 import net.perfectdreams.loritta.commands.`fun`.declarations.CoinFlipCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.RateWaifuCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.TextTransformDeclaration
+import net.perfectdreams.loritta.commands.images.ManiaTitleCardExecutor
+import net.perfectdreams.loritta.commands.images.declarations.ManiaTitleCardCommand
 import net.perfectdreams.loritta.commands.minecraft.McAvatarExecutor
 import net.perfectdreams.loritta.commands.minecraft.McBodyExecutor
 import net.perfectdreams.loritta.commands.minecraft.McHeadExecutor
@@ -39,21 +42,30 @@ import java.io.File
 
 class LorittaInteraKTions : LorittaBot() {
     val config = File("token.txt").readLines()
+
     val interactions = InteractionsServer(
         applicationId = config[2].toLong(),
         publicKey = config[1],
         token = config[0]
     )
+
     val commandManager = CommandManager(this, interactions.commandManager)
+
     override val emotes = Emotes(
         DiscordEmoteManager(
             mapOf("chino_ayaya" to "discord:a:chino_AYAYA:696984642594537503")
         )
     )
+
     val localeManager = LocaleManager(
         File("L:\\RandomProjects\\LorittaInteractions\\locales")
     )
+
     val mojangApi = MinecraftMojangAPI()
+
+    val http = HttpClient {
+        expectSuccess = false
+    }
 
     fun start() {
         localeManager.loadLocales()
@@ -113,6 +125,11 @@ class LorittaInteraKTions : LorittaBot() {
         commandManager.register(
             KkEaeMenCommand,
             KkEaeMenExecutor(emotes)
+        )
+
+        commandManager.register(
+            ManiaTitleCardCommand,
+            ManiaTitleCardExecutor(http)
         )
 
         runBlocking {
