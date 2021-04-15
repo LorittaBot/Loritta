@@ -12,7 +12,13 @@ import net.perfectdreams.loritta.commands.`fun`.TextVemDeZapExecutor
 import net.perfectdreams.loritta.commands.`fun`.declarations.CoinFlipCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.RateWaifuCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.TextTransformDeclaration
+import net.perfectdreams.loritta.commands.images.ArtExecutor
+import net.perfectdreams.loritta.commands.images.AvatarTestExecutor
 import net.perfectdreams.loritta.commands.images.ManiaTitleCardExecutor
+import net.perfectdreams.loritta.commands.images.MonicaAtaExecutor
+import net.perfectdreams.loritta.commands.images.declarations.ArtCommand
+import net.perfectdreams.loritta.commands.images.declarations.AtaCommand
+import net.perfectdreams.loritta.commands.images.declarations.AvatarTestCommand
 import net.perfectdreams.loritta.commands.images.declarations.ManiaTitleCardCommand
 import net.perfectdreams.loritta.commands.minecraft.McAvatarExecutor
 import net.perfectdreams.loritta.commands.minecraft.McBodyExecutor
@@ -37,6 +43,7 @@ import net.perfectdreams.loritta.common.LorittaBot
 import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.utils.minecraft.MinecraftMojangAPI
+import net.perfectdreams.loritta.platform.interaktions.commands.CommandManager
 import net.perfectdreams.loritta.platform.interaktions.emotes.DiscordEmoteManager
 import java.io.File
 
@@ -130,6 +137,21 @@ class LorittaInteraKTions : LorittaBot() {
         commandManager.register(
             ManiaTitleCardCommand,
             ManiaTitleCardExecutor(http)
+        )
+
+        commandManager.register(
+            AvatarTestCommand,
+            AvatarTestExecutor(http)
+        )
+
+        commandManager.register(
+            ArtCommand,
+            ArtExecutor(http)
+        )
+
+        commandManager.register(
+            AtaCommand,
+            MonicaAtaExecutor(http)
         )
 
         runBlocking {
