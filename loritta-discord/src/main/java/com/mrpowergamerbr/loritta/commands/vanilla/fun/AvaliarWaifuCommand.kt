@@ -33,23 +33,18 @@ class AvaliarWaifuCommand : AbstractCommand("ratewaifu", listOf("avaliarwaifu", 
 			val random = SplittableRandom(Calendar.getInstance().get(Calendar.DAY_OF_YEAR) + waifuLowerCase.hashCode().toLong()) // Usar um RANDOM sempre com a mesma seed
 			val nota = random.nextInt(0, 11)
 
-			var reason = context.locale.getList("$LOCALE_PREFIX.note${nota}").random()
+			val scoreReason = context.locale.getList("${RateWaifuCommand.LOCALE_PREFIX}.note${nota}").random()
 
-			if (nota == 10)
-				reason = "$reason ${Emotes.LORI_WOW}"
-			if (nota == 9)
-				reason = "$reason ${Emotes.LORI_HEART}"
-			if (nota == 8)
-				reason = "$reason ${Emotes.LORI_PAT}"
-			if (nota == 7)
-				reason = "$reason ${Emotes.LORI_SMILE}"
-
-			if (nota == 3)
-				reason = "\uD83E\uDD26 ${Emotes.LORI_SHRUG}"
-			if (nota == 2)
-				reason = "\uD83E\uDD26 ${Emotes.LORI_HMPF}"
-			if (nota == 1)
-				reason = "$reason ${Emotes.LORI_RAGE}"
+			var reason = when (nota) {
+				10 -> "$scoreReason ${emotes.loriWow}"
+				9 -> "$scoreReason ${emotes.loriHeart}"
+				8 -> "$scoreReason ${emotes.loriPat}"
+				7 -> "$scoreReason ${emotes.loriSmile}"
+				3 -> "$scoreReason ${emotes.loriShrug}"
+				2 -> "$scoreReason ${emotes.loriHmpf}"
+				1 -> "$scoreReason ${emotes.loriRage}"
+				else -> scoreReason
+			}
 
 			var strNota = nota.toString()
 			if (waifuLowerCase == "loritta") {
