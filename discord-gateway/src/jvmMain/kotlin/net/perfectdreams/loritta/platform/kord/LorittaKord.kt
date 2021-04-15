@@ -16,13 +16,18 @@ import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.options.CommandOptionType
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
 import net.perfectdreams.loritta.common.commands.options.CommandOption
+import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.platform.kord.commands.KordCommandContext
 import net.perfectdreams.loritta.platform.kord.entities.KordMessageChannel
 import java.io.File
 
 class LorittaKord : LorittaBot() {
     val commandManager = CommandManager()
+    val localeManager = LocaleManager(
+        File("L:\\RandomProjects\\LorittaInteractions\\locales")
+    )
 
     fun parseArgs(content: String, args: List<CommandOption<*>>): MutableMap<CommandOption<*>, Any?> {
         // --ayaya_count=5
@@ -70,7 +75,7 @@ class LorittaKord : LorittaBot() {
             executor.execute(
                 KordCommandContext(
                     this,
-                    BaseLocale("default", mapOf(), mapOf()),
+                    localeManager.getLocaleById("default"),
                     KordMessageChannel(event.message.getChannel())
                 ),
                 CommandArguments(args)
@@ -82,6 +87,8 @@ class LorittaKord : LorittaBot() {
     }
 
     fun start() {
+        localeManager.loadLocales()
+
         commandManager.register(
             PingCommand,
             PingExecutor(),
@@ -90,7 +97,7 @@ class LorittaKord : LorittaBot() {
 
         commandManager.register(
             CoinFlipCommand,
-            CoinFlipExecutor(random)
+            CoinFlipExecutor(emotes, random)
         )
 
         commandManager.register(
@@ -99,7 +106,7 @@ class LorittaKord : LorittaBot() {
         )
 
         runBlocking {
-            val client = Kord(File("token.txt").readText())
+            val client = Kord(File("token.txt").readLines()[0])
 
             client.on<MessageCreateEvent> {
                 try {
