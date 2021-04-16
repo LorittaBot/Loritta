@@ -75,16 +75,18 @@ import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOption
 import net.perfectdreams.loritta.common.commands.options.CommandOptionType
 import net.perfectdreams.loritta.common.locale.LocaleManager
+import net.perfectdreams.loritta.common.utils.config.LorittaConfig
+import net.perfectdreams.loritta.common.utils.extensions.locales
 import net.perfectdreams.loritta.common.utils.minecraft.MinecraftMojangAPI
 import net.perfectdreams.loritta.platform.cli.commands.CLICommandContext
 import net.perfectdreams.loritta.platform.cli.commands.CommandManager
 import net.perfectdreams.loritta.platform.cli.entities.CLIMessageChannel
 import java.io.File
 
-class LorittaCLI : LorittaBot() {
+class LorittaCLI(config: LorittaConfig): LorittaBot(config) {
     val commandManager = CommandManager(this)
     val localeManager = LocaleManager(
-        File("L:\\RandomProjects\\LorittaInteractions\\locales")
+        File(config.locales)
     )
 
     val mojangApi = MinecraftMojangAPI()

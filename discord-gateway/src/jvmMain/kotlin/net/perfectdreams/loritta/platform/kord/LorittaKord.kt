@@ -19,14 +19,16 @@ import net.perfectdreams.loritta.common.commands.options.CommandOption
 import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleManager
+import net.perfectdreams.loritta.common.utils.config.LorittaConfig
+import net.perfectdreams.loritta.common.utils.extensions.locales
 import net.perfectdreams.loritta.platform.kord.commands.KordCommandContext
 import net.perfectdreams.loritta.platform.kord.entities.KordMessageChannel
 import java.io.File
 
-class LorittaKord : LorittaBot() {
+class LorittaKord(config: LorittaConfig): LorittaBot(config) {
     val commandManager = CommandManager()
     val localeManager = LocaleManager(
-        File("L:\\RandomProjects\\LorittaInteractions\\locales")
+        File(config.locales)
     )
 
     fun parseArgs(content: String, args: List<CommandOption<*>>): MutableMap<CommandOption<*>, Any?> {
@@ -106,7 +108,7 @@ class LorittaKord : LorittaBot() {
         )
 
         runBlocking {
-            val client = Kord(File("token.txt").readLines()[0])
+            val client = Kord(config.token)
 
             client.on<MessageCreateEvent> {
                 try {

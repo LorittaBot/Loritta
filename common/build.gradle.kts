@@ -46,6 +46,9 @@ kotlin {
                 // Used for caching
                 api("com.github.ben-manes.caffeine:caffeine:3.0.1")
 
+                // Used for config
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-hocon:1.1.0")
+
                 // Used for the LocaleManager
                 implementation("org.yaml:snakeyaml:1.28")
             }

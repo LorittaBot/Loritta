@@ -38,18 +38,18 @@ import net.perfectdreams.loritta.commands.utils.declarations.MoneyCommand
 import net.perfectdreams.loritta.common.LorittaBot
 import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.LocaleManager
+import net.perfectdreams.loritta.common.utils.config.LorittaConfig
+import net.perfectdreams.loritta.common.utils.extensions.locales
 import net.perfectdreams.loritta.common.utils.minecraft.MinecraftMojangAPI
 import net.perfectdreams.loritta.platform.interaktions.commands.CommandManager
 import net.perfectdreams.loritta.platform.interaktions.emotes.DiscordEmoteManager
 import java.io.File
 
-class LorittaInteraKTions : LorittaBot() {
-    val config = File("token.txt").readLines()
-
+class LorittaInteraKTions(config: LorittaConfig): LorittaBot(config) {
     val interactions = InteractionsServer(
-        applicationId = config[2].toLong(),
-        publicKey = config[1],
-        token = config[0]
+        applicationId = config.applicationId,
+        publicKey = config.publicKey,
+        token = config.token
     )
 
     val commandManager = CommandManager(this, interactions.commandManager)
@@ -61,7 +61,7 @@ class LorittaInteraKTions : LorittaBot() {
     )
 
     val localeManager = LocaleManager(
-        File("L:\\RandomProjects\\LorittaInteractions\\locales")
+        File(config.locales)
     )
 
     val mojangApi = MinecraftMojangAPI()
