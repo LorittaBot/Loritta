@@ -139,23 +139,16 @@ class LorittaInteraKTions : LorittaBot() {
         )
 
         commandManager.register(
-            AtaCommand,
-            MonicaAtaExecutor(http),
-            ChicoAtaExecutor(http),
-            LoriAtaExecutor(http),
-            GessyAtaExecutor(http)
+            AtaCommand, MonicaAtaExecutor(http), ChicoAtaExecutor(http), LoriAtaExecutor(http), GessyAtaExecutor(http)
         )
 
         commandManager.register(ArtCommand, ArtExecutor(http))
         commandManager.register(BobBurningPaperCommand, BobBurningPaperExecutor(http))
-        commandManager.register(BolsoFrameCommand, BolsoFrameExecutor(http))
-        commandManager.register(Bolsonaro2Command, Bolsonaro2Executor(http))
-        commandManager.register(BolsonaroCommand, BolsonaroExecutor(http))
+        commandManager.register(BolsonaroCommand, BolsonaroExecutor(http), Bolsonaro2Executor(http), BolsoFrameExecutor(http))
         commandManager.register(BriggsCoverCommand, BriggsCoverExecutor(http))
         commandManager.register(BuckShirtCommand, BuckShirtExecutor(http))
         commandManager.register(CanellaDvdCommand, CanellaDvdExecutor(http))
-        commandManager.register(EdnaldoBandeiraCommand, EdnaldoBandeiraExecutor(http))
-        commandManager.register(EdnaldoTvCommand, EdnaldoTvExecutor(http))
+        commandManager.register(EdnaldoCommand, EdnaldoBandeiraExecutor(http), EdnaldoTvExecutor(http))
         commandManager.register(LoriSignCommand, LoriSignExecutor(http))
         commandManager.register(PassingPaperCommand, PassingPaperExecutor(http))
         commandManager.register(PepeDreamCommand, PepeDreamExecutor(http))
