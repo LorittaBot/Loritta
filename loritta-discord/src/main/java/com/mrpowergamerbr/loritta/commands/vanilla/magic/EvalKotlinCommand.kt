@@ -3,8 +3,8 @@ package com.mrpowergamerbr.loritta.commands.vanilla.magic
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.parallax.ParallaxUtils
-import net.perfectdreams.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import javax.script.Invocable
 import javax.script.ScriptEngineManager
 
@@ -23,7 +23,6 @@ class EvalKotlinCommand : AbstractCommand("eval", listOf("evalkt", "evalkotlin",
 			import com.mrpowergamerbr.loritta.Loritta
 			import com.mrpowergamerbr.loritta.LorittaLauncher
 			import com.mrpowergamerbr.loritta.commands.CommandContext
-			import com.mrpowergamerbr.loritta.utils.locale.*
 			import com.mrpowergamerbr.loritta.utils.loritta
 			import com.mrpowergamerbr.loritta.utils.lorittaShards
 			import com.mrpowergamerbr.loritta.utils.Constants
@@ -33,6 +32,7 @@ class EvalKotlinCommand : AbstractCommand("eval", listOf("evalkt", "evalkotlin",
 			import com.mrpowergamerbr.loritta.tables.*
 			import com.mrpowergamerbr.loritta.network.*
 			import com.mrpowergamerbr.loritta.utils.extensions.*
+			import net.perfectdreams.loritta.utils.locale.*
 			import net.perfectdreams.loritta.tables.*
 			import net.perfectdreams.loritta.tables.servers.*
 			import net.perfectdreams.loritta.tables.servers.moduleconfigs.*
