@@ -1,13 +1,9 @@
 package net.perfectdreams.loritta.platform.cli
 
 import io.ktor.client.*
-import net.perfectdreams.loritta.commands.`fun`.CoinFlipExecutor
-import net.perfectdreams.loritta.commands.`fun`.RateWaifuExecutor
-import net.perfectdreams.loritta.commands.`fun`.TextQualityExecutor
-import net.perfectdreams.loritta.commands.`fun`.TextVaporQualityExecutor
-import net.perfectdreams.loritta.commands.`fun`.TextVaporwaveExecutor
-import net.perfectdreams.loritta.commands.`fun`.TextVemDeZapExecutor
+import net.perfectdreams.loritta.commands.`fun`.*
 import net.perfectdreams.loritta.commands.`fun`.declarations.CoinFlipCommand
+import net.perfectdreams.loritta.commands.`fun`.declarations.JankenponCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.RateWaifuCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.TextTransformDeclaration
 import net.perfectdreams.loritta.commands.images.ArtExecutor
@@ -170,6 +166,8 @@ class LorittaCLI : LorittaBot() {
         commandManager.register(
             AtaCommand, MonicaAtaExecutor(http), ChicoAtaExecutor(http), LoriAtaExecutor(http), GessyAtaExecutor(http)
         )
+
+        commandManager.register(JankenponCommand, JankenponExecutor(this.random, this.emotes))
 
         commandManager.register(ArtCommand, ArtExecutor(http))
         commandManager.register(BobBurningPaperCommand, BobBurningPaperExecutor(http))
