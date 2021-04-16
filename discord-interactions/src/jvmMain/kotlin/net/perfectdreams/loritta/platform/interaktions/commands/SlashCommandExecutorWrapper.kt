@@ -49,7 +49,7 @@ class SlashCommandExecutorWrapper(
 
                     var found = false
                     for ((interaKTionOption, value) in imageReferenceArgs) {
-                        if (interaKTionOption.name.endsWith("_avatar") && value != null) {
+                        if (interaKTionOption.name == "${it.name}_avatar" && value != null) {
                             // If the type is a user OR a nullable user, and the value isn't null...
                             val interaKTionUser = value as User
 
@@ -61,13 +61,13 @@ class SlashCommandExecutorWrapper(
                             break
                         }
 
-                        if (interaKTionOption.name.endsWith("_url") && value != null) {
+                        if (interaKTionOption.name == "${it.name}_url" && value != null) {
                             cinnamonArgs[it] = URLImageReference(value as String)
                             found = true
                             break
                         }
 
-                        if (interaKTionOption.name.endsWith("_emote") && value != null) {
+                        if (interaKTionOption.name == "${it.name}_emote" && value != null) {
                             val strValue = value as String
                             val emoteId = strValue.substringAfterLast(":").substringBefore(">")
                             cinnamonArgs[it] = URLImageReference("https://cdn.discordapp.com/emojis/${emoteId}.png?v=1")
