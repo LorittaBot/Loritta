@@ -157,6 +157,8 @@ class LorittaInteraKTions : LorittaBot() {
         commandManager.register(RomeroBrittoCommand, RomeroBrittoExecutor(http))
         commandManager.register(StudiopolisTvCommand, StudiopolisTvExecutor(http))
         commandManager.register(SustoCommand, SustoExecutor(http))
+        commandManager.register(AttackOnHeartCommand, AttackOnHeartExecutor(http))
+        commandManager.register(CarlyAaahCommand, CarlyAaahExecutor(http))
 
         runBlocking {
             commandManager.convertToInteraKTions(
