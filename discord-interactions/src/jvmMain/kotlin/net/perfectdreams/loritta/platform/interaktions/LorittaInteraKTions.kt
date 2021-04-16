@@ -4,12 +4,14 @@ import io.ktor.client.*
 import kotlinx.coroutines.runBlocking
 import net.perfectdreams.discordinteraktions.InteractionsServer
 import net.perfectdreams.loritta.commands.`fun`.CoinFlipExecutor
+import net.perfectdreams.loritta.commands.`fun`.JankenponExecutor
 import net.perfectdreams.loritta.commands.`fun`.RateWaifuExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextQualityExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextVaporQualityExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextVaporwaveExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextVemDeZapExecutor
 import net.perfectdreams.loritta.commands.`fun`.declarations.CoinFlipCommand
+import net.perfectdreams.loritta.commands.`fun`.declarations.JankenponCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.RateWaifuCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.TextTransformDeclaration
 import net.perfectdreams.loritta.commands.images.*
@@ -138,6 +140,10 @@ class LorittaInteraKTions : LorittaBot() {
             AvatarTestExecutor(http)
         )
 
+        commandManager.register(
+            JankenponCommand, JankenponExecutor(random, emotes)
+        )
+
         commandManager.register(AtaCommand, MonicaAtaExecutor(http), ChicoAtaExecutor(http), LoriAtaExecutor(http), GessyAtaExecutor(http))
         commandManager.register(DrakeCommand, DrakeExecutor(http), BolsoDrakeExecutor(http), LoriDrakeExecutor(http))
 
@@ -159,6 +165,7 @@ class LorittaInteraKTions : LorittaBot() {
         commandManager.register(SustoCommand, SustoExecutor(http))
         commandManager.register(AttackOnHeartCommand, AttackOnHeartExecutor(http))
         commandManager.register(CarlyAaahCommand, CarlyAaahExecutor(http))
+        commandManager.register(CortesFlowCommand, CortesFlowExecutor(http))
 
         runBlocking {
             commandManager.convertToInteraKTions(
