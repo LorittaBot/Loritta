@@ -1,5 +1,9 @@
 package net.perfectdreams.loritta.platform.interaktions.commands
 
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.api.entities.User
 import net.perfectdreams.discordinteraktions.commands.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.commands.SlashCommandExecutor
@@ -26,6 +30,10 @@ class SlashCommandExecutorWrapper(
     val executor: CommandExecutor,
     val rootSignature: Int
 ) : SlashCommandExecutor() {
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+
     override suspend fun execute(context: SlashCommandContext, args: SlashCommandArguments) {
         println("Executed something $rootSignature")
 
@@ -95,6 +103,14 @@ class SlashCommandExecutorWrapper(
 
                     cinnamonArgs[it] = interaKTionArgument?.value
                 }
+            }
+        }
+
+        GlobalScope.launch {
+            delay(2_000)
+            if (!context.isDeferred) {
+                logger.info { "Command $declarationExecutor hasn't been deferred! Deferring..." }
+                context.defer()
             }
         }
 
