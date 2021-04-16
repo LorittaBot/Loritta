@@ -60,15 +60,8 @@ import net.perfectdreams.loritta.commands.misc.PingAyayaExecutor
 import net.perfectdreams.loritta.commands.misc.PingExecutor
 import net.perfectdreams.loritta.commands.misc.declarations.KkEaeMenCommand
 import net.perfectdreams.loritta.commands.misc.declarations.PingCommand
-import net.perfectdreams.loritta.commands.utils.AnagramExecutor
-import net.perfectdreams.loritta.commands.utils.CalculatorExecutor
-import net.perfectdreams.loritta.commands.utils.ChooseExecutor
-import net.perfectdreams.loritta.commands.utils.ECBManager
-import net.perfectdreams.loritta.commands.utils.MoneyExecutor
-import net.perfectdreams.loritta.commands.utils.declarations.AnagramCommand
-import net.perfectdreams.loritta.commands.utils.declarations.CalculatorCommand
-import net.perfectdreams.loritta.commands.utils.declarations.ChooseCommand
-import net.perfectdreams.loritta.commands.utils.declarations.MoneyCommand
+import net.perfectdreams.loritta.commands.utils.*
+import net.perfectdreams.loritta.commands.utils.declarations.*
 import net.perfectdreams.loritta.common.LorittaBot
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
@@ -168,6 +161,7 @@ class LorittaCLI : LorittaBot() {
         )
 
         commandManager.register(JankenponCommand, JankenponExecutor(this.random, this.emotes))
+        commandManager.register(MorseCommand, MorseExecutor(emotes))
 
         commandManager.register(ArtCommand, ArtExecutor(http))
         commandManager.register(BobBurningPaperCommand, BobBurningPaperExecutor(http))
