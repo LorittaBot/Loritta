@@ -55,6 +55,7 @@ class MorseExecutor(val emotes: Emotes): CommandExecutor() {
                     append(fromMorse.ifBlank { toMorse })
                     append("```")
                 }
+                color = -6706507
             }
         }
     }
