@@ -26,4 +26,16 @@ class Emotes(manager: EmoteManager) {
     val coinTails = manager.getEmoteByName("coin_tails")
 
     val chinoAyaya = manager.getEmoteByName("chino_ayaya")
+
+    val blush = manager.getEmoteByName("blush")
+    val slightSmile = manager.getEmoteByName("slight_smile")
+    val tada = manager.getEmoteByName("tada")
+    val whiteFlag = manager.getEmoteByName("white_flag")
+    val blackFlag = manager.getEmoteByName("black_flag")
+    val newspaper = manager.getEmoteByName("newspaper")
+    val scissors = manager.getEmoteByName("scissors")
+    val rock = manager.getEmoteByName("rock")
+    val jesus = manager.getEmoteByName("jesus")
+    val thinking = manager.getEmoteByName("thinking")
+    val shrug = manager.getEmoteByName("shrug")
 }
