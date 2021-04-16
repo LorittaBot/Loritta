@@ -12,14 +12,8 @@ import net.perfectdreams.loritta.commands.`fun`.TextVemDeZapExecutor
 import net.perfectdreams.loritta.commands.`fun`.declarations.CoinFlipCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.RateWaifuCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.TextTransformDeclaration
-import net.perfectdreams.loritta.commands.images.ArtExecutor
-import net.perfectdreams.loritta.commands.images.AvatarTestExecutor
-import net.perfectdreams.loritta.commands.images.ManiaTitleCardExecutor
-import net.perfectdreams.loritta.commands.images.MonicaAtaExecutor
-import net.perfectdreams.loritta.commands.images.declarations.ArtCommand
-import net.perfectdreams.loritta.commands.images.declarations.AtaCommand
-import net.perfectdreams.loritta.commands.images.declarations.AvatarTestCommand
-import net.perfectdreams.loritta.commands.images.declarations.ManiaTitleCardCommand
+import net.perfectdreams.loritta.commands.images.*
+import net.perfectdreams.loritta.commands.images.declarations.*
 import net.perfectdreams.loritta.commands.minecraft.McAvatarExecutor
 import net.perfectdreams.loritta.commands.minecraft.McBodyExecutor
 import net.perfectdreams.loritta.commands.minecraft.McHeadExecutor
@@ -145,14 +139,32 @@ class LorittaInteraKTions : LorittaBot() {
         )
 
         commandManager.register(
-            ArtCommand,
-            ArtExecutor(http)
+            AtaCommand,
+            MonicaAtaExecutor(http),
+            ChicoAtaExecutor(http),
+            LoriAtaExecutor(http),
+            GessyAtaExecutor(http)
         )
 
-        commandManager.register(
-            AtaCommand,
-            MonicaAtaExecutor(http)
-        )
+        commandManager.register(ArtCommand, ArtExecutor(http))
+        commandManager.register(BobBurningPaperCommand, BobBurningPaperExecutor(http))
+        commandManager.register(BolsoFrameCommand, BolsoFrameExecutor(http))
+        commandManager.register(Bolsonaro2Command, Bolsonaro2Executor(http))
+        commandManager.register(BolsonaroCommand, BolsonaroExecutor(http))
+        commandManager.register(BriggsCoverCommand, BriggsCoverExecutor(http))
+        commandManager.register(BuckShirtCommand, BuckShirtExecutor(http))
+        commandManager.register(CanellaDvdCommand, CanellaDvdExecutor(http))
+        commandManager.register(EdnaldoBandeiraCommand, EdnaldoBandeiraExecutor(http))
+        commandManager.register(EdnaldoTvCommand, EdnaldoTvExecutor(http))
+        commandManager.register(LoriSignCommand, LoriSignExecutor(http))
+        commandManager.register(PassingPaperCommand, PassingPaperExecutor(http))
+        commandManager.register(PepeDreamCommand, PepeDreamExecutor(http))
+        commandManager.register(PetPetCommand, PetPetExecutor(http))
+        commandManager.register(QuadroCommand, QuadroExecutor(http))
+        commandManager.register(RipTvCommand, RipTvExecutor(http))
+        commandManager.register(RomeroBrittoCommand, RomeroBrittoExecutor(http))
+        commandManager.register(StudiopolisTvCommand, StudiopolisTvExecutor(http))
+        commandManager.register(SustoCommand, SustoExecutor(http))
 
         runBlocking {
             commandManager.convertToInteraKTions(
