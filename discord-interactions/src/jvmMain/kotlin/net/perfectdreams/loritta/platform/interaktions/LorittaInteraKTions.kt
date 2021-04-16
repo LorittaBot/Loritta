@@ -138,9 +138,8 @@ class LorittaInteraKTions : LorittaBot() {
             AvatarTestExecutor(http)
         )
 
-        commandManager.register(
-            AtaCommand, MonicaAtaExecutor(http), ChicoAtaExecutor(http), LoriAtaExecutor(http), GessyAtaExecutor(http)
-        )
+        commandManager.register(AtaCommand, MonicaAtaExecutor(http), ChicoAtaExecutor(http), LoriAtaExecutor(http), GessyAtaExecutor(http))
+        commandManager.register(DrakeCommand, DrakeExecutor(http), BolsoDrakeExecutor(http), LoriDrakeExecutor(http))
 
         commandManager.register(ArtCommand, ArtExecutor(http))
         commandManager.register(BobBurningPaperCommand, BobBurningPaperExecutor(http))
@@ -158,6 +157,8 @@ class LorittaInteraKTions : LorittaBot() {
         commandManager.register(RomeroBrittoCommand, RomeroBrittoExecutor(http))
         commandManager.register(StudiopolisTvCommand, StudiopolisTvExecutor(http))
         commandManager.register(SustoCommand, SustoExecutor(http))
+        commandManager.register(AttackOnHeartCommand, AttackOnHeartExecutor(http))
+        commandManager.register(CarlyAaahCommand, CarlyAaahExecutor(http))
 
         runBlocking {
             commandManager.convertToInteraKTions(
