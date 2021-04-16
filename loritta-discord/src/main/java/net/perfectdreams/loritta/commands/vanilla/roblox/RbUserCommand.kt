@@ -94,7 +94,7 @@ class RbUserCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta
                 }
 
                 val avatarBodyTask = GlobalScope.async(com.mrpowergamerbr.loritta.utils.loritta.coroutineDispatcher) {
-                    HttpRequest.get("https://www.roblox.com/search/users/avatar?isHeadshot=false&userIds=$userId")
+                    HttpRequest.get("https://www.roblox.com/thumbnail/user-avatar?userId=$userId&thumbnailFormatId=124&width=300&height=300")
                         .body()
                 }
                 val usersApiRequest = GlobalScope.async(com.mrpowergamerbr.loritta.utils.loritta.coroutineDispatcher) {
@@ -221,10 +221,10 @@ class RbUserCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta
 
                 bufferedImage = bufferedImage.getSubimage(0, 0, 333, 110 + 55)
 
-                val avatarResponse = JsonParser.parseString(avatarBodyTask.await()).obj
+                val avatarResponse = Jsoup.parse(avatarBodyTask.await())
 
-                // {"PlayerAvatars":[{"Thumbnail":{"Final":true,"Url":"https://t0.rbxcdn.com/fff65b7dc56eefa902fe543b2665da42","RetryUrl":null,"UserId":37271405,"EndpointType":"Avatar"},"UserId":37271405},{"Thumbnail":{"Final":true,"Url":"https://t1.rbxcdn.com/2083a073d0cc644478d06d266c2cc4d6","RetryUrl":null,"UserId":315274565,"EndpointType":"Avatar"},"UserId":315274565}]}
-                val avatar = avatarResponse["PlayerAvatars"].array[0]["Thumbnail"]["Url"].string
+                // The avatar is the first img tag in the page
+                val avatar = avatarResponse.getElementsByTag("img").first().attr("src")
 
                 // Convert the date to a Instant
                 // Roblox's dates are in ISO format: "2013-01-22T11:00:23.88Z"
