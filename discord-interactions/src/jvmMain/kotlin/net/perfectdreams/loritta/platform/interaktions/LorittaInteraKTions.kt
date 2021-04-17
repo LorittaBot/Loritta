@@ -172,6 +172,7 @@ class LorittaInteraKTions : LorittaBot() {
         commandManager.register(NichijouYuukoPaperCommand, NichijouYuukoPaperExecutor(http))
         commandManager.register(TrumpCommand, TrumpExecutor(http))
         commandManager.register(TerminatorAnimeCommand, TerminatorAnimeExecutor(http))
+        commandManager.register(SAMCommand, SAMExecutor(http))
 
         runBlocking {
             commandManager.convertToInteraKTions(
