@@ -170,6 +170,7 @@ class LorittaInteraKTions : LorittaBot() {
         commandManager.register(CepoDeMadeiraCommand, CepoDeMadeiraExecutor(http))
         commandManager.register(GetOverHereCommand, GetOverHereExecutor(http))
         commandManager.register(NichijouYuukoPaperCommand, NichijouYuukoPaperExecutor(http))
+        commandManager.register(TrumpCommand, TrumpExecutor(http))
 
         runBlocking {
             commandManager.convertToInteraKTions(
