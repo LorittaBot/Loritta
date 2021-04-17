@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.commands.utils
 
-import net.perfectdreams.loritta.commands.utils.MorseToExecutor.Companion.Options.register
 import net.perfectdreams.loritta.commands.utils.declarations.MorseCommand
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandContext
@@ -12,7 +11,7 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.text.MorseUtils
 
 class MorseFromExecutor(val emotes: Emotes): CommandExecutor() {
-    companion object : CommandExecutorDeclaration(MorseToExecutor::class) {
+    companion object : CommandExecutorDeclaration(MorseFromExecutor::class) {
         object Options : CommandOptions() {
             val textArgument = string("text", LocaleKeyData("TODO_FIX_THIS"))
                 .register()

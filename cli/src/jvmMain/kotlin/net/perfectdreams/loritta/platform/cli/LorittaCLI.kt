@@ -89,8 +89,7 @@ import java.io.File
 class LorittaCLI : LorittaBot() {
     val commandManager = CommandManager(this)
     val localeManager = LocaleManager(
-        //File("L:\\RandomProjects\\LorittaInteractions\\locales")
-    File("/run/media/nightdavisao/Externo/repos/LorittaLocales")
+        File("L:\\RandomProjects\\LorittaInteractions\\locales")
     )
 
     val mojangApi = MinecraftMojangAPI()
