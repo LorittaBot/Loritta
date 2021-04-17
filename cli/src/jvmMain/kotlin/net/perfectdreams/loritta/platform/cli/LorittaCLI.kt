@@ -63,21 +63,16 @@ import net.perfectdreams.loritta.commands.misc.declarations.PingCommand
 import net.perfectdreams.loritta.commands.utils.*
 import net.perfectdreams.loritta.commands.utils.declarations.*
 import net.perfectdreams.loritta.common.LorittaBot
-import net.perfectdreams.loritta.common.commands.CommandArguments
-import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
-import net.perfectdreams.loritta.common.commands.options.CommandOption
-import net.perfectdreams.loritta.common.commands.options.CommandOptionType
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.utils.minecraft.MinecraftMojangAPI
-import net.perfectdreams.loritta.platform.cli.commands.CLICommandContext
 import net.perfectdreams.loritta.platform.cli.commands.CommandManager
-import net.perfectdreams.loritta.platform.cli.entities.CLIMessageChannel
 import java.io.File
 
 class LorittaCLI : LorittaBot() {
     val commandManager = CommandManager(this)
     val localeManager = LocaleManager(
-        File("L:\\RandomProjects\\LorittaInteractions\\locales")
+        //File("L:\\RandomProjects\\LorittaInteractions\\locales")
+    File("/run/media/nightdavisao/Externo/repos/LorittaLocales")
     )
 
     val mojangApi = MinecraftMojangAPI()
@@ -161,7 +156,7 @@ class LorittaCLI : LorittaBot() {
         )
 
         commandManager.register(JankenponCommand, JankenponExecutor(this.random, this.emotes))
-        commandManager.register(MorseCommand, MorseExecutor(emotes))
+        commandManager.register(MorseCommand, MorseToExecutor(emotes), MorseFromExecutor(emotes))
 
         commandManager.register(ArtCommand, ArtExecutor(http))
         commandManager.register(BobBurningPaperCommand, BobBurningPaperExecutor(http))

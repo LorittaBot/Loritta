@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.commands.utils.declarations
 
-import net.perfectdreams.loritta.commands.utils.MorseExecutor
+import net.perfectdreams.loritta.commands.utils.MorseFromExecutor
+import net.perfectdreams.loritta.commands.utils.MorseToExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
 import net.perfectdreams.loritta.common.commands.declarations.command
@@ -10,8 +11,14 @@ object MorseCommand : CommandDeclaration {
     const val LOCALE_PREFIX = "commands.command.morse"
 
     override fun declaration(): CommandDeclarationBuilder = command(listOf("morse")) {
-        description = LocaleKeyData("${LOCALE_PREFIX}.description")
-        executor = MorseExecutor
+        subcommand(listOf("to")) {
+            description = LocaleKeyData("${LOCALE_PREFIX}.description")
+            executor = MorseToExecutor
+        }
+        subcommand(listOf("from")) {
+            description = LocaleKeyData("${LOCALE_PREFIX}.description")
+            executor = MorseFromExecutor
+        }
     }
 
 }
