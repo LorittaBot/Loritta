@@ -1,8 +1,9 @@
 plugins {
-    kotlin("multiplatform") version Versions.KOTLIN
+    kotlin("multiplatform")
 }
 
 repositories {
+    maven("https://repo.perfectdreams.net/")
     maven("https://oss.sonatype.org/content/repositories/snapshots")
 }
 
@@ -19,6 +20,7 @@ kotlin {
             dependencies {
                 implementation(project(":common"))
                 implementation(project(":commands"))
+                implementation(project(":discord"))
                 implementation("net.perfectdreams.discordinteraktions:core:0.0.4-SNAPSHOT")
             }
         }

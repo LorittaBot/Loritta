@@ -21,11 +21,13 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.utils.config.LorittaConfig
 import net.perfectdreams.loritta.common.utils.extensions.locales
+import net.perfectdreams.loritta.discord.LorittaDiscord
+import net.perfectdreams.loritta.discord.LorittaDiscordConfig
 import net.perfectdreams.loritta.platform.kord.commands.KordCommandContext
 import net.perfectdreams.loritta.platform.kord.entities.KordMessageChannel
 import java.io.File
 
-class LorittaKord(config: LorittaConfig): LorittaBot(config) {
+class LorittaKord(config: LorittaConfig, discordConfig: LorittaDiscordConfig): LorittaDiscord(config, discordConfig) {
     val commandManager = CommandManager()
     val localeManager = LocaleManager(
         File(config.locales)
@@ -108,7 +110,7 @@ class LorittaKord(config: LorittaConfig): LorittaBot(config) {
         )
 
         runBlocking {
-            val client = Kord(config.token)
+            val client = Kord(discordConfig.token)
 
             client.on<MessageCreateEvent> {
                 try {

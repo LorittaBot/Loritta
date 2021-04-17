@@ -41,15 +41,17 @@ import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.utils.config.LorittaConfig
 import net.perfectdreams.loritta.common.utils.extensions.locales
 import net.perfectdreams.loritta.common.utils.minecraft.MinecraftMojangAPI
+import net.perfectdreams.loritta.discord.LorittaDiscord
+import net.perfectdreams.loritta.discord.LorittaDiscordConfig
 import net.perfectdreams.loritta.platform.interaktions.commands.CommandManager
 import net.perfectdreams.loritta.platform.interaktions.emotes.DiscordEmoteManager
 import java.io.File
 
-class LorittaInteraKTions(config: LorittaConfig): LorittaBot(config) {
+class LorittaInteraKTions(config: LorittaConfig, discordConfig: LorittaDiscordConfig): LorittaDiscord(config, discordConfig) {
     val interactions = InteractionsServer(
-        applicationId = config.applicationId,
-        publicKey = config.publicKey,
-        token = config.token
+        applicationId = discordConfig.applicationId,
+        publicKey = discordConfig.publicKey,
+        token = discordConfig.token
     )
 
     val commandManager = CommandManager(this, interactions.commandManager)
