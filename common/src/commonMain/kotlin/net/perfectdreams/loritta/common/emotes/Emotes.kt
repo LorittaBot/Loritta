@@ -38,4 +38,8 @@ class Emotes(manager: EmoteManager) {
     val jesus = manager.getEmoteByName("jesus")
     val thinking = manager.getEmoteByName("thinking")
     val shrug = manager.getEmoteByName("shrug")
+
+    val radio = manager.getEmoteByName("radio")
+    val handPointLeft = manager.getEmoteByName("hand_point_left")
+    val handPointRight = manager.getEmoteByName("hand_point_right")
 }

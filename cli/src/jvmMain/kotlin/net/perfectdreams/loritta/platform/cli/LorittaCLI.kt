@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.commands.`fun`.declarations.JankenponCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.RateWaifuCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.TextTransformDeclaration
 import net.perfectdreams.loritta.commands.images.ArtExecutor
+import net.perfectdreams.loritta.commands.images.AttackOnHeartExecutor
 import net.perfectdreams.loritta.commands.images.AvatarTestExecutor
 import net.perfectdreams.loritta.commands.images.BobBurningPaperExecutor
 import net.perfectdreams.loritta.commands.images.BolsoFrameExecutor
@@ -15,14 +16,20 @@ import net.perfectdreams.loritta.commands.images.BolsonaroExecutor
 import net.perfectdreams.loritta.commands.images.BriggsCoverExecutor
 import net.perfectdreams.loritta.commands.images.BuckShirtExecutor
 import net.perfectdreams.loritta.commands.images.CanellaDvdExecutor
+import net.perfectdreams.loritta.commands.images.CarlyAaahExecutor
+import net.perfectdreams.loritta.commands.images.CepoDeMadeiraExecutor
 import net.perfectdreams.loritta.commands.images.ChicoAtaExecutor
+import net.perfectdreams.loritta.commands.images.CortesFlowExecutor
 import net.perfectdreams.loritta.commands.images.EdnaldoBandeiraExecutor
 import net.perfectdreams.loritta.commands.images.EdnaldoTvExecutor
 import net.perfectdreams.loritta.commands.images.GessyAtaExecutor
+import net.perfectdreams.loritta.commands.images.GetOverHereExecutor
+import net.perfectdreams.loritta.commands.images.KnuxThrowExecutor
 import net.perfectdreams.loritta.commands.images.LoriAtaExecutor
 import net.perfectdreams.loritta.commands.images.LoriSignExecutor
 import net.perfectdreams.loritta.commands.images.ManiaTitleCardExecutor
 import net.perfectdreams.loritta.commands.images.MonicaAtaExecutor
+import net.perfectdreams.loritta.commands.images.NichijouYuukoPaperExecutor
 import net.perfectdreams.loritta.commands.images.PassingPaperExecutor
 import net.perfectdreams.loritta.commands.images.PepeDreamExecutor
 import net.perfectdreams.loritta.commands.images.PetPetExecutor
@@ -31,17 +38,26 @@ import net.perfectdreams.loritta.commands.images.RipTvExecutor
 import net.perfectdreams.loritta.commands.images.RomeroBrittoExecutor
 import net.perfectdreams.loritta.commands.images.StudiopolisTvExecutor
 import net.perfectdreams.loritta.commands.images.SustoExecutor
+import net.perfectdreams.loritta.commands.images.TerminatorAnimeExecutor
+import net.perfectdreams.loritta.commands.images.TrumpExecutor
 import net.perfectdreams.loritta.commands.images.declarations.ArtCommand
 import net.perfectdreams.loritta.commands.images.declarations.AtaCommand
+import net.perfectdreams.loritta.commands.images.declarations.AttackOnHeartCommand
 import net.perfectdreams.loritta.commands.images.declarations.AvatarTestCommand
 import net.perfectdreams.loritta.commands.images.declarations.BobBurningPaperCommand
 import net.perfectdreams.loritta.commands.images.declarations.BolsonaroCommand
 import net.perfectdreams.loritta.commands.images.declarations.BriggsCoverCommand
 import net.perfectdreams.loritta.commands.images.declarations.BuckShirtCommand
 import net.perfectdreams.loritta.commands.images.declarations.CanellaDvdCommand
+import net.perfectdreams.loritta.commands.images.declarations.CarlyAaahCommand
+import net.perfectdreams.loritta.commands.images.declarations.CepoDeMadeiraCommand
+import net.perfectdreams.loritta.commands.images.declarations.CortesFlowCommand
 import net.perfectdreams.loritta.commands.images.declarations.EdnaldoCommand
+import net.perfectdreams.loritta.commands.images.declarations.GetOverHereCommand
+import net.perfectdreams.loritta.commands.images.declarations.KnuxThrowCommand
 import net.perfectdreams.loritta.commands.images.declarations.LoriSignCommand
 import net.perfectdreams.loritta.commands.images.declarations.ManiaTitleCardCommand
+import net.perfectdreams.loritta.commands.images.declarations.NichijouYuukoPaperCommand
 import net.perfectdreams.loritta.commands.images.declarations.PassingPaperCommand
 import net.perfectdreams.loritta.commands.images.declarations.PepeDreamCommand
 import net.perfectdreams.loritta.commands.images.declarations.PetPetCommand
@@ -50,6 +66,8 @@ import net.perfectdreams.loritta.commands.images.declarations.RipTvCommand
 import net.perfectdreams.loritta.commands.images.declarations.RomeroBrittoCommand
 import net.perfectdreams.loritta.commands.images.declarations.StudiopolisTvCommand
 import net.perfectdreams.loritta.commands.images.declarations.SustoCommand
+import net.perfectdreams.loritta.commands.images.declarations.TerminatorAnimeCommand
+import net.perfectdreams.loritta.commands.images.declarations.TrumpCommand
 import net.perfectdreams.loritta.commands.minecraft.McAvatarExecutor
 import net.perfectdreams.loritta.commands.minecraft.McBodyExecutor
 import net.perfectdreams.loritta.commands.minecraft.McHeadExecutor
@@ -60,27 +78,14 @@ import net.perfectdreams.loritta.commands.misc.PingAyayaExecutor
 import net.perfectdreams.loritta.commands.misc.PingExecutor
 import net.perfectdreams.loritta.commands.misc.declarations.KkEaeMenCommand
 import net.perfectdreams.loritta.commands.misc.declarations.PingCommand
-import net.perfectdreams.loritta.commands.utils.AnagramExecutor
-import net.perfectdreams.loritta.commands.utils.CalculatorExecutor
-import net.perfectdreams.loritta.commands.utils.ChooseExecutor
-import net.perfectdreams.loritta.commands.utils.ECBManager
-import net.perfectdreams.loritta.commands.utils.MoneyExecutor
-import net.perfectdreams.loritta.commands.utils.declarations.AnagramCommand
-import net.perfectdreams.loritta.commands.utils.declarations.CalculatorCommand
-import net.perfectdreams.loritta.commands.utils.declarations.ChooseCommand
-import net.perfectdreams.loritta.commands.utils.declarations.MoneyCommand
+import net.perfectdreams.loritta.commands.utils.*
+import net.perfectdreams.loritta.commands.utils.declarations.*
 import net.perfectdreams.loritta.common.LorittaBot
-import net.perfectdreams.loritta.common.commands.CommandArguments
-import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
-import net.perfectdreams.loritta.common.commands.options.CommandOption
-import net.perfectdreams.loritta.common.commands.options.CommandOptionType
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.utils.config.LorittaConfig
 import net.perfectdreams.loritta.common.utils.extensions.locales
 import net.perfectdreams.loritta.common.utils.minecraft.MinecraftMojangAPI
-import net.perfectdreams.loritta.platform.cli.commands.CLICommandContext
 import net.perfectdreams.loritta.platform.cli.commands.CommandManager
-import net.perfectdreams.loritta.platform.cli.entities.CLIMessageChannel
 import java.io.File
 
 class LorittaCLI(config: LorittaConfig): LorittaBot(config) {
@@ -170,6 +175,7 @@ class LorittaCLI(config: LorittaConfig): LorittaBot(config) {
         )
 
         commandManager.register(JankenponCommand, JankenponExecutor(this.random, this.emotes))
+        commandManager.register(MorseCommand, MorseToExecutor(emotes), MorseFromExecutor(emotes))
 
         commandManager.register(ArtCommand, ArtExecutor(http))
         commandManager.register(BobBurningPaperCommand, BobBurningPaperExecutor(http))
@@ -187,6 +193,15 @@ class LorittaCLI(config: LorittaConfig): LorittaBot(config) {
         commandManager.register(RomeroBrittoCommand, RomeroBrittoExecutor(http))
         commandManager.register(StudiopolisTvCommand, StudiopolisTvExecutor(http))
         commandManager.register(SustoCommand, SustoExecutor(http))
+        commandManager.register(AttackOnHeartCommand, AttackOnHeartExecutor(http))
+        commandManager.register(CarlyAaahCommand, CarlyAaahExecutor(http))
+        commandManager.register(CortesFlowCommand, CortesFlowExecutor(http))
+        commandManager.register(KnuxThrowCommand, KnuxThrowExecutor(http))
+        commandManager.register(CepoDeMadeiraCommand, CepoDeMadeiraExecutor(http))
+        commandManager.register(GetOverHereCommand, GetOverHereExecutor(http))
+        commandManager.register(NichijouYuukoPaperCommand, NichijouYuukoPaperExecutor(http))
+        commandManager.register(TrumpCommand, TrumpExecutor(http))
+        commandManager.register(TerminatorAnimeCommand, TerminatorAnimeExecutor(http))
     }
 
     suspend fun runArgs(args: Array<String>) {

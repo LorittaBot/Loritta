@@ -168,6 +168,13 @@ class LorittaInteraKTions(config: LorittaConfig, discordConfig: LorittaDiscordCo
         commandManager.register(AttackOnHeartCommand, AttackOnHeartExecutor(http))
         commandManager.register(CarlyAaahCommand, CarlyAaahExecutor(http))
         commandManager.register(CortesFlowCommand, CortesFlowExecutor(http))
+        commandManager.register(KnuxThrowCommand, KnuxThrowExecutor(http))
+        commandManager.register(CepoDeMadeiraCommand, CepoDeMadeiraExecutor(http))
+        commandManager.register(GetOverHereCommand, GetOverHereExecutor(http))
+        commandManager.register(NichijouYuukoPaperCommand, NichijouYuukoPaperExecutor(http))
+        commandManager.register(TrumpCommand, TrumpExecutor(http))
+        commandManager.register(TerminatorAnimeCommand, TerminatorAnimeExecutor(http))
+        commandManager.register(SAMCommand, SAMExecutor(http))
 
         runBlocking {
             commandManager.convertToInteraKTions(
