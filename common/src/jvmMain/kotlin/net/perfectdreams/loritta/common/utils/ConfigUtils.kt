@@ -11,6 +11,10 @@ import kotlin.system.exitProcess
 
 @OptIn(ExperimentalSerializationApi::class)
 object ConfigUtils {
+    // TODO temporary
+    val localesFolder =
+        File("locales")
+
     fun parseConfig(): LorittaConfig {
         val file = File("config.conf")
         if (file.exists().not()) {
@@ -19,6 +23,7 @@ object ConfigUtils {
             println("I just created a config file, since you don't have one, customize your preferences there and then try restarting me!")
             exitProcess(-1)
         }
-        return Hocon {}.decodeFromConfig(ConfigFactory.parseFile(file))
+        // return Hocon {}.decodeFromConfig(ConfigFactory.parseFile(file))
+        return LorittaConfig()
     }
 }

@@ -38,8 +38,8 @@ import net.perfectdreams.loritta.commands.utils.declarations.MoneyCommand
 import net.perfectdreams.loritta.common.LorittaBot
 import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.LocaleManager
+import net.perfectdreams.loritta.common.utils.ConfigUtils
 import net.perfectdreams.loritta.common.utils.config.LorittaConfig
-import net.perfectdreams.loritta.common.utils.extensions.locales
 import net.perfectdreams.loritta.common.utils.minecraft.MinecraftMojangAPI
 import net.perfectdreams.loritta.discord.LorittaDiscord
 import net.perfectdreams.loritta.discord.LorittaDiscordConfig
@@ -63,7 +63,7 @@ class LorittaInteraKTions(config: LorittaConfig, discordConfig: LorittaDiscordCo
     )
 
     val localeManager = LocaleManager(
-        File(config.locales)
+        ConfigUtils.localesFolder
     )
 
     val mojangApi = MinecraftMojangAPI()
