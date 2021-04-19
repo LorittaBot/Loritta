@@ -173,6 +173,7 @@ class LorittaInteraKTions : LorittaBot() {
         commandManager.register(TrumpCommand, TrumpExecutor(http))
         commandManager.register(TerminatorAnimeCommand, TerminatorAnimeExecutor(http))
         commandManager.register(SAMCommand, SAMExecutor(http))
+        commandManager.register(ToBeContinuedCommand, ToBeContinuedExecutor(http))
 
         // ===[ UTILS ]===
         commandManager.register(MorseCommand, MorseFromExecutor(emotes), MorseToExecutor(emotes))
