@@ -24,24 +24,18 @@ class MorseFromExecutor(val emotes: Emotes): CommandExecutor() {
         val text = args[options.textArgument]
         val fromMorse = MorseUtils.fromMorse(text)
 
-        context.sendEmbed {
-            body {
-                title = buildString {
-                    append(emotes.handPointRight.asMention)
-                    append(emotes.radio.asMention)
-                    append(" ")
-                    append(context.locale["${MorseCommand.LOCALE_PREFIX}.toFrom"])
-                }
-                description = buildString {
-                    append("*beep* *boop*")
-                    append("\n")
-                    append("```")
-                    append(fromMorse)
-                    append("```")
-                }
-                color = -6706507
+        if (fromMorse.isBlank()) {
+            context.sendReply {
+                prefix = emotes.error.asMention
+                content = context.locale["${MorseCommand.LOCALE_PREFIX}.fail"]
+                isEphemeral = true
             }
+            return
+        }
+
+        context.sendReply {
+            content = "`$fromMorse`"
+            prefix = emotes.radio.toString()
         }
     }
-
 }

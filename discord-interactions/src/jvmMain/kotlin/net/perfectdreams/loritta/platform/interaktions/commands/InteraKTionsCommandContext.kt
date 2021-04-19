@@ -14,11 +14,17 @@ class InteraKTionsCommandContext(
 ) : CommandContext(loritta, locale, channel) {
     override suspend fun sendReply(block: LorittaReplyBuilder.() -> Unit) {
         val builder = LorittaReplyBuilder().apply(block)
-        sendMessage("${builder.prefix} **|** ${builder.content}")
+        sendMessage {
+            content = "${builder.prefix} **|** ${builder.content}"
+            isEphemeral = builder.isEphemeral
+        }
     }
 
     override suspend fun sendMultiReply(block: LorittaMultiReplyBuilder.() -> Unit) {
         val builder = LorittaMultiReplyBuilder().apply(block)
-        sendMessage(builder.replies.joinToString("\n") { "${it.prefix} **|** ${it.content}" })
+        sendMessage {
+            content = builder.replies.joinToString("\n") { "${it.prefix} **|** ${it.content}" }
+            isEphemeral = builder.isEphemeral
+        }
     }
 }
