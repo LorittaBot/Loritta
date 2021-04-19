@@ -62,6 +62,16 @@ class TradingViewRelayConnector(
                 delay(1_000)
             }
         }
+
+        // Keep checking if the ping is "acceptable"
+        GlobalScope.launch(Dispatchers.IO) {
+            val lastPingPacketReceivedAt = System.currentTimeMillis() - lastPingPacketReceivedAt
+
+            if (lastPingPacketReceivedAt >= 60_000) {
+                logger.warn { "Ping was sent more than 60s ago! Closing WebSocket..." }
+                client.close() // Close the connection and reconnect
+            }
+        }
     }
 
     /**
