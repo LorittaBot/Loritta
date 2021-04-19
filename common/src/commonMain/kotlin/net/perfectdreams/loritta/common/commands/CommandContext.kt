@@ -22,7 +22,14 @@ abstract class CommandContext(
     abstract suspend fun sendMultiReply(block: LorittaMultiReplyBuilder.() -> (Unit))
 
     suspend fun sendMessage(message: String, embed: LorittaEmbed? = null) {
-        channel.sendMessage(LorittaMessage(message, embed, emptyMap()))
+        channel.sendMessage(
+            LorittaMessage(
+                message,
+                embed,
+                emptyMap(),
+                isEphemeral = false
+            )
+        )
     }
 
     suspend fun sendMessage(block: MessageBuilder.() -> (Unit)) = channel.sendMessage(block)
