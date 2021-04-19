@@ -41,6 +41,12 @@ class SlashCommandExecutorWrapper(
         val cinnamonArgs = mutableMapOf<CommandOption<*>, Any?>()
         val interaKTionsArgumentEntries = args.types.entries
 
+        val cinnamonContext = InteraKTionsCommandContext(
+            loritta,
+            locale,
+            InteraKTionsMessageChannel(context)
+        )
+
         declarationExecutor.options.arguments.forEach {
             when (it.type) {
                 is CommandOptionType.StringList -> {
@@ -86,8 +92,9 @@ class SlashCommandExecutorWrapper(
 
                     if (!found) {
                         // TODO: Improve this lol
-                        context.sendMessage {
+                        cinnamonContext.sendMessage {
                             content = "tá mas cadê a imagem nn sei"
+                            isEphemeral = true
                         }
                         return
                     }
@@ -115,11 +122,7 @@ class SlashCommandExecutorWrapper(
         }
 
         executor.execute(
-            InteraKTionsCommandContext(
-                loritta,
-                locale,
-                InteraKTionsMessageChannel(context)
-            ),
+            cinnamonContext,
             CommandArguments(cinnamonArgs)
         )
     }
