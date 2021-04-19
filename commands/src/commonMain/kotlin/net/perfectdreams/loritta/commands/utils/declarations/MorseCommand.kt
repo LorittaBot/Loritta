@@ -11,6 +11,8 @@ object MorseCommand : CommandDeclaration {
     const val LOCALE_PREFIX = "commands.command.morse"
 
     override fun declaration(): CommandDeclarationBuilder = command(listOf("morse")) {
+        description = LocaleKeyData("TODO_FIX_THIS")
+
         subcommand(listOf("to")) {
             description = LocaleKeyData("${LOCALE_PREFIX}.description")
             executor = MorseToExecutor
@@ -20,5 +22,4 @@ object MorseCommand : CommandDeclaration {
             executor = MorseFromExecutor
         }
     }
-
 }
