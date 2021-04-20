@@ -1,8 +1,14 @@
 rootProject.name = "loritta-parent"
 
 include(":common")
+
+// ===[ COMMANDS ]===
 include(":commands")
+
+// ===[ CLI ]===
 include(":cli")
-include(":discord")
+
+// ===[ DISCORD ]===
+include(":discord:common")
 include(":discord:gateway")
 include(":discord:interactions")
