@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.common
 
 import net.perfectdreams.loritta.common.emotes.EmoteManager
 import net.perfectdreams.loritta.common.emotes.Emotes
+import net.perfectdreams.loritta.common.utils.config.LorittaConfig
 import kotlin.random.Random
 
 /**
@@ -9,7 +10,7 @@ import kotlin.random.Random
  *
  * This should be extended by plataform specific Lori's :3
  */
-abstract class LorittaBot {
+abstract class LorittaBot(val config: LorittaConfig) {
     // TODO: *Really* set a random seed
     val random = Random(0)
 
