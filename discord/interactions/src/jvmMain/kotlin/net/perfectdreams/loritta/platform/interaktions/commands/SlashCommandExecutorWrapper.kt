@@ -82,7 +82,7 @@ class SlashCommandExecutorWrapper(
                                 // If the type is a user OR a nullable user, and the value isn't null...
                                 val interaKTionUser = value as User
 
-                                cinnamonArgs[it] = URLImageReference(InteraKTionsUser(interaKTionUser).avatar.url)
+                                cinnamonArgs[it] = URLImageReference(interaKTionUser.avatar.url)
                                 found = true
                                 break
                             }
