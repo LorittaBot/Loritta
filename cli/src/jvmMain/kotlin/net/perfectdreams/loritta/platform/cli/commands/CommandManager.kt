@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.common.images.URLImageReference
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.platform.cli.LorittaCLI
 import net.perfectdreams.loritta.platform.cli.entities.CLIMessageChannel
+import net.perfectdreams.loritta.platform.cli.entities.CLIUser
 
 class CommandManager(val loritta: LorittaCLI) {
     companion object {
@@ -99,6 +100,7 @@ class CommandManager(val loritta: LorittaCLI) {
                 CLICommandContext(
                     loritta,
                     loritta.localeManager.getLocaleById("default"),
+                    CLIUser(),
                     CLIMessageChannel()
                 ),
                 CommandArguments(args)

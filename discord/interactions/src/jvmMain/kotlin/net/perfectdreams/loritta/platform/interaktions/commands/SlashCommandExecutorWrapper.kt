@@ -58,6 +58,7 @@ class SlashCommandExecutorWrapper(
             val cinnamonContext = InteraKTionsCommandContext(
                 loritta,
                 locale,
+                InteraKTionsUser(context.user),
                 InteraKTionsMessageChannel(context)
             )
 
