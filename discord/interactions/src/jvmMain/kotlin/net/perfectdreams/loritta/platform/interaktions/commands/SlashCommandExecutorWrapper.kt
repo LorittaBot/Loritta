@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.common.images.URLImageReference
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.platform.interaktions.LorittaInteraKTions
 import net.perfectdreams.loritta.platform.interaktions.entities.InteraKTionsMessageChannel
+import net.perfectdreams.loritta.platform.interaktions.entities.InteraKTionsUser
 import net.perfectdreams.loritta.platform.interaktions.utils.metrics.Prometheus
 
 /**
@@ -120,12 +121,21 @@ class SlashCommandExecutorWrapper(
                     else -> {
                         val interaKTionArgument =
                             interaKTionsArgumentEntries.firstOrNull { opt -> it.name == opt.key.name }
+
                         // If the value is null but it *wasn't* meant to be null, we are going to throw a exception!
                         // (This should NEVER happen!)
                         if (interaKTionArgument?.value == null && it.type !is CommandOptionType.Nullable)
                             throw UnsupportedOperationException("Argument ${interaKTionArgument?.key} valie is null, but the type of the argument is ${it.type}! Bug?")
 
-                        cinnamonArgs[it] = interaKTionArgument?.value
+                        when (it.type) {
+                            is CommandOptionType.User, CommandOptionType.NullableUser -> {
+                                cinnamonArgs[it] = interaKTionArgument?.value?.let { InteraKTionsUser(interaKTionArgument.value as User) }
+                            }
+
+                            else -> {
+                                cinnamonArgs[it] = interaKTionArgument?.value
+                            }
+                        }
                     }
                 }
             }

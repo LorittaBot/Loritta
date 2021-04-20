@@ -6,7 +6,7 @@ import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
 import net.perfectdreams.loritta.common.commands.declarations.command
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 
-object CancelledDeclaration : CommandDeclaration {
+object CancelledCommand : CommandDeclaration {
     const val LOCALE_PREFIX = "commands.command.cancelled"
 
     override fun declaration() = command(listOf("cancelled", "cancelado", "cancel", "cancelar"), CommandCategory.FUN) {
