@@ -2,7 +2,9 @@ package net.perfectdreams.loritta.platform.interaktions.entities
 
 import dev.kord.common.entity.MessageFlag
 import dev.kord.common.entity.MessageFlags
+import dev.kord.common.entity.Snowflake
 import net.perfectdreams.discordinteraktions.context.SlashCommandContext
+import net.perfectdreams.loritta.common.builder.AllowedMentionsBuilder
 import net.perfectdreams.loritta.common.entities.LorittaEmbed
 import net.perfectdreams.loritta.common.entities.LorittaMessage
 import net.perfectdreams.loritta.common.entities.MessageChannel
@@ -34,6 +36,17 @@ class InteraKTionsMessageChannel(val context: SlashCommandContext) : MessageChan
 
                 flags = MessageFlags(MessageFlag.Ephemeral)
             }
+
+            // Allowed Mentions
+            // By default we will disable ALL mentions, to avoid a "@everyone moment 3.0"
+            // Messages can enable specific mentions if needed
+            allowedMentions = dev.kord.rest.builder.message.AllowedMentionsBuilder().apply {
+                for (user in message.allowedMentions.users) {
+                    users.add(Snowflake(user.id))
+                }
+
+                repliedUser = message.allowedMentions.repliedUser
+            }.build()
         }
     }
 

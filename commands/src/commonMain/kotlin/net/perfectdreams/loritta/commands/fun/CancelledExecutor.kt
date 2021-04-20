@@ -22,7 +22,7 @@ class CancelledExecutor(val emotes: Emotes) : CommandExecutor() {
         val user = args[options.user]
 
         context.sendReply {
-            content = context.locale["commands.command.cancelled.wasCancelled", user.asMention,  context.locale.getList("commands.command.cancelled.reasons").random()]
+            content = context.locale["commands.command.cancelled.wasCancelled", mentionUser(user, false), context.locale.getList("commands.command.cancelled.reasons").random()]
             prefix = emotes.loriHmpf.toString()
         }
     }

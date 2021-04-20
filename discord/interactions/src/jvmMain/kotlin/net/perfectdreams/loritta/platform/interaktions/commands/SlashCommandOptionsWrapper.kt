@@ -104,6 +104,16 @@ class SlashCommandOptionsWrapper(
                             locale[it.description].shortenWithEllipsis()
                         )
 
+                        is CommandOptionType.User -> user(
+                            it.name,
+                            locale[it.description].shortenWithEllipsis()
+                        )
+
+                        is CommandOptionType.NullableUser -> optionalUser(
+                            it.name,
+                            locale[it.description].shortenWithEllipsis()
+                        )
+
                         else -> throw UnsupportedOperationException("Unsupported option type ${it.type}")
                     }
 

@@ -14,9 +14,11 @@ class InteraKTionsCommandContext(
 ) : CommandContext(loritta, locale, channel) {
     override suspend fun sendReply(block: LorittaReplyBuilder.() -> Unit) {
         val builder = LorittaReplyBuilder().apply(block)
+
         sendMessage {
             content = "${builder.prefix} **|** ${builder.content}"
             isEphemeral = builder.isEphemeral
+            allowedMentions = builder.allowedMentions
         }
     }
 

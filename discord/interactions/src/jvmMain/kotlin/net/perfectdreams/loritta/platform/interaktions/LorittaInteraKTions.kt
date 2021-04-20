@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.platform.interaktions
 
 import io.ktor.client.*
 import kotlinx.coroutines.runBlocking
+import net.perfectdreams.loritta.commands.`fun`.CancelledExecutor
 import net.perfectdreams.loritta.commands.`fun`.CoinFlipExecutor
 import net.perfectdreams.loritta.commands.`fun`.JankenponExecutor
 import net.perfectdreams.loritta.commands.`fun`.RateWaifuExecutor
@@ -9,6 +10,7 @@ import net.perfectdreams.loritta.commands.`fun`.TextQualityExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextVaporQualityExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextVaporwaveExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextVemDeZapExecutor
+import net.perfectdreams.loritta.commands.`fun`.declarations.CancelledCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.CoinFlipCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.JankenponCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.RateWaifuCommand
@@ -37,7 +39,6 @@ import net.perfectdreams.loritta.commands.utils.declarations.CalculatorCommand
 import net.perfectdreams.loritta.commands.utils.declarations.ChooseCommand
 import net.perfectdreams.loritta.commands.utils.declarations.MoneyCommand
 import net.perfectdreams.loritta.commands.utils.declarations.MorseCommand
-import net.perfectdreams.loritta.common.LorittaBot
 import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.utils.ConfigUtils
@@ -87,6 +88,7 @@ class LorittaInteraKTions(config: LorittaConfig, discordConfig: LorittaDiscordCo
             PingAyayaExecutor(emotes)
         )
 
+        // ===[ FUN ]===
         commandManager.register(
             CoinFlipCommand,
             CoinFlipExecutor(emotes, random)
@@ -95,6 +97,11 @@ class LorittaInteraKTions(config: LorittaConfig, discordConfig: LorittaDiscordCo
         commandManager.register(
             RateWaifuCommand,
             RateWaifuExecutor(emotes)
+        )
+
+        commandManager.register(
+            CancelledCommand,
+            CancelledExecutor(emotes)
         )
 
         commandManager.register(

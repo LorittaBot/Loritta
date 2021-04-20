@@ -4,6 +4,7 @@ import net.perfectdreams.loritta.common.LorittaBot
 import net.perfectdreams.loritta.common.builder.LorittaMultiReplyBuilder
 import net.perfectdreams.loritta.common.builder.LorittaReplyBuilder
 import net.perfectdreams.loritta.common.builder.MessageBuilder
+import net.perfectdreams.loritta.common.entities.AllowedMentions
 import net.perfectdreams.loritta.common.entities.LorittaEmbed
 import net.perfectdreams.loritta.common.entities.LorittaMessage
 import net.perfectdreams.loritta.common.entities.MessageChannel
@@ -27,7 +28,8 @@ abstract class CommandContext(
                 message,
                 embed,
                 emptyMap(),
-                isEphemeral = false
+                isEphemeral = false,
+                AllowedMentions(setOf(), true)
             )
         )
     }
