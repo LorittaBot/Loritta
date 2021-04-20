@@ -1,5 +1,5 @@
 plugins {
-    kotlin("multiplatform")
+    kotlin("multiplatform") version Versions.KOTLIN
 }
 
 repositories {
@@ -20,7 +20,7 @@ kotlin {
             dependencies {
                 implementation(project(":common"))
                 implementation(project(":commands"))
-                implementation(project(":discord"))
+                implementation(project(":discord:common"))
                 implementation("net.perfectdreams.discordinteraktions:core:0.0.4-SNAPSHOT")
             }
         }

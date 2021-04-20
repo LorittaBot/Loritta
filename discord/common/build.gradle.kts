@@ -3,6 +3,8 @@ plugins {
     kotlin("plugin.serialization") version Versions.KOTLIN
 }
 
+group = "net.perfectdreams.loritta.discord"
+
 kotlin {
     jvm {
         compilations.all {

@@ -1,5 +1,5 @@
 plugins {
-    kotlin("multiplatform")
+    kotlin("multiplatform") version Versions.KOTLIN
 }
 
 repositories {
@@ -19,7 +19,7 @@ kotlin {
             dependencies {
                 implementation(project(":common"))
                 implementation(project(":commands"))
-                implementation(project(":discord"))
+                implementation(project(":discord:common"))
                 implementation("dev.kord:kord-core:0.7.x-SNAPSHOT")
             }
         }
