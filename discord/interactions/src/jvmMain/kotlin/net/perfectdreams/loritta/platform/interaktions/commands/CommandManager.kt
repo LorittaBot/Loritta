@@ -199,7 +199,7 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
             CommandCategory.UNDERTALE -> "❤️"
             CommandCategory.ROBLOX -> TODO()
             CommandCategory.ANIME -> TODO()
-            CommandCategory.DISCORD -> TODO()
+            CommandCategory.DISCORD -> "\uD83E\uDD19"
             CommandCategory.MISC -> "\uD83E\uDDF6"
             CommandCategory.MODERATION -> TODO()
             CommandCategory.UTILS -> "\uD83D\uDEE0️"

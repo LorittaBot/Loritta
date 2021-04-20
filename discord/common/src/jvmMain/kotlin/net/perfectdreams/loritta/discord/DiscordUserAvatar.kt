@@ -28,7 +28,7 @@ class DiscordUserAvatar(val userId: Long, val discriminator: Int, val avatarId: 
      */
     val formatExtension = format.extension
 
-    override val url = "https://cdn.discordapp.com/avatars/userId/$avatarId.$formatExtension"
+    override val url = "https://cdn.discordapp.com/avatars/$userId/$avatarId.$formatExtension"
 
     enum class ImageFormat {
         PNG,
