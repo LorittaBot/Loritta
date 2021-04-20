@@ -17,10 +17,10 @@ class LorittaDiscordConfig(
 
 @OptIn(ExperimentalSerializationApi::class)
 fun ConfigUtils.parseDiscordConfig(): LorittaDiscordConfig {
-    val file = File("discord-config.conf")
+    val file = File("discord.conf")
     if (file.exists().not()) {
         file.createNewFile()
-        file.writeBytes(LorittaDiscord::class.java.getResourceAsStream("/discord-config.conf").readAllBytes())
+        file.writeBytes(LorittaDiscord::class.java.getResourceAsStream("/discord.conf").readAllBytes())
     }
-    return Hocon {}.decodeFromConfig(ConfigFactory.parseFile(File("discord-config.conf")))
+    return Hocon {}.decodeFromConfig(ConfigFactory.parseFile(File("discord.conf")))
 }

@@ -53,7 +53,10 @@ import net.perfectdreams.loritta.platform.interaktions.emotes.DiscordEmoteManage
 import net.perfectdreams.loritta.platform.interaktions.utils.metrics.Prometheus
 import net.perfectdreams.loritta.platform.interaktions.webserver.InteractionsServer
 
-class LorittaInteraKTions(config: LorittaConfig, discordConfig: LorittaDiscordConfig): LorittaDiscord(config, discordConfig) {
+class LorittaInteraKTions(
+    config: LorittaConfig,
+    discordConfig: LorittaDiscordConfig
+): LorittaDiscord(config, discordConfig) {
     val interactions = InteractionsServer(
         applicationId = discordConfig.applicationId,
         publicKey = discordConfig.publicKey,
