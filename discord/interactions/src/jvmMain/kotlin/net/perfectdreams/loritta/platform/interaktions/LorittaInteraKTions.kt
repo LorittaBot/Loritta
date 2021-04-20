@@ -31,10 +31,13 @@ import net.perfectdreams.loritta.commands.utils.CalculatorExecutor
 import net.perfectdreams.loritta.commands.utils.ChooseExecutor
 import net.perfectdreams.loritta.commands.utils.ECBManager
 import net.perfectdreams.loritta.commands.utils.MoneyExecutor
+import net.perfectdreams.loritta.commands.utils.MorseFromExecutor
+import net.perfectdreams.loritta.commands.utils.MorseToExecutor
 import net.perfectdreams.loritta.commands.utils.declarations.AnagramCommand
 import net.perfectdreams.loritta.commands.utils.declarations.CalculatorCommand
 import net.perfectdreams.loritta.commands.utils.declarations.ChooseCommand
 import net.perfectdreams.loritta.commands.utils.declarations.MoneyCommand
+import net.perfectdreams.loritta.commands.utils.declarations.MorseCommand
 import net.perfectdreams.loritta.common.LorittaBot
 import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.LocaleManager
@@ -133,11 +136,6 @@ class LorittaInteraKTions(config: LorittaConfig, discordConfig: LorittaDiscordCo
         )
 
         commandManager.register(
-            ManiaTitleCardCommand,
-            ManiaTitleCardExecutor(http)
-        )
-
-        commandManager.register(
             AvatarTestCommand,
             AvatarTestExecutor(http)
         )
@@ -146,8 +144,10 @@ class LorittaInteraKTions(config: LorittaConfig, discordConfig: LorittaDiscordCo
             JankenponCommand, JankenponExecutor(random, emotes)
         )
 
+        // ===[ IMAGES ]===
         commandManager.register(AtaCommand, MonicaAtaExecutor(http), ChicoAtaExecutor(http), LoriAtaExecutor(http), GessyAtaExecutor(http))
         commandManager.register(DrakeCommand, DrakeExecutor(http), BolsoDrakeExecutor(http), LoriDrakeExecutor(http))
+        commandManager.register(ManiaTitleCardCommand, ManiaTitleCardExecutor(http))
 
         commandManager.register(ArtCommand, ArtExecutor(http))
         commandManager.register(BobBurningPaperCommand, BobBurningPaperExecutor(http))
@@ -175,6 +175,10 @@ class LorittaInteraKTions(config: LorittaConfig, discordConfig: LorittaDiscordCo
         commandManager.register(TrumpCommand, TrumpExecutor(http))
         commandManager.register(TerminatorAnimeCommand, TerminatorAnimeExecutor(http))
         commandManager.register(SAMCommand, SAMExecutor(http))
+        commandManager.register(ToBeContinuedCommand, ToBeContinuedExecutor(http))
+
+        // ===[ UTILS ]===
+        commandManager.register(MorseCommand, MorseFromExecutor(emotes), MorseToExecutor(emotes))
 
         runBlocking {
             commandManager.convertToInteraKTions(

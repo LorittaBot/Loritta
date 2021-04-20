@@ -10,4 +10,5 @@ package net.perfectdreams.loritta.common.builder
 open class LorittaReplyBuilder {
     var content: String? = null
     var prefix: String? = "\uD83D\uDD39"
+    var isEphemeral = false
 }
