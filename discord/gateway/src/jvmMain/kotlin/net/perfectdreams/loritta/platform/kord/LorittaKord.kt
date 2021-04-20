@@ -22,6 +22,7 @@ import net.perfectdreams.loritta.discord.LorittaDiscord
 import net.perfectdreams.loritta.discord.LorittaDiscordConfig
 import net.perfectdreams.loritta.platform.kord.commands.KordCommandContext
 import net.perfectdreams.loritta.platform.kord.entities.KordMessageChannel
+import net.perfectdreams.loritta.platform.kord.entities.KordUser
 import java.io.File
 
 class LorittaKord(config: LorittaConfig, discordConfig: LorittaDiscordConfig): LorittaDiscord(config, discordConfig) {
@@ -77,6 +78,7 @@ class LorittaKord(config: LorittaConfig, discordConfig: LorittaDiscordConfig): L
                 KordCommandContext(
                     this,
                     localeManager.getLocaleById("default"),
+                    KordUser(event.message.author!!),
                     KordMessageChannel(event.message.getChannel())
                 ),
                 CommandArguments(args)
