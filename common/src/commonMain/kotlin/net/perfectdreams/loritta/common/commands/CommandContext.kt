@@ -8,6 +8,7 @@ import net.perfectdreams.loritta.common.entities.AllowedMentions
 import net.perfectdreams.loritta.common.entities.LorittaEmbed
 import net.perfectdreams.loritta.common.entities.LorittaMessage
 import net.perfectdreams.loritta.common.entities.MessageChannel
+import net.perfectdreams.loritta.common.entities.User
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.embed.EmbedBuilder
 
@@ -17,6 +18,7 @@ abstract class CommandContext(
     // If you don't keep it "open", the type will always be "LorittaBot", which sucks.
     open val loritta: LorittaBot,
     val locale: BaseLocale,
+    val user: User,
     val channel: MessageChannel
 ) {
     abstract suspend fun sendReply(block: LorittaReplyBuilder.() -> (Unit))
