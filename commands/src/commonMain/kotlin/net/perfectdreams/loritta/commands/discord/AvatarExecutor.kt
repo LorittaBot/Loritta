@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.common.utils.embed.embed
 class AvatarExecutor : CommandExecutor() {
     companion object : CommandExecutorDeclaration(AvatarExecutor::class) {
         object Options : CommandOptions() {
-            val user = user("user", LocaleKeyData("TODO_FIX_THIS"))
+            val user = optionalUser("user", LocaleKeyData("TODO_FIX_THIS"))
                 .register()
         }
 
@@ -20,7 +20,7 @@ class AvatarExecutor : CommandExecutor() {
     }
 
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
-        val user = args[options.user]
+        val user = args[options.user] ?: context.user
 
         // TODO: Easter eggs when looking up the avatar of specific users
         context.sendMessage {

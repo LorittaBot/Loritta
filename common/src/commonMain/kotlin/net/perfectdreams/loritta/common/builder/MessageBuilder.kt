@@ -3,7 +3,9 @@ package net.perfectdreams.loritta.common.builder
 import net.perfectdreams.loritta.common.entities.LorittaEmbed
 import net.perfectdreams.loritta.common.entities.LorittaMessage
 import net.perfectdreams.loritta.common.entities.User
+import net.perfectdreams.loritta.common.utils.CinnamonDslMarker
 
+@CinnamonDslMarker
 class MessageBuilder {
     var content: String? = null
     var embed: LorittaEmbed? = null
