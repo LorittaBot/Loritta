@@ -54,23 +54,17 @@ class MoneyExecutor(val emotes: Emotes, val ecbManager: ECBManager) : CommandExe
             // Então, para converter, primeiro devemos converter a currency para EUR e depois para o target
             // Primeiro iremos verificar se existe no exchange rate
             // Por exemplo, se a gente colocar BRL, o "valueInEuros" será 5.5956
-            val euroValueInCurrency = exchangeRates[from] ?: run {
-                context.sendReply(
-                    prefix = emotes.error,
-                    content = context.locale["${MoneyCommand.LOCALE_PREFIX}.invalidCurrency", from, exchangeRates.keys.joinToString(transform = { "`$it`" })]
-                ) { isEphemeral = true }
-                return
-            }
+            val euroValueInCurrency = exchangeRates[from] ?: context.fail(
+                prefix = emotes.error,
+                content = context.locale["${MoneyCommand.LOCALE_PREFIX}.invalidCurrency", from, exchangeRates.keys.joinToString(transform = { "`$it`" })]
+            ) { isEphemeral = true }
 
             val valueInEuro = 1 / euroValueInCurrency
 
-            val endValueInEuros = exchangeRates[to] ?: run {
-                context.sendReply(
-                    prefix = emotes.error,
-                    content = context.locale["${MoneyCommand.LOCALE_PREFIX}.invalidCurrency", from, exchangeRates.keys.joinToString(transform = { "`$it`" })]
-                ) { isEphemeral = true }
-                return
-            }
+            val endValueInEuros = exchangeRates[to] ?: context.fail(
+                prefix = emotes.error,
+                content = context.locale["${MoneyCommand.LOCALE_PREFIX}.invalidCurrency", from, exchangeRates.keys.joinToString(transform = { "`$it`" })]
+            ) { isEphemeral = true }
 
             value = endValueInEuros * valueInEuro
         }

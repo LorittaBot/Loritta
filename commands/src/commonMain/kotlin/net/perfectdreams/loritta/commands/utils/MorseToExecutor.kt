@@ -24,13 +24,11 @@ class MorseToExecutor(val emotes: Emotes) : CommandExecutor() {
         val text = args[options.textArgument]
         val toMorse = MorseUtils.toMorse(text)
 
-        if (toMorse.isBlank()) {
-            context.sendReply(
+        if (toMorse.isBlank())
+            context.fail(
                 prefix = emotes.error.asMention,
                 content = context.locale["${MorseCommand.LOCALE_PREFIX}.fail"]
             ) { isEphemeral = true }
-            return
-        }
 
         context.sendReply(
             content = "`$toMorse`",
