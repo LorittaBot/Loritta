@@ -38,6 +38,7 @@ import net.perfectdreams.loritta.commands.vanilla.`fun`.GiveawayRerollCommand
 import net.perfectdreams.loritta.commands.vanilla.`fun`.GiveawaySetupCommand
 import net.perfectdreams.loritta.commands.vanilla.administration.BanInfoCommand
 import net.perfectdreams.loritta.commands.vanilla.administration.ClearCommand
+import net.perfectdreams.loritta.commands.vanilla.administration.UnwarnCommand
 import net.perfectdreams.loritta.commands.vanilla.economy.SonhosTopCommand
 import net.perfectdreams.loritta.commands.vanilla.economy.SonhosTopLocalCommand
 import net.perfectdreams.loritta.commands.vanilla.economy.TransactionsCommand
@@ -93,6 +94,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 			// ===[ ADMIN ]===
 			BanInfoCommand(discordLoritta),
 			ClearCommand(discordLoritta),
+			UnwarnCommand(discordLoritta),
 
 			// ===[ MISC ]===
 			FanArtsCommand(discordLoritta),
