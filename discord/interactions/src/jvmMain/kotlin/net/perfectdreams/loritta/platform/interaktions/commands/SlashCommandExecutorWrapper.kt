@@ -24,11 +24,11 @@ import net.perfectdreams.loritta.platform.interaktions.entities.InteraKTionsMess
  * Used for argument conversion between the two platforms
  */
 class SlashCommandExecutorWrapper(
-    val loritta: LorittaInteraKTions,
-    val locale: BaseLocale,
-    val declarationExecutor: CommandExecutorDeclaration,
-    val executor: CommandExecutor,
-    val rootSignature: Int
+    private val loritta: LorittaInteraKTions,
+    private val locale: BaseLocale,
+    private val declarationExecutor: CommandExecutorDeclaration,
+    private val executor: CommandExecutor,
+    private val rootSignature: Int
 ) : SlashCommandExecutor() {
     companion object {
         private val logger = KotlinLogging.logger {}
