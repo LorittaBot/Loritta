@@ -15,6 +15,8 @@ import net.perfectdreams.loritta.commands.`fun`.declarations.CoinFlipCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.JankenponCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.RateWaifuCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.TextTransformDeclaration
+import net.perfectdreams.loritta.commands.discord.AvatarExecutor
+import net.perfectdreams.loritta.commands.discord.declarations.AvatarCommand
 import net.perfectdreams.loritta.commands.images.*
 import net.perfectdreams.loritta.commands.images.declarations.*
 import net.perfectdreams.loritta.commands.minecraft.McAvatarExecutor
@@ -86,6 +88,12 @@ class LorittaInteraKTions(config: LorittaConfig, discordConfig: LorittaDiscordCo
             PingCommand,
             PingExecutor(),
             PingAyayaExecutor(emotes)
+        )
+
+        // ===[ DISCORD ]===
+        commandManager.register(
+            AvatarCommand,
+            AvatarExecutor()
         )
 
         // ===[ FUN ]===
