@@ -4,12 +4,13 @@ import net.perfectdreams.loritta.commands.minecraft.McAvatarExecutor
 import net.perfectdreams.loritta.commands.minecraft.McBodyExecutor
 import net.perfectdreams.loritta.commands.minecraft.McHeadExecutor
 import net.perfectdreams.loritta.commands.minecraft.McSkinExecutor
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
 import net.perfectdreams.loritta.common.commands.declarations.command
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 
 object MinecraftPlayerCommand : CommandDeclaration {
-    override fun declaration() = command(listOf("mcplayer")) {
+    override fun declaration() = command(listOf("mcplayer"), CommandCategory.MINECRAFT) {
         description = LocaleKeyData("TODO_FIX_THIS")
 
         subcommand(listOf("skin")) {

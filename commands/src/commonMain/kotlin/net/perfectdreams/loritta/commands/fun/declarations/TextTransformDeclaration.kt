@@ -4,6 +4,7 @@ import net.perfectdreams.loritta.commands.`fun`.TextQualityExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextVaporQualityExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextVaporwaveExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextVemDeZapExecutor
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
 import net.perfectdreams.loritta.common.commands.declarations.command
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
@@ -330,7 +331,7 @@ object TextTransformDeclaration : CommandDeclaration {
     val sassyEmojis = listOf("😉", "😎", "😋", "😘", "😏", "😜", "😈", "😻", "🙊", "👉👌", "😼")
     val sickEmojis = listOf("😷", "🤒", "🤕", "🤢", "🤮", "🤧")
 
-    override fun declaration() = command(listOf("text", "texto")) {
+    override fun declaration() = command(listOf("text", "texto"), CommandCategory.FUN) {
         description = LocaleKeyData("TODO_FIX_THIS")
 
         subcommand(listOf("vaporwave", "vaporonda")) {
