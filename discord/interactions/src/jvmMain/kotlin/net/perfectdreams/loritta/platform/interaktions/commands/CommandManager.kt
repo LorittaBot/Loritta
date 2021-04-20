@@ -11,6 +11,7 @@ import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExec
 import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptions
 import net.perfectdreams.discordinteraktions.declarations.slash.slashCommand
 import net.perfectdreams.loritta.common.commands.CommandArguments
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
@@ -113,7 +114,8 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
             createdExecutors.add(interaKTionsExecutor)
 
             return slashCommand(declaration.labels.first()) {
-                description = locale[declaration.description!!].shortenWithEllipsis()
+                description = buildDescription(locale, declaration)
+
                 this.executor = interaKTionsExecutorDeclaration
 
                 for (group in declaration.subcommandGroups) {
@@ -148,7 +150,7 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
             }
         } else {
             return slashCommand(declaration.labels.first()) {
-                description = locale[declaration.description!!].shortenWithEllipsis()
+                description = buildDescription(locale, declaration)
 
                 for (group in declaration.subcommandGroups) {
                     subcommandGroup(group.labels.first()) {
@@ -182,4 +184,34 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
             }
         }
     }
+
+    fun buildDescription(locale: BaseLocale, declaration: CommandDeclarationBuilder) = buildString {
+        append("「")
+        // Unicode emojis reflecting every category
+        val emoji = when (declaration.category) {
+            CommandCategory.FUN -> "\uD83D\uDE02"
+            CommandCategory.IMAGES -> "\uD83D\uDDBC️"
+            CommandCategory.MINECRAFT -> "⛏️"
+            CommandCategory.POKEMON -> TODO()
+            CommandCategory.UNDERTALE -> "❤️"
+            CommandCategory.ROBLOX -> TODO()
+            CommandCategory.ANIME -> TODO()
+            CommandCategory.DISCORD -> TODO()
+            CommandCategory.MISC -> "\uD83E\uDDF6"
+            CommandCategory.MODERATION -> TODO()
+            CommandCategory.UTILS -> "\uD83D\uDEE0️"
+            CommandCategory.SOCIAL -> TODO()
+            CommandCategory.ACTION -> TODO()
+            CommandCategory.ECONOMY -> TODO()
+            CommandCategory.VIDEOS -> TODO()
+            CommandCategory.FORTNITE -> TODO()
+            CommandCategory.MAGIC -> TODO()
+        }
+        append(emoji)
+        append(" ")
+        append(declaration.category.getLocalizedName(locale))
+        append("」")
+        append(" ")
+        append(locale[declaration.description!!])
+    }.shortenWithEllipsis()
 }

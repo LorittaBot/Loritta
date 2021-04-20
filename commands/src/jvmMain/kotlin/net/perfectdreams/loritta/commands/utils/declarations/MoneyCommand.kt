@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.commands.utils.declarations
 
 import net.perfectdreams.loritta.commands.utils.MoneyExecutor
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
 import net.perfectdreams.loritta.common.commands.declarations.command
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
@@ -46,7 +47,7 @@ object MoneyCommand : CommandDeclaration {
         "ZAR"
     )
 
-    override fun declaration() = command(listOf("money", "dinheiro", "grana")) {
+    override fun declaration() = command(listOf("money", "dinheiro", "grana"), CommandCategory.UTILS) {
         description = LocaleKeyData("$LOCALE_PREFIX.description")
         executor = MoneyExecutor
     }

@@ -3,12 +3,13 @@ package net.perfectdreams.loritta.commands.images.declarations
 import net.perfectdreams.loritta.commands.images.BolsoFrameExecutor
 import net.perfectdreams.loritta.commands.images.Bolsonaro2Executor
 import net.perfectdreams.loritta.commands.images.BolsonaroExecutor
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
 import net.perfectdreams.loritta.common.commands.declarations.command
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 
 object BolsonaroCommand : CommandDeclaration {
-    override fun declaration() = command(listOf("bolsonaro")) {
+    override fun declaration() = command(listOf("bolsonaro"), CommandCategory.IMAGES) {
         description = LocaleKeyData("TODO_FIX_THIS")
 
         subcommand(listOf("tv")) {
