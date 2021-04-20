@@ -2,10 +2,11 @@ package net.perfectdreams.loritta.common.utils.embed
 
 import kotlinx.datetime.Instant
 import net.perfectdreams.loritta.common.entities.LorittaEmbed
+import net.perfectdreams.loritta.common.utils.CinnamonDslMarker
 import kotlin.reflect.KProperty
 
+@CinnamonDslMarker
 class EmbedBuilder {
-
     var author: Author? = null
     var body: Body? = null
     var footer: Footer? = null
