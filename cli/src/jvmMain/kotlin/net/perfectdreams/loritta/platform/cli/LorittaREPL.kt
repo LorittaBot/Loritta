@@ -1,7 +1,9 @@
 package net.perfectdreams.loritta.platform.cli
 
-class LorittaREPL {
-    val cli = LorittaCLI()
+import net.perfectdreams.loritta.common.utils.config.LorittaConfig
+
+class LorittaREPL(val config: LorittaConfig) {
+    val cli = LorittaCLI(config)
 
     suspend fun start() {
         println("Loritta Morenitta REPL")

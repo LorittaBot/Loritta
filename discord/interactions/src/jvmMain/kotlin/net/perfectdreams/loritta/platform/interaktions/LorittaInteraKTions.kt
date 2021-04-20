@@ -1,7 +1,15 @@
-package net.perfectdreams.loritta.platform.cli
+package net.perfectdreams.loritta.platform.interaktions
 
 import io.ktor.client.*
-import net.perfectdreams.loritta.commands.`fun`.*
+import kotlinx.coroutines.runBlocking
+import net.perfectdreams.discordinteraktions.InteractionsServer
+import net.perfectdreams.loritta.commands.`fun`.CoinFlipExecutor
+import net.perfectdreams.loritta.commands.`fun`.JankenponExecutor
+import net.perfectdreams.loritta.commands.`fun`.RateWaifuExecutor
+import net.perfectdreams.loritta.commands.`fun`.TextQualityExecutor
+import net.perfectdreams.loritta.commands.`fun`.TextVaporQualityExecutor
+import net.perfectdreams.loritta.commands.`fun`.TextVaporwaveExecutor
+import net.perfectdreams.loritta.commands.`fun`.TextVemDeZapExecutor
 import net.perfectdreams.loritta.commands.`fun`.declarations.CoinFlipCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.JankenponCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.RateWaifuCommand
@@ -18,17 +26,45 @@ import net.perfectdreams.loritta.commands.misc.PingAyayaExecutor
 import net.perfectdreams.loritta.commands.misc.PingExecutor
 import net.perfectdreams.loritta.commands.misc.declarations.KkEaeMenCommand
 import net.perfectdreams.loritta.commands.misc.declarations.PingCommand
-import net.perfectdreams.loritta.commands.utils.*
-import net.perfectdreams.loritta.commands.utils.declarations.*
+import net.perfectdreams.loritta.commands.utils.AnagramExecutor
+import net.perfectdreams.loritta.commands.utils.CalculatorExecutor
+import net.perfectdreams.loritta.commands.utils.ChooseExecutor
+import net.perfectdreams.loritta.commands.utils.ECBManager
+import net.perfectdreams.loritta.commands.utils.MoneyExecutor
+import net.perfectdreams.loritta.commands.utils.MorseFromExecutor
+import net.perfectdreams.loritta.commands.utils.MorseToExecutor
+import net.perfectdreams.loritta.commands.utils.declarations.AnagramCommand
+import net.perfectdreams.loritta.commands.utils.declarations.CalculatorCommand
+import net.perfectdreams.loritta.commands.utils.declarations.ChooseCommand
+import net.perfectdreams.loritta.commands.utils.declarations.MoneyCommand
+import net.perfectdreams.loritta.commands.utils.declarations.MorseCommand
 import net.perfectdreams.loritta.common.LorittaBot
+import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.utils.ConfigUtils
 import net.perfectdreams.loritta.common.utils.config.LorittaConfig
 import net.perfectdreams.loritta.common.utils.minecraft.MinecraftMojangAPI
-import net.perfectdreams.loritta.platform.cli.commands.CommandManager
+import net.perfectdreams.loritta.discord.LorittaDiscord
+import net.perfectdreams.loritta.discord.LorittaDiscordConfig
+import net.perfectdreams.loritta.platform.interaktions.commands.CommandManager
+import net.perfectdreams.loritta.platform.interaktions.emotes.DiscordEmoteManager
+import java.io.File
 
-class LorittaCLI(config: LorittaConfig): LorittaBot(config) {
-    val commandManager = CommandManager(this)
+class LorittaInteraKTions(config: LorittaConfig, discordConfig: LorittaDiscordConfig): LorittaDiscord(config, discordConfig) {
+    val interactions = InteractionsServer(
+        applicationId = discordConfig.applicationId,
+        publicKey = discordConfig.publicKey,
+        token = discordConfig.token
+    )
+
+    val commandManager = CommandManager(this, interactions.commandManager)
+
+    override val emotes = Emotes(
+        DiscordEmoteManager(
+            mapOf("chino_ayaya" to "discord:a:chino_AYAYA:696984642594537503")
+        )
+    )
+
     val localeManager = LocaleManager(
         ConfigUtils.localesFolder
     )
@@ -100,21 +136,18 @@ class LorittaCLI(config: LorittaConfig): LorittaBot(config) {
         )
 
         commandManager.register(
-            ManiaTitleCardCommand,
-            ManiaTitleCardExecutor(http)
-        )
-
-        commandManager.register(
             AvatarTestCommand,
             AvatarTestExecutor(http)
         )
 
         commandManager.register(
-            AtaCommand, MonicaAtaExecutor(http), ChicoAtaExecutor(http), LoriAtaExecutor(http), GessyAtaExecutor(http)
+            JankenponCommand, JankenponExecutor(random, emotes)
         )
 
-        commandManager.register(JankenponCommand, JankenponExecutor(this.random, this.emotes))
-        commandManager.register(MorseCommand, MorseToExecutor(emotes), MorseFromExecutor(emotes))
+        // ===[ IMAGES ]===
+        commandManager.register(AtaCommand, MonicaAtaExecutor(http), ChicoAtaExecutor(http), LoriAtaExecutor(http), GessyAtaExecutor(http))
+        commandManager.register(DrakeCommand, DrakeExecutor(http), BolsoDrakeExecutor(http), LoriDrakeExecutor(http))
+        commandManager.register(ManiaTitleCardCommand, ManiaTitleCardExecutor(http))
 
         commandManager.register(ArtCommand, ArtExecutor(http))
         commandManager.register(BobBurningPaperCommand, BobBurningPaperExecutor(http))
@@ -141,12 +174,18 @@ class LorittaCLI(config: LorittaConfig): LorittaBot(config) {
         commandManager.register(NichijouYuukoPaperCommand, NichijouYuukoPaperExecutor(http))
         commandManager.register(TrumpCommand, TrumpExecutor(http))
         commandManager.register(TerminatorAnimeCommand, TerminatorAnimeExecutor(http))
-    }
+        commandManager.register(SAMCommand, SAMExecutor(http))
+        commandManager.register(ToBeContinuedCommand, ToBeContinuedExecutor(http))
 
-    suspend fun runArgs(args: Array<String>) {
-        if (commandManager.matches(args.joinToString(" ")))
-            return
+        // ===[ UTILS ]===
+        commandManager.register(MorseCommand, MorseFromExecutor(emotes), MorseToExecutor(emotes))
 
-        println("No matching command found!")
+        runBlocking {
+            commandManager.convertToInteraKTions(
+                localeManager.getLocaleById("default")
+            )
+        }
+
+        interactions.start()
     }
 }
