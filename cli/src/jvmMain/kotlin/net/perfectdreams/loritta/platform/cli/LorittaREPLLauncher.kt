@@ -1,6 +1,8 @@
 package net.perfectdreams.loritta.platform.cli
 
-suspend fun main(args: Array<String>) {
-    val loritta = LorittaREPL()
+import net.perfectdreams.loritta.common.utils.ConfigUtils
+
+suspend fun main() {
+    val loritta = LorittaREPL(ConfigUtils.parseConfig())
     loritta.start()
 }
