@@ -35,7 +35,10 @@ class SlashCommandExecutorWrapper(
     }
 
     override suspend fun execute(context: SlashCommandContext, args: SlashCommandArguments) {
-        println("Executed something $rootSignature")
+        val stringifiedArgumentNames = stringifyArgumentNames(args.types)
+
+        logger.info { "(${context.user.id.value}) $executor $stringifiedArgumentNames" }
+        val start = System.currentTimeMillis()
 
         // Map Cinnamon Arguments to Discord InteraKTions Arguments
         val cinnamonArgs = mutableMapOf<CommandOption<*>, Any?>()
@@ -116,7 +119,7 @@ class SlashCommandExecutorWrapper(
         GlobalScope.launch {
             delay(2_000)
             if (!context.isDeferred) {
-                logger.info { "Command $declarationExecutor hasn't been deferred! Deferring..." }
+                logger.warn { "Command $declarationExecutor hasn't been deferred yet! Deferring..." }
                 context.defer()
             }
         }
@@ -125,7 +128,21 @@ class SlashCommandExecutorWrapper(
             cinnamonContext,
             CommandArguments(cinnamonArgs)
         )
+
+        val commandLatency = System.currentTimeMillis() - start
+        logger.info { "(${context.user.id.value}) $executor $stringifiedArgumentNames - OK! Took ${commandLatency}ms" }
     }
 
     override fun signature() = rootSignature
+
+    /**
+     * Stringifies the arguments in the [types] map to its name
+     *
+     * Useful for debug logging
+     *
+     * @param types the arguments
+     * @return a map with argument name -> argument value
+     */
+    private fun stringifyArgumentNames(types: Map<net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOption<*>, Any?>) = types.map { it.key.name to it.value }
+        .toMap()
 }
