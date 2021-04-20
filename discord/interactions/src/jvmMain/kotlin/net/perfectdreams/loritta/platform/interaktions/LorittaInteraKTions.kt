@@ -55,7 +55,8 @@ import net.perfectdreams.loritta.platform.interaktions.webserver.InteractionsSer
 
 class LorittaInteraKTions(
     config: LorittaConfig,
-    discordConfig: LorittaDiscordConfig
+    discordConfig: LorittaDiscordConfig,
+    override val emotes: Emotes
 ): LorittaDiscord(config, discordConfig) {
     val interactions = InteractionsServer(
         applicationId = discordConfig.applicationId,
@@ -65,26 +66,15 @@ class LorittaInteraKTions(
 
     val commandManager = CommandManager(this, interactions.commandManager)
 
-    override val emotes = Emotes(
-        DiscordEmoteManager(
-            mapOf("chino_ayaya" to "discord:a:chino_AYAYA:696984642594537503")
-        )
-    )
-
     val localeManager = LocaleManager(
         ConfigUtils.localesFolder
     )
-
-    val mojangApi = MinecraftMojangAPI()
 
     val http = HttpClient {
         expectSuccess = false
     }
 
     fun start() {
-        // Register Prometheus Metrics
-        Prometheus.register()
-
         localeManager.loadLocales()
 
         commandManager.register(
