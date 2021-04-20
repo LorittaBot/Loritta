@@ -11,8 +11,10 @@ import kotlinx.serialization.json.putJsonArray
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandContext
 import net.perfectdreams.loritta.common.commands.CommandExecutor
+import net.perfectdreams.loritta.common.emotes.Emotes
 
 open class GabrielaImageServerTwoCommandBase(
+    val emotes: Emotes,
     val http: HttpClient,
     val endpoint: String,
     val fileName: String
@@ -36,6 +38,12 @@ open class GabrielaImageServerTwoCommandBase(
                 }
             }.toString()
         }
+
+        // If the status code is between 400.499, then it means that it was (probably) a invalid input or something
+        if (response.status.value in 400..499)
+            context.fail(context.locale["commands.noValidImageFound", emotes.loriSob], emotes.loriSob)
+        else if (response.status.value !in 200..299) // This should show the error message because it means that the server had a unknown error
+            context.fail(context.locale["commands.errorWhileExecutingCommand", emotes.loriRage, emotes.loriSob], "\uD83E\uDD37")
 
         val result = response.receive<ByteArray>()
         context.sendMessage {

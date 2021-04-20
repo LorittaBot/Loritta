@@ -6,10 +6,13 @@ import net.perfectdreams.loritta.commands.images.base.GabrielaImageServerTwoComm
 import net.perfectdreams.loritta.commands.images.base.SingleImageOptions
 import net.perfectdreams.loritta.commands.images.base.TwoImagesOptions
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.common.emotes.Emotes
 
 class DrakeExecutor(
+    emotes: Emotes,
     http: HttpClient
 ) : GabrielaImageServerTwoCommandBase(
+    emotes,
     http,
     "/api/v1/images/drake",
     "drake.png"

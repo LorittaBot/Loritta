@@ -25,15 +25,10 @@ open class CrafatarExecutorBase(
 
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
         val player = args[Options.username]
-        val uuid = mojang.getUniqueId(player)
-
-        if (uuid == null) {
-            context.sendReply(
-                prefix = emotes.error,
-                content = context.locale["commands.category.minecraft.unknownPlayer", player]
-            ) { isEphemeral = true }
-            return
-        }
+        val uuid = mojang.getUniqueId(player) ?: context.fail(
+            prefix = emotes.error,
+            content = context.locale["commands.category.minecraft.unknownPlayer", player]
+        ) { isEphemeral = true }
 
         context.sendMessage("https://crafatar.com/$type/$uuid?size=128&overlay")
     }

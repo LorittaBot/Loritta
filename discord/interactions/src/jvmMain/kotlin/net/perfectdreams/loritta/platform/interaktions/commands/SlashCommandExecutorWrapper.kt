@@ -9,7 +9,9 @@ import net.perfectdreams.discordinteraktions.commands.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.commands.SlashCommandExecutor
 import net.perfectdreams.discordinteraktions.context.SlashCommandContext
 import net.perfectdreams.loritta.common.commands.CommandArguments
+import net.perfectdreams.loritta.common.commands.CommandException
 import net.perfectdreams.loritta.common.commands.CommandExecutor
+import net.perfectdreams.loritta.common.commands.SilentCommandException
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOption
@@ -154,6 +156,16 @@ class SlashCommandExecutorWrapper(
                 CommandArguments(cinnamonArgs)
             )
         } catch (e: Throwable) {
+            if (e is SilentCommandException)
+                return // SilentCommandExceptions should be ignored
+
+            if (e is CommandException) {
+                // Because we don't have access to the Cinnamon context here, and we *need* to send a LorittaMessage, we will
+                // wrap them in a InteraKTionsMessageChannel and send it!
+                InteraKTionsMessageChannel(context).sendMessage(e.lorittaMessage)
+                return
+            }
+
             logger.warn(e) { "Something went wrong while executing $firstLabel $executorClazzName" }
 
             // Tell the user that something went *really* wrong
@@ -161,8 +173,8 @@ class SlashCommandExecutorWrapper(
             context.sendEphemeralMessage {
                 var reply = "${loritta.emotes.loriShrug} **|** " + locale["commands.errorWhileExecutingCommand", loritta.emotes.loriRage, loritta.emotes.loriSob]
 
+                // TODO: Sanitize
                 if (!e.message.isNullOrEmpty())
-                    // TODO: Sanitize
                     reply += " `${e.message}`"
 
                 content = reply

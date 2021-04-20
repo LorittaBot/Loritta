@@ -21,25 +21,16 @@ class McSkinExecutor(val emotes: Emotes, val mojang: MinecraftMojangAPI) : Comma
 
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
         val player = args[Options.username]
-        val profile = mojang.getUserProfileFromName(player)
+        val profile = mojang.getUserProfileFromName(player) ?: context.fail(
+            prefix = emotes.error,
+            content = context.locale["commands.category.minecraft.unknownPlayer", player]
+        ) { isEphemeral = true }
 
-        if (profile == null) {
-            context.sendReply(
-                prefix = emotes.error,
-                content = context.locale["commands.category.minecraft.unknownPlayer", player]
-            ) { isEphemeral = true }
-            return
-        }
-
-        val skinUrl = profile.textures["SKIN"]?.url
-        if (skinUrl == null) {
-            // TODO: Localization
-            context.sendReply(
-                prefix = emotes.error,
-                content = "Player não possui skin!"
-            ) { isEphemeral = true }
-            return
-        }
+        // TODO: Localization
+        val skinUrl = profile.textures["SKIN"]?.url ?: context.fail(
+            prefix = emotes.error,
+            content = "Player não possui skin!"
+        ) { isEphemeral = true }
 
         context.sendMessage(skinUrl)
     }

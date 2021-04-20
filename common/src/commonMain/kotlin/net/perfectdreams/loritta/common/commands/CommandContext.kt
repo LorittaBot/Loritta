@@ -48,7 +48,8 @@ abstract class CommandContext(
      *
      * Prefixes should *not* be used for important behavior of the command!
      *
-     * @param content the already built LorittaReply
+     * @param content the content of the message
+     * @param prefix  the prefix of the message
      */
     suspend fun sendReply(content: String, prefix: Emote, block: MessageBuilder.() -> Unit = {}) = sendMessage {
         styled(content, prefix)
@@ -79,11 +80,68 @@ abstract class CommandContext(
      *
      * Prefixes should *not* be used for important behavior of the command!
      *
-     * @param content the already built LorittaReply
+     * @param reply the already built LorittaReply
      */
     suspend fun sendReply(reply: LorittaReply, block: MessageBuilder.() -> Unit = {}) = sendMessage {
         styled(reply)
 
         apply(block)
     }
+
+    /**
+     * Throws a [CommandException] with a specific [content] and [prefix], halting command execution
+     *
+     * @param reply  the message that will be sent
+     * @param prefix the reply prefix
+     * @param block  the message block, used for customization of the message
+     * @see fail
+     * @see CommandException
+     */
+    fun fail(content: String, prefix: Emote, block: MessageBuilder.() -> Unit = {}): Nothing = fail(
+        LorittaReply(
+            content, prefix.asMention
+        ),
+        block
+    )
+
+    /**
+     * Throws a [CommandException] with a specific [content] and [prefix], halting command execution
+     *
+     * @param reply the message that will be sent
+     * @param block the message block, used for customization of the message
+     * @see fail
+     * @see CommandException
+     */
+    fun fail(content: String, prefix: String = Emotes.defaultStyledPrefix.asMention, block: MessageBuilder.() -> Unit = {}): Nothing = fail(
+        LorittaReply(
+            content, prefix
+        ),
+        block
+    )
+
+    /**
+     * Throws a [CommandException] with a specific [reply], halting command execution
+     *
+     * @param reply the message that will be sent
+     * @param block the message block, used for customization of the message
+     * @see fail
+     * @see CommandException
+     */
+    fun fail(reply: LorittaReply, block: MessageBuilder.() -> Unit = {}): Nothing = fail {
+        styled(reply)
+        apply(block)
+    }
+
+    /**
+     * Throws a [CommandException] with a specific message [block], halting command execution
+     *
+     * @param reply the message that will be sent
+     * @see fail
+     * @see CommandException
+     */
+    fun fail(block: MessageBuilder.() -> Unit = {}): Nothing = throw CommandException(
+        MessageBuilder().apply {
+            apply(block)
+        }.build()
+    )
 }
