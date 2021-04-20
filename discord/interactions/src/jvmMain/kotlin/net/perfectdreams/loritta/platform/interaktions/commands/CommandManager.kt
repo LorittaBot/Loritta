@@ -186,6 +186,8 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
     }
 
     fun buildDescription(locale: BaseLocale, declaration: CommandDeclarationBuilder) = buildString {
+        // It looks like this
+        // "「Emoji Category」 Description"
         append("「")
         // Unicode emojis reflecting every category
         val emoji = when (declaration.category) {
