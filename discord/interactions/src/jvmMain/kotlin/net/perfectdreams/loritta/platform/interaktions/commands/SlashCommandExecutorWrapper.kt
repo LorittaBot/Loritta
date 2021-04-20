@@ -10,12 +10,10 @@ import net.perfectdreams.discordinteraktions.commands.SlashCommandExecutor
 import net.perfectdreams.discordinteraktions.context.SlashCommandContext
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandExecutor
-import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOption
 import net.perfectdreams.loritta.common.commands.options.CommandOptionType
-import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.images.URLImageReference
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.platform.interaktions.LorittaInteraKTions
@@ -84,10 +82,7 @@ class SlashCommandExecutorWrapper(
                                 // If the type is a user OR a nullable user, and the value isn't null...
                                 val interaKTionUser = value as User
 
-                                // TODO: Animated Avatars?
-                                cinnamonArgs[it] = URLImageReference(
-                                    "https://cdn.discordapp.com/avatars/${interaKTionUser.id.value}/${interaKTionUser.avatar}.png?size=256"
-                                )
+                                cinnamonArgs[it] = URLImageReference(InteraKTionsUser(interaKTionUser).avatar.url)
                                 found = true
                                 break
                             }
