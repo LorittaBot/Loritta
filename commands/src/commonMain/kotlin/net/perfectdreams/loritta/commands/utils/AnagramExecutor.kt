@@ -38,16 +38,16 @@ class AnagramExecutor(val emotes: Emotes) : CommandExecutor() {
 
         val max = MathUtils.factorial(currentWord.length.toBigInteger()).divide(exp)
 
-        context.sendMultiReply {
-            append {
-                content = context.locale["${AnagramCommand.LOCALE_PREFIX}.result", shuffledWord] + " ${emotes.loriWow}"
+        context.sendMessage {
+            styled(
+                content = context.locale["${AnagramCommand.LOCALE_PREFIX}.result", shuffledWord] + " ${emotes.loriWow}",
                 prefix = "✍"
-            }
+            )
 
-            append {
-                content = context.locale["${AnagramCommand.LOCALE_PREFIX}.stats", currentWord, max]
+            styled(
+                content = context.locale["${AnagramCommand.LOCALE_PREFIX}.stats", currentWord, max],
                 prefix = "\uD83E\uDD13"
-            }
+            )
         }
     }
 }

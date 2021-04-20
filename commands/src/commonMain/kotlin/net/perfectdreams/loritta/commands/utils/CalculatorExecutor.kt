@@ -41,23 +41,23 @@ class CalculatorExecutor(val emotes: Emotes) : CommandExecutor() {
 
                 // resultNumber0 --- resultNumber1
                 // resultNumber2 --- x
-                context.sendReply {
-                    content = context.locale["${CalculatorCommand.LOCALE_PREFIX}.result", (resultNumber2 * resultNumber1) / resultNumber0]
-                }
+                context.sendReply(
+                    context.locale["${CalculatorCommand.LOCALE_PREFIX}.result", (resultNumber2 * resultNumber1) / resultNumber0]
+                )
                 return
             }
 
             val result = MathUtils.evaluate(expression)
 
-            context.sendReply {
+            context.sendReply(
                 content = context.locale["${CalculatorCommand.LOCALE_PREFIX}.result", result]
-            }
+            )
         } catch (e: Exception) {
             // TODO: Fix stripCodeMarks
-            context.sendReply {
-                content = context.locale["${CalculatorCommand.LOCALE_PREFIX}.invalid", expression] + " ${emotes.loriSob}"
+            context.sendReply(
+                content = context.locale["${CalculatorCommand.LOCALE_PREFIX}.invalid", expression] + " ${emotes.loriSob}",
                 prefix = emotes.loriHm.toString()
-            }
+            )
         }
     }
 }

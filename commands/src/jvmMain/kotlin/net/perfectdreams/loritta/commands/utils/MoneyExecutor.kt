@@ -55,20 +55,20 @@ class MoneyExecutor(val emotes: Emotes, val ecbManager: ECBManager) : CommandExe
             // Primeiro iremos verificar se existe no exchange rate
             // Por exemplo, se a gente colocar BRL, o "valueInEuros" será 5.5956
             val euroValueInCurrency = exchangeRates[from] ?: run {
-                context.sendReply {
+                context.sendReply(
+                    prefix = emotes.error,
                     content = context.locale["${MoneyCommand.LOCALE_PREFIX}.invalidCurrency", from, exchangeRates.keys.joinToString(transform = { "`$it`" })]
-                    prefix = emotes.error.toString()
-                }
+                ) { isEphemeral = true }
                 return
             }
 
             val valueInEuro = 1 / euroValueInCurrency
 
             val endValueInEuros = exchangeRates[to] ?: run {
-                context.sendReply {
+                context.sendReply(
+                    prefix = emotes.error,
                     content = context.locale["${MoneyCommand.LOCALE_PREFIX}.invalidCurrency", from, exchangeRates.keys.joinToString(transform = { "`$it`" })]
-                    prefix = emotes.error.toString()
-                }
+                ) { isEphemeral = true }
                 return
             }
 
@@ -78,9 +78,9 @@ class MoneyExecutor(val emotes: Emotes, val ecbManager: ECBManager) : CommandExe
         val df = DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH))
         df.maximumFractionDigits = 340 // 340 = DecimalFormat.DOUBLE_FRACTION_DIGITS
 
-        context.sendReply {
+        context.sendReply(
+            prefix = "\uD83D\uDCB5",
             content = context.locale["${MoneyCommand.LOCALE_PREFIX}.converted", multiply, from, to, df.format(value * multiply)]
-            prefix = "\uD83D\uDCB5"
-        }
+        )
     }
 }

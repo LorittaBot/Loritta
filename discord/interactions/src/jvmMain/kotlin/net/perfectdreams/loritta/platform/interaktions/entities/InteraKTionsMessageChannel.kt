@@ -13,7 +13,13 @@ class InteraKTionsMessageChannel(val context: SlashCommandContext) : MessageChan
     override suspend fun sendMessage(message: LorittaMessage) {
         context.sendMessage {
             content = buildString {
-                append(message.content)
+                if (message.content != null)
+                    append(message.content)
+
+                for (reply in message.replies) {
+                    append("\n")
+                    append("${reply.prefix} **|** ${reply.content}")
+                }
 
                 val embed = message.embed
                 if (embed != null) {

@@ -24,9 +24,6 @@ class TextVaporQualityExecutor(val emotes: Emotes) : CommandExecutor() {
 
         // TODO: Fix Escape Mentions
         val vaporquality = VaporwaveUtils.vaporwave(text.toUpperCase().toCharArray().joinToString(" "))
-        context.sendReply {
-            content = vaporquality
-            prefix = "✍"
-        }
+        context.sendReply(vaporquality, "✍")
     }
 }

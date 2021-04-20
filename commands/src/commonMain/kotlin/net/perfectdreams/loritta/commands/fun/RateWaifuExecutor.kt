@@ -96,9 +96,9 @@ class RateWaifuExecutor(val emotes: Emotes) : CommandExecutor() {
         }
 
         // TODO: Fix stripCodeMarks, maybe implement a safer way to sanitize user input?
-        context.sendReply { 
-            content = context.locale["${RateWaifuCommand.LOCALE_PREFIX}.result", strNota, waifu, reason]
+        context.sendReply(
+            content = context.locale["${RateWaifuCommand.LOCALE_PREFIX}.result", strNota, waifu, reason],
             prefix = "\uD83E\uDD14"
-        }
+        )
     }
 }

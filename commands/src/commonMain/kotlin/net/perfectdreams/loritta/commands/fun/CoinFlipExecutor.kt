@@ -24,9 +24,6 @@ class CoinFlipExecutor(val emotes: Emotes, val random: Random) : CommandExecutor
             message = context.locale["${CoinFlipCommand.LOCALE_PREFIX}.heads"]
         }
 
-        context.sendReply {
-            this.content = "**$message!**"
-            this.prefix = prefix
-        }
+        context.sendReply("**$message!**", prefix)
     }
 }

@@ -28,10 +28,10 @@ open class CrafatarExecutorBase(
         val uuid = mojang.getUniqueId(player)
 
         if (uuid == null) {
-            context.sendReply {
+            context.sendReply(
+                prefix = emotes.error,
                 content = context.locale["commands.category.minecraft.unknownPlayer", player]
-                prefix = emotes.error.toString()
-            }
+            ) { isEphemeral = true }
             return
         }
 
