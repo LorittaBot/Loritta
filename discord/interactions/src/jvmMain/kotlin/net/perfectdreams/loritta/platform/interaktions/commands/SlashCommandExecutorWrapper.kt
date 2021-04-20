@@ -10,13 +10,17 @@ import net.perfectdreams.discordinteraktions.commands.SlashCommandExecutor
 import net.perfectdreams.discordinteraktions.context.SlashCommandContext
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandExecutor
+import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
+import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOption
 import net.perfectdreams.loritta.common.commands.options.CommandOptionType
+import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.images.URLImageReference
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.platform.interaktions.LorittaInteraKTions
 import net.perfectdreams.loritta.platform.interaktions.entities.InteraKTionsMessageChannel
+import net.perfectdreams.loritta.platform.interaktions.utils.metrics.Prometheus
 
 /**
  * Bridge between Cinnamon's [CommandExecutor] and Discord InteraKTions' [SlashCommandExecutor].
@@ -26,6 +30,8 @@ import net.perfectdreams.loritta.platform.interaktions.entities.InteraKTionsMess
 class SlashCommandExecutorWrapper(
     private val loritta: LorittaInteraKTions,
     private val locale: BaseLocale,
+    // This is only used for metrics
+    private val declaration: CommandDeclarationBuilder,
     private val declarationExecutor: CommandExecutorDeclaration,
     private val executor: CommandExecutor,
     private val rootSignature: Int
@@ -36,101 +42,130 @@ class SlashCommandExecutorWrapper(
 
     override suspend fun execute(context: SlashCommandContext, args: SlashCommandArguments) {
         val stringifiedArgumentNames = stringifyArgumentNames(args.types)
+        val firstLabel = declaration.labels.first()
+        val executorClazzName = executor::class.simpleName
 
         logger.info { "(${context.user.id.value}) $executor $stringifiedArgumentNames" }
-        val start = System.currentTimeMillis()
 
-        // Map Cinnamon Arguments to Discord InteraKTions Arguments
-        val cinnamonArgs = mutableMapOf<CommandOption<*>, Any?>()
-        val interaKTionsArgumentEntries = args.types.entries
+        val timer = Prometheus.EXECUTED_COMMAND_LATENCY_COUNT
+            .labels(firstLabel, executorClazzName)
+            .startTimer()
 
-        val cinnamonContext = InteraKTionsCommandContext(
-            loritta,
-            locale,
-            InteraKTionsMessageChannel(context)
-        )
+        try {
+            // Map Cinnamon Arguments to Discord InteraKTions Arguments
+            val cinnamonArgs = mutableMapOf<CommandOption<*>, Any?>()
+            val interaKTionsArgumentEntries = args.types.entries
 
-        declarationExecutor.options.arguments.forEach {
-            when (it.type) {
-                is CommandOptionType.StringList -> {
-                    // Special case: Lists
-                    val listsValues = interaKTionsArgumentEntries.filter { opt -> it.name.startsWith(it.name) }
-                    cinnamonArgs[it] = mutableListOf<String>().also {
-                        it.addAll(listsValues.map { it.value as String })
-                    }
-                }
+            val cinnamonContext = InteraKTionsCommandContext(
+                loritta,
+                locale,
+                InteraKTionsMessageChannel(context)
+            )
 
-                is CommandOptionType.ImageReference -> {
-                    // Special case: Image References
-                    val imageReferenceArgs = interaKTionsArgumentEntries.filter { opt -> it.name.startsWith(it.name) }
-
-                    var found = false
-                    for ((interaKTionOption, value) in imageReferenceArgs) {
-                        if (interaKTionOption.name == "${it.name}_avatar" && value != null) {
-                            // If the type is a user OR a nullable user, and the value isn't null...
-                            val interaKTionUser = value as User
-
-                            // TODO: Animated Avatars?
-                            cinnamonArgs[it] = URLImageReference(
-                                "https://cdn.discordapp.com/avatars/${interaKTionUser.id.value}/${interaKTionUser.avatar}.png?size=256"
-                            )
-                            found = true
-                            break
-                        }
-
-                        if (interaKTionOption.name == "${it.name}_url" && value != null) {
-                            cinnamonArgs[it] = URLImageReference(value as String)
-                            found = true
-                            break
-                        }
-
-                        if (interaKTionOption.name == "${it.name}_emote" && value != null) {
-                            val strValue = value as String
-                            val emoteId = strValue.substringAfterLast(":").substringBefore(">")
-                            cinnamonArgs[it] = URLImageReference("https://cdn.discordapp.com/emojis/${emoteId}.png?v=1")
-                            found = true
-                            break
+            declarationExecutor.options.arguments.forEach {
+                when (it.type) {
+                    is CommandOptionType.StringList -> {
+                        // Special case: Lists
+                        val listsValues = interaKTionsArgumentEntries.filter { opt -> it.name.startsWith(it.name) }
+                        cinnamonArgs[it] = mutableListOf<String>().also {
+                            it.addAll(listsValues.map { it.value as String })
                         }
                     }
 
-                    if (!found) {
-                        // TODO: Improve this lol
-                        cinnamonContext.sendMessage {
-                            content = "tá mas cadê a imagem nn sei"
-                            isEphemeral = true
+                    is CommandOptionType.ImageReference -> {
+                        // Special case: Image References
+                        val imageReferenceArgs =
+                            interaKTionsArgumentEntries.filter { opt -> it.name.startsWith(it.name) }
+
+                        var found = false
+                        for ((interaKTionOption, value) in imageReferenceArgs) {
+                            if (interaKTionOption.name == "${it.name}_avatar" && value != null) {
+                                // If the type is a user OR a nullable user, and the value isn't null...
+                                val interaKTionUser = value as User
+
+                                // TODO: Animated Avatars?
+                                cinnamonArgs[it] = URLImageReference(
+                                    "https://cdn.discordapp.com/avatars/${interaKTionUser.id.value}/${interaKTionUser.avatar}.png?size=256"
+                                )
+                                found = true
+                                break
+                            }
+
+                            if (interaKTionOption.name == "${it.name}_url" && value != null) {
+                                cinnamonArgs[it] = URLImageReference(value as String)
+                                found = true
+                                break
+                            }
+
+                            if (interaKTionOption.name == "${it.name}_emote" && value != null) {
+                                val strValue = value as String
+                                val emoteId = strValue.substringAfterLast(":").substringBefore(">")
+                                cinnamonArgs[it] =
+                                    URLImageReference("https://cdn.discordapp.com/emojis/${emoteId}.png?v=1")
+                                found = true
+                                break
+                            }
                         }
-                        return
+
+                        if (!found) {
+                            // TODO: Improve this lol
+                            cinnamonContext.sendMessage {
+                                content = "tá mas cadê a imagem nn sei"
+                                isEphemeral = true
+                            }
+                            return
+                        }
                     }
-                }
 
-                else -> {
-                    val interaKTionArgument =
-                        interaKTionsArgumentEntries.firstOrNull { opt -> it.name == opt.key.name }
-                    // If the value is null but it *wasn't* meant to be null, we are going to throw a exception!
-                    // (This should NEVER happen!)
-                    if (interaKTionArgument?.value == null && it.type !is CommandOptionType.Nullable)
-                        throw UnsupportedOperationException("Argument ${interaKTionArgument?.key} valie is null, but the type of the argument is ${it.type}! Bug?")
+                    else -> {
+                        val interaKTionArgument =
+                            interaKTionsArgumentEntries.firstOrNull { opt -> it.name == opt.key.name }
+                        // If the value is null but it *wasn't* meant to be null, we are going to throw a exception!
+                        // (This should NEVER happen!)
+                        if (interaKTionArgument?.value == null && it.type !is CommandOptionType.Nullable)
+                            throw UnsupportedOperationException("Argument ${interaKTionArgument?.key} valie is null, but the type of the argument is ${it.type}! Bug?")
 
-                    cinnamonArgs[it] = interaKTionArgument?.value
+                        cinnamonArgs[it] = interaKTionArgument?.value
+                    }
                 }
             }
-        }
 
-        GlobalScope.launch {
-            delay(2_000)
-            if (!context.isDeferred) {
-                logger.warn { "Command $declarationExecutor hasn't been deferred yet! Deferring..." }
-                context.defer()
+            GlobalScope.launch {
+                delay(2_000)
+                if (!context.isDeferred) {
+                    logger.warn { "Command $declarationExecutor hasn't been deferred yet! Deferring..." }
+
+                    Prometheus.AUTOMATICALLY_DEFERRED_COUNT
+                        .labels(firstLabel, executorClazzName)
+                        .inc()
+
+                    context.defer()
+                }
             }
+
+            executor.execute(
+                cinnamonContext,
+                CommandArguments(cinnamonArgs)
+            )
+        } catch (e: Throwable) {
+            logger.warn(e) { "Something went wrong while executing $firstLabel $executorClazzName" }
+
+            // Tell the user that something went *really* wrong
+            // We don't have access to the Cinnamon Context (sadly), so we will use the Discord InteraKTions context
+            context.sendEphemeralMessage {
+                var reply = "${loritta.emotes.loriShrug} **|** " + locale["commands.errorWhileExecutingCommand", loritta.emotes.loriRage, loritta.emotes.loriSob]
+
+                if (!e.message.isNullOrEmpty())
+                    // TODO: Sanitize
+                    reply += " `${e.message}`"
+
+                content = reply
+            }
+            return
         }
 
-        executor.execute(
-            cinnamonContext,
-            CommandArguments(cinnamonArgs)
-        )
-
-        val commandLatency = System.currentTimeMillis() - start
-        logger.info { "(${context.user.id.value}) $executor $stringifiedArgumentNames - OK! Took ${commandLatency}ms" }
+        val commandLatency = timer.observeDuration()
+        logger.info { "(${context.user.id.value}) $executor $stringifiedArgumentNames - OK! Took ${commandLatency * 1000}ms" }
     }
 
     override fun signature() = rootSignature

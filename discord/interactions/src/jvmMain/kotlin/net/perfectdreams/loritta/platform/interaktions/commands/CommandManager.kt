@@ -96,6 +96,7 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
             val interaKTionsExecutor = SlashCommandExecutorWrapper(
                 loritta,
                 locale,
+                declaration,
                 declarationExecutor,
                 executor,
                 rootSignature

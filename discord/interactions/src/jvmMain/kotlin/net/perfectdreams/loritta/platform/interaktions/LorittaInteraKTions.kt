@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.platform.interaktions
 
 import io.ktor.client.*
 import kotlinx.coroutines.runBlocking
-import net.perfectdreams.discordinteraktions.InteractionsServer
 import net.perfectdreams.loritta.commands.`fun`.CoinFlipExecutor
 import net.perfectdreams.loritta.commands.`fun`.JankenponExecutor
 import net.perfectdreams.loritta.commands.`fun`.RateWaifuExecutor
@@ -48,7 +47,8 @@ import net.perfectdreams.loritta.discord.LorittaDiscord
 import net.perfectdreams.loritta.discord.LorittaDiscordConfig
 import net.perfectdreams.loritta.platform.interaktions.commands.CommandManager
 import net.perfectdreams.loritta.platform.interaktions.emotes.DiscordEmoteManager
-import java.io.File
+import net.perfectdreams.loritta.platform.interaktions.utils.metrics.Prometheus
+import net.perfectdreams.loritta.platform.interaktions.webserver.InteractionsServer
 
 class LorittaInteraKTions(config: LorittaConfig, discordConfig: LorittaDiscordConfig): LorittaDiscord(config, discordConfig) {
     val interactions = InteractionsServer(
@@ -76,6 +76,9 @@ class LorittaInteraKTions(config: LorittaConfig, discordConfig: LorittaDiscordCo
     }
 
     fun start() {
+        // Register Prometheus Metrics
+        Prometheus.register()
+
         localeManager.loadLocales()
 
         commandManager.register(
