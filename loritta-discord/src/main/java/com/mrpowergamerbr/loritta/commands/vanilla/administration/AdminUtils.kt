@@ -20,6 +20,8 @@ import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.WarnAction
+import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
+import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.WarnActions
 import net.perfectdreams.loritta.utils.DiscordUtils
@@ -128,6 +130,21 @@ object AdminUtils {
 			val reason: String
 	)
 
+	suspend fun checkUser(context: DiscordCommandContext): JDAUser? {
+		val user = context.user(0)
+
+		if (user == null) {
+			context.reply(
+				LorittaReply(
+					context.locale["commands.userDoesNotExist", context.args[0].stripCodeMarks()],
+					Emotes.LORI_HM
+				)
+			)
+		}
+
+		return user
+	}
+
 	suspend fun checkForUser(context: CommandContext): User? {
 		val user = context.getUserAt(0)
 
@@ -141,6 +158,47 @@ object AdminUtils {
 		}
 
 		return user
+	}
+
+	suspend fun checkPermissions(context: DiscordCommandContext, member: Member): Boolean {
+		if (!context.guild.selfMember.canInteract(member)) {
+			val reply = buildString {
+				this.append(context.locale[ROLE_TOO_LOW_KEY])
+
+				if (context.member!!.hasPermission(Permission.MANAGE_ROLES)) {
+					this.append(" ")
+					this.append(context.locale[ROLE_TOO_LOW_HOW_TO_FIX_KEY])
+				}
+			}
+
+			context.reply(
+				LorittaReply(
+					reply,
+					Constants.ERROR
+				)
+			)
+			return false
+		}
+
+		if (!context.member!!.canInteract(member)) {
+			val reply = buildString {
+				this.append(context.locale[ROLE_TOO_LOW_KEY])
+
+				if (context.member.hasPermission(Permission.MANAGE_ROLES)) {
+					this.append(" ")
+					this.append(context.locale[PUNISHER_ROLE_TOO_LOW_HOW_TO_FIX_KEY])
+				}
+			}
+
+			context.reply(
+				LorittaReply(
+					reply,
+					Constants.ERROR
+				)
+			)
+			return false
+		}
+		return true
 	}
 
 	suspend fun checkForPermissions(context: CommandContext, member: Member): Boolean {

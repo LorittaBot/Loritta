@@ -188,7 +188,6 @@ class CommandManager(loritta: Loritta) {
 		commandMap.add(BanCommand())
 		commandMap.add(UnbanCommand())
 		commandMap.add(WarnCommand())
-		commandMap.add(UnwarnCommand())
 		commandMap.add(WarnListCommand())
 		commandMap.add(QuickPunishmentCommand())
 		commandMap.add(LockCommand())
