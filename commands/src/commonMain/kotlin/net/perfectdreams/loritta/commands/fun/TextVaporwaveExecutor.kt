@@ -24,9 +24,9 @@ class TextVaporwaveExecutor(val emotes: Emotes) : CommandExecutor() {
 
         // TODO: Fix Escape Mentions
         val vaporwave = VaporwaveUtils.vaporwave(text)
-        context.sendReply {
-            content = vaporwave
+        context.sendReply(
+            content = vaporwave,
             prefix = "✍"
-        }
+        )
     }
 }

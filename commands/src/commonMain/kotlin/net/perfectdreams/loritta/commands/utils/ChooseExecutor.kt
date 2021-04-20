@@ -25,9 +25,9 @@ class ChooseExecutor(val emotes: Emotes) : CommandExecutor() {
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
         val options = args[options.choices]
 
-        context.sendReply {
-            content = context.locale["${ChooseCommand.LOCALE_PREFIX}.result", options.random()]
+        context.sendReply(
+            content = context.locale["${ChooseCommand.LOCALE_PREFIX}.result", options.random()],
             prefix = emotes.loriHm.toString()
-        }
+        )
     }
 }

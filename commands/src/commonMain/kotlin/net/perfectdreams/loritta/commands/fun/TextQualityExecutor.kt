@@ -23,9 +23,9 @@ class TextQualityExecutor(val emotes: Emotes) : CommandExecutor() {
         val text = args[options.text]
 
         // TODO: Fix Escape Mentions
-        context.sendReply {
-            content = text.toUpperCase().toCharArray().joinToString(" ")
-            prefix = "✍"
-        }
+        context.sendReply(
+            text.toUpperCase().toCharArray().joinToString(" "),
+            "✍"
+        )
     }
 }

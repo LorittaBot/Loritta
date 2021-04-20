@@ -56,27 +56,25 @@ class JankenponExecutor(val random: Random, val emotes: Emotes): CommandExecutor
                 Jankenpon.JankenponStatus.LOSE -> emotes.blackFlag
             }
 
-            context.sendMultiReply {
-                append {
-                    prefix = jankenPrefix.asMention
-                    content = context.locale["${JankenponCommand.LOCALE_PREFIX}.chosen",
-                            janken.getEmoji(emotes), opponent.getEmoji(emotes)]
-                }
-                append {
-                    content = fancy
-                }
+            context.sendMessage {
+                styled(
+                    prefix = jankenPrefix,
+                    content = context.locale["${JankenponCommand.LOCALE_PREFIX}.chosen", janken.getEmoji(emotes), opponent.getEmoji(emotes)]
+                )
+
+                styled(fancy)
             }
         } else {
             if (argument.equals("jesus", ignoreCase = true)) {
                 val jesus = "${emotes.jesus} *${context.locale["${JankenponCommand.LOCALE_PREFIX}.jesusChrist"]}* ${emotes.jesus}"
-                context.sendMultiReply {
-                    append {
-                        prefix = emotes.whiteFlag.asMention
+
+                context.sendMessage {
+                    styled(
+                        prefix = emotes.whiteFlag,
                         content = context.locale["${JankenponCommand.LOCALE_PREFIX}.chosen", jesus, jesus]
-                    }
-                    append {
-                        content = "**${context.locale["${JankenponCommand.LOCALE_PREFIX}.maybeDraw"]} ${emotes.thinking} ${emotes.shrug}**"
-                    }
+                    )
+
+                    styled("**${context.locale["${JankenponCommand.LOCALE_PREFIX}.maybeDraw"]} ${emotes.thinking} ${emotes.shrug}**")
                 }
             }
         }

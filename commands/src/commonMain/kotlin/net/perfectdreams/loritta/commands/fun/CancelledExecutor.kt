@@ -21,9 +21,11 @@ class CancelledExecutor(val emotes: Emotes) : CommandExecutor() {
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
         val user = args[options.user]
 
-        context.sendReply {
-            content = context.locale["commands.command.cancelled.wasCancelled", mentionUser(user, false), context.locale.getList("commands.command.cancelled.reasons").random()]
-            prefix = emotes.loriHmpf.toString()
+        context.sendMessage {
+            styled(
+                context.locale["commands.command.cancelled.wasCancelled", mentionUser(user, false), context.locale.getList("commands.command.cancelled.reasons").random()],
+                emotes.loriHmpf.toString()
+            )
         }
     }
 }

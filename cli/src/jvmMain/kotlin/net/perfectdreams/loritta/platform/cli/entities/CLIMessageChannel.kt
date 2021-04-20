@@ -8,6 +8,11 @@ import java.io.File
 class CLIMessageChannel : MessageChannel {
     override suspend fun sendMessage(message: LorittaMessage) {
         println(message.content)
+
+        for (reply in message.replies) {
+            println(reply.prefix + " | " + reply.content)
+        }
+
         message.embed?.let { println(translateEmbed(it)) }
 
         message.files.entries.forEach {

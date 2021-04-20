@@ -5,6 +5,8 @@ class Emotes(manager: EmoteManager) {
         // Missing emote always uses UnicodeEmote, after all, what if the missing emote is also missing?
         // It is also a static object, because emote managers can use this reference
         val missingEmote = UnicodeEmote("\uD83D\uDC1B")
+        // Same as above, this is referenced for the Loritta-styled reply code
+        val defaultStyledPrefix = UnicodeEmote("\uD83D\uDD39")
     }
 
     val loriHeart = manager.getEmoteByName("lori_heart")

@@ -12,7 +12,16 @@ class KordMessageChannel(private val handle: dev.kord.core.entity.channel.Messag
     override suspend fun sendMessage(message: LorittaMessage) {
         val embed = message.embed
         handle.createMessage {
-            content = message.content
+            content = buildString {
+                if (message.content != null)
+                    append(message.content)
+
+                for (reply in message.replies) {
+                    append("\n")
+                    append("${reply.prefix} **|** ${reply.content}")
+                }
+            }
+
             if (embed != null) {
                 embed {
                     title = embed.title

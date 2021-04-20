@@ -24,20 +24,20 @@ class McSkinExecutor(val emotes: Emotes, val mojang: MinecraftMojangAPI) : Comma
         val profile = mojang.getUserProfileFromName(player)
 
         if (profile == null) {
-            context.sendReply {
+            context.sendReply(
+                prefix = emotes.error,
                 content = context.locale["commands.category.minecraft.unknownPlayer", player]
-                prefix = emotes.error.toString()
-            }
+            ) { isEphemeral = true }
             return
         }
 
         val skinUrl = profile.textures["SKIN"]?.url
         if (skinUrl == null) {
             // TODO: Localization
-            context.sendReply {
+            context.sendReply(
+                prefix = emotes.error,
                 content = "Player não possui skin!"
-                prefix = emotes.error.toString()
-            }
+            ) { isEphemeral = true }
             return
         }
 

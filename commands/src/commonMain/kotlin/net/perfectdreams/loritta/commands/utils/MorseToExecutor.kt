@@ -25,17 +25,16 @@ class MorseToExecutor(val emotes: Emotes) : CommandExecutor() {
         val toMorse = MorseUtils.toMorse(text)
 
         if (toMorse.isBlank()) {
-            context.sendReply {
-                prefix = emotes.error.asMention
+            context.sendReply(
+                prefix = emotes.error.asMention,
                 content = context.locale["${MorseCommand.LOCALE_PREFIX}.fail"]
-                isEphemeral = true
-            }
+            ) { isEphemeral = true }
             return
         }
 
-        context.sendReply {
-            content = "`$toMorse`"
+        context.sendReply(
+            content = "`$toMorse`",
             prefix = emotes.radio.toString()
-        }
+        )
     }
 }
