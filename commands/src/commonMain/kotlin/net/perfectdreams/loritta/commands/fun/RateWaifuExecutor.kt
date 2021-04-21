@@ -13,7 +13,7 @@ import kotlin.random.Random
 class RateWaifuExecutor(val emotes: Emotes) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(RateWaifuExecutor::class) {
         object Options : CommandOptions() {
-            val waifu = string("waifu", LocaleKeyData("TODO_FIX_THIS"))
+            val waifu = string("waifu", LocaleKeyData("${RateWaifuCommand.LOCALE_PREFIX}.selectWaifu"))
                 .register()
         }
 

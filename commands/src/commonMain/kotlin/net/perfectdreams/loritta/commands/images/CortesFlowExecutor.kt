@@ -20,7 +20,7 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 class CortesFlowExecutor(val http: HttpClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(CortesFlowExecutor::class) {
         object Options : CommandOptions() {
-            val type = string("thumbnail", LocaleKeyData("TODO_FIX_THIS"))
+            val type = string("thumbnail", LocaleKeyData("${CortesFlowCommand.LOCALE_PREFIX}.selectThumbnail"))
                 .also { option ->
                     CortesFlowCommand.lists.forEach {
                         option.choice(it, LocaleKeyData(it))
@@ -28,7 +28,7 @@ class CortesFlowExecutor(val http: HttpClient) : CommandExecutor() {
                 }
                 .register()
 
-            val text = string("text", LocaleKeyData("TODO_FIX_THIS"))
+            val text = string("text", LocaleKeyData("${CortesFlowCommand.LOCALE_PREFIX}.selectText"))
                 .register()
         }
 

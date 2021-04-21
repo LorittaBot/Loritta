@@ -14,7 +14,7 @@ import kotlin.random.Random
 class JankenponExecutor(val random: Random, val emotes: Emotes): CommandExecutor() {
     companion object: CommandExecutorDeclaration(JankenponExecutor::class) {
         object Options: CommandOptions() {
-            val value = string("value", LocaleKeyData("TODO_FIX_THIS"))
+            val value = string("value", LocaleKeyData("${JankenponCommand.LOCALE_PREFIX}.selectType"))
                 .choice("rock", LocaleKeyData(Jankenpon.ROCK.lang))
                 .choice("paper", LocaleKeyData(Jankenpon.PAPER.lang))
                 .choice("scissors", LocaleKeyData(Jankenpon.SCISSORS.lang))

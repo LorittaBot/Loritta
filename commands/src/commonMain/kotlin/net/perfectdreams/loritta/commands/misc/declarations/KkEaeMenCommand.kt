@@ -10,18 +10,18 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 
 object KkEaeMenCommand : CommandDeclaration {
     override fun declaration() = command(listOf("kk"), CommandCategory.MISC) {
-        description = LocaleKeyData("TODO_FIX_THIS")
+        description = LocaleKeyData("commands.command.kkeaemen.description")
 
         subcommandGroup(listOf("eae")) {
-            description = LocaleKeyData("TODO_FIX_THIS")
+            description = LocaleKeyData("commands.command.kkeaemen.description")
 
             subcommand(listOf("men")) {
-                description = LocaleKeyData("TODO_FIX_THIS")
+                description = LocaleKeyData("commands.command.kkeaemen.description")
                 executor = KkEaeMenExecutor
             }
 
             subcommand(listOf("girl")) {
-                description = LocaleKeyData("TODO_FIX_THIS")
+                description = LocaleKeyData("commands.command.kkeaemen.description")
                 executor = KkEaeMenExecutor
             }
         }
