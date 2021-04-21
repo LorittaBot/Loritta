@@ -105,11 +105,6 @@ class LorittaCLI(config: LorittaConfig): LorittaBot(config) {
         )
 
         commandManager.register(
-            AvatarTestCommand,
-            AvatarTestExecutor(http)
-        )
-
-        commandManager.register(
             AtaCommand, MonicaAtaExecutor(emotes, http), ChicoAtaExecutor(emotes, http), LoriAtaExecutor(emotes, http), GessyAtaExecutor(emotes, http)
         )
 
