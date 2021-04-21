@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.utils.ConfigUtils
 import net.perfectdreams.loritta.discord.parseDiscordConfig
 import net.perfectdreams.loritta.platform.interaktions.emotes.DiscordEmoteManager
+import net.perfectdreams.loritta.platform.interaktions.utils.config.parseDiscordInteractionsConfig
 import net.perfectdreams.loritta.platform.interaktions.utils.metrics.Prometheus
 import java.io.File
 
@@ -24,6 +25,7 @@ object LorittaInteraKTionsLauncher {
         val loritta = LorittaInteraKTions(
             ConfigUtils.parseConfig(),
             ConfigUtils.parseDiscordConfig(),
+            ConfigUtils.parseDiscordInteractionsConfig(),
             Emotes(DiscordEmoteManager(emotes))
         )
 

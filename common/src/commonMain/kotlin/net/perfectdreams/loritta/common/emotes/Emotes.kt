@@ -29,8 +29,6 @@ class Emotes(manager: EmoteManager) {
 
     val chinoAyaya = manager.getEmoteByName("chino_ayaya")
 
-    val blush = manager.getEmoteByName("blush")
-    val slightSmile = manager.getEmoteByName("slight_smile")
     val tada = manager.getEmoteByName("tada")
     val whiteFlag = manager.getEmoteByName("white_flag")
     val blackFlag = manager.getEmoteByName("black_flag")

@@ -22,7 +22,7 @@ open class GabrielaImageServerSingleCommandBase(
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
         val imageReference = args[SingleImageOptions.imageReference]
 
-        val response = http.post<HttpResponse>("https://gabriela-canary.loritta.website$endpoint") {
+        val response = http.post<HttpResponse>("https://gabriela.loritta.website$endpoint") {
             body = buildJsonObject {
                 putJsonArray("images") {
                     addJsonObject {

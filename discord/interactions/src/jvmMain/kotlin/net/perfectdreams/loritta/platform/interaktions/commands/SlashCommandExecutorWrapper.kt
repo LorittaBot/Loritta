@@ -12,6 +12,7 @@ import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandException
 import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.SilentCommandException
+import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOption
@@ -32,7 +33,7 @@ class SlashCommandExecutorWrapper(
     private val loritta: LorittaInteraKTions,
     private val locale: BaseLocale,
     // This is only used for metrics
-    private val declaration: CommandDeclarationBuilder,
+    private val rootDeclaration: CommandDeclarationBuilder,
     private val declarationExecutor: CommandExecutorDeclaration,
     private val executor: CommandExecutor,
     private val rootSignature: Int
@@ -43,13 +44,13 @@ class SlashCommandExecutorWrapper(
 
     override suspend fun execute(context: SlashCommandContext, args: SlashCommandArguments) {
         val stringifiedArgumentNames = stringifyArgumentNames(args.types)
-        val firstLabel = declaration.labels.first()
+        val rootDeclarationClazzName = rootDeclaration.parent.simpleName
         val executorClazzName = executor::class.simpleName
 
         logger.info { "(${context.user.id.value}) $executor $stringifiedArgumentNames" }
 
         val timer = Prometheus.EXECUTED_COMMAND_LATENCY_COUNT
-            .labels(firstLabel, executorClazzName)
+            .labels(rootDeclarationClazzName, executorClazzName)
             .startTimer()
 
         try {
@@ -144,7 +145,7 @@ class SlashCommandExecutorWrapper(
                     logger.warn { "Command $declarationExecutor hasn't been deferred yet! Deferring..." }
 
                     Prometheus.AUTOMATICALLY_DEFERRED_COUNT
-                        .labels(firstLabel, executorClazzName)
+                        .labels(rootDeclarationClazzName, executorClazzName)
                         .inc()
 
                     context.defer()
@@ -166,7 +167,7 @@ class SlashCommandExecutorWrapper(
                 return
             }
 
-            logger.warn(e) { "Something went wrong while executing $firstLabel $executorClazzName" }
+            logger.warn(e) { "Something went wrong while executing $rootDeclarationClazzName $executorClazzName" }
 
             // Tell the user that something went *really* wrong
             // We don't have access to the Cinnamon Context (sadly), so we will use the Discord InteraKTions context

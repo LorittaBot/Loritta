@@ -50,17 +50,19 @@ import net.perfectdreams.loritta.discord.LorittaDiscord
 import net.perfectdreams.loritta.discord.LorittaDiscordConfig
 import net.perfectdreams.loritta.platform.interaktions.commands.CommandManager
 import net.perfectdreams.loritta.platform.interaktions.emotes.DiscordEmoteManager
+import net.perfectdreams.loritta.platform.interaktions.utils.config.DiscordInteractionsConfig
 import net.perfectdreams.loritta.platform.interaktions.utils.metrics.Prometheus
 import net.perfectdreams.loritta.platform.interaktions.webserver.InteractionsServer
 
 class LorittaInteraKTions(
     config: LorittaConfig,
     discordConfig: LorittaDiscordConfig,
+    val interactionsConfig: DiscordInteractionsConfig,
     override val emotes: Emotes
 ): LorittaDiscord(config, discordConfig) {
     val interactions = InteractionsServer(
         applicationId = discordConfig.applicationId,
-        publicKey = discordConfig.publicKey,
+        publicKey = interactionsConfig.publicKey,
         token = discordConfig.token
     )
 
@@ -77,11 +79,11 @@ class LorittaInteraKTions(
     fun start() {
         localeManager.loadLocales()
 
-        commandManager.register(
+        /* commandManager.register(
             PingCommand,
             PingExecutor(),
             PingAyayaExecutor(emotes)
-        )
+        ) */
 
         // ===[ DISCORD ]===
         commandManager.register(
@@ -144,11 +146,6 @@ class LorittaInteraKTions(
         commandManager.register(
             KkEaeMenCommand,
             KkEaeMenExecutor(emotes)
-        )
-
-        commandManager.register(
-            AvatarTestCommand,
-            AvatarTestExecutor(http)
         )
 
         commandManager.register(

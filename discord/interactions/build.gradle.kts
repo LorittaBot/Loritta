@@ -1,5 +1,9 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     kotlin("multiplatform") version Versions.KOTLIN
+    kotlin("plugin.serialization") version Versions.KOTLIN
+    id("com.github.johnrengelman.shadow") version "5.2.0"
 }
 
 repositories {
@@ -22,15 +26,10 @@ kotlin {
                 implementation(project(":commands"))
                 implementation(project(":discord:common"))
 
+                implementation("net.perfectdreams.discordinteraktions:core:0.0.4-SNAPSHOT")
+
                 // Sequins
                 api("net.perfectdreams.sequins.ktor:base-route:1.0.2")
-
-                // Base Route uses a more up to date impl of Ktor compared to Discord InteraKTions
-                // (because Kord Core does not work with Ktor 1.5.X yet)
-                api("io.ktor:ktor-server-core:1.4.1")
-                api("io.ktor:ktor-server-netty:1.4.1")
-
-                implementation("net.perfectdreams.discordinteraktions:core:0.0.4-SNAPSHOT")
 
                 // Prometheus
                 api("io.prometheus:simpleclient:0.10.0")
@@ -38,5 +37,11 @@ kotlin {
                 api("io.prometheus:simpleclient_common:0.10.0")
             }
         }
+    }
+}
+
+tasks.withType<ShadowJar>() {
+    manifest {
+        attributes["Main-Class"] = "net.perfectdreams.loritta.platform.interaktions.LorittaInteraKTionsLauncher"
     }
 }

@@ -37,15 +37,15 @@ class JankenponExecutor(val random: Random, val emotes: Emotes): CommandExecutor
                 when (status) {
                     Jankenpon.JankenponStatus.WIN -> {
                         append("**${context.locale["${JankenponCommand.LOCALE_PREFIX}.win"]} ")
-                        append(emotes.blush.asMention + "**")
+                        append(emotes.loriWow.asMention + "**")
                     }
                     Jankenpon.JankenponStatus.LOSE -> {
                         append("**${context.locale["${JankenponCommand.LOCALE_PREFIX}.lose"]} ")
-                        append(emotes.slightSmile.asMention + "**")
+                        append(emotes.loriPat.asMention + "**")
                     }
                     Jankenpon.JankenponStatus.DRAW -> {
                         append("**${context.locale["${JankenponCommand.LOCALE_PREFIX}.draw"]} ")
-                        append(emotes.blush.asMention + "**")
+                        append(emotes.loriSmile.asMention + "**")
                     }
                 }
             }
