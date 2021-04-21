@@ -11,8 +11,7 @@ import java.io.File
 @Serializable
 class LorittaDiscordConfig(
     val token: String,
-    val applicationId: Long,
-    val publicKey: String
+    val applicationId: Long
 )
 
 @OptIn(ExperimentalSerializationApi::class)

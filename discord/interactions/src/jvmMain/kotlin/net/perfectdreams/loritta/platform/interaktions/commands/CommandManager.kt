@@ -54,7 +54,13 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
             )
         }
 
-        interaKTionsManager.updateAllCommandsInGuild(Snowflake(297732013006389252L), true)
+        if (loritta.interactionsConfig.registerGlobally) {
+            interaKTionsManager.updateAllGlobalCommands(true)
+        } else {
+            for (guildId in loritta.interactionsConfig.guildsToBeRegistered) {
+                interaKTionsManager.updateAllCommandsInGuild(Snowflake(guildId), true)
+            }
+        }
     }
 
     fun convertCommandDeclarationToInteraKTions(

@@ -23,7 +23,7 @@ open class GabrielaImageServerTwoCommandBase(
         val imageReference1 = args[TwoImagesOptions.imageReference1]
         val imageReference2 = args[TwoImagesOptions.imageReference2]
 
-        val response = http.post<HttpResponse>("https://gabriela-canary.loritta.website$endpoint") {
+        val response = http.post<HttpResponse>("https://gabriela.loritta.website$endpoint") {
             body = buildJsonObject {
                 putJsonArray("images") {
                     addJsonObject {

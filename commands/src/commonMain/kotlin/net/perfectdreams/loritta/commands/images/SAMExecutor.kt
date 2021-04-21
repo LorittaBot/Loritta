@@ -36,7 +36,7 @@ class SAMExecutor(val http: HttpClient) : CommandExecutor() {
         val type = args[options.type]
         val imageReference = args[options.imageReference]
 
-        val response = http.post<HttpResponse>("https://gabriela-canary.loritta.website/api/v1/images/sam/$type") {
+        val response = http.post<HttpResponse>("https://gabriela.loritta.website/api/v1/images/sam/$type") {
             body = buildJsonObject {
                 putJsonArray("images") {
                     addJsonObject {

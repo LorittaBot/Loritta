@@ -39,7 +39,7 @@ class CortesFlowExecutor(val http: HttpClient) : CommandExecutor() {
         val type = args[options.type]
         val text = args[options.text]
 
-        val response = http.post<HttpResponse>("https://gabriela-canary.loritta.website/api/v1/images/cortes-flow/$type") {
+        val response = http.post<HttpResponse>("https://gabriela.loritta.website/api/v1/images/cortes-flow/$type") {
             body = buildJsonObject {
                 putJsonArray("strings") {
                     addJsonObject {

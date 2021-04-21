@@ -33,7 +33,7 @@ class ManiaTitleCardExecutor(val http: HttpClient) : CommandExecutor() {
         val line1 = args[options.line1]
         val line2 = args[options.line2]
 
-        val response = http.post<HttpResponse>("https://gabriela-canary.loritta.website/api/v1/images/mania-title-card") {
+        val response = http.post<HttpResponse>("https://gabriela.loritta.website/api/v1/images/mania-title-card") {
             body = buildJsonObject {
                 putJsonArray("strings") {
                     addJsonObject {
