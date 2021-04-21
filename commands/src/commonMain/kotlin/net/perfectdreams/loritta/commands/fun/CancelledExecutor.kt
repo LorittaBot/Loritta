@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.commands.`fun`
 
+import net.perfectdreams.loritta.commands.`fun`.declarations.CancelledCommand
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandContext
 import net.perfectdreams.loritta.common.commands.CommandExecutor
@@ -11,7 +12,7 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 class CancelledExecutor(val emotes: Emotes) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(CancelledExecutor::class) {
         object Options : CommandOptions() {
-            val user = user("user", LocaleKeyData("TODO_FIX_THIS"))
+            val user = user("user", LocaleKeyData("${CancelledCommand.LOCALE_PREFIX}.selectUser"))
                 .register()
         }
 

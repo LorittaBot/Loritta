@@ -8,6 +8,7 @@ import kotlinx.serialization.json.addJsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
+import net.perfectdreams.loritta.commands.images.declarations.SAMCommand
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandContext
 import net.perfectdreams.loritta.common.commands.CommandExecutor
@@ -18,10 +19,10 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 class SAMExecutor(val http: HttpClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(SAMExecutor::class) {
         object Options : CommandOptions() {
-            val type = string("type", LocaleKeyData("TODO_FIX_THIS"))
-                .choice("1", LocaleKeyData("LOGO_ORIGINAL"))
-                .choice("2", LocaleKeyData("LOGO_2"))
-                .choice("3", LocaleKeyData("LOGO_3"))
+            val type = string("type", LocaleKeyData("${SAMCommand.LOCALE_PREFIX}.selectLogo"))
+                .choice("1", LocaleKeyData("${SAMCommand.LOCALE_PREFIX}.sam1"))
+                .choice("2", LocaleKeyData("${SAMCommand.LOCALE_PREFIX}.sam2"))
+                .choice("3", LocaleKeyData("${SAMCommand.LOCALE_PREFIX}.sam3"))
                 .register()
 
             val imageReference = imageReference("image", LocaleKeyData("TODO_FIX_THIS"))

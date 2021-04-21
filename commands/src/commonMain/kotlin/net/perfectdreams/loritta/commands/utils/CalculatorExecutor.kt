@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.common.utils.math.MathUtils
 class CalculatorExecutor(val emotes: Emotes) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(CalculatorExecutor::class) {
         object Options : CommandOptions() {
-            val expression = string("expression", LocaleKeyData("TODO_FIX_THIS"))
+            val expression = string("expression", LocaleKeyData("${CalculatorCommand.LOCALE_PREFIX}.selectExpression"))
                 .register()
         }
 
