@@ -28,7 +28,7 @@ class KordMessageChannel(private val handle: dev.kord.core.entity.channel.Messag
                     description = embed.description
                     image = embed.image
                     thumbnail = embed.thumbnail?.let { url -> EmbedBuilder.Thumbnail().also {it.url = url}}
-                    color = embed.color?.let { Color(it) }
+                    color = embed.color?.let { Color(it.rgb) }
                     timestamp = embed.timestamp?.toJavaInstant()
                     author = embed.author?.toKord()
                     fields = embed.fields.map { it.toKord() }.toMutableList()
