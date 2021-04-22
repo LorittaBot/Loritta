@@ -493,7 +493,7 @@ class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.F
 						}
 					}
 
-					context.sendMessage("${context.getAsMention(true)} $output")
+					context.sendMessage("${context.getAsMention(true)} ${output.escapeMentions()}")
 				}
 
 				levelMessage.addReaction("1⃣").queue()
