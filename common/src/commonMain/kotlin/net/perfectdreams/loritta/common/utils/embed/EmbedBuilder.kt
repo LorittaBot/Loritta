@@ -71,55 +71,32 @@ class EmbedBuilder {
             fields = fields.map {LorittaEmbed.Field(it.name, it.value, it.inline)}
         )
     }
-}
 
-class Author(val name: String) {
-    var url: String? by Optional()
-    var icon: String? by Optional()
-}
+    class Author(val name: String) {
+        var url: String? = null
+        var icon: String? = null
+    }
 
-/**
- * This is the body class (just something for improving
- * our DSLs and making them prettier!)
- *
- * This includes the embed's:
- *
- * @property title
- * @property description
- * @property color
- *
- * None of them are actually required.
- */
-class Body {
-    var title: String? by Optional()
-    var description: String? by Optional()
-    var color: Int? by Optional()
-}
+    class Body {
+        var title: String? = null
+        var description: String? = null
+        var color: LorittaColor? = null
+    }
 
-class Field(val name: String, val value: String) {
-    var inline: Boolean = false
-}
+    class Field(val name: String, val value: String) {
+        var inline: Boolean = false
+    }
 
-class Images {
-    var image: String? by Optional()
-    var thumbnail: String? by Optional()
-}
+    class Images {
+        var image: String? = null
+        var thumbnail: String? = null
+    }
 
-class Footer(val text: String) {
-    var icon: String? by Optional()
-    var timestamp: Instant? by Optional()
+    class Footer(val text: String) {
+        var icon: String? = null
+        var timestamp: Instant? = null
+    }
+
 }
 
 fun embed(embed: EmbedBuilder.() -> Unit): EmbedBuilder = EmbedBuilder().apply(embed)
-
-class Optional<V> {
-    private var value: V? = null
-
-    operator fun getValue(thisRef: Any?, property: KProperty<*>): V? {
-        return value
-    }
-
-    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: V) {
-        this.value = value
-    }
-}
