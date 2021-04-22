@@ -25,33 +25,17 @@ import net.perfectdreams.loritta.commands.minecraft.McHeadExecutor
 import net.perfectdreams.loritta.commands.minecraft.McSkinExecutor
 import net.perfectdreams.loritta.commands.minecraft.declarations.MinecraftPlayerCommand
 import net.perfectdreams.loritta.commands.misc.KkEaeMenExecutor
-import net.perfectdreams.loritta.commands.misc.PingAyayaExecutor
-import net.perfectdreams.loritta.commands.misc.PingExecutor
 import net.perfectdreams.loritta.commands.misc.declarations.KkEaeMenCommand
-import net.perfectdreams.loritta.commands.misc.declarations.PingCommand
-import net.perfectdreams.loritta.commands.utils.AnagramExecutor
-import net.perfectdreams.loritta.commands.utils.CalculatorExecutor
-import net.perfectdreams.loritta.commands.utils.ChooseExecutor
-import net.perfectdreams.loritta.commands.utils.ECBManager
-import net.perfectdreams.loritta.commands.utils.MoneyExecutor
-import net.perfectdreams.loritta.commands.utils.MorseFromExecutor
-import net.perfectdreams.loritta.commands.utils.MorseToExecutor
-import net.perfectdreams.loritta.commands.utils.declarations.AnagramCommand
-import net.perfectdreams.loritta.commands.utils.declarations.CalculatorCommand
-import net.perfectdreams.loritta.commands.utils.declarations.ChooseCommand
-import net.perfectdreams.loritta.commands.utils.declarations.MoneyCommand
-import net.perfectdreams.loritta.commands.utils.declarations.MorseCommand
+import net.perfectdreams.loritta.commands.utils.*
+import net.perfectdreams.loritta.commands.utils.declarations.*
 import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.utils.ConfigUtils
 import net.perfectdreams.loritta.common.utils.config.LorittaConfig
-import net.perfectdreams.loritta.common.utils.minecraft.MinecraftMojangAPI
 import net.perfectdreams.loritta.discord.LorittaDiscord
 import net.perfectdreams.loritta.discord.LorittaDiscordConfig
 import net.perfectdreams.loritta.platform.interaktions.commands.CommandManager
-import net.perfectdreams.loritta.platform.interaktions.emotes.DiscordEmoteManager
 import net.perfectdreams.loritta.platform.interaktions.utils.config.DiscordInteractionsConfig
-import net.perfectdreams.loritta.platform.interaktions.utils.metrics.Prometheus
 import net.perfectdreams.loritta.platform.interaktions.webserver.InteractionsServer
 
 class LorittaInteraKTions(
@@ -125,6 +109,11 @@ class LorittaInteraKTions(
         commandManager.register(
             ChooseCommand,
             ChooseExecutor(emotes)
+        )
+
+        commandManager.register(
+            HelpCommand,
+            HelpExecutor(emotes)
         )
 
         commandManager.register(
