@@ -34,7 +34,7 @@ class EmbedBuilder {
         this.body = Body().apply(callback)
     }
 
-    fun field(name: String, value: String, callback: Field.() -> Unit) {
+    fun field(name: String, value: String, callback: Field.() -> Unit = {}) {
         fields.add(Field(name, value).apply(callback))
     }
 

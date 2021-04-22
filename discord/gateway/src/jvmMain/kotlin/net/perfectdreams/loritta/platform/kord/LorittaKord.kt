@@ -11,6 +11,8 @@ import net.perfectdreams.loritta.commands.`fun`.declarations.RateWaifuCommand
 import net.perfectdreams.loritta.commands.misc.PingAyayaExecutor
 import net.perfectdreams.loritta.commands.misc.PingExecutor
 import net.perfectdreams.loritta.commands.misc.declarations.PingCommand
+import net.perfectdreams.loritta.commands.utils.HelpExecutor
+import net.perfectdreams.loritta.commands.utils.declarations.HelpCommand
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.options.CommandOptionType
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
@@ -106,6 +108,11 @@ class LorittaKord(config: LorittaConfig, discordConfig: LorittaDiscordConfig): L
         commandManager.register(
             RateWaifuCommand,
             RateWaifuExecutor(emotes)
+        )
+
+        commandManager.register(
+            HelpCommand,
+            HelpExecutor(emotes)
         )
 
         runBlocking {

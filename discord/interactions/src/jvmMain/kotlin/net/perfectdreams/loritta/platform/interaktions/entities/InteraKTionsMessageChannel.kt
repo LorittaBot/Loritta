@@ -38,7 +38,7 @@ class InteraKTionsMessageChannel(val context: SlashCommandContext) : MessageChan
                         description = embed.description
                         color = java.awt.Color(embed.color?.rgb ?: 0)
                     }
-                    fields.forEach {
+                    embed.fields.forEach {
                         field(it.name, it.value) {
                             inline = it.inline
                         }
