@@ -27,7 +27,6 @@ class AvatarExecutor : CommandExecutor() {
         context.sendMessage {
             embed = embed {
                 body {
-                    // TODO: Color
                     title = "\uD83D\uDDBC ${user.name}"
                     description = "**${context.locale["${AvatarCommand.LOCALE_PREFIX}.clickHere", "${user.avatar.url}?size=2048"]}**"
                     color = LorittaColor.DISCORD_BLURPLE
