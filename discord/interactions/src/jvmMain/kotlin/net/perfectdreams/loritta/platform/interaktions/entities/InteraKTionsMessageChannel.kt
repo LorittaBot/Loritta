@@ -4,8 +4,6 @@ import dev.kord.common.entity.MessageFlag
 import dev.kord.common.entity.MessageFlags
 import dev.kord.common.entity.Snowflake
 import net.perfectdreams.discordinteraktions.context.SlashCommandContext
-import net.perfectdreams.loritta.common.builder.AllowedMentionsBuilder
-import net.perfectdreams.loritta.common.entities.LorittaEmbed
 import net.perfectdreams.loritta.common.entities.LorittaMessage
 import net.perfectdreams.loritta.common.entities.MessageChannel
 
@@ -21,15 +19,38 @@ class InteraKTionsMessageChannel(val context: SlashCommandContext) : MessageChan
                     append("${reply.prefix} **|** ${reply.content}")
                 }
 
-                val embed = message.embed
-                if (embed != null) {
-                    append("\n\n")
-                    append(translateEmbed(embed))
-                }
             }
 
             for (file in message.files) {
                 addFile(file.key, file.value.inputStream())
+            }
+
+            val embed = message.embed
+            if (embed != null) {
+                embed {
+                    author {
+                        name = embed.author?.name
+                        icon = embed.author?.icon
+                        url = embed.author?.url
+                    }
+                    body {
+                        title = embed.title
+                        description = embed.description
+                        color = java.awt.Color(embed.color?.rgb ?: 0)
+                    }
+                    fields.forEach {
+                        field(it.name, it.value) {
+                            inline = it.inline
+                        }
+                    }
+                    images {
+                        image = embed.image
+                        thumbnail = embed.thumbnail
+                    }
+                    footer(embed.footer?.text ?: return@embed) {
+                        icon = embed.footer?.icon
+                    }
+                }
             }
 
             // Keep in mind that ephemeral messages do not support *everything*, so let's throw a exception if
@@ -53,15 +74,6 @@ class InteraKTionsMessageChannel(val context: SlashCommandContext) : MessageChan
 
                 repliedUser = message.allowedMentions.repliedUser
             }.build()
-        }
-    }
-
-    private fun translateEmbed(embed: LorittaEmbed): String = buildString {
-        append("Title: ${embed.title}\n")
-        append("Description: ${embed.description}\n")
-
-        embed.fields.forEach {
-            append("${it.name}: ${it.value}\n")
         }
     }
 }

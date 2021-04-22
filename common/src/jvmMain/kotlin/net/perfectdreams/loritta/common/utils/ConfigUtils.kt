@@ -16,10 +16,10 @@ object ConfigUtils {
         File("locales")
 
     fun parseConfig(): LorittaConfig {
-        val file = File("config.conf")
+        val file = File("loritta.conf")
         if (file.exists().not()) {
             file.createNewFile()
-            file.writeBytes(LorittaBot::class.java.getResourceAsStream("/config.conf").readAllBytes())
+            file.writeBytes(LorittaBot::class.java.getResourceAsStream("/loritta.conf").readAllBytes())
             println("I just created a config file, since you don't have one, customize your preferences there and then try restarting me!")
             exitProcess(-1)
         }
