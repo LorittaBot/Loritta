@@ -8,6 +8,7 @@ import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDec
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.utils.embed.LorittaColor
 import net.perfectdreams.loritta.common.utils.embed.embed
 
 class AvatarExecutor : CommandExecutor() {
@@ -27,9 +28,9 @@ class AvatarExecutor : CommandExecutor() {
         context.sendMessage {
             embed = embed {
                 body {
-                    // TODO: Color
                     title = "\uD83D\uDDBC ${user.name}"
                     description = "**${context.locale["${AvatarCommand.LOCALE_PREFIX}.clickHere", "${user.avatar.url}?size=2048"]}**"
+                    color = LorittaColor.DISCORD_BLURPLE
                 }
 
                 images {

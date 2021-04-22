@@ -1,13 +1,14 @@
 package net.perfectdreams.loritta.common.entities
 
 import kotlinx.datetime.Instant
+import net.perfectdreams.loritta.common.utils.embed.LorittaColor
 
 class LorittaEmbed(
     val title: String? = null,
     val description: String? = null,
     val image: String? = null,
     val thumbnail: String? = null,
-    val color: Int? = null,
+    val color: LorittaColor? = null,
     val author: Author? = null,
     val fields: List<Field> = emptyList(),
     val footer: Footer? = null,
