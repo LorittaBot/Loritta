@@ -72,9 +72,10 @@ class WikipediaCommand : AbstractCommand("wikipedia", listOf("wiki"), CommandCat
 					// Se não é -1, então é algo que existe! Yay!
 					val pageTitle = entryWikiContent.value.asJsonObject.get("title").asString
 					val pageExtract = entryWikiContent.value.asJsonObject.get("extract").asString
+					val wikiURL = ("https://" + languageId + ".wikipedia.org/wiki/" + (URLEncoder.encode(query, "UTF-8").replace("+", "%20")))
 
 					val embed = EmbedBuilder()
-							.setTitle("<:wikipedia:400981794666840084> $pageTitle", null)
+							.setTitle("$pageTitle", "$wikiURL")
 							.setColor(Color.BLACK)
 							.setDescription(if (pageExtract.length > 512) pageExtract.substring(0, 509) + "..." else pageExtract)
 
