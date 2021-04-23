@@ -12,7 +12,6 @@ import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandException
 import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.SilentCommandException
-import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOption
@@ -20,9 +19,10 @@ import net.perfectdreams.loritta.common.commands.options.CommandOptionType
 import net.perfectdreams.loritta.common.images.URLImageReference
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.platform.interaktions.LorittaInteraKTions
-import net.perfectdreams.loritta.platform.interaktions.entities.InteraKTionsMessageChannel
+import net.perfectdreams.loritta.platform.interaktions.entities.InteraKTionsMessageChannelHandler
 import net.perfectdreams.loritta.platform.interaktions.entities.InteraKTionsUser
 import net.perfectdreams.loritta.platform.interaktions.utils.metrics.Prometheus
+import net.perfectdreams.loritta.platform.interaktions.utils.toLorittaGuild
 
 /**
  * Bridge between Cinnamon's [CommandExecutor] and Discord InteraKTions' [SlashCommandExecutor].
@@ -57,13 +57,23 @@ class SlashCommandExecutorWrapper(
             // Map Cinnamon Arguments to Discord InteraKTions Arguments
             val cinnamonArgs = mutableMapOf<CommandOption<*>, Any?>()
             val interaKTionsArgumentEntries = args.types.entries
+            val guild = context.request.guildId.value?.let { loritta.interactions.rest.guild.getGuild(it) }
+            val channel = loritta.interactions.rest.channel.getChannel(context.request.channelId)
 
             val cinnamonContext = InteraKTionsCommandContext(
                 loritta,
                 locale,
                 InteraKTionsUser(context.user),
-                InteraKTionsMessageChannel(context)
+                InteraKTionsMessageChannelHandler(channel, context),
+                guild?.toLorittaGuild(loritta.interactions.rest)
             )
+
+            if (!rootDeclaration.allowedInPrivateChannel && guild == null) {
+                context.sendEphemeralMessage {
+                    content = ":no_entry: **|** ${locale["commands.cantUseInPrivate"]}"
+                }
+                return
+            }
 
             declarationExecutor.options.arguments.forEach {
                 when (it.type) {
@@ -163,7 +173,7 @@ class SlashCommandExecutorWrapper(
             if (e is CommandException) {
                 // Because we don't have access to the Cinnamon context here, and we *need* to send a LorittaMessage, we will
                 // wrap them in a InteraKTionsMessageChannel and send it!
-                InteraKTionsMessageChannel(context).sendMessage(e.lorittaMessage)
+                InteraKTionsMessageChannelHandler(loritta.interactions.rest.channel.getChannel(context.request.channelId), context).sendMessage(e.lorittaMessage)
                 return
             }
 

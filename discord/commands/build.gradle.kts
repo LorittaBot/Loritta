@@ -20,7 +20,6 @@ kotlin {
                 implementation(project(":common"))
                 implementation(project(":commands"))
                 implementation(project(":discord:common"))
-                implementation(project(":discord:commands"))
                 implementation("dev.kord:kord-core:0.7.x-SNAPSHOT")
             }
         }

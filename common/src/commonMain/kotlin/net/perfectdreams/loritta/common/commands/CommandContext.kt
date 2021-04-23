@@ -20,7 +20,7 @@ abstract class CommandContext(
     open val loritta: LorittaBot,
     val locale: BaseLocale,
     val user: User,
-    val channel: MessageChannel
+    open val channel: MessageChannel
 ) {
     suspend fun sendMessage(message: String, embed: LorittaEmbed? = null) {
         channel.sendMessage(

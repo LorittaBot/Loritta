@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.platform.kord
 
 import dev.kord.core.Kord
+import dev.kord.core.behavior.channel.createMessage
 import dev.kord.core.event.message.MessageCreateEvent
 import dev.kord.core.on
 import kotlinx.coroutines.runBlocking
@@ -17,15 +18,18 @@ import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.options.CommandOptionType
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
 import net.perfectdreams.loritta.common.commands.options.CommandOption
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.utils.ConfigUtils
 import net.perfectdreams.loritta.common.utils.config.LorittaConfig
 import net.perfectdreams.loritta.discord.LorittaDiscord
 import net.perfectdreams.loritta.discord.LorittaDiscordConfig
+import net.perfectdreams.loritta.platform.discord.utils.ChannelInfoExecutor
+import net.perfectdreams.loritta.platform.discord.utils.declarations.ChannelInfoCommand
 import net.perfectdreams.loritta.platform.kord.commands.KordCommandContext
-import net.perfectdreams.loritta.platform.kord.entities.KordMessageChannel
 import net.perfectdreams.loritta.platform.kord.entities.KordUser
-import java.io.File
+import net.perfectdreams.loritta.platform.kord.util.toLorittaMessageChannel
+import net.perfectdreams.loritta.platform.kord.util.toLorittaGuild
 
 class LorittaKord(config: LorittaConfig, discordConfig: LorittaDiscordConfig): LorittaDiscord(config, discordConfig) {
     val commandManager = CommandManager()
@@ -76,18 +80,22 @@ class LorittaKord(config: LorittaConfig, discordConfig: LorittaDiscordConfig): L
 
             val args = parseArgs(split.drop(1).joinToString(" "), declaration.executor?.options?.arguments ?: listOf())
 
+            if (!declaration.allowedInPrivateChannel && event.guildId == null) {
+                return false
+            }
+
             executor.execute(
                 KordCommandContext(
                     this,
                     localeManager.getLocaleById("default"),
                     KordUser(event.message.author!!),
-                    KordMessageChannel(event.message.getChannel())
+                    event.message.getChannel().toLorittaMessageChannel(),
+                    event.message.getGuildOrNull()?.toLorittaGuild(event.kord)
                 ),
                 CommandArguments(args)
             )
             return true
         }
-
         return false
     }
 
@@ -113,6 +121,11 @@ class LorittaKord(config: LorittaConfig, discordConfig: LorittaDiscordConfig): L
         commandManager.register(
             HelpCommand,
             HelpExecutor(emotes)
+        )
+
+        commandManager.register(
+            ChannelInfoCommand,
+            ChannelInfoExecutor(emotes)
         )
 
         runBlocking {
