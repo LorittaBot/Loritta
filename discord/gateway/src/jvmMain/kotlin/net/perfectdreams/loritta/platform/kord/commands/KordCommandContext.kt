@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.discord.objects.LorittaGuild
 import net.perfectdreams.loritta.platform.kord.LorittaKord
 
 class KordCommandContext(
-    loritta: LorittaKord,
+    override val loritta: LorittaKord,
     locale: BaseLocale,
     user: User,
     channel: LorittaDiscordMessageChannel,

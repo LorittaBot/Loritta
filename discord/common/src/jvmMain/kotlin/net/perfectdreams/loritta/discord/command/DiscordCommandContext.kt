@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.discord.objects.LorittaDiscordMessageChannel
 import net.perfectdreams.loritta.discord.objects.LorittaGuild
 
 abstract class DiscordCommandContext(
-    loritta: LorittaDiscord,
+    override val loritta: LorittaDiscord,
     locale: BaseLocale,
     user: User,
     override val channel: LorittaDiscordMessageChannel,
