@@ -25,6 +25,7 @@ kotlin {
                 implementation(project(":common"))
                 implementation(project(":commands"))
                 implementation(project(":discord:common"))
+                implementation(project(":discord:commands"))
 
                 implementation("net.perfectdreams.discordinteraktions:core:0.0.4-SNAPSHOT")
 
@@ -35,6 +36,11 @@ kotlin {
                 api("io.prometheus:simpleclient:0.10.0")
                 api("io.prometheus:simpleclient_hotspot:0.10.0")
                 api("io.prometheus:simpleclient_common:0.10.0")
+            }
+        }
+        jvm().compilations["main"].defaultSourceSet {
+            dependencies {
+                implementation("dev.kord:kord-rest:0.7.x-SNAPSHOT")
             }
         }
     }

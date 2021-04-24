@@ -1,14 +1,19 @@
 package net.perfectdreams.loritta.platform.interaktions.commands
 
+import net.perfectdreams.discordinteraktions.context.SlashCommandContext
 import net.perfectdreams.loritta.common.commands.CommandContext
 import net.perfectdreams.loritta.common.entities.MessageChannel
 import net.perfectdreams.loritta.common.entities.User
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.discord.command.DiscordCommandContext
+import net.perfectdreams.loritta.discord.objects.LorittaDiscordMessageChannel
+import net.perfectdreams.loritta.discord.objects.LorittaGuild
 import net.perfectdreams.loritta.platform.interaktions.LorittaInteraKTions
 
 class InteraKTionsCommandContext(
-    override val loritta: LorittaInteraKTions,
+    loritta: LorittaInteraKTions,
     locale: BaseLocale,
     user: User,
-    channel: MessageChannel
-) : CommandContext(loritta, locale, user, channel)
+    channel: LorittaDiscordMessageChannel,
+    guild: LorittaGuild?,
+) : DiscordCommandContext(loritta, locale, user, channel, guild)

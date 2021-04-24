@@ -15,8 +15,7 @@ import net.perfectdreams.loritta.commands.`fun`.declarations.CoinFlipCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.JankenponCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.RateWaifuCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.TextTransformDeclaration
-import net.perfectdreams.loritta.commands.discord.AvatarExecutor
-import net.perfectdreams.loritta.commands.discord.declarations.AvatarCommand
+import net.perfectdreams.loritta.platform.discord.utils.declarations.AvatarCommand
 import net.perfectdreams.loritta.commands.images.*
 import net.perfectdreams.loritta.commands.images.declarations.*
 import net.perfectdreams.loritta.commands.minecraft.McAvatarExecutor
@@ -34,6 +33,9 @@ import net.perfectdreams.loritta.common.utils.ConfigUtils
 import net.perfectdreams.loritta.common.utils.config.LorittaConfig
 import net.perfectdreams.loritta.discord.LorittaDiscord
 import net.perfectdreams.loritta.discord.LorittaDiscordConfig
+import net.perfectdreams.loritta.platform.discord.utils.AvatarExecutor
+import net.perfectdreams.loritta.platform.discord.utils.ChannelInfoExecutor
+import net.perfectdreams.loritta.platform.discord.utils.declarations.ChannelInfoCommand
 import net.perfectdreams.loritta.platform.interaktions.commands.CommandManager
 import net.perfectdreams.loritta.platform.interaktions.utils.config.DiscordInteractionsConfig
 import net.perfectdreams.loritta.platform.interaktions.webserver.InteractionsServer
@@ -55,7 +57,6 @@ class LorittaInteraKTions(
     val localeManager = LocaleManager(
         ConfigUtils.localesFolder
     )
-
     val http = HttpClient {
         expectSuccess = false
     }
@@ -135,6 +136,11 @@ class LorittaInteraKTions(
         commandManager.register(
             KkEaeMenCommand,
             KkEaeMenExecutor(emotes)
+        )
+
+        commandManager.register(
+            ChannelInfoCommand,
+            ChannelInfoExecutor(emotes)
         )
 
         commandManager.register(

@@ -1,6 +1,6 @@
-package net.perfectdreams.loritta.commands.discord
+package net.perfectdreams.loritta.platform.discord.utils
 
-import net.perfectdreams.loritta.commands.discord.declarations.AvatarCommand
+import net.perfectdreams.loritta.platform.discord.utils.declarations.AvatarCommand
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandContext
 import net.perfectdreams.loritta.common.commands.CommandExecutor
@@ -21,7 +21,7 @@ class AvatarExecutor : CommandExecutor() {
     }
 
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
-        val user = args[options.user] ?: context.user
+        val user = args[Options.user] ?: context.user
 
         // TODO: Easter eggs when looking up the avatar of specific users
         context.sendMessage {
