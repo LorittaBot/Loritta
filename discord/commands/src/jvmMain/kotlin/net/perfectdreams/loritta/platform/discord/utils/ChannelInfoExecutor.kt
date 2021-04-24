@@ -1,8 +1,6 @@
 package net.perfectdreams.loritta.platform.discord.utils
 
-import kotlinx.datetime.toJavaInstant
 import net.perfectdreams.loritta.common.commands.CommandArguments
-import net.perfectdreams.loritta.common.commands.CommandContext
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.emotes.Emotes
@@ -11,13 +9,14 @@ import net.perfectdreams.loritta.common.utils.DateUtils
 import net.perfectdreams.loritta.common.utils.embed.LorittaColor
 import net.perfectdreams.loritta.discord.command.DiscordCommandContext
 import net.perfectdreams.loritta.discord.objects.LorittaDiscordMessageChannel
+import net.perfectdreams.loritta.discord.util.optionalChannel
 import net.perfectdreams.loritta.platform.discord.DiscordCommandExecutor
 import net.perfectdreams.loritta.platform.discord.utils.declarations.ChannelInfoCommand
 
 class ChannelInfoExecutor(val emotes: Emotes) : DiscordCommandExecutor() {
     companion object : CommandExecutorDeclaration(ChannelInfoExecutor::class) {
         object Options : CommandOptions() {
-            val channelId = optionalString("id", LocaleKeyData("TODO_FIX_THIS"))
+            val channelId = optionalChannel("channel", LocaleKeyData("TODO_FIX_THIS"))
                 .register()
         }
 
@@ -25,11 +24,7 @@ class ChannelInfoExecutor(val emotes: Emotes) : DiscordCommandExecutor() {
     }
 
     override suspend fun executeDiscord(context: DiscordCommandContext, args: CommandArguments) {
-        val channelId = args[options.channelId]
-            ?.replace("<#", "")
-            ?.replace(">", "")
-            ?: context.channel.id.toString()
-        val channel = context.guild?.retrieveChannel(channelId.toLong())
+        val channel = args[options.channelId] ?: context.channel
 
         if (channel as? LorittaDiscordMessageChannel == null || channel.guildId == null) {
             return context.sendReply("Eu não consegui identificar o canal de texto que você está procurando!", ":no_entry:") {

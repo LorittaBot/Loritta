@@ -4,6 +4,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
+import net.perfectdreams.discordinteraktions.api.entities.Channel
 import net.perfectdreams.discordinteraktions.api.entities.User
 import net.perfectdreams.discordinteraktions.commands.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.commands.SlashCommandExecutor
@@ -139,6 +140,13 @@ class SlashCommandExecutorWrapper(
                         when (it.type) {
                             is CommandOptionType.User, CommandOptionType.NullableUser -> {
                                 cinnamonArgs[it] = interaKTionArgument?.value?.let { InteraKTionsUser(interaKTionArgument.value as User) }
+                            }
+
+                            is CommandOptionType.Channel, CommandOptionType.NullableChannel -> {
+                                println("okay, tipo de canal")
+                                println("Argumento é null? ${interaKTionArgument == null}")
+                                println("Guild é null? ${guild == null}")
+                                cinnamonArgs[it] = interaKTionArgument?.value?.let { guild?.toLorittaGuild(loritta.interactions.rest)?.retrieveChannel((interaKTionArgument.value as Channel).id.value) }
                             }
 
                             else -> {

@@ -37,7 +37,7 @@ class LorittaKord(config: LorittaConfig, discordConfig: LorittaDiscordConfig): L
         ConfigUtils.localesFolder
     )
 
-    fun parseArgs(content: String, args: List<CommandOption<*>>): MutableMap<CommandOption<*>, Any?> {
+    suspend fun parseArgs(content: String, args: List<CommandOption<*>>, event: MessageCreateEvent): MutableMap<CommandOption<*>, Any?> {
         // --ayaya_count=5
         val regex = Regex("--([A-z_]+)=([A-z0-9_]+)")
         val matchedArgs = regex.findAll(content)
@@ -54,6 +54,8 @@ class LorittaKord(config: LorittaConfig, discordConfig: LorittaDiscordConfig): L
                 is CommandOptionType.String, CommandOptionType.NullableString -> value
                 is CommandOptionType.Integer -> value.toInt()
                 is CommandOptionType.NullableInteger -> value.toIntOrNull()
+                is CommandOptionType.Channel, CommandOptionType.NullableChannel ->
+                    kotlin.runCatching { event.getGuild()?.toLorittaGuild(event.kord)?.retrieveChannel(value.toLong()) }.getOrNull()
                 else -> throw UnsupportedOperationException("I don't know how to convert ${result.type}!")
             }
 
@@ -78,7 +80,7 @@ class LorittaKord(config: LorittaConfig, discordConfig: LorittaDiscordConfig): L
                 it::class == declaration.executor?.parent
             }
 
-            val args = parseArgs(split.drop(1).joinToString(" "), declaration.executor?.options?.arguments ?: listOf())
+            val args = parseArgs(split.drop(1).joinToString(" "), declaration.executor?.options?.arguments ?: listOf(), event)
 
             if (!declaration.allowedInPrivateChannel && event.guildId == null) {
                 return false

@@ -73,7 +73,7 @@ open class CommandOptions {
         description
     )
 
-    private fun <T> argument(type: CommandOptionType, name: String, description: LocaleKeyData) = CommandOptionBuilder<T>(
+    fun <T> argument(type: CommandOptionType, name: String, description: LocaleKeyData) = CommandOptionBuilder<T>(
         type,
         name,
         description,
