@@ -11,4 +11,5 @@ include(":cli")
 // ===[ DISCORD ]===
 include(":discord:common")
 include(":discord:gateway")
+include(":discord:commands")
 include(":discord:interactions")

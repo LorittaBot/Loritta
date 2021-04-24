@@ -5,7 +5,6 @@ import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDec
 import net.perfectdreams.loritta.common.commands.options.CommandOptionType
 import net.perfectdreams.loritta.common.commands.options.ListCommandOption
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.platform.interaktions.utils.shortenWithEllipsis
 
 /**
@@ -110,6 +109,16 @@ class SlashCommandOptionsWrapper(
                         )
 
                         is CommandOptionType.NullableUser -> optionalUser(
+                            it.name,
+                            locale[it.description].shortenWithEllipsis()
+                        )
+
+                        is CommandOptionType.Channel -> optionalChannel(
+                            it.name,
+                            locale[it.description].shortenWithEllipsis()
+                        )
+
+                        is CommandOptionType.NullableChannel -> optionalChannel(
                             it.name,
                             locale[it.description].shortenWithEllipsis()
                         )

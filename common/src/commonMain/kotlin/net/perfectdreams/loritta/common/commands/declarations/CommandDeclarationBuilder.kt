@@ -11,6 +11,7 @@ fun command(parent: KClass<*>, labels: List<String>, category: CommandCategory, 
 class CommandDeclarationBuilder(val parent: KClass<*>, val labels: List<String>, val category: CommandCategory) {
     var description: LocaleKeyData? = null
     var executor: CommandExecutorDeclaration? = null
+    var allowedInPrivateChannel: Boolean = true
     val subcommands = mutableListOf<CommandDeclarationBuilder>()
     val subcommandGroups = mutableListOf<CommandDeclarationBuilder>()
 
