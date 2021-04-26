@@ -20,6 +20,7 @@ allprojects {
         maven("https://repo.perfectdreams.net/")
         maven("https://dl.bintray.com/kotlin/ktor/")
         maven("https://jitpack.io")
+        maven("https://m2.dv8tion.net/releases")
     }
 }
 
