@@ -43,6 +43,7 @@ class TradingViewRelayConnector(
     private var session: ClientWebSocketSession? = null
     private var isActive = false
     private var isClosed = false
+    private var atLeastOnePingPacketWasReceived = false
 
     /**
      * Starts the TradingView Relay client, this will connect to the TradingView Relay Server.
@@ -65,11 +66,17 @@ class TradingViewRelayConnector(
 
         // Keep checking if the ping is "acceptable"
         GlobalScope.launch(Dispatchers.IO) {
-            val lastPingPacketReceivedAt = System.currentTimeMillis() - lastPingPacketReceivedAt
+            while (true) {
+                if (atLeastOnePingPacketWasReceived) {
+                    val lastPingPacketReceivedAt = System.currentTimeMillis() - lastPingPacketReceivedAt
 
-            if (lastPingPacketReceivedAt >= 60_000) {
-                logger.warn { "Ping was sent more than 60s ago! Closing WebSocket..." }
-                client.close() // Close the connection and reconnect
+                    if (lastPingPacketReceivedAt >= 60_000) {
+                        logger.warn { "Ping was sent more than 60s ago! Closing WebSocket..." }
+                        client.close() // Close the connection and reconnect
+                    }
+                } else {
+                    delay(15_000)
+                }
             }
         }
     }
@@ -94,6 +101,7 @@ class TradingViewRelayConnector(
 
                             if (content == "pong") {
                                 lastPingPacketReceivedAt = sentAt.toLong()
+                                atLeastOnePingPacketWasReceived = true
                             } else {
                                 val asJson = Json.parseToJsonElement(content).jsonObject
                                 val tickerId = asJson["short_name"]!!.jsonPrimitive.content
