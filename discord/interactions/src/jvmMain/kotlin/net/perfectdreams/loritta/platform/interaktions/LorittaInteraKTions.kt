@@ -15,6 +15,8 @@ import net.perfectdreams.loritta.commands.`fun`.declarations.CoinFlipCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.JankenponCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.RateWaifuCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.TextTransformDeclaration
+import net.perfectdreams.loritta.commands.economy.SonhosExecutor
+import net.perfectdreams.loritta.commands.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.platform.discord.utils.declarations.AvatarCommand
 import net.perfectdreams.loritta.commands.images.*
 import net.perfectdreams.loritta.commands.images.declarations.*
@@ -29,6 +31,9 @@ import net.perfectdreams.loritta.commands.utils.*
 import net.perfectdreams.loritta.commands.utils.declarations.*
 import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.LocaleManager
+import net.perfectdreams.loritta.common.services.Services
+import net.perfectdreams.loritta.common.services.memory.MemoryServices
+import net.perfectdreams.loritta.common.services.memory.MemoryUserProfileService
 import net.perfectdreams.loritta.common.utils.ConfigUtils
 import net.perfectdreams.loritta.common.utils.config.LorittaConfig
 import net.perfectdreams.loritta.discord.LorittaDiscord
@@ -60,6 +65,8 @@ class LorittaInteraKTions(
     val http = HttpClient {
         expectSuccess = false
     }
+
+    override val services = MemoryServices()
 
     fun start() {
         localeManager.loadLocales()
@@ -183,6 +190,9 @@ class LorittaInteraKTions(
 
         // ===[ UTILS ]===
         commandManager.register(MorseCommand, MorseFromExecutor(emotes), MorseToExecutor(emotes))
+
+        // ===[ ECONOMY ]===
+        commandManager.register(SonhosCommand, SonhosExecutor(emotes))
 
         runBlocking {
             commandManager.convertToInteraKTions(
