@@ -6,6 +6,8 @@ import net.perfectdreams.loritta.commands.`fun`.declarations.CoinFlipCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.JankenponCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.RateWaifuCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.TextTransformDeclaration
+import net.perfectdreams.loritta.commands.economy.SonhosExecutor
+import net.perfectdreams.loritta.commands.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.commands.images.*
 import net.perfectdreams.loritta.commands.images.declarations.*
 import net.perfectdreams.loritta.commands.minecraft.McAvatarExecutor
@@ -22,6 +24,7 @@ import net.perfectdreams.loritta.commands.utils.*
 import net.perfectdreams.loritta.commands.utils.declarations.*
 import net.perfectdreams.loritta.common.LorittaBot
 import net.perfectdreams.loritta.common.locale.LocaleManager
+import net.perfectdreams.loritta.common.services.memory.MemoryServices
 import net.perfectdreams.loritta.common.utils.ConfigUtils
 import net.perfectdreams.loritta.common.utils.config.LorittaConfig
 import net.perfectdreams.loritta.common.utils.minecraft.MinecraftMojangAPI
@@ -38,6 +41,8 @@ class LorittaCLI(config: LorittaConfig): LorittaBot(config) {
     val http = HttpClient {
         expectSuccess = false
     }
+
+    override val services = MemoryServices()
 
     fun start() {
         localeManager.loadLocales()
@@ -141,6 +146,9 @@ class LorittaCLI(config: LorittaConfig): LorittaBot(config) {
         commandManager.register(NichijouYuukoPaperCommand, NichijouYuukoPaperExecutor(emotes, http))
         commandManager.register(TrumpCommand, TrumpExecutor(emotes, http))
         commandManager.register(TerminatorAnimeCommand, TerminatorAnimeExecutor(http))
+
+        commandManager.register(SonhosCommand, SonhosExecutor(emotes))
+
     }
 
     suspend fun runArgs(args: Array<String>) {
