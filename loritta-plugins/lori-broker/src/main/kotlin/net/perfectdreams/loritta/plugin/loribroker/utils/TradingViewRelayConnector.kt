@@ -75,6 +75,8 @@ class TradingViewRelayConnector(
                         logger.warn { "Ping was sent more than 300s ago! Closing WebSocket..." }
                         client.close() // Close the connection and reconnect
                     }
+
+                    delay(5_000)
                 } else {
                     delay(15_000)
                 }
