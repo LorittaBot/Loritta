@@ -2,6 +2,8 @@ rootProject.name = "loritta-parent"
 
 include(":common")
 
+include(":in-memory-services")
+
 // ===[ COMMANDS ]===
 include(":commands")
 
