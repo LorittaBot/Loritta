@@ -59,6 +59,7 @@ class TradingViewRelayConnector(
                     logger.warn(e) { "Disconnected due to exception! Trying again in 1s..." }
                 }
 
+                atLeastOnePingPacketWasReceived = false
                 logger.warn { "Disconnected! Trying again in 1s..." }
                 delay(1_000)
             }
@@ -70,8 +71,8 @@ class TradingViewRelayConnector(
                 if (atLeastOnePingPacketWasReceived) {
                     val lastPingPacketReceivedAt = System.currentTimeMillis() - lastPingPacketReceivedAt
 
-                    if (lastPingPacketReceivedAt >= 60_000) {
-                        logger.warn { "Ping was sent more than 60s ago! Closing WebSocket..." }
+                    if (lastPingPacketReceivedAt >= 300_000) {
+                        logger.warn { "Ping was sent more than 300s ago! Closing WebSocket..." }
                         client.close() // Close the connection and reconnect
                     }
                 } else {
