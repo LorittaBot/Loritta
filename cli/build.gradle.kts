@@ -15,6 +15,7 @@ kotlin {
             dependencies {
                 implementation(project(":common"))
                 implementation(project(":commands"))
+                implementation(project(":in-memory-services"))
                 implementation("io.ktor:ktor-client-cio:1.5.3")
             }
         }
