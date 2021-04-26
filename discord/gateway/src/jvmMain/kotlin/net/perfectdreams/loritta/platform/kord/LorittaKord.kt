@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOption
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleManager
+import net.perfectdreams.loritta.common.services.memory.MemoryServices
 import net.perfectdreams.loritta.common.utils.ConfigUtils
 import net.perfectdreams.loritta.common.utils.config.LorittaConfig
 import net.perfectdreams.loritta.discord.LorittaDiscord
@@ -36,6 +37,7 @@ class LorittaKord(config: LorittaConfig, discordConfig: LorittaDiscordConfig): L
     val localeManager = LocaleManager(
         ConfigUtils.localesFolder
     )
+    override val services = MemoryServices()
 
     suspend fun parseArgs(content: String, args: List<CommandOption<*>>, event: MessageCreateEvent): MutableMap<CommandOption<*>, Any?> {
         // --ayaya_count=5

@@ -24,6 +24,7 @@ kotlin {
             dependencies {
                 implementation(project(":common"))
                 implementation(project(":commands"))
+                implementation(project(":in-memory-services"))
                 implementation(project(":discord:common"))
                 implementation(project(":discord:commands"))
 

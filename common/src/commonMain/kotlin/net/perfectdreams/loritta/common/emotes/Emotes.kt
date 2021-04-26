@@ -19,6 +19,7 @@ class Emotes(manager: EmoteManager) {
     val loriSmile = manager.getEmoteByName("lori_smile")
     val loriPat = manager.getEmoteByName("lori_pat")
     val loriSob = manager.getEmoteByName("lori_sob")
+    val loriRich = manager.getEmoteByName("lori_rich")
 
     val error = manager.getEmoteByName("error")
 
