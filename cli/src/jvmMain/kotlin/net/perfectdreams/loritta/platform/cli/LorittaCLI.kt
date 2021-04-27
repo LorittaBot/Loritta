@@ -24,7 +24,7 @@ import net.perfectdreams.loritta.commands.utils.*
 import net.perfectdreams.loritta.commands.utils.declarations.*
 import net.perfectdreams.loritta.common.LorittaBot
 import net.perfectdreams.loritta.common.locale.LocaleManager
-import net.perfectdreams.loritta.common.services.memory.MemoryServices
+import net.perfectdreams.loritta.common.memory.services.memory.MemoryServices
 import net.perfectdreams.loritta.common.utils.ConfigUtils
 import net.perfectdreams.loritta.common.utils.config.LorittaConfig
 import net.perfectdreams.loritta.common.utils.minecraft.MinecraftMojangAPI
