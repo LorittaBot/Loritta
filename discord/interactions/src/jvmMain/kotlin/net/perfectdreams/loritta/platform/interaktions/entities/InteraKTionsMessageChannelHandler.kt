@@ -4,12 +4,8 @@ import dev.kord.common.entity.DiscordChannel
 import dev.kord.common.entity.MessageFlag
 import dev.kord.common.entity.MessageFlags
 import dev.kord.common.entity.Snowflake
-import dev.kord.common.entity.optional.value
-import kotlinx.datetime.Instant
-import kotlinx.datetime.toKotlinInstant
 import net.perfectdreams.discordinteraktions.context.SlashCommandContext
-import net.perfectdreams.loritta.common.entities.LorittaMessage
-import net.perfectdreams.loritta.discord.objects.LorittaDiscordMessageChannel
+import net.perfectdreams.loritta.common.pudding.entities.LorittaMessage
 
 class InteraKTionsMessageChannelHandler(handle: DiscordChannel, private val context: SlashCommandContext) : StaticInteraKTionsMessageChannel(handle) {
     override suspend fun sendMessage(message: LorittaMessage) {

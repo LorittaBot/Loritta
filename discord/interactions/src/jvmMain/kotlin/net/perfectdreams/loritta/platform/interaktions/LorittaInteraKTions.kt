@@ -31,9 +31,7 @@ import net.perfectdreams.loritta.commands.utils.*
 import net.perfectdreams.loritta.commands.utils.declarations.*
 import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.LocaleManager
-import net.perfectdreams.loritta.common.services.Services
-import net.perfectdreams.loritta.common.services.memory.MemoryServices
-import net.perfectdreams.loritta.common.services.memory.MemoryUserProfileService
+import net.perfectdreams.loritta.common.pudding.services.PuddingServices
 import net.perfectdreams.loritta.common.utils.ConfigUtils
 import net.perfectdreams.loritta.common.utils.config.LorittaConfig
 import net.perfectdreams.loritta.discord.LorittaDiscord
@@ -43,10 +41,12 @@ import net.perfectdreams.loritta.platform.discord.utils.ChannelInfoExecutor
 import net.perfectdreams.loritta.platform.discord.utils.declarations.ChannelInfoCommand
 import net.perfectdreams.loritta.platform.interaktions.commands.CommandManager
 import net.perfectdreams.loritta.platform.interaktions.utils.config.DiscordInteractionsConfig
+import net.perfectdreams.loritta.platform.interaktions.utils.config.PuddingConfig
 import net.perfectdreams.loritta.platform.interaktions.webserver.InteractionsServer
 
 class LorittaInteraKTions(
     config: LorittaConfig,
+    val puddingConfig: PuddingConfig,
     discordConfig: LorittaDiscordConfig,
     val interactionsConfig: DiscordInteractionsConfig,
     override val emotes: Emotes
@@ -66,7 +66,11 @@ class LorittaInteraKTions(
         expectSuccess = false
     }
 
-    override val services = MemoryServices()
+    override val services = PuddingServices(
+        puddingConfig.puddingUrl,
+        puddingConfig.authorization,
+        http
+    )
 
     fun start() {
         localeManager.loadLocales()

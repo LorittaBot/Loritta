@@ -9,6 +9,7 @@ plugins {
 repositories {
     maven("https://repo.perfectdreams.net/")
     maven("https://oss.sonatype.org/content/repositories/snapshots")
+    mavenLocal()
 }
 
 kotlin {
@@ -24,7 +25,7 @@ kotlin {
             dependencies {
                 implementation(project(":common"))
                 implementation(project(":commands"))
-                implementation(project(":in-memory-services"))
+                implementation(project(":services:pudding"))
                 implementation(project(":discord:common"))
                 implementation(project(":discord:commands"))
 
