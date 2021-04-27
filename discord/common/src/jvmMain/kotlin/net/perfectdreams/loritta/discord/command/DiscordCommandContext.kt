@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.discord.command
 
 import net.perfectdreams.loritta.common.commands.CommandContext
-import net.perfectdreams.loritta.common.entities.User
+import net.perfectdreams.loritta.common.pudding.entities.User
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.discord.LorittaDiscord
 import net.perfectdreams.loritta.discord.objects.LorittaDiscordMessageChannel

@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.discord.objects
 
 import kotlinx.datetime.Instant
-import net.perfectdreams.loritta.common.entities.MessageChannel
+import net.perfectdreams.loritta.common.pudding.entities.MessageChannel
 
 interface LorittaDiscordChannel {
     val id: Long

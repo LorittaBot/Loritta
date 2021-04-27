@@ -2,10 +2,15 @@ rootProject.name = "loritta-parent"
 
 include(":common")
 
-include(":in-memory-services")
+include(":services:memory")
+include(":services:pudding")
 
 // ===[ COMMANDS ]===
 include(":commands")
+
+// ===[ SERVICES ]===
+include(":services:memory")
+include(":services:pudding")
 
 // ===[ CLI ]===
 include(":cli")

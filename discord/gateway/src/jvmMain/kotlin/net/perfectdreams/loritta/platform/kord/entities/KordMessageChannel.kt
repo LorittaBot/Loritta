@@ -7,8 +7,8 @@ import dev.kord.rest.builder.message.EmbedBuilder
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toKotlinInstant
-import net.perfectdreams.loritta.common.entities.LorittaEmbed
-import net.perfectdreams.loritta.common.entities.LorittaMessage
+import net.perfectdreams.loritta.common.pudding.entities.LorittaEmbed
+import net.perfectdreams.loritta.common.pudding.entities.LorittaMessage
 import net.perfectdreams.loritta.discord.objects.LorittaDiscordMessageChannel
 
 class KordMessageChannel(private val handle: dev.kord.core.entity.channel.MessageChannel) : LorittaDiscordMessageChannel {
