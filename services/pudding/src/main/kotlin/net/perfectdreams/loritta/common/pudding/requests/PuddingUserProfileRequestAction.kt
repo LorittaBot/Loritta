@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.common.pudding.requests
 
-import net.perfectdreams.loritta.common.memory.requests.UserProfileRequestAction
+import net.perfectdreams.loritta.common.requests.UserProfileRequestAction
 import net.perfectdreams.loritta.common.pudding.services.PuddingUserProfileService
 import net.perfectdreams.loritta.common.pudding.entities.PuddingUserProfile
 

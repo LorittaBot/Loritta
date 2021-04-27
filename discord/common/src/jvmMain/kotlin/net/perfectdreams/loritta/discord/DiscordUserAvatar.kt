@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.discord
 
-import net.perfectdreams.loritta.common.pudding.entities.UserAvatar
+import net.perfectdreams.loritta.common.entities.UserAvatar
 
 // Inspired by Kord
 // https://github.com/kordlib/kord/blob/ce7f0a12e6b9267e2d13f7995a29c903e6d0edd8/core/src/main/kotlin/entity/User.kt#L85

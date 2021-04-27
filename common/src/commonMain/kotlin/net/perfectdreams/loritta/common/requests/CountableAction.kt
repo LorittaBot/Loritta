@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.common.pudding.requests
+package net.perfectdreams.loritta.common.requests
 
 interface CountableAction {
     suspend fun retrieveCount(): Long

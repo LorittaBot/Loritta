@@ -1,7 +1,7 @@
-package net.perfectdreams.loritta.common.pudding.services
+package net.perfectdreams.loritta.common.services
 
-import net.perfectdreams.loritta.common.pudding.entities.UserProfile
-import net.perfectdreams.loritta.common.pudding.requests.UserProfileRequestAction
+import net.perfectdreams.loritta.common.entities.UserProfile
+import net.perfectdreams.loritta.common.requests.UserProfileRequestAction
 
 interface UserProfileService {
     /**

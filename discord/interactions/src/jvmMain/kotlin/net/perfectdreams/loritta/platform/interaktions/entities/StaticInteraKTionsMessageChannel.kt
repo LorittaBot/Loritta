@@ -4,7 +4,7 @@ import dev.kord.common.entity.DiscordChannel
 import dev.kord.common.entity.optional.value
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toKotlinInstant
-import net.perfectdreams.loritta.common.pudding.entities.LorittaMessage
+import net.perfectdreams.loritta.common.entities.LorittaMessage
 import net.perfectdreams.loritta.discord.objects.LorittaDiscordMessageChannel
 
 open class StaticInteraKTionsMessageChannel(handle: DiscordChannel): LorittaDiscordMessageChannel {
