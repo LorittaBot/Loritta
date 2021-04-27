@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.platform.kord.entities
 
-import net.perfectdreams.loritta.common.pudding.entities.User
-import net.perfectdreams.loritta.common.pudding.entities.UserAvatar
+import net.perfectdreams.loritta.common.entities.User
+import net.perfectdreams.loritta.common.entities.UserAvatar
 import net.perfectdreams.loritta.discord.DiscordUserAvatar
 
 class KordUser(private val handle: dev.kord.core.entity.User) : User {

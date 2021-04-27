@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.common.pudding.services
+package net.perfectdreams.loritta.common.services
 
 abstract class Services {
     abstract val profiles: UserProfileService

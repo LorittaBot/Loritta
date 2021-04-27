@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.platform.interaktions.entities
 
-import net.perfectdreams.loritta.common.pudding.entities.User
+import net.perfectdreams.loritta.common.entities.User
 import net.perfectdreams.loritta.discord.DiscordUserAvatar
 
 class InteraKTionsUser(val user: net.perfectdreams.discordinteraktions.api.entities.User) : User {

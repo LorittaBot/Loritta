@@ -1,3 +1,3 @@
-package net.perfectdreams.loritta.common.pudding.requests
+package net.perfectdreams.loritta.common.requests
 
 interface CountableRequestAction<T> : RequestAction<T>, CountableAction

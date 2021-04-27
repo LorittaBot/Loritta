@@ -5,7 +5,7 @@ import dev.kord.common.entity.MessageFlag
 import dev.kord.common.entity.MessageFlags
 import dev.kord.common.entity.Snowflake
 import net.perfectdreams.discordinteraktions.context.SlashCommandContext
-import net.perfectdreams.loritta.common.pudding.entities.LorittaMessage
+import net.perfectdreams.loritta.common.entities.LorittaMessage
 
 class InteraKTionsMessageChannelHandler(handle: DiscordChannel, private val context: SlashCommandContext) : StaticInteraKTionsMessageChannel(handle) {
     override suspend fun sendMessage(message: LorittaMessage) {

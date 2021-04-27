@@ -1,8 +1,8 @@
-package net.perfectdreams.loritta.common.memory.requests.memory
+package net.perfectdreams.loritta.common.memory.requests
 
-import net.perfectdreams.loritta.common.pudding.entities.UserProfile
-import net.perfectdreams.loritta.common.memory.requests.UserProfileRequestAction
-import net.perfectdreams.loritta.common.memory.services.memory.MemoryUserProfileService
+import net.perfectdreams.loritta.common.entities.UserProfile
+import net.perfectdreams.loritta.common.requests.UserProfileRequestAction
+import net.perfectdreams.loritta.common.memory.services.MemoryUserProfileService
 
 class MemoryUserProfileRequestAction(
     private val service: MemoryUserProfileService,
