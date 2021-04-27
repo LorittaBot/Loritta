@@ -10,7 +10,7 @@ object ChannelInfoCommand: CommandDeclaration {
     const val LOCALE_PREFIX = "commands.command.channelinfo"
 
     override fun declaration(): CommandDeclarationBuilder = command(listOf("channelinfo"), CommandCategory.UTILS) {
-        description = LocaleKeyData("TODO_FIX_THIS")
+        description = LocaleKeyData("$LOCALE_PREFIX.description")
         executor = ChannelInfoExecutor
         allowedInPrivateChannel = false
     }
