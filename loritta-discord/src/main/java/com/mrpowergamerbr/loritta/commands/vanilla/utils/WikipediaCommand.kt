@@ -60,7 +60,7 @@ class WikipediaCommand : AbstractCommand("wikipedia", listOf("wiki"), CommandCat
 
 			try {
 				val query = StringUtils.join(context.args, " ", if (hasValidLanguageId) 1 else 0, context.args.size)
-				val wikipediaResponse = HttpRequest.get("https://" + languageId + ".wikipedia.org/w/api.php?format=json&action=query&prop=extracts&redirects=1&exintro=&explaintext=&titles=" + URLEncoder.encode(query, "UTF-8")).body()
+				val wikipediaResponse = HttpRequest.get("https://" + languageId + ".wikipedia.org/w/api.php?format=json&action=query&prop=extracts|info&inprop=url&redirects=1&exintro=&explaintext=&titles=" + URLEncoder.encode(query, "UTF-8")).body()
 				val wikipedia = JsonParser.parseString(wikipediaResponse).asJsonObject // Base
 				val wikiQuery = wikipedia.getAsJsonObject("query") // Query
 				val wikiPages = wikiQuery.getAsJsonObject("pages") // Páginas
@@ -72,9 +72,10 @@ class WikipediaCommand : AbstractCommand("wikipedia", listOf("wiki"), CommandCat
 					// Se não é -1, então é algo que existe! Yay!
 					val pageTitle = entryWikiContent.value.asJsonObject.get("title").asString
 					val pageExtract = entryWikiContent.value.asJsonObject.get("extract").asString
+					val pageUrl = entryWikiContent.value.asJsonObject.get("fullurl").asString
 
 					val embed = EmbedBuilder()
-							.setTitle("<:wikipedia:400981794666840084> $pageTitle", null)
+							.setTitle("<:wikipedia:400981794666840084> $pageTitle", pageUrl)
 							.setColor(Color.BLACK)
 							.setDescription(if (pageExtract.length > 512) pageExtract.substring(0, 509) + "..." else pageExtract)
 
