@@ -29,6 +29,12 @@ import net.perfectdreams.loritta.commands.misc.KkEaeMenExecutor
 import net.perfectdreams.loritta.commands.misc.declarations.KkEaeMenCommand
 import net.perfectdreams.loritta.commands.utils.*
 import net.perfectdreams.loritta.commands.utils.declarations.*
+import net.perfectdreams.loritta.commands.videos.AttackOnHeartExecutor
+import net.perfectdreams.loritta.commands.videos.CarlyAaahExecutor
+import net.perfectdreams.loritta.commands.videos.FansExplainingExecutor
+import net.perfectdreams.loritta.commands.videos.declarations.AttackOnHeartCommand
+import net.perfectdreams.loritta.commands.videos.declarations.CarlyAaahCommand
+import net.perfectdreams.loritta.commands.videos.declarations.FansExplainingCommand
 import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.pudding.services.PuddingServices
@@ -162,7 +168,6 @@ class LorittaInteraKTions(
         commandManager.register(AtaCommand, MonicaAtaExecutor(emotes, http), ChicoAtaExecutor(emotes, http), LoriAtaExecutor(emotes, http), GessyAtaExecutor(emotes, http))
         commandManager.register(DrakeCommand, DrakeExecutor(emotes, http), BolsoDrakeExecutor(emotes, http), LoriDrakeExecutor(emotes, http))
         commandManager.register(ManiaTitleCardCommand, ManiaTitleCardExecutor(http))
-
         commandManager.register(ArtCommand, ArtExecutor(emotes, http))
         commandManager.register(BobBurningPaperCommand, BobBurningPaperExecutor(emotes, http))
         commandManager.register(BolsonaroCommand, BolsonaroExecutor(emotes, http), Bolsonaro2Executor(emotes, http), BolsoFrameExecutor(emotes, http))
@@ -179,8 +184,6 @@ class LorittaInteraKTions(
         commandManager.register(RomeroBrittoCommand, RomeroBrittoExecutor(emotes, http))
         commandManager.register(StudiopolisTvCommand, StudiopolisTvExecutor(emotes, http))
         commandManager.register(SustoCommand, SustoExecutor(emotes, http))
-        commandManager.register(AttackOnHeartCommand, AttackOnHeartExecutor(emotes, http))
-        commandManager.register(CarlyAaahCommand, CarlyAaahExecutor(emotes, http))
         commandManager.register(CortesFlowCommand, CortesFlowExecutor(http))
         commandManager.register(KnuxThrowCommand, KnuxThrowExecutor(emotes, http))
         commandManager.register(CepoDeMadeiraCommand, CepoDeMadeiraExecutor(emotes, http))
@@ -191,6 +194,11 @@ class LorittaInteraKTions(
         commandManager.register(SAMCommand, SAMExecutor(http))
         commandManager.register(ToBeContinuedCommand, ToBeContinuedExecutor(emotes, http))
         commandManager.register(InvertColorsCommand, InvertColorsExecutor(emotes, http))
+
+        // ===[ VIDEOS ]===
+        commandManager.register(CarlyAaahCommand, CarlyAaahExecutor(emotes, http))
+        commandManager.register(AttackOnHeartCommand, AttackOnHeartExecutor(emotes, http))
+        commandManager.register(FansExplainingCommand, FansExplainingExecutor(http))
 
         // ===[ UTILS ]===
         commandManager.register(MorseCommand, MorseFromExecutor(emotes), MorseToExecutor(emotes))

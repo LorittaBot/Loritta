@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.commands.images
+package net.perfectdreams.loritta.commands.videos
 
 import io.ktor.client.*
 import net.perfectdreams.loritta.commands.images.base.GabrielaImageServerSingleCommandBase

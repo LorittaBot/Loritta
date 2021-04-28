@@ -191,7 +191,7 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
             CommandCategory.SOCIAL -> TODO()
             CommandCategory.ACTION -> TODO()
             CommandCategory.ECONOMY -> "\uD83D\uDCB8"
-            CommandCategory.VIDEOS -> TODO()
+            CommandCategory.VIDEOS -> "\uD83C\uDFAC"
             CommandCategory.FORTNITE -> TODO()
             CommandCategory.MAGIC -> TODO()
         }
