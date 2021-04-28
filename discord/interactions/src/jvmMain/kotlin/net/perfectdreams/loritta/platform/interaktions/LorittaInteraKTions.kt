@@ -194,6 +194,7 @@ class LorittaInteraKTions(
         commandManager.register(SAMCommand, SAMExecutor(http))
         commandManager.register(ToBeContinuedCommand, ToBeContinuedExecutor(emotes, http))
         commandManager.register(InvertColorsCommand, InvertColorsExecutor(emotes, http))
+        commandManager.register(MemeMakerCommand, MemeMakerExecutor(http))
 
         // ===[ VIDEOS ]===
         commandManager.register(CarlyAaahCommand, CarlyAaahExecutor(emotes, http))
