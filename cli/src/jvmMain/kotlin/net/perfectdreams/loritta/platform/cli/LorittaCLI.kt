@@ -22,6 +22,10 @@ import net.perfectdreams.loritta.commands.misc.declarations.KkEaeMenCommand
 import net.perfectdreams.loritta.commands.misc.declarations.PingCommand
 import net.perfectdreams.loritta.commands.utils.*
 import net.perfectdreams.loritta.commands.utils.declarations.*
+import net.perfectdreams.loritta.commands.videos.AttackOnHeartExecutor
+import net.perfectdreams.loritta.commands.videos.CarlyAaahExecutor
+import net.perfectdreams.loritta.commands.videos.declarations.AttackOnHeartCommand
+import net.perfectdreams.loritta.commands.videos.declarations.CarlyAaahCommand
 import net.perfectdreams.loritta.common.LorittaBot
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.memory.services.MemoryServices
