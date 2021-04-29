@@ -26,8 +26,8 @@ kotlin {
                 implementation(project(":common"))
                 implementation(project(":commands"))
                 implementation(project(":services:pudding"))
-                implementation(project(":discord:common"))
-                implementation(project(":discord:commands"))
+                implementation(project(":platforms:discord:common"))
+                implementation(project(":platforms:discord:commands"))
 
                 implementation("net.perfectdreams.discordinteraktions:core:0.0.4-SNAPSHOT")
 

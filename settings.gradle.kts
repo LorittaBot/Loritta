@@ -15,8 +15,16 @@ include(":services:pudding")
 // ===[ CLI ]===
 include(":cli")
 
+//// ===[ PLATFORMS ]===
+
+// ===[ CLI ]===
+include(":platforms:cli")
+
 // ===[ DISCORD ]===
-include(":discord:common")
-include(":discord:gateway")
-include(":discord:commands")
-include(":discord:interactions")
+include(":platforms:discord:common")
+include(":platforms:discord:gateway")
+include(":platforms:discord:commands")
+include(":platforms:discord:interactions")
+
+// ===[ TWITTER ]===
+include(":platforms:twitter")

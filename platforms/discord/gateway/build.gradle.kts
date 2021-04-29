@@ -19,7 +19,9 @@ kotlin {
             dependencies {
                 implementation(project(":common"))
                 implementation(project(":commands"))
-                implementation(project(":discord:common"))
+                implementation(project(":services:memory"))
+                implementation(project(":platforms:discord:common"))
+                implementation(project(":platforms:discord:commands"))
                 implementation("dev.kord:kord-core:0.7.x-SNAPSHOT")
             }
         }
