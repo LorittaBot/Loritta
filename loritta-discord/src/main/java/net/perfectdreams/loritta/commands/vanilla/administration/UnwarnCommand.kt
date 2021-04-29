@@ -66,7 +66,7 @@ class UnwarnCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta
                 return@executesDiscord
             }
 
-            if (args[1] == "all") {
+            if (args.getOrNull(1) == "all") {
                 loritta.newSuspendedTransaction {
                     Warns.deleteWhere { (Warns.guildId eq guild.idLong) and (Warns.userId eq user.id) }
                 }
@@ -88,8 +88,10 @@ class UnwarnCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta
                 return@executesDiscord
             }
 
-            val warnIndex = if (args.size >= 2) {
-                if (args[1].toIntOrNull() == null) {
+            var warnIndex = 0
+
+            if (args.size >= 2) {
+                if (args[1].toIntOrNull() == null && args.getOrNull(1) == "all") {
                     reply(
                         LorittaReply(
                             locale["commands.invalidNumber", args[1]],
@@ -99,8 +101,8 @@ class UnwarnCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta
                     return@executesDiscord
                 }
 
-                args[1].toInt()
-            } else warns.size
+                warnIndex = args[1].toInt()
+            } else warnIndex = warns.size
 
             if (warnIndex > warns.size) {
                 reply(
