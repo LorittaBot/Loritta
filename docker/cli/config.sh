@@ -1,7 +1,7 @@
-echo "Setting up, using folder $2"
+echo "Setting up, using folder $1"
 
 # Make it executable
-chmod -x $2/files/start.sh
+chmod -x $1/files/start.sh
 
 # Copy the JAR
 cp platforms/cli/build/libs/cli-*-all.jar $2/files/cinnamon-cli.jar
