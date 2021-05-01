@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version Versions.KOTLIN
@@ -19,6 +20,10 @@ dependencies {
 
     implementation("blue.starry:penicillin:6.1.0")
     implementation("io.ktor:ktor-client-cio:1.5.4")
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions.jvmTarget = "1.8"
 }
 
 tasks.withType<ShadowJar> {
