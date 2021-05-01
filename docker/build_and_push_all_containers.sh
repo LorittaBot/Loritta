@@ -1,1 +1,1 @@
-sh build_and_push_container.sh cinnamon-cli cli
+sh ${0%/*}/build_and_push_container.sh cinnamon-cli cli
