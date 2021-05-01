@@ -32,3 +32,7 @@ jobs:
     # Runs a single command using the runners shell
     - name: Build with Gradle
       run: "./gradlew build -Dgithub.build.id=$GITHUB_RUN_ID -Dbuild.number=$GITHUB_RUN_NUMBER -Dgit.branch=$GITHUB_REF -Dcommit.hash=$GITHUB_SHA -Dcompiled.at=${{ steps.current-time.outputs.time }}"
+
+    - name: Build and Push Docker Images
+      run: |
+        sh docker/build_and_push_all_containers.sh
