@@ -7,6 +7,9 @@ echo "Building $IMAGE_NAME by $GITHUB_REPO_OWNER... Folder: $2"
 # Login to GitHub's Container Repository
 echo "$GITHUB_TOKEN" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
 
+# Run setup
+sh $2/config.sh $2
+
 # Build container
 docker build $2 --file $2/Dockerfile --tag cinnamon-cli --label "runnumber=${GITHUB_RUN_ID}"
 
