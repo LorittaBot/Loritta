@@ -35,7 +35,9 @@ jobs:
 
     - name: Build and Push Docker Images
       env:
-        USERNAME: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
-        PASSWORD: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_ACTOR: ${{ github.actor }}
+        GITHUB_REPO_OWNER: ${{ github.repository_owner }}
+        GITHUB_REF: ${{ github.ref }}
       run: |
         sh docker/build_and_push_all_containers.sh
