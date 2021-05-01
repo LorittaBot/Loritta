@@ -1,3 +1,5 @@
+echo "Setting up, using folder $2"
+
 # Make it executable
 chmod -x $2/files/start.sh
 

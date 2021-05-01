@@ -1,23 +1,26 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
-    kotlin("multiplatform") version Versions.KOTLIN
+    kotlin("jvm") version Versions.KOTLIN
+    id("com.github.johnrengelman.shadow") version "5.2.0"
 }
 
-kotlin {
-    jvm {
-        compilations.all {
-            kotlinOptions.jvmTarget = "1.8"
-        }
-        withJava()
-    }
+dependencies {
+    implementation(project(":common"))
+    implementation(project(":commands"))
+    implementation(project(":services:memory"))
+    implementation("io.ktor:ktor-client-cio:1.5.3")
+}
 
-    sourceSets {
-        commonMain {
-            dependencies {
-                implementation(project(":common"))
-                implementation(project(":commands"))
-                implementation(project(":services:memory"))
-                implementation("io.ktor:ktor-client-cio:1.5.3")
-            }
-        }
+// CLI
+tasks.withType<ShadowJar> {
+    manifest {
+        attributes["Main-Class"] = "net.perfectdreams.loritta.platform.cli.LorittaCLILauncher"
+    }
+}
+
+tasks {
+    build {
+        dependsOn(shadowJar)
     }
 }
