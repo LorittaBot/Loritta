@@ -2,10 +2,12 @@
 # $2 = Folder
 IMAGE_NAME=$1
 
+echo "Building $IMAGE_NAME by $GITHUB_REPO_OWNER... Folder: $2"
+
 # Login to GitHub's Container Repository
 echo "$GITHUB_TOKEN" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
 
-# Build cli
+# Build container
 docker build $2 --file Dockerfile --tag cinnamon-cli --label "runnumber=${GITHUB_RUN_ID}"
 
 IMAGE_ID=ghcr.io/$GITHUB_REPO_OWNER/$IMAGE_NAME
