@@ -1,5 +1,5 @@
 # Make it executable
-chmod -x start.sh
+chmod -x $2/start.sh
 
 # Copy the JAR
-cp platforms/cli/build/libs/cli-*-all.jar docker/cli/files/cinnamon-cli.jar
+cp platforms/cli/build/libs/cli-*-all.jar $2/files/cinnamon-cli.jar
