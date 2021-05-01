@@ -145,7 +145,7 @@ class CommandManager(val loritta: LorittaCLI) {
                     }
                 } else if (labels.size == 3) {
                     val secondLabel = labels[1]
-                    val thirdLabel = labels[1]
+                    val thirdLabel = labels[2]
 
                     // If not, let's check subcommand groups and subcommands
                     for (group in declaration.subcommandGroups) {
