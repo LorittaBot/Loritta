@@ -30,7 +30,7 @@ kotlin {
                 api("org.jetbrains.kotlinx:kotlinx-datetime:0.1.1")
 
                 // Used for Math stuff
-                api("com.ionspin.kotlin:bignum:0.3.0-SNAPSHOT")
+                api("com.ionspin.kotlin:bignum:0.3.0")
             }
         }
 
