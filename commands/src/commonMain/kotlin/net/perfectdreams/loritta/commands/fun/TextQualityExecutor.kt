@@ -7,12 +7,11 @@ import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDec
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.common.utils.text.VaporwaveUtils
 
 class TextQualityExecutor(val emotes: Emotes) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(TextQualityExecutor::class) {
         object Options : CommandOptions() {
-            val text = string("text", LocaleKeyData("TODO_FIX_THIS"))
+            val text = string("text", LocaleKeyData("commands.command.vaporwave.options.text"))
                 .register()
         }
 

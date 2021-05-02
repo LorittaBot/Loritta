@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.common.utils.math.MathUtils
 class AnagramExecutor(val emotes: Emotes) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(AnagramExecutor::class) {
         object Options : CommandOptions() {
-            val text = string("text", LocaleKeyData("TODO_FIX_THIS"))
+            val text = string("text", LocaleKeyData("commands.command.anagram.options.text"))
                 .register()
         }
 

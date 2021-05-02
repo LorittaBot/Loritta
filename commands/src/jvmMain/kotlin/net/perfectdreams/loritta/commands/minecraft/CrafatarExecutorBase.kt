@@ -16,7 +16,7 @@ open class CrafatarExecutorBase(
 ) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(CrafatarExecutorBase::class) {
         object Options : CommandOptions() {
-            val username = string("player_name", LocaleKeyData("TODO_FIX_THIS"))
+            val username = string("player_name", LocaleKeyData("commands.category.minecraft.playerNameJavaEdition"))
                 .register()
         }
 

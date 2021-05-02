@@ -29,7 +29,7 @@ class TextVemDeZapExecutor(val emotes: Emotes, val random: Random) : CommandExec
                 .choice(4, LocaleKeyData("commands.command.vemdezap.level5"))
                 .register()
 
-            val text = string("text", LocaleKeyData("TODO_FIX_THIS"))
+            val text = string("text", LocaleKeyData("commands.command.vemdezap.selectText"))
                 .register()
         }
 

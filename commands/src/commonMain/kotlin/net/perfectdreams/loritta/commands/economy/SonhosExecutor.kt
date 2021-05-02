@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 class SonhosExecutor(val emotes: Emotes) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(SonhosExecutor::class) {
         object Options : CommandOptions() {
-            val user = optionalUser("user", LocaleKeyData("TODO_FIX_THIS"))
+            val user = optionalUser("user", LocaleKeyData("commands.command.sonhos.options.user"))
                 .register()
         }
 

@@ -18,13 +18,13 @@ import net.perfectdreams.loritta.common.utils.gabrielaimageserver.executeAndHand
 class SAMExecutor(val emotes: Emotes, val client: GabrielaImageServerClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(SAMExecutor::class) {
         object Options : CommandOptions() {
-            val type = string("type", LocaleKeyData("${SAMCommand.LOCALE_PREFIX}.selectLogo"))
-                .choice("1", LocaleKeyData("${SAMCommand.LOCALE_PREFIX}.sam1"))
-                .choice("2", LocaleKeyData("${SAMCommand.LOCALE_PREFIX}.sam2"))
-                .choice("3", LocaleKeyData("${SAMCommand.LOCALE_PREFIX}.sam3"))
+            val type = string("type", LocaleKeyData("${SAMCommand.LOCALE_PREFIX}.options.selectLogo"))
+                .choice("1", LocaleKeyData("${SAMCommand.LOCALE_PREFIX}.options.sam1"))
+                .choice("2", LocaleKeyData("${SAMCommand.LOCALE_PREFIX}.options.sam2"))
+                .choice("3", LocaleKeyData("${SAMCommand.LOCALE_PREFIX}.options.sam3"))
                 .register()
 
-            val imageReference = imageReference("image", LocaleKeyData("TODO_FIX_THIS"))
+            val imageReference = imageReference("image", LocaleKeyData("${SAMCommand.LOCALE_PREFIX}.options.image"))
                 .register()
         }
 

@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.platform.discord.utils
 
-import net.perfectdreams.loritta.platform.discord.utils.declarations.AvatarCommand
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandContext
 import net.perfectdreams.loritta.common.commands.CommandExecutor
@@ -10,11 +9,12 @@ import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.embed.LorittaColor
 import net.perfectdreams.loritta.common.utils.embed.embed
+import net.perfectdreams.loritta.platform.discord.utils.declarations.AvatarCommand
 
 class AvatarExecutor : CommandExecutor() {
     companion object : CommandExecutorDeclaration(AvatarExecutor::class) {
         object Options : CommandOptions() {
-            val user = optionalUser("user", LocaleKeyData("TODO_FIX_THIS"))
+            val user = optionalUser("user", LocaleKeyData("${AvatarCommand.LOCALE_PREFIX}.options.user"))
                 .register()
         }
 

@@ -14,7 +14,7 @@ class ChooseExecutor(val emotes: Emotes) : CommandExecutor() {
         object Options : CommandOptions() {
             val choices = stringList(
                 "choice",
-                LocaleKeyData("TODO_FIX_THIS"),
+                LocaleKeyData("${ChooseCommand.LOCALE_PREFIX}.options.selectionList"),
                 minimum = 2, maximum = 25
             ).register()
         }
