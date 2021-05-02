@@ -1,23 +1,21 @@
 package net.perfectdreams.loritta.commands.videos
 
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import kotlinx.serialization.json.addJsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
-import net.perfectdreams.loritta.commands.images.declarations.ManiaTitleCardCommand
 import net.perfectdreams.loritta.commands.videos.declarations.FansExplainingCommand
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandContext
 import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
+import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.utils.gabrielaimageserver.GabrielaImageServerClient
+import net.perfectdreams.loritta.common.utils.gabrielaimageserver.executeAndHandleExceptions
 
-class FansExplainingExecutor(val http: HttpClient) : CommandExecutor() {
+class FansExplainingExecutor(val emotes: Emotes, val client: GabrielaImageServerClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(FansExplainingExecutor::class) {
         object Options : CommandOptions() {
             val section1Line1 = string("section1_line1", LocaleKeyData("${FansExplainingCommand.LOCALE_PREFIX}.selectSection1Line1"))
@@ -65,8 +63,11 @@ class FansExplainingExecutor(val http: HttpClient) : CommandExecutor() {
         val section5Line1 = args[options.section5Line1]
         val section5Line2 = args[options.section5Line2]
 
-        val response = http.post<HttpResponse>("https://gabriela.loritta.website/api/v1/videos/fans-explaining") {
-            body = buildJsonObject {
+        val result = client.executeAndHandleExceptions(
+            context,
+            emotes,
+            "/api/v1/videos/fans-explaining",
+            buildJsonObject {
                 putJsonArray("strings") {
                     addJsonObject {
                         put("string", section1Line1)
@@ -99,12 +100,9 @@ class FansExplainingExecutor(val http: HttpClient) : CommandExecutor() {
                         put("string", section5Line2)
                     }
                 }
-            }.toString()
-        }
+            }
+        )
 
-        println(response.status)
-
-        val result = response.receive<ByteArray>()
         context.sendMessage {
             addFile("fans_explaining.mp4", result)
         }

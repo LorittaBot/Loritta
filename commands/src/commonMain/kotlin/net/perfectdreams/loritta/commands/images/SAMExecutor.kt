@@ -1,9 +1,5 @@
 package net.perfectdreams.loritta.commands.images
 
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import kotlinx.serialization.json.addJsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -14,9 +10,12 @@ import net.perfectdreams.loritta.common.commands.CommandContext
 import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
+import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.utils.gabrielaimageserver.GabrielaImageServerClient
+import net.perfectdreams.loritta.common.utils.gabrielaimageserver.executeAndHandleExceptions
 
-class SAMExecutor(val http: HttpClient) : CommandExecutor() {
+class SAMExecutor(val emotes: Emotes, val client: GabrielaImageServerClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(SAMExecutor::class) {
         object Options : CommandOptions() {
             val type = string("type", LocaleKeyData("${SAMCommand.LOCALE_PREFIX}.selectLogo"))
@@ -36,20 +35,20 @@ class SAMExecutor(val http: HttpClient) : CommandExecutor() {
         val type = args[options.type]
         val imageReference = args[options.imageReference]
 
-        val response = http.post<HttpResponse>("https://gabriela.loritta.website/api/v1/images/sam/$type") {
-            body = buildJsonObject {
+        val result = client.executeAndHandleExceptions(
+            context,
+            emotes,
+            "/api/v1/images/sam/$type",
+            buildJsonObject {
                 putJsonArray("images") {
                     addJsonObject {
                         put("type", "url")
                         put("content", imageReference.url)
                     }
                 }
-            }.toString()
-        }
+            }
+        )
 
-        println(response.status)
-
-        val result = response.receive<ByteArray>()
         context.sendMessage {
             addFile("sam_logo.png", result)
         }
