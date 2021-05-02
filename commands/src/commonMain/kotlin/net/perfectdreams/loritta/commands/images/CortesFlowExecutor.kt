@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.gabrielaimageserver.GabrielaImageServerClient
 import net.perfectdreams.loritta.common.utils.gabrielaimageserver.executeAndHandleExceptions
+import net.perfectdreams.loritta.common.utils.text.TextUtils
 
 class CortesFlowExecutor(val emotes: Emotes, val client: GabrielaImageServerClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(CortesFlowExecutor::class) {
@@ -21,7 +22,7 @@ class CortesFlowExecutor(val emotes: Emotes, val client: GabrielaImageServerClie
             val type = string("thumbnail", LocaleKeyData("${CortesFlowCommand.LOCALE_PREFIX}.selectThumbnail"))
                 .also { option ->
                     CortesFlowCommand.lists.forEach {
-                        option.choice(it, LocaleKeyData(it))
+                        option.choice(it, LocaleKeyData("${CortesFlowCommand.LOCALE_PREFIX}.thumbnails.${TextUtils.kebabToLowerCamelCase(it)}"))
                     }
                 }
                 .register()
