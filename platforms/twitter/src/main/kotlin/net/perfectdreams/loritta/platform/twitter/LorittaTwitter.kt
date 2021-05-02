@@ -22,7 +22,6 @@ import net.perfectdreams.loritta.commands.images.BuckShirtExecutor
 import net.perfectdreams.loritta.commands.images.CanellaDvdExecutor
 import net.perfectdreams.loritta.commands.images.CepoDeMadeiraExecutor
 import net.perfectdreams.loritta.commands.images.ChicoAtaExecutor
-import net.perfectdreams.loritta.commands.images.CortesFlowExecutor
 import net.perfectdreams.loritta.commands.images.DrakeExecutor
 import net.perfectdreams.loritta.commands.images.EdnaldoBandeiraExecutor
 import net.perfectdreams.loritta.commands.images.EdnaldoTvExecutor
@@ -53,7 +52,6 @@ import net.perfectdreams.loritta.commands.images.declarations.BriggsCoverCommand
 import net.perfectdreams.loritta.commands.images.declarations.BuckShirtCommand
 import net.perfectdreams.loritta.commands.images.declarations.CanellaDvdCommand
 import net.perfectdreams.loritta.commands.images.declarations.CepoDeMadeiraCommand
-import net.perfectdreams.loritta.commands.images.declarations.CortesFlowCommand
 import net.perfectdreams.loritta.commands.images.declarations.DrakeCommand
 import net.perfectdreams.loritta.commands.images.declarations.EdnaldoCommand
 import net.perfectdreams.loritta.commands.images.declarations.GetOverHereCommand
@@ -76,6 +74,7 @@ import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.memory.services.MemoryServices
 import net.perfectdreams.loritta.common.utils.ConfigUtils
 import net.perfectdreams.loritta.common.utils.config.LorittaConfig
+import net.perfectdreams.loritta.common.utils.gabrielaimageserver.GabrielaImageServerClient
 import net.perfectdreams.loritta.platform.twitter.commands.CommandManager
 import net.perfectdreams.loritta.platform.twitter.utils.config.TwitterConfig
 
@@ -101,45 +100,46 @@ class LorittaTwitter(config: LorittaConfig, val twitterConfig: TwitterConfig): L
     }
 
     override val services = MemoryServices()
-
+    val gabrielaImageServerClient = GabrielaImageServerClient("https://gabriela.loritta.website/", http)
+    
     fun start() {
         localeManager.loadLocales()
 
         // ===[ IMAGES ]===
-        commandManager.register(AtaCommand, MonicaAtaExecutor(emotes, http), ChicoAtaExecutor(emotes, http), LoriAtaExecutor(emotes, http), GessyAtaExecutor(emotes, http))
-        commandManager.register(DrakeCommand, DrakeExecutor(emotes, http), BolsoDrakeExecutor(emotes, http), LoriDrakeExecutor(emotes, http))
+        commandManager.register(AtaCommand, MonicaAtaExecutor(emotes, gabrielaImageServerClient), ChicoAtaExecutor(emotes, gabrielaImageServerClient), LoriAtaExecutor(emotes, gabrielaImageServerClient), GessyAtaExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(DrakeCommand, DrakeExecutor(emotes, gabrielaImageServerClient), BolsoDrakeExecutor(emotes, gabrielaImageServerClient), LoriDrakeExecutor(emotes, gabrielaImageServerClient))
         // commandManager.register(ManiaTitleCardCommand, ManiaTitleCardExecutor(http))
-        commandManager.register(ArtCommand, ArtExecutor(emotes, http))
-        commandManager.register(BobBurningPaperCommand, BobBurningPaperExecutor(emotes, http))
-        commandManager.register(BolsonaroCommand, BolsonaroExecutor(emotes, http), Bolsonaro2Executor(emotes, http), BolsoFrameExecutor(emotes, http))
-        commandManager.register(BriggsCoverCommand, BriggsCoverExecutor(emotes, http))
-        commandManager.register(BuckShirtCommand, BuckShirtExecutor(emotes, http))
-        commandManager.register(CanellaDvdCommand, CanellaDvdExecutor(emotes, http))
-        commandManager.register(EdnaldoCommand, EdnaldoBandeiraExecutor(emotes, http), EdnaldoTvExecutor(emotes, http))
-        commandManager.register(LoriSignCommand, LoriSignExecutor(emotes, http))
-        commandManager.register(PassingPaperCommand, PassingPaperExecutor(emotes, http))
-        commandManager.register(PepeDreamCommand, PepeDreamExecutor(emotes, http))
-        commandManager.register(PetPetCommand, PetPetExecutor(emotes, http))
-        commandManager.register(QuadroCommand, QuadroExecutor(emotes, http))
-        commandManager.register(RipTvCommand, RipTvExecutor(emotes, http))
-        commandManager.register(RomeroBrittoCommand, RomeroBrittoExecutor(emotes, http))
-        commandManager.register(StudiopolisTvCommand, StudiopolisTvExecutor(emotes, http))
-        commandManager.register(SustoCommand, SustoExecutor(emotes, http))
-        commandManager.register(CortesFlowCommand, CortesFlowExecutor(http))
-        commandManager.register(KnuxThrowCommand, KnuxThrowExecutor(emotes, http))
-        commandManager.register(CepoDeMadeiraCommand, CepoDeMadeiraExecutor(emotes, http))
-        commandManager.register(GetOverHereCommand, GetOverHereExecutor(emotes, http))
-        commandManager.register(NichijouYuukoPaperCommand, NichijouYuukoPaperExecutor(emotes, http))
-        commandManager.register(TrumpCommand, TrumpExecutor(emotes, http))
+        commandManager.register(ArtCommand, ArtExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(BobBurningPaperCommand, BobBurningPaperExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(BolsonaroCommand, BolsonaroExecutor(emotes, gabrielaImageServerClient), Bolsonaro2Executor(emotes, gabrielaImageServerClient), BolsoFrameExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(BriggsCoverCommand, BriggsCoverExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(BuckShirtCommand, BuckShirtExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(CanellaDvdCommand, CanellaDvdExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(EdnaldoCommand, EdnaldoBandeiraExecutor(emotes, gabrielaImageServerClient), EdnaldoTvExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(LoriSignCommand, LoriSignExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(PassingPaperCommand, PassingPaperExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(PepeDreamCommand, PepeDreamExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(PetPetCommand, PetPetExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(QuadroCommand, QuadroExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(RipTvCommand, RipTvExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(RomeroBrittoCommand, RomeroBrittoExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(StudiopolisTvCommand, StudiopolisTvExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(SustoCommand, SustoExecutor(emotes, gabrielaImageServerClient))
+        // commandManager.register(CortesFlowCommand, CortesFlowExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(KnuxThrowCommand, KnuxThrowExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(CepoDeMadeiraCommand, CepoDeMadeiraExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(GetOverHereCommand, GetOverHereExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(NichijouYuukoPaperCommand, NichijouYuukoPaperExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(TrumpCommand, TrumpExecutor(emotes, gabrielaImageServerClient))
         // commandManager.register(TerminatorAnimeCommand, TerminatorAnimeExecutor(http))
         // commandManager.register(SAMCommand, SAMExecutor(http))
-        commandManager.register(ToBeContinuedCommand, ToBeContinuedExecutor(emotes, http))
-        commandManager.register(InvertColorsCommand, InvertColorsExecutor(emotes, http))
+        commandManager.register(ToBeContinuedCommand, ToBeContinuedExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(InvertColorsCommand, InvertColorsExecutor(emotes, gabrielaImageServerClient))
         // commandManager.register(MemeMakerCommand, MemeMakerExecutor(http))
 
         // ===[ VIDEOS ]===
-        // commandManager.register(CarlyAaahCommand, CarlyAaahExecutor(emotes, http))
-        // commandManager.register(AttackOnHeartCommand, AttackOnHeartExecutor(emotes, http))
+        // commandManager.register(CarlyAaahCommand, CarlyAaahExecutor(emotes, gabrielaImageServerClient))
+        // commandManager.register(AttackOnHeartCommand, AttackOnHeartExecutor(emotes, gabrielaImageServerClient))
         // commandManager.register(FansExplainingCommand, FansExplainingExecutor(http))
 
         runBlocking {

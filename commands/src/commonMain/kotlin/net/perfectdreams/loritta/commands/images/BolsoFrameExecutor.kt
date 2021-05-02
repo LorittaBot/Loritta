@@ -5,13 +5,14 @@ import net.perfectdreams.loritta.commands.images.base.GabrielaImageServerSingleC
 import net.perfectdreams.loritta.commands.images.base.SingleImageOptions
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.emotes.Emotes
+import net.perfectdreams.loritta.common.utils.gabrielaimageserver.GabrielaImageServerClient
 
 class BolsoFrameExecutor(
     emotes: Emotes,
-    http: HttpClient
+    client: GabrielaImageServerClient
 ) : GabrielaImageServerSingleCommandBase(
     emotes,
-    http,
+    client,
     "/api/v1/images/bolso-frame",
     "bolsoframe.png"
 ) {

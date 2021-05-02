@@ -1,31 +1,30 @@
 package net.perfectdreams.loritta.commands.images
 
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import kotlinx.serialization.json.addJsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
-import net.perfectdreams.loritta.commands.images.declarations.ManiaTitleCardCommand
+import net.perfectdreams.loritta.commands.images.declarations.MemeMakerCommand
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandContext
 import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
+import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.utils.gabrielaimageserver.GabrielaImageServerClient
+import net.perfectdreams.loritta.common.utils.gabrielaimageserver.executeAndHandleExceptions
 
-class MemeMakerExecutor(val http: HttpClient) : CommandExecutor() {
+class MemeMakerExecutor(val emotes: Emotes, val client: GabrielaImageServerClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(MemeMakerExecutor::class) {
         object Options : CommandOptions() {
-            val line1 = string("line1", LocaleKeyData("${ManiaTitleCardCommand.LOCALE_PREFIX}.selectLine1"))
+            val line1 = string("line1", LocaleKeyData("${MemeMakerCommand.LOCALE_PREFIX}.selectLine1"))
                 .register()
 
-            val line2 = optionalString("line2", LocaleKeyData("${ManiaTitleCardCommand.LOCALE_PREFIX}.selectLine2"))
+            val line2 = optionalString("line2", LocaleKeyData("${MemeMakerCommand.LOCALE_PREFIX}.selectLine2"))
                 .register()
 
-            val imageReference = imageReference("image", LocaleKeyData("${ManiaTitleCardCommand.LOCALE_PREFIX}.selectImage"))
+            val imageReference = imageReference("image", LocaleKeyData("${MemeMakerCommand.LOCALE_PREFIX}.selectImage"))
                 .register()
         }
 
@@ -37,8 +36,11 @@ class MemeMakerExecutor(val http: HttpClient) : CommandExecutor() {
         val line1 = args[options.line1]
         val line2 = args[options.line2]
 
-        val response = http.post<HttpResponse>("https://gabriela.loritta.website/api/v1/images/meme-maker") {
-            body = buildJsonObject {
+        val result = client.executeAndHandleExceptions(
+            context,
+            emotes,
+            "/api/v1/images/meme-maker",
+            buildJsonObject {
                 putJsonArray("images") {
                     addJsonObject {
                         put("type", "url")
@@ -57,10 +59,9 @@ class MemeMakerExecutor(val http: HttpClient) : CommandExecutor() {
                         }
                     }
                 }
-            }.toString()
-        }
+            }
+        )
 
-        val result = response.receive<ByteArray>()
         context.sendMessage {
             addFile("meme_maker.png", result)
         }

@@ -1,9 +1,5 @@
 package net.perfectdreams.loritta.commands.images
 
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import kotlinx.serialization.json.addJsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -14,9 +10,12 @@ import net.perfectdreams.loritta.common.commands.CommandContext
 import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
+import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.utils.gabrielaimageserver.GabrielaImageServerClient
+import net.perfectdreams.loritta.common.utils.gabrielaimageserver.executeAndHandleExceptions
 
-class ManiaTitleCardExecutor(val http: HttpClient) : CommandExecutor() {
+class ManiaTitleCardExecutor(val emotes: Emotes, val client: GabrielaImageServerClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(ManiaTitleCardExecutor::class) {
         object Options : CommandOptions() {
             val line1 = string("line1", LocaleKeyData("${ManiaTitleCardCommand.LOCALE_PREFIX}.selectLine1"))
@@ -33,8 +32,11 @@ class ManiaTitleCardExecutor(val http: HttpClient) : CommandExecutor() {
         val line1 = args[options.line1]
         val line2 = args[options.line2]
 
-        val response = http.post<HttpResponse>("https://gabriela.loritta.website/api/v1/images/mania-title-card") {
-            body = buildJsonObject {
+        val result = client.executeAndHandleExceptions(
+            context,
+            emotes,
+            "/api/v1/images/mania-title-card",
+            buildJsonObject {
                 putJsonArray("strings") {
                     addJsonObject {
                         put("string", line1)
@@ -46,12 +48,9 @@ class ManiaTitleCardExecutor(val http: HttpClient) : CommandExecutor() {
                         }
                     }
                 }
-            }.toString()
-        }
+            }
+        )
 
-        println(response.status)
-
-        val result = response.receive<ByteArray>()
         context.sendMessage {
             addFile("mania_title_card.png", result)
         }
