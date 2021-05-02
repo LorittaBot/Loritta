@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.common.utils.minecraft.MinecraftMojangAPI
 class McSkinExecutor(val emotes: Emotes, val mojang: MinecraftMojangAPI) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(McSkinExecutor::class) {
         object Options : CommandOptions() {
-            val username = string("player_name", LocaleKeyData("TODO_FIX_THIS"))
+            val username = string("player_name", LocaleKeyData("commands.category.minecraft.playerNameJavaEdition"))
                 .register()
         }
 

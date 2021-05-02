@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.common.utils.text.VaporwaveUtils
 class TextVaporQualityExecutor(val emotes: Emotes) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(TextVaporQualityExecutor::class) {
         object Options : CommandOptions() {
-            val text = string("text", LocaleKeyData("TODO_FIX_THIS"))
+            val text = string("text", LocaleKeyData("commands.command.vaporwave.options.text"))
                 .register()
         }
 

@@ -8,7 +8,6 @@ import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDec
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.common.locale.LocaleStringData
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
@@ -16,23 +15,23 @@ import java.util.*
 class MoneyExecutor(val emotes: Emotes, val ecbManager: ECBManager) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(MoneyExecutor::class) {
         object Options : CommandOptions() {
-            val from = string("from", LocaleKeyData("TODO_FIX_THIS"))
+            val from = string("from", LocaleKeyData("commands.command.money.options.from"))
                 .also {
                     for (currencyId in MoneyCommand.currencyIds) {
-                        it.choice(currencyId, LocaleKeyData(currencyId))
+                        it.choice(currencyId, LocaleKeyData("commands.command.money.currencies.${currencyId.toLowerCase()}"))
                     }
                 }
                 .register()
 
-            val to = string("to", LocaleKeyData("TODO_FIX_THIS"))
+            val to = string("to", LocaleKeyData("commands.command.money.options.to"))
                 .also {
                     for (currencyId in MoneyCommand.currencyIds) {
-                        it.choice(currencyId, LocaleKeyData(currencyId))
+                        it.choice(currencyId, LocaleKeyData("commands.command.money.currencies.${currencyId.toLowerCase()}"))
                     }
                 }
                 .register()
 
-            val quantity = optionalInteger("quantity", LocaleKeyData("TODO_FIX_THIS"))
+            val quantity = optionalInteger("quantity", LocaleKeyData("commands.command.money.options.quantity"))
                 .register()
         }
 

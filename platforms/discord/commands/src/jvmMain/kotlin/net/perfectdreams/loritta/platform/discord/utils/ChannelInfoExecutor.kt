@@ -16,7 +16,7 @@ import net.perfectdreams.loritta.platform.discord.utils.declarations.ChannelInfo
 class ChannelInfoExecutor(val emotes: Emotes) : DiscordCommandExecutor() {
     companion object : CommandExecutorDeclaration(ChannelInfoExecutor::class) {
         object Options : CommandOptions() {
-            val channelId = optionalChannel("channel", LocaleKeyData("TODO_FIX_THIS"))
+            val channelId = optionalChannel("channel", LocaleKeyData(ChannelInfoCommand.LOCALE_PREFIX + ".options.channel"))
                 .register()
         }
 

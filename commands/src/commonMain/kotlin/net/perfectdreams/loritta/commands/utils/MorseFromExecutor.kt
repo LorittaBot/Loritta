@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.common.utils.text.MorseUtils
 class MorseFromExecutor(val emotes: Emotes): CommandExecutor() {
     companion object : CommandExecutorDeclaration(MorseFromExecutor::class) {
         object Options : CommandOptions() {
-            val textArgument = string("text", LocaleKeyData("TODO_FIX_THIS"))
+            val textArgument = string("text", LocaleKeyData("${MorseCommand.LOCALE_PREFIX}.options.fromMorse"))
                 .register()
         }
 

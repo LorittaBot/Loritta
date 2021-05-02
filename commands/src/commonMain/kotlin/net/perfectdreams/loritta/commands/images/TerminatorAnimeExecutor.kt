@@ -4,6 +4,7 @@ import kotlinx.serialization.json.addJsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
+import net.perfectdreams.loritta.commands.images.declarations.TerminatorAnimeCommand
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandContext
 import net.perfectdreams.loritta.common.commands.CommandExecutor
@@ -17,10 +18,10 @@ import net.perfectdreams.loritta.common.utils.gabrielaimageserver.executeAndHand
 class TerminatorAnimeExecutor(val emotes: Emotes, val client: GabrielaImageServerClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(TerminatorAnimeExecutor::class) {
         object Options : CommandOptions() {
-            val line1 = string("terminator", LocaleKeyData("TODO_FIX_THIS"))
+            val line1 = string("terminator", LocaleKeyData(TerminatorAnimeCommand.LOCALE_PREFIX + ".options.textTerminator"))
                 .register()
 
-            val line2 = optionalString("girl", LocaleKeyData("TODO_FIX_THIS"))
+            val line2 = optionalString("girl", LocaleKeyData(TerminatorAnimeCommand.LOCALE_PREFIX + ".options.textGirl"))
                 .register()
         }
 
