@@ -1,21 +1,18 @@
 package net.perfectdreams.loritta.platform.kord
 
-import com.typesafe.config.ConfigFactory
 import io.ktor.client.*
-import kotlinx.serialization.hocon.Hocon
-import kotlinx.serialization.hocon.decodeFromConfig
 import mu.KotlinLogging
 import net.perfectdreams.loritta.common.memory.services.MemoryServices
 import net.perfectdreams.loritta.common.pudding.services.PuddingServices
+import net.perfectdreams.loritta.common.utils.config.ConfigUtils
 import net.perfectdreams.loritta.platform.kord.utils.config.RootConfig
-import java.io.File
 
 object LorittaKordLauncher {
     private val logger = KotlinLogging.logger {}
 
     @JvmStatic
     fun main(args: Array<String>) {
-        val rootConfig = loadConfig()
+        val rootConfig = ConfigUtils.loadAndParseConfig<RootConfig>("./loritta.conf")
         logger.info { "Loaded Loritta's configuration file" }
 
         val http = HttpClient {
@@ -40,10 +37,5 @@ object LorittaKordLauncher {
 
         val loritta = LorittaKord(rootConfig.loritta, rootConfig.discord, services)
         loritta.start()
-    }
-
-    private fun loadConfig(): RootConfig {
-        val fileConfig = ConfigFactory.parseFile(File("./loritta.conf"))
-        return Hocon.decodeFromConfig(fileConfig)
     }
 }
