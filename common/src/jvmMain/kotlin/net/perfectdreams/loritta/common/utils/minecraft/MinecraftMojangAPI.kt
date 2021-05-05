@@ -4,13 +4,10 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import io.ktor.content.*
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.add
-import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -34,8 +31,8 @@ class MinecraftMojangAPI {
         }
     }
 
-    val username2uuid = Caffeine.newBuilder().expireAfterWrite(30L, TimeUnit.MINUTES).maximumSize(10000).build<String, UUID?>().asMap()
-    val uuid2profile = Caffeine.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(10000).build<UUID, MCTextures?>().asMap()
+    private val username2uuid = Caffeine.newBuilder().expireAfterWrite(30L, TimeUnit.MINUTES).maximumSize(10000).build<String, UUID?>().asMap()
+    private val uuid2profile = Caffeine.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(10000).build<UUID, MCTextures?>().asMap()
 
     suspend fun getUniqueId(player: String): UUID? {
         val lowercase = player.toLowerCase()
@@ -46,23 +43,15 @@ class MinecraftMojangAPI {
         if (player.isBlank())
             return null
 
-        val payload = buildJsonArray {
-            add(player)
-        }
+        val connection = http.get<HttpResponse>("https://api.mojang.com/users/profiles/minecraft/$player")
 
-        val connection = http.post<HttpResponse>("https://api.mojang.com/profiles/minecraft") {
-            body = TextContent(payload.toString(), ContentType.Application.Json)
-        }
-
-        if (!connection.status.isSuccess())
+        // Mojang uses "204 No Content" if the account doesn't exist
+        if (connection.status != HttpStatusCode.OK)
             return null
 
         val profile = connection.readText()
-        val array = json.parseToJsonElement(profile).jsonArray
-
-        array.forEach {
-            username2uuid[it.jsonObject["name"]!!.jsonPrimitive.content.toLowerCase()] = convertNonDashedToUniqueID(it.jsonObject["id"]!!.jsonPrimitive.content)
-        }
+        val obj = json.parseToJsonElement(profile).jsonObject
+        username2uuid[obj["name"]!!.jsonPrimitive.content.toLowerCase()] = convertNonDashedToUniqueID(obj["id"]!!.jsonPrimitive.content)
 
         return username2uuid[lowercase]
     }
@@ -76,9 +65,7 @@ class MinecraftMojangAPI {
         if (uuid2profile.contains(uuid))
             return uuid2profile[uuid]
 
-        val connection = http.get<HttpResponse>("https://sessionserver.mojang.com/session/minecraft/profile/$uuid") {
-            // contentType(ContentType.Application.Json)
-        }
+        val connection = http.get<HttpResponse>("https://sessionserver.mojang.com/session/minecraft/profile/$uuid")
 
         if (!connection.status.isSuccess())
             return null
