@@ -10,7 +10,7 @@ object LorittaCLILauncher {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        val rootConfig = ConfigUtils.loadAndParseConfig<RootConfig>("./loritta.conf")
+        val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(LorittaCLI::class, "loritta.conf")
         logger.info { "Loaded Loritta's configuration file" }
 
         val loritta = LorittaCLI(rootConfig.loritta, rootConfig.services.gabrielaImageServer)
