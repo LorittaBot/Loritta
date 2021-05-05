@@ -115,7 +115,7 @@ import net.perfectdreams.loritta.commands.videos.declarations.FansExplainingComm
 import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.services.Services
-import net.perfectdreams.loritta.common.utils.ConfigUtils
+import net.perfectdreams.loritta.common.utils.config.ConfigUtils
 import net.perfectdreams.loritta.common.utils.config.GabrielaImageServerConfig
 import net.perfectdreams.loritta.common.utils.config.LorittaConfig
 import net.perfectdreams.loritta.common.utils.gabrielaimageserver.GabrielaImageServerClient

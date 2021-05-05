@@ -101,7 +101,7 @@ import net.perfectdreams.loritta.commands.videos.declarations.CarlyAaahCommand
 import net.perfectdreams.loritta.common.LorittaBot
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.memory.services.MemoryServices
-import net.perfectdreams.loritta.common.utils.ConfigUtils
+import net.perfectdreams.loritta.common.utils.config.ConfigUtils
 import net.perfectdreams.loritta.common.utils.config.GabrielaImageServerConfig
 import net.perfectdreams.loritta.common.utils.config.LorittaConfig
 import net.perfectdreams.loritta.common.utils.gabrielaimageserver.GabrielaImageServerClient
