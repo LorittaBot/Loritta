@@ -102,12 +102,16 @@ import net.perfectdreams.loritta.common.LorittaBot
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.memory.services.MemoryServices
 import net.perfectdreams.loritta.common.utils.ConfigUtils
+import net.perfectdreams.loritta.common.utils.config.GabrielaImageServerConfig
 import net.perfectdreams.loritta.common.utils.config.LorittaConfig
 import net.perfectdreams.loritta.common.utils.gabrielaimageserver.GabrielaImageServerClient
 import net.perfectdreams.loritta.common.utils.minecraft.MinecraftMojangAPI
 import net.perfectdreams.loritta.platform.cli.commands.CommandManager
 
-class LorittaCLI(config: LorittaConfig): LorittaBot(config) {
+class LorittaCLI(
+    config: LorittaConfig,
+    gabrielaImageServerConfig: GabrielaImageServerConfig
+): LorittaBot(config) {
     val commandManager = CommandManager(this)
     val localeManager = LocaleManager(
         ConfigUtils.localesFolder
@@ -121,7 +125,7 @@ class LorittaCLI(config: LorittaConfig): LorittaBot(config) {
 
     override val services = MemoryServices()
     
-    val gabrielaImageServerClient = GabrielaImageServerClient("https://gabriela.loritta.website/", http)
+    val gabrielaImageServerClient = GabrielaImageServerClient(gabrielaImageServerConfig.url, http)
 
     fun start() {
         localeManager.loadLocales()

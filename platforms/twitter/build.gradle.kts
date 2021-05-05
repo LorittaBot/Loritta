@@ -20,10 +20,21 @@ dependencies {
 
     implementation("blue.starry:penicillin:6.1.0")
     implementation("io.ktor:ktor-client-cio:1.5.4")
+
+    // Required for tests, if this is missing then Gradle will throw
+    // "No tests found for given includes: [***Test](filter.includeTestsMatching)"
+    implementation(kotlin("test"))
+    implementation(kotlin("test-junit"))
+    implementation("org.junit.jupiter:junit-jupiter:5.4.2")
+    implementation("org.assertj:assertj-core:3.19.0")
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = Versions.JVM_TARGET
 }
 
 tasks.withType<ShadowJar> {

@@ -1,31 +1,22 @@
-package net.perfectdreams.loritta.platform.interaktions
+package net.perfectdreams.loritta.platform.kord
 
 import com.typesafe.config.ConfigFactory
 import io.ktor.client.*
 import kotlinx.serialization.hocon.Hocon
 import kotlinx.serialization.hocon.decodeFromConfig
 import mu.KotlinLogging
-import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.memory.services.MemoryServices
 import net.perfectdreams.loritta.common.pudding.services.PuddingServices
-import net.perfectdreams.loritta.platform.interaktions.emotes.DiscordEmoteManager
-import net.perfectdreams.loritta.platform.interaktions.utils.config.RootConfig
-import net.perfectdreams.loritta.platform.interaktions.utils.metrics.Prometheus
+import net.perfectdreams.loritta.platform.kord.utils.config.RootConfig
 import java.io.File
 
-object LorittaInteraKTionsLauncher {
+object LorittaKordLauncher {
     private val logger = KotlinLogging.logger {}
 
     @JvmStatic
     fun main(args: Array<String>) {
         val rootConfig = loadConfig()
         logger.info { "Loaded Loritta's configuration file" }
-
-        val emotes = loadEmotes()
-        logger.info { "Loaded ${emotes.size} emotes" }
-
-        Prometheus.register()
-        logger.info { "Registered Prometheus Metrics" }
 
         val http = HttpClient {
             expectSuccess = false
@@ -47,28 +38,8 @@ object LorittaInteraKTionsLauncher {
             else -> throw UnsupportedOperationException("Unsupported Loritta Data Type: ${rootConfig.services.lorittaData.type}")
         }
 
-        logger.info { "Using ${rootConfig.services.lorittaData.type} services $services" }
-
-        val loritta = LorittaInteraKTions(
-            rootConfig.loritta,
-            rootConfig.discord,
-            rootConfig.interactions,
-            services,
-            rootConfig.services.gabrielaImageServer,
-            Emotes(DiscordEmoteManager(emotes)),
-            http
-        )
-
+        val loritta = LorittaKord(rootConfig.loritta, rootConfig.discord, services)
         loritta.start()
-    }
-
-    private fun loadEmotes(): Map<String, String> {
-        val emotesFile = File("./emotes.conf")
-        val fileConfig = ConfigFactory.parseFile(emotesFile)
-
-        return fileConfig.entrySet().map {
-            it.key to it.value.unwrapped() as String
-        }.toMap()
     }
 
     private fun loadConfig(): RootConfig {

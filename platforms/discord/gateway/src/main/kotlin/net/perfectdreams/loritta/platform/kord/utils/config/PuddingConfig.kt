@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.platform.interaktions.utils.config
+package net.perfectdreams.loritta.platform.kord.utils.config
 
 import kotlinx.serialization.Serializable
 

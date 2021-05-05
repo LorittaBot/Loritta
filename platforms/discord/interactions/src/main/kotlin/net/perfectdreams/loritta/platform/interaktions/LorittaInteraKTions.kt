@@ -114,8 +114,9 @@ import net.perfectdreams.loritta.commands.videos.declarations.CarlyAaahCommand
 import net.perfectdreams.loritta.commands.videos.declarations.FansExplainingCommand
 import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.LocaleManager
-import net.perfectdreams.loritta.common.pudding.services.PuddingServices
+import net.perfectdreams.loritta.common.services.Services
 import net.perfectdreams.loritta.common.utils.ConfigUtils
+import net.perfectdreams.loritta.common.utils.config.GabrielaImageServerConfig
 import net.perfectdreams.loritta.common.utils.config.LorittaConfig
 import net.perfectdreams.loritta.common.utils.gabrielaimageserver.GabrielaImageServerClient
 import net.perfectdreams.loritta.discord.LorittaDiscord
@@ -126,15 +127,16 @@ import net.perfectdreams.loritta.platform.discord.utils.declarations.AvatarComma
 import net.perfectdreams.loritta.platform.discord.utils.declarations.ChannelInfoCommand
 import net.perfectdreams.loritta.platform.interaktions.commands.CommandManager
 import net.perfectdreams.loritta.platform.interaktions.utils.config.DiscordInteractionsConfig
-import net.perfectdreams.loritta.platform.interaktions.utils.config.PuddingConfig
 import net.perfectdreams.loritta.platform.interaktions.webserver.InteractionsServer
 
 class LorittaInteraKTions(
     config: LorittaConfig,
-    val puddingConfig: PuddingConfig,
     discordConfig: LorittaDiscordConfig,
     val interactionsConfig: DiscordInteractionsConfig,
-    override val emotes: Emotes
+    override val services: Services,
+    gabrielaImageServerConfig: GabrielaImageServerConfig,
+    override val emotes: Emotes,
+    http: HttpClient
 ): LorittaDiscord(config, discordConfig) {
     val interactions = InteractionsServer(
         applicationId = discordConfig.applicationId,
@@ -147,16 +149,8 @@ class LorittaInteraKTions(
     val localeManager = LocaleManager(
         ConfigUtils.localesFolder
     )
-    val http = HttpClient {
-        expectSuccess = false
-    }
 
-    override val services = PuddingServices(
-        puddingConfig.puddingUrl,
-        puddingConfig.authorization,
-        http
-    )
-    val gabrielaImageServerClient = GabrielaImageServerClient("https://gabriela.loritta.website/", http)
+    val gabrielaImageServerClient = GabrielaImageServerClient(gabrielaImageServerConfig.url, http)
     
     fun start() {
         localeManager.loadLocales()

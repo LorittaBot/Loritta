@@ -14,11 +14,11 @@ import net.perfectdreams.loritta.commands.misc.declarations.PingCommand
 import net.perfectdreams.loritta.commands.utils.HelpExecutor
 import net.perfectdreams.loritta.commands.utils.declarations.HelpCommand
 import net.perfectdreams.loritta.common.commands.CommandArguments
-import net.perfectdreams.loritta.common.commands.options.CommandOptionType
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
 import net.perfectdreams.loritta.common.commands.options.CommandOption
+import net.perfectdreams.loritta.common.commands.options.CommandOptionType
 import net.perfectdreams.loritta.common.locale.LocaleManager
-import net.perfectdreams.loritta.common.memory.services.MemoryServices
+import net.perfectdreams.loritta.common.services.Services
 import net.perfectdreams.loritta.common.utils.ConfigUtils
 import net.perfectdreams.loritta.common.utils.config.LorittaConfig
 import net.perfectdreams.loritta.discord.LorittaDiscord
@@ -27,15 +27,14 @@ import net.perfectdreams.loritta.platform.discord.utils.ChannelInfoExecutor
 import net.perfectdreams.loritta.platform.discord.utils.declarations.ChannelInfoCommand
 import net.perfectdreams.loritta.platform.kord.commands.KordCommandContext
 import net.perfectdreams.loritta.platform.kord.entities.KordUser
-import net.perfectdreams.loritta.platform.kord.util.toLorittaMessageChannel
 import net.perfectdreams.loritta.platform.kord.util.toLorittaGuild
+import net.perfectdreams.loritta.platform.kord.util.toLorittaMessageChannel
 
-class LorittaKord(config: LorittaConfig, discordConfig: LorittaDiscordConfig): LorittaDiscord(config, discordConfig) {
+class LorittaKord(config: LorittaConfig, discordConfig: LorittaDiscordConfig, override val services: Services): LorittaDiscord(config, discordConfig) {
     val commandManager = CommandManager()
     val localeManager = LocaleManager(
         ConfigUtils.localesFolder
     )
-    override val services = MemoryServices()
 
     suspend fun parseArgs(content: String, args: List<CommandOption<*>>, event: MessageCreateEvent): MutableMap<CommandOption<*>, Any?> {
         // --ayaya_count=5

@@ -73,12 +73,17 @@ import net.perfectdreams.loritta.common.LorittaBot
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.memory.services.MemoryServices
 import net.perfectdreams.loritta.common.utils.ConfigUtils
+import net.perfectdreams.loritta.common.utils.config.GabrielaImageServerConfig
 import net.perfectdreams.loritta.common.utils.config.LorittaConfig
 import net.perfectdreams.loritta.common.utils.gabrielaimageserver.GabrielaImageServerClient
 import net.perfectdreams.loritta.platform.twitter.commands.CommandManager
 import net.perfectdreams.loritta.platform.twitter.utils.config.TwitterConfig
 
-class LorittaTwitter(config: LorittaConfig, val twitterConfig: TwitterConfig): LorittaBot(config) {
+class LorittaTwitter(
+    config: LorittaConfig,
+    twitterConfig: TwitterConfig,
+    gabrielaImageServerConfig: GabrielaImageServerConfig
+): LorittaBot(config) {
     companion object {
         private const val LORITTA_MENTION = "@LorittaEdit"
     }
@@ -100,8 +105,8 @@ class LorittaTwitter(config: LorittaConfig, val twitterConfig: TwitterConfig): L
     }
 
     override val services = MemoryServices()
-    val gabrielaImageServerClient = GabrielaImageServerClient("https://gabriela.loritta.website/", http)
-    
+    val gabrielaImageServerClient = GabrielaImageServerClient(gabrielaImageServerConfig.url, http)
+
     fun start() {
         localeManager.loadLocales()
 
