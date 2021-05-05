@@ -9,7 +9,7 @@ object LorittaTwitterLauncher {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        val rootConfig = ConfigUtils.loadAndParseConfig<RootConfig>("./loritta.conf")
+        val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(LorittaTwitter::class, "loritta.conf")
         logger.info { "Loaded Loritta's configuration file" }
 
         val loritta = LorittaTwitter(
