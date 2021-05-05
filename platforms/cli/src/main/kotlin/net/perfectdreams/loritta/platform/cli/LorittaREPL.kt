@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.platform.cli
 
-import net.perfectdreams.loritta.common.utils.config.LorittaConfig
+import net.perfectdreams.loritta.platform.cli.utils.config.RootConfig
 
-class LorittaREPL(val config: LorittaConfig) {
-    val cli = LorittaCLI(config)
+class LorittaREPL(val config: RootConfig) {
+    val cli = LorittaCLI(config.loritta, config.services.gabrielaImageServer)
 
     suspend fun start() {
         println("Loritta Morenitta REPL")
