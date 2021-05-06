@@ -34,7 +34,7 @@ class AsciiCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta
         executesDiscord {
             val context = this
 
-            val img = context.image(0) as JVMImage
+            val img = context.imageOrFail(0) as JVMImage
             val options = mutableSetOf<ImageToAsciiConverter.AsciiOptions>()
             for (arg in args) {
                 try {

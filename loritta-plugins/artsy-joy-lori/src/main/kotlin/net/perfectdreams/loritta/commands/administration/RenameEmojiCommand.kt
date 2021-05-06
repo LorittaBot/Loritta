@@ -33,7 +33,6 @@ class RenameEmojiCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(l
             val context = this
 
             if (args.isNotEmpty()) {
-
                 // This will verify if have emotes in the message
                 val emote = context.emote(0)
 
