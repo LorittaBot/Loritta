@@ -8,7 +8,6 @@ import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.embed.LorittaColor
-import net.perfectdreams.loritta.common.utils.embed.embed
 import net.perfectdreams.loritta.platform.discord.utils.declarations.AvatarCommand
 
 class AvatarExecutor : CommandExecutor() {
@@ -26,7 +25,7 @@ class AvatarExecutor : CommandExecutor() {
 
         // TODO: Easter eggs when looking up the avatar of specific users
         context.sendMessage {
-            embed = embed {
+            embed {
                 body {
                     title = "\uD83D\uDDBC ${user.name}"
                     description = "**${context.locale["${AvatarCommand.LOCALE_PREFIX}.clickHere", "${user.avatar.url}?size=2048"]}**"
@@ -36,7 +35,7 @@ class AvatarExecutor : CommandExecutor() {
                 images {
                     image = "${user.avatar.url}?size=2048"
                 }
-            }.build()
+            }
         }
     }
 }

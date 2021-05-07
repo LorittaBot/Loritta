@@ -95,6 +95,7 @@ import net.perfectdreams.loritta.commands.misc.declarations.KkEaeMenCommand
 import net.perfectdreams.loritta.commands.utils.AnagramExecutor
 import net.perfectdreams.loritta.commands.utils.CalculatorExecutor
 import net.perfectdreams.loritta.commands.utils.ChooseExecutor
+import net.perfectdreams.loritta.commands.utils.DictionaryExecutor
 import net.perfectdreams.loritta.commands.utils.ECBManager
 import net.perfectdreams.loritta.commands.utils.HelpExecutor
 import net.perfectdreams.loritta.commands.utils.MoneyExecutor
@@ -103,6 +104,7 @@ import net.perfectdreams.loritta.commands.utils.MorseToExecutor
 import net.perfectdreams.loritta.commands.utils.declarations.AnagramCommand
 import net.perfectdreams.loritta.commands.utils.declarations.CalculatorCommand
 import net.perfectdreams.loritta.commands.utils.declarations.ChooseCommand
+import net.perfectdreams.loritta.commands.utils.declarations.DictionaryCommand
 import net.perfectdreams.loritta.commands.utils.declarations.HelpCommand
 import net.perfectdreams.loritta.commands.utils.declarations.MoneyCommand
 import net.perfectdreams.loritta.commands.utils.declarations.MorseCommand
@@ -136,7 +138,7 @@ class LorittaInteraKTions(
     override val services: Services,
     gabrielaImageServerConfig: GabrielaImageServerConfig,
     override val emotes: Emotes,
-    http: HttpClient
+    val http: HttpClient
 ): LorittaDiscord(config, discordConfig) {
     val interactions = InteractionsServer(
         applicationId = discordConfig.applicationId,
@@ -191,11 +193,6 @@ class LorittaInteraKTions(
         commandManager.register(
             AnagramCommand,
             AnagramExecutor(emotes)
-        )
-
-        commandManager.register(
-            MoneyCommand,
-            MoneyExecutor(emotes, ECBManager())
         )
 
         commandManager.register(
@@ -276,7 +273,9 @@ class LorittaInteraKTions(
         commandManager.register(FansExplainingCommand, FansExplainingExecutor(emotes, gabrielaImageServerClient))
 
         // ===[ UTILS ]===
+        commandManager.register(MoneyCommand, MoneyExecutor(emotes, ECBManager()))
         commandManager.register(MorseCommand, MorseFromExecutor(emotes), MorseToExecutor(emotes))
+        commandManager.register(DictionaryCommand, DictionaryExecutor(emotes, http), MorseToExecutor(emotes))
 
         // ===[ ECONOMY ]===
         commandManager.register(SonhosCommand, SonhosExecutor(emotes))
