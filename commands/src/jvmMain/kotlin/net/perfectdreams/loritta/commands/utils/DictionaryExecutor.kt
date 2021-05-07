@@ -40,7 +40,7 @@ class DictionaryExecutor(val emotes: Emotes, val http: HttpClient) : CommandExec
         val httpResponse = http.get<HttpResponse>("https://www.dicio.com.br/pesquisa.php?q=${URLEncoder.encode(wordToBeSearched, "UTF-8")}")
 
         if (httpResponse.status == HttpStatusCode.NotFound)
-            context.fail(context.locale["${DictionaryCommand.LOCALE_PREFIX}.wordNotFound"], emotes.error)
+            context.fail(context.locale["${DictionaryCommand.LOCALE_PREFIX}.wordNotFound"], emotes.error) { isEphemeral = true }
 
         val response = httpResponse.readText()
 
@@ -52,7 +52,7 @@ class DictionaryExecutor(val emotes: Emotes, val http: HttpClient) : CommandExec
 
         if (resultados != null) {
             val resultadosLi = resultados.getElementsByTag("li").firstOrNull()
-                ?: context.fail(context.locale["${DictionaryCommand.LOCALE_PREFIX}.wordNotFound"], emotes.error)
+                ?: context.fail(context.locale["${DictionaryCommand.LOCALE_PREFIX}.wordNotFound"], emotes.error) { isEphemeral = true }
 
             val linkElement = resultadosLi.getElementsByClass("_sugg").first()
             val link = linkElement.attr("href")
@@ -61,7 +61,7 @@ class DictionaryExecutor(val emotes: Emotes, val http: HttpClient) : CommandExec
 
             // This should *never* happen because we are getting it directly from the search results, but...
             if (httpRequest2.status == HttpStatusCode.NotFound)
-                context.fail(context.locale["${DictionaryCommand.LOCALE_PREFIX}.wordNotFound"], emotes.error)
+                context.fail(context.locale["${DictionaryCommand.LOCALE_PREFIX}.wordNotFound"], emotes.error) { isEphemeral = true }
 
             val response2 = httpRequest2.readText()
 
@@ -70,7 +70,7 @@ class DictionaryExecutor(val emotes: Emotes, val http: HttpClient) : CommandExec
 
         // Se a página não possui uma descrição ou se ela possui uma descrição mas começa com "Ainda não temos o significado de", então é uma palavra inexistente!
         if (jsoup.select("p[itemprop = description]").isEmpty() || jsoup.select("p[itemprop = description]")[0].text().startsWith("Ainda não temos o significado de"))
-            context.fail(context.locale["${DictionaryCommand.LOCALE_PREFIX}.wordNotFound"], emotes.error)
+            context.fail(context.locale["${DictionaryCommand.LOCALE_PREFIX}.wordNotFound"], emotes.error) { isEphemeral = true }
 
         val description = jsoup.select("p[itemprop = description]")[0]
 
