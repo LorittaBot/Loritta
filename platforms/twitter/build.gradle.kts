@@ -20,6 +20,7 @@ dependencies {
 
     implementation("blue.starry:penicillin:6.1.0")
     implementation("io.ktor:ktor-client-cio:1.5.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
 
     // Required for tests, if this is missing then Gradle will throw
     // "No tests found for given includes: [***Test](filter.includeTestsMatching)"
