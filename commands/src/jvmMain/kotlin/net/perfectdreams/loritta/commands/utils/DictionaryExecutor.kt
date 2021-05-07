@@ -95,7 +95,6 @@ class DictionaryExecutor(val emotes: Emotes, val http: HttpClient) : CommandExec
                 body {
                     color = LorittaColor(25, 89, 132)
 
-                    // TODO: Localization
                     title = "📙 ${context.locale["${DictionaryCommand.LOCALE_PREFIX}.meaningOf", word.text()]}"
 
                     this.description = buildString {
@@ -107,7 +106,6 @@ class DictionaryExecutor(val emotes: Emotes, val http: HttpClient) : CommandExec
 
                     // The first in the page will always be "synonyms"
                     // While the second in the page will always be "opposites"
-                    // TODO: Localization
                     jsoup.getElementsByClass("sinonimos").getOrNull(0)?.let {
                         field("\uD83D\uDE42 ${context.locale["${DictionaryCommand.LOCALE_PREFIX}.synonyms"]}", it.text())
                     }
