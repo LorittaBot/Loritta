@@ -69,6 +69,10 @@ import net.perfectdreams.loritta.commands.images.declarations.StudiopolisTvComma
 import net.perfectdreams.loritta.commands.images.declarations.SustoCommand
 import net.perfectdreams.loritta.commands.images.declarations.ToBeContinuedCommand
 import net.perfectdreams.loritta.commands.images.declarations.TrumpCommand
+import net.perfectdreams.loritta.commands.videos.AttackOnHeartExecutor
+import net.perfectdreams.loritta.commands.videos.CarlyAaahExecutor
+import net.perfectdreams.loritta.commands.videos.declarations.AttackOnHeartCommand
+import net.perfectdreams.loritta.commands.videos.declarations.CarlyAaahCommand
 import net.perfectdreams.loritta.common.LorittaBot
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.memory.services.MemoryServices
@@ -143,8 +147,8 @@ class LorittaTwitter(
         // commandManager.register(MemeMakerCommand, MemeMakerExecutor(http))
 
         // ===[ VIDEOS ]===
-        // commandManager.register(CarlyAaahCommand, CarlyAaahExecutor(emotes, gabrielaImageServerClient))
-        // commandManager.register(AttackOnHeartCommand, AttackOnHeartExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(CarlyAaahCommand, CarlyAaahExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(AttackOnHeartCommand, AttackOnHeartExecutor(emotes, gabrielaImageServerClient))
         // commandManager.register(FansExplainingCommand, FansExplainingExecutor(http))
 
         runBlocking {
@@ -173,7 +177,7 @@ class LorittaTwitter(
                             val textAfterMention = status.text.substringAfterLast(LORITTA_MENTION).trim()
 
                             commandManager.matches(status, textAfterMention)
-                        } catch (e: Exception) {
+                        } catch (e: Throwable) {
                             e.printStackTrace()
                         }
                     }
