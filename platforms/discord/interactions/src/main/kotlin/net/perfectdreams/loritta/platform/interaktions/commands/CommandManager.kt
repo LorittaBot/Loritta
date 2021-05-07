@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.platform.interaktions.commands
 
 import dev.kord.common.entity.Snowflake
+import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.commands.CommandManager
 import net.perfectdreams.discordinteraktions.commands.SlashCommandExecutor
 import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclaration
@@ -16,9 +17,12 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.platform.interaktions.LorittaInteraKTions
 import net.perfectdreams.loritta.platform.interaktions.utils.shortenWithEllipsis
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.UnsupportedOperationException
 
 class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: CommandManager) {
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+
     val declarations = mutableListOf<CommandDeclarationBuilder>()
     val executors = mutableListOf<CommandExecutor>()
 
@@ -116,6 +120,9 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
                 description = buildDescription(locale, declaration)
 
                 this.executor = interaKTionsExecutorDeclaration
+
+                if (declaration.subcommands.isNotEmpty() || declaration.subcommandGroups.isNotEmpty())
+                    logger.warn { "Executor ${executor::class.simpleName} is set to ${declaration.labels.first()}'s root, but the command has subcommands and/or subcommand groups! Due to Discord's limitations the root command won't be usable!" }
 
                 addSubcommandGroups(declaration, signature, createdExecutors, locale)
 
