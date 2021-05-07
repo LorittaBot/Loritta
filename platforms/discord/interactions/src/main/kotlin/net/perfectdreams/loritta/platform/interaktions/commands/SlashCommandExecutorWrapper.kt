@@ -42,6 +42,15 @@ class SlashCommandExecutorWrapper(
 ) : SlashCommandExecutor() {
     companion object {
         private val logger = KotlinLogging.logger {}
+
+        private val SUPPORTED_IMAGE_EXTENSIONS = listOf(
+            "png",
+            "jpg",
+            "jpeg",
+            "bmp",
+            "tiff",
+            "gif"
+        )
     }
 
     override suspend fun execute(context: SlashCommandContext, args: SlashCommandArguments) {
@@ -143,14 +152,8 @@ class SlashCommandExecutorWrapper(
                                             .flatMap { it.attachments }
                                             .firstOrNull {
                                                 // Only get filenames ending with "image" extensions
-                                                it.filename.substringAfter(".").toLowerCase() in listOf(
-                                                    "png",
-                                                    "jpg",
-                                                    "jpeg",
-                                                    "bmp",
-                                                    "tiff",
-                                                    "gif"
-                                                )
+                                                it.filename.substringAfter(".")
+                                                    .toLowerCase() in SUPPORTED_IMAGE_EXTENSIONS
                                             }?.url
 
                                         if (attachmentUrl != null) {
@@ -158,6 +161,7 @@ class SlashCommandExecutorWrapper(
                                             found = true
                                         }
                                     } catch (e: Exception) {
+                                        // TODO: Catch the "permission required" exception and show a nice message
                                         e.printStackTrace()
                                     }
                                 }
