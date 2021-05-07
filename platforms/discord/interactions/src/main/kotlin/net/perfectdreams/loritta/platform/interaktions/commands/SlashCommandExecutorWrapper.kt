@@ -124,6 +124,45 @@ class SlashCommandExecutorWrapper(
                                 found = true
                                 break
                             }
+
+                            if (interaKTionOption.name == "${it.name}_history" && value != null) {
+                                val boolValue = value as Boolean
+
+                                if (boolValue) {
+                                    // If true, we are going to find the first recent message in this chat
+                                    val channelId = context.request.channelId
+                                    val messages = loritta.rest.channel.getMessages(
+                                        channelId,
+                                        null,
+                                        100
+                                    )
+
+                                    try {
+                                        // Sort from the newest message to the oldest message
+                                        val attachmentUrl = messages.sortedByDescending { it.id.timeStamp }
+                                            .flatMap { it.attachments }
+                                            .firstOrNull {
+                                                // Only get filenames ending with "image" extensions
+                                                it.filename.substringAfter(".").toLowerCase() in listOf(
+                                                    "png",
+                                                    "jpg",
+                                                    "jpeg",
+                                                    "bmp",
+                                                    "tiff",
+                                                    "gif"
+                                                )
+                                            }?.url
+
+                                        if (attachmentUrl != null) {
+                                            cinnamonArgs[it] = URLImageReference(attachmentUrl)
+                                            found = true
+                                        }
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
+                                    }
+                                }
+                                break
+                            }
                         }
 
                         if (!found) {

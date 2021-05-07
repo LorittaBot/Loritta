@@ -24,12 +24,11 @@ import net.perfectdreams.sequins.ktor.BaseRoute
  * @param port HTTP server port to bind
  */
 class InteractionsServer(
+    val rest: RestClient,
     val applicationId: Long,
     val publicKey: String,
-    val token: String,
     val port: Int = 12212
 ) {
-    val rest = RestClient(token)
     val commandManager = CommandManager(rest, Snowflake(applicationId))
     val interactionRequestHandler = DefaultInteractionRequestHandler(
         Snowflake(applicationId),

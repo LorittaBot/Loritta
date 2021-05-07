@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.platform.interaktions
 
+import dev.kord.rest.service.RestClient
 import io.ktor.client.*
 import kotlinx.coroutines.runBlocking
 import net.perfectdreams.loritta.commands.`fun`.CancelledExecutor
@@ -140,10 +141,12 @@ class LorittaInteraKTions(
     override val emotes: Emotes,
     val http: HttpClient
 ): LorittaDiscord(config, discordConfig) {
+    val rest = RestClient(discordConfig.token)
+
     val interactions = InteractionsServer(
+        rest = rest,
         applicationId = discordConfig.applicationId,
         publicKey = interactionsConfig.publicKey,
-        token = discordConfig.token
     )
 
     val commandManager = CommandManager(this, interactions.commandManager)
@@ -153,7 +156,7 @@ class LorittaInteraKTions(
     )
 
     val gabrielaImageServerClient = GabrielaImageServerClient(gabrielaImageServerConfig.url, http)
-    
+
     fun start() {
         localeManager.loadLocales()
 
