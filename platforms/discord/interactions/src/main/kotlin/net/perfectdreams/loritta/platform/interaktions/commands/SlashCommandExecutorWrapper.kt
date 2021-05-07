@@ -24,6 +24,7 @@ import net.perfectdreams.loritta.platform.interaktions.entities.InteraKTionsMess
 import net.perfectdreams.loritta.platform.interaktions.entities.InteraKTionsUser
 import net.perfectdreams.loritta.platform.interaktions.utils.metrics.Prometheus
 import net.perfectdreams.loritta.platform.interaktions.utils.toLorittaGuild
+import kotlin.streams.toList
 
 /**
  * Bridge between Cinnamon's [CommandExecutor] and Discord InteraKTions' [SlashCommandExecutor].
@@ -110,9 +111,16 @@ class SlashCommandExecutorWrapper(
 
                             if (interaKTionOption.name == "${it.name}_emote" && value != null) {
                                 val strValue = value as String
-                                val emoteId = strValue.substringAfterLast(":").substringBefore(">")
-                                cinnamonArgs[it] =
-                                    URLImageReference("https://cdn.discordapp.com/emojis/${emoteId}.png?v=1")
+
+                                // Discord emotes always starts with "<" and ends with ">"
+                                if (strValue.startsWith("<") && strValue.endsWith(">")) {
+                                    val emoteId = strValue.substringAfterLast(":").substringBefore(">")
+                                    cinnamonArgs[it] = URLImageReference("https://cdn.discordapp.com/emojis/${emoteId}.png?v=1")
+                                } else {
+                                    // If not, we are going to handle it as if it were a Unicode emoji
+                                    val emoteId = strValue.codePoints().toList().joinToString(separator = "-") { String.format("\\u%04x", it).substring(2) }
+                                    cinnamonArgs[it] = URLImageReference("https://twemoji.maxcdn.com/2/72x72/$emoteId.png")
+                                }
                                 found = true
                                 break
                             }
