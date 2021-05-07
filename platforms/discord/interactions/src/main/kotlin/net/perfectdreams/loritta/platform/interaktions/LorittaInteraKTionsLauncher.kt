@@ -17,7 +17,7 @@ object LorittaInteraKTionsLauncher {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(LorittaInteraKTions::class, "loritta.conf")
+        val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(LorittaInteraKTions::class, ConfigUtils.defaultConfigFileName)
         logger.info { "Loaded Loritta's configuration file" }
 
         val emotes = loadEmotes()

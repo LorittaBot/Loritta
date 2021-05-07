@@ -11,6 +11,12 @@ import kotlin.system.exitProcess
 object ConfigUtils {
     // TODO: This is temporary and should be moved to the config files
     val localesFolder = File("locales")
+    private const val DEFAULT_CONFIG_FILE_NAME = "loritta.conf"
+
+    /**
+     * The default configuration file name or, if present, the file name in the `loritta.config` property
+     */
+    val defaultConfigFileName = System.getProperty("loritta.config", DEFAULT_CONFIG_FILE_NAME)
 
     /**
      * Loads the config file from [path] and parses it with [Hocon], deserialized to a object of type [T]

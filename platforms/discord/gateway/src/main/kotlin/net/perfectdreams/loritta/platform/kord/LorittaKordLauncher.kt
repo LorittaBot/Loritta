@@ -12,7 +12,7 @@ object LorittaKordLauncher {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(LorittaKord::class, "loritta.conf")
+        val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(LorittaKord::class, ConfigUtils.defaultConfigFileName)
         logger.info { "Loaded Loritta's configuration file" }
 
         val http = HttpClient {
