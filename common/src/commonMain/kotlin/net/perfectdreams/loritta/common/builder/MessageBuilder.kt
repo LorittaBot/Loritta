@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.common.entities.LorittaMessage
 import net.perfectdreams.loritta.common.entities.LorittaReply
 import net.perfectdreams.loritta.common.entities.User
 import net.perfectdreams.loritta.common.utils.CinnamonDslMarker
+import net.perfectdreams.loritta.common.utils.embed.EmbedBuilder
 
 @CinnamonDslMarker
 class MessageBuilder {
@@ -17,6 +18,15 @@ class MessageBuilder {
     var files = mutableMapOf<String, ByteArray>()
     var isEphemeral = false
     var allowedMentions = AllowedMentionsBuilder()
+
+    /**
+     * Appends a embed to this builder
+     *
+     * @param embed a embed builder
+     */
+    fun embed(embed: EmbedBuilder.() -> Unit){
+        this.embed = net.perfectdreams.loritta.common.utils.embed.embed(embed).build()
+    }
 
     /**
      * Appends a Loritta-styled formatted message to this builder
