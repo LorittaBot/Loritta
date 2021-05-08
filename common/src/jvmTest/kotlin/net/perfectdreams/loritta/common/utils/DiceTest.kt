@@ -71,7 +71,7 @@ class DiceTest {
         Assertions.assertThat(thrown).isInstanceOf(Dice.Companion.TooManyDicesException::class.java)
     }
 
-    private fun validateDices(dices: List<Dice>, quantity: Int, lowerBound: Int, upperBound: Int) {
+    private fun validateDices(dices: List<Dice>, quantity: Int, lowerBound: Long, upperBound: Long) {
         Assertions.assertThat(dices.size).isEqualTo(quantity)
 
         for (dice in dices) {
