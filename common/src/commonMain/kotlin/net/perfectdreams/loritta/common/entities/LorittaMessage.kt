@@ -6,5 +6,6 @@ class LorittaMessage(
     val embed: LorittaEmbed?,
     val files: Map<String, ByteArray>,
     val isEphemeral: Boolean,
-    val allowedMentions: AllowedMentions
+    val allowedMentions: AllowedMentions,
+    val impersonation: LorittaImpersonation?
 )

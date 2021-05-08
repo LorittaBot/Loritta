@@ -30,7 +30,8 @@ abstract class CommandContext(
                 embed,
                 emptyMap(),
                 isEphemeral = false,
-                AllowedMentions(setOf(), true)
+                AllowedMentions(setOf(), true),
+                impersonation = null
             )
         )
     }

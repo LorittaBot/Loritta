@@ -10,15 +10,31 @@ import net.perfectdreams.loritta.common.entities.LorittaMessage
 class InteraKTionsMessageChannelHandler(handle: DiscordChannel, private val context: SlashCommandContext) : StaticInteraKTionsMessageChannel(handle) {
     override suspend fun sendMessage(message: LorittaMessage) {
         context.sendMessage {
-            content = buildString {
-                if (message.content != null)
-                    append(message.content)
+            val impersonation = message.impersonation
 
-                for (reply in message.replies) {
-                    append("\n")
-                    append("${reply.prefix} **|** ${reply.content}")
+            if (impersonation != null) {
+                // We are going to *impersonate* someone (woo)
+                // Because we can't use webhooks, we will replace them with a embed
+                embed {
+                    author {
+                        name = impersonation.username
+                        icon = impersonation.avatar.url
+                    }
+
+                    body {
+                        description = message.content
+                    }
                 }
+            } else {
+                content = buildString {
+                    if (message.content != null)
+                        append(message.content)
 
+                    for (reply in message.replies) {
+                        append("\n")
+                        append("${reply.prefix} **|** ${reply.content}")
+                    }
+                }
             }
 
             for (file in message.files) {

@@ -3,19 +3,27 @@ package net.perfectdreams.loritta.platform.interaktions
 import dev.kord.rest.service.RestClient
 import io.ktor.client.*
 import kotlinx.coroutines.runBlocking
+import net.perfectdreams.loritta.commands.`fun`.BemBoladaExecutor
 import net.perfectdreams.loritta.commands.`fun`.CancelledExecutor
 import net.perfectdreams.loritta.commands.`fun`.CoinFlipExecutor
+import net.perfectdreams.loritta.commands.`fun`.FaustaoExecutor
 import net.perfectdreams.loritta.commands.`fun`.JankenponExecutor
 import net.perfectdreams.loritta.commands.`fun`.RateWaifuExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextQualityExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextVaporQualityExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextVaporwaveExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextVemDeZapExecutor
+import net.perfectdreams.loritta.commands.`fun`.TioDoPaveExecutor
+import net.perfectdreams.loritta.commands.`fun`.VieirinhaExecutor
+import net.perfectdreams.loritta.commands.`fun`.declarations.BemBoladaCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.CancelledCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.CoinFlipCommand
+import net.perfectdreams.loritta.commands.`fun`.declarations.FaustaoCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.JankenponCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.RateWaifuCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.TextTransformDeclaration
+import net.perfectdreams.loritta.commands.`fun`.declarations.TioDoPaveCommand
+import net.perfectdreams.loritta.commands.`fun`.declarations.VieirinhaCommand
 import net.perfectdreams.loritta.commands.economy.SonhosExecutor
 import net.perfectdreams.loritta.commands.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.commands.images.ArtExecutor
@@ -175,35 +183,13 @@ class LorittaInteraKTions(
         )
 
         // ===[ FUN ]===
-        commandManager.register(
-            CoinFlipCommand,
-            CoinFlipExecutor(emotes, random)
-        )
-
-        commandManager.register(
-            RateWaifuCommand,
-            RateWaifuExecutor(emotes)
-        )
-
-        commandManager.register(
-            CancelledCommand,
-            CancelledExecutor(emotes)
-        )
-
-        commandManager.register(
-            CalculatorCommand,
-            CalculatorExecutor(emotes)
-        )
-
-        commandManager.register(
-            AnagramCommand,
-            AnagramExecutor(emotes)
-        )
-
-        commandManager.register(
-            ChooseCommand,
-            ChooseExecutor(emotes)
-        )
+        commandManager.register(CoinFlipCommand, CoinFlipExecutor(emotes, random))
+        commandManager.register(RateWaifuCommand, RateWaifuExecutor(emotes))
+        commandManager.register(CancelledCommand, CancelledExecutor(emotes))
+        commandManager.register(FaustaoCommand, FaustaoExecutor(emotes))
+        commandManager.register(VieirinhaCommand, VieirinhaExecutor(emotes))
+        commandManager.register(TioDoPaveCommand, TioDoPaveExecutor(emotes))
+        commandManager.register(BemBoladaCommand, BemBoladaExecutor(emotes))
 
         commandManager.register(
             HelpCommand,
@@ -283,6 +269,9 @@ class LorittaInteraKTions(
         commandManager.register(MoneyCommand, MoneyExecutor(emotes, ECBManager()))
         commandManager.register(MorseCommand, MorseFromExecutor(emotes), MorseToExecutor(emotes))
         commandManager.register(DictionaryCommand, DictionaryExecutor(emotes, http), MorseToExecutor(emotes))
+        commandManager.register(CalculatorCommand, CalculatorExecutor(emotes))
+        commandManager.register(AnagramCommand, AnagramExecutor(emotes))
+        commandManager.register(ChooseCommand, ChooseExecutor(emotes))
 
         // ===[ ECONOMY ]===
         commandManager.register(SonhosCommand, SonhosExecutor(emotes))
