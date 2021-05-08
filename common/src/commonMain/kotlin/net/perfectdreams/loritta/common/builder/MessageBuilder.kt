@@ -3,9 +3,11 @@ package net.perfectdreams.loritta.common.builder
 import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.entities.LorittaEmbed
+import net.perfectdreams.loritta.common.entities.LorittaImpersonation
 import net.perfectdreams.loritta.common.entities.LorittaMessage
 import net.perfectdreams.loritta.common.entities.LorittaReply
 import net.perfectdreams.loritta.common.entities.User
+import net.perfectdreams.loritta.common.images.ImageReference
 import net.perfectdreams.loritta.common.utils.CinnamonDslMarker
 import net.perfectdreams.loritta.common.utils.embed.EmbedBuilder
 
@@ -18,6 +20,11 @@ class MessageBuilder {
     var files = mutableMapOf<String, ByteArray>()
     var isEphemeral = false
     var allowedMentions = AllowedMentionsBuilder()
+    var impersonation: LorittaImpersonation? = null
+
+    fun impersonation(username: String, avatar: ImageReference) {
+        impersonation = LorittaImpersonation(username, avatar)
+    }
 
     /**
      * Appends a embed to this builder
@@ -94,7 +101,8 @@ class MessageBuilder {
             embed,
             files,
             isEphemeral,
-            allowedMentions.build()
+            allowedMentions.build(),
+            impersonation
         )
     }
 }
