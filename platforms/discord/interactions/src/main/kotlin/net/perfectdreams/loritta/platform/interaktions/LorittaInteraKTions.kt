@@ -89,7 +89,9 @@ import net.perfectdreams.loritta.commands.images.declarations.TrumpCommand
 import net.perfectdreams.loritta.commands.minecraft.McAvatarExecutor
 import net.perfectdreams.loritta.commands.minecraft.McBodyExecutor
 import net.perfectdreams.loritta.commands.minecraft.McHeadExecutor
+import net.perfectdreams.loritta.commands.minecraft.McOfflineUUIDExecutor
 import net.perfectdreams.loritta.commands.minecraft.McSkinExecutor
+import net.perfectdreams.loritta.commands.minecraft.McUUIDExecutor
 import net.perfectdreams.loritta.commands.minecraft.declarations.MinecraftPlayerCommand
 import net.perfectdreams.loritta.commands.misc.KkEaeMenExecutor
 import net.perfectdreams.loritta.commands.misc.declarations.KkEaeMenCommand
@@ -213,7 +215,9 @@ class LorittaInteraKTions(
             McSkinExecutor(emotes, mojangApi),
             McAvatarExecutor(emotes, mojangApi),
             McHeadExecutor(emotes, mojangApi),
-            McBodyExecutor(emotes, mojangApi)
+            McBodyExecutor(emotes, mojangApi),
+            McOfflineUUIDExecutor(emotes),
+            McUUIDExecutor(emotes, mojangApi)
         )
 
         commandManager.register(
