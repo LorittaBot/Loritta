@@ -56,7 +56,7 @@ class CalculatorExecutor(val emotes: Emotes) : CommandExecutor() {
             // TODO: Fix stripCodeMarks
             context.sendReply(
                 content = context.locale["${CalculatorCommand.LOCALE_PREFIX}.invalid", expression] + " ${emotes.loriSob}",
-                prefix = emotes.loriHm.toString()
+                prefix = emotes.loriHm
             )
         }
     }

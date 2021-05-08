@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.commands.`fun`.CoinFlipExecutor
 import net.perfectdreams.loritta.commands.`fun`.FaustaoExecutor
 import net.perfectdreams.loritta.commands.`fun`.JankenponExecutor
 import net.perfectdreams.loritta.commands.`fun`.RateWaifuExecutor
+import net.perfectdreams.loritta.commands.`fun`.RollExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextQualityExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextVaporQualityExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextVaporwaveExecutor
@@ -21,6 +22,7 @@ import net.perfectdreams.loritta.commands.`fun`.declarations.CoinFlipCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.FaustaoCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.JankenponCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.RateWaifuCommand
+import net.perfectdreams.loritta.commands.`fun`.declarations.RollCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.TextTransformDeclaration
 import net.perfectdreams.loritta.commands.`fun`.declarations.TioDoPaveCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.VieirinhaCommand
@@ -190,6 +192,7 @@ class LorittaInteraKTions(
         commandManager.register(VieirinhaCommand, VieirinhaExecutor(emotes))
         commandManager.register(TioDoPaveCommand, TioDoPaveExecutor(emotes))
         commandManager.register(BemBoladaCommand, BemBoladaExecutor(emotes))
+        commandManager.register(RollCommand, RollExecutor(emotes, random))
 
         commandManager.register(
             HelpCommand,
