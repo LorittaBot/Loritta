@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOption
 import net.perfectdreams.loritta.common.commands.options.CommandOptionType
+import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.images.URLImageReference
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.platform.interaktions.LorittaInteraKTions
@@ -34,6 +35,7 @@ import kotlin.streams.toList
 class SlashCommandExecutorWrapper(
     private val loritta: LorittaInteraKTions,
     private val locale: BaseLocale,
+    private val emotes: Emotes,
     // This is only used for metrics
     private val rootDeclaration: CommandDeclarationBuilder,
     private val declarationExecutor: CommandExecutorDeclaration,
@@ -169,14 +171,8 @@ class SlashCommandExecutorWrapper(
                             }
                         }
 
-                        if (!found) {
-                            // TODO: Improve this lol
-                            cinnamonContext.sendMessage {
-                                content = "tá mas cadê a imagem nn sei"
-                                isEphemeral = true
-                            }
-                            return
-                        }
+                        if (!found)
+                            cinnamonContext.fail(cinnamonContext.locale["commands.noValidImageFound", emotes.loriSob], emotes.loriSob)
                     }
 
                     else -> {
