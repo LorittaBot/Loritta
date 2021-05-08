@@ -98,6 +98,7 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
             val interaKTionsExecutor = SlashCommandExecutorWrapper(
                 loritta,
                 locale,
+                loritta.emotes,
                 declaration,
                 declarationExecutor,
                 executor,
