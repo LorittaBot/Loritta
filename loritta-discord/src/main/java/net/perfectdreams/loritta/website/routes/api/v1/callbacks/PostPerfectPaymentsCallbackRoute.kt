@@ -268,6 +268,7 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaDiscord) : BaseRoute(
 						}
 
 						donationKey.expiresAt += 2_764_800_000 // 32 dias
+						internalPayment.expiresAt = donationKey.expiresAt // Fixes bug where key renewals breaks user features due to the difference in the expiration date
 					} else {
 						if (internalPayment.money > 9.99.toBigDecimal()) {
 							logger.info { "Creating donation key with value ${internalPayment.money.toDouble()} for ${internalPayment.userId}" }
