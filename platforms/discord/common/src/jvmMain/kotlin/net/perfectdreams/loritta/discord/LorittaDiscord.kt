@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.discord
 
 import net.perfectdreams.loritta.common.LorittaBot
 import net.perfectdreams.loritta.common.utils.config.LorittaConfig
-import net.perfectdreams.loritta.common.utils.minecraft.MinecraftMojangAPI
+import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 
 abstract class LorittaDiscord(
     config: LorittaConfig,

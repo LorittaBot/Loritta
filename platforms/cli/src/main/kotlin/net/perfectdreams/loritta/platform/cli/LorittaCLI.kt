@@ -105,7 +105,7 @@ import net.perfectdreams.loritta.common.utils.config.ConfigUtils
 import net.perfectdreams.loritta.common.utils.config.GabrielaImageServerConfig
 import net.perfectdreams.loritta.common.utils.config.LorittaConfig
 import net.perfectdreams.loritta.common.utils.gabrielaimageserver.GabrielaImageServerClient
-import net.perfectdreams.loritta.common.utils.minecraft.MinecraftMojangAPI
+import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 import net.perfectdreams.loritta.platform.cli.commands.CommandManager
 
 class LorittaCLI(
