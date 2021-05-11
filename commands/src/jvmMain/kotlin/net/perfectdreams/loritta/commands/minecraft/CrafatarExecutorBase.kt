@@ -7,7 +7,7 @@ import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDec
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.common.utils.minecraft.MinecraftMojangAPI
+import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 
 open class CrafatarExecutorBase(
     val type: String,
