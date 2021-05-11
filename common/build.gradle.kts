@@ -51,6 +51,9 @@ kotlin {
 
                 // Used for the LocaleManager
                 implementation("org.yaml:snakeyaml:1.28")
+
+                // Used by Minecraft related commands
+                implementation("net.perfectdreams.minecraftmojangapi:minecraft-mojang-api:0.0.1-SNAPSHOT")
             }
         }
 
