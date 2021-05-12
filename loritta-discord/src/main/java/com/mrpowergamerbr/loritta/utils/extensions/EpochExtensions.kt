@@ -5,6 +5,7 @@ import java.text.DateFormatSymbols
 import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.ZoneId
+import java.util.*
 
 /**
  * "Humanizes" the date
@@ -15,7 +16,12 @@ import java.time.ZoneId
 fun OffsetDateTime.humanize(locale: BaseLocale): String {
 	val localeId = locale.id
 	val fixedOffset = this.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime()
-	val months = DateFormatSymbols(locale.toJavaLocale()).months
+	val javaLocale = when (localeId) {
+		"default" -> Locale("pt", "br")
+		else -> Locale(localeId.split("-")[0], localeId.split("-").getOrNull(1) ?: "")
+	}
+	val months = DateFormatSymbols(javaLocale).months
+
 
 	return if (localeId == "en-us") {
 		val fancy = when (this.dayOfMonth) {
