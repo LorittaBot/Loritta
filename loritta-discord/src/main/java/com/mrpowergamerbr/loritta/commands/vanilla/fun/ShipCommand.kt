@@ -11,8 +11,6 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.escapeMentions
-import net.perfectdreams.loritta.utils.locale.BaseLocale
-import net.perfectdreams.loritta.utils.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.api.EmbedBuilder
@@ -25,6 +23,8 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.ImageFormat
 import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
 import net.perfectdreams.loritta.utils.extensions.readImage
+import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.utils.locale.LocaleKeyData
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.or
 import java.awt.Color
@@ -131,9 +131,9 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 
 			if (Loritta.RANDOM.nextInt(0, 50) == 9 && context.lorittaUser.profile.money >= 3000) {
 				context.reply(
-						LorittaReply(
-								context.locale["commands.command.ship.bribeLove", "${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/ship-effects"]
-						)
+					LorittaReply(
+						context.locale["commands.command.ship.bribeLove", "${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/ship-effects"]
+					)
 				)
 			}
 
@@ -217,11 +217,8 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 			embed.setDescription("**$percentage%** $text")
 			embed.setImage("attachment://ships.png")
 			val msgBuilder = MessageBuilder()
-					.append(texto)
-					.denyMentions(
-							Message.MentionType.EVERYONE,
-							Message.MentionType.HERE
-					)
+				.append(texto)
+				.allowMentions(Message.MentionType.EMOTE)
 			msgBuilder.setEmbed(embed.build())
 			context.sendFile(image, "ships.png", msgBuilder.build())
 		} else {
