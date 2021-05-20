@@ -12,8 +12,12 @@ import com.mrpowergamerbr.loritta.dao.GuildProfile
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Profiles
-import com.mrpowergamerbr.loritta.utils.*
-import net.perfectdreams.loritta.utils.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.LorittaShards
+import com.mrpowergamerbr.loritta.utils.gson
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.lorittaSupervisor
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -23,11 +27,16 @@ import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.EconomyConfig
 import net.perfectdreams.loritta.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.utils.ClusterOfflineException
+import net.perfectdreams.loritta.utils.locale.BaseLocale
 import net.perfectdreams.loritta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 
 class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCategory.MAGIC) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -267,12 +276,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				}
 
 				if (strBuilder.length > 2000) {
-					context.reply(
-                            LorittaReply(
-                                    "Tem tanto usuário na lista que eu não vou conseguir mostrar, a mensagem está grande demais! Sorry ;w;",
-                                    Constants.ERROR
-                            )
-					)
+					context.sendFile(strBuilder.toString().toByteArray(Charsets.UTF_8).inputStream(), "users.txt", "São tantos resultados que eu decidi colocar em um arquivo de texto! ^-^")
 					return
 				}
 
@@ -305,12 +309,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				}
 
 				if (strBuilder.length > 2000) {
-					context.reply(
-                            LorittaReply(
-                                    "Tem tanta guild na lista que eu não vou conseguir mostrar, a mensagem está grande demais! Sorry ;w;",
-                                    Constants.ERROR
-                            )
-					)
+					context.sendFile(strBuilder.toString().toByteArray(Charsets.UTF_8).inputStream(), "guilds.txt", "São tantos resultados que eu decidi colocar em um arquivo de texto! ^-^")
 					return
 				}
 
