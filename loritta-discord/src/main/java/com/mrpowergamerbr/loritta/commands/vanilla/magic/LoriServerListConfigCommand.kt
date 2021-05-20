@@ -28,6 +28,9 @@ import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import net.perfectdreams.loritta.utils.Emotes
+import java.io.InputStream
+import org.apache.commons.codec.Charsets
 
 class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCategory.MAGIC) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -267,12 +270,10 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				}
 
 				if (strBuilder.length > 2000) {
-					context.reply(
-                            LorittaReply(
-                                    "Tem tanto usuário na lista que eu não vou conseguir mostrar, a mensagem está grande demais! Sorry ;w;",
-                                    Constants.ERROR
-                            )
-					)
+					context.sendFile(strBuilder.toByteArray(Charsets.UTF_8).inputStream(), "users.txt", LorittaReply(
+						"Como tinha muitoos usuários na lista, resolvi mandar um arquivo com todos eles!",
+						Emotes.LORI_COFFEE
+					))
 					return
 				}
 
@@ -305,12 +306,10 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				}
 
 				if (strBuilder.length > 2000) {
-					context.reply(
-                            LorittaReply(
-                                    "Tem tanta guild na lista que eu não vou conseguir mostrar, a mensagem está grande demais! Sorry ;w;",
-                                    Constants.ERROR
-                            )
-					)
+					context.sendFile(strBuilder.toByteArray(Charsets.UTF_8).inputStream(), "guilds.txt", LorittaReply(
+						"Como tinha muitaas guilds na lista, resolvi mandar um arquivo com todos elas!",
+						Emotes.LORI_COFFEE
+					))
 					return
 				}
 
