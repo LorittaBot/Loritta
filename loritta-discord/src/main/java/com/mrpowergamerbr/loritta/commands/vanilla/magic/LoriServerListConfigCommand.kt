@@ -269,10 +269,9 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				}
 
 				if (strBuilder.length > 2000) {
-					context.sendFile(strBuilder.toByteArray(Charsets.UTF_8).inputStream(), "users.txt", LorittaReply(
-						"Como tinha muitoos usuários na lista, resolvi mandar um arquivo com todos eles!",
-						Emotes.LORI_COFFEE
-					))
+					context.sendFile(strBuilder.toByteArray(Charsets.UTF_8).inputStream(), "users.txt", 
+							 "${Emotes.LORI_COFFEE} **|** ${context.getAsMention(true)} Como tinha muitoos usuários na lista, resolvi mandar um arquivo com todos eles!"
+							)
 					return
 				}
 
@@ -305,10 +304,9 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 				}
 
 				if (strBuilder.length > 2000) {
-					context.sendFile(strBuilder.toByteArray(Charsets.UTF_8).inputStream(), "guilds.txt", LorittaReply(
-						"Como tinha muitaas guilds na lista, resolvi mandar um arquivo com todos elas!",
-						Emotes.LORI_COFFEE
-					))
+					context.sendFile(strBuilder.toByteArray(Charsets.UTF_8).inputStream(), "guilds.txt",
+							 "${Emotes.LORI_COFFEE} **|** ${context.getAsMention(true)} Como tinha muitaas guilds na lista, resolvi mandar um arquivo com todos elas!"
+							)
 					return
 				}
 
