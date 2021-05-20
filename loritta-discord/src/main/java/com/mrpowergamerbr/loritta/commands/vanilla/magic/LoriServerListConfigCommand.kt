@@ -30,7 +30,7 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import net.perfectdreams.loritta.utils.Emotes
 import java.io.InputStream
-import org.apache.commons.codec.Charsets
+import java.nio.charset.Charset
 
 class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCategory.MAGIC) {
 	override fun getDescription(locale: BaseLocale): String {
