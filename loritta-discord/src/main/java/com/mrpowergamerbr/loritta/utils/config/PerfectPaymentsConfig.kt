@@ -1,11 +1,12 @@
 package com.mrpowergamerbr.loritta.utils.config
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonProperty
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-class PerfectPaymentsConfig @JsonCreator constructor(
+@Serializable
+data class PerfectPaymentsConfig(
 	val url: String,
-	@JsonProperty("notification-token")
+	@SerialName("notification-token")
 	val notificationToken: String,
 	val token: String
 )

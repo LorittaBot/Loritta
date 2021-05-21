@@ -1,11 +1,12 @@
 package com.mrpowergamerbr.loritta.utils.config
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonProperty
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-class FortniteApiConfig @JsonCreator constructor(
-        @JsonProperty("token")
+@Serializable
+data class FortniteApiConfig(
+        @SerialName("token")
         val token: String,
-        @JsonProperty("creator-code")
+        @SerialName("creator-code")
         val creatorCode: String
 )

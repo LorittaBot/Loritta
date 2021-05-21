@@ -1,9 +1,14 @@
 package com.mrpowergamerbr.loritta.utils.config
 
-import com.fasterxml.jackson.annotation.JsonCreator
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-class JdaOkHttpConfig @JsonCreator constructor(
+@Serializable
+data class JdaOkHttpConfig(
+		@SerialName("read-timeout")
 		val readTimeout: Long,
+		@SerialName("connect-timeout")
 		val connectTimeout: Long,
+		@SerialName("write-timeout")
 		val writeTimeout: Long
 )

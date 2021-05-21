@@ -1,12 +1,18 @@
 package com.mrpowergamerbr.loritta.utils.config
 
-import com.fasterxml.jackson.annotation.JsonCreator
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-class CacheConfig @JsonCreator constructor(
+@Serializable
+data class CacheConfig(
+		@SerialName("server-configs")
 		val serverConfigs: ServerConfigCacheConfig
 ) {
-	class ServerConfigCacheConfig @JsonCreator constructor(
+	@Serializable
+	data class ServerConfigCacheConfig(
+			@SerialName("maximum-size")
 			val maximumSize: Long,
+			@SerialName("expire-after-write")
 			val expireAfterWrite: Long
 	)
 }

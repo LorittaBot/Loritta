@@ -38,6 +38,7 @@ import net.perfectdreams.loritta.platform.discord.plugin.JVMPluginManager
 import net.perfectdreams.loritta.platform.discord.utils.*
 import net.perfectdreams.loritta.tables.*
 import net.perfectdreams.loritta.utils.*
+import net.perfectdreams.loritta.utils.HoconUtils.decodeFromFile
 import net.perfectdreams.loritta.utils.config.*
 import net.perfectdreams.loritta.utils.extensions.readImage
 import net.perfectdreams.loritta.utils.locale.LocaleManager
@@ -262,7 +263,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
     /**
      * Loads an specific fan art artist
      */
-    fun loadFanArtArtist(file: File): FanArtArtist = Constants.HOCON_MAPPER.readValue(file)
+    fun loadFanArtArtist(file: File): FanArtArtist = Constants.HOCON.decodeFromFile(file)
 
     fun getFanArtArtistByFanArt(fanArt: FanArt) = fanArtArtists.firstOrNull { fanArt in it.fanArts }
 

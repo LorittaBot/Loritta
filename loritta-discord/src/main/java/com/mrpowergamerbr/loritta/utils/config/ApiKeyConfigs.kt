@@ -1,35 +1,52 @@
 package com.mrpowergamerbr.loritta.utils.config
 
-import com.fasterxml.jackson.annotation.JsonCreator
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-class OpenWeatherMapConfig @JsonCreator constructor(
+@Serializable
+data class OpenWeatherMapConfig(
+        @SerialName("api-key")
         val apiKey: String
 )
 
-class GoogleVisionKey @JsonCreator constructor(
+@Serializable
+data class GoogleVisionKey(
+        @SerialName("api-key")
         val apiKey: String
 )
 
-class GoogleRecaptcha @JsonCreator constructor(
+@Serializable
+data class GoogleRecaptcha(
+        @SerialName("server-vote-token")
         val serverVoteToken: String,
+        @SerialName("reputation-token")
         val reputationToken: String
 )
 
-class DiscordBotsConfig @JsonCreator constructor(
+@Serializable
+data class DiscordBotsConfig(
         val enabled: Boolean,
+        @SerialName("api-key")
         val apiKey: String
 )
 
-class DiscordBotListConfig@JsonCreator constructor(
+@Serializable
+data class DiscordBotListConfig(
         val enabled: Boolean,
+        @SerialName("api-key")
         val apiKey: String
 )
 
-class TwitchConfig @JsonCreator constructor(
+@Serializable
+data class TwitchConfig(
+        @SerialName("client-id")
         val clientId: String,
+        @SerialName("client-secret")
 		val clientSecret: String
 )
 
-class GeneralWebhookConfig @JsonCreator constructor(
+@Serializable
+data class GeneralWebhookConfig(
+        @SerialName("webhook-secret")
         val webhookSecret: String
 )

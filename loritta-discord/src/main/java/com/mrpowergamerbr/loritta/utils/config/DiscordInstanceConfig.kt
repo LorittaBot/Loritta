@@ -1,8 +1,12 @@
 package com.mrpowergamerbr.loritta.utils.config
 
-import com.fasterxml.jackson.annotation.JsonCreator
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-class DiscordInstanceConfig @JsonCreator constructor(
+@Serializable
+data class DiscordInstanceConfig(
+		@SerialName("add-bot-url")
 		val addBotUrl: String,
+		@SerialName("authorization-url")
 		val authorizationUrl: String
 )

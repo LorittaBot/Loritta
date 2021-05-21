@@ -1,15 +1,21 @@
 package com.mrpowergamerbr.loritta.utils.config
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-class GeneralDiscordConfig @JsonCreator constructor(
+@Serializable
+data class GeneralDiscordConfig(
 		val discord: DiscordConfig,
+		@SerialName("shard-controller")
 		val shardController: ShardControllerConfig,
+		@SerialName("ok-http")
 		val okHttp: JdaOkHttpConfig,
+		@SerialName("discord-bots")
 		val discordBots: DiscordBotsConfig,
+		@SerialName("discord-bot-list")
 		val discordBotList: DiscordBotListConfig,
+		@SerialName("anti-raid-ids")
 		val antiRaidIds: List<String>,
+		@SerialName("message-encryption")
 		val messageEncryption: MessageEncryptionConfig
 )

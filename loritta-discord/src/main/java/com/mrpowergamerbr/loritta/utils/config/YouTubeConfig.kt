@@ -1,7 +1,10 @@
 package com.mrpowergamerbr.loritta.utils.config
 
-import com.fasterxml.jackson.annotation.JsonCreator
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-class YouTubeConfig @JsonCreator constructor(
+@Serializable
+data class YouTubeConfig(
+        @SerialName("api-key")
         val apiKey: String
 )

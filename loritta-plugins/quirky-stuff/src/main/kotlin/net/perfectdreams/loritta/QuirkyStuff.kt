@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.mrpowergamerbr.loritta.utils.Constants
 import mu.KotlinLogging
 import net.perfectdreams.loritta.api.LorittaBot
@@ -12,6 +11,7 @@ import net.perfectdreams.loritta.modules.ThankYouLoriModule
 import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
 import net.perfectdreams.loritta.profile.badges.CanecaBadge
 import net.perfectdreams.loritta.profile.badges.HalloweenBadge
+import net.perfectdreams.loritta.utils.HoconUtils.decodeFromFile
 import java.io.File
 
 class QuirkyStuff(name: String, loritta: LorittaBot) : DiscordPlugin(name, loritta) {
@@ -20,7 +20,7 @@ class QuirkyStuff(name: String, loritta: LorittaBot) : DiscordPlugin(name, lorit
     var sponsorsAdvertisement: SponsorsAdvertisement? = null
 
     override fun onEnable() {
-        val config = Constants.HOCON_MAPPER.readValue<QuirkyConfig>(File(dataFolder, "config.conf"))
+        val config = Constants.HOCON.decodeFromFile<QuirkyConfig>(File(dataFolder, "config.conf"))
 
         if (config.topDonatorsRank.enabled) {
             logger.info { "Top Donators Rank is enabled! Enabling top donators rank stuff... :3"}

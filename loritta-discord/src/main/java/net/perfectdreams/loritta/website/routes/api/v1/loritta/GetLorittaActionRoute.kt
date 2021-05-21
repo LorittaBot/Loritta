@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import io.ktor.application.*
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.HoconUtils.decodeFromFile
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import java.io.File
@@ -31,9 +32,9 @@ class GetLorittaActionRoute(loritta: LorittaDiscord) : RequiresAPIAuthentication
 			}
 			"config" -> {
 				val file = File(System.getProperty("conf") ?: "./loritta.conf")
-				com.mrpowergamerbr.loritta.utils.loritta.config = Constants.HOCON_MAPPER.readValue(file.readText())
+				com.mrpowergamerbr.loritta.utils.loritta.config = Constants.HOCON.decodeFromFile(file)
 				val file2 = File(System.getProperty("discordConf") ?: "./discord.conf")
-				com.mrpowergamerbr.loritta.utils.loritta.discordConfig = Constants.HOCON_MAPPER.readValue(file2.readText())
+				com.mrpowergamerbr.loritta.utils.loritta.discordConfig = Constants.HOCON.decodeFromFile(file2)
 			}
 		}
 
