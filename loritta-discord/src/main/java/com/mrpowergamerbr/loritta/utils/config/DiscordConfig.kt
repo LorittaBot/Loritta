@@ -18,7 +18,7 @@ data class DiscordConfig(
 		val intents: List<GatewayIntent>,
 		val cacheFlags: List<CacheFlag>,
 		val fanArtExtravaganza: FanArtExtravaganzaConfig,
-		val delayBetweenActivities: Long? = 60000L,
+		val delayBetweenActivities: Long = 60000L,
 		val activities: List<LorittaGameStatus>,
 		val requestLimiter: RequestLimiterConfig
 ) {
