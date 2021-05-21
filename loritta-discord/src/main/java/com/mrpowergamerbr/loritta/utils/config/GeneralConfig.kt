@@ -91,7 +91,7 @@ class GeneralConfig(
 	data class LorittaAvatarFanArt(
 			val fileName: String,
 			val artistId: String,
-			val fancyName: String? = ""
+			val fancyName: String? = null
 	)
 
 	fun isOwner(id: String) = loritta.ownerIds.contains(id)
