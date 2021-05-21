@@ -5,7 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GeneralInstanceConfig (
-		@SerialName("machine-external-ip")
 		val machineExternalIp: String,
 		val loritta: LorittaInstanceConfig
 ) {
@@ -13,13 +12,11 @@ data class GeneralInstanceConfig (
 	data class LorittaInstanceConfig(
 			val folders: FoldersConfig,
 			val website: WebsiteConfig,
-			@SerialName("current-cluster-id")
 			val currentClusterId: Long
 	) {
 		@Serializable
 		data class WebsiteConfig(
 				val url: String,
-				@SerialName("cluster-url")
 				val clusterUrl: String,
 				val folder: String,
 				val port: Int
@@ -31,7 +28,6 @@ data class GeneralInstanceConfig (
 				val temp: String,
 				val locales: String,
 				val plugins: String,
-				@SerialName("fan-arts")
 				val fanArts: String
 		)
 	}

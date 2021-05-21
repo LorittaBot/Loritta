@@ -5,6 +5,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class YouTubeConfig(
-        @SerialName("api-key")
         val apiKey: String
 )
