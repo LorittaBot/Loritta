@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.RegisterConfig
@@ -18,6 +17,7 @@ import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.ReactionOption
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.HoconUtils.decodeFromFile
 import net.perfectdreams.loritta.website.utils.WebsiteAssetsHashes
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -295,9 +295,9 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 
 		if (arg0 == "config") {
 			val file = File(System.getProperty("conf") ?: "./loritta.conf")
-			loritta.config = Constants.HOCON_MAPPER.readValue(file.readText())
+			loritta.config = Constants.HOCON.decodeFromFile(file)
 			val file2 = File(System.getProperty("discordConf") ?: "./discord.conf")
-			loritta.discordConfig = Constants.HOCON_MAPPER.readValue(file2.readText())
+			loritta.discordConfig = Constants.HOCON.decodeFromFile(file2)
 
 			context.reply(
                     LorittaReply(

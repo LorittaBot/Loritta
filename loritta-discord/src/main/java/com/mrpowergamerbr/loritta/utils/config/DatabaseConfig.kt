@@ -1,8 +1,9 @@
 package com.mrpowergamerbr.loritta.utils.config
 
-import com.fasterxml.jackson.annotation.JsonCreator
+import kotlinx.serialization.Serializable
 
-class DatabaseConfig @JsonCreator constructor(
+@Serializable
+data class DatabaseConfig(
 		val type: String,
         val databaseName: String,
         val address: String,

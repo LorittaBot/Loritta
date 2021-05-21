@@ -1,13 +1,12 @@
 package com.mrpowergamerbr.loritta.utils.config
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.loritta
+import kotlinx.serialization.Serializable
 import net.perfectdreams.loritta.utils.DiscordUtils
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-class GeneralConfig @JsonCreator constructor(
+@Serializable
+class GeneralConfig(
 		val loritta: LorittaConfig,
 		val clusters: List<LorittaClusterConfig>,
 		val database: DatabaseConfig,
@@ -33,11 +32,12 @@ class GeneralConfig @JsonCreator constructor(
 		val caches: CacheConfig
 ) {
 
-	class CrowdinConfig @JsonCreator constructor(
+	@Serializable
+	data class CrowdinConfig(
 			val url: String
 	)
-
-	class LorittaClusterConfig @JsonCreator constructor(
+	@Serializable
+	class LorittaClusterConfig(
 			val id: Long,
 			val name: String,
 			val minShard: Long,
@@ -52,18 +52,19 @@ class GeneralConfig @JsonCreator constructor(
 					Constants.CLUSTER_USER_AGENT
 				).format(id, name)
 	}
-
-	class LorittaConfig @JsonCreator constructor(
+	@Serializable
+	data class LorittaConfig(
 			val environment: EnvironmentType,
 			val featureFlags: List<String>,
-			val ownerIds: List<String>,
-			val subOwnerIds: List<String>,
+			val ownerIds: List<Long>,
+			val subOwnerIds: List<Long>,
 			val commands: CommandsConfig,
 			val website: WebsiteConfig,
 			val clusterReadTimeout: Int,
 			val clusterConnectionTimeout: Int
 	) {
-		class WebsiteConfig @JsonCreator constructor(
+		@Serializable
+		data class WebsiteConfig(
 				val enabled: Boolean,
 				val apiKeys: List<AuthenticationKey>,
 				val maxGuildTries: Int,
@@ -72,24 +73,25 @@ class GeneralConfig @JsonCreator constructor(
 				val blockedIps: List<String>,
 				val blockedUserAgents: List<String>
 		) {
-			class AuthenticationKey @JsonCreator constructor(
+			@Serializable
+			data class AuthenticationKey (
 					val name: String,
 					val description: String,
 					val allowed: List<String>
 			)
 		}
-
-		class CommandsConfig @JsonCreator constructor(
+		@Serializable
+		data class CommandsConfig(
 				val cooldown: Int,
 				val imageCooldown: Int,
 				val commandsCooldown: Map<String, Int>
 		)
 	}
-
-	class LorittaAvatarFanArt @JsonCreator constructor(
+	@Serializable
+	data class LorittaAvatarFanArt(
 			val fileName: String,
 			val artistId: String,
-			val fancyName: String?
+			val fancyName: String? = null
 	)
 
 	fun isOwner(id: String) = loritta.ownerIds.contains(id)

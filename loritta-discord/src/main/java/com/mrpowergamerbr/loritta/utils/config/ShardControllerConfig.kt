@@ -1,8 +1,9 @@
 package com.mrpowergamerbr.loritta.utils.config
 
-import com.fasterxml.jackson.annotation.JsonCreator
+import kotlinx.serialization.Serializable
 
-class ShardControllerConfig @JsonCreator constructor(
+@Serializable
+data class ShardControllerConfig(
 		val enabled: Boolean,
 		val url: String,
 		val buckets: Int

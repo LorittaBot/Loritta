@@ -45,6 +45,7 @@ dependencies {
 
     // Kotlin Serialization
     api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLIN_SERIALIZATION}")
+    api("org.jetbrains.kotlinx:kotlinx-serialization-hocon:${Versions.KOTLIN_SERIALIZATION}")
 
     // Kotlin Coroutines
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.KOTLIN_COROUTINES}")
@@ -95,7 +96,6 @@ dependencies {
     api("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.3")
     api("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.3")
     api("com.fasterxml.jackson.module:jackson-module-parameter-names:2.11.3")
-    api("org.honton.chas.hocon:jackson-dataformat-hocon:1.1.1")
 
     api("org.json:json:20190722")
     api("com.github.salomonbrys.kotson:kotson:2.5.0")

@@ -1,11 +1,12 @@
 package com.mrpowergamerbr.loritta.utils.config
 
-import com.fasterxml.jackson.annotation.JsonCreator
+import kotlinx.serialization.Serializable
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 
-class DiscordConfig @JsonCreator constructor(
+@Serializable
+data class DiscordConfig(
 		val clientToken: String,
 		val clientId: String,
 		val clientSecret: String,
@@ -17,24 +18,26 @@ class DiscordConfig @JsonCreator constructor(
 		val intents: List<GatewayIntent>,
 		val cacheFlags: List<CacheFlag>,
 		val fanArtExtravaganza: FanArtExtravaganzaConfig,
-		val delayBetweenActivities: Long,
+		val delayBetweenActivities: Long = 60000L,
 		val activities: List<LorittaGameStatus>,
 		val requestLimiter: RequestLimiterConfig
 ) {
-    class FanArtExtravaganzaConfig @JsonCreator constructor(
-            val enabled: Boolean,
-            val dayOfTheWeek: Int,
-            val fanArts: List<GeneralConfig.LorittaAvatarFanArt>
-    )
-    class LorittaGameStatus @JsonCreator constructor(
-            val name: String,
-            val type: String
-    )
-
-	class RequestLimiterConfig @JsonCreator constructor(
-			val enabled: Boolean,
-			val maxRequestsPer10Minutes: Int,
-			val consoleWarnCooldown: Long,
-			val removePendingRequestsCooldown: Long
+	@Serializable
+	data class FanArtExtravaganzaConfig(
+		val enabled: Boolean,
+		val dayOfTheWeek: Int,
+		val fanArts: List<GeneralConfig.LorittaAvatarFanArt>
+	)
+	@Serializable
+	data class LorittaGameStatus(
+		val name: String,
+		val type: String
+	)
+	@Serializable
+	data class RequestLimiterConfig(
+		val enabled: Boolean,
+		val maxRequestsPer10Minutes: Int,
+		val consoleWarnCooldown: Long,
+		val removePendingRequestsCooldown: Long
 	)
 }

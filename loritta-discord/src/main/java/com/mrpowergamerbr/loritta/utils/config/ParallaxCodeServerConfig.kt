@@ -1,7 +1,8 @@
 package com.mrpowergamerbr.loritta.utils.config
 
-import com.fasterxml.jackson.annotation.JsonCreator
+import kotlinx.serialization.Serializable
 
-data class ParallaxCodeServerConfig @JsonCreator constructor(
+@Serializable
+data class ParallaxCodeServerConfig(
 		val url: String
 )

@@ -1,9 +1,8 @@
 package com.mrpowergamerbr.loritta.utils.config
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import kotlinx.serialization.Serializable
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-class GeneralDiscordInstanceConfig @JsonCreator constructor(
-		val discord: DiscordInstanceConfig
+@Serializable
+data class GeneralDiscordInstanceConfig(
+		val discord: DiscordInstanceConfig,
 )

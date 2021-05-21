@@ -1,26 +1,28 @@
 package com.mrpowergamerbr.loritta.utils.config
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-class GeneralInstanceConfig @JsonCreator constructor(
+@Serializable
+data class GeneralInstanceConfig (
 		val machineExternalIp: String,
 		val loritta: LorittaInstanceConfig
 ) {
-	class LorittaInstanceConfig @JsonCreator constructor(
+	@Serializable
+	data class LorittaInstanceConfig(
 			val folders: FoldersConfig,
 			val website: WebsiteConfig,
 			val currentClusterId: Long
 	) {
-		class WebsiteConfig @JsonCreator constructor(
+		@Serializable
+		data class WebsiteConfig(
 				val url: String,
 				val clusterUrl: String,
 				val folder: String,
 				val port: Int
 		)
-
-		class FoldersConfig @JsonCreator constructor(
+		@Serializable
+		data class FoldersConfig(
 				val root: String,
 				val assets: String,
 				val temp: String,

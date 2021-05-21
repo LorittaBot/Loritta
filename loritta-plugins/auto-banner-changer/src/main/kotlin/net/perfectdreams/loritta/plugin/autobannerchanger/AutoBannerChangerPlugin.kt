@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.plugin.autobannerchanger
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
 import mu.KotlinLogging
@@ -9,6 +8,7 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.commands.vanilla.magic.LoriToolsCommand
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
+import net.perfectdreams.loritta.utils.HoconUtils.decodeFromFile
 import java.io.File
 
 class AutoBannerChangerPlugin(name: String, loritta: LorittaDiscord) : LorittaDiscordPlugin(name, loritta) {
@@ -21,7 +21,7 @@ class AutoBannerChangerPlugin(name: String, loritta: LorittaDiscord) : LorittaDi
     override fun onEnable() {
         super.onEnable()
 
-        val config = Constants.HOCON_MAPPER.readValue<AutoBannerChangerConfig>(File(dataFolder, "config.conf"))
+        val config = Constants.HOCON.decodeFromFile<AutoBannerChangerConfig>(File(dataFolder, "config.conf"))
         if (config.enabled) {
             bannerChanger = BannerChanger(loritta as Loritta, this, config).also {
                 launch(it.start())

@@ -1,8 +1,9 @@
 package com.mrpowergamerbr.loritta.utils.config
 
-import com.fasterxml.jackson.annotation.JsonCreator
+import kotlinx.serialization.Serializable
 
-class ConnectionManagerConfig @JsonCreator constructor(
+@Serializable
+data class ConnectionManagerConfig(
         val trustedDomains: List<String>,
         val blockedDomains: List<String>
 )
