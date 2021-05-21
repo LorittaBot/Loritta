@@ -1,23 +1,13 @@
 package com.mrpowergamerbr.loritta.utils
 
-import com.fasterxml.jackson.databind.BeanDescription
-import com.fasterxml.jackson.databind.DeserializationConfig
-import com.fasterxml.jackson.databind.JsonDeserializer
-import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.PropertyNamingStrategy
-import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier
-import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.databind.type.MapType
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import kotlinx.serialization.hocon.Hocon
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.jackson.FixedMapDeserializer
 import org.yaml.snakeyaml.Yaml
 import java.awt.Color
 import java.awt.Font
