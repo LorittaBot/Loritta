@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.type.MapType
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
-import com.jasonclawson.jackson.dataformat.hocon.HoconFactory
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import kotlinx.serialization.hocon.Hocon
