@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.platform.discord.commands
 
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import mu.KotlinLogging
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandException
@@ -12,6 +13,7 @@ import net.perfectdreams.loritta.common.commands.options.CommandOptionType
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.entities.JDAMessageChannel
 import net.perfectdreams.loritta.platform.discord.entities.JDAUser
+import net.perfectdreams.loritta.utils.CommandUtils
 
 class JDACommandManager(val loritta: LorittaDiscord) {
     companion object {
@@ -27,7 +29,7 @@ class JDACommandManager(val loritta: LorittaDiscord) {
     }
 
     suspend fun matches(
-        content: LorittaMessageEvent,
+        event: LorittaMessageEvent,
         rawArguments: MutableList<String>
     ): Boolean {
         // Everything is a label right now, so we need to process and try to find the best match for us
@@ -51,7 +53,10 @@ class JDACommandManager(val loritta: LorittaDiscord) {
                     declaration
                 )
 
-                if (matchedDeclaration != null) {
+                // We need to check if it is different than our old declaration because, if we don't, stuff like
+                // "/morse to aaaaaa"
+                // Will be recognized even if the current it is 3, and that should not happen!
+                if (matchedDeclaration != null && matchedDeclaration != bestMatchedDeclaration) {
                     bestMatchedDeclaration = matchedDeclaration
                     bestMatchedRequiresHowManyLabels = it + 1
                 }
@@ -66,29 +71,70 @@ class JDACommandManager(val loritta: LorittaDiscord) {
 
             val argumentsSplit = rawArguments.drop(howManyLabels)
 
-            val args = parseArgs(argumentsSplit, matchedDeclaration.executor?.options?.arguments ?: listOf())
-
-            val context = JDACommandContext(
-                loritta,
-                loritta.localeManager.getLocaleById("default"),
-                JDAUser(content.author),
-                JDAMessageChannel(content.channel)
-            )
-
-            try {
-                executor.execute(
-                    context,
-                    CommandArguments(args)
-                )
-            } catch (e: CommandException) {
-                context.channel.sendMessage(e.lorittaMessage)
-            }
+            processCommand(event, matchedDeclaration, executor, argumentsSplit)
             return true
         }
 
         return false
     }
 
+    private suspend fun processCommand(event: LorittaMessageEvent, declaration: CommandDeclarationBuilder, executor: CommandExecutor, argumentsAsString: List<String>) {
+        val start = System.currentTimeMillis()
+
+        val args = parseArgs(argumentsAsString, declaration.executor?.options?.arguments ?: listOf())
+
+        val context = JDACommandContext(
+            loritta,
+            loritta.localeManager.getLocaleById("default"),
+            JDAUser(event.author),
+            JDAMessageChannel(event.channel)
+        )
+
+        CommandUtils.logMessageEvent(event, logger)
+
+        try {
+            // TODO: Channel blacklist permission check
+            // TODO: Check if user is banned
+            // TODO: Cooldown
+            // TODO: Command feedback
+            // TODO: Check disabled commands
+            // TODO: Check default permissions
+            // TODO: Check Loritta Permissions
+            // TODO: Help easter egg when using a command with shrug
+            // TODO: Owner only command check
+            // TODO: canUseCommand
+            // TODO: Can't use command in private channel check
+            // TODO: Check file upload permission
+            // TODO: Donation messages that... aren't being used for donation messages anymore
+            // TODO: Inappropriate words check
+            // TODO: Guild Owner banned check
+            // TODO: Log command to database
+
+            lorittaShards.updateCachedUserData(event.author)
+
+            executor.execute(
+                context,
+                CommandArguments(args)
+            )
+
+            // TODO: Delete user message
+            // TODO: Log Prometheus
+
+            val commandLatency = System.currentTimeMillis() - start
+
+            CommandUtils.logMessageEventComplete(event, logger, commandLatency)
+        } catch (e: CommandException) {
+            context.channel.sendMessage(e.lorittaMessage)
+        }
+    }
+
+    /**
+     * Parses the arguments in the [args] list, matching the provided arguments from the command in the list [commandArgs]
+     *
+     * @param args        the user's input arguments
+     * @param commandArgs the command's arguments
+     * @return a map matching the command arguments to user inputs
+     */
     private fun parseArgs(args: List<String>, commandArgs: List<CommandOption<*>>): MutableMap<CommandOption<*>, Any?> {
         val argsResults = mutableMapOf<CommandOption<*>, Any?>()
 
@@ -111,12 +157,12 @@ class JDACommandManager(val loritta: LorittaDiscord) {
      * @param declaration     the declaration that must be found
      * @return the matched declaration
      */
-    fun getLabelsConnectedToCommandDeclaration(labels: List<String>, declaration: CommandDeclarationBuilder): CommandDeclarationBuilder? {
+    private fun getLabelsConnectedToCommandDeclaration(labels: List<String>, declaration: CommandDeclarationBuilder): CommandDeclarationBuilder? {
         // Let's not over complicate this, we already know that Discord only supports one level deep of nesting
         // (so group -> subcommand)
         // So let's do easy and quick checks
-        val firstLabel = labels.first()
-        if (declaration.labels.any { it == firstLabel }) {
+        val firstLabel = labels.first().toLowerCase() // Allow using "+CoMaNd"
+        if (declaration.labels.any { it.equals(firstLabel, true) }) {
             // Matches the root label! Yay!
             if (labels.size == 1) {
                 // If there is only a Root Label, then it means we found our root declaration!
@@ -127,7 +173,7 @@ class JDACommandManager(val loritta: LorittaDiscord) {
 
                     // If not, let's check subcommands
                     for (subcommand in declaration.subcommands) {
-                        if (subcommand.labels.any { it == secondLabel }) {
+                        if (subcommand.labels.any { it.equals(secondLabel, true) }) {
                             // Matches, then return this!
                             return subcommand
                         }
@@ -138,9 +184,9 @@ class JDACommandManager(val loritta: LorittaDiscord) {
 
                     // If not, let's check subcommand groups and subcommands
                     for (group in declaration.subcommandGroups) {
-                        if (group.labels.any { it == secondLabel }) {
+                        if (group.labels.any { it.equals(secondLabel, true) }) {
                             for (subcommand in group.subcommands) {
-                                if (subcommand.labels.any { it == thirdLabel }) {
+                                if (subcommand.labels.any { it.equals(thirdLabel, true) }) {
                                     // Matches, then return this!
                                     return subcommand
                                 }

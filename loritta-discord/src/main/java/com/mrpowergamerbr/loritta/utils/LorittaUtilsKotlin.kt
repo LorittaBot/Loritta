@@ -4,11 +4,11 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Profile
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.utils.MiscUtil
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.utils.Emotes

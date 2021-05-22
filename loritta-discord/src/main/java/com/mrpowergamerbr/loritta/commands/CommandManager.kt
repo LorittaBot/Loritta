@@ -35,12 +35,10 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.locale.LocaleStringData
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.MiscellaneousConfig
-import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.utils.*
 import net.perfectdreams.loritta.utils.metrics.Prometheus
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import java.sql.Connection
 import java.util.*
@@ -144,7 +142,7 @@ class CommandManager(loritta: Loritta) {
 		commandMap.add(LyricsCommand())
 
 		// =======[ DISCORD ]=======
-		commandMap.add(createBotinfoCommand())
+		// commandMap.add(createBotinfoCommand())
 		commandMap.add(AvatarCommand())
 		commandMap.add(ServerIconCommand())
 		commandMap.add(EmojiCommand())
@@ -285,11 +283,8 @@ class CommandManager(loritta: Loritta) {
 			val context = CommandContext(serverConfig, lorittaUser, locale, ev, command, args, rawArgs, strippedArgs)
 
 			try {
-				if (ev.message.isFromType(ChannelType.TEXT)) {
-					logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
-				} else {
-					logger.info("(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
-				}
+				CommandUtils.logMessageEvent(ev, logger)
+
 				val miscellaneousConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<MiscellaneousConfig?>(loritta, ServerConfig::miscellaneousConfig)
 
 				val enableBomDiaECia = miscellaneousConfig?.enableBomDiaECia ?: false
@@ -500,21 +495,7 @@ class CommandManager(loritta: Loritta) {
 					lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
 				}
 
-				loritta.newSuspendedTransaction {
-					ExecutedCommandsLog.insert {
-						it[userId] = lorittaUser.user.idLong
-						it[ExecutedCommandsLog.guildId] = if (ev.message.isFromGuild) ev.message.guild.idLong else null
-						it[channelId] = ev.message.channel.idLong
-						it[sentAt] = System.currentTimeMillis()
-						it[ExecutedCommandsLog.command] = command::class.simpleName ?: "UnknownCommand"
-						it[ExecutedCommandsLog.message] = ev.message.contentRaw
-					}
-
-					val profile = serverConfig.getUserDataIfExistsNested(lorittaUser.profile.userId)
-
-					if (profile != null && !profile.isInGuild)
-						profile.isInGuild = true
-				}
+				CommandUtils.trackCommandToDatabase(ev, command::class.simpleName ?: "UnknownCommand")
 
 				lorittaShards.updateCachedUserData(context.userHandle)
 
@@ -531,11 +512,8 @@ class CommandManager(loritta: Loritta) {
 				val end = System.currentTimeMillis()
 				val commandLatency = end - start
 				Prometheus.COMMAND_LATENCY.labels(command::class.simpleName).observe(commandLatency.toDouble())
-				if (ev.message.isFromType(ChannelType.TEXT)) {
-					logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - OK! Processed in ${commandLatency}ms")
-				} else {
-					logger.info("(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - OK! Processed in ${commandLatency}ms")
-				}
+
+				CommandUtils.logMessageEventComplete(ev, logger, commandLatency)
 				return true
 			} catch (e: Exception) {
 				if (e is CancellationException) {

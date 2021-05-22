@@ -14,6 +14,7 @@ class CommandDeclarationBuilder(val parent: KClass<*>, val labels: List<String>,
     var allowedInPrivateChannel: Boolean = true
     val subcommands = mutableListOf<CommandDeclarationBuilder>()
     val subcommandGroups = mutableListOf<CommandDeclarationBuilder>()
+    val cooldown: Int? = null
 
     fun subcommand(labels: List<String>, block: CommandDeclarationBuilder.() -> (Unit)) {
         subcommands += CommandDeclarationBuilder(parent, labels, category).apply(block)

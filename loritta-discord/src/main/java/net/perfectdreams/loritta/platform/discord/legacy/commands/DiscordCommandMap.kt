@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.platform.discord.legacy.commands
 
-import com.mrpowergamerbr.loritta.commands.CommandManager
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.ChannelInfoCommand
 import com.mrpowergamerbr.loritta.commands.vanilla.magic.PluginsCommand
 import com.mrpowergamerbr.loritta.dao.ServerConfig
@@ -56,13 +55,11 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.locale.LocaleStringData
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.utils.CommandCooldownManager
 import net.perfectdreams.loritta.utils.CommandUtils
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.loritta.utils.metrics.Prometheus
-import org.jetbrains.exposed.sql.insert
 import java.sql.Connection
 import java.util.concurrent.CancellationException
 
@@ -199,11 +196,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 				validLabel
 			)
 
-			if (ev.message.isFromType(ChannelType.TEXT)) {
-				logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
-			} else {
-				logger.info("(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay}")
-			}
+			CommandUtils.logMessageEvent(ev, logger)
 
 			try {
 				if (serverConfig.blacklistedChannels.contains(ev.channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
@@ -421,16 +414,9 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 					lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
 				}
 
-				loritta.newSuspendedTransaction {
-					ExecutedCommandsLog.insert {
-						it[userId] = lorittaUser.user.idLong
-						it[ExecutedCommandsLog.guildId] = if (ev.message.isFromGuild) ev.message.guild.idLong else null
-						it[channelId] = ev.message.channel.idLong
-						it[sentAt] = System.currentTimeMillis()
-						it[ExecutedCommandsLog.command] = command.commandName ?: "UnknownCommand"
-						it[ExecutedCommandsLog.message] = ev.message.contentRaw
-					}
+				CommandUtils.trackCommandToDatabase(ev, command.commandName)
 
+				loritta.newSuspendedTransaction {
 					val profile = serverConfig.getUserDataIfExistsNested(lorittaUser.profile.userId)
 
 					if (profile != null && !profile.isInGuild)
@@ -453,11 +439,8 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 				val end = System.currentTimeMillis()
 				val commandLatency = end - start
 				Prometheus.COMMAND_LATENCY.labels(command.commandName).observe(commandLatency.toDouble())
-				if (ev.message.isFromType(ChannelType.TEXT)) {
-					CommandManager.logger.info("(${ev.message.guild.name} -> ${ev.message.channel.name}) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - OK! Processed in ${commandLatency}ms")
-				} else {
-					CommandManager.logger.info("(Direct Message) ${ev.author.name}#${ev.author.discriminator} (${ev.author.id}): ${ev.message.contentDisplay} - OK! Processed in ${commandLatency}ms")
-				}
+
+				CommandUtils.logMessageEventComplete(ev, logger, commandLatency)
 				return true
 			} catch (e: Exception) {
 				if (e is CancellationException) {
