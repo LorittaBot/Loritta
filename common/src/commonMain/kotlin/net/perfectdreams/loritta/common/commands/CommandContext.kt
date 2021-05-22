@@ -141,8 +141,6 @@ abstract class CommandContext(
      * @see CommandException
      */
     fun fail(block: MessageBuilder.() -> Unit = {}): Nothing = throw CommandException(
-        MessageBuilder().apply {
-            apply(block)
-        }.build()
+        MessageBuilder().apply(block).build()
     )
 }

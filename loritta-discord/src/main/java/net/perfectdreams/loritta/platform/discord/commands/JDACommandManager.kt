@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.platform.discord.commands
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import mu.KotlinLogging
 import net.perfectdreams.loritta.common.commands.CommandArguments
+import net.perfectdreams.loritta.common.commands.CommandException
 import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
@@ -56,7 +57,7 @@ class JDACommandManager(val loritta: LorittaDiscord) {
                 }
             }
 
-            val matchedDeclaration = bestMatchedDeclaration ?: return false
+            val matchedDeclaration = bestMatchedDeclaration ?: continue
             val howManyLabels = bestMatchedRequiresHowManyLabels
 
             val executor = executors.first {
@@ -67,15 +68,21 @@ class JDACommandManager(val loritta: LorittaDiscord) {
 
             val args = parseArgs(argumentsSplit, matchedDeclaration.executor?.options?.arguments ?: listOf())
 
-            executor.execute(
-                JDACommandContext(
-                    loritta,
-                    loritta.localeManager.getLocaleById("default"),
-                    JDAUser(content.author),
-                    JDAMessageChannel(content.channel)
-                ),
-                CommandArguments(args)
+            val context = JDACommandContext(
+                loritta,
+                loritta.localeManager.getLocaleById("default"),
+                JDAUser(content.author),
+                JDAMessageChannel(content.channel)
             )
+
+            try {
+                executor.execute(
+                    context,
+                    CommandArguments(args)
+                )
+            } catch (e: CommandException) {
+                context.channel.sendMessage(e.lorittaMessage)
+            }
             return true
         }
 
