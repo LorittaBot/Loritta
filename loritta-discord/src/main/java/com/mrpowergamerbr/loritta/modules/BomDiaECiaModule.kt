@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.utils.BomDiaECia
 import com.mrpowergamerbr.loritta.utils.LorittaUser
-import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.MiscellaneousConfig
 

@@ -6,8 +6,8 @@ import com.mrpowergamerbr.loritta.dao.Warn
 import com.mrpowergamerbr.loritta.tables.Warns
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
-import net.perfectdreams.loritta.utils.locale.BaseLocale
-import net.perfectdreams.loritta.utils.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission

@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.utils.locale
+package net.perfectdreams.loritta.common.locale
 
 import kotlinx.serialization.Serializable
 

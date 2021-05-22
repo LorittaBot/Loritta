@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.sweetmorenitta.views
 
-import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import kotlinx.html.*
 import net.perfectdreams.loritta.sweetmorenitta.utils.imgSrcSet
 

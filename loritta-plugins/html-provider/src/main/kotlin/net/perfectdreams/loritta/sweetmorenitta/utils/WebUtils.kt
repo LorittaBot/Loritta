@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.sweetmorenitta.utils
 
-import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.html.DIV
 import kotlinx.html.IMG

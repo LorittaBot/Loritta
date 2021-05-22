@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.sweetmorenitta.views
 
 import com.mrpowergamerbr.loritta.dao.Profile
-import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import kotlinx.html.DIV
 import kotlinx.html.code
 import kotlinx.html.div

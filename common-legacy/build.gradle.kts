@@ -21,9 +21,10 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-common"))
+                api(project(":common")) // hehe
                 api("io.github.microutils:kotlin-logging-common:1.7.8")
                 api("io.ktor:ktor-client-core:${Versions.KTOR}")
-                api("org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0")
+                api("org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.KOTLIN_SERIALIZATION}")
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
             }
         }

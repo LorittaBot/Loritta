@@ -23,8 +23,8 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.ImageFormat
 import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
 import net.perfectdreams.loritta.utils.extensions.readImage
-import net.perfectdreams.loritta.utils.locale.BaseLocale
-import net.perfectdreams.loritta.utils.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.or
 import java.awt.Color

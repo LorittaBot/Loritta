@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.utils
 
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.utils.extensions.sendMessageAsync
-import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member

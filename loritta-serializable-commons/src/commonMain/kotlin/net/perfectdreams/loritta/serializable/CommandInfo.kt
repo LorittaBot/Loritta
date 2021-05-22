@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.serializable
 
-import net.perfectdreams.loritta.utils.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import kotlinx.serialization.Serializable
 import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.api.commands.CommandCategory

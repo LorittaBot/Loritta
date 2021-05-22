@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.parallax.ParallaxUtils
 import net.perfectdreams.loritta.api.commands.CommandCategory
-import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import javax.script.Invocable
 import javax.script.ScriptEngineManager
 

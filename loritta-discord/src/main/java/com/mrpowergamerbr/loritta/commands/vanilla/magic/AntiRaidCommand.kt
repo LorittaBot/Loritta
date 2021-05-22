@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.modules.AutomodModule
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.api.commands.CommandCategory
 
 class AntiRaidCommand : AbstractCommand("antiraid", category = CommandCategory.MAGIC) {

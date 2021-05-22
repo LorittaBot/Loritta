@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.utils.locale
 
-import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 
 object DebugLocales {
     private val doNotChangeThisKeys = listOf(
@@ -17,7 +17,8 @@ object DebugLocales {
      * @return            the newly created base locale with the transformed strings
      */
     fun createPseudoLocaleOf(locale: BaseLocale, newLocaleId: String, newLocaleWebsitePath: String): BaseLocale {
-        val newLocale = BaseLocale(newLocaleId)
+        val localeStringEntries = mutableMapOf<String, String?>()
+        val localeListEntries = mutableMapOf<String, List<String>?>()
 
         for ((key, value) in locale.localeStringEntries) {
             val newValue = value?.let {
@@ -27,7 +28,7 @@ object DebugLocales {
                     value
             }
 
-            newLocale.localeStringEntries[key] = newValue
+            localeStringEntries[key] = newValue
         }
 
         for ((key, value) in locale.localeListEntries) {
@@ -38,11 +39,11 @@ object DebugLocales {
                     value
             }
 
-            newLocale.localeListEntries[key] = newValue
+            localeListEntries[key] = newValue
         }
 
-        newLocale.localeStringEntries["website.localePath"] = newLocaleWebsitePath
+        localeStringEntries["website.localePath"] = newLocaleWebsitePath
 
-        return newLocale
+        return BaseLocale(newLocaleId, localeStringEntries, localeListEntries)
     }
 }

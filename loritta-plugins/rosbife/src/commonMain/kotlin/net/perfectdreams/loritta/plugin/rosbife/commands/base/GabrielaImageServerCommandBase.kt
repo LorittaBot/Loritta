@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.plugin.rosbife.commands.base
 
-import net.perfectdreams.loritta.utils.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*

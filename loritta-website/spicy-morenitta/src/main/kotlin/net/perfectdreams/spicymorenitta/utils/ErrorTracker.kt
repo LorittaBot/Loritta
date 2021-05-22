@@ -1,11 +1,11 @@
 package net.perfectdreams.spicymorenitta.utils
 
-import net.perfectdreams.loritta.utils.locale.BaseLocale
 import io.ktor.client.request.*
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
@@ -76,7 +76,7 @@ object ErrorTracker : Logging {
 		// Gambiarra, a gente só quer usar o buildAsHtml do BaseLocale
 		// Ele nem usa nenhuma das entries, então vamos apenas criar um dummy locale e utilizá-lo
 		// No futuro seria melhor mover o buildAsHtml para um código separado
-		val locale = BaseLocale("dummy")
+		val locale = BaseLocale("dummy", mapOf(), mapOf())
 
 		warn("Message: $message")
 		warn("File: $file")

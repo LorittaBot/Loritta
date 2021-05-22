@@ -26,7 +26,7 @@ allprojects {
 
 plugins {
     java
-    kotlin("jvm") version "1.4.10" apply false
+    kotlin("jvm") version Versions.KOTLIN apply false
     `maven-publish`
 }
 

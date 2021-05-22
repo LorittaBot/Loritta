@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.website.routes.user
 
 import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import com.mrpowergamerbr.loritta.utils.gson
-import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.evaluate
 import io.ktor.application.ApplicationCall

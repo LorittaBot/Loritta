@@ -41,7 +41,7 @@ import net.perfectdreams.loritta.utils.*
 import net.perfectdreams.loritta.utils.HoconUtils.decodeFromFile
 import net.perfectdreams.loritta.utils.config.*
 import net.perfectdreams.loritta.utils.extensions.readImage
-import net.perfectdreams.loritta.utils.locale.LocaleManager
+import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction

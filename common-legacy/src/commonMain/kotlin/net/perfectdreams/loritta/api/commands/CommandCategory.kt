@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.api.commands
 
-import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import kotlinx.serialization.Serializable
 
 @Serializable

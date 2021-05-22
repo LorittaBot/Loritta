@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.website.routes
 
-import net.perfectdreams.loritta.utils.locale.BaseLocale
 import io.ktor.application.*
 import io.ktor.request.*
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.utils.extensions.redirect
 import net.perfectdreams.sequins.ktor.BaseRoute

@@ -1,6 +1,6 @@
 package net.perfectdreams.spicymorenitta.utils
 
-import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.embededitor.data.crosswindow.Placeholder
 import net.perfectdreams.loritta.embededitor.data.crosswindow.RenderType
 import net.perfectdreams.loritta.utils.Placeholders

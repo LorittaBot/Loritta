@@ -1,8 +1,7 @@
-package net.perfectdreams.loritta.utils.locale
+package net.perfectdreams.loritta.common.locale
 
-import net.perfectdreams.loritta.utils.locale.BaseLocale
 import mu.KotlinLogging
-import net.perfectdreams.loritta.api.utils.format
+import net.perfectdreams.loritta.common.utils.extensions.format
 import org.yaml.snakeyaml.Yaml
 import java.io.File
 
@@ -26,11 +25,14 @@ class LocaleManager(val localesFolder: File) {
      * @see BaseLocale
      */
     fun loadLocale(id: String, defaultLocale: BaseLocale?): BaseLocale {
-        val locale = BaseLocale(id)
+        val localeStrings = mutableMapOf<String, String?>()
+        val localeLists = mutableMapOf<String, List<String>?>()
+        val locale = BaseLocale(id, localeStrings, localeLists)
+
         if (defaultLocale != null) {
             // Colocar todos os valores padrões
-            locale.localeStringEntries.putAll(defaultLocale.localeStringEntries)
-            locale.localeListEntries.putAll(defaultLocale.localeListEntries)
+            localeStrings.putAll(defaultLocale.localeStringEntries)
+            localeLists.putAll(defaultLocale.localeListEntries)
         }
 
         val localeFolder = File(localesFolder, id)
@@ -53,7 +55,7 @@ class LocaleManager(val localesFolder: File) {
                                 transformIntoFlatMap(value as MutableMap<String, Any?>, "$prefix$key.")
                             } else {
                                 if (value is List<*>) {
-                                    locale.localeListEntries[keyPrefix.invoke(it) + prefix + key] = try {
+                                    localeLists[keyPrefix.invoke(it) + prefix + key] = try {
                                         (value as List<String>).map {
                                             it.replace(singleQuotesWithoutSlashPrecedingItRegex, "''") // Escape single quotes
                                                 .replace("\\'", "'") // Replace \' with '
@@ -64,7 +66,7 @@ class LocaleManager(val localesFolder: File) {
                                         (value as List<String>)
                                     }
                                 } else if (value is String) {
-                                    locale.localeStringEntries[keyPrefix.invoke(it) + prefix + key] = value.replace(singleQuotesWithoutSlashPrecedingItRegex, "''") // Escape single quotes
+                                    localeStrings[keyPrefix.invoke(it) + prefix + key] = value.replace(singleQuotesWithoutSlashPrecedingItRegex, "''") // Escape single quotes
                                         .replace("\\'", "'") // Replace \' with '
                                 } else throw IllegalArgumentException("Invalid object type detected in YAML! $value")
                             }

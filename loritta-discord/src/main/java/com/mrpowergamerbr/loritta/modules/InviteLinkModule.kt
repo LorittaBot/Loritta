@@ -22,7 +22,7 @@ import net.perfectdreams.loritta.platform.discord.entities.DiscordEmote
 import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
 import net.perfectdreams.loritta.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import org.jetbrains.exposed.sql.insert
 import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher

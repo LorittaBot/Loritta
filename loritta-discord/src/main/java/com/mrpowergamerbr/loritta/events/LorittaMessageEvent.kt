@@ -2,7 +2,7 @@ package com.mrpowergamerbr.loritta.events
 
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.utils.LorittaUser
-import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.*
 

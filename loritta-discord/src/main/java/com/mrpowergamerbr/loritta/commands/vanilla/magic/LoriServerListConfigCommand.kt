@@ -27,7 +27,7 @@ import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.EconomyConfig
 import net.perfectdreams.loritta.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.utils.ClusterOfflineException
-import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.dao.id.EntityID

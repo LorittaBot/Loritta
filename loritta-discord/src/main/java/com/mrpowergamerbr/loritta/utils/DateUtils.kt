@@ -1,7 +1,7 @@
 package com.mrpowergamerbr.loritta.utils
 
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
-import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import java.time.Instant
 import java.time.OffsetDateTime
 import java.util.*

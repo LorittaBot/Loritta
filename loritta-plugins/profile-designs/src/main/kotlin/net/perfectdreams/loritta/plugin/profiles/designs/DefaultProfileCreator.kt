@@ -8,7 +8,7 @@ import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.drawText
 import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
-import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.makeRoundedCorners
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import net.dv8tion.jda.api.entities.Guild

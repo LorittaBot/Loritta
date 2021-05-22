@@ -1,6 +1,6 @@
 package net.perfectdreams.spicymorenitta.utils.locale
 
-import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 
 fun BaseLocale.buildAsHtml(updateString: String, onControlChar: (Int) -> (Unit), onStringBuild: (String) -> (Unit)) {
     var isControl = false

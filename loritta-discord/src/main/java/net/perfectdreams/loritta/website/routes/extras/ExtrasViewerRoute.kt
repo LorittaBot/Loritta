@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.website.routes.extras
 
-import net.perfectdreams.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.evaluate
 import io.ktor.application.ApplicationCall

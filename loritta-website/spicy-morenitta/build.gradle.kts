@@ -13,7 +13,7 @@ kotlin {
 	}
 
 	sourceSets["main"].dependencies {
-		implementation(project(":loritta-api"))
+		implementation(project(":common-legacy"))
 		implementation(project(":loritta-serializable-commons"))
 		implementation(project(":loritta-website:embed-renderer"))
 		implementation(project(":loritta-website:embed-editor-crosswindow"))
