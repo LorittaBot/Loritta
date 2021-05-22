@@ -12,7 +12,7 @@ import io.ktor.client.request.header
 import io.ktor.client.request.post
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.utils.ClusterOfflineException

@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.plugin.fortnite.commands.fortnite
 
 import com.mrpowergamerbr.loritta.utils.Constants
-import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.plugin.fortnite.FortniteStuff

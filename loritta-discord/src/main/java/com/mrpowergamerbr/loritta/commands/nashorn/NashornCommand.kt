@@ -11,7 +11,7 @@ import com.mrpowergamerbr.loritta.utils.MessageUtils
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import io.ktor.client.request.*
-import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.serializable.CustomCommandCodeType
 import net.perfectdreams.loritta.utils.ExperienceUtils
 import net.perfectdreams.loritta.utils.NetAddressUtils

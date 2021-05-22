@@ -21,7 +21,7 @@ import com.mrpowergamerbr.loritta.utils.lorittaSupervisor
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.EconomyConfig

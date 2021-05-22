@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.platform.discord.commands
 
 import net.perfectdreams.loritta.api.commands.AbstractCommandBase
 import net.perfectdreams.loritta.api.commands.Command
-import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.CommandContext
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 

@@ -1,5 +1,7 @@
 package net.perfectdreams.loritta.api.commands
 
+import net.perfectdreams.loritta.common.commands.CommandCategory
+
 /**
  * AbstractCommandBase
  */

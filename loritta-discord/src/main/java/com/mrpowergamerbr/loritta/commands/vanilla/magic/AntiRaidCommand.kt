@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.modules.AutomodModule
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.common.commands.CommandCategory
 
 class AntiRaidCommand : AbstractCommand("antiraid", category = CommandCategory.MAGIC) {
 	override fun getDescription(locale: BaseLocale): String {

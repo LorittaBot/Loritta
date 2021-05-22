@@ -10,7 +10,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import java.awt.Color
 
 class McStatusCommand : AbstractCommand("mcstatus", category = CommandCategory.MINECRAFT) {

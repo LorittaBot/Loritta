@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.api.commands
 
 import net.perfectdreams.loritta.api.LorittaBot
+import net.perfectdreams.loritta.common.commands.CommandCategory
 
 abstract class LorittaAbstractCommandBase(
         val loritta: LorittaBot,

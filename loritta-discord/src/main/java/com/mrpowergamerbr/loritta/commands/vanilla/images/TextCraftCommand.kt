@@ -10,7 +10,7 @@ import com.mrpowergamerbr.loritta.utils.encodeToUrl
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.locale.LocaleStringData
-import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import org.json.XML
 import java.net.HttpURLConnection
 import java.net.URL

@@ -9,7 +9,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.common.commands.CommandCategory
 
 class McUUIDCommand : AbstractCommand("mcuuid", category = CommandCategory.MINECRAFT) {
     override fun getDescriptionKey() = LocaleKeyData("commands.command.mcuuid.description")

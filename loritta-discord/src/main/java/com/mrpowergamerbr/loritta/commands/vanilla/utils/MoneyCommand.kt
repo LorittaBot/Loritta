@@ -10,7 +10,7 @@ import com.mrpowergamerbr.loritta.utils.msgFormat
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import net.perfectdreams.loritta.api.commands.CommandCategory
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import org.jsoup.Jsoup
 import java.text.DecimalFormat

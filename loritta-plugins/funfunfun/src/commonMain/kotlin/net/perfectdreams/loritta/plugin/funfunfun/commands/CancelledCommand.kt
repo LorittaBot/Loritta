@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.plugin.funfunfun.commands
 
 import net.perfectdreams.loritta.api.commands.ArgumentType
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.LorittaAbstractCommandBase
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.plugin.funfunfun.FunFunFunPlugin
 import net.perfectdreams.loritta.utils.Emotes
 

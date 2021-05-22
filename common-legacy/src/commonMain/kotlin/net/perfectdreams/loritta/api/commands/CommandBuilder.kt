@@ -1,16 +1,17 @@
 package net.perfectdreams.loritta.api.commands
 
+import net.perfectdreams.loritta.api.LorittaBot
+import net.perfectdreams.loritta.api.platform.PlatformFeature
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.locale.LocaleStringData
-import net.perfectdreams.loritta.api.LorittaBot
-import net.perfectdreams.loritta.api.platform.PlatformFeature
 
 fun Any?.command(
-		loritta: LorittaBot,
-		labels: List<String>,
-		category: CommandCategory,
-		builder: CommandBuilder<CommandContext>.() -> (Unit)
+	loritta: LorittaBot,
+	labels: List<String>,
+	category: CommandCategory,
+	builder: CommandBuilder<CommandContext>.() -> (Unit)
 ) = command(loritta, this?.let { this::class.simpleName } ?: "UnknownCommand", labels, category, builder)
 
 fun command(loritta: LorittaBot, commandName: String, labels: List<String>, category: CommandCategory, builder: CommandBuilder<CommandContext>.() -> (Unit)): Command<CommandContext> {

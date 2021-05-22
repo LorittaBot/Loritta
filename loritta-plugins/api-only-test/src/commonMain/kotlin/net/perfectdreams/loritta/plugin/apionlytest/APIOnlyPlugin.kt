@@ -1,10 +1,10 @@
 package net.perfectdreams.loritta.plugin.apionlytest
 
 import net.perfectdreams.loritta.api.LorittaBot
-import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.command
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.api.plugin.LorittaPlugin
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.utils.Emotes
 
 class APIOnlyPlugin(name: String, loritta: LorittaBot) : LorittaPlugin(name, loritta) {
