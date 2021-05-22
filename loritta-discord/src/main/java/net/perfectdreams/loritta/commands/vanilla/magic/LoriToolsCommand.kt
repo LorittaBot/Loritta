@@ -5,8 +5,8 @@ import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.CommandContext
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
-import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
+import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.platform.discord.legacy.plugin.LorittaDiscordPlugin
 
 class LoriToolsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("loritools"), CommandCategory.MAGIC) {
 	companion object {

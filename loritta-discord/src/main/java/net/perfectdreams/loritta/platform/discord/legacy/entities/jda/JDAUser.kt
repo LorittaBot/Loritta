@@ -1,7 +1,7 @@
-package net.perfectdreams.loritta.platform.discord.entities.jda
+package net.perfectdreams.loritta.platform.discord.legacy.entities.jda
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import net.perfectdreams.loritta.platform.discord.entities.DiscordUser
+import net.perfectdreams.loritta.platform.discord.legacy.entities.DiscordUser
 import net.perfectdreams.loritta.utils.ImageFormat
 import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
 

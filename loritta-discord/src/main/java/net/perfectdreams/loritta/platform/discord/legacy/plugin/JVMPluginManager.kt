@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.platform.discord.plugin
+package net.perfectdreams.loritta.platform.discord.legacy.plugin
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty

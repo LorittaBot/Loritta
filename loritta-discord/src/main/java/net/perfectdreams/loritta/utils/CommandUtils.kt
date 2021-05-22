@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
+import net.perfectdreams.loritta.platform.discord.legacy.entities.jda.JDAUser
 
 object CommandUtils {
 	suspend fun checkIfCommandIsDisabledInGuild(serverConfig: ServerConfig, locale: BaseLocale, channel: MessageChannel, member: Member, clazzName: String): Boolean {

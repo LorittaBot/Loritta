@@ -18,8 +18,8 @@ import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.InviteBlockerConfig
-import net.perfectdreams.loritta.platform.discord.entities.DiscordEmote
-import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
+import net.perfectdreams.loritta.platform.discord.legacy.entities.DiscordEmote
+import net.perfectdreams.loritta.platform.discord.legacy.entities.jda.JDAUser
 import net.perfectdreams.loritta.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.common.locale.BaseLocale

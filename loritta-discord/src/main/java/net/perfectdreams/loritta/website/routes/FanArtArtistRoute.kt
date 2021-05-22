@@ -4,7 +4,7 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import io.ktor.application.ApplicationCall
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
+import net.perfectdreams.loritta.platform.discord.legacy.entities.jda.JDAUser
 import net.perfectdreams.loritta.website.LorittaWebsite
 import net.perfectdreams.loritta.website.utils.RouteKey
 import net.perfectdreams.loritta.website.utils.extensions.respondHtml

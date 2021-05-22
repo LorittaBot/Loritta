@@ -20,6 +20,7 @@ rootProject.name = "loritta-parent"
 
 include(":common")
 include(":common-legacy")
+include(":commands")
 include(":loritta-serializable-commons")
 include(":loritta-discord")
 

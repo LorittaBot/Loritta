@@ -1,11 +1,10 @@
 package net.perfectdreams.loritta.commands.vanilla.magic
 
-import com.mrpowergamerbr.loritta.dao.Background
 import com.mrpowergamerbr.loritta.dao.ProfileDesign
 import com.mrpowergamerbr.loritta.network.Databases
 import net.perfectdreams.loritta.api.commands.CommandContext
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
+import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordCommandContext
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object SetSelfProfileDesignExecutor : LoriToolsCommand.LoriToolsExecutor {

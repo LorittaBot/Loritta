@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.platform.discord.entities
+package net.perfectdreams.loritta.platform.discord.legacy.entities
 
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import net.perfectdreams.loritta.api.entities.Message

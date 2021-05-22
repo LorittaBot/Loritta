@@ -9,6 +9,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.utils.MiscUtil
+import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.utils.Emotes
 import org.apache.commons.lang3.ArrayUtils
@@ -101,7 +102,7 @@ object LorittaUtilsKotlin {
 	 *
 	 * @return if the user is banned
 	 */
-	suspend fun handleIfBanned(context: net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext, profile: Profile)
+	suspend fun handleIfBanned(context: DiscordCommandContext, profile: Profile)
 			= handleIfBanned(context.user, profile, context.discordMessage.channel, context.locale)
 
 	/**

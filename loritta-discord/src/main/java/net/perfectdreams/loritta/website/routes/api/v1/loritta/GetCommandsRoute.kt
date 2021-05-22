@@ -4,7 +4,7 @@ import io.ktor.application.*
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.commands.DiscordCommand
+import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordCommand
 import net.perfectdreams.loritta.serializable.CommandInfo
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.sequins.ktor.BaseRoute

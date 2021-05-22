@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.platform.discord.plugin
+package net.perfectdreams.loritta.platform.discord.legacy.plugin
 
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.plugin.LorittaPlugin

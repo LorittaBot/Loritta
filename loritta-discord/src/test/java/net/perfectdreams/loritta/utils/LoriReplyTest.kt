@@ -5,7 +5,7 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import io.mockk.every
 import io.mockk.mockk
 import net.dv8tion.jda.api.entities.User
-import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
+import net.perfectdreams.loritta.platform.discord.legacy.entities.jda.JDAUser
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

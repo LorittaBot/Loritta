@@ -35,6 +35,7 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     api(project(":common-legacy"))
+    api(project(":commands"))
     api(project(":loritta-serializable-commons"))
     api(project(":temmie-discord-auth"))
 

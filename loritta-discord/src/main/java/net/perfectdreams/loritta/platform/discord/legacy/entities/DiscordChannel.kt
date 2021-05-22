@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.platform.discord.entities
+package net.perfectdreams.loritta.platform.discord.legacy.entities
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import net.dv8tion.jda.api.entities.TextChannel

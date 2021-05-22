@@ -13,7 +13,6 @@ import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -39,7 +38,7 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.dao.servers.Giveaway
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.*
-import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
+import net.perfectdreams.loritta.platform.discord.legacy.plugin.DiscordPlugin
 import net.perfectdreams.loritta.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.tables.servers.Giveaways
 import net.perfectdreams.loritta.tables.servers.ServerRolePermissions

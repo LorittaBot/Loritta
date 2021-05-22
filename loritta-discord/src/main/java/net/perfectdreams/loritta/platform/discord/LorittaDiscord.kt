@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.platform.discord
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.salomonbrys.kotson.*
 import com.google.common.util.concurrent.ThreadFactoryBuilder
@@ -25,6 +24,8 @@ import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent
 import net.perfectdreams.loritta.api.LorittaBot
+import net.perfectdreams.loritta.commands.utils.AnagramExecutor
+import net.perfectdreams.loritta.commands.utils.declarations.AnagramCommand
 import net.perfectdreams.loritta.commands.vanilla.`fun`.*
 import net.perfectdreams.loritta.commands.vanilla.administration.*
 import net.perfectdreams.loritta.commands.vanilla.economy.*
@@ -32,16 +33,17 @@ import net.perfectdreams.loritta.commands.vanilla.magic.*
 import net.perfectdreams.loritta.commands.vanilla.misc.*
 import net.perfectdreams.loritta.commands.vanilla.roblox.*
 import net.perfectdreams.loritta.commands.vanilla.social.*
+import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.dao.Payment
-import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandMap
-import net.perfectdreams.loritta.platform.discord.plugin.JVMPluginManager
+import net.perfectdreams.loritta.platform.discord.commands.JDACommandManager
+import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordCommandMap
+import net.perfectdreams.loritta.platform.discord.legacy.plugin.JVMPluginManager
 import net.perfectdreams.loritta.platform.discord.utils.*
 import net.perfectdreams.loritta.tables.*
 import net.perfectdreams.loritta.utils.*
 import net.perfectdreams.loritta.utils.HoconUtils.decodeFromFile
 import net.perfectdreams.loritta.utils.config.*
 import net.perfectdreams.loritta.utils.extensions.readImage
-import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -68,6 +70,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
     val perfectPaymentsClient = PerfectPaymentsClient(config.perfectPayments.url)
 
     override val commandMap = DiscordCommandMap(this)
+    val commandManager = JDACommandManager(this)
     override val pluginManager = JVMPluginManager(this)
     override val assets = JVMLorittaAssets(this)
     val localeManager = LocaleManager(File(instanceConfig.loritta.folders.locales))
@@ -135,6 +138,13 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
     val pendingMessages = ConcurrentLinkedQueue<Job>()
     val guildSetupQueue = GuildSetupQueue(this)
     val commandCooldownManager = CommandCooldownManager(this)
+
+    init {
+        commandManager.register(
+            AnagramCommand,
+            AnagramExecutor(emotes)
+        )
+    }
 
     /**
      * Gets an user's profile background image or, if the user has a custom background, loads the custom background.

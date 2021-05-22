@@ -19,7 +19,7 @@ import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import net.perfectdreams.loritta.dao.servers.Giveaway
-import net.perfectdreams.loritta.platform.discord.entities.DiscordEmote
+import net.perfectdreams.loritta.platform.discord.legacy.entities.DiscordEmote
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.FeatureFlags
 import net.perfectdreams.sequins.text.StringUtils

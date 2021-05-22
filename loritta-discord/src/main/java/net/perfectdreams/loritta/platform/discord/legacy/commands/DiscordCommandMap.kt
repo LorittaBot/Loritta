@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.platform.discord.commands
+package net.perfectdreams.loritta.platform.discord.legacy.commands
 
 import com.mrpowergamerbr.loritta.commands.CommandManager
 import com.mrpowergamerbr.loritta.commands.vanilla.discord.ChannelInfoCommand
@@ -52,15 +52,15 @@ import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaTopLocalComma
 import net.perfectdreams.loritta.commands.vanilla.social.RankGlobalCommand
 import net.perfectdreams.loritta.commands.vanilla.social.RepTopCommand
 import net.perfectdreams.loritta.commands.vanilla.social.XpNotificationsCommand
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.LocaleStringData
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.utils.CommandCooldownManager
 import net.perfectdreams.loritta.utils.CommandUtils
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.UserPremiumPlans
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.common.locale.LocaleStringData
 import net.perfectdreams.loritta.utils.metrics.Prometheus
 import org.jetbrains.exposed.sql.insert
 import java.sql.Connection

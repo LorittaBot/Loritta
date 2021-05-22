@@ -19,7 +19,7 @@ import io.ktor.util.*
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import mu.KotlinLogging
-import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
+import net.perfectdreams.loritta.platform.discord.legacy.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.website.blog.Blog
 import net.perfectdreams.loritta.website.routes.LocalizedRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession

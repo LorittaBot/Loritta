@@ -12,9 +12,9 @@ import net.perfectdreams.loritta.api.entities.LorittaEmote
 import net.perfectdreams.loritta.api.entities.UnicodeEmote
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
-import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
-import net.perfectdreams.loritta.platform.discord.entities.DiscordEmote
+import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordCommandContext
+import net.perfectdreams.loritta.platform.discord.legacy.entities.DiscordEmote
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager
 

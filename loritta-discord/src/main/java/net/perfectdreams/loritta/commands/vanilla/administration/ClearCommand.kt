@@ -14,8 +14,8 @@ import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.CommandContext
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
-import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
+import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.utils.sendStyledReply
 import java.util.*

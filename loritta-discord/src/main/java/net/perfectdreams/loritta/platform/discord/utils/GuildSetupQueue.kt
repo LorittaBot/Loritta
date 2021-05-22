@@ -18,7 +18,7 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.perfectdreams.loritta.dao.servers.Giveaway
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.ReactionOption
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
+import net.perfectdreams.loritta.platform.discord.legacy.plugin.DiscordPlugin
 import net.perfectdreams.loritta.tables.servers.Giveaways
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.ReactionOptions
 import net.perfectdreams.loritta.utils.giveaway.GiveawayManager

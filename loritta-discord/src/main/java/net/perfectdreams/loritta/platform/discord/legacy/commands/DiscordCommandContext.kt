@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.platform.discord.commands
+package net.perfectdreams.loritta.platform.discord.legacy.commands
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.dao.ServerConfig
@@ -23,8 +23,8 @@ import net.perfectdreams.loritta.api.messages.LorittaMessage
 import net.perfectdreams.loritta.api.utils.image.Image
 import net.perfectdreams.loritta.api.utils.image.JVMImage
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.entities.DiscordMessage
-import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
+import net.perfectdreams.loritta.platform.discord.legacy.entities.DiscordMessage
+import net.perfectdreams.loritta.platform.discord.legacy.entities.jda.JDAUser
 import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.ImageFormat

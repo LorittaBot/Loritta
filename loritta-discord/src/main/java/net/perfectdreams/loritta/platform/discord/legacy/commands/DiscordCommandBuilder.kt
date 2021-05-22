@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.platform.discord.commands
+package net.perfectdreams.loritta.platform.discord.legacy.commands
 
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent

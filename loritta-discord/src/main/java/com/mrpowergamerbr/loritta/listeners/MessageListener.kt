@@ -23,12 +23,12 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import net.perfectdreams.loritta.dao.servers.moduleconfigs.AutoroleConfig
-import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
-import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
-import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
-import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.AutoroleConfig
+import net.perfectdreams.loritta.platform.discord.legacy.entities.jda.JDAUser
+import net.perfectdreams.loritta.platform.discord.legacy.plugin.DiscordPlugin
+import net.perfectdreams.loritta.platform.discord.legacy.plugin.LorittaDiscordPlugin
+import net.perfectdreams.loritta.utils.Emotes
 import org.apache.commons.text.similarity.LevenshteinDistance
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -477,6 +477,11 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 			// Executar comandos
 			var start = System.nanoTime()
+			if (loritta.commandManager.matches(lorittaMessageEvent, rawArguments, serverConfig, locale, lorittaUser))
+				return true
+			logIfEnabled(enableProfiling) { "Checking for command manager commands took ${System.nanoTime() - start}ns for ${author.idLong}" }
+
+			start = System.nanoTime()
 			if (loritta.commandMap.dispatch(lorittaMessageEvent, rawArguments, serverConfig, locale, lorittaUser))
 				return true
 			logIfEnabled(enableProfiling) { "Checking for command map commands took ${System.nanoTime() - start}ns for ${author.idLong}" }

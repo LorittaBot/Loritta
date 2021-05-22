@@ -4,8 +4,8 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import net.perfectdreams.loritta.api.entities.Message
 import net.perfectdreams.loritta.api.entities.User
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import net.perfectdreams.loritta.platform.discord.entities.DiscordMessage
-import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
+import net.perfectdreams.loritta.platform.discord.legacy.entities.DiscordMessage
+import net.perfectdreams.loritta.platform.discord.legacy.entities.jda.JDAUser
 
 /**
  * Converts a Loritta API [Message] to a JDA [net.dv8tion.jda.api.entities.Message]

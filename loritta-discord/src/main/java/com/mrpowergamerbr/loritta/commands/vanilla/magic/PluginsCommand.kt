@@ -14,7 +14,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.utils.ClusterOfflineException
 import java.io.File
 import java.util.*

@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.platform.discord.plugin
+package net.perfectdreams.loritta.platform.discord.legacy.plugin
 
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.modules.MessageReceivedModule

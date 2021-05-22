@@ -20,8 +20,8 @@ import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.WarnAction
-import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
-import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
+import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordCommandContext
+import net.perfectdreams.loritta.platform.discord.legacy.entities.jda.JDAUser
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.WarnActions
 import net.perfectdreams.loritta.utils.DiscordUtils

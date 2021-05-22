@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.website.utils.config.types
 
 import com.mrpowergamerbr.loritta.utils.loritta
-import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
+import net.perfectdreams.loritta.platform.discord.legacy.plugin.LorittaDiscordPlugin
 
 object ConfigTransformers {
     val ALL_TRANSFORMERS: List<ConfigTransformer>

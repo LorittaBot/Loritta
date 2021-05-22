@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.platform.discord.commands
+package net.perfectdreams.loritta.platform.discord.legacy.commands
 
 import net.perfectdreams.loritta.api.commands.AbstractCommandBase
 import net.perfectdreams.loritta.api.commands.Command

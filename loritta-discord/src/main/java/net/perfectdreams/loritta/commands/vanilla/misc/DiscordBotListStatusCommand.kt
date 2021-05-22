@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.commands.vanilla.misc
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.tables.BotVotes
 import org.jetbrains.exposed.sql.select
 

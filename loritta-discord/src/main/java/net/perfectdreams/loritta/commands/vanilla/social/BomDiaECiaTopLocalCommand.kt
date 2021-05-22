@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.commands.vanilla.social
 
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
-import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.Constants
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.CommandCategory
@@ -9,11 +8,10 @@ import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.api.utils.image.JVMImage
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.tables.BomDiaECiaWinners
 import net.perfectdreams.loritta.utils.RankingGenerator
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class BomDiaECiaTopLocalCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta, listOf("bomdiaecia top local", "bd&c top local", "bdc top local"), CommandCategory.SOCIAL) {
     companion object {

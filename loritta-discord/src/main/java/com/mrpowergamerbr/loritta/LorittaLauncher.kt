@@ -7,6 +7,7 @@ import com.mrpowergamerbr.loritta.utils.config.GeneralInstanceConfig
 import kotlinx.coroutines.debug.DebugProbes
 import net.perfectdreams.loritta.utils.readConfigurationFromFile
 import java.io.File
+import java.io.FileNotFoundException
 import java.nio.file.Paths
 import java.util.jar.Attributes
 import java.util.jar.JarFile
@@ -23,7 +24,11 @@ object LorittaLauncher {
 	@JvmStatic
 	fun main(args: Array<String>) {
 		installCoroutinesDebugProbes()
-		setKotlinScriptingClasspath()
+		try {
+			setKotlinScriptingClasspath()
+		} catch (e: FileNotFoundException) {
+			println("Exception while trying to set Kotlin Scripting's classpath, are you running Loritta within a IDE?")
+		}
 
 		val configurationFile = File(System.getProperty("conf") ?: "./loritta.conf")
 		val discordConfigurationFile = File(System.getProperty("discordConf") ?: "./discord.conf")

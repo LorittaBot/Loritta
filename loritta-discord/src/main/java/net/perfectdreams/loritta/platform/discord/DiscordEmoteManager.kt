@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.api.entities.LorittaEmote
 import net.perfectdreams.loritta.api.entities.UnicodeEmote
-import net.perfectdreams.loritta.platform.discord.entities.DiscordEmote
+import net.perfectdreams.loritta.platform.discord.legacy.entities.DiscordEmote
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.HoconUtils.decodeFromFile
 import java.io.File

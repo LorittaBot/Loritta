@@ -11,7 +11,8 @@ import kotlin.random.Random
  */
 abstract class LorittaBot {
     // TODO: *Really* set a random seed
-    val random = Random(0)
+    // TODO: Maybe it would be better if this wasn't open?
+    open val random = Random(0)
 
     open val emotes: Emotes = Emotes(EmoteManager.DefaultEmoteManager())
     // TODO: Services (Cinnamon)
