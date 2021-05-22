@@ -5,7 +5,7 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.Reputation
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.dv8tion.jda.api.entities.User
-import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
+import net.perfectdreams.loritta.platform.discord.legacy.entities.jda.JDAUser
 import net.perfectdreams.loritta.sweetmorenitta.views.BlogPostView
 import net.perfectdreams.loritta.sweetmorenitta.views.BlogView
 import net.perfectdreams.loritta.sweetmorenitta.views.CommunityGuidelinesView

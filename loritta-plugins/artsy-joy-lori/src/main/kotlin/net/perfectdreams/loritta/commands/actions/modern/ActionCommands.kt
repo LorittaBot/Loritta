@@ -20,8 +20,8 @@ import net.perfectdreams.loritta.commands.actions.modern.impl.AttackCommand
 import net.perfectdreams.loritta.commands.actions.modern.impl.KissCommand
 import net.perfectdreams.loritta.commands.actions.modern.impl.SlapCommand
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
-import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
+import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.utils.extensions.toJDA
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color

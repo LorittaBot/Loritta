@@ -25,7 +25,7 @@ kotlin {
                 api("io.github.microutils:kotlin-logging-common:1.7.8")
                 api("io.ktor:ktor-client-core:${Versions.KTOR}")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.KOTLIN_SERIALIZATION}")
-                api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
+                api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.KOTLIN_COROUTINES}")
             }
         }
 
@@ -48,7 +48,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib-js"))
                 api("io.github.microutils:kotlin-logging-js:1.7.8")
-                api("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.3.3")
+                api("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:${Versions.KOTLIN_COROUTINES}")
                 api(npm("canvas", "2.6.1"))
                 api("io.ktor:ktor-client-js:${Versions.KTOR}")
             }

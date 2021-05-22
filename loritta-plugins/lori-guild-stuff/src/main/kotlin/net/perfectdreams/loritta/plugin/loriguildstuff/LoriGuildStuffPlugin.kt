@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.plugin.loriguildstuff
 
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
+import net.perfectdreams.loritta.platform.discord.legacy.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.plugin.loriguildstuff.commands.AddBackgroundCommand
 import net.perfectdreams.loritta.plugin.loriguildstuff.commands.ColorCommand
 import net.perfectdreams.loritta.plugin.loriguildstuff.commands.FastBanCommand

@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.plugin.stafflorittaban
 import com.mrpowergamerbr.loritta.utils.Constants
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
+import net.perfectdreams.loritta.platform.discord.legacy.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.plugin.stafflorittaban.listeners.CheckReactionsForLoriBanListener
 import net.perfectdreams.loritta.plugin.stafflorittaban.listeners.CheckReactionsForPrivateSpamListener
 import net.perfectdreams.loritta.plugin.stafflorittaban.modules.AddReactionForStaffLoriBanModule

@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.plugin.profiles
 
 import com.mrpowergamerbr.loritta.profile.ProfileCreator
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
+import net.perfectdreams.loritta.platform.discord.legacy.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.plugin.profiles.designs.Christmas2019ProfileCreator
 import net.perfectdreams.loritta.plugin.profiles.designs.CowboyProfileCreator
 import net.perfectdreams.loritta.plugin.profiles.designs.DebugProfileCreator

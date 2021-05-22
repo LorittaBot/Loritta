@@ -15,12 +15,12 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.encodeToUrl
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.safety.Whitelist
@@ -90,7 +90,7 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 			// Fazer por colunas é mais... difícil do que parece na verdade!
 			var imageWidth = 0
 			for (column in columns) {
-				val biggestString = column.maxBy { getStringWidth(it, lyricFont, lyricFontMetrics, fallbackFontMetrics) }!!
+				val biggestString = column.maxByOrNull { getStringWidth(it, lyricFont, lyricFontMetrics, fallbackFontMetrics) }!!
 				imageWidth += getStringWidth(biggestString, lyricFont, lyricFontMetrics, fallbackFontMetrics) + 4
 			}
 
@@ -153,7 +153,7 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 				}
 
 
-				val biggestString = column.maxBy { it.length }!!
+				val biggestString = column.maxByOrNull { it.length }!!
 				x += getStringWidth(biggestString, lyricFont, lyricFontMetrics, fallbackFontMetrics) + 2
 				y = initialImageHeight
 			}

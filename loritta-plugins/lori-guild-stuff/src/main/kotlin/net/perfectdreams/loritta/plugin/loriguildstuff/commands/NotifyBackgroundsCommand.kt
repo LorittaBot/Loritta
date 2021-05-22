@@ -1,11 +1,10 @@
 package net.perfectdreams.loritta.plugin.loriguildstuff.commands
 
-import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.commands.discordCommand
+import net.perfectdreams.loritta.platform.discord.legacy.commands.discordCommand
 
 object NotifyBackgroundsCommand {
 	fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("notify backgrounds", "notificar backgrounds"), CommandCategory.MISC) {

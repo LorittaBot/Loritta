@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
+import net.perfectdreams.loritta.platform.discord.legacy.entities.jda.JDAUser
 import net.perfectdreams.loritta.plugin.stafflorittaban.StaffLorittaBanConfig
 import java.io.ByteArrayOutputStream
 import java.util.*

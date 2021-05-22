@@ -19,7 +19,8 @@ import net.perfectdreams.loritta.api.commands.*
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.tables.Raspadinhas
 import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.insertAndGetId
@@ -132,7 +133,7 @@ class ScratchCardCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(l
 			}
 		}
 	}
-	private suspend fun buyRaspadinha(context: net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext, profile: Profile, message: Message? = null, _boughtScratchCardsInThisMessage: Int = 0) {
+	private suspend fun buyRaspadinha(context: DiscordCommandContext, profile: Profile, message: Message? = null, _boughtScratchCardsInThisMessage: Int = 0) {
 		var boughtScratchCardsInThisMessage = _boughtScratchCardsInThisMessage
 		val mutex = mutexes.getOrPut(context.user.idLong, { Mutex() })
 		mutex.withLock {
@@ -247,7 +248,7 @@ class ScratchCardCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(l
 		}
 	}
 
-	private suspend fun checkRaspadinha(context: net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext, profile: Profile, id: Long?) {
+	private suspend fun checkRaspadinha(context: DiscordCommandContext, profile: Profile, id: Long?) {
 		val mutex = mutexes.getOrPut(context.user.idLong, { Mutex() })
 		mutex.withLock {
 			val raspadinha = transaction(Databases.loritta) {

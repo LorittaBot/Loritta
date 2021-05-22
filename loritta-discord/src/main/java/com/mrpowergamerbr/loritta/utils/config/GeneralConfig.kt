@@ -94,6 +94,6 @@ class GeneralConfig(
 			val fancyName: String? = null
 	)
 
-	fun isOwner(id: String) = loritta.ownerIds.contains(id)
-	fun isOwner(id: Long) = loritta.ownerIds.contains(id.toString())
+	fun isOwner(id: String) = isOwner(id.toLong())
+	fun isOwner(id: Long) = loritta.ownerIds.contains(id)
 }

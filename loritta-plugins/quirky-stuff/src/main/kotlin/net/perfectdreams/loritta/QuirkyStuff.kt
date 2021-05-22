@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.listeners.AddReactionListener
 import net.perfectdreams.loritta.modules.AddReactionForHeathecliffModule
 import net.perfectdreams.loritta.modules.QuirkyModule
 import net.perfectdreams.loritta.modules.ThankYouLoriModule
-import net.perfectdreams.loritta.platform.discord.plugin.DiscordPlugin
+import net.perfectdreams.loritta.platform.discord.legacy.plugin.DiscordPlugin
 import net.perfectdreams.loritta.profile.badges.CanecaBadge
 import net.perfectdreams.loritta.profile.badges.HalloweenBadge
 import net.perfectdreams.loritta.utils.HoconUtils.decodeFromFile

@@ -3,8 +3,8 @@ package net.perfectdreams.loritta.plugin.donatorsostentation.commands
 import net.perfectdreams.loritta.api.commands.CommandContext
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.commands.vanilla.magic.LoriToolsCommand
-import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
-import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
+import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordCommandContext
+import net.perfectdreams.loritta.platform.discord.legacy.entities.jda.JDAUser
 import net.perfectdreams.loritta.plugin.donatorsostentation.NitroBoostUtils
 
 object EnableBoostExecutor : LoriToolsCommand.LoriToolsExecutor {

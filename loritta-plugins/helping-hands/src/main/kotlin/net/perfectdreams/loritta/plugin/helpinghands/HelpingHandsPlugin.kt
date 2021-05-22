@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.plugin.helpinghands
 
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
+import net.perfectdreams.loritta.platform.discord.legacy.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.plugin.helpinghands.commands.CoinFlipBetCommand
 import net.perfectdreams.loritta.plugin.helpinghands.commands.CoinFlipBetStatsCommand
 import net.perfectdreams.loritta.plugin.helpinghands.commands.DailyInactivityTaxExecutor

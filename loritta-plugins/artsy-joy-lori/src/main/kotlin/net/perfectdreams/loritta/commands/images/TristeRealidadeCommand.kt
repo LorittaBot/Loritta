@@ -14,9 +14,9 @@ import net.perfectdreams.loritta.api.commands.CommandException
 import net.perfectdreams.loritta.api.entities.User
 import net.perfectdreams.loritta.api.utils.image.JVMImage
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
-import net.perfectdreams.loritta.platform.discord.entities.DiscordUser
-import net.perfectdreams.loritta.platform.discord.entities.jda.JDAUser
+import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.platform.discord.legacy.entities.DiscordUser
+import net.perfectdreams.loritta.platform.discord.legacy.entities.jda.JDAUser
 import net.perfectdreams.loritta.utils.ImageFormat
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.*

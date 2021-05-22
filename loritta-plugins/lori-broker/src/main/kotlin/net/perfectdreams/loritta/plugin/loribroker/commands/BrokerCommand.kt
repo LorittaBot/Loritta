@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.LorittaLauncher
 import kotlinx.serialization.json.double
 import kotlinx.serialization.json.jsonPrimitive
 import net.perfectdreams.loritta.common.commands.CommandCategory
-import net.perfectdreams.loritta.platform.discord.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.plugin.loribroker.LoriBrokerPlugin
 import net.perfectdreams.loritta.plugin.loribroker.tables.BoughtStocks
 import net.perfectdreams.loritta.utils.Emotes

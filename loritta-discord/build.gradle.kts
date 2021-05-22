@@ -50,7 +50,7 @@ dependencies {
 
     // Kotlin Coroutines
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.KOTLIN_COROUTINES}")
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.4.1")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${Versions.KOTLIN_COROUTINES}")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-debug:${Versions.KOTLIN_COROUTINES}")
 
     api("com.google.guava:guava:30.0-jre")

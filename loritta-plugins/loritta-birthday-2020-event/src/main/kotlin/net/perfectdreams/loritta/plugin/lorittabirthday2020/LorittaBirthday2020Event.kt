@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.plugin.lorittabirthday2020
 import com.mrpowergamerbr.loritta.network.Databases
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
+import net.perfectdreams.loritta.platform.discord.legacy.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.plugin.christmas2019.profile.badges.ChristmasBadge
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.badges.GabrielaBadge
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.badges.PantufaBadge

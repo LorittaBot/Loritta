@@ -203,11 +203,11 @@ class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
 				}
 			}
 
-			val maxRow0 = row0.maxBy { it.length }!!.length
-			val maxRow1 = row1.maxBy { it.length }!!.length
-			val maxRow2 = row2.maxBy { it.length }!!.length
-			val maxRow3 = row3.maxBy { it.length }!!.length
-			val maxRow4 = row4.maxBy { it.length }!!.length
+			val maxRow0 = row0.maxByOrNull { it.length }!!.length
+			val maxRow1 = row1.maxByOrNull { it.length }!!.length
+			val maxRow2 = row2.maxByOrNull { it.length }!!.length
+			val maxRow3 = row3.maxByOrNull { it.length }!!.length
+			val maxRow4 = row4.maxByOrNull { it.length }!!.length
 
 			val lines = mutableListOf<String>()
 			for (i in 0 until row0.size) {

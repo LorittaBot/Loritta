@@ -14,8 +14,8 @@ import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.platform.discord.commands.DiscordCommandContext
-import net.perfectdreams.loritta.platform.discord.plugin.LorittaDiscordPlugin
+import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordCommandContext
+import net.perfectdreams.loritta.platform.discord.legacy.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.plugin.fortnite.commands.fortnite.*
 import net.perfectdreams.loritta.plugin.fortnite.routes.ConfigureFortniteRoute
 import net.perfectdreams.loritta.plugin.fortnite.routes.PostItemListRoute
