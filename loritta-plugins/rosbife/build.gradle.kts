@@ -12,7 +12,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-common"))
-                implementation(project(":loritta-api"))
+                implementation(project(":common-legacy"))
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0")
             }
         }

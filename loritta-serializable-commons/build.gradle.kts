@@ -20,7 +20,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-common"))
-                implementation(project(":loritta-api"))
+                implementation(project(":common-legacy"))
             }
         }
 
