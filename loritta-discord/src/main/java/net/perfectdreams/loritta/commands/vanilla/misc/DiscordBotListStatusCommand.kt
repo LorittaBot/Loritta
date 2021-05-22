@@ -16,18 +16,25 @@ class DiscordBotListStatusCommand(loritta: LorittaDiscord): DiscordAbstractComma
         localizedDescription("$LOCALE_PREFIX.description")
 
         executesDiscord {
-
-            val context = this
+            val user = user(0) ?: this.message.author
 
             val votes = loritta.newSuspendedTransaction {
-                BotVotes.select { BotVotes.userId eq context.user.idLong }.count()
+                BotVotes.select { BotVotes.userId eq user.id }.count()
             }
 
-            context.reply(
-                LorittaReply(
-                    locale["$LOCALE_PREFIX.youVoted", votes]
+            if (user == this.message.author) {
+                reply(
+                    LorittaReply(
+                        locale["$LOCALE_PREFIX.youVoted", votes]
+                    )
                 )
-            )
+            } else {
+                reply(
+                    LorittaReply(
+                        locale["$LOCALE_PREFIX.userVoted", user, votes]
+                    )
+                )
+            }
         }
     }
 }
