@@ -259,8 +259,6 @@ class CommandManager(loritta: Loritta) {
 	 */
 	suspend fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, serverConfig: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
 		val message = ev.message.contentDisplay
-		val baseLocale = locale
-
 		val labels = mutableListOf(command.label)
 
 		labels.addAll(command.aliases)
@@ -284,18 +282,7 @@ class CommandManager(loritta: Loritta) {
 				strippedArgs = rawArgs
 			}
 
-			var reparsedLegacyLocale = locale
-			if (!isPrivateChannel) { // TODO: Migrar isto para que seja customizável
-				when (ev.channel.id) {
-					"414839559721975818" -> reparsedLegacyLocale = loritta.localeManager.getLocaleById("default") // português (default)
-					"404713176995987466" -> reparsedLegacyLocale = loritta.localeManager.getLocaleById("en-us") // inglês
-					"414847180285935622" -> reparsedLegacyLocale = loritta.localeManager.getLocaleById("es-es") // espanhol
-					"414847291669872661" -> reparsedLegacyLocale = loritta.localeManager.getLocaleById("pt-pt") // português de portugal
-					"414847379670564874" -> reparsedLegacyLocale = loritta.localeManager.getLocaleById("pt-funk") // português funk
-				}
-			}
-
-			val context = CommandContext(serverConfig, lorittaUser, baseLocale, ev, command, args, rawArgs, strippedArgs)
+			val context = CommandContext(serverConfig, lorittaUser, locale, ev, command, args, rawArgs, strippedArgs)
 
 			try {
 				if (ev.message.isFromType(ChannelType.TEXT)) {
@@ -421,15 +408,17 @@ class CommandManager(loritta: Loritta) {
 
 					if (missingPermissions.isNotEmpty()) {
 						// oh no
-						val required = missingPermissions.joinToString(", ", transform = { "`" + reparsedLegacyLocale["commands.loriPermission${it.name}"] + "`" })
-						var message = reparsedLegacyLocale["commands.loriMissingPermission", required]
+						val required = missingPermissions.joinToString(
+							", ",
+							transform = { "`" + locale["commands.loriPermission${it.name}"] + "`" })
+						var message = locale["commands.loriMissingPermission", required]
 
 						if (ev.member.hasPermission(Permission.ADMINISTRATOR) || ev.member.hasPermission(Permission.MANAGE_SERVER)) {
-							message += " ${reparsedLegacyLocale["commands.loriMissingPermissionCanConfigure", loritta.instanceConfig.loritta.website.url]}"
+							message += " ${locale["commands.loriMissingPermissionCanConfigure", loritta.instanceConfig.loritta.website.url]}"
 						}
 						ev.textChannel.sendMessage(Constants.ERROR + " **|** ${ev.member.asMention} $message")
-								.referenceIfPossible(ev.message, serverConfig, true)
-								.awaitCheckForReplyErrors()
+							.referenceIfPossible(ev.message, serverConfig, true)
+							.awaitCheckForReplyErrors()
 						return true
 					}
 				}
@@ -462,7 +451,7 @@ class CommandManager(loritta: Loritta) {
 				}
 
 				if (context.isPrivateChannel && !command.canUseInPrivateChannel()) {
-					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + reparsedLegacyLocale["commands.cantUseInPrivate"])
+					context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["commands.cantUseInPrivate"])
 					return true
 				}
 
@@ -490,8 +479,8 @@ class CommandManager(loritta: Loritta) {
 						if (hasBadNickname) {
 							context.reply(
 									LorittaReply(
-											reparsedLegacyLocale["commands.lorittaBadNickname"],
-											"<:lori_triste:370344565967814659>"
+										locale["commands.lorittaBadNickname"],
+										"<:lori_triste:370344565967814659>"
 									)
 							)
 							if (context.guild.selfMember.hasPermission(Permission.NICKNAME_CHANGE)) {
