@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.api.commands
 
 import net.perfectdreams.loritta.api.LorittaBot
-import net.perfectdreams.loritta.api.platform.PlatformFeature
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
@@ -30,7 +29,6 @@ open class CommandBuilder<context : CommandContext>(
 	var canUseInPrivateChannel = false
 	var needsToUploadFiles = false
 	var hideInHelp = false
-	var requiredFeatures = listOf<PlatformFeature>()
 	var onlyOwner = false
 	var similarCommands = listOf<String>()
 	var sendTypingStatus = false
@@ -125,7 +123,6 @@ open class CommandBuilder<context : CommandContext>(
 			this.canUseInPrivateChannel = this@CommandBuilder.canUseInPrivateChannel
 			this.needsToUploadFiles = this@CommandBuilder.needsToUploadFiles
 			this.hideInHelp = this@CommandBuilder.hideInHelp
-			this.requiredFeatures = this@CommandBuilder.requiredFeatures
 			this.onlyOwner = this@CommandBuilder.onlyOwner
 			this.similarCommands = this@CommandBuilder.similarCommands
 			this.sendTypingStatus = this@CommandBuilder.sendTypingStatus

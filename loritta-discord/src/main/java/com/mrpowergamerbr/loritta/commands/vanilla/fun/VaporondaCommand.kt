@@ -3,11 +3,11 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.escapeMentions
+import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import com.mrpowergamerbr.loritta.utils.misc.VaporwaveUtils
-import net.perfectdreams.loritta.common.commands.CommandCategory
-import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.utils.text.VaporwaveUtils
 
 class VaporondaCommand : AbstractCommand("vaporonda", listOf("vaporwave"), category = CommandCategory.FUN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.vaporwave.description")

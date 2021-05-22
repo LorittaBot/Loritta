@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.api.commands
 
 import net.perfectdreams.loritta.api.LorittaBot
-import net.perfectdreams.loritta.api.platform.PlatformFeature
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
@@ -31,7 +30,6 @@ open class Command<T : CommandContext>(
 	var sendTypingStatus = false
 	var canUseInPrivateChannel = false
 	var onlyOwner = false
-	var requiredFeatures: List<PlatformFeature> = listOf()
 	var similarCommands: List<String> = listOf()
 
 	open val cooldown = 2_500
