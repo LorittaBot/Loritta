@@ -142,7 +142,12 @@ class CommandManager(loritta: Loritta) {
 		commandMap.add(LyricsCommand())
 
 		// =======[ DISCORD ]=======
-		// commandMap.add(createBotinfoCommand())
+		try {
+			commandMap.add(createBotinfoCommand())
+		} catch (e: Exception) {
+			// TODO: Fix this
+			logger.warn(e) { "Exception while registering botinfo, are you running Loritta within a IDE?" }
+		}
 		commandMap.add(AvatarCommand())
 		commandMap.add(ServerIconCommand())
 		commandMap.add(EmojiCommand())
