@@ -7,7 +7,6 @@ dependencies {
 plugins {
     java
     kotlin("jvm")
-    `maven-publish`
 }
 
 tasks {

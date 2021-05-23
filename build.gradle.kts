@@ -9,17 +9,17 @@ allprojects {
     version = Versions.LORITTA
 
     repositories {
-        mavenLocal()
         mavenCentral()
+        mavenLocal()
 
-        maven("https://dl.bintray.com/kotlin/kotlin-dev/")
-        maven("https://dl.bintray.com/kotlin/kotlin-eap/")
-        maven("https://dl.bintray.com/kotlin/kotlinx.html")
-        maven("https://jcenter.bintray.com")
         maven("https://oss.sonatype.org/content/repositories/snapshots/")
+
+        // Used by kotlinx.html, can be removed after migrating to the newest kotlinx.html version
+        maven("https://dl.bintray.com/kotlin/kotlinx.html")
         maven("https://repo.perfectdreams.net/")
-        maven("https://dl.bintray.com/kotlin/ktor/")
         maven("https://jitpack.io")
+
+        // Used by JDA
         maven("https://m2.dv8tion.net/releases")
     }
 }
@@ -27,24 +27,6 @@ allprojects {
 plugins {
     java
     kotlin("jvm") version Versions.KOTLIN apply false
-    `maven-publish`
-}
-
-val sourcesJar by tasks.registering(Jar::class) {
-    archiveClassifier.set("sources")
-    from(sourceSets.main.get().allSource)
-}
-
-publishing {
-    repositories {
-        mavenLocal()
-    }
-    publications {
-        register("mavenJava", MavenPublication::class) {
-            from(components["java"])
-            artifact(sourcesJar.get())
-        }
-    }
 }
 
 java {

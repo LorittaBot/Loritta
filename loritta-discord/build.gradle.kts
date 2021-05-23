@@ -8,28 +8,6 @@ plugins {
     java
     kotlin("jvm")
     kotlin("plugin.serialization") version Versions.KOTLIN
-    `maven-publish`
-}
-
-val sourcesJar by tasks.registering(Jar::class) {
-    archiveClassifier.set("sources")
-    from(sourceSets.main.get().allSource)
-}
-
-publishing {
-    repositories {
-        mavenLocal()
-    }
-    publications {
-        register("mavenJava", MavenPublication::class) {
-            from(components["java"])
-            artifact(sourcesJar.get())
-        }
-    }
-}
-
-repositories {
-    jcenter()
 }
 
 dependencies {
@@ -61,7 +39,7 @@ dependencies {
 
     // Discord
     api("net.dv8tion:JDA:${Versions.JDA}")
-    api("club.minnced:discord-webhooks:0.5.0")
+    api("club.minnced:discord-webhooks:0.5.7")
 
     // Exposed & Databases
     api("org.postgresql:postgresql:42.2.18")

@@ -5,6 +5,5 @@ dependencies {
 plugins {
     java
     kotlin("jvm")
-    `maven-publish`
     kotlin("plugin.serialization")
 }

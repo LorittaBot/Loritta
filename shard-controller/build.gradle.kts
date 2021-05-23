@@ -7,11 +7,6 @@ tasks.withType<KotlinCompile> {
 plugins {
     java
     kotlin("jvm")
-    `maven-publish`
-}
-
-repositories {
-    jcenter()
 }
 
 dependencies {
@@ -32,11 +27,6 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.0-M1")
     testImplementation("io.mockk:mockk:1.9.3")
     testImplementation("org.assertj:assertj-core:3.12.2")
-}
-
-val sourcesJar by tasks.registering(Jar::class) {
-    archiveClassifier.set("sources")
-    from(sourceSets.main.get().allSource)
 }
 
 tasks {
