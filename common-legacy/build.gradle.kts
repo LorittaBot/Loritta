@@ -22,7 +22,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib-common"))
                 api(project(":common")) // hehe
-                api("io.github.microutils:kotlin-logging-common:1.7.8")
+
                 api("io.ktor:ktor-client-core:${Versions.KTOR}")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.KOTLIN_SERIALIZATION}")
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.KOTLIN_COROUTINES}")
@@ -33,9 +33,7 @@ kotlin {
         jvm().compilations["main"].defaultSourceSet {
             dependencies {
                 implementation(kotlin("stdlib-jdk8"))
-                api("io.github.microutils:kotlin-logging:1.7.8")
                 api("com.fasterxml.jackson.core:jackson-databind:2.9.8")
-                api("com.github.salomonbrys.kotson:kotson:2.5.0")
                 api("io.ktor:ktor-client-apache:${Versions.KTOR}")
 
                 // Used for the LocaleManager
@@ -47,8 +45,6 @@ kotlin {
         js().compilations["main"].defaultSourceSet {
             dependencies {
                 implementation(kotlin("stdlib-js"))
-                api("io.github.microutils:kotlin-logging-js:1.7.8")
-                api("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:${Versions.KOTLIN_COROUTINES}")
                 api(npm("canvas", "2.6.1"))
                 api("io.ktor:ktor-client-js:${Versions.KTOR}")
             }

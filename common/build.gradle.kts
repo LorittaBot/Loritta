@@ -26,7 +26,7 @@ kotlin {
                 api("io.github.microutils:kotlin-logging:2.0.6")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.KOTLIN_SERIALIZATION}")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLIN_SERIALIZATION}")
-                api("io.ktor:ktor-client-core:1.5.3")
+                api("io.ktor:ktor-client-core:${Versions.KTOR}")
                 api("org.jetbrains.kotlinx:kotlinx-datetime:0.1.1")
 
                 // Used for Math stuff

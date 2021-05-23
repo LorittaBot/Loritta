@@ -63,11 +63,9 @@ dependencies {
     api("io.ktor:ktor-client-apache:${Versions.KTOR}")
 
     api("com.google.code.gson:gson:2.8.6")
-    api("io.github.microutils:kotlin-logging:2.0.3")
     api("io.pebbletemplates:pebble:3.1.4")
     api("org.jsoup:jsoup:1.13.1")
     api("com.github.kevinsawicki:http-request:6.0")
-    api("com.rometools:rome:1.15.0")
 
     // Jackson
     api("com.fasterxml.jackson.core:jackson-databind:2.11.3")

@@ -1,6 +1,13 @@
 package net.perfectdreams.loritta.platform.discord.commands
 
+import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
+import com.mrpowergamerbr.loritta.utils.LorittaPermission
+import com.mrpowergamerbr.loritta.utils.LorittaUser
+import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
+import com.mrpowergamerbr.loritta.utils.MessageUtils
+import com.mrpowergamerbr.loritta.utils.extensions.awaitCheckForReplyErrors
+import com.mrpowergamerbr.loritta.utils.extensions.referenceIfPossible
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import mu.KotlinLogging
 import net.perfectdreams.loritta.common.commands.CommandArguments
@@ -10,6 +17,7 @@ import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
 import net.perfectdreams.loritta.common.commands.options.CommandOption
 import net.perfectdreams.loritta.common.commands.options.CommandOptionType
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.entities.JDAMessageChannel
 import net.perfectdreams.loritta.platform.discord.entities.JDAUser
@@ -30,7 +38,10 @@ class JDACommandManager(val loritta: LorittaDiscord) {
 
     suspend fun matches(
         event: LorittaMessageEvent,
-        rawArguments: MutableList<String>
+        rawArguments: MutableList<String>,
+        serverConfig: ServerConfig,
+        locale: BaseLocale,
+        lorittaUser: LorittaUser
     ): Boolean {
         // Everything is a label right now, so we need to process and try to find the best match for us
         // This makes the code be more complex, with slash commands we just need to check the amount of labels and match accordingly
@@ -71,30 +82,57 @@ class JDACommandManager(val loritta: LorittaDiscord) {
 
             val argumentsSplit = rawArguments.drop(howManyLabels)
 
-            processCommand(event, matchedDeclaration, executor, argumentsSplit)
-            return true
+            return processCommand(event, matchedDeclaration, executor, argumentsSplit, serverConfig, locale, lorittaUser)
         }
 
         return false
     }
 
-    private suspend fun processCommand(event: LorittaMessageEvent, declaration: CommandDeclarationBuilder, executor: CommandExecutor, argumentsAsString: List<String>) {
+    private suspend fun processCommand(
+        event: LorittaMessageEvent,
+        declaration: CommandDeclarationBuilder,
+        executor: CommandExecutor,
+        argumentsAsString: List<String>,
+        serverConfig: ServerConfig,
+        locale: BaseLocale,
+        lorittaUser: LorittaUser
+    ): Boolean {
         val start = System.currentTimeMillis()
 
         val args = parseArgs(argumentsAsString, declaration.executor?.options?.arguments ?: listOf())
 
         val context = JDACommandContext(
             loritta,
-            loritta.localeManager.getLocaleById("default"),
+            locale,
             JDAUser(event.author),
-            JDAMessageChannel(event.channel)
+            JDAMessageChannel(event.channel),
+            lorittaUser
         )
 
         CommandUtils.logMessageEvent(event, logger)
 
         try {
-            // TODO: Channel blacklist permission check
-            // TODO: Check if user is banned
+            if (serverConfig.blacklistedChannels.contains(event.channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
+                if (serverConfig.warnIfBlacklisted) {
+                    if (serverConfig.blacklistedChannels.isNotEmpty() && event.guild != null && event.member != null && event.textChannel != null) {
+                        val generatedMessage = MessageUtils.generateMessage(
+                            serverConfig.blacklistedWarning ?: "???",
+                            listOf(event.member, event.textChannel),
+                            event.guild
+                        )
+                        if (generatedMessage != null)
+                            event.textChannel.sendMessage(generatedMessage)
+                                .referenceIfPossible(event.message, serverConfig, true)
+                                .awaitCheckForReplyErrors()
+                    }
+                }
+                return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
+            }
+
+            // Check if user is banned
+            if (LorittaUtilsKotlin.handleIfBanned(context, lorittaUser.profile))
+                return true
+
             // TODO: Cooldown
             // TODO: Command feedback
             // TODO: Check disabled commands
@@ -121,11 +159,11 @@ class JDACommandManager(val loritta: LorittaDiscord) {
             // TODO: Log Prometheus
 
             val commandLatency = System.currentTimeMillis() - start
-
             CommandUtils.logMessageEventComplete(event, logger, commandLatency)
         } catch (e: CommandException) {
             context.channel.sendMessage(e.lorittaMessage)
         }
+        return true
     }
 
     /**
