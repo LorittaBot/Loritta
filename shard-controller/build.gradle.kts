@@ -30,7 +30,8 @@ dependencies {
 }
 
 tasks {
-    val fatJar = fatJarTask(
+    val fatJar = runnableJarTask(
+        DEFAULT_SHADED_WITHIN_JAR_LIBRARIES,
         configurations.runtimeClasspath.get(),
         jar.get(),
         "net.perfectdreams.loritta.shardcontroller.ShardControllerServerLauncher",

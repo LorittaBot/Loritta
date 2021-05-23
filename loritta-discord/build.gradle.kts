@@ -101,7 +101,8 @@ tasks.test {
 }
 
 tasks {
-    val fatJar = fatJarTask(
+    val runnableJar = runnableJarTask(
+        DEFAULT_SHADED_WITHIN_JAR_LIBRARIES,
         configurations.runtimeClasspath.get(),
         jar.get(),
         "com.mrpowergamerbr.loritta.LorittaLauncher",
@@ -111,6 +112,6 @@ tasks {
     )
 
     "build" {
-        dependsOn(fatJar)
+        dependsOn(runnableJar)
     }
 }
