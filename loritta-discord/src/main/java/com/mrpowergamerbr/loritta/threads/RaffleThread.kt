@@ -8,6 +8,8 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
@@ -32,6 +34,7 @@ class RaffleThread : Thread("Raffle Thread") {
 		// TODO: Alterar userId para um long (para usar menos memória)
 		var userIds = CopyOnWriteArrayList<Pair<String, String>>()
 		val logger = KotlinLogging.logger {}
+		val buyingOrGivingRewardsMutex = Mutex()
 	}
 
 	override fun run() {
@@ -71,52 +74,54 @@ class RaffleThread : Thread("Raffle Thread") {
 	}
 
 	fun handleWin() {
-		if (userIds.isEmpty()) {
-			started = System.currentTimeMillis()
-			save()
-		} else {
-			var winner: Pair<String, String>? = null
+		runBlocking {
+			buyingOrGivingRewardsMutex.withLock {
+				if (userIds.isEmpty()) {
+					started = System.currentTimeMillis()
+					save()
+				} else {
+					var winner: Pair<String, String>? = null
 
-			if (winner == null)
-				winner = getRandomWinner()
+					if (winner == null)
+						winner = getRandomWinner()
 
-			val winnerId = winner.first
-			lastWinnerId = winnerId
+					val winnerId = winner.first
+					lastWinnerId = winnerId
 
-			val currentActiveDonations = loritta.getActiveMoneyFromDonations(winnerId.toLong())
-			val plan = UserPremiumPlans.getPlanFromValue(currentActiveDonations)
+					val currentActiveDonations = loritta.getActiveMoneyFromDonations(winnerId.toLong())
+					val plan = UserPremiumPlans.getPlanFromValue(currentActiveDonations)
 
-			val moneyWithoutTaxes = userIds.size * 250
-			val money = (moneyWithoutTaxes * plan.totalLoraffleReward).toInt()
-			lastWinnerPrize = money
+					val moneyWithoutTaxes = userIds.size * 250
+					val money = (moneyWithoutTaxes * plan.totalLoraffleReward).toInt()
+					lastWinnerPrize = money
 
-			val lorittaProfile = loritta.getOrCreateLorittaProfile(winnerId)
-			logger.info("$lastWinnerId ganhou $lastWinnerPrize sonhos ($moneyWithoutTaxes without taxes; antes ele possuia ${lorittaProfile.money} sonhos) na Rifa!")
+					val lorittaProfile = loritta.getOrCreateLorittaProfile(winnerId)
+					logger.info("$lastWinnerId ganhou $lastWinnerPrize sonhos ($moneyWithoutTaxes without taxes; antes ele possuia ${lorittaProfile.money} sonhos) na Rifa!")
 
-			transaction(Databases.loritta) {
-				lorittaProfile.addSonhosAndAddToTransactionLogNested(
-					money.toLong(),
-					SonhosPaymentReason.RAFFLE
-				)
-			}
+					transaction(Databases.loritta) {
+						lorittaProfile.addSonhosAndAddToTransactionLogNested(
+							money.toLong(),
+							SonhosPaymentReason.RAFFLE
+						)
+					}
 
-			val totalTicketsBoughtByTheUser = userIds.count { it.first == winnerId }
-			val totalTickets = userIds.size
-			val totalUsersInTheRaffle = userIds.map { it.first }.distinct().size
+					val totalTicketsBoughtByTheUser = userIds.count { it.first == winnerId }
+					val totalTickets = userIds.size
+					val totalUsersInTheRaffle = userIds.map { it.first }.distinct().size
 
-			userIds.clear()
+					userIds.clear()
 
-			val locale = loritta.localeManager.getLocaleById(winner.second)
-			val user = runBlocking { lorittaShards.retrieveUserById(lastWinnerId!!) }
+					val locale = loritta.localeManager.getLocaleById(winner.second)
+					val user = runBlocking { lorittaShards.retrieveUserById(lastWinnerId!!) }
 
-			if (user != null && !user.isBot) {
-				try {
-					val embed = EmbedBuilder()
-					embed.setThumbnail("attachment://loritta_money.png")
-					embed.setColor(Color(47, 182, 92))
-					embed.setTitle("\uD83C\uDF89 ${locale["commands.command.raffle.victory.title"]}!")
-					embed.setDescription(
-							locale.getList(
+					if (user != null && !user.isBot) {
+						try {
+							val embed = EmbedBuilder()
+							embed.setThumbnail("attachment://loritta_money.png")
+							embed.setColor(Color(47, 182, 92))
+							embed.setTitle("\uD83C\uDF89 ${locale["commands.command.raffle.victory.title"]}!")
+							embed.setDescription(
+								locale.getList(
 									"commands.command.raffle.victory.description",
 									totalTicketsBoughtByTheUser,
 									lastWinnerPrize,
@@ -125,18 +130,23 @@ class RaffleThread : Thread("Raffle Thread") {
 									totalTicketsBoughtByTheUser / totalTickets.toDouble(),
 									Emotes.LORI_RICH,
 									Emotes.LORI_NICE
-							).joinToString("\n")
-					)
+								).joinToString("\n")
+							)
 
-					embed.setTimestamp(Instant.now())
-					val message = MessageBuilder().setContent(" ").setEmbed(embed.build()).build()
-					user.openPrivateChannel().queue {
-						it.sendMessage(message).addFile(File(Loritta.ASSETS, "loritta_money_discord.png"), "loritta_money.png").queue()
+							embed.setTimestamp(Instant.now())
+							val message = MessageBuilder().setContent(" ").setEmbed(embed.build()).build()
+							user.openPrivateChannel().queue {
+								it.sendMessage(message)
+									.addFile(File(Loritta.ASSETS, "loritta_money_discord.png"), "loritta_money.png")
+									.queue()
+							}
+						} catch (e: Exception) {
+						}
 					}
-				} catch (e: Exception) {}
+					started = System.currentTimeMillis()
+					save()
+				}
 			}
-			started = System.currentTimeMillis()
-			save()
 		}
 	}
 
