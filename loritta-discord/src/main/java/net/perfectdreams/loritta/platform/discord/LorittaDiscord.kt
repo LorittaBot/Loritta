@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.platform.discord
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.salomonbrys.kotson.*
 import com.google.common.util.concurrent.ThreadFactoryBuilder
@@ -44,7 +45,6 @@ import net.perfectdreams.loritta.platform.discord.legacy.plugin.JVMPluginManager
 import net.perfectdreams.loritta.platform.discord.utils.*
 import net.perfectdreams.loritta.tables.*
 import net.perfectdreams.loritta.utils.*
-import net.perfectdreams.loritta.utils.HoconUtils.decodeFromFile
 import net.perfectdreams.loritta.utils.config.*
 import net.perfectdreams.loritta.utils.extensions.readImage
 import net.perfectdreams.loritta.utils.payments.PaymentReason
@@ -282,7 +282,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
     /**
      * Loads an specific fan art artist
      */
-    fun loadFanArtArtist(file: File): FanArtArtist = Constants.HOCON.decodeFromFile(file)
+    fun loadFanArtArtist(file: File): FanArtArtist = Constants.HOCON_MAPPER.readValue(file)
 
     fun getFanArtArtistByFanArt(fanArt: FanArt) = fanArtArtists.firstOrNull { fanArt in it.fanArts }
 

@@ -1,12 +1,23 @@
 package com.mrpowergamerbr.loritta.utils
 
+import com.fasterxml.jackson.databind.BeanDescription
+import com.fasterxml.jackson.databind.DeserializationConfig
+import com.fasterxml.jackson.databind.JsonDeserializer
+import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.PropertyNamingStrategy
+import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier
+import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.databind.type.MapType
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
+import com.jasonclawson.jackson.dataformat.hocon.HoconFactory
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import kotlinx.serialization.hocon.Hocon
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.api.utils.jackson.FixedMapDeserializer
 import net.perfectdreams.loritta.utils.Emotes
 import org.yaml.snakeyaml.Yaml
 import java.awt.Color
@@ -70,6 +81,35 @@ object Constants {
 	val MAPPER = ObjectMapper(YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER))
 	val YAML = Yaml()
 	val HOCON = Hocon { useArrayPolymorphism = true }
+	val HOCON_MAPPER = ObjectMapper(HoconFactory()).apply {
+		this.enable(MapperFeature.ALLOW_EXPLICIT_PROPERTY_RENAMING)
+		this.registerModule(ParameterNamesModule())
+		val module = SimpleModule()
+
+		// Workaround for https://github.com/jclawson/jackson-dataformat-hocon/issues/15
+		module.setDeserializerModifier(object: BeanDeserializerModifier() {
+			override fun modifyMapDeserializer(config: DeserializationConfig, type: MapType, beanDesc: BeanDescription, deserializer: JsonDeserializer<*>): JsonDeserializer<*> {
+				return FixedMapDeserializer(type)
+			}
+		})
+
+		this.registerModule(module)
+
+		this.propertyNamingStrategy = object: PropertyNamingStrategy.PropertyNamingStrategyBase() {
+			override fun translate(p0: String): String {
+				val newField = StringBuilder()
+
+				for (ch in p0) {
+					if (ch.isUpperCase()) {
+						newField.append('-')
+					}
+					newField.append(ch.toLowerCase())
+				}
+
+				return newField.toString()
+			}
+		}
+	}
 
 	const val PORTUGUESE_SUPPORT_GUILD_ID = "297732013006389252"
 	const val ENGLISH_SUPPORT_GUILD_ID = "420626099257475072"
