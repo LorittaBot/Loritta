@@ -32,45 +32,44 @@ fun Project.fatJarTask(
             "parallax-code-api-"
         )
 
-        archiveBaseName.set("${project.name}-fat")
+        // Only copy the libs in a "doLast"
+        // doLast means that this won't be executed when loading the build.gradle.kts
+        // (Yes, by default Gradle will run everything in this task block, even if you are compiling a unrelated project)
+        // Very strange...
+        doLast {
+            archiveBaseName.set("${project.name}-fat")
 
-        manifest {
-            fun addIfAvailable(name: String, attrName: String) {
-                attributes[attrName] = System.getProperty(name) ?: "Unknown"
+            manifest {
+                fun addIfAvailable(name: String, attrName: String) {
+                    attributes[attrName] = System.getProperty(name) ?: "Unknown"
+                }
+
+                attributes["Loritta-Version"] = Versions.LORITTA
+                addIfAvailable("build.number", "Build-Number")
+                addIfAvailable("commit.hash", "Commit-Hash")
+                addIfAvailable("git.branch", "Git-Branch")
+                addIfAvailable("compiled.at", "Compiled-At")
+                addIfAvailable("github.build.id", "Github-Build-Id")
+                attributes["Main-Class"] = mainClass
+                attributes["Kotlin-Version"] = Versions.KOTLIN
+                attributes["Class-Path"] = runtimeClasspath
+                    .filterNot { addToFinalJarSourceProjects.any { sourceName -> it.name.startsWith(sourceName) } }
+                    .filter { it.extension == "jar" }
+                    .distinctBy { it.name }
+                    .joinToString(" ", transform = { "libs/" + it.name })
+                attributes.putAll(customAttributes)
             }
 
-            attributes["Loritta-Version"] = Versions.LORITTA
-            addIfAvailable("build.number", "Build-Number")
-            addIfAvailable("commit.hash", "Commit-Hash")
-            addIfAvailable("git.branch", "Git-Branch")
-            addIfAvailable("compiled.at", "Compiled-At")
-            addIfAvailable("github.build.id", "Github-Build-Id")
-            attributes["Main-Class"] = mainClass
-            attributes["Kotlin-Version"] = Versions.KOTLIN
-            attributes["Class-Path"] = runtimeClasspath
-                .filterNot { addToFinalJarSourceProjects.any { sourceName -> it.name.startsWith(sourceName) } }
-                .filter { it.extension == "jar" }
-                .distinctBy { it.name }
-                .joinToString(" ", transform = { "libs/" + it.name })
-            attributes.putAll(customAttributes)
-        }
+            val libs = File(rootProject.projectDir, "libs")
+            // libs.deleteRecursively()
+            libs.mkdirs()
+            // Add any required dependencies inside the JAR
+            from(runtimeClasspath.mapNotNull {
+                if (addToFinalJarSourceProjects.any { sourceName -> it.name.startsWith(sourceName) }) {
+                    zipTree(it)
+                } else null
+            })
 
-        val libs = File(rootProject.projectDir, "libs")
-        // libs.deleteRecursively()
-        libs.mkdirs()
-
-        // Add any required dependencies inside the JAR
-        from(runtimeClasspath.mapNotNull {
-            if (addToFinalJarSourceProjects.any { sourceName -> it.name.startsWith(sourceName) }) {
-                zipTree(it)
-            } else null
-        })
-
-        doLast {
-            // Only copy the libs in a "doLast"
-            // doLast means that this won't be executed when loading the build.gradle.kts
-            // (Yes, by default Gradle will run everything in this task block, even if you are compiling a unrelated project)
-            // Very strange...
             from(runtimeClasspath.mapNotNull {
                 if (!addToFinalJarSourceProjects.any { sourceName -> it.name.startsWith(sourceName) }) {
                     val output = File(libs, it.name)
