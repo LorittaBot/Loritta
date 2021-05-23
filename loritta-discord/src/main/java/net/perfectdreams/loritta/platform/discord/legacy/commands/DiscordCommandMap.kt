@@ -46,6 +46,7 @@ import net.perfectdreams.loritta.commands.vanilla.misc.DiscordBotListCommand
 import net.perfectdreams.loritta.commands.vanilla.misc.DiscordBotListStatusCommand
 import net.perfectdreams.loritta.commands.vanilla.roblox.RbGameCommand
 import net.perfectdreams.loritta.commands.vanilla.roblox.RbUserCommand
+import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaStatusCommand
 import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaTopCommand
 import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaTopLocalCommand
 import net.perfectdreams.loritta.commands.vanilla.social.RankGlobalCommand
@@ -82,7 +83,8 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 			TransactionsCommand(discordLoritta),
 
 			// ===[ SOCIAL ]===
-			BomDiaECiaTopCommand(discordLoritta),
+            BomDiaECiaStatusCommand(discordLoritta),
+            BomDiaECiaTopCommand(discordLoritta),
 			BomDiaECiaTopLocalCommand(discordLoritta),
 			RankGlobalCommand(discordLoritta),
 			RepTopCommand(discordLoritta),
@@ -112,7 +114,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 			RbGameCommand(discordLoritta)
 		)
 	}
-	
+
 	override fun register(command: Command<CommandContext>) {
 		logger.info { "Registering $command with ${command.labels}" }
 		commands.add(command)
@@ -372,7 +374,6 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 						return true
 					}
 				}
-
 				*/
 
 				// Vamos pegar uma mensagem aleatória de doação, se não for nula, iremos enviar ela :3
@@ -382,14 +383,11 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 						donatorPaid,
 						guildPaid
 				)?.let { context.reply(it) }
-
 				if (!context.isPrivateChannel && ev.guild != null) {
 					val nickname = ev.guild.selfMember.nickname
-
 					if (nickname != null) {
 						// #LoritaTambémTemSentimentos
 						val hasBadNickname = MiscUtils.hasInappropriateWords(nickname)
-
 						if (hasBadNickname) {
 							context.reply(
 									LoriReply(
