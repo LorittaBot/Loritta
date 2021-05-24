@@ -26,22 +26,12 @@ kotlin {
 		// Because Kotlin 1.5.0 has too many issues omg
 		// Workaround for https://kotlinlang.slack.com/archives/C0B8L3U69/p1621863081132900
 		// :kotlin_intensifies:
-		api("io.ktor:ktor-client-core:1.4.3") {
-			version {
-				strictly("1.4.3")
-			}
-		}
 		api("io.ktor:ktor-client-js:1.4.3") {
 			version {
 				strictly("1.4.3")
 			}
 		}
-		implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.KOTLIN_COROUTINES}") {
-			version {
-				strictly("1.4.3")
-			}
-		}
-		implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:${Versions.KOTLIN_COROUTINES}") {
+		implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.4.3") {
 			version {
 				strictly("1.4.3")
 			}
