@@ -66,7 +66,7 @@ class MonicaAtaProfileCreator : ProfileCreator("monicaAta") {
 			userInfo.add("${userProfile.money}")
 
 		graphics.font = KOMIKA.deriveFont(13f)
-		val biggestStrWidth = graphics.fontMetrics.stringWidth(userInfo.maxBy { graphics.fontMetrics.stringWidth(it) }!!)
+		val biggestStrWidth = graphics.fontMetrics.stringWidth(userInfo.maxByOrNull { graphics.fontMetrics.stringWidth(it) }!!)
 
 		val avatar = LorittaUtils.downloadImage(user.avatarUrl)!!.getScaledInstance(148, 148, BufferedImage.SCALE_SMOOTH)
 

@@ -1,5 +1,5 @@
 plugins {
-    kotlin("multiplatform") apply true
+    kotlin("multiplatform")
     kotlin("plugin.serialization") version Versions.KOTLIN
 }
 

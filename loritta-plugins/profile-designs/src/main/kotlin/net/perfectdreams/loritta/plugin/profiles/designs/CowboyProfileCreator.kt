@@ -139,7 +139,7 @@ class CowboyProfileCreator : ProfileCreator("cowboy") {
 		else
 			userInfo.add("${userProfile.money}")
 
-		val biggestStrWidth = graphics.fontMetrics.stringWidth(userInfo.maxBy { graphics.fontMetrics.stringWidth(it) }!!)
+		val biggestStrWidth = graphics.fontMetrics.stringWidth(userInfo.maxByOrNull { graphics.fontMetrics.stringWidth(it) }!!)
 
 		var y = 480
 		for (line in userInfo) {

@@ -4,13 +4,26 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.profile.ProfileCreator
 import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
-import com.mrpowergamerbr.loritta.utils.*
-import net.perfectdreams.loritta.common.locale.BaseLocale
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.DateUtils
+import com.mrpowergamerbr.loritta.utils.ImageUtils
+import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import com.mrpowergamerbr.loritta.utils.drawText
+import com.mrpowergamerbr.loritta.utils.enableFontAntiAliasing
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.makeRoundedCorners
+import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.profile.ProfileUtils
 import net.perfectdreams.loritta.utils.extensions.readImage
-import java.awt.*
+import java.awt.Color
+import java.awt.Font
+import java.awt.Graphics
+import java.awt.Image
+import java.awt.Rectangle
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
@@ -177,7 +190,7 @@ class Christmas2019ProfileCreator : ProfileCreator("christmas2019") {
 		else
 			userInfo.add("${userProfile.money}")
 
-		val biggestStrWidth = graphics.fontMetrics.stringWidth(userInfo.maxBy { graphics.fontMetrics.stringWidth(it) }!!)
+		val biggestStrWidth = graphics.fontMetrics.stringWidth(userInfo.maxByOrNull { graphics.fontMetrics.stringWidth(it) }!!)
 
 		var y = 515
 		for (line in userInfo) {

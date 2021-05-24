@@ -170,7 +170,7 @@ class Halloween2019ProfileCreator : ProfileCreator("halloween2019") {
 		else
 			userInfo.add("${userProfile.money}")
 
-		val biggestStrWidth = graphics.fontMetrics.stringWidth(userInfo.maxBy { graphics.fontMetrics.stringWidth(it) }!!)
+		val biggestStrWidth = graphics.fontMetrics.stringWidth(userInfo.maxByOrNull { graphics.fontMetrics.stringWidth(it) }!!)
 
 		var y = 475
 		for (line in userInfo) {

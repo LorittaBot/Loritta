@@ -1,3 +1,1 @@
-buildscript {
-    repositories { jcenter() }
-}
+// Nothing here...

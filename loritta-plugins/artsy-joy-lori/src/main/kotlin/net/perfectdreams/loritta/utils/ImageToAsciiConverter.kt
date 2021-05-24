@@ -19,7 +19,7 @@ class ImageToAsciiConverter(private vararg val options: AsciiOptions) {
 
         val asciiSplit = asciiArt.split("\n")
         // Largura é o tamanho da maior string * 10 (tamanho da fonte!)
-        val width = (asciiSplit.maxBy { it.length }?.length ?: 1) * 10
+        val width = (asciiSplit.maxByOrNull { it.length }?.length ?: 1) * 10
         // A altura é a quantidade de linhas * 11 (o tamanho da fonte é 18, mas a gente subtrai para ficar mais "compacto")
         val height = asciiSplit.size * 11
         val newImage = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
