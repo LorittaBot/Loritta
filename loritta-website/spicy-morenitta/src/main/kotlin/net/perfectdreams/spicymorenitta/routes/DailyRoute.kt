@@ -171,9 +171,9 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
                 val guild = searchParams.get("guild")
 
                 val url = if (guild != null)
-                    "${window.location.origin}/api/v1/economy/daily-reward"
-                else
                     "${window.location.origin}/api/v1/economy/daily-reward?guild=$guild"
+                else
+                    "${window.location.origin}/api/v1/economy/daily-reward"
 
                 val response = http.get<HttpResponse> {
                     url(url)
