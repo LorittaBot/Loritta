@@ -42,9 +42,12 @@ class MessageBuilder {
      *
      * Prefixes should *not* be used for important behavior of the command!
      *
-     * @param content the already built LorittaReply
+     * @param content           the content of the message
+     * @param prefix            the prefix of the message
+     * @param inReplyToUser     the user that is within the context of this reply
+     * @param mentionSenderHint if the user should be mentioned in the reply, implementations may decide to not add the mention if it isn't needed.
      */
-    fun styled(content: String, prefix: Emote) = styled(content, prefix.asMention)
+    fun styled(content: String, prefix: Emote, inReplyToUser: User? = null, mentionSenderHint: Boolean = false) = styled(content, prefix.asMention, inReplyToUser, mentionSenderHint)
 
     /**
      * Appends a Loritta-styled formatted message to this builder
@@ -53,10 +56,12 @@ class MessageBuilder {
      *
      * Prefixes should *not* be used for important behavior of the command!
      *
-     * @param content the content of the message
-     * @param prefix  the prefix of the message
+     * @param content           the content of the message
+     * @param prefix            the prefix of the message
+     * @param inReplyToUser     the user that is within the context of this reply
+     * @param mentionSenderHint if the user should be mentioned in the reply, implementations may decide to not add the mention if it isn't needed.
      */
-    fun styled(content: String, prefix: String = Emotes.defaultStyledPrefix.asMention) = styled(LorittaReply(content, prefix))
+    fun styled(content: String, prefix: String = Emotes.defaultStyledPrefix.asMention, inReplyToUser: User? = null, mentionSenderHint: Boolean = false) = styled(LorittaReply(content, prefix, inReplyToUser, mentionSenderHint))
 
     /**
      * Appends a Loritta-styled formatted message to this builder
@@ -91,9 +96,18 @@ class MessageBuilder {
         val content = content
         val embed = embed
         val files = files
+        val replies = replies
+        val allowedMentions = allowedMentions
 
         if (content == null && embed == null && files.isEmpty() && replies.isEmpty())
             throw UnsupportedOperationException("Message needs to have at least content, embed or a file!")
+
+        // Add all replied users that has a mention sender hint to the allowed mentions block
+        for (reply in replies) {
+            if (reply.mentionSenderHint && reply.inReplyToUser != null) {
+                allowedMentions.users.add(reply.inReplyToUser)
+            }
+        }
 
         return LorittaMessage(
             content,

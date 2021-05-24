@@ -304,7 +304,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 
 				// We are going to sort by the donation value of the server (so a higher plan = more priority) and then by the multiplier guild ID priority
 				// So if the user has multiple servers that has the best donation key, Loritta will use the Guild ID priority from the URL!
-				// B
+				// The value is sorted with a negative sign on front of it, while the priority is sorted by != because we want descending order!
 				val sortedServers = serverConfigs.map {
 					Pair(it, it.getActiveDonationKeysValueNested())
 				}.filter {

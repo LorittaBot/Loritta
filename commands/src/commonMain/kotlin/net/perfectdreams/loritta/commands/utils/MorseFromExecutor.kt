@@ -31,8 +31,9 @@ class MorseFromExecutor(val emotes: Emotes): CommandExecutor() {
             ) { isEphemeral = true }
 
         context.sendReply(
+            content = "`$fromMorse`",
             prefix = emotes.radio.toString(),
-            content = "`$fromMorse`"
+            mentionSenderHint = true
         )
     }
 }

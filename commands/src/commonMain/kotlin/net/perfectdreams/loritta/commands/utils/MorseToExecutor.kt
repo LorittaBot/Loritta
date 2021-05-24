@@ -32,7 +32,8 @@ class MorseToExecutor(val emotes: Emotes) : CommandExecutor() {
 
         context.sendReply(
             content = "`$toMorse`",
-            prefix = emotes.radio.toString()
+            prefix = emotes.radio.toString(),
+            mentionSenderHint = true
         )
     }
 }

@@ -11,7 +11,13 @@ class JDAMessageChannel(internal val channel: net.dv8tion.jda.api.entities.Messa
 
         for (reply in message.replies) {
             builder.append('\n')
-            builder.append("${reply.prefix} **|** ${reply.content}")
+            builder.append("${reply.prefix} **|** ")
+
+            val replyToUser = reply.inReplyToUser
+            if (reply.mentionSenderHint && replyToUser != null)
+                builder.append("${replyToUser.asMention} ")
+
+            builder.append("${reply.content}")
         }
 
         builder.mentionUsers(*message.allowedMentions.users.map { it.id }.toLongArray())

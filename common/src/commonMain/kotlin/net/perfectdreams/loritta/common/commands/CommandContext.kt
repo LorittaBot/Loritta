@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.common.commands
 
 import net.perfectdreams.loritta.common.LorittaBot
+import net.perfectdreams.loritta.common.builder.ContextualMultiReplyBuilder
 import net.perfectdreams.loritta.common.builder.MessageBuilder
 import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.common.emotes.Emotes
@@ -51,9 +52,11 @@ abstract class CommandContext(
      *
      * @param content the content of the message
      * @param prefix  the prefix of the message
+     * @param inReplyToUser     the user that is within the context of this reply
+     * @param mentionSenderHint if the user should be mentioned in the reply, implementations may decide to not add the mention if it isn't needed.
      */
-    suspend fun sendReply(content: String, prefix: Emote, block: MessageBuilder.() -> Unit = {}) = sendMessage {
-        styled(content, prefix)
+    suspend fun sendReply(content: String, prefix: Emote, inReplyToUser: User = user, mentionSenderHint: Boolean = false, block: MessageBuilder.() -> Unit = {}) = sendMessage {
+        styled(content, prefix, inReplyToUser, mentionSenderHint)
 
         apply(block)
     }
@@ -67,9 +70,10 @@ abstract class CommandContext(
      *
      * @param content the content of the message
      * @param prefix  the prefix of the message
+     * @param mentionSenderHint if the user should be mentioned in the reply, implementations may decide to not add the mention if it isn't needed.
      */
-    suspend fun sendReply(content: String, prefix: String = Emotes.defaultStyledPrefix.asMention, block: MessageBuilder.() -> Unit = {}) = sendMessage {
-        styled(content, prefix)
+    suspend fun sendReply(content: String, prefix: String = Emotes.defaultStyledPrefix.asMention, inReplyToUser: User = user, mentionSenderHint: Boolean = false, block: MessageBuilder.() -> Unit = {}) = sendMessage {
+        styled(content, prefix, inReplyToUser, mentionSenderHint)
 
         apply(block)
     }
@@ -87,6 +91,22 @@ abstract class CommandContext(
         styled(reply)
 
         apply(block)
+    }
+
+    /**
+     * Sends multiple Loritta-styled formatted messages in a single message
+     *
+     * By default, Loritta-styled formatting looks like this: `[prefix] **|** [content]`, however implementations can change the look and feel of the message.
+     *
+     * This is contextual, it uses the current command context as a context, example: inReplyToUser is automatically set to the [user]
+     *
+     * Prefixes should *not* be used for important behavior of the command!
+     *
+     * @param block the contextual multi reply builder block
+     */
+    suspend fun sendReplies(block: ContextualMultiReplyBuilder.() -> Unit = {}) = sendMessage {
+        val builder = ContextualMultiReplyBuilder(this@CommandContext).apply(block)
+        builder.replies.forEach { styled(it) }
     }
 
     /**
