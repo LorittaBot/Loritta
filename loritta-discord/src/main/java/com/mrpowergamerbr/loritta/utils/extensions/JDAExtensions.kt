@@ -3,7 +3,6 @@ package com.mrpowergamerbr.loritta.utils.extensions
 import com.mrpowergamerbr.loritta.LorittaLauncher.loritta
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import kotlinx.coroutines.future.await
-import mu.KotlinLogging
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.Permission.*
