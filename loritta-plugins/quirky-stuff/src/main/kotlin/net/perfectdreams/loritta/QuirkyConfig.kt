@@ -17,7 +17,7 @@ class QuirkyConfig(
     class RandomReactionsConfig(
             val enabled: Boolean,
             val maxBound: Int,
-            val reactions: Map<Int, String>,
+            val reactions: List<String>,
             val contextAwareReactions: List<ContextAwareReaction>
     ) {
         @Serializable

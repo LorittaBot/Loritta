@@ -8,11 +8,11 @@ import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.modules.MessageReceivedModule
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.chance
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.MessageType
 import net.perfectdreams.loritta.QuirkyConfig
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.MiscellaneousConfig
 
 class QuirkyModule(val config: QuirkyConfig) : MessageReceivedModule {
@@ -29,9 +29,9 @@ class QuirkyModule(val config: QuirkyConfig) : MessageReceivedModule {
         if (config.randomReactions.enabled) {
             val reactionRandom = RANDOM.nextInt(0, config.randomReactions.maxBound)
 
-            config.randomReactions.reactions[reactionRandom]?.let {
+            config.randomReactions.reactions.getOrNull(reactionRandom)?.let {
                 // Let = "Vamos apenas pegar se NÃO for nulo", ou seja:
-                // Se o valor na randomReactions.reactions[reactionRandom] NÃO for nulo, nós iremos adicionar a reação
+                // Se o valor na randomReactions.reactions.getOrNull(reactionRandom) NÃO for nulo, nós iremos adicionar a reação
                 // Caso seja nulo, nada irá acontecer.
                 message.addReaction(it).queue()
             }
