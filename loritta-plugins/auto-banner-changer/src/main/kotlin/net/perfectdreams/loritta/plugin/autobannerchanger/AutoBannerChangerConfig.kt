@@ -1,8 +1,9 @@
 package net.perfectdreams.loritta.plugin.autobannerchanger
 
-import com.fasterxml.jackson.annotation.JsonCreator
+import kotlinx.serialization.Serializable
 
-class AutoBannerChangerConfig @JsonCreator constructor(
+@Serializable
+class AutoBannerChangerConfig(
         val enabled: Boolean,
         val timeMod: Long,
         val banners: List<String>,

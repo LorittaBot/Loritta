@@ -1,8 +1,9 @@
 package net.perfectdreams.loritta
 
-import com.fasterxml.jackson.annotation.JsonCreator
+import kotlinx.serialization.Serializable
 
-class QuirkyConfig @JsonCreator constructor(
+@Serializable
+class QuirkyConfig(
         val randomReactions: RandomReactionsConfig,
         val thankYouLori: ThankYouLoriConfig,
         val tioDoPave: TioDoPaveConfig,
@@ -12,25 +13,27 @@ class QuirkyConfig @JsonCreator constructor(
         val sponsorsAdvertisement: SponsorsAdvertisementConfig,
         val canecaUsers: List<Long>
 ) {
-    class RandomReactionsConfig @JsonCreator constructor(
+    @Serializable
+    class RandomReactionsConfig(
             val enabled: Boolean,
             val maxBound: Int,
             val reactions: Map<Int, String>,
             val contextAwareReactions: List<ContextAwareReaction>
     ) {
-        class ContextAwareReaction@JsonCreator constructor(
+        @Serializable
+        class ContextAwareReaction(
                 val match: String,
                 val chanceOf: Double,
                 val reactions: List<String>
         )
     }
-
-    class TioDoPaveConfig @JsonCreator constructor(
+    @Serializable
+    class TioDoPaveConfig(
             val enabled: Boolean,
             val chance: Double
     )
-
-    class ThankYouLoriConfig @JsonCreator constructor(
+    @Serializable
+    class ThankYouLoriConfig(
             val enabled: Boolean,
             val channelId: Long,
             val giveDonationKeyIfSentBeforeTime: Long,
@@ -38,8 +41,8 @@ class QuirkyConfig @JsonCreator constructor(
             val expiresAt: Long,
             val reactions: List<String>
     )
-
-    class AddFanArtsConfig @JsonCreator constructor(
+    @Serializable
+    class AddFanArtsConfig(
             val enabled: Boolean,
             val emoteId: Long,
             val channels: List<Long>,
@@ -48,24 +51,24 @@ class QuirkyConfig @JsonCreator constructor(
             val firstFanArtRoleId: Long,
             val placesToPlaceStuff: List<String>
     )
-
-    class TopDonatorsRankConfig @JsonCreator constructor(
+    @Serializable
+    class TopDonatorsRankConfig(
             val enabled: Boolean,
             val topRole1: Long,
             val topRole2: Long,
             val topRole3: Long,
             val channels: List<Long>
     )
-
-    class TopVotersRankConfig @JsonCreator constructor(
+    @Serializable
+    class TopVotersRankConfig(
             val enabled: Boolean,
             val topRole1: Long,
             val topRole2: Long,
             val topRole3: Long,
             val channels: List<Long>
     )
-
-    class SponsorsAdvertisementConfig @JsonCreator constructor(
+    @Serializable
+    class SponsorsAdvertisementConfig(
             val enabled: Boolean,
             val channelId: Long
     )

@@ -1,8 +1,9 @@
 package net.perfectdreams.loritta.plugin.stafflorittaban
 
-import com.fasterxml.jackson.annotation.JsonCreator
+import kotlinx.serialization.Serializable
 
-class StaffLorittaBanConfig @JsonCreator constructor(
+@Serializable
+class StaffLorittaBanConfig(
 		val enabled: Boolean,
 		val requiredReactionCount: Int,
 		val channels: List<Long>
