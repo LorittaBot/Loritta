@@ -143,16 +143,18 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
     val commandCooldownManager = CommandCooldownManager(this)
 
     init {
-        commandManager.register(
-            AnagramCommand,
-            AnagramExecutor(emotes)
-        )
+        if (FeatureFlags.CINNAMON_COMMAND_API) {
+            commandManager.register(
+                AnagramCommand,
+                AnagramExecutor(emotes)
+            )
 
-        commandManager.register(
-            MorseCommand,
-            MorseFromExecutor(emotes),
-            MorseToExecutor(emotes)
-        )
+            commandManager.register(
+                MorseCommand,
+                MorseFromExecutor(emotes),
+                MorseToExecutor(emotes)
+            )
+        }
     }
 
     /**
