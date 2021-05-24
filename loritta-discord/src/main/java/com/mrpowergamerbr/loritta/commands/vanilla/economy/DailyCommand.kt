@@ -4,11 +4,11 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.DateUtils
+import com.mrpowergamerbr.loritta.utils.loritta
+import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import com.mrpowergamerbr.loritta.utils.loritta
-import net.perfectdreams.loritta.common.commands.CommandCategory
-import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 
 class DailyCommand : AbstractCommand("daily", listOf("diário", "bolsafamilia", "bolsafamília"), CommandCategory.ECONOMY) {
@@ -22,33 +22,38 @@ class DailyCommand : AbstractCommand("daily", listOf("diário", "bolsafamilia", 
 
 		if (!canGetDaily) {
 			context.reply(
-                    LorittaReply(
-                            locale["commands.command.daily.pleaseWait", DateUtils.formatDateDiff(tomorrow, locale)],
-                            Constants.ERROR
-                    ),
-                    LorittaReply(
-                            locale["commands.command.daily.pleaseWaitBuySonhos", "<${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/bundles>"],
-                            "\uD83D\uDCB3"
-                    )
+				LorittaReply(
+					locale["commands.command.daily.pleaseWait", DateUtils.formatDateDiff(tomorrow, locale)],
+					Constants.ERROR
+				),
+				LorittaReply(
+					locale["commands.command.daily.pleaseWaitBuySonhos", "<${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/bundles>"],
+					"\uD83D\uDCB3"
+				)
 			)
 			return
 		}
 
+		val url = if (context.isPrivateChannel)
+			"${loritta.instanceConfig.loritta.website.url}daily"
+		else // Used for daily multiplier priority
+			"${loritta.instanceConfig.loritta.website.url}daily?guild=${context.guild.idLong}"
+
 		context.reply(
-                LorittaReply(
-                        locale["commands.command.daily.dailyLink", "${loritta.instanceConfig.loritta.website.url}daily"],
-                        Emotes.LORI_RICH
-                ),
-				LorittaReply(
-						context.locale["commands.command.daily.dailyWarning", "${loritta.instanceConfig.loritta.website.url}guidelines"],
-						Emotes.LORI_BAN_HAMMER,
-						mentionUser = false
-				),
-                LorittaReply(
-                        locale["commands.command.daily.dailyLinkBuySonhos", "<${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/bundles>"],
-                        "\uD83D\uDCB3",
-						mentionUser = false
-                )
+			LorittaReply(
+				locale["commands.command.daily.dailyLink", url],
+				Emotes.LORI_RICH
+			),
+			LorittaReply(
+				context.locale["commands.command.daily.dailyWarning", "${loritta.instanceConfig.loritta.website.url}guidelines"],
+				Emotes.LORI_BAN_HAMMER,
+				mentionUser = false
+			),
+			LorittaReply(
+				locale["commands.command.daily.dailyLinkBuySonhos", "<${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/bundles>"],
+				"\uD83D\uDCB3",
+				mentionUser = false
+			)
 		)
 	}
 }

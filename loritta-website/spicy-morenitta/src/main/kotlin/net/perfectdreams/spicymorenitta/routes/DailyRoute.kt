@@ -29,6 +29,7 @@ import org.w3c.dom.Audio
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
+import org.w3c.dom.url.URLSearchParams
 import utils.CountUp
 import utils.CountUpOptions
 import utils.Moment
@@ -63,13 +64,13 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
         }
 
         private val randomEmotes = listOf(
-                "/assets/img/daily/here_comes_the_money.gif",
-                "/assets/img/daily/lori_rica.png",
-                "/assets/img/daily/lori_woop.gif",
-                "/assets/img/daily/lori_ehissoai.gif",
-                "/assets/img/daily/lori_confetti.gif",
-                "/assets/img/daily/lori_yay_wobbly.gif",
-                "/assets/img/daily/ferret.gif"
+            "/assets/img/daily/here_comes_the_money.gif",
+            "/assets/img/daily/lori_rica.png",
+            "/assets/img/daily/lori_woop.gif",
+            "/assets/img/daily/lori_ehissoai.gif",
+            "/assets/img/daily/lori_confetti.gif",
+            "/assets/img/daily/lori_yay_wobbly.gif",
+            "/assets/img/daily/ferret.gif"
         )
     }
 
@@ -99,9 +100,9 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
             }
 
             GoogleRecaptchaUtils.render(jq("#daily-captcha").get()[0], RecaptchaOptions(
-                    "6LfRyUkUAAAAAASo0YM4IZBqvkzxyRWJ1Ydw5weC",
-                    "recaptchaCallback",
-                    "normal"
+                "6LfRyUkUAAAAAASo0YM4IZBqvkzxyRWJ1Ydw5weC",
+                "recaptchaCallback",
+                "normal"
             ))
             m.hideLoadingScreen()
         }
@@ -166,8 +167,16 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
             dailyRewardButton.removeClass("button-discord-success")
 
             m.launch {
+                val searchParams = URLSearchParams(window.location.search)
+                val guild = searchParams.get("guild")
+
+                val url = if (guild != null)
+                    "${window.location.origin}/api/v1/economy/daily-reward"
+                else
+                    "${window.location.origin}/api/v1/economy/daily-reward?guild=$guild"
+
                 val response = http.get<HttpResponse> {
-                    url("${window.location.origin}/api/v1/economy/daily-reward")
+                    url(url)
                     parameter("recaptcha", response)
                 }
 
@@ -309,10 +318,10 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
                     prepended.fadeTo(500, 1)
 
                     val countUp = CountUp("dailyPayout", 0.0, payload.dailyPayout.toDouble(), 0, 7.5, CountUpOptions(
-                            true,
-                            true,
-                            "",
-                            ""
+                        true,
+                        true,
+                        "",
+                        ""
                     ))
 
                     ts1Promotion2.play()
@@ -328,34 +337,34 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
 
     @Serializable
     class DailyResponse(
-            val receivedDailyAt: String,
-            val dailyPayout: Int,
-            val sponsoredBy: Sponsored? = null,
-            val currentBalance: Double,
-            val failedGuilds: Array<FailedGuildDailyStats>
+        val receivedDailyAt: String,
+        val dailyPayout: Int,
+        val sponsoredBy: Sponsored? = null,
+        val currentBalance: Double,
+        val failedGuilds: Array<FailedGuildDailyStats>
     )
 
     @Serializable
     class Guild(
-            // É deserializado para String pois JavaScript é burro e não funciona direito com Longs
-            val name: String,
-            val iconUrl: String,
-            val id: String
+        // É deserializado para String pois JavaScript é burro e não funciona direito com Longs
+        val name: String,
+        val iconUrl: String,
+        val id: String
     )
 
     @Serializable
     class Sponsored(
-            val guild: Guild,
-            val user: ServerConfig.SelfMember? = null,
-            val multipliedBy: Double,
-            val originalPayout: Double
+        val guild: Guild,
+        val user: ServerConfig.SelfMember? = null,
+        val multipliedBy: Double,
+        val originalPayout: Double
     )
 
     @Serializable
     class FailedGuildDailyStats(
-            val guild: Guild,
-            val type: DailyGuildMissingRequirement,
-            val data: Long,
-            val multiplier: Double
+        val guild: Guild,
+        val type: DailyGuildMissingRequirement,
+        val data: Long,
+        val multiplier: Double
     )
 }

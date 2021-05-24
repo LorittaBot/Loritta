@@ -47,79 +47,79 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 	companion object {
 		private val logger = KotlinLogging.logger {}
 		private val mutexes = Caffeine.newBuilder()
-				.expireAfterAccess(60, TimeUnit.SECONDS)
-				.build<Long, Mutex>()
-				.asMap()
+			.expireAfterAccess(60, TimeUnit.SECONDS)
+			.build<Long, Mutex>()
+			.asMap()
 
 		suspend fun checkIfUserCanPayout(userIdentification: TemmieDiscordAuth.UserIdentification, ip: String): Int {
 			val todayAtMidnight = Instant.now()
-					.atZone(ZoneId.of("America/Sao_Paulo"))
-					.toOffsetDateTime()
-					.withHour(0)
-					.withMinute(0)
-					.withSecond(0)
-					.toInstant()
-					.toEpochMilli()
+				.atZone(ZoneId.of("America/Sao_Paulo"))
+				.toOffsetDateTime()
+				.withHour(0)
+				.withMinute(0)
+				.withSecond(0)
+				.toInstant()
+				.toEpochMilli()
 			val tomorrowAtMidnight = Instant.now()
-					.atZone(ZoneId.of("America/Sao_Paulo"))
-					.toOffsetDateTime()
-					.plusDays(1)
-					.withHour(0)
-					.withMinute(0)
-					.withSecond(0)
-					.toInstant()
-					.toEpochMilli()
+				.atZone(ZoneId.of("America/Sao_Paulo"))
+				.toOffsetDateTime()
+				.plusDays(1)
+				.withHour(0)
+				.withMinute(0)
+				.withSecond(0)
+				.toInstant()
+				.toEpochMilli()
 			val nowOneHourAgo = Instant.now()
-					.atZone(ZoneId.of("America/Sao_Paulo"))
-					.toOffsetDateTime()
-					.let {
-						if (it.hour != 0) // If the hour is 0, we would get the hour *one day ago*, which is isn't what we want
-							it.minusHours(1)
-						else {
-							it.withHour(0)
-									.withMinute(0)
-									.withSecond(0)
-									.withNano(0)
-						}
+				.atZone(ZoneId.of("America/Sao_Paulo"))
+				.toOffsetDateTime()
+				.let {
+					if (it.hour != 0) // If the hour is 0, we would get the hour *one day ago*, which is isn't what we want
+						it.minusHours(1)
+					else {
+						it.withHour(0)
+							.withMinute(0)
+							.withSecond(0)
+							.withNano(0)
 					}
-					.toInstant()
-					.toEpochMilli()
+				}
+				.toInstant()
+				.toEpochMilli()
 
 			// Para evitar pessoas criando várias contas e votando, nós iremos também verificar o IP dos usuários que votarem
 			// Isto evita pessoas farmando upvotes votando (claro que não é um método infalível, mas é melhor que nada, né?)
 			val lastReceivedDailyAt = loritta.newSuspendedTransaction {
 				com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.receivedById eq userIdentification.id.toLong() and (Dailies.receivedAt greaterEq todayAtMidnight) }.orderBy(Dailies.receivedAt, SortOrder.DESC)
-						.map {
-							it[Dailies.receivedAt]
-						}
+					.map {
+						it[Dailies.receivedAt]
+					}
 			}
 
 			val sameIpDailyAt = loritta.newSuspendedTransaction {
 				com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.ip eq ip and (Dailies.receivedAt greaterEq todayAtMidnight) }
-						.orderBy(Dailies.receivedAt, SortOrder.DESC)
-						.map {
-							it[Dailies.receivedAt]
-						}
+					.orderBy(Dailies.receivedAt, SortOrder.DESC)
+					.map {
+						it[Dailies.receivedAt]
+					}
 			}
 
 			val sameIpDailyOneHourAgoAt = loritta.newSuspendedTransaction {
 				com.mrpowergamerbr.loritta.tables.Dailies.select { Dailies.ip eq ip and (Dailies.receivedAt greaterEq nowOneHourAgo) }
-						.orderBy(Dailies.receivedAt, SortOrder.DESC)
-						.map {
-							it[Dailies.receivedAt]
-						}
+					.orderBy(Dailies.receivedAt, SortOrder.DESC)
+					.map {
+						it[Dailies.receivedAt]
+					}
 			}
 
 			if (lastReceivedDailyAt.isNotEmpty() || sameIpDailyOneHourAgoAt.isNotEmpty()) {
 				if (!com.mrpowergamerbr.loritta.utils.loritta.config.isOwner(userIdentification.id.toLong())) {
 					throw WebsiteAPIException(
-							HttpStatusCode.Forbidden,
-							WebsiteUtils.createErrorPayload(
-									LoriWebCode.ALREADY_GOT_THE_DAILY_REWARD_SAME_ACCOUNT_TODAY,
-									data = {
-										it["canPayoutAgain"] = tomorrowAtMidnight
-									}
-							)
+						HttpStatusCode.Forbidden,
+						WebsiteUtils.createErrorPayload(
+							LoriWebCode.ALREADY_GOT_THE_DAILY_REWARD_SAME_ACCOUNT_TODAY,
+							data = {
+								it["canPayoutAgain"] = tomorrowAtMidnight
+							}
+						)
 					)
 				}
 			}
@@ -129,24 +129,24 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				if (userIdentification.mfaEnabled == false) {
 					logger.warn { "User ${userIdentification.id} requires 2FA enabled because they have multiple accounts in the same email, but they didn't enable it yet! Asking them to turn it on..." }
 					throw WebsiteAPIException(
-							HttpStatusCode.Forbidden,
-							WebsiteUtils.createErrorPayload(
-									LoriWebCode.MFA_DISABLED
-							)
+						HttpStatusCode.Forbidden,
+						WebsiteUtils.createErrorPayload(
+							LoriWebCode.MFA_DISABLED
+						)
 					)
 				}
 
 				// Se o IP for IPv4 e tiver mais de uma conta no IP ou se for IPv6 e já tiver qualquer daily na conta
 				if (sameIpDailyAt.size >= 3 || ip.contains(":")) {
 					throw WebsiteAPIException(
-							HttpStatusCode.Forbidden,
-							WebsiteUtils.createErrorPayload(
-									LoriWebCode.ALREADY_GOT_THE_DAILY_REWARD_SAME_IP_TODAY,
-									data = {
-										it["canPayoutAgain"] = tomorrowAtMidnight
-										it["detectedIp"] = ip
-									}
-							)
+						HttpStatusCode.Forbidden,
+						WebsiteUtils.createErrorPayload(
+							LoriWebCode.ALREADY_GOT_THE_DAILY_REWARD_SAME_IP_TODAY,
+							data = {
+								it["canPayoutAgain"] = tomorrowAtMidnight
+								it["detectedIp"] = ip
+							}
+						)
 					)
 				}
 			}
@@ -172,34 +172,34 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 						// 1 = Bad hostname
 						// 2 = OVH IP
 						throw WebsiteAPIException(
-								HttpStatusCode.Forbidden,
-								WebsiteUtils.createErrorPayload(
-										LoriWebCode.BLACKLISTED_IP,
-										data = {
-											"reason" to when (status) {
-												MiscUtils.AccountCheckResult.STOP_FORUM_SPAM -> 0
-												MiscUtils.AccountCheckResult.BAD_HOSTNAME -> 1
-												MiscUtils.AccountCheckResult.OVH_HOSTNAME -> 2
-												else -> -1
-											}
-										}
-								)
+							HttpStatusCode.Forbidden,
+							WebsiteUtils.createErrorPayload(
+								LoriWebCode.BLACKLISTED_IP,
+								data = {
+									"reason" to when (status) {
+										MiscUtils.AccountCheckResult.STOP_FORUM_SPAM -> 0
+										MiscUtils.AccountCheckResult.BAD_HOSTNAME -> 1
+										MiscUtils.AccountCheckResult.OVH_HOSTNAME -> 2
+										else -> -1
+									}
+								}
+							)
 						)
 					}
 					MiscUtils.AccountCheckResult.BAD_EMAIL -> {
 						throw WebsiteAPIException(
-								HttpStatusCode.Forbidden,
-								WebsiteUtils.createErrorPayload(
-										LoriWebCode.BLACKLISTED_EMAIL
-								)
+							HttpStatusCode.Forbidden,
+							WebsiteUtils.createErrorPayload(
+								LoriWebCode.BLACKLISTED_EMAIL
+							)
 						)
 					}
 					MiscUtils.AccountCheckResult.NOT_VERIFIED -> {
 						throw WebsiteAPIException(
-								HttpStatusCode.Forbidden,
-								WebsiteUtils.createErrorPayload(
-										LoriWebCode.UNVERIFIED_ACCOUNT
-								)
+							HttpStatusCode.Forbidden,
+							WebsiteUtils.createErrorPayload(
+								LoriWebCode.UNVERIFIED_ACCOUNT
+							)
 						)
 					}
 					else -> throw RuntimeException("Missing !canAccess result! ${status.name}")
@@ -213,9 +213,10 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
 		loritta as Loritta
 		val recaptcha = call.parameters["recaptcha"] ?: return
+		val dailyMultiplierGuildIdPriority = call.request.queryParameters["guild"]?.toLongOrNull()
 
 		val body = HttpRequest.get("https://www.google.com/recaptcha/api/siteverify?secret=${loritta.config.googleRecaptcha.serverVoteToken}&response=$recaptcha")
-				.body()
+			.body()
 
 		val jsonParser = JsonParser.parseString(body).obj
 
@@ -224,13 +225,13 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 		if (!success) {
 			logger.warn { "User ${userIdentification.id} failed reCAPTCHA, error codes: ${jsonParser["error-codes"].array.joinToString(", ")}" }
 			throw WebsiteAPIException(
-					HttpStatusCode.Forbidden,
-					WebsiteUtils.createErrorPayload(
-							LoriWebCode.INVALID_RECAPTCHA,
-							data = {
-								"errorCodes" to jsonParser["error-codes"].array
-							}
-					)
+				HttpStatusCode.Forbidden,
+				WebsiteUtils.createErrorPayload(
+					LoriWebCode.INVALID_RECAPTCHA,
+					data = {
+						"errorCodes" to jsonParser["error-codes"].array
+					}
+				)
 			)
 		}
 
@@ -301,29 +302,38 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				var bestServer: ServerConfig? = null
 				var bestServerInfo: TemmieDiscordAuth.Guild? = null
 
-				for (pair in serverConfigs.map { Pair(it, it.getActiveDonationKeysValueNested()) }.filter { ServerPremiumPlans.getPlanFromValue(it.second).dailyMultiplier > 1.0 }.sortedByDescending { it.second  }) {
+				// We are going to sort by the donation value of the server (so a higher plan = more priority) and then by the multiplier guild ID priority
+				// So if the user has multiple servers that has the best donation key, Loritta will use the Guild ID priority from the URL!
+				// B
+				val sortedServers = serverConfigs.map {
+					Pair(it, it.getActiveDonationKeysValueNested())
+				}.filter {
+					ServerPremiumPlans.getPlanFromValue(it.second).dailyMultiplier > 1.0
+				}.sortedWith(compareBy({ -it.second }, { it.first.guildId != dailyMultiplierGuildIdPriority }))
+
+				for (pair in sortedServers) {
 					val (config, donationValue) = pair
 					logger.info { "Checking ${config.guildId}" }
 
 					val guild = mutualGuilds.firstOrNull { logger.info { "it[id] = ${it.id.toLong()}" }; it.id.toLong() == config.guildId }
-							?: continue
+						?: continue
 					val id = guild.id.toLong()
 
 					val xp = GuildProfile.find { (GuildProfiles.guildId eq id) and (GuildProfiles.userId eq userIdentification.id.toLong()) }.firstOrNull()?.xp
-							?: 0L
+						?: 0L
 
 					if (500 > xp) {
 						failedDailyServersInfo.add(
-								jsonObject(
-										"guild" to jsonObject(
-												"name" to guild.name,
-												"iconUrl" to guild.icon,
-												"id" to guild.id
-										),
-										"type" to DailyGuildMissingRequirement.REQUIRES_MORE_XP.toString(),
-										"data" to 500 - xp,
-										"multiplier" to getDailyMultiplier(donationValue)
-								)
+							jsonObject(
+								"guild" to jsonObject(
+									"name" to guild.name,
+									"iconUrl" to guild.icon,
+									"id" to guild.id
+								),
+								"type" to DailyGuildMissingRequirement.REQUIRES_MORE_XP.toString(),
+								"data" to 500 - xp,
+								"multiplier" to getDailyMultiplier(donationValue)
+							)
 						)
 						continue
 					}
@@ -351,13 +361,13 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 
 			if (sponsoredBy != null && multipliedBy != null) {
 				val sponsor = jsonObject(
-						"multipliedBy" to multipliedBy,
-						"guild" to jsonObject(
-								"name" to sponsoredBy!!.name,
-								"iconUrl" to sponsoredBy!!.icon,
-								"id" to sponsoredBy!!.id
-						),
-						"originalPayout" to originalPayout
+					"multipliedBy" to multipliedBy,
+					"guild" to jsonObject(
+						"name" to sponsoredBy!!.name,
+						"iconUrl" to sponsoredBy!!.icon,
+						"id" to sponsoredBy!!.id
+					),
+					"originalPayout" to originalPayout
 				)
 
 				if (sponsoredByUserId != null) {
