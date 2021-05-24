@@ -143,7 +143,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
     val commandCooldownManager = CommandCooldownManager(this)
 
     init {
-        if (FeatureFlags.CINNAMON_COMMAND_API) {
+        if (FeatureFlags.isEnabled(this, FeatureFlags.Names.CINNAMON_COMMAND_API)) {
             commandManager.register(
                 AnagramCommand,
                 AnagramExecutor(emotes)
