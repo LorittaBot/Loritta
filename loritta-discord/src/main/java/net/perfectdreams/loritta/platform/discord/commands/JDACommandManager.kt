@@ -19,6 +19,7 @@ import net.perfectdreams.loritta.common.commands.options.CommandOption
 import net.perfectdreams.loritta.common.commands.options.CommandOptionType
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.platform.discord.entities.JDAMessage
 import net.perfectdreams.loritta.platform.discord.entities.JDAMessageChannel
 import net.perfectdreams.loritta.platform.discord.entities.JDAUser
 import net.perfectdreams.loritta.utils.CommandUtils
@@ -105,6 +106,7 @@ class JDACommandManager(val loritta: LorittaDiscord) {
             loritta,
             locale,
             JDAUser(event.author),
+            JDAMessage(event.message),
             JDAMessageChannel(event.channel),
             lorittaUser
         )

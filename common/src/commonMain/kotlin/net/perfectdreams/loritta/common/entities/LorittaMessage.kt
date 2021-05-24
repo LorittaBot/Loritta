@@ -7,5 +7,6 @@ class LorittaMessage(
     val files: Map<String, ByteArray>,
     val isEphemeral: Boolean,
     val allowedMentions: AllowedMentions,
-    val impersonation: LorittaImpersonation?
+    val impersonation: LorittaImpersonation?,
+    val messageReferenceId: Long?
 )

@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.common.entities.LorittaEmbed
 import net.perfectdreams.loritta.common.entities.LorittaImpersonation
 import net.perfectdreams.loritta.common.entities.LorittaMessage
 import net.perfectdreams.loritta.common.entities.LorittaReply
+import net.perfectdreams.loritta.common.entities.Message
 import net.perfectdreams.loritta.common.entities.User
 import net.perfectdreams.loritta.common.images.ImageReference
 import net.perfectdreams.loritta.common.utils.CinnamonDslMarker
@@ -21,6 +22,7 @@ class MessageBuilder {
     var isEphemeral = false
     var allowedMentions = AllowedMentionsBuilder()
     var impersonation: LorittaImpersonation? = null
+    private var messageReferenceId: Long? = null
 
     fun impersonation(username: String, avatar: ImageReference) {
         impersonation = LorittaImpersonation(username, avatar)
@@ -33,6 +35,18 @@ class MessageBuilder {
      */
     fun embed(embed: EmbedBuilder.() -> Unit){
         this.embed = net.perfectdreams.loritta.common.utils.embed.embed(embed).build()
+    }
+
+    /**
+     * References the [message] in the message
+     *
+     * Implementations may implement this as a "inline reply", however implementations may ignore this parameter if the platform doesn't allow
+     * overriding the referenced message or if the implementation does not support message references.
+     *
+     * @param message the message that will be referenced
+     */
+    fun reference(message: Message) {
+        messageReferenceId = message.id
     }
 
     /**
@@ -116,7 +130,8 @@ class MessageBuilder {
             files,
             isEphemeral,
             allowedMentions.build(),
-            impersonation
+            impersonation,
+            messageReferenceId
         )
     }
 }

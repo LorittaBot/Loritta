@@ -5,14 +5,11 @@ import net.perfectdreams.loritta.common.builder.ContextualMultiReplyBuilder
 import net.perfectdreams.loritta.common.builder.MessageBuilder
 import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.common.emotes.Emotes
-import net.perfectdreams.loritta.common.entities.AllowedMentions
-import net.perfectdreams.loritta.common.entities.LorittaEmbed
-import net.perfectdreams.loritta.common.entities.LorittaMessage
 import net.perfectdreams.loritta.common.entities.LorittaReply
+import net.perfectdreams.loritta.common.entities.Message
 import net.perfectdreams.loritta.common.entities.MessageChannel
 import net.perfectdreams.loritta.common.entities.User
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.utils.embed.EmbedBuilder
 
 abstract class CommandContext(
     // Nifty trick: By keeping it "open", implementations can override this variable.
@@ -21,27 +18,10 @@ abstract class CommandContext(
     open val loritta: LorittaBot,
     val locale: BaseLocale,
     val user: User,
+    val message: Message,
     open val channel: MessageChannel
 ) {
-    suspend fun sendMessage(message: String, embed: LorittaEmbed? = null) {
-        channel.sendMessage(
-            LorittaMessage(
-                message,
-                listOf(),
-                embed,
-                emptyMap(),
-                isEphemeral = false,
-                AllowedMentions(setOf(), true),
-                impersonation = null
-            )
-        )
-    }
-
     suspend fun sendMessage(block: MessageBuilder.() -> (Unit)) = channel.sendMessage(block)
-
-    suspend fun sendEmbed(message: String = "", embed: EmbedBuilder.() -> Unit) {
-        sendMessage(message, EmbedBuilder().apply(embed).build())
-    }
 
     /**
      * Sends a Loritta-styled formatted messag
@@ -55,11 +35,8 @@ abstract class CommandContext(
      * @param inReplyToUser     the user that is within the context of this reply
      * @param mentionSenderHint if the user should be mentioned in the reply, implementations may decide to not add the mention if it isn't needed.
      */
-    suspend fun sendReply(content: String, prefix: Emote, inReplyToUser: User = user, mentionSenderHint: Boolean = false, block: MessageBuilder.() -> Unit = {}) = sendMessage {
-        styled(content, prefix, inReplyToUser, mentionSenderHint)
-
-        apply(block)
-    }
+    suspend fun sendReply(content: String, prefix: Emote, inReplyToUser: User = user, mentionSenderHint: Boolean = false, block: MessageBuilder.() -> Unit = {})
+            = sendReply(content, prefix.asMention, inReplyToUser, mentionSenderHint, block)
 
     /**
      * Sends a Loritta-styled formatted message
@@ -74,8 +51,9 @@ abstract class CommandContext(
      */
     suspend fun sendReply(content: String, prefix: String = Emotes.defaultStyledPrefix.asMention, inReplyToUser: User = user, mentionSenderHint: Boolean = false, block: MessageBuilder.() -> Unit = {}) = sendMessage {
         styled(content, prefix, inReplyToUser, mentionSenderHint)
-
         apply(block)
+
+        reference(message)
     }
 
     /**
@@ -89,8 +67,9 @@ abstract class CommandContext(
      */
     suspend fun sendReply(reply: LorittaReply, block: MessageBuilder.() -> Unit = {}) = sendMessage {
         styled(reply)
-
         apply(block)
+
+        reference(message)
     }
 
     /**
@@ -107,6 +86,8 @@ abstract class CommandContext(
     suspend fun sendReplies(block: ContextualMultiReplyBuilder.() -> Unit = {}) = sendMessage {
         val builder = ContextualMultiReplyBuilder(this@CommandContext).apply(block)
         builder.replies.forEach { styled(it) }
+
+        reference(message)
     }
 
     /**

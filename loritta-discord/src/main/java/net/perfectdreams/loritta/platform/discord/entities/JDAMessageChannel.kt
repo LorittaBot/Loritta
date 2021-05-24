@@ -8,6 +8,7 @@ import net.perfectdreams.loritta.common.entities.MessageChannel
 class JDAMessageChannel(internal val channel: net.dv8tion.jda.api.entities.MessageChannel) : MessageChannel {
     override suspend fun sendMessage(message: LorittaMessage) {
         val builder = MessageBuilder(message.content)
+        val messageReferenceId = message.messageReferenceId
 
         for (reply in message.replies) {
             builder.append('\n')
@@ -17,7 +18,7 @@ class JDAMessageChannel(internal val channel: net.dv8tion.jda.api.entities.Messa
             if (reply.mentionSenderHint && replyToUser != null)
                 builder.append("${replyToUser.asMention} ")
 
-            builder.append("${reply.content}")
+            builder.append(reply.content)
         }
 
         builder.mentionUsers(*message.allowedMentions.users.map { it.id }.toLongArray())
@@ -27,6 +28,9 @@ class JDAMessageChannel(internal val channel: net.dv8tion.jda.api.entities.Messa
                 message.files.forEach {
                     this.addFile(it.value, it.key)
                 }
+
+                if (messageReferenceId != null)
+                    referenceById(messageReferenceId)
             }
             .await()
     }
