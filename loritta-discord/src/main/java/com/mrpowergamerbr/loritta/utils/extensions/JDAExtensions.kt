@@ -2,7 +2,6 @@ package com.mrpowergamerbr.loritta.utils.extensions
 
 import com.mrpowergamerbr.loritta.LorittaLauncher.loritta
 import com.mrpowergamerbr.loritta.dao.ServerConfig
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import kotlinx.coroutines.future.await
 import mu.KotlinLogging
 import net.dv8tion.jda.api.MessageBuilder
@@ -13,38 +12,9 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.RestAction
 import net.dv8tion.jda.api.requests.restaction.MessageAction
+import net.perfectdreams.loritta.common.locale.BaseLocale
 
 suspend fun <T> RestAction<T>.await() : T = this.submit().await()
-
-private val logger = KotlinLogging.logger {}
-
-/**
- * Sends a message with [await] and checks if the message send failed due to a unknown message for the message's reference.
- *
- * If it was failed due to a missing message reference, the message is sent again without the reference.
- *
- * This *can't* be used if the message has a file, because JDA will clear the resources after sending the request!
- *
- * @return the message
- */
-suspend fun MessageAction.awaitCheckForReplyErrors() : Message {
-	try {
-		return this.submit().await()
-	} catch (e: ErrorResponseException) {
-		if (e.errorCode == 400 && e.meaning == "{\"message_reference\":[\"Unknown message\"]}") {
-			logger.warn(e) { "I tried replying to a message, but it was deleted! This *may* be a bug (command deleting the user's message) or it just may be the user deleting their own message, I will try sending the message without a reference..." }
-			// If we tried to reply to a unknown message, let's resend the message again but without the reference.
-			// Of course, this is a *issue*, so we need to log about this issue because this needs to be fixed!
-			//
-			// Seting to 0L removes the reference, see:
-			// https://github.com/DV8FromTheWorld/JDA/blob/8cffb0a24efc14e01b46df096cd35c38360d3063/src/main/java/net/dv8tion/jda/internal/requests/restaction/MessageActionImpl.java#L512
-			return this.referenceById(0L)
-					.submit()
-					.await()
-		}
-		throw e
-	}
-}
 
 suspend fun MessageChannel.sendMessageAsync(text: String) = this.sendMessage(text).await()
 suspend fun MessageChannel.sendMessageAsync(message: Message) = this.sendMessage(message).await()

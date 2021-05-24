@@ -7,9 +7,7 @@ import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.events.LorittaMessageEvent
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.loritta.utils.extensions.awaitCheckForReplyErrors
 import com.mrpowergamerbr.loritta.utils.extensions.referenceIfPossible
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
@@ -17,6 +15,7 @@ import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.exceptions.PermissionException
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.api.utils.NoCopyByteArrayOutputStream
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.utils.DiscordUtils
 import net.perfectdreams.loritta.utils.ImageFormat
 import net.perfectdreams.loritta.utils.extensions.build
@@ -150,7 +149,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 		if (isPrivateChannel || event.textChannel!!.canTalk()) {
 			return event.channel.sendMessage(message)
 					.referenceIfPossible(event.message, config, addInlineReply)
-					.awaitCheckForReplyErrors()
+					.await()
 		} else {
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}

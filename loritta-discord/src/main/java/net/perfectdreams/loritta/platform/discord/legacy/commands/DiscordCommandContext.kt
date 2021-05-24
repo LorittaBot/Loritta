@@ -4,12 +4,8 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.extensions.await
-import com.mrpowergamerbr.loritta.utils.extensions.awaitCheckForReplyErrors
 import com.mrpowergamerbr.loritta.utils.extensions.localized
 import com.mrpowergamerbr.loritta.utils.extensions.referenceIfPossible
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.common.locale.LocaleStringData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.EmbedBuilder
@@ -22,6 +18,9 @@ import net.perfectdreams.loritta.api.commands.CommandContext
 import net.perfectdreams.loritta.api.messages.LorittaMessage
 import net.perfectdreams.loritta.api.utils.image.Image
 import net.perfectdreams.loritta.api.utils.image.JVMImage
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.LocaleStringData
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.legacy.entities.DiscordMessage
 import net.perfectdreams.loritta.platform.discord.legacy.entities.jda.JDAUser
@@ -77,7 +76,7 @@ class DiscordCommandContext(
 		if (isPrivateChannel || discordMessage.textChannel.canTalk()) {
 			return discordMessage.channel.sendMessage(message)
 					.referenceIfPossible(discordMessage, serverConfig, true)
-					.awaitCheckForReplyErrors()
+					.await()
 		} else {
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
@@ -499,6 +498,6 @@ class DiscordCommandContext(
 
 		discordMessage.channel.sendMessage(messageBuilder.build())
 				.referenceIfPossible(discordMessage, serverConfig, true)
-				.awaitCheckForReplyErrors()
+				.await()
 	}
 }

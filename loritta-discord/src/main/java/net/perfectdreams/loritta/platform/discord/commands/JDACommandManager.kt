@@ -6,7 +6,7 @@ import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaUtilsKotlin
 import com.mrpowergamerbr.loritta.utils.MessageUtils
-import com.mrpowergamerbr.loritta.utils.extensions.awaitCheckForReplyErrors
+import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.referenceIfPossible
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import mu.KotlinLogging
@@ -123,7 +123,7 @@ class JDACommandManager(val loritta: LorittaDiscord) {
                         if (generatedMessage != null)
                             event.textChannel.sendMessage(generatedMessage)
                                 .referenceIfPossible(event.message, serverConfig, true)
-                                .awaitCheckForReplyErrors()
+                                .await()
                     }
                 }
                 return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
