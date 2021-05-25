@@ -2,24 +2,20 @@ package com.mrpowergamerbr.loritta.commands.vanilla.magic
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import com.mrpowergamerbr.loritta.dao.RegisterConfig
-import com.mrpowergamerbr.loritta.modules.register.RegisterHolder
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.tables.RegisterConfigs
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaTasks
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.ReactionOption
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.HoconUtils.decodeFromFile
 import net.perfectdreams.loritta.website.utils.WebsiteAssetsHashes
-import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 
@@ -110,75 +106,6 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
                             message = "Locales recarregadas!"
                     )
 			)
-			return
-		}
-
-		if (arg0 == "inject_unsafe") {
-			val registerHolder = RegisterHolder(
-					step = listOf(
-							RegisterHolder.RegisterStep(
-									"are u a novinha or a novinha?",
-									"owo nós precisamos saber",
-									"https://loritta.website/assets/img/fanarts/Loritta_Dormindo_-_Ayano.png",
-									1,
-									listOf(
-											RegisterHolder.RegisterOption(
-													"\uD83D\uDD35",
-													"513303483659714586"
-											),
-											RegisterHolder.RegisterOption(
-													"\uD83D\uDD34",
-													"513303519348916224"
-											)
-									)
-							),
-							RegisterHolder.RegisterStep(
-									"biscoito ou bolacha?",
-									"A resposta certa é bolacha e você sabe disso",
-									"https://guiadacozinha.com.br/wp-content/uploads/2016/11/torta-holandesa-facil.jpg",
-									1,
-									listOf(
-											RegisterHolder.RegisterOption(
-													"\uD83D\uDD35",
-													"513303531026120704"
-											),
-											RegisterHolder.RegisterOption(
-													"\uD83D\uDD34",
-													"513303543911022593"
-											)
-									)
-							),
-							RegisterHolder.RegisterStep(
-									"escolhe algo filosófico ai",
-									"você pode escolher até DUAS COISAS diferentes, wow!",
-									null,
-									2,
-									listOf(
-											RegisterHolder.RegisterOption(
-													"krisnite:508811243994480641",
-													"513310935511728130"
-											),
-											RegisterHolder.RegisterOption(
-													"ralseinite:508811387175436291",
-													"513310965647933443"
-											),
-											RegisterHolder.RegisterOption(
-													"vieirinha:412574915879763982",
-													"513310993326014464"
-											)
-									)
-							)
-					)
-			)
-
-			transaction(Databases.loritta) {
-				RegisterConfigs.deleteWhere { RegisterConfigs.id eq context.guild.idLong }
-				RegisterConfig.new(context.guild.idLong) {
-					this.holder = registerHolder
-				}
-			}
-
-			context.sendMessage("Adicionado configuração genérica para o registro!")
 			return
 		}
 

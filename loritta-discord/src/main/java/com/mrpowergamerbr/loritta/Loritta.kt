@@ -272,7 +272,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					Reputations,
 					Dailies,
 					Marriages,
-					RegisterConfigs,
 					Mutes,
 					Warns,
 					GuildProfiles,
