@@ -8,20 +8,12 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
-import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.AutorolePayload
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.CustomBadgePayload
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.DailyMultiplierPayload
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.EconomyPayload
-import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.GeneralConfigPayload
-import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.LevelPayload
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.MiscellaneousPayload
-import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.ModerationPayload
-import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.PremiumKeyPayload
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.ResetXpPayload
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.RssFeedsPayload
-import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.TwitchPayload
-import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.TwitterPayload
-import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.YouTubePayload
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
@@ -73,20 +65,12 @@ class PatchServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRout
 			call.respondJson(jsonObject())
 		} else {
 			val payloadHandlers = mapOf(
-					"moderation" to ModerationPayload::class.java,
-					"autorole" to AutorolePayload::class.java,
 					"miscellaneous" to MiscellaneousPayload::class.java,
 					"economy" to EconomyPayload::class.java,
-					"premium" to PremiumKeyPayload::class.java,
 					"badge" to CustomBadgePayload::class.java,
 					"daily_multiplier" to DailyMultiplierPayload::class.java,
-					"level" to LevelPayload::class.java,
 					"reset_xp" to ResetXpPayload::class.java,
-					"twitter" to TwitterPayload::class.java,
-					"rss_feeds" to RssFeedsPayload::class.java,
-					"default" to GeneralConfigPayload::class.java,
-					"youtube" to YouTubePayload::class.java,
-					"twitch" to TwitchPayload::class.java
+					"rss_feeds" to RssFeedsPayload::class.java
 			)
 
 			val payloadHandlerClass = payloadHandlers[type]
