@@ -19,7 +19,6 @@ import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.Modera
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.PremiumKeyPayload
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.ResetXpPayload
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.RssFeedsPayload
-import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.TimersPayload
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.TwitchPayload
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.TwitterPayload
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.YouTubePayload
@@ -78,7 +77,6 @@ class PatchServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRout
 					"autorole" to AutorolePayload::class.java,
 					"miscellaneous" to MiscellaneousPayload::class.java,
 					"economy" to EconomyPayload::class.java,
-					"timers" to TimersPayload::class.java,
 					"premium" to PremiumKeyPayload::class.java,
 					"badge" to CustomBadgePayload::class.java,
 					"daily_multiplier" to DailyMultiplierPayload::class.java,

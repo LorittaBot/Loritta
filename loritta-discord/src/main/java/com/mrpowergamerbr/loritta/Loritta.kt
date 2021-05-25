@@ -276,7 +276,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					Mutes,
 					Warns,
 					GuildProfiles,
-					Timers,
 					Giveaways,
 					ReactionOptions,
 					ServerConfigs,
