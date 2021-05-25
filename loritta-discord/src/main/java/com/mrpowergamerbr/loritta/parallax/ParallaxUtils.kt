@@ -1,17 +1,12 @@
 package com.mrpowergamerbr.loritta.parallax
 
-import com.github.salomonbrys.kotson.jsonObject
-import com.github.salomonbrys.kotson.toJsonArray
-import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
-import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageChannel
-import net.dv8tion.jda.api.entities.User
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.awt.Color
 import java.util.concurrent.ExecutionException
@@ -57,35 +52,5 @@ object ParallaxUtils {
 		messageBuilder.setEmbed(embedBuilder.build())
 
 		return channel.sendMessage(messageBuilder.build()).await()
-	}
-
-	fun transformToJson(message: Message): JsonObject {
-		return jsonObject(
-				"id" to message.idLong,
-				"author" to transformToJson(message.author),
-				"textChannelId" to message.channel.idLong,
-				"content" to message.contentRaw,
-				"cleanContent" to message.contentStripped,
-				"mentionedUsers" to message.mentionedUsers.map { transformToJson(it) }.toJsonArray()
-		)
-	}
-
-	fun transformToJson(user: User): JsonObject {
-		return jsonObject(
-				"id" to user.idLong,
-				"username" to user.name,
-				"discriminator" to user.discriminator,
-				"avatar" to user.avatarId
-		)
-	}
-
-	fun transformToJson(member: Member): JsonObject {
-		return jsonObject(
-				"user" to transformToJson(member.user),
-				"nickname" to member.effectiveName,
-				"roleIds" to member.roles.map { it.idLong }.toJsonArray(),
-				"joinedAt" to member.timeJoined.toInstant().toEpochMilli(),
-				"premiumSince" to member.timeBoosted?.toInstant()?.toEpochMilli()
-		)
 	}
 }
