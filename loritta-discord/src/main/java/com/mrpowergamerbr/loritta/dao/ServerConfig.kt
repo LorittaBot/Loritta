@@ -44,7 +44,6 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 	var disabledCommands by ServerConfigs.disabledCommands
 	// var donationKey by DonationKey optionalReferencedOn ServerConfigs.donationKey
 	var donationConfig by DonationConfig optionalReferencedOn ServerConfigs.donationConfig
-	var birthdayConfig by BirthdayConfig optionalReferencedOn ServerConfigs.birthdayConfig
 	var economyConfig by EconomyConfig optionalReferencedOn ServerConfigs.economyConfig
 	var levelConfig by LevelConfig optionalReferencedOn ServerConfigs.levelConfig
 	var starboardConfig by StarboardConfig optionalReferencedOn ServerConfigs.starboardConfig
