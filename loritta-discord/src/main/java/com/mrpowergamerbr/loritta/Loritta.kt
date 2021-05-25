@@ -295,7 +295,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 					ExperienceRoleRates,
 					BomDiaECiaWinners,
 					TrackedTwitterAccounts,
-					TrackedRssFeeds,
 					SonhosTransaction,
 					TrackedYouTubeAccounts,
 					TrackedTwitchAccounts,

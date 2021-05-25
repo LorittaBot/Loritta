@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.website.utils
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.toJsonArray
-import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.Background
@@ -11,7 +10,6 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ProfileDesign
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.network.Databases
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.LegacyBaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -32,15 +30,14 @@ import kotlinx.html.stream.createHTML
 import kotlinx.html.title
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.ReactionOption
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.ReactionOptions
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedRssFeeds
 import net.perfectdreams.loritta.utils.CachedUserInfo
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.config.types.ConfigTransformers
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.text.MessageFormat
 import kotlin.collections.component1
@@ -265,24 +262,6 @@ object WebsiteUtils {
 						"roleIds" to it.roleIds.toList().toJsonArray()
 				)
 			}.toJsonArray()
-		}
-
-		guildJson["trackedRssFeeds"] = loritta.newSuspendedTransaction {
-			val array = JsonArray()
-
-			TrackedRssFeeds.select {
-				TrackedRssFeeds.guildId eq guild.idLong
-			}.forEach {
-				array.add(
-						jsonObject(
-								"feedUrl" to it[TrackedRssFeeds.feedUrl],
-								"channelId" to it[TrackedRssFeeds.channelId],
-								"message" to it[TrackedRssFeeds.message]
-						)
-				)
-			}
-
-			array
 		}
 
 		guildJson["selfMember"] = selfMember

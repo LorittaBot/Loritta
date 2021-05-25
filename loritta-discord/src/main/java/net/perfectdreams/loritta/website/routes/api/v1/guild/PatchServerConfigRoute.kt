@@ -13,7 +13,6 @@ import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.DailyM
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.EconomyPayload
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.MiscellaneousPayload
 import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.ResetXpPayload
-import com.mrpowergamerbr.loritta.website.views.subviews.api.config.types.RssFeedsPayload
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
@@ -69,8 +68,7 @@ class PatchServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRout
 					"economy" to EconomyPayload::class.java,
 					"badge" to CustomBadgePayload::class.java,
 					"daily_multiplier" to DailyMultiplierPayload::class.java,
-					"reset_xp" to ResetXpPayload::class.java,
-					"rss_feeds" to RssFeedsPayload::class.java
+					"reset_xp" to ResetXpPayload::class.java
 			)
 
 			val payloadHandlerClass = payloadHandlers[type]
