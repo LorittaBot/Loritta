@@ -6,7 +6,6 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.utils.loritta
-import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.Guild
@@ -37,8 +36,6 @@ object TwitterConfigTransformer : ConfigTransformer {
                 }
             }
         }
-
-        lorittaShards.queryMasterLorittaCluster("/api/v1/twitter/update-stream")
     }
 
     override suspend fun toJson(guild: Guild, serverConfig: ServerConfig): JsonElement {
