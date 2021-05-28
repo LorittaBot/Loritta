@@ -20,13 +20,6 @@ class GeneralConfig(
 		val crowdin: CrowdinConfig,
 		val twitter: TwitterConfig,
 		val twitch: TwitchConfig,
-		val twitch2: TwitchConfig,
-		val twitch3: TwitchConfig,
-		val twitch4: TwitchConfig,
-		val twitch5: TwitchConfig,
-		val twitch6: TwitchConfig,
-		val twitch7: TwitchConfig,
-		val twitch8: TwitchConfig,
 		val generalWebhook: GeneralWebhookConfig,
 		val fortniteApi: FortniteApiConfig,
 		val caches: CacheConfig

@@ -3,7 +3,6 @@ package com.mrpowergamerbr.loritta.utils
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.mrpowergamerbr.loritta.analytics.AnalyticSender
 import com.mrpowergamerbr.loritta.analytics.InternalAnalyticSender
-import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.eventlog.DeleteOldStoredMessagesTask
 import com.mrpowergamerbr.loritta.utils.networkbans.ApplyBansTask
@@ -47,7 +46,6 @@ object LorittaTasks {
 			scheduleAtFixedRate(LorittaDailyShopUpdateTask(), diff, TimeUnit.DAYS.toMillis(1L), TimeUnit.MILLISECONDS)
 
 			scheduleWithFixedDelay(CreateYouTubeWebhooksTask(), 0L, 1L, TimeUnit.MINUTES)
-			scheduleWithFixedDelay(CreateTwitchWebhooksTask(), 0L, 1L, TimeUnit.MINUTES)
 		}
 	}
 

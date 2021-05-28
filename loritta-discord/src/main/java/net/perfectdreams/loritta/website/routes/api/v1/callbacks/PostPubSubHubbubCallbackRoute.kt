@@ -1,14 +1,8 @@
 package net.perfectdreams.loritta.website.routes.api.v1.callbacks
 
-import com.github.salomonbrys.kotson.array
-import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
-import com.github.salomonbrys.kotson.obj
-import com.github.salomonbrys.kotson.string
 import com.google.common.cache.CacheBuilder
-import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.livestreams.CreateTwitchWebhooksTask
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MessageUtils
 import com.mrpowergamerbr.loritta.utils.escapeMentions
@@ -30,7 +24,6 @@ import kotlinx.coroutines.withTimeout
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.SentYouTubeVideoIds
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedTwitchAccounts
 import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedYouTubeAccounts
 import net.perfectdreams.loritta.utils.ClusterOfflineException
 import net.perfectdreams.loritta.website.utils.WebsiteUtils
@@ -45,7 +38,6 @@ import org.jsoup.parser.Parser
 import java.util.concurrent.TimeUnit
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
-import kotlin.collections.set
 
 class PostPubSubHubbubCallbackRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/callbacks/pubsubhubbub") {
 	companion object {
@@ -196,109 +188,6 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaDiscord) : BaseRoute("/a
 						|**Enviado em...**
 						|${guildIds.joinToString("\n", transform = { "`$it`" })}
 					""".trimMargin())?.queue()
-		}
-
-		if (type == "twitch") {
-			if (com.mrpowergamerbr.loritta.utils.loritta.isMaster)
-				relayPubSubHubbubNotificationToOtherClusters(call, originalSignature, response)
-
-			val userId = call.parameters["userid"]!!.toLong()
-
-			val payload = JsonParser.parseString(response)
-			val data = payload["data"].array
-
-			val guildIds = mutableListOf<Long>()
-			val canTalkGuildIds = mutableListOf<Long>()
-
-			// Se for vazio, quer dizer que é um stream down
-			if (data.size() != 0) {
-				for (_obj in data) {
-					if (streamingSince.containsKey(userId))
-						continue
-
-					streamingSince[userId] = System.currentTimeMillis()
-
-					val obj = _obj.obj
-
-					val gameId = obj["game_id"].string
-					val title = obj["title"].string
-
-					val storedEpoch = CreateTwitchWebhooksTask.lastNotified[userId]
-					if (storedEpoch != null) {
-						// Para evitar problemas (caso duas webhooks tenham sido criadas) e para evitar "atualizações de descrições causando updates", nós iremos verificar:
-						// 1. Se o vídeo foi enviado a mais de 1 minuto do que o anterior
-						// 2. Se o último vídeo foi enviado depois do último vídeo enviado
-						if ((60000 + storedEpoch) >= System.currentTimeMillis()) {
-							return
-						}
-					}
-
-					CreateTwitchWebhooksTask.lastNotified[userId] = System.currentTimeMillis()
-
-					val accountInfo = loritta.twitch.getUserLoginById(userId)
-					if (accountInfo == null) {
-						logger.info { "Received livestream (Twitch) notification $title ($gameId) for $userId, but I can't find the user" }
-					} else {
-						logger.info { "Received livestream notification (Twitch) $title ($gameId) of ${accountInfo.id} ($userId)" }
-
-						val trackedAccounts = loritta.newSuspendedTransaction {
-							TrackedTwitchAccounts.select {
-								TrackedTwitchAccounts.twitchUserId eq userId
-							}.toList()
-						}
-
-						for (trackedAccount in trackedAccounts) {
-							guildIds.add(trackedAccount[TrackedTwitchAccounts.guildId])
-
-							val guild = lorittaShards.getGuildById(trackedAccount[TrackedTwitchAccounts.guildId])
-									?: continue
-
-							val textChannel = guild.getTextChannelById(trackedAccount[TrackedTwitchAccounts.channelId])
-									?: continue
-
-							if (!textChannel.canTalk())
-								continue
-
-							var message = trackedAccount[TrackedTwitchAccounts.message]
-
-							if (message.isEmpty()) {
-								message = "{link}"
-							}
-
-							val gameInfo = com.mrpowergamerbr.loritta.utils.loritta.twitch.getGameInfo(gameId)
-
-							val customTokens = mapOf(
-									"game" to (gameInfo?.name ?: "???"),
-									"title" to title,
-									"link" to "https://www.twitch.tv/${accountInfo.login}"
-							)
-
-							val discordMessage = MessageUtils.generateMessage(
-									message,
-									listOf(guild),
-									guild,
-									customTokens
-							) ?: continue
-
-							textChannel.sendMessage(discordMessage)
-									.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing(canTalkGuildIds.size)
-
-							canTalkGuildIds.add(trackedAccount[TrackedTwitchAccounts.guildId])
-						}
-
-						// Nós iremos fazer relay de todos os vídeos para o servidor da Lori
-						val textChannel = lorittaShards.getTextChannelById(Constants.RELAY_TWITCH_STREAMS_CHANNEL)
-
-						textChannel?.sendMessage("""${title.escapeMentions()} — https://www.twitch.tv/${accountInfo.login}
-									|**Enviado em...**
-									|${guildIds.joinToString("\n", transform = { "`$it`" })}
-								""".trimMargin())?.queue()
-					}
-				}
-			} else {
-				// Stream down, streamer parou de streamar
-				streamingSince.remove(userId)
-			}
 		}
 		call.respondJson(jsonObject())
 	}

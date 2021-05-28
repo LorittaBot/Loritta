@@ -105,13 +105,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	var newWebsiteThread: Thread? = null
 
 	var twitch = TwitchAPI(config.twitch.clientId, config.twitch.clientSecret)
-	var twitch2 = TwitchAPI(config.twitch2.clientId, config.twitch2.clientSecret)
-	var twitch3 = TwitchAPI(config.twitch3.clientId, config.twitch3.clientSecret)
-	var twitch4 = TwitchAPI(config.twitch4.clientId, config.twitch4.clientSecret)
-	var twitch5 = TwitchAPI(config.twitch5.clientId, config.twitch5.clientSecret)
-	var twitch6 = TwitchAPI(config.twitch6.clientId, config.twitch6.clientSecret)
-	var twitch7 = TwitchAPI(config.twitch7.clientId, config.twitch7.clientSecret)
-	var twitch8 = TwitchAPI(config.twitch8.clientId, config.twitch8.clientSecret)
 	val connectionManager = ConnectionManager()
 	var patchData = PatchData()
 	var sponsors: List<Sponsor> = listOf()
