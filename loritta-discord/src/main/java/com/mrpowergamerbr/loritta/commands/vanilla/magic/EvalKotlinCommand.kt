@@ -33,6 +33,7 @@ class EvalKotlinCommand : AbstractCommand("eval", listOf("evalkt", "evalkotlin",
 			import com.mrpowergamerbr.loritta.network.*
 			import com.mrpowergamerbr.loritta.utils.extensions.*
 			import net.perfectdreams.loritta.utils.locale.*
+			import net.perfectdreams.loritta.common.locale.*
 			import net.perfectdreams.loritta.tables.*
 			import net.perfectdreams.loritta.tables.servers.*
 			import net.perfectdreams.loritta.tables.servers.moduleconfigs.*
