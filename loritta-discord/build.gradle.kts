@@ -16,6 +16,7 @@ dependencies {
     api(project(":commands"))
     api(project(":loritta-serializable-commons"))
     api(project(":temmie-discord-auth"))
+    api(project(":discord-db-tables"))
 
     // Kotlin Scripting
     api(kotlin("script-util"))
@@ -49,6 +50,7 @@ dependencies {
     api("org.jetbrains.exposed:exposed-core:${Versions.EXPOSED}")
     api("org.jetbrains.exposed:exposed-dao:${Versions.EXPOSED}")
     api("org.jetbrains.exposed:exposed-jdbc:${Versions.EXPOSED}")
+    api("pw.forst:exposed-upsert:1.1.0")
 
     api("org.apache.commons:commons-lang3:3.11")
     api("commons-codec:commons-codec:1.15")

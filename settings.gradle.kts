@@ -23,6 +23,7 @@ include(":common-legacy")
 include(":commands")
 include(":loritta-serializable-commons")
 include(":loritta-discord")
+include(":discord-db-tables")
 
 // Plugins
 include(":loritta-plugins")
