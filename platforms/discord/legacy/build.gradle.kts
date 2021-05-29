@@ -16,7 +16,7 @@ dependencies {
     api(project(":commands"))
     api(project(":loritta-serializable-commons"))
     api(project(":temmie-discord-auth"))
-    api(project(":discord-db-tables"))
+    api(project(":platforms:discord:db-tables"))
 
     // Kotlin Scripting
     api(kotlin("script-util"))
