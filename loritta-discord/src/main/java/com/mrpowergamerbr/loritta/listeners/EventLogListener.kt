@@ -186,8 +186,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 					if (storedMessage != null) {
 						val user = lorittaShards.retrieveUserInfoById(storedMessage.authorId) ?: return@launch
 
-						val webhook = EventLog.getOrCreateEventLogWebhook(event.guild, eventLogConfig) ?: return@launch
-
 						val embed = WebhookEmbedBuilder()
 						embed.setTimestamp(Instant.now())
 						embed.setFooter(WebhookEmbed.EmbedFooter(locale["modules.eventLog.userID", user.id.toString()], null))
@@ -203,13 +201,15 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						embed.setDescription(deletedMessage)
 
-						webhook.send(
-								WebhookMessageBuilder()
-										.setUsername(event.guild.selfMember.user.name)
-										.setContent(" ")
-										.setAvatarUrl(event.guild.selfMember.user.effectiveAvatarUrl)
-										.addEmbeds(embed.build())
-										.build()
+						EventLog.sendMessageInEventLogViaWebhook(
+							WebhookMessageBuilder()
+								.setUsername(event.guild.selfMember.user.name)
+								.setContent(" ")
+								.setAvatarUrl(event.guild.selfMember.user.effectiveAvatarUrl)
+								.addEmbeds(embed.build())
+								.build(),
+							event.guild,
+							eventLogConfig
 						)
 
 						loritta.newSuspendedTransaction {
@@ -338,8 +338,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
 					return@launch
 
-				val webhook = EventLog.getOrCreateEventLogWebhook(event.guild, eventLogConfig) ?: return@launch
-
 				val embed = WebhookEmbedBuilder()
 				embed.setTimestamp(Instant.now())
 				embed.setColor(Color(35, 209, 96).rgb)
@@ -350,13 +348,15 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				embed.setDescription(message)
 				embed.setFooter(WebhookEmbed.EmbedFooter(locale["modules.eventLog.userID", event.user.id], null))
 
-				webhook.send(
-						WebhookMessageBuilder()
-								.setUsername(event.guild.selfMember.user.name)
-								.setContent(" ")
-								.setAvatarUrl(event.guild.selfMember.user.effectiveAvatarUrl)
-								.addEmbeds(embed.build())
-								.build()
+				EventLog.sendMessageInEventLogViaWebhook(
+					WebhookMessageBuilder()
+						.setUsername(event.guild.selfMember.user.name)
+						.setContent(" ")
+						.setAvatarUrl(event.guild.selfMember.user.effectiveAvatarUrl)
+						.addEmbeds(embed.build())
+						.build(),
+					event.guild,
+					eventLogConfig
 				)
 				return@launch
 			}
@@ -398,8 +398,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
 					return@launch
 
-				val webhook = EventLog.getOrCreateEventLogWebhook(event.guild, eventLogConfig) ?: return@launch
-
 				val embed = WebhookEmbedBuilder()
 				embed.setTimestamp(Instant.now())
 				embed.setColor(Color(35, 209, 96).rgb)
@@ -410,13 +408,15 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				embed.setDescription(message)
 				embed.setFooter(WebhookEmbed.EmbedFooter(locale["modules.eventLog.userID", event.user.id], null))
 
-				webhook.send(
-						WebhookMessageBuilder()
-								.setUsername(event.guild.selfMember.user.name)
-								.setContent(" ")
-								.setAvatarUrl(event.guild.selfMember.user.effectiveAvatarUrl)
-								.addEmbeds(embed.build())
-								.build()
+				EventLog.sendMessageInEventLogViaWebhook(
+					WebhookMessageBuilder()
+						.setUsername(event.guild.selfMember.user.name)
+						.setContent(" ")
+						.setAvatarUrl(event.guild.selfMember.user.effectiveAvatarUrl)
+						.addEmbeds(embed.build())
+						.build(),
+					event.guild,
+					eventLogConfig
 				)
 				return@launch
 			}
@@ -452,21 +452,21 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
 					return@launch
 
-				val webhook = EventLog.getOrCreateEventLogWebhook(event.guild, eventLogConfig) ?: return@launch
-
 				val oldNickname = if (event.oldNickname == null) "\uD83E\uDD37 ${locale["modules.eventLog.noNickname"]}" else event.oldNickname
 				val newNickname = if (event.newNickname == null) "\uD83E\uDD37 ${locale["modules.eventLog.noNickname"]}" else event.newNickname
 
 				embed.setDescription("\uD83D\uDCDD ${locale.getList("modules.eventLog.nicknameChanged", oldNickname, newNickname).joinToString("\n")}")
 				embed.setFooter(WebhookEmbed.EmbedFooter(locale["modules.eventLog.userID", event.member.user.id], null))
 
-				webhook.send(
-						WebhookMessageBuilder()
-								.setUsername(event.guild.selfMember.user.name)
-								.setContent(" ")
-								.setAvatarUrl(event.guild.selfMember.user.effectiveAvatarUrl)
-								.addEmbeds(embed.build())
-								.build()
+				EventLog.sendMessageInEventLogViaWebhook(
+					WebhookMessageBuilder()
+						.setUsername(event.guild.selfMember.user.name)
+						.setContent(" ")
+						.setAvatarUrl(event.guild.selfMember.user.effectiveAvatarUrl)
+						.addEmbeds(embed.build())
+						.build(),
+					event.guild,
+					eventLogConfig
 				)
 				return@launch
 			}
