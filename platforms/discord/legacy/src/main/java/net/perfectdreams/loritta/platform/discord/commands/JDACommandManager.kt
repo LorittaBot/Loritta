@@ -114,6 +114,12 @@ class JDACommandManager(val loritta: LorittaDiscord) {
         CommandUtils.logMessageEvent(event, logger)
 
         try {
+            // Check if user is banned
+            if (LorittaUtilsKotlin.handleIfBanned(context, lorittaUser.profile))
+                return true
+
+            // TODO: Cooldown
+
             if (serverConfig.blacklistedChannels.contains(event.channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
                 if (serverConfig.warnIfBlacklisted) {
                     if (serverConfig.blacklistedChannels.isNotEmpty() && event.guild != null && event.member != null && event.textChannel != null) {
@@ -130,12 +136,6 @@ class JDACommandManager(val loritta: LorittaDiscord) {
                 }
                 return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
             }
-
-            // Check if user is banned
-            if (LorittaUtilsKotlin.handleIfBanned(context, lorittaUser.profile))
-                return true
-
-            // TODO: Cooldown
             // TODO: Command feedback
             // TODO: Check disabled commands
             // TODO: Check default permissions

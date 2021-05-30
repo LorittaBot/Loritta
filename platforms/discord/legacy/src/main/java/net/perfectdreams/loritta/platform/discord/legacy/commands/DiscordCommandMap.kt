@@ -200,23 +200,6 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 			CommandUtils.logMessageEvent(ev, logger)
 
 			try {
-				if (serverConfig.blacklistedChannels.contains(ev.channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
-					if (serverConfig.warnIfBlacklisted) {
-						if (serverConfig.blacklistedChannels.isNotEmpty() && ev.guild != null && ev.member != null && ev.textChannel != null) {
-							val generatedMessage = MessageUtils.generateMessage(
-								serverConfig.blacklistedWarning ?: "???",
-								listOf(ev.member, ev.textChannel),
-								ev.guild
-							)
-							if (generatedMessage != null)
-								ev.textChannel.sendMessage(generatedMessage)
-									.referenceIfPossible(ev.message, serverConfig, true)
-									.await()
-						}
-					}
-					return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
-				}
-
 				// Check if user is banned
 				if (LorittaUtilsKotlin.handleIfBanned(context, lorittaUser.profile))
 					return true
@@ -270,6 +253,24 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 					return true
 				} else if (cooldownStatus == CommandCooldownManager.CooldownStatus.RATE_LIMITED_MESSAGE_ALREADY_SENT) return true
 
+				if (serverConfig.blacklistedChannels.contains(ev.channel.idLong) && !lorittaUser.hasPermission(
+						LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
+					if (serverConfig.warnIfBlacklisted) {
+						if (serverConfig.blacklistedChannels.isNotEmpty() && ev.guild != null && ev.member != null && ev.textChannel != null) {
+							val generatedMessage = MessageUtils.generateMessage(
+								serverConfig.blacklistedWarning ?: "???",
+								listOf(ev.member, ev.textChannel),
+								ev.guild
+							)
+							if (generatedMessage != null)
+								ev.textChannel.sendMessage(generatedMessage)
+									.referenceIfPossible(ev.message, serverConfig, true)
+									.await()
+						}
+					}
+					return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
+				}
+				
 				if (command.hasCommandFeedback) {
 					// Sending typing status for every single command is costly (API limits!)
 					// To avoid sending it every time, we check if we should send the typing status
