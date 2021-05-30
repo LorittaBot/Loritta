@@ -9,7 +9,8 @@ import java.io.File
 val DEFAULT_SHADED_WITHIN_JAR_LIBRARIES = arrayOf(
     "common-",
     "loritta-serializable-commons-",
-    "parallax-code-api-"
+    "parallax-code-api-",
+    "db-tables-"
 )
 
 /**
@@ -27,12 +28,7 @@ val DEFAULT_SHADED_WITHIN_JAR_LIBRARIES = arrayOf(
  * @param customAttributes custom attributes to be set in the manifest
  */
 fun Project.runnableJarTask(
-    addToFinalJarSourceProjectsPrefixes: Array<String> = arrayOf(
-        "common-",
-        "loritta-serializable-commons-",
-        "parallax-code-api-",
-        "db-tables-"
-    ),
+    addToFinalJarSourceProjectsPrefixes: Array<String> = DEFAULT_SHADED_WITHIN_JAR_LIBRARIES,
     runtimeClasspath: Configuration,
     taskProvider: Jar,
     mainClass: String,
