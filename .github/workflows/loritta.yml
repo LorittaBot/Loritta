@@ -39,10 +39,10 @@ jobs:
     # Upload Artifacts to GitHub
     # Loritta
     - uses: actions/upload-artifact@v2
-      name: "Upload Loritta (Discord)"
+      name: "Upload Loritta Legacy (Discord)"
       with:
-        name: Loritta (Discord)
-        path: loritta-discord/build/libs/loritta-discord-*.jar
+        name: Loritta Legacy (Discord)
+        path: platforms/discord/legacy/build/libs/legacy-*.jar
 
     # Loritta Plugins
     - uses: actions/upload-artifact@v2
