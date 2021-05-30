@@ -30,7 +30,8 @@ fun Project.runnableJarTask(
     addToFinalJarSourceProjectsPrefixes: Array<String> = arrayOf(
         "common-",
         "loritta-serializable-commons-",
-        "parallax-code-api-"
+        "parallax-code-api-",
+        "db-tables-"
     ),
     runtimeClasspath: Configuration,
     taskProvider: Jar,
