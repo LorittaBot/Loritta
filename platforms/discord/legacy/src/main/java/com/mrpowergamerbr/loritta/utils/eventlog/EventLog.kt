@@ -25,6 +25,8 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.VoiceChannel
 import net.dv8tion.jda.api.entities.Webhook
 import net.dv8tion.jda.api.entities.WebhookType
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.requests.ErrorResponse
 import net.perfectdreams.loritta.common.exposed.dao.CachedDiscordWebhook
 import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -82,9 +84,7 @@ object EventLog {
 				val shouldIgnoreDueToUnknownChannel =
 					alreadyCachedWebhookFromDatabase.state == WebhookState.UNKNOWN_CHANNEL
 				val shouldIgnoreDueToMissingPermissions =
-					alreadyCachedWebhookFromDatabase.state == WebhookState.MISSING_PERMISSION && MISSING_PERMISSIONS_COOLDOWN.toLong(
-						DurationUnit.MILLISECONDS
-					) >= (System.currentTimeMillis() - alreadyCachedWebhookFromDatabase.updatedAt)
+					alreadyCachedWebhookFromDatabase.state == WebhookState.MISSING_PERMISSION && MISSING_PERMISSIONS_COOLDOWN.toLong(DurationUnit.MILLISECONDS) >= (System.currentTimeMillis() - alreadyCachedWebhookFromDatabase.updatedAt)
 				val shouldIgnore = shouldIgnoreDueToUnknownChannel || shouldIgnoreDueToMissingPermissions
 
 				if (shouldIgnore) {
@@ -99,59 +99,91 @@ object EventLog {
 			if (guildWebhookFromDatabase == null || guildWebhookFromDatabase.state == WebhookState.MISSING_PERMISSION) {
 				logger.info { "First available webhook of $channelId to send a message is missing, trying to pull webhooks from the channel..." }
 
-				if (!guild.selfMember.hasPermission(channel, Permission.MANAGE_WEBHOOKS)) {
-					withContext(Dispatchers.IO) {
+				try {
+					if (!guild.selfMember.hasPermission(channel, Permission.MANAGE_WEBHOOKS)) {
+						withContext(Dispatchers.IO) {
+							transaction(Databases.loritta) {
+								CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
+									it[id] = channelId
+									// We don't replace the webhook token here... there is no pointing in replacing it.
+									it[state] = WebhookState.MISSING_PERMISSION
+									it[updatedAt] = System.currentTimeMillis()
+								}.resultedValues!!.first()
+							}
+						}
+						return false
+					}
+
+					// Try pulling the already created webhooks...
+					val webhooks = channel.retrieveWebhooks().await()
+
+					val firstAvailableWebhook = webhooks.firstOrNull { it.type == WebhookType.INCOMING }
+					var createdWebhook: Webhook? = null
+
+					// Oh no, there isn't any webhooks available, let's create one!
+					if (firstAvailableWebhook == null) {
+						logger.info { "No available webhooks in $channelId to send the message, creating a new webhook..." }
+
+						val jdaWebhook = channel.createWebhook("Loritta (Event Log)")
+							.await()
+
+						createdWebhook = jdaWebhook
+					}
+
+					val webhook = createdWebhook ?: firstAvailableWebhook ?: error("No webhook was found!")
+
+					logger.info { "Successfully found webhook in $channelId!" }
+
+					// Store the newly found webhook in our database!
+					guildWebhookFromDatabase = withContext(Dispatchers.IO) {
 						transaction(Databases.loritta) {
-							CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
-								it[id] = channelId
-								// We don't replace the webhook token here... there is no pointing in replacing it.
-								it[state] = WebhookState.MISSING_PERMISSION
-								it[updatedAt] = System.currentTimeMillis()
-							}.resultedValues!!.first()
+							CachedDiscordWebhook.wrapRow(
+								CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
+									it[id] = channelId
+									it[webhookId] = webhook.idLong
+									it[webhookToken] =
+										webhook.token!! // I doubt that the token can be null so let's just force null, heh
+									it[state] = WebhookState.SUCCESS
+									it[updatedAt] = System.currentTimeMillis()
+								}.resultedValues!!.first()
+							)
 						}
 					}
-					return false
-				}
-
-				// Try pulling the already created webhooks...
-				val webhooks = channel.retrieveWebhooks().await()
-
-				val firstAvailableWebhook = webhooks.firstOrNull { it.type == WebhookType.INCOMING }
-				var createdWebhook: Webhook? = null
-
-				// Oh no, there isn't any webhooks available, let's create one!
-				if (firstAvailableWebhook == null) {
-					logger.info { "No available webhooks in $channelId to send the message, creating a new webhook..." }
-
-					val jdaWebhook = channel.createWebhook("Loritta (Event Log)")
-						.await()
-
-					createdWebhook = jdaWebhook
-				}
-
-				val webhook = createdWebhook ?: firstAvailableWebhook ?: error("No webhook was found!")
-
-				logger.info { "Successfully found webhook in $channelId!" }
-
-				// Store the newly found webhook in our database!
-				guildWebhookFromDatabase = withContext(Dispatchers.IO) {
-					transaction(Databases.loritta) {
-						CachedDiscordWebhook.wrapRow(
-							CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
-								it[id] = channelId
-								it[webhookId] = webhook.idLong
-								it[webhookToken] =
-									webhook.token!! // I doubt that the token can be null so let's just force null, heh
-								it[state] = WebhookState.SUCCESS
-								it[updatedAt] = System.currentTimeMillis()
-							}.resultedValues!!.first()
-						)
+				} catch (e: ErrorResponseException) {
+					when (e.errorResponse) {
+						ErrorResponse.UNKNOWN_CHANNEL -> {
+							logger.warn(e) { "Unknown channel: $channelId; We are WILL NEVER check this channel again!" }
+							withContext(Dispatchers.IO) {
+								transaction(Databases.loritta) {
+									CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
+										it[id] = channelId
+										// We don't replace the webhook token here... there is no pointing in replacing it.
+										it[state] = WebhookState.UNKNOWN_CHANNEL
+										it[updatedAt] = System.currentTimeMillis()
+									}.resultedValues!!.first()
+								}
+							}
+						}
+						ErrorResponse.MISSING_ACCESS -> {
+							logger.warn(e) { "We don't have access in $channelId to do our webhook magic!" }
+							withContext(Dispatchers.IO) {
+								transaction(Databases.loritta) {
+									CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
+										it[id] = channelId
+										// We don't replace the webhook token here... there is no pointing in replacing it.
+										it[state] = WebhookState.MISSING_PERMISSION
+										it[updatedAt] = System.currentTimeMillis()
+									}.resultedValues!!.first()
+								}
+							}
+						}
+						else -> logger.warn(e) { "Something went wrong while trying to do webhook magic with the webhook message $message in $channelId!" }
 					}
+					return false
 				}
 			}
 
 			val webhook = guildWebhookFromDatabase
-
 
 			logger.info { "Sending $message in $channelId... Using webhook $webhook" }
 
