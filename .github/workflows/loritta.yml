@@ -46,7 +46,7 @@ jobs:
 
     # Libs
     - uses: actions/upload-artifact@v2
-      name: "Upload Loritta (Legacy) Libs"
+      name: "Upload Loritta Legacy (Libs)"
       with:
         name: Loritta Legacy (Libs)
         path: platforms/discord/legacy/build/libs/libs/*

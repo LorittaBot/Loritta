@@ -25,17 +25,17 @@ jobs:
     - name: Build with Gradle
       run: "./gradlew build -Dgithub.build.id=$GITHUB_RUN_ID -Dbuild.number=$GITHUB_RUN_NUMBER -Dgit.branch=$GITHUB_REF -Dcommit.hash=$GITHUB_SHA -Dcompiled.at=${{ steps.current-time.outputs.time }}"
 
-      # Upload Artifacts to GitHub
-      # Loritta
+    # Upload Artifacts to GitHub
+    # Loritta
     - uses: actions/upload-artifact@v2
       name: "Upload Loritta Legacy (Discord)"
       with:
         name: Loritta Legacy (Discord)
         path: platforms/discord/legacy/build/libs/legacy-*.jar
 
-      # Libs
+    # Libs
     - uses: actions/upload-artifact@v2
-      name: "Upload Loritta (Legacy) Libs"
+      name: "Upload Loritta Legacy (Libs)"
       with:
         name: Loritta Legacy (Libs)
         path: platforms/discord/legacy/build/libs/libs/*
