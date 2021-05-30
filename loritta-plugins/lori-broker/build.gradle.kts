@@ -1,5 +1,5 @@
 dependencies {
-    api(project(":loritta-discord"))
+    api(project(":platforms:discord:legacy"))
     api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0")
     implementation("io.ktor:ktor-client-websockets:${Versions.KTOR}")
 }
@@ -11,18 +11,23 @@ plugins {
 
 tasks {
     val fatJar = task("fatJar", type = Jar::class) {
-        println("Building fat jar for ${project.name}...")
+        doFirst {
+            println("Building fat jar for ${project.name}...")
 
-        archiveBaseName.set("${project.name}-fat")
+            archiveBaseName.set("${project.name}-fat")
 
-        from(configurations.runtimeClasspath.get().mapNotNull {
-            if (it.name.contains("TradingViewScraper"))
-                zipTree(it)
-            else
-                null
-        })
+        }
 
-        with(jar.get() as CopySpec)
+        doLast {
+            from(configurations.runtimeClasspath.get().mapNotNull {
+                if (it.name.contains("TradingViewScraper"))
+                    zipTree(it)
+                else
+                    null
+            })
+
+            with(jar.get() as CopySpec)
+        }
     }
 
     "build" {

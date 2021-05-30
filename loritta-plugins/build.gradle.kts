@@ -1,5 +1,5 @@
 dependencies {
-    api(project(":loritta-discord"))
+    api(project(":platforms:discord:legacy"))
 }
 
 plugins {

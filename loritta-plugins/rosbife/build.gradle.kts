@@ -21,7 +21,7 @@ kotlin {
         jvm().compilations["main"].defaultSourceSet {
             dependencies {
                 implementation(kotlin("stdlib-jdk8"))
-                implementation(project(":loritta-discord"))
+                implementation(project(":platforms:discord:legacy"))
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0")
             }
         }
