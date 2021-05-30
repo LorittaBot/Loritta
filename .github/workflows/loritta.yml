@@ -44,11 +44,18 @@ jobs:
         name: Loritta Legacy (Discord)
         path: platforms/discord/legacy/build/libs/legacy-*.jar
 
+    # Libs
+    - uses: actions/upload-artifact@v2
+      name: "Upload Loritta (Legacy) Libs"
+      with:
+        name: Loritta Legacy (Libs)
+        path: platforms/discord/legacy/build/libs/libs/*
+
     # Loritta Plugins
     - uses: actions/upload-artifact@v2
-      name: "Upload Loritta (Plugins)"
+      name: "Upload Loritta Legacy (Plugins)"
       with:
-        name: Loritta (Plugins)
+        name: Loritta Legacy (Plugins)
         path: loritta-plugins/*/build/libs/*.jar
 
     # Spicy Morenitta
@@ -78,10 +85,3 @@ jobs:
       with:
         name: Shard Controller
         path: shard-controller/build/libs/*.jar
-
-    # Libs
-    - uses: actions/upload-artifact@v2
-      name: "Upload Loritta's Libs"
-      with:
-        name: Loritta (Libs)
-        path: libs/*
