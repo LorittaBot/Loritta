@@ -12,22 +12,17 @@ plugins {
 tasks {
     val fatJar = task("fatJar", type = Jar::class) {
         doFirst {
-            println("Building fat jar for ${project.name}...")
-
             archiveBaseName.set("${project.name}-fat")
 
-        }
-
-        doLast {
             from(configurations.runtimeClasspath.get().mapNotNull {
                 if (it.name.contains("TradingViewScraper"))
                     zipTree(it)
                 else
                     null
             })
-
-            with(jar.get() as CopySpec)
         }
+        
+        with(jar.get() as CopySpec)
     }
 
     "build" {
