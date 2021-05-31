@@ -270,7 +270,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 					}
 					return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
 				}
-				
+
 				if (command.hasCommandFeedback) {
 					// Sending typing status for every single command is costly (API limits!)
 					// To avoid sending it every time, we check if we should send the typing status

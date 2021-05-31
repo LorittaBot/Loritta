@@ -501,6 +501,13 @@ class CommandManager(loritta: Loritta) {
 
 				CommandUtils.trackCommandToDatabase(ev, command::class.simpleName ?: "UnknownCommand")
 
+				loritta.newSuspendedTransaction {
+					val profile = serverConfig.getUserDataIfExistsNested(lorittaUser.profile.userId)
+
+					if (profile != null && !profile.isInGuild)
+						profile.isInGuild = true
+				}
+				
 				lorittaShards.updateCachedUserData(context.userHandle)
 
 				command.run(context, context.locale)
