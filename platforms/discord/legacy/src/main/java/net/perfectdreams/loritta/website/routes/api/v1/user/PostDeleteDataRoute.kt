@@ -32,6 +32,8 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.or
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.update
 
 class PostDeleteDataRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/@me/delete") {
 	companion object {
@@ -124,9 +126,18 @@ class PostDeleteDataRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRout
 					Profiles.id eq userId
 				}
 
-				logger.info { "Deleting $userId's marriages..." }
-				Marriages.deleteWhere {
-					Marriages.user1 eq userId or (Marriages.user2 eq userId)
+				// First we will select the marriage, check if there is a marriage and THEN update all profiles to have a null reference to it, and then delete it!
+				val marriage = Marriages.select { Marriages.user1 eq userId or (Marriages.user2 eq userId) }
+					.firstOrNull()
+				if (marriage != null) {
+					logger.info { "Deleting $userId's marriage..." }
+					Profiles.update({ Profiles.marriage eq marriage[Marriages.id] }) {
+						it[Profiles.marriage] = null
+					}
+
+					Marriages.deleteWhere { Marriages.id eq marriage[Marriages.id] }
+				} else {
+					logger.info { "Not deleting $userId's marriage because they aren't married! :P" }
 				}
 			}
 		}

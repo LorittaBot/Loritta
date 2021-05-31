@@ -11,5 +11,8 @@ object Profiles : SnowflakeTable() {
 	var isAfk = bool("isAfk")
 	var afkReason = text("afkReason").nullable()
 	var settings = reference("settings", UserSettings, onDelete = ReferenceOption.CASCADE).index()
-	var marriage = reference("marriage", Marriages, onDelete = ReferenceOption.CASCADE).nullable().index()
+	// DON'T SET THIS TO ON DELETE CASCADE!
+	// If this is set to on delete cascade, if someone married deletes their user data, the user data of the user
+	// AND the data of the user that is married with will be deleted!
+	var marriage = reference("marriage", Marriages).nullable().index()
 }
