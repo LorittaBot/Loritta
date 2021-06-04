@@ -1,32 +1,98 @@
 package net.perfectdreams.spicymorenitta
 
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import io.ktor.client.*
 import io.ktor.client.engine.js.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import io.ktor.client.statement.HttpResponse
 import io.ktor.http.*
 import kotlinx.browser.document
 import kotlinx.browser.window
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.dom.addClass
 import kotlinx.dom.clear
 import kotlinx.dom.hasClass
 import kotlinx.dom.removeClass
-import kotlinx.html.*
+import kotlinx.html.a
+import kotlinx.html.div
 import kotlinx.html.dom.append
+import kotlinx.html.hr
+import kotlinx.html.img
+import kotlinx.html.p
+import kotlinx.html.span
 import kotlinx.html.stream.createHTML
+import kotlinx.html.style
 import loadEmbeddedLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.serializable.UserIdentification
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
-import net.perfectdreams.spicymorenitta.routes.*
-import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.*
-import net.perfectdreams.spicymorenitta.routes.user.dashboard.*
-import net.perfectdreams.spicymorenitta.utils.*
-import org.w3c.dom.*
+import net.perfectdreams.spicymorenitta.routes.BaseRoute
+import net.perfectdreams.spicymorenitta.routes.Birthday2020Route
+import net.perfectdreams.spicymorenitta.routes.Birthday2020StatsRoute
+import net.perfectdreams.spicymorenitta.routes.CommandsRoute
+import net.perfectdreams.spicymorenitta.routes.DailyRoute
+import net.perfectdreams.spicymorenitta.routes.DiscordBotBrasileiroRoute
+import net.perfectdreams.spicymorenitta.routes.DonateRoute
+import net.perfectdreams.spicymorenitta.routes.FanArtsRoute
+import net.perfectdreams.spicymorenitta.routes.HomeRoute
+import net.perfectdreams.spicymorenitta.routes.ReputationRoute
+import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
+import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.AuditLogRoute
+import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.AutoroleConfigRoute
+import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.BadgeRoute
+import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.CustomCommandsRoute
+import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.DailyMultiplierRoute
+import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.FortniteConfigRoute
+import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.GeneralConfigRoute
+import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.LevelUpRoute
+import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.MemberCounterRoute
+import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.MiscellaneousConfigRoute
+import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.ModerationConfigRoute
+import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.PremiumKeyRoute
+import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.TwitchRoute
+import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.TwitterRoute
+import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.WelcomerConfigRoute
+import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.YouTubeRoute
+import net.perfectdreams.spicymorenitta.routes.user.dashboard.AllBackgroundsListDashboardRoute
+import net.perfectdreams.spicymorenitta.routes.user.dashboard.AvailableBundlesDashboardRoute
+import net.perfectdreams.spicymorenitta.routes.user.dashboard.BackgroundsListDashboardRoute
+import net.perfectdreams.spicymorenitta.routes.user.dashboard.DailyShopDashboardRoute
+import net.perfectdreams.spicymorenitta.routes.user.dashboard.ProfileDesignsListDashboardRoute
+import net.perfectdreams.spicymorenitta.routes.user.dashboard.ShipEffectsDashboardRoute
+import net.perfectdreams.spicymorenitta.utils.AdvertisementUtils
+import net.perfectdreams.spicymorenitta.utils.AuthUtils
+import net.perfectdreams.spicymorenitta.utils.ErrorTracker
+import net.perfectdreams.spicymorenitta.utils.GoogleAdSense
+import net.perfectdreams.spicymorenitta.utils.Logging
+import net.perfectdreams.spicymorenitta.utils.Moment
+import net.perfectdreams.spicymorenitta.utils.NitroPay
+import net.perfectdreams.spicymorenitta.utils.TingleModal
+import net.perfectdreams.spicymorenitta.utils.TingleOptions
+import net.perfectdreams.spicymorenitta.utils.WebsiteUtils
+import net.perfectdreams.spicymorenitta.utils.gtag
+import net.perfectdreams.spicymorenitta.utils.onClick
+import net.perfectdreams.spicymorenitta.utils.onDOMReady
+import net.perfectdreams.spicymorenitta.utils.onMouseEnter
+import net.perfectdreams.spicymorenitta.utils.onMouseLeave
+import net.perfectdreams.spicymorenitta.utils.onScroll
+import net.perfectdreams.spicymorenitta.utils.select
+import net.perfectdreams.spicymorenitta.utils.selectAll
+import net.perfectdreams.spicymorenitta.utils.trackOverflowChanges
+import net.perfectdreams.spicymorenitta.utils.visibleModal
+import org.w3c.dom.Element
+import org.w3c.dom.HTMLAnchorElement
+import org.w3c.dom.HTMLDivElement
+import org.w3c.dom.HTMLElement
+import org.w3c.dom.asList
 import kotlin.collections.set
 import kotlin.js.Date
 import kotlin.js.Json
@@ -50,61 +116,61 @@ class SpicyMorenitta : Logging {
 
 	val pageLoadLock = Mutex()
 	val routes = mutableListOf(
-			HomeRoute(),
-			DiscordBotBrasileiroRoute(),
-			FanArtsRoute(this),
-			UpdateNavbarSizePostRender("/support", false, false),
-			UpdateNavbarSizePostRender("/blog", false, false),
-			UpdateNavbarSizePostRender("/guidelines", false, false),
-			AuditLogRoute(this),
-			LevelUpRoute(this),
-			TwitterRoute(this),
-			CommandsRoute(this),
-			GeneralConfigRoute(this),
-			BadgeRoute(this),
-			DailyMultiplierRoute(this),
-			LevelUpRoute(this),
-			PremiumKeyRoute(this),
-			TwitterRoute(this),
-			YouTubeRoute(this),
-			TwitchRoute(this),
-			DonateRoute(this),
-			FortniteConfigRoute(this),
-			ShipEffectsDashboardRoute(this),
-			AvailableBundlesDashboardRoute(this),
-			DailyRoute(this),
-			BackgroundsListDashboardRoute(this),
-			AllBackgroundsListDashboardRoute(this),
-			ProfileDesignsListDashboardRoute(this),
-			DailyShopDashboardRoute(this),
-			Birthday2020Route(this),
-			Birthday2020StatsRoute(this),
-			ReputationRoute(),
-			MiscellaneousConfigRoute(this),
-			AutoroleConfigRoute(this),
-			MemberCounterRoute(this),
-			ModerationConfigRoute(this),
-			WelcomerConfigRoute(this),
-			CustomCommandsRoute(this)
+		HomeRoute(),
+		DiscordBotBrasileiroRoute(),
+		FanArtsRoute(this),
+		UpdateNavbarSizePostRender("/support", false, false),
+		UpdateNavbarSizePostRender("/blog", false, false),
+		UpdateNavbarSizePostRender("/guidelines", false, false),
+		AuditLogRoute(this),
+		LevelUpRoute(this),
+		TwitterRoute(this),
+		CommandsRoute(this),
+		GeneralConfigRoute(this),
+		BadgeRoute(this),
+		DailyMultiplierRoute(this),
+		LevelUpRoute(this),
+		PremiumKeyRoute(this),
+		TwitterRoute(this),
+		YouTubeRoute(this),
+		TwitchRoute(this),
+		DonateRoute(this),
+		FortniteConfigRoute(this),
+		ShipEffectsDashboardRoute(this),
+		AvailableBundlesDashboardRoute(this),
+		DailyRoute(this),
+		BackgroundsListDashboardRoute(this),
+		AllBackgroundsListDashboardRoute(this),
+		ProfileDesignsListDashboardRoute(this),
+		DailyShopDashboardRoute(this),
+		Birthday2020Route(this),
+		Birthday2020StatsRoute(this),
+		ReputationRoute(),
+		MiscellaneousConfigRoute(this),
+		AutoroleConfigRoute(this),
+		MemberCounterRoute(this),
+		ModerationConfigRoute(this),
+		WelcomerConfigRoute(this),
+		CustomCommandsRoute(this)
 	)
 
 	val validWebsiteLocaleIds = mutableListOf(
-			"br",
-			"us",
-			"es",
-			"pt-furry",
-			"en-furry",
-			"br-debug",
-			"en-debug"
+		"br",
+		"us",
+		"es",
+		"pt-furry",
+		"en-furry",
+		"br-debug",
+		"en-debug"
 	)
 	val websiteLocaleIdToLocaleId = mutableMapOf(
-			"br" to "default",
-			"us" to "en-us",
-			"es" to "es-es",
-			"pt-furry" to "pt-furry",
-			"en-furry" to "en-furry",
-			"br-debug" to "pt-debug",
-			"en-debug" to "en-debug"
+		"br" to "default",
+		"us" to "en-us",
+		"es" to "es-es",
+		"pt-furry" to "pt-furry",
+		"en-furry" to "en-furry",
+		"br-debug" to "pt-debug",
+		"en-debug" to "en-debug"
 	)
 
 	val localeId: String
@@ -145,12 +211,12 @@ class SpicyMorenitta : Logging {
 		console.log("Stack: ${dynamicException.stack}")
 
 		ErrorTracker.processException(
-				this,
-				dynamicException.message as String,
-				dynamicException.fileName as String,
-				dynamicException.lineNumber as Int,
-				dynamicException.columnNumber as Int,
-				dynamicException
+			this,
+			dynamicException.message as String,
+			dynamicException.fileName as String,
+			dynamicException.lineNumber as Int,
+			dynamicException.columnNumber as Int,
+			dynamicException
 		)
 		throw exception
 	}
@@ -183,12 +249,12 @@ class SpicyMorenitta : Logging {
 			val userThemeCookie = CookiesUtils.readCookie("userTheme")
 			if (userThemeCookie != null)
 				WebsiteThemeUtils.changeWebsiteThemeTo(
-						try {
-							WebsiteThemeUtils.WebsiteTheme.valueOf(userThemeCookie)
-						} catch (e: IllegalArgumentException) {
-							WebsiteThemeUtils.WebsiteTheme.DEFAULT
-						},
-						true
+					try {
+						WebsiteThemeUtils.WebsiteTheme.valueOf(userThemeCookie)
+					} catch (e: IllegalArgumentException) {
+						WebsiteThemeUtils.WebsiteTheme.DEFAULT
+					},
+					true
 				)
 		}
 
@@ -212,12 +278,12 @@ class SpicyMorenitta : Logging {
 				debug("Does the route need locale data? ${currentRoute.requiresLocales}")
 				debug("Does the route need user identification data? ${currentRoute.requiresUserIdentification}")
 				val deferred = listOf(
-						async {
-							loadLocale()
-						},
-						async {
-							loadLoggedInUser()
-						}
+					async {
+						loadLocale()
+					},
+					async {
+						loadLoggedInUser()
+					}
 				)
 
 				if (currentRoute.requiresLocales) {
@@ -380,61 +446,82 @@ class SpicyMorenitta : Logging {
 
 				deleteAccountButton.onClick {
 					val modal = TingleModal(
-							TingleOptions(
-									footer = true,
-									cssClass = arrayOf("tingle-modal--overflow")
-							)
+						TingleOptions(
+							footer = true,
+							cssClass = arrayOf("tingle-modal--overflow")
+						)
 					)
 
-					modal.addFooterBtn("<i class=\"fas fa-redo\"></i> ${locale["website.dashboard.profile.deleteAccount.deleteMyAccount"]}", "button-discord button-discord-attention pure-button button-discord-modal") {
-						showLoadingScreen()
-						launch {
-							http.post<String>("${window.location.origin}/api/v1/users/@me/delete") {}
-							window.location.href = "/"
+					var counterJob: Job? = null
+
+					var counterCountingDown = 300
+
+					modal.addFooterBtn("<i class=\"fas fa-redo\"></i> ${locale["website.dashboard.profile.deleteAccount.deleteMyAccount"]} (${counterCountingDown}s)", "button-discord button-discord-attention pure-button button-discord-modal delete-account-button disabled") {
+						if (counterCountingDown == 0) {
+							showLoadingScreen()
+							launch {
+								http.post<String>("${window.location.origin}/api/v1/users/@me/delete") {}
+								window.location.href = "/"
+							}
 						}
 					}
 
 					modal.addFooterBtn("<i class=\"fas fa-times\"></i> ${locale["modules.levelUp.resetXp.cancel"]}", "button-discord pure-button button-discord-modal button-discord-modal-secondary-action") {
 						modal.close()
+						counterJob?.cancel()
 					}
 
 					modal.setContent(
-							createHTML().div {
-								div(classes = "category-name") {
-									+ locale["modules.levelUp.resetXp.areYouSure"]
+						createHTML().div {
+							div(classes = "category-name") {
+								+ locale["modules.levelUp.resetXp.areYouSure"]
+							}
+
+							div {
+								style = "text-align: center;"
+
+								img(src = "https://loritta.website/assets/img/fanarts/l6.png") {
+									width = "250"
 								}
 
-								div {
-									style = "text-align: center;"
-
-									img(src = "https://loritta.website/assets/img/fanarts/l6.png") {
-										width = "250"
-									}
-
-									locale.getList("website.dashboard.profile.deleteAccount.description").forEach {
-										p {
-											+ it
-										}
-									}
-
+								locale.getList("website.dashboard.profile.deleteAccount.description").forEach {
 									p {
-										style = "font-size: 2.0em; color: red;"
-
-										+ locale["website.dashboard.profile.deleteAccount.yourAccountWillBeSuspendedWarning"]
+										+ it
 									}
+								}
 
-									locale.getList("website.dashboard.profile.deleteAccount.warningDescription").forEach {
-										p {
-											style = "font-size: 1.25em; color: red;"
-											+ it
-										}
+								p {
+									style = "font-size: 2.0em; color: red;"
+
+									+ locale["website.dashboard.profile.deleteAccount.yourAccountWillBeSuspendedWarning"]
+								}
+
+								locale.getList("website.dashboard.profile.deleteAccount.warningDescription").forEach {
+									p {
+										style = "font-size: 1.25em; color: red;"
+										+ it
 									}
 								}
 							}
+						}
 					)
 					modal.open()
 
 					modal.trackOverflowChanges(this)
+
+					counterJob = launch {
+						while (this.isActive && counterCountingDown > 0) {
+							val visibleModalDeleteAccountButton = visibleModal.querySelector(".delete-account-button") ?: break
+							counterCountingDown--
+							visibleModalDeleteAccountButton.innerHTML = "<i class=\"fas fa-redo\"></i> ${locale["website.dashboard.profile.deleteAccount.deleteMyAccount"]} (${counterCountingDown}s)"
+
+							if (counterCountingDown == 0) {
+								visibleModalDeleteAccountButton.removeClass("disabled")
+								visibleModalDeleteAccountButton.innerHTML = "<i class=\"fas fa-redo\"></i> ${locale["website.dashboard.profile.deleteAccount.deleteMyAccount"]}"
+							}
+							delay(1_000)
+						}
+					}
 				}
 			}
 		}
