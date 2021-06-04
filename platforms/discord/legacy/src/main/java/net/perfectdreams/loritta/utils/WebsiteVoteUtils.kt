@@ -24,8 +24,10 @@ object WebsiteVoteUtils {
 	//
 	// Because if Loritta is GC'd at the same time the votes is received, the response may take more than 5s and
 	// top.gg retries the vote... but Loritta did process the previous request! It just did take more time than it should...
+	//
+	// Before the expiration was after 1 minutes, but we had issues with top.gg retrying after 1 minute, so now it is 15 minutes
 	private val TOP_GG_USER_VOTED_AT = Caffeine.newBuilder()
-		.expireAfterWrite(60, TimeUnit.SECONDS)
+		.expireAfterWrite(15, TimeUnit.MINUTES)
 		.build<Long, Long>()
 
 	// Also used to avoid the issue described above
