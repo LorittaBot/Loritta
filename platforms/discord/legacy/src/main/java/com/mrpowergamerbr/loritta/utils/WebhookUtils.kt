@@ -29,8 +29,9 @@ object WebhookUtils {
 
 		val webhookList = textChannel.guild.retrieveWebhooks().await()
 				.filter {
-					// Webhooks criadas pelo usuário são INCOMING
-					it.type == WebhookType.INCOMING
+					// Webhooks created by users or bots are INCOMING and we only want to get webhooks created by Loritta!
+					// See: https://github.com/discord/discord-api-docs/issues/3056
+					it.type == WebhookType.INCOMING && it.ownerAsUser?.idLong == channel.jda.selfUser.idLong
 				}
 
 		val webhooks = webhookList.filter { it.channel == textChannel }

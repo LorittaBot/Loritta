@@ -507,7 +507,7 @@ class CommandManager(loritta: Loritta) {
 					if (profile != null && !profile.isInGuild)
 						profile.isInGuild = true
 				}
-				
+
 				lorittaShards.updateCachedUserData(context.userHandle)
 
 				command.run(context, context.locale)

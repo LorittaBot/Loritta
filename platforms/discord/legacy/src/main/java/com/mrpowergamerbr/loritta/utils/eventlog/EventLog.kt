@@ -22,11 +22,10 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.VoiceChannel
 import net.dv8tion.jda.api.entities.Webhook
 import net.dv8tion.jda.api.entities.WebhookType
-import net.dv8tion.jda.api.exceptions.ErrorResponseException
-import net.dv8tion.jda.api.requests.ErrorResponse
 import net.perfectdreams.loritta.common.exposed.dao.CachedDiscordWebhook
 import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -50,18 +49,21 @@ object EventLog {
 	@OptIn(ExperimentalTime::class)
 	private val MISSING_PERMISSIONS_COOLDOWN = 15.0.toDuration(DurationUnit.MINUTES)
 
+	@OptIn(ExperimentalTime::class)
+	private val UNKNOWN_WEBHOOK_PHASE_2_COOLDOWN = 15.0.toDuration(DurationUnit.MINUTES)
+
 	val logger = KotlinLogging.logger {}
 	// This is used to avoid spamming Discord with the same webhook creation request, so we synchronize access to the method
 	private val webhookRetrievalMutex = Caffeine.newBuilder().expireAfterAccess(1, TimeUnit.MINUTES).build<Long, Mutex>()
 		.asMap()
 
 	/**
-	 * Gets a webhook in the EventLog configured in the [guild], if a webhook doesn't exist, it will be created
+	 * Sends the [message] to the [channelId] via a webhook, the webhook may be created or pulled from the guild if it is needed
 	 *
-	 * @param message        the message you want to be sent
-	 * @param guild          the guild where the config is in
-	 * @param eventLogConfig the event log configuration of the server
-	 * @return if the message was successfully sent or not
+	 * @param applicationId used as a webhook filter, will only get webhooks created by the application ID
+	 * @param channelId     where the message will be sent
+	 * @param message       the message that will be sent
+	 * @return if the message was successfully sent
 	 */
 	@OptIn(ExperimentalTime::class)
 	suspend fun sendMessageInEventLogViaWebhook(message: WebhookMessage, guild: Guild, eventLogConfig: EventLogConfig): Boolean {
@@ -69,166 +71,177 @@ object EventLog {
 		val channel = guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return false
 		val channelId = channel.idLong
 
-		// Synchronize the database access and webhook creation within a mutex
-		// This is useful to avoid multiple event log requests causing havoc due to the lack of synchronization, causing multiple webhooks to be created (and deleted!) due to
-		// multiple threads accessing this function
-		// The mutex key is the channel ID, after all, webhooks are bound to a specific channel
-		webhookRetrievalMutex.getOrPut(channelId) { Mutex() }.withLock {
-			val alreadyCachedWebhookFromDatabase = withContext(Dispatchers.IO) {
-				transaction(Databases.loritta) {
-					CachedDiscordWebhook.findById(channelId)
-				}
+		val mutex = webhookRetrievalMutex.getOrPut(channelId) { Mutex() }
+		logger.info { "Retrieving webhook to be used in $channelId, is mutex locked? ${mutex.isLocked}" }
+		return mutex.withLock {
+			_sendMessageInEventLogViaWebhook(message, guild, channel)
+		}
+	}
+
+	/**
+	 * Sends the [message] to the [channelId] via a webhook, the webhook may be created or pulled from the guild if it is needed
+	 *
+	 * @param applicationId used as a webhook filter, will only get webhooks created by the application ID
+	 * @param channelId where the message will be sent
+	 * @param message   the message that will be sent
+	 * @return if the message was successfully sent
+	 */
+	@OptIn(ExperimentalTime::class)
+	// This is doesn't wrap in a mutex, that's why it is private
+	// The reason it starts with a underscore is because it is a private method and I can't find another good name for it
+	// The reason this is a separate method is to avoid deadlocking due to accessing an already locked mutex when trying to retrieve the webhook
+	private suspend fun _sendMessageInEventLogViaWebhook(message: WebhookMessage, guild: Guild, channel: TextChannel): Boolean {
+		// From SocialRelayer, changed a bit to use JDA
+		val channelId = channel.idLong
+
+		logger.info { "Trying to retrieve a webhook to be used in $channelId" }
+
+		val alreadyCachedWebhookFromDatabase = withContext(Dispatchers.IO) {
+			transaction(Databases.loritta) {
+				CachedDiscordWebhook.findById(channelId)
 			}
+		}
 
-			if (alreadyCachedWebhookFromDatabase != null) {
-				val shouldIgnoreDueToUnknownChannel =
-					alreadyCachedWebhookFromDatabase.state == WebhookState.UNKNOWN_CHANNEL
-				val shouldIgnoreDueToMissingPermissions =
-					alreadyCachedWebhookFromDatabase.state == WebhookState.MISSING_PERMISSION && MISSING_PERMISSIONS_COOLDOWN.toLong(DurationUnit.MILLISECONDS) >= (System.currentTimeMillis() - alreadyCachedWebhookFromDatabase.updatedAt)
-				val shouldIgnore = shouldIgnoreDueToUnknownChannel || shouldIgnoreDueToMissingPermissions
+		if (alreadyCachedWebhookFromDatabase != null) {
+			val shouldIgnoreDueToUnknownChannel = alreadyCachedWebhookFromDatabase.state == WebhookState.UNKNOWN_CHANNEL
+			val shouldIgnoreDueToMissingPermissions = alreadyCachedWebhookFromDatabase.state == WebhookState.MISSING_PERMISSION && MISSING_PERMISSIONS_COOLDOWN.toLong(DurationUnit.MILLISECONDS) >= (System.currentTimeMillis() - alreadyCachedWebhookFromDatabase.updatedAt)
+			val shouldIgnoreDueToUnknownWebhookPhaseTwo = alreadyCachedWebhookFromDatabase.state == WebhookState.UNKNOWN_WEBHOOK_PHASE_2 && UNKNOWN_WEBHOOK_PHASE_2_COOLDOWN.toLong(DurationUnit.MILLISECONDS) >= (System.currentTimeMillis() - alreadyCachedWebhookFromDatabase.updatedAt)
+			val shouldIgnore = shouldIgnoreDueToUnknownChannel || shouldIgnoreDueToMissingPermissions || shouldIgnoreDueToUnknownWebhookPhaseTwo
 
-				if (shouldIgnore) {
-					logger.warn { "Ignoring webhook retrieval for $channelId because I wasn't able to create a webhook for it before... Webhook State: ${alreadyCachedWebhookFromDatabase.state}" }
-					return false
-				}
+			if (shouldIgnore) {
+				logger.warn { "Ignoring webhook retrieval for $channelId because I wasn't able to create a webhook for it before... Webhook State: ${alreadyCachedWebhookFromDatabase.state}" }
+				return false
 			}
+		}
 
-			var guildWebhookFromDatabase = alreadyCachedWebhookFromDatabase
+		var guildWebhookFromDatabase = alreadyCachedWebhookFromDatabase
 
-			// Okay, so we don't have any webhooks available OR the last time we tried checking it, it was a "MISSING_PERMISSION"... let's try pulling them from Discord and then register them!
-			if (guildWebhookFromDatabase == null || guildWebhookFromDatabase.state == WebhookState.MISSING_PERMISSION) {
-				logger.info { "First available webhook of $channelId to send a message is missing, trying to pull webhooks from the channel..." }
-
-				try {
-					if (!guild.selfMember.hasPermission(channel, Permission.MANAGE_WEBHOOKS)) {
-						withContext(Dispatchers.IO) {
-							transaction(Databases.loritta) {
-								CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
-									it[id] = channelId
-									// We don't replace the webhook token here... there is no pointing in replacing it.
-									it[state] = WebhookState.MISSING_PERMISSION
-									it[updatedAt] = System.currentTimeMillis()
-								}.resultedValues!!.first()
-							}
-						}
-						return false
-					}
-
-					// Try pulling the already created webhooks...
-					val webhooks = channel.retrieveWebhooks().await()
-
-					val firstAvailableWebhook = webhooks.firstOrNull { it.type == WebhookType.INCOMING }
-					var createdWebhook: Webhook? = null
-
-					// Oh no, there isn't any webhooks available, let's create one!
-					if (firstAvailableWebhook == null) {
-						logger.info { "No available webhooks in $channelId to send the message, creating a new webhook..." }
-
-						val jdaWebhook = channel.createWebhook("Loritta (Event Log)")
-							.await()
-
-						createdWebhook = jdaWebhook
-					}
-
-					val webhook = createdWebhook ?: firstAvailableWebhook ?: error("No webhook was found!")
-
-					logger.info { "Successfully found webhook in $channelId!" }
-
-					// Store the newly found webhook in our database!
-					guildWebhookFromDatabase = withContext(Dispatchers.IO) {
-						transaction(Databases.loritta) {
-							CachedDiscordWebhook.wrapRow(
-								CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
-									it[id] = channelId
-									it[webhookId] = webhook.idLong
-									it[webhookToken] =
-										webhook.token!! // I doubt that the token can be null so let's just force null, heh
-									it[state] = WebhookState.SUCCESS
-									it[updatedAt] = System.currentTimeMillis()
-								}.resultedValues!!.first()
-							)
-						}
-					}
-				} catch (e: ErrorResponseException) {
-					when (e.errorResponse) {
-						ErrorResponse.UNKNOWN_CHANNEL -> {
-							logger.warn(e) { "Unknown channel: $channelId; We are WILL NEVER check this channel again!" }
-							withContext(Dispatchers.IO) {
-								transaction(Databases.loritta) {
-									CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
-										it[id] = channelId
-										// We don't replace the webhook token here... there is no pointing in replacing it.
-										it[state] = WebhookState.UNKNOWN_CHANNEL
-										it[updatedAt] = System.currentTimeMillis()
-									}.resultedValues!!.first()
-								}
-							}
-						}
-						ErrorResponse.MISSING_ACCESS -> {
-							logger.warn(e) { "We don't have access in $channelId to do our webhook magic!" }
-							withContext(Dispatchers.IO) {
-								transaction(Databases.loritta) {
-									CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
-										it[id] = channelId
-										// We don't replace the webhook token here... there is no pointing in replacing it.
-										it[state] = WebhookState.MISSING_PERMISSION
-										it[updatedAt] = System.currentTimeMillis()
-									}.resultedValues!!.first()
-								}
-							}
-						}
-						else -> logger.warn(e) { "Something went wrong while trying to do webhook magic with the webhook message $message in $channelId!" }
-					}
-					return false
-				}
-			}
-
-			val webhook = guildWebhookFromDatabase
-
-			logger.info { "Sending $message in $channelId... Using webhook $webhook" }
+		// Okay, so we don't have any webhooks available OR the last time we tried checking it, it wasn't "SUCCESS"... let's try pulling them from Discord and then register them!
+		if (guildWebhookFromDatabase == null || guildWebhookFromDatabase.state != WebhookState.SUCCESS) {
+			logger.info { "First available webhook of $channelId to send a message is missing, trying to pull webhooks from the channel..." }
 
 			try {
-				withContext(Dispatchers.IO) {
-					WebhookClientBuilder("https://discord.com/api/webhooks/${webhook.webhookId}/${webhook.webhookToken}")
-						.setExecutorService(loritta.webhookExecutor)
-						.setHttpClient(loritta.webhookOkHttpClient)
-						.setWait(true) // We want to wait to check if the webhook still exists!
-						.build()
-						.send(message)
-						.await()
-				}
-			} catch (e: JSONException) {
-				// Workaround for https://github.com/MinnDevelopment/discord-webhooks/issues/34
-				// Please remove this later!
-			} catch (e: HttpException) {
-				val statusCode = e.code
-
-				return if (statusCode == 404) {
-					logger.warn(e) { "Webhook $webhook in $channelId does not exist! Deleting the webhook from the database and retrying..." }
+				if (!guild.selfMember.hasPermission(channel, Permission.MANAGE_WEBHOOKS)) {
+					logger.warn { "Failed to get webhook in channel $channelId due to lack of manage webhooks permission" }
 
 					withContext(Dispatchers.IO) {
 						transaction(Databases.loritta) {
-							webhook.delete()
+							CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
+								it[id] = channelId
+								// We don't replace the webhook token here... there is no pointing in replacing it.
+								it[state] = WebhookState.MISSING_PERMISSION
+								it[updatedAt] = System.currentTimeMillis()
+							}.resultedValues!!.first()
 						}
 					}
-
-					sendMessageInEventLogViaWebhook(message, guild, eventLogConfig)
-				} else {
-					logger.warn(e) { "Something went wrong while sending the webhook message $message in $channelId using webhook $webhook!" }
 					return false
 				}
-			}
 
-			logger.info { "Everything went well when sending $message in $channelId using webhook $webhook, updating last used time..." }
+				// Try pulling the already created webhooks...
+				val webhooks = channel.retrieveWebhooks().await()
 
-			withContext(Dispatchers.IO) {
-				transaction(Databases.loritta) {
-					webhook.lastSuccessfullyExecutedAt = System.currentTimeMillis()
+				// Webhooks created by users or bots are INCOMING and we only want to get webhooks created by Loritta!
+				// See: https://github.com/discord/discord-api-docs/issues/3056
+				val firstAvailableWebhook = webhooks.firstOrNull { it.type == WebhookType.INCOMING && it.ownerAsUser?.idLong == guild.selfMember.idLong }
+				var createdWebhook: Webhook? = null
+
+				// Oh no, there isn't any webhooks available, let's create one!
+				if (firstAvailableWebhook == null) {
+					logger.info { "No available webhooks in $channelId to send the message, creating a new webhook..." }
+
+					val jdaWebhook = channel.createWebhook("Loritta (Event Log)")
+						.await()
+
+					createdWebhook = jdaWebhook
 				}
-			}
 
-			return true // yay! :smol_gessy:
+				val webhook = createdWebhook ?: firstAvailableWebhook ?: error("No webhook was found!")
+
+				logger.info { "Successfully found webhook in $channelId!" }
+
+				// Store the newly found webhook in our database!
+				guildWebhookFromDatabase = withContext(Dispatchers.IO) {
+					transaction(Databases.loritta) {
+						CachedDiscordWebhook.wrapRow(
+							CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
+								it[id] = channelId
+								it[webhookId] = webhook.idLong
+								it[webhookToken] = webhook.token!! // I doubt that the token can be null so let's just force null, heh
+								it[state] = WebhookState.SUCCESS
+								it[updatedAt] = System.currentTimeMillis()
+							}.resultedValues!!.first()
+						)
+					}
+				}
+			} catch (e: Exception) {
+				logger.warn(e) { "Failed to get webhook in channel $channelId" }
+
+				withContext(Dispatchers.IO) {
+					transaction(Databases.loritta) {
+						CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
+							it[id] = channelId
+							// We don't replace the webhook token here... there is no pointing in replacing it.
+							it[state] = WebhookState.MISSING_PERMISSION
+							it[updatedAt] = System.currentTimeMillis()
+						}.resultedValues!!.first()
+					}
+				}
+				return false
+			}
 		}
+
+		val webhook = guildWebhookFromDatabase
+
+		logger.info { "Sending $message in $channelId... Using webhook $webhook" }
+
+		try {
+			withContext(Dispatchers.IO) {
+				WebhookClientBuilder("https://discord.com/api/webhooks/${webhook.webhookId}/${webhook.webhookToken}")
+					.setExecutorService(loritta.webhookExecutor)
+					.setHttpClient(loritta.webhookOkHttpClient)
+					.setWait(true) // We want to wait to check if the webhook still exists!
+					.build()
+					.send(message)
+					.await()
+			}
+		} catch (e: JSONException) {
+			// Workaround for https://github.com/MinnDevelopment/discord-webhooks/issues/34
+			// Please remove this later!
+		} catch (e: HttpException) {
+			val statusCode = e.code
+
+			return if (statusCode == 404) {
+				// So, this actually depends on what was the last phase
+				//
+				// Some DUMB people love using bots that automatically delete webhooks to avoid "users abusing them"... well why not manage your permissions correctly then?
+				// So we have two phases: Phase 1 and Phase 2
+				// Phase 1 means that the webhook should be retrieved again without any issues
+				// Phase 2 means that SOMEONE is deleting the bot so it should just be ignored for a few minutes
+				logger.warn(e) { "Webhook $webhook in $channelId does not exist! Current state is ${webhook.state}..." }
+				withContext(Dispatchers.IO) {
+					transaction(Databases.loritta) {
+						webhook.state = if (webhook.state == WebhookState.UNKNOWN_WEBHOOK_PHASE_1) WebhookState.UNKNOWN_WEBHOOK_PHASE_2 else WebhookState.UNKNOWN_WEBHOOK_PHASE_1
+						webhook.updatedAt = System.currentTimeMillis()
+					}
+				}
+				logger.warn(e) { "Webhook $webhook in $channelId does not exist and its state was updated to ${webhook.state}!" }
+
+				_sendMessageInEventLogViaWebhook(message, guild, channel)
+			} else {
+				logger.warn(e) { "Something went wrong while sending the webhook message $message in $channelId using webhook $webhook!" }
+				false
+			}
+		}
+
+		logger.info { "Everything went well when sending $message in $channelId using webhook $webhook, updating last used time..." }
+
+		withContext(Dispatchers.IO) {
+			transaction(Databases.loritta) {
+				webhook.lastSuccessfullyExecutedAt = System.currentTimeMillis()
+			}
+		}
+
+		return true // yay! :smol_gessy:
 	}
 
 	suspend fun onMessageReceived(serverConfig: ServerConfig, message: Message) {
