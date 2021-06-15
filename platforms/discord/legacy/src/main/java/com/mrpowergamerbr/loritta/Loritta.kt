@@ -1,26 +1,56 @@
 package com.mrpowergamerbr.loritta
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.fromJson
+import com.github.salomonbrys.kotson.long
+import com.github.salomonbrys.kotson.nullArray
+import com.github.salomonbrys.kotson.nullInt
+import com.github.salomonbrys.kotson.nullString
+import com.github.salomonbrys.kotson.obj
 import com.google.common.cache.CacheBuilder
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.CommandManager
-import com.mrpowergamerbr.loritta.listeners.*
+import com.mrpowergamerbr.loritta.listeners.ChannelListener
+import com.mrpowergamerbr.loritta.listeners.DiscordListener
+import com.mrpowergamerbr.loritta.listeners.DiscordMetricsListener
+import com.mrpowergamerbr.loritta.listeners.EventLogListener
+import com.mrpowergamerbr.loritta.listeners.MessageListener
+import com.mrpowergamerbr.loritta.listeners.VoiceChannelListener
 import com.mrpowergamerbr.loritta.network.Databases
-import com.mrpowergamerbr.loritta.tables.*
+import com.mrpowergamerbr.loritta.tables.Dailies
+import com.mrpowergamerbr.loritta.tables.DonationKeys
+import com.mrpowergamerbr.loritta.tables.GuildProfiles
+import com.mrpowergamerbr.loritta.tables.Marriages
+import com.mrpowergamerbr.loritta.tables.Mutes
+import com.mrpowergamerbr.loritta.tables.Profiles
+import com.mrpowergamerbr.loritta.tables.Reminders
+import com.mrpowergamerbr.loritta.tables.Reputations
+import com.mrpowergamerbr.loritta.tables.ServerConfigs
+import com.mrpowergamerbr.loritta.tables.ShipEffects
+import com.mrpowergamerbr.loritta.tables.StarboardMessages
+import com.mrpowergamerbr.loritta.tables.StoredMessages
+import com.mrpowergamerbr.loritta.tables.UserSettings
+import com.mrpowergamerbr.loritta.tables.Warns
 import com.mrpowergamerbr.loritta.threads.RaffleThread
 import com.mrpowergamerbr.loritta.threads.RemindersThread
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.BomDiaECia
+import com.mrpowergamerbr.loritta.utils.ConnectionManager
+import com.mrpowergamerbr.loritta.utils.LorittaShards
+import com.mrpowergamerbr.loritta.utils.LorittaTasks
+import com.mrpowergamerbr.loritta.utils.MessageInteractionFunctions
+import com.mrpowergamerbr.loritta.utils.PatchData
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordInstanceConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralInstanceConfig
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
+import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import mu.KotlinLogging
+import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.utils.ChunkingFilter
 import net.dv8tion.jda.api.utils.MemberCachePolicy
@@ -30,13 +60,55 @@ import net.perfectdreams.loritta.platform.discord.DiscordEmoteManager
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.utils.BucketedController
 import net.perfectdreams.loritta.platform.discord.utils.RateLimitChecker
-import net.perfectdreams.loritta.tables.*
+import net.perfectdreams.loritta.tables.AuditLog
+import net.perfectdreams.loritta.tables.BackgroundPayments
+import net.perfectdreams.loritta.tables.Backgrounds
+import net.perfectdreams.loritta.tables.BannedIps
+import net.perfectdreams.loritta.tables.BannedUsers
+import net.perfectdreams.loritta.tables.BlacklistedGuilds
+import net.perfectdreams.loritta.tables.BomDiaECiaWinners
+import net.perfectdreams.loritta.tables.BotVotes
+import net.perfectdreams.loritta.tables.CachedDiscordUsers
+import net.perfectdreams.loritta.tables.CachedYouTubeChannelIds
+import net.perfectdreams.loritta.tables.DailyProfileShopItems
+import net.perfectdreams.loritta.tables.DailyShopItems
+import net.perfectdreams.loritta.tables.DailyShops
+import net.perfectdreams.loritta.tables.ExecutedCommandsLog
+import net.perfectdreams.loritta.tables.Payments
+import net.perfectdreams.loritta.tables.ProfileDesigns
+import net.perfectdreams.loritta.tables.ProfileDesignsPayments
+import net.perfectdreams.loritta.tables.SentYouTubeVideoIds
+import net.perfectdreams.loritta.tables.Sets
+import net.perfectdreams.loritta.tables.SonhosBundles
+import net.perfectdreams.loritta.tables.SonhosTransaction
+import net.perfectdreams.loritta.tables.SpicyStacktraces
+import net.perfectdreams.loritta.tables.Sponsors
 import net.perfectdreams.loritta.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.tables.servers.Giveaways
 import net.perfectdreams.loritta.tables.servers.ServerRolePermissions
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.*
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.AutoroleConfigs
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.EconomyConfigs
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.EventLogConfigs
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.ExperienceRoleRates
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.InviteBlockerConfigs
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.LevelAnnouncementConfigs
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.LevelConfigs
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.MemberCounterChannelConfigs
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.MiscellaneousConfigs
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.ModerationConfigs
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.ReactionOptions
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.RolesByExperience
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.StarboardConfigs
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedTwitchAccounts
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedTwitterAccounts
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedYouTubeAccounts
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.WarnActions
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.WelcomerConfigs
 import net.perfectdreams.loritta.twitch.TwitchAPI
-import net.perfectdreams.loritta.utils.*
+import net.perfectdreams.loritta.utils.CachedUserInfo
+import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.Sponsor
 import net.perfectdreams.loritta.utils.metrics.Prometheus
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
@@ -150,6 +222,20 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 				.setStatus(discordConfig.discord.status)
 				.setBulkDeleteSplittingEnabled(false)
 				.setHttpClientBuilder(okHttpBuilder)
+				.setActivityProvider {
+					// Before we updated the status every 60s and rotated between a list of status
+					// However this causes issues, Discord blocks all gateway events until the status is
+					// updated in all guilds in the shard she is in, which feels... bad, because it takes
+					// long for her to reply to new messages.
+
+					// Used to display the current Loritta cluster in the status
+					val currentCluster = loritta.lorittaCluster
+
+					Activity.of(
+						Activity.ActivityType.valueOf(discordConfig.discord.activity.type),
+						"${discordConfig.discord.activity.name} | Cluster ${currentCluster.id} [$it]"
+					)
+				}
 				.addEventListeners(
 						discordListener,
 						eventLogListener,

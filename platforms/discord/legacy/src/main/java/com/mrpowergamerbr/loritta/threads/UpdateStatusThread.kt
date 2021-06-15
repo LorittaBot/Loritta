@@ -12,11 +12,7 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.Icon
 import java.io.File
-import java.lang.management.ManagementFactory
-import java.time.Instant
-import java.time.ZoneId
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 /**
  * Thread que atualiza o status da Loritta a cada 1s segundos
@@ -33,6 +29,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 	var currentIndex = 0 // Index atual
 	var currentDay = -1
 	var revertedAvatar = false
+	var currentAvatarPayloadHash: Int? = null
 
 	override fun run() {
 		super.run()
@@ -52,6 +49,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 			currentIndex = skipToIndex
 			skipToIndex = -1
 		}
+
 		// Used to display the current Loritta cluster in the status
 		val currentCluster = loritta.lorittaCluster
 
@@ -59,11 +57,21 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 		currentDay = calendar.get(Calendar.DAY_OF_WEEK)
 		val firstInstance = loritta.lorittaShards.getShards().firstOrNull { it.status == JDA.Status.CONNECTED }
 
-		if (loritta.discordConfig.discord.fanArtExtravaganza.enabled && loritta.isMaster) { // Apenas reverta o avatar caso seja o cluster principal
+		// Check if Loritta needs to revert her avatar and status to the previous avatar/status
+		if (loritta.discordConfig.discord.fanArtExtravaganza.enabled && loritta.isMaster) {
 			if (currentDay != loritta.discordConfig.discord.fanArtExtravaganza.dayOfTheWeek && !revertedAvatar) {
 				if (firstInstance != null) {
 					revertedAvatar = true
+					currentAvatarPayloadHash = null
+
 					firstInstance.selfUser.manager.setAvatar(Icon.from(File(Loritta.ASSETS, "avatar_fanarts/original.png"))).complete()
+
+					loritta.lorittaShards.shardManager.setActivityProvider {
+						Activity.of(
+							Activity.ActivityType.valueOf(loritta.discordConfig.discord.activity.type),
+							"${loritta.discordConfig.discord.activity.name} | Cluster ${currentCluster.id} [$it]"
+						)
+					}
 				}
 			}
 		}
@@ -85,6 +93,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 
 				val fanArt = loritta.discordConfig.discord.fanArtExtravaganza.fanArts[currentIndex]
 
+				// Only update the avatar if we are in the first cluster
 				if (firstInstance != null) {
 					if (loritta.isMaster) // Apenas troque o avatar caso seja o cluster principal (ele que controla tudo!)
 						firstInstance.selfUser.manager.setAvatar(Icon.from(File(Loritta.ASSETS, "avatar_fanarts/${fanArt.fileName}"))).complete()
@@ -98,7 +107,11 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 				val currentFanArtInMasterCluster = runBlocking { lorittaShards.queryMasterLorittaCluster("/api/v1/loritta/current-fan-art-avatar").await() }.obj
 
 				val artistId = currentFanArtInMasterCluster["artistId"].nullString
-				if (artistId != null) { // Se o artistId for nulo, então ele não está marcado!
+
+				// If the artist ID is null, then there isn't any avatar available!
+				// We also check if the current payload hash is different than what we have stored
+				// We do this to only update the status when we *really* need to
+				if (artistId != null && currentAvatarPayloadHash != currentFanArtInMasterCluster.hashCode()) {
 					val fancyName = currentFanArtInMasterCluster["fancyName"].nullString
 
 					val artist = runBlocking { lorittaShards.retrieveUserInfoById(artistId.toLong()) }
@@ -109,61 +122,16 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 					loritta.lorittaShards.shardManager.setActivityProvider {
 						Activity.of(
 								Activity.ActivityType.WATCHING,
-								"\uD83D\uDCF7 Fan Art by $displayName \uD83C\uDFA8 | Cluster ${currentCluster.id} [$it]",
-								"https://www.twitch.tv/mrpowergamerbr"
+								"\uD83D\uDCF7 Fan Art by $displayName \uD83C\uDFA8 | Cluster ${currentCluster.id} [$it]"
 						)
 					}
+
+					currentAvatarPayloadHash = currentFanArtInMasterCluster.hashCode()
 					lastUpdate = System.currentTimeMillis()
 				}
 			}
 
 			fanArtMinutes = minutes
-		} else {
-			val diff = System.currentTimeMillis() - lastUpdate
-
-			if (diff >= loritta.discordConfig.discord.delayBetweenActivities) {
-				if (currentIndex > loritta.discordConfig.discord.activities.size - 1) {
-					currentIndex = 0
-				}
-
-				var jvmUpTime = ManagementFactory.getRuntimeMXBean().uptime
-				val days = TimeUnit.MILLISECONDS.toDays(jvmUpTime)
-				jvmUpTime -= TimeUnit.DAYS.toMillis(days)
-				val hours = TimeUnit.MILLISECONDS.toHours(jvmUpTime)
-				jvmUpTime -= TimeUnit.HOURS.toMillis(hours)
-				val minutes = TimeUnit.MILLISECONDS.toMinutes(jvmUpTime)
-				jvmUpTime -= TimeUnit.MINUTES.toMillis(minutes)
-				val seconds = TimeUnit.MILLISECONDS.toSeconds(jvmUpTime)
-
-				
-				val uptime = "${days}d ${hours}h ${minutes}m ${seconds}s"
-				val game = loritta.discordConfig.discord.activities[currentIndex]
-
-				var str = game.name
-				str = str.replace("{guilds}", runBlocking { lorittaShards.queryGuildCount() }.toString())
-				str = str.replace("{uptime}", uptime)
-
-				val willRestartAt = loritta.patchData.willRestartAt
-				if (willRestartAt != null) {
-					val instant = Instant.ofEpochMilli(willRestartAt).atZone(ZoneId.systemDefault())
-					str = "\uD83D\uDEAB Inatividade Agendada: ${instant.hour.toString().padStart(2, '0')}:${instant.minute.toString().padStart(2, '0')}"
-				}
-
-				// We use ".setActivityProvider" to show the shard in the status
-				loritta.lorittaShards.shardManager.setActivityProvider {
-					Activity.of(
-							Activity.ActivityType.valueOf(game.type),
-							"$str | Cluster ${currentCluster.id} [$it]",
-							"https://www.twitch.tv/mrpowergamerbr"
-					)
-				}
-
-				currentIndex++
-				lastUpdate = System.currentTimeMillis()
-
-				if (currentIndex > loritta.discordConfig.discord.activities.size - 1)
-					currentIndex = 0
-			}
 		}
 	}
 }

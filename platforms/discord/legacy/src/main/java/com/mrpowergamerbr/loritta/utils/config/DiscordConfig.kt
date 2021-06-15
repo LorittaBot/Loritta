@@ -19,7 +19,7 @@ data class DiscordConfig(
 		val cacheFlags: List<CacheFlag>,
 		val fanArtExtravaganza: FanArtExtravaganzaConfig,
 		val delayBetweenActivities: Long = 60000L,
-		val activities: List<LorittaGameStatus>,
+		val activity: LorittaGameStatus,
 		val requestLimiter: RequestLimiterConfig
 ) {
 	@Serializable
