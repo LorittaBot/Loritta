@@ -187,7 +187,7 @@ networks = [
 					}
 				}
 				userMessage.append("\n\n")
-				userMessage.append("Sério, obrigada pela fan art, continue assim e continue a transformar o mundo em um lugar melhor! ${Emotes.LORI_HUG}")
+				userMessage.append("Sério, obrigada pela fan art, continue assim e continue a transformar o mundo em um lugar melhor! ${Emotes.LORI_HEART}")
 
 				if (event.channel.idLong == config.addFanArts.firstFanArtChannelId)
 					message.delete().await()

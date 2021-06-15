@@ -21,7 +21,7 @@ tasks {
                     null
             })
         }
-        
+
         with(jar.get() as CopySpec)
     }
 
