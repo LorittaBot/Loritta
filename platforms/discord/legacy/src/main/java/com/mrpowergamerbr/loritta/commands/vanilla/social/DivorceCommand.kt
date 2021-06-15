@@ -6,14 +6,14 @@ import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.profile.ProfileUtils
 import net.perfectdreams.loritta.utils.Emotes
 import org.jetbrains.exposed.sql.update
@@ -32,7 +32,7 @@ class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCa
 			// If the user doesn't have any profile, then he won't have any marriage anyway
 			context.reply(
 					LorittaReply(
-							locale["commands.category.social.youAreNotMarried", "`${context.config.commandPrefix}casar`", Emotes.LORI_HUG],
+							locale["commands.category.social.youAreNotMarried", "`${context.config.commandPrefix}casar`", Emotes.LORI_HEART],
 							Constants.ERROR
 					)
 			)
@@ -43,7 +43,7 @@ class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCa
 			// Now that's for when the marriage doesn't exist
 			context.reply(
 					LorittaReply(
-							locale["commands.category.social.youAreNotMarried", "`${context.config.commandPrefix}casar`", Emotes.LORI_HUG],
+							locale["commands.category.social.youAreNotMarried", "`${context.config.commandPrefix}casar`", Emotes.LORI_HEART],
 							Constants.ERROR
 					)
 			)
@@ -78,7 +78,7 @@ class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCa
 
 				context.reply(
 						LorittaReply(
-								locale["$LOCALE_PREFIX.divorced", Emotes.LORI_HUG]
+								locale["$LOCALE_PREFIX.divorced", Emotes.LORI_HEART]
 						)
 				)
 
