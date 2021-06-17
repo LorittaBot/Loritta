@@ -43,17 +43,11 @@ import net.perfectdreams.loritta.commands.vanilla.economy.TransactionsCommand
 import net.perfectdreams.loritta.commands.vanilla.magic.LoriToolsCommand
 import net.perfectdreams.loritta.commands.vanilla.misc.DiscordBotListCommand
 import net.perfectdreams.loritta.commands.vanilla.misc.DiscordBotListStatusCommand
-import net.perfectdreams.loritta.commands.vanilla.roblox.RbGameCommand
-import net.perfectdreams.loritta.commands.vanilla.roblox.RbUserCommand
-import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaStatusCommand
-import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaTopCommand
-import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaTopLocalCommand
-import net.perfectdreams.loritta.commands.vanilla.social.RankGlobalCommand
-import net.perfectdreams.loritta.commands.vanilla.social.RepTopCommand
-import net.perfectdreams.loritta.commands.vanilla.social.XpNotificationsCommand
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.common.locale.LocaleStringData
+import net.perfectdreams.loritta.commands.vanilla.misc.DiscordBotListTopCommand
+import net.perfectdreams.loritta.commands.vanilla.misc.DiscordBotListTopLocalCommand
+import net.perfectdreams.loritta.commands.vanilla.roblox.*
+import net.perfectdreams.loritta.commands.vanilla.social.*
+import net.perfectdreams.loritta.common.locale.*
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.CommandCooldownManager
 import net.perfectdreams.loritta.utils.CommandUtils
@@ -98,6 +92,8 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 			FanArtsCommand(discordLoritta),
 			DiscordBotListCommand(discordLoritta),
 			DiscordBotListStatusCommand(discordLoritta),
+			DiscordBotListTopCommand(discordLoritta),
+			DiscordBotListTopLocalCommand(discordLoritta),
 
 			// ===[ DISCORD ]===
 			ChannelInfoCommand(discordLoritta),
