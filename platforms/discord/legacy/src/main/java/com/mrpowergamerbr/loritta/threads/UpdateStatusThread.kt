@@ -58,13 +58,15 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 		val firstInstance = loritta.lorittaShards.getShards().firstOrNull { it.status == JDA.Status.CONNECTED }
 
 		// Check if Loritta needs to revert her avatar and status to the previous avatar/status
-		if (loritta.discordConfig.discord.fanArtExtravaganza.enabled && loritta.isMaster) {
+		// This is also used in any cluster, but only the master cluster can revert the avatar to its original state!!
+		if (loritta.discordConfig.discord.fanArtExtravaganza.enabled) {
 			if (currentDay != loritta.discordConfig.discord.fanArtExtravaganza.dayOfTheWeek && !revertedAvatar) {
 				if (firstInstance != null) {
 					revertedAvatar = true
 					currentAvatarPayloadHash = null
 
-					firstInstance.selfUser.manager.setAvatar(Icon.from(File(Loritta.ASSETS, "avatar_fanarts/original.png"))).complete()
+					if (loritta.isMaster)
+						firstInstance.selfUser.manager.setAvatar(Icon.from(File(Loritta.ASSETS, "avatar_fanarts/original.png"))).complete()
 
 					loritta.lorittaShards.shardManager.setActivityProvider {
 						Activity.of(
@@ -121,8 +123,8 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 					// We use ".setActivityProvider" to show the shard in the status
 					loritta.lorittaShards.shardManager.setActivityProvider {
 						Activity.of(
-								Activity.ActivityType.WATCHING,
-								"\uD83D\uDCF7 Fan Art by $displayName \uD83C\uDFA8 | Cluster ${currentCluster.id} [$it]"
+							Activity.ActivityType.WATCHING,
+							"\uD83D\uDCF7 Fan Art by $displayName \uD83C\uDFA8 | Cluster ${currentCluster.id} [$it]"
 						)
 					}
 
