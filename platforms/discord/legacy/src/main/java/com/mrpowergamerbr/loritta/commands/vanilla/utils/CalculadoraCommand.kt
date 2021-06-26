@@ -24,6 +24,7 @@ class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calcul
 		if (context.args.isNotEmpty()) {
 			val expression = context.args.joinToString(" ")
 					.replace("_", "")
+					.replace(",", "")
 
 			try {
 				// Regra de três:tm:
