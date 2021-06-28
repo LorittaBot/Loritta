@@ -1,15 +1,10 @@
 package net.perfectdreams.loritta.platform.kord.entities
 
 import dev.kord.core.Kord
-import dev.kord.core.Unsafe
 import dev.kord.core.cache.data.toData
 import dev.kord.core.entity.Guild
 import dev.kord.core.entity.channel.Channel
-import dev.kord.gateway.DefaultGateway
-import dev.kord.rest.service.RestClient
-import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.flow.toList
-import kotlinx.datetime.toKotlinInstant
 import net.perfectdreams.loritta.discord.objects.LorittaDiscordChannel
 import net.perfectdreams.loritta.discord.objects.LorittaGuild
 import net.perfectdreams.loritta.discord.objects.LorittaMember
@@ -22,7 +17,7 @@ class KordGuild(private val client: Kord, private val handle: Guild): LorittaGui
     name = handle.name,
     ownerId = handle.ownerId.value,
     region = handle.regionId,
-    creation = handle.id.timeStamp.toKotlinInstant()
+    creation = handle.id.timeStamp
 ) {
     override suspend fun retrieveMember(id: Long): LorittaMember? {
         return handle.getMemberOrNull(id.toSnowflake())?.toLorittaMember()

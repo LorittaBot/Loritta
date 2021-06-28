@@ -5,8 +5,6 @@ import dev.kord.common.entity.optional.value
 import dev.kord.core.behavior.channel.createMessage
 import dev.kord.rest.builder.message.EmbedBuilder
 import kotlinx.datetime.Instant
-import kotlinx.datetime.toJavaInstant
-import kotlinx.datetime.toKotlinInstant
 import net.perfectdreams.loritta.common.entities.LorittaEmbed
 import net.perfectdreams.loritta.common.entities.LorittaMessage
 import net.perfectdreams.loritta.discord.objects.LorittaDiscordMessageChannel
@@ -17,7 +15,7 @@ class KordMessageChannel(private val handle: dev.kord.core.entity.channel.Messag
     override val topic: String? = handle.data.topic.value
     override val nsfw: Boolean? = handle.data.nsfw.value
     override val guildId: Long? = handle.data.guildId.value?.value
-    override val creation: Instant = handle.id.timeStamp.toKotlinInstant()
+    override val creation: Instant = handle.id.timeStamp
 
     override suspend fun sendMessage(message: LorittaMessage) {
         val embed = message.embed
@@ -39,7 +37,7 @@ class KordMessageChannel(private val handle: dev.kord.core.entity.channel.Messag
                     image = embed.image
                     thumbnail = embed.thumbnail?.let { url -> EmbedBuilder.Thumbnail().also {it.url = url}}
                     color = embed.color?.let { Color(it.rgb) }
-                    timestamp = embed.timestamp?.toJavaInstant()
+                    timestamp = embed.timestamp
                     author = embed.author?.toKord()
                     fields = embed.fields.map { it.toKord() }.toMutableList()
                     footer = embed.footer?.toKord()

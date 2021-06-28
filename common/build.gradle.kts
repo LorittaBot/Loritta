@@ -27,7 +27,7 @@ kotlin {
                 api("org.jetbrains.kotlinx:kotlinx-serialization-core:1.1.0")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
                 api("io.ktor:ktor-client-core:1.5.3")
-                api("org.jetbrains.kotlinx:kotlinx-datetime:0.1.1")
+                api("org.jetbrains.kotlinx:kotlinx-datetime:0.2.1")
 
                 // Used for Math stuff
                 api("com.ionspin.kotlin:bignum:0.3.0")
