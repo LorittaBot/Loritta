@@ -7,7 +7,6 @@ import dev.kord.core.entity.Member
 import dev.kord.core.entity.channel.Channel
 import dev.kord.core.entity.channel.MessageChannel
 import kotlinx.datetime.Instant
-import kotlinx.datetime.toKotlinInstant
 import net.perfectdreams.loritta.discord.objects.ChannelType
 import net.perfectdreams.loritta.discord.objects.LorittaDiscordChannel
 import net.perfectdreams.loritta.discord.objects.LorittaMember
@@ -34,7 +33,7 @@ fun Channel.toLorittaChannel(): LorittaDiscordChannel {
     return if (this is MessageChannel) toLorittaMessageChannel() else object: LorittaDiscordChannel {
         override val id: Long = data.id.value
         override val type: ChannelType = data.type.toLorittaChannelType()
-        override val creation: Instant = data.id.timeStamp.toKotlinInstant()
+        override val creation: Instant = data.id.timeStamp
     }
 }
 
