@@ -11,7 +11,7 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":commands"))
     implementation(project(":services:memory"))
-    implementation("io.ktor:ktor-client-cio:1.5.3")
+    implementation("io.ktor:ktor-client-cio:1.6.0")
 
     // Required for tests, if this is missing then Gradle will throw
     // "No tests found for given includes: [***Test](filter.includeTestsMatching)"
