@@ -11,7 +11,7 @@ kotlin {
         withJava()
     }
 
-    js {
+    js(IR) {
         // Declares that we want to compile for the browser and for nodejs
         browser()
         nodejs()
@@ -26,7 +26,7 @@ kotlin {
                 api("io.github.microutils:kotlin-logging:2.0.6")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-core:1.1.0")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
-                api("io.ktor:ktor-client-core:1.5.3")
+                api("io.ktor:ktor-client-core:1.6.0")
                 api("org.jetbrains.kotlinx:kotlinx-datetime:0.2.1")
 
                 // Used for Math stuff
