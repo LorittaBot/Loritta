@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.commands.vanilla.misc
 
-import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.utils.Constants
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.api.utils.image.JVMImage
@@ -9,7 +8,9 @@ import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.tables.BotVotes
 import net.perfectdreams.loritta.utils.RankingGenerator
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.count
+import org.jetbrains.exposed.sql.selectAll
 
 class DiscordBotListTopCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta, listOf("dbl top"), CommandCategory.MISC) {
     companion object {
@@ -42,8 +43,7 @@ class DiscordBotListTopCommand(loritta: LorittaDiscord): DiscordAbstractCommandB
             val userIdCount = BotVotes.userId.count()
 
             val userData = loritta.newSuspendedTransaction {
-                BotVotes.innerJoin(GuildProfiles, { GuildProfiles.userId }, { userId })
-                    .slice(userId, userIdCount)
+                BotVotes.slice(userId, userIdCount)
                     .selectAll()
                     .groupBy(userId)
                     .orderBy(userIdCount, SortOrder.DESC)
