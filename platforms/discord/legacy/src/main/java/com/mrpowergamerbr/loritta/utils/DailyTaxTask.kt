@@ -232,41 +232,50 @@ class DailyTaxTask : Runnable {
 				}
 
 				val removeMarriages = mutableListOf<Marriage>()
+				val alreadyCheckedMarriages = mutableListOf<Long>()
 
 				// Okay, tudo certo, vamos lá!
 				for ((index, document) in usersThatShouldHaveTheirMarriageRemoved.withIndex()) {
-					val marriage = transaction(Databases.loritta) { document.marriage } ?: continue
+					try {
+						if (document.marriageId?.value in alreadyCheckedMarriages)
+							continue // Do not check stuff twice, if we already checked the marriage don't check it again
 
-					removeMarriages.add(marriage)
+						val marriage = transaction(Databases.loritta) { document.marriage } ?: continue
 
-					val marriedWithId = if (marriage.user1 == document.userId) {
-						marriage.user2
-					} else {
-						marriage.user1
-					}.toString()
+						removeMarriages.add(marriage)
+						alreadyCheckedMarriages.add(marriage.id.value)
 
-					val marriedWith = lorittaShards.shardManager.retrieveUserById(marriedWithId).complete()
-					val user = lorittaShards.shardManager.retrieveUserById(document.userId.toString()).complete()
+						val marriedWithId = if (marriage.user1 == document.userId) {
+							marriage.user2
+						} else {
+							marriage.user1
+						}.toString()
 
-					// The "queueAfter" is to avoid too many requests at the same time
-					if (user != null) {
-						try {
-							user.openPrivateChannel().queueAfter(index.toLong(), TimeUnit.SECONDS) {
-								it.sendMessage("Você não teve dinheiro suficiente para manter o casamento... Infelizmente você foi divorciado...")
+						val marriedWith = lorittaShards.shardManager.retrieveUserById(marriedWithId).complete()
+						val user = lorittaShards.shardManager.retrieveUserById(document.userId.toString()).complete()
+
+						// The "queueAfter" is to avoid too many requests at the same time
+						if (user != null) {
+							try {
+								user.openPrivateChannel().queueAfter(index.toLong(), TimeUnit.SECONDS) {
+									it.sendMessage("Você não teve dinheiro suficiente para manter o casamento... Infelizmente você foi divorciado...")
 										.queue()
+								}
+							} catch (e: Exception) {
 							}
-						} catch (e: Exception) {
 						}
-					}
 
-					if (marriedWith != null) {
-						try {
-							marriedWith.openPrivateChannel().queueAfter(index.toLong(), TimeUnit.SECONDS) {
-								it.sendMessage("Seu parceiro não teve dinheiro suficiente para manter o casamento... Infelizmente você foi divorciado...")
+						if (marriedWith != null) {
+							try {
+								marriedWith.openPrivateChannel().queueAfter(index.toLong(), TimeUnit.SECONDS) {
+									it.sendMessage("Seu parceiro não teve dinheiro suficiente para manter o casamento... Infelizmente você foi divorciado...")
 										.queue()
+								}
+							} catch (e: Exception) {
 							}
-						} catch (e: Exception) {
 						}
+					} catch (e: Exception) {
+						logger.warn { "Something went wrong while checking the profile $index/$document for the marriage tax!" }
 					}
 				}
 

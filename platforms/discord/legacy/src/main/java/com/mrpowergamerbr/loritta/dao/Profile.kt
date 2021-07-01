@@ -11,7 +11,13 @@ import net.perfectdreams.loritta.utils.TakingMoreSonhosThanAllowedException
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.SqlExpressionBuilder
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.or
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.update
 import java.util.*
 
 class Profile(id: EntityID<Long>) : Entity<Long>(id) {
@@ -29,6 +35,7 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 	var afkReason by Profiles.afkReason
 
 	var settings by ProfileSettings referencedOn Profiles.settings
+	val marriageId by Profiles.marriage
 	var marriage by Marriage optionalReferencedOn Profiles.marriage
 
 	/**
