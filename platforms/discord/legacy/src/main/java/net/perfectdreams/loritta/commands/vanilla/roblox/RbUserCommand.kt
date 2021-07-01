@@ -1,7 +1,11 @@
 package net.perfectdreams.loritta.commands.vanilla.roblox
 
 import com.github.kevinsawicki.http.HttpRequest
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.array
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.int
+import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.DateUtils
@@ -16,8 +20,8 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.utils.image.JVMImage
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.utils.Emotes
@@ -32,6 +36,9 @@ import java.time.format.DateTimeFormatter
 class RbUserCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,listOf("rbuser", "rbplayer"), CommandCategory.ROBLOX) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command.rbuser"
+        private val json = Json {
+            ignoreUnknownKeys = true
+        }
 
         // Example data: {"description":"####### ######## ####################################################### Brasil!","created":"2013-01-22T11:00:23.88Z","isBanned":false,"id":37271405,"name":"SonicteamPower","displayName":"SonicteamPower"}
         @Serializable
@@ -155,7 +162,7 @@ class RbUserCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta
                     val y = 55
 
                     val robloxBadgesResponse = robloxBadgesRequest.await()
-                    val robloxBadges = Json.decodeFromString<List<RobloxBadge>>(robloxBadgesResponse)
+                    val robloxBadges = json.decodeFromString<List<RobloxBadge>>(robloxBadgesResponse)
 
                     val entries = robloxBadges.map {
                         if (x > 275) // Break, the list is too big
@@ -217,7 +224,7 @@ class RbUserCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta
                 playerAssets.await()
 
                 val usersApiResponse = usersApiRequest.await()
-                val robloxUserResponse = Json.decodeFromString<RobloxUserResponse>(usersApiResponse)
+                val robloxUserResponse = json.decodeFromString<RobloxUserResponse>(usersApiResponse)
 
                 bufferedImage = bufferedImage.getSubimage(0, 0, 333, 110 + 55)
 
