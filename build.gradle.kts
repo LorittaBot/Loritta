@@ -1,7 +1,3 @@
-buildscript {
-    repositories { jcenter() }
-}
-
 allprojects {
     // Example:
     // ":discord:interactions" will be transformed into "discord"

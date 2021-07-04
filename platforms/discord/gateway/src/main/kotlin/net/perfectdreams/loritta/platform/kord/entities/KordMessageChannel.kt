@@ -1,21 +1,19 @@
 package net.perfectdreams.loritta.platform.kord.entities
 
 import dev.kord.common.Color
-import dev.kord.common.entity.optional.value
 import dev.kord.core.behavior.channel.createMessage
 import dev.kord.rest.builder.message.EmbedBuilder
-import kotlinx.datetime.Instant
 import net.perfectdreams.loritta.common.entities.LorittaEmbed
 import net.perfectdreams.loritta.common.entities.LorittaMessage
 import net.perfectdreams.loritta.discord.objects.LorittaDiscordMessageChannel
 
 class KordMessageChannel(private val handle: dev.kord.core.entity.channel.MessageChannel) : LorittaDiscordMessageChannel {
-    override val id: Long = handle.id.value
+    /* override val id: Long = handle.id.value
     override val name: String? = handle.data.name.value
     override val topic: String? = handle.data.topic.value
     override val nsfw: Boolean? = handle.data.nsfw.value
     override val guildId: Long? = handle.data.guildId.value?.value
-    override val creation: Instant = handle.id.timeStamp
+    override val creation: Instant = handle.id.timeStamp */
 
     override suspend fun sendMessage(message: LorittaMessage) {
         val embed = message.embed

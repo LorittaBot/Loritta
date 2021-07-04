@@ -5,10 +5,7 @@ import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDec
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.common.utils.DateUtils
-import net.perfectdreams.loritta.common.utils.embed.LorittaColor
 import net.perfectdreams.loritta.discord.command.DiscordCommandContext
-import net.perfectdreams.loritta.discord.objects.LorittaDiscordMessageChannel
 import net.perfectdreams.loritta.discord.util.optionalChannel
 import net.perfectdreams.loritta.platform.discord.DiscordCommandExecutor
 import net.perfectdreams.loritta.platform.discord.utils.declarations.ChannelInfoCommand
@@ -26,7 +23,8 @@ class ChannelInfoExecutor(val emotes: Emotes) : DiscordCommandExecutor() {
     override suspend fun executeDiscord(context: DiscordCommandContext, args: CommandArguments) {
         val channel = args[options.channelId] ?: context.channel
 
-        if (channel as? LorittaDiscordMessageChannel == null || channel.guildId == null) {
+        TODO()
+        /* if (channel as? LorittaDiscordMessageChannel == null || channel.guildId == null) {
             return context.sendReply("Eu não consegui identificar o canal de texto que você está procurando!", ":no_entry:") {
                 isEphemeral = true
             }
@@ -53,6 +51,6 @@ class ChannelInfoExecutor(val emotes: Emotes) : DiscordCommandExecutor() {
             field("\uD83D\uDD39 Guild", "`${channel.guildId}`") {
                 inline = true
             }
-        }
+        } */
     }
 }

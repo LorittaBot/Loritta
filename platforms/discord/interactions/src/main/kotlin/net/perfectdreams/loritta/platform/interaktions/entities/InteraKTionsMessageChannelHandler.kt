@@ -1,18 +1,15 @@
 package net.perfectdreams.loritta.platform.interaktions.entities
 
-import dev.kord.common.entity.DiscordChannel
-import dev.kord.common.entity.MessageFlag
-import dev.kord.common.entity.MessageFlags
-import dev.kord.common.entity.Snowflake
-import net.perfectdreams.discordinteraktions.context.SlashCommandContext
+import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandContext
 import net.perfectdreams.loritta.common.entities.LorittaMessage
 
-class InteraKTionsMessageChannelHandler(handle: DiscordChannel, private val context: SlashCommandContext) : StaticInteraKTionsMessageChannel(handle) {
+class InteraKTionsMessageChannelHandler(private val context: SlashCommandContext) : StaticInteraKTionsMessageChannel() {
     override suspend fun sendMessage(message: LorittaMessage) {
         context.sendMessage {
             val impersonation = message.impersonation
 
-            if (impersonation != null) {
+            // TODO: Fix
+            /* if (impersonation != null) {
                 // We are going to *impersonate* someone (woo)
                 // Because we can't use webhooks, we will replace them with a embed
                 embed {
@@ -25,7 +22,7 @@ class InteraKTionsMessageChannelHandler(handle: DiscordChannel, private val cont
                         description = message.content
                     }
                 }
-            } else {
+            } else { */
                 content = buildString {
                     if (message.content != null)
                         append(message.content)
@@ -35,9 +32,9 @@ class InteraKTionsMessageChannelHandler(handle: DiscordChannel, private val cont
                         append("${reply.prefix} **|** ${reply.content}")
                     }
                 }
-            }
+            // }
 
-            for (file in message.files) {
+            /* for (file in message.files) {
                 addFile(file.key, file.value.inputStream())
             }
 
@@ -67,11 +64,11 @@ class InteraKTionsMessageChannelHandler(handle: DiscordChannel, private val cont
                         icon = embed.footer?.icon
                     }
                 }
-            }
+            } */
 
             // Keep in mind that ephemeral messages do not support *everything*, so let's throw a exception if
             // we are using stuff that Discord ephemeral messages do not support
-            if (message.isEphemeral) {
+            /* if (message.isEphemeral) {
                 if (message.embed != null)
                     throw UnsupportedOperationException("Ephemeral Messages do not support embeds!")
                 if (message.files.isNotEmpty())
@@ -89,7 +86,7 @@ class InteraKTionsMessageChannelHandler(handle: DiscordChannel, private val cont
                 }
 
                 repliedUser = message.allowedMentions.repliedUser
-            }.build()
+            }.build() */
         }
     }
 }

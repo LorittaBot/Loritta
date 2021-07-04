@@ -4,11 +4,11 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import net.perfectdreams.discordinteraktions.api.entities.Channel
 import net.perfectdreams.discordinteraktions.api.entities.User
-import net.perfectdreams.discordinteraktions.commands.SlashCommandArguments
-import net.perfectdreams.discordinteraktions.commands.SlashCommandExecutor
-import net.perfectdreams.discordinteraktions.context.SlashCommandContext
+import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
+import net.perfectdreams.discordinteraktions.common.context.commands.GuildSlashCommandContext
+import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandContext
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandException
 import net.perfectdreams.loritta.common.commands.CommandExecutor
@@ -24,7 +24,6 @@ import net.perfectdreams.loritta.platform.interaktions.LorittaInteraKTions
 import net.perfectdreams.loritta.platform.interaktions.entities.InteraKTionsMessageChannelHandler
 import net.perfectdreams.loritta.platform.interaktions.entities.InteraKTionsUser
 import net.perfectdreams.loritta.platform.interaktions.utils.metrics.Prometheus
-import net.perfectdreams.loritta.platform.interaktions.utils.toLorittaGuild
 import kotlin.streams.toList
 
 /**
@@ -60,7 +59,7 @@ class SlashCommandExecutorWrapper(
         val rootDeclarationClazzName = rootDeclaration.parent.simpleName
         val executorClazzName = executor::class.simpleName
 
-        logger.info { "(${context.user.id.value}) $executor $stringifiedArgumentNames" }
+        logger.info { "(${context.sender.id.value}) $executor $stringifiedArgumentNames" }
 
         val timer = Prometheus.EXECUTED_COMMAND_LATENCY_COUNT
             .labels(rootDeclarationClazzName, executorClazzName)
@@ -70,21 +69,29 @@ class SlashCommandExecutorWrapper(
             // Map Cinnamon Arguments to Discord InteraKTions Arguments
             val cinnamonArgs = mutableMapOf<CommandOption<*>, Any?>()
             val interaKTionsArgumentEntries = args.types.entries
-            val guild = context.request.guildId.value?.let { loritta.interactions.rest.guild.getGuild(it) }
-            val channel = loritta.interactions.rest.channel.getChannel(context.request.channelId)
+
+            val guildId = if (context is GuildSlashCommandContext) {
+                context.guildId
+            } else {
+                null
+            }
+
+            // val channel = loritta.interactions.rest.channel.getChannel(context.request.channelId)
 
             val cinnamonContext = InteraKTionsCommandContext(
                 loritta,
                 locale,
-                InteraKTionsUser(context.user),
-                InteraKTionsMessageChannelHandler(channel, context),
-                guild?.toLorittaGuild(loritta.interactions.rest)
+                InteraKTionsUser(context.sender),
+                InteraKTionsMessageChannelHandler(context),
+                // guild?.toLorittaGuild(loritta.interactions.rest)
+                null
             )
 
-            if (!rootDeclaration.allowedInPrivateChannel && guild == null) {
-                context.sendEphemeralMessage {
+            if (!rootDeclaration.allowedInPrivateChannel && guildId == null) {
+                TODO()
+                /* context.sendEphemeralMessage {
                     content = ":no_entry: **|** ${locale["commands.cantUseInPrivate"]}"
-                }
+                } */
                 return
             }
 
@@ -140,8 +147,9 @@ class SlashCommandExecutorWrapper(
                                 val boolValue = value as Boolean
 
                                 if (boolValue) {
+                                    TODO()
                                     // If true, we are going to find the first recent message in this chat
-                                    val channelId = context.request.channelId
+                                    /* val channelId = context.request.channelId
                                     val messages = loritta.rest.channel.getMessages(
                                         channelId,
                                         null,
@@ -165,7 +173,7 @@ class SlashCommandExecutorWrapper(
                                     } catch (e: Exception) {
                                         // TODO: Catch the "permission required" exception and show a nice message
                                         e.printStackTrace()
-                                    }
+                                    } */
                                 }
                                 break
                             }
@@ -192,8 +200,9 @@ class SlashCommandExecutorWrapper(
                             is CommandOptionType.Channel, CommandOptionType.NullableChannel -> {
                                 println("okay, tipo de canal")
                                 println("Argumento é null? ${interaKTionArgument == null}")
-                                println("Guild é null? ${guild == null}")
-                                cinnamonArgs[it] = interaKTionArgument?.value?.let { guild?.toLorittaGuild(loritta.interactions.rest)?.retrieveChannel((interaKTionArgument.value as Channel).id.value) }
+                                println("Guild é null? ${guildId == null}")
+                                // cinnamonArgs[it] = interaKTionArgument?.value?.let { guild?.toLorittaGuild(loritta.interactions.rest)?.retrieveChannel((interaKTionArgument.value as Channel).id.value) }
+                                TODO()
                             }
 
                             else -> {
@@ -205,6 +214,7 @@ class SlashCommandExecutorWrapper(
             }
 
             GlobalScope.launch {
+                // TODO: Remove this, this breaks ephemeral stuff
                 delay(2_000)
                 if (!context.isDeferred) {
                     logger.warn { "Command $declarationExecutor hasn't been deferred yet! Deferring..." }
@@ -213,7 +223,7 @@ class SlashCommandExecutorWrapper(
                         .labels(rootDeclarationClazzName, executorClazzName)
                         .inc()
 
-                    context.defer()
+                    context.deferReply(false)
                 }
             }
 
@@ -228,7 +238,8 @@ class SlashCommandExecutorWrapper(
             if (e is CommandException) {
                 // Because we don't have access to the Cinnamon context here, and we *need* to send a LorittaMessage, we will
                 // wrap them in a InteraKTionsMessageChannel and send it!
-                InteraKTionsMessageChannelHandler(loritta.interactions.rest.channel.getChannel(context.request.channelId), context).sendMessage(e.lorittaMessage)
+                // InteraKTionsMessageChannelHandler(loritta.interactions.rest.channel.getChannel(context.request.channelId), context).sendMessage(e.lorittaMessage)
+                TODO()
                 return
             }
 
@@ -236,7 +247,7 @@ class SlashCommandExecutorWrapper(
 
             // Tell the user that something went *really* wrong
             // We don't have access to the Cinnamon Context (sadly), so we will use the Discord InteraKTions context
-            context.sendEphemeralMessage {
+            /* context.sendEphemeralMessage {
                 var reply = "${loritta.emotes.loriShrug} **|** " + locale["commands.errorWhileExecutingCommand", loritta.emotes.loriRage, loritta.emotes.loriSob]
 
                 // TODO: Sanitize
@@ -244,12 +255,13 @@ class SlashCommandExecutorWrapper(
                     reply += " `${e.message}`"
 
                 content = reply
-            }
+            } */
+            TODO()
             return
         }
 
         val commandLatency = timer.observeDuration()
-        logger.info { "(${context.user.id.value}) $executor $stringifiedArgumentNames - OK! Took ${commandLatency * 1000}ms" }
+        logger.info { "(${context.sender.id.value}) $executor $stringifiedArgumentNames - OK! Took ${commandLatency * 1000}ms" }
     }
 
     override fun signature() = rootSignature
