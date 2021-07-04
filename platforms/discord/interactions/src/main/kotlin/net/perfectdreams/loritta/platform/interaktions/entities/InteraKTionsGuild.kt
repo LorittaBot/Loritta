@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.platform.interaktions.entities
 
 import dev.kord.common.entity.DiscordGuild
 import dev.kord.rest.service.RestClient
-import kotlinx.datetime.toKotlinInstant
 import net.perfectdreams.loritta.discord.objects.LorittaDiscordChannel
 import net.perfectdreams.loritta.discord.objects.LorittaGuild
 import net.perfectdreams.loritta.discord.objects.LorittaMember
@@ -15,7 +14,7 @@ class InteraKTionsGuild(val rest: RestClient, handle: DiscordGuild): LorittaGuil
     handle.name,
     handle.ownerId.value,
     handle.region,
-    handle.id.timeStamp.toKotlinInstant()
+    handle.id.timeStamp
 ) {
     override suspend fun retrieveMember(id: Long): LorittaMember {
         return rest.guild.getGuildMember(this.id.toSnowflake(), id.toSnowflake()).toLorittaMember()

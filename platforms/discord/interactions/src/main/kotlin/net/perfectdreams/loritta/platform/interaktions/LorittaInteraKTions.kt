@@ -3,6 +3,8 @@ package net.perfectdreams.loritta.platform.interaktions
 import dev.kord.rest.service.RestClient
 import io.ktor.client.*
 import kotlinx.coroutines.runBlocking
+import net.perfectdreams.discordinteraktions.api.entities.Snowflake
+import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
 import net.perfectdreams.loritta.commands.`fun`.BemBoladaExecutor
 import net.perfectdreams.loritta.commands.`fun`.CancelledExecutor
 import net.perfectdreams.loritta.commands.`fun`.CoinFlipExecutor
@@ -137,9 +139,7 @@ import net.perfectdreams.loritta.common.utils.gabrielaimageserver.GabrielaImageS
 import net.perfectdreams.loritta.discord.LorittaDiscord
 import net.perfectdreams.loritta.discord.LorittaDiscordConfig
 import net.perfectdreams.loritta.platform.discord.utils.AvatarExecutor
-import net.perfectdreams.loritta.platform.discord.utils.ChannelInfoExecutor
 import net.perfectdreams.loritta.platform.discord.utils.declarations.AvatarCommand
-import net.perfectdreams.loritta.platform.discord.utils.declarations.ChannelInfoCommand
 import net.perfectdreams.loritta.platform.interaktions.commands.CommandManager
 import net.perfectdreams.loritta.platform.interaktions.utils.config.DiscordInteractionsConfig
 import net.perfectdreams.loritta.platform.interaktions.webserver.InteractionsServer
@@ -161,7 +161,13 @@ class LorittaInteraKTions(
         publicKey = interactionsConfig.publicKey,
     )
 
-    val commandManager = CommandManager(this, interactions.commandManager)
+    val kordCommandRegistry = KordCommandRegistry(
+        Snowflake(discordConfig.applicationId),
+        rest,
+        interactions.commandManager
+    )
+
+    val commandManager = CommandManager(this, interactions.commandManager, kordCommandRegistry)
 
     val localeManager = LocaleManager(
         ConfigUtils.localesFolder
@@ -222,10 +228,8 @@ class LorittaInteraKTions(
             KkEaeMenExecutor(emotes)
         )
 
-        commandManager.register(
-            ChannelInfoCommand,
-            ChannelInfoExecutor(emotes)
-        )
+        // TODO: Fix
+        // commandManager.register(ChannelInfoCommand, ChannelInfoExecutor(emotes))
 
         commandManager.register(
             JankenponCommand, JankenponExecutor(random, emotes)

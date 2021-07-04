@@ -8,9 +8,9 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import net.perfectdreams.discordinteraktions.DefaultInteractionRequestHandler
-import net.perfectdreams.discordinteraktions.commands.CommandManager
-import net.perfectdreams.discordinteraktions.installDiscordInteractions
+import net.perfectdreams.discordinteraktions.common.commands.CommandManager
+import net.perfectdreams.discordinteraktions.webserver.DefaultInteractionRequestHandler
+import net.perfectdreams.discordinteraktions.webserver.installDiscordInteractions
 import net.perfectdreams.loritta.platform.interaktions.webserver.routes.api.v1.cinnamon.GetPrometheusMetricsRoute
 import net.perfectdreams.sequins.ktor.BaseRoute
 
@@ -29,7 +29,7 @@ class InteractionsServer(
     val publicKey: String,
     val port: Int = 12212
 ) {
-    val commandManager = CommandManager(rest, Snowflake(applicationId))
+    val commandManager = CommandManager()
     val interactionRequestHandler = DefaultInteractionRequestHandler(
         Snowflake(applicationId),
         commandManager,

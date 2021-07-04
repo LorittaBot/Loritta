@@ -1,9 +1,10 @@
 package net.perfectdreams.loritta.platform.interaktions.commands
 
-import dev.kord.common.entity.Snowflake
 import mu.KotlinLogging
-import net.perfectdreams.discordinteraktions.commands.CommandManager
-import net.perfectdreams.discordinteraktions.commands.SlashCommandExecutor
+import net.perfectdreams.discordinteraktions.api.entities.Snowflake
+import net.perfectdreams.discordinteraktions.common.commands.CommandManager
+import net.perfectdreams.discordinteraktions.common.commands.CommandRegistry
+import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
 import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclaration
 import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclarationBuilder
 import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration
@@ -18,7 +19,11 @@ import net.perfectdreams.loritta.platform.interaktions.LorittaInteraKTions
 import net.perfectdreams.loritta.platform.interaktions.utils.shortenWithEllipsis
 import java.util.concurrent.atomic.AtomicInteger
 
-class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: CommandManager) {
+class CommandManager(
+    val loritta: LorittaInteraKTions,
+    val interaKTionsManager: CommandManager,
+    val interaKTionsRegistry: CommandRegistry
+) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -51,10 +56,10 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
         }
 
         if (loritta.interactionsConfig.registerGlobally) {
-            interaKTionsManager.updateAllGlobalCommands(true)
+            interaKTionsRegistry.updateAllGlobalCommands(true)
         } else {
             for (guildId in loritta.interactionsConfig.guildsToBeRegistered) {
-                interaKTionsManager.updateAllCommandsInGuild(Snowflake(guildId), true)
+                interaKTionsRegistry.updateAllCommandsInGuild(Snowflake(guildId), true)
             }
         }
     }
@@ -117,9 +122,7 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
 
             createdExecutors.add(interaKTionsExecutor)
 
-            return slashCommand(declaration.labels.first()) {
-                description = buildDescription(locale, declaration)
-
+            return slashCommand(declaration.labels.first(), buildDescription(locale, declaration)) {
                 this.executor = interaKTionsExecutorDeclaration
 
                 if (declaration.subcommands.isNotEmpty() || declaration.subcommandGroups.isNotEmpty())
@@ -140,8 +143,7 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
                 }
             }
         } else {
-            return slashCommand(declaration.labels.first()) {
-                description = buildDescription(locale, declaration)
+            return slashCommand(declaration.labels.first(), buildDescription(locale, declaration)) {
                 addSubcommandGroups(declaration, signature, createdExecutors, locale)
 
                 for (subcommand in declaration.subcommands) {
@@ -161,9 +163,7 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
 
     private fun SlashCommandDeclarationBuilder.addSubcommandGroups(declaration: CommandDeclarationBuilder, signature: AtomicInteger, createdExecutors: MutableList<SlashCommandExecutor>, locale: BaseLocale) {
         for (group in declaration.subcommandGroups) {
-            subcommandGroup(group.labels.first()) {
-                description = locale[declaration.description!!].shortenWithEllipsis()
-
+            subcommandGroup(group.labels.first(), locale[declaration.description!!].shortenWithEllipsis()) {
                 for (subcommand in group.subcommands) {
                     subcommands.add(
                         convertCommandDeclarationToSlashCommand(

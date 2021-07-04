@@ -1,16 +1,16 @@
 package net.perfectdreams.loritta.platform.interaktions.utils
 
-import dev.kord.common.entity.*
+import dev.kord.common.entity.DiscordChannel
+import dev.kord.common.entity.DiscordGuild
+import dev.kord.common.entity.DiscordGuildMember
+import dev.kord.common.entity.Snowflake
 import dev.kord.rest.service.RestClient
-import kotlinx.datetime.Instant
-import kotlinx.datetime.toKotlinInstant
-import net.perfectdreams.discordinteraktions.context.SlashCommandContext
+import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandContext
 import net.perfectdreams.loritta.discord.objects.ChannelType
 import net.perfectdreams.loritta.discord.objects.LorittaDiscordChannel
 import net.perfectdreams.loritta.discord.objects.LorittaMember
 import net.perfectdreams.loritta.platform.interaktions.entities.InteraKTionsGuild
 import net.perfectdreams.loritta.platform.interaktions.entities.InteraKTionsMessageChannelHandler
-import net.perfectdreams.loritta.platform.interaktions.entities.StaticInteraKTionsMessageChannel
 
 fun Long.toSnowflake() = Snowflake(this)
 
@@ -29,7 +29,8 @@ fun DiscordGuild.toLorittaGuild(rest: RestClient) = InteraKTionsGuild(
 )
 
 fun DiscordChannel.toLorittaChannel(): LorittaDiscordChannel {
-    return if (type != dev.kord.common.entity.ChannelType.GuildText) {
+    TODO()
+    /* return if (type != dev.kord.common.entity.ChannelType.GuildText) {
         object: LorittaDiscordChannel {
             override val id: Long = this@toLorittaChannel.id.value
             override val type: ChannelType = this@toLorittaChannel.type.toLorittaChannelType()
@@ -37,9 +38,10 @@ fun DiscordChannel.toLorittaChannel(): LorittaDiscordChannel {
         }
     } else {
         return StaticInteraKTionsMessageChannel(this)
-    }
+    } */
 }
 
 fun DiscordChannel.toLorittaMessageChannel(context: SlashCommandContext) = InteraKTionsMessageChannelHandler(
-    this, context
+    TODO()
+    // this, context
 )

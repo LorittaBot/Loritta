@@ -10,6 +10,7 @@ plugins {
 repositories {
     maven("https://repo.perfectdreams.net/")
     maven("https://oss.sonatype.org/content/repositories/snapshots")
+    maven("https://m2.dv8tion.net/releases")
     mavenLocal()
 }
 
@@ -21,7 +22,8 @@ dependencies {
     implementation(project(":platforms:discord:common"))
     implementation(project(":platforms:discord:commands"))
 
-    implementation("net.perfectdreams.discordinteraktions:core:0.0.4-SNAPSHOT")
+    implementation("net.perfectdreams.discordinteraktions:webserver-ktor-kord:0.0.5-SNAPSHOT")
+    implementation("io.ktor:ktor-server-netty:1.6.0")
 
     // Sequins
     api("net.perfectdreams.sequins.ktor:base-route:1.0.2")
