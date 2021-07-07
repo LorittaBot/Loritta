@@ -14,8 +14,7 @@ allprojects {
 
         maven("https://oss.sonatype.org/content/repositories/snapshots/")
 
-        // Used by kotlinx.html, can be removed after migrating to the newest kotlinx.html version
-        maven("https://dl.bintray.com/kotlin/kotlinx.html")
+        maven("https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven")
         maven("https://repo.perfectdreams.net/")
         maven("https://jitpack.io")
 

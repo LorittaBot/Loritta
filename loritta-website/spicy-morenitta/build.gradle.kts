@@ -19,7 +19,7 @@ kotlin {
 		implementation(project(":loritta-serializable-commons"))
 		implementation(project(":loritta-website:embed-renderer"))
 		implementation(project(":loritta-website:embed-editor-crosswindow"))
-		implementation("org.jetbrains.kotlinx:kotlinx-html-js:0.6.11")
+		implementation("org.jetbrains.kotlinx:kotlinx-html-js:0.7.2")
 		api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLIN_SERIALIZATION}")
 
 		// ===[ KOTLIN 1.5.0 WORKAROUNDS ]===
