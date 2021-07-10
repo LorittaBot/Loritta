@@ -15,7 +15,7 @@ class Error404View(
         locale,
         path
 ) {
-    override fun getTitle() = locale["website.donate.title"]
+    override fun getTitle() = "404"
 
     override fun DIV.generateContent() {
         div(classes = "odd-wrapper") {
