@@ -50,7 +50,7 @@ class LorittaChristmas2019ProfileCreator : ProfileCreator("lorittaChristmas2019"
 			marriage?.user1
 		}
 
-		val marriedWith = if (marriedWithId != null) { runBlocking { lorittaShards.retrieveUserInfoById(marriedWithId.toLong()) } } else { null }
+		val marriedWith = if (marriedWithId != null) { lorittaShards.retrieveUserInfoById(marriedWithId.toLong()) } else { null }
 
 		val reputations = ProfileUtils.getReputationCount(user)
 

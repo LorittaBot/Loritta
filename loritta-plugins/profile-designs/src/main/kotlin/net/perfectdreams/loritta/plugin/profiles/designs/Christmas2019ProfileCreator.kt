@@ -14,7 +14,6 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.utils.makeRoundedCorners
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
-import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.profile.ProfileUtils
@@ -30,8 +29,6 @@ import java.io.FileInputStream
 
 class Christmas2019ProfileCreator : ProfileCreator("christmas2019") {
 	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
-		val list = mutableListOf<BufferedImage>()
-
 		val whitneySemiBold = FileInputStream(File(Loritta.ASSETS + "whitney-semibold.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
@@ -59,7 +56,7 @@ class Christmas2019ProfileCreator : ProfileCreator("christmas2019") {
 			marriage?.user1
 		}
 
-		val marriedWith = if (marriedWithId != null) { runBlocking { lorittaShards.retrieveUserInfoById(marriedWithId.toLong()) } } else { null }
+		val marriedWith = if (marriedWithId != null) { lorittaShards.retrieveUserInfoById(marriedWithId.toLong()) } else { null }
 
 		val reputations = ProfileUtils.getReputationCount(user)
 		val globalPosition = ProfileUtils.getGlobalExperiencePosition(userProfile)
