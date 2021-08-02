@@ -297,10 +297,14 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 
 		pluginManager.loadPlugins()
 
-		logger.info("Sucesso! Iniciando Loritta (Website)...")
+		try {
+			logger.info("Sucesso! Iniciando Loritta (Website)...")
 
-		website = LorittaWebsite(this, instanceConfig.loritta.website.url, instanceConfig.loritta.website.folder) // Apenas para rodar o init, que preenche uns companion objects marotos
-		startWebServer()
+			website = LorittaWebsite(this, instanceConfig.loritta.website.url, instanceConfig.loritta.website.folder) // Apenas para rodar o init, que preenche uns companion objects marotos
+			startWebServer()
+		} catch(e: Exception) {
+			logger.info(e) { "Failed to start Loritta's webserver" }
+		}
 
 		logger.info { "Sucesso! Iniciando threads da Loritta..." }
 
