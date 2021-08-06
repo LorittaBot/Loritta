@@ -44,17 +44,13 @@ class SlashCommandOptionsWrapper(
                 it.type == CommandOptionType.ImageReference -> {
                     // For image references we can accept multiple types
                     // (User Avatar, Link, Emote, etc)
-                    optionalUser("${it.name}_avatar", "Image from an User's Avatar")
+                    // Can't be required because some commands do use optional arguments before this (example: /meme)
+                    optionalString(it.name, "User Mention, Image URL or Emote")
                         .register()
 
-                    optionalString("${it.name}_url", "Image URL")
-                        .register()
-
-                    optionalString("${it.name}_emote", "Emote")
-                        .register()
-
-                    optionalBoolean("${it.name}_history", "Image from the most recent message in chat")
-                        .register()
+                    // TODO: Fix this later
+                    /* optionalBoolean("${it.name}_history", "Image from the most recent message in chat")
+                        .register() */
                 }
 
                 // ===[ NORMAL ARG TYPES ]===

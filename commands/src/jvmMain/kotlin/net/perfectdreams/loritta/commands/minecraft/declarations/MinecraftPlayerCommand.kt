@@ -9,39 +9,33 @@ import net.perfectdreams.loritta.commands.minecraft.McUUIDExecutor
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.utils.toI18nHelper
 
 object MinecraftPlayerCommand : CommandDeclaration {
-    override fun declaration() = command(listOf("mcplayer"), CommandCategory.MINECRAFT) {
-        description = LocaleKeyData("TODO_FIX_THIS")
+    override fun declaration() = command(listOf("mcplayer"), CommandCategory.MINECRAFT, LocaleKeyData("TODO_FIX_THIS").toI18nHelper()) {
 
-        subcommand(listOf("skin")) {
-            description = LocaleKeyData("commands.command.mcskin.description")
+        subcommand(listOf("skin"), LocaleKeyData("commands.command.mcskin.description").toI18nHelper()) {
             executor = McSkinExecutor
         }
 
-        subcommand(listOf("avatar")) {
-            description = LocaleKeyData("commands.command.mcavatar.description")
+        subcommand(listOf("avatar"), LocaleKeyData("commands.command.mcavatar.description").toI18nHelper()) {
             executor = McAvatarExecutor
         }
 
-        subcommand(listOf("head")) {
-            description = LocaleKeyData("commands.command.mchead.description")
+        subcommand(listOf("head"), LocaleKeyData("commands.command.mchead.description").toI18nHelper()) {
             executor = McHeadExecutor
         }
 
-        subcommand(listOf("body")) {
-            description = LocaleKeyData("commands.command.mcbody.description")
+        subcommand(listOf("body"), LocaleKeyData("commands.command.mcbody.description").toI18nHelper()) {
             executor = McBodyExecutor
         }
 
-        subcommandGroup(listOf("uuid")) {
-            subcommand(listOf("online")) {
-                description = LocaleKeyData("commands.command.mcuuid.description")
+        subcommandGroup(listOf("uuid"), description = LocaleKeyData("TODO_FIX_THIS").toI18nHelper()) {
+            subcommand(listOf("online"), LocaleKeyData("commands.command.mcuuid.description").toI18nHelper()) {
                 executor = McUUIDExecutor
             }
 
-            subcommand(listOf("offline")) {
-                description = LocaleKeyData("commands.command.mcofflineuuid.description")
+            subcommand(listOf("offline"), LocaleKeyData("commands.command.mcofflineuuid.description").toI18nHelper()) {
                 executor = McOfflineUUIDExecutor
             }
         }

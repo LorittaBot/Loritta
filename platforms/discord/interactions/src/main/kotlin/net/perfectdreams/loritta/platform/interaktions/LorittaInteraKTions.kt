@@ -5,10 +5,8 @@ import io.ktor.client.*
 import kotlinx.coroutines.runBlocking
 import net.perfectdreams.discordinteraktions.api.entities.Snowflake
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
-import net.perfectdreams.loritta.commands.`fun`.BemBoladaExecutor
 import net.perfectdreams.loritta.commands.`fun`.CancelledExecutor
 import net.perfectdreams.loritta.commands.`fun`.CoinFlipExecutor
-import net.perfectdreams.loritta.commands.`fun`.FaustaoExecutor
 import net.perfectdreams.loritta.commands.`fun`.JankenponExecutor
 import net.perfectdreams.loritta.commands.`fun`.RateWaifuExecutor
 import net.perfectdreams.loritta.commands.`fun`.RollExecutor
@@ -16,18 +14,12 @@ import net.perfectdreams.loritta.commands.`fun`.TextQualityExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextVaporQualityExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextVaporwaveExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextVemDeZapExecutor
-import net.perfectdreams.loritta.commands.`fun`.TioDoPaveExecutor
-import net.perfectdreams.loritta.commands.`fun`.VieirinhaExecutor
-import net.perfectdreams.loritta.commands.`fun`.declarations.BemBoladaCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.CancelledCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.CoinFlipCommand
-import net.perfectdreams.loritta.commands.`fun`.declarations.FaustaoCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.JankenponCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.RateWaifuCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.RollCommand
 import net.perfectdreams.loritta.commands.`fun`.declarations.TextTransformDeclaration
-import net.perfectdreams.loritta.commands.`fun`.declarations.TioDoPaveCommand
-import net.perfectdreams.loritta.commands.`fun`.declarations.VieirinhaCommand
 import net.perfectdreams.loritta.commands.economy.SonhosExecutor
 import net.perfectdreams.loritta.commands.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.commands.images.ArtExecutor
@@ -130,6 +122,7 @@ import net.perfectdreams.loritta.commands.videos.declarations.AttackOnHeartComma
 import net.perfectdreams.loritta.commands.videos.declarations.CarlyAaahCommand
 import net.perfectdreams.loritta.commands.videos.declarations.FansExplainingCommand
 import net.perfectdreams.loritta.common.emotes.Emotes
+import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.services.Services
 import net.perfectdreams.loritta.common.utils.config.ConfigUtils
@@ -141,6 +134,7 @@ import net.perfectdreams.loritta.discord.LorittaDiscordConfig
 import net.perfectdreams.loritta.platform.discord.utils.AvatarExecutor
 import net.perfectdreams.loritta.platform.discord.utils.declarations.AvatarCommand
 import net.perfectdreams.loritta.platform.interaktions.commands.CommandManager
+import net.perfectdreams.loritta.platform.interaktions.commands.WaifuDiscordMentionTextConverter
 import net.perfectdreams.loritta.platform.interaktions.utils.config.DiscordInteractionsConfig
 import net.perfectdreams.loritta.platform.interaktions.webserver.InteractionsServer
 
@@ -172,10 +166,16 @@ class LorittaInteraKTions(
     val localeManager = LocaleManager(
         ConfigUtils.localesFolder
     )
+    val languageManager = LanguageManager(
+        LorittaInteraKTions::class,
+        "en",
+        "/languages/"
+    )
 
     val gabrielaImageServerClient = GabrielaImageServerClient(gabrielaImageServerConfig.url, http)
 
     fun start() {
+        languageManager.loadLanguagesAndContexts()
         localeManager.loadLocales()
 
         /* commandManager.register(
@@ -192,12 +192,13 @@ class LorittaInteraKTions(
 
         // ===[ FUN ]===
         commandManager.register(CoinFlipCommand, CoinFlipExecutor(emotes, random))
-        commandManager.register(RateWaifuCommand, RateWaifuExecutor(emotes))
+        commandManager.register(RateWaifuCommand, RateWaifuExecutor(emotes, WaifuDiscordMentionTextConverter(rest)))
         commandManager.register(CancelledCommand, CancelledExecutor(emotes))
-        commandManager.register(FaustaoCommand, FaustaoExecutor(emotes))
-        commandManager.register(VieirinhaCommand, VieirinhaExecutor(emotes))
-        commandManager.register(TioDoPaveCommand, TioDoPaveExecutor(emotes))
-        commandManager.register(BemBoladaCommand, BemBoladaExecutor(emotes))
+        // TODO: Fix
+        // commandManager.register(FaustaoCommand, FaustaoExecutor(emotes))
+        // commandManager.register(VieirinhaCommand, VieirinhaExecutor(emotes))
+        // commandManager.register(TioDoPaveCommand, TioDoPaveExecutor(emotes))
+        // commandManager.register(BemBoladaCommand, BemBoladaExecutor(emotes))
         commandManager.register(RollCommand, RollExecutor(emotes, random))
 
         commandManager.register(
@@ -285,7 +286,7 @@ class LorittaInteraKTions(
 
         runBlocking {
             commandManager.convertToInteraKTions(
-                localeManager.getLocaleById("default")
+                languageManager.getI18nContextById("en")
             )
         }
 

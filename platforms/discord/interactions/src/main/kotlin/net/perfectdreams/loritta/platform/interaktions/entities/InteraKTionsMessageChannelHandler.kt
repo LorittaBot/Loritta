@@ -1,6 +1,8 @@
 package net.perfectdreams.loritta.platform.interaktions.entities
 
+import net.perfectdreams.discordinteraktions.api.entities.Snowflake
 import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandContext
+import net.perfectdreams.discordinteraktions.common.utils.AllowedMentions
 import net.perfectdreams.loritta.common.entities.LorittaMessage
 
 class InteraKTionsMessageChannelHandler(private val context: SlashCommandContext) : StaticInteraKTionsMessageChannel() {
@@ -34,11 +36,11 @@ class InteraKTionsMessageChannelHandler(private val context: SlashCommandContext
                 }
             // }
 
-            /* for (file in message.files) {
+            for (file in message.files) {
                 addFile(file.key, file.value.inputStream())
             }
 
-            val embed = message.embed
+            /* val embed = message.embed
             if (embed != null) {
                 embed {
                     author {
@@ -68,25 +70,23 @@ class InteraKTionsMessageChannelHandler(private val context: SlashCommandContext
 
             // Keep in mind that ephemeral messages do not support *everything*, so let's throw a exception if
             // we are using stuff that Discord ephemeral messages do not support
-            /* if (message.isEphemeral) {
+            if (message.isEphemeral) {
                 if (message.embed != null)
                     throw UnsupportedOperationException("Ephemeral Messages do not support embeds!")
                 if (message.files.isNotEmpty())
                     throw UnsupportedOperationException("Ephemeral Messages do not support files!")
 
-                flags = MessageFlags(MessageFlag.Ephemeral)
+                isEphemeral = true
             }
 
             // Allowed Mentions
             // By default we will disable ALL mentions, to avoid a "@everyone moment 3.0"
             // Messages can enable specific mentions if needed
-            allowedMentions = dev.kord.rest.builder.message.AllowedMentionsBuilder().apply {
-                for (user in message.allowedMentions.users) {
-                    users.add(Snowflake(user.id))
-                }
-
+            allowedMentions = AllowedMentions(
+                users = message.allowedMentions.users.map { Snowflake(it.id) },
+                roles = listOf(), // TODO: Add support
                 repliedUser = message.allowedMentions.repliedUser
-            }.build() */
+            )
         }
     }
 }

@@ -9,6 +9,7 @@ import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDecl
 import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclarationBuilder
 import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.declarations.slash.slashCommand
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
@@ -36,7 +37,7 @@ class CommandManager(
         this.executors.addAll(executors)
     }
 
-    suspend fun convertToInteraKTions(locale: BaseLocale) {
+    suspend fun convertToInteraKTions(locale: I18nContext) {
         val commandSignatureIndex = AtomicInteger()
 
         for (declaration in declarations) {
@@ -67,7 +68,7 @@ class CommandManager(
     fun convertCommandDeclarationToInteraKTions(
         declaration: CommandDeclarationBuilder,
         declarationExecutor: CommandExecutorDeclaration?,
-        locale: BaseLocale,
+        locale: I18nContext,
         signature: AtomicInteger
     ): Pair<SlashCommandDeclaration, List<SlashCommandExecutor>> {
         val executors = mutableListOf<SlashCommandExecutor>()
@@ -91,7 +92,7 @@ class CommandManager(
     fun convertCommandDeclarationToSlashCommand(
         declaration: CommandDeclarationBuilder,
         declarationExecutor: CommandExecutorDeclaration?,
-        locale: BaseLocale,
+        locale: I18nContext,
         signature: AtomicInteger,
         createdExecutors: MutableList<SlashCommandExecutor>
     ): SlashCommandDeclarationBuilder {
@@ -102,7 +103,7 @@ class CommandManager(
 
             val interaKTionsExecutor = SlashCommandExecutorWrapper(
                 loritta,
-                locale,
+                BaseLocale("dummy", mapOf(), mapOf()), // TODO: Fix
                 loritta.emotes,
                 declaration,
                 declarationExecutor,
@@ -113,7 +114,7 @@ class CommandManager(
             // Register all the command options with Discord InteraKTions
             val interaKTionsOptions = SlashCommandOptionsWrapper(
                 declarationExecutor,
-                locale
+                BaseLocale("dummy", mapOf(), mapOf()) // TODO: Fix
             )
 
             val interaKTionsExecutorDeclaration = object : SlashCommandExecutorDeclaration(rootSignature) {
@@ -161,15 +162,15 @@ class CommandManager(
         }
     }
 
-    private fun SlashCommandDeclarationBuilder.addSubcommandGroups(declaration: CommandDeclarationBuilder, signature: AtomicInteger, createdExecutors: MutableList<SlashCommandExecutor>, locale: BaseLocale) {
+    private fun SlashCommandDeclarationBuilder.addSubcommandGroups(declaration: CommandDeclarationBuilder, signature: AtomicInteger, createdExecutors: MutableList<SlashCommandExecutor>, i18nContext: I18nContext) {
         for (group in declaration.subcommandGroups) {
-            subcommandGroup(group.labels.first(), locale[declaration.description!!].shortenWithEllipsis()) {
+            subcommandGroup(group.labels.first(), i18nContext.get(declaration.description).shortenWithEllipsis()) {
                 for (subcommand in group.subcommands) {
                     subcommands.add(
                         convertCommandDeclarationToSlashCommand(
                             subcommand,
                             subcommand.executor!!,
-                            locale,
+                            i18nContext,
                             signature,
                             createdExecutors
                         )
@@ -179,7 +180,7 @@ class CommandManager(
         }
     }
 
-    fun buildDescription(locale: BaseLocale, declaration: CommandDeclarationBuilder) = buildString {
+    fun buildDescription(i18nContext: I18nContext, declaration: CommandDeclarationBuilder) = buildString {
         // It looks like this
         // "「Emoji Category」 Description"
         append("「")
@@ -205,9 +206,9 @@ class CommandManager(
         }
         append(emoji)
         append(" ")
-        append(declaration.category.getLocalizedName(locale))
+        append("FIX THIS!!!" /* declaration.category.getLocalizedName(locale) */)
         append("」")
         append(" ")
-        append(locale[declaration.description!!])
+        append(i18nContext.get(declaration.description))
     }.shortenWithEllipsis()
 }

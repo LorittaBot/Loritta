@@ -1,5 +1,8 @@
 package net.perfectdreams.loritta.commands.`fun`
 
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import net.perfectdreams.loritta.commands.`fun`.declarations.RateWaifuCommand
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandContext
@@ -10,7 +13,7 @@ import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import kotlin.random.Random
 
-class RateWaifuExecutor(val emotes: Emotes) : CommandExecutor() {
+class RateWaifuExecutor(val emotes: Emotes, val textConverter: TextConverter) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(RateWaifuExecutor::class) {
         object Options : CommandOptions() {
             val waifu = string("waifu", LocaleKeyData("${RateWaifuCommand.LOCALE_PREFIX}.selectWaifu"))
@@ -21,11 +24,12 @@ class RateWaifuExecutor(val emotes: Emotes) : CommandExecutor() {
     }
 
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
-        val waifu = args[options.waifu]
+        val waifu = textConverter.convert(context, args[options.waifu])
 
-        val waifuLowerCase = waifu.toLowerCase()
-        // TODO: Fix RANDOM with the current day of the year
-        val random = Random(waifuLowerCase.hashCode().toLong()) // Usar um RANDOM sempre com a mesma seed
+        val waifuLowerCase = waifu.lowercase()
+
+        // Always use the same seed for the random generator, but change it every day
+        val random = Random(Clock.System.now().toLocalDateTime(TimeZone.UTC).dayOfYear + waifuLowerCase.hashCode().toLong())
         val nota = random.nextInt(0, 11)
 
         val scoreReason = context.locale.getList("${RateWaifuCommand.LOCALE_PREFIX}.note${nota}").random()
@@ -100,5 +104,21 @@ class RateWaifuExecutor(val emotes: Emotes) : CommandExecutor() {
             content = context.locale["${RateWaifuCommand.LOCALE_PREFIX}.result", strNota, waifu, reason],
             prefix = "\uD83E\uDD14"
         )
+    }
+
+    /**
+     * Interface used to convert an input to an output
+     *
+     * This is used in the [RateWaifuExecutor] to convert platform-specific mentions into plain text
+     */
+    interface TextConverter {
+        suspend fun convert(context: CommandContext, input: String): String
+    }
+
+    /**
+     * An noop convert operation, always returns the input
+     */
+    class NoopTextConverter : TextConverter {
+        override suspend fun convert(context: CommandContext, input: String) = input
     }
 }
