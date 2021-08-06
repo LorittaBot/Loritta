@@ -6,8 +6,8 @@ import net.perfectdreams.loritta.commands.`fun`.TextVaporwaveExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextVemDeZapExecutor
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
-import net.perfectdreams.loritta.common.commands.declarations.command
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.utils.toI18nHelper
 
 object TextTransformDeclaration : CommandDeclaration {
     const val VEMDEZAP_LOCALE_PREFIX = "commands.command.vemdezap"
@@ -331,26 +331,21 @@ object TextTransformDeclaration : CommandDeclaration {
     val sassyEmojis = listOf("😉", "😎", "😋", "😘", "😏", "😜", "😈", "😻", "🙊", "👉👌", "😼")
     val sickEmojis = listOf("😷", "🤒", "🤕", "🤢", "🤮", "🤧")
 
-    override fun declaration() = command(listOf("text", "texto"), CommandCategory.FUN) {
-        description = LocaleKeyData("TODO_FIX_THIS")
+    override fun declaration() = command(listOf("text", "texto"), CommandCategory.FUN, LocaleKeyData("TODO_FIX_THIS").toI18nHelper()) {
 
-        subcommand(listOf("vaporwave", "vaporonda")) {
-            description = LocaleKeyData("commands.command.vaporwave.description")
+        subcommand(listOf("vaporwave", "vaporonda"), LocaleKeyData("commands.command.vaporwave.description").toI18nHelper()) {
             executor = TextVaporwaveExecutor
         }
 
-        subcommand(listOf("quality", "qualidade")) {
-            description = LocaleKeyData("commands.command.quality.description")
+        subcommand(listOf("quality", "qualidade"), LocaleKeyData("commands.command.quality.description").toI18nHelper()) {
             executor = TextQualityExecutor
         }
 
-        subcommand(listOf("vaporquality", "vaporqualidade")) {
-            description = LocaleKeyData("commands.command.vaporquality.description")
+        subcommand(listOf("vaporquality", "vaporqualidade"), LocaleKeyData("commands.command.vaporquality.description").toI18nHelper()) {
             executor = TextVaporQualityExecutor
         }
 
-        subcommand(listOf("vemdezap")) {
-            description = LocaleKeyData("${VEMDEZAP_LOCALE_PREFIX}.description")
+        subcommand(listOf("vemdezap"), LocaleKeyData("${VEMDEZAP_LOCALE_PREFIX}.description").toI18nHelper()) {
             executor = TextVemDeZapExecutor
         }
     }

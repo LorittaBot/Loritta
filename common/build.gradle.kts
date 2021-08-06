@@ -1,6 +1,12 @@
 plugins {
-    kotlin("multiplatform") version Versions.KOTLIN
-    kotlin("plugin.serialization") version Versions.KOTLIN
+    kotlin("multiplatform")
+    kotlin("plugin.serialization")
+    id("net.perfectdreams.i18nhelper.plugin") version "0.0.1-SNAPSHOT"
+}
+
+i18nHelper {
+    generatedPackage.set("net.perfectdreams.loritta.i18n")
+    languageSourceFolder.set("../resources/languages/en/")
 }
 
 kotlin {
@@ -19,6 +25,8 @@ kotlin {
 
     sourceSets {
         commonMain {
+            kotlin.srcDir("build/generated/languages")
+
             dependencies {
                 // API = We want to allow dependencies to access those classes
                 api(kotlin("stdlib-common"))
@@ -28,6 +36,7 @@ kotlin {
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
                 api("io.ktor:ktor-client-core:1.6.0")
                 api("org.jetbrains.kotlinx:kotlinx-datetime:0.2.1")
+                api("net.perfectdreams.i18nhelper:core:0.0.1-SNAPSHOT")
 
                 // Used for Math stuff
                 api("com.ionspin.kotlin:bignum:0.3.0")
@@ -51,6 +60,11 @@ kotlin {
 
                 // Used for the LocaleManager
                 implementation("org.yaml:snakeyaml:1.28")
+
+                // Internationalization
+                api("net.perfectdreams.i18nhelper.formatters:icu-messageformat-jvm:0.0.1-SNAPSHOT")
+                implementation("com.charleskorn.kaml:kaml:0.35.0")
+                implementation("com.ibm.icu:icu4j:69.1")
 
                 // Used by Minecraft related commands
                 api("net.perfectdreams.minecraftmojangapi:minecraft-mojang-api:0.0.1-SNAPSHOT")

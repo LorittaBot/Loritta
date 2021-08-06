@@ -4,6 +4,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
+import net.perfectdreams.discordinteraktions.api.entities.Snowflake
 import net.perfectdreams.discordinteraktions.api.entities.User
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
 import net.perfectdreams.discordinteraktions.common.context.commands.GuildSlashCommandContext
@@ -65,6 +66,8 @@ class SlashCommandExecutorWrapper(
             .labels(rootDeclarationClazzName, executorClazzName)
             .startTimer()
 
+        val channel = InteraKTionsMessageChannelHandler(context)
+
         try {
             // Map Cinnamon Arguments to Discord InteraKTions Arguments
             val cinnamonArgs = mutableMapOf<CommandOption<*>, Any?>()
@@ -82,9 +85,10 @@ class SlashCommandExecutorWrapper(
                 loritta,
                 locale,
                 InteraKTionsUser(context.sender),
-                InteraKTionsMessageChannelHandler(context),
+                channel,
                 // guild?.toLorittaGuild(loritta.interactions.rest)
-                null
+                null,
+                context
             )
 
             if (!rootDeclaration.allowedInPrivateChannel && guildId == null) {
@@ -99,7 +103,7 @@ class SlashCommandExecutorWrapper(
                 when (it.type) {
                     is CommandOptionType.StringList -> {
                         // Special case: Lists
-                        val listsValues = interaKTionsArgumentEntries.filter { opt -> it.name.startsWith(it.name) }
+                        val listsValues = interaKTionsArgumentEntries.filter { opt -> opt.key.name == it.name }
                         cinnamonArgs[it] = mutableListOf<String>().also {
                             it.addAll(listsValues.map { it.value as String })
                         }
@@ -107,77 +111,89 @@ class SlashCommandExecutorWrapper(
 
                     is CommandOptionType.ImageReference -> {
                         // Special case: Image References
-                        val imageReferenceArgs =
-                            interaKTionsArgumentEntries.filter { opt -> it.name.startsWith(it.name) }
+                        // Get the argument that matches our image reference
+                        val imageReferenceArgs = interaKTionsArgumentEntries.first { opt -> opt.key.name == it.name }
+                        val value = imageReferenceArgs.value as String
 
+                        // Now check if it is a valid thing!
                         var found = false
-                        for ((interaKTionOption, value) in imageReferenceArgs) {
-                            if (interaKTionOption.name == "${it.name}_avatar" && value != null) {
-                                // If the type is a user OR a nullable user, and the value isn't null...
-                                val interaKTionUser = value as User
 
-                                cinnamonArgs[it] = URLImageReference(interaKTionUser.avatar.url)
-                                found = true
-                                break
-                            }
+                        // First, we will try matching via user mentions
+                        if (value.startsWith("<@") && value.endsWith(">")) {
+                            // Maybe it is a mention?
+                            val userId = value
+                                .removePrefix("<@")
+                                .removePrefix("!") // User has a nickname
+                                .removeSuffix(">")
+                                .toLongOrNull()
 
-                            if (interaKTionOption.name == "${it.name}_url" && value != null) {
-                                cinnamonArgs[it] = URLImageReference(value as String)
-                                found = true
-                                break
-                            }
+                            if (userId != null) {
+                                val user = context.data.resolved?.users?.get(Snowflake(userId))
 
-                            if (interaKTionOption.name == "${it.name}_emote" && value != null) {
-                                val strValue = value as String
-
-                                // Discord emotes always starts with "<" and ends with ">"
-                                if (strValue.startsWith("<") && strValue.endsWith(">")) {
-                                    val emoteId = strValue.substringAfterLast(":").substringBefore(">")
-                                    cinnamonArgs[it] = URLImageReference("https://cdn.discordapp.com/emojis/${emoteId}.png?v=1")
-                                } else {
-                                    // If not, we are going to handle it as if it were a Unicode emoji
-                                    val emoteId = strValue.codePoints().toList().joinToString(separator = "-") { String.format("\\u%04x", it).substring(2) }
-                                    cinnamonArgs[it] = URLImageReference("https://twemoji.maxcdn.com/2/72x72/$emoteId.png")
+                                if (user != null) {
+                                    // User avatar found! Let's use it!!
+                                    cinnamonArgs[it] = URLImageReference(user.avatar.url)
+                                    found = true
                                 }
-                                found = true
-                                break
-                            }
-
-                            if (interaKTionOption.name == "${it.name}_history" && value != null) {
-                                val boolValue = value as Boolean
-
-                                if (boolValue) {
-                                    TODO()
-                                    // If true, we are going to find the first recent message in this chat
-                                    /* val channelId = context.request.channelId
-                                    val messages = loritta.rest.channel.getMessages(
-                                        channelId,
-                                        null,
-                                        100
-                                    )
-
-                                    try {
-                                        // Sort from the newest message to the oldest message
-                                        val attachmentUrl = messages.sortedByDescending { it.id.timeStamp }
-                                            .flatMap { it.attachments }
-                                            .firstOrNull {
-                                                // Only get filenames ending with "image" extensions
-                                                it.filename.substringAfter(".")
-                                                    .toLowerCase() in SUPPORTED_IMAGE_EXTENSIONS
-                                            }?.url
-
-                                        if (attachmentUrl != null) {
-                                            cinnamonArgs[it] = URLImageReference(attachmentUrl)
-                                            found = true
-                                        }
-                                    } catch (e: Exception) {
-                                        // TODO: Catch the "permission required" exception and show a nice message
-                                        e.printStackTrace()
-                                    } */
-                                }
-                                break
                             }
                         }
+
+                        if (!found && value.startsWith("http")) {
+                            // It is a URL!
+                            // TODO: Use a RegEx to check if it is a valid URL
+                            cinnamonArgs[it] = URLImageReference(value)
+                            found = true
+                        }
+
+                        if (!found) {
+                            // It is a emote!
+                            // Discord emotes always starts with "<" and ends with ">"
+                            if (value.startsWith("<") && value.endsWith(">")) {
+                                val emoteId = value.substringAfterLast(":").substringBefore(">")
+                                cinnamonArgs[it] = URLImageReference("https://cdn.discordapp.com/emojis/${emoteId}.png?v=1")
+                            } else {
+                                // If not, we are going to handle it as if it were a Unicode emoji
+                                val emoteId = value.codePoints().toList().joinToString(separator = "-") { String.format("\\u%04x", it).substring(2) }
+                                cinnamonArgs[it] = URLImageReference("https://twemoji.maxcdn.com/2/72x72/$emoteId.png")
+                            }
+                            found = true
+                        }
+
+                        // TODO: Fix this, removed for now
+                        /* if (interaKTionOption.name == "${it.name}_history" && value != null) {
+                            val boolValue = value as Boolean
+
+                            if (boolValue) {
+                                TODO()
+                                // If true, we are going to find the first recent message in this chat
+                                /* val channelId = context.request.channelId
+                                val messages = loritta.rest.channel.getMessages(
+                                    channelId,
+                                    null,
+                                    100
+                                )
+
+                                try {
+                                    // Sort from the newest message to the oldest message
+                                    val attachmentUrl = messages.sortedByDescending { it.id.timeStamp }
+                                        .flatMap { it.attachments }
+                                        .firstOrNull {
+                                            // Only get filenames ending with "image" extensions
+                                            it.filename.substringAfter(".")
+                                                .toLowerCase() in SUPPORTED_IMAGE_EXTENSIONS
+                                        }?.url
+
+                                    if (attachmentUrl != null) {
+                                        cinnamonArgs[it] = URLImageReference(attachmentUrl)
+                                        found = true
+                                    }
+                                } catch (e: Exception) {
+                                    // TODO: Catch the "permission required" exception and show a nice message
+                                    e.printStackTrace()
+                                } */
+                            }
+                            break
+                        } */
 
                         if (!found)
                             cinnamonContext.fail(cinnamonContext.locale["commands.noValidImageFound", emotes.loriSob], emotes.loriSob)
@@ -238,8 +254,7 @@ class SlashCommandExecutorWrapper(
             if (e is CommandException) {
                 // Because we don't have access to the Cinnamon context here, and we *need* to send a LorittaMessage, we will
                 // wrap them in a InteraKTionsMessageChannel and send it!
-                // InteraKTionsMessageChannelHandler(loritta.interactions.rest.channel.getChannel(context.request.channelId), context).sendMessage(e.lorittaMessage)
-                TODO()
+                channel.sendMessage(e.lorittaMessage)
                 return
             }
 

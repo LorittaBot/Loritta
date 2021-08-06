@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.platform.interaktions.commands
 
+import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandContext
 import net.perfectdreams.loritta.common.entities.User
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.discord.command.DiscordCommandContext
@@ -13,4 +14,5 @@ class InteraKTionsCommandContext(
     user: User,
     channel: LorittaDiscordMessageChannel,
     guild: LorittaGuild?,
+    val slashCommandContext: SlashCommandContext
 ) : DiscordCommandContext(loritta, locale, user, channel, guild)

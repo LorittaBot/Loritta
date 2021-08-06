@@ -2,8 +2,8 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version Versions.KOTLIN
-    kotlin("plugin.serialization") version Versions.KOTLIN
+    kotlin("jvm")
+    kotlin("plugin.serialization")
     id("com.github.johnrengelman.shadow") version "5.2.0"
 }
 
@@ -58,6 +58,10 @@ tasks.withType<ShadowJar> {
 }
 
 tasks {
+    processResources {
+        from("../../../resources/") // Include folders from the resources root folder
+    }
+
     build {
         dependsOn(shadowJar)
     }
