@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
 
-class EscolherCommand : AbstractCommand("choose", listOf("escolher"), category = CommandCategory.UTILS) {
+class EscolherCommand : AbstractCommand("choose", listOf("escolher", "pick"), category = CommandCategory.UTILS) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.choose.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.choose.examples")
 
