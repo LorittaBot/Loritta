@@ -27,7 +27,7 @@ class MorseFromExecutor(val emotes: Emotes): CommandExecutor() {
         if (fromMorse.isBlank())
             context.fail(
                 prefix = emotes.error.asMention,
-                content = context.locale["${MorseCommand.LOCALE_PREFIX}.fail"]
+                content = context.locale["${MorseCommand.LOCALE_PREFIX}.failFrom"]
             ) { isEphemeral = true }
 
         context.sendReply(
