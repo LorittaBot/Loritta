@@ -31,7 +31,7 @@ class LoriBrokerPlugin(name: String, loritta: LorittaDiscord) : LorittaDiscordPl
 			"AZUL4"  to "Azul",
 			"PETR4"  to "Petrobrás",
 			"MGLU3"  to "Magazine Luiza",
-			"VVAR3"  to "Via Varejo",
+			"VIIA3"  to "Via Varejo",
 			"LAME4"  to "Lojas Americanas",
 			"ITUB4"  to "Itaú Unibanco",
 			"VALE3"  to "Vale S.A.",
