@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.commands.`fun`
 
+import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.commands.`fun`.declarations.JankenponCommand
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandContext
@@ -8,17 +9,16 @@ import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDec
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.common.emotes.Emotes
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import kotlin.random.Random
 
 class JankenponExecutor(val random: Random, val emotes: Emotes): CommandExecutor() {
     companion object: CommandExecutorDeclaration(JankenponExecutor::class) {
         object Options: CommandOptions() {
-            val value = string("value", LocaleKeyData("${JankenponCommand.LOCALE_PREFIX}.selectType"))
-                .choice("rock", LocaleKeyData(Jankenpon.ROCK.lang))
-                .choice("paper", LocaleKeyData(Jankenpon.PAPER.lang))
-                .choice("scissors", LocaleKeyData(Jankenpon.SCISSORS.lang))
-                .choice("jesus", LocaleKeyData("${JankenponCommand.LOCALE_PREFIX}.jesusChrist"))
+            val value = string("value", JankenponCommand.I18N_PREFIX.Options.Action)
+                .choice("rock", JankenponCommand.I18N_PREFIX.Rock)
+                .choice("paper", JankenponCommand.I18N_PREFIX.Paper)
+                .choice("scissors", JankenponCommand.I18N_PREFIX.Scissors)
+                .choice("jesus", JankenponCommand.I18N_PREFIX.JesusChrist)
                 .register()
         }
         override val options = Options
@@ -36,15 +36,15 @@ class JankenponExecutor(val random: Random, val emotes: Emotes): CommandExecutor
             val fancy = buildString {
                 when (status) {
                     Jankenpon.JankenponStatus.WIN -> {
-                        append("**${context.locale["${JankenponCommand.LOCALE_PREFIX}.win"]} ")
+                        append("**${context.i18nContext.get(JankenponCommand.I18N_PREFIX.Win)} ")
                         append(emotes.loriWow.asMention + "**")
                     }
                     Jankenpon.JankenponStatus.LOSE -> {
-                        append("**${context.locale["${JankenponCommand.LOCALE_PREFIX}.lose"]} ")
+                        append("**${context.i18nContext.get(JankenponCommand.I18N_PREFIX.Lose)} ")
                         append(emotes.loriPat.asMention + "**")
                     }
                     Jankenpon.JankenponStatus.DRAW -> {
-                        append("**${context.locale["${JankenponCommand.LOCALE_PREFIX}.draw"]} ")
+                        append("**${context.i18nContext.get(JankenponCommand.I18N_PREFIX.Draw)} ")
                         append(emotes.loriSmile.asMention + "**")
                     }
                 }
@@ -59,31 +59,32 @@ class JankenponExecutor(val random: Random, val emotes: Emotes): CommandExecutor
             context.sendMessage {
                 styled(
                     prefix = jankenPrefix,
-                    content = context.locale["${JankenponCommand.LOCALE_PREFIX}.chosen", janken.getEmoji(emotes), opponent.getEmoji(emotes)]
+                    content = context.i18nContext.get(JankenponCommand.I18N_PREFIX.Chosen(janken.getEmoji(emotes), opponent.getEmoji(emotes)))
                 )
 
                 styled(fancy)
             }
         } else {
             if (argument.equals("jesus", ignoreCase = true)) {
-                val jesus = "${emotes.jesus} *${context.locale["${JankenponCommand.LOCALE_PREFIX}.jesusChrist"]}* ${emotes.jesus}"
+                val jesus = "${emotes.jesus} *${context.i18nContext.get(JankenponCommand.I18N_PREFIX.JesusChrist)}* ${emotes.jesus}"
 
                 context.sendMessage {
                     styled(
                         prefix = emotes.whiteFlag,
-                        content = context.locale["${JankenponCommand.LOCALE_PREFIX}.chosen", jesus, jesus]
+                        content = context.i18nContext.get(JankenponCommand.I18N_PREFIX.Chosen(jesus, jesus))
                     )
 
-                    styled("**${context.locale["${JankenponCommand.LOCALE_PREFIX}.maybeDraw"]} ${emotes.thinking} ${emotes.shrug}**")
+                    styled("**${context.i18nContext.get(JankenponCommand.I18N_PREFIX.MaybeDraw)} ${emotes.thinking} ${emotes.shrug}**")
                 }
             }
         }
     }
-    enum class Jankenpon(var lang: String, var wins: String, var loses: String) {
+
+    enum class Jankenpon(var lang: StringI18nData, var wins: String, var loses: String) {
         // Os wins e os loses precisam ser uma string já que os enums ainda não foram inicializados
-        ROCK("${JankenponCommand.LOCALE_PREFIX}.rock", "SCISSORS", "PAPER"),
-        PAPER("${JankenponCommand.LOCALE_PREFIX}.paper", "ROCK", "SCISSORS"),
-        SCISSORS("${JankenponCommand.LOCALE_PREFIX}.scissors", "PAPER", "ROCK");
+        ROCK(JankenponCommand.I18N_PREFIX.Rock, "SCISSORS", "PAPER"),
+        PAPER(JankenponCommand.I18N_PREFIX.Paper, "ROCK", "SCISSORS"),
+        SCISSORS(JankenponCommand.I18N_PREFIX.Scissors, "PAPER", "ROCK");
 
         fun getStatus(janken: Jankenpon): JankenponStatus {
             if (this.name.equals(janken.loses, ignoreCase = true)) {

@@ -4,18 +4,18 @@ import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.api.entities.Snowflake
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.commands.CommandRegistry
-import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclaration
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclarationBuilder
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration
-import net.perfectdreams.discordinteraktions.declarations.slash.slashCommand
+import net.perfectdreams.discordinteraktions.common.commands.slash.SlashCommandExecutor
+import net.perfectdreams.discordinteraktions.declarations.commands.SlashCommandDeclaration
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCommandDeclarationBuilder
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCommandExecutorDeclaration
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.slashCommand
+import net.perfectdreams.discordinteraktions.declarations.commands.wrappers.SlashCommandDeclarationWrapper
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.platform.interaktions.LorittaInteraKTions
 import net.perfectdreams.loritta.platform.interaktions.utils.shortenWithEllipsis
 import java.util.concurrent.atomic.AtomicInteger
@@ -70,7 +70,7 @@ class CommandManager(
         declarationExecutor: CommandExecutorDeclaration?,
         locale: I18nContext,
         signature: AtomicInteger
-    ): Pair<SlashCommandDeclaration, List<SlashCommandExecutor>> {
+    ): Pair<SlashCommandDeclarationWrapper, List<SlashCommandExecutor>> {
         val executors = mutableListOf<SlashCommandExecutor>()
 
         val declaration = convertCommandDeclarationToSlashCommand(
@@ -82,7 +82,7 @@ class CommandManager(
         )
 
         return Pair(
-            object: SlashCommandDeclaration {
+            object: SlashCommandDeclarationWrapper {
                 override fun declaration() = declaration
             },
             executors
@@ -95,7 +95,7 @@ class CommandManager(
         locale: I18nContext,
         signature: AtomicInteger,
         createdExecutors: MutableList<SlashCommandExecutor>
-    ): SlashCommandDeclarationBuilder {
+    ): SlashCommandDeclaration {
         if (declarationExecutor != null) {
             val executor = executors.firstOrNull { declarationExecutor.parent == it::class }
                 ?: throw UnsupportedOperationException("The command executor wasn't found! Did you register the command executor?")
@@ -103,7 +103,6 @@ class CommandManager(
 
             val interaKTionsExecutor = SlashCommandExecutorWrapper(
                 loritta,
-                BaseLocale("dummy", mapOf(), mapOf()), // TODO: Fix
                 loritta.emotes,
                 declaration,
                 declarationExecutor,
@@ -114,7 +113,7 @@ class CommandManager(
             // Register all the command options with Discord InteraKTions
             val interaKTionsOptions = SlashCommandOptionsWrapper(
                 declarationExecutor,
-                BaseLocale("dummy", mapOf(), mapOf()) // TODO: Fix
+                locale
             )
 
             val interaKTionsExecutorDeclaration = object : SlashCommandExecutorDeclaration(rootSignature) {
@@ -206,9 +205,10 @@ class CommandManager(
         }
         append(emoji)
         append(" ")
-        append("FIX THIS!!!" /* declaration.category.getLocalizedName(locale) */)
+        append(declaration.category.getLocalizedName(i18nContext))
         append("」")
-        append(" ")
+        // Looks better without this whitespace
+        // append(" ")
         append(i18nContext.get(declaration.description))
     }.shortenWithEllipsis()
 }

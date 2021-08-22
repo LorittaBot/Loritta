@@ -1,10 +1,10 @@
 package net.perfectdreams.loritta.platform.interaktions.commands
 
-import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptions
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOptions
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOptionType
 import net.perfectdreams.loritta.common.commands.options.ListCommandOption
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.platform.interaktions.utils.shortenWithEllipsis
 
 /**
@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.platform.interaktions.utils.shortenWithEllipsis
  */
 class SlashCommandOptionsWrapper(
     declarationExecutor: CommandExecutorDeclaration,
-    locale: BaseLocale
+    i18nContext: I18nContext
 ) : CommandOptions() {
     init {
         declarationExecutor.options.arguments.forEach {
@@ -29,13 +29,13 @@ class SlashCommandOptionsWrapper(
                     var idx = 1
 
                     repeat(requiredOptions) { _ ->
-                        string("${it.name}$idx", locale[it.description])
+                        string("${it.name}$idx", i18nContext.get(it.description))
                             .register()
                         idx++
                     }
 
                     repeat(optionalOptions) { _ ->
-                        optionalString("${it.name}$idx", locale[it.description])
+                        optionalString("${it.name}$idx", i18nContext.get(it.description))
                             .register()
                         idx++
                     }
@@ -58,68 +58,86 @@ class SlashCommandOptionsWrapper(
                     val arg = when (it.type) {
                         is CommandOptionType.String -> string(
                             it.name,
-                            locale[it.description].shortenWithEllipsis()
+                            i18nContext.get(it.description).shortenWithEllipsis()
                         ).also { option ->
                             it.choices.take(25).forEach {
-                                option.choice(it.value as String, locale[it.name])
+                                option.choice(it.value as String, i18nContext.get(it.name))
                             }
                         }
 
                         is CommandOptionType.NullableString -> optionalString(
                             it.name,
-                            locale[it.description].shortenWithEllipsis()
+                            i18nContext.get(it.description).shortenWithEllipsis()
                         ).also { option ->
                             it.choices.take(25).forEach {
-                                option.choice(it.value as String, locale[it.name])
+                                option.choice(it.value as String, i18nContext.get(it.name))
                             }
                         }
 
                         is CommandOptionType.Integer -> integer(
                             it.name,
-                            locale[it.description].shortenWithEllipsis()
+                            i18nContext.get(it.description).shortenWithEllipsis()
                         ).also { option ->
                             it.choices.take(25).forEach {
-                                option.choice(it.value as Int, locale[it.name])
+                                option.choice(it.value as Int, i18nContext.get(it.name))
                             }
                         }
 
                         is CommandOptionType.NullableInteger -> optionalInteger(
                             it.name,
-                            locale[it.description].shortenWithEllipsis()
+                            i18nContext.get(it.description).shortenWithEllipsis()
                         ).also { option ->
                             it.choices.take(25).forEach {
-                                option.choice(it.value as Int, locale[it.name])
+                                option.choice(it.value as Int, i18nContext.get(it.name))
+                            }
+                        }
+
+                        is CommandOptionType.Number -> number(
+                            it.name,
+                            i18nContext.get(it.description).shortenWithEllipsis()
+                        ).also { option ->
+                            it.choices.take(25).forEach {
+                                option.choice(it.value as Double, i18nContext.get(it.name))
+                            }
+                        }
+
+                        is CommandOptionType.NullableNumber -> optionalNumber(
+                            it.name,
+                            i18nContext.get(it.description).shortenWithEllipsis()
+                        ).also { option ->
+                            it.choices.take(25).forEach {
+                                option.choice(it.value as Double?, i18nContext.get(it.name))
                             }
                         }
 
                         is CommandOptionType.Bool -> boolean(
                             it.name,
-                            locale[it.description].shortenWithEllipsis()
+                            i18nContext.get(it.description).shortenWithEllipsis()
                         )
 
                         is CommandOptionType.NullableBool -> optionalBoolean(
                             it.name,
-                            locale[it.description].shortenWithEllipsis()
+                            i18nContext.get(it.description).shortenWithEllipsis()
                         )
 
                         is CommandOptionType.User -> user(
                             it.name,
-                            locale[it.description].shortenWithEllipsis()
+                            i18nContext.get(it.description).shortenWithEllipsis()
                         )
 
                         is CommandOptionType.NullableUser -> optionalUser(
                             it.name,
-                            locale[it.description].shortenWithEllipsis()
+                            i18nContext.get(it.description).shortenWithEllipsis()
                         )
 
                         is CommandOptionType.Channel -> optionalChannel(
                             it.name,
-                            locale[it.description].shortenWithEllipsis()
+                            i18nContext.get(it.description).shortenWithEllipsis()
                         )
 
                         is CommandOptionType.NullableChannel -> optionalChannel(
                             it.name,
-                            locale[it.description].shortenWithEllipsis()
+                            i18nContext.get(it.description).shortenWithEllipsis()
                         )
 
                         else -> throw UnsupportedOperationException("Unsupported option type ${it.type}")

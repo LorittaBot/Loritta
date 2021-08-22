@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.common.commands.options
 
+import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.common.entities.User
 import net.perfectdreams.loritta.common.images.ImageReference
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
 
 open class CommandOptions {
     companion object {
@@ -11,55 +11,67 @@ open class CommandOptions {
 
     val arguments = mutableListOf<CommandOption<*>>()
 
-    fun string(name: String, description: LocaleKeyData) = argument<String>(
+    fun string(name: String, description: StringI18nData) = argument<String>(
         CommandOptionType.String,
         name,
         description
     )
 
-    fun optionalString(name: String, description: LocaleKeyData) = argument<String?>(
+    fun optionalString(name: String, description: StringI18nData) = argument<String?>(
         CommandOptionType.NullableString,
         name,
         description
     )
 
-    fun integer(name: String, description: LocaleKeyData) = argument<Int>(
+    fun integer(name: String, description: StringI18nData) = argument<Int>(
         CommandOptionType.Integer,
         name,
         description
     )
 
-    fun optionalInteger(name: String, description: LocaleKeyData) = argument<Int?>(
+    fun optionalInteger(name: String, description: StringI18nData) = argument<Int?>(
         CommandOptionType.NullableInteger,
         name,
         description
     )
 
-    fun boolean(name: String, description: LocaleKeyData) = argument<Boolean>(
+    fun number(name: String, description: StringI18nData) = argument<Double>(
+        CommandOptionType.Number,
+        name,
+        description
+    )
+
+    fun optionalNumber(name: String, description: StringI18nData) = argument<Double?>(
+        CommandOptionType.NullableNumber,
+        name,
+        description
+    )
+
+    fun boolean(name: String, description: StringI18nData) = argument<Boolean>(
         CommandOptionType.Bool,
         name,
         description
     )
 
-    fun optionalBoolean(name: String, description: LocaleKeyData) = argument<Boolean?>(
+    fun optionalBoolean(name: String, description: StringI18nData) = argument<Boolean?>(
         CommandOptionType.NullableBool,
         name,
         description
     )
 
-    fun user(name: String, description: LocaleKeyData) = argument<User>(
+    fun user(name: String, description: StringI18nData) = argument<User>(
         CommandOptionType.User,
         name,
         description
     )
 
-    fun optionalUser(name: String, description: LocaleKeyData) = argument<User?>(
+    fun optionalUser(name: String, description: StringI18nData) = argument<User?>(
         CommandOptionType.NullableUser,
         name,
         description
     )
 
-    fun stringList(name: String, description: LocaleKeyData, minimum: Int? = null, maximum: Int? = null) = ListCommandOptionBuilder<List<String>>(
+    fun stringList(name: String, description: StringI18nData, minimum: Int? = null, maximum: Int? = null) = ListCommandOptionBuilder<List<String>>(
         CommandOptionType.StringList,
         name,
         description,
@@ -67,13 +79,13 @@ open class CommandOptions {
         maximum
     )
 
-    fun imageReference(name: String, description: LocaleKeyData) = argument<ImageReference>(
+    fun imageReference(name: String, description: StringI18nData) = argument<ImageReference>(
         CommandOptionType.ImageReference,
         name,
         description
     )
 
-    fun <T> argument(type: CommandOptionType, name: String, description: LocaleKeyData) = CommandOptionBuilder<T>(
+    fun <T> argument(type: CommandOptionType, name: String, description: StringI18nData) = CommandOptionBuilder<T>(
         type,
         name,
         description,

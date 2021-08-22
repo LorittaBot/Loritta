@@ -7,13 +7,12 @@ import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.emotes.Emotes
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.text.MorseUtils
 
 class MorseFromExecutor(val emotes: Emotes): CommandExecutor() {
     companion object : CommandExecutorDeclaration(MorseFromExecutor::class) {
         object Options : CommandOptions() {
-            val textArgument = string("text", LocaleKeyData("${MorseCommand.LOCALE_PREFIX}.options.fromMorse"))
+            val textArgument = string("text", MorseCommand.I18N_PREFIX.Options.FromMorseToText)
                 .register()
         }
 
@@ -22,17 +21,39 @@ class MorseFromExecutor(val emotes: Emotes): CommandExecutor() {
 
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
         val text = args[options.textArgument]
-        val fromMorse = MorseUtils.fromMorse(text)
 
-        if (fromMorse.isBlank())
-            context.fail(
-                prefix = emotes.error.asMention,
-                content = context.locale["${MorseCommand.LOCALE_PREFIX}.fail"]
-            ) { isEphemeral = true }
+        when (val fromMorseResult = MorseUtils.fromMorse(text)) {
+            is MorseUtils.ValidFromMorseConversionResult -> {
+                val fromMorse = fromMorseResult.text
+                val unknownMorseCodes = fromMorseResult.unknownMorseCodes
 
-        context.sendReply(
-            prefix = emotes.radio.toString(),
-            content = "`$fromMorse`"
-        )
+                context.sendMessage {
+                    styled(
+                        content = "`$fromMorse`",
+                        prefix = emotes.radio.toString()
+                    )
+
+                    if (unknownMorseCodes.isNotEmpty()) {
+                        styled(
+                            content = context.i18nContext.get(
+                                MorseCommand.I18N_PREFIX.FromMorseWarningUnknownMorseCodes(
+                                    unknownMorseCodes.joinToString("")
+                                )
+                            ),
+                            prefix = emotes.loriSob
+                        )
+                    }
+                }
+            }
+
+            is MorseUtils.InvalidFromMorseConversionResult -> {
+                context.fail(
+                    prefix = emotes.error.asMention,
+                    content = context.i18nContext.get(
+                        MorseCommand.I18N_PREFIX.FromMorseFailUnknownMorseCodes
+                    )
+                ) { isEphemeral = true }
+            }
+        }
     }
 }

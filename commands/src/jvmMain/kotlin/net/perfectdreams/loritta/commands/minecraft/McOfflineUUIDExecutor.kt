@@ -1,18 +1,18 @@
 package net.perfectdreams.loritta.commands.minecraft
 
+import net.perfectdreams.loritta.commands.minecraft.declarations.MinecraftCommand
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandContext
 import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.emotes.Emotes
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import java.util.*
 
 class McOfflineUUIDExecutor(val emotes: Emotes) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(McOfflineUUIDExecutor::class) {
         object Options : CommandOptions() {
-            val username = string("player_name", LocaleKeyData("commands.category.minecraft.playerNameJavaEdition"))
+            val username = string("player_name", MinecraftCommand.I18N_CATEGORY_PREFIX.Options.PlayerNameJavaEdition)
                 .register()
         }
 
@@ -24,6 +24,13 @@ class McOfflineUUIDExecutor(val emotes: Emotes) : CommandExecutor() {
 
         val uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:$player").toByteArray(Charsets.UTF_8))
 
-        context.sendReply(context.locale["commands.command.mcofflineuuid.result", player, uuid.toString()])
+        context.sendReply(
+            context.i18nContext.get(
+                MinecraftCommand.I18N_PREFIX.Player.Offlineuuid.Result(
+                    player,
+                    uuid.toString()
+                )
+            )
+        )
     }
 }

@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.commands.`fun`
 
+import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.commands.`fun`.declarations.CoinFlipCommand
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandContext
@@ -14,16 +15,16 @@ class CoinFlipExecutor(val emotes: Emotes, val random: Random) : CommandExecutor
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
         val isTails = random.nextBoolean()
         val prefix: String
-        val message: String
+        val message: StringI18nData
 
         if (isTails) {
             prefix = emotes.coinTails.toString()
-            message = context.locale["${CoinFlipCommand.LOCALE_PREFIX}.tails"]
+            message = CoinFlipCommand.I18N_PREFIX.Tails
         } else {
             prefix = emotes.coinHeads.toString()
-            message = context.locale["${CoinFlipCommand.LOCALE_PREFIX}.heads"]
+            message = CoinFlipCommand.I18N_PREFIX.Heads
         }
 
-        context.sendReply("**$message!**", prefix)
+        context.sendReply("**${context.i18nContext.get(message)}!**", prefix)
     }
 }

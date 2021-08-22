@@ -4,14 +4,15 @@ import kotlinx.serialization.json.addJsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
-import net.perfectdreams.loritta.commands.images.declarations.CortesFlowCommand
+import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
+import net.perfectdreams.i18nhelper.core.keys.StringI18nKey
+import net.perfectdreams.loritta.commands.images.declarations.BRMemesCommand
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandContext
 import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.emotes.Emotes
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.gabrielaimageserver.GabrielaImageServerClient
 import net.perfectdreams.loritta.common.utils.gabrielaimageserver.executeAndHandleExceptions
 import net.perfectdreams.loritta.common.utils.text.TextUtils
@@ -19,15 +20,21 @@ import net.perfectdreams.loritta.common.utils.text.TextUtils
 class CortesFlowExecutor(val emotes: Emotes, val client: GabrielaImageServerClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(CortesFlowExecutor::class) {
         object Options : CommandOptions() {
-            val type = string("thumbnail", LocaleKeyData("${CortesFlowCommand.LOCALE_PREFIX}.selectThumbnail"))
+            val type = string("thumbnail", BRMemesCommand.I18N_PREFIX.Cortesflow.Options.Thumbnail)
                 .also { option ->
-                    CortesFlowCommand.lists.forEach {
-                        option.choice(it, LocaleKeyData("${CortesFlowCommand.LOCALE_PREFIX}.thumbnails.${TextUtils.kebabToLowerCamelCase(it)}"))
+                    BRMemesCommand.cortesFlowThumbnails.forEach {
+                        option.choice(
+                            it,
+                            StringI18nData(
+                                StringI18nKey("${BRMemesCommand.I18N_CORTESFLOW_KEY_PREFIX}.thumbnails.${TextUtils.kebabToLowerCamelCase(it)}"),
+                                emptyMap()
+                            )
+                        )
                     }
                 }
                 .register()
 
-            val text = string("text", LocaleKeyData("${CortesFlowCommand.LOCALE_PREFIX}.selectText"))
+            val text = string("text", BRMemesCommand.I18N_PREFIX.Cortesflow.Options.Text)
                 .register()
         }
 
@@ -35,6 +42,8 @@ class CortesFlowExecutor(val emotes: Emotes, val client: GabrielaImageServerClie
     }
 
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
+        context.deferMessage(false) // Defer message because image manipulation is kinda heavy
+
         val type = args[options.type]
         val text = args[options.text]
 

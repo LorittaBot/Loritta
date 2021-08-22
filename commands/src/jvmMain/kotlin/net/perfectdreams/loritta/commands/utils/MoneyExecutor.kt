@@ -1,5 +1,7 @@
 package net.perfectdreams.loritta.commands.utils
 
+import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
+import net.perfectdreams.i18nhelper.core.keys.StringI18nKey
 import net.perfectdreams.loritta.commands.utils.declarations.MoneyCommand
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandContext
@@ -7,31 +9,39 @@ import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.emotes.Emotes
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
-import java.util.*
 
 class MoneyExecutor(val emotes: Emotes, val ecbManager: ECBManager) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(MoneyExecutor::class) {
         object Options : CommandOptions() {
-            val from = string("from", LocaleKeyData("commands.command.money.options.from"))
+            val from = string("from", MoneyCommand.I18N_PREFIX.Options.From)
                 .also {
                     for (currencyId in MoneyCommand.currencyIds) {
-                        it.choice(currencyId, LocaleKeyData("commands.command.money.currencies.${currencyId.toLowerCase()}"))
+                        it.choice(
+                            currencyId,
+                            StringI18nData(
+                                StringI18nKey("commands.command.money.currencies.${currencyId.lowercase()}"),
+                                emptyMap()
+                            )
+                        )
                     }
                 }
                 .register()
 
-            val to = string("to", LocaleKeyData("commands.command.money.options.to"))
+            val to = string("to", MoneyCommand.I18N_PREFIX.Options.To)
                 .also {
                     for (currencyId in MoneyCommand.currencyIds) {
-                        it.choice(currencyId, LocaleKeyData("commands.command.money.currencies.${currencyId.toLowerCase()}"))
+                        it.choice(
+                            currencyId,
+                            StringI18nData(
+                                StringI18nKey("commands.command.money.currencies.${currencyId.lowercase()}"),
+                                emptyMap()
+                            )
+                        )
                     }
                 }
                 .register()
 
-            val quantity = optionalInteger("quantity", LocaleKeyData("commands.command.money.options.quantity"))
+            val quantity = optionalNumber("quantity", MoneyCommand.I18N_PREFIX.Options.Quantity)
                 .register()
         }
 
@@ -41,7 +51,7 @@ class MoneyExecutor(val emotes: Emotes, val ecbManager: ECBManager) : CommandExe
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
         val from = args[options.from]
         val to = args[options.to]
-        val multiply = args[options.quantity] ?: 1
+        val multiply = args[options.quantity] ?: 1.0
         val exchangeRates = ecbManager.getOrUpdateExchangeRates().await()
 
         val value: Double
@@ -53,27 +63,66 @@ class MoneyExecutor(val emotes: Emotes, val ecbManager: ECBManager) : CommandExe
             // Então, para converter, primeiro devemos converter a currency para EUR e depois para o target
             // Primeiro iremos verificar se existe no exchange rate
             // Por exemplo, se a gente colocar BRL, o "valueInEuros" será 5.5956
-            val euroValueInCurrency = exchangeRates[from] ?: context.fail(
-                prefix = emotes.error,
-                content = context.locale["${MoneyCommand.LOCALE_PREFIX}.invalidCurrency", from, exchangeRates.keys.joinToString(transform = { "`$it`" })]
-            ) { isEphemeral = true }
+            //
+            // I don't think that those "InvalidCurrency" code paths will be ever be called in a platform that supports arguments.
+            // (Example: Discord Slash Commands)
+            val euroValueInCurrency = exchangeRates[from] ?: context.fail {
+                styled(
+                    prefix = emotes.error,
+                    content = context.i18nContext.get(
+                        MoneyCommand.I18N_PREFIX.InvalidCurrency(
+                            currency = from
+                        )
+                    )
+                )
+
+                styled(
+                    content = context.i18nContext.get(
+                        MoneyCommand.I18N_PREFIX.CurrencyList(
+                            list = exchangeRates.keys.joinToString(transform = { "`$it`" })
+                        )
+                    )
+                )
+
+                isEphemeral = true
+            }
 
             val valueInEuro = 1 / euroValueInCurrency
 
-            val endValueInEuros = exchangeRates[to] ?: context.fail(
-                prefix = emotes.error,
-                content = context.locale["${MoneyCommand.LOCALE_PREFIX}.invalidCurrency", from, exchangeRates.keys.joinToString(transform = { "`$it`" })]
-            ) { isEphemeral = true }
+            val endValueInEuros = exchangeRates[to] ?: context.fail {
+                styled(
+                    prefix = emotes.error,
+                    content = context.i18nContext.get(
+                        MoneyCommand.I18N_PREFIX.InvalidCurrency(
+                            currency = from
+                        )
+                    )
+                )
+
+                styled(
+                    content = context.i18nContext.get(
+                        MoneyCommand.I18N_PREFIX.CurrencyList(
+                            list = exchangeRates.keys.joinToString(transform = { "`$it`" })
+                        )
+                    )
+                )
+
+                isEphemeral = true
+            }
 
             value = endValueInEuros * valueInEuro
         }
 
-        val df = DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH))
-        df.maximumFractionDigits = 340 // 340 = DecimalFormat.DOUBLE_FRACTION_DIGITS
-
         context.sendReply(
             prefix = "\uD83D\uDCB5",
-            content = context.locale["${MoneyCommand.LOCALE_PREFIX}.converted", multiply, from, to, df.format(value * multiply)]
+            content = context.i18nContext.get(
+                MoneyCommand.I18N_PREFIX.Result(
+                    multiply,
+                    from,
+                    to,
+                    value * multiply
+                )
+            )
         )
     }
 }

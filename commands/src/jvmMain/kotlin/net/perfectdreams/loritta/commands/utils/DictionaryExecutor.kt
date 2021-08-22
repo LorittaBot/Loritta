@@ -11,21 +11,19 @@ import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.emotes.Emotes
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.common.utils.embed.LorittaColor
 import org.jsoup.Jsoup
 import java.net.URLEncoder
 
 class DictionaryExecutor(val emotes: Emotes, val http: HttpClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(DictionaryExecutor::class) {
         object Options : CommandOptions() {
-            val language = string("language", LocaleKeyData("${DictionaryCommand.LOCALE_PREFIX}.options.language"))
+            val language = string("language", DictionaryCommand.I18N_PREFIX.Options.Language)
                 .also {
-                    it.choice("pt-br", LocaleKeyData("${DictionaryCommand.LOCALE_PREFIX}.languages.ptBr"))
+                    it.choice("pt-br", DictionaryCommand.I18N_PREFIX.Languages.PtBr)
                 }
                 .register()
 
-            val word = string("word", LocaleKeyData("${DictionaryCommand.LOCALE_PREFIX}.options.text"))
+            val word = string("word", DictionaryCommand.I18N_PREFIX.Options.Word)
                 .register()
         }
 
@@ -37,10 +35,20 @@ class DictionaryExecutor(val emotes: Emotes, val http: HttpClient) : CommandExec
         val language = args[options.language]
         val wordToBeSearched = args[options.word]
 
-        val httpResponse = http.get<HttpResponse>("https://www.dicio.com.br/pesquisa.php?q=${URLEncoder.encode(wordToBeSearched, "UTF-8")}")
+        val httpResponse = http.get<HttpResponse>(
+            "https://www.dicio.com.br/pesquisa.php?q=${
+                URLEncoder.encode(
+                    wordToBeSearched,
+                    "UTF-8"
+                )
+            }"
+        )
 
         if (httpResponse.status == HttpStatusCode.NotFound)
-            context.fail(context.locale["${DictionaryCommand.LOCALE_PREFIX}.wordNotFound"], emotes.error) { isEphemeral = true }
+            context.fail(
+                context.i18nContext.get(DictionaryCommand.I18N_PREFIX.WordNotFound),
+                emotes.error
+            ) { isEphemeral = true }
 
         val response = httpResponse.readText()
 
@@ -52,7 +60,10 @@ class DictionaryExecutor(val emotes: Emotes, val http: HttpClient) : CommandExec
 
         if (resultados != null) {
             val resultadosLi = resultados.getElementsByTag("li").firstOrNull()
-                ?: context.fail(context.locale["${DictionaryCommand.LOCALE_PREFIX}.wordNotFound"], emotes.error) { isEphemeral = true }
+                ?: context.fail(
+                    context.i18nContext.get(DictionaryCommand.I18N_PREFIX.WordNotFound),
+                    emotes.error
+                ) { isEphemeral = true }
 
             val linkElement = resultadosLi.getElementsByClass("_sugg").first()
             val link = linkElement.attr("href")
@@ -61,7 +72,10 @@ class DictionaryExecutor(val emotes: Emotes, val http: HttpClient) : CommandExec
 
             // This should *never* happen because we are getting it directly from the search results, but...
             if (httpRequest2.status == HttpStatusCode.NotFound)
-                context.fail(context.locale["${DictionaryCommand.LOCALE_PREFIX}.wordNotFound"], emotes.error) { isEphemeral = true }
+                context.fail(
+                    context.i18nContext.get(DictionaryCommand.I18N_PREFIX.WordNotFound),
+                    emotes.error
+                ) { isEphemeral = true }
 
             val response2 = httpRequest2.readText()
 
@@ -69,8 +83,13 @@ class DictionaryExecutor(val emotes: Emotes, val http: HttpClient) : CommandExec
         }
 
         // Se a página não possui uma descrição ou se ela possui uma descrição mas começa com "Ainda não temos o significado de", então é uma palavra inexistente!
-        if (jsoup.select("p[itemprop = description]").isEmpty() || jsoup.select("p[itemprop = description]")[0].text().startsWith("Ainda não temos o significado de"))
-            context.fail(context.locale["${DictionaryCommand.LOCALE_PREFIX}.wordNotFound"], emotes.error) { isEphemeral = true }
+        if (jsoup.select("p[itemprop = description]").isEmpty() || jsoup.select("p[itemprop = description]")[0].text()
+                .startsWith("Ainda não temos o significado de")
+        )
+            context.fail(
+                context.i18nContext.get(DictionaryCommand.I18N_PREFIX.WordNotFound),
+                emotes.error
+            ) { isEphemeral = true }
 
         val description = jsoup.select("p[itemprop = description]")[0]
 
@@ -92,41 +111,37 @@ class DictionaryExecutor(val emotes: Emotes, val http: HttpClient) : CommandExec
 
         context.sendMessage {
             embed {
-                body {
-                    color = LorittaColor(25, 89, 132)
+                color(25, 89, 132)
 
-                    title = "📙 ${context.locale["${DictionaryCommand.LOCALE_PREFIX}.meaningOf", word.text()]}"
+                title = "📙 ${context.i18nContext.get(DictionaryCommand.I18N_PREFIX.MeaningOf(word.text()))}"
 
-                    this.description = buildString {
-                        append("*${type.text()}*")
+                this.description = buildString {
+                    append("*${type.text()}*")
 
-                        if (what != null)
-                            append("\n\n**${what.text()}**")
-                    }
+                    if (what != null)
+                        append("\n\n**${what.text()}**")
+                }
 
-                    // The first in the page will always be "synonyms"
-                    // While the second in the page will always be "opposites"
-                    jsoup.getElementsByClass("sinonimos").getOrNull(0)?.let {
-                        field("\uD83D\uDE42 ${context.locale["${DictionaryCommand.LOCALE_PREFIX}.synonyms"]}", it.text())
-                    }
+                // The first in the page will always be "synonyms"
+                // While the second in the page will always be "opposites"
+                jsoup.getElementsByClass("sinonimos").getOrNull(0)?.let {
+                    field("\uD83D\uDE42 ${context.i18nContext.get(DictionaryCommand.I18N_PREFIX.Synonyms)}", it.text())
+                }
 
-                    jsoup.getElementsByClass("sinonimos").getOrNull(1)?.let {
-                        field("\uD83D\uDE41 ${context.locale["${DictionaryCommand.LOCALE_PREFIX}.opposite"]}", it.text())
-                    }
+                jsoup.getElementsByClass("sinonimos").getOrNull(1)?.let {
+                    field("\uD83D\uDE41 ${context.i18nContext.get(DictionaryCommand.I18N_PREFIX.Opposite)}", it.text())
+                }
 
-                    frase?.let {
-                        field("\uD83D\uDD8B ${context.locale["${DictionaryCommand.LOCALE_PREFIX}.sentence"]}", it.text())
-                    }
+                frase?.let {
+                    field("\uD83D\uDD8B ${context.i18nContext.get(DictionaryCommand.I18N_PREFIX.Sentence)}", it.text())
                 }
 
                 if (wordImage != null)
-                    images {
-                        // We need to use "data-src" because the page uses lazy loading
-                        this.image = wordImage.attr("data-src")
-                    }
+                    // We need to use "data-src" because the page uses lazy loading
+                    image(wordImage.attr("data-src"))
 
                 if (etim != null)
-                    footer(etim.text()) {}
+                    footer(etim.text())
             }
         }
     }

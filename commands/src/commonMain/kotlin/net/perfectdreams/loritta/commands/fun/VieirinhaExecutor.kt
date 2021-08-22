@@ -8,12 +8,12 @@ import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDec
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.images.URLImageReference
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
 
 class VieirinhaExecutor(val emotes: Emotes) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(VieirinhaExecutor::class) {
         object Options : CommandOptions() {
-            val text = string("text", LocaleKeyData("${VieirinhaCommand.LOCALE_PREFIX}.options.question"))
+            // Unused because... well, we don't need it :P
+            val question = string("question", VieirinhaCommand.I18N_PREFIX.Options.Question)
                 .register()
         }
 
@@ -24,7 +24,11 @@ class VieirinhaExecutor(val emotes: Emotes) : CommandExecutor() {
         context.sendMessage {
             impersonation("Vieirinha", URLImageReference("http://i.imgur.com/rRtHdti.png"))
 
-            content = context.locale.getList("${VieirinhaCommand.LOCALE_PREFIX}.responses").random()
+            content = context.i18nContext.get(
+                VieirinhaCommand.I18N_PREFIX.Responses(
+                    VieirinhaCommand.PUNCTUATIONS.random()
+                )
+            ).random()
         }
     }
 }

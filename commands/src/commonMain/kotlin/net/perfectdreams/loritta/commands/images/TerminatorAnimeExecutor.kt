@@ -11,17 +11,16 @@ import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.emotes.Emotes
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.gabrielaimageserver.GabrielaImageServerClient
 import net.perfectdreams.loritta.common.utils.gabrielaimageserver.executeAndHandleExceptions
 
 class TerminatorAnimeExecutor(val emotes: Emotes, val client: GabrielaImageServerClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(TerminatorAnimeExecutor::class) {
         object Options : CommandOptions() {
-            val line1 = string("terminator", LocaleKeyData(TerminatorAnimeCommand.LOCALE_PREFIX + ".options.textTerminator"))
+            val line1 = string("terminator", TerminatorAnimeCommand.I18N_PREFIX.Options.TextTerminator)
                 .register()
 
-            val line2 = optionalString("girl", LocaleKeyData(TerminatorAnimeCommand.LOCALE_PREFIX + ".options.textGirl"))
+            val line2 = optionalString("girl", TerminatorAnimeCommand.I18N_PREFIX.Options.TextGirl)
                 .register()
         }
 
@@ -29,6 +28,8 @@ class TerminatorAnimeExecutor(val emotes: Emotes, val client: GabrielaImageServe
     }
 
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
+        context.deferMessage(false) // Defer message because image manipulation is kinda heavy
+
         val line1 = args[options.line1]
         val line2 = args[options.line2]
 

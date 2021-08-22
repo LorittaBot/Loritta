@@ -7,29 +7,29 @@ import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.emotes.Emotes
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.utils.TodoFixThisData
 import kotlin.random.Random
 
 class TextVemDeZapExecutor(val emotes: Emotes, val random: Random) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(TextVemDeZapExecutor::class) {
         object Options : CommandOptions() {
-            val mood = string("mood", LocaleKeyData("commands.command.vemdezap.whatIsTheMood"))
-                .choice("happy", LocaleKeyData("commands.command.vemdezap.moodHappy"))
-                .choice("angry", LocaleKeyData("commands.command.vemdezap.moodAngry"))
-                .choice("sassy", LocaleKeyData("commands.command.vemdezap.moodSassy"))
-                .choice("sad", LocaleKeyData("commands.command.vemdezap.moodSad"))
-                .choice("sick", LocaleKeyData("commands.command.vemdezap.moodSick"))
+            val mood = string("mood", TodoFixThisData)
+                .choice("happy", TodoFixThisData)
+                .choice("angry", TodoFixThisData)
+                .choice("sassy", TodoFixThisData)
+                .choice("sad", TodoFixThisData)
+                .choice("sick", TodoFixThisData)
                 .register()
 
-            val level = integer("level", LocaleKeyData("commands.command.vemdezap.whatIsTheLevel"))
-                .choice(0, LocaleKeyData("commands.command.vemdezap.level1"))
-                .choice(1, LocaleKeyData("commands.command.vemdezap.level2"))
-                .choice(2, LocaleKeyData("commands.command.vemdezap.level3"))
-                .choice(3, LocaleKeyData("commands.command.vemdezap.level4"))
-                .choice(4, LocaleKeyData("commands.command.vemdezap.level5"))
+            val level = integer("level", TodoFixThisData)
+                .choice(0, TodoFixThisData)
+                .choice(1, TodoFixThisData)
+                .choice(2, TodoFixThisData)
+                .choice(3, TodoFixThisData)
+                .choice(4, TodoFixThisData)
                 .register()
 
-            val text = string("text", LocaleKeyData("commands.command.vemdezap.selectText"))
+            val text = string("text", TodoFixThisData)
                 .register()
         }
 

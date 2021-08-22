@@ -7,12 +7,11 @@ import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.emotes.Emotes
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
 
 class CancelledExecutor(val emotes: Emotes) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(CancelledExecutor::class) {
         object Options : CommandOptions() {
-            val user = user("user", LocaleKeyData("${CancelledCommand.LOCALE_PREFIX}.selectUser"))
+            val user = user("user", CancelledCommand.I18N_PREFIX.Options.User)
                 .register()
         }
 
@@ -24,8 +23,14 @@ class CancelledExecutor(val emotes: Emotes) : CommandExecutor() {
 
         context.sendMessage {
             styled(
-                context.locale["commands.command.cancelled.wasCancelled", mentionUser(user, false), context.locale.getList("commands.command.cancelled.reasons").random()],
-                emotes.loriHmpf.toString()
+                content = context.i18nContext.get(
+                    CancelledCommand.I18N_PREFIX.WasCancelled(
+                        mentionUser(user, false),
+                        context.i18nContext.get(CancelledCommand.I18N_PREFIX.Reasons)
+                            .random()
+                    )
+                ),
+                prefix = emotes.loriHmpf.toString()
             )
         }
     }
