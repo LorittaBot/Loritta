@@ -1,13 +1,13 @@
 ata:
   description: "ata."
   monica:
-    description: "A Mônica viu uma imagem sua e reagiu da melhor maneira possível."
+    description: "Mônica seen one of your images and reacted in the best way possible."
   chico:
-    description: "O Chico Bento viu uma imagem sua e reagiu da melhor maneira possível."
+    description: "Chico Bento seen one of your images and reacted in the best way possible"
   lori:
-    description: "Eu vi uma imagem sua e reagiu da melhor maneira possível."
+    description: "I've seen one of your images and reacted in the best way possible"
   gessy:
-    description: "O Gessy viu uma imagem sua e reagiu da melhor maneira possível."
+    description: "Gessy seen one of your images and reacted in the best way possible"
 
 bolsonaro:
   # https://twitter.com/sensacionalista/status/1414567158437253124
