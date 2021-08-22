@@ -3,7 +3,6 @@ plugins {
     kotlin("multiplatform") version Versions.KOTLIN apply false
     kotlin("jvm") version Versions.KOTLIN apply false
     kotlin("plugin.serialization") version Versions.KOTLIN apply false
-
 }
 
 allprojects {
