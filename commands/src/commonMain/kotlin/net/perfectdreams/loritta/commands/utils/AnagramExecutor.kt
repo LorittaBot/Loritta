@@ -8,13 +8,12 @@ import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.emotes.Emotes
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.math.MathUtils
 
 class AnagramExecutor(val emotes: Emotes) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(AnagramExecutor::class) {
         object Options : CommandOptions() {
-            val text = string("text", LocaleKeyData("commands.command.anagram.options.text"))
+            val text = string("text", AnagramCommand.I18N_PREFIX.Options.Text)
                 .register()
         }
 
@@ -40,12 +39,21 @@ class AnagramExecutor(val emotes: Emotes) : CommandExecutor() {
 
         context.sendMessage {
             styled(
-                content = context.locale["${AnagramCommand.LOCALE_PREFIX}.result", shuffledWord] + " ${emotes.loriWow}",
+                content = context.i18nContext.get(
+                    AnagramCommand.I18N_PREFIX.Result(
+                        shuffledWord
+                    )
+                ) + " ${emotes.loriWow}",
                 prefix = "✍"
             )
 
             styled(
-                content = context.locale["${AnagramCommand.LOCALE_PREFIX}.stats", currentWord, max],
+                content = context.i18nContext.get(
+                    AnagramCommand.I18N_PREFIX.Stats(
+                        currentWord,
+                        max // TODO: Can't format this as a number
+                    )
+                ),
                 prefix = "\uD83E\uDD13"
             )
         }

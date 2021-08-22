@@ -3,13 +3,14 @@ package net.perfectdreams.loritta.commands.utils.declarations
 import net.perfectdreams.loritta.commands.utils.ChooseExecutor
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.common.utils.toI18nHelper
+import net.perfectdreams.loritta.i18n.I18nKeysData
 
 object ChooseCommand : CommandDeclaration {
-    const val LOCALE_PREFIX = "commands.command.choose"
+    val I18N_PREFIX = I18nKeysData.Commands
+        .Command
+        .Choose
 
-    override fun declaration() = command(listOf("choose", "escolher"), CommandCategory.UTILS, LocaleKeyData("$LOCALE_PREFIX.description").toI18nHelper()) {
+    override fun declaration() = command(listOf("choose", "escolher"), CommandCategory.UTILS, I18N_PREFIX.Description) {
         executor = ChooseExecutor
     }
 }

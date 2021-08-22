@@ -21,6 +21,11 @@ class Emotes(manager: EmoteManager) {
     val loriSob = manager.getEmoteByName("lori_sob")
     val loriRich = manager.getEmoteByName("lori_rich")
     val loriOkHand = manager.getEmoteByName("lori_ok_hand")
+    val loriReading = manager.getEmoteByName("lori_reading")
+    val loriCoffee = manager.getEmoteByName("lori_coffee")
+    val loriHeartCombo1 = manager.getEmoteByName("lori_heart_1")
+    val loriHeartCombo2 = manager.getEmoteByName("lori_heart_2")
+    val pantufaHeartCombo2 = manager.getEmoteByName("pantufa_heart_2")
 
     val error = manager.getEmoteByName("error")
 
@@ -40,6 +45,9 @@ class Emotes(manager: EmoteManager) {
     val jesus = manager.getEmoteByName("jesus")
     val thinking = manager.getEmoteByName("thinking")
     val shrug = manager.getEmoteByName("shrug")
+    val sparkles = manager.getEmoteByName("sparkles")
+    val marriageRing = manager.getEmoteByName("marriage_ring")
+    val sparklingHeart = manager.getEmoteByName("sparkling_heart")
 
     val radio = manager.getEmoteByName("radio")
     val handPointLeft = manager.getEmoteByName("hand_point_left")

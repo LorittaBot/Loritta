@@ -310,7 +310,7 @@ class TioDoPaveExecutor(val emotes: Emotes) : CommandExecutor() {
 
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
         context.sendMessage {
-            impersonation("Tio Do Pave", URLImageReference("https://loritta.website/assets/img/tio_do_pave.jpg"))
+            impersonation("Tio do Pavê", URLImageReference("https://loritta.website/assets/img/tio_do_pave.jpg"))
 
             content = "${PIADAS.random()} ${emotes.loriOkHand}"
         }

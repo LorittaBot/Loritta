@@ -7,7 +7,6 @@ import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.emotes.Emotes
-import net.perfectdreams.loritta.common.utils.embed.LorittaColor
 
 class HelpExecutor(val emotes: Emotes): CommandExecutor() {
     companion object : CommandExecutorDeclaration(HelpExecutor::class) {
@@ -18,21 +17,19 @@ class HelpExecutor(val emotes: Emotes): CommandExecutor() {
 
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
         context.sendEmbed {
-            body {
-                title = "${emotes.loriHeart} ${context.locale["${HelpCommand.LOCALE_PREFIX}.lorittaHelp"]}"
-                description = context.locale.getList("${HelpCommand.LOCALE_PREFIX}.intro")
-                    .joinToString("\n\n", transform = { it.replace("{0}", context.user.asMention) })
-                color = LorittaColor.LORITTA_AQUA
-            }
-            field("${emotes.loriPat} ${context.locale["${HelpCommand.LOCALE_PREFIX}.commandList"]}", "${context.loritta.config.website}commands")
-            field("${emotes.loriHm} ${context.locale["${HelpCommand.LOCALE_PREFIX}.supportServer"]}", "${context.loritta.config.website}support")
-            field("${emotes.loriYay} ${context.locale["${HelpCommand.LOCALE_PREFIX}.addMe"]}", "${context.loritta.config.website}dashboard")
-            field("${emotes.loriYay} ${context.locale["${HelpCommand.LOCALE_PREFIX}.donate"]}", "${context.loritta.config.website}donate")
-            field("${emotes.loriYay} ${context.locale["${HelpCommand.LOCALE_PREFIX}.blog"]}", "${context.loritta.config.website}blog")
-            field("${emotes.loriYay} ${context.locale["${HelpCommand.LOCALE_PREFIX}.guidelines"]}", "${context.loritta.config.website}guidelines")
-            images {
-                thumbnail = context.loritta.config.website + "assets/img/lori_help_short.png"
-            }
+            title = "${emotes.loriHeart} ${context.i18nContext.get(HelpCommand.I18N_PREFIX.LorittaHelp)}"
+            description = context.i18nContext.get(HelpCommand.I18N_PREFIX.Intro(context.user.asMention)).joinToString("\n\n")
+
+            color(26, 160, 254) // TODO: Move this to a object
+
+            field("${emotes.loriPat} ${context.i18nContext.get(HelpCommand.I18N_PREFIX.CommandList)}", "${context.loritta.config.website}commands")
+            field("${emotes.loriHm} ${context.i18nContext.get(HelpCommand.I18N_PREFIX.SupportServer)}", "${context.loritta.config.website}support")
+            field("${emotes.loriYay} ${context.i18nContext.get(HelpCommand.I18N_PREFIX.AddMe)}", "${context.loritta.config.website}dashboard")
+            field("${emotes.loriRich} ${context.i18nContext.get(HelpCommand.I18N_PREFIX.Donate)}", "${context.loritta.config.website}donate")
+            field("${emotes.loriReading} ${context.i18nContext.get(HelpCommand.I18N_PREFIX.Blog)}", "${context.loritta.config.website}blog")
+            field("${emotes.loriRage} ${context.i18nContext.get(HelpCommand.I18N_PREFIX.Guidelines)}", "${context.loritta.config.website}guidelines")
+
+            thumbnail(context.loritta.config.website + "assets/img/lori_help_short.png")
         }
     }
 }

@@ -22,7 +22,7 @@ dependencies {
     implementation(project(":platforms:discord:common"))
     implementation(project(":platforms:discord:commands"))
 
-    implementation("net.perfectdreams.discordinteraktions:webserver-ktor-kord:0.0.5-SNAPSHOT")
+    implementation("net.perfectdreams.discordinteraktions:webserver-ktor-kord:0.0.6-SNAPSHOT")
     implementation("io.ktor:ktor-server-netty:1.6.0")
 
     // Sequins
@@ -33,7 +33,7 @@ dependencies {
     api("io.prometheus:simpleclient_hotspot:0.10.0")
     api("io.prometheus:simpleclient_common:0.10.0")
 
-    implementation("dev.kord:kord-rest:0.7.x-SNAPSHOT")
+    implementation("dev.kord:kord-rest:0.8.x-SNAPSHOT")
 
     // Required for tests, if this is missing then Gradle will throw
     // "No tests found for given includes: [***Test](filter.includeTestsMatching)"

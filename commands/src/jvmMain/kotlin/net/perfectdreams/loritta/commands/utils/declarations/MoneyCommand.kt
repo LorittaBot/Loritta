@@ -3,11 +3,10 @@ package net.perfectdreams.loritta.commands.utils.declarations
 import net.perfectdreams.loritta.commands.utils.MoneyExecutor
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.common.utils.toI18nHelper
+import net.perfectdreams.loritta.i18n.I18nKeysData
 
 object MoneyCommand : CommandDeclaration {
-    const val LOCALE_PREFIX = "commands.command.money"
+    val I18N_PREFIX = I18nKeysData.Commands.Command.Money
 
     // Remember, Discord Slash Commands have a limit of 25 options per command!
     // The overflown options are taken out before being registered
@@ -47,7 +46,7 @@ object MoneyCommand : CommandDeclaration {
         "ZAR"
     )
 
-    override fun declaration() = command(listOf("money", "dinheiro", "grana"), CommandCategory.UTILS, LocaleKeyData("$LOCALE_PREFIX.description").toI18nHelper()) {
+    override fun declaration() = command(listOf("money", "dinheiro", "grana"), CommandCategory.UTILS, I18N_PREFIX.Description) {
         executor = MoneyExecutor
     }
 }

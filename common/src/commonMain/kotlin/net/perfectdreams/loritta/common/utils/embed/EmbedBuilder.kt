@@ -1,101 +1,72 @@
 package net.perfectdreams.loritta.common.utils.embed
 
-import kotlinx.datetime.Instant
-import net.perfectdreams.loritta.common.entities.LorittaEmbed
 import net.perfectdreams.loritta.common.utils.CinnamonDslMarker
+import net.perfectdreams.loritta.common.utils.Color
+
+fun embed(embed: EmbedBuilder.() -> Unit): EmbedBuilder = EmbedBuilder().apply(embed)
 
 @CinnamonDslMarker
 class EmbedBuilder {
+    var title: String? = null
+    var description: String? = null
+    var url: String? = null
     var author: Author? = null
-    var body: Body? = null
+    var image: Image? = null
+    var thumbnail: Thumbnail? = null
     var footer: Footer? = null
-    var images: Images? = null
+    var fields = mutableListOf<Field>()
+    var color: Color? = null
 
-    val fields = mutableListOf<Field>()
-
-    /**
-     * This is the method we can use
-     * for defining the embed's author
-     *
-     * @param callback Declaration of the author's data
-     */
-    fun author(name: String, callback: Author.() -> Unit) {
-        this.author = Author(name).apply(callback)
+    fun author(name: String, url: String? = null, iconUrl: String? = null) {
+        author = Author(name, url, iconUrl)
     }
 
-    /**
-     * This is the method we can use
-     * for defining the embed's body data (title, description, color).
-     *
-     * @param callback Declaration of the body's data
-     */
-    fun body(callback: Body.() -> Unit) {
-        this.body = Body().apply(callback)
+    fun image(url: String) {
+        image = Image(url)
     }
 
-    fun field(name: String, value: String, callback: Field.() -> Unit = {}) {
-        fields.add(Field(name, value).apply(callback))
+    fun thumbnail(url: String) {
+        thumbnail = Thumbnail(url)
     }
 
-    /**
-     * This is the method we can use
-     * for defining the embed's images (thumbnail, image).
-     *
-     * @param callback Declaration of the images
-     */
-    fun images(callback: Images.() -> Unit) {
-        this.images = Images().apply(callback)
+    fun footer(text: String, iconUrl: String? = null) {
+        footer = Footer(text, iconUrl)
     }
 
-    /**
-     * This is the method we can use
-     * for defining the embed's footer (also including the timestamp).
-     *
-     * @param callback Declaration of the footer's data
-     */
-    fun footer(text: String, callback: Footer.() -> Unit) {
-        this.footer = Footer(text).apply(callback)
+    fun field(name: String, value: String, inline: Boolean = false) {
+        fields.add(Field(name, value, inline))
     }
 
-    fun build(): LorittaEmbed {
-        return LorittaEmbed(
-            title = body?.title,
-            description = body?.description,
-            image = images?.image,
-            thumbnail = images?.thumbnail,
-            color = body?.color,
-            footer = footer?.let {LorittaEmbed.Footer(it.text, it.icon)},
-            author = author?.let {LorittaEmbed.Author(it.name, it.icon, it.url)},
-            timestamp = footer?.timestamp,
-            fields = fields.map {LorittaEmbed.Field(it.name, it.value, it.inline)}
-        )
+    fun inlineField(name: String, value: String) = field(name, value, true)
+
+    fun color(rgb: Int) {
+        color = Color(rgb)
     }
 
-    class Author(val name: String) {
-        var url: String? = null
-        var icon: String? = null
+    fun color(r: Int, g: Int, b: Int) {
+        var rgb: Int = r
+        rgb = (rgb shl 8) + g
+        rgb = (rgb shl 8) + b
+        return color(rgb)
     }
 
-    class Body {
-        var title: String? = null
-        var description: String? = null
-        var color: LorittaColor? = null
-    }
+    data class Author(
+        val name: String,
+        val url: String?,
+        val iconUrl: String?
+    )
 
-    class Field(val name: String, val value: String) {
-        var inline: Boolean = false
-    }
+    data class Image(val url: String)
+    data class Thumbnail(val url: String)
 
-    class Images {
-        var image: String? = null
-        var thumbnail: String? = null
-    }
+    data class Footer(
+        val text: String,
+        val iconUrl: String?
+    )
 
-    class Footer(val text: String) {
-        var icon: String? = null
-        var timestamp: Instant? = null
-    }
-
+    data class Field(
+        val name: String,
+        val value: String,
+        val inline: Boolean
+    )
 }
-
-fun embed(embed: EmbedBuilder.() -> Unit): EmbedBuilder = EmbedBuilder().apply(embed)

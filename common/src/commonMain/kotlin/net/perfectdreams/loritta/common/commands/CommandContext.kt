@@ -1,16 +1,15 @@
 package net.perfectdreams.loritta.common.commands
 
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.LorittaBot
 import net.perfectdreams.loritta.common.builder.MessageBuilder
 import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.common.emotes.Emotes
 import net.perfectdreams.loritta.common.entities.AllowedMentions
-import net.perfectdreams.loritta.common.entities.LorittaEmbed
+import net.perfectdreams.loritta.common.entities.InteractionMessageChannel
 import net.perfectdreams.loritta.common.entities.LorittaMessage
 import net.perfectdreams.loritta.common.entities.LorittaReply
-import net.perfectdreams.loritta.common.entities.MessageChannel
 import net.perfectdreams.loritta.common.entities.User
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.embed.EmbedBuilder
 
 abstract class CommandContext(
@@ -18,16 +17,18 @@ abstract class CommandContext(
     // By doing this, classes can use their own platform implementation (example: LorittaDiscord instead of LorittaBot)
     // If you don't keep it "open", the type will always be "LorittaBot", which sucks.
     open val loritta: LorittaBot,
-    val locale: BaseLocale,
+    val i18nContext: I18nContext,
     val user: User,
-    open val channel: MessageChannel
+    open val channel: InteractionMessageChannel
 ) {
-    suspend fun sendMessage(message: String, embed: LorittaEmbed? = null) {
+    suspend fun deferMessage(isEphemeral: Boolean = true) = channel.deferMessage(isEphemeral)
+
+    suspend fun sendMessage(message: String, embed: EmbedBuilder? = null) {
         channel.sendMessage(
             LorittaMessage(
                 message,
                 listOf(),
-                embed,
+                embed?.let { listOf(it) },
                 emptyMap(),
                 isEphemeral = false,
                 AllowedMentions(setOf(), true),
@@ -39,7 +40,7 @@ abstract class CommandContext(
     suspend fun sendMessage(block: MessageBuilder.() -> (Unit)) = channel.sendMessage(block)
 
     suspend fun sendEmbed(message: String = "", embed: EmbedBuilder.() -> Unit) {
-        sendMessage(message, EmbedBuilder().apply(embed).build())
+        sendMessage(message, EmbedBuilder().apply(embed))
     }
 
     /**
