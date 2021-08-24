@@ -126,7 +126,7 @@ class PostDeleteDataRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRout
 				} else {
 					logger.info { "Not deleting $userId's marriage because they aren't married! :P" }
 				}
-				
+
 				logger.info { "Deleting $userId's profile..." }
 				Profiles.deleteWhere {
 					Profiles.id eq userId
@@ -143,13 +143,13 @@ class PostDeleteDataRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRout
 		deleteAccountData(loritta, userId)
 
 		loritta.newSuspendedTransaction {
-			logger.info { "Banning $userId for three days..." }
+			logger.info { "Banning $userId for 90 days..." }
 			BannedUsers.insert {
 				it[BannedUsers.userId] = userId
 				it[bannedAt] = System.currentTimeMillis()
 				it[bannedBy] = null
 				it[valid] = true
-				it[expiresAt] = System.currentTimeMillis() + (Constants.ONE_DAY_IN_MILLISECONDS * 3)
+				it[expiresAt] = System.currentTimeMillis() + (Constants.ONE_DAY_IN_MILLISECONDS * 90)
 				it[BannedUsers.reason] = loritta.localeManager.getLocaleById("default")["website.dashboard.profile.deleteAccount.bannedAccountDueToDeletion"]
 			}
 		}
