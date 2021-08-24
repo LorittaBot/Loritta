@@ -5,7 +5,6 @@ import com.mrpowergamerbr.loritta.tables.Dailies
 import com.mrpowergamerbr.loritta.tables.DonationKeys
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Marriages
-import com.mrpowergamerbr.loritta.tables.Mutes
 import com.mrpowergamerbr.loritta.tables.Profiles
 import com.mrpowergamerbr.loritta.tables.Reminders
 import com.mrpowergamerbr.loritta.tables.Reputations
@@ -22,7 +21,6 @@ import net.perfectdreams.loritta.tables.BomDiaECiaWinners
 import net.perfectdreams.loritta.tables.BotVotes
 import net.perfectdreams.loritta.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
-import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.tables.ProfileDesignsPayments
 import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
@@ -41,7 +39,11 @@ class PostDeleteDataRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRout
 
 		suspend fun deleteAccountData(loritta: LorittaDiscord, userId: Long) {
 			loritta.newSuspendedTransaction {
+				// According to Discord, IDs aren't user identifiable information, so we aren't going to delete the following stuff:
+				// Mutes (Useful for moderation, doesn't store anything related to the user, also IDs aren't personally identifiable)
+				// Payments (Required for banking stuff, we can't delete those)
 				logger.info { "Deleting $userId's dailies..." }
+
 				Dailies.deleteWhere {
 					Dailies.receivedById eq userId
 				}
@@ -54,11 +56,6 @@ class PostDeleteDataRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRout
 				logger.info { "Deleting $userId's guild profiles..." }
 				GuildProfiles.deleteWhere {
 					GuildProfiles.userId eq userId
-				}
-
-				logger.info { "Deleting $userId's mutes..." }
-				Mutes.deleteWhere {
-					Mutes.userId eq userId
 				}
 
 				logger.info { "Deleting $userId's reminders..." }
@@ -111,19 +108,9 @@ class PostDeleteDataRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRout
 					ExecutedCommandsLog.userId eq userId
 				}
 
-				logger.info { "Deleting $userId's payments..." }
-				Payments.deleteWhere {
-					Payments.userId eq userId
-				}
-
 				logger.info { "Deleting $userId's sonhos transactions..." }
 				SonhosTransaction.deleteWhere {
 					SonhosTransaction.receivedBy eq userId or (SonhosTransaction.givenBy eq userId)
-				}
-
-				logger.info { "Deleting $userId's profile..." }
-				Profiles.deleteWhere {
-					Profiles.id eq userId
 				}
 
 				// First we will select the marriage, check if there is a marriage and THEN update all profiles to have a null reference to it, and then delete it!
@@ -138,6 +125,11 @@ class PostDeleteDataRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRout
 					Marriages.deleteWhere { Marriages.id eq marriage[Marriages.id] }
 				} else {
 					logger.info { "Not deleting $userId's marriage because they aren't married! :P" }
+				}
+				
+				logger.info { "Deleting $userId's profile..." }
+				Profiles.deleteWhere {
+					Profiles.id eq userId
 				}
 			}
 		}
