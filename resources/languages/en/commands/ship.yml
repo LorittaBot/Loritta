@@ -47,6 +47,9 @@ scoreMarried:
   - "We don't need to ship them, they are already married!"
   - "They are already in love my darling, no need to do pesky ships!"
 
+scoreLoveYourself:
+  - "Love yourself!"
+
 options:
   user1: "The user that you want to ship"
   user2: "The user that you want to ship, if not present, I will use... you!"
