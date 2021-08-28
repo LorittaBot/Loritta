@@ -47,7 +47,7 @@ class FansExplainingExecutor(val emotes: Emotes, val client: GabrielaImageServer
     }
 
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
-        context.deferMessage(false) // Defer message because image manipulation is kinda heavy
+        context.deferChannelMessage() // Defer message because image manipulation is kinda heavy
 
         val section1Line1 = args[options.section1Line1]
         val section1Line2 = args[options.section1Line2]

@@ -32,7 +32,7 @@ class MemeMakerExecutor(val emotes: Emotes, val client: GabrielaImageServerClien
     }
 
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
-        context.deferMessage(false) // Defer message because image manipulation is kinda heavy
+        context.deferChannelMessage() // Defer message because image manipulation is kinda heavy
 
         val imageReference = args[options.imageReference]
         val line1 = args[options.line1]

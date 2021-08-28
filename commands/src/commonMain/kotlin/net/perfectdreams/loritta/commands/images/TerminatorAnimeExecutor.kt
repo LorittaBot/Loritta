@@ -28,7 +28,7 @@ class TerminatorAnimeExecutor(val emotes: Emotes, val client: GabrielaImageServe
     }
 
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
-        context.deferMessage(false) // Defer message because image manipulation is kinda heavy
+        context.deferChannelMessage() // Defer message because image manipulation is kinda heavy
 
         val line1 = args[options.line1]
         val line2 = args[options.line2]

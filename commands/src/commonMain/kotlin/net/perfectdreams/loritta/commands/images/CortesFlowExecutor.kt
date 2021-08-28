@@ -42,7 +42,7 @@ class CortesFlowExecutor(val emotes: Emotes, val client: GabrielaImageServerClie
     }
 
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
-        context.deferMessage(false) // Defer message because image manipulation is kinda heavy
+        context.deferChannelMessage() // Defer message because image manipulation is kinda heavy
 
         val type = args[options.type]
         val text = args[options.text]

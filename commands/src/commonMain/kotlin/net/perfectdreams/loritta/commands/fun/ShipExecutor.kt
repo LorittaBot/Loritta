@@ -21,7 +21,11 @@ import net.perfectdreams.loritta.common.utils.gabrielaimageserver.executeAndHand
 import kotlin.math.absoluteValue
 import kotlin.random.Random
 
-class ShipExecutor(val emotes: Emotes, val inputConverter: InputConverter<String, ConverterResult>, val client: GabrielaImageServerClient) : CommandExecutor() {
+class ShipExecutor(
+    val emotes: Emotes,
+    val inputConverter: InputConverter<String, ConverterResult>,
+    val client: GabrielaImageServerClient
+) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(ShipExecutor::class) {
         object Options : CommandOptions() {
             val user1 = string("user1", ShipCommand.I18N_PREFIX.Options.User1)
@@ -35,6 +39,8 @@ class ShipExecutor(val emotes: Emotes, val inputConverter: InputConverter<String
     }
 
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
+        context.deferChannelMessage()
+
         val user1 = args[options.user1]
         val user2 = args[options.user2]
 
@@ -95,10 +101,16 @@ class ShipExecutor(val emotes: Emotes, val inputConverter: InputConverter<String
         var value = (seed % 101).absoluteValue.toInt()
 
         var isMarried = false
-        // We will only check for manipulated values if both users are a UserResult
-        // Because we don't need to spend requests by checking if an StringResult has a marriage
-        if (result1 is UserResult && result2 is UserResult) {
-            // "Loritta will be cancelled on Twitter due to result manipulation, oh no!"
+        var isLoveYourself = false
+
+        // "Loritta will be cancelled on Twitter due to result manipulation, oh no!"
+        if (user1Id == user2Id) {
+            // Easter Egg: Love Yourself
+            value = 100
+            isLoveYourself = true
+        } else if (result1 is UserResult && result2 is UserResult) {
+            // We will only check for manipulated values if both users are a UserResult
+            // Because we don't need to spend requests by checking if an StringResult has a marriage
             val user1Marriage = context.loritta.services.marriages.getMarriageByUser(user1Id)
             val user2Marriage = context.loritta.services.marriages.getMarriageByUser(user2Id)
 
@@ -126,6 +138,10 @@ class ShipExecutor(val emotes: Emotes, val inputConverter: InputConverter<String
         val loveTextEmote: Emote
 
         when {
+            isLoveYourself -> {
+                loveTextResults = ShipCommand.I18N_PREFIX.ScoreLoveYourself
+                loveTextEmote = emotes.loriSmile
+            }
             isMarried -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScoreMarried
                 loveTextEmote = emotes.marriageRing
@@ -157,9 +173,14 @@ class ShipExecutor(val emotes: Emotes, val inputConverter: InputConverter<String
         val loveTextResult = context.i18nContext.get(loveTextResults).random(Random(seed))
 
         // We will substring half of the name of both of user's, so we can create a nice "ship name"
-        val name1 = user1Name.substring(0..(user1Name.length / 2))
-        val name2 = user2Name.substring(user2Name.length / 2 until user2Name.length)
-        val shipName = name1 + name2
+        val shipName = if (isLoveYourself) {
+            // Easter Egg: Love Yourself
+            user1Name
+        } else {
+            val name1 = user1Name.substring(0..(user1Name.length / 2))
+            val name2 = user2Name.substring(user2Name.length / 2 until user2Name.length)
+            name1 + name2
+        }
 
         val result = client.executeAndHandleExceptions(
             context,
