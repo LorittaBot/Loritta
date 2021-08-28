@@ -7,7 +7,8 @@ import net.perfectdreams.loritta.common.entities.InteractionMessageChannel
 import net.perfectdreams.loritta.common.entities.LorittaMessage
 
 class InteraKTionsInteractionMessageChannel(private val context: ApplicationCommandContext) : InteraKTionsMessageChannel(context), InteractionMessageChannel {
-    override suspend fun deferMessage(isEphemeral: Boolean) = context.deferMessage(isEphemeral)
+    override suspend fun deferChannelMessage() = context.deferChannelMessage()
+    override suspend fun deferChannelMessageEphemerally() = context.deferChannelMessageEphemerally()
 
     override suspend fun sendMessage(message: LorittaMessage) {
         if (message.isEphemeral) {
@@ -109,7 +110,7 @@ class InteraKTionsInteractionMessageChannel(private val context: ApplicationComm
                 }
 
                 for (file in message.files) {
-                    addFile(file.key, file.value.inputStream())
+                    file(file.key, file.value.inputStream())
                 }
 
                 message.embeds?.forEach {

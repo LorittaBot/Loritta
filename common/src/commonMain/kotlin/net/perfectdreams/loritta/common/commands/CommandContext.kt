@@ -21,7 +21,15 @@ abstract class CommandContext(
     val user: User,
     open val channel: InteractionMessageChannel
 ) {
-    suspend fun deferMessage(isEphemeral: Boolean = true) = channel.deferMessage(isEphemeral)
+    /**
+     * Defers the application command request message with a public message
+     */
+    suspend fun deferChannelMessage() = channel.deferChannelMessage()
+
+    /**
+     * Defers the application command request message with a ephemeral message
+     */
+    suspend fun deferChannelMessageEphemerally() = channel.deferChannelMessageEphemerally()
 
     suspend fun sendMessage(message: String, embed: EmbedBuilder? = null) {
         channel.sendMessage(

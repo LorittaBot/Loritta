@@ -6,8 +6,11 @@ package net.perfectdreams.loritta.common.entities
 interface InteractionMessageChannel : MessageChannel {
     /**
      * Defers the application command request message
-     *
-     * @param isEphemeral if the deferred message should be ephemeral or not
      */
-    suspend fun deferMessage(isEphemeral: Boolean)
+    suspend fun deferChannelMessage()
+
+    /**
+     * Defers the application command request message
+     */
+    suspend fun deferChannelMessageEphemerally()
 }

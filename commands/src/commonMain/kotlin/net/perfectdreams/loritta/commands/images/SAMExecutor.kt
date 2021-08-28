@@ -31,7 +31,7 @@ class SAMExecutor(val emotes: Emotes, val client: GabrielaImageServerClient) : C
     }
 
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
-        context.deferMessage(false) // Defer message because image manipulation is kinda heavy
+        context.deferChannelMessage() // Defer message because image manipulation is kinda heavy
 
         val type = args[options.type]
         val imageReference = args[options.imageReference]

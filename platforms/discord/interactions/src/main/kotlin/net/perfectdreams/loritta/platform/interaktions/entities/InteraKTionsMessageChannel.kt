@@ -107,7 +107,7 @@ abstract class InteraKTionsMessageChannel(private val context: ApplicationComman
                 }
 
                 for (file in message.files) {
-                    addFile(file.key, file.value.inputStream())
+                    file(file.key, file.value.inputStream())
                 }
 
                 message.embeds?.forEach {
