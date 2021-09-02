@@ -1,0 +1,6 @@
+files:
+  - source: /default/*.yml
+    translation: /%locale%/%original_file_name%
+    ignore: [ "/translators.yml" ]
+  - source: /default/commands/*.yml
+    translation: /%locale%/commands/%original_file_name%
