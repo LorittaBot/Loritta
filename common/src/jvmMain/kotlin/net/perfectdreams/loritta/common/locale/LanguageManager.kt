@@ -204,7 +204,7 @@ class LanguageManager(
         val notLoadedYetLanguages = Files.list(
             getPathFromResources(languagesPath) ?: error("Language folder $languagesPath is not present in the application resources folder!")
         ).filter {
-            it.isDirectory()
+            it.isDirectory() && !it.name.startsWith(".") // Ignore ".github"
         }
             .toList()
             .toMutableList()
