@@ -7,29 +7,28 @@ import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.emotes.Emotes
-import net.perfectdreams.loritta.common.utils.TodoFixThisData
 import kotlin.random.Random
 
 class TextVemDeZapExecutor(val emotes: Emotes, val random: Random) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(TextVemDeZapExecutor::class) {
         object Options : CommandOptions() {
-            val mood = string("mood", TodoFixThisData)
-                .choice("happy", TodoFixThisData)
-                .choice("angry", TodoFixThisData)
-                .choice("sassy", TodoFixThisData)
-                .choice("sad", TodoFixThisData)
-                .choice("sick", TodoFixThisData)
+            val mood = string("mood", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Mood.Text)
+                .choice("happy", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Happy)
+                .choice("angry", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Angry)
+                .choice("sassy", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Sassy)
+                .choice("sad", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Sad)
+                .choice("sick", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Sick)
                 .register()
 
-            val level = integer("level", TodoFixThisData)
-                .choice(0, TodoFixThisData)
-                .choice(1, TodoFixThisData)
-                .choice(2, TodoFixThisData)
-                .choice(3, TodoFixThisData)
-                .choice(4, TodoFixThisData)
+            val level = integer("level", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Level.Text)
+                .choice(0, TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level1)
+                .choice(1, TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level2)
+                .choice(2, TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level3)
+                .choice(3, TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level4)
+                .choice(4, TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level5)
                 .register()
 
-            val text = string("text", TodoFixThisData)
+            val text = string("text", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Text)
                 .register()
         }
 
@@ -93,7 +92,11 @@ class TextVemDeZapExecutor(val emotes: Emotes, val random: Random) : CommandExec
             }
         }
 
-        context.sendMessage(output)
+        // TODO: Fix Escape Mentions
+        context.sendReply(
+            output,
+            "✍"
+        )
     }
 
     enum class ZapZapMood {
