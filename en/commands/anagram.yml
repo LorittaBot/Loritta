@@ -1,8 +1,4 @@
-description: "Create an one-word anagram!"
-examples:
-  - "Loritta |-| Create a anagram using the word \"Loritta\""
-  - "kk eae men |-| Create an anagram using the sentence \"kk eae men\""
-  - "Asriel Dreemurr |-| Create an anagram using the sentence \"Asriel Dreemurr\""
+description: "Create an anagram from a text! Perfect if you want to be mysterious with your messages"
 result: "**Your anagram is...** `{anagramResult}`"
 stats: "The word `{originalWord}` has **{howMany} different anagrams**!"
 options:
