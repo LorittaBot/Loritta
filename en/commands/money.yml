@@ -3,9 +3,9 @@ result: "**{input,number,#.##} {fromCurrency} in {toCurrency}**: {result,number,
 invalidCurrency: "`{currency}` is not a valid currency!"
 currencyList: "Currencies: `{list}`"
 options:
-  from: "A moeda da qual você deseja converter"
-  to: "A moeda para a qual você deseja converter"
-  quantity: "A quantidade que você deseja converter, perfeito para saber quanto vai pagar em um Discord Nitro!"
+  from: "The currency you want to be converted from"
+  to: "The currency you want to be converted to"
+  quantity: "The quantity you want to be converted, perfect if you want to know how much money you will spend for Discord Nitro!"
 currencies:
   eur: "Euro (EUR)"
   usd: "United States dollar (USD)"
