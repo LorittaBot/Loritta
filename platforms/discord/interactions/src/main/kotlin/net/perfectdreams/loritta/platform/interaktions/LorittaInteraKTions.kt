@@ -200,7 +200,7 @@ class LorittaInteraKTions(
 
         commandManager.register(
             ShipCommand,
-            ShipExecutor(emotes, ShipDiscordMentionInputConverter(), gabrielaImageServerClient)
+            ShipExecutor(emotes, ShipDiscordMentionInputConverter(), gabrielaImageServerClient, discordConfig.applicationId)
         )
 
         commandManager.register(CancelledCommand, CancelledExecutor(emotes))
