@@ -5,6 +5,7 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
     id("com.github.johnrengelman.shadow") version "5.2.0"
+    id("com.google.cloud.tools.jib") version Versions.JIB
 }
 
 repositories {
@@ -49,6 +50,25 @@ tasks.test {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = Versions.JVM_TARGET
+}
+
+jib {
+    container {
+        ports = listOf("8080")
+    }
+
+    to {
+        image = "ghcr.io/lorittabot/cinnamon-discord-interaktions"
+
+        auth {
+            username = System.getProperty("DOCKER_USERNAME") ?: System.getenv("DOCKER_USERNAME")
+            password = System.getProperty("DOCKER_PASSWORD") ?: System.getenv("DOCKER_PASSWORD")
+        }
+    }
+
+    from {
+        image = "openjdk:15.0.2-slim-buster"
+    }
 }
 
 tasks.withType<ShadowJar> {
