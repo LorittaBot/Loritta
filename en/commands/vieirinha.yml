@@ -16,7 +16,7 @@ responses:
   - "You can trust on it{punctuation, select, exclamation {!} other {.}}"
   - "My answer is yes{punctuation, select, exclamation {!} other {.}}"
   - "My answer is no{punctuation, select, exclamation {!} other {.}}"
-  - "I don't think it would be a good idea "
+  - "I don't think it would be a good idea"
   - "Better not tell you this right now..."
   - "Yes, absolutely{punctuation, select, exclamation {!} other {.}}"
   - "Of course{punctuation, select, exclamation {!} other {.}}"
