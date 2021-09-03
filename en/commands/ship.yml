@@ -50,10 +50,10 @@ scoreLoveYourself:
   - "Love yourself!"
   
 scoreLoritta:
-  - "Nah, I don't want to be in a couple with you, I like being single and living my own life! But someday you will find someone that will love you!"
+  - "Nah, I don't want to be in a couple, I like being single and living my own life! But someday you will find someone that will love you!"
  
 scoreLorittaWithShipEffect:
-  - "What? Do you think that magically manipulating the results would work with me? Get out of here!"
+  - "What? Trying to magically manipulate the ship results with me won't work. Get out of here!"
 
 options:
   user1: "The user that you want to ship"
