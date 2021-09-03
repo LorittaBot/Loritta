@@ -203,7 +203,11 @@ class LanguageManager(
     fun loadLanguages() {
         val notLoadedYetLanguages = Files.list(
             getPathFromResources(languagesPath) ?: error("Language folder $languagesPath is not present in the application resources folder!")
-        ).toList().toMutableList()
+        ).filter {
+            it.isDirectory()
+        }
+            .toList()
+            .toMutableList()
 
         val languages = mutableMapOf<String, Language>()
 
