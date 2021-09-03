@@ -336,6 +336,7 @@ object TextTransformDeclaration : CommandDeclaration {
     val sickEmojis = listOf("😷", "🤒", "🤕", "🤢", "🤮", "🤧")
 
     val I18N_PREFIX = I18nKeysData.Commands.Command.Text
+    val VEMDEZAP_I18N_PREFIX = I18N_PREFIX.Vemdezap
     val CLAP_EMOJI = "\uD83D\uDC4F"
 
     override fun declaration() = command(listOf("text", "texto"), CommandCategory.FUN, TodoFixThisData) {
@@ -359,15 +360,15 @@ object TextTransformDeclaration : CommandDeclaration {
             executor = TextMockExecutor
         }
 
-        subcommand(listOf("quality", "qualidade"), TodoFixThisData) {
+        subcommand(listOf("quality", "qualidade"), I18N_PREFIX.Quality.Description) {
             executor = TextQualityExecutor
         }
 
-        subcommand(listOf("vaporquality", "vaporqualidade"), TodoFixThisData) {
+        subcommand(listOf("vaporquality", "vaporqualidade"), I18N_PREFIX.Vaporquality.Description) {
             executor = TextVaporQualityExecutor
         }
 
-        subcommand(listOf("vemdezap"), TodoFixThisData) {
+        subcommand(listOf("vemdezap"), VEMDEZAP_I18N_PREFIX.Description) {
             executor = TextVemDeZapExecutor
         }
     }

@@ -16,7 +16,7 @@ import kotlin.random.Random
 class RateWaifuExecutor(val emotes: Emotes, val inputConverter: InputConverter<String, String>) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(RateWaifuExecutor::class) {
         object Options : CommandOptions() {
-            val waifu = string("waifu", RateCommand.I18N_PREFIX.WaifuHusbando.Options.Husbando)
+            val waifu = string("waifu", RateCommand.I18N_PREFIX.WaifuHusbando.Options.Waifu)
                 .register()
         }
 
