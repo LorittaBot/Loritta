@@ -85,18 +85,18 @@ class SlashCommandExecutorWrapper(
             val serverConfig = if (guildId != null) {
                 loritta.services.serverConfigs.getServerConfigRootById(guildId.value) ?: NonGuildServerConfigRoot( // Fallback to a fake guild config if it doesn't exist
                     guildId.value,
-                    "en"
+                    "pt" // Default to Portuguese
                 )
             } else {
                 // TODO: Should this class *really* be named "ServerConfig"? After all, it isn't always used for guilds
                 NonGuildServerConfigRoot(
                     -1L,
-                    "en"
+                    "pt" // Default to Portuguese
                 )
             }
 
             // Patches and workarounds!!!
-            val localeId = when (serverConfig?.localeId) {
+            val localeId = when (serverConfig.localeId) {
                 "default" -> "pt"
                 "en-us" -> "en"
                 else -> serverConfig.localeId
