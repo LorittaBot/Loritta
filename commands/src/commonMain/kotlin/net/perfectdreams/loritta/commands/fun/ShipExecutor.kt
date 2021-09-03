@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDec
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.common.emotes.Emotes
+import net.perfectdreams.loritta.common.entities.ShipEffect
 import net.perfectdreams.loritta.common.entities.User
 import net.perfectdreams.loritta.common.utils.InputConverter
 import net.perfectdreams.loritta.common.utils.gabrielaimageserver.GabrielaImageServerClient
@@ -24,7 +25,8 @@ import kotlin.random.Random
 class ShipExecutor(
     val emotes: Emotes,
     val inputConverter: InputConverter<String, ConverterResult>,
-    val client: GabrielaImageServerClient
+    val client: GabrielaImageServerClient,
+    val lorittaId: Long
 ) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(ShipExecutor::class) {
         object Options : CommandOptions() {
@@ -102,12 +104,37 @@ class ShipExecutor(
 
         var isMarried = false
         var isLoveYourself = false
+        var isLoritta = false
+        var isLorittaWithShipEffects = false
 
         // "Loritta will be cancelled on Twitter due to result manipulation, oh no!"
         if (user1Id == user2Id) {
             // Easter Egg: Love Yourself
             value = 100
             isLoveYourself = true
+        } else if (user1Id == lorittaId || user2Id == lorittaId) {
+            // Easter Egg: Shipping you/someone with Loritta
+            val shipEffects = mutableListOf<ShipEffect>()
+
+            if (result1 is UserResult)
+                shipEffects += context.loritta.services.shipEffects.getShipEffectsForUser(user1Id)
+
+            if (result2 is UserResult)
+                shipEffects += context.loritta.services.shipEffects.getShipEffectsForUser(user2Id)
+
+            // TODO: Add RPC call to only get valid (non expired) ship effects
+            // TODO: Add RPC call to do what we are doing here in the .firstOrNull { ... } call
+            val firstMatchedShipEffect = shipEffects
+                .filter { it.expiresAt > Clock.System.now() }
+                .sortedByDescending { it.id }
+                .firstOrNull { (it.user1 == user1Id && it.user2 == user2Id) || (it.user2 == user1Id && it.user1 == user2Id) }
+
+            if (firstMatchedShipEffect != null)
+                isLorittaWithShipEffects = true
+            else
+                isLoritta = true
+
+            value = (seed % 51).absoluteValue.toInt()
         } else if (result1 is UserResult && result2 is UserResult) {
             // We will only check for manipulated values if both users are a UserResult
             // Because we don't need to spend requests by checking if an StringResult has a marriage
@@ -138,6 +165,14 @@ class ShipExecutor(
         val loveTextEmote: Emote
 
         when {
+            isLorittaWithShipEffects -> {
+                loveTextResults = ShipCommand.I18N_PREFIX.ScoreLorittaWithShipEffect
+                loveTextEmote = emotes.loriHmpf
+            }
+            isLoritta -> {
+                loveTextResults = ShipCommand.I18N_PREFIX.ScoreLoritta
+                loveTextEmote = emotes.loriShrug
+            }
             isLoveYourself -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScoreLoveYourself
                 loveTextEmote = emotes.loriSmile
