@@ -1,5 +1,5 @@
 avatar:
-  description: "Shows your, or another user's, Discord avatar"
+  description: "Shows your, or another user's, profile avatar"
   clickHere: "Click [here]({avatarUrl}) to download the user's avatar!"
 
   yourselfEasterEgg: "Despite everything, it's still you."
@@ -16,8 +16,8 @@ avatar:
     user: "The user that you want to steal... I mean, view, their avatar (*/ω＼*)"
 
 banner:
-  description: "Shows your, or another user's, Discord banner"
-  userDoesNotHaveAnBanner: "{user} does not have an Discord banner! Maybe they don't have Discord Nitro... Or maybe they were just too lazy to set a nice banner."
+  description: "Shows your, or another user's, profile banner"
+  userDoesNotHaveAnBanner: "{user} does not have a banner in their profile! Maybe they don't have Discord Nitro... Or maybe they were just too lazy to set a nice banner."
 
   clickHere: "Click [here]({bannerUrl}) to download the user's banner!"
 
