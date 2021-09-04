@@ -30,13 +30,14 @@ class UserBannerExecutor(val emotes: Emotes, val rest: RestClient) : DiscordComm
         val retrievedDiscordUser = rest.user.getUser(Snowflake(user.id))
 
         val bannerId = retrievedDiscordUser.banner ?: context.fail {
-                styled(
-                    context.i18nContext.get(
-                        I18nKeysData.Commands.Command.User.Banner.UserDoesNotHaveAnBanner(mentionUser(user, false))
-                    ),
-                    prefix = emotes.error
-                )
-            }
+            isEphemeral = true
+            styled(
+                context.i18nContext.get(
+                    I18nKeysData.Commands.Command.User.Banner.UserDoesNotHaveAnBanner(mentionUser(user, false))
+                ),
+                prefix = emotes.error
+            )
+        }
 
         val extension = if (bannerId.startsWith("a_")) "gif" else "png"
         val bannerUrl = "https://cdn.discordapp.com/banners/${user.id}/${retrievedDiscordUser.banner}.$extension?size=512"
