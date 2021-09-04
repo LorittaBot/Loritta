@@ -20,6 +20,8 @@ class SonhosExecutor(val emotes: Emotes) : CommandExecutor() {
     }
 
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
+        context.deferChannelMessage() // Defer because this sometimes takes too long
+
         val user = args[options.user] ?: context.user
 
         val profile = context.loritta.services.users.getUserProfileById(user.id)
