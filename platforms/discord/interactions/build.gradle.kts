@@ -23,7 +23,7 @@ dependencies {
     implementation(project(":platforms:discord:common"))
     implementation(project(":platforms:discord:commands"))
 
-    implementation("net.perfectdreams.discordinteraktions:webserver-ktor-kord:0.0.6-SNAPSHOT")
+    implementation("net.perfectdreams.discordinteraktions:webserver-ktor-kord:0.0.7-SNAPSHOT")
     implementation("io.ktor:ktor-server-netty:1.6.0")
 
     // Sequins
