@@ -1,5 +1,8 @@
-buildscript {
-    repositories { jcenter() }
+plugins {
+    // It needs to be in here to avoid a "Failed to apply plugin class 'org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin'."
+    kotlin("multiplatform") version Versions.KOTLIN apply false
+    kotlin("jvm") version Versions.KOTLIN apply false
+    kotlin("plugin.serialization") version Versions.KOTLIN apply false
 }
 
 allprojects {

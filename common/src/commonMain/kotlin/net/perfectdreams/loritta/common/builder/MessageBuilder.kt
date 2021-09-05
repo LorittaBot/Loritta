@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.common.builder
 
 import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.common.emotes.Emotes
-import net.perfectdreams.loritta.common.entities.LorittaEmbed
 import net.perfectdreams.loritta.common.entities.LorittaImpersonation
 import net.perfectdreams.loritta.common.entities.LorittaMessage
 import net.perfectdreams.loritta.common.entities.LorittaReply
@@ -15,7 +14,7 @@ import net.perfectdreams.loritta.common.utils.embed.EmbedBuilder
 class MessageBuilder {
     var content: String? = null
     var replies = mutableListOf<LorittaReply>()
-    var embed: LorittaEmbed? = null
+    var embeds: MutableList<EmbedBuilder>? = null
     // There isn't a multiplatform input stream (sad)
     var files = mutableMapOf<String, ByteArray>()
     var isEphemeral = false
@@ -27,12 +26,14 @@ class MessageBuilder {
     }
 
     /**
-     * Appends a embed to this builder
+     * Appends an embed to this builder
      *
      * @param embed a embed builder
      */
-    fun embed(embed: EmbedBuilder.() -> Unit){
-        this.embed = net.perfectdreams.loritta.common.utils.embed.embed(embed).build()
+    fun embed(declaration: EmbedBuilder.() -> Unit) {
+        embeds = (embeds ?: mutableListOf()).also {
+            it.add(EmbedBuilder().apply(declaration))
+        }
     }
 
     /**
@@ -89,10 +90,10 @@ class MessageBuilder {
 
     fun build(): LorittaMessage {
         val content = content
-        val embed = embed
+        val embed = embeds
         val files = files
 
-        if (content == null && embed == null && files.isEmpty() && replies.isEmpty())
+        if (content == null && embeds?.isNotEmpty() != true && files.isEmpty() && replies.isEmpty())
             throw UnsupportedOperationException("Message needs to have at least content, embed or a file!")
 
         return LorittaMessage(

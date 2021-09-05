@@ -3,13 +3,12 @@ package net.perfectdreams.loritta.commands.`fun`.declarations
 import net.perfectdreams.loritta.commands.`fun`.RollExecutor
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 
 object RollCommand : CommandDeclaration {
-    const val LOCALE_PREFIX = "commands.command.roll"
+    val I18N_PREFIX = I18nKeysData.Commands.Command.Roll
 
-    override fun declaration() = command(listOf("roll"), CommandCategory.FUN) {
-        description = LocaleKeyData("${LOCALE_PREFIX}.description")
+    override fun declaration() = command(listOf("roll"), CommandCategory.FUN, I18N_PREFIX.Description) {
         executor = RollExecutor
     }
 }

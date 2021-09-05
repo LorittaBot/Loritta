@@ -1,24 +1,30 @@
 package net.perfectdreams.loritta.platform.interaktions.commands
 
-import dev.kord.common.entity.Snowflake
 import mu.KotlinLogging
-import net.perfectdreams.discordinteraktions.commands.CommandManager
-import net.perfectdreams.discordinteraktions.commands.SlashCommandExecutor
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclaration
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclarationBuilder
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration
-import net.perfectdreams.discordinteraktions.declarations.slash.slashCommand
+import net.perfectdreams.discordinteraktions.api.entities.Snowflake
+import net.perfectdreams.discordinteraktions.common.commands.CommandManager
+import net.perfectdreams.discordinteraktions.common.commands.CommandRegistry
+import net.perfectdreams.discordinteraktions.common.commands.slash.SlashCommandExecutor
+import net.perfectdreams.discordinteraktions.declarations.commands.SlashCommandDeclaration
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCommandDeclarationBuilder
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCommandExecutorDeclaration
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.slashCommand
+import net.perfectdreams.discordinteraktions.declarations.commands.wrappers.SlashCommandDeclarationWrapper
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.platform.interaktions.LorittaInteraKTions
 import net.perfectdreams.loritta.platform.interaktions.utils.shortenWithEllipsis
 import java.util.concurrent.atomic.AtomicInteger
 
-class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: CommandManager) {
+class CommandManager(
+    val loritta: LorittaInteraKTions,
+    val interaKTionsManager: CommandManager,
+    val interaKTionsRegistry: CommandRegistry
+) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -31,7 +37,7 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
         this.executors.addAll(executors)
     }
 
-    suspend fun convertToInteraKTions(locale: BaseLocale) {
+    suspend fun convertToInteraKTions(locale: I18nContext) {
         val commandSignatureIndex = AtomicInteger()
 
         for (declaration in declarations) {
@@ -51,10 +57,10 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
         }
 
         if (loritta.interactionsConfig.registerGlobally) {
-            interaKTionsManager.updateAllGlobalCommands(true)
+            interaKTionsRegistry.updateAllGlobalCommands(true)
         } else {
             for (guildId in loritta.interactionsConfig.guildsToBeRegistered) {
-                interaKTionsManager.updateAllCommandsInGuild(Snowflake(guildId), true)
+                interaKTionsRegistry.updateAllCommandsInGuild(Snowflake(guildId), true)
             }
         }
     }
@@ -62,9 +68,9 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
     fun convertCommandDeclarationToInteraKTions(
         declaration: CommandDeclarationBuilder,
         declarationExecutor: CommandExecutorDeclaration?,
-        locale: BaseLocale,
+        locale: I18nContext,
         signature: AtomicInteger
-    ): Pair<SlashCommandDeclaration, List<SlashCommandExecutor>> {
+    ): Pair<SlashCommandDeclarationWrapper, List<SlashCommandExecutor>> {
         val executors = mutableListOf<SlashCommandExecutor>()
 
         val declaration = convertCommandDeclarationToSlashCommand(
@@ -76,7 +82,7 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
         )
 
         return Pair(
-            object: SlashCommandDeclaration {
+            object: SlashCommandDeclarationWrapper {
                 override fun declaration() = declaration
             },
             executors
@@ -86,10 +92,10 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
     fun convertCommandDeclarationToSlashCommand(
         declaration: CommandDeclarationBuilder,
         declarationExecutor: CommandExecutorDeclaration?,
-        locale: BaseLocale,
+        locale: I18nContext,
         signature: AtomicInteger,
         createdExecutors: MutableList<SlashCommandExecutor>
-    ): SlashCommandDeclarationBuilder {
+    ): SlashCommandDeclaration {
         if (declarationExecutor != null) {
             val executor = executors.firstOrNull { declarationExecutor.parent == it::class }
                 ?: throw UnsupportedOperationException("The command executor wasn't found! Did you register the command executor?")
@@ -97,7 +103,6 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
 
             val interaKTionsExecutor = SlashCommandExecutorWrapper(
                 loritta,
-                locale,
                 loritta.emotes,
                 declaration,
                 declarationExecutor,
@@ -117,9 +122,7 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
 
             createdExecutors.add(interaKTionsExecutor)
 
-            return slashCommand(declaration.labels.first()) {
-                description = buildDescription(locale, declaration)
-
+            return slashCommand(declaration.labels.first(), buildDescription(locale, declaration)) {
                 this.executor = interaKTionsExecutorDeclaration
 
                 if (declaration.subcommands.isNotEmpty() || declaration.subcommandGroups.isNotEmpty())
@@ -140,8 +143,7 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
                 }
             }
         } else {
-            return slashCommand(declaration.labels.first()) {
-                description = buildDescription(locale, declaration)
+            return slashCommand(declaration.labels.first(), buildDescription(locale, declaration)) {
                 addSubcommandGroups(declaration, signature, createdExecutors, locale)
 
                 for (subcommand in declaration.subcommands) {
@@ -159,17 +161,15 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
         }
     }
 
-    private fun SlashCommandDeclarationBuilder.addSubcommandGroups(declaration: CommandDeclarationBuilder, signature: AtomicInteger, createdExecutors: MutableList<SlashCommandExecutor>, locale: BaseLocale) {
+    private fun SlashCommandDeclarationBuilder.addSubcommandGroups(declaration: CommandDeclarationBuilder, signature: AtomicInteger, createdExecutors: MutableList<SlashCommandExecutor>, i18nContext: I18nContext) {
         for (group in declaration.subcommandGroups) {
-            subcommandGroup(group.labels.first()) {
-                description = locale[declaration.description!!].shortenWithEllipsis()
-
+            subcommandGroup(group.labels.first(), i18nContext.get(declaration.description).shortenWithEllipsis()) {
                 for (subcommand in group.subcommands) {
                     subcommands.add(
                         convertCommandDeclarationToSlashCommand(
                             subcommand,
                             subcommand.executor!!,
-                            locale,
+                            i18nContext,
                             signature,
                             createdExecutors
                         )
@@ -179,7 +179,7 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
         }
     }
 
-    fun buildDescription(locale: BaseLocale, declaration: CommandDeclarationBuilder) = buildString {
+    fun buildDescription(i18nContext: I18nContext, declaration: CommandDeclarationBuilder) = buildString {
         // It looks like this
         // "「Emoji Category」 Description"
         append("「")
@@ -205,9 +205,10 @@ class CommandManager(val loritta: LorittaInteraKTions, val interaKTionsManager: 
         }
         append(emoji)
         append(" ")
-        append(declaration.category.getLocalizedName(locale))
+        append(declaration.category.getLocalizedName(i18nContext))
         append("」")
-        append(" ")
-        append(locale[declaration.description!!])
+        // Looks better without this whitespace
+        // append(" ")
+        append(i18nContext.get(declaration.description))
     }.shortenWithEllipsis()
 }

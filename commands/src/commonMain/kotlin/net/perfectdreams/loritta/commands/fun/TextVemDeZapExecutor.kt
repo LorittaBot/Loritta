@@ -7,29 +7,28 @@ import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.emotes.Emotes
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import kotlin.random.Random
 
 class TextVemDeZapExecutor(val emotes: Emotes, val random: Random) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(TextVemDeZapExecutor::class) {
         object Options : CommandOptions() {
-            val mood = string("mood", LocaleKeyData("commands.command.vemdezap.whatIsTheMood"))
-                .choice("happy", LocaleKeyData("commands.command.vemdezap.moodHappy"))
-                .choice("angry", LocaleKeyData("commands.command.vemdezap.moodAngry"))
-                .choice("sassy", LocaleKeyData("commands.command.vemdezap.moodSassy"))
-                .choice("sad", LocaleKeyData("commands.command.vemdezap.moodSad"))
-                .choice("sick", LocaleKeyData("commands.command.vemdezap.moodSick"))
+            val mood = string("mood", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Mood.Text)
+                .choice("happy", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Happy)
+                .choice("angry", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Angry)
+                .choice("sassy", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Sassy)
+                .choice("sad", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Sad)
+                .choice("sick", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Sick)
                 .register()
 
-            val level = integer("level", LocaleKeyData("commands.command.vemdezap.whatIsTheLevel"))
-                .choice(0, LocaleKeyData("commands.command.vemdezap.level1"))
-                .choice(1, LocaleKeyData("commands.command.vemdezap.level2"))
-                .choice(2, LocaleKeyData("commands.command.vemdezap.level3"))
-                .choice(3, LocaleKeyData("commands.command.vemdezap.level4"))
-                .choice(4, LocaleKeyData("commands.command.vemdezap.level5"))
+            val level = integer("level", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Level.Text)
+                .choice(0, TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level1)
+                .choice(1, TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level2)
+                .choice(2, TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level3)
+                .choice(3, TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level4)
+                .choice(4, TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level5)
                 .register()
 
-            val text = string("text", LocaleKeyData("commands.command.vemdezap.selectText"))
+            val text = string("text", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Text)
                 .register()
         }
 
@@ -93,7 +92,11 @@ class TextVemDeZapExecutor(val emotes: Emotes, val random: Random) : CommandExec
             }
         }
 
-        context.sendMessage(output)
+        // TODO: Fix Escape Mentions
+        context.sendReply(
+            output,
+            "✍"
+        )
     }
 
     enum class ZapZapMood {

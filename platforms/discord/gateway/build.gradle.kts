@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version Versions.KOTLIN
-    kotlin("plugin.serialization") version Versions.KOTLIN
+    kotlin("jvm")
+    kotlin("plugin.serialization")
     id("com.github.johnrengelman.shadow") version "5.2.0"
 }
 
@@ -17,7 +17,7 @@ dependencies {
     implementation(project(":services:pudding"))
     implementation(project(":platforms:discord:common"))
     implementation(project(":platforms:discord:commands"))
-    implementation("dev.kord:kord-core:0.7.x-SNAPSHOT")
+    implementation("dev.kord:kord-core:0.8.x-SNAPSHOT")
 
     // Required for tests, if this is missing then Gradle will throw
     // "No tests found for given includes: [***Test](filter.includeTestsMatching)"

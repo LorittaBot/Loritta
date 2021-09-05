@@ -18,6 +18,8 @@ open class GabrielaImageServerSingleCommandBase(
     val fileName: String
 ) : CommandExecutor() {
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
+        context.deferChannelMessage() // Defer message because image manipulation is kinda heavy
+
         val imageReference = args[SingleImageOptions.imageReference]
 
         val result = client.executeAndHandleExceptions(

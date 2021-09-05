@@ -5,25 +5,21 @@ import net.perfectdreams.loritta.commands.images.DrakeExecutor
 import net.perfectdreams.loritta.commands.images.LoriDrakeExecutor
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
-import net.perfectdreams.loritta.common.commands.declarations.command
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 
 object DrakeCommand : CommandDeclaration {
-    override fun declaration() = command(listOf("drake"), CommandCategory.IMAGES) {
-        description = LocaleKeyData("TODO_FIX_THIS")
+    val I18N_PREFIX = I18nKeysData.Commands.Command.Drake
 
-        subcommand(listOf("drake")) {
-            description = LocaleKeyData("commands.command.drake.description")
+    override fun declaration() = command(listOf("drake"), CommandCategory.IMAGES, I18N_PREFIX.Description) {
+        subcommand(listOf("drake"), I18N_PREFIX.Drake.Description) {
             executor = DrakeExecutor
         }
 
-        subcommand(listOf("bolsonaro")) {
-            description = LocaleKeyData("commands.command.bolsodrake.description")
+        subcommand(listOf("bolsonaro"), I18N_PREFIX.Bolsonaro.Description) {
             executor = BolsoDrakeExecutor
         }
 
-        subcommand(listOf("lori")) {
-            description = LocaleKeyData("commands.command.loridrake.description")
+        subcommand(listOf("lori"), I18N_PREFIX.Lori.Description) {
             executor = LoriDrakeExecutor
         }
     }

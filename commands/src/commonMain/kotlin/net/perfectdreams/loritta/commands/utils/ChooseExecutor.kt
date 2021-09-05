@@ -7,14 +7,13 @@ import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.emotes.Emotes
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
 
 class ChooseExecutor(val emotes: Emotes) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(ChooseExecutor::class) {
         object Options : CommandOptions() {
             val choices = stringList(
                 "choice",
-                LocaleKeyData("${ChooseCommand.LOCALE_PREFIX}.options.selectionList"),
+                ChooseCommand.I18N_PREFIX.Options.Choice,
                 minimum = 2, maximum = 25
             ).register()
         }
@@ -26,8 +25,13 @@ class ChooseExecutor(val emotes: Emotes) : CommandExecutor() {
         val options = args[options.choices]
 
         context.sendReply(
-            content = context.locale["${ChooseCommand.LOCALE_PREFIX}.result", options.random()],
-            prefix = emotes.loriHm.toString()
+            content = context.i18nContext.get(
+                ChooseCommand.I18N_PREFIX.Result(
+                    result = options.random(),
+                    emote = emotes.loriYay
+                )
+            ),
+            prefix = emotes.loriHm
         )
     }
 }

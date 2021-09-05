@@ -1,6 +1,6 @@
 plugins {
-    kotlin("multiplatform") version Versions.KOTLIN
-    kotlin("plugin.serialization") version Versions.KOTLIN
+    kotlin("multiplatform")
+    kotlin("plugin.serialization")
 }
 
 kotlin {
@@ -11,7 +11,7 @@ kotlin {
         withJava()
     }
 
-    js {
+    js(IR) {
         // Declares that we want to compile for the browser and for nodejs
         browser()
         nodejs()

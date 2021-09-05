@@ -15,5 +15,9 @@ class PuddingServices(
         http
     )
 
-    override val profiles = PuddingUserProfileService(puddingClient)
+    override val users = PuddingUserService(puddingClient)
+    override val marriages = PuddingMarriagesService(puddingClient)
+    override val shipEffects = PuddingShipEffectsService(puddingClient)
+    override val sonhos = PuddingSonhosService(puddingClient)
+    override val serverConfigs = PuddingServerConfigsService(puddingClient)
 }

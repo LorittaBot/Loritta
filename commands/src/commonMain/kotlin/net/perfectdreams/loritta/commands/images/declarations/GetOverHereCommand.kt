@@ -1,19 +1,14 @@
 package net.perfectdreams.loritta.commands.images.declarations
 
-import net.perfectdreams.loritta.commands.images.CepoDeMadeiraExecutor
 import net.perfectdreams.loritta.commands.images.GetOverHereExecutor
-import net.perfectdreams.loritta.commands.images.KnuxThrowExecutor
-import net.perfectdreams.loritta.commands.images.LoriSignExecutor
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
-import net.perfectdreams.loritta.common.commands.declarations.command
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 
 object GetOverHereCommand : CommandDeclaration {
-    const val LOCALE_PREFIX = "commands.command.getoverhere"
+    val I18N_PREFIX = I18nKeysData.Commands.Command.Getoverhere
 
-    override fun declaration() = command(listOf("getoverhere"), CommandCategory.IMAGES) {
-        description = LocaleKeyData("$LOCALE_PREFIX.description")
+    override fun declaration() = command(listOf("getoverhere"), CommandCategory.IMAGES, I18N_PREFIX.Description) {
         executor = GetOverHereExecutor
     }
 }

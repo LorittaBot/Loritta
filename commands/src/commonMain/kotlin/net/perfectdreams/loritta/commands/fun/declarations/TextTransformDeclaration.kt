@@ -1,13 +1,17 @@
 package net.perfectdreams.loritta.commands.`fun`.declarations
 
+import net.perfectdreams.loritta.commands.`fun`.TextClapExecutor
+import net.perfectdreams.loritta.commands.`fun`.TextLowercaseExecutor
+import net.perfectdreams.loritta.commands.`fun`.TextMockExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextQualityExecutor
+import net.perfectdreams.loritta.commands.`fun`.TextUppercaseExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextVaporQualityExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextVaporwaveExecutor
 import net.perfectdreams.loritta.commands.`fun`.TextVemDeZapExecutor
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
-import net.perfectdreams.loritta.common.commands.declarations.command
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.utils.TodoFixThisData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 
 object TextTransformDeclaration : CommandDeclaration {
     const val VEMDEZAP_LOCALE_PREFIX = "commands.command.vemdezap"
@@ -331,26 +335,40 @@ object TextTransformDeclaration : CommandDeclaration {
     val sassyEmojis = listOf("😉", "😎", "😋", "😘", "😏", "😜", "😈", "😻", "🙊", "👉👌", "😼")
     val sickEmojis = listOf("😷", "🤒", "🤕", "🤢", "🤮", "🤧")
 
-    override fun declaration() = command(listOf("text", "texto"), CommandCategory.FUN) {
-        description = LocaleKeyData("TODO_FIX_THIS")
+    val I18N_PREFIX = I18nKeysData.Commands.Command.Text
+    val VEMDEZAP_I18N_PREFIX = I18N_PREFIX.Vemdezap
+    val CLAP_EMOJI = "\uD83D\uDC4F"
 
-        subcommand(listOf("vaporwave", "vaporonda")) {
-            description = LocaleKeyData("commands.command.vaporwave.description")
+    override fun declaration() = command(listOf("text", "texto"), CommandCategory.FUN, TodoFixThisData) {
+        subcommand(listOf("vaporwave", "vaporonda"), I18N_PREFIX.Vaporwave.Description) {
             executor = TextVaporwaveExecutor
         }
 
-        subcommand(listOf("quality", "qualidade")) {
-            description = LocaleKeyData("commands.command.quality.description")
+        subcommand(listOf("uppercase"), I18N_PREFIX.Uppercase.Description) {
+            executor = TextUppercaseExecutor
+        }
+
+        subcommand(listOf("lowercase"), I18N_PREFIX.Lowercase.Description) {
+            executor = TextLowercaseExecutor
+        }
+
+        subcommand(listOf("clap"), I18N_PREFIX.Clap.Description(CLAP_EMOJI)) {
+            executor = TextClapExecutor
+        }
+
+        subcommand(listOf("mock"), I18N_PREFIX.Mock.Description) {
+            executor = TextMockExecutor
+        }
+
+        subcommand(listOf("quality", "qualidade"), I18N_PREFIX.Quality.Description) {
             executor = TextQualityExecutor
         }
 
-        subcommand(listOf("vaporquality", "vaporqualidade")) {
-            description = LocaleKeyData("commands.command.vaporquality.description")
+        subcommand(listOf("vaporquality", "vaporqualidade"), I18N_PREFIX.Vaporquality.Description) {
             executor = TextVaporQualityExecutor
         }
 
-        subcommand(listOf("vemdezap")) {
-            description = LocaleKeyData("${VEMDEZAP_LOCALE_PREFIX}.description")
+        subcommand(listOf("vemdezap"), VEMDEZAP_I18N_PREFIX.Description) {
             executor = TextVemDeZapExecutor
         }
     }

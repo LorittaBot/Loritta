@@ -1,6 +1,6 @@
 plugins {
-    kotlin("multiplatform") version Versions.KOTLIN
-    kotlin("plugin.serialization") version Versions.KOTLIN
+    kotlin("multiplatform")
+    kotlin("plugin.serialization")
 }
 
 group = "net.perfectdreams.loritta.discord"
@@ -19,7 +19,7 @@ kotlin {
                 implementation(project(":common"))
                 implementation(project(":commands"))
                 // Kord bugs
-                implementation("io.ktor:ktor-client-cio:1.5.3")
+                implementation("io.ktor:ktor-client-cio:1.6.0")
             }
         }
     }

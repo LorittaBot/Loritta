@@ -18,6 +18,8 @@ open class GabrielaImageServerTwoCommandBase(
     val fileName: String
 ) : CommandExecutor() {
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
+        context.deferChannelMessage() // Defer message because image manipulation is kinda heavy
+
         val imageReference1 = args[TwoImagesOptions.imageReference1]
         val imageReference2 = args[TwoImagesOptions.imageReference2]
 

@@ -3,14 +3,12 @@ package net.perfectdreams.loritta.commands.images.declarations
 import net.perfectdreams.loritta.commands.images.PepeDreamExecutor
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
-import net.perfectdreams.loritta.common.commands.declarations.command
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 
 object PepeDreamCommand : CommandDeclaration {
-    const val LOCALE_PREFIX = "commands.command.pepedream"
+    val I18N_PREFIX = I18nKeysData.Commands.Command.Pepedream
 
-    override fun declaration() = command(listOf("pepedream", "sonhopepe", "pepesonho"), CommandCategory.IMAGES) {
-        description = LocaleKeyData("$LOCALE_PREFIX.description")
+    override fun declaration() = command(listOf("pepedream", "sonhopepe", "pepesonho"), CommandCategory.IMAGES, I18N_PREFIX.Description) {
         executor = PepeDreamExecutor
     }
 }

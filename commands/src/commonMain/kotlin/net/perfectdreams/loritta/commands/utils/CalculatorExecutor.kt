@@ -7,13 +7,12 @@ import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.emotes.Emotes
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.math.MathUtils
 
 class CalculatorExecutor(val emotes: Emotes) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(CalculatorExecutor::class) {
         object Options : CommandOptions() {
-            val expression = string("expression", LocaleKeyData("${CalculatorCommand.LOCALE_PREFIX}.selectExpression"))
+            val expression = string("expression", CalculatorCommand.I18N_PREFIX.Options.Expression)
                 .register()
         }
 
@@ -42,20 +41,35 @@ class CalculatorExecutor(val emotes: Emotes) : CommandExecutor() {
                 // resultNumber0 --- resultNumber1
                 // resultNumber2 --- x
                 context.sendReply(
-                    context.locale["${CalculatorCommand.LOCALE_PREFIX}.result", (resultNumber2 * resultNumber1) / resultNumber0]
+                    content = context.i18nContext.get(
+                        CalculatorCommand.I18N_PREFIX.Result(
+                            (resultNumber2 * resultNumber1) / resultNumber0
+                        )
+                    ),
+                    prefix = emotes.loriReading
                 )
                 return
             }
 
+            // TODO: Evaluate based on the user's locale (or maybe find what locale they are using by figuring out the number?)
             val result = MathUtils.evaluate(expression)
 
             context.sendReply(
-                content = context.locale["${CalculatorCommand.LOCALE_PREFIX}.result", result]
+                content = context.i18nContext.get(
+                    CalculatorCommand.I18N_PREFIX.Result(
+                        result
+                    )
+                ),
+                prefix = emotes.loriReading
             )
         } catch (e: Exception) {
             // TODO: Fix stripCodeMarks
             context.sendReply(
-                content = context.locale["${CalculatorCommand.LOCALE_PREFIX}.invalid", expression] + " ${emotes.loriSob}",
+                content = context.i18nContext.get(
+                    CalculatorCommand.I18N_PREFIX.Invalid(
+                        expression
+                    )
+                ) + " ${emotes.loriSob}",
                 prefix = emotes.loriHm
             )
         }

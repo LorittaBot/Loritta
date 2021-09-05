@@ -11,20 +11,20 @@ import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.emotes.Emotes
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.gabrielaimageserver.GabrielaImageServerClient
 import net.perfectdreams.loritta.common.utils.gabrielaimageserver.executeAndHandleExceptions
+import net.perfectdreams.loritta.i18n.I18nKeysData
 
 class MemeMakerExecutor(val emotes: Emotes, val client: GabrielaImageServerClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(MemeMakerExecutor::class) {
         object Options : CommandOptions() {
-            val line1 = string("line1", LocaleKeyData("${MemeMakerCommand.LOCALE_PREFIX}.selectLine1"))
+            val line1 = string("line1", MemeMakerCommand.I18N_PREFIX.Options.Line1)
                 .register()
 
-            val line2 = optionalString("line2", LocaleKeyData("${MemeMakerCommand.LOCALE_PREFIX}.selectLine2"))
+            val line2 = optionalString("line2", MemeMakerCommand.I18N_PREFIX.Options.Line2)
                 .register()
 
-            val imageReference = imageReference("image", LocaleKeyData("${MemeMakerCommand.LOCALE_PREFIX}.selectImage"))
+            val imageReference = imageReference("image", I18nKeysData.Commands.Category.Images.Options.Image)
                 .register()
         }
 
@@ -32,6 +32,8 @@ class MemeMakerExecutor(val emotes: Emotes, val client: GabrielaImageServerClien
     }
 
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
+        context.deferChannelMessage() // Defer message because image manipulation is kinda heavy
+
         val imageReference = args[options.imageReference]
         val line1 = args[options.line1]
         val line2 = args[options.line2]

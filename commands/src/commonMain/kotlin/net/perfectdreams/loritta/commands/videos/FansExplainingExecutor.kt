@@ -11,36 +11,35 @@ import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.common.commands.options.CommandOptions
 import net.perfectdreams.loritta.common.emotes.Emotes
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.gabrielaimageserver.GabrielaImageServerClient
 import net.perfectdreams.loritta.common.utils.gabrielaimageserver.executeAndHandleExceptions
 
 class FansExplainingExecutor(val emotes: Emotes, val client: GabrielaImageServerClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(FansExplainingExecutor::class) {
         object Options : CommandOptions() {
-            val section1Line1 = string("section1_line1", LocaleKeyData("${FansExplainingCommand.LOCALE_PREFIX}.selectSection1Line1"))
+            val section1Line1 = string("section1_line1", FansExplainingCommand.I18N_PREFIX.Options.Section1Line1)
                 .register()
-            val section1Line2 = string("section1_line2", LocaleKeyData("${FansExplainingCommand.LOCALE_PREFIX}.selectSection1Line2"))
-                .register()
-
-            val section2Line1 = string("section2_line1", LocaleKeyData("${FansExplainingCommand.LOCALE_PREFIX}.selectSection2Line1"))
-                .register()
-            val section2Line2 = string("section2_line2", LocaleKeyData("${FansExplainingCommand.LOCALE_PREFIX}.selectSection2Line2"))
+            val section1Line2 = string("section1_line2", FansExplainingCommand.I18N_PREFIX.Options.Section1Line2)
                 .register()
 
-            val section3Line1 = string("section3_line1", LocaleKeyData("${FansExplainingCommand.LOCALE_PREFIX}.selectSection3Line1"))
+            val section2Line1 = string("section2_line1", FansExplainingCommand.I18N_PREFIX.Options.Section2Line1)
                 .register()
-            val section3Line2 = string("section3_line2", LocaleKeyData("${FansExplainingCommand.LOCALE_PREFIX}.selectSection3Line2"))
-                .register()
-
-            val section4Line1 = string("section4_line1", LocaleKeyData("${FansExplainingCommand.LOCALE_PREFIX}.selectSection4Line1"))
-                .register()
-            val section4Line2 = string("section4_line2", LocaleKeyData("${FansExplainingCommand.LOCALE_PREFIX}.selectSection4Line2"))
+            val section2Line2 = string("section2_line2", FansExplainingCommand.I18N_PREFIX.Options.Section2Line2)
                 .register()
 
-            val section5Line1 = string("section5_line1", LocaleKeyData("${FansExplainingCommand.LOCALE_PREFIX}.selectSection5Line1"))
+            val section3Line1 = string("section3_line1", FansExplainingCommand.I18N_PREFIX.Options.Section3Line1)
                 .register()
-            val section5Line2 = string("section5_line2", LocaleKeyData("${FansExplainingCommand.LOCALE_PREFIX}.selectSection5Line2"))
+            val section3Line2 = string("section3_line2", FansExplainingCommand.I18N_PREFIX.Options.Section3Line2)
+                .register()
+
+            val section4Line1 = string("section4_line1", FansExplainingCommand.I18N_PREFIX.Options.Section4Line1)
+                .register()
+            val section4Line2 = string("section4_line2", FansExplainingCommand.I18N_PREFIX.Options.Section4Line2)
+                .register()
+
+            val section5Line1 = string("section5_line1", FansExplainingCommand.I18N_PREFIX.Options.Section5Line1)
+                .register()
+            val section5Line2 = string("section5_line2", FansExplainingCommand.I18N_PREFIX.Options.Section5Line2)
                 .register()
         }
 
@@ -48,6 +47,8 @@ class FansExplainingExecutor(val emotes: Emotes, val client: GabrielaImageServer
     }
 
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
+        context.deferChannelMessage() // Defer message because image manipulation is kinda heavy
+
         val section1Line1 = args[options.section1Line1]
         val section1Line2 = args[options.section1Line2]
 

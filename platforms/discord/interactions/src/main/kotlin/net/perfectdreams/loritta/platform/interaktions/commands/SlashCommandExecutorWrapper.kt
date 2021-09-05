@@ -1,15 +1,15 @@
 package net.perfectdreams.loritta.platform.interaktions.commands
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import net.perfectdreams.discordinteraktions.api.entities.Channel
+import net.perfectdreams.discordinteraktions.api.entities.Snowflake
 import net.perfectdreams.discordinteraktions.api.entities.User
-import net.perfectdreams.discordinteraktions.commands.SlashCommandArguments
-import net.perfectdreams.discordinteraktions.commands.SlashCommandExecutor
-import net.perfectdreams.discordinteraktions.context.SlashCommandContext
+import net.perfectdreams.discordinteraktions.common.commands.slash.SlashCommandExecutor
+import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
+import net.perfectdreams.discordinteraktions.common.context.commands.GuildApplicationCommandContext
+import net.perfectdreams.discordinteraktions.common.context.commands.slash.SlashCommandArguments
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.commands.CommandArguments
+import net.perfectdreams.loritta.common.commands.CommandContext
 import net.perfectdreams.loritta.common.commands.CommandException
 import net.perfectdreams.loritta.common.commands.CommandExecutor
 import net.perfectdreams.loritta.common.commands.SilentCommandException
@@ -18,13 +18,13 @@ import net.perfectdreams.loritta.common.commands.declarations.CommandExecutorDec
 import net.perfectdreams.loritta.common.commands.options.CommandOption
 import net.perfectdreams.loritta.common.commands.options.CommandOptionType
 import net.perfectdreams.loritta.common.emotes.Emotes
+import net.perfectdreams.loritta.common.entities.ServerConfigRoot
 import net.perfectdreams.loritta.common.images.URLImageReference
-import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.platform.interaktions.LorittaInteraKTions
-import net.perfectdreams.loritta.platform.interaktions.entities.InteraKTionsMessageChannelHandler
+import net.perfectdreams.loritta.platform.interaktions.entities.InteraKTionsInteractionMessageChannel
 import net.perfectdreams.loritta.platform.interaktions.entities.InteraKTionsUser
 import net.perfectdreams.loritta.platform.interaktions.utils.metrics.Prometheus
-import net.perfectdreams.loritta.platform.interaktions.utils.toLorittaGuild
 import kotlin.streams.toList
 
 /**
@@ -34,7 +34,6 @@ import kotlin.streams.toList
  */
 class SlashCommandExecutorWrapper(
     private val loritta: LorittaInteraKTions,
-    private val locale: BaseLocale,
     private val emotes: Emotes,
     // This is only used for metrics
     private val rootDeclaration: CommandDeclarationBuilder,
@@ -55,36 +54,73 @@ class SlashCommandExecutorWrapper(
         )
     }
 
-    override suspend fun execute(context: SlashCommandContext, args: SlashCommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val stringifiedArgumentNames = stringifyArgumentNames(args.types)
         val rootDeclarationClazzName = rootDeclaration.parent.simpleName
         val executorClazzName = executor::class.simpleName
 
-        logger.info { "(${context.user.id.value}) $executor $stringifiedArgumentNames" }
+        logger.info { "(${context.sender.id.value}) $executor $stringifiedArgumentNames" }
 
         val timer = Prometheus.EXECUTED_COMMAND_LATENCY_COUNT
             .labels(rootDeclarationClazzName, executorClazzName)
             .startTimer()
 
+        val channel = InteraKTionsInteractionMessageChannel(context)
+
+        // These variables are used in the catch { ... } block, to make our lives easier
+        var i18nContext: I18nContext? = null
+        var cinnamonContext: CommandContext? = null
+
         try {
             // Map Cinnamon Arguments to Discord InteraKTions Arguments
             val cinnamonArgs = mutableMapOf<CommandOption<*>, Any?>()
             val interaKTionsArgumentEntries = args.types.entries
-            val guild = context.request.guildId.value?.let { loritta.interactions.rest.guild.getGuild(it) }
-            val channel = loritta.interactions.rest.channel.getChannel(context.request.channelId)
 
-            val cinnamonContext = InteraKTionsCommandContext(
+            val guildId = if (context is GuildApplicationCommandContext) {
+                context.guildId
+            } else {
+                null
+            }
+
+            val serverConfig = if (guildId != null) {
+                loritta.services.serverConfigs.getServerConfigRootById(guildId.value) ?: NonGuildServerConfigRoot( // Fallback to a fake guild config if it doesn't exist
+                    guildId.value,
+                    "pt" // Default to Portuguese
+                )
+            } else {
+                // TODO: Should this class *really* be named "ServerConfig"? After all, it isn't always used for guilds
+                NonGuildServerConfigRoot(
+                    -1L,
+                    "pt" // Default to Portuguese
+                )
+            }
+
+            // Patches and workarounds!!!
+            val localeId = when (serverConfig.localeId) {
+                "default" -> "pt"
+                "en-us" -> "en"
+                else -> serverConfig.localeId
+            }
+
+            i18nContext = loritta.languageManager.getI18nContextById(localeId)
+
+            // val channel = loritta.interactions.rest.channel.getChannel(context.request.channelId)
+
+            cinnamonContext = InteraKTionsCommandContext(
                 loritta,
-                locale,
-                InteraKTionsUser(context.user),
-                InteraKTionsMessageChannelHandler(channel, context),
-                guild?.toLorittaGuild(loritta.interactions.rest)
+                i18nContext,
+                InteraKTionsUser(context.sender),
+                channel,
+                // guild?.toLorittaGuild(loritta.interactions.rest)
+                null,
+                context
             )
 
-            if (!rootDeclaration.allowedInPrivateChannel && guild == null) {
-                context.sendEphemeralMessage {
+            if (!rootDeclaration.allowedInPrivateChannel && guildId == null) {
+                TODO()
+                /* context.sendEphemeralMessage {
                     content = ":no_entry: **|** ${locale["commands.cantUseInPrivate"]}"
-                }
+                } */
                 return
             }
 
@@ -92,7 +128,7 @@ class SlashCommandExecutorWrapper(
                 when (it.type) {
                     is CommandOptionType.StringList -> {
                         // Special case: Lists
-                        val listsValues = interaKTionsArgumentEntries.filter { opt -> it.name.startsWith(it.name) }
+                        val listsValues = interaKTionsArgumentEntries.filter { opt -> opt.key.name.startsWith(it.name) }
                         cinnamonArgs[it] = mutableListOf<String>().also {
                             it.addAll(listsValues.map { it.value as String })
                         }
@@ -100,84 +136,101 @@ class SlashCommandExecutorWrapper(
 
                     is CommandOptionType.ImageReference -> {
                         // Special case: Image References
-                        val imageReferenceArgs =
-                            interaKTionsArgumentEntries.filter { opt -> it.name.startsWith(it.name) }
-
+                        // Get the argument that matches our image reference
+                        val interaKTionArgument = interaKTionsArgumentEntries.firstOrNull { opt -> opt.key.name == it.name }
                         var found = false
-                        for ((interaKTionOption, value) in imageReferenceArgs) {
-                            if (interaKTionOption.name == "${it.name}_avatar" && value != null) {
-                                // If the type is a user OR a nullable user, and the value isn't null...
-                                val interaKTionUser = value as User
 
-                                cinnamonArgs[it] = URLImageReference(interaKTionUser.avatar.url)
-                                found = true
-                                break
-                            }
+                        if (interaKTionArgument != null) {
+                            val value = interaKTionArgument.value as String
 
-                            if (interaKTionOption.name == "${it.name}_url" && value != null) {
-                                cinnamonArgs[it] = URLImageReference(value as String)
-                                found = true
-                                break
-                            }
+                            // Now check if it is a valid thing!
+                            // First, we will try matching via user mentions
+                            if (value.startsWith("<@") && value.endsWith(">")) {
+                                // Maybe it is a mention?
+                                val userId = value
+                                    .removePrefix("<@")
+                                    .removePrefix("!") // User has a nickname
+                                    .removeSuffix(">")
+                                    .toLongOrNull()
 
-                            if (interaKTionOption.name == "${it.name}_emote" && value != null) {
-                                val strValue = value as String
+                                if (userId != null) {
+                                    val user = context.data.resolved?.users?.get(Snowflake(userId))
 
-                                // Discord emotes always starts with "<" and ends with ">"
-                                if (strValue.startsWith("<") && strValue.endsWith(">")) {
-                                    val emoteId = strValue.substringAfterLast(":").substringBefore(">")
-                                    cinnamonArgs[it] = URLImageReference("https://cdn.discordapp.com/emojis/${emoteId}.png?v=1")
-                                } else {
-                                    // If not, we are going to handle it as if it were a Unicode emoji
-                                    val emoteId = strValue.codePoints().toList().joinToString(separator = "-") { String.format("\\u%04x", it).substring(2) }
-                                    cinnamonArgs[it] = URLImageReference("https://twemoji.maxcdn.com/2/72x72/$emoteId.png")
-                                }
-                                found = true
-                                break
-                            }
-
-                            if (interaKTionOption.name == "${it.name}_history" && value != null) {
-                                val boolValue = value as Boolean
-
-                                if (boolValue) {
-                                    // If true, we are going to find the first recent message in this chat
-                                    val channelId = context.request.channelId
-                                    val messages = loritta.rest.channel.getMessages(
-                                        channelId,
-                                        null,
-                                        100
-                                    )
-
-                                    try {
-                                        // Sort from the newest message to the oldest message
-                                        val attachmentUrl = messages.sortedByDescending { it.id.timeStamp }
-                                            .flatMap { it.attachments }
-                                            .firstOrNull {
-                                                // Only get filenames ending with "image" extensions
-                                                it.filename.substringAfter(".")
-                                                    .toLowerCase() in SUPPORTED_IMAGE_EXTENSIONS
-                                            }?.url
-
-                                        if (attachmentUrl != null) {
-                                            cinnamonArgs[it] = URLImageReference(attachmentUrl)
-                                            found = true
-                                        }
-                                    } catch (e: Exception) {
-                                        // TODO: Catch the "permission required" exception and show a nice message
-                                        e.printStackTrace()
+                                    if (user != null) {
+                                        // User avatar found! Let's use it!!
+                                        cinnamonArgs[it] = URLImageReference(user.avatar.url)
+                                        found = true
                                     }
                                 }
-                                break
+                            }
+
+                            if (!found && value.startsWith("http")) {
+                                // It is a URL!
+                                // TODO: Use a RegEx to check if it is a valid URL
+                                cinnamonArgs[it] = URLImageReference(value)
+                                found = true
+                            }
+
+                            if (!found) {
+                                // It is a emote!
+                                // Discord emotes always starts with "<" and ends with ">"
+                                if (value.startsWith("<") && value.endsWith(">")) {
+                                    val emoteId = value.substringAfterLast(":").substringBefore(">")
+                                    cinnamonArgs[it] =
+                                        URLImageReference("https://cdn.discordapp.com/emojis/${emoteId}.png?v=1")
+                                } else {
+                                    // If not, we are going to handle it as if it were a Unicode emoji
+                                    val emoteId = value.codePoints().toList()
+                                        .joinToString(separator = "-") { String.format("\\u%04x", it).substring(2) }
+                                    cinnamonArgs[it] =
+                                        URLImageReference("https://twemoji.maxcdn.com/2/72x72/$emoteId.png")
+                                }
+                                found = true
                             }
                         }
 
+                        // TODO: Fix this, removed for now
+                        /* if (interaKTionOption.name == "${it.name}_history" && value != null) {
+                            val boolValue = value as Boolean
+
+                            if (boolValue) {
+                                TODO()
+                                // If true, we are going to find the first recent message in this chat
+                                /* val channelId = context.request.channelId
+                                val messages = loritta.rest.channel.getMessages(
+                                    channelId,
+                                    null,
+                                    100
+                                )
+
+                                try {
+                                    // Sort from the newest message to the oldest message
+                                    val attachmentUrl = messages.sortedByDescending { it.id.timeStamp }
+                                        .flatMap { it.attachments }
+                                        .firstOrNull {
+                                            // Only get filenames ending with "image" extensions
+                                            it.filename.substringAfter(".")
+                                                .toLowerCase() in SUPPORTED_IMAGE_EXTENSIONS
+                                        }?.url
+
+                                    if (attachmentUrl != null) {
+                                        cinnamonArgs[it] = URLImageReference(attachmentUrl)
+                                        found = true
+                                    }
+                                } catch (e: Exception) {
+                                    // TODO: Catch the "permission required" exception and show a nice message
+                                    e.printStackTrace()
+                                } */
+                            }
+                            break
+                        } */
+
                         if (!found)
-                            cinnamonContext.fail(cinnamonContext.locale["commands.noValidImageFound", emotes.loriSob], emotes.loriSob)
+                            cinnamonContext.fail(cinnamonContext.i18nContext.get(I18nKeysData.Commands.NoValidImageFound), emotes.loriSob)
                     }
 
                     else -> {
-                        val interaKTionArgument =
-                            interaKTionsArgumentEntries.firstOrNull { opt -> it.name == opt.key.name }
+                        val interaKTionArgument = interaKTionsArgumentEntries.firstOrNull { opt -> it.name == opt.key.name }
 
                         // If the value is null but it *wasn't* meant to be null, we are going to throw a exception!
                         // (This should NEVER happen!)
@@ -192,8 +245,9 @@ class SlashCommandExecutorWrapper(
                             is CommandOptionType.Channel, CommandOptionType.NullableChannel -> {
                                 println("okay, tipo de canal")
                                 println("Argumento é null? ${interaKTionArgument == null}")
-                                println("Guild é null? ${guild == null}")
-                                cinnamonArgs[it] = interaKTionArgument?.value?.let { guild?.toLorittaGuild(loritta.interactions.rest)?.retrieveChannel((interaKTionArgument.value as Channel).id.value) }
+                                println("Guild é null? ${guildId == null}")
+                                // cinnamonArgs[it] = interaKTionArgument?.value?.let { guild?.toLorittaGuild(loritta.interactions.rest)?.retrieveChannel((interaKTionArgument.value as Channel).id.value) }
+                                TODO()
                             }
 
                             else -> {
@@ -201,19 +255,6 @@ class SlashCommandExecutorWrapper(
                             }
                         }
                     }
-                }
-            }
-
-            GlobalScope.launch {
-                delay(2_000)
-                if (!context.isDeferred) {
-                    logger.warn { "Command $declarationExecutor hasn't been deferred yet! Deferring..." }
-
-                    Prometheus.AUTOMATICALLY_DEFERRED_COUNT
-                        .labels(rootDeclarationClazzName, executorClazzName)
-                        .inc()
-
-                    context.defer()
                 }
             }
 
@@ -228,28 +269,46 @@ class SlashCommandExecutorWrapper(
             if (e is CommandException) {
                 // Because we don't have access to the Cinnamon context here, and we *need* to send a LorittaMessage, we will
                 // wrap them in a InteraKTionsMessageChannel and send it!
-                InteraKTionsMessageChannelHandler(loritta.interactions.rest.channel.getChannel(context.request.channelId), context).sendMessage(e.lorittaMessage)
+                channel.sendMessage(e.lorittaMessage)
                 return
             }
 
             logger.warn(e) { "Something went wrong while executing $rootDeclarationClazzName $executorClazzName" }
 
+            // If the i18nContext is not present, we will default to the default language provided
+            i18nContext = i18nContext ?: loritta.languageManager.getI18nContextById(loritta.languageManager.defaultLanguageId)
+
             // Tell the user that something went *really* wrong
-            // We don't have access to the Cinnamon Context (sadly), so we will use the Discord InteraKTions context
-            context.sendEphemeralMessage {
-                var reply = "${loritta.emotes.loriShrug} **|** " + locale["commands.errorWhileExecutingCommand", loritta.emotes.loriRage, loritta.emotes.loriSob]
+            // While we do have access to the Cinnamon Context, it may be null at this stage, so we will use the Discord InteraKTions context
+            val content = "${loritta.emotes.loriHm} **|** " + i18nContext.get(
+                I18nKeysData.Commands.ErrorWhileExecutingCommand(
+                    loriRage = loritta.emotes.loriRage,
+                    loriSob = loritta.emotes.loriSob,
+                    stacktrace = if (!e.message.isNullOrEmpty())
+                        " `${e.message}`" // TODO: Sanitize
+                    else
+                        ""
+                )
+            )
 
-                // TODO: Sanitize
-                if (!e.message.isNullOrEmpty())
-                    reply += " `${e.message}`"
+            // If the context was already deferred, but it isn't ephemeral, then we will send a non-ephemeral message
+            val isEphemeral = if (context.isDeferred)
+                context.wasInitiallyDeferredEphemerally
+            else true
 
-                content = reply
-            }
-            return
+
+            if (isEphemeral)
+                context.sendEphemeralMessage {
+                    this.content = content
+                }
+            else
+                context.sendMessage {
+                    this.content = content
+                }
         }
 
         val commandLatency = timer.observeDuration()
-        logger.info { "(${context.user.id.value}) $executor $stringifiedArgumentNames - OK! Took ${commandLatency * 1000}ms" }
+        logger.info { "(${context.sender.id.value}) $executor $stringifiedArgumentNames - OK! Took ${commandLatency * 1000}ms" }
     }
 
     override fun signature() = rootSignature
@@ -262,6 +321,11 @@ class SlashCommandExecutorWrapper(
      * @param types the arguments
      * @return a map with argument name -> argument value
      */
-    private fun stringifyArgumentNames(types: Map<net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOption<*>, Any?>) = types.map { it.key.name to it.value }
+    private fun stringifyArgumentNames(types: Map<net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOption<*>, Any?>) = types.map { it.key.name to it.value }
         .toMap()
+
+    class NonGuildServerConfigRoot(
+        override val id: Long,
+        override val localeId: String
+    ) : ServerConfigRoot
 }
