@@ -8,5 +8,5 @@ class MemoryServerConfigsService : ServerConfigsService {
     // So what we need to do is lock all map accesses
     private val accessMutex = Mutex()
 
-    override suspend fun getServerConfigRootById(id: Long) = null
+    override suspend fun getServerConfigRootById(id: ULong) = null
 }

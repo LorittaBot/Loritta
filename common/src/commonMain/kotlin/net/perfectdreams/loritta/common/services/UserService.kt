@@ -9,7 +9,7 @@ interface UserService {
      * @param  id the profile's ID
      * @return the user profile
      */
-    suspend fun getOrCreateUserProfileById(id: Long): UserProfile
+    suspend fun getOrCreateUserProfileById(id: ULong): UserProfile
 
     /**
      * Gets a [UserProfile], if the profile doesn't exist, then null is returned
@@ -17,5 +17,5 @@ interface UserService {
      * @param id the profile's ID
      * @return the user profile or null if it doesn't exist
      */
-    suspend fun getUserProfileById(id: Long): UserProfile?
+    suspend fun getUserProfileById(id: ULong): UserProfile?
 }

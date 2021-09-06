@@ -9,7 +9,7 @@ class InteraKTionsGuild(val rest: RestClient, handle: DiscordGuild): LorittaGuil
     handle.name,
     handle.ownerId.value,
     handle.region,
-    handle.id.timeStamp
+    handle.id.timestamp
 ) {
     /* override suspend fun retrieveMember(id: Long): LorittaMember {
         return rest.guild.getGuildMember(this.id.toSnowflake(), id.toSnowflake()).toLorittaMember()

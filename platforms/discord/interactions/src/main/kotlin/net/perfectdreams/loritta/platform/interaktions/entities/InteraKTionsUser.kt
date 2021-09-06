@@ -5,7 +5,7 @@ import net.perfectdreams.loritta.discord.DiscordUserAvatar
 import net.perfectdreams.loritta.discord.entities.DiscordUser
 
 class InteraKTionsUser(val user: net.perfectdreams.discordinteraktions.api.entities.User) : DiscordUser {
-    override val id: Long
+    override val id: ULong
         get() = user.id.value
     override val name by user::name
 

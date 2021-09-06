@@ -90,7 +90,7 @@ class SlashCommandExecutorWrapper(
             } else {
                 // TODO: Should this class *really* be named "ServerConfig"? After all, it isn't always used for guilds
                 NonGuildServerConfigRoot(
-                    -1L,
+                    0u,
                     "pt" // Default to Portuguese
                 )
             }
@@ -325,7 +325,7 @@ class SlashCommandExecutorWrapper(
         .toMap()
 
     class NonGuildServerConfigRoot(
-        override val id: Long,
+        override val id: ULong,
         override val localeId: String
     ) : ServerConfigRoot
 }

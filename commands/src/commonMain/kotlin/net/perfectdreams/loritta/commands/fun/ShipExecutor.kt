@@ -66,7 +66,7 @@ class ShipExecutor(
                 user1AvatarUrl = "https://cdn.discordapp.com/embed/avatars/0.png?size=256"
             }
             is UserResult -> {
-                user1Id = result1.user.id
+                user1Id = result1.user.id.toLong()
                 user1Name = result1.user.name
                 user1AvatarUrl = result1.user.avatar.url
             }
@@ -84,7 +84,7 @@ class ShipExecutor(
                 user2AvatarUrl = "https://cdn.discordapp.com/embed/avatars/0.png?size=256"
             }
             is UserResult -> {
-                user2Id = result2.user.id
+                user2Id = result2.user.id.toLong()
                 user2Name = result2.user.name
                 user2AvatarUrl = result2.user.avatar.url
             }
