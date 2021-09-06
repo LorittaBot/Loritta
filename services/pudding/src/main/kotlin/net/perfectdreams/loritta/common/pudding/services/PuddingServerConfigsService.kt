@@ -6,7 +6,7 @@ import net.perfectdreams.loritta.common.services.ServerConfigsService
 import net.perfectdreams.pudding.client.PuddingClient
 
 class PuddingServerConfigsService(val puddingClient: PuddingClient) : ServerConfigsService {
-    override suspend fun getServerConfigRootById(id: Long): ServerConfigRoot? {
-        return puddingClient.serverConfigs.getServerConfigRootById(id)?.let { PuddingServerConfigRoot(it) }
+    override suspend fun getServerConfigRootById(id: ULong): ServerConfigRoot? {
+        return puddingClient.serverConfigs.getServerConfigRootById(id.toLong())?.let { PuddingServerConfigRoot(it) }
     }
 }

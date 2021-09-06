@@ -33,28 +33,28 @@ class UserAvatarExecutor(val emotes: Emotes, val lorittaId: Long) : CommandExecu
 
                     // Easter Egg: Loritta/Application ID
                     // TODO: Show who made the fan art during the Fan Art Extravaganza
-                    user.id == lorittaId -> UserCommand.I18N_PREFIX.Avatar.LorittaEasterEgg
+                    user.id == lorittaId.toULong() -> UserCommand.I18N_PREFIX.Avatar.LorittaEasterEgg
 
                     // Easter Egg: Pantufa
-                    user.id == 390927821997998081L -> UserCommand.I18N_PREFIX.Avatar.PantufaEasterEgg
+                    user.id == 390927821997998081u -> UserCommand.I18N_PREFIX.Avatar.PantufaEasterEgg
 
                     // Easter Egg: Gabriela
-                    user.id == 481901252007952385L -> UserCommand.I18N_PREFIX.Avatar.GabrielaEasterEgg
+                    user.id == 481901252007952385u -> UserCommand.I18N_PREFIX.Avatar.GabrielaEasterEgg
 
                     // Easter Egg: Carl-bot
-                    user.id == 235148962103951360L -> UserCommand.I18N_PREFIX.Avatar.CarlbotEasterEgg
+                    user.id == 235148962103951360u -> UserCommand.I18N_PREFIX.Avatar.CarlbotEasterEgg
 
                     // Easter Egg: Dank Memer
-                    user.id == 270904126974590976L -> UserCommand.I18N_PREFIX.Avatar.DankMemerEasterEgg
+                    user.id == 270904126974590976u -> UserCommand.I18N_PREFIX.Avatar.DankMemerEasterEgg
 
                     // Easter Egg: Mantaro
-                    user.id == 213466096718708737L -> UserCommand.I18N_PREFIX.Avatar.MantaroEasterEgg
+                    user.id == 213466096718708737u -> UserCommand.I18N_PREFIX.Avatar.MantaroEasterEgg
 
                     // Easter Egg: Erisly
-                    user.id == 169678500893163520L -> UserCommand.I18N_PREFIX.Avatar.ErislyEasterEgg
+                    user.id == 169678500893163520u -> UserCommand.I18N_PREFIX.Avatar.ErislyEasterEgg
 
                     // Easter Egg: Kuraminha
-                    user.id == 640593174171090984L -> UserCommand.I18N_PREFIX.Avatar.KuraminhaEasterEgg
+                    user.id == 640593174171090984u -> UserCommand.I18N_PREFIX.Avatar.KuraminhaEasterEgg
 
                     // Nothing else, just use null
                     else -> null

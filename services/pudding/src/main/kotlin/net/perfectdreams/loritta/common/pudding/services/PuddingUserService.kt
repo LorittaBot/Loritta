@@ -6,11 +6,11 @@ import net.perfectdreams.loritta.common.services.UserService
 import net.perfectdreams.pudding.client.PuddingClient
 
 class PuddingUserService(val puddingClient: PuddingClient) : UserService {
-    override suspend fun getOrCreateUserProfileById(id: Long): UserProfile {
-        return PuddingUserProfile(puddingClient.users.getOrCreateUserProfileById(id))
+    override suspend fun getOrCreateUserProfileById(id: ULong): UserProfile {
+        return PuddingUserProfile(puddingClient.users.getOrCreateUserProfileById(id.toLong()))
     }
 
-    override suspend fun getUserProfileById(id: Long): UserProfile? {
-        return puddingClient.users.getUserProfileById(id)?.let { PuddingUserProfile(it) }
+    override suspend fun getUserProfileById(id: ULong): UserProfile? {
+        return puddingClient.users.getUserProfileById(id.toLong())?.let { PuddingUserProfile(it) }
     }
 }

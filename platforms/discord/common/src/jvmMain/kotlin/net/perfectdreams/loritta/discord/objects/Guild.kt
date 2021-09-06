@@ -3,9 +3,9 @@ package net.perfectdreams.loritta.discord.objects
 import kotlinx.datetime.Instant
 
 abstract class LorittaGuild(
-    val id: Long,
+    val id: ULong,
     val name: String,
-    val ownerId: Long,
+    val ownerId: ULong,
     val region: String,
     val creation: Instant
 ) {
