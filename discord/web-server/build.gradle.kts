@@ -58,7 +58,7 @@ jib {
     }
 
     to {
-        image = "ghcr.io/lorittabot/cinnamon-discord-interaktions"
+        image = "ghcr.io/lorittabot/cinnamon-web-server"
 
         auth {
             username = System.getProperty("DOCKER_USERNAME") ?: System.getenv("DOCKER_USERNAME")
