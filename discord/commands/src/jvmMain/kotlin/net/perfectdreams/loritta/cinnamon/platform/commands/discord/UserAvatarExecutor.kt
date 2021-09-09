@@ -2,13 +2,15 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.discord
 
 import dev.kord.common.Color
 import dev.kord.common.entity.Snowflake
+import net.perfectdreams.discordinteraktions.common.builder.message.create.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.create.embed
 import net.perfectdreams.discordinteraktions.common.utils.footer
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
+import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.utils.NotableUserIds
 
@@ -28,7 +30,6 @@ class UserAvatarExecutor(val lorittaId: Snowflake) : CommandExecutor() {
         context.sendMessage {
             embed {
                 title = "\uD83D\uDDBC ${user.name}"
-                description = "**${context.i18nContext.get(UserCommand.I18N_PREFIX.Avatar.ClickHere("${user.avatar.url}?size=2048"))}**"
 
                 // Specific User Avatar Easter Egg Texts
                 val easterEggFooterTextKey = when {
@@ -70,6 +71,14 @@ class UserAvatarExecutor(val lorittaId: Snowflake) : CommandExecutor() {
 
                 color = Color(114, 137, 218) // TODO: Move this to an object
                 image = user.avatar.url + "?size=2048"
+
+                actionRow {
+                    linkButton(
+                        url = "${user.avatar.url}?size=2048"
+                    ) {
+                        label = context.i18nContext.get(I18nKeysData.Commands.Command.User.Avatar.OpenAvatarInBrowser)
+                    }
+                }
             }
         }
     }
