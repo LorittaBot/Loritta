@@ -73,7 +73,7 @@ jib {
 
 tasks.withType<ShadowJar> {
     manifest {
-        attributes["Main-Class"] = "net.perfectdreams.loritta.cinnamon.interaktions.webserver.LorittaInteraKTionsLauncher"
+        attributes["Main-Class"] = "net.perfectdreams.loritta.cinnamon.platform.webserver.LorittaInteraKTionsLauncher"
     }
 }
 
