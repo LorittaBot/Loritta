@@ -2,18 +2,19 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.discord
 
 import dev.kord.common.Color
 import dev.kord.rest.service.RestClient
+import net.perfectdreams.discordinteraktions.common.builder.message.create.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.create.embed
 import net.perfectdreams.discordinteraktions.common.utils.footer
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.mentionUser
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 
 class UserBannerExecutor(val rest: RestClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(UserBannerExecutor::class) {
@@ -47,7 +48,6 @@ class UserBannerExecutor(val rest: RestClient) : CommandExecutor() {
         context.sendMessage {
             embed {
                 title = "\uD83D\uDDBC ${user.name}"
-                description = "**${context.i18nContext.get(UserCommand.I18N_PREFIX.Banner.ClickHere(bannerUrl))}**"
 
                 image = bannerUrl
 
@@ -60,6 +60,14 @@ class UserBannerExecutor(val rest: RestClient) : CommandExecutor() {
                     color = Color(accentColor)
                 } else
                     color = Color(114, 137, 218) // TODO: Move this to an object
+            }
+
+            actionRow {
+                linkButton(
+                    url = "${user.avatar.url}?size=2048"
+                ) {
+                    label = context.i18nContext.get(UserCommand.I18N_PREFIX.Banner.OpenBannerInBrowser)
+                }
             }
         }
     }
