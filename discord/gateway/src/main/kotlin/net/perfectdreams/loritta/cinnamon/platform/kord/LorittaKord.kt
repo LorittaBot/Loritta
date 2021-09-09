@@ -13,10 +13,10 @@ import net.perfectdreams.loritta.cinnamon.commands.misc.PingExecutor
 import net.perfectdreams.loritta.cinnamon.commands.misc.declarations.PingCommand
 import net.perfectdreams.loritta.cinnamon.commands.utils.HelpExecutor
 import net.perfectdreams.loritta.cinnamon.commands.utils.declarations.HelpCommand
-import net.perfectdreams.loritta.cinnamon.common.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.common.commands.declarations.CommandDeclarationBuilder
-import net.perfectdreams.loritta.cinnamon.common.commands.options.CommandOption
-import net.perfectdreams.loritta.cinnamon.common.commands.options.CommandOptionType
+import net.perfectdreams.loritta.cinnamon.discord.commands.CommandArguments
+import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandDeclarationBuilder
+import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOption
+import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOptionType
 import net.perfectdreams.loritta.cinnamon.common.locale.LocaleManager
 import net.perfectdreams.loritta.cinnamon.common.services.Services
 import net.perfectdreams.loritta.cinnamon.common.utils.config.ConfigUtils

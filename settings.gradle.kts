@@ -21,6 +21,6 @@ include(":services:pudding")
 
 // ===[ DISCORD ]===
 include(":discord:common")
-// include(":discord:gateway")
 include(":discord:commands")
-include(":discord:interactions")
+// include(":discord:gateway")
+include(":discord:web-server")
