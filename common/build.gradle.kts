@@ -5,7 +5,7 @@ plugins {
 }
 
 i18nHelper {
-    generatedPackage.set("net.perfectdreams.loritta.i18n")
+    generatedPackage.set("net.perfectdreams.loritta.cinnamon.i18n")
     languageSourceFolder.set("../resources/languages/en/")
     translationLoadTransform.set { file, map ->
         // Before, all commands locales were split up into different files, based on the category, example:

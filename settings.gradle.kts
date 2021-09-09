@@ -5,7 +5,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = "loritta-parent"
+rootProject.name = "cinnamon-parent"
 
 include(":common")
 
@@ -19,15 +19,8 @@ include(":commands")
 include(":services:memory")
 include(":services:pudding")
 
-//// ===[ PLATFORMS ]===
-// ===[ CLI ]===
-// include(":platforms:cli")
-
 // ===[ DISCORD ]===
-include(":platforms:discord:common")
-// include(":platforms:discord:gateway")
-include(":platforms:discord:commands")
-include(":platforms:discord:interactions")
-
-// ===[ TWITTER ]===
-// include(":platforms:twitter")
+include(":discord:common")
+include(":discord:commands")
+// include(":discord:gateway")
+include(":discord:web-server")
