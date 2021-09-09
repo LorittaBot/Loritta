@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.utils
 
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.CalculatorCommand
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.math.MathUtils
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
@@ -8,6 +7,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.CommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.CalculatorCommand
 
 class CalculatorExecutor() : CommandExecutor() {
     companion object : CommandExecutorDeclaration(CalculatorExecutor::class) {
@@ -64,12 +64,12 @@ class CalculatorExecutor() : CommandExecutor() {
             )
         } catch (e: Exception) {
             // TODO: Fix stripCodeMarks
-            context.sendReply(
-                content = context.i18nContext.get(
+            context.failEphemerally(
+                context.i18nContext.get(
                     CalculatorCommand.I18N_PREFIX.Invalid(
                         expression
                     )
-                ) + " ${Emotes.loriSob}",
+                ),
                 prefix = Emotes.loriHm
             )
         }
