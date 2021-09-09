@@ -10,7 +10,7 @@ avatar:
   mantaroEasterEgg: "She's actually Yuyuko from Touhou"
   erislyEasterEgg: "Did you know that she is a giant? Don't trust me? Just look it up!"
   kuraminhaEasterEgg: "The cutest fox... and bot, out there!"
-  avatarUrlButton: "Open avatar in browser" # Used in a button, when clicking the button, Discord opens the user's avatar in the user's browser
+  openAvatarInBrowser: "Open avatar in browser" # Used in a button, when clicking the button, Discord opens the user's avatar in the user's browser
 
   options:
     user: "The user that you want to steal... I mean, view, their avatar (*/ω＼*)"
@@ -18,7 +18,7 @@ avatar:
 banner:
   description: "Shows your, or another user's, profile banner"
   userDoesNotHaveAnBanner: "{user} does not have a banner in their profile! Maybe they don't have Discord Nitro... Or maybe they were just too lazy to set a nice banner."
-  bannerUrlButton: "Open banner in browser" # Used in a button, when clicking the button, Discord opens the user's banner in the user's browser
+  openBannerInBrowser: "Open banner in browser" # Used in a button, when clicking the button, Discord opens the user's banner in the user's browser
 
   yourselfEasterEgg: "Despite everything, it's still your banner."
 
