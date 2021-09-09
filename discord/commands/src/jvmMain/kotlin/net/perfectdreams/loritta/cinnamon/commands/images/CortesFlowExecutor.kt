@@ -17,7 +17,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOptions
 
-class CortesFlowExecutor(val emotes: Emotes, val client: GabrielaImageServerClient) : CommandExecutor() {
+class CortesFlowExecutor(val client: GabrielaImageServerClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(CortesFlowExecutor::class) {
         object Options : CommandOptions() {
             val type = string("thumbnail", BRMemesCommand.I18N_PREFIX.Cortesflow.Options.Thumbnail)
@@ -49,8 +49,7 @@ class CortesFlowExecutor(val emotes: Emotes, val client: GabrielaImageServerClie
 
         val result = client.executeAndHandleExceptions(
             context,
-            emotes,
-            "/api/v1/images/cortes-flow/$type",
+                    "/api/v1/images/cortes-flow/$type",
             buildJsonObject {
                 putJsonArray("strings") {
                     addJsonObject {

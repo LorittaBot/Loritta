@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandE
 import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOptions
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 
-class McUUIDExecutor(val emotes: Emotes, val mojang: MinecraftMojangAPI) : CommandExecutor() {
+class McUUIDExecutor(val mojang: MinecraftMojangAPI) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(McUUIDExecutor::class) {
         object Options : CommandOptions() {
             val username = string("player_name", MinecraftCommand.I18N_CATEGORY_PREFIX.Options.PlayerNameJavaEdition)
@@ -23,7 +23,7 @@ class McUUIDExecutor(val emotes: Emotes, val mojang: MinecraftMojangAPI) : Comma
         val player = args[Options.username]
 
         val onlineUniqueId = mojang.getUniqueId(player) ?: context.failEphemerally(
-            prefix = emotes.error,
+            prefix = Emotes.error,
             content = context.i18nContext.get(MinecraftCommand.I18N_CATEGORY_PREFIX.UnknownPlayer(player))
         )
 

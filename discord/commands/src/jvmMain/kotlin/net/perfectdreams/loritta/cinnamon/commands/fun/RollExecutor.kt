@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOption
 import net.perfectdreams.loritta.cinnamon.discord.commands.styled
 import kotlin.random.Random
 
-class RollExecutor(val emotes: Emotes, val random: Random) : CommandExecutor() {
+class RollExecutor(val random: Random) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(RollExecutor::class) {
         object Options : CommandOptions() {
             val dices = optionalString("dices", RollCommand.I18N_PREFIX.Options.Dices)
@@ -40,22 +40,22 @@ class RollExecutor(val emotes: Emotes, val random: Random) : CommandExecutor() {
         } catch (e: Dice.Companion.TooManyDicesException) {
             context.failEphemerally(
                 context.i18nContext.get(RollCommand.I18N_PREFIX.TooManyDices),
-                emotes.loriSob
+                Emotes.loriSob
             )
         } catch (e: Dice.Companion.LowerBoundHigherThanUpperBoundException) {
             context.failEphemerally(
                 context.i18nContext.get(RollCommand.I18N_PREFIX.InvalidBound),
-                emotes.loriShrug
+                Emotes.loriShrug
             )
         } catch (e: IllegalArgumentException) {
             context.failEphemerally(
                 context.i18nContext.get(RollCommand.I18N_PREFIX.InvalidBound),
-                emotes.loriShrug
+                Emotes.loriShrug
             )
         } catch (e: UnsupportedOperationException) {
             context.failEphemerally(
                 context.i18nContext.get(RollCommand.I18N_PREFIX.InvalidBound),
-                emotes.loriShrug
+                Emotes.loriShrug
             )
         }
 

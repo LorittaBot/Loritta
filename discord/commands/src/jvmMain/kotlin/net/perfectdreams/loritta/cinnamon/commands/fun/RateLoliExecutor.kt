@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandE
 import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOptions
 import net.perfectdreams.loritta.cinnamon.discord.commands.styled
 
-class RateLoliExecutor(val emotes: Emotes) : CommandExecutor() {
+class RateLoliExecutor() : CommandExecutor() {
     companion object : CommandExecutorDeclaration(RateLoliExecutor::class) {
         object Options : CommandOptions() {
             // Yes, this is meant to be unused
@@ -24,7 +24,7 @@ class RateLoliExecutor(val emotes: Emotes) : CommandExecutor() {
         val strScore = "∞"
         val reason = context.i18nContext.get(
             RateCommand.I18N_PREFIX.WaifuHusbando.ScoreLoritta
-        ).random() + " ${emotes.loriYay}"
+        ).random() + " ${Emotes.loriYay}"
 
         context.sendMessage {
             styled(

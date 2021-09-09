@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOption
 import net.perfectdreams.loritta.cinnamon.discord.utils.ContextStringToUserNameConverter
 import kotlin.random.Random
 
-class RateWaifuExecutor(val emotes: Emotes) : CommandExecutor() {
+class RateWaifuExecutor() : CommandExecutor() {
     companion object : CommandExecutorDeclaration(RateWaifuExecutor::class) {
         object Options : CommandOptions() {
             val waifu = string("waifu", RateCommand.I18N_PREFIX.WaifuHusbando.Options.Waifu)
@@ -34,7 +34,7 @@ class RateWaifuExecutor(val emotes: Emotes) : CommandExecutor() {
          * @param typeSingular the singular type of the category that is being scored
          * @param typePlural   the plural type of the category that is being scored
          */
-        suspend fun executeGeneric(input: String, context: CommandContext, emotes: Emotes, typeSingular: String, typePlural: String) {
+        suspend fun executeGeneric(input: String, context: CommandContext, typeSingular: String, typePlural: String) {
             val waifuLowerCase = input.lowercase()
 
             // Always use the same seed for the random generator, but change it every day
@@ -46,13 +46,13 @@ class RateWaifuExecutor(val emotes: Emotes) : CommandExecutor() {
             ).random()
 
             var reason = when (score) {
-                10 -> "$scoreReason ${emotes.loriWow}"
-                9 -> "$scoreReason ${emotes.loriHeart}"
-                8 -> "$scoreReason ${emotes.loriPat}"
-                7 -> "$scoreReason ${emotes.loriSmile}"
-                3 -> "$scoreReason ${emotes.loriShrug}"
-                2 -> "$scoreReason ${emotes.loriHmpf}"
-                1 -> "$scoreReason ${emotes.loriRage}"
+                10 -> "$scoreReason ${Emotes.loriWow}"
+                9 -> "$scoreReason ${Emotes.loriHeart}"
+                8 -> "$scoreReason ${Emotes.loriPat}"
+                7 -> "$scoreReason ${Emotes.loriSmile}"
+                3 -> "$scoreReason ${Emotes.loriShrug}"
+                2 -> "$scoreReason ${Emotes.loriHmpf}"
+                1 -> "$scoreReason ${Emotes.loriRage}"
                 else -> scoreReason
             }
 
@@ -62,13 +62,13 @@ class RateWaifuExecutor(val emotes: Emotes) : CommandExecutor() {
                     strScore = "∞"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreLoritta
-                    ).random() + " ${emotes.loriYay}"
+                    ).random() + " ${Emotes.loriYay}"
                 }
                 "pantufa" -> {
                     strScore = "10"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScorePantufa
-                    ).random() + " ${emotes.loriHeart}"
+                    ).random() + " ${Emotes.loriHeart}"
                 }
                 "wumpus" -> {
                     strScore = "∞"
@@ -86,13 +86,13 @@ class RateWaifuExecutor(val emotes: Emotes) : CommandExecutor() {
                     strScore = "10"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreDankMemer(typeSingular)
-                    ).random() + " ${emotes.loriCoffee}"
+                    ).random() + " ${Emotes.loriCoffee}"
                 }
                 "carl-bot" -> {
                     strScore = "10"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreCarlbot
-                    ).random() + " ${emotes.loriPat}"
+                    ).random() + " ${Emotes.loriPat}"
                 }
                 "kuraminha" -> {
                     strScore = "10"
@@ -100,13 +100,13 @@ class RateWaifuExecutor(val emotes: Emotes) : CommandExecutor() {
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreKuraminha(
                             typeSingular
                         )
-                    ).random() + " ${emotes.loriHm}"
+                    ).random() + " ${Emotes.loriHm}"
                 }
                 "pollux" -> {
                     strScore = "10"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScorePollux
-                    ).random() + " ${emotes.loriYay}"
+                    ).random() + " ${Emotes.loriYay}"
                 }
                 "tatsumaki" -> {
                     strScore = "10"
@@ -166,7 +166,7 @@ class RateWaifuExecutor(val emotes: Emotes) : CommandExecutor() {
                     strScore = "-∞"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreLorrita
-                    ).random() + " ${emotes.loriHmpf}"
+                    ).random() + " ${Emotes.loriHmpf}"
                 }
             }
 
@@ -188,8 +188,7 @@ class RateWaifuExecutor(val emotes: Emotes) : CommandExecutor() {
         executeGeneric(
             ContextStringToUserNameConverter.convert(context, args[options.waifu]),
             context,
-            emotes,
-            RateCommand.WAIFU_SINGULAR,
+                    RateCommand.WAIFU_SINGULAR,
             RateCommand.WAIFU_PLURAL
         )
     }

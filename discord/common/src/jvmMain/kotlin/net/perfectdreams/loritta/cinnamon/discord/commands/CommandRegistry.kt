@@ -101,7 +101,6 @@ class CommandRegistry(
 
             val interaKTionsExecutor = SlashCommandExecutorWrapper(
                 loritta,
-                loritta.emotes,
                 declaration,
                 declarationExecutor,
                 executor,

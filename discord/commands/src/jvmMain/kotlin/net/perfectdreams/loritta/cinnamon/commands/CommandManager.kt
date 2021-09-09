@@ -4,14 +4,78 @@ import dev.kord.common.entity.Snowflake
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
 import net.perfectdreams.loritta.cinnamon.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.commands.`fun`.*
-import net.perfectdreams.loritta.cinnamon.commands.`fun`.declarations.*
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.BemBoladaExecutor
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.CancelledExecutor
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.CoinFlipExecutor
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.FaustaoExecutor
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.JankenponExecutor
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.RateHusbandoExecutor
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.RateLoliExecutor
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.RateWaifuExecutor
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.RollExecutor
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.ShipExecutor
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.TextClapExecutor
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.TextLowercaseExecutor
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.TextMockExecutor
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.TextQualityExecutor
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.TextUppercaseExecutor
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.TextVaporQualityExecutor
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.TextVaporwaveExecutor
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.TextVemDeZapExecutor
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.TioDoPaveExecutor
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.VieirinhaExecutor
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.declarations.CancelledCommand
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.declarations.CoinFlipCommand
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.declarations.JankenponCommand
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.declarations.RateCommand
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.declarations.RollCommand
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.declarations.ShipCommand
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.declarations.SummonCommand
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.declarations.TextTransformDeclaration
+import net.perfectdreams.loritta.cinnamon.commands.`fun`.declarations.VieirinhaCommand
 import net.perfectdreams.loritta.cinnamon.commands.discord.UserAvatarExecutor
 import net.perfectdreams.loritta.cinnamon.commands.discord.UserBannerExecutor
 import net.perfectdreams.loritta.cinnamon.commands.discord.declarations.UserCommand
 import net.perfectdreams.loritta.cinnamon.commands.economy.SonhosExecutor
 import net.perfectdreams.loritta.cinnamon.commands.economy.declarations.SonhosCommand
-import net.perfectdreams.loritta.cinnamon.commands.images.*
+import net.perfectdreams.loritta.cinnamon.commands.images.ArtExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.BobBurningPaperExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.BolsoDrakeExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.BolsoFrameExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.Bolsonaro2Executor
+import net.perfectdreams.loritta.cinnamon.commands.images.BolsonaroExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.BriggsCoverExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.BuckShirtExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.CanellaDvdExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.CepoDeMadeiraExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.ChicoAtaExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.CortesFlowExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.DrakeExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.EdnaldoBandeiraExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.EdnaldoTvExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.GessyAtaExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.GetOverHereExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.InvertColorsExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.KnuxThrowExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.LoriAtaExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.LoriDrakeExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.LoriSignExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.ManiaTitleCardExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.MemeMakerExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.MonicaAtaExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.NichijouYuukoPaperExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.PassingPaperExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.PepeDreamExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.PetPetExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.RipTvExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.RomeroBrittoExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.SAMExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.StudiopolisTvExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.SustoExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.TerminatorAnimeExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.ToBeContinuedExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.TrumpExecutor
+import net.perfectdreams.loritta.cinnamon.commands.images.WolverineFrameExecutor
 import net.perfectdreams.loritta.cinnamon.commands.images.declarations.ArtCommand
 import net.perfectdreams.loritta.cinnamon.commands.images.declarations.BRMemesCommand
 import net.perfectdreams.loritta.cinnamon.commands.images.declarations.BobBurningPaperCommand
@@ -32,7 +96,12 @@ import net.perfectdreams.loritta.cinnamon.commands.images.declarations.Terminato
 import net.perfectdreams.loritta.cinnamon.commands.images.declarations.ToBeContinuedCommand
 import net.perfectdreams.loritta.cinnamon.commands.images.declarations.TrumpCommand
 import net.perfectdreams.loritta.cinnamon.commands.images.declarations.WolverineFrameCommand
-import net.perfectdreams.loritta.cinnamon.commands.minecraft.*
+import net.perfectdreams.loritta.cinnamon.commands.minecraft.McAvatarExecutor
+import net.perfectdreams.loritta.cinnamon.commands.minecraft.McBodyExecutor
+import net.perfectdreams.loritta.cinnamon.commands.minecraft.McHeadExecutor
+import net.perfectdreams.loritta.cinnamon.commands.minecraft.McOfflineUUIDExecutor
+import net.perfectdreams.loritta.cinnamon.commands.minecraft.McSkinExecutor
+import net.perfectdreams.loritta.cinnamon.commands.minecraft.McUUIDExecutor
 import net.perfectdreams.loritta.cinnamon.commands.minecraft.declarations.MinecraftCommand
 import net.perfectdreams.loritta.cinnamon.commands.utils.AnagramExecutor
 import net.perfectdreams.loritta.cinnamon.commands.utils.CalculatorExecutor
@@ -71,7 +140,6 @@ class CommandManager(
 
     private val discordConfig = loritta.discordConfig
     private val servicesConfig = loritta.servicesConfig
-    private val emotes = loritta.emotes
     private val rest = loritta.rest
     private val gabrielaImageServerClient = GabrielaImageServerClient(loritta.servicesConfig.gabrielaImageServer.url, loritta.http)
     private val random = loritta.random
@@ -93,126 +161,126 @@ class CommandManager(
         // ===[ DISCORD ]===
         commandManager.register(
             UserCommand,
-            UserAvatarExecutor(emotes, Snowflake(discordConfig.applicationId)),
-            UserBannerExecutor(emotes, rest)
+            UserAvatarExecutor(Snowflake(discordConfig.applicationId)),
+            UserBannerExecutor(rest)
         )
 
         // ===[ FUN ]===
-        commandManager.register(CoinFlipCommand, CoinFlipExecutor(emotes, random))
+        commandManager.register(CoinFlipCommand, CoinFlipExecutor(random))
         commandManager.register(
             RateCommand,
-            RateWaifuExecutor(emotes),
-            RateHusbandoExecutor(emotes),
-            RateLoliExecutor(emotes)
+            RateWaifuExecutor(),
+            RateHusbandoExecutor(),
+            RateLoliExecutor()
         )
 
         commandManager.register(
             ShipCommand,
-            ShipExecutor(emotes, gabrielaImageServerClient, Snowflake(discordConfig.applicationId))
+            ShipExecutor(gabrielaImageServerClient, Snowflake(discordConfig.applicationId))
         )
 
-        commandManager.register(CancelledCommand, CancelledExecutor(emotes))
+        commandManager.register(CancelledCommand, CancelledExecutor())
         commandManager.register(
             SummonCommand,
-            TioDoPaveExecutor(emotes),
-            FaustaoExecutor(emotes),
-            BemBoladaExecutor(emotes)
+            TioDoPaveExecutor(),
+            FaustaoExecutor(),
+            BemBoladaExecutor()
         )
 
-        commandManager.register(VieirinhaCommand, VieirinhaExecutor(emotes))
-        commandManager.register(RollCommand, RollExecutor(emotes, random))
+        commandManager.register(VieirinhaCommand, VieirinhaExecutor())
+        commandManager.register(RollCommand, RollExecutor(random))
 
         commandManager.register(
             HelpCommand,
-            HelpExecutor(emotes)
+            HelpExecutor()
         )
 
         commandManager.register(
             MinecraftCommand,
-            McSkinExecutor(emotes, mojangApi),
-            McAvatarExecutor(emotes, mojangApi),
-            McHeadExecutor(emotes, mojangApi),
-            McBodyExecutor(emotes, mojangApi),
-            McOfflineUUIDExecutor(emotes),
-            McUUIDExecutor(emotes, mojangApi)
+            McSkinExecutor(mojangApi),
+            McAvatarExecutor(mojangApi),
+            McHeadExecutor(mojangApi),
+            McBodyExecutor(mojangApi),
+            McOfflineUUIDExecutor(),
+            McUUIDExecutor(mojangApi)
         )
 
         commandManager.register(
             TextTransformDeclaration,
-            TextVaporwaveExecutor(emotes),
-            TextQualityExecutor(emotes),
-            TextVaporQualityExecutor(emotes),
-            TextVemDeZapExecutor(emotes, random),
-            TextUppercaseExecutor(emotes),
-            TextLowercaseExecutor(emotes),
-            TextClapExecutor(emotes),
-            TextMockExecutor(emotes)
+            TextVaporwaveExecutor(),
+            TextQualityExecutor(),
+            TextVaporQualityExecutor(),
+            TextVemDeZapExecutor(random),
+            TextUppercaseExecutor(),
+            TextLowercaseExecutor(),
+            TextClapExecutor(),
+            TextMockExecutor()
         )
 
         commandManager.register(
-            JankenponCommand, JankenponExecutor(random, emotes)
+            JankenponCommand, JankenponExecutor(random)
         )
 
         // ===[ IMAGES ]===
-        commandManager.register(DrakeCommand, DrakeExecutor(emotes, gabrielaImageServerClient), BolsoDrakeExecutor(emotes, gabrielaImageServerClient), LoriDrakeExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(DrakeCommand, DrakeExecutor(gabrielaImageServerClient), BolsoDrakeExecutor(gabrielaImageServerClient), LoriDrakeExecutor(gabrielaImageServerClient))
         commandManager.register(
             SonicCommand,
-            KnuxThrowExecutor(emotes, gabrielaImageServerClient),
-            ManiaTitleCardExecutor(emotes, gabrielaImageServerClient),
-            StudiopolisTvExecutor(emotes, gabrielaImageServerClient)
+            KnuxThrowExecutor(gabrielaImageServerClient),
+            ManiaTitleCardExecutor(gabrielaImageServerClient),
+            StudiopolisTvExecutor(gabrielaImageServerClient)
         )
-        commandManager.register(ArtCommand, ArtExecutor(emotes, gabrielaImageServerClient))
-        commandManager.register(BobBurningPaperCommand, BobBurningPaperExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(ArtCommand, ArtExecutor(gabrielaImageServerClient))
+        commandManager.register(BobBurningPaperCommand, BobBurningPaperExecutor(gabrielaImageServerClient))
         commandManager.register(
             BRMemesCommand,
-            BolsonaroExecutor(emotes, gabrielaImageServerClient),
-            Bolsonaro2Executor(emotes, gabrielaImageServerClient),
-            MonicaAtaExecutor(emotes, gabrielaImageServerClient),
-            ChicoAtaExecutor(emotes, gabrielaImageServerClient),
-            LoriAtaExecutor(emotes, gabrielaImageServerClient),
-            GessyAtaExecutor(emotes, gabrielaImageServerClient),
-            EdnaldoBandeiraExecutor(emotes, gabrielaImageServerClient),
-            EdnaldoTvExecutor(emotes, gabrielaImageServerClient),
-            BolsoFrameExecutor(emotes, gabrielaImageServerClient),
-            CanellaDvdExecutor(emotes, gabrielaImageServerClient),
-            CortesFlowExecutor(emotes, gabrielaImageServerClient),
-            SAMExecutor(emotes, gabrielaImageServerClient),
-            CepoDeMadeiraExecutor(emotes, gabrielaImageServerClient),
-            RomeroBrittoExecutor(emotes, gabrielaImageServerClient),
-            BriggsCoverExecutor(emotes, gabrielaImageServerClient)
+            BolsonaroExecutor(gabrielaImageServerClient),
+            Bolsonaro2Executor(gabrielaImageServerClient),
+            MonicaAtaExecutor(gabrielaImageServerClient),
+            ChicoAtaExecutor(gabrielaImageServerClient),
+            LoriAtaExecutor(gabrielaImageServerClient),
+            GessyAtaExecutor(gabrielaImageServerClient),
+            EdnaldoBandeiraExecutor(gabrielaImageServerClient),
+            EdnaldoTvExecutor(gabrielaImageServerClient),
+            BolsoFrameExecutor(gabrielaImageServerClient),
+            CanellaDvdExecutor(gabrielaImageServerClient),
+            CortesFlowExecutor(gabrielaImageServerClient),
+            SAMExecutor(gabrielaImageServerClient),
+            CepoDeMadeiraExecutor(gabrielaImageServerClient),
+            RomeroBrittoExecutor(gabrielaImageServerClient),
+            BriggsCoverExecutor(gabrielaImageServerClient)
         )
 
-        commandManager.register(BuckShirtCommand, BuckShirtExecutor(emotes, gabrielaImageServerClient))
-        commandManager.register(LoriSignCommand, LoriSignExecutor(emotes, gabrielaImageServerClient))
-        commandManager.register(PassingPaperCommand, PassingPaperExecutor(emotes, gabrielaImageServerClient))
-        commandManager.register(PepeDreamCommand, PepeDreamExecutor(emotes, gabrielaImageServerClient))
-        commandManager.register(PetPetCommand, PetPetExecutor(emotes, gabrielaImageServerClient))
-        commandManager.register(WolverineFrameCommand, WolverineFrameExecutor(emotes, gabrielaImageServerClient))
-        commandManager.register(RipTvCommand, RipTvExecutor(emotes, gabrielaImageServerClient))
-        commandManager.register(SustoCommand, SustoExecutor(emotes, gabrielaImageServerClient))
-        commandManager.register(GetOverHereCommand, GetOverHereExecutor(emotes, gabrielaImageServerClient))
-        commandManager.register(NichijouYuukoPaperCommand, NichijouYuukoPaperExecutor(emotes, gabrielaImageServerClient))
-        commandManager.register(TrumpCommand, TrumpExecutor(emotes, gabrielaImageServerClient))
-        commandManager.register(TerminatorAnimeCommand, TerminatorAnimeExecutor(emotes, gabrielaImageServerClient))
-        commandManager.register(ToBeContinuedCommand, ToBeContinuedExecutor(emotes, gabrielaImageServerClient))
-        commandManager.register(InvertColorsCommand, InvertColorsExecutor(emotes, gabrielaImageServerClient))
-        commandManager.register(MemeMakerCommand, MemeMakerExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(BuckShirtCommand, BuckShirtExecutor(gabrielaImageServerClient))
+        commandManager.register(LoriSignCommand, LoriSignExecutor(gabrielaImageServerClient))
+        commandManager.register(PassingPaperCommand, PassingPaperExecutor(gabrielaImageServerClient))
+        commandManager.register(PepeDreamCommand, PepeDreamExecutor(gabrielaImageServerClient))
+        commandManager.register(PetPetCommand, PetPetExecutor(gabrielaImageServerClient))
+        commandManager.register(WolverineFrameCommand, WolverineFrameExecutor(gabrielaImageServerClient))
+        commandManager.register(RipTvCommand, RipTvExecutor(gabrielaImageServerClient))
+        commandManager.register(SustoCommand, SustoExecutor(gabrielaImageServerClient))
+        commandManager.register(GetOverHereCommand, GetOverHereExecutor(gabrielaImageServerClient))
+        commandManager.register(NichijouYuukoPaperCommand, NichijouYuukoPaperExecutor(gabrielaImageServerClient))
+        commandManager.register(TrumpCommand, TrumpExecutor(gabrielaImageServerClient))
+        commandManager.register(TerminatorAnimeCommand, TerminatorAnimeExecutor(gabrielaImageServerClient))
+        commandManager.register(ToBeContinuedCommand, ToBeContinuedExecutor(gabrielaImageServerClient))
+        commandManager.register(InvertColorsCommand, InvertColorsExecutor(gabrielaImageServerClient))
+        commandManager.register(MemeMakerCommand, MemeMakerExecutor(gabrielaImageServerClient))
 
         // ===[ VIDEOS ]===
-        commandManager.register(CarlyAaahCommand, CarlyAaahExecutor(emotes, gabrielaImageServerClient))
-        commandManager.register(AttackOnHeartCommand, AttackOnHeartExecutor(emotes, gabrielaImageServerClient))
-        commandManager.register(FansExplainingCommand, FansExplainingExecutor(emotes, gabrielaImageServerClient))
+        commandManager.register(CarlyAaahCommand, CarlyAaahExecutor(gabrielaImageServerClient))
+        commandManager.register(AttackOnHeartCommand, AttackOnHeartExecutor(gabrielaImageServerClient))
+        commandManager.register(FansExplainingCommand, FansExplainingExecutor(gabrielaImageServerClient))
 
         // ===[ UTILS ]===
-        commandManager.register(MoneyCommand, MoneyExecutor(emotes, ECBManager()))
-        commandManager.register(MorseCommand, MorseFromExecutor(emotes), MorseToExecutor(emotes))
-        commandManager.register(DictionaryCommand, DictionaryExecutor(emotes, http), MorseToExecutor(emotes))
-        commandManager.register(CalculatorCommand, CalculatorExecutor(emotes))
-        commandManager.register(AnagramCommand, AnagramExecutor(emotes))
-        commandManager.register(ChooseCommand, ChooseExecutor(emotes))
+        commandManager.register(MoneyCommand, MoneyExecutor(ECBManager()))
+        commandManager.register(MorseCommand, MorseFromExecutor(), MorseToExecutor())
+        commandManager.register(DictionaryCommand, DictionaryExecutor(http), MorseToExecutor())
+        commandManager.register(CalculatorCommand, CalculatorExecutor())
+        commandManager.register(AnagramCommand, AnagramExecutor())
+        commandManager.register(ChooseCommand, ChooseExecutor())
 
         // ===[ ECONOMY ]===
-        commandManager.register(SonhosCommand, SonhosExecutor(emotes))
+        commandManager.register(SonhosCommand, SonhosExecutor())
 
         // Validate if we don't have more commands than Discord allows
         if (commandManager.declarations.size > 100) {

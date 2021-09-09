@@ -7,10 +7,8 @@ import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.gabrielaimageserver.GabrielaImageServerClient
 
 class InvertColorsExecutor(
-    emotes: Emotes,
     client: GabrielaImageServerClient
 ) : GabrielaImageServerSingleCommandBase(
-    emotes,
     client,
     "/api/v1/images/invert-colors",
     "invert.png"

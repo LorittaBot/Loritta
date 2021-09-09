@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandE
 import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOptions
 import net.perfectdreams.loritta.cinnamon.discord.utils.NotableUserIds
 
-class UserAvatarExecutor(val emotes: Emotes, val lorittaId: Snowflake) : CommandExecutor() {
+class UserAvatarExecutor(val lorittaId: Snowflake) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(UserAvatarExecutor::class) {
         object Options : CommandOptions() {
             val user = optionalUser("user", UserCommand.I18N_PREFIX.Avatar.Options.User)

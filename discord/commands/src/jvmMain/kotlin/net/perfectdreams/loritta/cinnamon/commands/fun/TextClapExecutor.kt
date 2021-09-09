@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandE
 import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOptions
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 
-class TextClapExecutor(val emotes: Emotes) : CommandExecutor() {
+class TextClapExecutor() : CommandExecutor() {
     companion object : CommandExecutorDeclaration(TextClapExecutor::class) {
         object Options : CommandOptions() {
             val text = string("text", TextTransformDeclaration.I18N_PREFIX.Clap.Options.Text(TextTransformDeclaration.CLAP_EMOJI))

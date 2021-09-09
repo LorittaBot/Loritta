@@ -1,12 +1,8 @@
 package net.perfectdreams.loritta.cinnamon.common.emotes
 
-class UnicodeEmote(code: String) : Emote(code) {
+class UnicodeEmote(override val name: String) : Emote() {
     override val asMention: String
-        get() = getName()
-
-    override fun getName(): String {
-        return code
-    }
+        get() = name
 
     override fun toString() = asMention
 }

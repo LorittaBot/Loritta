@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOption
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import java.util.*
 
-class McOfflineUUIDExecutor(val emotes: Emotes) : CommandExecutor() {
+class McOfflineUUIDExecutor() : CommandExecutor() {
     companion object : CommandExecutorDeclaration(McOfflineUUIDExecutor::class) {
         object Options : CommandOptions() {
             val username = string("player_name", MinecraftCommand.I18N_CATEGORY_PREFIX.Options.PlayerNameJavaEdition)

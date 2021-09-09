@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOptions
 
-class FansExplainingExecutor(val emotes: Emotes, val client: GabrielaImageServerClient) : CommandExecutor() {
+class FansExplainingExecutor(val client: GabrielaImageServerClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(FansExplainingExecutor::class) {
         object Options : CommandOptions() {
             val section1Line1 = string("section1_line1", FansExplainingCommand.I18N_PREFIX.Options.Section1Line1)
@@ -66,7 +66,6 @@ class FansExplainingExecutor(val emotes: Emotes, val client: GabrielaImageServer
 
         val result = client.executeAndHandleExceptions(
             context,
-            emotes,
             "/api/v1/videos/fans-explaining",
             buildJsonObject {
                 putJsonArray("strings") {

@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOptions
 
-class TerminatorAnimeExecutor(val emotes: Emotes, val client: GabrielaImageServerClient) : CommandExecutor() {
+class TerminatorAnimeExecutor(val client: GabrielaImageServerClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(TerminatorAnimeExecutor::class) {
         object Options : CommandOptions() {
             val line1 = string("terminator", TerminatorAnimeCommand.I18N_PREFIX.Options.TextTerminator)
@@ -35,8 +35,7 @@ class TerminatorAnimeExecutor(val emotes: Emotes, val client: GabrielaImageServe
 
         val result = client.executeAndHandleExceptions(
             context,
-            emotes,
-            "/api/v1/images/terminator-anime",
+                    "/api/v1/images/terminator-anime",
             buildJsonObject {
                 putJsonArray("strings") {
                     addJsonObject {

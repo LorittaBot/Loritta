@@ -19,7 +19,6 @@ abstract class LorittaCinnamon(
 
     val languageManager: LanguageManager,
     val services: Services,
-    val emotes: Emotes,
     val http: HttpClient
 ) {
 

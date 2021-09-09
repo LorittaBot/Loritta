@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandE
 import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOptions
 import net.perfectdreams.loritta.cinnamon.discord.utils.ContextStringToUserNameConverter
 
-class RateHusbandoExecutor(val emotes: Emotes) : CommandExecutor() {
+class RateHusbandoExecutor() : CommandExecutor() {
     companion object : CommandExecutorDeclaration(RateHusbandoExecutor::class) {
         object Options : CommandOptions() {
             val husbando = string("husbando", RateCommand.I18N_PREFIX.WaifuHusbando.Options.Husbando)
@@ -23,7 +23,6 @@ class RateHusbandoExecutor(val emotes: Emotes) : CommandExecutor() {
         RateWaifuExecutor.executeGeneric(
             ContextStringToUserNameConverter.convert(context, args[RateWaifuExecutor.options.waifu]),
             context,
-            emotes,
             RateCommand.HUSBANDO_SINGULAR,
             RateCommand.HUSBANDO_PLURAL
         )

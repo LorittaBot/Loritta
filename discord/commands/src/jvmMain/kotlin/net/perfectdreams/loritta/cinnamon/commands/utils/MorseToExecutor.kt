@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandE
 import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOptions
 import net.perfectdreams.loritta.cinnamon.discord.commands.styled
 
-class MorseToExecutor(val emotes: Emotes) : CommandExecutor() {
+class MorseToExecutor() : CommandExecutor() {
     companion object : CommandExecutorDeclaration(MorseToExecutor::class) {
         object Options : CommandOptions() {
             val textArgument = string("text", MorseCommand.I18N_PREFIX.Options.FromTextToMorse)
@@ -31,7 +31,7 @@ class MorseToExecutor(val emotes: Emotes) : CommandExecutor() {
                 context.sendMessage {
                     styled(
                         content = "`$toMorse`",
-                        prefix = emotes.radio.toString()
+                        prefix = Emotes.radio.toString()
                     )
 
                     if (unknownCharacters.isNotEmpty()) {
@@ -41,7 +41,7 @@ class MorseToExecutor(val emotes: Emotes) : CommandExecutor() {
                                     unknownCharacters.joinToString("")
                                 )
                             ),
-                            prefix = emotes.loriSob
+                            prefix = Emotes.loriSob
                         )
                     }
                 }
@@ -49,7 +49,7 @@ class MorseToExecutor(val emotes: Emotes) : CommandExecutor() {
 
             is MorseUtils.InvalidToMorseConversionResult -> {
                 context.failEphemerally(
-                    prefix = emotes.error.asMention,
+                    prefix = Emotes.error.asMention,
                     content = context.i18nContext.get(
                         MorseCommand.I18N_PREFIX.ToMorseFailUnknownCharacters
                     )

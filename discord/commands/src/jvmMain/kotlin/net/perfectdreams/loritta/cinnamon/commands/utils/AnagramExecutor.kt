@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandE
 import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOptions
 import net.perfectdreams.loritta.cinnamon.discord.commands.styled
 
-class AnagramExecutor(val emotes: Emotes) : CommandExecutor() {
+class AnagramExecutor() : CommandExecutor() {
     companion object : CommandExecutorDeclaration(AnagramExecutor::class) {
         object Options : CommandOptions() {
             val text = string("text", AnagramCommand.I18N_PREFIX.Options.Text)
@@ -44,7 +44,7 @@ class AnagramExecutor(val emotes: Emotes) : CommandExecutor() {
                     AnagramCommand.I18N_PREFIX.Result(
                         shuffledWord
                     )
-                ) + " ${emotes.loriWow}",
+                ) + " ${Emotes.loriWow}",
                 prefix = "✍"
             )
 

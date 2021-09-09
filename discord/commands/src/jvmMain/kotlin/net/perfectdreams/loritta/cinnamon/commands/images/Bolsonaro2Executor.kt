@@ -8,10 +8,8 @@ import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.gabrielaimageserver.GabrielaImageServerClient
 
 class Bolsonaro2Executor(
-    emotes: Emotes,
     client: GabrielaImageServerClient
 ) : GabrielaImageServerSingleCommandBase(
-    emotes,
     client,
     "/api/v1/images/bolsonaro2",
     "bolsonaro_tv2.png"

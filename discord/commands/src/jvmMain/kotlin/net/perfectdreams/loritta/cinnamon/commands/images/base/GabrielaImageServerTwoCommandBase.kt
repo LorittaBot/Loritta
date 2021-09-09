@@ -12,7 +12,6 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.CommandContext
 import net.perfectdreams.loritta.cinnamon.discord.commands.CommandExecutor
 
 open class GabrielaImageServerTwoCommandBase(
-    val emotes: Emotes,
     val client: GabrielaImageServerClient,
     val endpoint: String,
     val fileName: String
@@ -25,8 +24,7 @@ open class GabrielaImageServerTwoCommandBase(
 
         val result = client.executeAndHandleExceptions(
             context,
-            emotes,
-            endpoint,
+                    endpoint,
             buildJsonObject {
                 putJsonArray("images") {
                     addJsonObject {

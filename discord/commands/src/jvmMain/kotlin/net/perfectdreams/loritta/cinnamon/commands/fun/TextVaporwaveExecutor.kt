@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOption
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.text.VaporwaveUtils
 
-class TextVaporwaveExecutor(val emotes: Emotes) : CommandExecutor() {
+class TextVaporwaveExecutor() : CommandExecutor() {
     companion object : CommandExecutorDeclaration(TextVaporwaveExecutor::class) {
         object Options : CommandOptions() {
             val text = string("text", TextTransformDeclaration.I18N_PREFIX.Vaporwave.Description)
