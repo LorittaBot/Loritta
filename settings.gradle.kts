@@ -20,7 +20,7 @@ include(":services:memory")
 include(":services:pudding")
 
 // ===[ DISCORD ]===
-include(":platforms:discord:common")
-// include(":platforms:discord:gateway")
-include(":platforms:discord:commands")
-include(":platforms:discord:interactions")
+include(":discord:common")
+// include(":discord:gateway")
+include(":discord:commands")
+include(":discord:interactions")

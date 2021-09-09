@@ -20,8 +20,8 @@ dependencies {
     implementation(project(":commands"))
     implementation(project(":services:memory"))
     implementation(project(":services:pudding"))
-    implementation(project(":platforms:discord:common"))
-    implementation(project(":platforms:discord:commands"))
+    implementation(project(":discord:common"))
+    implementation(project(":discord:commands"))
 
     implementation("net.perfectdreams.discordinteraktions:webserver-ktor-kord:0.0.7-SNAPSHOT")
     implementation("io.ktor:ktor-server-netty:1.6.0")
