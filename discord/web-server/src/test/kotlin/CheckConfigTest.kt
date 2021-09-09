@@ -1,13 +1,13 @@
 import com.typesafe.config.ConfigFactory
 import kotlinx.serialization.hocon.Hocon
 import kotlinx.serialization.hocon.decodeFromConfig
-import net.perfectdreams.loritta.cinnamon.interaktions.webserver.LorittaInteraKTions
-import net.perfectdreams.loritta.cinnamon.interaktions.webserver.utils.config.RootConfig
+import net.perfectdreams.loritta.cinnamon.platform.webserver.LorittaCinnamonWebServer
+import net.perfectdreams.loritta.cinnamon.platform.webserver.utils.config.RootConfig
 import org.junit.jupiter.api.Test
 
 class CheckConfigTest {
     private fun loadFromJar(inputPath: String): String {
-        val inputStream = LorittaInteraKTions::class.java.getResourceAsStream(inputPath)
+        val inputStream = LorittaCinnamonWebServer::class.java.getResourceAsStream(inputPath)
         return inputStream.bufferedReader(Charsets.UTF_8).readText()
     }
 
