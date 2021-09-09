@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.cinnamon.interaktions.webserver.utils.config
 
 import kotlinx.serialization.Serializable
 import net.perfectdreams.loritta.cinnamon.common.utils.config.LorittaConfig
-import net.perfectdreams.loritta.cinnamon.discord.LorittaDiscordConfig
+import net.perfectdreams.loritta.cinnamon.discord.utils.config.LorittaDiscordConfig
 import net.perfectdreams.loritta.cinnamon.discord.utils.config.DiscordInteractionsConfig
 import net.perfectdreams.loritta.cinnamon.discord.utils.config.ServicesConfig
 
