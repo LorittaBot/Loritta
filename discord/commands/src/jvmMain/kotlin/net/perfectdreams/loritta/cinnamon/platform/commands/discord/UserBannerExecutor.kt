@@ -43,7 +43,7 @@ class UserBannerExecutor(val rest: RestClient) : CommandExecutor() {
         }
 
         val extension = if (bannerId.startsWith("a_")) "gif" else "png"
-        val bannerUrl = "https://cdn.discordapp.com/banners/${user.id}/${retrievedDiscordUser.banner}.$extension?size=512"
+        val bannerUrl = "https://cdn.discordapp.com/banners/${user.id.value}/${retrievedDiscordUser.banner}.$extension?size=512"
 
         context.sendMessage {
             embed {
@@ -64,7 +64,7 @@ class UserBannerExecutor(val rest: RestClient) : CommandExecutor() {
 
             actionRow {
                 linkButton(
-                    url = "${user.avatar.url}?size=2048"
+                    url = bannerUrl
                 ) {
                     label = context.i18nContext.get(UserCommand.I18N_PREFIX.Banner.OpenBannerInBrowser)
                 }
