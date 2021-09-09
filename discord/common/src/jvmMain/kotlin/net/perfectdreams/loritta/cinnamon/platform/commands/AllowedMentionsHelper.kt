@@ -17,5 +17,5 @@ fun MessageCreateBuilder.mentionUser(user: User, notifyUser: Boolean = true): St
             users.add(user.id)
         }
 
-    return "<@$user>" // TODO: Implement "asMention" in Discord InteraKTions
+    return "<@${user.id.value}>" // TODO: Implement "asMention" in Discord InteraKTions
 }
