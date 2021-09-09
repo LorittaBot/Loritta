@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.discord.commands.mentionUser
 
-class FaustaoExecutor(val emotes: Emotes) : CommandExecutor() {
+class FaustaoExecutor() : CommandExecutor() {
     companion object : CommandExecutorDeclaration(FaustaoExecutor::class)
 
     // TODO: Localization

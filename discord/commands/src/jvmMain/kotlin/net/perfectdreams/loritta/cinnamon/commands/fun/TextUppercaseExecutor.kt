@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandE
 import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOptions
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 
-class TextUppercaseExecutor(val emotes: Emotes) : CommandExecutor() {
+class TextUppercaseExecutor() : CommandExecutor() {
     companion object : CommandExecutorDeclaration(TextUppercaseExecutor::class) {
         object Options : CommandOptions() {
             val text = string("text", TextTransformDeclaration.I18N_PREFIX.Uppercase.Description)

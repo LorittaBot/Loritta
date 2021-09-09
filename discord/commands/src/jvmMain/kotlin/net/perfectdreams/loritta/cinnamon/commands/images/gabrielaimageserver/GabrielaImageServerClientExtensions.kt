@@ -9,10 +9,10 @@ import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 
 // This is in a extension to avoid cluttering GabrielaImageServerClient with Loritta-related stuff
 // (So in the future we can move GISClient to a different project)
-suspend fun GabrielaImageServerClient.executeAndHandleExceptions(context: CommandContext, emotes: Emotes, endpoint: String, body: JsonObject): ByteArray {
+suspend fun GabrielaImageServerClient.executeAndHandleExceptions(context: CommandContext, endpoint: String, body: JsonObject): ByteArray {
     return try {
         execute(endpoint, body)
     } catch (e: NoValidImageFoundException) { // This is called if the image wasn't valid/untrusted URL/etc
-        context.fail(context.i18nContext.get(I18nKeysData.Commands.NoValidImageFound), emotes.loriSob)
+        context.fail(context.i18nContext.get(I18nKeysData.Commands.NoValidImageFound), Emotes.loriSob)
     } // Because we aren't catching "Exception", the exception should be propagated to the caller!
 }

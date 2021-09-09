@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.CommandContext
 import net.perfectdreams.loritta.cinnamon.discord.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandExecutorDeclaration
 
-class TioDoPaveExecutor(val emotes: Emotes) : CommandExecutor() {
+class TioDoPaveExecutor() : CommandExecutor() {
     companion object : CommandExecutorDeclaration(TioDoPaveExecutor::class) {
         // TODO: Localization
         // https://www.reddit.com/r/tiodopave/top/?sort=top&t=all&count=375&after=t3_666izg
@@ -313,7 +313,7 @@ class TioDoPaveExecutor(val emotes: Emotes) : CommandExecutor() {
         context.sendMessage {
             embed {
                 author("Tio do Pavê", null, "https://loritta.website/assets/img/tio_do_pave.jpg")
-                description = "${PIADAS.random()} ${emotes.loriOkHand}"
+                description = "${PIADAS.random()} ${Emotes.loriOkHand}"
             }
         }
     }

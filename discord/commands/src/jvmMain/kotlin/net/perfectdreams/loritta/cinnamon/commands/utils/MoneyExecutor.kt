@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandE
 import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOptions
 import net.perfectdreams.loritta.cinnamon.discord.commands.styled
 
-class MoneyExecutor(val emotes: Emotes, val ecbManager: ECBManager) : CommandExecutor() {
+class MoneyExecutor(val ecbManager: ECBManager) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(MoneyExecutor::class) {
         object Options : CommandOptions() {
             val from = string("from", MoneyCommand.I18N_PREFIX.Options.From)
@@ -69,7 +69,7 @@ class MoneyExecutor(val emotes: Emotes, val ecbManager: ECBManager) : CommandExe
             // (Example: Discord Slash Commands)
             val euroValueInCurrency = exchangeRates[from] ?: context.failEphemerally {
                 styled(
-                    prefix = emotes.error,
+                    prefix = Emotes.error,
                     content = context.i18nContext.get(
                         MoneyCommand.I18N_PREFIX.InvalidCurrency(
                             currency = from
@@ -90,7 +90,7 @@ class MoneyExecutor(val emotes: Emotes, val ecbManager: ECBManager) : CommandExe
 
             val endValueInEuros = exchangeRates[to] ?: context.failEphemerally {
                 styled(
-                    prefix = emotes.error,
+                    prefix = Emotes.error,
                     content = context.i18nContext.get(
                         MoneyCommand.I18N_PREFIX.InvalidCurrency(
                             currency = from

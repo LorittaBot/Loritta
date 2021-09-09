@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandExecutorDeclaration
 import kotlin.random.Random
 
-class CoinFlipExecutor(val emotes: Emotes, val random: Random) : CommandExecutor() {
+class CoinFlipExecutor(val random: Random) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(CoinFlipExecutor::class)
 
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
@@ -18,10 +18,10 @@ class CoinFlipExecutor(val emotes: Emotes, val random: Random) : CommandExecutor
         val message: StringI18nData
 
         if (isTails) {
-            prefix = emotes.coinTails.toString()
+            prefix = Emotes.coinTails.toString()
             message = CoinFlipCommand.I18N_PREFIX.Tails
         } else {
-            prefix = emotes.coinHeads.toString()
+            prefix = Emotes.coinHeads.toString()
             message = CoinFlipCommand.I18N_PREFIX.Heads
         }
 

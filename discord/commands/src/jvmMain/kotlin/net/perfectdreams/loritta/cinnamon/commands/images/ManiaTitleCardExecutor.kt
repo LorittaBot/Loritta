@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOptions
 
-class ManiaTitleCardExecutor(val emotes: Emotes, val client: GabrielaImageServerClient) : CommandExecutor() {
+class ManiaTitleCardExecutor(val client: GabrielaImageServerClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(ManiaTitleCardExecutor::class) {
         object Options : CommandOptions() {
             val line1 = string("line1", SonicCommand.I18N_PREFIX.Maniatitlecard.Options.Line1)
@@ -35,8 +35,7 @@ class ManiaTitleCardExecutor(val emotes: Emotes, val client: GabrielaImageServer
 
         val result = client.executeAndHandleExceptions(
             context,
-            emotes,
-            "/api/v1/images/mania-title-card",
+                    "/api/v1/images/mania-title-card",
             buildJsonObject {
                 putJsonArray("strings") {
                     addJsonObject {

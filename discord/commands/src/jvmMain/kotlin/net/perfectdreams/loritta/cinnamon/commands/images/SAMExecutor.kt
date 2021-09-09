@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOptions
 
-class SAMExecutor(val emotes: Emotes, val client: GabrielaImageServerClient) : CommandExecutor() {
+class SAMExecutor(val client: GabrielaImageServerClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(SAMExecutor::class) {
         object Options : CommandOptions() {
             val type = string("type", BRMemesCommand.I18N_PREFIX.Sam.Options.Type)
@@ -38,8 +38,7 @@ class SAMExecutor(val emotes: Emotes, val client: GabrielaImageServerClient) : C
 
         val result = client.executeAndHandleExceptions(
             context,
-            emotes,
-            "/api/v1/images/sam/$type",
+                    "/api/v1/images/sam/$type",
             buildJsonObject {
                 putJsonArray("images") {
                     addJsonObject {

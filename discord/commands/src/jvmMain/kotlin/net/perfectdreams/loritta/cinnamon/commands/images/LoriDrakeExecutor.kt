@@ -7,10 +7,8 @@ import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.gabrielaimageserver.GabrielaImageServerClient
 
 class LoriDrakeExecutor(
-    emotes: Emotes,
     client: GabrielaImageServerClient
 ) : GabrielaImageServerTwoCommandBase(
-    emotes,
     client,
     "/api/v1/images/lori-drake",
     "lori_drake.png"

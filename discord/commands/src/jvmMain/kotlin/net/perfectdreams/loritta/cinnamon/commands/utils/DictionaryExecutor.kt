@@ -18,7 +18,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOption
 import org.jsoup.Jsoup
 import java.net.URLEncoder
 
-class DictionaryExecutor(val emotes: Emotes, val http: HttpClient) : CommandExecutor() {
+class DictionaryExecutor(val http: HttpClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(DictionaryExecutor::class) {
         object Options : CommandOptions() {
             val language = string("language", DictionaryCommand.I18N_PREFIX.Options.Language)
@@ -51,7 +51,7 @@ class DictionaryExecutor(val emotes: Emotes, val http: HttpClient) : CommandExec
         if (httpResponse.status == HttpStatusCode.NotFound)
             context.failEphemerally(
                 context.i18nContext.get(DictionaryCommand.I18N_PREFIX.WordNotFound),
-                emotes.error
+                Emotes.error
             )
 
         val response = httpResponse.readText()
@@ -66,7 +66,7 @@ class DictionaryExecutor(val emotes: Emotes, val http: HttpClient) : CommandExec
             val resultadosLi = resultados.getElementsByTag("li").firstOrNull()
                 ?: context.failEphemerally(
                     context.i18nContext.get(DictionaryCommand.I18N_PREFIX.WordNotFound),
-                    emotes.error
+                    Emotes.error
                 )
 
             val linkElement = resultadosLi.getElementsByClass("_sugg").first()
@@ -78,7 +78,7 @@ class DictionaryExecutor(val emotes: Emotes, val http: HttpClient) : CommandExec
             if (httpRequest2.status == HttpStatusCode.NotFound)
                 context.failEphemerally(
                     context.i18nContext.get(DictionaryCommand.I18N_PREFIX.WordNotFound),
-                    emotes.error
+                    Emotes.error
                 )
 
             val response2 = httpRequest2.readText()
@@ -92,7 +92,7 @@ class DictionaryExecutor(val emotes: Emotes, val http: HttpClient) : CommandExec
         )
             context.failEphemerally(
                 context.i18nContext.get(DictionaryCommand.I18N_PREFIX.WordNotFound),
-                emotes.error
+                Emotes.error
             )
 
         val description = jsoup.select("p[itemprop = description]")[0]

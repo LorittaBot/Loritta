@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 import java.util.*
 
-class McSkinExecutor(val emotes: Emotes, val mojang: MinecraftMojangAPI) : CommandExecutor() {
+class McSkinExecutor(val mojang: MinecraftMojangAPI) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(McSkinExecutor::class) {
         object Options : CommandOptions() {
             val username = string("player_name", MinecraftCommand.I18N_CATEGORY_PREFIX.Options.PlayerNameJavaEdition)
@@ -24,7 +24,7 @@ class McSkinExecutor(val emotes: Emotes, val mojang: MinecraftMojangAPI) : Comma
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
         val player = args[Options.username]
         val profile = mojang.getUserProfileFromName(player) ?: context.failEphemerally(
-            prefix = emotes.error,
+            prefix = Emotes.error,
             content = context.i18nContext.get(MinecraftCommand.I18N_CATEGORY_PREFIX.UnknownPlayer(player))
         )
 
@@ -35,7 +35,7 @@ class McSkinExecutor(val emotes: Emotes, val mojang: MinecraftMojangAPI) : Comma
         val isSteve = uniqueId.hashCode() % 2 == 1
 
         val skinUrl = profile.textures["SKIN"]?.url ?: context.failEphemerally(
-            prefix = emotes.error,
+            prefix = Emotes.error,
             content = context.i18nContext.get(
                 I18nKeysData.Commands.Command.Minecraft.Player.Skin.PlayerDoesNotHaveASkin(
                     playerName = player,

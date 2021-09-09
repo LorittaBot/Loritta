@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.mentionUser
 import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOptions
 import net.perfectdreams.loritta.cinnamon.discord.commands.styled
 
-class SonhosExecutor(val emotes: Emotes) : CommandExecutor() {
+class SonhosExecutor() : CommandExecutor() {
     companion object : CommandExecutorDeclaration(SonhosExecutor::class) {
         object Options : CommandOptions() {
             val user = optionalUser("user", CancelledCommand.I18N_PREFIX.Options.User)
@@ -52,7 +52,7 @@ class SonhosExecutor(val emotes: Emotes) : CommandExecutor() {
                             }
                         )
                     ),
-                    emotes.loriRich
+                    Emotes.loriRich
                 )
             } else {
                 styled(
@@ -71,7 +71,7 @@ class SonhosExecutor(val emotes: Emotes) : CommandExecutor() {
                             }
                         )
                     ),
-                    emotes.loriRich
+                    Emotes.loriRich
                 )
             }
         }

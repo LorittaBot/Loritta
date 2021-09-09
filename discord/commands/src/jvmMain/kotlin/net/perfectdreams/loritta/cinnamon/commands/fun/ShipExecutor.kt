@@ -23,7 +23,6 @@ import kotlin.math.absoluteValue
 import kotlin.random.Random
 
 class ShipExecutor(
-    val emotes: Emotes,
     val client: GabrielaImageServerClient,
     val lorittaId: Snowflake
 ) : CommandExecutor() {
@@ -167,39 +166,39 @@ class ShipExecutor(
         when {
             isLorittaWithShipEffects -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScoreLorittaWithShipEffect
-                loveTextEmote = emotes.loriHmpf
+                loveTextEmote = Emotes.loriHmpf
             }
             isLoritta -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScoreLoritta
-                loveTextEmote = emotes.loriShrug
+                loveTextEmote = Emotes.loriShrug
             }
             isLoveYourself -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScoreLoveYourself
-                loveTextEmote = emotes.loriSmile
+                loveTextEmote = Emotes.loriSmile
             }
             isMarried -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScoreMarried
-                loveTextEmote = emotes.marriageRing
+                loveTextEmote = Emotes.marriageRing
             }
             value == 100 -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScorePerfect
-                loveTextEmote = emotes.sparklingHeart
+                loveTextEmote = Emotes.sparklingHeart
             }
             value in 67..99 -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScoreLove
-                loveTextEmote = emotes.loriHeart
+                loveTextEmote = Emotes.loriHeart
             }
             value in 34..66 -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScoreShrug
-                loveTextEmote = emotes.loriShrug
+                loveTextEmote = Emotes.loriShrug
             }
             value in 1..33 -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScoreSob
-                loveTextEmote = emotes.loriSob
+                loveTextEmote = Emotes.loriSob
             }
             value == 0 -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScoreImpossible
-                loveTextEmote = emotes.loriHmpf
+                loveTextEmote = Emotes.loriHmpf
             }
             else -> error("Percentage is out of range")
         }
@@ -219,8 +218,7 @@ class ShipExecutor(
 
         val result = client.executeAndHandleExceptions(
             context,
-            emotes,
-            "/api/v1/images/ship",
+                    "/api/v1/images/ship",
             buildJsonObject {
                 putJsonArray("images") {
                     addJsonObject {
@@ -238,8 +236,8 @@ class ShipExecutor(
         )
 
         context.sendMessage {
-            content = """${emotes.loriHeartCombo1}${emotes.loriHeartCombo2} **${context.i18nContext.get(ShipCommand.I18N_PREFIX.NewCouple)}** ${emotes.loriHeartCombo1}${emotes.pantufaHeartCombo2}
-                |${emotes.loriReading} `$user1Name` + `$user2Name` = ${emotes.sparkles} **`$shipName`** ${emotes.sparkles}
+            content = """${Emotes.loriHeartCombo1}${Emotes.loriHeartCombo2} **${context.i18nContext.get(ShipCommand.I18N_PREFIX.NewCouple)}** ${Emotes.loriHeartCombo1}${Emotes.pantufaHeartCombo2}
+                |${Emotes.loriReading} `$user1Name` + `$user2Name` = ${Emotes.sparkles} **`$shipName`** ${Emotes.sparkles}
                 |$loveTextEmote $loveTextResult $loveTextEmote
             """.trimMargin()
 

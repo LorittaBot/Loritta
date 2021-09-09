@@ -1,14 +1,14 @@
 package net.perfectdreams.loritta.cinnamon.commands.utils
 
 import net.perfectdreams.loritta.cinnamon.commands.utils.declarations.ChooseCommand
+import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.discord.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.commands.CommandContext
 import net.perfectdreams.loritta.cinnamon.discord.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOptions
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 
-class ChooseExecutor(val emotes: Emotes) : CommandExecutor() {
+class ChooseExecutor() : CommandExecutor() {
     companion object : CommandExecutorDeclaration(ChooseExecutor::class) {
         object Options : CommandOptions() {
             val choices = stringList(
@@ -28,10 +28,10 @@ class ChooseExecutor(val emotes: Emotes) : CommandExecutor() {
             content = context.i18nContext.get(
                 ChooseCommand.I18N_PREFIX.Result(
                     result = options.random(),
-                    emote = emotes.loriYay
+                    emote = Emotes.loriYay
                 )
             ),
-            prefix = emotes.loriHm
+            prefix = Emotes.loriHm
         )
     }
 }

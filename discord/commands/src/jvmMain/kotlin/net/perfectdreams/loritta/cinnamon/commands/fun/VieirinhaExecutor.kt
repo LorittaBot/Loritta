@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOptions
 
-class VieirinhaExecutor(val emotes: Emotes) : CommandExecutor() {
+class VieirinhaExecutor() : CommandExecutor() {
     companion object : CommandExecutorDeclaration(VieirinhaExecutor::class) {
         object Options : CommandOptions() {
             // Unused because... well, we don't need it :P

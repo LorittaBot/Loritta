@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandE
 import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOptions
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 
-class MemeMakerExecutor(val emotes: Emotes, val client: GabrielaImageServerClient) : CommandExecutor() {
+class MemeMakerExecutor(val client: GabrielaImageServerClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(MemeMakerExecutor::class) {
         object Options : CommandOptions() {
             val line1 = string("line1", MemeMakerCommand.I18N_PREFIX.Options.Line1)
@@ -40,8 +40,7 @@ class MemeMakerExecutor(val emotes: Emotes, val client: GabrielaImageServerClien
 
         val result = client.executeAndHandleExceptions(
             context,
-            emotes,
-            "/api/v1/images/meme-maker",
+                    "/api/v1/images/meme-maker",
             buildJsonObject {
                 putJsonArray("images") {
                     addJsonObject {

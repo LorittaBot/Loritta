@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.CommandContext
 import net.perfectdreams.loritta.cinnamon.discord.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandExecutorDeclaration
 
-class BemBoladaExecutor(val emotes: Emotes) : CommandExecutor() {
+class BemBoladaExecutor() : CommandExecutor() {
     companion object : CommandExecutorDeclaration(BemBoladaExecutor::class)
 
     // TODO: Localization
@@ -198,7 +198,7 @@ class BemBoladaExecutor(val emotes: Emotes) : CommandExecutor() {
             embed {
                 author("Kenji do Loop Infinito", null, "https://loritta.website/assets/img/kenji.jpg")
 
-                description = "${bemBoladas.random()} ${emotes.loriSmile}"
+                description = "${bemBoladas.random()} ${Emotes.loriSmile}"
             }
         }
     }

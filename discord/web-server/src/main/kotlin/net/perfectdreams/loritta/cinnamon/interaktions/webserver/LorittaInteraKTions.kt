@@ -23,7 +23,6 @@ class LorittaInteraKTions(
     servicesConfig: ServicesConfig,
     languageManager: LanguageManager,
     services: Services,
-    emotes: Emotes,
     http: HttpClient
 ): LorittaCinnamon(
     config,
@@ -32,7 +31,6 @@ class LorittaInteraKTions(
     servicesConfig,
     languageManager,
     services,
-    emotes,
     http
 ) {
     companion object {

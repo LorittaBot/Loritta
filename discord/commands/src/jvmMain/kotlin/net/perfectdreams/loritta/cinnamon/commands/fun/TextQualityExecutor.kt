@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandE
 import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOptions
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 
-class TextQualityExecutor(val emotes: Emotes) : CommandExecutor() {
+class TextQualityExecutor() : CommandExecutor() {
     companion object : CommandExecutorDeclaration(TextQualityExecutor::class) {
         object Options : CommandOptions() {
             val text = string("text", TextTransformDeclaration.I18N_PREFIX.Quality.Description)

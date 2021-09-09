@@ -26,7 +26,6 @@ import kotlin.streams.toList
  */
 class SlashCommandExecutorWrapper(
     private val loritta: LorittaCinnamon,
-    private val emotes: Emotes,
     // This is only used for metrics
     private val rootDeclaration: CommandDeclarationBuilder,
     private val declarationExecutor: CommandExecutorDeclaration,
@@ -213,7 +212,7 @@ class SlashCommandExecutorWrapper(
                         } */
 
                         if (!found)
-                            cinnamonContext.fail(cinnamonContext.i18nContext.get(I18nKeysData.Commands.NoValidImageFound), emotes.loriSob)
+                            cinnamonContext.fail(cinnamonContext.i18nContext.get(I18nKeysData.Commands.NoValidImageFound), Emotes.loriSob)
                     }
 
                     else -> {
@@ -272,10 +271,10 @@ class SlashCommandExecutorWrapper(
 
             // Tell the user that something went *really* wrong
             // While we do have access to the Cinnamon Context, it may be null at this stage, so we will use the Discord InteraKTions context
-            val content = "${loritta.emotes.loriHm} **|** " + i18nContext.get(
+            val content = "${Emotes.loriHm} **|** " + i18nContext.get(
                 I18nKeysData.Commands.ErrorWhileExecutingCommand(
-                    loriRage = loritta.emotes.loriRage,
-                    loriSob = loritta.emotes.loriSob,
+                    loriRage = Emotes.loriRage,
+                    loriSob = Emotes.loriSob,
                     stacktrace = if (!e.message.isNullOrEmpty())
                         " `${e.message}`" // TODO: Sanitize
                     else

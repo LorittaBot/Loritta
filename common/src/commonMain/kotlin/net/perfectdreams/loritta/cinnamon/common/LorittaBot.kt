@@ -1,7 +1,5 @@
 package net.perfectdreams.loritta.cinnamon.common
 
-import net.perfectdreams.loritta.cinnamon.common.emotes.EmoteManager
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.services.Services
 import net.perfectdreams.loritta.cinnamon.common.utils.config.LorittaConfig
 import kotlin.random.Random
@@ -14,7 +12,5 @@ import kotlin.random.Random
 abstract class LorittaBot(val config: LorittaConfig) {
     // TODO: *Really* set a random seed
     val random = Random(0)
-
-    open val emotes: Emotes = Emotes(EmoteManager.DefaultEmoteManager())
     abstract val services: Services
 }

@@ -8,10 +8,8 @@ import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.gabrielaimageserver.GabrielaImageServerClient
 
 class BriggsCoverExecutor(
-    emotes: Emotes,
     client: GabrielaImageServerClient
 ) : GabrielaImageServerSingleCommandBase(
-    emotes,
     client,
     "/api/v1/images/briggs-cover",
     "briggs_capa.png"

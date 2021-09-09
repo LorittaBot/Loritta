@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.mentionUser
 import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOptions
 import net.perfectdreams.loritta.cinnamon.discord.commands.styled
 
-class CancelledExecutor(val emotes: Emotes) : CommandExecutor() {
+class CancelledExecutor() : CommandExecutor() {
     companion object : CommandExecutorDeclaration(CancelledExecutor::class) {
         object Options : CommandOptions() {
             val user = user("user", CancelledCommand.I18N_PREFIX.Options.User)
@@ -32,7 +32,7 @@ class CancelledExecutor(val emotes: Emotes) : CommandExecutor() {
                             .random()
                     )
                 ),
-                prefix = emotes.loriHmpf.toString()
+                prefix = Emotes.loriHmpf.toString()
             )
         }
     }

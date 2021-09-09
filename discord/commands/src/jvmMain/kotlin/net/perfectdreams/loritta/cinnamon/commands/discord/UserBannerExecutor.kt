@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOption
 import net.perfectdreams.loritta.cinnamon.discord.commands.styled
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 
-class UserBannerExecutor(val emotes: Emotes, val rest: RestClient) : CommandExecutor() {
+class UserBannerExecutor(val rest: RestClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(UserBannerExecutor::class) {
         object Options : CommandOptions() {
             val user = optionalUser("user", UserCommand.I18N_PREFIX.Banner.Options.User)
@@ -37,7 +37,7 @@ class UserBannerExecutor(val emotes: Emotes, val rest: RestClient) : CommandExec
                 context.i18nContext.get(
                     I18nKeysData.Commands.Command.User.Banner.UserDoesNotHaveAnBanner(mentionUser(user, false))
                 ),
-                prefix = emotes.error
+                prefix = Emotes.error
             )
         }
 

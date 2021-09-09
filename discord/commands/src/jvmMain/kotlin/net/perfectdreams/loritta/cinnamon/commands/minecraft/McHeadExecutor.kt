@@ -1,12 +1,11 @@
 package net.perfectdreams.loritta.cinnamon.commands.minecraft
 
-import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 
-class McHeadExecutor(emotes: Emotes, mojang: MinecraftMojangAPI) : CrafatarExecutorBase(
+class McHeadExecutor(mojang: MinecraftMojangAPI) : CrafatarExecutorBase(
     "renders/head",
-    emotes,
     mojang
 ) {
     companion object : CommandExecutorDeclaration(McHeadExecutor::class) {

@@ -11,7 +11,6 @@ import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 
 open class CrafatarExecutorBase(
     val type: String,
-    val emotes: Emotes,
     val mojang: MinecraftMojangAPI
 ) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(CrafatarExecutorBase::class) {
@@ -26,7 +25,7 @@ open class CrafatarExecutorBase(
     override suspend fun execute(context: CommandContext, args: CommandArguments) {
         val player = args[Options.username]
         val uuid = mojang.getUniqueId(player) ?: context.failEphemerally(
-            prefix = emotes.error,
+            prefix = Emotes.error,
             content = context.i18nContext.get(MinecraftCommand.I18N_CATEGORY_PREFIX.UnknownPlayer(player))
         )
 

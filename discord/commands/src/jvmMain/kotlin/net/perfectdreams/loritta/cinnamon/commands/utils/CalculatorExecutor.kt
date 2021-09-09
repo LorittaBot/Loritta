@@ -1,15 +1,15 @@
 package net.perfectdreams.loritta.cinnamon.commands.utils
 
 import net.perfectdreams.loritta.cinnamon.commands.utils.declarations.CalculatorCommand
+import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.common.utils.math.MathUtils
 import net.perfectdreams.loritta.cinnamon.discord.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.commands.CommandContext
 import net.perfectdreams.loritta.cinnamon.discord.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOptions
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.common.utils.math.MathUtils
 
-class CalculatorExecutor(val emotes: Emotes) : CommandExecutor() {
+class CalculatorExecutor() : CommandExecutor() {
     companion object : CommandExecutorDeclaration(CalculatorExecutor::class) {
         object Options : CommandOptions() {
             val expression = string("expression", CalculatorCommand.I18N_PREFIX.Options.Expression)
@@ -46,7 +46,7 @@ class CalculatorExecutor(val emotes: Emotes) : CommandExecutor() {
                             (resultNumber2 * resultNumber1) / resultNumber0
                         )
                     ),
-                    prefix = emotes.loriReading
+                    prefix = Emotes.loriReading
                 )
                 return
             }
@@ -60,7 +60,7 @@ class CalculatorExecutor(val emotes: Emotes) : CommandExecutor() {
                         result
                     )
                 ),
-                prefix = emotes.loriReading
+                prefix = Emotes.loriReading
             )
         } catch (e: Exception) {
             // TODO: Fix stripCodeMarks
@@ -69,8 +69,8 @@ class CalculatorExecutor(val emotes: Emotes) : CommandExecutor() {
                     CalculatorCommand.I18N_PREFIX.Invalid(
                         expression
                     )
-                ) + " ${emotes.loriSob}",
-                prefix = emotes.loriHm
+                ) + " ${Emotes.loriSob}",
+                prefix = Emotes.loriHm
             )
         }
     }

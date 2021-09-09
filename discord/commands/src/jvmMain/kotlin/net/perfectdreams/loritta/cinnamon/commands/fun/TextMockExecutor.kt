@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.cinnamon.discord.commands.options.CommandOption
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import kotlin.random.Random
 
-class TextMockExecutor(val emotes: Emotes) : CommandExecutor() {
+class TextMockExecutor() : CommandExecutor() {
     companion object : CommandExecutorDeclaration(TextMockExecutor::class) {
         object Options : CommandOptions() {
             val text = string("text", TextTransformDeclaration.I18N_PREFIX.Mock.Description)
