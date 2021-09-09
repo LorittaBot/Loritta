@@ -1,10 +1,10 @@
-package net.perfectdreams.loritta.common.memory.services
+package net.perfectdreams.loritta.cinnamon.common.memory.services
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import net.perfectdreams.loritta.common.entities.UserProfile
-import net.perfectdreams.loritta.common.memory.entities.MemoryUserProfile
-import net.perfectdreams.loritta.common.services.UserService
+import net.perfectdreams.loritta.cinnamon.common.entities.UserProfile
+import net.perfectdreams.loritta.cinnamon.common.memory.entities.MemoryUserProfile
+import net.perfectdreams.loritta.cinnamon.common.services.UserService
 
 class MemoryUserService : UserService {
     private val profiles = mutableMapOf<ULong, UserProfile>()

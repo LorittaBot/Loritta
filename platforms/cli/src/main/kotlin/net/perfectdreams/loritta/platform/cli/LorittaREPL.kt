@@ -1,6 +1,6 @@
-package net.perfectdreams.loritta.platform.cli
+package net.perfectdreams.loritta.cinnamon.platform.cli
 
-import net.perfectdreams.loritta.platform.cli.utils.config.RootConfig
+import net.perfectdreams.loritta.cinnamon.platform.cli.utils.config.RootConfig
 
 class LorittaREPL(val config: RootConfig) {
     val cli = LorittaCLI(config.loritta, config.services.gabrielaImageServer)

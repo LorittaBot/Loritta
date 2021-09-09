@@ -1,8 +1,8 @@
-package net.perfectdreams.loritta.platform.twitter
+package net.perfectdreams.loritta.cinnamon.platform.twitter
 
 import mu.KotlinLogging
-import net.perfectdreams.loritta.common.utils.config.ConfigUtils
-import net.perfectdreams.loritta.platform.twitter.utils.config.RootConfig
+import net.perfectdreams.loritta.cinnamon.common.utils.config.ConfigUtils
+import net.perfectdreams.loritta.cinnamon.platform.twitter.utils.config.RootConfig
 
 object LorittaTwitterLauncher {
     private val logger = KotlinLogging.logger {}

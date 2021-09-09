@@ -1,7 +1,7 @@
-package net.perfectdreams.loritta.common.memory.entities
+package net.perfectdreams.loritta.cinnamon.common.memory.entities
 
 import kotlinx.datetime.Instant
-import net.perfectdreams.loritta.common.entities.ShipEffect
+import net.perfectdreams.loritta.cinnamon.common.entities.ShipEffect
 
 class MemoryShipEffect(
     override val id: Long,

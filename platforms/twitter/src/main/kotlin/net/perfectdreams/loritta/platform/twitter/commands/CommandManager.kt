@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.platform.twitter.commands
+package net.perfectdreams.loritta.cinnamon.platform.twitter.commands
 
 import blue.starry.penicillin.endpoints.account
 import blue.starry.penicillin.endpoints.statuses
@@ -6,16 +6,16 @@ import blue.starry.penicillin.endpoints.statuses.show
 import blue.starry.penicillin.endpoints.users
 import blue.starry.penicillin.endpoints.users.showByUserId
 import blue.starry.penicillin.models.Status
-import net.perfectdreams.loritta.common.commands.CommandArguments
-import net.perfectdreams.loritta.common.commands.CommandExecutor
-import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
-import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
-import net.perfectdreams.loritta.common.commands.options.CommandOption
-import net.perfectdreams.loritta.common.commands.options.CommandOptionType
-import net.perfectdreams.loritta.common.images.URLImageReference
-import net.perfectdreams.loritta.platform.twitter.LorittaTwitter
-import net.perfectdreams.loritta.platform.twitter.entities.TwitterMessageChannel
-import net.perfectdreams.loritta.platform.twitter.entities.TwitterUser
+import net.perfectdreams.loritta.cinnamon.common.commands.CommandArguments
+import net.perfectdreams.loritta.cinnamon.common.commands.CommandExecutor
+import net.perfectdreams.loritta.cinnamon.common.commands.declarations.CommandDeclaration
+import net.perfectdreams.loritta.cinnamon.common.commands.declarations.CommandDeclarationBuilder
+import net.perfectdreams.loritta.cinnamon.common.commands.options.CommandOption
+import net.perfectdreams.loritta.cinnamon.common.commands.options.CommandOptionType
+import net.perfectdreams.loritta.cinnamon.common.images.URLImageReference
+import net.perfectdreams.loritta.cinnamon.platform.twitter.LorittaTwitter
+import net.perfectdreams.loritta.cinnamon.platform.twitter.entities.TwitterMessageChannel
+import net.perfectdreams.loritta.cinnamon.platform.twitter.entities.TwitterUser
 
 class CommandManager(val loritta: LorittaTwitter) {
     companion object {

@@ -40,7 +40,7 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<ShadowJar> {
     manifest {
-        attributes["Main-Class"] = "net.perfectdreams.loritta.platform.twitter.LorittaTwitterLauncher"
+        attributes["Main-Class"] = "net.perfectdreams.loritta.cinnamon.platform.twitter.LorittaTwitterLauncher"
     }
 }
 

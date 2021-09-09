@@ -1,10 +1,10 @@
-package net.perfectdreams.loritta.platform.cli.commands
+package net.perfectdreams.loritta.cinnamon.platform.cli.commands
 
-import net.perfectdreams.loritta.common.commands.CommandContext
-import net.perfectdreams.loritta.common.entities.MessageChannel
-import net.perfectdreams.loritta.common.entities.User
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.platform.cli.LorittaCLI
+import net.perfectdreams.loritta.cinnamon.common.commands.CommandContext
+import net.perfectdreams.loritta.cinnamon.common.entities.MessageChannel
+import net.perfectdreams.loritta.cinnamon.common.entities.User
+import net.perfectdreams.loritta.cinnamon.common.locale.BaseLocale
+import net.perfectdreams.loritta.cinnamon.platform.cli.LorittaCLI
 
 class CLICommandContext(
     override val loritta: LorittaCLI,

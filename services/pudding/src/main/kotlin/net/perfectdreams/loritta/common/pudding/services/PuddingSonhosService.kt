@@ -1,6 +1,6 @@
-package net.perfectdreams.loritta.common.pudding.services
+package net.perfectdreams.loritta.cinnamon.common.pudding.services
 
-import net.perfectdreams.loritta.common.services.SonhosService
+import net.perfectdreams.loritta.cinnamon.common.services.SonhosService
 import net.perfectdreams.pudding.client.PuddingClient
 
 class PuddingSonhosService(val puddingClient: PuddingClient) : SonhosService {

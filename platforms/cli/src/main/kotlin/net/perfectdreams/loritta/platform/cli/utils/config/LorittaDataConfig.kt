@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.platform.cli.utils.config
+package net.perfectdreams.loritta.cinnamon.platform.cli.utils.config
 
 import kotlinx.serialization.Serializable
 

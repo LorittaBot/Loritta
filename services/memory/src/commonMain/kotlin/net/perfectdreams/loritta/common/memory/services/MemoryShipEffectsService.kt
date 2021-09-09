@@ -1,9 +1,9 @@
-package net.perfectdreams.loritta.common.memory.services
+package net.perfectdreams.loritta.cinnamon.common.memory.services
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import net.perfectdreams.loritta.common.entities.ShipEffect
-import net.perfectdreams.loritta.common.services.ShipEffectsService
+import net.perfectdreams.loritta.cinnamon.common.entities.ShipEffect
+import net.perfectdreams.loritta.cinnamon.common.services.ShipEffectsService
 
 class MemoryShipEffectsService : ShipEffectsService {
     private val shipEffects = mutableMapOf<Long, ShipEffect>()

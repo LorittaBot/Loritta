@@ -32,7 +32,7 @@ tasks.withType<KotlinCompile> {
 // CLI
 tasks.withType<ShadowJar> {
     manifest {
-        attributes["Main-Class"] = "net.perfectdreams.loritta.platform.cli.LorittaCLILauncher"
+        attributes["Main-Class"] = "net.perfectdreams.loritta.cinnamon.platform.cli.LorittaCLILauncher"
     }
 }
 

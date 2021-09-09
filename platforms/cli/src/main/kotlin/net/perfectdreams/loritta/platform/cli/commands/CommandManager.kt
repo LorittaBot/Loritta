@@ -1,16 +1,16 @@
-package net.perfectdreams.loritta.platform.cli.commands
+package net.perfectdreams.loritta.cinnamon.platform.cli.commands
 
-import net.perfectdreams.loritta.common.commands.CommandArguments
-import net.perfectdreams.loritta.common.commands.CommandExecutor
-import net.perfectdreams.loritta.common.commands.declarations.CommandDeclaration
-import net.perfectdreams.loritta.common.commands.declarations.CommandDeclarationBuilder
-import net.perfectdreams.loritta.common.commands.options.CommandOption
-import net.perfectdreams.loritta.common.commands.options.CommandOptionType
-import net.perfectdreams.loritta.common.images.URLImageReference
-import net.perfectdreams.loritta.common.locale.LocaleManager
-import net.perfectdreams.loritta.platform.cli.LorittaCLI
-import net.perfectdreams.loritta.platform.cli.entities.CLIMessageChannel
-import net.perfectdreams.loritta.platform.cli.entities.CLIUser
+import net.perfectdreams.loritta.cinnamon.common.commands.CommandArguments
+import net.perfectdreams.loritta.cinnamon.common.commands.CommandExecutor
+import net.perfectdreams.loritta.cinnamon.common.commands.declarations.CommandDeclaration
+import net.perfectdreams.loritta.cinnamon.common.commands.declarations.CommandDeclarationBuilder
+import net.perfectdreams.loritta.cinnamon.common.commands.options.CommandOption
+import net.perfectdreams.loritta.cinnamon.common.commands.options.CommandOptionType
+import net.perfectdreams.loritta.cinnamon.common.images.URLImageReference
+import net.perfectdreams.loritta.cinnamon.common.locale.LocaleManager
+import net.perfectdreams.loritta.cinnamon.platform.cli.LorittaCLI
+import net.perfectdreams.loritta.cinnamon.platform.cli.entities.CLIMessageChannel
+import net.perfectdreams.loritta.cinnamon.platform.cli.entities.CLIUser
 
 class CommandManager(val loritta: LorittaCLI) {
     companion object {
