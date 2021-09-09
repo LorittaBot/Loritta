@@ -1,7 +1,7 @@
-package net.perfectdreams.loritta.common.memory.entities
+package net.perfectdreams.loritta.cinnamon.common.memory.entities
 
 import kotlinx.datetime.Instant
-import net.perfectdreams.loritta.common.entities.Marriage
+import net.perfectdreams.loritta.cinnamon.common.entities.Marriage
 
 class MemoryMarriage(
     override val id: Long,

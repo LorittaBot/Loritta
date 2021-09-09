@@ -1,8 +1,8 @@
-package net.perfectdreams.loritta.platform.cli.entities
+package net.perfectdreams.loritta.cinnamon.platform.cli.entities
 
-import net.perfectdreams.loritta.common.entities.LorittaEmbed
-import net.perfectdreams.loritta.common.entities.LorittaMessage
-import net.perfectdreams.loritta.common.entities.MessageChannel
+import net.perfectdreams.loritta.cinnamon.common.entities.LorittaEmbed
+import net.perfectdreams.loritta.cinnamon.common.entities.LorittaMessage
+import net.perfectdreams.loritta.cinnamon.common.entities.MessageChannel
 import java.io.File
 
 class CLIMessageChannel : MessageChannel {

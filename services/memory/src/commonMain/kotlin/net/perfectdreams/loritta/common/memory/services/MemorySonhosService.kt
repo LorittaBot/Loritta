@@ -1,6 +1,6 @@
-package net.perfectdreams.loritta.common.memory.services
+package net.perfectdreams.loritta.cinnamon.common.memory.services
 
-import net.perfectdreams.loritta.common.services.SonhosService
+import net.perfectdreams.loritta.cinnamon.common.services.SonhosService
 
 class MemorySonhosService(val userService: MemoryUserService) : SonhosService {
     override suspend fun getSonhosRankPositionBySonhos(sonhos: Long): Long {

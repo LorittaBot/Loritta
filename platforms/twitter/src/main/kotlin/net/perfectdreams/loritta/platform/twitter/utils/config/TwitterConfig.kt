@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.platform.twitter.utils.config
+package net.perfectdreams.loritta.cinnamon.platform.twitter.utils.config
 
 import kotlinx.serialization.Serializable
 

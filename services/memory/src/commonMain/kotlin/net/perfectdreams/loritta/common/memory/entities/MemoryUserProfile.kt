@@ -1,6 +1,6 @@
-package net.perfectdreams.loritta.common.memory.entities
+package net.perfectdreams.loritta.cinnamon.common.memory.entities
 
-import net.perfectdreams.loritta.common.entities.UserProfile
+import net.perfectdreams.loritta.cinnamon.common.entities.UserProfile
 
 class MemoryUserProfile(
     override val id: ULong,

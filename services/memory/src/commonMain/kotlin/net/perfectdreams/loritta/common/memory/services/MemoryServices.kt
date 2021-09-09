@@ -1,6 +1,6 @@
-package net.perfectdreams.loritta.common.memory.services
+package net.perfectdreams.loritta.cinnamon.common.memory.services
 
-import net.perfectdreams.loritta.common.services.Services
+import net.perfectdreams.loritta.cinnamon.common.services.Services
 
 class MemoryServices : Services() {
     override val users = MemoryUserService()

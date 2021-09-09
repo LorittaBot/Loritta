@@ -13,9 +13,9 @@ allprojects {
     val splittedPath = this.path.split(":")
     group = if (splittedPath.size >= 3) {
         // No need for the dot because the first entry in the "splittedPath" is a empty string
-        "net.perfectdreams.loritta${splittedPath.dropLast(1).joinToString(".")}"
+        "net.perfectdreams.loritta.cinnamon${splittedPath.dropLast(1).joinToString(".")}"
     } else {
-        "net.perfectdreams.loritta"
+        "net.perfectdreams.loritta.cinnamon"
     }
 
     version = Versions.LORITTA

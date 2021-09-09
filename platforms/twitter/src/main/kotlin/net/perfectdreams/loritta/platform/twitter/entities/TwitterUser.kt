@@ -1,7 +1,7 @@
-package net.perfectdreams.loritta.platform.twitter.entities
+package net.perfectdreams.loritta.cinnamon.platform.twitter.entities
 
-import net.perfectdreams.loritta.common.entities.User
-import net.perfectdreams.loritta.common.entities.UserAvatar
+import net.perfectdreams.loritta.cinnamon.common.entities.User
+import net.perfectdreams.loritta.cinnamon.common.entities.UserAvatar
 
 class TwitterUser : User {
     override val id: Long = 0L

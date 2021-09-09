@@ -2,8 +2,8 @@
 import com.typesafe.config.ConfigFactory
 import kotlinx.serialization.hocon.Hocon
 import kotlinx.serialization.hocon.decodeFromConfig
-import net.perfectdreams.loritta.platform.cli.LorittaCLI
-import net.perfectdreams.loritta.platform.cli.utils.config.RootConfig
+import net.perfectdreams.loritta.cinnamon.platform.cli.LorittaCLI
+import net.perfectdreams.loritta.cinnamon.platform.cli.utils.config.RootConfig
 import org.junit.jupiter.api.Test
 
 class CheckConfigTest {

@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.platform.twitter.entities
+package net.perfectdreams.loritta.cinnamon.platform.twitter.entities
 
 import blue.starry.penicillin.core.exceptions.PenicillinTwitterMediaProcessingFailedError
 import blue.starry.penicillin.core.session.ApiClient
@@ -14,8 +14,8 @@ import blue.starry.penicillin.endpoints.statuses.create
 import blue.starry.penicillin.models.Status
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
-import net.perfectdreams.loritta.common.entities.LorittaMessage
-import net.perfectdreams.loritta.common.entities.MessageChannel
+import net.perfectdreams.loritta.cinnamon.common.entities.LorittaMessage
+import net.perfectdreams.loritta.cinnamon.common.entities.MessageChannel
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 import kotlin.time.seconds

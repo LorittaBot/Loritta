@@ -1,8 +1,8 @@
-package net.perfectdreams.loritta.common.pudding.entities
+package net.perfectdreams.loritta.cinnamon.common.pudding.entities
 
-import net.perfectdreams.loritta.common.entities.ShipEffect
+import net.perfectdreams.loritta.cinnamon.common.entities.ShipEffect
 
-class PuddingShipEffect(val shipEffect: net.perfectdreams.loritta.pudding.common.data.ShipEffect) : ShipEffect {
+class PuddingShipEffect(val shipEffect: net.perfectdreams.loritta.cinnamon.pudding.common.data.ShipEffect) : ShipEffect {
     override val id by shipEffect::id
     override val buyerId by shipEffect::buyerId
     override val user1 by shipEffect::user1

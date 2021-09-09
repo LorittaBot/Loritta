@@ -1,9 +1,9 @@
-package net.perfectdreams.loritta.platform.cli
+package net.perfectdreams.loritta.cinnamon.platform.cli
 
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import net.perfectdreams.loritta.common.utils.config.ConfigUtils
-import net.perfectdreams.loritta.platform.cli.utils.config.RootConfig
+import net.perfectdreams.loritta.cinnamon.common.utils.config.ConfigUtils
+import net.perfectdreams.loritta.cinnamon.platform.cli.utils.config.RootConfig
 
 object LorittaREPLLauncher {
     private val logger = KotlinLogging.logger {}

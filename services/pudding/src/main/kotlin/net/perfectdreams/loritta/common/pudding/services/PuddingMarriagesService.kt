@@ -1,8 +1,8 @@
-package net.perfectdreams.loritta.common.pudding.services
+package net.perfectdreams.loritta.cinnamon.common.pudding.services
 
-import net.perfectdreams.loritta.common.entities.Marriage
-import net.perfectdreams.loritta.common.pudding.entities.PuddingMarriage
-import net.perfectdreams.loritta.common.services.MarriagesService
+import net.perfectdreams.loritta.cinnamon.common.entities.Marriage
+import net.perfectdreams.loritta.cinnamon.common.pudding.entities.PuddingMarriage
+import net.perfectdreams.loritta.cinnamon.common.services.MarriagesService
 import net.perfectdreams.pudding.client.PuddingClient
 
 class PuddingMarriagesService(val puddingClient: PuddingClient) : MarriagesService {

@@ -1,6 +1,6 @@
-package net.perfectdreams.loritta.common.utils
+package net.perfectdreams.loritta.cinnamon.common.utils
 
-import net.perfectdreams.loritta.common.utils.math.Dice
+import net.perfectdreams.loritta.cinnamon.common.utils.math.Dice
 import org.assertj.core.api.Assertions
 import org.junit.Test
 

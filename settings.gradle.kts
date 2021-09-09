@@ -5,7 +5,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = "loritta-parent"
+rootProject.name = "cinnamon-parent"
 
 include(":common")
 

@@ -3,7 +3,7 @@ plugins {
     kotlin("plugin.serialization")
 }
 
-group = "net.perfectdreams.loritta.discord"
+group = "net.perfectdreams.loritta.cinnamon.discord"
 
 kotlin {
     jvm {

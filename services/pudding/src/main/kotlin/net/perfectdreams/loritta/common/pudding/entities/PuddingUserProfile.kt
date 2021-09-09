@@ -1,8 +1,8 @@
-package net.perfectdreams.loritta.common.pudding.entities
+package net.perfectdreams.loritta.cinnamon.common.pudding.entities
 
-import net.perfectdreams.loritta.common.entities.UserProfile
+import net.perfectdreams.loritta.cinnamon.common.entities.UserProfile
 
-class PuddingUserProfile(private val pudding: net.perfectdreams.loritta.pudding.common.data.UserProfile) : UserProfile {
+class PuddingUserProfile(private val pudding: net.perfectdreams.loritta.cinnamon.pudding.common.data.UserProfile) : UserProfile {
     override val id = pudding.id.toULong()
     override val money by pudding::money
 }
