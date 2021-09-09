@@ -1,9 +1,6 @@
 plugins {
     kotlin("multiplatform")
-}
-
-repositories {
-    maven("https://oss.sonatype.org/content/repositories/snapshots")
+    kotlin("plugin.serialization")
 }
 
 kotlin {
@@ -15,12 +12,18 @@ kotlin {
     }
 
     sourceSets {
-        commonMain {
+        // jvmMain *should* work but for some reason they don't
+        jvm().compilations["main"].defaultSourceSet {
             dependencies {
-                implementation(project(":common"))
-                implementation(project(":commands"))
                 implementation(project(":discord:common"))
-                implementation("dev.kord:kord-core:0.8.x-SNAPSHOT")
+                implementation("org.jsoup:jsoup:1.13.1")
+
+                // Discord InteraKTions my beloved
+                // We only depend in the Common Kord here, because we use it for command registration.
+                api("net.perfectdreams.discordinteraktions:common-kord:0.0.8-kord-yay-SNAPSHOT")
+
+                // Kord REST
+                api("dev.kord:kord-rest:0.8.x-SNAPSHOT")
             }
         }
     }

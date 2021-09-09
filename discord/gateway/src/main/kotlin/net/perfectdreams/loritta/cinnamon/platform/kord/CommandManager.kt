@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.cinnamon.platform.kord
 
-import net.perfectdreams.loritta.cinnamon.common.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.common.commands.declarations.CommandDeclaration
-import net.perfectdreams.loritta.cinnamon.common.commands.declarations.CommandDeclarationBuilder
+import net.perfectdreams.loritta.cinnamon.discord.commands.CommandExecutor
+import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandDeclaration
+import net.perfectdreams.loritta.cinnamon.discord.commands.declarations.CommandDeclarationBuilder
 
 class CommandManager {
     val declarations = mutableListOf<CommandDeclarationBuilder>()

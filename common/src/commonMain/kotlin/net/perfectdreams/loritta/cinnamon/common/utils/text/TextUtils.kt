@@ -22,4 +22,10 @@ object TextUtils {
     }
 
     fun snakeToUpperCamelCase(string: String) = snakeToLowerCamelCase(string).capitalize()
+
+    fun String.shortenWithEllipsis(): String {
+        if (this.length >= 100)
+            return this.take(97) + "..."
+        return this
+    }
 }
