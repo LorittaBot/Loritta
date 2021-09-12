@@ -107,12 +107,12 @@ class AchievementsExecutor : CommandExecutor() {
                         ComponentDataUtils.encode(data)
                     ) {
                         fun insertOption(optionCategory: AchievementCategory) {
-                            val userAchevimentsInCategoryCount = achievements.count { it.type.category == optionCategory }
-                            val totalAchevimentsInCategoryCount = AchievementType.values()
+                            val userAchievementsInCategoryCount = achievements.count { it.type.category == optionCategory }
+                            val totalAchievementsInCategoryCount = AchievementType.values()
                                 .count { it.category == optionCategory }
 
                             this.option(
-                                "${i18nContext.get(optionCategory.title)} [$userAchevimentsInCategoryCount/$totalAchevimentsInCategoryCount]",
+                                "${i18nContext.get(optionCategory.title)} [$userAchievementsInCategoryCount/$totalAchievementsInCategoryCount]",
                                 optionCategory.name
                             ) {
                                 if (category == optionCategory)
