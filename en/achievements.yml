@@ -12,6 +12,7 @@ achievements:
       description: "Achievements related to the `{command}` command" # This is a generic description for achievements that do not have a custom description
 
   achievementUnlocked: "Achievement Unlocked!" # Shown to the user when an achievement is unlocked
+  viewYourAchievements: "Check out your achievements using `{command}`"
 
   achievement:
     # ===[ SHIP ]===
