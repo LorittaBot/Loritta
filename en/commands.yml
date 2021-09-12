@@ -2,3 +2,5 @@ commands:
   errorWhileExecutingCommand: "Something went very wrong while executing this command... {loriRage} Sorry for the inconvenience... {loriSob} I hope this issue is fixed soon! {stacktrace}"
   commandOnlyAvailableInGuilds: "This command is only available within a server! If you really want to use it, please create a nice and cosy server, add me in there, and use the command there!"
   noValidImageFound: "Sorry, but I wasn't able to find an image that I could use! I tried getting images in links, attached images, mentioned user avatars, emojis... but I didn't find anything like that in your message."
+  youArentTheUserGeneric: "Wait a minute... This isn't for you! Shoo, shoo! Go away!" # Used in button/select menu reponses if the user tries to interact with a button/component that isn't for them
+  youArentTheUserSingleUser: "Wait a minute... you aren't {user}! This isn't for you, go away!" # Used in button/select menu reponses if the user tries to interact with a button/component that isn't for them, used when the correct user is known
