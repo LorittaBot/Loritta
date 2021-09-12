@@ -277,7 +277,7 @@ class ShipExecutor(
             context.giveAchievement(AchievementType.LOVE_YOURSELF)
         if (hasShipEffects)
             context.giveAchievement(AchievementType.FISHY_SHIP)
-        if (isLoritta && isShipWithTheSelfUser)
+        if (isLoritta && isShipWithTheSelfUser && !isLorittaWithShipEffects)
             context.giveAchievement(AchievementType.FRIENDZONED_BY_LORITTA)
         if (isLorittaWithShipEffects && isShipWithTheSelfUser)
             context.giveAchievement(AchievementType.SABOTAGED_LORITTA_FRIENDZONE)
