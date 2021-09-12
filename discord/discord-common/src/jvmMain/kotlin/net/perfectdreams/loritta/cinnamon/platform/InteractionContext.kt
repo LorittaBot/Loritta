@@ -270,6 +270,11 @@ open class InteractionContext(
                     "**${i18nContext.get(type.title)}:** ${i18nContext.get(type.description)}",
                     prefix = type.category.emote
                 )
+
+                styled(
+                    i18nContext.get(I18nKeysData.Achievements.ViewYourAchievements("/achievements")),
+                    prefix = Emotes.LoriWow
+                )
             }
     }
 }
