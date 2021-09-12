@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`
 
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.RateCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.RateCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.utils.ContextStringToUserNameConverter
@@ -20,7 +20,7 @@ class RateHusbandoExecutor() : CommandExecutor() {
 
     override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
         RateWaifuExecutor.executeGeneric(
-            ContextStringToUserNameConverter.convert(context, args[RateWaifuExecutor.options.waifu]),
+            ContextStringToUserNameConverter.convert(context, args[options.husbando]),
             context,
             RateCommand.HUSBANDO_SINGULAR,
             RateCommand.HUSBANDO_PLURAL
