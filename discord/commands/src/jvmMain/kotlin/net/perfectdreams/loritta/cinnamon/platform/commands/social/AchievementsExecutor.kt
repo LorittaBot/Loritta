@@ -175,7 +175,7 @@ class AchievementsExecutor : CommandExecutor() {
                 createMessage(
                     loritta,
                     user,
-                    loritta.languageManager.getI18nContextById("en"),
+                    context.i18nContext,
                     achievements,
                     try {
                         AchievementCategory.valueOf(newCategory)
