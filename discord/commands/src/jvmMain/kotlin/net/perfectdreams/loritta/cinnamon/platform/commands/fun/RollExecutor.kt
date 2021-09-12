@@ -1,12 +1,12 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`
 
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.RollCommand
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.math.Dice
 import net.perfectdreams.loritta.cinnamon.common.utils.math.MathUtils
+import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.RollCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
@@ -25,7 +25,7 @@ class RollExecutor(val random: Random) : CommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: CommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
         val dicesAsString = args[options.dices]
         val mathematicalExpression = args[options.expression]
 
@@ -40,22 +40,22 @@ class RollExecutor(val random: Random) : CommandExecutor() {
         } catch (e: Dice.Companion.TooManyDicesException) {
             context.failEphemerally(
                 context.i18nContext.get(RollCommand.I18N_PREFIX.TooManyDices),
-                Emotes.loriSob
+                Emotes.LoriSob
             )
         } catch (e: Dice.Companion.LowerBoundHigherThanUpperBoundException) {
             context.failEphemerally(
                 context.i18nContext.get(RollCommand.I18N_PREFIX.InvalidBound),
-                Emotes.loriShrug
+                Emotes.LoriShrug
             )
         } catch (e: IllegalArgumentException) {
             context.failEphemerally(
                 context.i18nContext.get(RollCommand.I18N_PREFIX.InvalidBound),
-                Emotes.loriShrug
+                Emotes.LoriShrug
             )
         } catch (e: UnsupportedOperationException) {
             context.failEphemerally(
                 context.i18nContext.get(RollCommand.I18N_PREFIX.InvalidBound),
-                Emotes.loriShrug
+                Emotes.LoriShrug
             )
         }
 

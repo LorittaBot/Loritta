@@ -2,12 +2,12 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.discord
 
 import dev.kord.common.Color
 import dev.kord.common.entity.Snowflake
-import net.perfectdreams.discordinteraktions.common.builder.message.create.actionRow
-import net.perfectdreams.discordinteraktions.common.builder.message.create.embed
+import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
+import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
@@ -24,7 +24,7 @@ class UserAvatarExecutor(val lorittaId: Snowflake) : CommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: CommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
         val user = args[Options.user] ?: context.user
 
         context.sendMessage {

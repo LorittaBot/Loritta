@@ -5,13 +5,13 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import net.perfectdreams.discordinteraktions.common.builder.message.create.embed
+import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.DictionaryCommand
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
@@ -34,7 +34,7 @@ class DictionaryExecutor(val http: HttpClient) : CommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: CommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
         // TODO: More languages
         val language = args[options.language]
         val wordToBeSearched = args[options.word]
@@ -51,7 +51,7 @@ class DictionaryExecutor(val http: HttpClient) : CommandExecutor() {
         if (httpResponse.status == HttpStatusCode.NotFound)
             context.failEphemerally(
                 context.i18nContext.get(DictionaryCommand.I18N_PREFIX.WordNotFound),
-                Emotes.error
+                Emotes.Error
             )
 
         val response = httpResponse.readText()
@@ -66,7 +66,7 @@ class DictionaryExecutor(val http: HttpClient) : CommandExecutor() {
             val resultadosLi = resultados.getElementsByTag("li").firstOrNull()
                 ?: context.failEphemerally(
                     context.i18nContext.get(DictionaryCommand.I18N_PREFIX.WordNotFound),
-                    Emotes.error
+                    Emotes.Error
                 )
 
             val linkElement = resultadosLi.getElementsByClass("_sugg").first()
@@ -78,7 +78,7 @@ class DictionaryExecutor(val http: HttpClient) : CommandExecutor() {
             if (httpRequest2.status == HttpStatusCode.NotFound)
                 context.failEphemerally(
                     context.i18nContext.get(DictionaryCommand.I18N_PREFIX.WordNotFound),
-                    Emotes.error
+                    Emotes.Error
                 )
 
             val response2 = httpRequest2.readText()
@@ -92,7 +92,7 @@ class DictionaryExecutor(val http: HttpClient) : CommandExecutor() {
         )
             context.failEphemerally(
                 context.i18nContext.get(DictionaryCommand.I18N_PREFIX.WordNotFound),
-                Emotes.error
+                Emotes.Error
             )
 
         val description = jsoup.select("p[itemprop = description]")[0]

@@ -5,7 +5,7 @@ import net.perfectdreams.i18nhelper.core.keys.StringI18nKey
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.MoneyCommand
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
@@ -49,7 +49,7 @@ class MoneyExecutor(val ecbManager: ECBManager) : CommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: CommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
         val from = args[options.from]
         val to = args[options.to]
         val multiply = args[options.quantity] ?: 1.0
@@ -69,7 +69,7 @@ class MoneyExecutor(val ecbManager: ECBManager) : CommandExecutor() {
             // (Example: Discord Slash Commands)
             val euroValueInCurrency = exchangeRates[from] ?: context.failEphemerally {
                 styled(
-                    prefix = Emotes.error,
+                    prefix = Emotes.Error,
                     content = context.i18nContext.get(
                         MoneyCommand.I18N_PREFIX.InvalidCurrency(
                             currency = from
@@ -90,7 +90,7 @@ class MoneyExecutor(val ecbManager: ECBManager) : CommandExecutor() {
 
             val endValueInEuros = exchangeRates[to] ?: context.failEphemerally {
                 styled(
-                    prefix = Emotes.error,
+                    prefix = Emotes.Error,
                     content = context.i18nContext.get(
                         MoneyCommand.I18N_PREFIX.InvalidCurrency(
                             currency = from

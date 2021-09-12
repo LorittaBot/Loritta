@@ -3,11 +3,12 @@ package net.perfectdreams.loritta.cinnamon.platform.webserver
 import io.ktor.client.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
-import net.perfectdreams.loritta.cinnamon.common.memory.services.MemoryServices
-import net.perfectdreams.loritta.cinnamon.common.pudding.services.PuddingServices
 import net.perfectdreams.loritta.cinnamon.common.utils.config.ConfigUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
 import net.perfectdreams.loritta.cinnamon.platform.webserver.utils.config.RootConfig
+import net.perfectdreams.loritta.cinnamon.pudding.DatabaseType
+import net.perfectdreams.loritta.cinnamon.pudding.Pudding
+import kotlin.concurrent.thread
 
 object LorittaCinnamonWebServerLauncher {
     private val logger = KotlinLogging.logger {}
@@ -31,23 +32,32 @@ object LorittaCinnamonWebServerLauncher {
             expectSuccess = false
         }
 
-        val services = when (rootConfig.services.lorittaData.type) {
-            "PUDDING" -> {
-                val puddingConfig = rootConfig.services.lorittaData.pudding ?: throw UnsupportedOperationException("Loritta Data Type is Pudding, but config is not present!")
-
-                PuddingServices(
-                    puddingConfig.url.removeSuffix("/"), // Remove trailing slash
-                    puddingConfig.authorization,
-                    http
+        val services = when (rootConfig.services.pudding.type) {
+            DatabaseType.POSTGRESQL ->
+                Pudding.createPostgreSQLPudding(
+                    rootConfig.services.pudding.address ?: error("Missing database address!"),
+                    rootConfig.services.pudding.database ?: error("Missing database!"),
+                    rootConfig.services.pudding.username ?: error("Missing database username!"),
+                    rootConfig.services.pudding.password ?: error("Missing database password!")
                 )
-            }
-            "MEMORY" -> {
-                MemoryServices()
-            }
-            else -> throw UnsupportedOperationException("Unsupported Loritta Data Type: ${rootConfig.services.lorittaData.type}")
+            DatabaseType.POSTGRESQL_EMBEDDED ->
+                Pudding.createEmbeddedPostgreSQLPudding(
+                    rootConfig.services.pudding.database ?: error("Missing database path!")
+                )
+            DatabaseType.POSTGRESQL_MEMORY ->
+                Pudding.createMemoryPostgreSQLPudding()
+            else -> throw UnsupportedOperationException("Unsupported Database Type: ${rootConfig.services.pudding.type}")
         }
 
-        logger.info { "Using ${rootConfig.services.lorittaData.type} services $services" }
+        Runtime.getRuntime().addShutdownHook(
+            thread(false) {
+                // Shutdown services when stopping the application
+                // This is needed for the Embedded PostgreSQL
+                services.shutdown()
+            }
+        )
+
+        logger.info { "Using ${rootConfig.services.pudding.type} services $services" }
 
         val loritta = LorittaCinnamonWebServer(
             rootConfig.loritta,

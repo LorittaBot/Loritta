@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`
 
-import net.perfectdreams.discordinteraktions.common.builder.message.create.embed
+import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.mentionUser
@@ -50,7 +50,7 @@ class FaustaoExecutor() : CommandExecutor() {
         "http://i.imgur.com/z7Ec5I3.png"
     )
 
-    override suspend fun execute(context: CommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
         context.sendMessage {
             embed {
                 author("Faustão", null, avatars.random())
