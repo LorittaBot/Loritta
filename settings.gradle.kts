@@ -9,18 +9,16 @@ rootProject.name = "cinnamon-parent"
 
 include(":common")
 
-include(":services:memory")
-include(":services:pudding")
-
-// ===[ COMMANDS ]===
-include(":commands")
-
-// ===[ SERVICES ]===
-include(":services:memory")
-include(":services:pudding")
+// ===[ PUDDING ]===
+// The reason this is not named "common" is because IDEA was getting a bit confusing due to duplicated names
+// (errors related to class not found)
+include(":pudding:data")
+include(":pudding:client")
 
 // ===[ DISCORD ]===
-include(":discord:common")
+// The reason this is not named "common" is because IDEA was getting a bit confusing due to duplicated names
+// (errors related to class not found)
+include(":discord:discord-common")
 include(":discord:commands")
 // include(":discord:gateway")
 include(":discord:web-server")

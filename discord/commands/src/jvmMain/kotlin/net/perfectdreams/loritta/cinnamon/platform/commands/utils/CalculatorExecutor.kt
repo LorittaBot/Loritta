@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.utils
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.math.MathUtils
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
@@ -19,7 +19,7 @@ class CalculatorExecutor() : CommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: CommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
         val expression = args[options.expression]
 
         try {
@@ -46,7 +46,7 @@ class CalculatorExecutor() : CommandExecutor() {
                             (resultNumber2 * resultNumber1) / resultNumber0
                         )
                     ),
-                    prefix = Emotes.loriReading
+                    prefix = Emotes.LoriReading
                 )
                 return
             }
@@ -60,7 +60,7 @@ class CalculatorExecutor() : CommandExecutor() {
                         result
                     )
                 ),
-                prefix = Emotes.loriReading
+                prefix = Emotes.LoriReading
             )
         } catch (e: Exception) {
             // TODO: Fix stripCodeMarks
@@ -70,7 +70,7 @@ class CalculatorExecutor() : CommandExecutor() {
                         expression
                     )
                 ),
-                prefix = Emotes.loriHm
+                prefix = Emotes.LoriHm
             )
         }
     }

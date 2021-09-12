@@ -3,11 +3,12 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.RateCommand
+import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.RateCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.utils.ContextStringToUserNameConverter
@@ -34,7 +35,7 @@ class RateWaifuExecutor() : CommandExecutor() {
          * @param typeSingular the singular type of the category that is being scored
          * @param typePlural   the plural type of the category that is being scored
          */
-        suspend fun executeGeneric(input: String, context: CommandContext, typeSingular: String, typePlural: String) {
+        suspend fun executeGeneric(input: String, context: ApplicationCommandContext, typeSingular: String, typePlural: String) {
             val waifuLowerCase = input.lowercase()
 
             // Always use the same seed for the random generator, but change it every day
@@ -46,29 +47,33 @@ class RateWaifuExecutor() : CommandExecutor() {
             ).random()
 
             var reason = when (score) {
-                10 -> "$scoreReason ${Emotes.loriWow}"
-                9 -> "$scoreReason ${Emotes.loriHeart}"
-                8 -> "$scoreReason ${Emotes.loriPat}"
-                7 -> "$scoreReason ${Emotes.loriSmile}"
-                3 -> "$scoreReason ${Emotes.loriShrug}"
-                2 -> "$scoreReason ${Emotes.loriHmpf}"
-                1 -> "$scoreReason ${Emotes.loriRage}"
+                10 -> "$scoreReason ${Emotes.LoriWow}"
+                9 -> "$scoreReason ${Emotes.LoriHeart}"
+                8 -> "$scoreReason ${Emotes.LoriPat}"
+                7 -> "$scoreReason ${Emotes.LoriSmile}"
+                3 -> "$scoreReason ${Emotes.LoriShrug}"
+                2 -> "$scoreReason ${Emotes.LoriHmpf}"
+                1 -> "$scoreReason ${Emotes.LoriRage}"
                 else -> scoreReason
             }
 
             var strScore = score.toString()
+            var isLoritta = false
+            var isGroovy = false
+
             when (waifuLowerCase) {
                 "loritta", "lori" -> {
                     strScore = "∞"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreLoritta
-                    ).random() + " ${Emotes.loriYay}"
+                    ).random() + " ${Emotes.LoriYay}"
+                    isLoritta = true
                 }
                 "pantufa" -> {
                     strScore = "10"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScorePantufa
-                    ).random() + " ${Emotes.loriHeart}"
+                    ).random() + " ${Emotes.LoriHeart}"
                 }
                 "wumpus" -> {
                     strScore = "∞"
@@ -86,13 +91,13 @@ class RateWaifuExecutor() : CommandExecutor() {
                     strScore = "10"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreDankMemer(typeSingular)
-                    ).random() + " ${Emotes.loriCoffee}"
+                    ).random() + " ${Emotes.LoriCoffee}"
                 }
                 "carl-bot" -> {
                     strScore = "10"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreCarlbot
-                    ).random() + " ${Emotes.loriPat}"
+                    ).random() + " ${Emotes.LoriPat}"
                 }
                 "kuraminha" -> {
                     strScore = "10"
@@ -100,13 +105,13 @@ class RateWaifuExecutor() : CommandExecutor() {
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreKuraminha(
                             typeSingular
                         )
-                    ).random() + " ${Emotes.loriHm}"
+                    ).random() + " ${Emotes.LoriHm}"
                 }
                 "pollux" -> {
                     strScore = "10"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScorePollux
-                    ).random() + " ${Emotes.loriYay}"
+                    ).random() + " ${Emotes.LoriYay}"
                 }
                 "tatsumaki" -> {
                     strScore = "10"
@@ -161,12 +166,13 @@ class RateWaifuExecutor() : CommandExecutor() {
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreGroovy
                     ).random()
+                    isGroovy = true
                 }
                 "lorita", "lorrita" -> {
                     strScore = "-∞"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreLorrita
-                    ).random() + " ${Emotes.loriHmpf}"
+                    ).random() + " ${Emotes.LoriHmpf}"
                 }
             }
 
@@ -181,10 +187,15 @@ class RateWaifuExecutor() : CommandExecutor() {
                 ),
                 prefix = "\uD83E\uDD14"
             )
+
+            if (isLoritta)
+                context.giveAchievement(AchievementType.INFLATED_EGO)
+            if (isGroovy)
+                context.giveAchievement(AchievementType.PRESS_PLAY_TO_PAY_RESPECTS)
         }
     }
 
-    override suspend fun execute(context: CommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
         executeGeneric(
             ContextStringToUserNameConverter.convert(context, args[options.waifu]),
             context,

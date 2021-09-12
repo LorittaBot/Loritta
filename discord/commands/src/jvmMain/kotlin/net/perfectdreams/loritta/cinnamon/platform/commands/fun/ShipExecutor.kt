@@ -8,17 +8,19 @@ import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import net.perfectdreams.discordinteraktions.api.entities.User
 import net.perfectdreams.i18nhelper.core.keydata.ListI18nData
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.ShipCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.executeAndHandleExceptions
+import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emote
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.common.entities.ShipEffect
 import net.perfectdreams.loritta.cinnamon.common.utils.gabrielaimageserver.GabrielaImageServerClient
+import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.ShipCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.executeAndHandleExceptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingShipEffect
 import kotlin.math.absoluteValue
 import kotlin.random.Random
 
@@ -39,7 +41,7 @@ class ShipExecutor(
         private val inputConverter = ShipDiscordMentionInputConverter()
     }
 
-    override suspend fun execute(context: CommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
         context.deferChannelMessage()
 
         val user1 = args[options.user1]
@@ -58,6 +60,10 @@ class ShipExecutor(
         val user1AvatarUrl: String
         val user2AvatarUrl: String
 
+        // If the user that executed the command is in any of the ships, then this will be true
+        // Used for achievements
+        var isShipWithTheSelfUser = false
+
         when (result1) {
             is StringResult -> {
                 user1Id = result1.string.hashCode().toLong()
@@ -65,6 +71,9 @@ class ShipExecutor(
                 user1AvatarUrl = "https://cdn.discordapp.com/embed/avatars/0.png?size=256"
             }
             is UserResult -> {
+                if (result1.user.id == context.user.id)
+                    isShipWithTheSelfUser = true
+
                 user1Id = result1.user.id.value.toLong()
                 user1Name = result1.user.name
                 user1AvatarUrl = result1.user.avatar.url
@@ -83,6 +92,9 @@ class ShipExecutor(
                 user2AvatarUrl = "https://cdn.discordapp.com/embed/avatars/0.png?size=256"
             }
             is UserResult -> {
+                if (result2.user.id == context.user.id)
+                    isShipWithTheSelfUser = true
+
                 user2Id = result2.user.id.value.toLong()
                 user2Name = result2.user.name
                 user2AvatarUrl = result2.user.avatar.url
@@ -104,60 +116,71 @@ class ShipExecutor(
         var isMarried = false
         var isLoveYourself = false
         var isLoritta = false
+        var hasShipEffects = false
         var isLorittaWithShipEffects = false
+        var isNatural100Ship = value == 100
+        var isNatural0Ship = value == 0
 
         // "Loritta will be cancelled on Twitter due to result manipulation, oh no!"
         if (user1Id == user2Id) {
             // Easter Egg: Love Yourself
             value = 100
             isLoveYourself = true
+            isNatural100Ship = false // Not a natural ship
         } else if (user1Id == lorittaId.value.toLong() || user2Id == lorittaId.value.toLong()) {
             // Easter Egg: Shipping you/someone with Loritta
-            val shipEffects = mutableListOf<ShipEffect>()
+            val shipEffects = mutableListOf<PuddingShipEffect>()
 
             if (result1 is UserResult)
-                shipEffects += context.loritta.services.shipEffects.getShipEffectsForUser(user1Id)
+                shipEffects += context.loritta.services.shipEffects.getShipEffectsForUser(UserId(user1Id))
 
             if (result2 is UserResult)
-                shipEffects += context.loritta.services.shipEffects.getShipEffectsForUser(user2Id)
+                shipEffects += context.loritta.services.shipEffects.getShipEffectsForUser(UserId(user2Id))
 
             // TODO: Add RPC call to only get valid (non expired) ship effects
             // TODO: Add RPC call to do what we are doing here in the .firstOrNull { ... } call
             val firstMatchedShipEffect = shipEffects
                 .filter { it.expiresAt > Clock.System.now() }
                 .sortedByDescending { it.id }
-                .firstOrNull { (it.user1 == user1Id && it.user2 == user2Id) || (it.user2 == user1Id && it.user1 == user2Id) }
+                .firstOrNull { (it.user1.value.toLong() == user1Id && it.user2.value.toLong() == user2Id) || (it.user2.value.toLong() == user1Id && it.user1.value.toLong() == user2Id) }
 
-            if (firstMatchedShipEffect != null)
+            if (firstMatchedShipEffect != null) {
                 isLorittaWithShipEffects = true
-            else
+                hasShipEffects = true
+            } else
                 isLoritta = true
 
             value = (seed % 51).absoluteValue.toInt()
+            isNatural0Ship = false // Not a natural ship
         } else if (result1 is UserResult && result2 is UserResult) {
             // We will only check for manipulated values if both users are a UserResult
             // Because we don't need to spend requests by checking if an StringResult has a marriage
-            val user1Marriage = context.loritta.services.marriages.getMarriageByUser(user1Id)
-            val user2Marriage = context.loritta.services.marriages.getMarriageByUser(user2Id)
+            val user1Marriage = context.loritta.services.marriages.getMarriageByUser(UserId(user1Id))
+            val user2Marriage = context.loritta.services.marriages.getMarriageByUser(UserId(user2Id))
 
             // If both users are married, and the marriage ID of both are the same, then it means that they are married together, how cute!
             if (user1Marriage != null && user2Marriage != null && user1Marriage.id == user2Marriage.id) {
                 value = 100 // And also set the value to 100% if they are married
                 isMarried = true
+                isNatural100Ship = false // Not a natural ship
             }
 
             // However ship effects can override the married percentage!
-            val shipEffects = context.loritta.services.shipEffects.getShipEffectsForUser(user1Id) + context.loritta.services.shipEffects.getShipEffectsForUser(user2Id)
+            val shipEffects = context.loritta.services.shipEffects.getShipEffectsForUser(UserId(user1Id)) + context.loritta.services.shipEffects.getShipEffectsForUser(UserId(user2Id))
 
             // TODO: Add RPC call to only get valid (non expired) ship effects
             // TODO: Add RPC call to do what we are doing here in the .firstOrNull { ... } call
             val firstMatchedShipEffect = shipEffects
                 .filter { it.expiresAt > Clock.System.now() }
                 .sortedByDescending { it.id }
-                .firstOrNull { (it.user1 == user1Id && it.user2 == user2Id) || (it.user2 == user1Id && it.user1 == user2Id) }
+                .firstOrNull { (it.user1.value.toLong() == user1Id && it.user2.value.toLong() == user2Id) || (it.user2.value.toLong() == user1Id && it.user1.value.toLong() == user2Id) }
 
-            if (firstMatchedShipEffect != null)
+            if (firstMatchedShipEffect != null) {
                 value = firstMatchedShipEffect.editedShipValue
+                isNatural100Ship = false // Not a natural ship
+                isNatural0Ship = false // Not a natural ship
+                hasShipEffects = true
+            }
         }
 
         val loveTextResults: ListI18nData
@@ -166,39 +189,39 @@ class ShipExecutor(
         when {
             isLorittaWithShipEffects -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScoreLorittaWithShipEffect
-                loveTextEmote = Emotes.loriHmpf
+                loveTextEmote = Emotes.LoriHmpf
             }
             isLoritta -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScoreLoritta
-                loveTextEmote = Emotes.loriShrug
+                loveTextEmote = Emotes.LoriShrug
             }
             isLoveYourself -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScoreLoveYourself
-                loveTextEmote = Emotes.loriSmile
+                loveTextEmote = Emotes.LoriSmile
             }
             isMarried -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScoreMarried
-                loveTextEmote = Emotes.marriageRing
+                loveTextEmote = Emotes.MarriageRing
             }
             value == 100 -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScorePerfect
-                loveTextEmote = Emotes.sparklingHeart
+                loveTextEmote = Emotes.SparklingHeart
             }
             value in 67..99 -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScoreLove
-                loveTextEmote = Emotes.loriHeart
+                loveTextEmote = Emotes.LoriHeart
             }
             value in 34..66 -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScoreShrug
-                loveTextEmote = Emotes.loriShrug
+                loveTextEmote = Emotes.LoriShrug
             }
             value in 1..33 -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScoreSob
-                loveTextEmote = Emotes.loriSob
+                loveTextEmote = Emotes.LoriSob
             }
             value == 0 -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScoreImpossible
-                loveTextEmote = Emotes.loriHmpf
+                loveTextEmote = Emotes.LoriHmpf
             }
             else -> error("Percentage is out of range")
         }
@@ -236,13 +259,28 @@ class ShipExecutor(
         )
 
         context.sendMessage {
-            content = """${Emotes.loriHeartCombo1}${Emotes.loriHeartCombo2} **${context.i18nContext.get(ShipCommand.I18N_PREFIX.NewCouple)}** ${Emotes.loriHeartCombo1}${Emotes.pantufaHeartCombo2}
-                |${Emotes.loriReading} `$user1Name` + `$user2Name` = ${Emotes.sparkles} **`$shipName`** ${Emotes.sparkles}
+            content = """${Emotes.LoriHeartCombo1}${Emotes.LoriHeartCombo2} **${context.i18nContext.get(ShipCommand.I18N_PREFIX.NewCouple)}** ${Emotes.LoriHeartCombo1}${Emotes.PantufaHeartCombo2}
+                |${Emotes.LoriReading} `$user1Name` + `$user2Name` = ${Emotes.Sparkles} **`$shipName`** ${Emotes.Sparkles}
                 |$loveTextEmote $loveTextResult $loveTextEmote
             """.trimMargin()
 
             addFile("ship.png", result.inputStream())
         }
+
+        if (isNatural100Ship)
+            context.giveAchievement(AchievementType.NATURAL_100_SHIP)
+        if (isNatural0Ship)
+            context.giveAchievement(AchievementType.NATURAL_0_SHIP)
+        if (isMarried)
+            context.giveAchievement(AchievementType.MARRIED_SHIP)
+        if (isLoveYourself && isShipWithTheSelfUser)
+            context.giveAchievement(AchievementType.LOVE_YOURSELF)
+        if (hasShipEffects)
+            context.giveAchievement(AchievementType.FISHY_SHIP)
+        if (isLoritta && isShipWithTheSelfUser)
+            context.giveAchievement(AchievementType.FRIENDZONED_BY_LORITTA)
+        if (isLoritta && isShipWithTheSelfUser && hasShipEffects)
+            context.giveAchievement(AchievementType.SABOTAGED_LORITTA_FRIENDZONE)
     }
 
     sealed class ConverterResult
@@ -255,7 +293,7 @@ class ShipExecutor(
         private val userRegex = Regex("<@!?(\\d+)>")
         private val emoteRegex = Regex("<(a)?:([a-zA-Z0-9_]+):([0-9]+)>")
 
-        suspend fun convert(context: CommandContext, input: String): ShipExecutor.ConverterResult {
+        suspend fun convert(context: ApplicationCommandContext, input: String): ShipExecutor.ConverterResult {
             // Check for user mention
             val userMatch = userRegex.matchEntire(input)
             if (userMatch != null) {

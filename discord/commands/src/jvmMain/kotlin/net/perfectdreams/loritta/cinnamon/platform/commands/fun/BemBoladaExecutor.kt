@@ -1,10 +1,10 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`
 
-import net.perfectdreams.discordinteraktions.common.builder.message.create.embed
+import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
 
@@ -193,12 +193,12 @@ class BemBoladaExecutor() : CommandExecutor() {
         "Por que o médico que trabalha de noite usa verde?\n\nÉ porque ele está de plantão.",
         "O que o tomate foi fazer no banco?\n\nFoi tirar o extrato.")
 
-    override suspend fun execute(context: CommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
         context.sendMessage {
             embed {
                 author("Kenji do Loop Infinito", null, "https://loritta.website/assets/img/kenji.jpg")
 
-                description = "${bemBoladas.random()} ${Emotes.loriSmile}"
+                description = "${bemBoladas.random()} ${Emotes.LoriSmile}"
             }
         }
     }
