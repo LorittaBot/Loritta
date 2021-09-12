@@ -17,8 +17,8 @@ class PuddingUserProfile(
     /**
      * Gives an achievement to this user
      *
-     * @param  type the acheviment type
-     * @return if true, the acheviment was successfully given, if false, the user already has the acheviment
+     * @param  type the achievement type
+     * @return if true, the achievement was successfully given, if false, the user already has the achievement
      */
     suspend fun giveAchievement(type: AchievementType, achievedAt: Instant): Boolean = pudding.users.giveAchievement(
         id,

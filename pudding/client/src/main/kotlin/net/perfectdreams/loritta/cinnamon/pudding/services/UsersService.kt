@@ -65,11 +65,11 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
     }
 
     /**
-     * Gives an acheviment to the user
+     * Gives an achievement to the user
      *
      * @param  id the profile's ID
-     * @param  type the acheviment type
-     * @return if true, the acheviment was successfully given, if false, the user already has the acheviment
+     * @param  type the achievement type
+     * @return if true, the achievement was successfully given, if false, the user already has the achievement
      */
     suspend fun giveAchievement(id: UserId, type: AchievementType, achievedAt: Instant): Boolean {
         return pudding.transaction {
@@ -91,10 +91,10 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
     }
 
     /**
-     * Gets acheviments of an user
+     * Gets achievements of a user
      *
      * @param  id the profile's ID
-     * @return the acheviment list
+     * @return the achievement list
      */
     suspend fun getUserAchievements(id: UserId): List<PuddingAchievement> {
         return pudding.transaction {
