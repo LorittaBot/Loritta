@@ -144,11 +144,11 @@ class ShipExecutor(
                 .sortedByDescending { it.id }
                 .firstOrNull { (it.user1.value.toLong() == user1Id && it.user2.value.toLong() == user2Id) || (it.user2.value.toLong() == user1Id && it.user1.value.toLong() == user2Id) }
 
-            if (firstMatchedShipEffect != null) {
-                isLorittaWithShipEffects = true
-                hasShipEffects = true
-            } else
-                isLoritta = true
+            isLoritta = true
+            isLorittaWithShipEffects = true
+            hasShipEffects = true
+
+
 
             value = (seed % 51).absoluteValue.toInt()
             isNatural0Ship = false // Not a natural ship
@@ -241,7 +241,7 @@ class ShipExecutor(
 
         val result = client.executeAndHandleExceptions(
             context,
-                    "/api/v1/images/ship",
+            "/api/v1/images/ship",
             buildJsonObject {
                 putJsonArray("images") {
                     addJsonObject {
@@ -279,7 +279,7 @@ class ShipExecutor(
             context.giveAchievement(AchievementType.FISHY_SHIP)
         if (isLoritta && isShipWithTheSelfUser)
             context.giveAchievement(AchievementType.FRIENDZONED_BY_LORITTA)
-        if (isLoritta && isShipWithTheSelfUser && hasShipEffects)
+        if (isLorittaWithShipEffects && isShipWithTheSelfUser)
             context.giveAchievement(AchievementType.SABOTAGED_LORITTA_FRIENDZONE)
     }
 
