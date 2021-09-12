@@ -145,10 +145,10 @@ class ShipExecutor(
                 .firstOrNull { (it.user1.value.toLong() == user1Id && it.user2.value.toLong() == user2Id) || (it.user2.value.toLong() == user1Id && it.user1.value.toLong() == user2Id) }
 
             isLoritta = true
-            isLorittaWithShipEffects = true
-            hasShipEffects = true
-
-
+            if (firstMatchedShipEffect != null) {
+                isLorittaWithShipEffects = true
+                hasShipEffects = true
+            }
 
             value = (seed % 51).absoluteValue.toInt()
             isNatural0Ship = false // Not a natural ship
