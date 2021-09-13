@@ -313,6 +313,11 @@ fun Permission.localized(locale: BaseLocale): String {
 		VOICE_STREAM -> locale["discord.permissions.voiceStream"]
 		VIEW_GUILD_INSIGHTS -> locale["discord.permissions.viewGuildInsights"]
 		USE_SLASH_COMMANDS -> locale["discord.permissions.useSlashCommands"]
+		MESSAGE_EXT_STICKER -> locale["discord.permissions.messageExtSticker"]
+		MANAGE_THREADS -> locale["discord.permissions.manageThreads"]
+		USE_PUBLIC_THREADS -> locale["discord.permissions.usePublicThreads"]
+		USE_PRIVATE_THREADS -> locale["discord.permissions.usePrivateThreads"]
+		REQUEST_TO_SPEAK -> locale["discord.permissions.requestToSpeak"]
 		UNKNOWN -> "This should never, ever happen!"
 	}
 }
