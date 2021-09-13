@@ -19,6 +19,11 @@ enum class AchievementType(
         I18nKeysData.Achievements.Achievement.Natural0Ship.Title,
         I18nKeysData.Achievements.Achievement.Natural0Ship.Description
     ),
+    NATURAL_69_SHIP(
+        AchievementCategory.SHIP,
+        I18nKeysData.Achievements.Achievement.Natural69Ship.Title,
+        I18nKeysData.Achievements.Achievement.Natural69Ship.Description
+    ),
     MARRIED_SHIP(
         AchievementCategory.SHIP,
         I18nKeysData.Achievements.Achievement.MarriedShip.Title,

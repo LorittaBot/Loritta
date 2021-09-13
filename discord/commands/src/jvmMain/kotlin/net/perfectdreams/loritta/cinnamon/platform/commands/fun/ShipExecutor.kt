@@ -118,15 +118,17 @@ class ShipExecutor(
         var isLoritta = false
         var hasShipEffects = false
         var isLorittaWithShipEffects = false
-        var isNatural100Ship = value == 100
-        var isNatural0Ship = value == 0
+        var isNatural = true
+        val isNatural100Ship = value == 100
+        val isNatural0Ship = value == 0
+        val isNatural69Ship = value == 69
 
         // "Loritta will be cancelled on Twitter due to result manipulation, oh no!"
         if (user1Id == user2Id) {
             // Easter Egg: Love Yourself
             value = 100
             isLoveYourself = true
-            isNatural100Ship = false // Not a natural ship
+            isNatural = false // Not a natural ship
         } else if (user1Id == lorittaId.value.toLong() || user2Id == lorittaId.value.toLong()) {
             // Easter Egg: Shipping you/someone with Loritta
             val shipEffects = mutableListOf<PuddingShipEffect>()
@@ -151,7 +153,7 @@ class ShipExecutor(
             }
 
             value = (seed % 51).absoluteValue.toInt()
-            isNatural0Ship = false // Not a natural ship
+            isNatural = false // Not a natural ship
         } else if (result1 is UserResult && result2 is UserResult) {
             // We will only check for manipulated values if both users are a UserResult
             // Because we don't need to spend requests by checking if an StringResult has a marriage
@@ -162,7 +164,7 @@ class ShipExecutor(
             if (user1Marriage != null && user2Marriage != null && user1Marriage.id == user2Marriage.id) {
                 value = 100 // And also set the value to 100% if they are married
                 isMarried = true
-                isNatural100Ship = false // Not a natural ship
+                isNatural = false // Not a natural ship
             }
 
             // However ship effects can override the married percentage!
@@ -177,8 +179,7 @@ class ShipExecutor(
 
             if (firstMatchedShipEffect != null) {
                 value = firstMatchedShipEffect.editedShipValue
-                isNatural100Ship = false // Not a natural ship
-                isNatural0Ship = false // Not a natural ship
+                isNatural = false // Not a natural ship
                 hasShipEffects = true
             }
         }
@@ -267,10 +268,12 @@ class ShipExecutor(
             addFile("ship.png", result.inputStream())
         }
 
-        if (isNatural100Ship)
+        if (isNatural && isNatural100Ship)
             context.giveAchievement(AchievementType.NATURAL_100_SHIP)
-        if (isNatural0Ship)
+        if (isNatural && isNatural0Ship)
             context.giveAchievement(AchievementType.NATURAL_0_SHIP)
+        if (isNatural && isNatural69Ship)
+            context.giveAchievement(AchievementType.NATURAL_69_SHIP)
         if (isMarried)
             context.giveAchievement(AchievementType.MARRIED_SHIP)
         if (isLoveYourself && isShipWithTheSelfUser)
