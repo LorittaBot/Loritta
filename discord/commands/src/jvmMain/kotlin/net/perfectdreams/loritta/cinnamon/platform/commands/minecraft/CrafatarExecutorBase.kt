@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.minecraft
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.declarations.MinecraftCommand
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
@@ -22,10 +22,10 @@ open class CrafatarExecutorBase(
         override val options = Options
     }
 
-    override suspend fun execute(context: CommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
         val player = args[Options.username]
         val uuid = mojang.getUniqueId(player) ?: context.failEphemerally(
-            prefix = Emotes.error,
+            prefix = Emotes.Error,
             content = context.i18nContext.get(MinecraftCommand.I18N_CATEGORY_PREFIX.UnknownPlayer(player))
         )
 

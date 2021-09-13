@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.cinnamon.platform.commands
 import dev.kord.common.entity.Snowflake
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
+import net.perfectdreams.loritta.cinnamon.common.utils.gabrielaimageserver.GabrielaImageServerClient
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.BemBoladaExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.CancelledExecutor
@@ -103,6 +104,8 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McOfflineU
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McSkinExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McUUIDExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.declarations.MinecraftCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.social.AchievementsExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.AchievementsCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.AnagramExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.CalculatorExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.ChooseExecutor
@@ -125,7 +128,6 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.videos.FansExplainin
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.AttackOnHeartCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.CarlyAaahCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.FansExplainingCommand
-import net.perfectdreams.loritta.cinnamon.common.utils.gabrielaimageserver.GabrielaImageServerClient
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 import kotlin.system.exitProcess
 
@@ -280,6 +282,17 @@ class CommandManager(
 
         // ===[ ECONOMY ]===
         commandManager.register(SonhosCommand, SonhosExecutor())
+
+        // ===[ SOCIAL ]===
+        commandManager.register(
+            AchievementsCommand,
+            AchievementsExecutor()
+        )
+
+        commandManager.register(
+            AchievementsExecutor.ChangeCategoryMenuExecutor,
+            AchievementsExecutor.ChangeCategoryMenuExecutor(loritta)
+        )
 
         // Validate if we don't have more commands than Discord allows
         if (commandManager.declarations.size > 100) {

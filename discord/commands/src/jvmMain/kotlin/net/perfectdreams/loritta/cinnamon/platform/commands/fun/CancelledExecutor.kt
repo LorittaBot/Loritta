@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.CancelledCommand
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.mentionUser
@@ -20,7 +20,7 @@ class CancelledExecutor() : CommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: CommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
         val user = args[options.user]
 
         context.sendMessage {
@@ -32,7 +32,7 @@ class CancelledExecutor() : CommandExecutor() {
                             .random()
                     )
                 ),
-                prefix = Emotes.loriHmpf.toString()
+                prefix = Emotes.LoriHmpf.toString()
             )
         }
     }

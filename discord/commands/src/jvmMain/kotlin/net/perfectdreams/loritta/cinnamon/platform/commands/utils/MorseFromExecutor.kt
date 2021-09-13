@@ -4,7 +4,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.M
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.text.MorseUtils
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
@@ -20,7 +20,7 @@ class MorseFromExecutor(): CommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: CommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
         val text = args[options.textArgument]
 
         when (val fromMorseResult = MorseUtils.fromMorse(text)) {
@@ -31,7 +31,7 @@ class MorseFromExecutor(): CommandExecutor() {
                 context.sendMessage {
                     styled(
                         content = "`$fromMorse`",
-                        prefix = Emotes.radio.toString()
+                        prefix = Emotes.Radio.toString()
                     )
 
                     if (unknownMorseCodes.isNotEmpty()) {
@@ -41,7 +41,7 @@ class MorseFromExecutor(): CommandExecutor() {
                                     unknownMorseCodes.joinToString("")
                                 )
                             ),
-                            prefix = Emotes.loriSob
+                            prefix = Emotes.LoriSob
                         )
                     }
                 }
@@ -49,7 +49,7 @@ class MorseFromExecutor(): CommandExecutor() {
 
             is MorseUtils.InvalidFromMorseConversionResult -> {
                 context.failEphemerally(
-                    prefix = Emotes.error.asMention,
+                    prefix = Emotes.Error.asMention,
                     content = context.i18nContext.get(
                         MorseCommand.I18N_PREFIX.FromMorseFailUnknownMorseCodes
                     )

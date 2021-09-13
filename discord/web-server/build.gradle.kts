@@ -11,30 +11,20 @@ plugins {
 repositories {
     maven("https://repo.perfectdreams.net/")
     maven("https://oss.sonatype.org/content/repositories/snapshots")
-    maven("https://m2.dv8tion.net/releases")
     mavenLocal()
 }
 
 dependencies {
     implementation(project(":common"))
+    implementation(project(":discord:discord-common"))
     implementation(project(":discord:commands"))
-    implementation(project(":services:memory"))
-    implementation(project(":services:pudding"))
-    implementation(project(":discord:common"))
 
     // Discord InteraKTions (Web Server)
-    implementation("net.perfectdreams.discordinteraktions:webserver-ktor-kord:0.0.8-kord-yay-SNAPSHOT")
-    implementation("io.ktor:ktor-server-netty:1.6.0")
+    implementation("net.perfectdreams.discordinteraktions:webserver-ktor-kord:0.0.9-SNAPSHOT")
+    implementation("io.ktor:ktor-server-netty:${Versions.KTOR}")
 
     // Sequins
     api("net.perfectdreams.sequins.ktor:base-route:1.0.2")
-
-    // Prometheus
-    api("io.prometheus:simpleclient:0.10.0")
-    api("io.prometheus:simpleclient_hotspot:0.10.0")
-    api("io.prometheus:simpleclient_common:0.10.0")
-
-    implementation("dev.kord:kord-rest:0.8.x-SNAPSHOT")
 
     // Required for tests, if this is missing then Gradle will throw
     // "No tests found for given includes: [***Test](filter.includeTestsMatching)"

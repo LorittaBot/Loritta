@@ -2,13 +2,13 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.discord
 
 import dev.kord.common.Color
 import dev.kord.rest.service.RestClient
-import net.perfectdreams.discordinteraktions.common.builder.message.create.actionRow
-import net.perfectdreams.discordinteraktions.common.builder.message.create.embed
+import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
+import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
@@ -26,7 +26,7 @@ class UserBannerExecutor(val rest: RestClient) : CommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: CommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
         val user = args[Options.user] ?: context.user
 
         // We need to retrieve from Discord's API to get the banner info
@@ -38,7 +38,7 @@ class UserBannerExecutor(val rest: RestClient) : CommandExecutor() {
                 context.i18nContext.get(
                     I18nKeysData.Commands.Command.User.Banner.UserDoesNotHaveAnBanner(mentionUser(user, false))
                 ),
-                prefix = Emotes.error
+                prefix = Emotes.Error
             )
         }
 

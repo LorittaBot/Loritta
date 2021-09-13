@@ -5,7 +5,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.J
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emote
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
@@ -25,7 +25,7 @@ class JankenponExecutor(val random: Random, ): CommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: CommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
         val argument = args[options.value]
         val janken = Jankenpon.getJanken(argument)
 
@@ -38,23 +38,23 @@ class JankenponExecutor(val random: Random, ): CommandExecutor() {
                 when (status) {
                     Jankenpon.JankenponStatus.WIN -> {
                         append("**${context.i18nContext.get(JankenponCommand.I18N_PREFIX.Win)} ")
-                        append(Emotes.loriWow.asMention + "**")
+                        append(Emotes.LoriWow.asMention + "**")
                     }
                     Jankenpon.JankenponStatus.LOSE -> {
                         append("**${context.i18nContext.get(JankenponCommand.I18N_PREFIX.Lose)} ")
-                        append(Emotes.loriPat.asMention + "**")
+                        append(Emotes.LoriPat.asMention + "**")
                     }
                     Jankenpon.JankenponStatus.DRAW -> {
                         append("**${context.i18nContext.get(JankenponCommand.I18N_PREFIX.Draw)} ")
-                        append(Emotes.loriSmile.asMention + "**")
+                        append(Emotes.LoriSmile.asMention + "**")
                     }
                 }
             }
 
             val jankenPrefix = when (status) {
-                Jankenpon.JankenponStatus.WIN -> Emotes.tada
-                Jankenpon.JankenponStatus.DRAW -> Emotes.whiteFlag
-                Jankenpon.JankenponStatus.LOSE -> Emotes.blackFlag
+                Jankenpon.JankenponStatus.WIN -> Emotes.Tada
+                Jankenpon.JankenponStatus.DRAW -> Emotes.WhiteFlag
+                Jankenpon.JankenponStatus.LOSE -> Emotes.BlackFlag
             }
 
             context.sendMessage {
@@ -67,15 +67,15 @@ class JankenponExecutor(val random: Random, ): CommandExecutor() {
             }
         } else {
             if (argument.equals("jesus", ignoreCase = true)) {
-                val jesus = "${Emotes.jesus} *${context.i18nContext.get(JankenponCommand.I18N_PREFIX.JesusChrist)}* ${Emotes.jesus}"
+                val jesus = "${Emotes.Jesus} *${context.i18nContext.get(JankenponCommand.I18N_PREFIX.JesusChrist)}* ${Emotes.Jesus}"
 
                 context.sendMessage {
                     styled(
-                        prefix = Emotes.whiteFlag,
+                        prefix = Emotes.WhiteFlag,
                         content = context.i18nContext.get(JankenponCommand.I18N_PREFIX.Chosen(jesus, jesus))
                     )
 
-                    styled("**${context.i18nContext.get(JankenponCommand.I18N_PREFIX.MaybeDraw)} ${Emotes.thinking} ${Emotes.shrug}**")
+                    styled("**${context.i18nContext.get(JankenponCommand.I18N_PREFIX.MaybeDraw)} ${Emotes.Thinking} ${Emotes.Shrug}**")
                 }
             }
         }
@@ -99,9 +99,9 @@ class JankenponExecutor(val random: Random, ): CommandExecutor() {
 
         fun getEmoji(): Emote {
             return when (this) {
-                ROCK -> Emotes.rock
-                PAPER -> Emotes.newspaper
-                SCISSORS -> Emotes.scissors
+                ROCK -> Emotes.Rock
+                PAPER -> Emotes.Newspaper
+                SCISSORS -> Emotes.Scissors
             }
         }
 

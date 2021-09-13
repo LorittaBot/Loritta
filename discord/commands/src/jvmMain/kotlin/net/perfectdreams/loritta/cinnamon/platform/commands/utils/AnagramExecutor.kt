@@ -5,7 +5,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.A
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.math.MathUtils
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
@@ -21,7 +21,7 @@ class AnagramExecutor() : CommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: CommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
         val currentWord = args[options.text]
 
         var shuffledChars = currentWord.toCharArray().toList()
@@ -44,7 +44,7 @@ class AnagramExecutor() : CommandExecutor() {
                     AnagramCommand.I18N_PREFIX.Result(
                         shuffledWord
                     )
-                ) + " ${Emotes.loriWow}",
+                ) + " ${Emotes.LoriWow}",
                 prefix = "✍"
             )
 

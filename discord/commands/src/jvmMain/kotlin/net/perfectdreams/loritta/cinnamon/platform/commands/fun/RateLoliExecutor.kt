@@ -1,10 +1,11 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`
 
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.RateCommand
+import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.RateCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
@@ -20,11 +21,11 @@ class RateLoliExecutor() : CommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: CommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
         val strScore = "∞"
         val reason = context.i18nContext.get(
             RateCommand.I18N_PREFIX.WaifuHusbando.ScoreLoritta
-        ).random() + " ${Emotes.loriYay}"
+        ).random() + " ${Emotes.LoriYay}"
 
         context.sendMessage {
             styled(
@@ -44,5 +45,7 @@ class RateLoliExecutor() : CommandExecutor() {
                 prefix = "\uD83E\uDD14"
             )
         }
+
+        context.giveAchievement(AchievementType.WEIRDO)
     }
 }
