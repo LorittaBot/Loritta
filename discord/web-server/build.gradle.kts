@@ -20,7 +20,7 @@ dependencies {
     implementation(project(":discord:commands"))
 
     // Discord InteraKTions (Web Server)
-    implementation("net.perfectdreams.discordinteraktions:webserver-ktor-kord:0.0.9-SNAPSHOT")
+    implementation("net.perfectdreams.discordinteraktions:webserver-ktor-kord:${Versions.DISCORD_INTERAKTIONS}")
     implementation("io.ktor:ktor-server-netty:${Versions.KTOR}")
 
     // Sequins
@@ -63,7 +63,7 @@ jib {
 
 tasks.withType<ShadowJar> {
     manifest {
-        attributes["Main-Class"] = "net.perfectdreams.loritta.cinnamon.platform.webserver.LorittaInteraKTionsLauncher"
+        attributes["Main-Class"] = "net.perfectdreams.loritta.cinnamon.platform.webserver.LorittaCinnamonWebServerLauncher"
     }
 }
 
