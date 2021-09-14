@@ -24,6 +24,18 @@
 <a href="https://loritta.website/support"><img src="https://discordapp.com/api/guilds/297732013006389252/widget.png"></a>
 </p>
 
+## ⚠️ Attention, this is Loritta's "Legacy" branch!
+
+Currently Loritta has two versions:
+* Legacy: The legacy code base, uses JDA and it is a *gigantic* project that became way too messy (heck, just see the `common` and `common-legacy` modules!). This is still being used for everything *except* interactions and slash commands.
+* [Cinnamon](https://github.com/LorittaBot/Loritta/tree/cinnamon): A complete rewrite of Loritta's code base, made with [Discord InteraKTions](https://github.com/LorittaBot/DiscordInteraKTions) and currently it is being used for slash commands.
+
+We are also trying to split up Loritta key features in multiple projects, to help with stability and updates, because no one likes waiting 20+ minutes just to wait for Loritta to update! So, in the future, more projects may be created to help modularize Loritta (example: A project that listens to gateway events, for things like Join/Leave messages!).
+
+If you are looking to help develop Loritta, we recommend taking a look at Loritta's [Cinnamon branch](https://github.com/LorittaBot/Loritta/tree/cinnamon) and helping there, instead of trying to untangle and wasting your time in a branch that, in the future, will be deprecated.
+
+<hr>
+
 All Discord servers have the same problems. Members want entertainment, moderators want automation... and you just want to rest.
 
 Your life is too precious to spend your time with useless junk, let me take care of the boring parts while you have fun on your server!
