@@ -54,7 +54,7 @@ jib {
     }
 
     from {
-        image = "openjdk:15.0.2-slim-buster"
+        image = "openjdk:17-slim-bullseye"
     }
 }
 
