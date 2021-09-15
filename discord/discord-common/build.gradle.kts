@@ -42,6 +42,9 @@ kotlin {
                 api("io.prometheus:simpleclient:${Versions.PROMETHEUS}")
                 api("io.prometheus:simpleclient_hotspot:${Versions.PROMETHEUS}")
                 api("io.prometheus:simpleclient_common:${Versions.PROMETHEUS}")
+
+                // Logback GELF, used for Graylog logging
+                implementation("de.siegmar:logback-gelf:3.0.0")
             }
         }
     }
