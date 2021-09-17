@@ -4,13 +4,13 @@ import kotlinx.serialization.json.addJsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.TerminatorAnimeCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.executeAndHandleExceptions
 import net.perfectdreams.loritta.cinnamon.common.utils.gabrielaimageserver.GabrielaImageServerClient
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.TerminatorAnimeCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.executeAndHandleExceptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
 
 class TerminatorAnimeExecutor(val client: GabrielaImageServerClient) : CommandExecutor() {
@@ -19,7 +19,7 @@ class TerminatorAnimeExecutor(val client: GabrielaImageServerClient) : CommandEx
             val line1 = string("terminator", TerminatorAnimeCommand.I18N_PREFIX.Options.TextTerminator)
                 .register()
 
-            val line2 = optionalString("girl", TerminatorAnimeCommand.I18N_PREFIX.Options.TextGirl)
+            val line2 = string("girl", TerminatorAnimeCommand.I18N_PREFIX.Options.TextGirl)
                 .register()
         }
 
