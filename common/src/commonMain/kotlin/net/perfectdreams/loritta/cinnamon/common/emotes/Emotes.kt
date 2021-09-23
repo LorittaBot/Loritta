@@ -21,6 +21,9 @@ object Emotes {
     val LoriHeartCombo1 = DiscordEmote(728722208825802873, "lori_heart_1", false)
     val LoriHeartCombo2 = DiscordEmote(728722238924128257, "lori_heart_2", false)
     val PantufaHeartCombo2 = DiscordEmote(853048446666801202, "pantufa_heart2", false)
+    val LoriBlackAndWhite = DiscordEmote(890738812538478643L, "lori_bw", false)
+    val LoriGrayscale = DiscordEmote(890738824748093490L, "lori_grayscale", false)
+    val LoriColored = DiscordEmote(890738873242632192L, "lori", false)
 
     val Error = DiscordEmote(412585701054611458L, "error", false)
 
@@ -40,4 +43,35 @@ object Emotes {
     val MarriageRing = UnicodeEmote("\uD83D\uDC8D")
     val SparklingHeart = UnicodeEmote("\uD83D\uDC96")
     val Radio = UnicodeEmote("\uD83D\uDCFB")
+
+    val Undertale = DiscordEmote(412576128340066304L, "undertale_heart", false)
+    val Deltarune = DiscordEmote(889958066362155008L, "deltarune", false)
+
+    val OriginalBox = DiscordEmote(890643062999646248L, "original_box", false)
+    val DarkWorldBox = DiscordEmote(890642692105703433L, "dark_world_box", false)
+
+    val DeltaruneSavePoint = DiscordEmote(890646948267319346L, "dr_save_point", true)
+    val UndertaleSavePoint = DiscordEmote(890648332152766505L, "ut_save_point", true)
+
+    val AnnoyingDog = DiscordEmote(890683694791151627L, "annoying_dog", true)
+
+    val DeltaruneBerdlyNeutral = DiscordEmote(890604048665948190L, "dr_berdly_neutral", false)
+    val DeltaruneBerdlyDarkWorldNeutral = DiscordEmote(890608351740842005L, "dr_berdly_dw_neutral", false)
+    val DeltaruneNoelleNeutral = DiscordEmote(890624508619288586L, "dr_berdly_dw_neutral", false)
+    val DeltaruneLancerNeutral = DiscordEmote(890624528970027080L, "dr_berdly_dw_neutral", false)
+    val DeltaruneQueenNeutral = DiscordEmote(890624486712422510L, "dr_berdly_dw_neutral", false)
+    val DeltaruneSusieNeutral = DiscordEmote(890624469217984554L, "dr_berdly_dw_neutral", false)
+    val DeltaruneAlphysNeutral = DiscordEmote(890624549081731162L, "dr_berdly_dw_neutral", false)
+    val DeltaruneRalseiWithHatNeutral = DiscordEmote(890624447269179464L, "dr_berdly_dw_neutral", false)
+    val DeltaruneRalseiNeutral = DiscordEmote(890624421604253746L, "dr_ralsei_neutral", false)
+
+    val UndertaleAlphysNeutral = DiscordEmote(890641011502645278L, "ut_alphys_neutral", false)
+    val UndertaleFloweyNeutral = DiscordEmote(890641122739777588L, "ut_flowey_neutral", false)
+    val UndertaleMettatonExNeutral = DiscordEmote(890641215098339360L, "ut_mettaton_ex_neutral", false)
+    val UndertalePapyrusNeutral = DiscordEmote(890641301295472710L, "ut_papyrus_neutral", false)
+    val UndertaleSansNeutral = DiscordEmote(890638653875974236L, "ut_sans_neutral", false)
+    val UndertaleTorielNeutral = DiscordEmote(890641427678261298L, "ut_toriel_neutral", false)
+    val UndertaleUndyneNeutral = DiscordEmote(890641629520740362L, "ut_undyne_neutral", false)
+    val UndertaleAsgoreNeutral = DiscordEmote(890641728313368596L, "ut_asgore_neutral", false)
+    val UndertaleAsrielNeutral = DiscordEmote(890641811771646015L, "ut_asriel_neutral", false)
 }

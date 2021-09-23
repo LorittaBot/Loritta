@@ -5,8 +5,6 @@ import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.commands.CommandRegistry
 import net.perfectdreams.discordinteraktions.common.commands.slash.SlashCommandExecutor
-import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickExecutor
-import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickExecutorDeclaration
 import net.perfectdreams.discordinteraktions.declarations.commands.SlashCommandDeclaration
 import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCommandDeclarationBuilder
 import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCommandExecutorDeclaration
@@ -18,6 +16,9 @@ import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandDeclarationBuilder
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.components.buttons.ButtonClickExecutor
+import net.perfectdreams.loritta.cinnamon.platform.components.buttons.ButtonClickExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.components.buttons.ButtonClickExecutorWrapper
 import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuWithDataExecutor
@@ -39,13 +40,17 @@ class CommandRegistry(
     val selectMenusDeclarations = mutableListOf<SelectMenuExecutorDeclaration>()
     val selectMenusExecutors = mutableListOf<SelectMenuExecutor>()
 
+    val buttonsDeclarations = mutableListOf<ButtonClickExecutorDeclaration>()
+    val buttonsExecutors = mutableListOf<ButtonClickExecutor>()
+
     fun register(declaration: CommandDeclaration, vararg executors: CommandExecutor) {
         declarations.add(declaration.declaration())
         this.executors.addAll(executors)
     }
 
     fun register(declaration: ButtonClickExecutorDeclaration, executor: ButtonClickExecutor) {
-        interaKTionsManager.register(declaration, executor)
+        buttonsDeclarations.add(declaration)
+        buttonsExecutors.add(executor)
     }
 
     fun register(declaration: SelectMenuExecutorDeclaration, executor: SelectMenuExecutor) {
@@ -56,6 +61,7 @@ class CommandRegistry(
     suspend fun convertToInteraKTions(locale: I18nContext) {
         convertCommandsToInteraKTions(locale)
         convertSelectMenusToInteraKTions()
+        convertButtonsToInteraKTions()
 
         if (loritta.interactionsConfig.registerGlobally) {
             interaKTionsRegistry.updateAllGlobalCommands(true)
@@ -91,7 +97,7 @@ class CommandRegistry(
 
         for (declaration in selectMenusDeclarations) {
             val executor = selectMenusExecutors.firstOrNull { declaration.parent == it::class }
-                ?: throw UnsupportedOperationException("The select menu executor wasn't found! Did you register the command executor?")
+                ?: throw UnsupportedOperationException("The select menu executor wasn't found! Did you register the select menu executor?")
 
             if (executor is SelectMenuWithDataExecutor) {
                 val rootSignature = signatureIndex.getAndIncrement()
@@ -103,14 +109,44 @@ class CommandRegistry(
                     rootSignature
                 )
 
-                val interaKTionsExecutorDeclaration = object : net.perfectdreams.discordinteraktions.common.components.selects.SelectMenuExecutorDeclaration(rootSignature,
-                    declaration.id.value) {}
+                val interaKTionsExecutorDeclaration = object : net.perfectdreams.discordinteraktions.common.components.selects.SelectMenuExecutorDeclaration(
+                    rootSignature,
+                    declaration.id.value
+                ) {}
 
                 interaKTionsManager.register(
                     interaKTionsExecutorDeclaration,
                     interaKTionsExecutor
                 )
             }
+        }
+    }
+
+    private fun convertButtonsToInteraKTions() {
+        val signatureIndex = AtomicInteger()
+
+        for (declaration in buttonsDeclarations) {
+            val executor = buttonsExecutors.firstOrNull { declaration.parent == it::class }
+                ?: throw UnsupportedOperationException("The button click executor wasn't found! Did you register the button click executor?")
+
+            val rootSignature = signatureIndex.getAndIncrement()
+
+            val interaKTionsExecutor = ButtonClickExecutorWrapper(
+                loritta,
+                declaration,
+                executor,
+                rootSignature
+            )
+
+            val interaKTionsExecutorDeclaration = object : net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickExecutorDeclaration(
+                rootSignature,
+                declaration.id.value
+            ) {}
+
+            interaKTionsManager.register(
+                interaKTionsExecutorDeclaration,
+                interaKTionsExecutor
+            )
         }
     }
 
@@ -147,7 +183,7 @@ class CommandRegistry(
     ): SlashCommandDeclaration {
         if (declarationExecutor != null) {
             val executor = executors.firstOrNull { declarationExecutor.parent == it::class }
-                ?: throw UnsupportedOperationException("The command executor wasn't found! Did you register the command executor?")
+                ?: throw UnsupportedOperationException("The command executor ${declarationExecutor.parent} wasn't found! Did you register the command executor?")
             val rootSignature = signature.getAndIncrement()
 
             val interaKTionsExecutor = SlashCommandExecutorWrapper(

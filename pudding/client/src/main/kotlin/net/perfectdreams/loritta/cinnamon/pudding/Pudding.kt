@@ -7,12 +7,14 @@ import io.zonky.test.db.postgres.embedded.EmbeddedPostgres
 import kotlinx.coroutines.Dispatchers
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
+import net.perfectdreams.loritta.cinnamon.pudding.services.InteractionsDataService
 import net.perfectdreams.loritta.cinnamon.pudding.services.MarriagesService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ServerConfigsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ShipEffectsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.SonhosService
 import net.perfectdreams.loritta.cinnamon.pudding.services.UsersService
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
+import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
@@ -126,6 +128,7 @@ open class Pudding(private val database: Database) {
     val sonhos = SonhosService(this)
     val shipEffects = ShipEffectsService(this)
     val marriages = MarriagesService(this)
+    val interactionsData = InteractionsDataService(this)
 
     /**
      * Creates missing tables and columns in the database.
@@ -147,7 +150,8 @@ open class Pudding(private val database: Database) {
             ServerConfigs,
             ShipEffects,
             Marriages,
-            UserAchievements
+            UserAchievements,
+            InteractionsData
         )
 
         if (schemas.isNotEmpty())

@@ -4,26 +4,26 @@ import kotlinx.serialization.json.addJsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.MemeMakerCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.executeAndHandleExceptions
 import net.perfectdreams.loritta.cinnamon.common.utils.gabrielaimageserver.GabrielaImageServerClient
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
+import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.MemeMakerCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.executeAndHandleExceptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 
 class MemeMakerExecutor(val client: GabrielaImageServerClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(MemeMakerExecutor::class) {
         object Options : CommandOptions() {
+            val imageReference = imageReference("image", I18nKeysData.Commands.Category.Images.Options.Image)
+                .register()
+
             val line1 = string("line1", MemeMakerCommand.I18N_PREFIX.Options.Line1)
                 .register()
 
             val line2 = optionalString("line2", MemeMakerCommand.I18N_PREFIX.Options.Line2)
-                .register()
-
-            val imageReference = imageReference("image", I18nKeysData.Commands.Category.Images.Options.Image)
                 .register()
         }
 
