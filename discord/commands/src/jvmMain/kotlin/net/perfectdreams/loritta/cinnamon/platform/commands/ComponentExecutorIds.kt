@@ -10,6 +10,12 @@ object ComponentExecutorIds {
     // All component executors can have any character from A-z0-9
     // This means that we can have 1185921 executors, which should be enough :)
     val CHANGE_CATEGORY_MENU_EXECUTOR = register("0000")
+    val PORTRAIT_SELECT_MENU_EXECUTOR = register("0001")
+    val CHANGE_TOBY_CHARACTER_MENU_EXECUTOR = register("0002")
+    val CHANGE_DIALOG_BOX_TYPE_BUTTON_EXECUTOR = register("0003")
+    val CHANGE_UNIVERSE_SELECT_MENU_EXECUTOR = register("0004")
+    val CONFIRM_DIALOG_BOX_BUTTON_EXECUTOR = register("0005")
+    val CHANGE_COLOR_PORTRAIT_TYPE_BUTTON_EXECUTOR = register("0006")
 
     /**
      * Verifies if the [id] matches our constraints

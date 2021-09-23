@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands
 
-import net.perfectdreams.discordinteraktions.common.builder.message.create.MessageCreateBuilder
+import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emote
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.entities.LorittaReply
@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.cinnamon.common.entities.LorittaReply
  *
  * @param content the already built LorittaReply
  */
-fun MessageCreateBuilder.styled(content: String, prefix: Emote) = styled(content, prefix.asMention)
+fun MessageBuilder.styled(content: String, prefix: Emote) = styled(content, prefix.asMention)
 
 /**
  * Appends a Loritta-styled formatted message to the builder's message content.
@@ -26,7 +26,7 @@ fun MessageCreateBuilder.styled(content: String, prefix: Emote) = styled(content
  * @param content the content of the message
  * @param prefix  the prefix of the message
  */
-fun MessageCreateBuilder.styled(content: String, prefix: String = Emotes.DefaultStyledPrefix.asMention) = styled(LorittaReply(content, prefix))
+fun MessageBuilder.styled(content: String, prefix: String = Emotes.DefaultStyledPrefix.asMention) = styled(LorittaReply(content, prefix))
 
 /**
  * Appends a Loritta-styled formatted message to the builder's message content.
@@ -37,7 +37,7 @@ fun MessageCreateBuilder.styled(content: String, prefix: String = Emotes.Default
  *
  * @param content the already built LorittaReply
  */
-fun MessageCreateBuilder.styled(reply: LorittaReply) {
+fun MessageBuilder.styled(reply: LorittaReply) {
     if (content != null) {
         content += "\n"
         content += "${reply.prefix} **|** ${reply.content}"

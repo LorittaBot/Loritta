@@ -15,8 +15,6 @@ import kotlinx.serialization.protobuf.ProtoBuf
  *
  * The reason [Ecoji] is used instead of Base64 is because Discord does not check the length of the String,
  * it checks the amount of codepoints.
- *
- * TODO: aaa
  */
 object ComponentDataUtils {
     inline fun <reified T> encode(data: T) = Ecoji.getEncoder()

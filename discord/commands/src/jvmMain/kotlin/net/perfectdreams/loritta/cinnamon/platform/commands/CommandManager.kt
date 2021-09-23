@@ -106,6 +106,15 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McUUIDExec
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.declarations.MinecraftCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.AchievementsExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.AchievementsCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.CustomTextBoxExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.TextBoxExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.declarations.UndertaleCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.ChangeCharacterSelectMenuExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.ChangeColorPortraitTypeButtonClickExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.ChangeDialogBoxTypeButtonClickExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.ChangeUniverseSelectMenuExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.ConfirmDialogBoxButtonClickExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.PortraitSelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.AnagramExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.CalculatorExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.ChooseExecutor
@@ -292,6 +301,43 @@ class CommandManager(
         commandManager.register(
             AchievementsExecutor.ChangeCategoryMenuExecutor,
             AchievementsExecutor.ChangeCategoryMenuExecutor(loritta)
+        )
+
+        // ===[ UNDERTALE ]===
+        commandManager.register(
+            UndertaleCommand,
+            CustomTextBoxExecutor(gabrielaImageServerClient),
+            TextBoxExecutor(gabrielaImageServerClient),
+        )
+
+        commandManager.register(
+            PortraitSelectMenuExecutor,
+            PortraitSelectMenuExecutor(loritta, gabrielaImageServerClient)
+        )
+
+        commandManager.register(
+            ChangeUniverseSelectMenuExecutor,
+            ChangeUniverseSelectMenuExecutor(loritta, gabrielaImageServerClient)
+        )
+
+        commandManager.register(
+            ChangeCharacterSelectMenuExecutor,
+            ChangeCharacterSelectMenuExecutor(loritta, gabrielaImageServerClient)
+        )
+
+        commandManager.register(
+            ChangeDialogBoxTypeButtonClickExecutor,
+            ChangeDialogBoxTypeButtonClickExecutor(loritta, gabrielaImageServerClient)
+        )
+
+        commandManager.register(
+            ConfirmDialogBoxButtonClickExecutor,
+            ConfirmDialogBoxButtonClickExecutor(loritta, gabrielaImageServerClient)
+        )
+
+        commandManager.register(
+            ChangeColorPortraitTypeButtonClickExecutor,
+            ChangeColorPortraitTypeButtonClickExecutor(loritta, gabrielaImageServerClient)
         )
 
         // Validate if we don't have more commands than Discord allows
