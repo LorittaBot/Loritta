@@ -54,3 +54,7 @@ achievements:
     weirdo:
       title: "Are you... a weirdo?"
       description: "Rate... or well, try to, rate a child"
+
+    isThatAnUndertaleReference:
+      title: "Is that an Undertale reference???"
+      description: "View your own avatar"
