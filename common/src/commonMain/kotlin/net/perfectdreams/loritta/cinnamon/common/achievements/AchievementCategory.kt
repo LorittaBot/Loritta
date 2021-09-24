@@ -23,5 +23,11 @@ enum class AchievementCategory(
         I18nKeysData.Achievements.Category.Rate.Description("/rate"),
         Emotes.LoriReading,
         Color(127, 0, 255)
+    ),
+    MISCELLANEOUS(
+        I18nKeysData.Achievements.Category.Miscellaneous.Title,
+        I18nKeysData.Achievements.Category.Miscellaneous.Description,
+        Emotes.Infinity,
+        Color(59, 148, 217)
     )
 }
