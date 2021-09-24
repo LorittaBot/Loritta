@@ -136,6 +136,7 @@ class AchievementsExecutor : CommandExecutor() {
 
                         insertOption(AchievementCategory.SHIP)
                         insertOption(AchievementCategory.RATE)
+                        insertOption(AchievementCategory.MISCELLANEOUS)
                     }
                 }
             }
