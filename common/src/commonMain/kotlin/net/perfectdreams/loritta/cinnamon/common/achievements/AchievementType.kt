@@ -65,5 +65,12 @@ enum class AchievementType(
         AchievementCategory.RATE,
         I18nKeysData.Achievements.Achievement.Weirdo.Title,
         I18nKeysData.Achievements.Achievement.Weirdo.Description
+    ),
+
+    // ===[ MISCELLANEOUS ]===
+    IS_THAT_AN_UNDERTALE_REFERENCE(
+        AchievementCategory.MISCELLANEOUS,
+        I18nKeysData.Achievements.Achievement.IsThatAnUndertaleReference.Title,
+        I18nKeysData.Achievements.Achievement.IsThatAnUndertaleReference.Description
     )
 }

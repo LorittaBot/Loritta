@@ -5,9 +5,10 @@ import dev.kord.common.entity.Snowflake
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.footer
+import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
@@ -81,5 +82,8 @@ class UserAvatarExecutor(val lorittaId: Snowflake) : CommandExecutor() {
                 }
             }
         }
+
+        if (user.id == context.user.id)
+            context.giveAchievement(AchievementType.IS_THAT_AN_UNDERTALE_REFERENCE)
     }
 }
