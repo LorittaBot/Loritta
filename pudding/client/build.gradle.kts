@@ -18,6 +18,8 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-java-time:${Versions.EXPOSED}")
     implementation("org.postgresql:postgresql:42.2.23")
     implementation("io.zonky.test:embedded-postgres:1.3.1")
+    // Because we want to use PostgreSQL 13
+    implementation(enforcedPlatform("io.zonky.test.postgres:embedded-postgres-binaries-bom:13.4.0"))
     implementation("com.zaxxer:HikariCP:5.0.0")
 
     // Required for tests, if this is missing then Gradle will throw
