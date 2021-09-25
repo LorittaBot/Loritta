@@ -1,9 +1,10 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.utils
 
+import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.math.MathUtils
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
@@ -62,6 +63,9 @@ class CalculatorExecutor() : CommandExecutor() {
                 ),
                 prefix = Emotes.LoriReading
             )
+
+            if (expression.replace(" ", "") == "1+1")
+                context.giveAchievement(AchievementType.ONE_PLUS_ONE_CALCULATION)
         } catch (e: Exception) {
             // TODO: Fix stripCodeMarks
             context.failEphemerally(
