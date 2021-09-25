@@ -195,7 +195,7 @@ open class Pudding(private val database: Database) {
                     commit()
                 }
 
-                // Now call the addMissingColumnsStatements again with the partitoned tables
+                // Now call the addMissingColumnsStatements again with the partitioned tables
                 // We can not use createMissingTablesAndColumns here because Exposed will think that the table does not exist
                 // because it is a partitioned table!
                 if (ExecutedApplicationCommandsLog in schemas) {
