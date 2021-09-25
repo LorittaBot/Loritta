@@ -55,6 +55,10 @@ achievements:
       title: "Are you... a weirdo?"
       description: "Rate... or well, try to, rate a child"
 
+    # ===[ MISC ]===
     isThatAnUndertaleReference:
       title: "Is that an Undertale reference???"
       description: "View your own avatar"
+    onePlusOneCalculation:
+      title: "I just wanted to be sure that I was right!"
+      description: "Calculate the world's easiest calculation, juuuust to be sure that math didn't change overnight"
