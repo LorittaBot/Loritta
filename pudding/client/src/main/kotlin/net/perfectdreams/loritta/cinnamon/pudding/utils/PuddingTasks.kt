@@ -14,6 +14,13 @@ class PuddingTasks(private val pudding: Pudding) {
             1L,
             TimeUnit.DAYS
         )
+
+        executorService.scheduleWithFixedDelay(
+            AutoExpireInteractionsData(pudding),
+            0L,
+            1L,
+            TimeUnit.MINUTES
+        )
     }
 
     fun shutdown() {

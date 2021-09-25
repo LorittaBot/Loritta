@@ -23,7 +23,7 @@ class AutoExpireInteractionsData(private val pudding: Pudding) : Runnable {
 
             val now = LocalDate.now(TIME_ZONE)
 
-            runBlocking {
+            val count = runBlocking {
                 pudding.transaction {
                     InteractionsData.deleteWhere {
                         InteractionsData.expiresAt less now
@@ -31,7 +31,7 @@ class AutoExpireInteractionsData(private val pudding: Pudding) : Runnable {
                 }
             }
 
-            logger.info { "Successfully expired old interactions data!" }
+            logger.info { "Successfully expired $count old interactions data!" }
         } catch (e: Exception) {
             logger.warn(e) { "Somethign went wrong while expiring interactions data!" }
         }
