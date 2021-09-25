@@ -176,7 +176,7 @@ open class Pudding(private val database: Database) {
                 createOrUpdatePostgreSQLEnum(AchievementType.values())
                 createOrUpdatePostgreSQLEnum(ApplicationCommandType.values())
 
-                logger.info { "Schemas: $schemas" }
+                logger.info { "Tables to be created or updated: $schemas" }
                 SchemaUtils.createMissingTablesAndColumns(
                     *schemas
                         .toMutableList()
@@ -187,13 +187,11 @@ open class Pudding(private val database: Database) {
 
                 // This is a workaround because Exposed does not support (yet) Partitioned Tables
                 if (ExecutedApplicationCommandsLog in schemas) {
-                    logger.info { "Creating ExecutedApplicationCommandsLog table..." }
                     // The reason we use partitioned tables for the ExecutedApplicationCommandsLog table, is because there is a LOT of commands there
                     // Removing old logs is painfully slow due to vacuuming and stuff, querying recent commands is also pretty slow.
                     // So it is better to split stuff up in separate partitions!
                     val createStatements = createStatementsPartitioned(ExecutedApplicationCommandsLog, "RANGE(sent_at)")
 
-                    logger.info { "Create statements: $createStatements" }
                     execStatements(false, createStatements)
                     commit()
                 }
@@ -202,12 +200,10 @@ open class Pudding(private val database: Database) {
                 // We can not use createMissingTablesAndColumns here because Exposed will think that the table does not exist
                 // because it is a partitioned table!
                 if (ExecutedApplicationCommandsLog in schemas) {
-                    logger.info { "Alter statements..." }
                     val alterStatements = SchemaUtils.addMissingColumnsStatements(
                         ExecutedApplicationCommandsLog
                     )
 
-                    logger.info { "Alter statements: $alterStatements" }
                     execStatements(false, alterStatements)
                     commit()
                 }
@@ -248,7 +244,7 @@ open class Pudding(private val database: Database) {
 
     // From Exposed, this is the "createStatements" method but with a few changes
     private fun Transaction.createStatementsPartitioned(table: Table, partitionBySuffix: String): List<String> {
-        if (checkIfTableExists(table).also { logger.info { "Does table exist?" }})
+        if (checkIfTableExists(table))
             return emptyList()
 
         val alters = arrayListOf<String>()
