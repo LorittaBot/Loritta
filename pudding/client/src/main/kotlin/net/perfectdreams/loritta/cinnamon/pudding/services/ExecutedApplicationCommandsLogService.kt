@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.cinnamon.pudding.services
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaInstant
 import kotlinx.serialization.json.JsonObject
+import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
 import org.jetbrains.exposed.sql.insertAndGetId
@@ -13,6 +14,7 @@ class ExecutedApplicationCommandsLogService(private val pudding: Pudding) : Serv
         guildId: Long?,
         channelId: Long,
         sentAt: Instant,
+        type: ApplicationCommandType,
         declaration: String,
         executor: String,
         options: JsonObject,
@@ -26,6 +28,7 @@ class ExecutedApplicationCommandsLogService(private val pudding: Pudding) : Serv
                 it[ExecutedApplicationCommandsLog.guildId] = guildId
                 it[ExecutedApplicationCommandsLog.channelId] = channelId
                 it[ExecutedApplicationCommandsLog.sentAt] = sentAt.toJavaInstant()
+                it[ExecutedApplicationCommandsLog.type] = type
                 it[ExecutedApplicationCommandsLog.declaration] = declaration
                 it[ExecutedApplicationCommandsLog.executor] = executor
                 it[ExecutedApplicationCommandsLog.options] = options.toString()

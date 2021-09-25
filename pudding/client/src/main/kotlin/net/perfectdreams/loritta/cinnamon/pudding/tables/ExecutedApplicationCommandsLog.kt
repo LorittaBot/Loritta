@@ -1,17 +1,20 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables
 
+import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.jsonb
+import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.postgresEnumeration
 import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.`java-time`.timestamp
 
 object ExecutedApplicationCommandsLog : LongIdTable() {
-    val userId = long("user")
+    val userId = long("user").index()
     val guildId = long("guild").nullable()
     val channelId = long("channel")
-    val sentAt = timestamp("sent_at")
+    val sentAt = timestamp("sent_at").index()
 
-    val declaration = text("declaration")
-    val executor = text("executor")
+    val type = postgresEnumeration<ApplicationCommandType>("type").index()
+    val declaration = text("declaration").index()
+    val executor = text("executor").index()
     val options = jsonb("options")
     val success = bool("success")
     val latency = double("latency")

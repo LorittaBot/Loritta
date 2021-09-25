@@ -10,6 +10,7 @@ import net.perfectdreams.discordinteraktions.common.context.commands.Application
 import net.perfectdreams.discordinteraktions.common.context.commands.GuildApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.context.commands.slash.SlashCommandArguments
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.images.ImageReference
 import net.perfectdreams.loritta.cinnamon.common.images.URLImageReference
@@ -305,6 +306,7 @@ class SlashCommandExecutorWrapper(
             guildId?.value?.toLong(),
             context.channelId.value.toLong(),
             Clock.System.now(),
+            ApplicationCommandType.CHAT_INPUT,
             rootDeclarationClazzName!!,
             executorClazzName!!,
             buildJsonWithArguments(cinnamonArgs),
