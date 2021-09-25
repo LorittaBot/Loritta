@@ -5,7 +5,7 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
 import org.jetbrains.exposed.sql.deleteWhere
-import java.time.LocalDate
+import java.time.Instant
 import java.time.ZoneOffset
 
 /**
@@ -14,14 +14,13 @@ import java.time.ZoneOffset
 class AutoExpireInteractionsData(private val pudding: Pudding) : Runnable {
     companion object {
         private val logger = KotlinLogging.logger {}
-        private val TIME_ZONE = ZoneOffset.UTC
     }
 
     override fun run() {
         try {
             logger.info { "Removing already expired interactions data..." }
 
-            val now = LocalDate.now(TIME_ZONE)
+            val now = Instant.now()
 
             val count = runBlocking {
                 pudding.transaction {
