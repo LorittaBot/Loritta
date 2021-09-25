@@ -7,6 +7,7 @@ import io.zonky.test.db.postgres.embedded.EmbeddedPostgres
 import kotlinx.coroutines.Dispatchers
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
+import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.pudding.services.ExecutedApplicationCommandsLogService
 import net.perfectdreams.loritta.cinnamon.pudding.services.InteractionsDataService
 import net.perfectdreams.loritta.cinnamon.pudding.services.MarriagesService
@@ -32,9 +33,9 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.Transaction
-import org.jetbrains.exposed.sql.exists
 import org.jetbrains.exposed.sql.transactions.DEFAULT_REPETITION_ATTEMPTS
 import org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManager
+import org.jetbrains.exposed.sql.transactions.TransactionManager
 
 open class Pudding(private val database: Database) {
     companion object {
@@ -154,7 +155,8 @@ open class Pudding(private val database: Database) {
      */
     suspend fun createMissingTablesAndColumns(shouldBeUpdated: (String) -> Boolean) {
         val schemas = mutableListOf<Table>()
-        fun insertIfValid(vararg tables: Table) = schemas.addAll(tables.filter { shouldBeUpdated.invoke(it::class.simpleName!!) })
+        fun insertIfValid(vararg tables: Table) =
+            schemas.addAll(tables.filter { shouldBeUpdated.invoke(it::class.simpleName!!) })
         insertIfValid(
             Sets,
             ProfileDesigns,
@@ -172,6 +174,7 @@ open class Pudding(private val database: Database) {
         if (schemas.isNotEmpty())
             transaction {
                 createOrUpdatePostgreSQLEnum(AchievementType.values())
+                createOrUpdatePostgreSQLEnum(ApplicationCommandType.values())
 
                 SchemaUtils.createMissingTablesAndColumns(
                     *schemas
@@ -192,12 +195,17 @@ open class Pudding(private val database: Database) {
                     commit()
                 }
 
-                // Now call the createMissingTablesAndColumns again with the partitoned tables
-                // Exposed will detect that the table exists and will only alter things, which is possible in a partitioned table :)
-                SchemaUtils.createMissingTablesAndColumns(
-                    *schemas.filter { it == ExecutedApplicationCommandsLog }
-                        .toTypedArray()
-                )
+                // Now call the addMissingColumnsStatements again with the partitoned tables
+                // We can not use createMissingTablesAndColumns here because Exposed will think that the table does not exist
+                // because it is a partitioned table!
+                if (ExecutedApplicationCommandsLog in schemas) {
+                    val alterStatements = SchemaUtils.addMissingColumnsStatements(
+                        ExecutedApplicationCommandsLog
+                    )
+
+                    execStatements(false, alterStatements)
+                    commit()
+                }
             }
     }
 
@@ -212,9 +220,30 @@ open class Pudding(private val database: Database) {
         }
     }
 
+
+    // This is a workaround because "Table.exists()" does not work for partitioned tables!
+    private fun Transaction.checkIfTableExists(table: Table): Boolean {
+        val tableScheme = table.tableName.substringBefore('.', "").takeIf { it.isNotEmpty() }
+        val schema = tableScheme?.inProperCase() ?: TransactionManager.current().connection.metadata { currentScheme }
+
+        return exec("SELECT EXISTS (\n" +
+                "   SELECT FROM information_schema.tables \n" +
+                "   WHERE  table_schema = '$schema'\n" +
+                "   AND    table_name   = '${table.tableName}'\n" +
+                "   )") {
+            it.next()
+            it.getBoolean(1) // It should always be the first column, right?
+        } ?: false
+    }
+
+    // From Exposed
+    private fun String.inProperCase(): String =
+        TransactionManager.currentOrNull()?.db?.identifierManager?.inProperCase(this@inProperCase) ?: this
+
+
     // From Exposed, this is the "createStatements" method but with a few changes
-    private fun createStatementsPartitioned(table: Table, partitionBySuffix: String): List<String> {
-        if (table.exists())
+    private fun Transaction.createStatementsPartitioned(table: Table, partitionBySuffix: String): List<String> {
+        if (checkIfTableExists(table))
             return emptyList()
 
         val alters = arrayListOf<String>()
