@@ -6,7 +6,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
 import org.jetbrains.exposed.sql.deleteWhere
 import java.time.Instant
-import java.time.ZoneOffset
 
 /**
  * Automatically expires old interactions data from the database, based on the [InteractionsData.expiresAt] field.
