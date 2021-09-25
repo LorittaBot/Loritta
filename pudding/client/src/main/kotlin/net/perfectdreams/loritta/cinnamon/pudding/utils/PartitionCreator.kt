@@ -34,7 +34,7 @@ class PartitionCreator(private val pudding: Pudding) : Runnable {
 
             logger.info { "Successfully created partition tables!" }
         } catch (e: Exception) {
-            logger.warn(e) { "Somethign went wrong while creating partitions!" }
+            logger.warn(e) { "Something went wrong while creating partitions!" }
         }
     }
 

@@ -33,7 +33,7 @@ class AutoExpireInteractionsData(private val pudding: Pudding) : Runnable {
 
             logger.info { "Successfully expired $count old interactions data!" }
         } catch (e: Exception) {
-            logger.warn(e) { "Somethign went wrong while expiring interactions data!" }
+            logger.warn(e) { "Something went wrong while expiring interactions data!" }
         }
     }
 }
