@@ -52,7 +52,7 @@ object LorittaCinnamonGatewayLauncher {
         Runtime.getRuntime().addShutdownHook(
             thread(false) {
                 // Shutdown services when stopping the application
-                // This is needed for the Embedded PostgreSQL
+                // This is needed for the Embedded PostgreSQL and Pudding Tasks
                 services.shutdown()
             }
         )

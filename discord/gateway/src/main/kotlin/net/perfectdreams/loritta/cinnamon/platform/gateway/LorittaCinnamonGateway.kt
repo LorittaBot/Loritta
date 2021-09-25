@@ -56,6 +56,7 @@ class LorittaCinnamonGateway(
                     true
                 else it in tableNames
             }
+            services.startPuddingTasks()
 
             commandManager.register()
 

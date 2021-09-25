@@ -1,6 +1,9 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands
 
 import dev.kord.common.entity.Snowflake
+import kotlinx.datetime.Clock
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.slash.SlashCommandExecutor
 import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
@@ -8,6 +11,7 @@ import net.perfectdreams.discordinteraktions.common.context.commands.GuildApplic
 import net.perfectdreams.discordinteraktions.common.context.commands.slash.SlashCommandArguments
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.common.images.ImageReference
 import net.perfectdreams.loritta.cinnamon.common.images.URLImageReference
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
@@ -62,13 +66,14 @@ class SlashCommandExecutorWrapper(
         var i18nContext: I18nContext? = null
         var cinnamonContext: net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext? = null
 
+        var stacktrace: String? = null
+
+        // Map Cinnamon Arguments to Discord InteraKTions Arguments
+        val cinnamonArgs = mutableMapOf<CommandOption<*>, Any?>()
+        val interaKTionsArgumentEntries = args.types.entries
+        val guildId = (context as? GuildApplicationCommandContext)?.guildId
+
         try {
-            // Map Cinnamon Arguments to Discord InteraKTions Arguments
-            val cinnamonArgs = mutableMapOf<CommandOption<*>, Any?>()
-            val interaKTionsArgumentEntries = args.types.entries
-
-            val guildId = (context as? GuildApplicationCommandContext)?.guildId
-
             val serverConfig = if (guildId != null) {
                 // TODO: Fix this workaround, while this does work, it isn't that good
                 loritta.services.serverConfigs.getServerConfigRoot(guildId.value)?.data ?: NonGuildServerConfigRoot
@@ -258,6 +263,7 @@ class SlashCommandExecutorWrapper(
             }
 
             logger.warn(e) { "Something went wrong while executing $rootDeclarationClazzName $executorClazzName" }
+            stacktrace = e.stackTraceToString() // Whoops!
 
             // If the i18nContext is not present, we will default to the default language provided
             i18nContext = i18nContext ?: loritta.languageManager.getI18nContextById(loritta.languageManager.defaultLanguageId)
@@ -293,6 +299,19 @@ class SlashCommandExecutorWrapper(
 
         val commandLatency = timer.observeDuration()
         logger.info { "(${context.sender.id.value}) $executor $stringifiedArgumentNames - OK! Took ${commandLatency * 1000}ms" }
+
+        loritta.services.executedApplicationCommandsLog.insertApplicationCommandLog(
+            context.sender.id.value.toLong(),
+            guildId?.value?.toLong(),
+            context.channelId.value.toLong(),
+            Clock.System.now(),
+            rootDeclarationClazzName!!,
+            executorClazzName!!,
+            buildJsonWithArguments(cinnamonArgs),
+            stacktrace == null,
+            commandLatency,
+            stacktrace
+        )
     }
 
     override fun signature() = rootSignature
@@ -307,4 +326,14 @@ class SlashCommandExecutorWrapper(
      */
     private fun stringifyArgumentNames(types: Map<net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOption<*>, Any?>) = types.map { it.key.name to it.value }
         .toMap()
+
+    private fun buildJsonWithArguments(types: Map<CommandOption<*>, Any?>) = buildJsonObject {
+        for ((option, value) in types) {
+            when (value) {
+                is ImageReference -> put(option.name, value.url)
+                is Number -> put(option.name, value)
+                else -> put(option.name, value.toString())
+            }
+        }
+    }
 }
