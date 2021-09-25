@@ -7,6 +7,7 @@ import io.zonky.test.db.postgres.embedded.EmbeddedPostgres
 import kotlinx.coroutines.Dispatchers
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
+import net.perfectdreams.loritta.cinnamon.pudding.services.ExecutedApplicationCommandsLogService
 import net.perfectdreams.loritta.cinnamon.pudding.services.InteractionsDataService
 import net.perfectdreams.loritta.cinnamon.pudding.services.MarriagesService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ServerConfigsService
@@ -14,6 +15,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.services.ShipEffectsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.SonhosService
 import net.perfectdreams.loritta.cinnamon.pudding.services.UsersService
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
@@ -23,11 +25,14 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Sets
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
+import net.perfectdreams.loritta.cinnamon.pudding.utils.PuddingTasks
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.createOrUpdatePostgreSQLEnum
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.Transaction
+import org.jetbrains.exposed.sql.exists
 import org.jetbrains.exposed.sql.transactions.DEFAULT_REPETITION_ATTEMPTS
 import org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManager
 
@@ -129,6 +134,15 @@ open class Pudding(private val database: Database) {
     val shipEffects = ShipEffectsService(this)
     val marriages = MarriagesService(this)
     val interactionsData = InteractionsDataService(this)
+    val executedApplicationCommandsLog = ExecutedApplicationCommandsLogService(this)
+    val puddingTasks = PuddingTasks(this)
+
+    /**
+     * Starts tasks related to [Pudding], like table partition creation, purge old data, etc.
+     *
+     * If you are using Pudding just to interact with tables, and you don't care about the tasks, then you don't need to start the tasks!
+     */
+    fun startPuddingTasks() = puddingTasks.start()
 
     /**
      * Creates missing tables and columns in the database.
@@ -151,7 +165,8 @@ open class Pudding(private val database: Database) {
             ShipEffects,
             Marriages,
             UserAchievements,
-            InteractionsData
+            InteractionsData,
+            ExecutedApplicationCommandsLog
         )
 
         if (schemas.isNotEmpty())
@@ -159,9 +174,59 @@ open class Pudding(private val database: Database) {
                 createOrUpdatePostgreSQLEnum(AchievementType.values())
 
                 SchemaUtils.createMissingTablesAndColumns(
-                    *schemas.toTypedArray()
+                    *schemas
+                        .toMutableList()
+                        .apply {
+                            this.remove(ExecutedApplicationCommandsLog)
+                        }.toTypedArray()
+                )
+
+                // This is a workaround because Exposed does not support (yet) Partitioned Tables
+                if (ExecutedApplicationCommandsLog in schemas) {
+                    // The reason we use partitioned tables for the ExecutedApplicationCommandsLog table, is because there is a LOT of commands there
+                    // Removing old logs is painfully slow due to vacuuming and stuff, querying recent commands is also pretty slow.
+                    // So it is better to split stuff up in separate partitions!
+                    val createStatements = createStatementsPartitioned(ExecutedApplicationCommandsLog, "RANGE(sent_at)")
+
+                    execStatements(false, createStatements)
+                    commit()
+                }
+
+                // Now call the createMissingTablesAndColumns again with the partitoned tables
+                // Exposed will detect that the table exists and will only alter things, which is possible in a partitioned table :)
+                SchemaUtils.createMissingTablesAndColumns(
+                    *schemas.filter { it == ExecutedApplicationCommandsLog }
+                        .toTypedArray()
                 )
             }
+    }
+
+    // From Exposed
+    private fun Transaction.execStatements(inBatch: Boolean, statements: List<String>) {
+        if (inBatch) {
+            execInBatch(statements)
+        } else {
+            for (statement in statements) {
+                exec(statement)
+            }
+        }
+    }
+
+    // From Exposed, this is the "createStatements" method but with a few changes
+    private fun createStatementsPartitioned(table: Table, partitionBySuffix: String): List<String> {
+        if (table.exists())
+            return emptyList()
+
+        val alters = arrayListOf<String>()
+
+        val (create, alter) = table.ddl.partition { it.startsWith("CREATE ") }
+
+        val createTableSuffixed = create.map { "$it PARTITION BY $partitionBySuffix" }
+
+        val indicesDDL = table.indices.flatMap { SchemaUtils.createIndex(it) }
+        alters += alter
+
+        return createTableSuffixed + indicesDDL + alter
     }
 
     // https://github.com/JetBrains/Exposed/issues/1003
@@ -180,5 +245,7 @@ open class Pudding(private val database: Database) {
         throw lastException ?: RuntimeException("This should never happen")
     }
 
-    open fun shutdown() {}
+    open fun shutdown() {
+        puddingTasks.shutdown()
+    }
 }
