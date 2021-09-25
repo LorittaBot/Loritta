@@ -72,5 +72,10 @@ enum class AchievementType(
         AchievementCategory.MISCELLANEOUS,
         I18nKeysData.Achievements.Achievement.IsThatAnUndertaleReference.Title,
         I18nKeysData.Achievements.Achievement.IsThatAnUndertaleReference.Description
+    ),
+    ONE_PLUS_ONE_CALCULATION(
+        AchievementCategory.MISCELLANEOUS,
+        I18nKeysData.Achievements.Achievement.OnePlusOneCalculation.Title,
+        I18nKeysData.Achievements.Achievement.OnePlusOneCalculation.Description
     )
 }
