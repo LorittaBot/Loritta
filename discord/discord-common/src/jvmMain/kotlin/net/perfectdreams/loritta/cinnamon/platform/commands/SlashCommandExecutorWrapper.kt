@@ -5,6 +5,7 @@ import kotlinx.datetime.Clock
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import mu.KotlinLogging
+import net.perfectdreams.discordinteraktions.api.entities.Guild
 import net.perfectdreams.discordinteraktions.common.commands.slash.SlashCommandExecutor
 import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.context.commands.GuildApplicationCommandContext
@@ -98,7 +99,9 @@ class SlashCommandExecutorWrapper(
                 loritta,
                 i18nContext,
                 context.sender,
-                context
+                context,
+                guildId,
+                (context as? GuildApplicationCommandContext)?.member
             )
 
             if (!rootDeclaration.allowedInPrivateChannel && guildId == null) {

@@ -36,6 +36,10 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.T
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.VieirinhaCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.UserAvatarExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.UserBannerExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerSplashExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerBannerExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerIconExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.ServerCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.SonhosExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.SonhosCommand
@@ -173,6 +177,13 @@ class CommandManager(
             UserCommand,
             UserAvatarExecutor(Snowflake(discordConfig.applicationId)),
             UserBannerExecutor(rest)
+        )
+
+        commandManager.register(
+            ServerCommand,
+            ServerIconExecutor(rest),
+            ServerBannerExecutor(rest),
+            ServerSplashExecutor(rest)
         )
 
         // ===[ FUN ]===
