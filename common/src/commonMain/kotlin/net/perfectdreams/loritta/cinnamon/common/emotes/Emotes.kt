@@ -44,7 +44,8 @@ object Emotes {
     val SparklingHeart = UnicodeEmote("\uD83D\uDC96")
     val Radio = UnicodeEmote("\uD83D\uDCFB")
     val Infinity = UnicodeEmote("♾️")
-
+    val FramePhoto = UnicodeEmote("\uD83D\uDDBC️")
+    val Discord = DiscordEmote(870518518720892938, "discord", false)
     val Undertale = DiscordEmote(412576128340066304L, "undertale_heart", false)
     val Deltarune = DiscordEmote(889958066362155008L, "deltarune", false)
 
