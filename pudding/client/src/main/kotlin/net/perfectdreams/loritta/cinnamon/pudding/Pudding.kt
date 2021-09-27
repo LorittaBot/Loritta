@@ -226,11 +226,12 @@ open class Pudding(private val database: Database) {
     private fun Transaction.checkIfTableExists(table: Table): Boolean {
         val tableScheme = table.tableName.substringBefore('.', "").takeIf { it.isNotEmpty() }
         val schema = tableScheme?.inProperCase() ?: TransactionManager.current().connection.metadata { currentScheme }
+        val tableName = TransactionManager.current().identity(table) // Yes, because "Table.tableName" does not return the correct name...
 
         return exec("SELECT EXISTS (\n" +
                 "   SELECT FROM information_schema.tables \n" +
                 "   WHERE  table_schema = '$schema'\n" +
-                "   AND    table_name   = '${table.tableName}'\n" +
+                "   AND    table_name   = '$tableName'\n" +
                 "   )") {
             it.next()
             it.getBoolean(1) // It should always be the first column, right?
