@@ -8,4 +8,5 @@ object Versions {
     const val PROMETHEUS = "0.12.0"
     const val KTOR = "1.6.3"
     const val DISCORD_INTERAKTIONS = "0.0.9"
+    const val I18N_HELPER = "0.0.2-SNAPSHOT"
 }
