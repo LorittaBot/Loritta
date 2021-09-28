@@ -6,7 +6,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.platform.InteractionContext
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 
-class ApplicationCommandContext(
+open class ApplicationCommandContext(
     loritta: LorittaCinnamon,
     i18nContext: I18nContext,
     user: User,

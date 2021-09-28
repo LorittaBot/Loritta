@@ -23,7 +23,8 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptio
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
 import net.perfectdreams.loritta.cinnamon.pudding.data.ServerConfigRoot
 import kotlin.streams.toList
-
+import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext as CinnamonApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.GuildApplicationCommandContext as CinnamonGuildApplicationCommandContext
 /**
  * Bridge between Cinnamon's [CommandExecutor] and Discord InteraKTions' [SlashCommandExecutor].
  *
@@ -94,12 +95,23 @@ class SlashCommandExecutorWrapper(
 
             // val channel = loritta.interactions.rest.channel.getChannel(context.request.channelId)
 
-            cinnamonContext = ApplicationCommandContext(
-                loritta,
-                i18nContext,
-                context.sender,
-                context
-            )
+            cinnamonContext = if (context is GuildApplicationCommandContext) {
+                CinnamonGuildApplicationCommandContext(
+                    loritta,
+                    i18nContext,
+                    context.sender,
+                    context,
+                    context.guildId,
+                    context.member
+                )
+            } else {
+                CinnamonApplicationCommandContext(
+                    loritta,
+                    i18nContext,
+                    context.sender,
+                    context
+                )
+            }
 
             if (!rootDeclaration.allowedInPrivateChannel && guildId == null) {
                 TODO()
