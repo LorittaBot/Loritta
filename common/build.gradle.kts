@@ -1,7 +1,7 @@
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
-    id("net.perfectdreams.i18nhelper.plugin") version "0.0.2-SNAPSHOT"
+    id("net.perfectdreams.i18nhelper.plugin") version Versions.I18N_HELPER
 }
 
 i18nHelper {
@@ -96,7 +96,7 @@ kotlin {
                 api("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:${Versions.KOTLINX_SERIALIZATION}")
                 api("io.ktor:ktor-client-core:1.6.0")
                 api("org.jetbrains.kotlinx:kotlinx-datetime:0.2.1")
-                api("net.perfectdreams.i18nhelper:core:0.0.2-SNAPSHOT")
+                api("net.perfectdreams.i18nhelper:core:${Versions.I18N_HELPER}")
 
                 // Used for Math stuff
                 api("com.ionspin.kotlin:bignum:0.3.0")
@@ -122,7 +122,7 @@ kotlin {
                 implementation("org.yaml:snakeyaml:1.28")
 
                 // Internationalization
-                api("net.perfectdreams.i18nhelper.formatters:icu-messageformat-jvm:0.0.1-SNAPSHOT")
+                api("net.perfectdreams.i18nhelper.formatters:icu-messageformat-jvm:${Versions.I18N_HELPER}")
                 implementation("com.charleskorn.kaml:kaml:0.35.0")
                 implementation("com.ibm.icu:icu4j:69.1")
 
