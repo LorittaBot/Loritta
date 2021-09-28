@@ -5,7 +5,6 @@ import kotlinx.datetime.Clock
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import mu.KotlinLogging
-import net.perfectdreams.discordinteraktions.api.entities.Guild
 import net.perfectdreams.discordinteraktions.common.commands.slash.SlashCommandExecutor
 import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.context.commands.GuildApplicationCommandContext
@@ -24,7 +23,8 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptio
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
 import net.perfectdreams.loritta.cinnamon.pudding.data.ServerConfigRoot
 import kotlin.streams.toList
-
+import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext as CinnamonApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.GuildApplicationCommandContext as CinnamonGuildApplicationCommandContext
 /**
  * Bridge between Cinnamon's [CommandExecutor] and Discord InteraKTions' [SlashCommandExecutor].
  *
@@ -95,14 +95,23 @@ class SlashCommandExecutorWrapper(
 
             // val channel = loritta.interactions.rest.channel.getChannel(context.request.channelId)
 
-            cinnamonContext = ApplicationCommandContext(
-                loritta,
-                i18nContext,
-                context.sender,
-                context,
-                guildId,
-                (context as? GuildApplicationCommandContext)?.member
-            )
+            cinnamonContext = if (context is GuildApplicationCommandContext) {
+                CinnamonGuildApplicationCommandContext(
+                    loritta,
+                    i18nContext,
+                    context.sender,
+                    context,
+                    context.guildId,
+                    context.member
+                )
+            } else {
+                CinnamonApplicationCommandContext(
+                    loritta,
+                    i18nContext,
+                    context.sender,
+                    context
+                )
+            }
 
             if (!rootDeclaration.allowedInPrivateChannel && guildId == null) {
                 TODO()
@@ -180,7 +189,6 @@ class SlashCommandExecutorWrapper(
                         // TODO: Fix this, removed for now
                         /* if (interaKTionOption.name == "${it.name}_history" && value != null) {
                             val boolValue = value as Boolean
-
                             if (boolValue) {
                                 TODO()
                                 // If true, we are going to find the first recent message in this chat
@@ -190,7 +198,6 @@ class SlashCommandExecutorWrapper(
                                     null,
                                     100
                                 )
-
                                 try {
                                     // Sort from the newest message to the oldest message
                                     val attachmentUrl = messages.sortedByDescending { it.id.timeStamp }
@@ -200,7 +207,6 @@ class SlashCommandExecutorWrapper(
                                             it.filename.substringAfter(".")
                                                 .toLowerCase() in SUPPORTED_IMAGE_EXTENSIONS
                                         }?.url
-
                                     if (attachmentUrl != null) {
                                         cinnamonArgs[it] = URLImageReference(attachmentUrl)
                                         found = true
