@@ -12,5 +12,6 @@ class PuddingTest {
         runBlocking {
             pudding.createMissingTablesAndColumns { true }
         }
+        pudding.shutdown()
     }
 }
