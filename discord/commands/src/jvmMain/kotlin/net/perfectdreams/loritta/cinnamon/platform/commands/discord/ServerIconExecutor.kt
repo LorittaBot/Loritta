@@ -27,7 +27,7 @@ class ServerIconExecutor(val rest: RestClient) : CommandExecutor() {
         }
 
         val extension = if (iconId.startsWith("a_")) "gif" else "png"
-        val urlIcon = "https://cdn.discordapp.com/banners/${guild.id.value}/${guild.icon}.$extension?size=2048"
+        val urlIcon = "https://cdn.discordapp.com/icons/${guild.id.value}/${guild.icon}.$extension?size=2048"
 
         context.sendMessage {
             embed {

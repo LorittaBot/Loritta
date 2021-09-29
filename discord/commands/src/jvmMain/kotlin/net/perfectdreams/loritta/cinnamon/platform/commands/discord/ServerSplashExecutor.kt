@@ -27,7 +27,7 @@ class ServerSplashExecutor(val rest: RestClient) : CommandExecutor() {
         }
 
         val extension = if (splashId.startsWith("a_")) "gif" else "png"
-        val urlIcon = "https://cdn.discordapp.com/splashs/${guild.id.value}/${guild.splash.value}.$extension?size=2048"
+        val urlIcon = "https://cdn.discordapp.com/splashes/${guild.id.value}/${guild.splash.value}.$extension?size=2048"
 
         context.sendMessage {
             embed {
