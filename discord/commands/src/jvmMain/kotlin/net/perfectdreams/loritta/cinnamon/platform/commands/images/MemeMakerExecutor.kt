@@ -1,17 +1,15 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.images
 
-import kotlinx.serialization.json.addJsonObject
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonArray
-import net.perfectdreams.loritta.cinnamon.common.utils.gabrielaimageserver.GabrielaImageServerClient
+import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
+import net.perfectdreams.gabrielaimageserver.data.MemeMakerRequest
+import net.perfectdreams.gabrielaimageserver.data.URLImageData
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.MemeMakerCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.executeAndHandleExceptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.handleExceptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
 
 class MemeMakerExecutor(val client: GabrielaImageServerClient) : CommandExecutor() {
@@ -37,30 +35,15 @@ class MemeMakerExecutor(val client: GabrielaImageServerClient) : CommandExecutor
         val line1 = args[options.line1]
         val line2 = args[options.line2]
 
-        val result = client.executeAndHandleExceptions(
-            context,
-                    "/api/v1/images/meme-maker",
-            buildJsonObject {
-                putJsonArray("images") {
-                    addJsonObject {
-                        put("type", "url")
-                        put("content", imageReference.url)
-                    }
-                }
-
-                putJsonArray("strings") {
-                    addJsonObject {
-                        put("string", line1)
-                    }
-
-                    if (line2 != null) {
-                        addJsonObject {
-                            put("string", line2)
-                        }
-                    }
-                }
-            }
-        )
+        val result = client.handleExceptions(context) {
+            client.images.memeMaker(
+                MemeMakerRequest(
+                    URLImageData(imageReference.url),
+                    line1,
+                    line2
+                )
+            )
+        }
 
         context.sendMessage {
             addFile("meme_maker.png", result.inputStream())

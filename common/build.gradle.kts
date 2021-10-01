@@ -97,6 +97,7 @@ kotlin {
                 api("io.ktor:ktor-client-core:1.6.0")
                 api("org.jetbrains.kotlinx:kotlinx-datetime:0.2.1")
                 api("net.perfectdreams.i18nhelper:core:${Versions.I18N_HELPER}")
+                api("net.perfectdreams.gabrielaimageserver:client:2.0.0-SNAPSHOT")
 
                 // Used for Math stuff
                 api("com.ionspin.kotlin:bignum:0.3.0")

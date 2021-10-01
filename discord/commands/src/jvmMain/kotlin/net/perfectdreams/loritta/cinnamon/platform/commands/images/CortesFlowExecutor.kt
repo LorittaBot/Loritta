@@ -1,19 +1,16 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.images
 
-import kotlinx.serialization.json.addJsonObject
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonArray
+import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
+import net.perfectdreams.gabrielaimageserver.data.CortesFlowRequest
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.i18nhelper.core.keys.StringI18nKey
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.BRMemesCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.executeAndHandleExceptions
-import net.perfectdreams.loritta.cinnamon.common.utils.gabrielaimageserver.GabrielaImageServerClient
 import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.BRMemesCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.handleExceptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
 
 class CortesFlowExecutor(val client: GabrielaImageServerClient) : CommandExecutor() {
@@ -46,17 +43,9 @@ class CortesFlowExecutor(val client: GabrielaImageServerClient) : CommandExecuto
         val type = args[options.type]
         val text = args[options.text]
 
-        val result = client.executeAndHandleExceptions(
-            context,
-                    "/api/v1/images/cortes-flow/$type",
-            buildJsonObject {
-                putJsonArray("strings") {
-                    addJsonObject {
-                        put("string", text)
-                    }
-                }
-            }
-        )
+        val result = client.handleExceptions(context) {
+            client.images.cortesFlow(type, CortesFlowRequest(text))
+        }
 
         context.sendMessage {
             addFile("cortes_flow.jpg", result.inputStream())

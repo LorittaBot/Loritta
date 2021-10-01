@@ -3,18 +3,16 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.undertale
 import dev.kord.common.entity.ButtonStyle
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.addJsonObject
-import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonArray
 import net.perfectdreams.discordinteraktions.api.entities.User
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
+import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
+import net.perfectdreams.gabrielaimageserver.data.TobyTextBoxRequest
+import net.perfectdreams.gabrielaimageserver.data.URLImageData
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.common.utils.gabrielaimageserver.GabrielaImageServerClient
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
@@ -38,6 +36,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.Se
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.TextBoxOptionsData
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.TextBoxWithCustomPortraitOptionsData
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.TextBoxWithGamePortraitOptionsData
+import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.TextBoxWithNoPortraitOptionsData
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.TextBoxWithUniverseOptionsData
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.characters.CharacterType
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.characters.UniverseType
@@ -220,6 +219,7 @@ class TextBoxExecutor(val client: GabrielaImageServerClient) : CommandExecutor()
             }
         }
 
+        // Everything that uses this should wrap the call in a "context.handleExceptions"!
         suspend fun createDialogBox(
             client: GabrielaImageServerClient,
             data: TextBoxOptionsData
@@ -227,34 +227,35 @@ class TextBoxExecutor(val client: GabrielaImageServerClient) : CommandExecutor()
             val text = data.text
             val type = data.dialogBoxType
 
-            val result = client.execute(
-                "/api/v1/images/toby-text-box",
-                buildJsonObject {
-                    put("type", type.name)
-
-                    // Only put the portrait if the save data contains a Game Portrait
-                    if (data is TextBoxWithGamePortraitOptionsData) {
-                        val portrait = data.portrait
-                        put("portrait", portrait)
-                    } else if (data is TextBoxWithCustomPortraitOptionsData) {
-                        // If it is a custom portrait, then add a image array!
-                        putJsonArray("images") {
-                            addJsonObject {
-                                put("type", "url")
-                                put("content", data.imageUrl)
-                            }
-                        }
-
-                        put("colorPortraitType", data.colorPortraitType.name)
-                    }
-
-                    putJsonArray("strings") {
-                        addJsonObject {
-                            put("string", text)
-                        }
-                    }
+            val result = when (data) {
+                is TextBoxWithGamePortraitOptionsData -> {
+                    client.images.tobyTextBox(
+                        TobyTextBoxRequest(
+                            text,
+                            TobyTextBoxRequest.TextBoxType.valueOf(type.name),
+                            data.portrait
+                        )
+                    )
                 }
-            )
+                is TextBoxWithCustomPortraitOptionsData -> {
+                    client.images.tobyTextBox(
+                        TobyTextBoxRequest(
+                            text,
+                            TobyTextBoxRequest.TextBoxType.valueOf(type.name),
+                            image = URLImageData(data.imageUrl),
+                            colorPortraitType = TobyTextBoxRequest.ColorPortraitType.valueOf(data.colorPortraitType.name)
+                        )
+                    )
+                }
+                is TextBoxWithNoPortraitOptionsData -> {
+                    client.images.tobyTextBox(
+                        TobyTextBoxRequest(
+                            text,
+                            TobyTextBoxRequest.TextBoxType.valueOf(type.name),
+                        )
+                    )
+                }
+            }
 
             return result.inputStream()
         }

@@ -1,9 +1,10 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox
 
 import net.perfectdreams.discordinteraktions.api.entities.User
-import net.perfectdreams.loritta.cinnamon.common.utils.gabrielaimageserver.GabrielaImageServerClient
+import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.ComponentExecutorIds
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.handleExceptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.TextBoxExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.TextBoxHelper
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
@@ -40,7 +41,7 @@ class ChangeColorPortraitTypeButtonClickExecutor(
             newData
         )
 
-        val dialogBox = TextBoxExecutor.createDialogBox(client, newData)
+        val dialogBox = client.handleExceptions(context) { TextBoxExecutor.createDialogBox(client, newData) }
 
         context.updateMessage {
             attachments = mutableListOf() // Remove all attachments from the message!

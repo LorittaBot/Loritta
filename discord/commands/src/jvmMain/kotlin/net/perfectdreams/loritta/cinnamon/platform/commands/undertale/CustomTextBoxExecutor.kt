@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.undertale
 
 import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
-import net.perfectdreams.loritta.cinnamon.common.utils.gabrielaimageserver.GabrielaImageServerClient
+import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
