@@ -7,6 +7,6 @@ object Versions {
     const val EXPOSED = "0.34.1"
     const val PROMETHEUS = "0.12.0"
     const val KTOR = "1.6.3"
-    const val DISCORD_INTERAKTIONS = "0.0.9"
+    const val DISCORD_INTERAKTIONS = "0.0.10-SNAPSHOT"
     const val I18N_HELPER = "0.0.2-SNAPSHOT"
 }
