@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`
 
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.TextTransformDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.TextTransformDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
 import kotlin.random.Random
@@ -70,9 +70,9 @@ class TextVemDeZapExecutor(val random: Random) : CommandExecutor() {
             if (!addedEmoji) { // Se nós ainda não adicionamos nenhum emoji na palavra...
                 // Para fazer um aleatório baseado no nível... quanto maior o nível = mais chance de aparecer emojos
                 val upperBound = (5 - level) + 3
-                val randomInteger = random.nextInt(upperBound)
+                val randomInteger = random.nextLong(upperBound)
 
-                if (randomInteger == 0) {
+                if (randomInteger == 0L) {
                     val moodEmojis = when (mood) {
                         ZapZapMood.HAPPY -> TextTransformDeclaration.happyEmojis
                         ZapZapMood.ANGRY -> TextTransformDeclaration.angryEmojis
@@ -82,7 +82,7 @@ class TextVemDeZapExecutor(val random: Random) : CommandExecutor() {
                     }
 
                     // E quanto maior o nível, maiores as chances de aparecer mais emojis do lado da palavra
-                    val addEmojis = random.nextInt(1, level + 2)
+                    val addEmojis = random.nextLong(1, level + 2)
 
                     for (i in 0 until addEmojis) {
                         output += "${moodEmojis.random()} "

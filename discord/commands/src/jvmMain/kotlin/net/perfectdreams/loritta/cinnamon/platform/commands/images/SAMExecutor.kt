@@ -1,16 +1,14 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.images
 
-import kotlinx.serialization.json.addJsonObject
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonArray
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.BRMemesCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.executeAndHandleExceptions
-import net.perfectdreams.loritta.cinnamon.common.utils.gabrielaimageserver.GabrielaImageServerClient
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
+import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
+import net.perfectdreams.gabrielaimageserver.data.SAMLogoRequest
+import net.perfectdreams.gabrielaimageserver.data.URLImageData
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.BRMemesCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.handleExceptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
 
 class SAMExecutor(val client: GabrielaImageServerClient) : CommandExecutor() {
@@ -35,18 +33,19 @@ class SAMExecutor(val client: GabrielaImageServerClient) : CommandExecutor() {
         val type = args[options.type]
         val imageReference = args[options.imageReference]
 
-        val result = client.executeAndHandleExceptions(
-            context,
-                    "/api/v1/images/sam/$type",
-            buildJsonObject {
-                putJsonArray("images") {
-                    addJsonObject {
-                        put("type", "url")
-                        put("content", imageReference.url)
+        val result = client.handleExceptions(context) {
+            client.images.samLogo(
+                SAMLogoRequest(
+                    URLImageData(imageReference.url),
+                    when (type) {
+                        "1" -> SAMLogoRequest.LogoType.SAM_1
+                        "2" -> SAMLogoRequest.LogoType.SAM_2
+                        "3" -> SAMLogoRequest.LogoType.SAM_3
+                        else -> error("Unsupported Logo Type!")
                     }
-                }
-            }
-        )
+                )
+            )
+        }
 
         context.sendMessage {
             addFile("sam_logo.png", result.inputStream())

@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.cinnamon.platform.commands
 import dev.kord.common.entity.Snowflake
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
-import net.perfectdreams.loritta.cinnamon.common.utils.gabrielaimageserver.GabrielaImageServerClient
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.BemBoladaExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.CancelledExecutor
@@ -155,7 +154,8 @@ class CommandManager(
     private val discordConfig = loritta.discordConfig
     private val servicesConfig = loritta.servicesConfig
     private val rest = loritta.rest
-    private val gabrielaImageServerClient = GabrielaImageServerClient(loritta.servicesConfig.gabrielaImageServer.url, loritta.http)
+
+    private val gabrielaImageServerClient = net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient(loritta.servicesConfig.gabrielaImageServer.url, loritta.http)
     private val random = loritta.random
     private val http = loritta.http
 

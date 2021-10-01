@@ -79,7 +79,7 @@ class SlashCommandOptionsWrapper(
                             i18nContext.get(it.description).shortenWithEllipsis()
                         ).also { option ->
                             it.choices.take(25).forEach {
-                                option.choice(it.value as Int, i18nContext.get(it.name))
+                                option.choice(it.value as Long, i18nContext.get(it.name))
                             }
                         }
 
@@ -88,7 +88,7 @@ class SlashCommandOptionsWrapper(
                             i18nContext.get(it.description).shortenWithEllipsis()
                         ).also { option ->
                             it.choices.take(25).forEach {
-                                option.choice(it.value as Int, i18nContext.get(it.name))
+                                option.choice(it.value as Long, i18nContext.get(it.name))
                             }
                         }
 
