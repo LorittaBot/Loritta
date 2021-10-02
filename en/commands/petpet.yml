@@ -8,6 +8,7 @@ options:
       kindaHardButABitSquishy: "Kinda hard... but it is a bit squishy!"
       normalSquishness: "Normal squishness"
       verySquishy: "Very squishy"
+      soMuchSquishy: "So much squishy"
       patItSoTheyCanFeelIt: "Pat it so they can feel it" # This is a Simpsons's reference https://youtu.be/0GVVjd_exO8
   speed:
     text: "How fast you want your pet?" # Pet here is "petting"
