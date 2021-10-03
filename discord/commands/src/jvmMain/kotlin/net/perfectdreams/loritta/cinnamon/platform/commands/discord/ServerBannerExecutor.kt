@@ -38,7 +38,6 @@ class ServerBannerExecutor(val rest: RestClient) : CommandExecutor() {
             embed {
                 title = "${Emotes.Discord} ${guild.name}"
                 color = Color(114, 137, 218) // TODO: Move this to an object
-
                 image = bannerUrl
 
                 actionRow {
