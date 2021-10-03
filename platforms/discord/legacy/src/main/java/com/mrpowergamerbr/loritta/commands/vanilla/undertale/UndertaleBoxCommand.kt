@@ -6,10 +6,11 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.ImageUtils
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.utils.ImageFormat
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
 import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
@@ -33,6 +34,8 @@ class UndertaleBoxCommand : AbstractCommand("utbox", listOf("undertalebox"), Com
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "undertale textbox")
+
 		try {
 			if (context.args.size >= 1) {
 				var user = context.userHandle

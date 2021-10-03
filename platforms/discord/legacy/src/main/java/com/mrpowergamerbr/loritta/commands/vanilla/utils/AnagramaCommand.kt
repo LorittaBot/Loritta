@@ -3,13 +3,14 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 import com.google.common.math.BigIntegerMath
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 
 
 class AnagramaCommand : AbstractCommand("anagram", listOf("anagrama"), CommandCategory.UTILS) {
@@ -25,6 +26,8 @@ class AnagramaCommand : AbstractCommand("anagram", listOf("anagrama"), CommandCa
 	override fun getExamplesKey() = LocaleKeyData("$LOCALE_PREFIX.examples")
 
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {
+		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "anagram")
+
 		if (context.args.isNotEmpty()) {
 			val currentWord = context.args.joinToString(separator = " ")
 

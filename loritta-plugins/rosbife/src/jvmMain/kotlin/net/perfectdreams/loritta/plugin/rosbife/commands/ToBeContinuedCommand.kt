@@ -5,6 +5,7 @@ import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.utils.image.JVMImage
 import net.perfectdreams.loritta.plugin.rosbife.RosbifePlugin
 import net.perfectdreams.loritta.plugin.rosbife.commands.base.ImageAbstractCommandBase
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 import java.awt.Color
 import java.awt.image.BufferedImage
 
@@ -20,6 +21,8 @@ class ToBeContinuedCommand(m: RosbifePlugin) : ImageAbstractCommandBase(m.loritt
 		needsToUploadFiles = true
 
 		executes {
+			OutdatedCommandUtils.sendOutdatedCommandMessage(this, locale, "tobecontinued")
+
 			// TODO: Multiplatform
 			val mppImage = validate(image(0))
 			mppImage as JVMImage

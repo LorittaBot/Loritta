@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.math.MathUtils
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 
 class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calculator", "calcular", "calculate"), CommandCategory.UTILS) {
 	companion object {
@@ -21,6 +22,8 @@ class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calcul
 	override fun getExamplesKey() = LocaleKeyData("$LOCALE_PREFIX.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "calc")
+
 		if (context.args.isNotEmpty()) {
 			val expression = context.args.joinToString(" ")
 					.replace("_", "")

@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.common.locale.LocaleStringData
 import net.perfectdreams.loritta.common.utils.math.MathUtils
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.GenericReplies
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 
 class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), CommandCategory.FUN) {
 	companion object {
@@ -38,6 +39,8 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), Com
 	override fun getExamplesKey() = LocaleKeyData("commands.command.roll.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "roll")
+
 		var quantity = 1L
 		var lowerBound = 1L
 		var upperBound = 6L

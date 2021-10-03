@@ -3,15 +3,16 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.msgFormat
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 import org.jsoup.Jsoup
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -51,6 +52,8 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 	override fun getExamplesKey() = LocaleKeyData("commands.command.money.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "money")
+
 		if (context.args.size >= 2) {
 			var multiply: Double? = 1.0
 			if (context.args.size > 2) {

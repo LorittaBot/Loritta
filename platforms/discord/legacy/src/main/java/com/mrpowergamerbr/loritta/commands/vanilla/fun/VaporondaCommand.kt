@@ -8,6 +8,7 @@ import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.text.VaporwaveUtils
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 
 class VaporondaCommand : AbstractCommand("vaporonda", listOf("vaporwave"), category = CommandCategory.FUN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.vaporwave.description")
@@ -17,6 +18,8 @@ class VaporondaCommand : AbstractCommand("vaporonda", listOf("vaporwave"), categ
 	// TODO: Fix Detailed Usage
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "text vaporwave")
+
 		if (context.args.isNotEmpty()) {
 			val vaporwave = VaporwaveUtils.vaporwave(context.args.joinToString(" "))
 					.escapeMentions()

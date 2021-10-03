@@ -8,6 +8,7 @@ import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.text.MorseUtils
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 import java.awt.Color
 
 class MorseCommand : AbstractCommand("morse", category = CommandCategory.UTILS) {
@@ -17,6 +18,8 @@ class MorseCommand : AbstractCommand("morse", category = CommandCategory.UTILS) 
 	override fun getExamplesKey() = LocaleKeyData("commands.command.morse.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "morse")
+
 		if (context.args.isNotEmpty()) {
 			val message = context.args.joinToString(" ")
 

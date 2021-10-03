@@ -17,14 +17,15 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.perfectdreams.loritta.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import net.perfectdreams.loritta.utils.ImageFormat
-import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
-import net.perfectdreams.loritta.utils.extensions.readImage
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.utils.ImageFormat
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
+import net.perfectdreams.loritta.utils.extensions.getEffectiveAvatarUrl
+import net.perfectdreams.loritta.utils.extensions.readImage
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.or
 import java.awt.Color
@@ -48,6 +49,8 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.F
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "ship")
+
 		var user1Name: String? = context.rawArgs.getOrNull(0)
 		var user2Name: String? = context.rawArgs.getOrNull(1)
 		var user1AvatarUrl: String? = context.userHandle.defaultAvatarUrl

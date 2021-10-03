@@ -4,10 +4,11 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 import org.jsoup.Jsoup
 import java.awt.Color
 import java.net.URLEncoder
@@ -20,6 +21,8 @@ class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "dicionario"
 	override fun getExamplesKey() = LocaleKeyData("commands.command.dicio.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "dictionary")
+
 		if (context.args.size == 1) {
 			val palavra = URLEncoder.encode(context.args[0], "UTF-8")
 			val httpRequest = HttpRequest.get("https://www.dicio.com.br/pesquisa.php?q=$palavra")

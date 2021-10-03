@@ -7,9 +7,10 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 
 class McUUIDCommand : AbstractCommand("mcuuid", category = CommandCategory.MINECRAFT) {
     override fun getDescriptionKey() = LocaleKeyData("commands.command.mcuuid.description")
@@ -18,6 +19,8 @@ class McUUIDCommand : AbstractCommand("mcuuid", category = CommandCategory.MINEC
     // TODO: Fix Usage
 
     override suspend fun run(context: CommandContext,locale: BaseLocale) {
+        OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "minecraft player onlineuuid")
+
         if (context.args.size > 0) {
             val player = context.args[0]
 

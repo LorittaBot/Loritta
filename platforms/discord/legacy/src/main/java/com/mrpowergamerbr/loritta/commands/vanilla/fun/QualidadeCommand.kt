@@ -3,10 +3,11 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.escapeMentions
+import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.common.commands.CommandCategory
-import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 
 class QualidadeCommand : AbstractCommand("qualidade", category = CommandCategory.FUN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.quality.description")
@@ -15,6 +16,8 @@ class QualidadeCommand : AbstractCommand("qualidade", category = CommandCategory
 	// TODO: Fix Detailed Usage
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "text quality")
+
 		if (context.args.isNotEmpty()) {
 			val qualidade = context.args.joinToString(" ").toCharArray().joinToString(" ").toUpperCase()
 					.escapeMentions()
