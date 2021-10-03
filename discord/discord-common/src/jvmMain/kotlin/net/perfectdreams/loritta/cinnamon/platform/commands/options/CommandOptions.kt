@@ -23,13 +23,13 @@ open class CommandOptions {
         description
     )
 
-    fun integer(name: String, description: StringI18nData) = argument<Int>(
+    fun integer(name: String, description: StringI18nData) = argument<Long>(
         CommandOptionType.Integer,
         name,
         description
     )
 
-    fun optionalInteger(name: String, description: StringI18nData) = argument<Int?>(
+    fun optionalInteger(name: String, description: StringI18nData) = argument<Long?>(
         CommandOptionType.NullableInteger,
         name,
         description

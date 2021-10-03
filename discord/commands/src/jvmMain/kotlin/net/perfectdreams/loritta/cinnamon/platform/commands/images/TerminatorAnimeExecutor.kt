@@ -1,16 +1,13 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.images
 
-import kotlinx.serialization.json.addJsonObject
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonArray
-import net.perfectdreams.loritta.cinnamon.common.utils.gabrielaimageserver.GabrielaImageServerClient
+import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
+import net.perfectdreams.gabrielaimageserver.data.TerminatorAnimeRequest
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.TerminatorAnimeCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.executeAndHandleExceptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.handleExceptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
 
 class TerminatorAnimeExecutor(val client: GabrielaImageServerClient) : CommandExecutor() {
@@ -32,23 +29,11 @@ class TerminatorAnimeExecutor(val client: GabrielaImageServerClient) : CommandEx
         val line1 = args[options.line1]
         val line2 = args[options.line2]
 
-        val result = client.executeAndHandleExceptions(
-            context,
-                    "/api/v1/images/terminator-anime",
-            buildJsonObject {
-                putJsonArray("strings") {
-                    addJsonObject {
-                        put("string", line1)
-                    }
-
-                    if (line2 != null) {
-                        addJsonObject {
-                            put("string", line2)
-                        }
-                    }
-                }
-            }
-        )
+        val result = client.handleExceptions(context) {
+            client.images.terminatorAnime(
+                TerminatorAnimeRequest(line1, line2)
+            )
+        }
 
         context.sendMessage {
             addFile("terminator_anime.png", result.inputStream())

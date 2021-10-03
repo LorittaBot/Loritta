@@ -2,22 +2,20 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`
 
 import dev.kord.common.entity.Snowflake
 import kotlinx.datetime.Clock
-import kotlinx.serialization.json.addJsonObject
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonArray
 import net.perfectdreams.discordinteraktions.api.entities.User
+import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
+import net.perfectdreams.gabrielaimageserver.data.ShipRequest
+import net.perfectdreams.gabrielaimageserver.data.URLImageData
 import net.perfectdreams.i18nhelper.core.keydata.ListI18nData
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emote
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.common.utils.gabrielaimageserver.GabrielaImageServerClient
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.ShipCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.executeAndHandleExceptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.handleExceptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingShipEffect
@@ -240,24 +238,15 @@ class ShipExecutor(
             name1 + name2
         }
 
-        val result = client.executeAndHandleExceptions(
-            context,
-            "/api/v1/images/ship",
-            buildJsonObject {
-                putJsonArray("images") {
-                    addJsonObject {
-                        put("type", "url")
-                        put("content", user1AvatarUrl)
-                    }
-                    addJsonObject {
-                        put("type", "url")
-                        put("content", user2AvatarUrl)
-                    }
-                }
-
-                put("percentage", value)
-            }
-        )
+        val result = client.handleExceptions(context) {
+            client.images.ship(
+                ShipRequest(
+                    URLImageData(user1AvatarUrl),
+                    URLImageData(user2AvatarUrl),
+                    value
+                )
+            )
+        }
 
         context.sendMessage {
             content = """${Emotes.LoriHeartCombo1}${Emotes.LoriHeartCombo2} **${context.i18nContext.get(ShipCommand.I18N_PREFIX.NewCouple)}** ${Emotes.LoriHeartCombo1}${Emotes.PantufaHeartCombo2}

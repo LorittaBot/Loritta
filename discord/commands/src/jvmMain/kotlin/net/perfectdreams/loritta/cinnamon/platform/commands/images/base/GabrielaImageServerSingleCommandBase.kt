@@ -1,18 +1,16 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.images.base
 
-import kotlinx.serialization.json.addJsonObject
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonArray
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.executeAndHandleExceptions
-import net.perfectdreams.loritta.cinnamon.common.utils.gabrielaimageserver.GabrielaImageServerClient
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
+import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
+import net.perfectdreams.gabrielaimageserver.data.SingleImageRequest
+import net.perfectdreams.gabrielaimageserver.data.URLImageData
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.handleExceptions
 
 open class GabrielaImageServerSingleCommandBase(
     val client: GabrielaImageServerClient,
-    val endpoint: String,
+    val block: suspend GabrielaImageServerClient.(SingleImageRequest) -> (ByteArray),
     val fileName: String
 ) : CommandExecutor() {
     override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
@@ -20,18 +18,16 @@ open class GabrielaImageServerSingleCommandBase(
 
         val imageReference = args[SingleImageOptions.imageReference]
 
-        val result = client.executeAndHandleExceptions(
-            context,
-                    endpoint,
-            buildJsonObject {
-                putJsonArray("images") {
-                    addJsonObject {
-                        put("type", "url")
-                        put("content", imageReference.url)
-                    }
-                }
-            }
-        )
+        val result = client.handleExceptions(context) {
+            block.invoke(
+                client,
+                SingleImageRequest(
+                    URLImageData(
+                        imageReference.url
+                    )
+                )
+            )
+        }
 
         context.sendMessage {
             addFile(fileName, result.inputStream())

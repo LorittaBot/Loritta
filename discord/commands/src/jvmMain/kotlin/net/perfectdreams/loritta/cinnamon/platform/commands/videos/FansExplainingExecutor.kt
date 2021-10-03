@@ -1,17 +1,14 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.videos
 
-import kotlinx.serialization.json.addJsonObject
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonArray
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.executeAndHandleExceptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.FansExplainingCommand
-import net.perfectdreams.loritta.cinnamon.common.utils.gabrielaimageserver.GabrielaImageServerClient
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
+import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
+import net.perfectdreams.gabrielaimageserver.data.FansExplainingRequest
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.handleExceptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.FansExplainingCommand
 
 class FansExplainingExecutor(val client: GabrielaImageServerClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(FansExplainingExecutor::class) {
@@ -63,44 +60,11 @@ class FansExplainingExecutor(val client: GabrielaImageServerClient) : CommandExe
         val section5Line1 = args[options.section5Line1]
         val section5Line2 = args[options.section5Line2]
 
-        val result = client.executeAndHandleExceptions(
-            context,
-            "/api/v1/videos/fans-explaining",
-            buildJsonObject {
-                putJsonArray("strings") {
-                    addJsonObject {
-                        put("string", section1Line1)
-                    }
-                    addJsonObject {
-                        put("string", section1Line2)
-                    }
-                    addJsonObject {
-                        put("string", section2Line1)
-                    }
-                    addJsonObject {
-                        put("string", section2Line2)
-                    }
-                    addJsonObject {
-                        put("string", section3Line1)
-                    }
-                    addJsonObject {
-                        put("string", section3Line2)
-                    }
-                    addJsonObject {
-                        put("string", section4Line1)
-                    }
-                    addJsonObject {
-                        put("string", section4Line2)
-                    }
-                    addJsonObject {
-                        put("string", section5Line1)
-                    }
-                    addJsonObject {
-                        put("string", section5Line2)
-                    }
-                }
-            }
-        )
+        val result = client.handleExceptions(context) {
+            client.videos.fansExplaining(
+                FansExplainingRequest(section1Line1, section1Line2, section2Line1, section2Line2, section3Line1, section3Line2, section4Line1, section4Line2, section5Line1, section5Line2)
+            )
+        }
 
         context.sendMessage {
             addFile("fans_explaining.mp4", result.inputStream())

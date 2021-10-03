@@ -3,13 +3,13 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.images
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.base.GabrielaImageServerSingleCommandBase
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.base.SingleImageOptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.common.utils.gabrielaimageserver.GabrielaImageServerClient
+import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 
 class BolsoFrameExecutor(
     client: GabrielaImageServerClient
 ) : GabrielaImageServerSingleCommandBase(
     client,
-    "/api/v1/images/bolso-frame",
+    { client.images.bolsoFrame(it) },
     "bolsoframe.png"
 ) {
     companion object : CommandExecutorDeclaration(BolsoFrameExecutor::class) {
