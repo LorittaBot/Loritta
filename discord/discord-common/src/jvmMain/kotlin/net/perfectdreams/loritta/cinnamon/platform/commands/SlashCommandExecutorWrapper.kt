@@ -189,7 +189,6 @@ class SlashCommandExecutorWrapper(
                         // TODO: Fix this, removed for now
                         /* if (interaKTionOption.name == "${it.name}_history" && value != null) {
                             val boolValue = value as Boolean
-
                             if (boolValue) {
                                 TODO()
                                 // If true, we are going to find the first recent message in this chat
@@ -199,7 +198,6 @@ class SlashCommandExecutorWrapper(
                                     null,
                                     100
                                 )
-
                                 try {
                                     // Sort from the newest message to the oldest message
                                     val attachmentUrl = messages.sortedByDescending { it.id.timeStamp }
@@ -209,7 +207,6 @@ class SlashCommandExecutorWrapper(
                                             it.filename.substringAfter(".")
                                                 .toLowerCase() in SUPPORTED_IMAGE_EXTENSIONS
                                         }?.url
-
                                     if (attachmentUrl != null) {
                                         cinnamonArgs[it] = URLImageReference(attachmentUrl)
                                         found = true
