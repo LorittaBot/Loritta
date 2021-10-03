@@ -38,7 +38,6 @@ class ServerIconExecutor(val rest: RestClient) : CommandExecutor() {
             embed {
                 title = "${Emotes.Discord} ${guild.name}"
                 image = urlIcon
-
                 color = Color(114, 137, 218) // TODO: Move this to an object
 
                 actionRow {

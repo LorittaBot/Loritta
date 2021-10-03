@@ -37,6 +37,7 @@ class ServerSplashExecutor(val rest: RestClient) : CommandExecutor() {
         context.sendMessage {
             embed {
                 title = "${Emotes.Discord} ${guild.name}"
+                image = urlIcon
                 color = Color(114, 137, 218) // TODO: Move this to an object
 
                 actionRow {
