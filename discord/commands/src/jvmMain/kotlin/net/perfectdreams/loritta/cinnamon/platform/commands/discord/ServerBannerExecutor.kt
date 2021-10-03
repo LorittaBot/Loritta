@@ -44,7 +44,7 @@ class ServerBannerExecutor(val rest: RestClient) : CommandExecutor() {
                     linkButton(
                         url = bannerUrl
                     ) {
-                        label = context.i18nContext.get(I18nKeysData.Commands.Command.User.Banner.OpenBannerInBrowser)
+                        label = context.i18nContext.get(I18nKeysData.Commands.Command.Server.Banner.OpenBannerInBrowser)
                     }
                 }
             }
