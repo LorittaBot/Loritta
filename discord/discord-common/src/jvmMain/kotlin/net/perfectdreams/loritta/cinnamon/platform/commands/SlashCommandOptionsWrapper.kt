@@ -45,7 +45,7 @@ class SlashCommandOptionsWrapper(
                     // For image references we can accept multiple types
                     // (User Avatar, Link, Emote, etc)
                     // Can't be required because some commands do use optional arguments before this (example: /meme)
-                    string(it.name, "User Mention, Image URL or Emote")
+                    optionalString(it.name, "User Mention, Image URL or Emote. If not present, I will use an image from the channel!")
                         .register()
 
                     // TODO: Fix this later
