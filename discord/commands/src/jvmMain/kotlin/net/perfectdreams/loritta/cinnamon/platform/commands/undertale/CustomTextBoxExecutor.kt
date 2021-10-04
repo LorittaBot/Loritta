@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.undertale
 
-import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
+import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
@@ -15,10 +15,10 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.Te
 class CustomTextBoxExecutor(val client: GabrielaImageServerClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(CustomTextBoxExecutor::class) {
         object Options : CommandOptions() {
-            val imageReference = imageReference("image", TodoFixThisData)
+            val text = textBoxTextOption()
                 .register()
 
-            val text = textBoxTextOption()
+            val imageReference = imageReference("image", TodoFixThisData)
                 .register()
         }
 

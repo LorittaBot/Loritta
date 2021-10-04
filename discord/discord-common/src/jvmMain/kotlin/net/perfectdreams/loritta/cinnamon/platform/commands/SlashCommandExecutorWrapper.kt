@@ -186,38 +186,34 @@ class SlashCommandExecutorWrapper(
                             }
                         }
 
-                        // TODO: Fix this, removed for now
-                        /* if (interaKTionOption.name == "${it.name}_history" && value != null) {
-                            val boolValue = value as Boolean
-                            if (boolValue) {
-                                TODO()
-                                // If true, we are going to find the first recent message in this chat
-                                /* val channelId = context.request.channelId
-                                val messages = loritta.rest.channel.getMessages(
-                                    channelId,
-                                    null,
-                                    100
-                                )
-                                try {
-                                    // Sort from the newest message to the oldest message
-                                    val attachmentUrl = messages.sortedByDescending { it.id.timeStamp }
-                                        .flatMap { it.attachments }
-                                        .firstOrNull {
-                                            // Only get filenames ending with "image" extensions
-                                            it.filename.substringAfter(".")
-                                                .toLowerCase() in SUPPORTED_IMAGE_EXTENSIONS
-                                        }?.url
-                                    if (attachmentUrl != null) {
-                                        cinnamonArgs[it] = URLImageReference(attachmentUrl)
-                                        found = true
-                                    }
-                                } catch (e: Exception) {
-                                    // TODO: Catch the "permission required" exception and show a nice message
-                                    e.printStackTrace()
-                                } */
+                        if (!found) {
+                            // If no image was found, we will try to find the first recent message in this chat
+                            val channelId = context.channelId
+                            val messages = loritta.rest.channel.getMessages(
+                                channelId,
+                                null,
+                                100
+                            )
+                            try {
+                                // Sort from the newest message to the oldest message
+                                val attachmentUrl = messages.sortedByDescending { it.id.timestamp }
+                                    .flatMap { it.attachments }
+                                    .firstOrNull {
+                                        // Only get filenames ending with "image" extensions
+                                        it.filename.substringAfter(".")
+                                            .lowercase() in SUPPORTED_IMAGE_EXTENSIONS
+                                    }?.url
+
+                                if (attachmentUrl != null) {
+                                    // Found a valid URL, let's go!
+                                    cinnamonArgs[it] = URLImageReference(attachmentUrl)
+                                    found = true
+                                }
+                            } catch (e: Exception) {
+                                // TODO: Catch the "permission required" exception and show a nice message
+                                e.printStackTrace()
                             }
-                            break
-                        } */
+                        }
 
                         if (!found)
                             cinnamonContext.fail(cinnamonContext.i18nContext.get(I18nKeysData.Commands.NoValidImageFound), Emotes.LoriSob)

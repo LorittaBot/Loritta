@@ -15,13 +15,13 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptio
 class MemeMakerExecutor(val client: GabrielaImageServerClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(MemeMakerExecutor::class) {
         object Options : CommandOptions() {
-            val imageReference = imageReference("image", I18nKeysData.Commands.Category.Images.Options.Image)
-                .register()
-
             val line1 = string("line1", MemeMakerCommand.I18N_PREFIX.Options.Line1)
                 .register()
 
             val line2 = optionalString("line2", MemeMakerCommand.I18N_PREFIX.Options.Line2)
+                .register()
+
+            val imageReference = imageReference("image", I18nKeysData.Commands.Category.Images.Options.Image)
                 .register()
         }
 
