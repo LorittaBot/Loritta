@@ -12,10 +12,6 @@ import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), CommandCategory.FUN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.tiodopave.description")
 
-	override fun hasCommandFeedback(): Boolean {
-		return false
-	}
-	
 	companion object {
 		// https://www.reddit.com/r/tiodopave/top/?sort=top&t=all&count=375&after=t3_666izg
 		val PIADAS = listOf(

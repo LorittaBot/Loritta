@@ -31,8 +31,6 @@ class CocieloChavesCommand(m: RosbifePlugin) : DiscordAbstractCommandBase(
 		localizedDescription("commands.command.cocielochaves.description")
 		localizedExamples("commands.command.cocielochaves.examples")
 
-		sendTypingStatus = true
-
 		executesDiscord {
 			val mutex = heavyGenerationMutexMap.getOrPut(this.guild.idLong) { Mutex() }
 

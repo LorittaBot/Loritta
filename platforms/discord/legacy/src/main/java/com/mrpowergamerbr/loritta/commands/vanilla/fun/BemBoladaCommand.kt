@@ -14,10 +14,6 @@ import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 class BemBoladaCommand : AbstractCommand("bembolada", listOf("kenji"), CommandCategory.FUN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.bembolada.description")
 
-	override fun hasCommandFeedback(): Boolean {
-		return false
-	}
-
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "summon kenji")
 

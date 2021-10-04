@@ -45,9 +45,17 @@ import net.perfectdreams.loritta.commands.vanilla.misc.DiscordBotListCommand
 import net.perfectdreams.loritta.commands.vanilla.misc.DiscordBotListStatusCommand
 import net.perfectdreams.loritta.commands.vanilla.misc.DiscordBotListTopCommand
 import net.perfectdreams.loritta.commands.vanilla.misc.DiscordBotListTopLocalCommand
-import net.perfectdreams.loritta.commands.vanilla.roblox.*
-import net.perfectdreams.loritta.commands.vanilla.social.*
-import net.perfectdreams.loritta.common.locale.*
+import net.perfectdreams.loritta.commands.vanilla.roblox.RbGameCommand
+import net.perfectdreams.loritta.commands.vanilla.roblox.RbUserCommand
+import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaStatusCommand
+import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaTopCommand
+import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaTopLocalCommand
+import net.perfectdreams.loritta.commands.vanilla.social.RankGlobalCommand
+import net.perfectdreams.loritta.commands.vanilla.social.RepTopCommand
+import net.perfectdreams.loritta.commands.vanilla.social.XpNotificationsCommand
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.LocaleStringData
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.CommandCooldownManager
 import net.perfectdreams.loritta.utils.CommandUtils
@@ -265,14 +273,6 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 						}
 					}
 					return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
-				}
-
-				if (command.hasCommandFeedback) {
-					// Sending typing status for every single command is costly (API limits!)
-					// To avoid sending it every time, we check if we should send the typing status
-					// (We only send it if the command takes a looong time to be executed)
-					if (command.sendTypingStatus)
-						ev.channel.sendTyping().await()
 				}
 
 				if (!isPrivateChannel && ev.guild != null && ev.member != null) {

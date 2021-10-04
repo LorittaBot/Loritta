@@ -30,7 +30,6 @@ abstract class GabrielaImageServerCommandBase(
         val descriptionKey: String,
         val endpoint: String,
         val fileName: String,
-        val sendTypingStatus: Boolean = false,
         val examplesKey: String? = null,
         category: CommandCategory = CommandCategory.IMAGES,
         val slashCommandName: String? = null
@@ -41,7 +40,6 @@ abstract class GabrielaImageServerCommandBase(
 ) {
     override fun command() = create {
         localizedDescription(descriptionKey)
-        this.sendTypingStatus = this@GabrielaImageServerCommandBase.sendTypingStatus
 
         val examplesKey = when (imageCount) {
             1 -> Command.SINGLE_IMAGE_EXAMPLES_KEY

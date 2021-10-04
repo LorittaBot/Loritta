@@ -49,10 +49,6 @@ class FaustaoCommand : AbstractCommand("faustão", listOf("faustao"), CommandCat
 
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.faustao.description")
 
-	override fun hasCommandFeedback(): Boolean {
-		return false
-	}
-
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "summon faustao")
 

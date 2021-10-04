@@ -26,8 +26,6 @@ open class Command<T : CommandContext>(
 
 	var needsToUploadFiles = false
 	var hideInHelp = false
-	var hasCommandFeedback = true
-	var sendTypingStatus = false
 	var canUseInPrivateChannel = false
 	var onlyOwner = false
 	var similarCommands: List<String> = listOf()

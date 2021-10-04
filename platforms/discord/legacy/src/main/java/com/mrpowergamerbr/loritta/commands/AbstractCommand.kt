@@ -4,9 +4,6 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.extensions.localized
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.common.locale.LocaleStringData
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import mu.KotlinLogging
@@ -14,8 +11,11 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.api.commands.CommandArguments
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.LocaleStringData
 import net.perfectdreams.loritta.utils.Emotes
 import java.awt.Color
 import java.time.Instant
@@ -37,11 +37,6 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 				loritta.config.loritta.commands.cooldown
 		}
 
-	open val sendTypingStatus: Boolean
-		get() {
-			return cooldown > loritta.config.loritta.commands.imageCooldown
-		}
-
 	open fun getDescriptionKey() = Command.MISSING_DESCRIPTION_KEY
 
 	open fun getDescription(locale: BaseLocale) = locale.get(getDescriptionKey())
@@ -59,10 +54,6 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 	open fun getExamples(locale: BaseLocale): List<String> {
 		return listOf()
-	}
-
-	open fun hasCommandFeedback(): Boolean {
-		return true
 	}
 
 	open fun needsToUploadFiles(): Boolean {

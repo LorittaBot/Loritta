@@ -11,7 +11,6 @@ class CarlyAaahCommand(m: RosbifePlugin) : GabrielaImageServerCommandBase(
 	"commands.command.carlyaaah.description",
 	"/api/v1/videos/carly-aaah",
 	"carly_aaah.mp4",
-	sendTypingStatus = true,
 	category = CommandCategory.VIDEOS,
 	slashCommandName = "carlyaaah"
 )

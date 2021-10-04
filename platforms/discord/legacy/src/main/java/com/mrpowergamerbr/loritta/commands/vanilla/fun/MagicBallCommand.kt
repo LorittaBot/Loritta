@@ -24,10 +24,6 @@ class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball
 		}
 	}
 
-	override fun hasCommandFeedback(): Boolean {
-		return false
-	}
-
 	override fun canUseInPrivateChannel(): Boolean {
 		return false
 	}

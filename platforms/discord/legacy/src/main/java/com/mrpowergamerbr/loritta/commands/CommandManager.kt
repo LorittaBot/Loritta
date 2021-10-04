@@ -365,14 +365,6 @@ class CommandManager(loritta: Loritta) {
 					}
 				}
 
-				if (command.hasCommandFeedback()) {
-					// Sending typing status for every single command is costly (API limits!)
-					// To avoid sending it every time, we check if we should send the typing status
-					// (We only send it if the command takes a looong time to be executed)
-					if (command.sendTypingStatus)
-						ev.channel.sendTyping().await()
-				}
-
 				if (!isPrivateChannel && ev.guild != null && ev.member != null) {
 					// Verificar se o comando está ativado na guild atual
 					if (CommandUtils.checkIfCommandIsDisabledInGuild(serverConfig, locale, ev.channel, ev.member, command::class.simpleName!!))
