@@ -27,7 +27,7 @@ object OutdatedCommandUtils {
             locale.getList(
                 "commands.outdatedCommand.description",
                 slashCommandName,
-                loritta.discordInstanceConfig.discord.authorizationUrl,
+                loritta.discordInstanceConfig.discord.addBotUrl,
                 "${loritta.instanceConfig.loritta.website.url}support",
                 locale["commands.outdatedCommand.discordUrl"],
                 Emotes.LORI_OWO,
