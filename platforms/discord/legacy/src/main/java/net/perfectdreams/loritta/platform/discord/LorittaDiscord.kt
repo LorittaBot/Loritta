@@ -126,9 +126,9 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         }
 
     val cachedServerConfigs = Caffeine.newBuilder()
-            .maximumSize(config.caches.serverConfigs.maximumSize)
-            .expireAfterWrite(config.caches.serverConfigs.expireAfterWrite, TimeUnit.SECONDS)
-            .build<Long, ServerConfig>()
+        .maximumSize(config.caches.serverConfigs.maximumSize)
+        .expireAfterWrite(config.caches.serverConfigs.expireAfterWrite, TimeUnit.SECONDS)
+        .build<Long, ServerConfig>()
 
     // Used for message execution
     val coroutineMessageExecutor = createThreadPool("Message Executor Thread %d")
@@ -171,15 +171,15 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
         if (background?.id?.value == Background.RANDOM_BACKGROUND_ID) {
             // Caso o usuário tenha pegado um background random, vamos pegar todos os backgrounds que o usuário comprou e pegar um aleatório de lá
-            val defaultBlueBackground = if (background.id.value != Background.DEFAULT_BACKGROUND_ID) loritta.newSuspendedTransaction { Background.findById(Background.DEFAULT_BACKGROUND_ID)!! } else background
+            val defaultBlueBackground = loritta.newSuspendedTransaction { Background.findById(Background.DEFAULT_BACKGROUND_ID)!! }
             val allBackgrounds = mutableListOf(defaultBlueBackground)
 
             allBackgrounds.addAll(
-                    loritta.newSuspendedTransaction {
-                        (BackgroundPayments innerJoin Backgrounds).select {
-                            BackgroundPayments.userId eq profile.id.value
-                        }.map { Background.wrapRow(it) }
-                    }
+                loritta.newSuspendedTransaction {
+                    (BackgroundPayments innerJoin Backgrounds).select {
+                        BackgroundPayments.userId eq profile.id.value
+                    }.map { Background.wrapRow(it) }
+                }
             )
             return getUserProfileBackground(allBackgrounds.random())
         }
@@ -196,7 +196,11 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
                 val bytes = response.readBytes()
                 val image = readImage(bytes.inputStream())
-                return image
+                // If the image is null, we will get the default blue background to replace it
+                return image ?: getUserProfileBackground(Background.findById(Background.DEFAULT_BACKGROUND_ID)!!)
+            } else {
+                // If the user has a custom background ID but it doesn't have the premium plan anymore, use the default background
+                return getUserProfileBackground(Background.findById(Background.DEFAULT_BACKGROUND_ID)!!)
             }
         }
 
@@ -243,11 +247,11 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
             val allBackgrounds = mutableListOf(defaultBlueBackground)
 
             allBackgrounds.addAll(
-                    loritta.newSuspendedTransaction {
-                        (BackgroundPayments innerJoin Backgrounds).select {
-                            BackgroundPayments.userId eq profile.id.value
-                        }.map { Background.wrapRow(it) }
-                    }
+                loritta.newSuspendedTransaction {
+                    (BackgroundPayments innerJoin Backgrounds).select {
+                        BackgroundPayments.userId eq profile.id.value
+                    }.map { Background.wrapRow(it) }
+                }
             )
             background = allBackgrounds.random()
         }
@@ -567,8 +571,8 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
         val start = System.currentTimeMillis()
         val job = GlobalScope.launch(
-                coroutineMessageDispatcher + CoroutineName(coroutineName),
-                block = block
+            coroutineMessageDispatcher + CoroutineName(coroutineName),
+            block = block
         )
         // Yes, the order matters, since sometimes the invokeOnCompletion would be invoked before the job was
         // added to the list, causing leaks.
