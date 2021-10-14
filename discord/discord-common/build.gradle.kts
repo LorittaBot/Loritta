@@ -23,13 +23,6 @@ kotlin {
                 // We only depend in the common module here, the interactions/gateway will have the proper Discord InteraKTions modules related to them.
                 api("net.perfectdreams.discordinteraktions:common:${Versions.DISCORD_INTERAKTIONS}")
 
-                // Databases
-                implementation("org.jetbrains.exposed:exposed-core:${Versions.EXPOSED}")
-                implementation("org.jetbrains.exposed:exposed-jdbc:${Versions.EXPOSED}")
-                implementation("org.postgresql:postgresql:42.2.23")
-                implementation("org.xerial:sqlite-jdbc:3.36.0.3")
-                implementation("com.zaxxer:HikariCP:5.0.0")
-
                 // Used to serialize state on components
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:${Versions.KOTLINX_SERIALIZATION}")
                 // Used to serialize state on components
