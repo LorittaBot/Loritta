@@ -19,8 +19,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.guild.GuildBanEvent
 import net.dv8tion.jda.api.events.guild.GuildUnbanEvent
@@ -269,15 +267,19 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						retrievedUsers[storedMessages.first().authorId] = user
 
-						val embed = EmbedBuilder()
+						val embed = WebhookEmbedBuilder()
 						embed.setTimestamp(Instant.now())
-						embed.setColor(Color(221, 0, 0))
-						embed.setAuthor(user.name + "#" + user.discriminator, null, user.effectiveAvatarUrl)
+						embed.setColor(Color(221, 0, 0).rgb)
+						embed.setAuthor(WebhookEmbed.EmbedAuthor(user.name + "#" + user.discriminator, null, user.effectiveAvatarUrl))
 
 						val lines = mutableListOf<String>()
 
 						for (message in storedMessages) {
-							val messageSentByUser = retrievedUsers.getOrPut(message.authorId, { lorittaShards.retrieveUserInfoById(message.authorId) })
+							val messageSentByUser = retrievedUsers.getOrPut(message.authorId) {
+								lorittaShards.retrieveUserInfoById(
+									message.authorId
+								)
+							}
 
 							val creationTime = OffsetDateTime.ofInstant(Instant.ofEpochMilli(message.createdAt), TimeZone.getTimeZone("GMT").toZoneId())
 
@@ -293,7 +295,17 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 						val channelName = event.guild.getTextChannelById(storedMessages.first().channelId)?.name ?: "unknown"
 
-						textChannel.sendMessage(MessageBuilder().append(" ").setEmbed(embed.build()).build()).addFile(targetStream, "deleted-${event.guild.name}-$channelName-${DateUtils.PRETTY_FILE_SAFE_UNDERSCORE_DATE_FORMAT.format(Instant.now())}.log").queue()
+						EventLog.sendMessageInEventLogViaWebhook(
+							WebhookMessageBuilder()
+								.setUsername(event.guild.selfMember.user.name)
+								.setContent(" ")
+								.setAvatarUrl(event.guild.selfMember.user.effectiveAvatarUrl)
+								.addEmbeds(embed.build())
+								.addFile("deleted-${event.guild.name}-$channelName-${DateUtils.PRETTY_FILE_SAFE_UNDERSCORE_DATE_FORMAT.format(Instant.now())}.log", targetStream)
+								.build(),
+							event.guild,
+							eventLogConfig
+						)
 
 						loritta.newSuspendedTransaction {
 							StoredMessages.deleteWhere { StoredMessages.id inList event.messageIds.map { it.toLong() } }
