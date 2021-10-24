@@ -82,12 +82,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 			try {
 				logger.info("Baixando avatar de ${event.entity.id} para enviar no event log...")
 
-				val embed = EmbedBuilder()
-				embed.setTimestamp(Instant.now())
-				embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
-				embed.setColor(Constants.DISCORD_BLURPLE)
-				embed.setImage("attachment://avatar.png")
-
 				val oldAvatarUrl = event.oldAvatarUrl
 						?.replace("gif", "png")
 						?: event.user.defaultAvatarUrl
@@ -126,6 +120,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						}.forEach {
 							val guildId = it[ServerConfigs.id].value
 							val eventLogChannelId = it[EventLogConfigs.eventLogChannelId]
+							val eventLogConfig = EventLogConfig.wrapRow(it)
 
 							val locale = loritta.localeManager.getLocaleById(it[ServerConfigs.localeId])
 
@@ -143,12 +138,26 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 								if (!guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_READ))
 									return@forEach
 
+								val embed = WebhookEmbedBuilder()
+								embed.setTimestamp(Instant.now())
+								embed.setAuthor(WebhookEmbed.EmbedAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl))
+								embed.setColor(Constants.DISCORD_BLURPLE.rgb)
+								embed.setImageUrl("attachment://avatar.png")
+
 								embed.setDescription("\uD83D\uDDBC ${locale["modules.eventLog.avatarChanged", event.user.asMention]}")
-								embed.setFooter(locale["modules.eventLog.userID", event.user.id], null)
+								embed.setFooter(WebhookEmbed.EmbedFooter(locale["modules.eventLog.userID", event.user.id], null))
 
-								val message = MessageBuilder().append(" ").setEmbed(embed.build())
+								val message = WebhookMessageBuilder()
+									.append(" ")
+									.addEmbeds(embed.build())
+									.addFile("avatar.png", bais)
 
-								textChannel.sendMessage(message.build()).addFile(bais, "avatar.png").queue()
+
+								EventLog.sendMessageInEventLogViaWebhook(
+									message.build(),
+									guild,
+									eventLogConfig
+								)
 							}
 						}
 					}
