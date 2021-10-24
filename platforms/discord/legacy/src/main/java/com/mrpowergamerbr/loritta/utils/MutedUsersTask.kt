@@ -43,9 +43,10 @@ class MutedUsersTask : Runnable {
 					continue
 				}
 
-				val member = runBlocking { guild.retrieveMemberOrNullById(mute.userId) }
+				val member = if (mute.userId in MuteCommand.notInTheServerUserIds) null else runBlocking { guild.retrieveMemberOrNullById(mute.userId) }
 
 				if (member == null) {
+					MuteCommand.notInTheServerUserIds.add(mute.userId)
 					logger.debug { "Member ${mute.userId} has a mute status in $guild, but the member isn't there anymore!" }
 
 					deleteMuteIfNeeded(mute)
