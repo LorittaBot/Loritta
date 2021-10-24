@@ -13,7 +13,6 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.eventlog.EventLog
-import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -327,26 +326,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		bannedUsers.put("${event.guild.id}#${event.user.id}", true)
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
-			// Fazer relay de bans
-			if (event.guild.id == Constants.PORTUGUESE_SUPPORT_GUILD_ID) {
-				val relayTo = lorittaShards.getGuildById(Constants.ENGLISH_SUPPORT_GUILD_ID)
-
-				if (relayTo != null) {
-					if (relayTo.retrieveBanList().await().firstOrNull { it.user == event.user } == null) {
-						relayTo.ban(event.user, 7, "Banned on LorittaLand (Brazilian Server)").queue()
-					}
-				}
-			}
-			if (event.guild.id == Constants.ENGLISH_SUPPORT_GUILD_ID) {
-				val relayTo = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
-
-				if (relayTo != null) {
-					if (relayTo.retrieveBanList().await().firstOrNull { it.user == event.user } == null) {
-						relayTo.ban(event.user, 7, "Banido na LorittaLand (English Server)").queue()
-					}
-				}
-			}
-
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(com.mrpowergamerbr.loritta.utils.loritta, ServerConfig::eventLogConfig) ?: return@launch
 
