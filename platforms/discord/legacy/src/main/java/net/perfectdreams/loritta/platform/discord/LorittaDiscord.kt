@@ -189,7 +189,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
             val donationValue = loritta.getActiveMoneyFromDonationsAsync(profile.userId)
             val plan = UserPremiumPlans.getPlanFromValue(donationValue)
 
-            if (plan.customBackground) {
+            return if (plan.customBackground) {
                 val response = loritta.http.get<HttpResponse>("${loritta.instanceConfig.loritta.website.url}assets/img/profiles/backgrounds/custom/${profile.userId}.png?t=${System.currentTimeMillis()}") {
                     userAgent(loritta.lorittaCluster.getUserAgent())
                 }
@@ -197,10 +197,10 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
                 val bytes = response.readBytes()
                 val image = readImage(bytes.inputStream())
                 // If the image is null, we will get the default blue background to replace it
-                return image ?: getUserProfileBackground(Background.findById(Background.DEFAULT_BACKGROUND_ID)!!)
+                image ?: getUserProfileBackground(loritta.newSuspendedTransaction { Background.findById(Background.DEFAULT_BACKGROUND_ID)!! })
             } else {
                 // If the user has a custom background ID but it doesn't have the premium plan anymore, use the default background
-                return getUserProfileBackground(Background.findById(Background.DEFAULT_BACKGROUND_ID)!!)
+                getUserProfileBackground(loritta.newSuspendedTransaction { Background.findById(Background.DEFAULT_BACKGROUND_ID)!! })
             }
         }
 
