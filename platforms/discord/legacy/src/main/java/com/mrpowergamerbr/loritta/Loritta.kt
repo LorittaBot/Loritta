@@ -116,6 +116,8 @@ import okhttp3.Protocol
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
+import java.net.InetSocketAddress
+import java.net.Proxy
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -182,7 +184,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	var patchData = PatchData()
 	var sponsors: List<Sponsor> = listOf()
 	val cachedRetrievedArtists = CacheBuilder.newBuilder().expireAfterWrite(7, TimeUnit.DAYS)
-			.build<Long, Optional<CachedUserInfo>>()
+		.build<Long, Optional<CachedUserInfo>>()
 	var bucketedController: BucketedController? = null
 	val rateLimitChecker = RateLimitChecker(this)
 
@@ -198,52 +200,59 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		dispatcher.maxRequestsPerHost = discordConfig.discord.maxRequestsPerHost
 
 		val okHttpBuilder = OkHttpClient.Builder()
-				.dispatcher(dispatcher)
-				.connectTimeout(discordConfig.okHttp.connectTimeout, TimeUnit.SECONDS) // O padrão de timeouts é 10 segundos, mas vamos aumentar para evitar problemas.
-				.readTimeout(discordConfig.okHttp.readTimeout, TimeUnit.SECONDS)
-				.writeTimeout(discordConfig.okHttp.writeTimeout, TimeUnit.SECONDS)
-				.protocols(listOf(Protocol.HTTP_1_1)) // https://i.imgur.com/FcQljAP.png
+			.dispatcher(dispatcher)
+			.connectTimeout(discordConfig.okHttp.connectTimeout, TimeUnit.SECONDS) // O padrão de timeouts é 10 segundos, mas vamos aumentar para evitar problemas.
+			.readTimeout(discordConfig.okHttp.readTimeout, TimeUnit.SECONDS)
+			.writeTimeout(discordConfig.okHttp.writeTimeout, TimeUnit.SECONDS)
+			.protocols(listOf(Protocol.HTTP_1_1)) // https://i.imgur.com/FcQljAP.png
+			.apply {
+				if (discordConfig.okHttp.proxyUrl != null) {
+					val split = discordConfig.okHttp.proxyUrl.split(":")
+					this.proxy(Proxy(Proxy.Type.HTTP, InetSocketAddress(split[0], split[1].toInt())))
+				}
+			}
+
 
 		builder = DefaultShardManagerBuilder.create(discordConfig.discord.clientToken, discordConfig.discord.intents)
-				// By default all flags are enabled, so we disable all flags and then...
-				.disableCache(CacheFlag.values().toList())
-				.enableCache(discordConfig.discord.cacheFlags) // ...we enable all the flags again
-				.setChunkingFilter(ChunkingFilter.NONE) // No chunking policy because trying to load all members is hard
-				.setMemberCachePolicy(MemberCachePolicy.ALL) // Cache all members!!
-				.apply {
-					if (loritta.discordConfig.shardController.enabled) {
-						logger.info { "Using shard controller (for bots with \"sharding for very large bots\" to manage shards!" }
-						bucketedController = BucketedController(discordConfig.shardController.buckets)
-						this.setSessionController(bucketedController)
-					}
+			// By default all flags are enabled, so we disable all flags and then...
+			.disableCache(CacheFlag.values().toList())
+			.enableCache(discordConfig.discord.cacheFlags) // ...we enable all the flags again
+			.setChunkingFilter(ChunkingFilter.NONE) // No chunking policy because trying to load all members is hard
+			.setMemberCachePolicy(MemberCachePolicy.ALL) // Cache all members!!
+			.apply {
+				if (loritta.discordConfig.shardController.enabled) {
+					logger.info { "Using shard controller (for bots with \"sharding for very large bots\" to manage shards!" }
+					bucketedController = BucketedController(discordConfig.shardController.buckets)
+					this.setSessionController(bucketedController)
 				}
-				.setShardsTotal(discordConfig.discord.maxShards)
-				.setShards(lorittaCluster.minShard.toInt(), lorittaCluster.maxShard.toInt())
-				.setStatus(discordConfig.discord.status)
-				.setBulkDeleteSplittingEnabled(false)
-				.setHttpClientBuilder(okHttpBuilder)
-				.setActivityProvider {
-					// Before we updated the status every 60s and rotated between a list of status
-					// However this causes issues, Discord blocks all gateway events until the status is
-					// updated in all guilds in the shard she is in, which feels... bad, because it takes
-					// long for her to reply to new messages.
+			}
+			.setShardsTotal(discordConfig.discord.maxShards)
+			.setShards(lorittaCluster.minShard.toInt(), lorittaCluster.maxShard.toInt())
+			.setStatus(discordConfig.discord.status)
+			.setBulkDeleteSplittingEnabled(false)
+			.setHttpClientBuilder(okHttpBuilder)
+			.setActivityProvider {
+				// Before we updated the status every 60s and rotated between a list of status
+				// However this causes issues, Discord blocks all gateway events until the status is
+				// updated in all guilds in the shard she is in, which feels... bad, because it takes
+				// long for her to reply to new messages.
 
-					// Used to display the current Loritta cluster in the status
-					val currentCluster = loritta.lorittaCluster
+				// Used to display the current Loritta cluster in the status
+				val currentCluster = loritta.lorittaCluster
 
-					Activity.of(
-						Activity.ActivityType.valueOf(discordConfig.discord.activity.type),
-						"${discordConfig.discord.activity.name} | Cluster ${currentCluster.id} [$it]"
-					)
-				}
-				.addEventListeners(
-						discordListener,
-						eventLogListener,
-						messageListener,
-						voiceChannelListener,
-						channelListener,
-						discordMetricsListener
+				Activity.of(
+					Activity.ActivityType.valueOf(discordConfig.discord.activity.type),
+					"${discordConfig.discord.activity.name} | Cluster ${currentCluster.id} [$it]"
 				)
+			}
+			.addEventListeners(
+				discordListener,
+				eventLogListener,
+				messageListener,
+				voiceChannelListener,
+				channelListener,
+				discordMetricsListener
+			)
 	}
 
 	val lorittaCluster: GeneralConfig.LorittaClusterConfig
@@ -349,67 +358,67 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 
 		transaction(Databases.loritta) {
 			SchemaUtils.createMissingTablesAndColumns(
-					StoredMessages,
-					Profiles,
-					UserSettings,
-					Reminders,
-					Reputations,
-					Dailies,
-					Marriages,
-					Mutes,
-					Warns,
-					GuildProfiles,
-					Giveaways,
-					ReactionOptions,
-					ServerConfigs,
-					DonationKeys,
-					Payments,
-					ShipEffects,
-					BotVotes,
-					StoredMessages,
-					StarboardMessages,
-					Sponsors,
-					EconomyConfigs,
-					ExecutedCommandsLog,
-					BlacklistedGuilds,
-					RolesByExperience,
-					LevelAnnouncementConfigs,
-					LevelConfigs,
-					AuditLog,
-					ExperienceRoleRates,
-					BomDiaECiaWinners,
-					TrackedTwitterAccounts,
-					SonhosTransaction,
-					TrackedYouTubeAccounts,
-					TrackedTwitchAccounts,
-					CachedYouTubeChannelIds,
-					SonhosBundles,
-					Backgrounds,
-					Sets,
-					DailyShops,
-					DailyShopItems,
-					BackgroundPayments,
-					CachedDiscordUsers,
-					SentYouTubeVideoIds,
-					SpicyStacktraces,
-					BannedIps,
-					StarboardConfigs,
-					MiscellaneousConfigs,
-					EventLogConfigs,
-					AutoroleConfigs,
-					InviteBlockerConfigs,
-					ServerRolePermissions,
-					WelcomerConfigs,
-					CustomGuildCommands,
-					MemberCounterChannelConfigs,
-					ModerationConfigs,
-					WarnActions,
-					ModerationPunishmentMessagesConfig,
-					BannedUsers,
-					ProfileDesigns,
-					ProfileDesignsPayments,
-					DailyProfileShopItems,
-					CachedDiscordWebhooks
+				StoredMessages,
+				Profiles,
+				UserSettings,
+				Reminders,
+				Reputations,
+				Dailies,
+				Marriages,
+				Mutes,
+				Warns,
+				GuildProfiles,
+				Giveaways,
+				ReactionOptions,
+				ServerConfigs,
+				DonationKeys,
+				Payments,
+				ShipEffects,
+				BotVotes,
+				StoredMessages,
+				StarboardMessages,
+				Sponsors,
+				EconomyConfigs,
+				ExecutedCommandsLog,
+				BlacklistedGuilds,
+				RolesByExperience,
+				LevelAnnouncementConfigs,
+				LevelConfigs,
+				AuditLog,
+				ExperienceRoleRates,
+				BomDiaECiaWinners,
+				TrackedTwitterAccounts,
+				SonhosTransaction,
+				TrackedYouTubeAccounts,
+				TrackedTwitchAccounts,
+				CachedYouTubeChannelIds,
+				SonhosBundles,
+				Backgrounds,
+				Sets,
+				DailyShops,
+				DailyShopItems,
+				BackgroundPayments,
+				CachedDiscordUsers,
+				SentYouTubeVideoIds,
+				SpicyStacktraces,
+				BannedIps,
+				StarboardConfigs,
+				MiscellaneousConfigs,
+				EventLogConfigs,
+				AutoroleConfigs,
+				InviteBlockerConfigs,
+				ServerRolePermissions,
+				WelcomerConfigs,
+				CustomGuildCommands,
+				MemberCounterChannelConfigs,
+				ModerationConfigs,
+				WarnActions,
+				ModerationPunishmentMessagesConfig,
+				BannedUsers,
+				ProfileDesigns,
+				ProfileDesignsPayments,
+				DailyProfileShopItems,
+				CachedDiscordWebhooks
 			)
 		}
 	}
