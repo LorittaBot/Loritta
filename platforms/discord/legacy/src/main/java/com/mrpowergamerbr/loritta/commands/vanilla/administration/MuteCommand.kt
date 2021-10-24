@@ -1,24 +1,42 @@
 package com.mrpowergamerbr.loritta.commands.vanilla.administration
 
+import com.google.common.collect.Sets
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Mute
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Mutes
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.DateUtils
+import com.mrpowergamerbr.loritta.utils.MessageUtils
+import com.mrpowergamerbr.loritta.utils.TimeUtils
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
 import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNull
 import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNullById
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import kotlinx.coroutines.*
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
+import com.mrpowergamerbr.loritta.utils.onResponseByAuthor
+import com.mrpowergamerbr.loritta.utils.stripCodeMarks
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.GuildChannel
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.Role
+import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.exceptions.HierarchyException
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
@@ -152,6 +170,9 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 		// Exemplo:
 		// 297732013006389252#123170274651668480
 		val roleRemovalJobs = ConcurrentHashMap<String, Job>()
+
+		// This is used to avoid spamming Discord with retrieveMemberById requests, by storing the not in server IDs and NEVER CHECKING IT AGAIN (until they join the server again owo)
+		val notInTheServerUserIds = Sets.newConcurrentHashSet<Long>()
 
 		suspend fun muteUser(context: CommandContext, settings: AdminUtils.ModerationConfigSettings, member: Member, time: Long?, locale: BaseLocale, user: User, reason: String, isSilent: Boolean): Boolean {
 			val delay = if (time != null) {
@@ -418,10 +439,11 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 				return
 			}
 
-			val currentMember = runBlocking { currentGuild.retrieveMemberOrNullById(userId) }
+			val currentMember = if (userId in notInTheServerUserIds) null else runBlocking { currentGuild.retrieveMemberOrNullById(userId) }
 
 			if (currentMember == null) {
 				logger.warn("Ignorando job removal de $userId em $guildId - Motivo: Ela não está mais no servidor!")
+				notInTheServerUserIds.add(userId)
 				return
 			}
 

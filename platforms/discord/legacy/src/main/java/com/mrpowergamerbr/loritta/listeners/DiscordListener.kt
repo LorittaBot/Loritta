@@ -5,7 +5,11 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.administration.MuteCommand
 import com.mrpowergamerbr.loritta.dao.Mute
 import com.mrpowergamerbr.loritta.dao.ServerConfig
-import com.mrpowergamerbr.loritta.modules.*
+import com.mrpowergamerbr.loritta.modules.AutoroleModule
+import com.mrpowergamerbr.loritta.modules.InviteLinkModule
+import com.mrpowergamerbr.loritta.modules.ReactionModule
+import com.mrpowergamerbr.loritta.modules.StarboardModule
+import com.mrpowergamerbr.loritta.modules.WelcomeModule
 import com.mrpowergamerbr.loritta.tables.DonationKeys
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Mutes
@@ -37,7 +41,10 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.dao.servers.Giveaway
-import net.perfectdreams.loritta.dao.servers.moduleconfigs.*
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.AutoroleConfig
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.MemberCounterChannelConfig
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.StarboardConfig
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.WelcomerConfig
 import net.perfectdreams.loritta.platform.discord.legacy.plugin.DiscordPlugin
 import net.perfectdreams.loritta.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.tables.servers.Giveaways
@@ -422,6 +429,9 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 	}
 
 	override fun onGuildMemberJoin(event: GuildMemberJoinEvent) {
+		// Remove because maybe it is present in the set
+		MuteCommand.notInTheServerUserIds.remove(event.user.idLong)
+
 		if (DebugLog.cancelAllEvents)
 			return
 
