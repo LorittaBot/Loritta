@@ -120,7 +120,7 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 						}.forEach {
 							val guildId = it[ServerConfigs.id].value
 							val eventLogChannelId = it[EventLogConfigs.eventLogChannelId]
-							val eventLogConfig = EventLogConfig.wrapRow(it)
+							val eventLogConfig = loritta.newSuspendedTransaction { EventLogConfig.wrapRow(it) }
 
 							val locale = loritta.localeManager.getLocaleById(it[ServerConfigs.localeId])
 
@@ -151,7 +151,6 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 									.append(" ")
 									.addEmbeds(embed.build())
 									.addFile("avatar.png", bais)
-
 
 								EventLog.sendMessageInEventLogViaWebhook(
 									message.build(),
