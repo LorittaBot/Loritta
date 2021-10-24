@@ -67,6 +67,11 @@ class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
 		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
 			return
 
+		// Ignoring bot avatar updates because *every time* Loritta (or any other big bot that shares a lot of servers with her) changes their avatar,
+		// it would SPAM event log messages in a lot of servers, causing the global rate limit to be triggered. :(
+		if (event.user.isBot)
+			return
+
 		// Primeiro iremos baixar o avatar em uma task
 		// Para não precisar baixar (número de shards) vezes (na pior das hipóteses), vamos criar uma task separada que irá baixar apenas uma vez
 		// A task, ao finalizar, irá propagar para o resto dos servidores
