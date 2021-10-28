@@ -8,6 +8,11 @@ import dev.kord.rest.json.request.WebhookEditMessageRequest
 import dev.kord.rest.json.request.WebhookExecuteRequest
 import dev.kord.rest.request.RestRequestException
 import dev.kord.rest.service.ChannelService
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.putJsonArray
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.URLUtils
@@ -154,6 +159,32 @@ object WebhookCommandUtils {
             context.failEphemerally(context.i18nContext.get(WebhookCommand.I18N_PREFIX.MessageToBeRepostedDoesNotExist))
 
         throw e
+    }
+
+    inline fun <reified T> decodeRequestFromString(context: ApplicationCommandContext, input: String): T {
+        try {
+            val parsedToJsonElement = Json.parseToJsonElement(input).jsonObject
+
+            val rebuiltJson = buildJsonObject {
+                for (entry in parsedToJsonElement.entries) {
+                    if (entry.key == "embed") {
+                        putJsonArray("embeds") {
+                            add(entry.value)
+                        }
+                    } else {
+                        put(entry.key, entry.value)
+                    }
+                }
+            }
+
+            return Json.decodeFromJsonElement(rebuiltJson)
+        } catch (e: Exception) {
+            // Invalid message
+            if (!input.startsWith("{")) // Doesn't seem to be a valid JSON, maybe they would prefer using "/webhook send simple"?
+                context.failEphemerally(context.i18nContext.get(WebhookCommand.I18N_PREFIX.InvalidJsonMessageNoCurlyBraces))
+            else
+                context.failEphemerally(context.i18nContext.get(WebhookCommand.I18N_PREFIX.InvalidJsonMessage))
+        }
     }
 
     private fun validateMessageLength(context: ApplicationCommandContext, optionalContent: Optional<String?>) {

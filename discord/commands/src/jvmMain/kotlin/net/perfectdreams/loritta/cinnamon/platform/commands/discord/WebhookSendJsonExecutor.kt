@@ -1,8 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.discord
 
 import dev.kord.rest.service.RestClient
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
@@ -30,7 +28,7 @@ class WebhookSendJsonExecutor(val rest: RestClient) : CommandExecutor() {
         val message = args[Options.json]
 
         WebhookCommandUtils.sendMessageViaWebhook(context, webhookUrl) {
-            Json.decodeFromString(message)
+            WebhookCommandUtils.decodeRequestFromString(context, message)
         }
     }
 }
