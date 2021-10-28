@@ -36,6 +36,27 @@ class Color(rgb: Int) {
     companion object {
         private const val MIN_COLOR = 0
         private const val MAX_COLOR = 0xFFFFFF
+
+        fun fromString(input: String): Color {
+            if (input.indexOf(',') == 3) {
+                // r,g,b color
+                val split = input.split(',')
+                val r = requireNotNull(split[0].toIntOrNull()) { "Red part of the RGB code is not a valid integer!" }
+                val g = requireNotNull(split[1].toIntOrNull()) { "Green part of the RGB code is not a valid integer!" }
+                val b = requireNotNull(split[2].toIntOrNull()) { "Blue part of the RGB code is not a valid integer!" }
+
+                return Color(r, g, b)
+            } else if (input.startsWith("#")) {
+                // Parse it as a hex color
+                return fromHex(input)
+            } else {
+                val inputAsAnInteger = requireNotNull(input.toIntOrNull()) { "The string is not a valid color code!" }
+                return Color(inputAsAnInteger)
+            }
+        }
+
+        // https://stackoverflow.com/a/41654372/7271796
+        fun fromHex(input: String) = Color(input.removePrefix("#").toInt(16))
     }
 
     internal object Serializer : KSerializer<Color> {

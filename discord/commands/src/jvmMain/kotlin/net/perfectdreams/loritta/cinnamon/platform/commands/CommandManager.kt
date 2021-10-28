@@ -33,13 +33,20 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.S
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.SummonCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.TextTransformDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.VieirinhaCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.UserAvatarExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.UserBannerExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerSplashExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerBannerExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerIconExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerSplashExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.UserAvatarExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.UserBannerExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookEditJsonExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookEditRepostExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookEditSimpleExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookSendJsonExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookSendRepostExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookSendSimpleExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.ServerCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.WebhookCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.SonhosExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.ArtExecutor
@@ -184,6 +191,16 @@ class CommandManager(
             ServerIconExecutor(rest),
             ServerBannerExecutor(rest),
             ServerSplashExecutor(rest)
+        )
+
+        commandManager.register(
+            WebhookCommand,
+            WebhookSendSimpleExecutor(rest),
+            WebhookSendJsonExecutor(rest),
+            WebhookSendRepostExecutor(rest),
+            WebhookEditSimpleExecutor(rest),
+            WebhookEditJsonExecutor(rest),
+            WebhookEditRepostExecutor(rest)
         )
 
         // ===[ FUN ]===
