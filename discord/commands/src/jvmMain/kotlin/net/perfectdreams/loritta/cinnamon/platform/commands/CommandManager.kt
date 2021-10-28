@@ -72,6 +72,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.images.LoriAtaExecut
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.LoriDrakeExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.LoriSignExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.ManiaTitleCardExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.MarkMetaExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.MemeMakerExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.MonicaAtaExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.NichijouYuukoPaperExecutor
@@ -95,6 +96,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.GetOverHereCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.InvertColorsCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.LoriSignCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.MarkMetaCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.MemeMakerCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.NichijouYuukoPaperCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.PassingPaperCommand
@@ -303,6 +305,7 @@ class CommandManager(
         commandManager.register(ToBeContinuedCommand, ToBeContinuedExecutor(gabrielaImageServerClient))
         commandManager.register(InvertColorsCommand, InvertColorsExecutor(gabrielaImageServerClient))
         commandManager.register(MemeMakerCommand, MemeMakerExecutor(gabrielaImageServerClient))
+        commandManager.register(MarkMetaCommand, MarkMetaExecutor(gabrielaImageServerClient))
 
         // ===[ VIDEOS ]===
         commandManager.register(CarlyAaahCommand, CarlyAaahExecutor(gabrielaImageServerClient))
