@@ -20,6 +20,8 @@ messageToBeRepostedDoesNotExist: "I really wanted to repost that message for you
 tooManyEmbeds: "I know that must have been an amazing message... But that's above Discord's {maxEmbeds} embed limit per message so I can't use it, sorry!"
 tooManyEmbedFields: "I know that must have been an amazing message... But that's above Discord's {maxFields} field limit per embed so I can't use it, sorry!"
 invalidMessageUrl: "That doesn't look like a Message URL... Are you sure you copied and pasted it correctly?"
+invalidJsonMessage: "That doesn't look like a valid JSON message... Verify if you typed the JSON message correctly, check if there aren't any missing fields... and try again!"
+invalidJsonMessageNoCurlyBraces: "That doesn't look like a valid JSON message... It doesn't even has curly braces around it! Are you sure you want to send a JSON message? Maybe using `/webhook send simple` or `/webhook send repost` would be better and easier for you!"
 
 options:
   webhookUrl:
