@@ -32,16 +32,34 @@ class SlashCommandOptionsWrapper(
 
                     var idx = 1
 
-                    repeat(requiredOptions) { _ ->
-                        string("${it.name}$idx", i18nContext.get(it.description))
-                            .register()
-                        idx++
-                    }
+                    when (it.type) {
+                        CommandOptionType.UserList -> {
+                            repeat(requiredOptions) { _ ->
+                                user("${it.name}$idx", i18nContext.get(it.description))
+                                    .register()
+                                idx++
+                            }
 
-                    repeat(optionalOptions) { _ ->
-                        optionalString("${it.name}$idx", i18nContext.get(it.description))
-                            .register()
-                        idx++
+                            repeat(optionalOptions) { _ ->
+                                optionalUser("${it.name}$idx", i18nContext.get(it.description))
+                                    .register()
+                                idx++
+                            }
+                        }
+
+                        else -> {
+                            repeat(requiredOptions) { _ ->
+                                string("${it.name}$idx", i18nContext.get(it.description))
+                                    .register()
+                                idx++
+                            }
+
+                            repeat(optionalOptions) { _ ->
+                                optionalString("${it.name}$idx", i18nContext.get(it.description))
+                                    .register()
+                                idx++
+                            }
+                        }
                     }
                 }
 
@@ -49,7 +67,10 @@ class SlashCommandOptionsWrapper(
                     // For image references we can accept multiple types
                     // (User Avatar, Link, Emote, etc)
                     // Can't be required because some commands do use optional arguments before this (example: /meme)
-                    optionalString(it.name, "User Mention, Image URL or Emote. If not present, I will use an image from the channel!")
+                    optionalString(
+                        it.name,
+                        "User Mention, Image URL or Emote. If not present, I will use an image from the channel!"
+                    )
                         .register()
 
                     // TODO: Fix this later
@@ -134,12 +155,22 @@ class SlashCommandOptionsWrapper(
                             i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         )
 
-                        is CommandOptionType.Channel -> optionalChannel(
+                        is CommandOptionType.Channel -> channel(
                             it.name,
                             i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         )
 
                         is CommandOptionType.NullableChannel -> optionalChannel(
+                            it.name,
+                            i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
+                        )
+
+                        is CommandOptionType.Role -> role(
+                            it.name,
+                            i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
+                        )
+
+                        is CommandOptionType.NullableRole -> optionalRole(
                             it.name,
                             i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         )

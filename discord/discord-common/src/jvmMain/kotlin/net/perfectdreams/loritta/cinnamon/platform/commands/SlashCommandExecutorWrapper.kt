@@ -5,6 +5,7 @@ import kotlinx.datetime.Clock
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import mu.KotlinLogging
+import net.perfectdreams.discordinteraktions.api.entities.User
 import net.perfectdreams.discordinteraktions.common.commands.slash.SlashCommandExecutor
 import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.context.commands.GuildApplicationCommandContext
@@ -131,6 +132,13 @@ class SlashCommandExecutorWrapper(
                         }
                     }
 
+                    is CommandOptionType.UserList -> {
+                        val listsValues = interaKTionsArgumentEntries.filter { opt -> opt.key.name.startsWith(it.name) }
+                        cinnamonArgs[it] = mutableListOf<User>().also {
+                            it.addAll(listsValues.map { it.value as User })
+                        }
+                    }
+
                     is CommandOptionType.ImageReference -> {
                         // Special case: Image References
                         // Get the argument that matches our image reference
@@ -235,11 +243,15 @@ class SlashCommandExecutorWrapper(
                             }
 
                             is CommandOptionType.Channel, CommandOptionType.NullableChannel -> {
-                                println("okay, tipo de canal")
-                                println("Argumento é null? ${interaKTionArgument == null}")
-                                println("Guild é null? ${guildId == null}")
-                                // cinnamonArgs[it] = interaKTionArgument?.value?.let { guild?.toLorittaGuild(loritta.interactions.rest)?.retrieveChannel((interaKTionArgument.value as Channel).id.value) }
-                                TODO()
+                                cinnamonArgs[it] = interaKTionArgument?.value?.let {
+                                    interaKTionArgument.value
+                                }
+                            }
+
+                            is CommandOptionType.Role, CommandOptionType.NullableRole -> {
+                                cinnamonArgs[it] = interaKTionArgument?.value?.let {
+                                    interaKTionArgument.value
+                                }
                             }
 
                             else -> {

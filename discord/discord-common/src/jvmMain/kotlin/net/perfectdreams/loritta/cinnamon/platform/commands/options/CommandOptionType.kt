@@ -83,6 +83,10 @@ interface CommandOptionType {
         override val isNullable = false
     }
 
+    object UserList : CommandOptionType {
+        override val isNullable = false
+    }
+
     // ImageReference
     object ImageReference : CommandOptionType {
         override val isNullable = false

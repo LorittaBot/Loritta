@@ -1,5 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.options
 
+import net.perfectdreams.discordinteraktions.api.entities.Channel
+import net.perfectdreams.discordinteraktions.api.entities.Role
 import net.perfectdreams.discordinteraktions.api.entities.User
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.common.images.ImageReference
@@ -71,8 +73,40 @@ open class CommandOptions {
         description
     )
 
+    fun channel(name: String, description: StringI18nData) = argument<Channel>(
+        CommandOptionType.Channel,
+        name,
+        description
+    )
+
+    fun optionalChannel(name: String, description: StringI18nData) = argument<Channel?>(
+        CommandOptionType.NullableChannel,
+        name,
+        description
+    )
+
+    fun role(name: String, description: StringI18nData) = argument<Role>(
+        CommandOptionType.Role,
+        name,
+        description
+    )
+
+    fun optionalRole(name: String, description: StringI18nData) = argument<Role?>(
+        CommandOptionType.NullableRole,
+        name,
+        description
+    )
+
     fun stringList(name: String, description: StringI18nData, minimum: Int? = null, maximum: Int? = null) = ListCommandOptionBuilder<List<String>>(
         CommandOptionType.StringList,
+        name,
+        description,
+        minimum,
+        maximum
+    )
+
+    fun userList(name: String, description: StringI18nData, minimum: Int? = null, maximum: Int? = null) = ListCommandOptionBuilder<List<User>>(
+        CommandOptionType.UserList,
         name,
         description,
         minimum,
