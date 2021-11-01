@@ -32,6 +32,7 @@ class CommandRegistry(
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}
+        private const val MAX_COMMAND_DESCRIPTION_LENGTH = 100
     }
 
     val declarations = mutableListOf<CommandDeclarationBuilder>()
@@ -247,7 +248,7 @@ class CommandRegistry(
 
     private fun SlashCommandDeclarationBuilder.addSubcommandGroups(declaration: CommandDeclarationBuilder, signature: AtomicInteger, createdExecutors: MutableList<SlashCommandExecutor>, i18nContext: I18nContext) {
         for (group in declaration.subcommandGroups) {
-            subcommandGroup(group.labels.first(), i18nContext.get(declaration.description).shortenWithEllipsis()) {
+            subcommandGroup(group.labels.first(), i18nContext.get(declaration.description).shortenWithEllipsis(MAX_COMMAND_DESCRIPTION_LENGTH)) {
                 for (subcommand in group.subcommands) {
                     subcommands.add(
                         convertCommandDeclarationToSlashCommand(
@@ -294,5 +295,5 @@ class CommandRegistry(
         // Looks better without this whitespace
         // append(" ")
         append(i18nContext.get(declaration.description))
-    }.shortenWithEllipsis()
+    }.shortenWithEllipsis(MAX_COMMAND_DESCRIPTION_LENGTH)
 }

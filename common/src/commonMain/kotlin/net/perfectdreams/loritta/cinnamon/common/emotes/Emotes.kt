@@ -24,6 +24,8 @@ object Emotes {
     val LoriBlackAndWhite = DiscordEmote(890738812538478643L, "lori_bw", false)
     val LoriGrayscale = DiscordEmote(890738824748093490L, "lori_grayscale", false)
     val LoriColored = DiscordEmote(890738873242632192L, "lori", false)
+    val LoriPing = DiscordEmote(640141673531441153, "lori_yay_ping", false)
+    val LoriHappy = DiscordEmote(521721811298156558, "lori_happy", true)
 
     val Error = DiscordEmote(412585701054611458L, "error", false)
 
