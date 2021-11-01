@@ -16,6 +16,10 @@ class SlashCommandOptionsWrapper(
     declarationExecutor: CommandExecutorDeclaration,
     i18nContext: I18nContext
 ) : CommandOptions() {
+    companion object {
+        private const val MAX_OPTIONS_DESCRIPTION_LENGTH = 100
+    }
+
     init {
         declarationExecutor.options.arguments.forEach {
             when {
@@ -58,7 +62,7 @@ class SlashCommandOptionsWrapper(
                     val arg = when (it.type) {
                         is CommandOptionType.String -> string(
                             it.name,
-                            i18nContext.get(it.description).shortenWithEllipsis()
+                            i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         ).also { option ->
                             it.choices.take(25).forEach {
                                 option.choice(it.value as String, i18nContext.get(it.name))
@@ -67,7 +71,7 @@ class SlashCommandOptionsWrapper(
 
                         is CommandOptionType.NullableString -> optionalString(
                             it.name,
-                            i18nContext.get(it.description).shortenWithEllipsis()
+                            i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         ).also { option ->
                             it.choices.take(25).forEach {
                                 option.choice(it.value as String, i18nContext.get(it.name))
@@ -76,7 +80,7 @@ class SlashCommandOptionsWrapper(
 
                         is CommandOptionType.Integer -> integer(
                             it.name,
-                            i18nContext.get(it.description).shortenWithEllipsis()
+                            i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         ).also { option ->
                             it.choices.take(25).forEach {
                                 option.choice(it.value as Long, i18nContext.get(it.name))
@@ -85,7 +89,7 @@ class SlashCommandOptionsWrapper(
 
                         is CommandOptionType.NullableInteger -> optionalInteger(
                             it.name,
-                            i18nContext.get(it.description).shortenWithEllipsis()
+                            i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         ).also { option ->
                             it.choices.take(25).forEach {
                                 option.choice(it.value as Long, i18nContext.get(it.name))
@@ -94,7 +98,7 @@ class SlashCommandOptionsWrapper(
 
                         is CommandOptionType.Number -> number(
                             it.name,
-                            i18nContext.get(it.description).shortenWithEllipsis()
+                            i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         ).also { option ->
                             it.choices.take(25).forEach {
                                 option.choice(it.value as Double, i18nContext.get(it.name))
@@ -103,7 +107,7 @@ class SlashCommandOptionsWrapper(
 
                         is CommandOptionType.NullableNumber -> optionalNumber(
                             it.name,
-                            i18nContext.get(it.description).shortenWithEllipsis()
+                            i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         ).also { option ->
                             it.choices.take(25).forEach {
                                 option.choice(it.value as Double?, i18nContext.get(it.name))
@@ -112,32 +116,32 @@ class SlashCommandOptionsWrapper(
 
                         is CommandOptionType.Bool -> boolean(
                             it.name,
-                            i18nContext.get(it.description).shortenWithEllipsis()
+                            i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         )
 
                         is CommandOptionType.NullableBool -> optionalBoolean(
                             it.name,
-                            i18nContext.get(it.description).shortenWithEllipsis()
+                            i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         )
 
                         is CommandOptionType.User -> user(
                             it.name,
-                            i18nContext.get(it.description).shortenWithEllipsis()
+                            i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         )
 
                         is CommandOptionType.NullableUser -> optionalUser(
                             it.name,
-                            i18nContext.get(it.description).shortenWithEllipsis()
+                            i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         )
 
                         is CommandOptionType.Channel -> optionalChannel(
                             it.name,
-                            i18nContext.get(it.description).shortenWithEllipsis()
+                            i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         )
 
                         is CommandOptionType.NullableChannel -> optionalChannel(
                             it.name,
-                            i18nContext.get(it.description).shortenWithEllipsis()
+                            i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         )
 
                         else -> throw UnsupportedOperationException("Unsupported option type ${it.type}")

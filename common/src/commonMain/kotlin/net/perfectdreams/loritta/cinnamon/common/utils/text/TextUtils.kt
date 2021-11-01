@@ -23,9 +23,12 @@ object TextUtils {
 
     fun snakeToUpperCamelCase(string: String) = snakeToLowerCamelCase(string).capitalize()
 
-    fun String.shortenWithEllipsis(): String {
-        if (this.length >= 100)
-            return this.take(97) + "..."
+    fun String.shortenWithEllipsis(maxLength: Int, suffix: String = "..."): String {
+        if (this.length >= maxLength)
+            return this.take(maxLength - suffix.length) + suffix
         return this
     }
+
+    fun String.shortenAndRemoveCodeBackticks(maxLength: Int, suffix: String = "..."): String =
+        shortenWithEllipsis(maxLength, suffix).replace("`", "")
 }

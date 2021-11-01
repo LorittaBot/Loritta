@@ -119,7 +119,7 @@ class AchievementsExecutor : CommandExecutor() {
                                     default = true // Set as default if we are currently looking at this category
 
                                 description = i18nContext.get(optionCategory.description)
-                                    .shortenWithEllipsis()
+                                    .shortenWithEllipsis(100)
                                 loriEmoji = optionCategory.emote
                             }
                         }
