@@ -477,11 +477,6 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 
 			// Executar comandos
 			var start = System.nanoTime()
-			if (loritta.commandManager.matches(lorittaMessageEvent, rawArguments, serverConfig, locale, lorittaUser))
-				return true
-			logIfEnabled(enableProfiling) { "Checking for command manager commands took ${System.nanoTime() - start}ns for ${author.idLong}" }
-
-			start = System.nanoTime()
 			if (loritta.commandMap.dispatch(lorittaMessageEvent, rawArguments, serverConfig, locale, lorittaUser))
 				return true
 			logIfEnabled(enableProfiling) { "Checking for command map commands took ${System.nanoTime() - start}ns for ${author.idLong}" }
