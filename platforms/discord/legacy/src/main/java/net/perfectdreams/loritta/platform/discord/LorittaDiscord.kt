@@ -25,11 +25,6 @@ import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent
 import net.perfectdreams.loritta.api.LorittaBot
-import net.perfectdreams.loritta.commands.utils.AnagramExecutor
-import net.perfectdreams.loritta.commands.utils.MorseFromExecutor
-import net.perfectdreams.loritta.commands.utils.MorseToExecutor
-import net.perfectdreams.loritta.commands.utils.declarations.AnagramCommand
-import net.perfectdreams.loritta.commands.utils.declarations.MorseCommand
 import net.perfectdreams.loritta.commands.vanilla.`fun`.*
 import net.perfectdreams.loritta.commands.vanilla.administration.*
 import net.perfectdreams.loritta.commands.vanilla.economy.*
