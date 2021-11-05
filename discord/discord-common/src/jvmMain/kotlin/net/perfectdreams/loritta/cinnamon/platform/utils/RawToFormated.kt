@@ -84,7 +84,10 @@ object RawToFormated {
         GuildFeature.MoreStickers to I18nKeys.GuildFeatures.MoreStickers,
         GuildFeature.ThreeDayThreadArchive to I18nKeys.GuildFeatures.ThreeDayThreadArchive,
         GuildFeature.SevenDayThreadArchive to I18nKeys.GuildFeatures.SevenDayThreadArchive,
-        GuildFeature.PrivateThreads to I18nKeys.GuildFeatures.PrivateThreads
+        GuildFeature.PrivateThreads to I18nKeys.GuildFeatures.PrivateThreads,
+        GuildFeature.MemberVerificationGateEnabled to I18nKeys.GuildFeatures.MemberVerificationGateEnabled,
+        GuildFeature.PreviewEnabled to I18nKeys.GuildFeatures.PreviewEnabled,
+        GuildFeature.RoleIcons to I18nKeys.GuildFeatures.RoleIcons
     ).toMutableMap()
 
     fun List<UserFlag>.toEmotes() = mapNotNull {
