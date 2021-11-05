@@ -4,6 +4,8 @@ import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ChannelInfoExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.RoleInfoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerBannerExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerIconExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerSplashExecutor
@@ -22,6 +24,18 @@ object ServerCommand : CommandDeclaration {
 
         subcommand(listOf("splash"), I18nKeysData.Commands.Command.Server.Splash.Description) {
             executor = ServerSplashExecutor
+        }
+
+        subcommandGroup(listOf("channel"), TodoFixThisData) {
+            subcommand(listOf("info"), I18nKeysData.Commands.Command.Server.Channel.Info.Description) {
+                executor = ChannelInfoExecutor
+            }
+        }
+
+        subcommandGroup(listOf("role"), TodoFixThisData) {
+            subcommand(listOf("info"), I18nKeysData.Commands.Command.Server.Role.Info.Description) {
+                executor = RoleInfoExecutor
+            }
         }
     }
 }
