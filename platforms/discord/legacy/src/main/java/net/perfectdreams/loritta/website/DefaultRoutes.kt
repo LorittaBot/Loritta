@@ -33,7 +33,6 @@ import net.perfectdreams.loritta.website.routes.api.v1.guild.GetMembersWithRoles
 import net.perfectdreams.loritta.website.routes.api.v1.guild.GetServerConfigRoute
 import net.perfectdreams.loritta.website.routes.api.v1.guild.GetServerConfigSectionRoute
 import net.perfectdreams.loritta.website.routes.api.v1.guild.PatchServerConfigRoute
-import net.perfectdreams.loritta.website.routes.api.v1.guild.PatchUpdateServerConfigBadgeRoute
 import net.perfectdreams.loritta.website.routes.api.v1.guild.PostObsoleteServerConfigRoute
 import net.perfectdreams.loritta.website.routes.api.v1.guild.PostSearchGuildsRoute
 import net.perfectdreams.loritta.website.routes.api.v1.guild.PostSendMessageGuildRoute
@@ -189,7 +188,6 @@ object DefaultRoutes {
 			PostObsoleteServerConfigRoute(loritta),
 			PostSearchGuildsRoute(loritta),
 			PostSendMessageGuildRoute(loritta),
-			PatchUpdateServerConfigBadgeRoute(loritta),
 			GetServerConfigSectionRoute(loritta),
 
 			// Loritta

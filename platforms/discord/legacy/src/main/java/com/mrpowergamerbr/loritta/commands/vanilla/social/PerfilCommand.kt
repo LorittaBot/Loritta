@@ -18,17 +18,17 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.LorittaShards
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.MiscUtils
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.tables.BotVotes
 import net.perfectdreams.loritta.utils.AccountUtils
 import net.perfectdreams.loritta.utils.ClusterOfflineException
@@ -159,6 +159,8 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			if (user.idLong == 249508932861558785L || user.idLong == 336892460280315905L)
 				badges += ImageIO.read(File(Loritta.ASSETS + "loritta_sweater.png"))
 
+			val dssNamespace = loritta.dreamStorageService.getCachedNamespaceOrRetrieve()
+
 			loritta.newSuspendedTransaction {
 				val results = (ServerConfigs innerJoin DonationConfigs)
 					.select {
@@ -170,7 +172,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 				for (config in configs) {
 					val donationKeysValue = config.getActiveDonationKeysValueNested()
 					if (ServerPremiumPlans.getPlanFromValue(donationKeysValue).hasCustomBadge) {
-						val badge = LorittaUtils.downloadImage("${loritta.instanceConfig.loritta.website.url}/assets/img/badges/custom/${config.guildId}.png?t=${System.currentTimeMillis()}", bypassSafety = true)
+						val badge = LorittaUtils.downloadImage("${loritta.config.dreamStorageService.url}/$dssNamespace/${config.donationConfig?.customBadgePath}", bypassSafety = true)
 
 						if (badge != null) {
 							badges += badge

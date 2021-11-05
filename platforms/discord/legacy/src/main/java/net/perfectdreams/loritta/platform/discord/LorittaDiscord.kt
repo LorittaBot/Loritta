@@ -24,6 +24,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent
+import net.perfectdreams.dreamstorageservice.client.DreamStorageServiceClient
 import net.perfectdreams.loritta.api.LorittaBot
 import net.perfectdreams.loritta.commands.vanilla.`fun`.*
 import net.perfectdreams.loritta.commands.vanilla.administration.*
@@ -105,6 +106,11 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
             }
         }
     }
+    val dreamStorageService = DreamStorageServiceClient(
+        config.dreamStorageService.url,
+        config.dreamStorageService.token,
+        httpWithoutTimeout
+    )
     override val random = Random(System.currentTimeMillis())
     private val logger = KotlinLogging.logger {}
 

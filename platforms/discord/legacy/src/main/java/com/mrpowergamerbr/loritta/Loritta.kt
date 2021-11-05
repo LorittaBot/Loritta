@@ -20,6 +20,7 @@ import com.mrpowergamerbr.loritta.listeners.MessageListener
 import com.mrpowergamerbr.loritta.listeners.VoiceChannelListener
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.tables.Dailies
+import com.mrpowergamerbr.loritta.tables.DonationConfigs
 import com.mrpowergamerbr.loritta.tables.DonationKeys
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Marriages
@@ -402,6 +403,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 				SentYouTubeVideoIds,
 				SpicyStacktraces,
 				BannedIps,
+				DonationConfigs,
 				StarboardConfigs,
 				MiscellaneousConfigs,
 				EventLogConfigs,

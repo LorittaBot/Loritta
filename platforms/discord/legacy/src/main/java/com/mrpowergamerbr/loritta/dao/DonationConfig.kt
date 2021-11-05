@@ -10,4 +10,5 @@ class DonationConfig(id: EntityID<Long>) : Entity<Long>(id) {
 
 	var customBadge by DonationConfigs.customBadge
 	var dailyMultiplier by DonationConfigs.dailyMultiplier
+	var customBadgePath by DonationConfigs.customBadgePath
 }

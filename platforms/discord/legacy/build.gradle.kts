@@ -51,6 +51,9 @@ dependencies {
     api("org.jetbrains.exposed:exposed-jdbc:${Versions.EXPOSED}")
     api("pw.forst:exposed-upsert:1.1.0")
 
+    // DreamStorageService
+    api("net.perfectdreams.dreamstorageservice:client:0.0.1-SNAPSHOT")
+
     api("org.apache.commons:commons-lang3:3.11")
     api("commons-codec:commons-codec:1.15")
     api("commons-io:commons-io:2.8.0")

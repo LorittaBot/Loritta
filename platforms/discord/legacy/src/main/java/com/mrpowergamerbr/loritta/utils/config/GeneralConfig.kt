@@ -22,7 +22,8 @@ class GeneralConfig(
 		val twitch: TwitchConfig,
 		val generalWebhook: GeneralWebhookConfig,
 		val fortniteApi: FortniteApiConfig,
-		val caches: CacheConfig
+		val caches: CacheConfig,
+		val dreamStorageService: DreamStorageServiceConfig
 ) {
 
 	@Serializable
