@@ -111,7 +111,7 @@ class RoleInfoExecutor(val rest: RestClient) : CommandExecutor() {
 
                 field {
                     name = "${Emotes.Shield} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.Permissions)
-                    value = rolePermissionsLocalized ?: context.i18nContext.get(I18nKeysData.Common.None2)
+                    value = rolePermissionsLocalized ?: context.i18nContext.get(I18nKeysData.Common.NoPermissions)
                 }
             }
 

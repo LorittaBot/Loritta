@@ -142,7 +142,7 @@ class InviteInfoExecutor(val rest: RestClient) : CommandExecutor() {
                     value = featuresToLocalized?.joinToString(
                         ", ",
                         transform = { "`${context.i18nContext.get(it)}`" })
-                        ?: context.i18nContext.get(I18nKeys.Common.None)
+                        ?: context.i18nContext.get(I18nKeys.Common.NoFeature)
                 }
             }
 
