@@ -2,6 +2,7 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.CopySpec
+import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.kotlin.dsl.task
 import java.io.File
@@ -35,6 +36,9 @@ fun Project.runnableJarTask(
     customAttributes: Map<String, String>
 ): Task {
     return task("runnableJar", type = Jar::class) {
+        // Fixes a "is a duplicate but no duplicate handling strategy has been set" error
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
         doFirst {
             archiveBaseName.set("${project.name}-runnable")
 
