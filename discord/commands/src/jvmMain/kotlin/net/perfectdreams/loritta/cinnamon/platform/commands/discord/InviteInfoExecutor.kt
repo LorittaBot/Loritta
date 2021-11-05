@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandCo
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.InviteCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.ServerCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
@@ -22,7 +23,7 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.RawToFormated.toLocaliz
 class InviteInfoExecutor(val rest: RestClient) : CommandExecutor() {
     companion object : CommandExecutorDeclaration(InviteInfoExecutor::class) {
         object Options : CommandOptions() {
-            val invite = string("invite", ServerCommand.I18N_PREFIX.Invite.Options.Invite)
+            val invite = string("invite", InviteCommand.I18N_PREFIX.Info.Options.Invite)
                 .register()
         }
 
@@ -59,7 +60,7 @@ class InviteInfoExecutor(val rest: RestClient) : CommandExecutor() {
             context.failEphemerally {
                 styled(
                     context.i18nContext.get(
-                        ServerCommand.I18N_PREFIX.Invite.DoesntExists(
+                        InviteCommand.I18N_PREFIX.Info.DoesntExists(
                             args[Options.invite].shortenAndRemoveCodeBackticks(100)
                         )
                     ),
@@ -76,7 +77,7 @@ class InviteInfoExecutor(val rest: RestClient) : CommandExecutor() {
             context.failEphemerally {
                 styled(
                     context.i18nContext.get(
-                        ServerCommand.I18N_PREFIX.Invite.DoesntExists(
+                        InviteCommand.I18N_PREFIX.Info.DoesntExists(
                             args[Options.invite].shortenAndRemoveCodeBackticks(100)
                         )
                     ),
@@ -102,12 +103,14 @@ class InviteInfoExecutor(val rest: RestClient) : CommandExecutor() {
 
                 field {
                     name = "${Emotes.BustsInSilhouette} " + context.i18nContext.get(
-                        ServerCommand.I18N_PREFIX.Invite.ServerMembers
+                        InviteCommand.I18N_PREFIX.Info.ServerMembers
                     )
                     value = "${Emotes.PersonTippingHand} " + context.i18nContext.get(
-                        ServerCommand.I18N_PREFIX.Invite.MembersPresence(
+                        InviteCommand.I18N_PREFIX.Info.OnlineMembersPresence(
                             invite.approximatePresenceCount.value!!.toString(),
-                            Emotes.Sleeping,
+                        )
+                    ) + "\n${Emotes.Sleeping} " + context.i18nContext.get(
+                        InviteCommand.I18N_PREFIX.Info.OfflineMembersPresence(
                             (invite.approximateMemberCount.value!! - invite.approximatePresenceCount.value!!).toString()
                         )
                     )
@@ -117,7 +120,7 @@ class InviteInfoExecutor(val rest: RestClient) : CommandExecutor() {
 
                 if (invite.channel.name.value != null) field {
                     name = "${Emotes.SpeakingHead} " + context.i18nContext.get(
-                        ServerCommand.I18N_PREFIX.Invite.InvitationChannel
+                        InviteCommand.I18N_PREFIX.Info.InvitationChannel
                     )
                     value = "#${invite.channel.name.value} (`${invite.channel.id.value}`)"
 
@@ -126,7 +129,7 @@ class InviteInfoExecutor(val rest: RestClient) : CommandExecutor() {
 
                 if (invite.inviter.value != null) field {
                     name = "${Emotes.Wave}" + context.i18nContext.get(
-                        ServerCommand.I18N_PREFIX.Invite.WhoInvited
+                        InviteCommand.I18N_PREFIX.Info.WhoInvited
                     )
                     value = "${invite.inviter.value!!.username}#${invite.inviter.value!!.discriminator} " +
                             "(`${invite.inviter.value!!.id.value}`)"
@@ -137,12 +140,12 @@ class InviteInfoExecutor(val rest: RestClient) : CommandExecutor() {
                 val featuresToLocalized = invite.guild.value?.features?.toLocalized()
                 field {
                     name = "${Emotes.Sparkles} " + context.i18nContext.get(
-                        ServerCommand.I18N_PREFIX.Invite.GuildFeatures
+                        InviteCommand.I18N_PREFIX.Info.GuildFeatures
                     )
                     value = featuresToLocalized?.joinToString(
                         ", ",
                         transform = { "`${context.i18nContext.get(it)}`" })
-                        ?: context.i18nContext.get(I18nKeys.Common.NoFeature)
+                        ?: context.i18nContext.get(InviteCommand.I18N_PREFIX.Info.GuildFeatures)
                 }
             }
 

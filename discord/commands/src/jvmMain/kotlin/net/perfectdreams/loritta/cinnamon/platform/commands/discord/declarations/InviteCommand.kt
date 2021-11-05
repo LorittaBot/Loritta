@@ -7,10 +7,10 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.Command
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.InviteInfoExecutor
 
 object InviteCommand : CommandDeclaration {
-    val I18N_PREFIX = I18nKeysData.Commands.Command.Server
+    val I18N_PREFIX = I18nKeysData.Commands.Command.Invite
 
     override fun declaration() = command(listOf("invite"), CommandCategory.DISCORD, TodoFixThisData) {
-        subcommand(listOf("info"), I18N_PREFIX.Invite.Description) {
+        subcommand(listOf("info"), I18N_PREFIX.Info.Description) {
             executor = InviteInfoExecutor
         }
     }
