@@ -20,7 +20,6 @@ rootProject.name = "loritta-parent"
 
 include(":common")
 include(":common-legacy")
-include(":commands")
 include(":loritta-serializable-commons")
 include(":platforms:discord:db-tables")
 include(":platforms:discord:legacy")
