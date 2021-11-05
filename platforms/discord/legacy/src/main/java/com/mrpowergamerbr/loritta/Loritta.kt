@@ -71,6 +71,7 @@ import net.perfectdreams.loritta.tables.BomDiaECiaWinners
 import net.perfectdreams.loritta.tables.BotVotes
 import net.perfectdreams.loritta.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.tables.CachedYouTubeChannelIds
+import net.perfectdreams.loritta.tables.CustomBackgroundSettings
 import net.perfectdreams.loritta.tables.DailyProfileShopItems
 import net.perfectdreams.loritta.tables.DailyShopItems
 import net.perfectdreams.loritta.tables.DailyShops
@@ -420,7 +421,8 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 				ProfileDesigns,
 				ProfileDesignsPayments,
 				DailyProfileShopItems,
-				CachedDiscordWebhooks
+				CachedDiscordWebhooks,
+				CustomBackgroundSettings
 			)
 		}
 	}

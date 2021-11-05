@@ -21,8 +21,12 @@ import io.ktor.http.*
 import io.ktor.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import net.perfectdreams.dreamstorageservice.data.DeleteFileLinkRequest
+import net.perfectdreams.dreamstorageservice.data.UploadFileRequest
+import net.perfectdreams.loritta.api.utils.NoCopyByteArrayOutputStream
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.BackgroundPayments
+import net.perfectdreams.loritta.tables.CustomBackgroundSettings
 import net.perfectdreams.loritta.tables.ProfileDesigns
 import net.perfectdreams.loritta.tables.ProfileDesignsPayments
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
@@ -35,9 +39,8 @@ import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
+import pw.forst.exposed.insertOrUpdate
 import java.awt.image.BufferedImage
-import java.io.ByteArrayOutputStream
-import java.io.File
 import java.util.*
 import javax.imageio.ImageIO
 
@@ -62,9 +65,9 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 				val username = split[0].trim()
 				if (2 > username.length)
 					throw WebsiteAPIException(HttpStatusCode.NotFound,
-							WebsiteUtils.createErrorPayload(
-									LoriWebCode.UNKNOWN_USER
-							)
+						WebsiteUtils.createErrorPayload(
+							LoriWebCode.UNKNOWN_USER
+						)
 					)
 
 				val discriminator = split[1].trim()
@@ -73,16 +76,16 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 
 				userInfo?.id
 			} ?: throw WebsiteAPIException(HttpStatusCode.NotFound,
-					WebsiteUtils.createErrorPayload(
-							LoriWebCode.UNKNOWN_USER
-					)
+				WebsiteUtils.createErrorPayload(
+					LoriWebCode.UNKNOWN_USER
+				)
 			)
 
 			if (3000 > profile.money) {
 				throw WebsiteAPIException(HttpStatusCode.PaymentRequired,
-						WebsiteUtils.createErrorPayload(
-								LoriWebCode.INSUFFICIENT_FUNDS
-						)
+					WebsiteUtils.createErrorPayload(
+						LoriWebCode.INSUFFICIENT_FUNDS
+					)
 				)
 			}
 
@@ -114,9 +117,9 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 
 			if (internalName != Background.DEFAULT_BACKGROUND_ID && internalName != Background.RANDOM_BACKGROUND_ID && internalName != Background.CUSTOM_BACKGROUND_ID && loritta.newSuspendedTransaction { BackgroundPayments.select { BackgroundPayments.background eq internalName and (BackgroundPayments.userId eq userIdentification.id.toLong()) }.count() } == 0L) {
 				throw WebsiteAPIException(HttpStatusCode.Forbidden,
-						WebsiteUtils.createErrorPayload(
-								LoriWebCode.FORBIDDEN
-						)
+					WebsiteUtils.createErrorPayload(
+						LoriWebCode.FORBIDDEN
+					)
 				)
 			}
 
@@ -126,15 +129,18 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 
 				if (!plan.customBackground)
 					throw WebsiteAPIException(HttpStatusCode.Forbidden,
-							WebsiteUtils.createErrorPayload(
-									LoriWebCode.FORBIDDEN
-							)
+						WebsiteUtils.createErrorPayload(
+							LoriWebCode.FORBIDDEN
+						)
 					)
 			}
 
 			// Se é um background personalizado, vamos pegar a imagem e salvar!
 			// Mas apenas se o usuário enviou um background, altere o bg salvo, yay
 			val data = config["data"].nullString
+			var oldPath: String? = null
+			var newPath: String? = null
+
 			if (internalName == Background.CUSTOM_BACKGROUND_ID && data != null) {
 				val decodedBytes = Base64.getDecoder().decode(data.split(",")[1])
 				val decodedImage = readImage(decodedBytes.inputStream())
@@ -144,15 +150,41 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 				if (decodedImage.width != 800 && decodedImage.height != 600)
 					writeImage = decodedImage.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH).toBufferedImage()
 
-				val baos = ByteArrayOutputStream()
+				val baos = NoCopyByteArrayOutputStream()
 				ImageIO.write(writeImage, "png", baos)
 
-				File(com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.folder, "static/assets/img/profiles/backgrounds/custom/${profile.id.value}.png")
-						.writeBytes(baos.toByteArray())
+				val (path, fullPath) = loritta.dreamStorageService.fileLinks.uploadFile(
+					baos.toByteArray(),
+					ContentType.Image.PNG,
+					UploadFileRequest(
+						"profiles/backgrounds/custom/${profile.id.value}/%s.png"
+					)
+				)
+
+				newPath = path
 			}
 
 			loritta.newSuspendedTransaction {
 				profileSettings.activeBackground = Background.findById(internalName)
+				oldPath = CustomBackgroundSettings.select { CustomBackgroundSettings.settings eq profileSettings.id }.firstOrNull()?.get(CustomBackgroundSettings.path)
+
+				if (newPath != null) {
+					CustomBackgroundSettings.insertOrUpdate(CustomBackgroundSettings.settings) {
+						it[settings] = profileSettings.id
+						it[path] = newPath
+					}
+				}
+			}
+
+			// Just to avoid adding !! within the DeleteFileLinkRequest call
+			val immutableOldPath = oldPath
+			val immutableNewPath = newPath
+
+			if (immutableOldPath != null && immutableNewPath != immutableOldPath) {
+				// Request deletion of the old profile background
+				com.mrpowergamerbr.loritta.utils.loritta.dreamStorageService.fileLinks.deleteLink(
+					DeleteFileLinkRequest(immutableOldPath)
+				)
 			}
 
 			call.respondJson(jsonObject())
@@ -164,9 +196,9 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 
 			if (internalName != ProfileDesign.DEFAULT_PROFILE_DESIGN_ID && internalName != ProfileDesign.RANDOM_PROFILE_DESIGN_ID && loritta.newSuspendedTransaction { ProfileDesignsPayments.select { ProfileDesignsPayments.profile eq internalName and (ProfileDesignsPayments.userId eq userIdentification.id.toLong()) }.count() } == 0L) {
 				throw WebsiteAPIException(HttpStatusCode.Forbidden,
-						WebsiteUtils.createErrorPayload(
-								LoriWebCode.FORBIDDEN
-						)
+					WebsiteUtils.createErrorPayload(
+						LoriWebCode.FORBIDDEN
+					)
 				)
 			}
 
