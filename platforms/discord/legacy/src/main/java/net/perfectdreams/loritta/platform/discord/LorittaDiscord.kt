@@ -39,7 +39,6 @@ import net.perfectdreams.loritta.commands.vanilla.roblox.*
 import net.perfectdreams.loritta.commands.vanilla.social.*
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.dao.Payment
-import net.perfectdreams.loritta.platform.discord.commands.JDACommandManager
 import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordCommandMap
 import net.perfectdreams.loritta.platform.discord.legacy.plugin.JVMPluginManager
 import net.perfectdreams.loritta.platform.discord.utils.*
@@ -73,7 +72,6 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
     val perfectPaymentsClient = PerfectPaymentsClient(config.perfectPayments.url)
 
     override val commandMap = DiscordCommandMap(this)
-    val commandManager = JDACommandManager(this)
     override val pluginManager = JVMPluginManager(this)
     override val assets = JVMLorittaAssets(this)
     val localeManager = LocaleManager(File(instanceConfig.loritta.folders.locales))
@@ -141,21 +139,6 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
     val pendingMessages = ConcurrentLinkedQueue<Job>()
     val guildSetupQueue = GuildSetupQueue(this)
     val commandCooldownManager = CommandCooldownManager(this)
-
-    init {
-        if (FeatureFlags.isEnabled(this, FeatureFlags.Names.CINNAMON_COMMAND_API)) {
-            commandManager.register(
-                AnagramCommand,
-                AnagramExecutor(emotes)
-            )
-
-            commandManager.register(
-                MorseCommand,
-                MorseFromExecutor(emotes),
-                MorseToExecutor(emotes)
-            )
-        }
-    }
 
     /**
      * Gets an user's profile background image or, if the user has a custom background, loads the custom background.

@@ -9,7 +9,6 @@ import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.utils.MiscUtil
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.platform.discord.commands.JDACommandContext
 import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.utils.Emotes
@@ -105,14 +104,6 @@ object LorittaUtilsKotlin {
 	 */
 	suspend fun handleIfBanned(context: DiscordCommandContext, profile: Profile)
 			= handleIfBanned(context.user, profile, context.discordMessage.channel, context.locale)
-
-	/**
-	 * Checks if a user is banned and, if it is, a message is sent to the user via direct messages or, if their DMs are disabled, in the current channel.
-	 *
-	 * @return if the user is banned
-	 */
-	suspend fun handleIfBanned(context: JDACommandContext, profile: Profile)
-			= handleIfBanned(context.jdaUser, profile, context.jdaMessageChannel, context.locale)
 
 	/**
 	 * Checks if a user is banned and, if it is, a message is sent to the user via direct messages or, if their DMs are disabled, in the current channel.
