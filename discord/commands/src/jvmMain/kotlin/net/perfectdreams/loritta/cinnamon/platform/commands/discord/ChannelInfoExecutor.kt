@@ -165,11 +165,12 @@ class ChannelInfoExecutor(val rest: RestClient) : CommandExecutor() {
                     name = "${Emotes.Snail} " + context.i18nContext.get(
                         ServerCommand.I18N_PREFIX.Channel.Info.Text.SlowMode
                     )
-                    value = if (channel.rateLimitPerUser.value == 0)
+                    val rateLimitPerUser = channel.rateLimitPerUser.value
+                    value = if (rateLimitPerUser == 0 || rateLimitPerUser == null)
                         context.i18nContext.get(I18nKeys.Common.Disabled)
                     else
                         context.i18nContext.get(
-                            ServerCommand.I18N_PREFIX.Channel.Info.Text.SlowModeSeconds(channel.rateLimitPerUser.value.toString())
+                            ServerCommand.I18N_PREFIX.Channel.Info.Text.SlowModeSeconds(rateLimitPerUser)
                         )
 
                     inline = true
