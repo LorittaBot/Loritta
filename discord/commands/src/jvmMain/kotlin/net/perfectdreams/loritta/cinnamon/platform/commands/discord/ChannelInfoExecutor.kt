@@ -120,7 +120,11 @@ class ChannelInfoExecutor(val rest: RestClient) : CommandExecutor() {
                         name = "${Emotes.PageFacingUp} " + context.i18nContext.get(
                             ServerCommand.I18N_PREFIX.Channel.Info.Thread.MessageCount
                         )
-                        value = channel.messageCount.value.toString()
+
+                        val messageCount = channel.messageCount.value.toString()
+                        // The request limit only goes up to 50 messages
+                        value = if (messageCount == "50") "$messageCount+"
+                        else messageCount
 
                         inline = true
                     }
@@ -129,7 +133,11 @@ class ChannelInfoExecutor(val rest: RestClient) : CommandExecutor() {
                         name = "${Emotes.BustsInSilhouette} " + context.i18nContext.get(
                             ServerCommand.I18N_PREFIX.Channel.Info.Thread.MemberCount
                         )
-                        value = channel.memberCount.value.toString()
+
+                        val memberCount = channel.memberCount.value.toString()
+                        // The request limit only goes up to 50 membersCount
+                        value = if (memberCount == "50") "$memberCount+"
+                        else memberCount
 
                         inline = true
                     }
@@ -165,11 +173,12 @@ class ChannelInfoExecutor(val rest: RestClient) : CommandExecutor() {
                     name = "${Emotes.Snail} " + context.i18nContext.get(
                         ServerCommand.I18N_PREFIX.Channel.Info.Text.SlowMode
                     )
-                    value = if (channel.rateLimitPerUser.value == 0)
+                    val rateLimitPerUser = channel.rateLimitPerUser.value
+                    value = if (rateLimitPerUser == 0 || rateLimitPerUser == null)
                         context.i18nContext.get(I18nKeys.Common.Disabled)
                     else
                         context.i18nContext.get(
-                            ServerCommand.I18N_PREFIX.Channel.Info.Text.SlowModeSeconds(channel.rateLimitPerUser.value.toString())
+                            ServerCommand.I18N_PREFIX.Channel.Info.Text.SlowModeSeconds(rateLimitPerUser)
                         )
 
                     inline = true

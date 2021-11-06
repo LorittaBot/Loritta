@@ -156,7 +156,7 @@ class InviteInfoExecutor(val rest: RestClient) : CommandExecutor() {
 
                 footer(
                     if (discordGuild != null) "${Emotes.Blush} " + context.i18nContext.get(InviteCommand.I18N_PREFIX.Info.InThisServer)
-                    else "${Emotes.LoriSob} " + context.i18nContext.get(InviteCommand.I18N_PREFIX.Info.NotOnTheServer)
+                    else "${Emotes.Sob} " + context.i18nContext.get(InviteCommand.I18N_PREFIX.Info.NotOnTheServer)
                 )
             }
 
