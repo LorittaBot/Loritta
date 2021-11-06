@@ -29,12 +29,12 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PuddingTasks
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.createOrUpdatePostgreSQLEnum
 import org.jetbrains.exposed.exceptions.ExposedSQLException
+import org.jetbrains.exposed.sql.DEFAULT_REPETITION_ATTEMPTS
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.DatabaseConfig
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.Transaction
-import org.jetbrains.exposed.sql.transactions.DEFAULT_REPETITION_ATTEMPTS
-import org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManager
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 
 open class Pudding(private val database: Database) {
@@ -120,13 +120,12 @@ open class Pudding(private val database: Database) {
 
         private fun connectToDatabase(dataSource: HikariDataSource): Database =
             Database.connect(
-                HikariDataSource(dataSource)
-            ) {
-                // This code is the same callback used in the "Database.connect(...)" call, but with the default isolation level change
-                ThreadLocalTransactionManager(it, DEFAULT_REPETITION_ATTEMPTS).also {
-                    it.defaultIsolationLevel = ISOLATION_LEVEL.levelId // Change our default isolation level
+                HikariDataSource(dataSource),
+                databaseConfig = DatabaseConfig {
+                    defaultRepetitionAttempts = DEFAULT_REPETITION_ATTEMPTS
+                    defaultIsolationLevel = ISOLATION_LEVEL.levelId // Change our default isolation level
                 }
-            }
+            )
     }
 
     val users = UsersService(this)
