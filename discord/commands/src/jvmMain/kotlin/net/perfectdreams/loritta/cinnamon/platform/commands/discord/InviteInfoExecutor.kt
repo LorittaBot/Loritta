@@ -6,10 +6,10 @@ import dev.kord.rest.request.KtorRequestException
 import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
+import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenAndRemoveCodeBackticks
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeys
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
@@ -86,6 +86,12 @@ class InviteInfoExecutor(val rest: RestClient) : CommandExecutor() {
             }
         }
 
+        val discordGuild = try {
+            rest.guild.getGuild(invite.guild.value!!.id)
+        } catch (e: KtorRequestException) {
+            null
+        }
+
         val extension = if (invite.guild.value?.icon?.startsWith("a_") == true) "gif" else "png"
         val iconUrl = "https://cdn.discordapp.com/icons/${invite.guild.value!!.id.value}/${invite.guild.value!!.icon}.$extension?size=2048"
 
@@ -147,6 +153,11 @@ class InviteInfoExecutor(val rest: RestClient) : CommandExecutor() {
                         transform = { "`${context.i18nContext.get(it)}`" })
                         ?: context.i18nContext.get(InviteCommand.I18N_PREFIX.Info.GuildFeatures)
                 }
+
+                footer(
+                    if (discordGuild != null) "${Emotes.Blush} " + context.i18nContext.get(InviteCommand.I18N_PREFIX.Info.InThisServer)
+                    else "${Emotes.LoriSob} " + context.i18nContext.get(InviteCommand.I18N_PREFIX.Info.NotOnTheServer)
+                )
             }
 
             if (invite.guild.value?.icon != null)
