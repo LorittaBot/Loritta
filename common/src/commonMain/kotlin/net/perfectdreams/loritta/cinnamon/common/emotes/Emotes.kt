@@ -67,6 +67,7 @@ object Emotes {
     val Art = UnicodeEmote("\uD83C\uDFA8")
     val Shield = UnicodeEmote("\uD83D\uDEE1")
     val BookMark = UnicodeEmote("\uD83D\uDD16")
+    val Blush = UnicodeEmote("\uD83D\uDE0A")
     val Discord = DiscordEmote(314003252830011395, "discord", false)
     val Undertale = DiscordEmote(412576128340066304L, "undertale_heart", false)
     val Deltarune = DiscordEmote(889958066362155008L, "deltarune", false)
