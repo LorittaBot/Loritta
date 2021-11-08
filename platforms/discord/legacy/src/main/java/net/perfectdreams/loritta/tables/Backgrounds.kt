@@ -13,7 +13,8 @@ object Backgrounds : IdTable<String>() {
     val internalName = text("internal_name")
     override val id: Column<EntityID<String>> = internalName.entityId()
 
-    val imageFile = text("image_file")
+    val file = text("file")
+    val preferredMediaType = text("preferred_media_type")
     val enabled = bool("enabled").index()
     val rarity = enumeration("rarity", Rarity::class).index()
     val createdBy = array<String>("created_by", TextColumnType())

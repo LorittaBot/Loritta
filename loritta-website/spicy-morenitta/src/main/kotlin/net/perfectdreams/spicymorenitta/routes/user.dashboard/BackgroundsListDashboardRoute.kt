@@ -7,10 +7,21 @@ import kotlinx.dom.addClass
 import kotlinx.dom.clear
 import kotlinx.dom.hasClass
 import kotlinx.dom.removeClass
-import kotlinx.html.*
+import kotlinx.html.InputType
+import kotlinx.html.a
+import kotlinx.html.b
+import kotlinx.html.button
+import kotlinx.html.canvas
+import kotlinx.html.div
 import kotlinx.html.dom.append
+import kotlinx.html.h2
+import kotlinx.html.i
+import kotlinx.html.id
+import kotlinx.html.input
 import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
+import kotlinx.html.p
+import kotlinx.html.style
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.JSON
@@ -22,9 +33,21 @@ import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
-import net.perfectdreams.spicymorenitta.utils.*
+import net.perfectdreams.spicymorenitta.utils.FanArtArtist
+import net.perfectdreams.spicymorenitta.utils.LockerUtils
+import net.perfectdreams.spicymorenitta.utils.SaveUtils
+import net.perfectdreams.spicymorenitta.utils.awaitLoad
+import net.perfectdreams.spicymorenitta.utils.loriUrl
+import net.perfectdreams.spicymorenitta.utils.onClick
+import net.perfectdreams.spicymorenitta.utils.page
+import net.perfectdreams.spicymorenitta.utils.select
 import net.perfectdreams.spicymorenitta.views.dashboard.Stuff
-import org.w3c.dom.*
+import org.w3c.dom.CanvasRenderingContext2D
+import org.w3c.dom.Element
+import org.w3c.dom.HTMLButtonElement
+import org.w3c.dom.HTMLCanvasElement
+import org.w3c.dom.HTMLDivElement
+import org.w3c.dom.Image
 import org.w3c.files.FileReader
 import kotlin.js.Date
 
@@ -94,33 +117,35 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
             val entriesDiv = document.select<HTMLDivElement>("#bundles-content")
 
             val backgrounds = result.backgrounds.sortedByDescending { it.rarity.getBackgroundPrice() }
-                    .toMutableList()
-                    .apply {
-                        this.add(
-                                Background(
-                                        "random",
-                                        "random.png",
-                                        true,
-                                        Rarity.COMMON,
-                                        listOf(),
-                                        null,
-                                        null,
-                                        null
-                                )
+                .toMutableList()
+                .apply {
+                    this.add(
+                        Background(
+                            "random",
+                            "random",
+                            "image/png",
+                            true,
+                            Rarity.COMMON,
+                            listOf(),
+                            null,
+                            null,
+                            null
                         )
-                        this.add(
-                                Background(
-                                        "custom",
-                                        "custom.png",
-                                        true,
-                                        Rarity.COMMON,
-                                        listOf(),
-                                        null,
-                                        null,
-                                        null
-                                )
+                    )
+                    this.add(
+                        Background(
+                            "custom",
+                            "custom",
+                            "image/png",
+                            true,
+                            Rarity.COMMON,
+                            listOf(),
+                            null,
+                            null,
+                            null
                         )
-                    }
+                    )
+                }
 
             entriesDiv.append {
                 div("loritta-items-list") {
@@ -275,7 +300,7 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
                     val canvasPreview = document.select<HTMLCanvasElement>("#canvas-preview-${background.internalName}")
 
                     m.launch {
-                        val (image) = LockerUtils.prepareBackgroundCanvasPreview(m, background, canvasPreview)
+                        val (image) = LockerUtils.prepareBackgroundCanvasPreview(m, result.dreamStorageServiceUrl, result.dreamStorageServiceBackgroundsNamespace, background, canvasPreview)
 
                         canvasPreview.parentElement!!.parentElement!!.onClick {
                             updateActiveBackground(profileWrapper, background, image, fanArtArtists)
@@ -305,10 +330,10 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
 
         if (background.internalName == "custom") {
             document.select<HTMLDivElement>("#select-active-background-file")
-                    .style.display = ""
+                .style.display = ""
         } else {
             document.select<HTMLDivElement>("#select-active-background-file")
-                    .style.display = "none"
+                .style.display = "none"
         }
 
         val canvasCheckout = document.select<HTMLCanvasElement>(".canvas-preview")
@@ -318,29 +343,29 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
         val canvasPreviewOnlyBgContext = (canvasCheckoutOnlyBg.getContext("2d")!! as CanvasRenderingContext2D)
 
         canvasPreviewContext
-                .drawImage(
-                        backgroundImg,
-                        (background.crop?.offsetX ?: 0).toDouble(),
-                        (background.crop?.offsetY ?: 0).toDouble(),
-                        (background.crop?.width ?: backgroundImg.width).toDouble(),
-                        (background.crop?.height ?: backgroundImg.height).toDouble(),
-                        0.0,
-                        0.0,
-                        800.0,
-                        600.0
-                )
+            .drawImage(
+                backgroundImg,
+                (background.crop?.offsetX ?: 0).toDouble(),
+                (background.crop?.offsetY ?: 0).toDouble(),
+                (background.crop?.width ?: backgroundImg.width).toDouble(),
+                (background.crop?.height ?: backgroundImg.height).toDouble(),
+                0.0,
+                0.0,
+                800.0,
+                600.0
+            )
         canvasPreviewOnlyBgContext
-                .drawImage(
-                        backgroundImg,
-                        (background.crop?.offsetX ?: 0).toDouble(),
-                        (background.crop?.offsetY ?: 0).toDouble(),
-                        (background.crop?.width ?: backgroundImg.width).toDouble(),
-                        (background.crop?.height ?: backgroundImg.height).toDouble(),
-                        0.0,
-                        0.0,
-                        800.0,
-                        600.0
-                )
+            .drawImage(
+                backgroundImg,
+                (background.crop?.offsetX ?: 0).toDouble(),
+                (background.crop?.offsetY ?: 0).toDouble(),
+                (background.crop?.width ?: backgroundImg.width).toDouble(),
+                (background.crop?.height ?: backgroundImg.height).toDouble(),
+                0.0,
+                0.0,
+                800.0,
+                600.0
+            )
 
         canvasPreviewContext.drawImage(profileWrapper, 0.0, 0.0)
 
@@ -384,19 +409,21 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
 
     @Serializable
     class UserInfoResult(
-            val settings: Settings,
-            var backgrounds: MutableList<Background>,
-            val donations: DonationValues
+        val settings: Settings,
+        val dreamStorageServiceUrl: String,
+        val dreamStorageServiceBackgroundsNamespace: String,
+        var backgrounds: MutableList<Background>,
+        val donations: DonationValues
     )
 
     @Serializable
     class Settings(
-            val activeBackground: String? = null,
-            val activeProfileDesign: String? = null
+        val activeBackground: String? = null,
+        val activeProfileDesign: String? = null
     )
 
     @Serializable
     class DonationValues(
-            val value: Double
+        val value: Double
     )
 }

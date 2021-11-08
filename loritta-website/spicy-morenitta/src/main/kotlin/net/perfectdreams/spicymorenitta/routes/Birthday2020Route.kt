@@ -8,16 +8,37 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.dom.clear
-import kotlinx.html.*
+import kotlinx.html.canvas
+import kotlinx.html.div
 import kotlinx.html.dom.append
+import kotlinx.html.h1
+import kotlinx.html.hr
+import kotlinx.html.i
+import kotlinx.html.id
+import kotlinx.html.img
 import kotlinx.html.js.onClickFunction
-import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.html.span
+import kotlinx.html.style
+import kotlinx.serialization.decodeFromString
 import net.perfectdreams.loritta.serializable.Background
+import net.perfectdreams.loritta.serializable.BackgroundListResponse
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
-import net.perfectdreams.spicymorenitta.utils.*
-import org.w3c.dom.*
+import net.perfectdreams.spicymorenitta.utils.GoogleAdSense
+import net.perfectdreams.spicymorenitta.utils.LockerUtils
+import net.perfectdreams.spicymorenitta.utils.Logging
+import net.perfectdreams.spicymorenitta.utils.awaitLoad
+import net.perfectdreams.spicymorenitta.utils.generateAd
+import net.perfectdreams.spicymorenitta.utils.select
+import net.perfectdreams.spicymorenitta.utils.selectAll
+import net.perfectdreams.spicymorenitta.utils.width
+import org.w3c.dom.Audio
+import org.w3c.dom.CanvasRenderingContext2D
+import org.w3c.dom.HTMLCanvasElement
+import org.w3c.dom.HTMLDivElement
+import org.w3c.dom.HTMLImageElement
+import org.w3c.dom.Image
 import org.w3c.dom.url.URLSearchParams
 import kotlin.collections.set
 import kotlin.coroutines.resume
@@ -123,7 +144,7 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 				val result = http.get<String> {
 					url("${window.location.origin}/api/v1/loritta/backgrounds")
 				}
-				kotlinx.serialization.json.JSON.nonstrict.decodeFromString(ListSerializer(Background.serializer()), result)
+				kotlinx.serialization.json.JSON.nonstrict.decodeFromString<BackgroundListResponse>(result)
 			}
 
 			val profileWrapperJob = m.async {
@@ -165,11 +186,11 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 
 										animationOverlay.remove()
 
-										val backgrounds = backgroundsJob.await()
+										val backgroundsResponse = backgroundsJob.await()
 										val profileWrapper = profileWrapperJob.await()
 
-										createBody(backgrounds, profileWrapper, currentTeam != null)
-										fillBodyStuff(backgrounds, profileWrapper)
+										createBody(backgroundsResponse.dreamStorageServiceUrl, backgroundsResponse.namespace, backgroundsResponse.backgrounds, profileWrapper, currentTeam != null)
+										fillBodyStuff(backgroundsResponse.dreamStorageServiceUrl, backgroundsResponse.namespace, backgroundsResponse.backgrounds, profileWrapper)
 
 										val flashOverlay = document.select<HTMLImageElement>("#flash-overlay")
 
@@ -190,11 +211,11 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 									m.launch {
 										document.select<HTMLDivElement>("#pre-animation-overlay").remove()
 
-										val backgrounds = backgroundsJob.await()
+										val backgroundsResponse = backgroundsJob.await()
 										val profileWrapper = profileWrapperJob.await()
 
-										createBody(backgrounds, profileWrapper, currentTeam != null)
-										fillBodyStuff(backgrounds, profileWrapper)
+										createBody(backgroundsResponse.dreamStorageServiceUrl, backgroundsResponse.namespace, backgroundsResponse.backgrounds, profileWrapper, currentTeam != null)
+										fillBodyStuff(backgroundsResponse.dreamStorageServiceUrl, backgroundsResponse.namespace, backgroundsResponse.backgrounds, profileWrapper)
 									}
 								}
 							}
@@ -202,16 +223,16 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 					}
 				}
 			} else {
-				val backgrounds = backgroundsJob.await()
+				val backgroundsResponse = backgroundsJob.await()
 				val profileWrapper = profileWrapperJob.await()
 
-				createBody(backgrounds, profileWrapper, currentTeam != null)
-				fillBodyStuff(backgrounds, profileWrapper)
+				createBody(backgroundsResponse.dreamStorageServiceUrl, backgroundsResponse.namespace, backgroundsResponse.backgrounds, profileWrapper, currentTeam != null)
+				fillBodyStuff(backgroundsResponse.dreamStorageServiceUrl, backgroundsResponse.namespace, backgroundsResponse.backgrounds, profileWrapper)
 			}
 		}
 	}
 
-	suspend fun fillBodyStuff(backgrounds: List<Background>, profileWrapper: Image) {
+	suspend fun fillBodyStuff(backgroundsUrl: String, namespace: String, backgrounds: List<Background>, profileWrapper: Image) {
 		val backgroundsToBeFilled = document.selectAll<HTMLDivElement>(".loritta-background-fill")
 
 		backgroundsToBeFilled.forEach {
@@ -249,7 +270,7 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 				}
 
 				val backgroundImg = Image()
-				backgroundImg.awaitLoad("${window.location.origin}/assets/img/profiles/backgrounds/${background.imageFile}")
+				backgroundImg.awaitLoad(LockerUtils.getBackgroundUrl(backgroundsUrl, namespace, background))
 
 				val canvasPreviewOnlyBgContext = (canvasPreviewOnlyBg.getContext("2d")!! as CanvasRenderingContext2D)
 				canvasPreviewOnlyBgContext
@@ -448,7 +469,7 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 		}
 	}
 
-	suspend fun createBody(backgrounds: List<Background>, profileWrapper: Image, isAlreadyOnATeam: Boolean) {
+	suspend fun createBody(backgroundUrl: String, namespace: String, backgrounds: List<Background>, profileWrapper: Image, isAlreadyOnATeam: Boolean) {
 		document.select<HTMLDivElement>("#birthday-2020").append {
 			div {
 				style = "height: calc(100vh - 46px); display: flex; position: relative;"

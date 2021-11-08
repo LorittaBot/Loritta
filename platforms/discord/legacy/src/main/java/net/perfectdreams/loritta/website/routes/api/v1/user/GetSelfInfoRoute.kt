@@ -18,18 +18,19 @@ import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.serializable.UserIdentification
-import net.perfectdreams.loritta.tables.*
-import net.perfectdreams.sequins.ktor.BaseRoute
+import net.perfectdreams.loritta.tables.BackgroundPayments
+import net.perfectdreams.loritta.tables.Backgrounds
+import net.perfectdreams.loritta.tables.BannedIps
+import net.perfectdreams.loritta.tables.ProfileDesigns
+import net.perfectdreams.loritta.tables.ProfileDesignsPayments
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.website.utils.extensions.trueIp
+import net.perfectdreams.sequins.ktor.BaseRoute
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
-import kotlin.collections.firstOrNull
-import kotlin.collections.map
 import kotlin.collections.set
-import kotlin.collections.toSet
 
 class GetSelfInfoRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/users/@me/{sections?}") {
 	companion object {
@@ -130,6 +131,8 @@ class GetSelfInfoRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/users/@
 			}
 
 			if ("backgrounds" in sections) {
+				payload["dreamStorageServiceUrl"] = loritta.dreamStorageService.baseUrl
+				payload["dreamStorageServiceBackgroundsNamespace"] = loritta.dreamStorageService.getCachedNamespaceOrRetrieve()
 				payload["backgrounds"] = loritta.newSuspendedTransaction {
 					val backgrounds = Backgrounds.select {
 						Backgrounds.internalName inList BackgroundPayments.select {

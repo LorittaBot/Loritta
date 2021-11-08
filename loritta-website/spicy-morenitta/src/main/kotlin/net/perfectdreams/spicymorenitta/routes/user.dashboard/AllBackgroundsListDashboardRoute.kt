@@ -3,10 +3,15 @@ package net.perfectdreams.spicymorenitta.routes.user.dashboard
 import io.ktor.client.request.*
 import kotlinx.browser.document
 import kotlinx.browser.window
-import kotlinx.html.*
+import kotlinx.html.b
+import kotlinx.html.canvas
+import kotlinx.html.div
 import kotlinx.html.dom.append
-import kotlinx.serialization.builtins.ListSerializer
-import net.perfectdreams.loritta.serializable.Background
+import kotlinx.html.h1
+import kotlinx.html.id
+import kotlinx.html.style
+import kotlinx.serialization.decodeFromString
+import net.perfectdreams.loritta.serializable.BackgroundListResponse
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
@@ -33,7 +38,7 @@ class AllBackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSize
                 url("${window.location.origin}/api/v1/loritta/backgrounds")
             }
 
-            val list = kotlinx.serialization.json.JSON.nonstrict.decodeFromString(ListSerializer(Background.serializer()), result)
+            val backgroundListRequest = kotlinx.serialization.json.JSON.nonstrict.decodeFromString<BackgroundListResponse>(result)
 
             val profileWrapper = Image()
             debug("Awaiting load...")
@@ -46,7 +51,7 @@ class AllBackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSize
                 div {
                     style = "justify-content: space-between; display: flex; flex-wrap: wrap;"
                 }
-                for (background in list) {
+                for (background in backgroundListRequest.backgrounds) {
                     div {
                         h1 {
                             + (background.internalName)
@@ -98,12 +103,12 @@ class AllBackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSize
                 }
             }
 
-            for (background in list) {
+            for (background in backgroundListRequest.backgrounds) {
                 m.launch {
                     val canvasPreview = document.select<HTMLCanvasElement>("#canvas-preview-${background.internalName}")
 
                     val backgroundImg = Image()
-                    backgroundImg.awaitLoad("${window.location.origin}/assets/img/profiles/backgrounds/${background.imageFile}")
+                    backgroundImg.awaitLoad(backgroundListRequest.dreamStorageServiceUrl + "/" + backgroundListRequest.namespace + "/" + background.file)
 
                     val canvasPreviewContext = (canvasPreview.getContext("2d")!! as CanvasRenderingContext2D)
                     canvasPreviewContext

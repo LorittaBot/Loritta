@@ -1,15 +1,25 @@
 package net.perfectdreams.spicymorenitta.routes.user.dashboard
 
 import io.ktor.client.request.*
-import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.coroutines.delay
 import kotlinx.dom.clear
-import kotlinx.html.*
+import kotlinx.html.a
+import kotlinx.html.b
+import kotlinx.html.canvas
+import kotlinx.html.div
 import kotlinx.html.dom.append
 import kotlinx.html.dom.create
+import kotlinx.html.h1
+import kotlinx.html.i
+import kotlinx.html.id
+import kotlinx.html.img
+import kotlinx.html.p
+import kotlinx.html.span
+import kotlinx.html.style
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.JSON
@@ -22,9 +32,23 @@ import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
-import net.perfectdreams.spicymorenitta.utils.*
+import net.perfectdreams.spicymorenitta.utils.FanArtArtist
+import net.perfectdreams.spicymorenitta.utils.LockerUtils
+import net.perfectdreams.spicymorenitta.utils.TingleModal
+import net.perfectdreams.spicymorenitta.utils.TingleOptions
+import net.perfectdreams.spicymorenitta.utils.awaitLoad
+import net.perfectdreams.spicymorenitta.utils.generateAd
 import net.perfectdreams.spicymorenitta.utils.locale.buildAsHtml
-import org.w3c.dom.*
+import net.perfectdreams.spicymorenitta.utils.loriUrl
+import net.perfectdreams.spicymorenitta.utils.onClick
+import net.perfectdreams.spicymorenitta.utils.select
+import net.perfectdreams.spicymorenitta.utils.visibleModal
+import org.w3c.dom.Audio
+import org.w3c.dom.CanvasRenderingContext2D
+import org.w3c.dom.HTMLCanvasElement
+import org.w3c.dom.HTMLDivElement
+import org.w3c.dom.HTMLElement
+import org.w3c.dom.Image
 import kotlin.js.Date
 
 class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/user/@me/dashboard/daily-shop") {
@@ -299,7 +323,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
             val canvasPreview = document.select<HTMLCanvasElement>("#canvas-preview-${background.internalName}")
 
             m.launch {
-                val (image) = LockerUtils.prepareBackgroundCanvasPreview(m, background, canvasPreview)
+                val (image) = LockerUtils.prepareBackgroundCanvasPreview(m, dailyShop.dreamStorageServiceUrl, dailyShop.namespace, background, canvasPreview)
 
                 canvasPreview.parentElement!!.parentElement!!.onClick {
                     openBackgroundInformation(userInfoResult, background, bought, StaticBackgroundImage(image), profileWrapper, fanArtArtists)

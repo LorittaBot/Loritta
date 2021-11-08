@@ -14,7 +14,8 @@ class Background(id: EntityID<String>) : Entity<String>(id) {
 		const val CUSTOM_BACKGROUND_ID = "custom"
 	}
 
-	var imageFile by Backgrounds.imageFile
+	var file by Backgrounds.file
+	var preferredMediaType by Backgrounds.preferredMediaType
 	var enabled by Backgrounds.enabled
 	var rarity by Backgrounds.rarity
 	var createdBy by Backgrounds.createdBy
@@ -24,12 +25,13 @@ class Background(id: EntityID<String>) : Entity<String>(id) {
 	var set by Backgrounds.set
 
 	fun toSerializable() = net.perfectdreams.loritta.serializable.Background(
-			id.value,
-			imageFile,
-			enabled,
-			rarity,
-			createdBy.toList(),
-			crop?.let { Json.decodeFromString(Crop.serializer(), it.toString()) },
-			set?.value
+		id.value,
+		file,
+		preferredMediaType,
+		enabled,
+		rarity,
+		createdBy.toList(),
+		crop?.let { Json.decodeFromString(Crop.serializer(), it.toString()) },
+		set?.value
 	)
 }

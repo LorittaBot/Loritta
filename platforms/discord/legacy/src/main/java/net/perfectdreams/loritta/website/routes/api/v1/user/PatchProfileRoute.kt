@@ -21,14 +21,17 @@ import io.ktor.http.*
 import io.ktor.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import net.perfectdreams.dreamstorageservice.data.DeleteFileLinkRequest
-import net.perfectdreams.dreamstorageservice.data.UploadFileRequest
-import net.perfectdreams.loritta.api.utils.NoCopyByteArrayOutputStream
+import net.perfectdreams.dreamstorageservice.data.CreateImageLinkRequest
+import net.perfectdreams.dreamstorageservice.data.DeleteImageLinkRequest
+import net.perfectdreams.dreamstorageservice.data.UploadImageRequest
+import net.perfectdreams.loritta.common.utils.MediaTypeUtils
+import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.BackgroundPayments
 import net.perfectdreams.loritta.tables.CustomBackgroundSettings
 import net.perfectdreams.loritta.tables.ProfileDesigns
 import net.perfectdreams.loritta.tables.ProfileDesignsPayments
+import net.perfectdreams.loritta.utils.SimpleImageInfo
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.loritta.utils.extensions.readImage
@@ -41,6 +44,8 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import pw.forst.exposed.insertOrUpdate
 import java.awt.image.BufferedImage
+import java.io.ByteArrayOutputStream
+import java.io.IOException
 import java.util.*
 import javax.imageio.ImageIO
 
@@ -140,38 +145,66 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 			val data = config["data"].nullString
 			var oldPath: String? = null
 			var newPath: String? = null
+			var preferredMediaType: String? = null
 
 			if (internalName == Background.CUSTOM_BACKGROUND_ID && data != null) {
 				val decodedBytes = Base64.getDecoder().decode(data.split(",")[1])
+				// TODO: Maybe add a dimension check to avoid crashing Loritta when loading the image?
+				val mediaType = try { SimpleImageInfo(decodedBytes).mimeType } catch (e: IOException) { null }
 				val decodedImage = readImage(decodedBytes.inputStream())
 
-				var writeImage = decodedImage
+				if (decodedImage != null && mediaType != null) {
+					var writeImage = decodedImage
 
-				if (decodedImage.width != 800 && decodedImage.height != 600)
-					writeImage = decodedImage.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH).toBufferedImage()
+					if (decodedImage.width != 800 && decodedImage.height != 600)
+						writeImage = decodedImage.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH).toBufferedImage()
 
-				val baos = NoCopyByteArrayOutputStream()
-				ImageIO.write(writeImage, "png", baos)
+					// This will convert the image to the preferred content type
+					// This is useful for JPEG images because if the image has alpha (TYPE_INT_ARGB), the result file will have 0 bytes
+					// https://stackoverflow.com/a/66954103/7271796
+					val targetContentType = ContentType.parse(mediaType)
+					if (targetContentType == ContentType.Image.JPEG && writeImage.type == BufferedImage.TYPE_INT_ARGB) {
+						val newBufferedImage = BufferedImage(
+							writeImage.width,
+							writeImage.height,
+							BufferedImage.TYPE_INT_RGB
+						)
+						newBufferedImage.graphics.drawImage(writeImage, 0, 0, null)
+						writeImage = newBufferedImage
+					}
 
-				val (path, fullPath) = loritta.dreamStorageService.fileLinks.uploadFile(
-					baos.toByteArray(),
-					ContentType.Image.PNG,
-					UploadFileRequest(
-						"profiles/backgrounds/custom/${profile.id.value}/%s.png"
+					// DO NOT USE NoCopyByteArrayOutputStream HERE, IT MAY CAUSE ISSUES DUE TO THE BYTEARRAY HAVING MORE BYTES THAN IT SHOULD!!
+					val baos = ByteArrayOutputStream()
+					ImageIO.write(writeImage, MediaTypeUtils.convertContentTypeToExtension(targetContentType), baos)
+
+					val (imageId) = loritta.dreamStorageService.uploadImage(
+						baos.toByteArray(),
+						targetContentType,
+						UploadImageRequest(false)
 					)
-				)
 
-				newPath = path
+					val (folder, file) = StoragePaths.CustomBackground(profile.id.value, "%s")
+					val (_, _, uploadedFile) = loritta.dreamStorageService.createImageLink(
+						CreateImageLinkRequest(
+							imageId,
+							folder,
+							file
+						)
+					)
+					newPath = uploadedFile
+					preferredMediaType = targetContentType.toString()
+				}
 			}
 
 			loritta.newSuspendedTransaction {
 				profileSettings.activeBackground = Background.findById(internalName)
-				oldPath = CustomBackgroundSettings.select { CustomBackgroundSettings.settings eq profileSettings.id }.firstOrNull()?.get(CustomBackgroundSettings.path)
+				oldPath = CustomBackgroundSettings.select { CustomBackgroundSettings.settings eq profileSettings.id }.firstOrNull()?.get(CustomBackgroundSettings.file)
 
-				if (newPath != null) {
+				if (newPath != null && preferredMediaType != null) {
 					CustomBackgroundSettings.insertOrUpdate(CustomBackgroundSettings.settings) {
 						it[settings] = profileSettings.id
-						it[path] = newPath
+						it[file] = newPath
+						it[CustomBackgroundSettings.preferredMediaType] = preferredMediaType
 					}
 				}
 			}
@@ -182,8 +215,12 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 
 			if (immutableOldPath != null && immutableNewPath != immutableOldPath) {
 				// Request deletion of the old profile background
-				com.mrpowergamerbr.loritta.utils.loritta.dreamStorageService.fileLinks.deleteLink(
-					DeleteFileLinkRequest(immutableOldPath)
+				val (folder, file) = StoragePaths.CustomBackground(profile.id.value, immutableOldPath)
+				loritta.dreamStorageService.deleteImageLink(
+					DeleteImageLinkRequest(
+						folder,
+						file
+					)
 				)
 			}
 

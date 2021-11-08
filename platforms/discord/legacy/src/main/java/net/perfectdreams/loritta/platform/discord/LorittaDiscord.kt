@@ -34,6 +34,8 @@ import net.perfectdreams.loritta.commands.vanilla.misc.*
 import net.perfectdreams.loritta.commands.vanilla.roblox.*
 import net.perfectdreams.loritta.commands.vanilla.social.*
 import net.perfectdreams.loritta.common.locale.LocaleManager
+import net.perfectdreams.loritta.common.utils.MediaTypeUtils
+import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordCommandMap
 import net.perfectdreams.loritta.platform.discord.legacy.plugin.JVMPluginManager
@@ -175,16 +177,15 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
             if (plan.customBackground) {
                 val dssNamespace = loritta.dreamStorageService.getCachedNamespaceOrRetrieve()
-                val dssPath = loritta.newSuspendedTransaction {
+                val resultRow = loritta.newSuspendedTransaction {
                     CustomBackgroundSettings.select { CustomBackgroundSettings.settings eq profile.settings.id }
                         .firstOrNull()
-                        ?.get(CustomBackgroundSettings.path)
                 }
 
                 // If the path exists, then the background (probably!) exists
-                if (dssPath != null) {
-                    val response =
-                        loritta.http.get<HttpResponse>("${loritta.config.dreamStorageService.url}/$dssNamespace/$dssPath") {
+                if (resultRow != null) {
+                    val extension = MediaTypeUtils.convertContentTypeToExtension(resultRow[CustomBackgroundSettings.preferredMediaType])
+                    val response = loritta.http.get<HttpResponse>("${loritta.config.dreamStorageService.url}/$dssNamespace/${StoragePaths.CustomBackground(profile.id.value, resultRow[CustomBackgroundSettings.file]).join()}.$extension") {
                             userAgent(loritta.lorittaCluster.getUserAgent())
                         }
 
@@ -220,7 +221,10 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
             Background.findById(Background.DEFAULT_BACKGROUND_ID)!!
         }
 
-        val response = loritta.http.get<HttpResponse>("${loritta.instanceConfig.loritta.website.url}assets/img/profiles/backgrounds/cropped_profiles/${backgroundOrDefault.imageFile}") {
+        val dssNamespace = dreamStorageService.getCachedNamespaceOrRetrieve()
+        val backgroundUrl = getBackgroundUrlWithCropParameters(loritta.config.dreamStorageService.url, dssNamespace, backgroundOrDefault.toSerializable())
+
+        val response = loritta.http.get<HttpResponse>(backgroundUrl) {
             userAgent(loritta.lorittaCluster.getUserAgent())
         }
 
@@ -262,15 +266,17 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
 
             if (plan.customBackground) {
                 val dssNamespace = loritta.dreamStorageService.getCachedNamespaceOrRetrieve()
-                val dssPath = loritta.newSuspendedTransaction {
+                val resultRow = loritta.newSuspendedTransaction {
                     CustomBackgroundSettings.select { CustomBackgroundSettings.settings eq profile.settings.id }
                         .firstOrNull()
-                        ?.get(CustomBackgroundSettings.path)
                 }
 
                 // If the path exists, then the background (probably!) exists
-                if (dssPath != null)
-                    return "${loritta.config.dreamStorageService.url}/$dssNamespace/$dssPath"
+                if (resultRow != null) {
+                    val file = resultRow[CustomBackgroundSettings.file]
+                    val extension = MediaTypeUtils.convertContentTypeToExtension(resultRow[CustomBackgroundSettings.preferredMediaType])
+                    return "${loritta.config.dreamStorageService.url}/$dssNamespace/${StoragePaths.CustomBackground(profile.id.value, file).join()}.$extension"
+                }
             }
         }
 
@@ -278,7 +284,21 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
             Background.findById(Background.DEFAULT_BACKGROUND_ID)!!
         }
 
-        return "${loritta.instanceConfig.loritta.website.url}assets/img/profiles/backgrounds/${backgroundOrDefault.imageFile}"
+        val dssNamespace = dreamStorageService.getCachedNamespaceOrRetrieve()
+        return getBackgroundUrlWithCropParameters(loritta.config.dreamStorageService.url, dssNamespace, backgroundOrDefault.toSerializable())
+    }
+
+    private fun getBackgroundUrl(dreamStorageServiceUrl: String, namespace: String, background: net.perfectdreams.loritta.serializable.Background): String {
+        val extension = MediaTypeUtils.convertContentTypeToExtension(background.preferredMediaType)
+        return "$dreamStorageServiceUrl/$namespace/${StoragePaths.Background(background.file).join()}.$extension"
+    }
+
+    private fun getBackgroundUrlWithCropParameters(dreamStorageServiceUrl: String, namespace: String, background: net.perfectdreams.loritta.serializable.Background): String {
+        var url = getBackgroundUrl(dreamStorageServiceUrl, namespace, background)
+        val crop = background.crop
+        if (crop != null)
+            url += "?crop_x=${crop.offsetX}&crop_y=${crop.offsetY}&crop_width=${crop.width}&crop_height=${crop.height}"
+        return url
     }
 
     /**

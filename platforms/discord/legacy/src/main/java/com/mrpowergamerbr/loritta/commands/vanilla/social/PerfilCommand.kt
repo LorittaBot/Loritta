@@ -29,6 +29,8 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.utils.MediaTypeUtils
+import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.tables.BotVotes
 import net.perfectdreams.loritta.utils.AccountUtils
 import net.perfectdreams.loritta.utils.ClusterOfflineException
@@ -171,8 +173,11 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 
 				for (config in configs) {
 					val donationKeysValue = config.getActiveDonationKeysValueNested()
-					if (ServerPremiumPlans.getPlanFromValue(donationKeysValue).hasCustomBadge) {
-						val badge = LorittaUtils.downloadImage("${loritta.config.dreamStorageService.url}/$dssNamespace/${config.donationConfig?.customBadgePath}", bypassSafety = true)
+					val badgeFile = config.donationConfig?.customBadgeFile
+					val badgeMediaType = config.donationConfig?.customBadgePreferredMediaType
+					if (ServerPremiumPlans.getPlanFromValue(donationKeysValue).hasCustomBadge && badgeFile != null && badgeMediaType != null) {
+						val extension = MediaTypeUtils.convertContentTypeToExtension(badgeMediaType)
+						val badge = LorittaUtils.downloadImage("${loritta.config.dreamStorageService.url}/$dssNamespace/${StoragePaths.CustomBadge(config.guildId, badgeFile).join()}.$extension", bypassSafety = true)
 
 						if (badge != null) {
 							badges += badge
