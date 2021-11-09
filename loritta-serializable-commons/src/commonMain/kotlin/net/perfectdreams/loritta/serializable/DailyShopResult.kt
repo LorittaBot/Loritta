@@ -4,7 +4,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 class DailyShopResult(
-		val backgrounds: List<Background>,
-		val profileDesigns: List<ProfileDesign>,
-		val generatedAt: Long
+	val dreamStorageServiceUrl: String,
+	val namespace: String,
+	val backgrounds: List<Background>,
+	val profileDesigns: List<ProfileDesign>,
+	val generatedAt: Long
 )

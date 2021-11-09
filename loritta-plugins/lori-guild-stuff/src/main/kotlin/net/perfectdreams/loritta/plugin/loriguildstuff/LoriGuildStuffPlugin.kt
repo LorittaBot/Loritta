@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.plugin.loriguildstuff
 
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.legacy.plugin.LorittaDiscordPlugin
-import net.perfectdreams.loritta.plugin.loriguildstuff.commands.AddBackgroundCommand
 import net.perfectdreams.loritta.plugin.loriguildstuff.commands.FastBanCommand
 import net.perfectdreams.loritta.plugin.loriguildstuff.commands.NotifyBackgroundsCommand
 import net.perfectdreams.loritta.plugin.loriguildstuff.commands.SendFanartCommand
@@ -15,7 +14,6 @@ class LoriGuildStuffPlugin(name: String, loritta: LorittaDiscord) : LorittaDisco
     override fun onEnable() {
         registerCommands(
                 NotifyBackgroundsCommand.create(loritta),
-                AddBackgroundCommand.create(loritta),
                 SendFanartCommand.create(loritta),
                 FastBanCommand.create(loritta),
                 SendFanartCommand.create(loritta)
