@@ -69,7 +69,9 @@ class ButtonClickExecutorWrapper(
                     loritta,
                     i18nContext,
                     context.sender,
-                    context
+                    context,
+                    context.guildId,
+                    context.member
                 )
             } else {
                 CinnamonComponentContext(
