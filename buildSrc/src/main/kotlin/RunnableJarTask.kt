@@ -42,14 +42,14 @@ fun Project.runnableJarTask(
         // Fixes a "is a duplicate but no duplicate handling strategy has been set" error
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
-        val changedFileNames = mutableMapOf<File, String>()
-
-        for (file in runtimeClasspath) {
-            val checksum = calculateChecksum(file.readBytes())
-            changedFileNames[file] = "${file.nameWithoutExtension}-${Hex.encodeHexString(checksum).substring(0, 4)}.${file.extension}"
-        }
-
         doFirst {
+            val changedFileNames = mutableMapOf<File, String>()
+
+            for (file in runtimeClasspath) {
+                val checksum = calculateChecksum(file.readBytes())
+                changedFileNames[file] = "${file.nameWithoutExtension}-${Hex.encodeHexString(checksum).substring(0, 4)}.${file.extension}"
+            }
+            
             archiveBaseName.set("${project.name}-runnable")
 
             manifest {
@@ -88,6 +88,13 @@ fun Project.runnableJarTask(
         // (Yes, by default Gradle will run everything in this task block, even if you are compiling a unrelated project)
         // Very strange...
         doLast {
+            val changedFileNames = mutableMapOf<File, String>()
+
+            for (file in runtimeClasspath) {
+                val checksum = calculateChecksum(file.readBytes())
+                changedFileNames[file] = "${file.nameWithoutExtension}-${Hex.encodeHexString(checksum).substring(0, 4)}.${file.extension}"
+            }
+
             println("Copying dependencies JARs for ${project.name}...")
 
             val libs = File(project.projectDir, "build/libs/libs")
