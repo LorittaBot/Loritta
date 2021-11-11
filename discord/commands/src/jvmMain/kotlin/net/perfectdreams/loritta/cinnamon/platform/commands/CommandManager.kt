@@ -127,8 +127,10 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.declaratio
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.AchievementsExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.AfkOffExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.AfkOnExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.social.GenderExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.AchievementsCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.AfkCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.GenderCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.CustomTextBoxExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.TextBoxExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.declarations.UndertaleCommand
@@ -361,6 +363,11 @@ class CommandManager(
             AfkCommand,
             AfkOnExecutor(),
             AfkOffExecutor()
+        )
+
+        commandManager.register(
+            GenderCommand,
+            GenderExecutor()
         )
 
         commandManager.register(
