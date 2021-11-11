@@ -125,7 +125,10 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McSkinExec
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McUUIDExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.declarations.MinecraftCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.AchievementsExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.social.AfkOffExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.social.AfkOnExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.AchievementsCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.AfkCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.CustomTextBoxExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.TextBoxExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.declarations.UndertaleCommand
@@ -352,6 +355,12 @@ class CommandManager(
         commandManager.register(
             AchievementsCommand,
             AchievementsExecutor()
+        )
+
+        commandManager.register(
+            AfkCommand,
+            AfkOnExecutor(),
+            AfkOffExecutor()
         )
 
         commandManager.register(
