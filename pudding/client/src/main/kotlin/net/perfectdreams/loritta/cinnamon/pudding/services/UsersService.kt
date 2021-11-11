@@ -39,6 +39,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
             it[Profiles.lastMessageSentHash] = 0
             it[Profiles.money] = 0
             it[Profiles.isAfk] = false
+            it[Profiles.afkReason] = null
             it[Profiles.settings] = profileSettings[UserSettings.id]
         }
 

@@ -4,6 +4,8 @@ import kotlinx.datetime.Instant
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserProfile
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
+import org.jetbrains.exposed.sql.update
 
 class PuddingUserProfile(
     private val pudding: Pudding,
@@ -13,6 +15,8 @@ class PuddingUserProfile(
 
     val id by data::id
     val money by data::money
+    val isAfk by data::isAfk
+    val afkReason by data::afkReason
 
     /**
      * Gives an achievement to this user
@@ -27,4 +31,11 @@ class PuddingUserProfile(
     )
 
     suspend fun getRankPositionInSonhosRanking() = pudding.sonhos.getSonhosRankPositionBySonhos(money)
+
+    suspend fun updateAfkState(isAfk: Boolean, reason: String? = null) = pudding.transaction {
+        Profiles.update({ Profiles.id eq this@PuddingUserProfile.id.value.toLong() }) {
+            it[Profiles.isAfk] = isAfk
+            it[afkReason] = reason
+        }
+    }
 }
