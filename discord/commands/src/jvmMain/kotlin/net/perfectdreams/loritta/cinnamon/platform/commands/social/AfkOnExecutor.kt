@@ -26,7 +26,7 @@ class AfkOnExecutor : CommandExecutor() {
         val profile = context.loritta.services.users.getOrCreateUserProfile(UserId(context.user.id.value))
         val reason = args[Options.reason]?.shortenAndRemoveCodeBackticks(299)?.stripNewLines()
 
-        if (profile.isAfk && profile.afkReason != reason)
+        if (!profile.isAfk || profile.afkReason != reason)
             profile.updateAfkState(true, reason)
 
         context.sendMessage {
