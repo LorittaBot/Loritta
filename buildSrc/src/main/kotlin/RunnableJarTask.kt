@@ -49,7 +49,7 @@ fun Project.runnableJarTask(
                 val checksum = calculateChecksum(file.readBytes())
                 changedFileNames[file] = "${file.nameWithoutExtension}-${Hex.encodeHexString(checksum).substring(0, 4)}.${file.extension}"
             }
-            
+
             archiveBaseName.set("${project.name}-runnable")
 
             manifest {
