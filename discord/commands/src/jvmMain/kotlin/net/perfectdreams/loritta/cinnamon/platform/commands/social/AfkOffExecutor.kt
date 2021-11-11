@@ -16,7 +16,7 @@ class AfkOffExecutor : CommandExecutor() {
         val profile = context.loritta.services.users.getUserProfile(UserId(context.user.id.value))
 
         if (profile?.isAfk == true)
-            profile.updateAfkState(false, null)
+            profile.disableAfk()
 
         context.sendMessage {
             styled(

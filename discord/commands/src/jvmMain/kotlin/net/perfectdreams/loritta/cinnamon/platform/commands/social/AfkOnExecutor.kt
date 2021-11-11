@@ -24,10 +24,10 @@ class AfkOnExecutor : CommandExecutor() {
 
     override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
         val profile = context.loritta.services.users.getOrCreateUserProfile(UserId(context.user.id.value))
-        val reason = args[Options.reason]?.shortenAndRemoveCodeBackticks(299)?.stripNewLines()
+        val reason = args[Options.reason]?.shortenAndRemoveCodeBackticks(300)?.stripNewLines()
 
         if (!profile.isAfk || profile.afkReason != reason)
-            profile.updateAfkState(true, reason)
+            profile.enableAfk(reason)
 
         context.sendMessage {
             styled(
