@@ -2,6 +2,7 @@ plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
     id("net.perfectdreams.i18nhelper.plugin") version Versions.I18N_HELPER
+    id("maven-publish")
 }
 
 i18nHelper {
@@ -76,7 +77,7 @@ kotlin {
         withJava()
     }
 
-    js(IR) {
+    js(BOTH) { // We compile for both because Loritta Legacy also uses this module
         // Declares that we want to compile for the browser and for nodejs
         browser()
         nodejs()
@@ -95,9 +96,8 @@ kotlin {
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLINX_SERIALIZATION}")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:${Versions.KOTLINX_SERIALIZATION}")
                 api("io.ktor:ktor-client-core:1.6.0")
-                api("org.jetbrains.kotlinx:kotlinx-datetime:0.2.1")
                 api("net.perfectdreams.i18nhelper:core:${Versions.I18N_HELPER}")
-                api("net.perfectdreams.gabrielaimageserver:client:2.0.2")
+                api("org.jetbrains.kotlinx:kotlinx-datetime:0.2.1")
 
                 // Used for Math stuff
                 api("com.ionspin.kotlin:bignum:0.3.0")
@@ -129,6 +129,9 @@ kotlin {
 
                 // Used by Minecraft related commands
                 api("net.perfectdreams.minecraftmojangapi:minecraft-mojang-api:0.0.1-SNAPSHOT")
+
+                // Gabriela Image Server
+                api("net.perfectdreams.gabrielaimageserver:client:2.0.2")
             }
         }
 

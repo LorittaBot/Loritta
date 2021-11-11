@@ -2,7 +2,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm")
+    id("maven-publish")
 }
+
+version = Versions.PUDDING
 
 repositories {
     mavenLocal()
@@ -33,4 +36,21 @@ dependencies {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = Versions.JVM_TARGET
+}
+
+// Required due to the "enforced platform" implementation, we want to ignore this error
+tasks.withType<GenerateModuleMetadata> {
+    suppressedValidationErrors.add("enforced-platform")
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "net.perfectdreams.loritta.cinnamon.pudding"
+            artifactId = "client"
+            version = Versions.PUDDING
+
+            from(components["java"])
+        }
+    }
 }
